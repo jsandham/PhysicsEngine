@@ -1,0 +1,145 @@
+#include <windows.h>
+#include<gl/gl.h>
+
+static bool running;
+
+void Win32InitOpenGL(HWND window)
+{
+	HDC windowDC = GetDC(window);
+
+	PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
+	desiredPixelFormat.nSize = sizeof(desiredPixelFormat);
+	desiredPixelFormat.nVersion = 1;
+	desiredPixelFormat.dwFlags = PFD_SUPPORT_OPENGL|PFD_DRAW_TO_WINDOW|PFD_DOUBLEBUFFER;
+	desiredPixelFormat.cColorBits = 32;
+	desiredPixelFormat.cAlphaBits = 8;
+	desiredPixelFormat.iLayerType = PFD_MAIN_PLANE;
+
+	int suggestedPixelFormatIndex = ChoosePixelFormat(windowDC, &desiredPixelFormat);
+
+	PIXELFORMATDESCRIPTOR suggestedPixelFormat;
+	DescribePixelFormat(windowDC, suggestedPixelFormatIndex, sizeof(suggestedPixelFormat), &suggestedPixelFormat);
+	SetPixelFormat(windowDC, suggestedPixelFormatIndex, &suggestedPixelFormat);
+	
+	HGLRC openGLRC = wglCreateContext(windowDC);
+	//wglCreateContextAttrib();
+	if(wglMakeCurrent(windowDC, openGLRC))
+	{
+		MessageBox(0, "OpenGL SUCCESS!!!!", "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+	}
+	else
+	{
+		MessageBox(0, "OpenGL failed", "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+		// TODO: handle error?
+	}
+	ReleaseDC(window, windowDC);
+}
+
+void Win32UpdateWindow(HDC windowDC, int x, int y, int width, int height)
+{
+	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	SwapBuffers(windowDC);
+}
+
+LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	LRESULT result = 0;
+
+	switch(uMsg)
+	{
+		case WM_SIZE:
+		{
+			OutputDebugStringA("WM_SIZE CALLED\n");
+			break;
+		}
+		case WM_CLOSE:
+			running = false;
+			PostQuitMessage(0);
+			break;
+		case WM_DESTROY:
+		{
+			running = false;
+			break;
+		}
+		case WM_ACTIVATEAPP:
+		{
+			break;
+		}
+		case WM_PAINT:
+		{
+			PAINTSTRUCT paint;
+			HDC deviceContext = BeginPaint(hwnd, &paint);
+			int x = paint.rcPaint.left;
+			int y = paint.rcPaint.top;
+			int width = paint.rcPaint.right - paint.rcPaint.left;
+			int height = paint.rcPaint.bottom - paint.rcPaint.top;
+			Win32UpdateWindow(deviceContext, x, y, width, height);
+			EndPaint(hwnd, &paint);
+			break;
+		}
+		default:
+		{
+			result = DefWindowProc(hwnd, uMsg, wParam, lParam);
+			break;
+		}
+	}
+
+	return result;
+}
+
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	MessageBox(0, "This is my physics engine", "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+	
+	WNDCLASS windowClass = {};
+	windowClass.style = CS_HREDRAW|CS_VREDRAW;
+	windowClass.lpfnWndProc = MainWindowCallback;
+	windowClass.hInstance = hInstance;
+	windowClass.lpszClassName = "PhysicsEngineWindowClass";
+	
+	if(RegisterClass(&windowClass))
+	{
+		HWND windowHandle = CreateWindowEx(0, 
+				windowClass.lpszClassName, 
+				"PhysicsEngine", 
+				WS_OVERLAPPEDWINDOW|WS_VISIBLE,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				0,
+				0,
+				hInstance,
+				0);
+		if(windowHandle)
+		{
+			Win32InitOpenGL(windowHandle);
+
+			running = true;
+			while(running)
+			{
+				MSG message;
+				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+				{
+					if(message.message == WM_QUIT)
+					{
+						running = false;
+					}
+					TranslateMessage(&message);
+					DispatchMessage(&message);
+				}
+			}
+		}
+		else
+		{
+			// TODO handle unlikely error?
+		}
+	}
+	else
+	{
+		// TODO handle unlikely error?
+	}
+
+	return 0;
+}

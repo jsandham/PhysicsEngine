@@ -1,0 +1,27 @@
+#include <iostream>
+#include "DirectionalLight.h"
+
+using namespace PhysicsEngine;
+
+DirectionalLight::DirectionalLight()
+{
+	direction = glm::vec3(1.0f, 2.0f, 0.0f);
+	ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	specular = glm::vec3(1.0f, 1.0f, 1.0f);
+}
+
+DirectionalLight::DirectionalLight(Entity *entity)
+{
+	this->entity = entity;
+
+	direction = glm::vec3(1.0f, 2.0f, 0.0f);
+	ambient = glm::vec3(0.1f, 0.1f, 0.1f);
+	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	specular = glm::vec3(1.0f, 1.0f, 1.0f);
+}
+
+DirectionalLight::~DirectionalLight()
+{
+
+}
