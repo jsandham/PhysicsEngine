@@ -7,14 +7,6 @@
 #include <vector>
 #include <string>
 
-//#include <SFML/Window.hpp>
-//#include <SFML/Graphics.hpp>
-
-//#include "../components/Transform.h"
-
-//#include "../components/Component.h"
-//#include "../components/ComponentFactory.h"
-
 namespace PhysicsEngine
 {
 	class Component;

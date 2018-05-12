@@ -24,6 +24,7 @@ namespace PhysicsEngine
 
 		public:
 			static float gravity;
+			static float timestep;
 
 		public:
 			static void init(Bounds bounds, int depth);

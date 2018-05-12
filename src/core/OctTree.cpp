@@ -148,7 +148,7 @@ std::vector<float> Octtree::getWireframe()
 			glm::vec3 centre = node->bounds.centre;
 			glm::vec3 extents = 0.5f * node->bounds.size;
 
-			Log::Info("extents: %f %f %f", extents.x, extents.y, extents.z);
+			//Log::Info("extents: %f %f %f", extents.x, extents.y, extents.z);
 
 			vertices.push_back(centre.x - extents.x);
 			vertices.push_back(centre.y - extents.y);
@@ -181,74 +181,72 @@ std::vector<float> Octtree::getWireframe()
 			vertices.push_back(centre.x - extents.x);
 			vertices.push_back(centre.y - extents.y);
 			vertices.push_back(centre.z - extents.z);
-
-			break;
 
 			//
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// //
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z - extents.z);
+			//
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z - extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z - extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z - extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y - extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y - extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z - extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z - extents.z);
 
-			// vertices.push_back(centre.x + extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x + extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z - extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z - extents.z);
 
-			// vertices.push_back(centre.x - extents.x);
-			// vertices.push_back(centre.y + extents.y);
-			// vertices.push_back(centre.z + extents.z);
+			vertices.push_back(centre.x - extents.x);
+			vertices.push_back(centre.y + extents.y);
+			vertices.push_back(centre.z + extents.z);
 		}
 	}
 

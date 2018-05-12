@@ -77,11 +77,11 @@ void Gizmos::init()
 	cubeVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 	cubeVAO.unbind();
 
-	meshVAO.generate();
-	meshVAO.bind();
-	meshVBO.generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
-	meshVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-	meshVAO.unbind();
+	// meshVAO.generate();
+	// meshVAO.bind();
+	// meshVBO.generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+	// meshVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+	// meshVAO.unbind();
 
 	treeVAO.generate();
 	treeVAO.bind();
@@ -165,10 +165,11 @@ void Gizmos::drawOcttree(Octtree* tree, Color color)
 	}
 
 	glm::mat4 model = glm::mat4(1.0f);
+	model[3][3] = 1.0f;
 
 	std::vector<float> lines = tree->getWireframe();
 
-	Log::Info("lines: %d", lines.size());
+	// Log::Info("lines: %d", lines.size());
 	// for(unsigned int i = 0; i < lines.size() / 3; i++){
 	// 	Log::Info("[i]: %f  %f  %f", lines[3*i], lines[3*i+1], lines[3*i+2]);
 	// }

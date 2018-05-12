@@ -15,7 +15,7 @@ set Asset= ..\src\MeshLoader.cpp ..\src\TextureLoader.cpp
 
 set Entities= ..\src\entities\Entity.cpp
 
-set Components= ..\src\components\Component.cpp ..\src\components\Camera.cpp ..\src\components\Collider.cpp ..\src\components\BoxCollider.cpp ..\src\components\SphereCollider.cpp ..\src\components\CapsuleCollider.cpp ..\src\components\Transform.cpp ..\src\components\Rigidbody.cpp ..\src\components\DirectionalLight.cpp ..\src\components\SpotLight.cpp ..\src\components\PointLight.cpp ..\src\components\MeshRenderer.cpp ..\src\components\LineRenderer.cpp
+set Components= ..\src\components\Component.cpp ..\src\components\Joint.cpp ..\src\components\SpringJoint.cpp ..\src\components\Camera.cpp ..\src\components\Collider.cpp ..\src\components\BoxCollider.cpp ..\src\components\SphereCollider.cpp ..\src\components\CapsuleCollider.cpp ..\src\components\Transform.cpp ..\src\components\Rigidbody.cpp ..\src\components\DirectionalLight.cpp ..\src\components\SpotLight.cpp ..\src\components\PointLight.cpp ..\src\components\MeshRenderer.cpp ..\src\components\LineRenderer.cpp
 
 set Systems= ..\src\systems\System.cpp ..\src\systems\RenderSystem.cpp ..\src\systems\PhysicsSystem.cpp ..\src\systems\PlayerSystem.cpp ..\src\systems\DebugSystem.cpp ..\src\systems\CleanUpSystem.cpp
 

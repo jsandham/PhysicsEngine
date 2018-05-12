@@ -2,7 +2,8 @@
 
 using namespace PhysicsEngine;
 
-float Physics::gravity = 9.81f;
+float Physics::gravity = 1.81f;
+float Physics::timestep = 0.1f;
 
 std::vector<Collider*> Physics::colliders;
 Octtree Physics::tree;

@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include "../entities/Entity.h"
+
 namespace PhysicsEngine
 {
 	class Entity;

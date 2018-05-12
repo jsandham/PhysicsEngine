@@ -14,32 +14,26 @@ namespace PhysicsEngine
 	class Transform : public Component
 	{
 		private:
-			glm::vec3 position;
 			glm::vec3 eulerAngles;
-			glm::quat rotation;
-			glm::vec3 scale;
-
 			glm::mat4 translateMatrix;
 			glm::mat4 scaleMatrix;
 			glm::mat4 rotationMatrix;
 			glm::mat4 modelMatrix;
 
 		public:
+			glm::vec3 position;
+			glm::quat rotation;
+			glm::vec3 scale;
+
+		public:
 			Transform();
 			Transform(Entity *entity);
 			~Transform();
 
-			glm::vec3 getPosition();
 			glm::vec3 getEulerAngles();
-			glm::quat getRotation();
-			glm::vec3 getScale();
-
 			glm::mat4 getModelMatrix();
 
-			void setPosition(glm::vec3 position);
 			void setEulerAngles(glm::vec3 eulerAngles);
-			void setRotation(glm::quat rotation);
-			void setScale(glm::vec3 scale);
 	};
 }
 

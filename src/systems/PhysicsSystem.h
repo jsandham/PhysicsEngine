@@ -8,6 +8,7 @@
 #include "../components/ParticlePhysics.h"
 #include "../components/ParticleMesh.h"
 #include "../components/Collider.h"
+#include "../components/Rigidbody.h"
 
 namespace PhysicsEngine
 {
@@ -15,8 +16,14 @@ namespace PhysicsEngine
 	{
 		private:
 			std::vector<Collider*> colliders;
+			std::vector<Rigidbody*> rigidbodies;
 			//std::vector<ParticlePhysics*> particles;
 			//std::vector<ParticleMesh*> particleMeshes;*/
+
+			float timestep;
+			float gravity;
+
+			bool start = false;
 
 		public:
 			PhysicsSystem(Manager *manager);

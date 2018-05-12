@@ -10,11 +10,14 @@
 #include "../components/DirectionalLight.h"
 #include "../components/PointLight.h"
 #include "../components/SpotLight.h"
-#include "../components/SphereCollider.h"
-#include "../components/BoxCollider.h"
 #include "../components/MeshRenderer.h"
 #include "../components/LineRenderer.h"
-#include "../components/Skybox.h"
+#include "../components/Collider.h"
+#include "../components/SphereCollider.h"
+#include "../components/BoxCollider.h"
+#include "../components/Joint.h"
+#include "../components/SpringJoint.h"
+
 #include "../components/Camera.h"
 //#include "../components/Fluid.h"
 //#include "../components/Cloth.h"
@@ -52,9 +55,11 @@ namespace PhysicsEngine
 			std::vector<SpotLight*> spotLights;
 			std::vector<MeshRenderer*> meshRenderers;
 			std::vector<LineRenderer*> lineRenderers;
+			std::vector<Collider*> colliders;
 			std::vector<SphereCollider*> sphereColliders;
 			std::vector<BoxCollider*> boxColliders;
-			std::vector<Collider*> colliders;
+			std::vector<Joint*> joints;
+			std::vector<SpringJoint*> springJoints;
 			//std::vector<Fluid*> fluids;
 			//std::vector<Cloth*> cloths;
 
@@ -70,9 +75,11 @@ namespace PhysicsEngine
 			Pool<LineRenderer> lineRendererPool;
 			Pool<SphereCollider> sphereColliderPool;
 			Pool<BoxCollider> boxColliderPool;
-			Pool<Camera> cameraPool;
+			Pool<SpringJoint> springJointPool;
 			//Pool<Fluid> fluidPool;
 			//Pool<Cloth> clothPool;
+
+			Pool<Camera> cameraPool;
 
 		public:
 			Manager();
@@ -88,9 +95,10 @@ namespace PhysicsEngine
 			LineRenderer* createLineRenderer();
 			SphereCollider* createSphereCollider();
 			BoxCollider* createBoxCollider();
-			Camera* createCamera();
+			SpringJoint* createSpringJoint();
 			//Fluid* createFluid();
 			//Cloth* createCloth();
+			Camera* createCamera();
 
 			std::vector<Entity*> getEntities();
 			std::vector<Transform*> getTransforms();
@@ -100,9 +108,11 @@ namespace PhysicsEngine
 			std::vector<SpotLight*> getSpotLights();
 			std::vector<MeshRenderer*> getMeshRenderers();
 			std::vector<LineRenderer*> getLineRenderers();
+			std::vector<Collider*> getColliders();
 			std::vector<SphereCollider*> getSphereColliders();
 			std::vector<BoxCollider*> getBoxColliders();
-			std::vector<Collider*> getColliders();
+			std::vector<Joint*> getJoints();
+			std::vector<SpringJoint*> getSpringJoints();
 			//std::vector<Fluid*> getFluids();
 			//std::vector<Cloth*> getCloths();
 			Camera* getCamera();

@@ -11,25 +11,24 @@ namespace PhysicsEngine
 {
 	class Rigidbody : public Component
 	{
-		private:
+		public:
+			bool useGravity;
+			float mass;
+			float drag;
+			float angularDrag;
+
+			glm::vec3 velocity;
 			glm::vec3 angularVelocity;
 			glm::vec3 centreOfMass;
 			glm::mat3 inertiaTensor;
 
-		public:
-			float mass;
-			float gravity;
-			float drag;
-			float angularDrag;
+			// leap-frog
+			glm::vec3 halfVelocity;
 
 		public:
 			Rigidbody();
 			Rigidbody(Entity *entity);
 			~Rigidbody();
-
-			glm::vec3 GetAngularVelocity();
-			glm::vec3 GetCentreOfMass();
-			glm::mat3 GetInertiaTensor();
 	};
 }
 

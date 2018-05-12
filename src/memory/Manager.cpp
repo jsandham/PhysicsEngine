@@ -120,6 +120,17 @@ BoxCollider* Manager::createBoxCollider()
 	return collider;
 }
 
+SpringJoint* Manager::createSpringJoint()
+{
+	SpringJoint* joint = springJointPool.getNext();
+
+	springJoints.push_back(joint);
+
+	joints.push_back(joint);
+
+	return joint;
+}
+
 // Fluid* Manager::createFluid()
 // {
 // 	Fluid* fluid = fluidPool.getNext();
@@ -194,6 +205,11 @@ std::vector<LineRenderer*> Manager::getLineRenderers()
 	//return lineRendererPool.getPool();
 }
 
+std::vector<Collider*> Manager::getColliders()
+{
+	return colliders;
+}
+
 std::vector<SphereCollider*> Manager::getSphereColliders()
 {
 	return sphereColliders;
@@ -204,9 +220,14 @@ std::vector<BoxCollider*> Manager::getBoxColliders()
 	return boxColliders;
 }
 
-std::vector<Collider*> Manager::getColliders()
+std::vector<Joint*> Manager::getJoints()
 {
-	return colliders;
+	return joints;
+}
+
+std::vector<SpringJoint*> Manager::getSpringJoints()
+{
+	return springJoints;
 }
 
 // std::vector<Fluid*> Manager::getFluids()
