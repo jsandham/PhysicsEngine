@@ -6,10 +6,12 @@
 #include "../core/Physics.h"
 
 #include "../components/Transform.h"
-// #include "../components/Fluid.h"
-// #include "../components/Cloth.h"
+#include "../components/Fluid.h"
+#include "../components/Cloth.h"
 // #include "../components/Particles.h"
 // #include "../components/ParticleMesh.h"
+
+#include "../cuda/CudaPhysics.cuh"
 
 using namespace PhysicsEngine;
 
@@ -20,7 +22,13 @@ PhysicsSystem::PhysicsSystem(Manager *manager)
 
 PhysicsSystem::~PhysicsSystem()
 {
+	for(unsigned int i = 0; i < cudaCloths.size(); i++){
+		CudaPhysics::deallocate(&cudaCloths[i]);
+	}
 
+	for(unsigned int i = 0; i < cudaFluids.size(); i++){
+		CudaPhysics::deallocate(&cudaFluids[i]);
+	}
 }
 
 void PhysicsSystem::init()
@@ -32,7 +40,31 @@ void PhysicsSystem::init()
 	timestep = Physics::timestep;
 	gravity = Physics::gravity;
 
+	std::vector<Cloth*> cloths = manager->getCloths();
+	for(unsigned int i = 0; i < cloths.size(); i++){
+		cudaCloths.push_back(CudaCloth());
 
+		cudaCloths[i].nx = cloths[i]->nx;
+		cudaCloths[i].ny = cloths[i]->ny;
+		cudaCloths[i].particles = cloths[i]->particles;
+		cudaCloths[i].particleTypes = cloths[i]->particleTypes;
+
+		cudaCloths[i].dt = timestep;
+		cudaCloths[i].kappa = cloths[i]->kappa;
+		cudaCloths[i].c = cloths[i]->c;
+		cudaCloths[i].mass = cloths[i]->mass;
+
+		CudaPhysics::allocate(&cudaCloths[i]);
+		CudaPhysics::initialize(&cudaCloths[i]);
+	}
+
+	std::vector<Fluid*> fluids = manager->getFluids();
+	for(unsigned int i = 0; i < fluids.size(); i++){
+		cudaFluids.push_back(CudaFluid());
+
+		CudaPhysics::allocate(&cudaFluids[i]);
+		CudaPhysics::initialize(&cudaFluids[i]);
+	}
 
 	/*std::vector<Fluid*> fluids = manager->getFluids();
 	std::vector<Cloth*> cloths = manager->getCloths();
@@ -113,41 +145,52 @@ void PhysicsSystem::update()
 	// }
 
 	// spring joints
-	std::vector<SpringJoint*> springJoints = manager->getSpringJoints();
-	for(unsigned int i = 0; i < springJoints.size(); i++){
-		float stiffness = springJoints[i]->stiffness;
-		float damping = springJoints[i]->damping;
-		glm::vec3 targetPosition = springJoints[i]->getTargetPosition();
+	for(int t = 0; t < 10; t++){
+		std::vector<SpringJoint*> springJoints = manager->getSpringJoints();
+		for(unsigned int i = 0; i < springJoints.size(); i++){
+			float stiffness = springJoints[i]->stiffness;
+			float damping = springJoints[i]->damping;
+			float fac1 = 1.0f - 0.5f * damping * timestep;
+			float fac2 = 1.0f / (1.0f + 0.5f * damping * timestep);
 
-		float fac1 = 1.0f - 0.5f * damping * timestep;
-		float fac2 = 1.0f / (1.0f + 0.5f * damping * timestep);
+			Transform* transform = springJoints[i]->entity->getComponent<Transform>();
+			Rigidbody* rigidbody = springJoints[i]->entity->getComponent<Rigidbody>();
 
-		Transform* transform = springJoints[i]->entity->getComponent<Transform>();
-		Rigidbody* rigidbody = springJoints[i]->entity->getComponent<Rigidbody>();
+			glm::vec3 targetPosition = springJoints[i]->getTargetPosition();
 
-		Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
+			glm::vec3 position = transform->position;
+			glm::vec3 halfVelocity = rigidbody->halfVelocity;
+			glm::vec3 velocity = rigidbody->velocity;
 
-		glm::vec3 position = transform->position;
-		glm::vec3 halfVelocity = rigidbody->halfVelocity;
-		glm::vec3 velocity = rigidbody->velocity;
+			halfVelocity = fac1 * fac2 * halfVelocity - stiffness * timestep * fac2 * (position - targetPosition) + timestep * fac2 * (glm::vec3(0.0f, -gravity, 0.0f));
+			position += timestep * halfVelocity;
 
-		halfVelocity = fac1 * fac2 * halfVelocity - stiffness * timestep * fac2 * (position - targetPosition) + timestep * fac2 * (glm::vec3(0.0f, -gravity, 0.0f));
-		position += position * timestep * halfVelocity;
+			transform->position = position;
+			rigidbody->halfVelocity = halfVelocity;
 
-		transform->position = position;
-		rigidbody->halfVelocity = halfVelocity;
-
-		Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
-
-
-		//Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
-
-		// rigidbody->halfVelocity = rigidbody->velocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
-		// transform->position += timestep * rigidbody->halfVelocity;
-		// rigidbody->velocity = rigidbody->halfVelocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
-	
-		//Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
+			// rigidbody->halfVelocity = rigidbody->velocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
+			// transform->position += timestep * rigidbody->halfVelocity;
+			// rigidbody->velocity = rigidbody->halfVelocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
+		
+			//Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
+		}
 	}
+
+	// hinge joints
+
+
+	// cloth
+	std::vector<Cloth*> cloths = manager->getCloths();
+	for(unsigned int i = 0; i < cudaCloths.size(); i++){
+		CudaPhysics::update(&cudaCloths[i]);
+
+		cloths[i]->particles = cudaCloths[i].particles;
+	}
+
+	// fluid
+
+
+
 
 	//std::vector<Fluid*> fluids = manager->getFluids();
 	//std::vector<Cloth*> cloths = manager->getCloths();

@@ -131,22 +131,22 @@ SpringJoint* Manager::createSpringJoint()
 	return joint;
 }
 
-// Fluid* Manager::createFluid()
-// {
-// 	Fluid* fluid = fluidPool.getNext();
+Fluid* Manager::createFluid()
+{
+	Fluid* fluid = fluidPool.getNext();
 
-// 	fluids.push_back(fluid);
+	fluids.push_back(fluid);
 
-// 	return fluid;
-// }
+	return fluid;
+}
 
-// Cloth* Manager::createCloth()
-// {
-// 	Cloth* cloth = clothPool.getNext();
-// 	cloths.push_back(cloth);
+Cloth* Manager::createCloth()
+{
+	Cloth* cloth = clothPool.getNext();
+	cloths.push_back(cloth);
 
-// 	return cloth;
-// }
+	return cloth;
+}
 
 Camera* Manager::createCamera()
 {
@@ -230,17 +230,17 @@ std::vector<SpringJoint*> Manager::getSpringJoints()
 	return springJoints;
 }
 
-// std::vector<Fluid*> Manager::getFluids()
-// {
-// 	return fluids;
-// 	//return fluidPool.getPool();
-// }
+std::vector<Fluid*> Manager::getFluids()
+{
+	return fluids;
+	//return fluidPool.getPool();
+}
 
-// std::vector<Cloth*> Manager::getCloths()
-// {
-// 	return cloths;
-// 	//return clothPool.getPool();
-// }
+std::vector<Cloth*> Manager::getCloths()
+{
+	return cloths;
+	//return clothPool.getPool();
+}
 
 Camera* Manager::getCamera()
 {

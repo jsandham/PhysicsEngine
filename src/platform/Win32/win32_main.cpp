@@ -5,8 +5,15 @@
 #include <gl/gl.h>
 #include <stdio.h>
 
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
+
+#include "../../cuda/cuda_util.h"
+
 #include "../../core/Input.h"
 #include "../../core/Time.h"
+#include "../../core/Log.h"
 
 #include "../../Scene.h"
 
@@ -109,6 +116,16 @@ bool Win32InitOpenGL(HWND window)
 	{
 		OutputDebugStringA("INITIALIZED GLEW SUCCESSFULLY\n");
 	}
+
+	cudaDeviceProp prop;
+	int device; 
+	memset(&prop, 0, sizeof(cudaDeviceProp));
+	prop.major = 1;
+	prop.minor = 0;
+	gpuErrchk(cudaChooseDevice(&device, &prop));
+	//gpuErrchk(cudaGLSetGLDevice(device));
+
+	OutputDebugStringA("CUDA DEVICE SELECTED\n");
 
 	return true;
 }
@@ -245,8 +262,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				WS_OVERLAPPEDWINDOW|WS_VISIBLE,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
+				1000,
+				1000,
 				0,
 				0,
 				hInstance,
@@ -259,6 +276,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			Scene scene;
 
 			scene.init();
+
+			Log::Info("call scene init");
 
 			running = true;
 

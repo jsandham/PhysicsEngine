@@ -48,6 +48,7 @@ namespace PhysicsEngine
 
 			// internal shaders
 			Shader depthShader;
+			Shader particleShader;
 
 			// internal graphics state
 			GraphicState state;
@@ -56,6 +57,9 @@ namespace PhysicsEngine
 			std::vector<Buffer> vertexVBO;
 			std::vector<Buffer> normalVBO;
 			std::vector<Buffer> texCoordVBO;
+
+			std::vector<VertexArrayObject> clothVAO;
+			std::vector<Buffer> clothVBO;
 
 			std::vector<glm::mat4> cascadeLightView;
 			std::vector<glm::mat4> cascadeOrthoProj;

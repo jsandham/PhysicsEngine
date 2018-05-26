@@ -5,7 +5,6 @@
 
 #include "Component.h"
 
-#include "../graphics/Material.h"
 #include "../graphics/Buffer.h"
 #include "../graphics/VertexArrayObject.h"
 

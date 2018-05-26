@@ -20,10 +20,12 @@ namespace PhysicsEngine
 			Joint();
 			virtual ~Joint() = 0;
 
+			Joint* getConnectedJoint();
 			Rigidbody* getConnectedBody();
 			glm::vec3 getConnectedAnchor();
 			glm::vec3 getAnchor();
 			
+			void setConnectedJoint(Joint* joint);
 			void setConnectedBody(Rigidbody* body);
 			void setConnectedAnchor(glm::vec3 anchor);
 			void setAnchor(glm::vec3 anchor);

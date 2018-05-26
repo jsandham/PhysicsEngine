@@ -32,7 +32,7 @@ namespace PhysicsEngine
 			template<typename T>
 			void addComponent(T* component)
 			{
-				printf("this: 0x%p\n", this);
+				//printf("this: 0x%p\n", this);
 				component->entity = this;
 
 				componentTypes.push_back(typeid(T));

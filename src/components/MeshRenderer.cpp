@@ -46,28 +46,3 @@ void MeshRenderer::setMeshFilter(int filter)
 {
 	this->meshFilter = filter;
 }
-
-Buffer* MeshRenderer::getVertexVBO()
-{
-	return &vertexVBO;
-}
-
-Buffer* MeshRenderer::getNormalVBO()
-{
-	return &normalVBO;
-}
-
-Buffer* MeshRenderer::getTexCoordVBO()
-{
-	return &texCoordVBO;
-}
-
-Buffer* MeshRenderer::getColourVBO()
-{
-	return &colourVBO;
-}
-
-VertexArrayObject* MeshRenderer::getMeshVAO()
-{
-	return &meshVAO;
-}

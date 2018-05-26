@@ -19,15 +19,17 @@
 #include "../components/SpringJoint.h"
 
 #include "../components/Camera.h"
-//#include "../components/Fluid.h"
-//#include "../components/Cloth.h"
+#include "../components/Fluid.h"
+#include "../components/Cloth.h"
 
 #include "Pool.h"
 
 #include "../core/Mesh.h"
+
 #include "../graphics/Texture2D.h"
 #include "../graphics/Cubemap.h"
 #include "../graphics/Shader.h"
+#include "../graphics/Material.h"
 
 namespace PhysicsEngine
 {
@@ -60,8 +62,8 @@ namespace PhysicsEngine
 			std::vector<BoxCollider*> boxColliders;
 			std::vector<Joint*> joints;
 			std::vector<SpringJoint*> springJoints;
-			//std::vector<Fluid*> fluids;
-			//std::vector<Cloth*> cloths;
+			std::vector<Fluid*> fluids;
+			std::vector<Cloth*> cloths;
 
 			Camera* camera;
 
@@ -76,8 +78,8 @@ namespace PhysicsEngine
 			Pool<SphereCollider> sphereColliderPool;
 			Pool<BoxCollider> boxColliderPool;
 			Pool<SpringJoint> springJointPool;
-			//Pool<Fluid> fluidPool;
-			//Pool<Cloth> clothPool;
+			Pool<Fluid> fluidPool;
+			Pool<Cloth> clothPool;
 
 			Pool<Camera> cameraPool;
 
@@ -96,8 +98,8 @@ namespace PhysicsEngine
 			SphereCollider* createSphereCollider();
 			BoxCollider* createBoxCollider();
 			SpringJoint* createSpringJoint();
-			//Fluid* createFluid();
-			//Cloth* createCloth();
+			Fluid* createFluid();
+			Cloth* createCloth();
 			Camera* createCamera();
 
 			std::vector<Entity*> getEntities();
@@ -113,8 +115,8 @@ namespace PhysicsEngine
 			std::vector<BoxCollider*> getBoxColliders();
 			std::vector<Joint*> getJoints();
 			std::vector<SpringJoint*> getSpringJoints();
-			//std::vector<Fluid*> getFluids();
-			//std::vector<Cloth*> getCloths();
+			std::vector<Fluid*> getFluids();
+			std::vector<Cloth*> getCloths();
 			Camera* getCamera();
 
 			void loadMesh(const std::string& name);

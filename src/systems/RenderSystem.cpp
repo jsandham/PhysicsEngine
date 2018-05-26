@@ -7,6 +7,7 @@
 
 #include "../core/Debug.h"
 #include "../core/Input.h"
+#include "../core/Log.h"
 #include "../TextureLoader.h"
 
 #include "../graphics/Gizmos.h"
@@ -14,8 +15,8 @@
 
 using namespace PhysicsEngine;
 
-const unsigned int SHADOW_WIDTH = 1080, SHADOW_HEIGHT = 1080;
-const unsigned int DEBUG_WIDTH = 800, DEBUG_HEIGHT = 800;
+const unsigned int SHADOW_WIDTH = 1000, SHADOW_HEIGHT = 1000;
+const unsigned int DEBUG_WIDTH = 1000, DEBUG_HEIGHT = 1000;
 
 const unsigned int NUM_CASCADES = 5;
 
@@ -69,8 +70,14 @@ void RenderSystem::init()
 	}
 
 	if (!depthShader.compile("../data/shaders/depth.vs", "../data/shaders/depth.frag")){
-		std::cout << "RenderSystem: depth shader failed to compile" << std::endl;
+		Log::Info("RenderSystem: depth shader failed to compile");
 	}
+
+	if(!particleShader.compile("../data/shaders/particle_directional.vs", "../data/shaders/particle_directional.frag")){
+		Log::Info("RenderSystem: particle shader failed to compile");
+	}
+
+	particleShader.setUniformBlock("CameraBlock", (int)UniformBuffer::CameraBuffer);
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
 	std::vector<Mesh> meshes = manager->getMeshes();
@@ -105,6 +112,22 @@ void RenderSystem::init()
 		meshVAO[i].setLayout(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);*/
 
 		meshVAO[i].unbind();
+	}
+
+	std::vector<Cloth*> cloths = manager->getCloths();
+	clothVAO.resize(cloths.size());
+	clothVBO.resize(cloths.size());
+	for(unsigned int i = 0; i < cloths.size(); i++){
+		clothVAO[i].generate();
+		clothVAO[i].bind();
+		clothVAO[i].setDrawMode(GL_POINTS);
+
+		clothVBO[i].generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		clothVBO[i].bind();
+		clothVBO[i].setData(&((cloths[i]->particles)[0]), cloths[i]->particles.size()*sizeof(float));
+		clothVAO[i].setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+		clothVAO[i].unbind();
 	}
 
 	state.init();
@@ -287,6 +310,30 @@ void RenderSystem::renderScene()
 		material->setMat4("model", glm::mat4(1.0));
 
 		lineRenderers[j]->draw();
+	}
+
+	// maybe temporary?
+	particleShader.bind();
+	particleShader.setMat4("view", state.getViewMatrix());
+	particleShader.setMat4("projection", state.getProjectionMatrix());
+
+	std::vector<Cloth*> cloths = manager->getCloths();
+	for(unsigned int i = 0; i < cloths.size(); i++){
+		Transform *transform = cloths[i]->entity->getComponent<Transform>();
+		particleShader.setMat4("model", transform->getModelMatrix());
+
+		std::vector<float> particles = cloths[i]->particles;
+
+		clothVAO[i].bind();
+		clothVBO[i].bind();
+		clothVBO[i].setSubData(&(particles[0]), 0, 4*particles.size());
+		clothVAO[i].draw((int)(cloths[i]->particles).size());
+		clothVAO[i].unbind();
+		//vertexVBO[i].setData(&(mesh->getVertices()[0]), mesh->getVertices().size()*sizeof(float));		
+
+
+		//void setData(const void* data, std::size_t size);
+		//	void setSubData(const void* data, unsigned int offset, std::size_t size);
 	}
 
 	// move to debug system? Probably use input there to toggle it on and off

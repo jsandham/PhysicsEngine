@@ -182,7 +182,7 @@ bool Shader::compile()
 
 bool Shader::isCompiled()
 {
-	return success;
+	return (bool)success;
 }
 
 bool Shader::compile(std::string vertexShaderPath, std::string fragmentShaderPath, std::string geometryShaderPath)

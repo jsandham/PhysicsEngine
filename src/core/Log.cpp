@@ -35,6 +35,15 @@ std::string Log::convertToString(const char* format, va_list args)
 			case 'f':
 				message += std::to_string(va_arg(args, double));
 				break;
+			case 'p':
+				char text[255];
+				sprintf(text, "%p\n", va_arg(args, void*));
+				int t = 0;
+				while(t <= 255 && text[t] != '\n'){
+					message += text[t];
+					t++;
+				}
+				break;
 			}
 
 			c++;

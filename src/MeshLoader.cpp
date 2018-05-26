@@ -12,7 +12,7 @@ using namespace PhysicsEngine;
 
 bool MeshLoader::load(const std::string& filepath, std::vector<float>& vertices, std::vector<float>& normals, std::vector<float>& texCoords)
 {
-	int period = filepath.find_last_of(".");
+	size_t period = filepath.find_last_of(".");
 	std::string extension = filepath.substr(period + 1);
 
 	if (extension != "txt"){
@@ -64,10 +64,10 @@ bool MeshLoader::load(const std::string& filepath, std::vector<float>& vertices,
 			}
 			else if (wordsInLine[0] == "p")
 			{
-				p.push_back((float)std::stod(wordsInLine[i]));
+				p.push_back(std::stoi(wordsInLine[i]));
 			}
 			else if (wordsInLine[0] == "l"){
-				l.push_back((float)std::stod(wordsInLine[i]));
+				l.push_back(std::stoi(wordsInLine[i]));
 			}
 			else if (wordsInLine[0] == "f"){
 				ss << wordsInLine[i];
@@ -115,12 +115,12 @@ bool MeshLoader::load(const std::string& filepath, std::vector<float>& vertices,
 	// calculate normals if not given
 	if (vn.size() == 0){
 		vn.resize(v.size(), 0.0f);
-		f_vn.resize(f_v.size(), 0.0f);
+		f_vn.resize(f_v.size(), 0);
 
 		for (int i = 0; i<f_v.size(); i += 3){
-			float f1 = f_v[i];
-			float f2 = f_v[i + 1];
-			float f3 = f_v[i + 2];
+			int f1 = f_v[i];
+			int f2 = f_v[i + 1];
+			int f3 = f_v[i + 2];
 
 			f_vn[i] = f1;
 			f_vn[i + 1] = f2;

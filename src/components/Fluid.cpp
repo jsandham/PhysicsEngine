@@ -4,25 +4,25 @@
 
 using namespace PhysicsEngine;
 
-// Fluid::Fluid()
-// {
-// 	std::cout << "fluid particles constructor called" << std::endl;
-// 	physics = new CudaFluidPhysics();
-// }
+Fluid::Fluid()
+{
+	//std::cout << "fluid particles constructor called" << std::endl;
+	//physics = new CudaFluidPhysics();
+}
 
-// Fluid::Fluid(Entity *entity)
-// {
-// 	this->entity = entity;
+Fluid::Fluid(Entity *entity)
+{
+	this->entity = entity;
 
-// 	std::cout << "fluid particles constructor called" << std::endl;
-// 	physics = new CudaFluidPhysics();
-// }
+	//std::cout << "fluid particles constructor called" << std::endl;
+	//physics = new CudaFluidPhysics();
+}
 
-// Fluid::~Fluid()
-// {
-// 	std::cout << "FluidParticles destructor called" << std::endl;
-// 	delete physics;
-// }
+Fluid::~Fluid()
+{
+	//std::cout << "FluidParticles destructor called" << std::endl;
+	//delete physics;
+}
 
 // void Fluid::init()
 // {

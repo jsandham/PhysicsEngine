@@ -1,37 +1,35 @@
 #ifndef __CLOTH_H__
 #define __CLOTH_H__
 
-// #include "ParticlePhysics.h"
+#include <vector>
 
-// #include "../CudaClothPhysics.cuh"
+#include "Component.h"
 
-// namespace PhysicsEngine
-// {
-// 	class Cloth : public ParticlePhysics
-// 	{
-// 		private:
-// 			bool run; 
+// #include "../graphics/Buffer.h"
+// #include "../graphics/VertexArrayObject.h"
 
-// 			CudaClothPhysics *physics;
+namespace PhysicsEngine
+{
+	class Cloth : public Component
+	{
+		public:
+			int nx;
+			int ny;
+			std::vector<float> particles;
+			std::vector<int> particleTypes;
 
-// 		public:
-// 			Cloth();
-// 			Cloth(Entity *entity);
-// 			~Cloth();
+			float kappa;
+			float c;
+			float mass;
 
-// 			void init();
-// 			void update();
+			// Buffer vbo;
+			// VertexArrayObject vao;
 
-// 			void setParticles(std::vector<float> &particles);
-// 			void setParticleTypes(std::vector<int> &particleTypes);
-// 			void setNx(int nx);
-// 			void setNy(int ny);
-
-// 			std::vector<float>& getParticles();
-// 			std::vector<int>& getParticleTypes();
-// 			int getNx();
-// 			int getNy();
-// 	};
-// }
+		public:
+			Cloth();
+			Cloth(Entity *entity);
+			~Cloth();
+	};
+}
 
 #endif

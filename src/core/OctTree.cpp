@@ -114,7 +114,7 @@ void Octtree::build(std::vector<Collider*> colliders)
 {
 	this->colliders = colliders;
 
-	Log::Info("building octtree with %d colliders", colliders.size());
+	//Log::Info("building octtree with %d colliders", colliders.size());
 
 	for (unsigned int i = 0; i < colliders.size(); i++){
 
@@ -126,7 +126,7 @@ void Octtree::build(std::vector<Collider*> colliders)
 			if (colliders[i]->intersect(nodes[index].bounds)){
 				nodes[index].add(i);
 
-				Log::Info("collider %d intersected with node %d", i, index);
+				//Log::Info("collider %d intersected with node %d", i, index);
 
 				if(8*index+8 < nodes.size()){
 					for (int j = 8 * index + 1; j <= 8 * index + 8; j++){
