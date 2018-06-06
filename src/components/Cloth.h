@@ -5,8 +5,8 @@
 
 #include "Component.h"
 
-// #include "../graphics/Buffer.h"
-// #include "../graphics/VertexArrayObject.h"
+#include "../graphics/Buffer.h"
+#include "../graphics/VertexArrayObject.h"
 
 namespace PhysicsEngine
 {
@@ -22,8 +22,8 @@ namespace PhysicsEngine
 			float c;
 			float mass;
 
-			// Buffer vbo;
-			// VertexArrayObject vao;
+			Buffer vbo;
+			VertexArrayObject vao;
 
 		public:
 			Cloth();

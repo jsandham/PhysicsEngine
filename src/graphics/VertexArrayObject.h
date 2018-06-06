@@ -10,6 +10,8 @@ namespace PhysicsEngine
 	{
 	private:
 		GLenum drawMode;
+
+	public:
 		GLuint handle;
 
 	public:

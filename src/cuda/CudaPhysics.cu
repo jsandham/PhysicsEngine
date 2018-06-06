@@ -80,6 +80,13 @@ void CudaPhysics::initialize(CudaCloth* cloth)
 
 void CudaPhysics::update(CudaCloth* cloth)
 {
+	cudaGraphicsMapResources(1, &(cloth->vbo_cuda), 0);
+	size_t num_bytes;
+
+	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_output), &num_bytes, cloth->vbo_cuda);
+
+	//Log::Info("num bytes: %d", (int)num_bytes);
+
 	dim3 blockSize(16, 16);
 	dim3 gridSize(16, 16);
 
@@ -117,11 +124,12 @@ void CudaPhysics::update(CudaCloth* cloth)
 		);
 	}
 
-	int nx = cloth->nx;
-	int ny = cloth->ny;
-	//Log::Info("nx %d ny %d", nx,ny);
+	cudaGraphicsUnmapResources(1, &(cloth->vbo_cuda), 0);
 
-	gpuErrchk(cudaMemcpy(&((cloth->particles)[0]), cloth->d_output, 3*nx*ny*sizeof(float), cudaMemcpyDeviceToHost));
+	//int nx = cloth->nx;
+	//int ny = cloth->ny;
+
+	//gpuErrchk(cudaMemcpy(&((cloth->particles)[0]), cloth->d_output, 3*nx*ny*sizeof(float), cudaMemcpyDeviceToHost));
 }
 
 

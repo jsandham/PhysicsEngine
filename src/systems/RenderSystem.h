@@ -58,9 +58,6 @@ namespace PhysicsEngine
 			std::vector<Buffer> normalVBO;
 			std::vector<Buffer> texCoordVBO;
 
-			std::vector<VertexArrayObject> clothVAO;
-			std::vector<Buffer> clothVBO;
-
 			std::vector<glm::mat4> cascadeLightView;
 			std::vector<glm::mat4> cascadeOrthoProj;
 			std::vector<glm::mat4> cubeViewMatrices;

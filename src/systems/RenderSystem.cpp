@@ -114,22 +114,6 @@ void RenderSystem::init()
 		meshVAO[i].unbind();
 	}
 
-	std::vector<Cloth*> cloths = manager->getCloths();
-	clothVAO.resize(cloths.size());
-	clothVBO.resize(cloths.size());
-	for(unsigned int i = 0; i < cloths.size(); i++){
-		clothVAO[i].generate();
-		clothVAO[i].bind();
-		clothVAO[i].setDrawMode(GL_POINTS);
-
-		clothVBO[i].generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-		clothVBO[i].bind();
-		clothVBO[i].setData(&((cloths[i]->particles)[0]), cloths[i]->particles.size()*sizeof(float));
-		clothVAO[i].setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-		clothVAO[i].unbind();
-	}
-
 	state.init();
 
 	OpenGL::enableDepthTest();
@@ -323,17 +307,11 @@ void RenderSystem::renderScene()
 		particleShader.setMat4("model", transform->getModelMatrix());
 
 		std::vector<float> particles = cloths[i]->particles;
+		int size = particles.size();
 
-		clothVAO[i].bind();
-		clothVBO[i].bind();
-		clothVBO[i].setSubData(&(particles[0]), 0, 4*particles.size());
-		clothVAO[i].draw((int)(cloths[i]->particles).size());
-		clothVAO[i].unbind();
-		//vertexVBO[i].setData(&(mesh->getVertices()[0]), mesh->getVertices().size()*sizeof(float));		
-
-
-		//void setData(const void* data, std::size_t size);
-		//	void setSubData(const void* data, unsigned int offset, std::size_t size);
+		cloths[i]->vao.bind();
+		cloths[i]->vao.draw(size);
+		cloths[i]->vao.unbind();
 	}
 
 	// move to debug system? Probably use input there to toggle it on and off

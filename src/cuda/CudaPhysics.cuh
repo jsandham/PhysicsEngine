@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "vector_types.h"
+#include <vector_types.h>
 
 #include "../glm/glm.hpp"
 
@@ -39,6 +39,8 @@ namespace PhysicsEngine
 		float kappa;
 		float c;
 		float mass;
+
+		struct cudaGraphicsResource* vbo_cuda;
 	};
 
 	struct CudaFluid

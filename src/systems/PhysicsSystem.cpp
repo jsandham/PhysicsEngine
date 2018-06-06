@@ -13,6 +13,12 @@
 
 #include "../cuda/CudaPhysics.cuh"
 
+#include <cuda.h>
+#include <cudagl.h>
+#include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
+#include <cuda_gl_interop.h>
+
 using namespace PhysicsEngine;
 
 PhysicsSystem::PhysicsSystem(Manager *manager)
@@ -56,6 +62,23 @@ void PhysicsSystem::init()
 
 		CudaPhysics::allocate(&cudaCloths[i]);
 		CudaPhysics::initialize(&cudaCloths[i]);
+
+		cloths[i]->vao.generate();
+		cloths[i]->vao.bind();
+		cloths[i]->vao.setDrawMode(GL_POINTS);
+
+		cloths[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		cloths[i]->vbo.bind();
+		cloths[i]->vbo.setData(&(cloths[i]->particles[0]), 3*cloths[i]->nx*cloths[i]->ny*sizeof(float));
+
+		cloths[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+		cloths[i]->vao.unbind();
+
+		cudaGraphicsGLRegisterBuffer(&(cudaCloths[i].vbo_cuda), cloths[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
+
+		Log::Info("particles size: %d", cloths[i]->particles.size());
+		Log::Info("vbo: %d", cloths[i]->vbo.handle);
+		Log::Info("vbo: %d  vao: %d", cloths[i]->vbo.handle, cloths[i]->vao.handle);
 	}
 
 	std::vector<Fluid*> fluids = manager->getFluids();
@@ -183,8 +206,6 @@ void PhysicsSystem::update()
 	std::vector<Cloth*> cloths = manager->getCloths();
 	for(unsigned int i = 0; i < cudaCloths.size(); i++){
 		CudaPhysics::update(&cudaCloths[i]);
-
-		cloths[i]->particles = cudaCloths[i].particles;
 	}
 
 	// fluid

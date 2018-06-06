@@ -118,6 +118,8 @@ void Scene::init()
 	entity2->addComponent<Transform>(transform2);
 	entity2->addComponent<Cloth>(cloth2);
 
+	Log::Info("scene created");
+
 	// entity3 (sphere)
 	// Entity* entity3 = manager.createEntity();
 	// Transform* transform3 = manager.createTransform();
@@ -292,8 +294,8 @@ void Scene::init()
 	// entity7->addComponent<Transform>(transform7);
 	// entity7->addComponent<BoxCollider>(boxCollider7);
 
-	renderSystem->init();
 	physicsSystem->init();
+	renderSystem->init();
 	playerSystem->init();
 	cleanUpSystem->init();
 	debugSystem->init();
@@ -301,8 +303,8 @@ void Scene::init()
 
 void Scene::update()
 {
-	renderSystem->update();
 	physicsSystem->update();
+	renderSystem->update();
 	playerSystem->update();
 	cleanUpSystem->update();
 	debugSystem->update();
