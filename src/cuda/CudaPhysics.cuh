@@ -22,11 +22,17 @@ namespace PhysicsEngine
 		float4 *h_pos;
 		float4 *h_oldPos;
 		float4 *h_acc;
+		int *h_triangleIndices;
+		float *h_triangleVertices;
+		float *h_triangleNormals;
 
 		// device variables
 		float4 *d_pos;
 		float4 *d_oldPos;
 		float4 *d_acc;
+		int *d_triangleIndices;
+		float *d_triangleVertices;
+		float *d_triangleNormals;
 		float *d_output;
 
 		// used for timing

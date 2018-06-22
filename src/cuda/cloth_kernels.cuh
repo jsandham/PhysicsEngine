@@ -27,6 +27,20 @@ __global__ void verlet_integration
 		int ny
 	);
 
+__global__ void update_triangle_mesh
+	(
+		float4 *pos,
+		int *triangleIndices,
+		float *triangleVertices,
+		int nx,
+		int ny
+	);
+
+
+
+
+
+
 __global__ void apply_constraints
 	(
 		float4 *pos,

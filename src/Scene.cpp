@@ -37,6 +37,7 @@ void Scene::init()
 
 	manager.loadShader("standard", "../data/shaders/standard_directional.vs", "../data/shaders/standard_directional.frag");
 	manager.loadShader("particle", "../data/shaders/particle_directional.vs", "../data/shaders/particle_directional.frag");
+	manager.loadShader("basic", "../data/shaders/basic.vs", "../data/shaders/basic.frag");
 	manager.loadShader("line", "../data/shaders/line.vs", "../data/shaders/line.frag");
 
 	std::vector<std::string> faces = {"../data/textures/right.jpg", 
@@ -52,14 +53,17 @@ void Scene::init()
 	defaultMat->setMainTexture(manager.getTexture2D("../data/textures/default.png"));
 	Material *sunMat = new Material(manager.getShader("standard"));
 	sunMat->setMainTexture(manager.getTexture2D("../data/textures/sun.png"));
+	Material *basicMat = new Material(manager.getShader("basic"));
 	Material *lineMat = new Material(manager.getShader("line"));
 
 	manager.loadMaterial("defaultMat", *defaultMat);
 	manager.loadMaterial("sunMat", *sunMat);
+	manager.loadMaterial("basicMat", *basicMat);
 	manager.loadMaterial("lineMat", *lineMat);
 
 	delete defaultMat;
 	delete sunMat;
+	delete basicMat;
 	delete lineMat;
 
 	// create cloth particles

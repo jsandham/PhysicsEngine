@@ -24,11 +24,18 @@ void CudaPhysics::allocate(CudaCloth* cloth)
 	cloth->h_pos = new float4[nx*ny];
 	cloth->h_oldPos = new float4[nx*ny];
 	cloth->h_acc = new float4[nx*ny];
+	cloth->h_triangleIndices = new int[3*2*(nx-1)*(ny-1)];
+	cloth->h_triangleVertices = new float[9*2*(nx-1)*(ny-1)];
+	cloth->h_triangleNormals = new float[9*2*(nx-1)*(ny-1)];
 
 	// allocate memory on device
 	gpuErrchk(cudaMalloc((void**)&(cloth->d_pos), nx*ny*sizeof(float4)));
 	gpuErrchk(cudaMalloc((void**)&(cloth->d_oldPos), nx*ny*sizeof(float4)));
 	gpuErrchk(cudaMalloc((void**)&(cloth->d_acc), nx*ny*sizeof(float4)));
+	gpuErrchk(cudaMalloc((void**)&(cloth->d_triangleIndices), 3*2*(nx-1)*(ny-1)*sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&(cloth->d_triangleVertices), 9*2*(nx-1)*(ny-1)*sizeof(float)));
+	gpuErrchk(cudaMalloc((void**)&(cloth->d_triangleNormals), 9*2*(nx-1)*(ny-1)*sizeof(float)));
+
 	gpuErrchk(cudaMalloc((void**)&(cloth->d_output), 3*nx*ny*sizeof(float)));
 }
 
@@ -38,11 +45,18 @@ void CudaPhysics::deallocate(CudaCloth* cloth)
 	delete[] cloth->h_pos;
 	delete[] cloth->h_oldPos;
 	delete[] cloth->h_acc;
+	delete[] cloth->h_triangleIndices;
+	delete[] cloth->h_triangleVertices;
+	delete[] cloth->h_triangleNormals;
 
 	// free memory on device
 	gpuErrchk(cudaFree(cloth->d_pos));
 	gpuErrchk(cudaFree(cloth->d_oldPos));
 	gpuErrchk(cudaFree(cloth->d_acc));
+	gpuErrchk(cudaFree(cloth->d_triangleIndices));
+	gpuErrchk(cudaFree(cloth->d_triangleVertices));
+	gpuErrchk(cudaFree(cloth->d_triangleNormals));
+
 	gpuErrchk(cudaFree(cloth->d_output));
 }
 
@@ -71,9 +85,52 @@ void CudaPhysics::initialize(CudaCloth* cloth)
 		(cloth->h_acc)[i] = hAcc;
 	}
 
+	// set up triangle mesh indices
+	int index = 0;
+	int triCount = 0;
+	while(triCount < (nx-1)*(ny-1)){
+		if(((index + 1) % nx) != 0){
+			cloth->h_triangleIndices[3*index] = index;
+			cloth->h_triangleIndices[3*index + 1] = nx + 1 + index;
+			cloth->h_triangleIndices[3*index + 2] = nx + index;
+			cloth->h_triangleIndices[3*index + 3] = index;
+			cloth->h_triangleIndices[3*index + 4] = index + 1;
+			cloth->h_triangleIndices[3*index + 5] = nx + 1 + index;
+			triCount++;
+
+			//Log::Info("%d %d %d %d %d %d", cloth->h_triangleIndices[3*index], cloth->h_triangleIndices[3*index + 1], cloth->h_triangleIndices[3*index + 2], cloth->h_triangleIndices[3*index + 3], cloth->h_triangleIndices[3*index + 4], cloth->h_triangleIndices[3*index + 5]);
+		}
+
+		index++;
+	}
+
+	for(int i = 0; i < 2*(nx-1)*(ny-1); i++){
+		int ind1 = cloth->h_triangleIndices[3*i];
+		int ind2 = cloth->h_triangleIndices[3*i + 1];
+		int ind3 = cloth->h_triangleIndices[3*i + 2];
+
+		cloth->h_triangleVertices[9*i] = cloth->particles[3*ind1];
+		cloth->h_triangleVertices[9*i + 1] = cloth->particles[3*ind1 + 1];
+		cloth->h_triangleVertices[9*i + 2] = cloth->particles[3*ind1 + 2];
+		cloth->h_triangleVertices[9*i + 3] = cloth->particles[3*ind2];
+		cloth->h_triangleVertices[9*i + 4] = cloth->particles[3*ind2 + 1];
+		cloth->h_triangleVertices[9*i + 5] = cloth->particles[3*ind2 + 2];
+		cloth->h_triangleVertices[9*i + 6] = cloth->particles[3*ind3];
+		cloth->h_triangleVertices[9*i + 7] = cloth->particles[3*ind3 + 1];
+		cloth->h_triangleVertices[9*i + 8] = cloth->particles[3*ind3 + 2];
+	}
+
 	gpuErrchk(cudaMemcpy(cloth->d_pos, cloth->h_pos, nx*ny*sizeof(float4), cudaMemcpyHostToDevice));
 	gpuErrchk(cudaMemcpy(cloth->d_oldPos, cloth->h_oldPos, nx*ny*sizeof(float4), cudaMemcpyHostToDevice));
 	gpuErrchk(cudaMemcpy(cloth->d_acc, cloth->h_acc, nx*ny*sizeof(float4), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaMemcpy(cloth->d_triangleIndices, cloth->h_triangleIndices, 3*2*(nx-1)*(ny-1)*sizeof(int), cudaMemcpyHostToDevice));
+
+	cudaGraphicsMapResources(1, &(cloth->vbo_cuda), 0);
+	size_t num_bytes;
+
+	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->vbo_cuda);
+	gpuErrchk(cudaMemcpy(cloth->d_triangleVertices, cloth->h_triangleVertices, 9*2*(nx-1)*(ny-1)*sizeof(float), cudaMemcpyHostToDevice));
+	cudaGraphicsUnmapResources(1, &(cloth->vbo_cuda), 0);
 
 	cloth->initCalled = true;
 }
@@ -83,9 +140,7 @@ void CudaPhysics::update(CudaCloth* cloth)
 	cudaGraphicsMapResources(1, &(cloth->vbo_cuda), 0);
 	size_t num_bytes;
 
-	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_output), &num_bytes, cloth->vbo_cuda);
-
-	//Log::Info("num bytes: %d", (int)num_bytes);
+	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->vbo_cuda);
 
 	dim3 blockSize(16, 16);
 	dim3 gridSize(16, 16);
@@ -124,12 +179,16 @@ void CudaPhysics::update(CudaCloth* cloth)
 		);
 	}
 
+	update_triangle_mesh<<<gridSize, blockSize>>>
+		(
+			cloth->d_pos, 
+			cloth->d_triangleIndices,
+			cloth->d_triangleVertices,
+			cloth->nx, 
+			cloth->ny
+		);
+
 	cudaGraphicsUnmapResources(1, &(cloth->vbo_cuda), 0);
-
-	//int nx = cloth->nx;
-	//int ny = cloth->ny;
-
-	//gpuErrchk(cudaMemcpy(&((cloth->particles)[0]), cloth->d_output, 3*nx*ny*sizeof(float), cudaMemcpyDeviceToHost));
 }
 
 

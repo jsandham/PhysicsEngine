@@ -296,23 +296,39 @@ void RenderSystem::renderScene()
 		lineRenderers[j]->draw();
 	}
 
-	// maybe temporary?
-	particleShader.bind();
-	particleShader.setMat4("view", state.getViewMatrix());
-	particleShader.setMat4("projection", state.getProjectionMatrix());
-
 	std::vector<Cloth*> cloths = manager->getCloths();
-	for(unsigned int i = 0; i < cloths.size(); i++){
-		Transform *transform = cloths[i]->entity->getComponent<Transform>();
-		particleShader.setMat4("model", transform->getModelMatrix());
+	for(unsigned int j = 0; j < cloths.size(); j++){
+		Transform *transform = cloths[j]->entity->getComponent<Transform>();
+		Material *material = manager->getMaterial(2);  // just geeting first material for right now, change later
 
-		std::vector<float> particles = cloths[i]->particles;
-		int size = particles.size();
+		material->setMat4("model", transform->getModelMatrix());
 
-		cloths[i]->vao.bind();
-		cloths[i]->vao.draw(size);
-		cloths[i]->vao.unbind();
+		material->bind(state);
+
+		int size = 9*2*(cloths[j]->nx - 1)*(cloths[j]->ny - 1);
+
+		cloths[j]->vao.bind();
+		cloths[j]->vao.draw(size);
+		cloths[j]->vao.unbind();
 	}
+
+	// // maybe temporary?
+	// particleShader.bind();
+	// particleShader.setMat4("view", state.getViewMatrix());
+	// particleShader.setMat4("projection", state.getProjectionMatrix());
+
+	// std::vector<Cloth*> cloths = manager->getCloths();
+	// for(unsigned int i = 0; i < cloths.size(); i++){
+	// 	Transform *transform = cloths[i]->entity->getComponent<Transform>();
+	// 	particleShader.setMat4("model", transform->getModelMatrix());
+
+	// 	std::vector<float> particles = cloths[i]->particles;
+	// 	int size = particles.size();
+
+	// 	cloths[i]->vao.bind();
+	// 	cloths[i]->vao.draw(size);
+	// 	cloths[i]->vao.unbind();
+	// }
 
 	// move to debug system? Probably use input there to toggle it on and off
 	std::vector<SphereCollider*> sphereColliders = manager->getSphereColliders();

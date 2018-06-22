@@ -139,6 +139,48 @@ __global__ void verlet_integration
 	output[3 * index + 2] = my_pos.z;
 }
 
+__global__ void update_triangle_mesh
+(
+	float4 *pos,
+	int *triangleIndices,
+	float *triangleVertices,
+	int nx,
+	int ny
+)
+{
+	int ix = threadIdx.x + blockIdx.x * blockDim.x;
+	int iy = threadIdx.y + blockIdx.y * blockDim.y;
+
+	int index = ix + nx*iy;
+
+	while(index < 2*(nx-1)*(ny-1)){
+		int ind1 = triangleIndices[3*index];
+		int ind2 = triangleIndices[3*index + 1];
+		int ind3 = triangleIndices[3*index + 2];
+
+		triangleVertices[9*index] = pos[ind1].x;
+		triangleVertices[9*index + 1] = pos[ind1].y;
+		triangleVertices[9*index + 2] = pos[ind1].z;
+
+		triangleVertices[9*index + 3] = pos[ind2].x;
+		triangleVertices[9*index + 4] = pos[ind2].y;
+		triangleVertices[9*index + 5] = pos[ind2].z;
+
+		triangleVertices[9*index + 6] = pos[ind3].x;
+		triangleVertices[9*index + 7] = pos[ind3].y;
+		triangleVertices[9*index + 8] = pos[ind3].z;
+
+		index += 256*256;
+	}
+}
+
+
+
+
+
+
+
+
 __global__ void apply_constraints
 (
 	float4 *pos,

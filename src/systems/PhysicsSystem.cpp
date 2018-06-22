@@ -48,6 +48,7 @@ void PhysicsSystem::init()
 
 	std::vector<Cloth*> cloths = manager->getCloths();
 	for(unsigned int i = 0; i < cloths.size(); i++){
+
 		cudaCloths.push_back(CudaCloth());
 
 		cudaCloths[i].nx = cloths[i]->nx;
@@ -61,24 +62,23 @@ void PhysicsSystem::init()
 		cudaCloths[i].mass = cloths[i]->mass;
 
 		CudaPhysics::allocate(&cudaCloths[i]);
-		CudaPhysics::initialize(&cudaCloths[i]);
 
 		cloths[i]->vao.generate();
 		cloths[i]->vao.bind();
-		cloths[i]->vao.setDrawMode(GL_POINTS);
+		//cloths[i]->vao.setDrawMode(GL_POINTS); 
 
 		cloths[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
 		cloths[i]->vbo.bind();
-		cloths[i]->vbo.setData(&(cloths[i]->particles[0]), 3*cloths[i]->nx*cloths[i]->ny*sizeof(float));
+		// cloths[i]->vbo.setData(&(cloths[i]->particles[0]), 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
+		//cloths[i]->vbo.setData(NULL, 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
+		cloths[i]->vbo.setData(NULL, 9*2*(cloths[i]->nx-1)*(cloths[i]->ny-1)*sizeof(float)); 
 
 		cloths[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 		cloths[i]->vao.unbind();
 
 		cudaGraphicsGLRegisterBuffer(&(cudaCloths[i].vbo_cuda), cloths[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
 
-		Log::Info("particles size: %d", cloths[i]->particles.size());
-		Log::Info("vbo: %d", cloths[i]->vbo.handle);
-		Log::Info("vbo: %d  vao: %d", cloths[i]->vbo.handle, cloths[i]->vao.handle);
+		CudaPhysics::initialize(&cudaCloths[i]);
 	}
 
 	std::vector<Fluid*> fluids = manager->getFluids();
