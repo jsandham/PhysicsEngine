@@ -21,9 +21,11 @@
 #include "../components/Camera.h"
 #include "../components/Fluid.h"
 #include "../components/Cloth.h"
+#include "../components/FESolid.h"
 
 #include "Pool.h"
 
+#include "../core/GMesh.h"
 #include "../core/Mesh.h"
 
 #include "../graphics/Texture2D.h"
@@ -37,12 +39,14 @@ namespace PhysicsEngine
 	{
 		private:
 			// assets
+			std::vector<GMesh> gmeshes;
 			std::vector<Mesh> meshes;
 			std::vector<Texture2D> textures;
 			std::vector<Cubemap> cubemaps;
 			std::vector<Shader> shaders;
 			std::vector<Material> materials;
 
+			std::map<std::string, int> gmeshMap;
 			std::map<std::string, int> meshMap;
 			std::map<std::string, int> textureMap;
 			std::map<std::string, int> cubemapMap;
@@ -64,6 +68,7 @@ namespace PhysicsEngine
 			std::vector<SpringJoint*> springJoints;
 			std::vector<Fluid*> fluids;
 			std::vector<Cloth*> cloths;
+			std::vector<FESolid*> fesolids;
 
 			Camera* camera;
 
@@ -80,6 +85,7 @@ namespace PhysicsEngine
 			Pool<SpringJoint> springJointPool;
 			Pool<Fluid> fluidPool;
 			Pool<Cloth> clothPool;
+			Pool<FESolid> fesolidPool;
 
 			Pool<Camera> cameraPool;
 
@@ -100,6 +106,7 @@ namespace PhysicsEngine
 			SpringJoint* createSpringJoint();
 			Fluid* createFluid();
 			Cloth* createCloth();
+			FESolid* createFESolid();
 			Camera* createCamera();
 
 			std::vector<Entity*> getEntities();
@@ -117,29 +124,35 @@ namespace PhysicsEngine
 			std::vector<SpringJoint*> getSpringJoints();
 			std::vector<Fluid*> getFluids();
 			std::vector<Cloth*> getCloths();
+			std::vector<FESolid*> getFESolids();
 			Camera* getCamera();
 
+			void loadGMesh(const std::string& name);
 			void loadMesh(const std::string& name);
 			void loadTexture2D(const std::string& name);
 			void loadCubemap(const std::vector<std::string>& names);
 			void loadShader(const std::string& name, std::string vertex, std::string fragment, std::string geometry = std::string());
 			void loadMaterial(const std::string& name, Material mat);
 
+			GMesh* getGMesh(const std::string& name);
 			Mesh* getMesh(const std::string& name);
 			Texture2D* getTexture2D(const std::string& name);
 			Cubemap* getCubemap(const std::string& name);
 			Shader* getShader(const std::string& name);
 			Material* getMaterial(const std::string& name);
 
+			GMesh* getGMesh(int filter);
 			Mesh* getMesh(int filter);
 			Material* getMaterial(int filter);
 
+			std::vector<GMesh>& getGMeshes();
 			std::vector<Mesh>& getMeshes();
 			std::vector<Texture2D>& getTextures();
 			std::vector<Cubemap>& getCubemaps();
 			std::vector<Shader>& getShaders();
 			std::vector<Material>& getMaterials();
 
+			int getGMeshFilter(const std::string& name);
 			int getMeshFilter(const std::string& name);
 			int getMaterialFilter(const std::string& name);
 	};

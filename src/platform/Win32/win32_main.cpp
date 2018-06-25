@@ -257,6 +257,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	
 	if(RegisterClass(&windowClass))
 	{
+		AllocConsole();
+		freopen("CONIN$", "r",stdin);
+		freopen("CONOUT$", "w",stdout);
+		freopen("CONOUT$", "w",stderr);
+
 		HWND windowHandle = CreateWindowEx(0, 
 				windowClass.lpszClassName, 
 				"PhysicsEngine", 

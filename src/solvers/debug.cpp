@@ -153,13 +153,13 @@ int DEBUG_TEST_MATRIX_AMG(std::string filename, unsigned int nnz, unsigned int n
   	//int niter = ssor(row_ptr,col_total,val_total,x,b,Nr-1,1.2,10e-8,100000);
   	//cout<<"niter: "<<niter<<endl;
   	//output b array
-  	//ofstream myfile("exact.txt");
-  	//if(myfile.is_open()){
-  	//  for(int i=0;i<Nr-1;i++){
-  	//    myfile<<x[i]<<endl;
-  	//  }
-  	//}
-  	//myfile.close();
+  	ofstream myfile("exact.txt");
+  	if(myfile.is_open()){
+  	 for(int i=0;i<Nr-1;i++){
+  	   myfile<<x[i]<<endl;
+  	 }
+  	}
+  	myfile.close();
 
 
   	delete[] rows;

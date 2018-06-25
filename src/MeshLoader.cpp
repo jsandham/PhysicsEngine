@@ -10,6 +10,12 @@
 
 using namespace PhysicsEngine;
 
+const int MAX_NUM_GROUPS = 20;
+const int MAX_NUM_ELEM_TYP = 20;
+const int MAX_CHARS_PER_LINE = 512;
+const int MAX_TOKENS_PER_LINE = 20;
+const char* DELIMITER = " ";
+
 bool MeshLoader::load(const std::string& filepath, std::vector<float>& vertices, std::vector<float>& normals, std::vector<float>& texCoords)
 {
 	size_t period = filepath.find_last_of(".");
@@ -193,6 +199,299 @@ bool MeshLoader::load(const std::string& filepath, std::vector<float>& vertices,
 	}
 
 	std::cout << vertices.size() << " " << normals.size() << " " << texCoords.size() << std::endl;
+
+	return true;
+}
+
+
+bool MeshLoader::load_gmesh(const std::string& filepath, std::vector<float>& vertices, std::vector<int>& connect, std::vector<int>& bconnect, std::vector<int>& groups)
+{
+	//create a file-reading object
+	std::ifstream myfile;
+	myfile.open(filepath.c_str());
+
+	int flag=0,index=0,typ=0,grp=0;
+	int tl[MAX_NUM_ELEM_TYP]={}; //list of element types
+	int gl[MAX_NUM_GROUPS]={};   //list of groups
+
+	int Dim = 0;     //dimension of problem
+	int Ng = 0;      //number of element groups
+	int N = 0;       //number of points 
+	int Nte = 0;     //total number of elements 
+	int Ne = 0;      //number of interior elements
+	int Ne_b = 0;    //number of boundary elements
+	int Npe = 0;     //number of points per interior element
+	int Npe_b = 0;   //number of points per boundary element
+	int Type = 0;    //interior element type
+	int Type_b = 0;  //boundary element type
+
+	//scan through file (first pass)
+	while(!myfile.eof())
+	{
+		char buf[MAX_CHARS_PER_LINE];
+		myfile.getline(buf,MAX_CHARS_PER_LINE);
+
+		const char* token[MAX_TOKENS_PER_LINE]={};
+
+		int n = 0;
+
+		// parse the line
+		token[0] = strtok(buf,DELIMITER);
+		if(token[0]){
+	 		if(strcmp(token[0],"$Nodes")==0) {flag=1; index=-2;}
+	  		if(strcmp(token[0],"$Elements")==0) {flag=2; index=-2;}
+		  	if(strcmp(token[0],"$EndNodes")==0) {flag=0; index=-2;}
+		 	if(strcmp(token[0],"$EndElements")==0) {flag=0; index=-2;}
+		  	for(n=1;n<MAX_TOKENS_PER_LINE;n++){
+	    		token[n] = strtok(0,DELIMITER);
+	   			if(!token[n]) break;
+	  		}
+		}
+
+		//process the line
+		if(index==-1){
+	 		if(flag==1) {N = atoi(token[0]);}
+	  		if(flag==2) {Nte = atoi(token[0]);}
+		}
+		else if(index>-1){
+	  		if(flag==2){
+	    		typ = atoi(token[1]);  //element type
+	    		grp = atoi(token[3]);  //group
+	    		if(typ==15){           //15 corresponds to a point
+	    		}
+	    		else if(typ>Type){
+	     			Type=typ;
+	     			Ne = 1;
+	    		}
+	    		else if(typ==Type){
+	      			Ne++;
+	    		}
+	    		for(int i=0;i<MAX_NUM_GROUPS;i++){
+	      			if(gl[i]==0) {gl[i]=grp; Ng++; break;}
+	      			if(gl[i]==grp) {break;}
+	    		}
+	    		for(int i=0;i<MAX_NUM_ELEM_TYP;i++){
+	      			if(tl[i]==0) {tl[i]=typ; break;}
+	      			if(tl[i]==typ) {break;}
+	    		}
+	  		}
+		}
+		index++;
+	}
+	Ne_b = Nte-Ne;
+
+	switch (Type)
+	{
+		case 1:      //linear 1D lines
+			Npe = 2;
+		    Npe_b = 1;
+		    Type_b = 15;
+		    Dim = 1;
+		    break;
+		case 2:      //linear 2D triangles
+		    Npe = 3;
+		    Npe_b = 2;
+		    Type_b = 1;
+		    Dim = 2;
+		    break;
+		case 3:      //linear 2D quadrangles
+		    Npe = 4;
+		    Npe_b = 2;
+		    Type_b = 1;
+		    Dim = 2;
+		    break;
+		case 4:      //linear 3D tetrahedra
+		    Npe = 4;
+		    Npe_b = 3;
+		    Type_b = 2;
+		    Dim = 3;
+		    break;
+		case 8:      //quadratic 1D lines
+		    Npe = 3;
+		    Npe_b = 1;
+		    Type_b =15;
+		    Dim = 1;
+		    break;
+		case 9:      //quadratic 2D triangles
+		    Npe = 6;
+		    Npe_b = 3;
+		    Type_b = 8;
+		    Dim = 2;
+		    break;
+		case 10:     //quadratic 2D quadrangles
+		    Npe = 8;
+		    Npe_b = 3;
+		    Type_b = 8;
+		    Dim = 2;
+		    break;
+		case 11:     //quadratic 3D tetrahedra
+		    Npe = 10;
+		    Npe_b = 6;
+		    Type_b = 9;
+		    Dim = 3;
+		    break;
+	}
+
+	//initialize model
+	groups.resize(Ng);
+	vertices.resize(3*N);
+	connect.resize(Npe*Ne);
+	bconnect.resize(Ne_b*(Npe_b+1));
+
+	for(int i=0;i<Ng;i++){groups[i] = gl[i];}
+
+	//return to beginning of file
+	myfile.clear();
+	myfile.seekg(0,myfile.beg);
+
+	//scan through file (second pass)
+	index=0; flag=0;
+	while(!myfile.eof())
+	{
+		char buf[MAX_CHARS_PER_LINE];
+		myfile.getline(buf,MAX_CHARS_PER_LINE);
+
+		const char* token[MAX_TOKENS_PER_LINE]={};
+
+		int n = 0;
+
+		// parse the line
+		token[0] = strtok(buf,DELIMITER);
+		if(token[0]){
+	  		if(strcmp(token[0],"$Nodes")==0) {flag=1; index=-2;}
+	  		if(strcmp(token[0],"$Elements")==0) {flag=2; index=-2;}
+	  		if(strcmp(token[0],"$EndNodes")==0) {flag=0; index=-2;}
+	  		if(strcmp(token[0],"$EndElements")==0) {flag=0; index=-2;}
+	  		for(n=1;n<MAX_TOKENS_PER_LINE;n++){
+	    		token[n] = strtok(0,DELIMITER);
+	    		if(!token[n]) break;
+	  		}
+		}
+
+		//process the line (fill model arrays)
+		if(index>-1){
+	  		if(flag==1){
+	  			vertices[3*index] = strtof(token[1],NULL);
+	  			vertices[3*index + 1] = strtof(token[2],NULL);
+	  			vertices[3*index + 2] = strtof(token[3],NULL);
+	  		}
+	  		if(flag==2){
+	    		if(atoi(token[1])==Type){
+		      		switch (Type)
+		      		{
+		      			case 1:       //2-point 1D line
+		      				connect[2*(index-Ne_b)] = atoi(token[5]);
+		        			connect[2*(index-Ne_b) + 1] = atoi(token[6]);
+		        			break;
+		      			case 2:       //3-point 2D triangle
+		      				connect[3*(index-Ne_b)] = atoi(token[5]);
+		        			connect[3*(index-Ne_b) + 1] = atoi(token[6]);
+		        			connect[3*(index-Ne_b) + 2] = atoi(token[7]);
+		        			break;
+		      			case 3:       //4-point 2D quadrangle
+		      				connect[4*(index-Ne_b)] = atoi(token[5]);
+					        connect[4*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[4*(index-Ne_b) + 2] = atoi(token[7]);
+					        connect[4*(index-Ne_b) + 3] = atoi(token[8]);
+					        break;
+		      			case 4:       //4-point 3D tetrahedra
+		      				connect[4*(index-Ne_b)] = atoi(token[5]);
+					        connect[4*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[4*(index-Ne_b) + 2] = atoi(token[7]);
+					        connect[4*(index-Ne_b) + 3] = atoi(token[8]);
+					        break;
+				      	case 8:       //3-point 1D line
+				      		connect[3*(index-Ne_b)] = atoi(token[5]);
+					        connect[3*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[3*(index-Ne_b) + 2] = atoi(token[7]);
+					        break;
+		      			case 9:       //6-point 2D triangle
+		      				connect[6*(index-Ne_b)] = atoi(token[5]);
+					        connect[6*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[6*(index-Ne_b) + 2] = atoi(token[7]);
+					        connect[6*(index-Ne_b) + 3] = atoi(token[8]);
+					        connect[6*(index-Ne_b) + 4] = atoi(token[9]);
+					        connect[6*(index-Ne_b) + 5] = atoi(token[10]);
+					        break;
+		      			case 10:      //8-point 2D quadrangle
+		      				connect[8*(index-Ne_b)] = atoi(token[5]);
+					        connect[8*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[8*(index-Ne_b) + 2] = atoi(token[7]);
+					        connect[8*(index-Ne_b) + 3] = atoi(token[8]);
+					        connect[8*(index-Ne_b) + 4] = atoi(token[9]);
+					        connect[8*(index-Ne_b) + 5] = atoi(token[10]);
+					        connect[8*(index-Ne_b) + 6] = atoi(token[11]);
+					        connect[8*(index-Ne_b) + 7] = atoi(token[12]);
+					        break;
+		      			case 11:      //10-point 3D tetrahedra
+		      				connect[10*(index-Ne_b)] = atoi(token[5]);
+					        connect[10*(index-Ne_b) + 1] = atoi(token[6]);
+					        connect[10*(index-Ne_b) + 2] = atoi(token[7]);
+					        connect[10*(index-Ne_b) + 3] = atoi(token[8]);
+					        connect[10*(index-Ne_b) + 4] = atoi(token[9]);
+					        connect[10*(index-Ne_b) + 5] = atoi(token[10]);
+					        connect[10*(index-Ne_b) + 6] = atoi(token[11]);
+					        connect[10*(index-Ne_b) + 7] = atoi(token[12]);
+					        connect[10*(index-Ne_b) + 8] = atoi(token[13]);
+					        connect[10*(index-Ne_b) + 9] = atoi(token[14]);
+					        break;
+		      		}
+		    	}
+	    		else{
+		      		switch (Type)
+		      		{
+		      			case 1:       //1-point (2-point 1D line)
+		        			bconnect[2*index] = atoi(token[3]);
+					        bconnect[2*index + 1] = atoi(token[5]);
+					        break;
+		      			case 2:       //2-point line (3-point 2D triangle)
+					        bconnect[3*index] = atoi(token[3]);
+					        bconnect[3*index + 1] = atoi(token[5]);
+					        bconnect[3*index + 2] = atoi(token[6]);
+					        break;
+		      			case 3:       //2-point line (4-point 2D quadrangle)
+		      				bconnect[3*index] = atoi(token[3]);
+					        bconnect[3*index + 1] = atoi(token[5]);
+					        bconnect[3*index + 2] = atoi(token[6]);
+					        break;
+		      			case 4:       //3-point triangle (4-point 3D tetrahedra)
+		      				bconnect[4*index] = atoi(token[3]);
+					        bconnect[4*index + 1] = atoi(token[5]);
+					        bconnect[4*index + 2] = atoi(token[6]);
+					        bconnect[4*index + 3] = atoi(token[7]);
+					        break;
+		      			case 8:       //1-point (3-point 1D line)
+		      				bconnect[2*index] = atoi(token[3]);
+					        bconnect[2*index + 1] = atoi(token[5]);
+					        break;
+		      			case 9:       //3-point line (6-point 2D triangle)
+		      				bconnect[4*index] = atoi(token[3]);
+					        bconnect[4*index + 1] = atoi(token[5]);
+					        bconnect[4*index + 2] = atoi(token[6]);
+					        bconnect[4*index + 3] = atoi(token[7]);
+					        break;
+		      			case 10:      //3-point line (8-point 2D quadrangle)
+		      				bconnect[4*index] = atoi(token[3]);
+					        bconnect[4*index + 1] = atoi(token[5]);
+					        bconnect[4*index + 2] = atoi(token[6]);
+					        bconnect[4*index + 3] = atoi(token[7]);
+					        break;
+		      			case 11:      //6-point triangle (10-point 3D tetrahedra)
+		      				bconnect[7*index] = atoi(token[3]);
+					        bconnect[7*index + 1] = atoi(token[5]);
+					        bconnect[7*index + 2] = atoi(token[6]);
+					        bconnect[7*index + 3] = atoi(token[7]);
+					        bconnect[7*index + 4] = atoi(token[8]);
+					        bconnect[7*index + 5] = atoi(token[9]);
+					        bconnect[7*index + 6] = atoi(token[10]);
+					        break;
+	      			}
+	    		}
+	  		}
+		}
+		index++;
+	}
+	myfile.close();
 
 	return true;
 }

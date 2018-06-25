@@ -147,13 +147,6 @@ void CudaPhysics::update(CudaCloth* cloth)
 
 	for (int i = 0; i < 20; ++i)
 	{
-		// apply_constraints<<<gridSize, blockSize>>>
-		// (
-		// 	cloth->d_pos,
-		// 	cloth->nx,
-		// 	cloth->ny
-		// );
-
 		calculate_forces<<<gridSize, blockSize >>>
 		(
 			cloth->d_pos, 
@@ -194,6 +187,29 @@ void CudaPhysics::update(CudaCloth* cloth)
 
 
 
+void CudaPhysics::allocate(CudaFEM* fem)
+{
+
+}
+
+void CudaPhysics::deallocate(CudaFEM* fem)
+{
+
+}
+
+void CudaPhysics::initialize(CudaFEM* fem)
+{
+
+}
+
+void CudaPhysics::update(CudaFEM* fem)
+{
+
+}
+
+
+
+
 
 void CudaPhysics::allocate(CudaFluid* fluid)
 {
@@ -210,7 +226,6 @@ void CudaPhysics::allocate(CudaFluid* fluid)
 	fluid->h_rho = new float[numParticles];
 	fluid->h_rho0 = new float[numParticles];
 	fluid->h_pres = new float[numParticles];
-	//fluid->h_output = new float[3*numParticles];
 	
 	fluid->h_cellStartIndex = new int[numCells];
 	fluid->h_cellEndIndex = new int[numCells];

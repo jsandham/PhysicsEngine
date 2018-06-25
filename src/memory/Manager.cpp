@@ -148,6 +148,14 @@ Cloth* Manager::createCloth()
 	return cloth;
 }
 
+FESolid* Manager::createFESolid()
+{
+	FESolid* solid = fesolidPool.getNext();
+	fesolids.push_back(solid);
+
+	return solid;
+}
+
 Camera* Manager::createCamera()
 {
 	Camera* camera = cameraPool.getNext();
@@ -242,10 +250,43 @@ std::vector<Cloth*> Manager::getCloths()
 	//return clothPool.getPool();
 }
 
+std::vector<FESolid*> Manager::getFESolids()
+{
+	return fesolids;
+	//return clothPool.getPool();
+}
+
 Camera* Manager::getCamera()
 {
 	return camera;
 	//return editorCameraPool.getPool();
+}
+
+void Manager::loadGMesh(const std::string& name)
+{
+	if (gmeshMap.count(name) != 0){
+		std::cout << "gmesh: " << name << " already loaded" << std::endl;
+		return;
+	}
+
+	std::cout << "loading gmesh: " << name << std::endl;
+
+	std::vector<float> vertices;
+	std::vector<int> connect, bconnect, groups;
+
+	if (MeshLoader::load_gmesh(name, vertices, connect, bconnect, groups)){
+		GMesh gmesh;
+		gmesh.setVertices(vertices);
+		gmesh.setConnect(connect);
+		gmesh.setBConnect(bconnect);
+
+		gmeshes.push_back(gmesh);
+
+		gmeshMap[name] = (int)gmeshes.size() - 1;
+	}
+	else{
+		std::cout << "Could not load gmesh " << name << std::endl;
+	}
 }
 
 void Manager::loadMesh(const std::string& name)
@@ -396,6 +437,16 @@ void Manager::loadMaterial(const std::string& name, Material mat)
 	materialMap[name] = (int)materials.size() - 1;
 }
 
+GMesh* Manager::getGMesh(const std::string& name)
+{
+	std::map<std::string, int>::iterator it = gmeshMap.find(name);
+	if (it != gmeshMap.end()){
+		return &gmeshes[it->second];
+	}
+
+	return NULL;
+}
+
 Mesh* Manager::getMesh(const std::string& name)
 {
 	std::map<std::string, int>::iterator it = meshMap.find(name);
@@ -446,6 +497,11 @@ Material* Manager::getMaterial(const std::string& name)
 	return NULL;
 }
 
+std::vector<GMesh>& Manager::getGMeshes()
+{
+	return gmeshes;
+}
+
 std::vector<Mesh>& Manager::getMeshes()
 {
 	return meshes;
@@ -471,6 +527,16 @@ std::vector<Material>& Manager::getMaterials()
 	return materials;
 }
 
+int Manager::getGMeshFilter(const std::string& name)
+{
+	std::map<std::string, int>::iterator it = gmeshMap.find(name);
+	if (it != gmeshMap.end()){
+		return it->second;
+	}
+
+	return -1;
+}
+
 int Manager::getMeshFilter(const std::string& name)
 {
 	std::map<std::string, int>::iterator it = meshMap.find(name);
@@ -489,6 +555,15 @@ int Manager::getMaterialFilter(const std::string& name)
 	}
 
 	return -1;
+}
+
+GMesh* Manager::getGMesh(int filter)
+{
+	if (filter < 0 || filter >= (int)gmeshes.size()){
+		std::cout << "Invalid gmesh filter: " << filter << std::endl;
+	}
+
+	return &gmeshes[filter];
 }
 
 Mesh* Manager::getMesh(int filter)

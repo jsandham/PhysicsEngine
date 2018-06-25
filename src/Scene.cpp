@@ -4,6 +4,8 @@
 #include "core/Input.h"
 #include "cuda/Util.h"
 
+#include "solvers/debug.h"
+
 #include "components/Cloth.h"
 
 using namespace PhysicsEngine;
@@ -23,6 +25,8 @@ void Scene::init()
 	Log::Info("scene init called %d\n", 4);
 
 	// load assets
+	manager.loadGMesh("../data/gmeshes/mesh12.msh");
+
 	manager.loadMesh("../data/meshes/square.txt");
 	manager.loadMesh("../data/meshes/cube.txt");
 	manager.loadMesh("../data/meshes/square.txt");
@@ -72,7 +76,28 @@ void Scene::init()
 	particleTypes.resize(256*256);
 	Util::gridOfParticlesXZPlane(particles, 0.005f, 0.005f, 1.0f, 256, 256);
 
+	// grab finite element gmesh
+	GMesh* gmesh = manager.getGMesh("../data/gmeshes/mesh12.msh");
+
+	// AMG tests
+	//int erro_code;
+	//erro_code = DEBUG_TEST_MATRIX_AMG("../data/matrices/mesh1em6.mtx", 177, 49, 0);
+	//erro_code = DEBUG_TEST_MATRIX_AMG("../data/matrices/mesh2em5.mtx", 1162, 307, 0);
+	//erro_code = DEBUG_TEST_MATRIX_AMG("../data/matrices/mesh3em5.mtx", 1089, 290, 0);
+
 	Log::Info("assets loaded");
+	
+	std::vector<int> connect = gmesh->getConnect();
+	for(unsigned int i = 0; i < 20; i++){
+		std::cout << connect[i] << std::endl;
+	}
+
+	std::cout<<"AAAAAAAAAAAAAAAA"<<std::endl;
+
+	std::vector<int> bconnect = gmesh->getBConnect();
+	for(unsigned int i = 0; i < 20; i++){
+		std::cout << bconnect[i] << std::endl;
+	}
 
 
 	// systems
@@ -121,6 +146,28 @@ void Scene::init()
 
 	entity2->addComponent<Transform>(transform2);
 	entity2->addComponent<Cloth>(cloth2);
+
+	// entity2 (fem)
+	Entity* entity3 = manager.createEntity();
+	Transform* transform3 = manager.createTransform();
+	FESolid* fesolid3 = manager.createFESolid();
+
+	transform3->position = glm::vec3(0.0f, 1.0f, 0.0f);
+	transform3->setEulerAngles(glm::vec3(0.0f, 0.0f, 0.0f));
+	transform3->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	fesolid3->c = 1.0f;                       
+    fesolid3->rho = 1.0f;                              
+    fesolid3->Q = 1.0f;        
+    fesolid3->k = 1.0f;        
+
+	fesolid3->vertices = gmesh->getVertices();
+	fesolid3->connect = gmesh->getConnect();
+	fesolid3->bconnect = gmesh->getBConnect();
+	fesolid3->groups = gmesh->getGroups();
+
+	entity3->addComponent<Transform>(transform3);
+	entity3->addComponent<FESolid>(fesolid3);
 
 	Log::Info("scene created");
 

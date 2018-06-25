@@ -8,8 +8,6 @@
 #include "../components/Transform.h"
 #include "../components/Fluid.h"
 #include "../components/Cloth.h"
-// #include "../components/Particles.h"
-// #include "../components/ParticleMesh.h"
 
 #include "../cuda/CudaPhysics.cuh"
 
@@ -65,20 +63,41 @@ void PhysicsSystem::init()
 
 		cloths[i]->vao.generate();
 		cloths[i]->vao.bind();
-		//cloths[i]->vao.setDrawMode(GL_POINTS); 
-
 		cloths[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
 		cloths[i]->vbo.bind();
 		// cloths[i]->vbo.setData(&(cloths[i]->particles[0]), 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
 		//cloths[i]->vbo.setData(NULL, 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
 		cloths[i]->vbo.setData(NULL, 9*2*(cloths[i]->nx-1)*(cloths[i]->ny-1)*sizeof(float)); 
-
 		cloths[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 		cloths[i]->vao.unbind();
 
 		cudaGraphicsGLRegisterBuffer(&(cudaCloths[i].vbo_cuda), cloths[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
 
 		CudaPhysics::initialize(&cudaCloths[i]);
+	}
+
+	std::vector<FESolid*> fesolids = manager->getFESolids();
+	for(unsigned int i = 0; i < fesolids.size(); i++){
+		cudaFEMs.push_back(CudaFEM());
+
+		cudaFEMs[i].vertices = fesolids[i]->vertices;
+		cudaFEMs[i].connect = fesolids[i]->connect;
+		cudaFEMs[i].bconnect = fesolids[i]->bconnect;
+		cudaFEMs[i].groups = fesolids[i]->groups;
+
+		CudaPhysics::allocate(&cudaFEMs[i]);
+
+		fesolids[i]->vao.generate();
+		fesolids[i]->vao.bind();
+		fesolids[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		fesolids[i]->vbo.bind();
+		//fesolids[i]->vbo.setData(NULL, 9*2*(fesolids[i]->nx-1)*(fesolids[i]->ny-1)*sizeof(float)); 
+		fesolids[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+		fesolids[i]->vao.unbind();
+
+		cudaGraphicsGLRegisterBuffer(&(cudaFEMs[i].vbo_cuda), fesolids[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
+
+		CudaPhysics::initialize(&cudaFEMs[i]);
 	}
 
 	std::vector<Fluid*> fluids = manager->getFluids();
@@ -203,14 +222,19 @@ void PhysicsSystem::update()
 
 
 	// cloth
-	std::vector<Cloth*> cloths = manager->getCloths();
 	for(unsigned int i = 0; i < cudaCloths.size(); i++){
 		CudaPhysics::update(&cudaCloths[i]);
 	}
 
 	// fluid
+	for(unsigned int i = 0; i < cudaFluids.size(); i++){
+		CudaPhysics::update(&cudaFluids[i]);
+	}
 
-
+	// fem
+	for(unsigned int i = 0; i < cudaFEMs.size(); i++){
+		CudaPhysics::update(&cudaFEMs[i]);
+	}
 
 
 	//std::vector<Fluid*> fluids = manager->getFluids();

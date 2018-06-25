@@ -49,6 +49,48 @@ namespace PhysicsEngine
 		struct cudaGraphicsResource* vbo_cuda;
 	};
 
+	struct CudaFEM
+	{
+		float c;                //specific heat coefficient                         
+	    float rho;              //density                            
+	    float Q;                //internal heat generation   
+	    float k;                //thermal conductivity coefficient
+
+		int Dim;                //dimension of mesh (1, 2, or 3) 
+	    int Ng;                 //number of element groups
+	    int N;                  //total number of nodes                      
+	    int Nte;                //total number of elements (Nte=Ne+Ne_b)       
+	    int Ne;                 //number of interior elements                
+	    int Ne_b;               //number of boundary elements                                 
+	    int Npe;                //number of points per interior element      
+	    int Npe_b;              //number of points per boundary element      
+	    int Type;               //interior element type                      
+	    int Type_b;             //boundary element type    
+
+	    std::vector<float> vertices;
+	    std::vector<int> connect;
+	    std::vector<int> bconnect;
+	    std::vector<int> groups;
+
+		// host variables
+		float4 *h_pos;
+		float4 *h_oldPos;
+		float4 *h_acc;
+		int *h_connect;
+		int *h_bconnect;
+		int *h_groups;
+
+		// device variables
+		float4 *d_pos;
+		float4 *d_oldPos;
+		float4 *d_acc;
+		int *d_connect;
+		int *d_bconnect;
+		int *d_groups;
+
+		struct cudaGraphicsResource* vbo_cuda;
+	};
+
 	struct CudaFluid
 	{
 		// grid parameters
@@ -112,6 +154,11 @@ namespace PhysicsEngine
 			static void deallocate(CudaCloth* cloth);
 			static void initialize(CudaCloth* cloth);
 			static void update(CudaCloth* cloth);
+
+			static void allocate(CudaFEM* fem);
+			static void deallocate(CudaFEM* fem);
+			static void initialize(CudaFEM* fem);
+			static void update(CudaFEM* fem);
 
 			static void allocate(CudaFluid* fluid);
 			static void deallocate(CudaFluid* fluid);

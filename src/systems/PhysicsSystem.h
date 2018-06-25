@@ -19,11 +19,10 @@ namespace PhysicsEngine
 		private:
 			std::vector<Collider*> colliders;
 			std::vector<Rigidbody*> rigidbodies;
-			//std::vector<ParticlePhysics*> particles;
-			//std::vector<ParticleMesh*> particleMeshes;*/
 
 			std::vector<CudaCloth> cudaCloths;
 			std::vector<CudaFluid> cudaFluids;
+			std::vector<CudaFEM> cudaFEMs;
 
 			float timestep;
 			float gravity;
