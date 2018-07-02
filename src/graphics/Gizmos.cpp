@@ -37,27 +37,11 @@ void Gizmos::init()
 		return;
 	}
 
-	std::vector<float> vertices, normals, texCoords;
-
-	if (MeshLoader::load("../data/meshes/sphere.txt", vertices, normals, texCoords)){
-		sphereMesh.setVertices(vertices);
-		sphereMesh.setNormals(normals);
-		sphereMesh.setTexCoords(texCoords);
-	}
-	else{
-		Log::Warn("Gizmos: Could not load obj/sphere.txt mesh");
+	if (!MeshLoader::load("../data/meshes/sphere.txt", sphereMesh)){
+		Log::Warn("Gizmos: Could not load obj/sphere.txt mesh");	
 	}
 
-	vertices.clear();
-	normals.clear();
-	texCoords.clear();
-
-	if (MeshLoader::load("../data/meshes/cube.txt", vertices, normals, texCoords)){
-		cubeMesh.setVertices(vertices);
-		cubeMesh.setNormals(normals);
-		cubeMesh.setTexCoords(texCoords);
-	}
-	else{
+	if (!MeshLoader::load("../data/meshes/cube.txt", cubeMesh)){
 		Log::Warn("Gizmos: Could not load obj/cube.txt mesh");
 	}
 
@@ -65,7 +49,7 @@ void Gizmos::init()
 	sphereVAO.bind();
 	sphereVBO.generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 	sphereVBO.bind();
-	sphereVBO.setData(&(sphereMesh.getVertices()[0]), sphereMesh.getVertices().size()*sizeof(float));
+	sphereVBO.setData(&(sphereMesh.vertices[0]), sphereMesh.vertices.size()*sizeof(float));
 	sphereVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 	sphereVAO.unbind();
 
@@ -73,7 +57,7 @@ void Gizmos::init()
 	cubeVAO.bind();
 	cubeVBO.generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 	cubeVBO.bind();
-	cubeVBO.setData(&(cubeMesh.getVertices()[0]), cubeMesh.getVertices().size()*sizeof(float));
+	cubeVBO.setData(&(cubeMesh.vertices[0]), cubeMesh.vertices.size()*sizeof(float));
 	cubeVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 	cubeVAO.unbind();
 
@@ -121,7 +105,7 @@ void Gizmos::drawWireSphere(glm::vec3 centre, float radius, Color color)
 	model = glm::translate(model, centre);
 	model = glm::scale(model, glm::vec3(radius, radius, radius));
 
-	draw(sphereVAO, (int)sphereMesh.getVertices().size() / 3, model, color);
+	draw(sphereVAO, (int)sphereMesh.vertices.size() / 3, model, color);
 }
 
 void Gizmos::drawWireCube(glm::vec3 centre, glm::vec3 size, Color color)
@@ -135,7 +119,7 @@ void Gizmos::drawWireCube(glm::vec3 centre, glm::vec3 size, Color color)
 	model = glm::translate(model, centre);
 	model = glm::scale(model, glm::vec3(size.x, size.y, size.z));
 
-	draw(cubeVAO, (int)cubeMesh.getVertices().size() / 3, model, color);
+	draw(cubeVAO, (int)cubeMesh.vertices.size() / 3, model, color);
 }
 
 void Gizmos::drawWireMesh(Mesh* mesh, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, Color color)
@@ -151,10 +135,10 @@ void Gizmos::drawWireMesh(Mesh* mesh, glm::vec3 position, glm::vec3 rotation, gl
 	//TODO: add rotation once I implement quaternions
 
 	meshVBO.bind();
-	meshVBO.setData(&(mesh->getVertices()[0]), mesh->getVertices().size()*sizeof(float));
+	meshVBO.setData(&(mesh->vertices[0]), mesh->vertices.size()*sizeof(float));
 	meshVBO.unbind();
 
-	draw(meshVAO, (int)mesh->getVertices().size() / 3, model, color);
+	draw(meshVAO, (int)mesh->vertices.size() / 3, model, color);
 }
 
 void Gizmos::drawOcttree(Octtree* tree, Color color)

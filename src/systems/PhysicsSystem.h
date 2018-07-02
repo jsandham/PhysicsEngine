@@ -22,7 +22,7 @@ namespace PhysicsEngine
 
 			std::vector<CudaCloth> cudaCloths;
 			std::vector<CudaFluid> cudaFluids;
-			std::vector<CudaFEM> cudaFEMs;
+			std::vector<CudaSolid> cudaSolids;
 
 			float timestep;
 			float gravity;

@@ -1,13 +1,23 @@
-#ifndef __GMESH_H__
-#define __GMESH_H__
+#ifndef __SOLID_H__
+#define __SOLID_H__
 
-#include<vector>
+#include <vector>
+
+#include "Component.h"
+
+#include "../graphics/Buffer.h"
+#include "../graphics/VertexArrayObject.h"
 
 namespace PhysicsEngine
 {
-	class GMesh
+	class Solid : public Component
 	{
 		public:
+		    float c;                //specific heat coefficient                         
+		    float rho;              //density                            
+		    float Q;                //internal heat generation   
+		    float k;                //thermal conductivity coefficient
+
 			int dim;                //dimension of mesh (1, 2, or 3) 
 		    int ng;                 //number of element groups
 		    int n;                  //total number of nodes                      
@@ -17,16 +27,21 @@ namespace PhysicsEngine
 		    int npe;                //number of points per interior element      
 		    int npe_b;              //number of points per boundary element      
 		    int type;               //interior element type                      
-		    int type_b;             //boundary element type  
+		    int type_b;             //boundary element type    
 
 			std::vector<float> vertices;
 			std::vector<int> connect;
-			std::vector<int> bconnect;	
+			std::vector<int> bconnect;
 			std::vector<int> groups;
 
+			Buffer vertexVBO;
+			Buffer normalVBO;
+			VertexArrayObject solidVAO;
+
 		public:
-			GMesh();
-			~GMesh();
+			Solid();
+			Solid(Entity *entity);
+			~Solid();
 	};
 }
 

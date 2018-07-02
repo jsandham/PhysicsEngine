@@ -21,7 +21,7 @@
 #include "../components/Camera.h"
 #include "../components/Fluid.h"
 #include "../components/Cloth.h"
-#include "../components/FESolid.h"
+#include "../components/Solid.h"
 
 #include "Pool.h"
 
@@ -68,7 +68,7 @@ namespace PhysicsEngine
 			std::vector<SpringJoint*> springJoints;
 			std::vector<Fluid*> fluids;
 			std::vector<Cloth*> cloths;
-			std::vector<FESolid*> fesolids;
+			std::vector<Solid*> solids;
 
 			Camera* camera;
 
@@ -85,7 +85,7 @@ namespace PhysicsEngine
 			Pool<SpringJoint> springJointPool;
 			Pool<Fluid> fluidPool;
 			Pool<Cloth> clothPool;
-			Pool<FESolid> fesolidPool;
+			Pool<Solid> solidPool;
 
 			Pool<Camera> cameraPool;
 
@@ -106,7 +106,7 @@ namespace PhysicsEngine
 			SpringJoint* createSpringJoint();
 			Fluid* createFluid();
 			Cloth* createCloth();
-			FESolid* createFESolid();
+			Solid* createSolid();
 			Camera* createCamera();
 
 			std::vector<Entity*> getEntities();
@@ -124,7 +124,7 @@ namespace PhysicsEngine
 			std::vector<SpringJoint*> getSpringJoints();
 			std::vector<Fluid*> getFluids();
 			std::vector<Cloth*> getCloths();
-			std::vector<FESolid*> getFESolids();
+			std::vector<Solid*> getSolids();
 			Camera* getCamera();
 
 			void loadGMesh(const std::string& name);

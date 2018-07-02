@@ -42,6 +42,7 @@ void Scene::init()
 	manager.loadShader("standard", "../data/shaders/standard_directional.vs", "../data/shaders/standard_directional.frag");
 	manager.loadShader("particle", "../data/shaders/particle_directional.vs", "../data/shaders/particle_directional.frag");
 	manager.loadShader("basic", "../data/shaders/basic.vs", "../data/shaders/basic.frag");
+	manager.loadShader("basic2", "../data/shaders/basic2.vs", "../data/shaders/basic2.frag");
 	manager.loadShader("line", "../data/shaders/line.vs", "../data/shaders/line.frag");
 
 	std::vector<std::string> faces = {"../data/textures/right.jpg", 
@@ -58,16 +59,19 @@ void Scene::init()
 	Material *sunMat = new Material(manager.getShader("standard"));
 	sunMat->setMainTexture(manager.getTexture2D("../data/textures/sun.png"));
 	Material *basicMat = new Material(manager.getShader("basic"));
+	Material *basic2Mat = new Material(manager.getShader("basic2"));
 	Material *lineMat = new Material(manager.getShader("line"));
 
 	manager.loadMaterial("defaultMat", *defaultMat);
 	manager.loadMaterial("sunMat", *sunMat);
 	manager.loadMaterial("basicMat", *basicMat);
+	manager.loadMaterial("basic2Mat", *basic2Mat);
 	manager.loadMaterial("lineMat", *lineMat);
 
 	delete defaultMat;
 	delete sunMat;
 	delete basicMat;
+	delete basic2Mat;
 	delete lineMat;
 
 	// create cloth particles
@@ -87,14 +91,14 @@ void Scene::init()
 
 	Log::Info("assets loaded");
 	
-	std::vector<int> connect = gmesh->getConnect();
+	std::vector<int> connect = gmesh->connect;
 	for(unsigned int i = 0; i < 20; i++){
 		std::cout << connect[i] << std::endl;
 	}
 
 	std::cout<<"AAAAAAAAAAAAAAAA"<<std::endl;
 
-	std::vector<int> bconnect = gmesh->getBConnect();
+	std::vector<int> bconnect = gmesh->bconnect;
 	for(unsigned int i = 0; i < 20; i++){
 		std::cout << bconnect[i] << std::endl;
 	}
@@ -150,26 +154,35 @@ void Scene::init()
 	// entity2 (fem)
 	Entity* entity3 = manager.createEntity();
 	Transform* transform3 = manager.createTransform();
-	FESolid* fesolid3 = manager.createFESolid();
+	Solid* solid3 = manager.createSolid();
 
 	transform3->position = glm::vec3(0.0f, 1.0f, 0.0f);
 	transform3->setEulerAngles(glm::vec3(0.0f, 0.0f, 0.0f));
 	transform3->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	fesolid3->c = 1.0f;                       
-    fesolid3->rho = 1.0f;                              
-    fesolid3->Q = 1.0f;        
-    fesolid3->k = 1.0f;        
+	solid3->c = 1.0f;                       
+    solid3->rho = 1.0f;                              
+    solid3->Q = 1.0f;        
+    solid3->k = 1.0f;        
 
-	fesolid3->vertices = gmesh->getVertices();
-	fesolid3->connect = gmesh->getConnect();
-	fesolid3->bconnect = gmesh->getBConnect();
-	fesolid3->groups = gmesh->getGroups();
+    solid3->dim = gmesh->dim;               
+    solid3->ng = gmesh->ng;             
+    solid3->n = gmesh->n;                            
+    solid3->nte = gmesh->nte;                
+    solid3->ne = gmesh->ne;                        
+    solid3->ne_b = gmesh->ne_b;                                        
+    solid3->npe = gmesh->npe;                
+    solid3->npe_b = gmesh->npe_b;               
+    solid3->type = gmesh->type;                           
+    solid3->type_b = gmesh->type_b;            
+	
+	solid3->vertices = gmesh->vertices;
+	solid3->connect = gmesh->connect;
+	solid3->bconnect = gmesh->bconnect;
+	solid3->groups = gmesh->groups;
 
 	entity3->addComponent<Transform>(transform3);
-	entity3->addComponent<FESolid>(fesolid3);
-
-	Log::Info("scene created");
+	entity3->addComponent<Solid>(solid3);
 
 	// entity3 (sphere)
 	// Entity* entity3 = manager.createEntity();
@@ -185,7 +198,7 @@ void Scene::init()
 	// entity3->addComponent<Transform>(transform3);
 	// entity3->addComponent<MeshRenderer>(meshRenderer3);
 
-
+	Log::Info("scene created");
 
 
 

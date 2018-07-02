@@ -5,7 +5,10 @@
 
 #include <vector_types.h>
 
+#define GLM_FORCE_RADIANS
+
 #include "../glm/glm.hpp"
+#include "../glm/gtx/normal.hpp"
 
 //#include "VoxelGrid.h"
 
@@ -33,7 +36,6 @@ namespace PhysicsEngine
 		int *d_triangleIndices;
 		float *d_triangleVertices;
 		float *d_triangleNormals;
-		float *d_output;
 
 		// used for timing
 		float elapsedTime;
@@ -42,30 +44,32 @@ namespace PhysicsEngine
 		bool initCalled;
 
 		float dt;
-		float kappa;
-		float c;
-		float mass;
+		float kappa;            //spring stiffness coefficient
+		float c;                //spring dampening coefficient
+		float mass;             //mass
 
-		struct cudaGraphicsResource* vbo_cuda;
+		struct cudaGraphicsResource* cudaVertexVBO;
+		struct cudaGraphicsResource* cudaNormalVBO;
 	};
 
-	struct CudaFEM
+// have CudaCloth and CudaFEM take a Cloth or Solid as a member?
+	struct CudaSolid
 	{
 		float c;                //specific heat coefficient                         
 	    float rho;              //density                            
 	    float Q;                //internal heat generation   
 	    float k;                //thermal conductivity coefficient
 
-		int Dim;                //dimension of mesh (1, 2, or 3) 
-	    int Ng;                 //number of element groups
-	    int N;                  //total number of nodes                      
-	    int Nte;                //total number of elements (Nte=Ne+Ne_b)       
-	    int Ne;                 //number of interior elements                
-	    int Ne_b;               //number of boundary elements                                 
-	    int Npe;                //number of points per interior element      
-	    int Npe_b;              //number of points per boundary element      
-	    int Type;               //interior element type                      
-	    int Type_b;             //boundary element type    
+		int dim;                //dimension of mesh (1, 2, or 3) 
+	    int ng;                 //number of element groups
+	    int n;                  //total number of nodes                      
+	    int nte;                //total number of elements (Nte=Ne+Ne_b)       
+	    int ne;                 //number of interior elements                
+	    int ne_b;               //number of boundary elements                                 
+	    int npe;                //number of points per interior element      
+	    int npe_b;              //number of points per boundary element      
+	    int type;               //interior element type                      
+	    int type_b;             //boundary element type    
 
 	    std::vector<float> vertices;
 	    std::vector<int> connect;
@@ -79,6 +83,9 @@ namespace PhysicsEngine
 		int *h_connect;
 		int *h_bconnect;
 		int *h_groups;
+		int *h_triangleIndices;
+		float *h_triangleVertices;
+		float *h_triangleNormals;
 
 		// device variables
 		float4 *d_pos;
@@ -87,8 +94,14 @@ namespace PhysicsEngine
 		int *d_connect;
 		int *d_bconnect;
 		int *d_groups;
+		int *d_triangleIndices;
+		float *d_triangleVertices;
+		float *d_triangleNormals;
 
-		struct cudaGraphicsResource* vbo_cuda;
+		bool initCalled;
+
+		struct cudaGraphicsResource* cudaVertexVBO;
+		struct cudaGraphicsResource* cudaNormalVBO;
 	};
 
 	struct CudaFluid
@@ -155,10 +168,10 @@ namespace PhysicsEngine
 			static void initialize(CudaCloth* cloth);
 			static void update(CudaCloth* cloth);
 
-			static void allocate(CudaFEM* fem);
-			static void deallocate(CudaFEM* fem);
-			static void initialize(CudaFEM* fem);
-			static void update(CudaFEM* fem);
+			static void allocate(CudaSolid* fem);
+			static void deallocate(CudaSolid* fem);
+			static void initialize(CudaSolid* fem);
+			static void update(CudaSolid* fem);
 
 			static void allocate(CudaFluid* fluid);
 			static void deallocate(CudaFluid* fluid);

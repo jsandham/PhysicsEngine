@@ -18,12 +18,13 @@ namespace PhysicsEngine
 			std::vector<float> particles;
 			std::vector<int> particleTypes;
 
-			float kappa;
-			float c;
-			float mass;
+			float kappa;            //spring stiffness coefficient
+			float c;                //spring dampening coefficient
+			float mass;             //mass
 
-			Buffer vbo;
-			VertexArrayObject vao;
+			Buffer vertexVBO;
+			Buffer normalVBO;
+			VertexArrayObject clothVAO;
 
 		public:
 			Cloth();

@@ -8,6 +8,7 @@
 #include "../components/Transform.h"
 #include "../components/Fluid.h"
 #include "../components/Cloth.h"
+#include "../components/Solid.h"
 
 #include "../cuda/CudaPhysics.cuh"
 
@@ -28,6 +29,10 @@ PhysicsSystem::~PhysicsSystem()
 {
 	for(unsigned int i = 0; i < cudaCloths.size(); i++){
 		CudaPhysics::deallocate(&cudaCloths[i]);
+	}
+
+	for(unsigned int i = 0; i < cudaSolids.size(); i++){
+		CudaPhysics::deallocate(&cudaSolids[i]);
 	}
 
 	for(unsigned int i = 0; i < cudaFluids.size(); i++){
@@ -61,43 +66,63 @@ void PhysicsSystem::init()
 
 		CudaPhysics::allocate(&cudaCloths[i]);
 
-		cloths[i]->vao.generate();
-		cloths[i]->vao.bind();
-		cloths[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-		cloths[i]->vbo.bind();
-		// cloths[i]->vbo.setData(&(cloths[i]->particles[0]), 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
-		//cloths[i]->vbo.setData(NULL, 3*cloths[i]->nx*cloths[i]->ny*sizeof(float)); 
-		cloths[i]->vbo.setData(NULL, 9*2*(cloths[i]->nx-1)*(cloths[i]->ny-1)*sizeof(float)); 
-		cloths[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-		cloths[i]->vao.unbind();
+		cloths[i]->clothVAO.generate();
+		cloths[i]->clothVAO.bind();
+		cloths[i]->vertexVBO.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		cloths[i]->vertexVBO.bind();
+		cloths[i]->vertexVBO.setData(NULL, 9*2*(cloths[i]->nx-1)*(cloths[i]->ny-1)*sizeof(float)); 
+		cloths[i]->clothVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+		cloths[i]->clothVAO.unbind();
 
-		cudaGraphicsGLRegisterBuffer(&(cudaCloths[i].vbo_cuda), cloths[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
+		cudaGraphicsGLRegisterBuffer(&(cudaCloths[i].cudaVertexVBO), cloths[i]->vertexVBO.handle, cudaGraphicsMapFlagsWriteDiscard);
 
 		CudaPhysics::initialize(&cudaCloths[i]);
 	}
 
-	std::vector<FESolid*> fesolids = manager->getFESolids();
-	for(unsigned int i = 0; i < fesolids.size(); i++){
-		cudaFEMs.push_back(CudaFEM());
+	std::vector<Solid*> solids = manager->getSolids();
+	for(unsigned int i = 0; i < solids.size(); i++){
+		cudaSolids.push_back(CudaSolid());
 
-		cudaFEMs[i].vertices = fesolids[i]->vertices;
-		cudaFEMs[i].connect = fesolids[i]->connect;
-		cudaFEMs[i].bconnect = fesolids[i]->bconnect;
-		cudaFEMs[i].groups = fesolids[i]->groups;
+		cudaSolids[i].c = solids[i]->c;                   
+	    cudaSolids[i].rho = solids[i]->rho;                           
+	    cudaSolids[i].Q = solids[i]->Q;    
+	    cudaSolids[i].k = solids[i]->k;   
 
-		CudaPhysics::allocate(&cudaFEMs[i]);
+		cudaSolids[i].dim = solids[i]->dim; 
+	    cudaSolids[i].ng = solids[i]->ng;  
+	    cudaSolids[i].n = solids[i]->n;                     
+	    cudaSolids[i].nte = solids[i]->nte;        
+	    cudaSolids[i].ne = solids[i]->ne;                   
+	    cudaSolids[i].ne_b = solids[i]->ne_b;                                
+	    cudaSolids[i].npe = solids[i]->npe;      
+	    cudaSolids[i].npe_b = solids[i]->npe_b;      
+	    cudaSolids[i].type = solids[i]->type;                        
+	    cudaSolids[i].type_b = solids[i]->type_b; 
 
-		fesolids[i]->vao.generate();
-		fesolids[i]->vao.bind();
-		fesolids[i]->vbo.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-		fesolids[i]->vbo.bind();
-		//fesolids[i]->vbo.setData(NULL, 9*2*(fesolids[i]->nx-1)*(fesolids[i]->ny-1)*sizeof(float)); 
-		fesolids[i]->vao.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-		fesolids[i]->vao.unbind();
+		cudaSolids[i].vertices = solids[i]->vertices;
+		cudaSolids[i].connect = solids[i]->connect;
+		cudaSolids[i].bconnect = solids[i]->bconnect;
+		cudaSolids[i].groups = solids[i]->groups;
 
-		cudaGraphicsGLRegisterBuffer(&(cudaFEMs[i].vbo_cuda), fesolids[i]->vbo.handle, cudaGraphicsMapFlagsWriteDiscard);
+		CudaPhysics::allocate(&cudaSolids[i]);
 
-		CudaPhysics::initialize(&cudaFEMs[i]);
+		solids[i]->solidVAO.generate();
+		solids[i]->solidVAO.bind();
+		solids[i]->vertexVBO.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		solids[i]->vertexVBO.bind();
+		solids[i]->vertexVBO.setData(NULL, 3*(solids[i]->ne_b)*(solids[i]->npe_b)*sizeof(float)); 
+		solids[i]->solidVAO.setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+		solids[i]->normalVBO.generate(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+		solids[i]->normalVBO.bind();
+		solids[i]->normalVBO.setData(NULL, 3*(solids[i]->ne_b)*(solids[i]->npe_b)*sizeof(float)); 
+		solids[i]->solidVAO.setLayout(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+		solids[i]->solidVAO.unbind();
+
+		cudaGraphicsGLRegisterBuffer(&(cudaSolids[i].cudaVertexVBO), solids[i]->vertexVBO.handle, cudaGraphicsMapFlagsWriteDiscard);
+		cudaGraphicsGLRegisterBuffer(&(cudaSolids[i].cudaNormalVBO), solids[i]->normalVBO.handle, cudaGraphicsMapFlagsWriteDiscard);
+
+		CudaPhysics::initialize(&cudaSolids[i]);
 	}
 
 	std::vector<Fluid*> fluids = manager->getFluids();
@@ -232,8 +257,8 @@ void PhysicsSystem::update()
 	}
 
 	// fem
-	for(unsigned int i = 0; i < cudaFEMs.size(); i++){
-		CudaPhysics::update(&cudaFEMs[i]);
+	for(unsigned int i = 0; i < cudaSolids.size(); i++){
+		CudaPhysics::update(&cudaSolids[i]);
 	}
 
 

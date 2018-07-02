@@ -148,10 +148,10 @@ Cloth* Manager::createCloth()
 	return cloth;
 }
 
-FESolid* Manager::createFESolid()
+Solid* Manager::createSolid()
 {
-	FESolid* solid = fesolidPool.getNext();
-	fesolids.push_back(solid);
+	Solid* solid = solidPool.getNext();
+	solids.push_back(solid);
 
 	return solid;
 }
@@ -250,9 +250,9 @@ std::vector<Cloth*> Manager::getCloths()
 	//return clothPool.getPool();
 }
 
-std::vector<FESolid*> Manager::getFESolids()
+std::vector<Solid*> Manager::getSolids()
 {
-	return fesolids;
+	return solids;
 	//return clothPool.getPool();
 }
 
@@ -271,15 +271,8 @@ void Manager::loadGMesh(const std::string& name)
 
 	std::cout << "loading gmesh: " << name << std::endl;
 
-	std::vector<float> vertices;
-	std::vector<int> connect, bconnect, groups;
-
-	if (MeshLoader::load_gmesh(name, vertices, connect, bconnect, groups)){
-		GMesh gmesh;
-		gmesh.setVertices(vertices);
-		gmesh.setConnect(connect);
-		gmesh.setBConnect(bconnect);
-
+	GMesh gmesh;
+	if (MeshLoader::load_gmesh(name, gmesh)){
 		gmeshes.push_back(gmesh);
 
 		gmeshMap[name] = (int)gmeshes.size() - 1;
@@ -298,14 +291,8 @@ void Manager::loadMesh(const std::string& name)
 
 	std::cout << "loading mesh: " << name << std::endl;
 
-	std::vector<float> vertices, normals, texCoords;
-
-	if (MeshLoader::load(name, vertices, normals, texCoords)){
-		Mesh mesh;
-		mesh.setVertices(vertices);
-		mesh.setNormals(normals);
-		mesh.setTexCoords(texCoords);
-
+	Mesh mesh;
+	if (MeshLoader::load(name, mesh)){
 		meshes.push_back(mesh);
 
 		meshMap[name] = (int)meshes.size() - 1;

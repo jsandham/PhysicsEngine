@@ -93,17 +93,17 @@ void RenderSystem::init()
 
 		vertexVBO[i].generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 		vertexVBO[i].bind();
-		vertexVBO[i].setData(&(mesh->getVertices()[0]), mesh->getVertices().size()*sizeof(float));
+		vertexVBO[i].setData(&(mesh->vertices[0]), mesh->vertices.size()*sizeof(float));
 		meshVAO[i].setLayout(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
 		normalVBO[i].generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 		normalVBO[i].bind();
-		normalVBO[i].setData(&(mesh->getNormals()[0]), mesh->getNormals().size()*sizeof(float));
+		normalVBO[i].setData(&(mesh->normals[0]), mesh->normals.size()*sizeof(float));
 		meshVAO[i].setLayout(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
 		texCoordVBO[i].generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
 		texCoordVBO[i].bind();
-		texCoordVBO[i].setData(&(mesh->getTexCoords()[0]), mesh->getTexCoords().size()*sizeof(float));
+		texCoordVBO[i].setData(&(mesh->texCoords[0]), mesh->texCoords.size()*sizeof(float));
 		meshVAO[i].setLayout(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
 		/*colourVBO[i].generate(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
@@ -281,7 +281,7 @@ void RenderSystem::renderScene()
 		Mesh* mesh = manager->getMesh(meshRenderers[j]->getMeshFilter());
 
 		meshVAO[meshRenderers[j]->getMeshFilter()].bind();
-		meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->getVertices().size());
+		meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->vertices.size());
 		meshVAO[meshRenderers[j]->getMeshFilter()].unbind();
 	}
 
@@ -307,9 +307,25 @@ void RenderSystem::renderScene()
 
 		int size = 9*2*(cloths[j]->nx - 1)*(cloths[j]->ny - 1);
 
-		cloths[j]->vao.bind();
-		cloths[j]->vao.draw(size);
-		cloths[j]->vao.unbind();
+		cloths[j]->clothVAO.bind();
+		cloths[j]->clothVAO.draw(size);
+		cloths[j]->clothVAO.unbind();
+	}
+
+	std::vector<Solid*> solids = manager->getSolids();
+	for(unsigned int j = 0; j < solids.size(); j++){
+		Transform *transform = solids[j]->entity->getComponent<Transform>();
+		Material *material = manager->getMaterial(3);  // just geeting first material for right now, change later
+
+		material->setMat4("model", transform->getModelMatrix());
+
+		material->bind(state);
+
+		int size = 3*(solids[j]->ne_b)*(solids[j]->npe_b);//9*2*(cloths[j]->nx - 1)*(cloths[j]->ny - 1);
+
+		solids[j]->solidVAO.bind();
+		solids[j]->solidVAO.draw(size);
+		solids[j]->solidVAO.unbind();
 	}
 
 	// // maybe temporary?
@@ -476,7 +492,7 @@ void RenderSystem::renderShadowMap(Texture2D* texture, glm::mat4 lightView, glm:
 		Mesh* mesh = manager->getMesh(meshRenderers[i]->getMeshFilter());
 
 		meshVAO[meshRenderers[i]->getMeshFilter()].bind();
-		meshVAO[meshRenderers[i]->getMeshFilter()].draw((int)mesh->getVertices().size());
+		meshVAO[meshRenderers[i]->getMeshFilter()].draw((int)mesh->vertices.size());
 		meshVAO[meshRenderers[i]->getMeshFilter()].unbind();
 	}
 
@@ -505,7 +521,7 @@ void RenderSystem::renderDepthCubemap(Cubemap* cubemap, glm::mat4 lightProjectio
 			Mesh* mesh = manager->getMesh(meshRenderers[j]->getMeshFilter());
 
 			meshVAO[meshRenderers[j]->getMeshFilter()].bind();
-			meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->getVertices().size());
+			meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->vertices.size());
 			meshVAO[meshRenderers[j]->getMeshFilter()].unbind();
 		}
 	}
