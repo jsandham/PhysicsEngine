@@ -91,7 +91,6 @@ __global__ void verlet_integration
 	float4 *pos,
 	float4 *oldPos,
 	float4 *acc,
-	float *output,
 	float dt,
 	int nx,
 	int ny
@@ -134,9 +133,9 @@ __global__ void verlet_integration
 	pos[index] = my_pos;
 	oldPos[index] = my_oldPos;
 
-	output[3 * index] = my_pos.x;
-	output[3 * index + 1] = my_pos.y;
-	output[3 * index + 2] = my_pos.z;
+	//output[3 * index] = my_pos.x;
+	//output[3 * index + 1] = my_pos.y;
+	//output[3 * index + 2] = my_pos.z;
 }
 
 __global__ void update_triangle_mesh

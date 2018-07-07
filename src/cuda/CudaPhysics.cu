@@ -104,15 +104,31 @@ void CudaPhysics::initialize(CudaCloth* cloth)
 		int ind2 = cloth->h_triangleIndices[3*i + 1];
 		int ind3 = cloth->h_triangleIndices[3*i + 2];
 
-		cloth->h_triangleVertices[9*i] = cloth->particles[3*ind1];
-		cloth->h_triangleVertices[9*i + 1] = cloth->particles[3*ind1 + 1];
-		cloth->h_triangleVertices[9*i + 2] = cloth->particles[3*ind1 + 2];
-		cloth->h_triangleVertices[9*i + 3] = cloth->particles[3*ind2];
-		cloth->h_triangleVertices[9*i + 4] = cloth->particles[3*ind2 + 1];
-		cloth->h_triangleVertices[9*i + 5] = cloth->particles[3*ind2 + 2];
-		cloth->h_triangleVertices[9*i + 6] = cloth->particles[3*ind3];
-		cloth->h_triangleVertices[9*i + 7] = cloth->particles[3*ind3 + 1];
-		cloth->h_triangleVertices[9*i + 8] = cloth->particles[3*ind3 + 2];
+		glm::vec3 a = glm::vec3(cloth->particles[3*ind1], cloth->particles[3*ind1 + 1], cloth->particles[3*ind1 + 2]);
+		glm::vec3 b = glm::vec3(cloth->particles[3*ind2], cloth->particles[3*ind2 + 1], cloth->particles[3*ind2 + 2]);
+		glm::vec3 c = glm::vec3(cloth->particles[3*ind3], cloth->particles[3*ind3 + 1], cloth->particles[3*ind3 + 2]);
+
+		glm::vec3 normal = glm::triangleNormal(a, b, c);
+
+		cloth->h_triangleVertices[9*i] = a.x;
+		cloth->h_triangleVertices[9*i + 1] = a.y;
+		cloth->h_triangleVertices[9*i + 2] = a.z;
+		cloth->h_triangleVertices[9*i + 3] = b.x;
+		cloth->h_triangleVertices[9*i + 4] = b.y;
+		cloth->h_triangleVertices[9*i + 5] = b.z;
+		cloth->h_triangleVertices[9*i + 6] = c.x;
+		cloth->h_triangleVertices[9*i + 7] = c.y;
+		cloth->h_triangleVertices[9*i + 8] = c.z;
+
+		cloth->h_triangleNormals[9*i] = normal.x;
+		cloth->h_triangleNormals[9*i + 1] = normal.y;
+		cloth->h_triangleNormals[9*i + 2] = normal.z;
+		cloth->h_triangleNormals[9*i + 3] = normal.x;
+		cloth->h_triangleNormals[9*i + 4] = normal.y;
+		cloth->h_triangleNormals[9*i + 5] = normal.z;
+		cloth->h_triangleNormals[9*i + 6] = normal.x;
+		cloth->h_triangleNormals[9*i + 7] = normal.y;
+		cloth->h_triangleNormals[9*i + 8] = normal.z;
 	}
 
 	gpuErrchk(cudaMemcpy(cloth->d_pos, cloth->h_pos, nx*ny*sizeof(float4), cudaMemcpyHostToDevice));
@@ -122,20 +138,25 @@ void CudaPhysics::initialize(CudaCloth* cloth)
 
 	size_t num_bytes;
 
-	cudaGraphicsMapResources(1, &(cloth->cudaVertexVBO), 0);
-	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->cudaVertexVBO);
+	gpuErrchk(cudaGraphicsMapResources(1, &(cloth->cudaVertexVBO), 0));
+	gpuErrchk(cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->cudaVertexVBO));
 	gpuErrchk(cudaMemcpy(cloth->d_triangleVertices, cloth->h_triangleVertices, 9*2*(nx-1)*(ny-1)*sizeof(float), cudaMemcpyHostToDevice));
-	cudaGraphicsUnmapResources(1, &(cloth->cudaVertexVBO), 0);
+	gpuErrchk(cudaGraphicsUnmapResources(1, &(cloth->cudaVertexVBO), 0));
+
+	gpuErrchk(cudaGraphicsMapResources(1, &(cloth->cudaNormalVBO), 0));
+	gpuErrchk(cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleNormals), &num_bytes, cloth->cudaNormalVBO));
+	gpuErrchk(cudaMemcpy(cloth->d_triangleNormals, cloth->h_triangleNormals, 9*2*(nx-1)*(ny-1)*sizeof(float), cudaMemcpyHostToDevice));
+	gpuErrchk(cudaGraphicsUnmapResources(1, &(cloth->cudaNormalVBO), 0));
 
 	cloth->initCalled = true;
 }
 
 void CudaPhysics::update(CudaCloth* cloth)
 {
-	cudaGraphicsMapResources(1, &(cloth->cudaVertexVBO), 0);
+	gpuErrchk(cudaGraphicsMapResources(1, &(cloth->cudaVertexVBO), 0));
 	size_t num_bytes;
 
-	cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->cudaVertexVBO);
+	gpuErrchk(cudaGraphicsResourceGetMappedPointer((void**)&(cloth->d_triangleVertices), &num_bytes, cloth->cudaVertexVBO));
 
 	dim3 blockSize(16, 16);
 	dim3 gridSize(16, 16);
@@ -159,8 +180,7 @@ void CudaPhysics::update(CudaCloth* cloth)
 		(
 			cloth->d_pos, 
 			cloth->d_oldPos, 
-			cloth->d_acc, 
-			cloth->d_output, 
+			cloth->d_acc,  
 			cloth->dt, 
 			cloth->nx, 
 			cloth->ny
@@ -176,7 +196,7 @@ void CudaPhysics::update(CudaCloth* cloth)
 			cloth->ny
 		);
 
-	cudaGraphicsUnmapResources(1, &(cloth->cudaVertexVBO), 0);
+	gpuErrchk(cudaGraphicsUnmapResources(1, &(cloth->cudaVertexVBO), 0));
 }
 
 
@@ -212,6 +232,8 @@ void CudaPhysics::allocate(CudaSolid* solid)
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleIndices), ne_b*npe_b*sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleVertices), 3*ne_b*npe_b*sizeof(float)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleNormals), 3*ne_b*npe_b*sizeof(float)));
+
+	gpuErrchk(cudaMalloc((void**)&(solid->d_localStiffnessMatrices), ne*npe*npe*sizeof(float)));
 }
 
 void CudaPhysics::deallocate(CudaSolid* solid)
@@ -237,6 +259,8 @@ void CudaPhysics::deallocate(CudaSolid* solid)
 	gpuErrchk(cudaFree(solid->d_triangleIndices));
 	gpuErrchk(cudaFree(solid->d_triangleVertices));
 	gpuErrchk(cudaFree(solid->d_triangleNormals));
+
+	gpuErrchk(cudaFree(solid->d_localStiffnessMatrices));
 }
 
 void CudaPhysics::initialize(CudaSolid* solid)
@@ -330,15 +354,15 @@ void CudaPhysics::initialize(CudaSolid* solid)
 
 	size_t num_bytes;
 
-	cudaGraphicsMapResources(1, &(solid->cudaVertexVBO), 0);
-	cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleVertices), &num_bytes, solid->cudaVertexVBO	);
+	gpuErrchk(cudaGraphicsMapResources(1, &(solid->cudaVertexVBO), 0));
+	gpuErrchk(cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleVertices), &num_bytes, solid->cudaVertexVBO));
 	gpuErrchk(cudaMemcpy(solid->d_triangleVertices, solid->h_triangleVertices, 3*ne_b*npe_b*sizeof(float), cudaMemcpyHostToDevice));
-	cudaGraphicsUnmapResources(1, &(solid->cudaVertexVBO), 0);
+	gpuErrchk(cudaGraphicsUnmapResources(1, &(solid->cudaVertexVBO), 0));
 
-	cudaGraphicsMapResources(1, &(solid->cudaNormalVBO), 0);
-	cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleNormals), &num_bytes, solid->cudaNormalVBO	);
+	gpuErrchk(cudaGraphicsMapResources(1, &(solid->cudaNormalVBO), 0));
+	gpuErrchk(cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleNormals), &num_bytes, solid->cudaNormalVBO));
 	gpuErrchk(cudaMemcpy(solid->d_triangleNormals, solid->h_triangleNormals, 3*ne_b*npe_b*sizeof(float), cudaMemcpyHostToDevice));
-	cudaGraphicsUnmapResources(1, &(solid->cudaNormalVBO), 0);
+	gpuErrchk(cudaGraphicsUnmapResources(1, &(solid->cudaNormalVBO), 0));
 
 	solid->initCalled = true;
 }

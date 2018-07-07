@@ -72981,3 +72981,20 @@
 [Info]: assets loaded (frame 0)
 [Info]: scene created (frame 0)
 [Info]: call scene init (frame 0)
+[Info]: scene init called 4
+ (frame 0)
+[Info]: assets loaded (frame 0)
+[Info]: scene created (frame 0)
+[Info]: scene init called 4
+ (frame 0)
+[Info]: assets loaded (frame 0)
+[Info]: scene created (frame 0)
+[Info]: scene init called 4
+ (frame 0)
+[Info]: assets loaded (frame 0)
+[Info]: scene created (frame 0)
+[Info]: scene init called 4
+ (frame 0)
+[Info]: assets loaded (frame 0)
+[Info]: scene created (frame 0)
+[Info]: call scene init (frame 0)

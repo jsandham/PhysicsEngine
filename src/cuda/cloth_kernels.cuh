@@ -21,7 +21,6 @@ __global__ void verlet_integration
 		float4 *pos,
 		float4 *oldPos,
 		float4 *acc,
-		float *output,
 		float dt,
 		int nx,
 		int ny

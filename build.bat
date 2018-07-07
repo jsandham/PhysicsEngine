@@ -19,7 +19,7 @@ set Systems=..\src\systems\System.cpp ..\src\systems\RenderSystem.cpp ..\src\sys
 set Graphics=..\src\graphics\Buffer.cpp ..\src\graphics\Color.cpp ..\src\graphics\Texture.cpp ..\src\graphics\Cubemap.cpp ..\src\graphics\Texture2D.cpp ..\src\graphics\Texture3D.cpp ..\src\graphics\Framebuffer.cpp ..\src\graphics\Gizmos.cpp ..\src\graphics\GraphicState.cpp ..\src\graphics\Material.cpp ..\src\graphics\OpenGL.cpp ..\src\graphics\Shader.cpp ..\src\graphics\ShaderUniformState.cpp ..\src\graphics\UniformBufferObject.cpp ..\src\graphics\VertexArrayObject.cpp ..\src\graphics\stb_image_implementation.cpp
 set Memory=..\src\memory\Manager.cpp ..\src\memory\Pool.cpp 
 set Win32=..\src\platform\Win32\win32_main.cpp
-set Cuda=..\src\cuda\fluid_kernels.cu ..\src\cuda\cloth_kernels.cu ..\src\cuda\solid_kernels.cu
+set Cuda=..\src\cuda\fluid_kernels.cu ..\src\cuda\cloth_kernels.cu ..\src\cuda\solid_kernels.cu ..\src\cuda\QuadratureRule.cu
 set Solvers=..\src\solvers\AMG.cpp ..\src\solvers\SLAF.cpp ..\src\solvers\debug.cpp
 
 set CoreObj=Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj
@@ -30,7 +30,7 @@ set SystemsObj=System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj De
 set GraphicsObj= Buffer.obj Color.obj VertexArrayObject.obj UniformBufferObject.obj Texture.obj Cubemap.obj Texture2D.obj Texture3D.obj Framebuffer.obj OpenGL.obj GraphicState.obj Shader.obj ShaderUniformState.obj Material.obj stb_image_implementation.obj Gizmos.obj
 set MemoryObj=Manager.obj Pool.obj
 set Win32Obj=win32_main.obj
-set CudaObj=fluid_kernels.obj cloth_kernels.obj solid_kernels.obj CudaPhysics.obj
+set CudaObj=fluid_kernels.obj cloth_kernels.obj solid_kernels.obj CudaPhysics.obj QuadratureRule.obj
 set SolversObj=AMG.obj SLAF.obj debug.obj
 
 

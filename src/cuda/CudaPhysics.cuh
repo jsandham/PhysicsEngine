@@ -11,12 +11,18 @@
 #include "../glm/gtx/normal.hpp"
 
 //#include "VoxelGrid.h"
+#include "QuadratureRule.cuh"
 
 namespace PhysicsEngine
 {
 	struct CudaCloth
 	{
 		int nx, ny;
+
+		float dt;
+		float kappa;            //spring stiffness coefficient
+		float c;                //spring dampening coefficient
+		float mass;             //mass
 
 		std::vector<float> particles;
 		std::vector<int> particleTypes;
@@ -42,11 +48,6 @@ namespace PhysicsEngine
 		cudaEvent_t start, stop;
 
 		bool initCalled;
-
-		float dt;
-		float kappa;            //spring stiffness coefficient
-		float c;                //spring dampening coefficient
-		float mass;             //mass
 
 		struct cudaGraphicsResource* cudaVertexVBO;
 		struct cudaGraphicsResource* cudaNormalVBO;
@@ -97,6 +98,9 @@ namespace PhysicsEngine
 		int *d_triangleIndices;
 		float *d_triangleVertices;
 		float *d_triangleNormals;
+
+		float *d_localStiffnessMatrices;
+		QuadratureRule *d_rule;
 
 		bool initCalled;
 
