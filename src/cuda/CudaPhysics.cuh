@@ -87,6 +87,11 @@ namespace PhysicsEngine
 		int *h_triangleIndices;
 		float *h_triangleVertices;
 		float *h_triangleNormals;
+		float *h_localElementMatrices;
+
+		int *h_rowA;
+		int *h_colA;
+		float *h_valA;
 
 		// device variables
 		float4 *d_pos;
@@ -98,9 +103,11 @@ namespace PhysicsEngine
 		int *d_triangleIndices;
 		float *d_triangleVertices;
 		float *d_triangleNormals;
+		float *d_localElementMatrices;
 
-		float *d_localStiffnessMatrices;
-		QuadratureRule *d_rule;
+		int *d_rowA;
+		int *d_colA;
+		float *d_valA;
 
 		bool initCalled;
 
@@ -130,7 +137,6 @@ namespace PhysicsEngine
 		float4 *h_spos;
 		float4 *h_svel;
 		float *h_rho, *h_rho0, *h_pres;
-		//float *h_output;
 		int *h_cellStartIndex;
 		int *h_cellEndIndex;
 		int *h_cellIndex;
@@ -181,6 +187,9 @@ namespace PhysicsEngine
 			static void deallocate(CudaFluid* fluid);
 			static void initialize(CudaFluid* fluid);
 			static void update(CudaFluid* fluid);
+
+		private:
+			static void assembleCSR(float* values, int* rowPtrs, int* columns, int* conenct, float* localMatrices, int n, int ne, int npe);
 	};
 }
 

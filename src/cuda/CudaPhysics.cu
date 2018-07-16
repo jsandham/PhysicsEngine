@@ -221,6 +221,11 @@ void CudaPhysics::allocate(CudaSolid* solid)
 	solid->h_triangleIndices = new int[ne_b*npe_b];
 	solid->h_triangleVertices = new float[3*ne_b*npe_b];
 	solid->h_triangleNormals = new float[3*ne_b*npe_b];
+	solid->h_localElementMatrices = new float[ne*npe*npe];
+
+	solid->h_rowA = new int[n + 1];
+	solid->h_colA = new int[32*n];
+	solid->h_valA = new float[32*n];
 
 	// allocate memory on device
 	gpuErrchk(cudaMalloc((void**)&(solid->d_pos), n*sizeof(float4)));
@@ -232,8 +237,11 @@ void CudaPhysics::allocate(CudaSolid* solid)
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleIndices), ne_b*npe_b*sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleVertices), 3*ne_b*npe_b*sizeof(float)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_triangleNormals), 3*ne_b*npe_b*sizeof(float)));
-
-	gpuErrchk(cudaMalloc((void**)&(solid->d_localStiffnessMatrices), ne*npe*npe*sizeof(float)));
+	gpuErrchk(cudaMalloc((void**)&(solid->d_localElementMatrices), ne*npe*npe*sizeof(float)));
+	
+	gpuErrchk(cudaMalloc((void**)&(solid->d_rowA), (n+1)*sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&(solid->d_colA), 32*n*sizeof(int)));
+	gpuErrchk(cudaMalloc((void**)&(solid->d_valA), 32*n*sizeof(float)));
 }
 
 void CudaPhysics::deallocate(CudaSolid* solid)
@@ -248,6 +256,11 @@ void CudaPhysics::deallocate(CudaSolid* solid)
 	delete [] solid->h_triangleIndices; 
 	delete [] solid->h_triangleVertices; 
 	delete [] solid->h_triangleNormals; 
+	delete [] solid->h_localElementMatrices;
+
+	delete [] solid->h_rowA;
+	delete [] solid->h_colA;
+	delete [] solid->h_valA;
 
 	// allocate memory on device
 	gpuErrchk(cudaFree(solid->d_pos));
@@ -259,8 +272,11 @@ void CudaPhysics::deallocate(CudaSolid* solid)
 	gpuErrchk(cudaFree(solid->d_triangleIndices));
 	gpuErrchk(cudaFree(solid->d_triangleVertices));
 	gpuErrchk(cudaFree(solid->d_triangleNormals));
+	gpuErrchk(cudaFree(solid->d_localElementMatrices));
 
-	gpuErrchk(cudaFree(solid->d_localStiffnessMatrices));
+	gpuErrchk(cudaFree(solid->h_rowA));
+	gpuErrchk(cudaFree(solid->h_colA));
+	gpuErrchk(cudaFree(solid->h_valA));
 }
 
 void CudaPhysics::initialize(CudaSolid* solid)
@@ -271,6 +287,8 @@ void CudaPhysics::initialize(CudaSolid* solid)
 	int ne = solid->ne;
 	int ne_b = solid->ne_b;
 	int npe_b = solid->npe_b;
+	//int type = solid->type;
+	//int type_b = solid->type_b;
 
 	for(unsigned int i = 0; i < solid->vertices.size() / 3; i++){
 		float4 hPos;
@@ -365,24 +383,153 @@ void CudaPhysics::initialize(CudaSolid* solid)
 	gpuErrchk(cudaGraphicsUnmapResources(1, &(solid->cudaNormalVBO), 0));
 
 	solid->initCalled = true;
+
+	std::cout << " ne: " << solid->ne << " npe: " << solid->npe << " ne_b: " << solid->ne_b << " type: " << solid->type << std::endl;
+
+	dim3 blockSize(64, 1);
+	dim3 gridSize(64, 1);
+
+	// find local mass matrices
+	compute_local_mass_matrices<<<gridSize, blockSize>>>
+	(
+		solid->d_pos,
+		solid->d_localElementMatrices,
+		solid->d_connect,
+		solid->ne,
+		solid->npe,
+		solid->type
+	);
+
+	gpuErrchk(cudaMemcpy(solid->h_localElementMatrices, solid->d_localElementMatrices, ne*npe*npe*sizeof(float), cudaMemcpyDeviceToHost));
+
+	// form global mass matrix;
+	assembleCSR(solid->h_valA, solid->h_rowA, solid->h_colA, solid->h_connect, solid->h_localElementMatrices, n, ne, npe);
+
+	// find local stiffness matrices
+	compute_local_stiffness_matrices<<<gridSize, blockSize>>>
+	(
+		solid->d_pos,
+		solid->d_localElementMatrices,
+		solid->d_connect,
+		solid->ne,
+		solid->npe,
+		solid->type
+	);
+
+	gpuErrchk(cudaMemcpy(solid->h_localElementMatrices, solid->d_localElementMatrices, ne*npe*npe*sizeof(float), cudaMemcpyDeviceToHost));
+
+	// form global stiffness matrix
+	//assembleCSR(solid->h_valA, solid->h_rowA, solid->h_colA, solid->h_connect, solid->h_localElementMatrices, n, ne, npe);
+
+	// gpuErrchk(cudaMemcpy(solid->h_localElementMatrices, solid->d_localElementMatrices, ne*npe*npe*sizeof(float), cudaMemcpyDeviceToHost));
+
+	// for(int i = 0; i < 100; i++){
+	// 	std::cout << "i: " << solid->h_localElementMatrices[i] << std::endl;
+	// }
 }
 
 void CudaPhysics::update(CudaSolid* solid)
 {
-	// cudaGraphicsMapResources(1, &(solid->vbo_cuda), 0);
-	// size_t num_bytes;
+	std::cout << "BBBBBB" << std::endl;
 
-	// cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleVertices), &num_bytes, solid->vbo_cuda);
+	cudaGraphicsMapResources(1, &(solid->cudaVertexVBO), 0);
+	size_t num_bytes;
 
-	// dim3 blockSize(16, 16);
-	// dim3 gridSize(16, 16);
+	cudaGraphicsResourceGetMappedPointer((void**)&(solid->d_triangleVertices), &num_bytes, solid->cudaVertexVBO);
 
-	// for (int i = 0; i < 20; ++i)
+	// std::cout << " ne: " << solid->ne << " npe: " << solid->npe << " ne_b: " << solid->ne_b << " type: " << solid->type << std::endl;
+
+	// dim3 blockSize(64, 1);
+	// dim3 gridSize(64, 1);
+
+	// for (int i = 0; i < 1; ++i)
 	// {
-		
+	// 	compute_local_stiffness_matrices<<<gridSize, blockSize>>>
+	// 	(
+	// 		solid->d_pos,
+	// 		solid->d_localStiffnessMatrices,
+	// 		solid->d_connect,
+	// 		solid->ne,
+	// 		solid->npe,
+	// 		solid->type
+	// 	);
 	// }
 
-	// cudaGraphicsUnmapResources(1, &(solid->vbo_cuda), 0);
+	cudaGraphicsUnmapResources(1, &(solid->cudaVertexVBO), 0);
+}
+
+void CudaPhysics::assembleCSR(float* values, int* rowPtrs, int* columns, int* connect, float* localMatrices, int n, int ne, int npe)
+{
+	int r, c = 0;
+	float v;
+
+	int MAX_NNZ = 32;
+
+	// update global matrix values and columns arrays
+	for(int k = 0; k < ne; k++){
+	    for(int i = 0; i < npe; i++){
+	      	for(int j = 0; j < npe; j++){
+	        	r = connect[npe*k + i];
+	        	c = connect[npe*k + j];
+	        	v = localMatrices[npe*npe*k + npe*i + j];
+	        	for(int p = MAX_NNZ*r - MAX_NNZ; p < MAX_NNZ*r; p++){
+	          		if(columns[p] == -1){
+	            		columns[p] = c - 1;
+	            		values[p] = v;
+	            		break;
+	          		}
+	          		else if(columns[p] == c - 1){
+	            		values[p] += v;
+	            		break;
+	          		}
+	        	}
+	      	}
+	    }
+	}
+
+  	//update row array
+  	int jj = 0;
+  	for(int i = 1; i < n + 1; i++){
+    	for(int j = 0; j < MAX_NNZ; j++){
+      		if(columns[i*MAX_NNZ-MAX_NNZ + j] == -1){jj = j; break;}
+    	}
+    	rowPtrs[i] = rowPtrs[i-1] + jj;
+  	}
+
+  	//sort (insertion) col and A arrays
+  	for(int p = 0; p < n; p++){
+    	for(int i = 0; i < rowPtrs[p+1] - rowPtrs[p]; i++){
+      		int entry = columns[i + p*MAX_NNZ];
+      		float entryA = values[i + p*MAX_NNZ];
+      		int index = i + p*MAX_NNZ;
+      		for(int j = i-1; j >= 0;j--){
+        		if(entry < columns[j + p*MAX_NNZ]){
+          			int a = columns[j + p*MAX_NNZ];
+          			float b = values[j + p*MAX_NNZ];
+          			columns[j + p*MAX_NNZ] = entry;
+          			values[j + p*MAX_NNZ] = entryA;
+          			columns[index] = a;
+          			values[index] = b;
+          			index = j + p*MAX_NNZ;
+        		}
+      		}
+    	}
+  	}
+
+  	//compress col and A arrays
+  	int index = 0;
+  	for(int i = 0; i < n*MAX_NNZ; i++){
+    	if(columns[i] == -1){ continue; }
+    	columns[index] = columns[i];
+    	values[index] = values[i];
+    	index++;
+  	}
+
+  	//set unused parts of arrays to 0 or -1
+  	for(int i = index; i < n*MAX_NNZ; i++){
+    	columns[i] = -1;
+    	values[i] = 0.0;
+  	}
 }
 
 

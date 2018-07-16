@@ -6,8 +6,8 @@ class QuadratureRule
   public:
     int nDim;
     int nIntPoints;
-    double *xii, *eti, *zei;
-    double *weights;
+    float *xii, *eti, *zei;
+    float *weights;
 
   public: 
     __device__ __host__ QuadratureRule(int n, int dim, int typ);

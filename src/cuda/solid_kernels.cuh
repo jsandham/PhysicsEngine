@@ -3,15 +3,24 @@
 
 #include "vector_types.h"
 
-// __device__ glm::mat4 jacobian(float xi, float et, float ze);
-
 __global__ void compute_local_stiffness_matrices
 	(
 		float4* pos,
 		float* localStiffnessMatrices,
 		int* connect,
 		int ne,
-		int npe
+		int npe,
+		int type
+	);
+
+__global__ void compute_local_mass_matrices
+	(
+		float4* pos,
+		float* localMassMatrices,
+		int* connect,
+		int ne,
+		int npe,
+		int type
 	);
 
 #endif
