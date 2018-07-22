@@ -242,6 +242,10 @@ void CudaPhysics::allocate(CudaSolid* solid)
 	gpuErrchk(cudaMalloc((void**)&(solid->d_rowA), (n+1)*sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_colA), 32*n*sizeof(int)));
 	gpuErrchk(cudaMalloc((void**)&(solid->d_valA), 32*n*sizeof(float)));
+
+	// allocate solver 
+	gpuErrchk(cudaMalloc((void**)&((solid->jacobi).d_xnew), n*sizeof(float)));
+	gpuErrchk(cudaMalloc((void**)&((solid->jacobi).d_diag), n*sizeof(float)));
 }
 
 void CudaPhysics::deallocate(CudaSolid* solid)
@@ -274,9 +278,13 @@ void CudaPhysics::deallocate(CudaSolid* solid)
 	gpuErrchk(cudaFree(solid->d_triangleNormals));
 	gpuErrchk(cudaFree(solid->d_localElementMatrices));
 
-	gpuErrchk(cudaFree(solid->h_rowA));
-	gpuErrchk(cudaFree(solid->h_colA));
-	gpuErrchk(cudaFree(solid->h_valA));
+	gpuErrchk(cudaFree(solid->d_rowA));
+	gpuErrchk(cudaFree(solid->d_colA));
+	gpuErrchk(cudaFree(solid->d_valA));
+
+	// deallocate solver
+	gpuErrchk(cudaFree((solid->jacobi).d_xnew));
+	gpuErrchk(cudaFree((solid->jacobi).d_diag));
 }
 
 void CudaPhysics::initialize(CudaSolid* solid)
@@ -402,8 +410,15 @@ void CudaPhysics::initialize(CudaSolid* solid)
 
 	gpuErrchk(cudaMemcpy(solid->h_localElementMatrices, solid->d_localElementMatrices, ne*npe*npe*sizeof(float), cudaMemcpyDeviceToHost));
 
+	std::cout << "n: " << n << " ne: " << ne << " npe: " << npe << std::endl;
+
 	// form global mass matrix;
 	assembleCSR(solid->h_valA, solid->h_rowA, solid->h_colA, solid->h_connect, solid->h_localElementMatrices, n, ne, npe);
+
+	for(int i = 0; i < 20; i++)
+	{
+		std::cout << "row: " << solid->h_rowA[i] << std::endl;
+	}
 
 	// find local stiffness matrices
 	compute_local_stiffness_matrices<<<gridSize, blockSize>>>
@@ -460,18 +475,25 @@ void CudaPhysics::update(CudaSolid* solid)
 
 void CudaPhysics::assembleCSR(float* values, int* rowPtrs, int* columns, int* connect, float* localMatrices, int n, int ne, int npe)
 {
-	int r, c = 0;
-	float v;
-
 	int MAX_NNZ = 32;
+
+	// initialize rowPtr to zeros
+	for(int i = 0; i < n + 1; i++){
+		rowPtrs[i] = 0;
+	}
+
+	// initialize columns to -1
+	for(int i = 0; i < MAX_NNZ*n; i++){
+		columns[i] = -1;
+	}
 
 	// update global matrix values and columns arrays
 	for(int k = 0; k < ne; k++){
 	    for(int i = 0; i < npe; i++){
 	      	for(int j = 0; j < npe; j++){
-	        	r = connect[npe*k + i];
-	        	c = connect[npe*k + j];
-	        	v = localMatrices[npe*npe*k + npe*i + j];
+	        	int r = connect[npe*k + i];
+	        	int c = connect[npe*k + j];
+	        	float v = localMatrices[npe*npe*k + npe*i + j];
 	        	for(int p = MAX_NNZ*r - MAX_NNZ; p < MAX_NNZ*r; p++){
 	          		if(columns[p] == -1){
 	            		columns[p] = c - 1;

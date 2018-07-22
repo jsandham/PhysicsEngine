@@ -272,29 +272,29 @@ void RenderSystem::renderScene()
 	std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 	for (unsigned int j = 0; j < meshRenderers.size(); j++){
 		Transform *transform = meshRenderers[j]->entity->getComponent<Transform>();
-		Material *material = manager->getMaterial(meshRenderers[j]->getMaterialFilter());
+		Material *material = manager->getMaterial(meshRenderers[j]->materialFilter);
 
 		material->setMat4("model", transform->getModelMatrix());
 
 		material->bind(state);
 
-		Mesh* mesh = manager->getMesh(meshRenderers[j]->getMeshFilter());
+		Mesh* mesh = manager->getMesh(meshRenderers[j]->meshFilter);
 
-		meshVAO[meshRenderers[j]->getMeshFilter()].bind();
-		meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->vertices.size());
-		meshVAO[meshRenderers[j]->getMeshFilter()].unbind();
+		meshVAO[meshRenderers[j]->meshFilter].bind();
+		meshVAO[meshRenderers[j]->meshFilter].draw((int)mesh->vertices.size());
+		meshVAO[meshRenderers[j]->meshFilter].unbind();
 	}
 
-	std::vector<LineRenderer*> lineRenderers = manager->getLineRenderers();
-	for (unsigned int j = 0; j < lineRenderers.size(); j++){
-		Material* material = manager->getMaterial(lineRenderers[j]->getMaterialFilter());
+	// std::vector<LineRenderer*> lineRenderers = manager->getLineRenderers();
+	// for (unsigned int j = 0; j < lineRenderers.size(); j++){
+	// 	Material* material = manager->getMaterial(lineRenderers[j]->materialFilter);
 
-		material->bind(state);
+	// 	material->bind(state);
 
-		material->setMat4("model", glm::mat4(1.0));
+	// 	material->setMat4("model", glm::mat4(1.0));
 
-		lineRenderers[j]->draw();
-	}
+	// 	lineRenderers[j]->draw();
+	// }
 
 	std::vector<Cloth*> cloths = manager->getCloths();
 	for(unsigned int j = 0; j < cloths.size(); j++){
@@ -489,11 +489,11 @@ void RenderSystem::renderShadowMap(Texture2D* texture, glm::mat4 lightView, glm:
 		Transform* transform = meshRenderers[i]->entity->getComponent<Transform>();
 		depthShader.setMat4("model", transform->getModelMatrix());
 
-		Mesh* mesh = manager->getMesh(meshRenderers[i]->getMeshFilter());
+		Mesh* mesh = manager->getMesh(meshRenderers[i]->meshFilter);
 
-		meshVAO[meshRenderers[i]->getMeshFilter()].bind();
-		meshVAO[meshRenderers[i]->getMeshFilter()].draw((int)mesh->vertices.size());
-		meshVAO[meshRenderers[i]->getMeshFilter()].unbind();
+		meshVAO[meshRenderers[i]->meshFilter].bind();
+		meshVAO[meshRenderers[i]->meshFilter].draw((int)mesh->vertices.size());
+		meshVAO[meshRenderers[i]->meshFilter].unbind();
 	}
 
 	shadowFBO->unbind();
@@ -518,11 +518,11 @@ void RenderSystem::renderDepthCubemap(Cubemap* cubemap, glm::mat4 lightProjectio
 			Transform* transform = meshRenderers[j]->entity->getComponent<Transform>();
 			depthShader.setMat4("model", transform->getModelMatrix());
 
-			Mesh* mesh = manager->getMesh(meshRenderers[j]->getMeshFilter());
+			Mesh* mesh = manager->getMesh(meshRenderers[j]->meshFilter);
 
-			meshVAO[meshRenderers[j]->getMeshFilter()].bind();
-			meshVAO[meshRenderers[j]->getMeshFilter()].draw((int)mesh->vertices.size());
-			meshVAO[meshRenderers[j]->getMeshFilter()].unbind();
+			meshVAO[meshRenderers[j]->meshFilter].bind();
+			meshVAO[meshRenderers[j]->meshFilter].draw((int)mesh->vertices.size());
+			meshVAO[meshRenderers[j]->meshFilter].unbind();
 		}
 	}
 

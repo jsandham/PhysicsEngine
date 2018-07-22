@@ -131,8 +131,8 @@ void Scene::init()
 	entity1->addComponent<Transform>(transform1);
 	entity1->addComponent<MeshRenderer>(meshRenderer1);
 
-	meshRenderer1->setMeshFilter(manager.getMeshFilter("../data/meshes/square.txt"));
-	meshRenderer1->setMaterialFilter(manager.getMaterialFilter("defaultMat"));
+	meshRenderer1->meshFilter = manager.getMeshFilter("../data/meshes/square.txt");
+	meshRenderer1->materialFilter = manager.getMaterialFilter("defaultMat");
 
 	// entity2 (cloth)
 	Entity* entity2 = manager.createEntity();

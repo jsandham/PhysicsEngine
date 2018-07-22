@@ -2,26 +2,15 @@
 
 using namespace PhysicsEngine;
 
-int Entity::entityCount = 0;
-
 Entity::Entity()
 {
-	entityId = entityCount;
-	std::cout << "entity constructor called for entity with id " << entityId << std::endl;
-	Entity::entityCount++;
+	
 }
 
 Entity::~Entity()
 {
-	//std::cout << "entity destructor called for entity with id " << entityId << std::endl;
-}
 
-void Entity::clear()
-{
-	componentTypes.clear();
-	components.clear();
 }
-
 
 
 

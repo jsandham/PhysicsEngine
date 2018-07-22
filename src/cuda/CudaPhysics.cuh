@@ -1,9 +1,11 @@
-#ifndef __CUDAPhysicsEngine_CUH__
-#define __CUDAPhysicsEngine_CUH__
+#ifndef __CUDA_PHYSICS_CUH__
+#define __CUDA_PHYSICS_CUH__
 
 #include <vector>
 
 #include <vector_types.h>
+
+#include "CudaSolvers.cuh"
 
 #define GLM_FORCE_RADIANS
 
@@ -11,7 +13,6 @@
 #include "../glm/gtx/normal.hpp"
 
 //#include "VoxelGrid.h"
-#include "QuadratureRule.cuh"
 
 namespace PhysicsEngine
 {
@@ -20,14 +21,20 @@ namespace PhysicsEngine
 		int nx, ny;
 
 		float dt;
-		float kappa;            //spring stiffness coefficient
-		float c;                //spring dampening coefficient
-		float mass;             //mass
+		float kappa;            // spring stiffness coefficient
+		float c;                // spring dampening coefficient
+		float mass;             // mass
 
 		std::vector<float> particles;
 		std::vector<int> particleTypes;
 
-		// host variables
+		// used for timing
+		float elapsedTime;
+		cudaEvent_t start, stop;
+
+		bool initCalled;
+
+		// pointers to host memory
 		float4 *h_pos;
 		float4 *h_oldPos;
 		float4 *h_acc;
@@ -35,19 +42,13 @@ namespace PhysicsEngine
 		float *h_triangleVertices;
 		float *h_triangleNormals;
 
-		// device variables
+		// pointers to device memory
 		float4 *d_pos;
 		float4 *d_oldPos;
 		float4 *d_acc;
 		int *d_triangleIndices;
 		float *d_triangleVertices;
 		float *d_triangleNormals;
-
-		// used for timing
-		float elapsedTime;
-		cudaEvent_t start, stop;
-
-		bool initCalled;
 
 		struct cudaGraphicsResource* cudaVertexVBO;
 		struct cudaGraphicsResource* cudaNormalVBO;
@@ -56,28 +57,36 @@ namespace PhysicsEngine
 // have CudaCloth and CudaFEM take a Cloth or Solid as a member?
 	struct CudaSolid
 	{
-		float c;                //specific heat coefficient                         
-	    float rho;              //density                            
-	    float Q;                //internal heat generation   
-	    float k;                //thermal conductivity coefficient
+		float c;                // specific heat coefficient                         
+	    float rho;              // density                            
+	    float Q;                // internal heat generation   
+	    float k;                // thermal conductivity coefficient
 
-		int dim;                //dimension of mesh (1, 2, or 3) 
-	    int ng;                 //number of element groups
-	    int n;                  //total number of nodes                      
-	    int nte;                //total number of elements (Nte=Ne+Ne_b)       
-	    int ne;                 //number of interior elements                
-	    int ne_b;               //number of boundary elements                                 
-	    int npe;                //number of points per interior element      
-	    int npe_b;              //number of points per boundary element      
-	    int type;               //interior element type                      
-	    int type_b;             //boundary element type    
+		int dim;                // dimension of mesh (1, 2, or 3) 
+	    int ng;                 // number of element groups
+	    int n;                  // total number of nodes                      
+	    int nte;                // total number of elements (Nte=Ne+Ne_b)       
+	    int ne;                 // number of interior elements                
+	    int ne_b;               // number of boundary elements                                 
+	    int npe;                // number of points per interior element      
+	    int npe_b;              // number of points per boundary element      
+	    int type;               // interior element type                      
+	    int type_b;             // boundary element type    
+
+	    // used for timing
+		float elapsedTime;
+		cudaEvent_t start, stop;
+
+		bool initCalled;
 
 	    std::vector<float> vertices;
 	    std::vector<int> connect;
 	    std::vector<int> bconnect;
 	    std::vector<int> groups;
 
-		// host variables
+	    CudaJacobi jacobi;
+
+		// pointers to host memory
 		float4 *h_pos;
 		float4 *h_oldPos;
 		float4 *h_acc;
@@ -93,7 +102,7 @@ namespace PhysicsEngine
 		int *h_colA;
 		float *h_valA;
 
-		// device variables
+		// pointers to device memory
 		float4 *d_pos;
 		float4 *d_oldPos;
 		float4 *d_acc;
@@ -109,28 +118,34 @@ namespace PhysicsEngine
 		int *d_colA;
 		float *d_valA;
 
-		bool initCalled;
-
 		struct cudaGraphicsResource* cudaVertexVBO;
 		struct cudaGraphicsResource* cudaNormalVBO;
 	};
 
 	struct CudaFluid
 	{
-		// grid parameters
-		float h, h2, h6, h9;
-
-		// particle grid 
-		int numParticles;
-		int numCells;
-		int3 particleGridDim;
-		float3 particleGridSize;
+		float h, h2, h6, h9;      // grid parameters
+		float dt;                 // TODO: remove. use Physics.time instead
+		float kappa;              // kappa
+		float rho0;               // particle rest density
+		float mass;	              // particle mass
+ 
+		int numParticles;         // number of particles
+		int numCells;             // number of cells
+		int3 particleGridDim;     // number of voxels in grid for x, y, and z directions 
+		float3 particleGridSize;  // size of grid for x, y, and z directions
 		//VoxelGrid *grid;
 
 		std::vector<float> particles;
 		std::vector<int> particleTypes;
 
-		// host variables
+		// used for timing
+		float elapsedTime;
+		cudaEvent_t start, stop;
+
+		bool initCalled;
+
+		// pointers to host memory
 		float4 *h_pos;
 		float4 *h_vel;
 		float4 *h_acc;
@@ -144,7 +159,7 @@ namespace PhysicsEngine
 		int *h_particleType;
 		int *h_sparticleType;
 
-		// device variables
+		// pointers to device memory
 		float4 *d_pos;
 		float4 *d_vel;
 		float4 *d_acc;
@@ -158,16 +173,6 @@ namespace PhysicsEngine
 		int *d_particleIndex;
 		int *d_particleType;
 		int *d_sparticleType;
-
-		// used for timing
-		float elapsedTime;
-		cudaEvent_t start, stop;
-
-		bool initCalled;
-		float dt;
-		float kappa;
-		float rho0;
-		float mass;	
 	};
 
 	class CudaPhysics
@@ -189,7 +194,7 @@ namespace PhysicsEngine
 			static void update(CudaFluid* fluid);
 
 		private:
-			static void assembleCSR(float* values, int* rowPtrs, int* columns, int* conenct, float* localMatrices, int n, int ne, int npe);
+			static void assembleCSR(float* values, int* rowPtrs, int* columns, int* connect, float* localMatrices, int n, int ne, int npe);
 	};
 }
 

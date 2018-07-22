@@ -1,0 +1,36 @@
+{
+  "render settings" : {
+    "ambient" : [0.1, 0.2, 0.1],
+    "diffuse" : [0.5, 0.5, 0.4],
+    "specular" : [1.0, 1.0, 1.0]
+  },
+  "23424355" : {
+    "type" : "Entity",
+    "name" : "cube",
+    "components" : ["34356423", "56875838"]
+  },
+  "34356423" : {
+    "type" : "Transform",
+    "entity" : "23424355",
+    "position" : [0.0, 0.0, 0.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  },
+  "56875838" : {
+    "type" : "MeshRenderer",
+    "entity" : "23424355",
+    "mesh" : "cube"
+  },
+  "58692047" : {
+    "type" : "Entity",
+    "name" : "sphere",
+    "components" : ["10592743"]
+  },
+  "10592743" : {
+    "type" : "Transform",
+    "entity" : "58692047",
+    "position" : [0.0, 0.0, 0.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  }
+}
