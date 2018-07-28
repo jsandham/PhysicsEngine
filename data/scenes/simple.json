@@ -1,8 +1,12 @@
 {
-  "render settings" : {
-    "ambient" : [0.1, 0.2, 0.1],
-    "diffuse" : [0.5, 0.5, 0.4],
-    "specular" : [1.0, 1.0, 1.0]
+  "Settings" : {
+    "maxAllowedEntities" : 100,
+    "maxAllowedTransforms" : 100,
+    "maxAllowedRigidbodies" : 100,
+    "maxAllowedMeshRenderers" : 100,
+    "maxDirectionalLights" : 20,
+    "maxSpotLights" : 20,
+    "maxPointLights" : 20
   },
   "23424355" : {
     "type" : "Entity",
@@ -12,7 +16,7 @@
   "34356423" : {
     "type" : "Transform",
     "entity" : "23424355",
-    "position" : [0.0, 0.0, 0.0],
+    "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
@@ -29,7 +33,7 @@
   "10592743" : {
     "type" : "Transform",
     "entity" : "58692047",
-    "position" : [0.0, 0.0, 0.0],
+    "position" : [0.2, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   }

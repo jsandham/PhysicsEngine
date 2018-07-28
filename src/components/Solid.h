@@ -40,7 +40,6 @@ namespace PhysicsEngine
 
 		public:
 			Solid();
-			Solid(Entity *entity);
 			~Solid();
 	};
 }

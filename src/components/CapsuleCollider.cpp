@@ -9,11 +9,6 @@ CapsuleCollider::CapsuleCollider()
 
 }
 
-CapsuleCollider::CapsuleCollider(Entity *entity)
-{
-	this->entity = entity;
-}
-
 CapsuleCollider::~CapsuleCollider()
 {
 

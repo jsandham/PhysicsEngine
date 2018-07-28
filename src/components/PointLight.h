@@ -24,7 +24,6 @@ namespace PhysicsEngine
 
 		public:
 			PointLight();
-			PointLight(Entity *entity);
 			~PointLight();
 	};
 }

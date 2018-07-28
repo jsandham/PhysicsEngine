@@ -10,11 +10,6 @@ Cloth::Cloth()
 	mass = 64.0f / (256 * 256);
 }
 
-Cloth::Cloth(Entity *entity)
-{
-	this->entity = entity;
-}
-
 Cloth::~Cloth()
 {
 	

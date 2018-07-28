@@ -27,7 +27,6 @@ namespace PhysicsEngine
 
 		public:
 			SpotLight();
-			SpotLight(Entity *entity);
 			~SpotLight();
 	};
 }

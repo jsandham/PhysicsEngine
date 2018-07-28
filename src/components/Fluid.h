@@ -22,7 +22,6 @@ namespace PhysicsEngine
 
 		public:
 			Fluid();
-			Fluid(Entity *entity);
 			~Fluid();
 
 			// void init();

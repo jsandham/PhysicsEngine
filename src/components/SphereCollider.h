@@ -18,7 +18,6 @@ namespace PhysicsEngine
 
 		public:
 			SphereCollider();
-			SphereCollider(Entity *entity);
 			~SphereCollider();
 
 			bool intersect(Bounds bounds);

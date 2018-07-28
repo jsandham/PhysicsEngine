@@ -17,7 +17,6 @@ namespace PhysicsEngine
 
 		public:
 			HingeJoint();
-			HingeJoint(Entity* entity);
 			~HingeJoint();
 	};
 }

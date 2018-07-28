@@ -78,7 +78,7 @@ void DebugSystem::update()
 	//std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 
 	//Mesh *mesh = manager->getMesh(meshRenderers[1]->getMeshFilter());
-	//Transform* transform = meshRenderers[1]->entity->getComponent<Transform>();
+	//Transform* transform = meshRenderers[1]->entity->getComponent<Transform>(manager);
 
 	Gizmos::projection = camera->getProjMatrix();
 	Gizmos::view = camera->getViewMatrix();

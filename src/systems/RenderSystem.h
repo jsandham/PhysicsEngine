@@ -10,11 +10,9 @@
 
 #include "../components/Transform.h"
 #include "../components/MeshRenderer.h"
-#include "../components/ParticleMesh.h"
 #include "../components/DirectionalLight.h"
 #include "../components/SpotLight.h"
 #include "../components/PointLight.h"
-#include "../components/Skybox.h"
 #include "../components/Camera.h"
 
 #include "../graphics/Framebuffer.h"

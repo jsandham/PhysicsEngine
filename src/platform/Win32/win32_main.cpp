@@ -243,8 +243,11 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	MessageBox(0, "This is my physics engine", "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+	MessageBox(0, GetCommandLine(), "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+	MessageBox(0, lpCmdLine, "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
 	
+	// std::cout << "commanad line: " << lpCmdLine << std::endl;
+
 	LARGE_INTEGER perfCounterFrequencyResult;
 	QueryPerformanceFrequency(&perfCounterFrequencyResult);
 	long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
@@ -281,7 +284,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			// init game?
 			Scene scene;
 
-			scene.init();
+			scene.init(lpCmdLine);
 
 			Log::Info("call scene init");
 

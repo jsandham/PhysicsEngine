@@ -28,7 +28,6 @@ namespace PhysicsEngine
 
 		public:
 			LineRenderer();
-			LineRenderer(Entity* entity);
 			~LineRenderer();
 
 			void initLineData();

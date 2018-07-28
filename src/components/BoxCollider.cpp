@@ -9,11 +9,6 @@ BoxCollider::BoxCollider()
 
 }
 
-BoxCollider::BoxCollider(Entity *entity)
-{
-	this->entity = entity;
-}
-
 BoxCollider::~BoxCollider()
 {
 

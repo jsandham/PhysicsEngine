@@ -27,7 +27,6 @@ namespace PhysicsEngine
 
 		public:
 			Rigidbody();
-			Rigidbody(Entity *entity);
 			~Rigidbody();
 	};
 }

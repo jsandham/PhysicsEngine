@@ -20,7 +20,6 @@ namespace PhysicsEngine
 
 		public:
 			Transform();
-			Transform(Entity *entity);
 			~Transform();
 
 			glm::vec3 getEulerAngles();

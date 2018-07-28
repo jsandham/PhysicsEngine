@@ -13,7 +13,6 @@ namespace PhysicsEngine
 
 		public:
 			MeshRenderer();
-			MeshRenderer(Entity* entity);
 			~MeshRenderer();
 	};
 }

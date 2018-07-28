@@ -10,14 +10,6 @@ Fluid::Fluid()
 	//physics = new CudaFluidPhysics();
 }
 
-Fluid::Fluid(Entity *entity)
-{
-	this->entity = entity;
-
-	//std::cout << "fluid particles constructor called" << std::endl;
-	//physics = new CudaFluidPhysics();
-}
-
 Fluid::~Fluid()
 {
 	//std::cout << "FluidParticles destructor called" << std::endl;

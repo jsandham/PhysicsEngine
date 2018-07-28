@@ -9,11 +9,6 @@ SphereCollider::SphereCollider()
 
 }
 
-SphereCollider::SphereCollider(Entity *entity)
-{
-	this->entity = entity;
-}
-
 SphereCollider::~SphereCollider()
 {
 

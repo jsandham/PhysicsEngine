@@ -16,7 +16,6 @@ namespace PhysicsEngine
 
 		public:
 			BoxCollider();
-			BoxCollider(Entity *entity);
 			~BoxCollider();
 
 			bool intersect(Bounds bounds);

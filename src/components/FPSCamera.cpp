@@ -20,20 +20,6 @@ FPSCamera::FPSCamera() : Camera()
 	mouseDelta = glm::vec2(0.0f);
 }
 
-FPSCamera::FPSCamera(Entity *entity)
-{
-	this->entity = entity;
-
-	firstFrame = true;
-
-	yaw = 0.0;
-	pitch = 0.0;
-
-	jumpInProgress = false;
-
-	mouseDelta = glm::vec2(0.0f);
-}
-
 FPSCamera::~FPSCamera()
 {
 

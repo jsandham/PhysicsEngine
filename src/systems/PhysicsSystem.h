@@ -5,8 +5,6 @@
 
 #include "../memory/Manager.h"
 
-#include "../components/ParticlePhysics.h"
-#include "../components/ParticleMesh.h"
 #include "../components/Collider.h"
 #include "../components/Rigidbody.h"
 

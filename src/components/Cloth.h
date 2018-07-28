@@ -28,7 +28,6 @@ namespace PhysicsEngine
 
 		public:
 			Cloth();
-			Cloth(Entity *entity);
 			~Cloth();
 	};
 }

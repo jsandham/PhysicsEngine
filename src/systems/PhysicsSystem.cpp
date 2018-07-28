@@ -154,11 +154,11 @@ void PhysicsSystem::init()
 	for (it = Entity::entities.begin(); it != Entity::entities.end(); it++){
 		Entity *entity = it->second;
 
-		Collider *collider = entity->GetComponent<Collider>();
-		ParticleMesh *mesh = entity->GetComponent<ParticleMesh>();
-		FluidParticles *fp = entity->GetComponent<FluidParticles>();
-		Particles *p = entity->GetComponent<Particles>();
-		ClothParticles *cp = entity->GetComponent<ClothParticles>();
+		Collider *collider = entity->GetComponent<Collider>(manager);
+		ParticleMesh *mesh = entity->GetComponent<ParticleMesh>(manager);
+		FluidParticles *fp = entity->GetComponent<FluidParticles>(manager);
+		Particles *p = entity->GetComponent<Particles>(manager);
+		ClothParticles *cp = entity->GetComponent<ClothParticles>(manager);
 
 		if (collider != NULL){
 			colliders.push_back(collider);
@@ -192,10 +192,10 @@ void PhysicsSystem::init()
 
 void PhysicsSystem::update()
 {
-	colliders = manager->getColliders();
-	rigidbodies = manager->getRigidbodies();
+	// colliders = manager->getColliders();
+	// rigidbodies = manager->getRigidbodies();
 
-	Physics::update(colliders);
+	// Physics::update(colliders);
 
 
 	if(Input::getKeyDown(KeyCode::Tab)){
@@ -209,7 +209,7 @@ void PhysicsSystem::update()
 	// gravity
 	// for(unsigned int i = 0; i < rigidbodies.size(); i++){
 	// 	if(rigidbodies[i]->useGravity){
-	// 		Transform* transform = rigidbodies[i]->entity->getComponent<Transform>();
+	// 		Transform* transform = rigidbodies[i]->entity->getComponent<Transform>(manager);
 
 	// 		rigidbodies[i]->halfVelocity = rigidbodies[i]->velocity + 0.5f * timestep * glm::vec3(0.0f, -gravity, 0.0f);
 	// 		transform->position += timestep * rigidbodies[i]->halfVelocity;
@@ -218,36 +218,36 @@ void PhysicsSystem::update()
 	// }
 
 	// spring joints
-	for(int t = 0; t < 10; t++){
-		std::vector<SpringJoint*> springJoints = manager->getSpringJoints();
-		for(unsigned int i = 0; i < springJoints.size(); i++){
-			float stiffness = springJoints[i]->stiffness;
-			float damping = springJoints[i]->damping;
-			float fac1 = 1.0f - 0.5f * damping * timestep;
-			float fac2 = 1.0f / (1.0f + 0.5f * damping * timestep);
+	// for(int t = 0; t < 10; t++){
+	// 	std::vector<SpringJoint*> springJoints = manager->getSpringJoints();
+	// 	for(unsigned int i = 0; i < springJoints.size(); i++){
+	// 		float stiffness = springJoints[i]->stiffness;
+	// 		float damping = springJoints[i]->damping;
+	// 		float fac1 = 1.0f - 0.5f * damping * timestep;
+	// 		float fac2 = 1.0f / (1.0f + 0.5f * damping * timestep);
 
-			Transform* transform = springJoints[i]->entity->getComponent<Transform>();
-			Rigidbody* rigidbody = springJoints[i]->entity->getComponent<Rigidbody>();
+	// 		Transform* transform = springJoints[i]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
+	// 		Rigidbody* rigidbody = springJoints[i]->getEntity(manager->getEntities())->getComponent<Rigidbody>(manager->getRigidbodies());
 
-			glm::vec3 targetPosition = springJoints[i]->getTargetPosition();
+	// 		glm::vec3 targetPosition = springJoints[i]->getTargetPosition();
 
-			glm::vec3 position = transform->position;
-			glm::vec3 halfVelocity = rigidbody->halfVelocity;
-			glm::vec3 velocity = rigidbody->velocity;
+	// 		glm::vec3 position = transform->position;
+	// 		glm::vec3 halfVelocity = rigidbody->halfVelocity;
+	// 		glm::vec3 velocity = rigidbody->velocity;
 
-			halfVelocity = fac1 * fac2 * halfVelocity - stiffness * timestep * fac2 * (position - targetPosition) + timestep * fac2 * (glm::vec3(0.0f, -gravity, 0.0f));
-			position += timestep * halfVelocity;
+	// 		halfVelocity = fac1 * fac2 * halfVelocity - stiffness * timestep * fac2 * (position - targetPosition) + timestep * fac2 * (glm::vec3(0.0f, -gravity, 0.0f));
+	// 		position += timestep * halfVelocity;
 
-			transform->position = position;
-			rigidbody->halfVelocity = halfVelocity;
+	// 		transform->position = position;
+	// 		rigidbody->halfVelocity = halfVelocity;
 
-			// rigidbody->halfVelocity = rigidbody->velocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
-			// transform->position += timestep * rigidbody->halfVelocity;
-			// rigidbody->velocity = rigidbody->halfVelocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
+	// 		// rigidbody->halfVelocity = rigidbody->velocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
+	// 		// transform->position += timestep * rigidbody->halfVelocity;
+	// 		// rigidbody->velocity = rigidbody->halfVelocity + 0.5f * timestep * 100 * (glm::vec3(4.0f, 4.0f, 4.0f) - transform->position + glm::vec3(0.0f, -gravity, 0.0f));
 		
-			//Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
-		}
-	}
+	// 		//Log::Info("iteration: %d velocity %f %f %f", i, rigidbody->velocity.x, rigidbody->velocity.y, rigidbody->velocity.z);
+	// 	}
+	// }
 
 	// hinge joints
 

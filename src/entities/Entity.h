@@ -1,63 +1,50 @@
 #ifndef __ENTITY_H__
 #define __ENTITY_H__
 
-#include <iostream>
-#include <typeindex>
-#include <map>
 #include <vector>
-#include <string>
 
 namespace PhysicsEngine
 {
-	class Component;
-
 	class Entity
 	{
 		private:
-			//int entityId;
-			std::string name;
-			std::vector<std::type_index> componentTypes;
-			std::vector<Component*> components;
+			int ind;
+
+		public:
+			int globalEntityIndex;
+			int globalComponentIndices[8];
+			int componentTypes[8];
+
+			int entityId;
+			int componentIds[8];
 
 		public:
 			Entity();
-			Entity(unsigned int id);
 			~Entity();
 
 			template<typename T>
 			void addComponent(T* component)
 			{
-				//printf("this: 0x%p\n", this);
-				component->entity = this;
+				component->globalEntityIndex = globalEntityIndex;
 
-				componentTypes.push_back(typeid(T));
-				components.push_back(component);
+				componentTypes[ind] = Manager::getType<T>();
+				globalComponentIndices[ind] = component->globalComponentIndex;
 
+				ind++;
 			}
 
 			template<typename T>
-			T* getComponent()
+			T* getComponent(std::vector<T*> components)
 			{
-				for (unsigned int i = 0; i < componentTypes.size(); i++){
-					if (componentTypes[i] == typeid(T)){
-						return static_cast<T*>(components[i]);
+				for (int i = 0; i < 8; i++){
+					if (componentTypes[i] == Manager::getType<T>()){
+						int globalComponentIndex = globalComponentIndices[i];
+
+						return components[globalComponentIndex];
 					}
 				}
 
 				return NULL;
-			}
-
-			template<typename T>
-			std::vector<T*> getComponents()
-			{
-				std::vector<T*> transforms;
-				for (unsigned int i = 0; i < componentTypes.size(); i++){
-					if (componentTypes[i] == typeid(T)){
-						transforms.push_back(static_cast<T*>(components[i]));
-					}
-				}
-
-				return transforms;
 			}
 	};
 }

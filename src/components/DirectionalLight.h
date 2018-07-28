@@ -19,7 +19,6 @@ namespace PhysicsEngine
 
 		public:
 			DirectionalLight();
-			DirectionalLight(Entity *entity);
 			~DirectionalLight();
 	};
 }

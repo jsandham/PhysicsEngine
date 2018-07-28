@@ -18,7 +18,6 @@ namespace PhysicsEngine
 
 		public:
 			CapsuleCollider();
-			CapsuleCollider(Entity *entity);
 			~CapsuleCollider();
 
 			bool intersect(Bounds bounds);

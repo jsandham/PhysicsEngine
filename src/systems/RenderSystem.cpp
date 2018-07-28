@@ -271,7 +271,7 @@ void RenderSystem::renderScene()
 
 	std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 	for (unsigned int j = 0; j < meshRenderers.size(); j++){
-		Transform *transform = meshRenderers[j]->entity->getComponent<Transform>();
+		Transform *transform = meshRenderers[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 		Material *material = manager->getMaterial(meshRenderers[j]->materialFilter);
 
 		material->setMat4("model", transform->getModelMatrix());
@@ -298,7 +298,7 @@ void RenderSystem::renderScene()
 
 	std::vector<Cloth*> cloths = manager->getCloths();
 	for(unsigned int j = 0; j < cloths.size(); j++){
-		Transform *transform = cloths[j]->entity->getComponent<Transform>();
+		Transform *transform = cloths[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 		Material *material = manager->getMaterial(2);  // just geeting first material for right now, change later
 
 		material->setMat4("model", transform->getModelMatrix());
@@ -314,7 +314,7 @@ void RenderSystem::renderScene()
 
 	std::vector<Solid*> solids = manager->getSolids();
 	for(unsigned int j = 0; j < solids.size(); j++){
-		Transform *transform = solids[j]->entity->getComponent<Transform>();
+		Transform *transform = solids[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 		Material *material = manager->getMaterial(3);  // just geeting first material for right now, change later
 
 		material->setMat4("model", transform->getModelMatrix());
@@ -335,7 +335,7 @@ void RenderSystem::renderScene()
 
 	// std::vector<Cloth*> cloths = manager->getCloths();
 	// for(unsigned int i = 0; i < cloths.size(); i++){
-	// 	Transform *transform = cloths[i]->entity->getComponent<Transform>();
+	// 	Transform *transform = cloths[i]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 	// 	particleShader.setMat4("model", transform->getModelMatrix());
 
 	// 	std::vector<float> particles = cloths[i]->particles;
@@ -486,7 +486,7 @@ void RenderSystem::renderShadowMap(Texture2D* texture, glm::mat4 lightView, glm:
 
 	std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 	for (unsigned int i = 0; i < meshRenderers.size(); i++){
-		Transform* transform = meshRenderers[i]->entity->getComponent<Transform>();
+		Transform* transform = meshRenderers[i]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 		depthShader.setMat4("model", transform->getModelMatrix());
 
 		Mesh* mesh = manager->getMesh(meshRenderers[i]->meshFilter);
@@ -515,7 +515,7 @@ void RenderSystem::renderDepthCubemap(Cubemap* cubemap, glm::mat4 lightProjectio
 
 		std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 		for (unsigned int j = 0; j < meshRenderers.size(); j++){
-			Transform* transform = meshRenderers[j]->entity->getComponent<Transform>();
+			Transform* transform = meshRenderers[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
 			depthShader.setMat4("model", transform->getModelMatrix());
 
 			Mesh* mesh = manager->getMesh(meshRenderers[j]->meshFilter);

@@ -18,7 +18,6 @@ namespace PhysicsEngine
 
 		public:
 			SpringJoint();
-			SpringJoint(Entity* entity);
 			~SpringJoint();
 
 			glm::vec3 getTargetPosition();

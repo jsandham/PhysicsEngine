@@ -1,23 +1,35 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
-#include <map>
-
-#include "../entities/Entity.h"
-#include "../core/Log.h"
+#include <vector>
 
 namespace PhysicsEngine
 {
 	class Entity;
 
+	typedef enum ComponentType
+	{
+		TransformType,
+		RigidbodyType,
+		MeshRendererType,
+		DirectionalLightType,
+		SpotLightType,
+		PointLightType	
+	};
+
 	class Component
 	{
 		public:
-			Entity *entity;
+			int globalEntityIndex;
+			int globalComponentIndex;
+			int componentId;
+			int entityId;
 
 		public:
 			Component();
 			virtual ~Component() = 0;
+
+			Entity* Component::getEntity(std::vector<Entity*> entities);
 	};
 }
 

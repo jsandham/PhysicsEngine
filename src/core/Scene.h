@@ -2,14 +2,16 @@
 #define __SCENE_H__
 
 #include <vector>
+#include <string>
+#include <map>
 
-#include "memory/Manager.h"
+#include "Manager.h"
 
-#include "systems/PlayerSystem.h"
-#include "systems/PhysicsSystem.h"
-#include "systems/RenderSystem.h"
-#include "systems/DebugSystem.h"
-#include "systems/CleanUpSystem.h"
+// #include "systems/PlayerSystem.h"
+// #include "systems/PhysicsSystem.h"
+// #include "systems/RenderSystem.h"
+// #include "systems/DebugSystem.h"
+// #include "systems/CleanUpSystem.h"
 
 
 
@@ -19,17 +21,17 @@ namespace PhysicsEngine
 	{
 		private:
 			Manager manager;
-			PlayerSystem *playerSystem;
-			PhysicsSystem *physicsSystem;
-			RenderSystem *renderSystem;
-			DebugSystem *debugSystem;
-			CleanUpSystem *cleanUpSystem;
+			// PlayerSystem *playerSystem;
+			// PhysicsSystem *physicsSystem;
+			// RenderSystem *renderSystem;
+			// DebugSystem *debugSystem;
+			// CleanUpSystem *cleanUpSystem;
 
 		public:
 			Scene();
 			~Scene();
 
-			void init();
+			void init(std::string scene);
 			void update();
 	};
 }

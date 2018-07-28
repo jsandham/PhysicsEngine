@@ -7,11 +7,6 @@ HingeJoint::HingeJoint()
 	
 }
 
-HingeJoint::HingeJoint(Entity* entity)
-{
-	this->entity = entity;
-}
-
 HingeJoint::~HingeJoint()
 {
 	

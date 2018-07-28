@@ -26,7 +26,6 @@ namespace PhysicsEngine
 
 		public:
 			FPSCamera();
-			FPSCamera(Entity *entity);
 			~FPSCamera();
 
 			bool getFirstFrame();

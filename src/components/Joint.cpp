@@ -35,7 +35,8 @@ glm::vec3 Joint::getConnectedAnchor()
 
 glm::vec3 Joint::getAnchor()
 {
-	glm::vec3 position = entity->getComponent<Transform>()->position;
+	// glm::vec3 position = entity->getComponent<Transform>()->position;
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	return position + anchor;
 }

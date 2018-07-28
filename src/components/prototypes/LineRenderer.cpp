@@ -7,11 +7,6 @@ LineRenderer::LineRenderer()
 	
 }
 
-LineRenderer::LineRenderer(Entity* entity)
-{
-	this->entity = entity;
-}
-
 LineRenderer::~LineRenderer()
 {
 
