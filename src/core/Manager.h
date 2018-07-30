@@ -20,6 +20,8 @@
 #include "../components/SpringJoint.h"
 #include "../components/Camera.h"
 
+#include "../core/Material.h"
+
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
@@ -49,21 +51,43 @@ namespace PhysicsEngine
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
-		unsigned int sizeOfVertexShader;
-		unsigned int sizeOfFragmentShader;
-		unsigned int sizeOfMainTexture;
+		unsigned int materialId;
+		unsigned int shaderId;
+		unsigned int textureId;
+		
 	};
 #pragma pack(pop)
+
+// #pragma pack(push, 1)
+// 	struct ShaderHeader
+// 	{
+// 		unsigned short fileType;
+// 		unsigned int fileSize;
+		
+// 	};
+// #pragma pack(pop)	
+
+// #pragma pack(push, 1)
+// 	struct Texture2DHeader
+// 	{
+// 		unsigned short fileType;
+// 		unsigned int fileSize;
+// 		unsigned int width;
+// 		unsigned int height;
+// 		unsigned int numChannels;
+// 		unsigned int sizeOfData;
+// 	};
+// #pragma pack(pop)	
 
 #pragma pack(push, 1)
 	struct MeshHeader
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
+		unsigned int meshId;
 		unsigned int verticesSize;
 		unsigned int normalsSize;
 		unsigned int texCoordsSize;
-		unsigned int coloursSize;
 	};
 #pragma pack(pop)
 
@@ -72,6 +96,7 @@ namespace PhysicsEngine
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
+		unsigned int gmeshId;
 		int dim;
 		int ng;
 	    int n;
@@ -110,8 +135,12 @@ namespace PhysicsEngine
 			int totalNumberOfSpotLightsAlloc;
 			int totalNumberOfPointLightsAlloc;
 
+			std::map<int, int> idToIndexMap;
+			std::map<int, int> componentIdToTypeMap;
+
 			SceneSettings settings;
 
+			// entities and components
 			Entity* entities;
 			Transform* transforms;
 			Rigidbody* rigidbodies;
@@ -120,8 +149,20 @@ namespace PhysicsEngine
 			SpotLight* spotLights;
 			PointLight* pointLights;
 
-			std::map<int, int> idToIndexMap;
-			std::map<int, int> componentIdToTypeMap;
+			// materials
+			Material* materials;
+
+			// shaders
+
+			// textures
+
+			// meshes
+			float* vertices;
+			float* normals;
+			float* texCoords;
+
+			// gmeshes
+
 
 		public:
 			Manager();
@@ -135,6 +176,11 @@ namespace PhysicsEngine
 
 #endif
 
+
+// TODO: So I could find all the asset files in win32_main and pass them through to scene which does not 
+// store them at all and just immediately passes them through to manager? I.e. in win32_main just call 
+// something like scene.loadMeshes(meshFilePaths) and then inside scene immediately call manager.loadMeshes(meshFilePaths)????
+// In fact now that I think about it, is there any point to having the scene class at all??
 
 
 

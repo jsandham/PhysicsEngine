@@ -91,7 +91,7 @@ int Manager::loadScene(const std::string &filepath)
 	error &= numberOfPointLights > totalNumberOfPointLightsAlloc;
 
 	if(error){
-		std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings."
+		std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
 		return 0;
 	}
 

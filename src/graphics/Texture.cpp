@@ -1,10 +1,6 @@
 #include <iostream>
 #include "Texture.h"
 
-#include "../core/Log.h"
-
-#include "../stb_image/stb_image.h"
-
 using namespace PhysicsEngine;
 
 
@@ -66,7 +62,7 @@ int Texture::calcNumChannels(TextureFormat format)
 		nChannels = 4;
 		break;
 	default:
-		Log::Error("Texture: Invalid texture format");
+		//Log::Error("Texture: Invalid texture format");
 	}
 
 	return nChannels;

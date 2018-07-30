@@ -11,7 +11,6 @@ namespace PhysicsEngine
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;
-			std::vector<float> colours;
 
 		public:
 			Mesh();
