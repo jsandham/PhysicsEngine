@@ -1,7 +1,13 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
 
 #include "Manager.h"
 
+#include "../json/json.hpp" 
+
+using namespace json;
 using namespace PhysicsEngine;
 
 Manager::Manager()
@@ -26,22 +32,48 @@ Manager::~Manager()
 	delete [] pointLights;
 }
 
-int Manager::loadAssets( )
+int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
 {
-	return 0;
-}
+	// open scene json file 
+	std::ifstream in(sceneFilePath, std::ios::in | std::ios::binary);
+	std::ostringstream contents;
+	contents << in.rdbuf();
+	in.close();
+	json::JSON jsonScene = json::JSON::Load(contents.str());
 
-int Manager::loadScene(const std::string &filepath)
-{
+	// parse scene json file and load any assets found inside mesh renderers
+	json::JSON jsonMeshRenderers;
+	json::JSON::JSONWrapper<std::map<std::string, JSON>> objects = jsonScene.ObjectRange();
+	std::map<std::string, JSON>::iterator it;
+
+	for(it = objects.begin(); it != objects.end(); it++){
+		if(it->first == "id" || it->first == "Settings"){
+			continue;
+		}
+
+		std::string type = it->second["type"].ToString();
+
+		if(type == "MeshRenderer"){
+			jsonMeshRenderers[it->first] = it->second;
+		}
+	}
+
+
+
+
+	std::string binarySceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".scene";
+
+	std::cout << "binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
+
 	SceneHeader sceneHeader = {};
-	FILE* file = fopen(filepath.c_str(), "rb");
+	FILE* file = fopen(binarySceneFilePath.c_str(), "rb");
 	size_t bytesRead;
 	if (file){
 		bytesRead = fread(&sceneHeader, sizeof(SceneHeader), 1, file);
 		std::cout << "number of bytes read from file: " << bytesRead << std::endl;
 	}
 	else{
-		std::cout << "Error: Failed to open file " << filepath << " for reading" << std::endl;
+		std::cout << "Error: Failed to open scene binary file " << binarySceneFilePath << " for reading" << std::endl;
 		return 0;
 	}
 
@@ -82,16 +114,36 @@ int Manager::loadScene(const std::string &filepath)
 	totalNumberOfSpotLightsAlloc = settings.maxAllowedSpotLights;
 	totalNumberOfPointLightsAlloc = settings.maxAllowedPointLights;
 
+	std::cout << "Total number of entities alloc: " << totalNumberOfEntitiesAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfTransformsAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfRigidbodiesAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfMeshRenderersAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfDirectionalLightsAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfSpotLightsAlloc << std::endl;
+	std::cout << "Total number of entities alloc: " << totalNumberOfPointLightsAlloc << std::endl;
+
 	bool error = numberOfEntities > totalNumberOfEntitiesAlloc;
-	error &= numberOfTransforms > totalNumberOfTransformsAlloc;
-	error &= numberOfRigidbodies > totalNumberOfRigidbodiesAlloc;
-	error &= numberOfMeshRenderers > totalNumberOfMeshRenderersAlloc;
-	error &= numberOfDirectionalLights > totalNumberOfDirectionalLightsAlloc;
-	error &= numberOfSpotLights > totalNumberOfSpotLightsAlloc;
-	error &= numberOfPointLights > totalNumberOfPointLightsAlloc;
+	error |= numberOfTransforms > totalNumberOfTransformsAlloc;
+	error |= numberOfRigidbodies > totalNumberOfRigidbodiesAlloc;
+	error |= numberOfMeshRenderers > totalNumberOfMeshRenderersAlloc;
+	error |= numberOfDirectionalLights > totalNumberOfDirectionalLightsAlloc;
+	error |= numberOfSpotLights > totalNumberOfSpotLightsAlloc;
+	error |= numberOfPointLights > totalNumberOfPointLightsAlloc;
 
 	if(error){
 		std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
+		return 0;
+	}
+
+	error = totalNumberOfEntitiesAlloc <= 0;
+	error |= totalNumberOfTransformsAlloc <= 0;
+	error |= totalNumberOfRigidbodiesAlloc <= 0;
+	error |= totalNumberOfMeshRenderersAlloc <= 0;
+	error |= totalNumberOfDirectionalLightsAlloc <= 0;
+	error |= totalNumberOfPointLightsAlloc <= 0;
+
+	if(error){
+		std::cout << "Error: Total number of entities and components must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
 		return 0;
 	}
 
@@ -105,22 +157,22 @@ int Manager::loadScene(const std::string &filepath)
 	pointLights = new PointLight[totalNumberOfPointLightsAlloc];
 
 	// de-serialize entities and components
-	bytesRead = fread(entities, sizeof(Entity), 1, file);
-	bytesRead = fread(transforms, sizeof(Transform), 1, file);
-	bytesRead = fread(rigidbodies, sizeof(Rigidbody), 1, file);
-	bytesRead = fread(meshRenderers, sizeof(MeshRenderer), 1, file);
-	bytesRead = fread(directionalLights, sizeof(DirectionalLight), 1, file);
-	bytesRead = fread(spotLights, sizeof(SpotLight), 1, file);
-	bytesRead = fread(pointLights, sizeof(PointLight), 1, file);
+	bytesRead = fread(&entities[0], numberOfEntities*sizeof(Entity), 1, file);
+	bytesRead = fread(&transforms[0], numberOfTransforms*sizeof(Transform), 1, file);
+	bytesRead = fread(&rigidbodies[0], numberOfRigidbodies*sizeof(Rigidbody), 1, file);
+	bytesRead = fread(&meshRenderers[0], numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
+	bytesRead = fread(&directionalLights[0], numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
+	bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
+	bytesRead = fread(&pointLights[0], numberOfPointLights*sizeof(PointLight), 1, file);
 
 	// map entity/component id to its global array index
-	for(int i = 0; i < numberOfEntities; i++){ idToIndexMap[entities[i].entityId] = i; }
-	for(int i = 0; i < numberOfTransforms; i++){ idToIndexMap[transforms[i].componentId] = i; }
-	for(int i = 0; i < numberOfRigidbodies; i++){ idToIndexMap[rigidbodies[i].componentId] = i; }
-	for(int i = 0; i < numberOfMeshRenderers; i++){ idToIndexMap[meshRenderers[i].componentId] = i; }
-	for(int i = 0; i < numberOfDirectionalLights; i++){ idToIndexMap[directionalLights[i].componentId] = i; }
-	for(int i = 0; i < numberOfSpotLights; i++){ idToIndexMap[spotLights[i].componentId] = i; }
-	for(int i = 0; i < numberOfPointLights; i++){ idToIndexMap[pointLights[i].componentId] = i; }
+	for(int i = 0; i < numberOfEntities; i++){ idToGlobalIndexMap[entities[i].entityId] = i; }
+	for(int i = 0; i < numberOfTransforms; i++){ idToGlobalIndexMap[transforms[i].componentId] = i; }
+	for(int i = 0; i < numberOfRigidbodies; i++){ idToGlobalIndexMap[rigidbodies[i].componentId] = i; }
+	for(int i = 0; i < numberOfMeshRenderers; i++){ idToGlobalIndexMap[meshRenderers[i].componentId] = i; }
+	for(int i = 0; i < numberOfDirectionalLights; i++){ idToGlobalIndexMap[directionalLights[i].componentId] = i; }
+	for(int i = 0; i < numberOfSpotLights; i++){ idToGlobalIndexMap[spotLights[i].componentId] = i; }
+	for(int i = 0; i < numberOfPointLights; i++){ idToGlobalIndexMap[pointLights[i].componentId] = i; }
 
 	// map component id to its type
 	for(int i = 0; i < numberOfTransforms; i++){ componentIdToTypeMap[transforms[i].componentId] = (int)ComponentType::TransformType; }
@@ -137,7 +189,7 @@ int Manager::loadScene(const std::string &filepath)
 		for(int j = 0; j < 8; j++){
 			int componentId = entities[i].componentIds[j];
 
-			int globalComponentIndex = idToIndexMap.find(componentId)->second;
+			int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
 			int componentType = componentIdToTypeMap.find(componentId)->second;
 
 			entities[i].globalComponentIndices[j] = globalComponentIndex;
@@ -145,13 +197,22 @@ int Manager::loadScene(const std::string &filepath)
 		}
 	}
 
-	for(int i = 0; i < numberOfTransforms; i++){
-		transforms[i].globalComponentIndex = i;
+	// for(int i = 0; i < numberOfTransforms; i++){
+	// 	transforms[i].globalComponentIndex = i;
 
-		int entityId = transforms[i].entityId;
-		int globalEntityIndex = idToIndexMap.find(entityId)->second;
-		transforms[i].globalEntityIndex = globalEntityIndex;
-	}
+	// 	int entityId = transforms[i].entityId;
+	// 	int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
+	// 	transforms[i].globalEntityIndex = globalEntityIndex;
+	// }
+
+	setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
+	setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
+	setGlobalIndexOnComponent<MeshRenderer>(meshRenderers, numberOfMeshRenderers);
+	setGlobalIndexOnComponent<DirectionalLight>(directionalLights, numberOfDirectionalLights);
+	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
+	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
+
+	
 
 	fclose(file);
 

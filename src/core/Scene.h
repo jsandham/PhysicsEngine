@@ -20,6 +20,7 @@ namespace PhysicsEngine
 	class Scene
 	{
 		private:
+			std::string sceneName;
 			Manager manager;
 			// PlayerSystem *playerSystem;
 			// PhysicsSystem *physicsSystem;
@@ -31,10 +32,20 @@ namespace PhysicsEngine
 			Scene();
 			~Scene();
 
-			void init(std::string scene);
+			void load(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
 			void update();
 	};
 }
+
+
+
+
+
+
+
+
+
+
 
 // #include <map>
 // #include <string>

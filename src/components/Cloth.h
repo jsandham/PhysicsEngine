@@ -5,8 +5,8 @@
 
 #include "Component.h"
 
-#include "../graphics/Buffer.h"
-#include "../graphics/VertexArrayObject.h"
+// #include "../graphics/Buffer.h"
+// #include "../graphics/VertexArrayObject.h"
 
 namespace PhysicsEngine
 {
@@ -22,9 +22,9 @@ namespace PhysicsEngine
 			float c;                //spring dampening coefficient
 			float mass;             //mass
 
-			Buffer vertexVBO;
-			Buffer normalVBO;
-			VertexArrayObject clothVAO;
+			// Buffer vertexVBO;
+			// Buffer normalVBO;
+			// VertexArrayObject clothVAO;
 
 		public:
 			Cloth();

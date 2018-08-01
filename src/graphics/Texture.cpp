@@ -62,7 +62,7 @@ int Texture::calcNumChannels(TextureFormat format)
 		nChannels = 4;
 		break;
 	default:
-		//Log::Error("Texture: Invalid texture format");
+		std::cout <<"Texture: Invalid texture format" << std::endl;
 	}
 
 	return nChannels;

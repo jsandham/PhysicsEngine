@@ -20,7 +20,11 @@
 #include "../components/SpringJoint.h"
 #include "../components/Camera.h"
 
+#include "Mesh.h"
+#include "GMesh.h"
 #include "../core/Material.h"
+#include "../graphics/Shader.h"
+#include "../graphics/Texture2D.h"
 
 namespace PhysicsEngine
 {
@@ -135,7 +139,7 @@ namespace PhysicsEngine
 			int totalNumberOfSpotLightsAlloc;
 			int totalNumberOfPointLightsAlloc;
 
-			std::map<int, int> idToIndexMap;
+			std::map<int, int> idToGlobalIndexMap;
 			std::map<int, int> componentIdToTypeMap;
 
 			SceneSettings settings;
@@ -149,28 +153,32 @@ namespace PhysicsEngine
 			SpotLight* spotLights;
 			PointLight* pointLights;
 
-			// materials
+			// assets
 			Material* materials;
-
-			// shaders
-
-			// textures
-
-			// meshes
-			float* vertices;
-			float* normals;
-			float* texCoords;
-
-			// gmeshes
+			Shader* shaders;
+			Texture2D* textures;
+			Mesh* meshes;
+			GMesh* gmeshes;
 
 
 		public:
 			Manager();
 			~Manager();
 
+			int load(std::string &sceneFilepath, std::vector<std::string> &assetFilePaths);
+
 		private:
-			int loadAssets();
-			int loadScene(const std::string &filepath);
+			template<typename T>
+			void setGlobalIndexOnComponent(T* components, int numberOfComponents)
+			{
+				for(int i = 0; i < numberOfComponents; i++){
+					components[i].globalComponentIndex = i;
+
+					int entityId = components[i].entityId;
+					int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
+					components[i].globalEntityIndex = globalEntityIndex;
+				}
+			}
 	};
 }
 

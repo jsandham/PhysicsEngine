@@ -15,12 +15,35 @@
 #include "../../core/Input.h"
 #include "../../core/Time.h"
 #include "../../core/Log.h"
-
-#include "../../Scene.h"
+#include "../../core/Scene.h"
 
 using namespace PhysicsEngine;
 
 static bool running;
+
+std::vector<std::string> get_all_files_names_within_folder(std::string folder, std::string extension)
+{
+    std::vector<std::string> names;
+    std::string search_path = folder + "/*.*";
+    WIN32_FIND_DATA fd; 
+    HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd); 
+    if(hFind != INVALID_HANDLE_VALUE) { 
+        do { 
+            // read all (real) files in current folder
+            // , delete '!' read other 2 default folder . and ..
+            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+
+            	std::string file = fd.cFileName;
+            	if(file.substr(file.find_last_of(".") + 1) == extension) {
+            		names.push_back(folder + file);
+				}
+                //names.push_back(fd.cFileName);
+            }
+        }while(::FindNextFile(hFind, &fd)); 
+        ::FindClose(hFind); 
+    } 
+    return names;
+}
 
 KeyCode GetKeyCode(unsigned int vKCode)
 {
@@ -284,9 +307,23 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			// init game?
 			Scene scene;
 
-			scene.init(lpCmdLine);
+			// load assets
+			std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "json");
+			std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "json");
+			std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "json");
+			std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "json");
+			std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "json");
 
-			Log::Info("call scene init");
+			std::vector<std::string> assetFilePaths;
+			for(unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
+			for(unsigned int i = 0; i < meshFilePaths.size(); i++){ assetFilePaths.push_back(meshFilePaths[i]); }
+			for(unsigned int i = 0; i < gmeshFilePaths.size(); i++){ assetFilePaths.push_back(gmeshFilePaths[i]); }
+			for(unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
+			for(unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }
+
+			std::cout << "Calling scene load" << std::endl;
+			// scene.load(lpCmdLine, assetFilePaths);
+			scene.load("../data/scenes/simple.json", assetFilePaths);
 
 			running = true;
 

@@ -111,135 +111,58 @@ void Frustum::setCameraSlow(glm::vec3 position, glm::vec3 front, glm::vec3 up, g
 	glm::vec3 fbl = fc - 0.5f*farPlaneHeight*up - 0.5f*farPlaneWidth*right;
 	glm::vec3 fbr = fc - 0.5f*farPlaneHeight*up + 0.5f*farPlaneWidth*right;
 
-	frustumVertices.clear();
-	frustumNormals.clear();
-
 	// top plane triangles
-	frustumVertices.push_back(ftl.x);
-	frustumVertices.push_back(ftl.y);
-	frustumVertices.push_back(ftl.z);
-	frustumVertices.push_back(ftr.x);
-	frustumVertices.push_back(ftr.y);
-	frustumVertices.push_back(ftr.z);
-	frustumVertices.push_back(ntl.x);
-	frustumVertices.push_back(ntl.y);
-	frustumVertices.push_back(ntl.z);
-	frustumVertices.push_back(ftr.x);
-	frustumVertices.push_back(ftr.y);
-	frustumVertices.push_back(ftr.z);
-	frustumVertices.push_back(ntr.x);
-	frustumVertices.push_back(ntr.y);
-	frustumVertices.push_back(ntr.z);
-	frustumVertices.push_back(ntl.x);
-	frustumVertices.push_back(ntl.y);
-	frustumVertices.push_back(ntl.z);
+	frustumVertices[0] = ftl;
+	frustumVertices[1] = ftr;
+	frustumVertices[2] = ntl;
+	frustumVertices[3] = ftr;
+	frustumVertices[4] = ntr;
+	frustumVertices[5] = ntl;
 
 	// bottom plane triangles
-	frustumVertices.push_back(fbl.x);
-	frustumVertices.push_back(fbl.y);
-	frustumVertices.push_back(fbl.z);
-	frustumVertices.push_back(fbr.x);
-	frustumVertices.push_back(fbr.y);
-	frustumVertices.push_back(fbr.z);
-	frustumVertices.push_back(nbl.x);
-	frustumVertices.push_back(nbl.y);
-	frustumVertices.push_back(nbl.z);
-	frustumVertices.push_back(fbr.x);
-	frustumVertices.push_back(fbr.y);
-	frustumVertices.push_back(fbr.z);
-	frustumVertices.push_back(nbr.x);
-	frustumVertices.push_back(nbr.y);
-	frustumVertices.push_back(nbr.z);
-	frustumVertices.push_back(nbl.x);
-	frustumVertices.push_back(nbl.y);
-	frustumVertices.push_back(nbl.z);
+	frustumVertices[6] = fbl;
+	frustumVertices[7] = fbr;
+	frustumVertices[8] = nbl;
+	frustumVertices[9] = fbr;
+	frustumVertices[10] = nbr;
+	frustumVertices[11] = nbl;
 
 	// left plane triangles
-	frustumVertices.push_back(ftl.x);
-	frustumVertices.push_back(ftl.y);
-	frustumVertices.push_back(ftl.z);
-	frustumVertices.push_back(nbl.x);
-	frustumVertices.push_back(nbl.y);
-	frustumVertices.push_back(nbl.z);
-	frustumVertices.push_back(fbl.x);
-	frustumVertices.push_back(fbl.y);
-	frustumVertices.push_back(fbl.z);
-	frustumVertices.push_back(ftl.x);
-	frustumVertices.push_back(ftl.y);
-	frustumVertices.push_back(ftl.z);
-	frustumVertices.push_back(ntl.x);
-	frustumVertices.push_back(ntl.y);
-	frustumVertices.push_back(ntl.z);
-	frustumVertices.push_back(nbl.x);
-	frustumVertices.push_back(nbl.y);
-	frustumVertices.push_back(nbl.z);
+	frustumVertices[12] = ftl;
+	frustumVertices[13] = nbl;
+	frustumVertices[14] = fbl;
+	frustumVertices[15] = ftl;
+	frustumVertices[16] = ntl;
+	frustumVertices[17] = nbl;
 
 	// right plane triangles
-	frustumVertices.push_back(ftr.x);
-	frustumVertices.push_back(ftr.y);
-	frustumVertices.push_back(ftr.z);
-	frustumVertices.push_back(nbr.x);
-	frustumVertices.push_back(nbr.y);
-	frustumVertices.push_back(nbr.z);
-	frustumVertices.push_back(fbr.x);
-	frustumVertices.push_back(fbr.y);
-	frustumVertices.push_back(fbr.z);
-	frustumVertices.push_back(ftr.x);
-	frustumVertices.push_back(ftr.y);
-	frustumVertices.push_back(ftr.z);
-	frustumVertices.push_back(ntr.x);
-	frustumVertices.push_back(ntr.y);
-	frustumVertices.push_back(ntr.z);
-	frustumVertices.push_back(nbr.x);
-	frustumVertices.push_back(nbr.y);
-	frustumVertices.push_back(nbr.z);
+	frustumVertices[18] = ftr;
+	frustumVertices[19] = nbr;
+	frustumVertices[20] = fbr;
+	frustumVertices[21] = ftr;
+	frustumVertices[22] = ntr;
+	frustumVertices[23] = nbr;
 
 	// near plane triangles
-	frustumVertices.push_back(ntl.x);
-	frustumVertices.push_back(ntl.y);
-	frustumVertices.push_back(ntl.z);
-	frustumVertices.push_back(ntr.x);
-	frustumVertices.push_back(ntr.y);
-	frustumVertices.push_back(ntr.z);
-	frustumVertices.push_back(nbr.x);
-	frustumVertices.push_back(nbr.y);
-	frustumVertices.push_back(nbr.z);
-	frustumVertices.push_back(ntl.x);
-	frustumVertices.push_back(ntl.y);
-	frustumVertices.push_back(ntl.z);
-	frustumVertices.push_back(nbr.x);
-	frustumVertices.push_back(nbr.y);
-	frustumVertices.push_back(nbr.z);
-	frustumVertices.push_back(nbl.x);
-	frustumVertices.push_back(nbl.y);
-	frustumVertices.push_back(nbl.z);
+	frustumVertices[24] = ntl;
+	frustumVertices[25] = ntr;
+	frustumVertices[26] = nbr;
+	frustumVertices[27] = ntl;
+	frustumVertices[28] = nbr;
+	frustumVertices[29] = nbl;
 
 	// far plane triangles
-	frustumVertices.push_back(ftl.x);
-	frustumVertices.push_back(ftl.y);
-	frustumVertices.push_back(ftl.z);
-	frustumVertices.push_back(ftr.x);
-	frustumVertices.push_back(ftr.y);
-	frustumVertices.push_back(ftr.z);
-	frustumVertices.push_back(fbr.x);
-	frustumVertices.push_back(fbr.y);
-	frustumVertices.push_back(fbr.z);
-	frustumVertices.push_back(ftl.x);
-	frustumVertices.push_back(ftl.y);
-	frustumVertices.push_back(ftl.z);
-	frustumVertices.push_back(fbr.x);
-	frustumVertices.push_back(fbr.y);
-	frustumVertices.push_back(fbr.z);
-	frustumVertices.push_back(fbl.x);
-	frustumVertices.push_back(fbl.y);
-	frustumVertices.push_back(fbl.z);
+	frustumVertices[30] = ftl;
+	frustumVertices[31] = ftr;
+	frustumVertices[32] = fbr;
+	frustumVertices[33] = ftl;
+	frustumVertices[34] = fbr;
+	frustumVertices[35] = fbl;
 
 	for(int i = 0; i < 6; i++){
 		glm::vec3 n = planes[i].n;
-		for(int j = 0;j < 6; j++){
-			frustumNormals.push_back(n.x);
-			frustumNormals.push_back(n.y);
-			frustumNormals.push_back(n.z);
+		for(int j = 0; j < 6; j++){
+			frustumNormals[6*i + j] = n;
 		}
 	}
 }
@@ -281,15 +204,3 @@ int Frustum::checkAABB(glm::vec3 min, glm::vec3 max)
 {
 	return 1;
 }
-
-std::vector<float> Frustum::getTriVertices()
-{
-	return frustumVertices;
-}
-
-
-std::vector<float> Frustum::getTriNormals()
-{
-	return frustumNormals;
-}
-

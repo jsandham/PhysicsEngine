@@ -10,8 +10,6 @@
 #include "../core/Log.h"
 #include "../TextureLoader.h"
 
-#include "../graphics/Gizmos.h"
-
 
 using namespace PhysicsEngine;
 

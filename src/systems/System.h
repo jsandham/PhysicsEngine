@@ -5,7 +5,7 @@
 
 #include "../entities/Entity.h"
 
-#include "../memory/Manager.h"
+#include "../core/Manager.h"
 
 namespace PhysicsEngine
 {

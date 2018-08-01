@@ -56,8 +56,8 @@ namespace PhysicsEngine
 			glm::vec3 right;
 
 			// vertices and normals for drawing the frustum box
-			std::vector<float> frustumVertices;
-			std::vector<float> frustumNormals;
+			glm::vec3 frustumVertices[36];
+			glm::vec3 frustumNormals[36];
 
 		public:
 			Frustum();
@@ -70,9 +70,6 @@ namespace PhysicsEngine
 			int checkPoint(glm::vec3 point);
 			int checkSphere(glm::vec3 centre, float radius);
 			int checkAABB(glm::vec3 min, glm::vec3 max);
-
-			std::vector<float> getTriVertices();
-			std::vector<float> getTriNormals();
 	};
 
 }

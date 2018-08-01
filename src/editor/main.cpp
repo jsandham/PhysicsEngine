@@ -18,6 +18,7 @@
 #include "../components/DirectionalLight.h"
 
 #include "../core/Manager.h"
+#include "../core/SceneSettings.h"
 #include "../core/Mesh.h"
 #include "../core/GMesh.h"
 
@@ -39,10 +40,6 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 
 int main(int argc, char* argv[])
 {
-	if(argc > 0){
-		std::cout << argv[0] << std::endl;
-	}
-
 	std::string scenePath = "../data/scenes/simple.json";
 
 	if(!serializeScene(scenePath)){
@@ -119,9 +116,10 @@ int serializeScene(std::string scenePath)
 	contents << in.rdbuf();
 	in.close();
 	std::string jsonString = contents.str();
-	json::JSON jsonScene = JSON::Load(jsonString);
+	json::JSON jsonScene = json::JSON::Load(jsonString);
 
 	// parse loaded json file
+	json::JSON sceneSettings;
 	json::JSON entities;
 	json::JSON transforms;
 	json::JSON rigidbodies;
@@ -139,6 +137,7 @@ int serializeScene(std::string scenePath)
 			continue;
 		}
 		else if(it->first == "Settings"){
+			sceneSettings = it->second;
 			continue;
 		}
 
@@ -208,6 +207,21 @@ int serializeScene(std::string scenePath)
 		std::cout << "Failed to open file " << outputPath << " for writing" << std::endl;
 		return 0;
 	}
+
+	// serialize seetings
+	SceneSettings settings;
+	settings.maxAllowedEntities = sceneSettings["maxAllowedEntities"].ToInt();
+	settings.maxAllowedTransforms = sceneSettings["maxAllowedTransforms"].ToInt();
+	settings.maxAllowedRigidbodies = sceneSettings["maxAllowedRigidbodies"].ToInt();
+	settings.maxAllowedMeshRenderers = sceneSettings["maxAllowedMeshRenderers"].ToInt();
+	settings.maxAllowedDirectionalLights = sceneSettings["maxAllowedDirectionalLights"].ToInt();
+	settings.maxAllowedSpotLights = sceneSettings["maxAllowedSpotLights"].ToInt();
+	settings.maxAllowedPointLights = sceneSettings["maxAllowedPointLights"].ToInt();
+	
+	fwrite(&settings, sizeof(SceneSettings), 1, file);
+
+	std::cout << "maxAllowedEntities: " << settings.maxAllowedEntities << std::endl;
+	std::cout << "maxAllowedPointLights: " << settings.maxAllowedPointLights << std::endl;
 
 	// serialize entities
 	objects = entities.ObjectRange();

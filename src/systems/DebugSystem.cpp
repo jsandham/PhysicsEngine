@@ -4,7 +4,7 @@
 #include "../core/Input.h"
 #include "../core/Physics.h"
 
-#include "../graphics/Gizmos.h"
+// #include "../graphics/Gizmos.h"
 #include "../graphics/OpenGL.h"
 
 #include "../glm/glm.hpp"
@@ -28,7 +28,7 @@ void DebugSystem::init()
 		std::cout << "shader failed to compile" << std::endl;
 	}*/
 
-	Gizmos::init();
+	// Gizmos::init();
 }
 
 void DebugSystem::update()
@@ -73,15 +73,15 @@ void DebugSystem::update()
 	// 	//std::cout << "space bar pressed" << std::endl;
 	// }
 
-	Camera* camera = manager->getCamera();
+	// Camera* camera = manager->getCamera();
 
 	//std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
 
 	//Mesh *mesh = manager->getMesh(meshRenderers[1]->getMeshFilter());
 	//Transform* transform = meshRenderers[1]->entity->getComponent<Transform>(manager);
 
-	Gizmos::projection = camera->getProjMatrix();
-	Gizmos::view = camera->getViewMatrix();
+	// Gizmos::projection = camera->getProjMatrix();
+	// Gizmos::view = camera->getViewMatrix();
 
 	//Gizmos::drawWireCube(glm::vec3(1.0, 3.0, 1.0), glm::vec3(0.5, 2.0, 0.5), Color::green);
 	// Gizmos::drawWireCube(glm::vec3(2.0, 1.5, 1.0), glm::vec3(0.5, 1.0, 0.5), Color::yellow);

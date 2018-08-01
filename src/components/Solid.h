@@ -5,8 +5,8 @@
 
 #include "Component.h"
 
-#include "../graphics/Buffer.h"
-#include "../graphics/VertexArrayObject.h"
+// #include "../graphics/Buffer.h"
+// #include "../graphics/VertexArrayObject.h"
 
 namespace PhysicsEngine
 {
@@ -34,9 +34,9 @@ namespace PhysicsEngine
 			std::vector<int> bconnect;
 			std::vector<int> groups;
 
-			Buffer vertexVBO;
-			Buffer normalVBO;
-			VertexArrayObject solidVAO;
+			// Buffer vertexVBO;
+			// Buffer normalVBO;
+			// VertexArrayObject solidVAO;
 
 		public:
 			Solid();

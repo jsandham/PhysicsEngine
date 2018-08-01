@@ -3,8 +3,6 @@
 
 #include "System.h"
 
-#include "../memory/Manager.h"
-
 #include "../components/Camera.h"
 
 namespace PhysicsEngine

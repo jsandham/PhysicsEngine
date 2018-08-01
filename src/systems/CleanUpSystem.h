@@ -3,8 +3,6 @@
 
 #include "System.h"
 
-#include "../memory/Manager.h"
-
 namespace PhysicsEngine
 {
 	class CleanUpSystem : public System

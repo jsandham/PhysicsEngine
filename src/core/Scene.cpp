@@ -12,9 +12,17 @@ Scene::~Scene()
 
 }
 
-void Scene::init(std::string scene)
+void Scene::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
 {
-	std::cout << "scene: " << scene << std::endl;
+	sceneName = sceneFilePath;
+
+	std::cout << "scene: " << sceneFilePath << std::endl;
+
+	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
+		std::cout << "asset file: " << assetFilePaths[i] << std::endl;
+	}
+
+	manager.load(sceneFilePath, assetFilePaths);
 
 	// // load assets
 	// manager.loadGMesh("../data/gmeshes/mesh12.msh");

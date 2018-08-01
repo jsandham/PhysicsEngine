@@ -3,8 +3,6 @@
 
 #include "System.h"
 
-#include "../graphics/Material.h"
-
 namespace PhysicsEngine
 {
 	class DebugSystem : public System

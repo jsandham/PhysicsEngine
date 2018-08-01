@@ -5,13 +5,12 @@
     "maxAllowedTransforms" : 100,
     "maxAllowedRigidbodies" : 100,
     "maxAllowedMeshRenderers" : 100,
-    "maxDirectionalLights" : 20,
-    "maxSpotLights" : 20,
-    "maxPointLights" : 20
+    "maxAllowedDirectionalLights" : 20,
+    "maxAllowedSpotLights" : 20,
+    "maxAllowedPointLights" : 20
   },
   "23424355" : {
     "type" : "Entity",
-    "name" : "cube",
     "components" : ["34356423", "56875838"]
   },
   "34356423" : {
@@ -24,11 +23,11 @@
   "56875838" : {
     "type" : "MeshRenderer",
     "entity" : "23424355",
-    "mesh" : "cube"
+    "mesh" : "12347344",
+    "material" : "60859222"
   },
   "58692047" : {
     "type" : "Entity",
-    "name" : "sphere",
     "components" : ["10592743"]
   },
   "10592743" : {
