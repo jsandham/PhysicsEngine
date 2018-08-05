@@ -16,7 +16,7 @@ namespace PhysicsEngine
 {
 	class Camera : public Component
 	{
-		protected:
+		public:
 			Frustum frustum;
 
 			glm::vec3 position;

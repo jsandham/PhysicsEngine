@@ -9,6 +9,7 @@
 #include "../entities/Entity.h"
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
+#include "../components/Camera.h"
 #include "../components/DirectionalLight.h"
 #include "../components/PointLight.h"
 #include "../components/SpotLight.h"
@@ -18,13 +19,12 @@
 #include "../components/BoxCollider.h"
 #include "../components/Joint.h"
 #include "../components/SpringJoint.h"
-#include "../components/Camera.h"
 
 #include "Mesh.h"
 #include "GMesh.h"
-#include "../core/Material.h"
-#include "../graphics/Shader.h"
-#include "../graphics/Texture2D.h"
+#include "Material.h"
+//#include "../graphics/Shader.h"
+#include "Texture2D.h"
 
 namespace PhysicsEngine
 {
@@ -33,16 +33,20 @@ namespace PhysicsEngine
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
+
 		unsigned int numberOfEntities;
 		unsigned int numberOfTransforms;
 		unsigned int numberOfRigidbodies;
+		unsigned int numberOfCameras;
 		unsigned int numberOfMeshRenderers;
 		unsigned int numberOfDirectionalLights;
 		unsigned int numberOfSpotLights;
 		unsigned int numberOfPointLights;
+
 		unsigned int sizeOfEntity;
 		unsigned int sizeOfTransform;
 		unsigned int sizeOfRigidbody;
+		unsigned int sizeOfCamera;
 		unsigned int sizeOfMeshRenderer;
 		unsigned int sizeOfDirectionalLight;
 		unsigned int sizeOfSpotLight;
@@ -50,17 +54,17 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
-#pragma pack(push, 1)
-	struct MaterialHeader
-	{
-		unsigned short fileType;
-		unsigned int fileSize;
-		unsigned int materialId;
-		unsigned int shaderId;
-		unsigned int textureId;
+// #pragma pack(push, 1)
+// 	struct MaterialHeader
+// 	{
+// 		unsigned short fileType;
+// 		unsigned int fileSize;
+// 		unsigned int materialId;
+// 		unsigned int shaderId;
+// 		unsigned int textureId;
 		
-	};
-#pragma pack(pop)
+// 	};
+// #pragma pack(pop)
 
 // #pragma pack(push, 1)
 // 	struct ShaderHeader
@@ -125,6 +129,7 @@ namespace PhysicsEngine
 			int numberOfEntities;
 			int numberOfTransforms;
 			int numberOfRigidbodies;
+			int numberOfCameras;
 			int numberOfMeshRenderers;
 			int numberOfDirectionalLights;
 			int numberOfSpotLights;
@@ -134,11 +139,21 @@ namespace PhysicsEngine
 			int totalNumberOfEntitiesAlloc;
 			int totalNumberOfTransformsAlloc;
 			int totalNumberOfRigidbodiesAlloc;
+			int totalNumberOfCamerasAlloc;
 			int totalNumberOfMeshRenderersAlloc;
 			int totalNumberOfDirectionalLightsAlloc;
 			int totalNumberOfSpotLightsAlloc;
 			int totalNumberOfPointLightsAlloc;
 
+			// total number of assets allocated
+			int totalNumberOfMaterialsAlloc;
+			int totalNumberOfShadersAlloc;
+			int totalNumberOfTexturesAlloc;
+			int totalNumberOfMeshesAlloc;
+			int totalNuberOfGMeshesAlloc;
+
+			std::map<int, std::string> assetIdToFilePathMap;
+			std::map<int, int> assetIdToGlobalIndexMap;
 			std::map<int, int> idToGlobalIndexMap;
 			std::map<int, int> componentIdToTypeMap;
 
@@ -148,6 +163,7 @@ namespace PhysicsEngine
 			Entity* entities;
 			Transform* transforms;
 			Rigidbody* rigidbodies;
+			Camera* cameras;
 			MeshRenderer* meshRenderers;
 			DirectionalLight* directionalLights;
 			SpotLight* spotLights;
@@ -155,7 +171,7 @@ namespace PhysicsEngine
 
 			// assets
 			Material* materials;
-			Shader* shaders;
+			//Shader* shaders;
 			Texture2D* textures;
 			Mesh* meshes;
 			GMesh* gmeshes;

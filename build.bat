@@ -11,7 +11,7 @@ set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -Zi
 set Libs=user32.lib gdi32.lib xinput.lib opengl32.lib glew32.lib cudart.lib
 set LinkerFlags=/SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64
 
-set Core=..\src\core\Scene.cpp ..\src\core\SceneSettings.cpp ..\src\core\Manager.cpp ..\src\core\Octtree.cpp ..\src\core\Physics.cpp ..\src\core\Log.cpp ..\src\core\Input.cpp ..\src\core\Time.cpp ..\src\core\Sphere.cpp ..\src\core\Bounds.cpp ..\src\core\Ray.cpp ..\src\core\Line.cpp ..\src\core\Capsule.cpp ..\src\core\Geometry.cpp ..\src\core\Frustum.cpp  ..\src\core\GMesh.cpp ..\src\core\Mesh.cpp 
+set Core=..\src\core\Scene.cpp ..\src\core\SceneSettings.cpp ..\src\core\Manager.cpp ..\src\core\Octtree.cpp ..\src\core\Physics.cpp ..\src\core\Log.cpp ..\src\core\Input.cpp ..\src\core\Time.cpp ..\src\core\Sphere.cpp ..\src\core\Bounds.cpp ..\src\core\Ray.cpp ..\src\core\Line.cpp ..\src\core\Capsule.cpp ..\src\core\Geometry.cpp ..\src\core\Frustum.cpp  ..\src\core\GMesh.cpp ..\src\core\Mesh.cpp ..\src\core\Material.cpp ..\src\core\Color.cpp ..\src\core\Texture.cpp ..\src\core\Texture2D.cpp
 rem set Asset=..\src\MeshLoader.cpp ..\src\TextureLoader.cpp
 set Entities=..\src\entities\Entity.cpp
 set Components=..\src\components\Component.cpp ..\src\components\Solid.cpp ..\src\components\Cloth.cpp ..\src\components\Fluid.cpp ..\src\components\Joint.cpp ..\src\components\HingeJoint.cpp ..\src\components\SpringJoint.cpp ..\src\components\Camera.cpp ..\src\components\Collider.cpp ..\src\components\BoxCollider.cpp ..\src\components\SphereCollider.cpp ..\src\components\CapsuleCollider.cpp ..\src\components\Transform.cpp ..\src\components\Rigidbody.cpp ..\src\components\DirectionalLight.cpp ..\src\components\SpotLight.cpp ..\src\components\PointLight.cpp ..\src\components\MeshRenderer.cpp
@@ -22,7 +22,7 @@ set Win32=..\src\platform\Win32\win32_main.cpp
 rem set Cuda=..\src\cuda\fluid_kernels.cu ..\src\cuda\cloth_kernels.cu ..\src\cuda\solid_kernels.cu ..\src\cuda\math_kernels.cu ..\src\cuda\jacobi_kernels.cu ..\src\cuda\pcg_kernels.cu ..\src\cuda\CudaPhysics.cu ..\src\cuda\CudaSolvers.cu
 rem set Solvers=..\src\solvers\AMG.cpp ..\src\solvers\SLAF.cpp ..\src\solvers\debug.cpp
 
-set CoreObj=Scene.obj SceneSettings.obj Manager.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj
+set CoreObj=Scene.obj SceneSettings.obj Manager.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj
 rem set AssetObj=MeshLoader.obj TextureLoader.obj
 set EntitiesObj=Entity.obj
 set ComponentsObj=Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj

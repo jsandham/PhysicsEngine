@@ -308,22 +308,24 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			Scene scene;
 
 			// load assets
-			std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "json");
-			std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "json");
-			std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "json");
-			std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "json");
-			std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "json");
+			std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "mat");
+			std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "mesh");
+			std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "gmesh");
+			std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "png");
+			std::vector<std::string> vertexShaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "vs");
+			std::vector<std::string> fragmentShaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "frag");
 
 			std::vector<std::string> assetFilePaths;
 			for(unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
 			for(unsigned int i = 0; i < meshFilePaths.size(); i++){ assetFilePaths.push_back(meshFilePaths[i]); }
 			for(unsigned int i = 0; i < gmeshFilePaths.size(); i++){ assetFilePaths.push_back(gmeshFilePaths[i]); }
 			for(unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
-			for(unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }
+			for(unsigned int i = 0; i < vertexShaderFilePaths.size(); i++){ assetFilePaths.push_back(vertexShaderFilePaths[i]); }
+			for(unsigned int i = 0; i < fragmentShaderFilePaths.size(); i++){ assetFilePaths.push_back(fragmentShaderFilePaths[i]); }
 
 			std::cout << "Calling scene load" << std::endl;
 			// scene.load(lpCmdLine, assetFilePaths);
-			scene.load("../data/scenes/simple.json", assetFilePaths);
+			scene.load("../data/scenes/simple.scene", assetFilePaths);
 
 			running = true;
 

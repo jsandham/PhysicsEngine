@@ -8,8 +8,10 @@ namespace PhysicsEngine
 	class MeshRenderer : public Component
 	{
 		public:
-			int meshFilter;
-			int materialFilter;
+			int meshId;
+			int materialId;
+			int meshGlobalIndex;
+			int materialGlobalIndex;
 
 		public:
 			MeshRenderer();

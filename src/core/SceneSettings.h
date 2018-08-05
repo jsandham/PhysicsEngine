@@ -9,6 +9,7 @@ namespace PhysicsEngine
 			int maxAllowedEntities;
 			int maxAllowedTransforms;
 			int maxAllowedRigidbodies;
+			int maxAllowedCameras;
 			int maxAllowedMeshRenderers;
 			int maxAllowedDirectionalLights;
 			int maxAllowedSpotLights;

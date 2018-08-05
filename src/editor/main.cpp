@@ -14,8 +14,12 @@
 
 #include "../entities/Entity.h"
 #include "../components/Transform.h"
+#include "../components/Rigidbody.h"
+#include "../components/Camera.h"
 #include "../components/MeshRenderer.h"
 #include "../components/DirectionalLight.h"
+#include "../components/SpotLight.h"
+#include "../components/PointLight.h"
 
 #include "../core/Manager.h"
 #include "../core/SceneSettings.h"
@@ -76,6 +80,8 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+
 	if(!serializeMeshes(meshFilePaths)){
 		std::cout << "Failed to serialize meshes" << std::endl;
 	}
@@ -123,6 +129,7 @@ int serializeScene(std::string scenePath)
 	json::JSON entities;
 	json::JSON transforms;
 	json::JSON rigidbodies;
+	json::JSON cameras;
 	json::JSON meshRenderers;
 	json::JSON directionalLights;
 	json::JSON spotLights;
@@ -155,6 +162,9 @@ int serializeScene(std::string scenePath)
 			std::cout << it->first << " is a Rigidbody" << std::endl;
 			rigidbodies[it->first] = it->second;
 		}
+		else if(type == "Camera"){
+			cameras[it->first] = it->second;
+		}
 		else if(type == "MeshRenderer"){
 			meshRenderers[it->first] = it->second;
 		}
@@ -172,6 +182,7 @@ int serializeScene(std::string scenePath)
 	int numberOfEntities = std::max(0, entities.size());
 	int numberOfTransforms = std::max(0, transforms.size());
 	int numberOfRigidbodies = std::max(0, rigidbodies.size());
+	int numberOfCameras = std::max(0, cameras.size());
 	int numberOfMeshRenderers = std::max(0, meshRenderers.size());
 	int numberOfDirectionalLights = std::max(0, directionalLights.size());
 	int numberOfSpotLights = std::max(0, spotLights.size());
@@ -180,6 +191,7 @@ int serializeScene(std::string scenePath)
 	std::cout << "number of entities found: " << numberOfEntities << std::endl;
 	std::cout << "number of transforms found: " << numberOfTransforms << std::endl;
 	std::cout << "number of rigidbodies found: " << numberOfRigidbodies << std::endl;
+	std::cout << "number of cameras found" << numberOfCameras << std::endl;
 	std::cout << "number of mesh renderers found: " << numberOfMeshRenderers << std::endl;
 	std::cout << "number of directional lights found: " << numberOfDirectionalLights << std::endl;
 	std::cout << "number of spot lights found: " << numberOfSpotLights << std::endl;
@@ -190,12 +202,21 @@ int serializeScene(std::string scenePath)
 
 	header.sizeOfEntity = sizeof(Entity);
 	header.sizeOfTransform = sizeof(Transform);
+	header.sizeOfRigidbody = sizeof(Rigidbody);
+	header.sizeOfCamera = sizeof(Camera);
 	header.sizeOfMeshRenderer = sizeof(MeshRenderer);
 	header.sizeOfDirectionalLight = sizeof(DirectionalLight);
+	header.sizeOfSpotLight = sizeof(SpotLight);
+	header.sizeOfPointLight = sizeof(PointLight);
+
 	header.numberOfEntities = numberOfEntities;
 	header.numberOfTransforms = numberOfTransforms;
+	header.numberOfRigidbodies = numberOfRigidbodies;
+	header.numberOfCameras = numberOfCameras;
 	header.numberOfMeshRenderers = numberOfMeshRenderers;
 	header.numberOfDirectionalLights = numberOfDirectionalLights;
+	header.numberOfSpotLights = numberOfSpotLights;
+	header.numberOfPointLights = numberOfPointLights;
 
 	// serialize scene header
 	FILE* file = fopen(outputPath.c_str(), "wb");
@@ -213,6 +234,7 @@ int serializeScene(std::string scenePath)
 	settings.maxAllowedEntities = sceneSettings["maxAllowedEntities"].ToInt();
 	settings.maxAllowedTransforms = sceneSettings["maxAllowedTransforms"].ToInt();
 	settings.maxAllowedRigidbodies = sceneSettings["maxAllowedRigidbodies"].ToInt();
+	settings.maxAllowedCameras = sceneSettings["maxAllowedCameras"].ToInt();
 	settings.maxAllowedMeshRenderers = sceneSettings["maxAllowedMeshRenderers"].ToInt();
 	settings.maxAllowedDirectionalLights = sceneSettings["maxAllowedDirectionalLights"].ToInt();
 	settings.maxAllowedSpotLights = sceneSettings["maxAllowedSpotLights"].ToInt();
@@ -222,6 +244,7 @@ int serializeScene(std::string scenePath)
 
 	std::cout << "maxAllowedEntities: " << settings.maxAllowedEntities << std::endl;
 	std::cout << "maxAllowedPointLights: " << settings.maxAllowedPointLights << std::endl;
+	std::cout << "maxAllowedCameras: " << settings.maxAllowedCameras << std::endl;
 
 	// serialize entities
 	objects = entities.ObjectRange();
@@ -291,6 +314,26 @@ int serializeScene(std::string scenePath)
 		fwrite(&rigidbody, sizeof(Rigidbody), 1, file);
 	}
 
+	// serialize cameras 
+	objects = cameras.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		Camera camera;
+
+		camera.componentId = std::stoi(it->first);
+		camera.entityId = it->second["entity"].ToInt();
+
+		camera.position.x = (float)it->second["position"][0].ToFloat();
+		camera.position.y = (float)it->second["position"][1].ToFloat();
+		camera.position.z = (float)it->second["position"][2].ToFloat();
+
+		camera.backgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
+		camera.backgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
+		camera.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
+		camera.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
+
+		fwrite(&camera, sizeof(Camera), 1, file);
+	}
+
 	// serialize mesh renderers
 	objects = meshRenderers.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
@@ -299,8 +342,10 @@ int serializeScene(std::string scenePath)
 		meshRenderer.componentId = std::stoi(it->first);
 		meshRenderer.entityId = it->second["entity"].ToInt();
 
-		meshRenderer.meshFilter = 0;
-		meshRenderer.materialFilter = 2;
+		meshRenderer.meshId = it->second["mesh"].ToInt();
+		meshRenderer.materialId = it->second["material"].ToInt();
+
+		std::cout << "mesh renderer entity id: " << meshRenderer.entityId << "mesh renderer component id: " << meshRenderer.componentId << " mesh renderer mesh id: " << meshRenderer.meshId << std::endl;
 
 		fwrite(&meshRenderer, sizeof(MeshRenderer), 1, file);
 	}
@@ -425,14 +470,23 @@ int serializeScene(std::string scenePath)
 
 	std::cout << "de-serialized scene header file contains the following information: " << std::endl;
 	std::cout << "fileSize: " << sceneHeader.fileSize << std::endl;
+
 	std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
 	std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
+	std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
 	std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
 	std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
+	std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
+	std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
+
 	std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
 	std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
+	std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
+	std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
 	std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
 	std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
+	std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
+	std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
 
 	if(file2){
 		fclose(file2);
@@ -455,9 +509,9 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 		json::JSON jsonMaterial = JSON::Load(jsonString);
 
 		Material material;
-		material.materialId = std::stoi(jsonMaterial["id"].ToString());
-		material.shaderId = std::stoi(jsonMaterial["shader"].ToString());
-		material.textureId = std::stoi(jsonMaterial["mainTexture"].ToString());
+		material.materialId = jsonMaterial["id"].ToInt();
+		material.shaderId  = jsonMaterial["shader"].ToInt();
+		material.textureId = jsonMaterial["mainTexture"].ToInt();
 
 		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
 
@@ -502,7 +556,7 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 			
 			// create mesh header
 			MeshHeader header = {};
-			header.meshId = std::stoi(jsonMesh["id"].ToString());
+			header.meshId = jsonMesh["id"].ToInt();
 			header.verticesSize = (unsigned int)mesh.vertices.size();
 			header.normalsSize = (unsigned int)mesh.normals.size();
 			header.texCoordsSize = (unsigned int)mesh.texCoords.size();
@@ -558,7 +612,7 @@ int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
 			
 			// create gmesh header
 			GMeshHeader header = {};
-			header.gmeshId = std::stoi(jsonGMesh["id"].ToString());
+			header.gmeshId = jsonGMesh["id"].ToInt();
 			header.dim = gmesh.dim;
 			header.ng = gmesh.ng;
 		    header.n = gmesh.n;

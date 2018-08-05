@@ -1,9 +1,10 @@
 {
-  "id" : "10000000",
+  "id" : 10000000,
   "Settings" : {
     "maxAllowedEntities" : 100,
     "maxAllowedTransforms" : 100,
     "maxAllowedRigidbodies" : 100,
+    "maxAllowedCameras" : 10,
     "maxAllowedMeshRenderers" : 100,
     "maxAllowedDirectionalLights" : 20,
     "maxAllowedSpotLights" : 20,
@@ -11,28 +12,34 @@
   },
   "23424355" : {
     "type" : "Entity",
-    "components" : ["34356423", "56875838"]
+    "components" : [34356423, 56875838]
   },
   "34356423" : {
     "type" : "Transform",
-    "entity" : "23424355",
+    "entity" : 23424355,
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
+  "34343456" : {
+    "type" : "Camera",
+    "entity" : 23424355,
+    "position" : [0.0, 2.0, 0.0],
+    "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
+  },
   "56875838" : {
     "type" : "MeshRenderer",
-    "entity" : "23424355",
-    "mesh" : "12347344",
-    "material" : "60859222"
+    "entity" : 23424355,
+    "mesh" : 12347344,
+    "material" : 60859222
   },
   "58692047" : {
     "type" : "Entity",
-    "components" : ["10592743"]
+    "components" : [10592743]
   },
   "10592743" : {
     "type" : "Transform",
-    "entity" : "58692047",
+    "entity" : 58692047,
     "position" : [0.2, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]

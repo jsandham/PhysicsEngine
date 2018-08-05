@@ -15,10 +15,17 @@ Manager::Manager()
 	entities = NULL;
 	transforms = NULL;
 	rigidbodies = NULL;
+	cameras = NULL;
 	meshRenderers = NULL;
 	directionalLights = NULL;
 	spotLights = NULL;
 	pointLights = NULL;
+
+	materials = NULL;
+	//shaders = NULL;
+	textures = NULL;
+	meshes = NULL;
+	gmeshes = NULL;
 }
 
 Manager::~Manager()
@@ -26,44 +33,44 @@ Manager::~Manager()
 	delete [] entities;
 	delete [] transforms;
 	delete [] rigidbodies;
+	delete [] cameras;
 	delete [] meshRenderers;
 	delete [] directionalLights;
 	delete [] spotLights;
 	delete [] pointLights;
+
+	delete [] materials;
+	//delete [] shaders;
+	delete [] textures;
+	delete [] meshes;
+	delete [] gmeshes;
 }
 
 int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
 {
-	// open scene json file 
-	std::ifstream in(sceneFilePath, std::ios::in | std::ios::binary);
-	std::ostringstream contents;
-	contents << in.rdbuf();
-	in.close();
-	json::JSON jsonScene = json::JSON::Load(contents.str());
+	// create asset id to filepath map
+	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
+		// open asset files json object and get asset id
+		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
+		std::cout << "AAAAAAAAAAAA: " << jsonAssetFilePath << std::endl;
+		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
+		std::ostringstream contents;
+		contents << in.rdbuf();
+		in.close();
 
-	// parse scene json file and load any assets found inside mesh renderers
-	json::JSON jsonMeshRenderers;
-	json::JSON::JSONWrapper<std::map<std::string, JSON>> objects = jsonScene.ObjectRange();
-	std::map<std::string, JSON>::iterator it;
+		std::string jsonString = contents.str();
+		json::JSON jsonAsset = JSON::Load(jsonString);
 
-	for(it = objects.begin(); it != objects.end(); it++){
-		if(it->first == "id" || it->first == "Settings"){
-			continue;
-		}
+		int assetId = jsonAsset["id"].ToInt();
 
-		std::string type = it->second["type"].ToString();
-
-		if(type == "MeshRenderer"){
-			jsonMeshRenderers[it->first] = it->second;
-		}
+		std::cout << "asset id: " << assetId << std::endl;
+		
+		assetIdToFilePathMap[assetId] = assetFilePaths[i];
 	}
-
-
-
 
 	std::string binarySceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".scene";
 
-	std::cout << "binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
+	std::cout << "scene file path: " << sceneFilePath << " binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
 
 	SceneHeader sceneHeader = {};
 	FILE* file = fopen(binarySceneFilePath.c_str(), "rb");
@@ -83,6 +90,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
 	std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
 	std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
+	std::cout << "numberOfCameras: " << sceneHeader.numberOfCameras << std::endl;
 	std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
 	std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
 	std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
@@ -91,6 +99,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
 	std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
 	std::cout << "sizeOfRigidbodies: " << sceneHeader.sizeOfRigidbody << std::endl;
+	std::cout << "sizeOfCameras: " << sceneHeader.sizeOfCamera << std::endl;
 	std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
 	std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
 	std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
@@ -99,6 +108,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	numberOfEntities = sceneHeader.numberOfEntities;
 	numberOfTransforms = sceneHeader.numberOfTransforms;
 	numberOfRigidbodies = sceneHeader.numberOfRigidbodies;
+	numberOfCameras = sceneHeader.numberOfCameras;
 	numberOfMeshRenderers = sceneHeader.numberOfMeshRenderers;
 	numberOfDirectionalLights = sceneHeader.numberOfDirectionalLights;
 	numberOfSpotLights = sceneHeader.numberOfSpotLights;
@@ -109,22 +119,25 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	totalNumberOfEntitiesAlloc = settings.maxAllowedEntities;
 	totalNumberOfTransformsAlloc = settings.maxAllowedTransforms;
 	totalNumberOfRigidbodiesAlloc = settings.maxAllowedRigidbodies;
+	totalNumberOfCamerasAlloc = settings.maxAllowedCameras;
 	totalNumberOfMeshRenderersAlloc = settings.maxAllowedMeshRenderers;
 	totalNumberOfDirectionalLightsAlloc= settings.maxAllowedDirectionalLights;
 	totalNumberOfSpotLightsAlloc = settings.maxAllowedSpotLights;
 	totalNumberOfPointLightsAlloc = settings.maxAllowedPointLights;
 
 	std::cout << "Total number of entities alloc: " << totalNumberOfEntitiesAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfTransformsAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfRigidbodiesAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfMeshRenderersAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfDirectionalLightsAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfSpotLightsAlloc << std::endl;
-	std::cout << "Total number of entities alloc: " << totalNumberOfPointLightsAlloc << std::endl;
+	std::cout << "Total number of transforms alloc: " << totalNumberOfTransformsAlloc << std::endl;
+	std::cout << "Total number of rigidbodies alloc: " << totalNumberOfRigidbodiesAlloc << std::endl;
+	std::cout << "Total number of cameras alloc: " << totalNumberOfCamerasAlloc << std::endl;
+	std::cout << "Total number of mesh renderers alloc: " << totalNumberOfMeshRenderersAlloc << std::endl;
+	std::cout << "Total number of directional lights alloc: " << totalNumberOfDirectionalLightsAlloc << std::endl;
+	std::cout << "Total number of spot lights alloc: " << totalNumberOfSpotLightsAlloc << std::endl;
+	std::cout << "Total number of point lights alloc: " << totalNumberOfPointLightsAlloc << std::endl;
 
 	bool error = numberOfEntities > totalNumberOfEntitiesAlloc;
 	error |= numberOfTransforms > totalNumberOfTransformsAlloc;
 	error |= numberOfRigidbodies > totalNumberOfRigidbodiesAlloc;
+	error |= numberOfCameras > totalNumberOfCamerasAlloc;
 	error |= numberOfMeshRenderers > totalNumberOfMeshRenderersAlloc;
 	error |= numberOfDirectionalLights > totalNumberOfDirectionalLightsAlloc;
 	error |= numberOfSpotLights > totalNumberOfSpotLightsAlloc;
@@ -138,6 +151,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	error = totalNumberOfEntitiesAlloc <= 0;
 	error |= totalNumberOfTransformsAlloc <= 0;
 	error |= totalNumberOfRigidbodiesAlloc <= 0;
+	error |= totalNumberOfCamerasAlloc <= 0;
 	error |= totalNumberOfMeshRenderersAlloc <= 0;
 	error |= totalNumberOfDirectionalLightsAlloc <= 0;
 	error |= totalNumberOfPointLightsAlloc <= 0;
@@ -151,6 +165,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	entities = new Entity[totalNumberOfEntitiesAlloc];
 	transforms = new Transform[totalNumberOfTransformsAlloc];
 	rigidbodies = new Rigidbody[totalNumberOfRigidbodiesAlloc];
+	cameras = new Camera[totalNumberOfCamerasAlloc];
 	meshRenderers = new MeshRenderer[totalNumberOfMeshRenderersAlloc];
 	directionalLights = new DirectionalLight[totalNumberOfDirectionalLightsAlloc];
 	spotLights = new SpotLight[totalNumberOfSpotLightsAlloc];
@@ -160,6 +175,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	bytesRead = fread(&entities[0], numberOfEntities*sizeof(Entity), 1, file);
 	bytesRead = fread(&transforms[0], numberOfTransforms*sizeof(Transform), 1, file);
 	bytesRead = fread(&rigidbodies[0], numberOfRigidbodies*sizeof(Rigidbody), 1, file);
+	bytesRead = fread(&cameras[0], numberOfCameras*sizeof(Camera), 1, file);
 	bytesRead = fread(&meshRenderers[0], numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
 	bytesRead = fread(&directionalLights[0], numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
 	bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
@@ -169,6 +185,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	for(int i = 0; i < numberOfEntities; i++){ idToGlobalIndexMap[entities[i].entityId] = i; }
 	for(int i = 0; i < numberOfTransforms; i++){ idToGlobalIndexMap[transforms[i].componentId] = i; }
 	for(int i = 0; i < numberOfRigidbodies; i++){ idToGlobalIndexMap[rigidbodies[i].componentId] = i; }
+	for(int i = 0; i < numberOfCameras; i++){ idToGlobalIndexMap[cameras[i].componentId] = i; }
 	for(int i = 0; i < numberOfMeshRenderers; i++){ idToGlobalIndexMap[meshRenderers[i].componentId] = i; }
 	for(int i = 0; i < numberOfDirectionalLights; i++){ idToGlobalIndexMap[directionalLights[i].componentId] = i; }
 	for(int i = 0; i < numberOfSpotLights; i++){ idToGlobalIndexMap[spotLights[i].componentId] = i; }
@@ -177,6 +194,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	// map component id to its type
 	for(int i = 0; i < numberOfTransforms; i++){ componentIdToTypeMap[transforms[i].componentId] = (int)ComponentType::TransformType; }
 	for(int i = 0; i < numberOfRigidbodies; i++){ componentIdToTypeMap[rigidbodies[i].componentId] = (int)ComponentType::RigidbodyType; }
+	for(int i = 0; i < numberOfCameras; i++){ componentIdToTypeMap[cameras[i].componentId] = (int)ComponentType::CameraType; }
 	for(int i = 0; i < numberOfMeshRenderers; i++){ componentIdToTypeMap[meshRenderers[i].componentId] = (int)ComponentType::MeshRendererType; }
 	for(int i = 0; i < numberOfDirectionalLights; i++){ componentIdToTypeMap[directionalLights[i].componentId] = (int)ComponentType::DirectionalLightType; }
 	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = (int)ComponentType::SpotLightType; }
@@ -197,22 +215,180 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		}
 	}
 
-	// for(int i = 0; i < numberOfTransforms; i++){
-	// 	transforms[i].globalComponentIndex = i;
-
-	// 	int entityId = transforms[i].entityId;
-	// 	int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
-	// 	transforms[i].globalEntityIndex = globalEntityIndex;
-	// }
-
 	setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
 	setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
+	setGlobalIndexOnComponent<Camera>(cameras, numberOfCameras);
 	setGlobalIndexOnComponent<MeshRenderer>(meshRenderers, numberOfMeshRenderers);
 	setGlobalIndexOnComponent<DirectionalLight>(directionalLights, numberOfDirectionalLights);
 	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
 	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
+	// find all unique materials and meshes
+	std::vector<int> materialIds;
+	std::vector<int> meshIds;
+	for(int i = 0; i < numberOfMeshRenderers; i++){
+		bool materialIdFound = false;
+		for(unsigned int j = 0; j < materialIds.size(); j++){
+			if(meshRenderers[i].materialId == materialIds[j]){
+				materialIdFound = true;
+				break;
+			}
+		}
+
+		if(!materialIdFound){
+			materialIds.push_back(meshRenderers[i].materialId);
+		}
+
+		bool meshIdFound = false;
+		for(unsigned int j = 0; j < meshIds.size(); j++){
+			if(meshRenderers[i].meshId == meshIds[j]){
+				meshIdFound = true;
+				break;
+			}
+		}
+
+		if(!meshIdFound){
+			meshIds.push_back(meshRenderers[i].meshId);
+		}
+	}
+
+	totalNumberOfMaterialsAlloc = (int)materialIds.size();
+	totalNumberOfMeshesAlloc = (int)meshIds.size();
+
+	// allocate materials and meshes
+	materials = new Material[totalNumberOfMaterialsAlloc];
+	meshes = new Mesh[totalNumberOfMeshesAlloc];
+
+	// de-serialize all unique materials and meshes found
+	for(unsigned int i = 0; i < materialIds.size(); i++){
+		int materialId = materialIds[i];
+
+		assetIdToGlobalIndexMap[materialId] = i;
+
+		std::string materialFilePath = assetIdToFilePathMap[materialId];
+
+		FILE* file = fopen(materialFilePath.c_str(), "rb");
+		size_t bytesRead;
+		if (file){
+			bytesRead = fread(&materials[i], sizeof(Material), 1, file);
+			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
+		}
+		else{
+			std::cout << "Error: Failed to open material binary file " << materialFilePath << " for reading" << std::endl;
+			return 0;
+		}
+
+		std::cout << "material id: " << materials[i].materialId << " texture id: " << materials[i].textureId << " shader id: " << materials[i].shaderId << std::endl;
+	}
+
+	for(unsigned int i = 0; i < meshIds.size(); i++){
+		int meshId = meshIds[i];
+
+		assetIdToGlobalIndexMap[meshId] = i;
+
+		std::string meshFilePath = assetIdToFilePathMap[meshId];
+
+		std::cout << "mesh file path: " << meshFilePath << std::endl;
+
+		MeshHeader header = {};
+
+		FILE* file = fopen(meshFilePath.c_str(), "rb");
+		size_t bytesRead;
+		if (file){
+			bytesRead = fread(&header, sizeof(MeshHeader), 1, file);
+
+			meshes[i].vertices.resize(header.verticesSize);
+			meshes[i].normals.resize(header.normalsSize);
+			meshes[i].texCoords.resize(header.texCoordsSize);
+			
+			bytesRead += fwrite(&meshes[i].vertices[0], header.verticesSize*sizeof(float), 1, file);
+			bytesRead += fwrite(&meshes[i].normals[0], header.normalsSize*sizeof(float), 1, file);
+			bytesRead += fwrite(&meshes[i].texCoords[0], header.texCoordsSize*sizeof(float), 1, file);
+			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
+		}
+		else{
+			std::cout << "Error: Failed to open material binary file " << meshFilePath << " for reading" << std::endl;
+			return 0;
+		}
+
+		std::cout << "mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
+	}
+
+	// set global mesh and material index on mesh renderers
+	for(int i = 0; i < numberOfMeshRenderers; i++){
+		meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
+		meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
+	}	
+
+
+	// find all unique textures and shaders 
+	std::vector<int> textureIds;
+	std::vector<int> shaderIds;
+	for(int i = 0; i < totalNumberOfMaterialsAlloc; i++){
+		bool textureIdFound = false;
+		for(unsigned int j = 0; j < textureIds.size(); j++){
+			if(materials[i].textureId == textureIds[j]){
+				textureIdFound = true;
+				break;
+			}
+		}
+
+		if(!textureIdFound){
+			textureIds.push_back(materials[i].textureId);
+		}
+
+		// bool shaderIdFound = false;
+		// for(unsigned int j = 0; j < shaderIds.size(); j++){
+		// 	if(materials[i].shaderId == shaderIds[j]){
+		// 		shaderIdFound = true;
+		// 		break;
+		// 	}
+		// }
+
+		// if(!shaderIdFound){
+		// 	shaderIds.push_back(materials[i].shaderId);
+		// }
+	}
+
+	totalNumberOfTexturesAlloc = (int)textureIds.size();
+	//totalNumberOfShadersAlloc = (int)shaderIds.size();
+
+	// allocate textures and shaders
+	textures = new Texture2D[totalNumberOfTexturesAlloc];
+	//shaders = new Shader[totalNumberOfShadersAlloc];
+
+
+
+
+
+
 	
+	// run through materials and load textures and shaders assigned to the material
+	for(int i = 0; i < totalNumberOfMaterialsAlloc; i++){
+
+		int textureId = materials[i].textureId;
+
+		std::string textureFilePath = assetIdToFilePathMap[textureId];
+
+		std::cout << "loading texture with id: " << textureId << " and file path: " << textureFilePath << std::endl;		
+
+
+
+		// unsigned char* raw = stbi_load(filepath.c_str(), width, height, numChannels, 0);
+
+		// int size = (*width) * (*height) * (*numChannels);
+
+		// std::cout << "width: " << *width << " height: " << *height << " num channels: " << *numChannels << std::endl;
+
+		// data.clear();
+		// data.resize(size);
+
+		// for (int i = 0; i < size; i++){
+		// 	data[i] = raw[i];
+		// }
+
+		// stbi_image_free(raw);
+	}
 
 	fclose(file);
 

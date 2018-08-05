@@ -11,6 +11,7 @@ namespace PhysicsEngine
 	{
 		TransformType,
 		RigidbodyType,
+		CameraType,
 		MeshRendererType,
 		DirectionalLightType,
 		SpotLightType,

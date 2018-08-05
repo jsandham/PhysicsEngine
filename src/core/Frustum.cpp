@@ -13,19 +13,14 @@ float Plane::distance(glm::vec3 point)
 	return (glm::dot(n,point) + d) / sqrt(glm::dot(n,n));
 }
 
-
-
-
 Frustum::Frustum()
 {
 }
-
 
 Frustum::~Frustum()
 {
 
 }
-
 
 void Frustum::setPerspective(float angle, float ratio, float near, float far)
 {
@@ -40,7 +35,6 @@ void Frustum::setPerspective(float angle, float ratio, float near, float far)
 	farPlaneHeight = far * tan;
 	farPlaneWidth = farPlaneHeight * ratio;
 }
-
 
 void Frustum::setCamera(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::vec3 right)
 {
@@ -89,7 +83,6 @@ void Frustum::setCamera(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::
 	// std::cout << "left normal: " << planes[LEFT].n.x << " " << planes[LEFT].n.y << " " << planes[LEFT].n.z << std::endl;
 	// std::cout << "right normal: " << planes[RIGHT].n.x << " " << planes[RIGHT].n.y << " " << planes[RIGHT].n.z << std::endl;
 }
-
 
 void Frustum::setCameraSlow(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::vec3 right)
 {
@@ -167,7 +160,6 @@ void Frustum::setCameraSlow(glm::vec3 position, glm::vec3 front, glm::vec3 up, g
 	}
 }
 
-
 int Frustum::checkPoint(glm::vec3 point)
 {
 	// loop over all 6 planes
@@ -179,7 +171,6 @@ int Frustum::checkPoint(glm::vec3 point)
 
 	return 1; // inside
 }
-
 
 int Frustum::checkSphere(glm::vec3 centre, float radius)
 {
@@ -198,7 +189,6 @@ int Frustum::checkSphere(glm::vec3 centre, float radius)
 
 	return answer; // inside
 }
-
 
 int Frustum::checkAABB(glm::vec3 min, glm::vec3 max)
 {
