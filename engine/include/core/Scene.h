@@ -26,6 +26,7 @@ namespace PhysicsEngine
 			Scene();
 			~Scene();
 
+			bool validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
 			void load(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
 			void init();
 			void update();

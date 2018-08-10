@@ -5,6 +5,11 @@
 #include <string>
 
 #include "SceneSettings.h"
+#include "Mesh.h"
+#include "GMesh.h"
+#include "Material.h"
+#include "Shader.h"
+#include "Texture2D.h"
 
 #include "../core/Entity.h"
 #include "../components/Transform.h"
@@ -19,12 +24,6 @@
 #include "../components/BoxCollider.h"
 #include "../components/Joint.h"
 #include "../components/SpringJoint.h"
-
-#include "Mesh.h"
-#include "GMesh.h"
-#include "Material.h"
-#include "Shader.h"
-#include "Texture2D.h"
 
 namespace PhysicsEngine
 {
@@ -184,12 +183,6 @@ namespace PhysicsEngine
 }
 
 #endif
-
-
-// TODO: So I could find all the asset files in win32_main and pass them through to scene which does not 
-// store them at all and just immediately passes them through to manager? I.e. in win32_main just call 
-// something like scene.loadMeshes(meshFilePaths) and then inside scene immediately call manager.loadMeshes(meshFilePaths)????
-// In fact now that I think about it, is there any point to having the scene class at all??
 
 
 

@@ -11,6 +11,7 @@ namespace PhysicsEngine
 	{
 		public:
 			int shaderId;
+			int globalIndex;
 
 			std::string vertexShader;
 			std::string fragmentShader;

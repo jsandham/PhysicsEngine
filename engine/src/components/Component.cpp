@@ -6,7 +6,10 @@ using namespace PhysicsEngine;
 
 Component::Component()
 {
-	
+	globalEntityIndex = -1;
+	globalComponentIndex = -1;
+	componentId = -1;
+	entityId = -1;
 }
 
 Component::~Component()

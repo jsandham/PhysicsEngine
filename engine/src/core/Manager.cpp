@@ -53,7 +53,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
 		// open asset files json object and get asset id
 		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
-		std::cout << "AAAAAAAAAAAA: " << jsonAssetFilePath << std::endl;
+		std::cout << "jsonAssetFilePath: " << jsonAssetFilePath << std::endl;
 		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
 		std::ostringstream contents;
 		contents << in.rdbuf();
@@ -80,7 +80,6 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		bytesRead = fread(&sceneHeader, sizeof(SceneHeader), 1, file);
 
 		std::cout << "de-serialized scene header file contains the following information: " << std::endl;
-		std::cout << "fileSize: " << sceneHeader.fileSize << std::endl;
 
 		std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
 		std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
@@ -176,6 +175,12 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
 		bytesRead = fread(&pointLights[0], numberOfPointLights*sizeof(PointLight), 1, file);
 
+		for(int i = 0; i < numberOfEntities; i++){
+			for(int j = 0; j < 8; j++){
+				std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
+			}
+		}
+
 		std::cout << "number of bytes read from file: " << bytesRead << std::endl;
 
 		fclose(file);
@@ -204,21 +209,23 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = (int)ComponentType::SpotLightType; }
 	for(int i = 0; i < numberOfPointLights; i++){ componentIdToTypeMap[pointLights[i].componentId] = (int)ComponentType::PointLightType; }
 
-	// set global indices in entities and components
+	// set global indices in entities
 	for(int i = 0; i < numberOfEntities; i++){
 		entities[i].globalEntityIndex = i;
 
 		for(int j = 0; j < 8; j++){
 			int componentId = entities[i].componentIds[j];
+			if(componentId != -1){
+				int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
+				int componentType = componentIdToTypeMap.find(componentId)->second;
 
-			int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
-			int componentType = componentIdToTypeMap.find(componentId)->second;
-
-			entities[i].globalComponentIndices[j] = globalComponentIndex;
-			entities[i].componentTypes[j] = componentType;
+				entities[i].globalComponentIndices[j] = globalComponentIndex;
+				entities[i].componentTypes[j] = componentType;
+			}
 		}
 	}
 
+	// set global indices in components
 	setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
 	setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
 	setGlobalIndexOnComponent<Camera>(cameras, numberOfCameras);
@@ -227,9 +234,14 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
 	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
-	// find all unique materials and meshes
+	for(int i = 0; i < numberOfEntities; i++){
+		for(int j = 0; j < 8; j++){
+			std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
+		}
+	}
+
+	// find all unique materials
 	std::vector<int> materialIds;
-	std::vector<int> meshIds;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
 		bool materialIdFound = false;
 		for(unsigned int j = 0; j < materialIds.size(); j++){
@@ -242,28 +254,14 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		if(!materialIdFound){
 			materialIds.push_back(meshRenderers[i].materialId);
 		}
-
-		bool meshIdFound = false;
-		for(unsigned int j = 0; j < meshIds.size(); j++){
-			if(meshRenderers[i].meshId == meshIds[j]){
-				meshIdFound = true;
-				break;
-			}
-		}
-
-		if(!meshIdFound){
-			meshIds.push_back(meshRenderers[i].meshId);
-		}
 	}
 
 	totalNumberOfMaterialsAlloc = (int)materialIds.size();
-	totalNumberOfMeshesAlloc = (int)meshIds.size();
 
 	// allocate materials and meshes
 	materials = new Material[totalNumberOfMaterialsAlloc];
-	meshes = new Mesh[totalNumberOfMeshesAlloc];
 
-	// de-serialize all unique materials and meshes found
+	// de-serialize all unique materials found
 	for(unsigned int i = 0; i < materialIds.size(); i++){
 		int materialId = materialIds[i];
 
@@ -285,49 +283,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		std::cout << "material id: " << materials[i].materialId << " texture id: " << materials[i].textureId << " shader id: " << materials[i].shaderId << std::endl;
 	}
 
-	for(unsigned int i = 0; i < meshIds.size(); i++){
-		int meshId = meshIds[i];
-
-		assetIdToGlobalIndexMap[meshId] = i;
-
-		std::string meshFilePath = assetIdToFilePathMap[meshId];
-
-		std::cout << "mesh file path: " << meshFilePath << std::endl;
-
-		MeshHeader header = {};
-
-		FILE* file = fopen(meshFilePath.c_str(), "rb");
-		size_t bytesRead;
-		if (file){
-			bytesRead = fread(&header, sizeof(MeshHeader), 1, file);
-
-			meshes[i].vertices.resize(header.verticesSize);
-			meshes[i].normals.resize(header.normalsSize);
-			meshes[i].texCoords.resize(header.texCoordsSize);
-			
-			bytesRead += fwrite(&meshes[i].vertices[0], header.verticesSize*sizeof(float), 1, file);
-			bytesRead += fwrite(&meshes[i].normals[0], header.normalsSize*sizeof(float), 1, file);
-			bytesRead += fwrite(&meshes[i].texCoords[0], header.texCoordsSize*sizeof(float), 1, file);
-			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
-
-			fclose(file);
-		}
-		else{
-			std::cout << "Error: Failed to open material binary file " << meshFilePath << " for reading" << std::endl;
-			return 0;
-		}
-
-		std::cout << "mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
-	}
-
 	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
-
-	// set global mesh and material index on mesh renderers
-	for(int i = 0; i < numberOfMeshRenderers; i++){
-		meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
-		meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
-	}	
-
 
 	// find all unique textures and shaders 
 	std::vector<int> textureIds;
@@ -375,27 +331,31 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 
 		assetIdToGlobalIndexMap[textureId] = (int)i;
 
-		std::cout << "aaaaa" << std::endl;
-
 		std::string textureFilePath = assetIdToFilePathMap[textureId];
 
 		std::cout << "loading texture with id: " << textureId << " and file path: " << textureFilePath << std::endl;		
 
-		// int width, height, numChannels;
-		// unsigned char* raw = stbi_load(textureFilePath.c_str(), &width, &height, &numChannels, 0);
+		int width, height, numChannels;
+		unsigned char* raw = stbi_load(textureFilePath.c_str(), &width, &height, &numChannels, 0);
 
-		// int size = (width) * (height) * (numChannels);
+		int size = (width) * (height) * (numChannels);
 
-		// std::cout << "width: " << width << " height: " << height << " num channels: " << numChannels << std::endl;
+		std::cout << "size: " << size << " width: " << width << " height: " << height << " num channels: " << numChannels << std::endl;
 
-		// // data.clear();
-		// // data.resize(size);
+		std::vector<unsigned char> data;
+		data.resize(size);
 
-		// // for (int i = 0; i < size; i++){
-		// // 	data[i] = raw[i];
-		// // }
+		for (int j = 0; j < size; j++){
+			data[j] = raw[j];
+			std::cout << (int)data[j] << " ";
+		}
+		std::cout << "" << std::endl;
 
-		// stbi_image_free(raw);
+		textures[i].textureId = textureId;
+		textures[i].globalIndex = i;
+		textures[i].setRawTextureData(data);
+
+		stbi_image_free(raw);
 	}
 
 	std::cout << "textures loaded" << std::endl;
@@ -449,10 +409,86 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	    //std::cout << "fragmentShader: " << fragmentShader << std::endl;
 
 	    shaders[i].shaderId = shaderId;
+	    shaders[i].globalIndex = i;
 	    shaders[i].vertexShader = vertexShader;
 	    shaders[i].geometryShader = geometryShader;
 	    shaders[i].fragmentShader = fragmentShader;
 	}
+
+	// set global material, shader, and texture indices 
+	for(int i = 0; i < totalNumberOfMaterialsAlloc; i++){
+		materials[i].globalMaterialIndex = i;
+		materials[i].globalShaderIndex = assetIdToGlobalIndexMap[materials[i].shaderId];
+		materials[i].globalTextureIndex = assetIdToGlobalIndexMap[materials[i].textureId];
+	}
+
+	// find all unique meshes
+	std::vector<int> meshIds;
+	for(int i = 0; i < numberOfMeshRenderers; i++){
+		bool meshIdFound = false;
+		for(unsigned int j = 0; j < meshIds.size(); j++){
+			if(meshRenderers[i].meshId == meshIds[j]){
+				meshIdFound = true;
+				break;
+			}
+		}
+
+		if(!meshIdFound){
+			meshIds.push_back(meshRenderers[i].meshId);
+		}
+	}
+
+	totalNumberOfMeshesAlloc = (int)meshIds.size();
+
+	// allocate meshes
+	meshes = new Mesh[totalNumberOfMeshesAlloc];
+
+	// de-serialize all unique meshes found
+	for(unsigned int i = 0; i < meshIds.size(); i++){
+		int meshId = meshIds[i];
+
+		assetIdToGlobalIndexMap[meshId] = i;
+
+		std::string meshFilePath = assetIdToFilePathMap[meshId];
+
+		std::cout << "mesh file path: " << meshFilePath << std::endl;
+
+		MeshHeader header = {};
+
+		FILE* file = fopen(meshFilePath.c_str(), "rb");
+		size_t bytesRead;
+		if (file){
+			bytesRead = fread(&header, sizeof(MeshHeader), 1, file);
+
+			meshes[i].meshId = header.meshId;
+			meshes[i].globalIndex = i;
+
+			meshes[i].vertices.resize(header.verticesSize);
+			meshes[i].normals.resize(header.normalsSize);
+			meshes[i].texCoords.resize(header.texCoordsSize);
+			
+			bytesRead += fread(&(meshes[i].vertices[0]), header.verticesSize*sizeof(float), 1, file);
+			bytesRead += fread(&(meshes[i].normals[0]), header.normalsSize*sizeof(float), 1, file);
+			bytesRead += fread(&(meshes[i].texCoords[0]), header.texCoordsSize*sizeof(float), 1, file);
+			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
+
+			fclose(file);
+		}
+		else{
+			std::cout << "Error: Failed to open material binary file " << meshFilePath << " for reading" << std::endl;
+			return 0;
+		}
+
+		std::cout << "mesh id: " << meshId << " mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
+	}
+
+	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
+
+	// set global mesh and material index on mesh renderers
+	for(int i = 0; i < numberOfMeshRenderers; i++){
+		meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
+		meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
+	}	
 
 	return 1;
 }

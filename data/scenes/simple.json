@@ -12,7 +12,7 @@
   },
   "23424355" : {
     "type" : "Entity",
-    "components" : [34356423, 56875838]
+    "components" : [34356423, 34343456, 56875838]
   },
   "34356423" : {
     "type" : "Transform",
@@ -30,18 +30,41 @@
   "56875838" : {
     "type" : "MeshRenderer",
     "entity" : 23424355,
-    "mesh" : 12347344,
+    "mesh" : 34763455,
     "material" : 60859222
   },
   "58692047" : {
     "type" : "Entity",
-    "components" : [10592743]
+    "components" : [10592743, 66875838]
   },
   "10592743" : {
     "type" : "Transform",
     "entity" : 58692047,
-    "position" : [0.2, 0.0, 0.0],
+    "position" : [5.2, 5.0, 5.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
+  },
+  "66875838" : {
+    "type" : "MeshRenderer",
+    "entity" : 58692047,
+    "mesh" : 12347344,
+    "material" : 12957442
+  },
+  "78692047" : {
+    "type" : "Entity",
+    "components" : [20592743, 76875838]
+  },
+  "20592743" : {
+    "type" : "Transform",
+    "entity" : 78692047,
+    "position" : [3.2, 1.0, 0.4],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  },
+  "76875838" : {
+    "type" : "MeshRenderer",
+    "entity" : 78692047,
+    "mesh" : 11221434,
+    "material" : 47759201
   }
 }

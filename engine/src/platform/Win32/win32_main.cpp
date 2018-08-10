@@ -321,83 +321,89 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			for(unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
 			for(unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }	
 
-			std::cout << "Calling scene load" << std::endl;
-			// scene.load(lpCmdLine, assetFilePaths);
-			scene.load("../data/scenes/simple.scene", assetFilePaths);
+			if(scene.validate("../data/scenes/simple.scene", assetFilePaths)){
+				std::cout << "Calling scene load" << std::endl;
+				// scene.load(lpCmdLine, assetFilePaths);
+				scene.load("../data/scenes/simple.scene", assetFilePaths);
 
-			running = true;
+				running = true;
 
-			int frameCount = 0;
-			LARGE_INTEGER lastCounter;
-			QueryPerformanceCounter(&lastCounter);
-			unsigned long long lastCycleCount = __rdtsc();
-			while(running)
-			{
-				MSG message;
-				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+				int frameCount = 0;
+				LARGE_INTEGER lastCounter;
+				QueryPerformanceCounter(&lastCounter);
+				unsigned long long lastCycleCount = __rdtsc();
+				while(running)
 				{
-					if(message.message == WM_QUIT)
+					MSG message;
+					while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
 					{
-						running = false;
+						if(message.message == WM_QUIT)
+						{
+							running = false;
+						}
+
+						TranslateMessage(&message);
+						DispatchMessage(&message);
 					}
 
-					TranslateMessage(&message);
-					DispatchMessage(&message);
+					// controller input
+					for(DWORD controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++){
+						XINPUT_STATE controllerState;
+						if(XInputGetState(controllerIndex, &controllerState) == ERROR_SUCCESS){
+							XINPUT_GAMEPAD *pad = &controllerState.Gamepad;
+							// bool up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
+							// bool down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
+							// bool left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
+							// bool right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
+							// bool start = (pad->wButtons & XINPUT_GAMEPAD_START);
+							// bool back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
+							// bool leftShoulder = (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
+							// bool rightShoulder = (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
+							// bool aButton = (pad->wButtons & XINPUT_GAMEPAD_A);
+							// bool bButton = (pad->wButtons & XINPUT_GAMEPAD_B);
+							// bool xButton = (pad->wButtons & XINPUT_GAMEPAD_X);
+							// bool yButton = (pad->wButtons & XINPUT_GAMEPAD_Y);
+						}
+						else{
+							// NOTE: controller not available
+						}
+
+					}
+
+					// run game update?
+					scene.update();
+
+					RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+					// record time
+					unsigned long long endCycleCount = __rdtsc();
+					LARGE_INTEGER endCounter;
+					QueryPerformanceCounter(&endCounter);
+
+					unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+					long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+					float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+					float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+					lastCycleCount = endCycleCount;
+					lastCounter = endCounter;
+					frameCount++;
+
+					Time::frameCount = frameCount;
+					Time::deltaCycles = (int)cyclesElapsed;
+					Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+					Time::deltaTime = milliSecPerFrame;
+
+					// char buffer[256];
+					// sprintf(buffer, "frame count %d delta cycles %d time %f delta time %f\n", Time::frameCount, Time::deltaCycles, Time::time, Time::deltaTime);
+					// OutputDebugStringA(buffer);
+
+					Input::updateEOF();
 				}
-
-				// controller input
-				for(DWORD controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++){
-					XINPUT_STATE controllerState;
-					if(XInputGetState(controllerIndex, &controllerState) == ERROR_SUCCESS){
-						XINPUT_GAMEPAD *pad = &controllerState.Gamepad;
-						// bool up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
-						// bool down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-						// bool left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-						// bool right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
-						// bool start = (pad->wButtons & XINPUT_GAMEPAD_START);
-						// bool back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
-						// bool leftShoulder = (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
-						// bool rightShoulder = (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
-						// bool aButton = (pad->wButtons & XINPUT_GAMEPAD_A);
-						// bool bButton = (pad->wButtons & XINPUT_GAMEPAD_B);
-						// bool xButton = (pad->wButtons & XINPUT_GAMEPAD_X);
-						// bool yButton = (pad->wButtons & XINPUT_GAMEPAD_Y);
-					}
-					else{
-						// NOTE: controller not available
-					}
-
-				}
-
-				// run game update?
-				scene.update();
-
-				RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-				// record time
-				unsigned long long endCycleCount = __rdtsc();
-				LARGE_INTEGER endCounter;
-				QueryPerformanceCounter(&endCounter);
-
-				unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-				long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-				float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-				float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-				lastCycleCount = endCycleCount;
-				lastCounter = endCounter;
-				frameCount++;
-
-				Time::frameCount = frameCount;
-				Time::deltaCycles = (int)cyclesElapsed;
-				Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-				Time::deltaTime = milliSecPerFrame;
-
-				// char buffer[256];
-				// sprintf(buffer, "frame count %d delta cycles %d time %f delta time %f\n", Time::frameCount, Time::deltaCycles, Time::time, Time::deltaTime);
-				// OutputDebugStringA(buffer);
-
-				Input::updateEOF();
+			}
+			else
+			{
+				std::cout << "Failed scene validation" << std::endl;
 			}
 		}
 		else

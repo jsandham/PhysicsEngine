@@ -34,6 +34,10 @@ namespace PhysicsEngine
 			TextureDimension dimension;
 
 		public:
+			int textureId;
+			int globalIndex;
+
+		public:
 			Texture();
 			virtual ~Texture() {};
 

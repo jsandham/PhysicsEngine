@@ -255,6 +255,12 @@ int serializeScene(std::string scenePath)
 		for(int i = 0; i < it->second["components"].size(); i++){
 			entity.componentIds[i] = it->second["components"][i].ToInt();
 		}
+
+		// for(int i = 0; i < 8; i++){
+		// 	std::cout << "component types: " << entity.componentTypes[i] << " globalComponentIndices: " << entity.globalComponentIndices[i] << std::endl;
+		// }
+
+
 		fwrite(&entity, sizeof(Entity), 1, file);
 	}
 
@@ -564,13 +570,18 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 
 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
 
+			// for(unsigned int i = 0; i < mesh.vertices.size(); i++){
+			// 	std::cout << mesh.vertices[i] << " ";
+			// }
+			// std::cout << "" << std::endl;
+
 			// serialize scene header and mesh data
 			FILE* file = fopen(outputPath.c_str(), "wb");
 			if (file){
 				size_t test = fwrite(&header, sizeof(MeshHeader), 1, file);
-				test += fwrite(&mesh.vertices[0], mesh.vertices.size()*sizeof(float), 1, file);
-				test += fwrite(&mesh.normals[0], mesh.normals.size()*sizeof(float), 1, file);
-				test += fwrite(&mesh.texCoords[0], mesh.texCoords.size()*sizeof(float), 1, file);
+				test += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
+				test += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
+				test += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
 				std::cout << "number of bytes written to file: " << test << std::endl;
 			}
 			else{
@@ -677,88 +688,3 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder)
     } 
     return names;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// int serializeTextures(std::string texturesPath){
-
-// 	// open json file and load to json object
-// 	std::ifstream in(texturesPath, std::ios::in | std::ios::binary);
-// 	std::ostringstream contents;
-// 	contents << in.rdbuf();
-// 	in.close();
-// 	std::string jsonString = contents.str();
-// 	json::JSON jsonMeshes = JSON::Load(jsonString);
-
-// 	json::JSON::JSONWrapper<map<string,JSON>> objects = jsonMeshes.ObjectRange();
-// 	map<string,JSON>::iterator it;
-
-// 	json::JSON textures;
-
-// 	for(it = objects.begin(); it != objects.end(); it++){
-// 		textures[it->first] = it->second;
-// 	}
-
-// 	int numberOfTextures = std::max(0, textures.size());
-	
-// 	std::cout << "number of meshes found: " << numberOfTextures << std::endl;
-
-// 	for(it = objects.begin(); it != objects.end(); it++){
-// 		std::string filePath = it->second["name"].ToString();
-// 		std::string outputPath = filePath.substr(0, filePath.find_last_of(".")) + ".texture";	
-
-// 		std::cout << "creating texture file from " << it->second["name"] << " filepath: " << filePath << std::endl;
-		
-// 		int width, height, numChannels;
-// 		std::vector<unsigned char> rawTextureData;
-
-// 		if(TextureLoader::load(filePath, rawTextureData, &width, &height, &numChannels)){
-			
-// 			// create mesh header
-// 			Texture2DHeader header = {};
-// 			header.width = width;
-// 			header.height = height;
-// 			header.numChannels = numChannels;
-// 			header.sizeOfData = (unsigned int)rawTextureData.size();
-
-// 			std::cout << "raw texture data size: " << rawTextureData.size() << " width: " << width << " height: " << height << std::endl;
-
-// 			// serialize scene header and mesh data
-// 			// FILE* file = fopen(outputPath.c_str(), "wb");
-// 			// if (file){
-// 			// 	size_t test = fwrite(&header, sizeof(Texture2DHeader), 1, file);
-// 			// 	test += fwrite(&rawTextureData[0], rawTextureData.size()*sizeof(unsigned char), 1, file);
-// 			// 	std::cout << "number of bytes written to file: " << test << std::endl;
-// 			// }
-// 			// else{
-// 			// 	std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
-// 			// 	return 0;
-// 			// }
-
-// 			// if(file){
-// 			// 	fclose(file);
-// 			// }
-// 		}
-// 		else{
-// 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
-// 			return 0;
-// 		}
-// 	}
-
-// 	return 1;
-// }
