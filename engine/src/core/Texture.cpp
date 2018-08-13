@@ -62,10 +62,15 @@ int Texture::calcNumChannels(TextureFormat format)
 		nChannels = 4;
 		break;
 	default:
-		std::cout <<"Texture: Invalid texture format" << std::endl;
+		std::cout <<"Error: Texture: Invalid texture format" << std::endl;
 	}
 
 	return nChannels;
+}
+
+GLHandle Texture::getHandle() const
+{
+	return handle;
 }
 
 

@@ -1,68 +1,75 @@
-//#include "Texture3D.h"
-//
-//using namespace PhysicsEngine;
-//
-//Texture3D::Texture3D()
-//{
-//
-//}
-//
-//Texture3D::Texture3D(int width, int height, int depth, int numChannels)
-//{
-//
-//}
-//
-//Texture3D::~Texture3D()
-//{
-//
-//}
-//
-//void Texture3D::generate()
-//{
-//
-//}
-//
-//void Texture3D::destroy()
-//{
-//
-//}
-//
-//void Texture3D::bind()
-//{
-//
-//}
-//
-//void Texture3D::unbind()
-//{
-//
-//}
-//
-//void Texture3D::active(unsigned int slot)
-//{
-//
-//}
-//
-//std::vector<unsigned char> Texture3D::getRawTextureData()
-//{
-//
-//}
-//
-//Color Texture3D::getPixel(int x, int y)
-//{
-//
-//}
-//
-//void Texture3D::setRawTextureData(std::vector<unsigned char> data)
-//{
-//
-//}
-//
-//void Texture3D::setPixel(int x, int y, Color color)
-//{
-//
-//}
-//
-//GLuint Texture3D::getHandle() const
-//{
-//
-//}
+#include "../../include/core/Texture3D.h"
+#include "../../include/core/Log.h"
+#include "../../include/graphics/Graphics.h"
+
+using namespace PhysicsEngine;
+
+Texture3D::Texture3D()
+{
+	this->dimension = TextureDimension::Tex2D;
+
+	this->width = 0;
+	this->height = 0;
+	this->depth = 0;
+	this->format = TextureFormat::RGB;
+
+	this->numChannels = calcNumChannels(format);
+}
+
+Texture3D::Texture3D(int width, int height, int depth, int numChannels)
+{
+	this->dimension = TextureDimension::Tex2D;
+
+	this->width = width;
+	this->height = height;
+	this->depth = depth;
+	this->format = TextureFormat::RGB;
+
+	this->numChannels = calcNumChannels(format);
+}
+
+Texture3D::~Texture3D()
+{
+
+}
+
+int Texture3D::getDepth() const
+{
+	return depth;
+}
+
+
+std::vector<unsigned char> Texture3D::getRawTextureData()
+{
+	return rawTextureData;
+}
+
+Color Texture3D::getPixel(int x, int y, int z)
+{
+	return Color::white;
+}
+
+TextureFormat Texture3D::getFormat()
+{
+	return format;
+}
+
+void Texture3D::setRawTextureData(std::vector<unsigned char> data)
+{
+
+}
+
+void Texture3D::setPixel(int x, int y, int z, Color color)
+{
+
+}
+
+void Texture3D::readPixels()
+{
+	Graphics::readPixels(this);
+}
+
+void Texture3D::apply()
+{
+	Graphics::apply(this);
+}

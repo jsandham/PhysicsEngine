@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <unordered_set>
 
 #include "../../include/core/Manager.h"
 
@@ -47,7 +48,139 @@ Manager::~Manager()
 	delete [] gmeshes;
 }
 
-int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
+bool Manager::validate(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
+{
+	std::vector<int> materialShaderIds;
+	std::vector<int> materialTextureIds;
+
+	// check that all asset id's are unique and that the shader and texture ids on materials match actual shaders and textures
+	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
+		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
+		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
+		std::ostringstream contents; contents << in.rdbuf(); in.close();
+
+		json::JSON jsonAsset = JSON::Load(contents.str());
+
+		int assetId = jsonAsset["id"].ToInt();
+
+		std::cout << "asset id: " << assetId << " file path: " << assetFilePaths[i] << std::endl;
+		
+		if(assetIdToFilePathMap.count(assetId) == 0){
+			assetIdToFilePathMap[assetId] == assetFilePaths[i];
+		}
+		else{
+			std::cout << "Error: Duplicate asset ids exist" << std::endl;
+			return false;
+		}
+
+		if(assetFilePaths[i].substr(assetFilePaths[i].find_last_of(".") + 1) == "material"){
+			materialShaderIds.push_back(jsonAsset["shaderId"].ToInt());
+			materialTextureIds.push_back(jsonAsset["textureId"].ToInt());
+		}
+	}
+
+	for(unsigned int i = 0; i < materialShaderIds.size(); i++){
+		std::map<int, std::string>::iterator it = assetIdToFilePathMap.find(materialShaderIds[i]);
+		if(it != assetIdToFilePathMap.end()){
+			std::string filepath = it->second;
+			if(filepath.substr(filepath.find_last_of(".") + 1) != "shader"){
+				std::cout << "Error: Shader id found inside material does not correspond to a shader" << std::endl;
+				return false;
+			}
+		}
+		else{
+			std::cout << "Error: Shader id in material does not match any asset file path" << std::endl;
+			return false;
+		}
+	}
+
+	for(unsigned int i = 0; i < materialTextureIds.size(); i++){
+		std::map<int, std::string>::iterator it = assetIdToFilePathMap.find(materialTextureIds[i]);
+		if(it != assetIdToFilePathMap.end()){
+			std::string filepath = it->second;
+			if(filepath.substr(filepath.find_last_of(".") + 1) != "texture"){
+				std::cout << "Error: Texture id found inside material does not correspond to a texture" << std::endl;
+				return false;
+			}
+		}
+		else{
+			std::cout << "Error: Texture id in material does not match any asset file path" << std::endl;
+			return false;
+		}
+	}
+
+	std::unordered_set<int> entityIds;
+	std::map<int, int> componentIdToEntityIdMap;
+
+	// check that all entities and components have unique ids
+	std::string jsonSceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".json";
+	std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
+	std::ostringstream contents; contents << in.rdbuf(); in.close();
+
+	json::JSON jsonScene = JSON::Load(contents.str());
+
+	json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
+	map<string,JSON>::iterator it;
+
+	for(it = objects.begin(); it != objects.end(); it++){
+		if(it->first == "id" || it->first == "Settings"){
+			continue;
+		}
+
+		int objectId = std::stoi(it->first);
+		std::string type = it->second["type"].ToString();
+
+		if(type == "Entity"){
+			if (entityIds.find(objectId) == entityIds.end()) {
+				entityIds.insert(objectId);
+			}
+			else{
+				std::cout << "Error: Duplicate entity id found" << std::endl;
+				return false;
+			}
+		}
+		else{
+			int entityId = it->second["entity"].ToInt();
+			if(componentIdToEntityIdMap.count(objectId) == 0){
+				componentIdToEntityIdMap[objectId] = entityId;
+			}
+			else{
+				std::cout << "Error: Duplicate component ids exist" << std::endl;
+				return false;
+			}
+
+			if(type == "MeshRenderer"){
+				int meshId = it->second["mesh"].ToInt();
+				int materialId = it->second["material"].ToInt();
+
+				if(assetIdToFilePathMap.count(meshId) != 1){
+					std::cout << "Error: Mesh id found on MeshRenderer does not match a mesh" << std::endl;
+					return false;
+				}
+
+				if(assetIdToFilePathMap.count(materialId) != 1){
+					std::cout << "Error: Material id found on MeshRenderer does not match a material" << std::endl;
+					return false;
+				}
+			}
+
+
+		}
+	}
+
+	// check that every components entity id matches an existing entity
+	std::map<int, int>::iterator iter;
+	for(iter = componentIdToEntityIdMap.begin(); iter != componentIdToEntityIdMap.end(); iter++){
+		int entityId = iter->second;
+		if(entityIds.find(entityId) == entityIds.end()){
+			std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
+		}
+	}
+
+	return true;
+}
+
+void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
 {
 	// create asset id to filepath map
 	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
@@ -55,9 +188,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
 		std::cout << "jsonAssetFilePath: " << jsonAssetFilePath << std::endl;
 		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
-		std::ostringstream contents;
-		contents << in.rdbuf();
-		in.close();
+		std::ostringstream contents; contents << in.rdbuf(); in.close();
 
 		std::string jsonString = contents.str();
 		json::JSON jsonAsset = JSON::Load(jsonString);
@@ -68,6 +199,8 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		
 		assetIdToFilePathMap[assetId] = assetFilePaths[i];
 	}
+
+	std::cout << "scene file path: " << sceneFilePath << std::endl;
 
 	std::string binarySceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".scene";
 
@@ -139,7 +272,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 
 		if(error){
 			std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
-			return 0;
+			return;
 		}
 
 		error = totalNumberOfEntitiesAlloc <= 0;
@@ -152,7 +285,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 
 		if(error){
 			std::cout << "Error: Total number of entities and components must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
-			return 0;
+			return;
 		}
 
 		// allocate memory blocks for entities and components
@@ -175,11 +308,11 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
 		bytesRead = fread(&pointLights[0], numberOfPointLights*sizeof(PointLight), 1, file);
 
-		for(int i = 0; i < numberOfEntities; i++){
-			for(int j = 0; j < 8; j++){
-				std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
-			}
-		}
+		// for(int i = 0; i < numberOfEntities; i++){
+		// 	for(int j = 0; j < 8; j++){
+		// 		std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
+		// 	}
+		// }
 
 		std::cout << "number of bytes read from file: " << bytesRead << std::endl;
 
@@ -187,7 +320,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	}
 	else{
 		std::cout << "Error: Failed to open scene binary file " << binarySceneFilePath << " for reading" << std::endl;
-		return 0;
+		return;
 	}
 
 	// map entity/component id to its global array index
@@ -234,11 +367,11 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
 	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
-	for(int i = 0; i < numberOfEntities; i++){
-		for(int j = 0; j < 8; j++){
-			std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
-		}
-	}
+	// for(int i = 0; i < numberOfEntities; i++){
+	// 	for(int j = 0; j < 8; j++){
+	// 		std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
+	// 	}
+	// }
 
 	// find all unique materials
 	std::vector<int> materialIds;
@@ -277,7 +410,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		}
 		else{
 			std::cout << "Error: Failed to open material binary file " << materialFilePath << " for reading" << std::endl;
-			return 0;
+			return;
 		}
 
 		std::cout << "material id: " << materials[i].materialId << " texture id: " << materials[i].textureId << " shader id: " << materials[i].shaderId << std::endl;
@@ -345,11 +478,11 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		std::vector<unsigned char> data;
 		data.resize(size);
 
-		for (int j = 0; j < size; j++){
-			data[j] = raw[j];
-			std::cout << (int)data[j] << " ";
-		}
-		std::cout << "" << std::endl;
+		// for (int j = 0; j < size; j++){
+		// 	data[j] = raw[j];
+		// 	std::cout << (int)data[j] << " ";
+		// }
+		// std::cout << "" << std::endl;
 
 		textures[i].textureId = textureId;
 		textures[i].globalIndex = i;
@@ -370,11 +503,9 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		std::cout << "loading shader with id: " << shaderId << " and file path: " << shaderFilePath << std::endl;
 
 		std::ifstream in(shaderFilePath.c_str());
-	    std::ostringstream contents;
+	    std::ostringstream contents; contents << in.rdbuf(); in.close();
 
-	    contents << in.rdbuf();
 	    std::string shader = contents.str();
-	    in.close();
 
 	    std::string vertexTag = "VERTEX:";
 	    std::string geometryTag = "GEOMETRY:";
@@ -386,7 +517,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 
 	    if(startOfVertexTag == std::string::npos || startOfFragmentTag == std::string::npos){
 	    	std::cout << "Error: Shader must contain both a vertex shader and a fragment shader" << std::endl;
-	    	return 0;
+	    	return;
 	    }
 
 	    std::string vertexShader, geometryShader, fragmentShader;
@@ -401,6 +532,40 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 	    	vertexShader = shader.substr(startOfVertexTag + vertexTag.length(), startOfGeometryTag - vertexTag.length());
 	    	geometryShader = shader.substr(startOfGeometryTag + geometryTag.length(), startOfFragmentTag - geometryTag.length());
 	    	fragmentShader = shader.substr(startOfFragmentTag + fragmentTag.length(), shader.length());
+	    }
+
+	    // trim left
+	    size_t firstNotOfIndex;
+	    firstNotOfIndex = vertexShader.find_first_not_of("\n");
+	    if(firstNotOfIndex != std::string::npos){
+	    	vertexShader = vertexShader.substr(firstNotOfIndex);
+	    }
+
+	    firstNotOfIndex = geometryShader.find_first_not_of("\n");
+	    if(firstNotOfIndex != std::string::npos){
+	    	geometryShader = geometryShader.substr(firstNotOfIndex);
+	    }
+
+	    firstNotOfIndex = fragmentShader.find_first_not_of("\n");
+	    if(firstNotOfIndex != std::string::npos){
+	    	fragmentShader = fragmentShader.substr(firstNotOfIndex);
+	    }
+
+	    // trim right
+	    size_t lastNotOfIndex;
+	    lastNotOfIndex = vertexShader.find_last_not_of("\n");
+	    if(lastNotOfIndex != std::string::npos){
+	    	vertexShader.erase(lastNotOfIndex + 1);
+	    }
+
+	    lastNotOfIndex = geometryShader.find_last_not_of("\n");
+	    if(lastNotOfIndex != std::string::npos){
+	    	geometryShader.erase(lastNotOfIndex + 1);
+	    }
+
+	    lastNotOfIndex = fragmentShader.find_last_not_of("\n");
+	    if(lastNotOfIndex != std::string::npos){
+	    	fragmentShader.erase(lastNotOfIndex + 1);
 	    }
 
 	    // std::cout << "shader: " << shader << std::endl;
@@ -476,7 +641,7 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		}
 		else{
 			std::cout << "Error: Failed to open material binary file " << meshFilePath << " for reading" << std::endl;
-			return 0;
+			return;
 		}
 
 		std::cout << "mesh id: " << meshId << " mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
@@ -489,8 +654,6 @@ int Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFil
 		meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
 		meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
 	}	
-
-	return 1;
 }
 
 int Manager::getNumberOfEntities()

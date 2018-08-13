@@ -18,53 +18,7 @@ Scene::~Scene()
 
 bool Scene::validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
 {
-	st::map<int, std::string> assetIdToPathMap;
-	std::vector<int> materialShaderIds;
-	std::vector<int> materialTextureIds;
-
-	// check that all asset id's are unique and that the shader and texture ids on materials match actual shaders and textures
-	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
-		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
-		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
-		std::ostringstream contents; contents << in.rdbuf(); in.close();
-
-		json::JSON jsonAsset = JSON::Load(contents.str());
-
-		int assetId = jsonAsset["id"].ToInt();
-
-		std::cout << "asset id: " << assetId << " file path: " << assetFilePaths[i] << std::endl;
-		
-		if(assetIdToPathMap.count(assetId) == 0){
-			assetIdToPathMap[assetId] == assetFilePaths[i];
-		}
-		else{
-			std::cout << "Error: Duplicate asset ids exist" << std::endl;
-			return false;
-		}
-
-		if(assetFilePaths[i].substr(assetFilePaths[i].find_last_of(".") + 1) == "material"){
-			materialShaderIds.push_back(jsonAsset["shaderId"].ToInt());
-			materialTextureIds.push_back(jsonAsset["textureId"].ToInt());
-		}
-	}
-
-	for(unsigned int i = 0; i < materialShaderIds.size(); i++){
-		if(){
-
-		}
-	}
-
-	for(unsigned int i = 0; i < materialTextureIds.size(); i++){
-		if(){
-			
-		}
-	}
-
-
-
-
-
-	return true;
+	return manager.validate(sceneFilePath, assetFilePaths);
 }
 
 void Scene::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)

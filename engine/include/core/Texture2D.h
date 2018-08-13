@@ -1,7 +1,6 @@
 #ifndef __TEXTURE2D_H__
 #define __TEXTURE2D_H__
 
-#include <string>
 #include <vector>
 
 #include "Texture.h"
@@ -25,10 +24,14 @@ namespace PhysicsEngine
 			std::vector<unsigned char> getRawTextureData();
 			std::vector<Color> getPixels();
 			Color getPixel(int x, int y);
+			TextureFormat getFormat();
 
 			void setRawTextureData(std::vector<unsigned char> data);
 			void setPixels(std::vector<Color> colors);
 			void setPixel(int x, int y, Color color);
+
+			void readPixels();
+			void apply();
 	};
 }
 

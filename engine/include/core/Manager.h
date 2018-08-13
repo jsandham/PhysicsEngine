@@ -147,7 +147,8 @@ namespace PhysicsEngine
 			Manager();
 			~Manager();
 
-			int load(std::string &sceneFilepath, std::vector<std::string> &assetFilePaths);
+			bool validate(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths);
+			void load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths);
 
 			int getNumberOfEntities();
 			int getNumberOfTransforms();

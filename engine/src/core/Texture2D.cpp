@@ -2,8 +2,7 @@
 
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
-
-#include "../../include/stb_image/stb_image.h"
+#include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
 
@@ -100,6 +99,11 @@ Color Texture2D::getPixel(int x, int y)
 	return color;
 }
 
+TextureFormat Texture2D::getFormat()
+{
+	return format;
+}
+
 void Texture2D::setRawTextureData(std::vector<unsigned char> data)
 {
 	if (width*height*numChannels != data.size()){
@@ -158,6 +162,16 @@ void Texture2D::setPixel(int x, int y, Color color)
 		rawTextureData[index + 2] = color.b;
 		rawTextureData[index + 3] = color.a;
 	}
+}
+
+void Texture2D::readPixels()
+{
+	Graphics::readPixels(this);
+}
+
+void Texture2D::apply()
+{
+	Graphics::apply(this);
 }
 
 

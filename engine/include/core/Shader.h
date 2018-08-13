@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "../graphics/GLHandle.h"
+
 namespace PhysicsEngine
 {
 	class Shader
@@ -17,9 +19,17 @@ namespace PhysicsEngine
 			std::string fragmentShader;
 			std::string geometryShader;
 
+		private:
+			bool programCompiled;
+			GLHandle handle;
+
 		public:
 			Shader();
 			~Shader();
+
+			bool isCompiled();
+			void compile();
+			GLHandle getHandle();
 	};
 }
 

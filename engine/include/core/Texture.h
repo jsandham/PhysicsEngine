@@ -1,7 +1,7 @@
 #ifndef __TEXTURE_H__
 #define __TEXTURE_H__
 
-#include <string>
+#include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
@@ -33,6 +33,8 @@ namespace PhysicsEngine
 			int numChannels;
 			TextureDimension dimension;
 
+			GLHandle handle;
+
 		public:
 			int textureId;
 			int globalIndex;
@@ -44,6 +46,7 @@ namespace PhysicsEngine
 			int getWidth() const;
 			int getHeight() const;
 			int getNumChannels() const;
+			GLHandle getHandle() const;
 			TextureDimension getDimension() const;
 
 		protected:

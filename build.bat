@@ -45,6 +45,7 @@ cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLE
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Color.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Texture.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Texture2D.cpp
+cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Texture3D.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Cubemap.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\core\Shader.cpp
 
@@ -79,6 +80,7 @@ cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLE
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\Framebuffer.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\GraphicState.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\OpenGL.cpp
+cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\Graphics.cpp
 rem cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\Shader.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\ShaderUniformState.cpp
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\graphics\UniformBufferObject.cpp
@@ -91,7 +93,7 @@ cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLE
 rem lib -nologo -out:engine.lib stb_image_implementation.obj Scene.obj SceneSettings.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj
 
 :: link 
-link %LinkerFlags% stb_image_implementation.obj Scene.obj SceneSettings.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj %Libs%
+link %LinkerFlags% stb_image_implementation.obj Scene.obj SceneSettings.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Texture3D.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Graphics.obj OpenGL.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj %Libs%
 
 popd
 
