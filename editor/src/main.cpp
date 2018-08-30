@@ -14,7 +14,7 @@
 
 #include <core/Entity.h>
 #include <core/Manager.h>
-#include <core/SceneSettings.h>
+// #include <core/SceneSettings.h>
 #include <core/Mesh.h>
 #include <core/GMesh.h>
 
@@ -85,6 +85,8 @@ int main(int argc, char* argv[])
 		std::cout << "Failed to serialize meshes" << std::endl;
 	}
 
+	std::cout << "BBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
 	// gmesh files
 	std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder("../data/gmeshes");
 	std::vector<std::string> gmeshFilePaths;
@@ -98,9 +100,13 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	std::cout << "CCCCCCCCCCCCCCCCCCCCC" << std::endl;
+
 	if(!serializeGMeshes(gmeshFilePaths)){
 		std::cout << "Failed to serialize gmeshes" << std::endl;
 	}
+
+	std::cout << "DDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
 	while(true)
 	{
@@ -229,21 +235,21 @@ int serializeScene(std::string scenePath)
 	}
 
 	// serialize seetings
-	SceneSettings settings;
-	settings.maxAllowedEntities = sceneSettings["maxAllowedEntities"].ToInt();
-	settings.maxAllowedTransforms = sceneSettings["maxAllowedTransforms"].ToInt();
-	settings.maxAllowedRigidbodies = sceneSettings["maxAllowedRigidbodies"].ToInt();
-	settings.maxAllowedCameras = sceneSettings["maxAllowedCameras"].ToInt();
-	settings.maxAllowedMeshRenderers = sceneSettings["maxAllowedMeshRenderers"].ToInt();
-	settings.maxAllowedDirectionalLights = sceneSettings["maxAllowedDirectionalLights"].ToInt();
-	settings.maxAllowedSpotLights = sceneSettings["maxAllowedSpotLights"].ToInt();
-	settings.maxAllowedPointLights = sceneSettings["maxAllowedPointLights"].ToInt();
+	//SceneSettings settings;
+	//settings.maxAllowedEntities = sceneSettings["maxAllowedEntities"].ToInt();
+	//settings.maxAllowedTransforms = sceneSettings["maxAllowedTransforms"].ToInt();
+	//settings.maxAllowedRigidbodies = sceneSettings["maxAllowedRigidbodies"].ToInt();
+	//settings.maxAllowedCameras = sceneSettings["maxAllowedCameras"].ToInt();
+	//settings.maxAllowedMeshRenderers = sceneSettings["maxAllowedMeshRenderers"].ToInt();
+	//settings.maxAllowedDirectionalLights = sceneSettings["maxAllowedDirectionalLights"].ToInt();
+	//settings.maxAllowedSpotLights = sceneSettings["maxAllowedSpotLights"].ToInt();
+	//settings.maxAllowedPointLights = sceneSettings["maxAllowedPointLights"].ToInt();
 	
-	fwrite(&settings, sizeof(SceneSettings), 1, file);
+	//fwrite(&settings, sizeof(SceneSettings), 1, file);
 
-	std::cout << "maxAllowedEntities: " << settings.maxAllowedEntities << std::endl;
-	std::cout << "maxAllowedPointLights: " << settings.maxAllowedPointLights << std::endl;
-	std::cout << "maxAllowedCameras: " << settings.maxAllowedCameras << std::endl;
+	//std::cout << "maxAllowedEntities: " << settings.maxAllowedEntities << std::endl;
+	//std::cout << "maxAllowedPointLights: " << settings.maxAllowedPointLights << std::endl;
+	//std::cout << "maxAllowedCameras: " << settings.maxAllowedCameras << std::endl;
 
 	// serialize entities
 	objects = entities.ObjectRange();
@@ -556,6 +562,8 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 		Mesh mesh;
 
 		std::string filePath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".txt";
+
+		std::cout << "mesh filepath: " << filePath << std::endl;
 
 		if(MeshLoader::load(filePath, mesh)){
 			

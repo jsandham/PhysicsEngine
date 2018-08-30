@@ -3,6 +3,8 @@
 
 #include<vector>
 
+#include "../graphics/GLHandle.h"
+
 namespace PhysicsEngine
 {
 	class Mesh
@@ -15,9 +17,16 @@ namespace PhysicsEngine
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 
+			GLHandle meshVAO;
+			GLHandle vertexVBO;
+			GLHandle normalVBO;
+			GLHandle texCoordVBO;
+
 		public:
 			Mesh();
 			~Mesh();
+
+			void apply();
 	};
 }
 

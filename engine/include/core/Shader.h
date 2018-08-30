@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "../glm/glm.hpp"
+
 #include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
@@ -19,9 +21,8 @@ namespace PhysicsEngine
 			std::string fragmentShader;
 			std::string geometryShader;
 
-		private:
 			bool programCompiled;
-			GLHandle handle;
+			GLHandle program;
 
 		public:
 			Shader();
@@ -29,7 +30,16 @@ namespace PhysicsEngine
 
 			bool isCompiled();
 			void compile();
-			GLHandle getHandle();
+
+			void setBool(std::string name, bool value);
+			void setInt(std::string name, int value);
+			void setFloat(std::string name, float value);
+			void setVec2(std::string name, glm::vec2 &vec);
+			void setVec3(std::string name, glm::vec3 &vec);
+			void setVec4(std::string name, glm::vec4 &vec);
+			void setMat2(std::string name, glm::mat2 &mat);
+			void setMat3(std::string name, glm::mat3 &mat);
+			void setMat4(std::string name, glm::mat4 &mat);
 	};
 }
 

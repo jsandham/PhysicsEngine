@@ -1,24 +1,24 @@
-#ifndef __SCENE_SETTINGS_H__
-#define __SCENE_SETTINGS_H__
+// #ifndef __SCENE_SETTINGS_H__
+// #define __SCENE_SETTINGS_H__
 
-namespace PhysicsEngine
-{
-	class SceneSettings
-	{
-		public:
-			int maxAllowedEntities;
-			int maxAllowedTransforms;
-			int maxAllowedRigidbodies;
-			int maxAllowedCameras;
-			int maxAllowedMeshRenderers;
-			int maxAllowedDirectionalLights;
-			int maxAllowedSpotLights;
-			int maxAllowedPointLights;
+// namespace PhysicsEngine
+// {
+// 	class SceneSettings
+// 	{
+// 		public:
+// 			int maxAllowedEntities;
+// 			int maxAllowedTransforms;
+// 			int maxAllowedRigidbodies;
+// 			int maxAllowedCameras;
+// 			int maxAllowedMeshRenderers;
+// 			int maxAllowedDirectionalLights;
+// 			int maxAllowedSpotLights;
+// 			int maxAllowedPointLights;
 
-		public:
-			SceneSettings();
-			~SceneSettings();
-	};
-}
+// 		public:
+// 			SceneSettings();
+// 			~SceneSettings();
+// 	};
+// }
 
-#endif
+// #endif

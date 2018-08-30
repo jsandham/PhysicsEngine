@@ -1,36 +1,52 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+// #ifndef __SCENE_H__
+// #define __SCENE_H__
 
-#include <vector>
-#include <string>
-#include <map>
+// #include <vector>
+// #include <string>
+// #include <map>
 
-#include "Manager.h"
+// #include "Manager.h"
 
-#include "../systems/PlayerSystem.h"
-#include "../systems/PhysicsSystem.h"
-#include "../systems/RenderSystem.h"
+// #include "../systems/PlayerSystem.h"
+// #include "../systems/PhysicsSystem.h"
+// #include "../systems/RenderSystem.h"
 
-namespace PhysicsEngine
-{
-	class Scene
-	{
-		private:
-			std::string sceneName;
-			Manager manager;
-			PlayerSystem *playerSystem;
-			PhysicsSystem *physicsSystem;
-			RenderSystem *renderSystem;
+// namespace PhysicsEngine
+// {
+// 	class Scene
+// 	{
+// 		public:
+// 			std::string name;
+// 			std::string filepath;
+// 			bool isLoaded;
 
-		public:
-			Scene();
-			~Scene();
+// 		public:
+// 			Scene();
+// 			~Scene();
+// 	};
 
-			bool validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
-			void load(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
-			void init();
-			void update();
-	};
+
+
+
+
+	// class Scene
+	// {
+	// 	private:
+	// 		std::string sceneName;
+	// 		Manager manager;
+	// 		PlayerSystem *playerSystem;
+	// 		PhysicsSystem *physicsSystem;
+	// 		RenderSystem *renderSystem;
+
+	// 	public:
+	// 		Scene();
+	// 		~Scene();
+
+	// 		bool validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
+	// 		void load(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
+	// 		void init();
+	// 		void update();
+	// };
 }
 
 
@@ -119,4 +135,4 @@ namespace PhysicsEngine
 // 	};
 // }
 
-#endif
+// #endif

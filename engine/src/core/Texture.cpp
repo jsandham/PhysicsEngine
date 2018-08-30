@@ -6,6 +6,8 @@ using namespace PhysicsEngine;
 
 Texture::Texture()
 {
+	textureId = -1;
+	globalIndex = -1;
 }
 
 int Texture::getWidth() const
@@ -66,11 +68,6 @@ int Texture::calcNumChannels(TextureFormat format)
 	}
 
 	return nChannels;
-}
-
-GLHandle Texture::getHandle() const
-{
-	return handle;
 }
 
 

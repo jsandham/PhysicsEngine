@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 
-#include "SceneSettings.h"
 #include "Mesh.h"
 #include "GMesh.h"
 #include "Material.h"
@@ -88,6 +87,38 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+	struct BuildSettings
+	{
+		int maxAllowedEntities;
+		int maxAllowedTransforms;
+		int maxAllowedRigidbodies;
+		int maxAllowedCameras;
+		int maxAllowedMeshRenderers;
+		int maxAllowedDirectionalLights;
+		int maxAllowedSpotLights;
+		int maxAllowedPointLights;
+
+		int maxAllowedMaterials;
+		int maxAllowedTextures;
+		int maxAllowedShaders;
+		int maxAllowedMeshes;
+		int maxAllowedGMeshes;
+	};
+#pragma pack(pop)
+
+	struct Scene
+	{
+		std::string name;
+		std::string filepath;
+		bool isLoaded;
+	};
+
+	struct Asset
+	{
+		std::string filepath;
+	};
+
 	class Manager
 	{
 		private:
@@ -101,29 +132,19 @@ namespace PhysicsEngine
 			int numberOfSpotLights;
 			int numberOfPointLights;
 
-			// total number of entities and components allocated
-			int totalNumberOfEntitiesAlloc;
-			int totalNumberOfTransformsAlloc;
-			int totalNumberOfRigidbodiesAlloc;
-			int totalNumberOfCamerasAlloc;
-			int totalNumberOfMeshRenderersAlloc;
-			int totalNumberOfDirectionalLightsAlloc;
-			int totalNumberOfSpotLightsAlloc;
-			int totalNumberOfPointLightsAlloc;
-
-			// total number of assets allocated
-			int totalNumberOfMaterialsAlloc;
-			int totalNumberOfShadersAlloc;
-			int totalNumberOfTexturesAlloc;
-			int totalNumberOfMeshesAlloc;
-			int totalNuberOfGMeshesAlloc;
+			// number of assets
+			int numberOfMaterials;
+			int numberOfTextures;
+			int numberOfShaders;
+			int numberOfMeshes;
+			int numberOfGMeshes;
 
 			std::map<int, std::string> assetIdToFilePathMap;
 			std::map<int, int> assetIdToGlobalIndexMap;
 			std::map<int, int> idToGlobalIndexMap;
 			std::map<int, int> componentIdToTypeMap;
 
-			SceneSettings settings;
+			BuildSettings settings;
 
 			// entities and components
 			Entity* entities;
@@ -147,8 +168,9 @@ namespace PhysicsEngine
 			Manager();
 			~Manager();
 
-			bool validate(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths);
-			void load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths);
+			//void init();
+			bool validate(std::vector<Scene> scenes, std::vector<Asset> assets);
+			void load(Scene scene, std::vector<Asset> assets);
 
 			int getNumberOfEntities();
 			int getNumberOfTransforms();
@@ -159,6 +181,12 @@ namespace PhysicsEngine
 			int getNumberOfSpotLights();
 			int getNumberOfPointLights();
 
+			int getNumberOfMaterials();
+			int getNumberOfShaders();
+			int getNumberOfTextures();
+			int getNumberOfMeshes();
+			int getNumberOfGmeshes();
+
 			Entity* getEntity(int globalIndex);
 			Transform* getTransform(int globalIndex);
 			Rigidbody* getRigidbody(int globalIndex);
@@ -167,6 +195,12 @@ namespace PhysicsEngine
 			DirectionalLight* getDirectionalLight(int globalIndex);
 			SpotLight* getSpotLight(int globalIndex);
 			PointLight* getPointLight(int globalIndex);
+
+			Material* getMaterial(int globalIndex);
+			Shader* getShader(int globalIndex);
+			Texture2D* getTexture2D(int globalIndex);
+			Mesh* getMesh(int globalIndex);
+			GMesh* getGMesh(int globalIndex);
 
 		private:
 			template<typename T>

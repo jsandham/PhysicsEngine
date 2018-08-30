@@ -1,0 +1,17 @@
+{
+  "Settings" : {
+    "maxAllowedEntities" : 100,
+    "maxAllowedTransforms" : 100,
+    "maxAllowedRigidbodies" : 100,
+    "maxAllowedCameras" : 10,
+    "maxAllowedMeshRenderers" : 100,
+    "maxAllowedDirectionalLights" : 20,
+    "maxAllowedSpotLights" : 20,
+    "maxAllowedPointLights" : 20,
+    "maxAllowedMaterials" : 15,
+    "maxAllowedTextures" : 15,
+    "maxAllowedShaders" : 15,
+    "maxAllowedMeshes" : 15,
+    "maxAllowedGMeshes" : 15
+  }
+}

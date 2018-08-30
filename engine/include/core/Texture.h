@@ -33,11 +33,11 @@ namespace PhysicsEngine
 			int numChannels;
 			TextureDimension dimension;
 
-			GLHandle handle;
-
 		public:
 			int textureId;
 			int globalIndex;
+
+			GLHandle handle;
 
 		public:
 			Texture();
@@ -46,7 +46,6 @@ namespace PhysicsEngine
 			int getWidth() const;
 			int getHeight() const;
 			int getNumChannels() const;
-			GLHandle getHandle() const;
 			TextureDimension getDimension() const;
 
 		protected:

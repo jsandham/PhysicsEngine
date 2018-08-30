@@ -4,6 +4,9 @@
 #include <GL/glew.h>
 #include <gl/gl.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 #include <cuda.h>
 #include <cudagl.h>
@@ -15,7 +18,7 @@
 #include "../../../include/core/Input.h"
 #include "../../../include/core/Time.h"
 #include "../../../include/core/Log.h"
-#include "../../../include/core/Scene.h"
+#include "../../../include/core/SceneManager.h"
 
 using namespace PhysicsEngine;
 
@@ -43,6 +46,24 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder, s
         ::FindClose(hFind); 
     } 
     return names;
+}
+
+std::vector<std::string> get_all_asset_files()
+{
+	std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "mat");
+	std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "mesh");
+	std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "gmesh");
+	std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "png");
+	std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "shader");
+
+	std::vector<std::string> assetFilePaths;
+	for(unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
+	for(unsigned int i = 0; i < meshFilePaths.size(); i++){ assetFilePaths.push_back(meshFilePaths[i]); }
+	for(unsigned int i = 0; i < gmeshFilePaths.size(); i++){ assetFilePaths.push_back(gmeshFilePaths[i]); }
+	for(unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
+	for(unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }
+
+	return assetFilePaths;
 }
 
 KeyCode GetKeyCode(unsigned int vKCode)
@@ -268,8 +289,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
 	MessageBox(0, GetCommandLine(), "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
 	MessageBox(0, lpCmdLine, "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
-	
-	// std::cout << "commanad line: " << lpCmdLine << std::endl;
 
 	LARGE_INTEGER perfCounterFrequencyResult;
 	QueryPerformanceFrequency(&perfCounterFrequencyResult);
@@ -288,133 +307,191 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		freopen("CONOUT$", "w",stdout);
 		freopen("CONOUT$", "w",stderr);
 
-		HWND windowHandle = CreateWindowEx(0, 
-				windowClass.lpszClassName, 
-				"PhysicsEngine", 
-				WS_OVERLAPPEDWINDOW|WS_VISIBLE,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				1000,
-				1000,
-				0,
-				0,
-				hInstance,
-				0);
+		HWND windowHandle = CreateWindowEx(0, windowClass.lpszClassName, "PhysicsEngine", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1000, 1000, 0, 0, hInstance, 0);
+
 		if(windowHandle)
 		{
 			if(!Win32InitOpenGL(windowHandle)){ return 0; }
 
-			// init game?
-			Scene scene;
+			SceneManager sceneManager;
 
-			// load assets
-			std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "mat");
-			std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "mesh");
-			std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "gmesh");
-			std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "png");
-			std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "shader");
+			// fill in scene manager with all scenes found in the scene build register
+			std::string sceneFileName;
+		  	std::ifstream sceneRegisterFile ("../data/scene_build_register.txt");
+		  	if (sceneRegisterFile.is_open()){
+		   		while ( getline (sceneRegisterFile, sceneFileName) ){
+		   			Scene scene;
+		   			scene.name = sceneFileName;
+		   			scene.filepath = "../data/scenes/" + sceneFileName;
+		   			scene.isLoaded = false;
 
-			std::vector<std::string> assetFilePaths;
-			for(unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
-			for(unsigned int i = 0; i < meshFilePaths.size(); i++){ assetFilePaths.push_back(meshFilePaths[i]); }
-			for(unsigned int i = 0; i < gmeshFilePaths.size(); i++){ assetFilePaths.push_back(gmeshFilePaths[i]); }
-			for(unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
-			for(unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }	
+		   			sceneManager.add(scene);
 
-			if(scene.validate("../data/scenes/simple.scene", assetFilePaths)){
-				std::cout << "Calling scene load" << std::endl;
-				// scene.load(lpCmdLine, assetFilePaths);
-				scene.load("../data/scenes/simple.scene", assetFilePaths);
+		      		std::cout << sceneFileName << std::endl;
+		    	}
 
-				running = true;
+		    	sceneRegisterFile.close();
+		  	}
+		  	else{
+		  		std::cout << "Error: Could not open scene build register file" << std::endl;
+		  	}
 
-				int frameCount = 0;
-				LARGE_INTEGER lastCounter;
-				QueryPerformanceCounter(&lastCounter);
-				unsigned long long lastCycleCount = __rdtsc();
-				while(running)
-				{
-					MSG message;
-					while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
-					{
-						if(message.message == WM_QUIT)
-						{
-							running = false;
-						}
+		  	// fill in scene manager with all assets found in the data folder
+			std::vector<std::string> assetFilePaths = get_all_asset_files();
 
-						TranslateMessage(&message);
-						DispatchMessage(&message);
-					}
+			for(unsigned int i = 0; i < assetFilePaths.size(); i++){ 
+				Asset asset;
+				asset.filepath = assetFilePaths[i];
 
-					// controller input
-					for(DWORD controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++){
-						XINPUT_STATE controllerState;
-						if(XInputGetState(controllerIndex, &controllerState) == ERROR_SUCCESS){
-							XINPUT_GAMEPAD *pad = &controllerState.Gamepad;
-							// bool up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
-							// bool down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-							// bool left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-							// bool right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
-							// bool start = (pad->wButtons & XINPUT_GAMEPAD_START);
-							// bool back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
-							// bool leftShoulder = (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
-							// bool rightShoulder = (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
-							// bool aButton = (pad->wButtons & XINPUT_GAMEPAD_A);
-							// bool bButton = (pad->wButtons & XINPUT_GAMEPAD_B);
-							// bool xButton = (pad->wButtons & XINPUT_GAMEPAD_X);
-							// bool yButton = (pad->wButtons & XINPUT_GAMEPAD_Y);
-						}
-						else{
-							// NOTE: controller not available
-						}
-
-					}
-
-					// run game update?
-					scene.update();
-
-					RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-					// record time
-					unsigned long long endCycleCount = __rdtsc();
-					LARGE_INTEGER endCounter;
-					QueryPerformanceCounter(&endCounter);
-
-					unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-					long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-					float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-					float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-					lastCycleCount = endCycleCount;
-					lastCounter = endCounter;
-					frameCount++;
-
-					Time::frameCount = frameCount;
-					Time::deltaCycles = (int)cyclesElapsed;
-					Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-					Time::deltaTime = milliSecPerFrame;
-
-					// char buffer[256];
-					// sprintf(buffer, "frame count %d delta cycles %d time %f delta time %f\n", Time::frameCount, Time::deltaCycles, Time::time, Time::deltaTime);
-					// OutputDebugStringA(buffer);
-
-					Input::updateEOF();
-				}
+				sceneManager.add(asset); 
 			}
-			else
+
+			sceneManager.init();
+
+			running = true;
+
+			int frameCount = 0;
+			LARGE_INTEGER lastCounter;
+			QueryPerformanceCounter(&lastCounter);
+			unsigned long long lastCycleCount = __rdtsc();
+			while(running)
 			{
-				std::cout << "Failed scene validation" << std::endl;
+				MSG message;
+				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+				{
+					if(message.message == WM_QUIT)
+					{
+						running = false;
+					}
+
+					TranslateMessage(&message);
+					DispatchMessage(&message);
+				}
+
+				sceneManager.update();
+
+				RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+				// record time
+				unsigned long long endCycleCount = __rdtsc();
+				LARGE_INTEGER endCounter;
+				QueryPerformanceCounter(&endCounter);
+
+				unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+				long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+				float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+				float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+				lastCycleCount = endCycleCount;
+				lastCounter = endCounter;
+				frameCount++;
+
+				Time::frameCount = frameCount;
+				Time::deltaCycles = (int)cyclesElapsed;
+				Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+				Time::deltaTime = milliSecPerFrame;
+
+				Input::updateEOF();
 			}
 		}
-		else
-		{
+		else{
 			// TODO handle unlikely error?
 		}
 	}
-	else
-	{
+	else{
 		// TODO handle unlikely error?
 	}
-
+	
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			// init game?
+			// Scene scene;
+
+	// 		if(scene.validate("../data/scenes/simple.scene", assetFilePaths)){
+	// 			std::cout << "Calling scene load" << std::endl;
+	// 			// scene.load(lpCmdLine, assetFilePaths);
+	// 			scene.load("../data/scenes/simple.scene", assetFilePaths);
+
+	// 			scene.init();
+
+	// 			running = true;
+
+	// 			int frameCount = 0;
+	// 			LARGE_INTEGER lastCounter;
+	// 			QueryPerformanceCounter(&lastCounter);
+	// 			unsigned long long lastCycleCount = __rdtsc();
+	// 			while(running)
+	// 			{
+	// 				MSG message;
+	// 				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+	// 				{
+	// 					if(message.message == WM_QUIT)
+	// 					{
+	// 						running = false;
+	// 					}
+
+	// 					TranslateMessage(&message);
+	// 					DispatchMessage(&message);
+	// 				}
+
+	// 				// run game update?
+	// 				scene.update();
+
+	// 				RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+	// 				// record time
+	// 				unsigned long long endCycleCount = __rdtsc();
+	// 				LARGE_INTEGER endCounter;
+	// 				QueryPerformanceCounter(&endCounter);
+
+	// 				unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+	// 				long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+	// 				float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+	// 				float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+	// 				lastCycleCount = endCycleCount;
+	// 				lastCounter = endCounter;
+	// 				frameCount++;
+
+	// 				Time::frameCount = frameCount;
+	// 				Time::deltaCycles = (int)cyclesElapsed;
+	// 				Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+	// 				Time::deltaTime = milliSecPerFrame;
+
+	// 				Input::updateEOF();
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			std::cout << "Failed scene validation" << std::endl;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		// TODO handle unlikely error?
+	// 	}
+	// }
+	// else
+	// {
+	// 	// TODO handle unlikely error?
+	// }
+
+// 	return 0;
+// }

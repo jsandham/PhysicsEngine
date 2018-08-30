@@ -28,6 +28,70 @@ Manager::Manager()
 	textures = NULL;
 	meshes = NULL;
 	gmeshes = NULL;
+
+	std::ifstream in("../data/build_settings.json", std::ios::in | std::ios::binary);
+	std::ostringstream contents; contents << in.rdbuf(); in.close();
+
+	json::JSON jsonBuildSettings = JSON::Load(contents.str());
+
+	json::JSON::JSONWrapper<map<string,JSON>> objects = jsonBuildSettings.ObjectRange();
+	map<string,JSON>::iterator it;
+
+	for(it = objects.begin(); it != objects.end(); it++){
+		if(it->first == "Settings"){
+			settings.maxAllowedEntities = it->second["maxAllowedEntities"].ToInt();
+			settings.maxAllowedTransforms = it->second["maxAllowedTransforms"].ToInt();
+			settings.maxAllowedRigidbodies = it->second["maxAllowedRigidbodies"].ToInt();
+			settings.maxAllowedCameras = it->second["maxAllowedCameras"].ToInt();
+			settings.maxAllowedMeshRenderers = it->second["maxAllowedMeshRenderers"].ToInt();
+			settings.maxAllowedDirectionalLights = it->second["maxAllowedDirectionalLights"].ToInt();
+			settings.maxAllowedSpotLights = it->second["maxAllowedSpotLights"].ToInt();
+			settings.maxAllowedPointLights = it->second["maxAllowedPointLights"].ToInt();
+
+			settings.maxAllowedMaterials = it->second["maxAllowedMaterials"].ToInt();
+			settings.maxAllowedTextures = it->second["maxAllowedTextures"].ToInt();
+			settings.maxAllowedShaders = it->second["maxAllowedShaders"].ToInt();
+			settings.maxAllowedMeshes = it->second["maxAllowedMeshes"].ToInt();
+			settings.maxAllowedGMeshes = it->second["maxAllowedGMeshes"].ToInt();
+		}
+	}
+
+	bool error = settings.maxAllowedEntities <= 0;
+	error |= settings.maxAllowedTransforms <= 0;
+	error |= settings.maxAllowedRigidbodies <= 0;
+	error |= settings.maxAllowedCameras <= 0;
+	error |= settings.maxAllowedMeshRenderers <= 0;
+	error |= settings.maxAllowedDirectionalLights <= 0;
+	error |= settings.maxAllowedSpotLights <= 0;
+	error |= settings.maxAllowedPointLights <= 0;
+
+	error |= settings.maxAllowedMaterials <= 0;
+	error |= settings.maxAllowedTextures <= 0;
+	error |= settings.maxAllowedShaders <= 0;
+	error |= settings.maxAllowedMeshes <= 0;
+	error |= settings.maxAllowedGMeshes <= 0;
+
+	if(error){
+		std::cout << "Error: Max allowed values cannot be equal to or less than zero" << std::endl;
+		return;
+	}
+
+	// allocate space for all entities and components
+	entities = new Entity[settings.maxAllowedEntities];
+	transforms = new Transform[settings.maxAllowedTransforms];
+	rigidbodies = new Rigidbody[settings.maxAllowedRigidbodies];
+	cameras = new Camera[settings.maxAllowedCameras];
+	meshRenderers = new MeshRenderer[settings.maxAllowedMeshRenderers];
+	directionalLights = new DirectionalLight[settings.maxAllowedDirectionalLights];
+	spotLights = new SpotLight[settings.maxAllowedSpotLights];
+	pointLights = new PointLight[settings.maxAllowedPointLights];
+
+	// allocate space for all assets
+	materials = new Material[settings.maxAllowedMaterials];
+	textures = new Texture2D[settings.maxAllowedTextures];
+	shaders = new Shader[settings.maxAllowedShaders];
+	meshes = new Mesh[settings.maxAllowedMeshes];
+	gmeshes = new GMesh[settings.maxAllowedGMeshes];
 }
 
 Manager::~Manager()
@@ -48,14 +112,14 @@ Manager::~Manager()
 	delete [] gmeshes;
 }
 
-bool Manager::validate(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
+bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 {
 	std::vector<int> materialShaderIds;
 	std::vector<int> materialTextureIds;
 
 	// check that all asset id's are unique and that the shader and texture ids on materials match actual shaders and textures
-	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
-		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
+	for(unsigned int i = 0; i < assets.size(); i++){
+		std::string jsonAssetFilePath = assets[i].filepath.substr(0, assets[i].filepath.find_last_of(".")) + ".json";
 		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
 		std::ostringstream contents; contents << in.rdbuf(); in.close();
 
@@ -63,17 +127,17 @@ bool Manager::validate(std::string &sceneFilePath, std::vector<std::string> &ass
 
 		int assetId = jsonAsset["id"].ToInt();
 
-		std::cout << "asset id: " << assetId << " file path: " << assetFilePaths[i] << std::endl;
+		std::cout << "asset id: " << assetId << " file path: " << assets[i].filepath << std::endl;
 		
 		if(assetIdToFilePathMap.count(assetId) == 0){
-			assetIdToFilePathMap[assetId] == assetFilePaths[i];
+			assetIdToFilePathMap[assetId] == assets[i].filepath;
 		}
 		else{
-			std::cout << "Error: Duplicate asset ids exist" << std::endl;
+			std::cout << "Error: Duplicate asset id (" << assetId << ") exists" << std::endl;
 			return false;
 		}
 
-		if(assetFilePaths[i].substr(assetFilePaths[i].find_last_of(".") + 1) == "material"){
+		if(assets[i].filepath.substr(assets[i].filepath.find_last_of(".") + 1) == "material"){
 			materialShaderIds.push_back(jsonAsset["shaderId"].ToInt());
 			materialTextureIds.push_back(jsonAsset["textureId"].ToInt());
 		}
@@ -109,102 +173,101 @@ bool Manager::validate(std::string &sceneFilePath, std::vector<std::string> &ass
 		}
 	}
 
-	std::unordered_set<int> entityIds;
-	std::map<int, int> componentIdToEntityIdMap;
-
 	// check that all entities and components have unique ids
-	std::string jsonSceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".json";
-	std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
-	std::ostringstream contents; contents << in.rdbuf(); in.close();
+	for(unsigned int i = 0; i < scenes.size(); i++){
+		std::cout << "validating scene: " << scenes[i].name << std::endl;
 
-	json::JSON jsonScene = JSON::Load(contents.str());
+		std::unordered_set<int> entityIds;
+		std::map<int, int> componentIdToEntityIdMap;
 
-	json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
-	map<string,JSON>::iterator it;
+		std::string jsonSceneFilePath = scenes[i].filepath.substr(0, scenes[i].filepath.find_last_of(".")) + ".json";
+		std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
+		std::ostringstream contents; contents << in.rdbuf(); in.close();
 
-	for(it = objects.begin(); it != objects.end(); it++){
-		if(it->first == "id" || it->first == "Settings"){
-			continue;
-		}
+		json::JSON jsonScene = JSON::Load(contents.str());
 
-		int objectId = std::stoi(it->first);
-		std::string type = it->second["type"].ToString();
+		json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
+		map<string,JSON>::iterator it;
 
-		if(type == "Entity"){
-			if (entityIds.find(objectId) == entityIds.end()) {
-				entityIds.insert(objectId);
-			}
-			else{
-				std::cout << "Error: Duplicate entity id found" << std::endl;
-				return false;
-			}
-		}
-		else{
-			int entityId = it->second["entity"].ToInt();
-			if(componentIdToEntityIdMap.count(objectId) == 0){
-				componentIdToEntityIdMap[objectId] = entityId;
-			}
-			else{
-				std::cout << "Error: Duplicate component ids exist" << std::endl;
-				return false;
-			}
+		for(it = objects.begin(); it != objects.end(); it++){
+			if(it->first == "id"){ continue; }
 
-			if(type == "MeshRenderer"){
-				int meshId = it->second["mesh"].ToInt();
-				int materialId = it->second["material"].ToInt();
+			int objectId = std::stoi(it->first);
+			std::string type = it->second["type"].ToString();
 
-				if(assetIdToFilePathMap.count(meshId) != 1){
-					std::cout << "Error: Mesh id found on MeshRenderer does not match a mesh" << std::endl;
-					return false;
+			if(type == "Entity"){
+				if (entityIds.find(objectId) == entityIds.end()) {
+					entityIds.insert(objectId);
 				}
-
-				if(assetIdToFilePathMap.count(materialId) != 1){
-					std::cout << "Error: Material id found on MeshRenderer does not match a material" << std::endl;
+				else{
+					std::cout << "Error: Duplicate entity id found" << std::endl;
 					return false;
 				}
 			}
+			else{
+				int entityId = it->second["entity"].ToInt();
+				if(componentIdToEntityIdMap.count(objectId) == 0){
+					componentIdToEntityIdMap[objectId] = entityId;
+				}
+				else{
+					std::cout << "Error: Duplicate component ids exist" << std::endl;
+					return false;
+				}
 
+				if(type == "MeshRenderer"){
+					int meshId = it->second["mesh"].ToInt();
+					int materialId = it->second["material"].ToInt();
 
+					if(assetIdToFilePathMap.count(meshId) != 1){
+						std::cout << "Error: Mesh id found on MeshRenderer does not match a mesh" << std::endl;
+						return false;
+					}
+
+					if(assetIdToFilePathMap.count(materialId) != 1){
+						std::cout << "Error: Material id found on MeshRenderer does not match a material" << std::endl;
+						return false;
+					}
+				}
+			}
 		}
-	}
 
-	// check that every components entity id matches an existing entity
-	std::map<int, int>::iterator iter;
-	for(iter = componentIdToEntityIdMap.begin(); iter != componentIdToEntityIdMap.end(); iter++){
-		int entityId = iter->second;
-		if(entityIds.find(entityId) == entityIds.end()){
-			std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
+		// check that every components entity id matches an existing entity
+		std::map<int, int>::iterator iter;
+		for(iter = componentIdToEntityIdMap.begin(); iter != componentIdToEntityIdMap.end(); iter++){
+			int entityId = iter->second;
+			if(entityIds.find(entityId) == entityIds.end()){
+				std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
+			}
 		}
 	}
 
 	return true;
 }
 
-void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFilePaths)
+void Manager::load(Scene scene, std::vector<Asset> assets)
 {
-	// create asset id to filepath map
-	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
-		// open asset files json object and get asset id
-		std::string jsonAssetFilePath = assetFilePaths[i].substr(0, assetFilePaths[i].find_last_of(".")) + ".json";
-		std::cout << "jsonAssetFilePath: " << jsonAssetFilePath << std::endl;
-		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
-		std::ostringstream contents; contents << in.rdbuf(); in.close();
+	// // create asset id to filepath map
+	// for(unsigned int i = 0; i < assets.size(); i++){
+	// 	// open asset files json object and get asset id
+	// 	std::string jsonAssetFilePath = assets[i].filepath.substr(0, assets[i].filepath.find_last_of(".")) + ".json";
+	// 	std::cout << "jsonAssetFilePath: " << jsonAssetFilePath << std::endl;
+	// 	std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents; contents << in.rdbuf(); in.close();
 
-		std::string jsonString = contents.str();
-		json::JSON jsonAsset = JSON::Load(jsonString);
+	// 	json::JSON jsonAsset = JSON::Load(contents.str());
 
-		int assetId = jsonAsset["id"].ToInt();
+	// 	int assetId = jsonAsset["id"].ToInt();
 
-		std::cout << "asset id: " << assetId << " file path: " << assetFilePaths[i] << std::endl;
+	// 	std::cout << "asset id: " << assetId << " file path: " << assets[i].filepath << std::endl;
 		
-		assetIdToFilePathMap[assetId] = assetFilePaths[i];
-	}
+	// 	assetIdToFilePathMap[assetId] = assets[i].filepath;
+	// }
 
-	std::cout << "scene file path: " << sceneFilePath << std::endl;
+	std::cout << "scene file path: " << scene.filepath << std::endl;
 
-	std::string binarySceneFilePath = sceneFilePath.substr(0, sceneFilePath.find_last_of(".")) + ".scene";
+	std::string binarySceneFilePath = scene.filepath.substr(0, scene.filepath.find_last_of(".")) + ".scene";
 
-	std::cout << "scene file path: " << sceneFilePath << " binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
+	std::cout << "scene file path: " << scene.filepath << " binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
 
 	SceneHeader sceneHeader = {};
 	FILE* file = fopen(binarySceneFilePath.c_str(), "rb");
@@ -241,62 +304,33 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 		numberOfSpotLights = sceneHeader.numberOfSpotLights;
 		numberOfPointLights = sceneHeader.numberOfPointLights;
 
-		bytesRead = fread(&settings, sizeof(SceneSettings), 1, file);
-
-		totalNumberOfEntitiesAlloc = settings.maxAllowedEntities;
-		totalNumberOfTransformsAlloc = settings.maxAllowedTransforms;
-		totalNumberOfRigidbodiesAlloc = settings.maxAllowedRigidbodies;
-		totalNumberOfCamerasAlloc = settings.maxAllowedCameras;
-		totalNumberOfMeshRenderersAlloc = settings.maxAllowedMeshRenderers;
-		totalNumberOfDirectionalLightsAlloc= settings.maxAllowedDirectionalLights;
-		totalNumberOfSpotLightsAlloc = settings.maxAllowedSpotLights;
-		totalNumberOfPointLightsAlloc = settings.maxAllowedPointLights;
-
-		std::cout << "Total number of entities alloc: " << totalNumberOfEntitiesAlloc << std::endl;
-		std::cout << "Total number of transforms alloc: " << totalNumberOfTransformsAlloc << std::endl;
-		std::cout << "Total number of rigidbodies alloc: " << totalNumberOfRigidbodiesAlloc << std::endl;
-		std::cout << "Total number of cameras alloc: " << totalNumberOfCamerasAlloc << std::endl;
-		std::cout << "Total number of mesh renderers alloc: " << totalNumberOfMeshRenderersAlloc << std::endl;
-		std::cout << "Total number of directional lights alloc: " << totalNumberOfDirectionalLightsAlloc << std::endl;
-		std::cout << "Total number of spot lights alloc: " << totalNumberOfSpotLightsAlloc << std::endl;
-		std::cout << "Total number of point lights alloc: " << totalNumberOfPointLightsAlloc << std::endl;
-
-		bool error = numberOfEntities > totalNumberOfEntitiesAlloc;
-		error |= numberOfTransforms > totalNumberOfTransformsAlloc;
-		error |= numberOfRigidbodies > totalNumberOfRigidbodiesAlloc;
-		error |= numberOfCameras > totalNumberOfCamerasAlloc;
-		error |= numberOfMeshRenderers > totalNumberOfMeshRenderersAlloc;
-		error |= numberOfDirectionalLights > totalNumberOfDirectionalLightsAlloc;
-		error |= numberOfSpotLights > totalNumberOfSpotLightsAlloc;
-		error |= numberOfPointLights > totalNumberOfPointLightsAlloc;
+		bool error = numberOfEntities > settings.maxAllowedEntities;
+		error |= numberOfTransforms > settings.maxAllowedTransforms;
+		error |= numberOfRigidbodies > settings.maxAllowedRigidbodies;
+		error |= numberOfCameras > settings.maxAllowedCameras;
+		error |= numberOfMeshRenderers > settings.maxAllowedMeshRenderers;
+		error |= numberOfDirectionalLights > settings.maxAllowedDirectionalLights;
+		error |= numberOfSpotLights > settings.maxAllowedSpotLights;
+		error |= numberOfPointLights > settings.maxAllowedPointLights;
 
 		if(error){
 			std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
 			return;
 		}
 
-		error = totalNumberOfEntitiesAlloc <= 0;
-		error |= totalNumberOfTransformsAlloc <= 0;
-		error |= totalNumberOfRigidbodiesAlloc <= 0;
-		error |= totalNumberOfCamerasAlloc <= 0;
-		error |= totalNumberOfMeshRenderersAlloc <= 0;
-		error |= totalNumberOfDirectionalLightsAlloc <= 0;
-		error |= totalNumberOfPointLightsAlloc <= 0;
+		error = settings.maxAllowedEntities <= 0;
+		error |= settings.maxAllowedTransforms <= 0;
+		error |= settings.maxAllowedRigidbodies <= 0;
+		error |= settings.maxAllowedCameras <= 0;
+		error |= settings.maxAllowedMeshRenderers <= 0;
+		error |= settings.maxAllowedDirectionalLights <= 0;
+		error |= settings.maxAllowedSpotLights <= 0;
+		error |= settings.maxAllowedPointLights <= 0;
 
 		if(error){
 			std::cout << "Error: Total number of entities and components must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
 			return;
 		}
-
-		// allocate memory blocks for entities and components
-		entities = new Entity[totalNumberOfEntitiesAlloc];
-		transforms = new Transform[totalNumberOfTransformsAlloc];
-		rigidbodies = new Rigidbody[totalNumberOfRigidbodiesAlloc];
-		cameras = new Camera[totalNumberOfCamerasAlloc];
-		meshRenderers = new MeshRenderer[totalNumberOfMeshRenderersAlloc];
-		directionalLights = new DirectionalLight[totalNumberOfDirectionalLightsAlloc];
-		spotLights = new SpotLight[totalNumberOfSpotLightsAlloc];
-		pointLights = new PointLight[totalNumberOfPointLightsAlloc];
 
 		// de-serialize entities and components
 		bytesRead = fread(&entities[0], numberOfEntities*sizeof(Entity), 1, file);
@@ -307,14 +341,6 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 		bytesRead = fread(&directionalLights[0], numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
 		bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
 		bytesRead = fread(&pointLights[0], numberOfPointLights*sizeof(PointLight), 1, file);
-
-		// for(int i = 0; i < numberOfEntities; i++){
-		// 	for(int j = 0; j < 8; j++){
-		// 		std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
-		// 	}
-		// }
-
-		std::cout << "number of bytes read from file: " << bytesRead << std::endl;
 
 		fclose(file);
 	}
@@ -367,12 +393,6 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
 	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
-	// for(int i = 0; i < numberOfEntities; i++){
-	// 	for(int j = 0; j < 8; j++){
-	// 		std::cout << "component types: " << entities[i].componentTypes[j] << " globalComponentIndices: " << entities[i].globalComponentIndices[j] << std::endl;
-	// 	}
-	// }
-
 	// find all unique materials
 	std::vector<int> materialIds;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
@@ -389,10 +409,8 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 		}
 	}
 
-	totalNumberOfMaterialsAlloc = (int)materialIds.size();
-
-	// allocate materials and meshes
-	materials = new Material[totalNumberOfMaterialsAlloc];
+	//totalNumberOfMaterialsAlloc = (int)materialIds.size();
+	numberOfMaterials = (int)materialIds.size();
 
 	// de-serialize all unique materials found
 	for(unsigned int i = 0; i < materialIds.size(); i++){
@@ -421,7 +439,7 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 	// find all unique textures and shaders 
 	std::vector<int> textureIds;
 	std::vector<int> shaderIds;
-	for(int i = 0; i < totalNumberOfMaterialsAlloc; i++){
+	for(unsigned int i = 0; i < materialIds.size(); i++){
 		bool textureIdFound = false;
 		for(unsigned int j = 0; j < textureIds.size(); j++){
 			if(materials[i].textureId == textureIds[j]){
@@ -447,14 +465,11 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 		}
 	}
 
-	totalNumberOfTexturesAlloc = (int)textureIds.size();
-	totalNumberOfShadersAlloc = (int)shaderIds.size();
+	// include internally used depth shader
+	shaderIds.push_back(34343434);
 
-	std::cout << "total number of textures alloc: " << totalNumberOfTexturesAlloc << " total number of shaders alloc: " << totalNumberOfShadersAlloc << std::endl;
-
-	// allocate textures and shaders
-	textures = new Texture2D[totalNumberOfTexturesAlloc];
-	shaders = new Shader[totalNumberOfShadersAlloc];
+	numberOfTextures = (int)textureIds.size();
+	numberOfShaders = (int)shaderIds.size();
 
 	// de-serialize all unique textures and shaders found
 	for(unsigned int i = 0; i < textureIds.size(); i++){
@@ -477,12 +492,6 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 
 		std::vector<unsigned char> data;
 		data.resize(size);
-
-		// for (int j = 0; j < size; j++){
-		// 	data[j] = raw[j];
-		// 	std::cout << (int)data[j] << " ";
-		// }
-		// std::cout << "" << std::endl;
 
 		textures[i].textureId = textureId;
 		textures[i].globalIndex = i;
@@ -523,7 +532,6 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 	    std::string vertexShader, geometryShader, fragmentShader;
 	
 	    if(startOfGeometryTag == std::string::npos){
-	    	std::cout << "BBBBBBBBBBB" << std::endl;
 	    	vertexShader = shader.substr(startOfVertexTag + vertexTag.length(), startOfFragmentTag - vertexTag.length());
 	    	geometryShader = "";
 	    	fragmentShader = shader.substr(startOfFragmentTag + fragmentTag.length(), shader.length());
@@ -568,11 +576,6 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 	    	fragmentShader.erase(lastNotOfIndex + 1);
 	    }
 
-	    // std::cout << "shader: " << shader << std::endl;
-	    std::cout << "start of vertex shader: " << startOfVertexTag  << " start of fragment shader: " << startOfFragmentTag << " start of geometry shader: " << startOfGeometryTag << std::endl;
-	    std::cout << "vertexShader: " << vertexShader << std::endl;
-	    //std::cout << "fragmentShader: " << fragmentShader << std::endl;
-
 	    shaders[i].shaderId = shaderId;
 	    shaders[i].globalIndex = i;
 	    shaders[i].vertexShader = vertexShader;
@@ -581,7 +584,7 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 	}
 
 	// set global material, shader, and texture indices 
-	for(int i = 0; i < totalNumberOfMaterialsAlloc; i++){
+	for(unsigned int i = 0; i < materialIds.size(); i++){
 		materials[i].globalMaterialIndex = i;
 		materials[i].globalShaderIndex = assetIdToGlobalIndexMap[materials[i].shaderId];
 		materials[i].globalTextureIndex = assetIdToGlobalIndexMap[materials[i].textureId];
@@ -603,10 +606,8 @@ void Manager::load(std::string &sceneFilePath, std::vector<std::string> &assetFi
 		}
 	}
 
-	totalNumberOfMeshesAlloc = (int)meshIds.size();
-
-	// allocate meshes
-	meshes = new Mesh[totalNumberOfMeshesAlloc];
+	//totalNumberOfMeshesAlloc = (int)meshIds.size();
+	numberOfMeshes = (int)meshIds.size();
 
 	// de-serialize all unique meshes found
 	for(unsigned int i = 0; i < meshIds.size(); i++){
@@ -696,6 +697,31 @@ int Manager::getNumberOfPointLights()
 	return numberOfPointLights;
 }
 
+int Manager::getNumberOfMaterials()
+{
+	return numberOfMaterials;
+}
+
+int Manager::getNumberOfShaders()
+{
+	return numberOfShaders;
+}
+
+int Manager::getNumberOfTextures()
+{
+	return numberOfTextures;
+}
+
+int Manager::getNumberOfMeshes()
+{
+	return numberOfMeshes;
+}
+
+int Manager::getNumberOfGmeshes()
+{
+	return numberOfGMeshes;
+}
+
 Entity* Manager::getEntity(int globalIndex)
 {
 	if(globalIndex >= numberOfEntities){
@@ -766,6 +792,51 @@ PointLight* Manager::getPointLight(int globalIndex)
 	}
 
 	return &pointLights[globalIndex];
+}
+
+Material* Manager::getMaterial(int globalIndex)
+{
+	if(globalIndex >= numberOfMaterials){
+		std::cout << "Error: Trying to access material outside of range" << std::endl;
+	}
+
+	return &materials[globalIndex];
+}
+
+Shader* Manager::getShader(int globalIndex)
+{
+	if(globalIndex >= numberOfShaders){
+		std::cout << "Error: Trying to access shader outside of range" << std::endl;
+	}
+
+	return &shaders[globalIndex];
+}
+
+Texture2D* Manager::getTexture2D(int globalIndex)
+{
+	if(globalIndex >= numberOfTextures){
+		std::cout << "Error: Trying to access texture outside of range" << std::endl;
+	}
+
+	return &textures[globalIndex];
+}
+
+Mesh* Manager::getMesh(int globalIndex)
+{
+	if(globalIndex >= numberOfMeshes){
+		std::cout << "Error: Trying to access mesh outside of range" << std::endl;
+	}
+
+	return &meshes[globalIndex];
+}
+
+GMesh* Manager::getGMesh(int globalIndex)
+{
+	if(globalIndex >= numberOfGMeshes){
+		std::cout << "Error: Trying to access gmeshes outside of range" << std::endl;
+	}
+
+	return &gmeshes[globalIndex];
 }
 
 

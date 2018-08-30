@@ -1,5 +1,4 @@
 #include "../../include/graphics/Buffer.h"
-#include <iostream>
 
 using namespace PhysicsEngine;
 

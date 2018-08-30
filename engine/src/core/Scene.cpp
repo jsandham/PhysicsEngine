@@ -1,57 +1,67 @@
-#include "../../include/core/Scene.h"
+// #include "../../include/core/Scene.h"
 
-using namespace PhysicsEngine;
+// using namespace PhysicsEngine;
 
-Scene::Scene()
-{
-	physicsSystem = NULL;
-	renderSystem = NULL;
-	playerSystem = NULL;
-}
+// Scene::Scene()
+// {
+	
+// }
 
-Scene::~Scene()
-{
-	delete physicsSystem;
-	delete renderSystem;
-	delete playerSystem;
-}
+// Scene::~Scene()
+// {
+	
+// }
 
-bool Scene::validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
-{
-	return manager.validate(sceneFilePath, assetFilePaths);
-}
+// Scene::Scene()
+// {
+// 	physicsSystem = NULL;
+// 	renderSystem = NULL;
+// 	playerSystem = NULL;
+// }
 
-void Scene::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
-{
-	sceneName = sceneFilePath;
+// Scene::~Scene()
+// {
+// 	delete physicsSystem;
+// 	delete renderSystem;
+// 	delete playerSystem;
+// }
 
-	std::cout << "scene: " << sceneFilePath << std::endl;
+// bool Scene::validate(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
+// {
+// 	return manager.validate(sceneFilePath, assetFilePaths);
+// }
 
-	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
-		std::cout << "asset file: " << assetFilePaths[i] << std::endl;
-	}
+// void Scene::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
+// {
+// 	sceneName = sceneFilePath;
 
-	manager.load(sceneFilePath, assetFilePaths);
+// 	std::cout << "scene: " << sceneFilePath << std::endl;
 
-	// systems
-	renderSystem = new RenderSystem(&manager);
-	physicsSystem = new PhysicsSystem(&manager);
-	playerSystem = new PlayerSystem(&manager);
-}
+// 	for(unsigned int i = 0; i < assetFilePaths.size(); i++){
+// 		std::cout << "asset file: " << assetFilePaths[i] << std::endl;
+// 	}
 
-void Scene::init()
-{
-	physicsSystem->init();
-	renderSystem->init();
-	playerSystem->init();
-}
+// 	manager.load(sceneFilePath, assetFilePaths);
 
-void Scene::update()
-{
-	physicsSystem->update();
-	renderSystem->update();
-	playerSystem->update();
-}
+// 	// systems
+// 	renderSystem = new RenderSystem(&manager);
+// 	physicsSystem = new PhysicsSystem(&manager);
+// 	playerSystem = new PlayerSystem(&manager);
+// }
+
+// void Scene::init()
+// {
+// 	physicsSystem->init();
+// 	renderSystem->init();
+// 	playerSystem->init();
+// }
+
+// void Scene::update()
+// {
+// 	physicsSystem->update();
+// 	renderSystem->update();
+// 	playerSystem->update();
+// }
 
 
 

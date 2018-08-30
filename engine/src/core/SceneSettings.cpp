@@ -1,13 +1,13 @@
-#include "../../include/core/SceneSettings.h"
+// #include "../../include/core/SceneSettings.h"
 
-using namespace PhysicsEngine;
+// using namespace PhysicsEngine;
 
-SceneSettings::SceneSettings()
-{
+// SceneSettings::SceneSettings()
+// {
 	
-}
+// }
 
-SceneSettings::~SceneSettings()
-{
+// SceneSettings::~SceneSettings()
+// {
 	
-}
+// }

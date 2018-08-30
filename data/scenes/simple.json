@@ -1,15 +1,5 @@
 {
   "id" : 10000000,
-  "Settings" : {
-    "maxAllowedEntities" : 100,
-    "maxAllowedTransforms" : 100,
-    "maxAllowedRigidbodies" : 100,
-    "maxAllowedCameras" : 10,
-    "maxAllowedMeshRenderers" : 100,
-    "maxAllowedDirectionalLights" : 20,
-    "maxAllowedSpotLights" : 20,
-    "maxAllowedPointLights" : 20
-  },
   "23424355" : {
     "type" : "Entity",
     "components" : [34356423, 34343456, 56875838]

@@ -15,9 +15,10 @@
 #include "../components/PointLight.h"
 #include "../components/Camera.h"
 
-// #include "../graphics/Framebuffer.h"
-// #include "../graphics/Buffer.h"
-// #include "../graphics/GraphicState.h"
+#include "../core/Texture2D.h"
+#include "../core/Cubemap.h"
+
+#include "../graphics/GLState.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -33,28 +34,23 @@ namespace PhysicsEngine
 			unsigned int numLights;
 			unsigned int pass;
 
-			// camera data
+			// camera data   //  Probably can get rid of this now that it is contained inside GLCamera???
 			glm::mat4 view;
 			glm::mat4 projection;
 			glm::vec3 cameraPos;
 
 			// shadow textures and framebuffer
-			// std::vector<Texture2D*> cascadeTexture2D;
-			// Texture2D* shadowTexture2D;
-			// Cubemap* shadowCubemap;
-			// Framebuffer* shadowFBO;
+			std::vector<Texture2D*> cascadeTexture2D;
+			Texture2D* shadowTexture2D;
+			Cubemap* shadowCubemap;
+			//Framebuffer* shadowFBO;
 
-			// // internal shaders
-			// Shader depthShader;
-			// Shader particleShader;
-
-			// // internal graphics state
-			// GraphicState state;
-
-			// std::vector<VertexArrayObject> meshVAO;
-			// std::vector<Buffer> vertexVBO;
-			// std::vector<Buffer> normalVBO;
-			// std::vector<Buffer> texCoordVBO;
+			// internal graphics state
+			GLCamera cameraState;
+			GLShadow shadowState;
+			GLDirectionalLight directionLightState;
+			GLSpotLight spotLightState;
+			GLPointLight pointLightState;
 
 			std::vector<glm::mat4> cascadeLightView;
 			std::vector<glm::mat4> cascadeOrthoProj;

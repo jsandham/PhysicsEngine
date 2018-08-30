@@ -2,7 +2,7 @@
 
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
-#include "../../include/stb_image/stb_image.h"
+#include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
 
@@ -164,6 +164,16 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
 		rawCubemapData[index + 2] = color.b;
 		rawCubemapData[index + 3] = color.a;
 	}
+}
+
+void Cubemap::readPixels()
+{
+	Graphics::readPixels(this);
+}
+
+void Cubemap::apply()
+{
+	Graphics::apply(this);
 }
 
 

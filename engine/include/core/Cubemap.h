@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
-#include "../core/Texture.h"
-#include "../core/Color.h"
+#include "Texture.h"
+#include "Color.h"
 
 namespace PhysicsEngine
 {
@@ -40,6 +40,9 @@ namespace PhysicsEngine
 			void setRawCubemapData(std::vector<unsigned char> data);
 			void setPixels(CubemapFace face, int x, int y, Color color);
 			void setPixel(CubemapFace face, int x, int y, Color color);
+
+			void readPixels();
+			void apply();
 	};
 }
 

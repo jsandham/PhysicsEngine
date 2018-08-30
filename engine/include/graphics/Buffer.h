@@ -1,8 +1,7 @@
 #ifndef __BUFFER_H__
 #define __BUFFER_H__
 
-#include <vector>
-
+#include <iostream>
 #include <GL/glew.h>
 #include <gl/gl.h>
 
