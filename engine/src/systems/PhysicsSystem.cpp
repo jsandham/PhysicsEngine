@@ -20,7 +20,7 @@
 
 using namespace PhysicsEngine;
 
-PhysicsSystem::PhysicsSystem(Manager *manager)
+PhysicsSystem::PhysicsSystem(Manager *manager, SceneContext* context)
 {
 	this->manager = manager;
 }

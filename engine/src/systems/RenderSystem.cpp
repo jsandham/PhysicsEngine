@@ -11,7 +11,7 @@ const unsigned int DEBUG_WIDTH = 1000, DEBUG_HEIGHT = 1000;
 
 const unsigned int NUM_CASCADES = 5;
 
-RenderSystem::RenderSystem(Manager *manager)
+RenderSystem::RenderSystem(Manager *manager, SceneContext* context)
 {
 	this->manager = manager;
 

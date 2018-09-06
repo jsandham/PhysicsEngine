@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-CleanUpSystem::CleanUpSystem(Manager *manager)
+CleanUpSystem::CleanUpSystem(Manager *manager, SceneContext* context)
 {
 	this->manager = manager;
 }

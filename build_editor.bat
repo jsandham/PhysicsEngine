@@ -8,7 +8,7 @@ set GLEW="C:\Program Files (x86)\glew-2.1.0\include"
 set ENGINE="C:\Users\James\Documents\PhysicsEngine\engine\include"
 
 set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi
-set Libs=engine.lib glew32.lib
+set Libs=engine.lib glew32.lib opengl32.lib
 set LinkerFlags=/SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /OUT:editor.exe /DEBUG
 
 mkdir build

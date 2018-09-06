@@ -57,7 +57,7 @@ namespace PhysicsEngine
 			std::vector<glm::mat4> cubeViewMatrices;
 
 		public:
-			RenderSystem(Manager *manager);
+			RenderSystem(Manager *manager, SceneContext* context);
 			~RenderSystem();
 
 			void init();

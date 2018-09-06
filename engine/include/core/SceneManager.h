@@ -36,6 +36,8 @@ namespace PhysicsEngine
 
 			void add(Scene scene);
 			void add(Asset asset);
+
+			bool validate();
 			void init();
 			void update();
 

@@ -6,6 +6,8 @@ using namespace PhysicsEngine;
 
 Entity::Entity()
 {
+	isActive = false;
+
 	entityId = -1;
 	globalEntityIndex = -1;
 
@@ -15,9 +17,24 @@ Entity::Entity()
 		globalComponentIndices[i] = -1;
 		componentIds[i] = -1;
 	}	
+
+	manager = NULL;
 }
 
 Entity::~Entity()
 {
 
 }
+
+void Entity::setManager(Manager* manager)
+{
+	// if(manager->check(this)){
+	// 	this->manager = manager;
+	// }
+	this->manager = manager;
+}
+
+// void Entity::dontDestroyOnLoad(Entity* entity)
+// {	
+// 	entity-
+// }

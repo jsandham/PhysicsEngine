@@ -168,7 +168,6 @@ namespace PhysicsEngine
 			Manager();
 			~Manager();
 
-			//void init();
 			bool validate(std::vector<Scene> scenes, std::vector<Asset> assets);
 			void load(Scene scene, std::vector<Asset> assets);
 
@@ -201,6 +200,23 @@ namespace PhysicsEngine
 			Texture2D* getTexture2D(int globalIndex);
 			Mesh* getMesh(int globalIndex);
 			GMesh* getGMesh(int globalIndex);
+
+			template<typename T>
+			T* getComponent(int globalIndex)
+			{
+				return NULL;
+			}
+
+			template<typename T>
+			void instantiate()
+			{
+
+			}
+
+			void destroy()
+			{
+
+			}
 
 		private:
 			template<typename T>

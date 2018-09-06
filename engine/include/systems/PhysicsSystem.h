@@ -29,7 +29,7 @@ namespace PhysicsEngine
 			bool start = false;
 
 		public:
-			PhysicsSystem(Manager *manager);
+			PhysicsSystem(Manager *manager, SceneContext* context);
 			~PhysicsSystem();
 
 			void init();

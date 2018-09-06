@@ -6,9 +6,9 @@ SceneManager::SceneManager()
 {
 	manager = new Manager();
 
-	playerSystem = new PlayerSystem(manager);
-	physicsSystem = new PhysicsSystem(manager);
-	renderSystem = new RenderSystem(manager);
+	playerSystem = new PlayerSystem(manager, &context);
+	physicsSystem = new PhysicsSystem(manager, &context);
+	renderSystem = new RenderSystem(manager, &context);
 }
 
 SceneManager::~SceneManager()
@@ -32,18 +32,23 @@ void SceneManager::add(Asset asset)
 	assets.push_back(asset);
 }
 
-void SceneManager::init()
+bool SceneManager::validate()
 {
 	if(scenes.size() == 0){
 		std::cout << "Warning: No scenes found" << std::endl;
-		return;
+		return false;
 	}
 
 	if(!validate(scenes, assets)){
 		std::cout << "Error: Validation failed" << std::endl;
-		return;
+		return false;
 	}
 
+	return true;
+}
+
+void SceneManager::init()
+{
 	loadingSceneIndex = -1;
 	activeSceneIndex = -1;
 }
@@ -61,6 +66,8 @@ void SceneManager::update()
 
 		load(*loadingScene, assets);
 
+		//compress();
+
 		playerSystem->init(); 
 		physicsSystem->init();
 		renderSystem->init();
@@ -73,7 +80,7 @@ void SceneManager::update()
 	if(activeScene != NULL){
 		//physicsSystem->update();
 		//renderSystem->update();
-		//playerSystem->update();
+		playerSystem->update();
 	}
 	
 }
@@ -87,3 +94,8 @@ void SceneManager::load(Scene scene, std::vector<Asset> assets)
 {
 	manager->load(scene, assets);
 }
+
+// void SceneManager::compress()
+// {
+// 	manager->compress();
+// }

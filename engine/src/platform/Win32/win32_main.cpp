@@ -346,52 +346,54 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				sceneManager.add(asset); 
 			}
 
-			sceneManager.init();
+			if(sceneManager.validate()){
+				sceneManager.init();
 
-			running = true;
+				running = true;
 
-			int frameCount = 0;
-			LARGE_INTEGER lastCounter;
-			QueryPerformanceCounter(&lastCounter);
-			unsigned long long lastCycleCount = __rdtsc();
-			while(running)
-			{
-				MSG message;
-				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+				int frameCount = 0;
+				LARGE_INTEGER lastCounter;
+				QueryPerformanceCounter(&lastCounter);
+				unsigned long long lastCycleCount = __rdtsc();
+				while(running)
 				{
-					if(message.message == WM_QUIT)
+					MSG message;
+					while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
 					{
-						running = false;
+						if(message.message == WM_QUIT)
+						{
+							running = false;
+						}
+
+						TranslateMessage(&message);
+						DispatchMessage(&message);
 					}
 
-					TranslateMessage(&message);
-					DispatchMessage(&message);
+					sceneManager.update();
+
+					RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+					// record time
+					unsigned long long endCycleCount = __rdtsc();
+					LARGE_INTEGER endCounter;
+					QueryPerformanceCounter(&endCounter);
+
+					unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+					long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+					float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+					float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+					lastCycleCount = endCycleCount;
+					lastCounter = endCounter;
+					frameCount++;
+
+					Time::frameCount = frameCount;
+					Time::deltaCycles = (int)cyclesElapsed;
+					Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+					Time::deltaTime = milliSecPerFrame;
+
+					Input::updateEOF();
 				}
-
-				sceneManager.update();
-
-				RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-				// record time
-				unsigned long long endCycleCount = __rdtsc();
-				LARGE_INTEGER endCounter;
-				QueryPerformanceCounter(&endCounter);
-
-				unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-				long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-				float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-				float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-				lastCycleCount = endCycleCount;
-				lastCounter = endCounter;
-				frameCount++;
-
-				Time::frameCount = frameCount;
-				Time::deltaCycles = (int)cyclesElapsed;
-				Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-				Time::deltaTime = milliSecPerFrame;
-
-				Input::updateEOF();
 			}
 		}
 		else{
@@ -404,94 +406,3 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			// init game?
-			// Scene scene;
-
-	// 		if(scene.validate("../data/scenes/simple.scene", assetFilePaths)){
-	// 			std::cout << "Calling scene load" << std::endl;
-	// 			// scene.load(lpCmdLine, assetFilePaths);
-	// 			scene.load("../data/scenes/simple.scene", assetFilePaths);
-
-	// 			scene.init();
-
-	// 			running = true;
-
-	// 			int frameCount = 0;
-	// 			LARGE_INTEGER lastCounter;
-	// 			QueryPerformanceCounter(&lastCounter);
-	// 			unsigned long long lastCycleCount = __rdtsc();
-	// 			while(running)
-	// 			{
-	// 				MSG message;
-	// 				while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
-	// 				{
-	// 					if(message.message == WM_QUIT)
-	// 					{
-	// 						running = false;
-	// 					}
-
-	// 					TranslateMessage(&message);
-	// 					DispatchMessage(&message);
-	// 				}
-
-	// 				// run game update?
-	// 				scene.update();
-
-	// 				RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-	// 				// record time
-	// 				unsigned long long endCycleCount = __rdtsc();
-	// 				LARGE_INTEGER endCounter;
-	// 				QueryPerformanceCounter(&endCounter);
-
-	// 				unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-	// 				long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-	// 				float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-	// 				float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-	// 				lastCycleCount = endCycleCount;
-	// 				lastCounter = endCounter;
-	// 				frameCount++;
-
-	// 				Time::frameCount = frameCount;
-	// 				Time::deltaCycles = (int)cyclesElapsed;
-	// 				Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-	// 				Time::deltaTime = milliSecPerFrame;
-
-	// 				Input::updateEOF();
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			std::cout << "Failed scene validation" << std::endl;
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		// TODO handle unlikely error?
-	// 	}
-	// }
-	// else
-	// {
-	// 	// TODO handle unlikely error?
-	// }
-
-// 	return 0;
-// }

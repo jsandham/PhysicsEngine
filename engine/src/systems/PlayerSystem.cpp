@@ -10,8 +10,9 @@ const float PlayerSystem::PAN_SENSITIVITY = 0.01f;
 const float PlayerSystem::SCROLL_SENSITIVITY = 0.001f;
 const float PlayerSystem::TRANSLATE_SENSITIVITY = 0.05f;
 
-PlayerSystem::PlayerSystem(Manager *manager)
+PlayerSystem::PlayerSystem(Manager *manager, SceneContext* context)
 {
+	this->context = context;
 	this->manager = manager;
 }
 
@@ -27,6 +28,16 @@ void PlayerSystem::init()
 
 void PlayerSystem::update()
 {
+	if(Input::getKey(KeyCode::A)){
+		std::cout << "A pressed" << std::endl;
+		context->setSceneToLoad("empty.scene");
+	}
+	else if(Input::getKey(KeyCode::B)){
+		std::cout << "B pressed" << std::endl;
+		context->setSceneToLoad("simple.scene");
+	}
+
+
 	Camera* camera = manager->getCamera(0);
 
 	glm::vec3 position = camera->getPosition();

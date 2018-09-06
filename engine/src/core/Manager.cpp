@@ -92,6 +92,21 @@ Manager::Manager()
 	shaders = new Shader[settings.maxAllowedShaders];
 	meshes = new Mesh[settings.maxAllowedMeshes];
 	gmeshes = new GMesh[settings.maxAllowedGMeshes];
+
+	numberOfEntities = 0;
+	numberOfTransforms = 0;
+	numberOfRigidbodies = 0;
+	numberOfCameras = 0;
+	numberOfMeshRenderers = 0;
+	numberOfDirectionalLights = 0;
+	numberOfSpotLights = 0;
+	numberOfPointLights = 0;
+
+	numberOfMaterials = 0;
+	numberOfTextures = 0;
+	numberOfShaders = 0;
+	numberOfMeshes = 0;
+	numberOfGMeshes = 0;
 }
 
 Manager::~Manager()
@@ -130,7 +145,7 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 		std::cout << "asset id: " << assetId << " file path: " << assets[i].filepath << std::endl;
 		
 		if(assetIdToFilePathMap.count(assetId) == 0){
-			assetIdToFilePathMap[assetId] == assets[i].filepath;
+			assetIdToFilePathMap[assetId] = assets[i].filepath;
 		}
 		else{
 			std::cout << "Error: Duplicate asset id (" << assetId << ") exists" << std::endl;
@@ -173,12 +188,12 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 		}
 	}
 
-	// check that all entities and components have unique ids
+	// check that all entities and components have unique ids accross all scenes and that all scene ids are unique
+	std::unordered_set<int> sceneIds;
+	std::unordered_set<int> entityIds;
+	std::map<int, int> componentIdToEntityIdMap;
 	for(unsigned int i = 0; i < scenes.size(); i++){
 		std::cout << "validating scene: " << scenes[i].name << std::endl;
-
-		std::unordered_set<int> entityIds;
-		std::map<int, int> componentIdToEntityIdMap;
 
 		std::string jsonSceneFilePath = scenes[i].filepath.substr(0, scenes[i].filepath.find_last_of(".")) + ".json";
 		std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
@@ -190,7 +205,17 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 		map<string,JSON>::iterator it;
 
 		for(it = objects.begin(); it != objects.end(); it++){
-			if(it->first == "id"){ continue; }
+			if(it->first == "id"){ 
+				int sceneId = it->second.ToInt();
+				if(sceneIds.find(sceneId) == sceneIds.end()){
+					sceneIds.insert(sceneId);
+					continue;
+				} 
+				else{
+					std::cout << "Error: Duplicate scene id found" << std::endl;
+					return false;
+				}
+			}
 
 			int objectId = std::stoi(it->first);
 			std::string type = it->second["type"].ToString();
@@ -237,6 +262,7 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 			int entityId = iter->second;
 			if(entityIds.find(entityId) == entityIds.end()){
 				std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
+				return false;
 			}
 		}
 	}
@@ -246,7 +272,7 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 
 void Manager::load(Scene scene, std::vector<Asset> assets)
 {
-	// // create asset id to filepath map
+	// create asset id to filepath map
 	// for(unsigned int i = 0; i < assets.size(); i++){
 	// 	// open asset files json object and get asset id
 	// 	std::string jsonAssetFilePath = assets[i].filepath.substr(0, assets[i].filepath.find_last_of(".")) + ".json";
@@ -263,6 +289,15 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	// 	assetIdToFilePathMap[assetId] = assets[i].filepath;
 	// }
 
+	//for(unsigned int i = 0; i < numberOfEntities; i++){
+	//	if(!entities[i].isActive){
+	//
+	//	}
+	//}
+
+	
+
+
 	std::cout << "scene file path: " << scene.filepath << std::endl;
 
 	std::string binarySceneFilePath = scene.filepath.substr(0, scene.filepath.find_last_of(".")) + ".scene";
@@ -277,15 +312,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 
 		std::cout << "de-serialized scene header file contains the following information: " << std::endl;
 
-		std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
-		std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
-		std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
-		std::cout << "numberOfCameras: " << sceneHeader.numberOfCameras << std::endl;
-		std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
-		std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
-		std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
-		std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
-
 		std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
 		std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
 		std::cout << "sizeOfRigidbodies: " << sceneHeader.sizeOfRigidbody << std::endl;
@@ -295,14 +321,32 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
 		std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
 
-		numberOfEntities = sceneHeader.numberOfEntities;
-		numberOfTransforms = sceneHeader.numberOfTransforms;
-		numberOfRigidbodies = sceneHeader.numberOfRigidbodies;
-		numberOfCameras = sceneHeader.numberOfCameras;
-		numberOfMeshRenderers = sceneHeader.numberOfMeshRenderers;
-		numberOfDirectionalLights = sceneHeader.numberOfDirectionalLights;
-		numberOfSpotLights = sceneHeader.numberOfSpotLights;
-		numberOfPointLights = sceneHeader.numberOfPointLights;
+		int existingNumberOfEntities = numberOfEntities;
+		int existingNumberOfTransforms = numberOfTransforms;
+		int existingNumberOfRigidbodies = numberOfRigidbodies;
+		int existingNumberOfCameras = numberOfCameras;
+		int existingNumberOfMeshRenderers = numberOfMeshRenderers;
+		int existingNumberOfDirectionalLights = numberOfDirectionalLights;
+		int existingNumberOfSpotLights = numberOfSpotLights;
+		int existingNumberOfPointLights = numberOfPointLights;
+
+		numberOfEntities = existingNumberOfEntities + sceneHeader.numberOfEntities;
+		numberOfTransforms = existingNumberOfTransforms + sceneHeader.numberOfTransforms;
+		numberOfRigidbodies = existingNumberOfRigidbodies + sceneHeader.numberOfRigidbodies;
+		numberOfCameras = existingNumberOfCameras + sceneHeader.numberOfCameras;
+		numberOfMeshRenderers = existingNumberOfMeshRenderers + sceneHeader.numberOfMeshRenderers;
+		numberOfDirectionalLights = existingNumberOfDirectionalLights + sceneHeader.numberOfDirectionalLights;
+		numberOfSpotLights = existingNumberOfSpotLights + sceneHeader.numberOfSpotLights;
+		numberOfPointLights = existingNumberOfPointLights + sceneHeader.numberOfPointLights;
+
+		std::cout << "numberOfEntities: " << numberOfEntities << std::endl;
+		std::cout << "numberOfTransforms: " << numberOfTransforms << std::endl;
+		std::cout << "numberOfRigidbodies: " << numberOfRigidbodies << std::endl;
+		std::cout << "numberOfCameras: " << numberOfCameras << std::endl;
+		std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
+		std::cout << "numberOfDirectionalLights: " << numberOfDirectionalLights << std::endl;
+		std::cout << "numberOfSpotLights: " << numberOfSpotLights << std::endl;
+		std::cout << "numberOfPointLights: " << numberOfPointLights << std::endl;
 
 		bool error = numberOfEntities > settings.maxAllowedEntities;
 		error |= numberOfTransforms > settings.maxAllowedTransforms;
@@ -333,14 +377,14 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		}
 
 		// de-serialize entities and components
-		bytesRead = fread(&entities[0], numberOfEntities*sizeof(Entity), 1, file);
-		bytesRead = fread(&transforms[0], numberOfTransforms*sizeof(Transform), 1, file);
-		bytesRead = fread(&rigidbodies[0], numberOfRigidbodies*sizeof(Rigidbody), 1, file);
-		bytesRead = fread(&cameras[0], numberOfCameras*sizeof(Camera), 1, file);
-		bytesRead = fread(&meshRenderers[0], numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
-		bytesRead = fread(&directionalLights[0], numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
-		bytesRead = fread(&spotLights[0], numberOfSpotLights*sizeof(SpotLight), 1, file);
-		bytesRead = fread(&pointLights[0], numberOfPointLights*sizeof(PointLight), 1, file);
+		bytesRead = fread(&entities[existingNumberOfEntities], sceneHeader.numberOfEntities*sizeof(Entity), 1, file);
+		bytesRead = fread(&transforms[existingNumberOfTransforms], sceneHeader.numberOfTransforms*sizeof(Transform), 1, file);
+		bytesRead = fread(&rigidbodies[existingNumberOfRigidbodies], sceneHeader.numberOfRigidbodies*sizeof(Rigidbody), 1, file);
+		bytesRead = fread(&cameras[existingNumberOfCameras], sceneHeader.numberOfCameras*sizeof(Camera), 1, file);
+		bytesRead = fread(&meshRenderers[existingNumberOfMeshRenderers], sceneHeader.numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
+		bytesRead = fread(&directionalLights[existingNumberOfDirectionalLights], sceneHeader.numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
+		bytesRead = fread(&spotLights[existingNumberOfSpotLights], sceneHeader.numberOfSpotLights*sizeof(SpotLight), 1, file);
+		bytesRead = fread(&pointLights[existingNumberOfPointLights], sceneHeader.numberOfPointLights*sizeof(PointLight), 1, file);
 
 		fclose(file);
 	}
@@ -348,6 +392,16 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "Error: Failed to open scene binary file " << binarySceneFilePath << " for reading" << std::endl;
 		return;
 	}
+
+	//set manager on entites and components
+	for(int i = 0; i < numberOfEntities; i++){ entities[i].setManager(this); }
+	for(int i = 0; i < numberOfTransforms; i++){ transforms[i].setManager(this); }
+	for(int i = 0; i < numberOfRigidbodies; i++){ rigidbodies[i].setManager(this); }
+	for(int i = 0; i < numberOfCameras; i++){ cameras[i].setManager(this); }
+	for(int i = 0; i < numberOfMeshRenderers; i++){ meshRenderers[i].setManager(this); }
+	for(int i = 0; i < numberOfDirectionalLights; i++){ directionalLights[i].setManager(this); }
+	for(int i = 0; i < numberOfSpotLights; i++){ spotLights[i].setManager(this); }
+	for(int i = 0; i < numberOfPointLights; i++){ pointLights[i].setManager(this); }
 
 	// map entity/component id to its global array index
 	for(int i = 0; i < numberOfEntities; i++){ idToGlobalIndexMap[entities[i].entityId] = i; }
@@ -393,6 +447,11 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
 	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
+	std::cout << "number of mesh renderers: " << numberOfMeshRenderers << std::endl;
+	for(int i = 0; i < numberOfMeshRenderers; i++){
+		std::cout << "material id found on meshrenderer: " << meshRenderers[i].materialId << " mesh id: " << meshRenderers[i].meshId << std::endl;
+	}
+
 	// find all unique materials
 	std::vector<int> materialIds;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
@@ -405,11 +464,11 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		}
 
 		if(!materialIdFound){
+			std::cout << "material id: " << meshRenderers[i].materialId << " i: " << i << std::endl;
 			materialIds.push_back(meshRenderers[i].materialId);
 		}
 	}
 
-	//totalNumberOfMaterialsAlloc = (int)materialIds.size();
 	numberOfMaterials = (int)materialIds.size();
 
 	// de-serialize all unique materials found
@@ -419,6 +478,8 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		assetIdToGlobalIndexMap[materialId] = i;
 
 		std::string materialFilePath = assetIdToFilePathMap[materialId];
+
+		std::cout << "material id: " << materialId << " material file path: " << materialFilePath << std::endl;
 
 		FILE* file = fopen(materialFilePath.c_str(), "rb");
 		size_t bytesRead;
@@ -433,8 +494,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 
 		std::cout << "material id: " << materials[i].materialId << " texture id: " << materials[i].textureId << " shader id: " << materials[i].shaderId << std::endl;
 	}
-
-	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
 
 	// find all unique textures and shaders 
 	std::vector<int> textureIds;
@@ -606,7 +665,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		}
 	}
 
-	//totalNumberOfMeshesAlloc = (int)meshIds.size();
 	numberOfMeshes = (int)meshIds.size();
 
 	// de-serialize all unique meshes found

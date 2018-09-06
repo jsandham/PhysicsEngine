@@ -44,6 +44,7 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 int main(int argc, char* argv[])
 {
 	std::string scenePath = "../data/scenes/simple.json";
+	//std::string scenePath = "../data/scenes/empty.json";
 
 	if(!serializeScene(scenePath)){
 		std::cout << "Failed to serialize scene" << std::endl;
@@ -360,6 +361,8 @@ int serializeScene(std::string scenePath)
 
 		fwrite(&meshRenderer, sizeof(MeshRenderer), 1, file);
 	}
+
+	std::cout << "size of mesh renderer: " << sizeof(MeshRenderer) << std::endl;
 
 	// serialize directional lights
 	objects = directionalLights.ObjectRange();

@@ -6,6 +6,7 @@
 namespace PhysicsEngine
 {
 	class Entity;
+	class Manager;
 
 	typedef enum ComponentType
 	{
@@ -20,7 +21,12 @@ namespace PhysicsEngine
 
 	class Component
 	{
+		private:
+			Manager* manager;
+
 		public:
+			bool isActive;
+
 			int globalEntityIndex;
 			int globalComponentIndex;
 			int componentId;
@@ -30,7 +36,17 @@ namespace PhysicsEngine
 			Component();
 			virtual ~Component() = 0;
 
-			Entity* Component::getEntity(std::vector<Entity*> entities);
+			void setManager(Manager* manager);
+
+			Entity* getEntity();
+
+			template<typename T>
+			T* getComponent()
+			{
+				Entity* entity = getEntity();
+
+				return entity->getComponent<T>();
+			}
 	};
 }
 

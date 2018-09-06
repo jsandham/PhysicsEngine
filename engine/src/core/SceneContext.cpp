@@ -21,12 +21,13 @@ void SceneContext::add(Scene scene)
 
 void SceneContext::setSceneToLoad(std::string sceneName)
 {
-	bool sceneFound = true;
+	bool sceneFound = false;
 	for(unsigned int i = 0; i < scenes.size(); i++){
+		std::cout << "scene name: " << scenes[i].name << std::endl;
 		if(scenes[i].name == sceneName){
 			sceneToLoadIndex = i;
 			sceneToLoad = sceneName;
-			sceneFound = false;
+			sceneFound = true;
 			break;
 		}
 	}

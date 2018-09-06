@@ -8,7 +8,7 @@ namespace PhysicsEngine
 	class CleanUpSystem : public System
 	{
 		public:
-			CleanUpSystem(Manager *manager);
+			CleanUpSystem(Manager *manager, SceneContext* context);
 			~CleanUpSystem();
 
 			void init();

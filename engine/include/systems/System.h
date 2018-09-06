@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "../core/Entity.h"
+#include "../core/SceneContext.h"
 #include "../core/Manager.h"
 
 namespace PhysicsEngine
@@ -11,7 +11,8 @@ namespace PhysicsEngine
 	class System
 	{
 		protected:
-			Manager *manager;
+			SceneContext* context;
+			Manager* manager;
 
 		public:
 			System();

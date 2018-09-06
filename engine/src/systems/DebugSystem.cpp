@@ -12,7 +12,7 @@
 
 using namespace PhysicsEngine;
 
-DebugSystem::DebugSystem(Manager* manager)
+DebugSystem::DebugSystem(Manager* manager, SceneContext* context)
 {
 	this->manager = manager;
 }

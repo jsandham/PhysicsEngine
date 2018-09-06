@@ -8,7 +8,7 @@ namespace PhysicsEngine
 	class DebugSystem : public System
 	{
 		public:
-			DebugSystem(Manager* manager);
+			DebugSystem(Manager* manager, SceneContext* context);
 			~DebugSystem();
 
 			void init();
