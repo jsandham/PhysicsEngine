@@ -43,12 +43,11 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 
 int main(int argc, char* argv[])
 {
-	std::string scenePath = "../data/scenes/simple.json";
+	//std::string scenePath = "../data/scenes/simple.json";
 	//std::string scenePath = "../data/scenes/empty.json";
 
-	if(!serializeScene(scenePath)){
-		std::cout << "Failed to serialize scene" << std::endl;
-	}
+	if(!serializeScene("../data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
+	if(!serializeScene("../data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
 	// material files
 	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder("../data/materials");

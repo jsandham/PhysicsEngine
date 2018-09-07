@@ -4,18 +4,15 @@ if not defined DevEnvDir (
 	call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x64
 )
 
+mkdir build
+pushd build
+
 set GLEW="C:\Program Files (x86)\glew-2.1.0\include"
 set CUDA="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include"
 
 set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi -nologo
 set Libs=user32.lib gdi32.lib xinput.lib opengl32.lib glew32.lib cudart.lib
 set LinkerFlags=/SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /OUT:engine.exe /DEBUG
-
-rem set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi -nologo -LD -FS
-rem set LinkerFlags=/SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /DLL /OUT:engine.dll
-
-mkdir build
-pushd build
 
 :: compile engine cuda source files to obj
 "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64" -I%CUDA% -I%GLEW% -I"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include" --compile ..\engine\src\cuda\fluid_kernels.cu
@@ -92,10 +89,19 @@ cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLE
 :: compile engine platform c++ source files
 cl /c /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include" /I%GLEW% %CompilerFlags% ..\engine\src\platform\Win32\win32_main.cpp
 
-rem lib -nologo -out:engine.lib stb_image_implementation.obj SceneContext.obj SceneManager.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Texture3D.obj Cubemap.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Graphics.obj Buffer.obj OpenGL.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj
-
-:: link 
+:: link engine platform
 link %LinkerFlags% stb_image_implementation.obj SceneContext.obj SceneManager.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Texture3D.obj Cubemap.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Graphics.obj Buffer.obj OpenGL.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj %Libs%
+
+
+set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi -nologo -LD -FS
+set LinkerFlags=/SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /DLL /OUT:engine.dll
+
+:: create lib library
+lib -nologo -out:engine.lib stb_image_implementation.obj SceneContext.obj SceneManager.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Texture3D.obj Cubemap.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Graphics.obj Buffer.obj OpenGL.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj
+
+:: create engine dll
+link %LinkerFlags% stb_image_implementation.obj SceneContext.obj SceneManager.obj Manager.obj Entity.obj Octtree.obj Physics.obj Log.obj Input.obj Time.obj Sphere.obj Bounds.obj Ray.obj Line.obj Capsule.obj Geometry.obj Frustum.obj GMesh.obj Mesh.obj Material.obj Color.obj Texture.obj Texture2D.obj Texture3D.obj Cubemap.obj Shader.obj Component.obj Solid.obj Cloth.obj Fluid.obj Joint.obj HingeJoint.obj SpringJoint.obj Camera.obj Collider.obj BoxCollider.obj SphereCollider.obj CapsuleCollider.obj Transform.obj Rigidbody.obj DirectionalLight.obj SpotLight.obj PointLight.obj MeshRenderer.obj System.obj RenderSystem.obj PhysicsSystem.obj PlayerSystem.obj win32_main.obj Graphics.obj Buffer.obj OpenGL.obj Util.obj fluid_kernels.obj cloth_kernels.obj solid_kernels.obj math_kernels.obj jacobi_kernels.obj pcg_kernels.obj CudaPhysics.obj CudaSolvers.obj %Libs%
+
 
 popd
 
