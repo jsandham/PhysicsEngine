@@ -11,7 +11,7 @@ namespace PhysicsEngine
 	{
 		public:
 			int meshId;
-			int globalIndex;
+			//int globalIndex;
 
 			std::vector<float> vertices;
 			std::vector<float> normals;

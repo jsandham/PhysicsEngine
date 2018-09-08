@@ -7,7 +7,7 @@ using namespace PhysicsEngine;
 Texture::Texture()
 {
 	textureId = -1;
-	globalIndex = -1;
+	// globalIndex = -1;
 }
 
 int Texture::getWidth() const

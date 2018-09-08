@@ -8,6 +8,8 @@ namespace PhysicsEngine
 	class GMesh
 	{
 		public:
+			int gmeshId;
+
 			int dim;                //dimension of mesh (1, 2, or 3) 
 		    int ng;                 //number of element groups
 		    int n;                  //total number of nodes                      

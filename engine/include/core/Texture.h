@@ -35,7 +35,7 @@ namespace PhysicsEngine
 
 		public:
 			int textureId;
-			int globalIndex;
+			// int globalIndex;
 
 			GLHandle handle;
 

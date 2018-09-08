@@ -393,7 +393,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		return;
 	}
 
-	//set manager on entites and components
+	// set manager on entites and components
 	for(int i = 0; i < numberOfEntities; i++){ entities[i].setManager(this); }
 	for(int i = 0; i < numberOfTransforms; i++){ transforms[i].setManager(this); }
 	for(int i = 0; i < numberOfRigidbodies; i++){ rigidbodies[i].setManager(this); }
@@ -422,30 +422,35 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = (int)ComponentType::SpotLightType; }
 	for(int i = 0; i < numberOfPointLights; i++){ componentIdToTypeMap[pointLights[i].componentId] = (int)ComponentType::PointLightType; }
 
+
+
+
+
+
 	// set global indices in entities
-	for(int i = 0; i < numberOfEntities; i++){
-		entities[i].globalEntityIndex = i;
+	// for(int i = 0; i < numberOfEntities; i++){
+	// 	entities[i].globalEntityIndex = i;
 
-		for(int j = 0; j < 8; j++){
-			int componentId = entities[i].componentIds[j];
-			if(componentId != -1){
-				int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
-				int componentType = componentIdToTypeMap.find(componentId)->second;
+	// 	for(int j = 0; j < 8; j++){
+	// 		int componentId = entities[i].componentIds[j];
+	// 		if(componentId != -1){
+	// 			int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
+	// 			int componentType = componentIdToTypeMap.find(componentId)->second;
 
-				entities[i].globalComponentIndices[j] = globalComponentIndex;
-				entities[i].componentTypes[j] = componentType;
-			}
-		}
-	}
+	// 			entities[i].globalComponentIndices[j] = globalComponentIndex;
+	// 			entities[i].componentTypes[j] = componentType;
+	// 		}
+	// 	}
+	// }
 
 	// set global indices in components
-	setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
-	setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
-	setGlobalIndexOnComponent<Camera>(cameras, numberOfCameras);
-	setGlobalIndexOnComponent<MeshRenderer>(meshRenderers, numberOfMeshRenderers);
-	setGlobalIndexOnComponent<DirectionalLight>(directionalLights, numberOfDirectionalLights);
-	setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
-	setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
+	// setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
+	// setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
+	// setGlobalIndexOnComponent<Camera>(cameras, numberOfCameras);
+	// setGlobalIndexOnComponent<MeshRenderer>(meshRenderers, numberOfMeshRenderers);
+	// setGlobalIndexOnComponent<DirectionalLight>(directionalLights, numberOfDirectionalLights);
+	// setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
+	// setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
 
 	std::cout << "number of mesh renderers: " << numberOfMeshRenderers << std::endl;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
@@ -553,7 +558,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		data.resize(size);
 
 		textures[i].textureId = textureId;
-		textures[i].globalIndex = i;
+		//textures[i].globalIndex = i;
 		textures[i].setRawTextureData(data);
 
 		stbi_image_free(raw);
@@ -636,18 +641,18 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	    }
 
 	    shaders[i].shaderId = shaderId;
-	    shaders[i].globalIndex = i;
+	    //shaders[i].globalIndex = i;
 	    shaders[i].vertexShader = vertexShader;
 	    shaders[i].geometryShader = geometryShader;
 	    shaders[i].fragmentShader = fragmentShader;
 	}
 
 	// set global material, shader, and texture indices 
-	for(unsigned int i = 0; i < materialIds.size(); i++){
-		materials[i].globalMaterialIndex = i;
-		materials[i].globalShaderIndex = assetIdToGlobalIndexMap[materials[i].shaderId];
-		materials[i].globalTextureIndex = assetIdToGlobalIndexMap[materials[i].textureId];
-	}
+	// for(unsigned int i = 0; i < materialIds.size(); i++){
+	// 	materials[i].globalMaterialIndex = i;
+	// 	materials[i].globalShaderIndex = assetIdToGlobalIndexMap[materials[i].shaderId];
+	// 	materials[i].globalTextureIndex = assetIdToGlobalIndexMap[materials[i].textureId];
+	// }
 
 	// find all unique meshes
 	std::vector<int> meshIds;
@@ -685,7 +690,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 			bytesRead = fread(&header, sizeof(MeshHeader), 1, file);
 
 			meshes[i].meshId = header.meshId;
-			meshes[i].globalIndex = i;
+			//meshes[i].globalIndex = i;
 
 			meshes[i].vertices.resize(header.verticesSize);
 			meshes[i].normals.resize(header.normalsSize);
@@ -709,10 +714,10 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
 
 	// set global mesh and material index on mesh renderers
-	for(int i = 0; i < numberOfMeshRenderers; i++){
-		meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
-		meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
-	}	
+	// for(int i = 0; i < numberOfMeshRenderers; i++){
+	// 	meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
+	// 	meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
+	// }	
 }
 
 int Manager::getNumberOfEntities()
@@ -780,121 +785,160 @@ int Manager::getNumberOfGmeshes()
 	return numberOfGMeshes;
 }
 
-Entity* Manager::getEntity(int globalIndex)
+Entity* Manager::getEntity(int id)
 {
-	if(globalIndex >= numberOfEntities){
-		std::cout << "Error: Trying to access entity outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &entities[it->second];
 	}
-
-	return &entities[globalIndex];
+	else{
+		std::cout << "Error: No entity with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Transform* Manager::getTransform(int globalIndex)
+Transform* Manager::getTransform(int id)
 {
-	if(globalIndex >= numberOfTransforms){
-		std::cout << "Error: Trying to access transform outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &transforms[it->second];
 	}
-
-	return &transforms[globalIndex];
+	else{
+		std::cout << "Error: No transform with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Rigidbody* Manager::getRigidbody(int globalIndex)
+Rigidbody* Manager::getRigidbody(int id)
 {
-	if(globalIndex >= numberOfRigidbodies){
-		std::cout << "Error: Trying to access rigidbody outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &rigidbodies[it->second];
 	}
-
-	return &rigidbodies[globalIndex];
+	else{
+		std::cout << "Error: No rigidbody with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Camera* Manager::getCamera(int globalIndex)
+Camera* Manager::getCamera(int id)
 {
-	if(globalIndex >= numberOfCameras){
-		std::cout << "Error: Trying to access camera outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &cameras[it->second];
 	}
-
-	return &cameras[globalIndex];
+	else{
+		std::cout << "Error: No camera with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-MeshRenderer* Manager::getMeshRenderer(int globalIndex)
+MeshRenderer* Manager::getMeshRenderer(int id)
 {
-	if(globalIndex >= numberOfMeshRenderers){
-		std::cout << "Error: Trying to access mesh renderer outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &meshRenderers[it->second];
 	}
-
-	return &meshRenderers[globalIndex];
+	else{
+		std::cout << "Error: No entity with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-DirectionalLight* Manager::getDirectionalLight(int globalIndex)
+DirectionalLight* Manager::getDirectionalLight(int id)
 {
-	if(globalIndex >= numberOfDirectionalLights){
-		std::cout << "Error: Trying to access directional light outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &directionalLights[it->second];
 	}
-
-	return &directionalLights[globalIndex];
+	else{
+		std::cout << "Error: No mesh renderer with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-SpotLight* Manager::getSpotLight(int globalIndex)
+SpotLight* Manager::getSpotLight(int id)
 {
-	if(globalIndex >= numberOfSpotLights){
-		std::cout << "Error: Trying to access spot light outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &spotLights[it->second];
 	}
-
-	return &spotLights[globalIndex];
+	else{
+		std::cout << "Error: No spot light with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }	
 
-PointLight* Manager::getPointLight(int globalIndex)
+PointLight* Manager::getPointLight(int id)
 {
-	if(globalIndex >= numberOfPointLights){
-		std::cout << "Error: Trying to access point light outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &pointLights[it->second];
 	}
-
-	return &pointLights[globalIndex];
+	else{
+		std::cout << "Error: No point light with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Material* Manager::getMaterial(int globalIndex)
+Material* Manager::getMaterial(int id)
 {
-	if(globalIndex >= numberOfMaterials){
-		std::cout << "Error: Trying to access material outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &materials[it->second];
 	}
-
-	return &materials[globalIndex];
+	else{
+		std::cout << "Error: No material with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Shader* Manager::getShader(int globalIndex)
+Shader* Manager::getShader(int id)
 {
-	if(globalIndex >= numberOfShaders){
-		std::cout << "Error: Trying to access shader outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &shaders[it->second];
 	}
-
-	return &shaders[globalIndex];
+	else{
+		std::cout << "Error: No shader with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Texture2D* Manager::getTexture2D(int globalIndex)
+Texture2D* Manager::getTexture2D(int id)
 {
-	if(globalIndex >= numberOfTextures){
-		std::cout << "Error: Trying to access texture outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &textures[it->second];
 	}
-
-	return &textures[globalIndex];
+	else{
+		std::cout << "Error: No texture with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-Mesh* Manager::getMesh(int globalIndex)
+Mesh* Manager::getMesh(int id)
 {
-	if(globalIndex >= numberOfMeshes){
-		std::cout << "Error: Trying to access mesh outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &meshes[it->second];
 	}
-
-	return &meshes[globalIndex];
+	else{
+		std::cout << "Error: No mesh with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
-GMesh* Manager::getGMesh(int globalIndex)
+GMesh* Manager::getGMesh(int id)
 {
-	if(globalIndex >= numberOfGMeshes){
-		std::cout << "Error: Trying to access gmeshes outside of range" << std::endl;
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &gmeshes[it->second];
 	}
-
-	return &gmeshes[globalIndex];
+	else{
+		std::cout << "Error: No gmesh with id " << id << " was found" << std::endl;
+		return NULL;
+	}
 }
 
 

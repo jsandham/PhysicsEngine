@@ -27,8 +27,8 @@ namespace PhysicsEngine
 		public:
 			bool isActive;
 
-			int globalEntityIndex;
-			int globalComponentIndex;
+			//int globalEntityIndex;
+			//int globalComponentIndex;
 			int componentId;
 			int entityId;
 

@@ -4,14 +4,15 @@ using namespace PhysicsEngine;
 
 Material::Material()
 {
-
+	materialId = -1;
+	shaderId = -1;
+	textureId = -1;
 }
 
 Material::~Material()
 {
 
 }
-
 
 
 

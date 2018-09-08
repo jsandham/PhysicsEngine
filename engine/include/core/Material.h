@@ -22,9 +22,9 @@ namespace PhysicsEngine
 			int shaderId;
 			int textureId;
 
-			int globalMaterialIndex;
-			int globalTextureIndex;
-			int globalShaderIndex;
+			// int globalMaterialIndex;
+			// int globalTextureIndex;
+			// int globalShaderIndex;
 
 		public:
 			Material();

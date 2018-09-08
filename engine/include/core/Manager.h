@@ -122,7 +122,7 @@ namespace PhysicsEngine
 	class Manager
 	{
 		private:
-			// active entities and components
+			// entities and components
 			int numberOfEntities;
 			int numberOfTransforms;
 			int numberOfRigidbodies;
@@ -186,26 +186,129 @@ namespace PhysicsEngine
 			int getNumberOfMeshes();
 			int getNumberOfGmeshes();
 
-			Entity* getEntity(int globalIndex);
-			Transform* getTransform(int globalIndex);
-			Rigidbody* getRigidbody(int globalIndex);
-			Camera* getCamera(int globalIndex);
-			MeshRenderer* getMeshRenderer(int globalIndex);
-			DirectionalLight* getDirectionalLight(int globalIndex);
-			SpotLight* getSpotLight(int globalIndex);
-			PointLight* getPointLight(int globalIndex);
+			Entity* getEntity(int id);
+			Transform* getTransform(int id);
+			Rigidbody* getRigidbody(int id);
+			Camera* getCamera(int id);
+			MeshRenderer* getMeshRenderer(int id);
+			DirectionalLight* getDirectionalLight(int id);
+			SpotLight* getSpotLight(int id);
+			PointLight* getPointLight(int id);
 
-			Material* getMaterial(int globalIndex);
-			Shader* getShader(int globalIndex);
-			Texture2D* getTexture2D(int globalIndex);
-			Mesh* getMesh(int globalIndex);
-			GMesh* getGMesh(int globalIndex);
+			Material* getMaterial(int id);
+			Shader* getShader(int id);
+			Texture2D* getTexture2D(int id);
+			Mesh* getMesh(int id);
+			GMesh* getGMesh(int id);
 
 			template<typename T>
-			T* getComponent(int globalIndex)
+			T* getComponent(int entityId)
 			{
+				Entity* entity = getEntity(entityId);
+
+				if(entity == NULL){
+					return NULL;
+				}
+
+				for(int i = 0; i < 8; i++){
+					int componentId = entity->componentIds[i];
+					int componentType = -1;
+					int componentGlobalIndex = -1;
+					if(componentId != -1){
+						std::map<int, int>::iterator it1 = componentIdToTypeMap.find(componentId);
+						if(it1 != componentIdToTypeMap.end()){
+							componentType = it1->second;
+						}
+						else{
+							std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in component type map" << std::endl;
+							return NULL;
+						}
+
+						if(componentType == -1){
+							std::cout << "Error: When searching entity with id " << entityId << " the component type found corresponding to component " << componentId << " was invalid" << std::endl;
+							return NULL;
+						}
+
+						if(componentType == getType<T>()){
+							std::map<int, int>::iterator it2 = idToGlobalIndexMap.find(componentId);
+							if(it2 != idToGlobalIndexMap.end()){
+								componentGlobalIndex = it2->second;
+							}
+							else{
+								std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in map" << std::endl;
+								return NULL;
+							}
+
+							// TODO: replace with map
+							if(componentType == (int)ComponentType::TransformType){
+								return &transforms[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::RigidbodyType){
+								return &rigidbodies[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::CameraType){
+								return &cameras[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::MeshRendererType){
+								return &directionalLights[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::DirectionalLightType){
+								return &pointLights[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::SpotLightType){
+								return &spotLights[componentGlobalIndex];
+							}
+							else if(componentType == (int)ComponentType::PointLightType){
+								return &meshRenderers[componentGlobalIndex];
+							}
+							else{
+								return NULL;
+							}
+						}
+					}
+				}
+
 				return NULL;
 			}
+
+			template<typename T>
+			int getType()
+			{
+				int type = -1;
+				if(typeid(T) == typeid(Transform)){
+					type = 0;
+				}
+				else if(typeid(T) == typeid(Rigidbody)){
+					type = 1;
+				}
+				else if(typeid(T) == typeid(Camera)){
+					type = 2;
+				}
+				else if(typeid(T) == typeid(DirectionalLight)){
+					type = 3;
+				}
+				else if(typeid(T) == typeid(PointLight)){
+					type = 4;
+				}
+				else if(typeid(T) == typeid(SpotLight)){
+					type = 5;
+				}
+				else if(typeid(T) == typeid(MeshRenderer)){
+					type = 6;
+				}
+				else if(typeid(T) == typeid(Cloth)){
+					type = 7;
+				}
+				else if(typeid(T) == typeid(Solid)){
+					type = 8;
+				}
+				else if(typeid(T) == typeid(Fluid)){
+					type = 9;
+				}
+				
+				return type;
+			}
+
 
 			template<typename T>
 			void instantiate()
@@ -218,18 +321,18 @@ namespace PhysicsEngine
 
 			}
 
-		private:
-			template<typename T>
-			void setGlobalIndexOnComponent(T* components, int numberOfComponents)
-			{
-				for(int i = 0; i < numberOfComponents; i++){
-					components[i].globalComponentIndex = i;
+		// private:
+		// 	template<typename T>
+		// 	void setGlobalIndexOnComponent(T* components, int numberOfComponents)
+		// 	{
+		// 		for(int i = 0; i < numberOfComponents; i++){
+		// 			components[i].globalComponentIndex = i;
 
-					int entityId = components[i].entityId;
-					int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
-					components[i].globalEntityIndex = globalEntityIndex;
-				}
-			}
+		// 			int entityId = components[i].entityId;
+		// 			int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
+		// 			components[i].globalEntityIndex = globalEntityIndex;
+		// 		}
+		// 	}
 	};
 }
 

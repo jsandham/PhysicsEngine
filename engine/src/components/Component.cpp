@@ -9,8 +9,8 @@ Component::Component()
 {
 	isActive = false;
 
-	globalEntityIndex = -1;
-	globalComponentIndex = -1;
+	//globalEntityIndex = -1;
+	//globalComponentIndex = -1;
 	componentId = -1;
 	entityId = -1;
 
@@ -29,5 +29,5 @@ void Component::setManager(Manager* manager)
 
 Entity* Component::getEntity()
 {
-	return manager->getEntity(globalEntityIndex);
+	return manager->getEntity(entityId);
 }
