@@ -104,12 +104,30 @@ TextureFormat Texture2D::getFormat()
 	return format;
 }
 
-void Texture2D::setRawTextureData(std::vector<unsigned char> data)
+void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format)
 {
-	if (width*height*numChannels != data.size()){
-		Log::Error("Texture2D: raw texture data does not match size of texture");
-		return;
+	switch(format)
+	{
+		case TextureFormat::Depth:
+			numChannels = 1;
+			break;
+		case TextureFormat::RG:
+			numChannels = 2;
+			break;
+		case TextureFormat::RGB:
+			numChannels = 3;
+			break;
+		case TextureFormat::RGBA:
+			numChannels = 4;
+			break;
+		default:
+			std::cout << "Error: Unsupported texture format " << format << std::endl;
+			return;
 	}
+
+	this->width = width;
+	this->height = height;
+	this->format = format;
 
 	rawTextureData = data;
 }

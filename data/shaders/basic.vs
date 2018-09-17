@@ -8,9 +8,10 @@ layout (std140) uniform CameraBlock
 };
 
 uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 in vec3 position;
-in vec3 normal;
 
 void main()
 {

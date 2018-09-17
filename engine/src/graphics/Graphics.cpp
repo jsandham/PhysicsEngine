@@ -318,36 +318,11 @@ void Graphics::compile(Shader* shader)
 	}
 
 	shader->programCompiled = (success != 0);
-
-	// GLint count;
-	// GLint size;
-	// GLenum type;
-	// GLchar name[16];
-	// GLsizei length;
-
-	// // fill vector of strings with attributes from shader program
-	// glGetProgramiv(Program, GL_ACTIVE_ATTRIBUTES, &count);
-	// for(int i = 0; i < count; i++){
-	// 	glGetActiveAttrib(Program, (GLuint)i, 16, &length, &size, &type, name);
-	// 	attributes.push_back(std::string(name));
-	// 	attributeTypes.push_back(type);
-	// 	//std::cout << "attribute type: " << type << std::endl;
-	// 	//std::cout << "GL_FLOAT: " << GL_FLOAT << " GL_FLOAT_MAT4: " << GL_FLOAT_MAT4 << std::endl;
-	// }
-
-	// // fill vector of strings with uniforms from shader program
-	// glGetProgramiv(Program, GL_ACTIVE_UNIFORMS, &count);
-	// for(int i = 0; i < count; i++){
-	// 	glGetActiveUniform(Program, (GLuint)i, 16, &length, &size, &type, name);
-	// 	uniforms.push_back(std::string(name));
-	// 	uniformTypes.push_back(type);
-	// 	//std::cout << "uniform type: " << type << std::endl;
-	// }
 }
 
 void Graphics::use(Shader* shader)
 {
-	if(shader->isCompiled()){
+	if(!shader->isCompiled()){
 		std::cout << "Error: Must compile shader before using" << std::endl;
 		return;
 	}
@@ -430,6 +405,9 @@ void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
 	if (locationIndex != -1){
 		glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
+	else{
+		std::cout << "Error: set mt4 name: " << name << " location index: " << locationIndex << std::endl;
+	}
 }
 
 void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockName, unsigned int bindingPoint)
@@ -437,6 +415,9 @@ void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockNa
 	GLuint blockIndex = glGetUniformBlockIndex(shader->program.handle, blockName.c_str()); 
 	if (blockIndex != GL_INVALID_INDEX){
 		glUniformBlockBinding(shader->program.handle, blockIndex, bindingPoint);
+	}
+	else{
+		std::cout << "error for block name: " << blockName << " block index: " << blockIndex << std::endl;
 	}
 }
 
@@ -455,7 +436,6 @@ void Graphics::generate(Mesh* mesh)
 	glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size()*sizeof(float), &(mesh->vertices[0]), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
 
 	glGenBuffers(1, &(mesh->normalVBO.handle));
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->normalVBO.handle);
@@ -478,7 +458,6 @@ void Graphics::destroy(Mesh* mesh)
 	glDeleteBuffers(1, &(mesh->vertexVBO.handle));
 	glDeleteBuffers(1, &(mesh->normalVBO.handle));
 	glDeleteBuffers(1, &(mesh->texCoordVBO.handle));
-
 }
 
 void Graphics::bind(Mesh* mesh)
@@ -489,6 +468,11 @@ void Graphics::bind(Mesh* mesh)
 void Graphics::unbind(Mesh* mesh)
 {
 	glBindVertexArray(0);
+}
+
+void Graphics::draw(Mesh* mesh)
+{
+	glDrawArrays(GL_TRIANGLES, 0, (int)mesh->vertices.size());
 }
 
 void Graphics::generate(GLCamera* state)
@@ -541,7 +525,7 @@ void Graphics::generate(GLShadow* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 736, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->handle.handle, 0, 736);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->handle.handle, 0, 736);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -585,7 +569,7 @@ void Graphics::generate(GLDirectionalLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 64, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->handle.handle, 0, 64);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 2, state->handle.handle, 0, 64);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -637,7 +621,7 @@ void Graphics::generate(GLSpotLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 100, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->handle.handle, 0, 100);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 3, state->handle.handle, 0, 100);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -731,7 +715,7 @@ void Graphics::generate(GLPointLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 76, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->handle.handle, 0, 76);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 4, state->handle.handle, 0, 76);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

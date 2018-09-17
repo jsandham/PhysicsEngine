@@ -529,6 +529,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		}
 	}
 
+	// TODO: maybe store internally used shaders a static strings directly in source code?
 	// include internally used depth shader
 	shaderIds.push_back(34343434);
 
@@ -550,18 +551,45 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		int width, height, numChannels;
 		unsigned char* raw = stbi_load(textureFilePath.c_str(), &width, &height, &numChannels, 0);
 
-		int size = (width) * (height) * (numChannels);
+		if(raw != NULL){
+			int size = width * height * numChannels;
 
-		std::cout << "size: " << size << " width: " << width << " height: " << height << " num channels: " << numChannels << std::endl;
+			std::cout << "size: " << size << " width: " << width << " height: " << height << " num channels: " << numChannels << std::endl;
 
-		std::vector<unsigned char> data;
-		data.resize(size);
+			std::vector<unsigned char> data;
+			data.resize(size);
 
-		textures[i].textureId = textureId;
-		//textures[i].globalIndex = i;
-		textures[i].setRawTextureData(data);
+			for(unsigned int j = 0; j < data.size(); j++){ data[j] = raw[j]; }
 
-		stbi_image_free(raw);
+			stbi_image_free(raw);
+
+			TextureFormat format;
+			switch(numChannels)
+			{
+				case 1:
+					format = TextureFormat::Depth;
+					break;
+				case 2:
+					format = TextureFormat::RG;
+					break;
+				case 3:
+					format = TextureFormat::RGB;
+					break;
+				case 4:
+					format = TextureFormat::RGBA;
+					break;
+				default:
+					std::cout << "Error: Unsupported number of channels (" << numChannels << ") found when loading texture " << textureFilePath << " (" << textureId << ")" << std::endl;
+					return;
+			}
+
+			textures[i].textureId = textureId;
+			textures[i].setRawTextureData(data, width, height, format);
+		}
+		else{
+			std::cout << "Error: stbi_load failed to load texture " << textureFilePath << " (" << textureId << ") with reported reason: " << stbi_failure_reason() << std::endl;
+			return;
+		}
 	}
 
 	std::cout << "textures loaded" << std::endl;
@@ -641,10 +669,11 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	    }
 
 	    shaders[i].shaderId = shaderId;
-	    //shaders[i].globalIndex = i;
 	    shaders[i].vertexShader = vertexShader;
 	    shaders[i].geometryShader = geometryShader;
 	    shaders[i].fragmentShader = fragmentShader;
+
+	    std::cout << vertexShader << std::endl;
 	}
 
 	// set global material, shader, and texture indices 
@@ -883,8 +912,8 @@ PointLight* Manager::getPointLight(int id)
 
 Material* Manager::getMaterial(int id)
 {
-	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
-	if(it != idToGlobalIndexMap.end()){
+	std::map<int, int>::iterator it = assetIdToGlobalIndexMap.find(id);
+	if(it != assetIdToGlobalIndexMap.end()){
 		return &materials[it->second];
 	}
 	else{
@@ -895,8 +924,8 @@ Material* Manager::getMaterial(int id)
 
 Shader* Manager::getShader(int id)
 {
-	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
-	if(it != idToGlobalIndexMap.end()){
+	std::map<int, int>::iterator it = assetIdToGlobalIndexMap.find(id);
+	if(it != assetIdToGlobalIndexMap.end()){
 		return &shaders[it->second];
 	}
 	else{
@@ -907,8 +936,8 @@ Shader* Manager::getShader(int id)
 
 Texture2D* Manager::getTexture2D(int id)
 {
-	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
-	if(it != idToGlobalIndexMap.end()){
+	std::map<int, int>::iterator it = assetIdToGlobalIndexMap.find(id);
+	if(it != assetIdToGlobalIndexMap.end()){
 		return &textures[it->second];
 	}
 	else{
@@ -919,8 +948,8 @@ Texture2D* Manager::getTexture2D(int id)
 
 Mesh* Manager::getMesh(int id)
 {
-	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
-	if(it != idToGlobalIndexMap.end()){
+	std::map<int, int>::iterator it = assetIdToGlobalIndexMap.find(id);
+	if(it != assetIdToGlobalIndexMap.end()){
 		return &meshes[it->second];
 	}
 	else{
@@ -931,8 +960,8 @@ Mesh* Manager::getMesh(int id)
 
 GMesh* Manager::getGMesh(int id)
 {
-	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
-	if(it != idToGlobalIndexMap.end()){
+	std::map<int, int>::iterator it = assetIdToGlobalIndexMap.find(id);
+	if(it != assetIdToGlobalIndexMap.end()){
 		return &gmeshes[it->second];
 	}
 	else{
@@ -940,6 +969,72 @@ GMesh* Manager::getGMesh(int id)
 		return NULL;
 	}
 }
+
+Entity* Manager::getEntityByIndex(int index)
+{
+	return &entities[index];
+}
+
+Transform* Manager::getTransformByIndex(int index)
+{
+	return &transforms[index];
+}
+
+Rigidbody* Manager::getRigidbodyByIndex(int index)
+{
+	return &rigidbodies[index];
+}
+
+Camera* Manager::getCameraByIndex(int index)
+{
+	return &cameras[index];
+}
+
+MeshRenderer* Manager::getMeshRendererByIndex(int index)
+{
+	return &meshRenderers[index];
+}
+
+DirectionalLight* Manager::getDirectionalLightByIndex(int index)
+{
+	return &directionalLights[index];
+}
+
+SpotLight* Manager::getSpotLightByIndex(int index)
+{
+	return &spotLights[index];
+}
+
+PointLight* Manager::getPointLightByIndex(int index)
+{
+	return &pointLights[index];
+}
+
+Material* Manager::getMaterialByIndex(int index)
+{
+	return &materials[index];
+}
+
+Shader* Manager::getShaderByIndex(int index)
+{
+	return &shaders[index];
+}
+
+Texture2D* Manager::getTexture2DByIndex(int index)
+{
+	return &textures[index];
+}
+
+Mesh* Manager::getMeshByIndex(int index)
+{
+	return &meshes[index];
+}
+
+GMesh* Manager::getGMeshByIndex(int index)
+{
+	return &gmeshes[index];
+}
+
 
 
 

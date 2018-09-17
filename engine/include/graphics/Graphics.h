@@ -68,6 +68,7 @@ namespace PhysicsEngine
 			static void destroy(Mesh* mesh);
 			static void bind(Mesh* mesh);
 			static void unbind(Mesh* mesh);
+			static void draw(Mesh* mesh);
 
 			static void generate(GLCamera* state);
 			static void destroy(GLCamera* state);

@@ -38,7 +38,7 @@ void PlayerSystem::update()
 	}
 
 
-	Camera* camera = manager->getCamera(0);
+	Camera* camera = manager->getCameraByIndex(0);
 
 	glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();

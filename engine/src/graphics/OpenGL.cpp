@@ -8,36 +8,21 @@ using namespace PhysicsEngine;
 
 GLenum OpenGL::getTextureFormat(TextureFormat format)
 {
-	GLenum openglFormat = GL_RED;
+	GLenum openglFormat = GL_DEPTH_COMPONENT;
 
 	switch (format)
 	{
-	case Red:
-		openglFormat = GL_RED;
-		break;
-	case Green:
-		openglFormat = GL_GREEN;
-		break;
-	case Blue:
-		openglFormat = GL_BLUE;
-		break;
-	case Alpha:
-		openglFormat = GL_ALPHA;
-		break;
 	case Depth:
 		openglFormat = GL_DEPTH_COMPONENT;
+		break;
+	case RG:
+		openglFormat = GL_RG;
 		break;
 	case RGB:
 		openglFormat = GL_RGB;
 		break;
-	case BGR:
-		openglFormat = GL_BGR;
-		break;
 	case RGBA:
 		openglFormat = GL_RGBA;
-		break;
-	case BGRA:
-		openglFormat = GL_BGRA;
 		break;
 	default:
 		Log::Error("OpengGL: Invalid texture format");

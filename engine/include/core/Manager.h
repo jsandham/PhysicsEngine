@@ -143,6 +143,7 @@ namespace PhysicsEngine
 			std::map<int, int> assetIdToGlobalIndexMap;
 			std::map<int, int> idToGlobalIndexMap;
 			std::map<int, int> componentIdToTypeMap;
+			//std::map<int, void*> temp;
 
 			BuildSettings settings;
 
@@ -201,6 +202,21 @@ namespace PhysicsEngine
 			Mesh* getMesh(int id);
 			GMesh* getGMesh(int id);
 
+			Entity* getEntityByIndex(int index);
+			Transform* getTransformByIndex(int index);
+			Rigidbody* getRigidbodyByIndex(int index);
+			Camera* getCameraByIndex(int index);
+			MeshRenderer* getMeshRendererByIndex(int index);
+			DirectionalLight* getDirectionalLightByIndex(int index);
+			SpotLight* getSpotLightByIndex(int index);
+			PointLight* getPointLightByIndex(int index);
+
+			Material* getMaterialByIndex(int index);
+			Shader* getShaderByIndex(int index);
+			Texture2D* getTexture2DByIndex(int index);
+			Mesh* getMeshByIndex(int index);
+			GMesh* getGMeshByIndex(int index);
+
 			template<typename T>
 			T* getComponent(int entityId)
 			{
@@ -240,30 +256,39 @@ namespace PhysicsEngine
 							}
 
 							// TODO: replace with map
-							if(componentType == (int)ComponentType::TransformType){
-								return &transforms[componentGlobalIndex];
+							// if(componentType == (int)ComponentType::TransformType){
+							void* component;
+							if(typeid(T) == typeid(Transform)){
+								component = &transforms[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::RigidbodyType){
-								return &rigidbodies[componentGlobalIndex];
+							// else if(componentType == (int)ComponentType::RigidbodyType){
+							else if(typeid(T) == typeid(Rigidbody)){
+								component = &rigidbodies[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::CameraType){
-								return &cameras[componentGlobalIndex];
+							// else if(componentType == (int)ComponentType::CameraType){
+							else if(typeid(T) == typeid(Camera)){
+								component = &cameras[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::MeshRendererType){
-								return &directionalLights[componentGlobalIndex];
+							// else if(componentType == (int)ComponentType::MeshRendererType){
+							else if(typeid(T) == typeid(MeshRenderer)){
+								component = &meshRenderers[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::DirectionalLightType){
-								return &pointLights[componentGlobalIndex];
+							else if(typeid(T) == typeid(DirectionalLight)){
+								component = &directionalLights[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::SpotLightType){
-								return &spotLights[componentGlobalIndex];
+							// else if(componentType == (int)ComponentType::DirectionalLightType){
+							else if(typeid(T) == typeid(PointLight)){
+								component = &pointLights[componentGlobalIndex];
 							}
-							else if(componentType == (int)ComponentType::PointLightType){
-								return &meshRenderers[componentGlobalIndex];
+							// else if(componentType == (int)ComponentType::SpotLightType){
+							else if(typeid(T) == typeid(SpotLight)){
+								component = &spotLights[componentGlobalIndex];
 							}
 							else{
 								return NULL;
 							}
+
+							return static_cast<T*>(component);
 						}
 					}
 				}
@@ -295,15 +320,6 @@ namespace PhysicsEngine
 				}
 				else if(typeid(T) == typeid(MeshRenderer)){
 					type = 6;
-				}
-				else if(typeid(T) == typeid(Cloth)){
-					type = 7;
-				}
-				else if(typeid(T) == typeid(Solid)){
-					type = 8;
-				}
-				else if(typeid(T) == typeid(Fluid)){
-					type = 9;
 				}
 				
 				return type;

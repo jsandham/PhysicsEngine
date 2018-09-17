@@ -42,20 +42,20 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::init()
 {
-	std::cout << "Render system init called" << std::endl;
-
 	for(int i = 0; i < manager->getNumberOfTextures(); i++){
-		Graphics::generate(manager->getTexture2D(i));
+		Graphics::generate(manager->getTexture2DByIndex(i));
 	}
 
 	for(int i = 0; i < manager->getNumberOfShaders(); i++){
-		Shader* shader = manager->getShader(i);
+		Shader* shader = manager->getShaderByIndex(i);
 
 		shader->compile();
 
 		if(!shader->isCompiled()){
 			std::cout << "Shader failed to compile " << i << std::endl;
 		}
+
+		std::cout << "shader: " << shader->shaderId << std::endl;
 
 		Graphics::setUniformBlockToBindingPoint(shader, "CameraBlock", 0);
 		Graphics::setUniformBlockToBindingPoint(shader, "ShadowBlock", 1);
@@ -66,7 +66,7 @@ void RenderSystem::init()
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
 	for(int i = 0; i < manager->getNumberOfMeshes(); i++){
-		Mesh* mesh = manager->getMesh(i);
+		Mesh* mesh = manager->getMeshByIndex(i);
 
 		Graphics::generate(mesh);
 	}
@@ -83,19 +83,20 @@ void RenderSystem::init()
 	Graphics::enableCubemaps();
 	Graphics::enablePoints();
 	Graphics::checkError();
+
+	std::cout << "Render system init called" << std::endl;
+	std::cout << "GL_TEXTURE_2D: " << GL_TEXTURE_2D << std::endl;
 }
 
 void RenderSystem::update()
 {
-	std::cout << "Render update called" << std::endl;
-
 	int numberOfDirectionalLights = manager->getNumberOfDirectionalLights();
 	int numberOfSpotLights = manager->getNumberOfSpotLights();
 	int numberOfPointLights = manager->getNumberOfPointLights();
 
 	Camera* camera;
 	if(manager->getNumberOfCameras() > 0){
-		camera = manager->getCamera(0);
+		camera = manager->getCameraByIndex(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
@@ -119,7 +120,7 @@ void RenderSystem::update()
 	pass = 0;
 
 	if (numberOfDirectionalLights > 0){
-		DirectionalLight* directionalLight = manager->getDirectionalLight(0);
+		DirectionalLight* directionalLight = manager->getDirectionalLightByIndex(0);
 
 		calcCascadeOrthoProj(directionalLight->direction);
 
@@ -167,7 +168,7 @@ void RenderSystem::update()
 	}
 
 	for(int i = 0; i < numberOfSpotLights; i++){
-		SpotLight* spotLight = manager->getSpotLight(i);
+		SpotLight* spotLight = manager->getSpotLightByIndex(i);
 
 		glm::vec3 position = spotLight->position;
 		glm::vec3 direction = spotLight->direction;
@@ -206,7 +207,7 @@ void RenderSystem::update()
 	}
 
 	for(int i = 0; i < numberOfPointLights; i++){
-		PointLight* pointLight = manager->getPointLight(i);
+		PointLight* pointLight = manager->getPointLightByIndex(i);
 
 		glm::vec3 lightPosition = pointLight->position;
 		glm::mat4 lightProjection = pointLight->projection;
@@ -241,71 +242,36 @@ void RenderSystem::update()
 
 void RenderSystem::renderScene()
 {
-	// for(int i = 0; i < manager->getNumberOfMeshRenderers(); i++){
-	// 	MeshRenderer* meshRenderer = manager->getMeshRenderer(i);
-		
-	// 	Transform* transform = manager->getEntity(meshRenderer->globalEntityIndex)->getComponent<Transform>(manager->getTransforms());
-	// 	// Or...
-	// 	Transform* transform = manager->getComponent<Transform>(meshRenderer->globalEntityIndex);
-	// 	// Or...
-	// 	int transformGlobalIndex = manager->getEntity(meshRenderer->globalEntityIndex)->getComponentIndex<Transform>();
-	// 	Transform* transform = manager->getTransform(transformGlobalIndex);
-	// 	// Or...
-	// 	Transform* transform = meshRenderer->getComponent<Transform>(manager);
+	for(int i = 0; i < manager->getNumberOfMeshRenderers(); i++){
+		MeshRenderer* meshRenderer = manager->getMeshRendererByIndex(i);
+		Transform* transform = meshRenderer->getComponent<Transform>();
 
-	// 	Mesh* mesh = manager->getMesh(meshRenderer->meshGlobalIndex);
-	// 	Material* material = manager->getMaterial(meshRenderer->materialGlobalIndex);
+		//std::cout << "entity id: " << meshRenderer->entityId << " mesh id: " << meshRenderer->meshId << " material id: " << meshRenderer->materialId << std::endl;
 
+		Mesh* mesh = manager->getMesh(meshRenderer->meshId);
+		Material* material = manager->getMaterial(meshRenderer->materialId);
+		Shader* shader = manager->getShader(material->shaderId);
+		Texture2D* texture = manager->getTexture2D(material->textureId);
 
-	// }
+		glm::mat4 model = transform->getModelMatrix();
 
-	// std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
-	// for (unsigned int j = 0; j < meshRenderers.size(); j++){
-	// 	Transform *transform = meshRenderers[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
-	// 	Material *material = manager->getMaterial(meshRenderers[j]->materialFilter);
+		//std::cout << "shader compiled: " << shader->isCompiled() << " id: " << shader->shaderId << std::endl;
+		// std::cout << model[0][0] << " " << model[0][1] << " " << model[0][2] << " " << model[0][3] << std::endl;
+		// std::cout << model[1][0] << " " << model[1][1] << " " << model[1][2] << " " << model[1][3] << std::endl;
+		// std::cout << model[2][0] << " " << model[2][1] << " " << model[2][2] << " " << model[2][3] << std::endl;
+		// std::cout << model[3][0] << " " << model[3][1] << " " << model[3][2] << " " << model[3][3] << std::endl;
 
-	// 	material->setMat4("model", transform->getModelMatrix());
+		Graphics::use(shader);
+		//Graphics::setMat4(shader, "projection", projection);
+		//Graphics::setMat4(shader, "view", view);
+		Graphics::setMat4(shader, "model", model);
 
-	// 	material->bind(state);
-
-	// 	Mesh* mesh = manager->getMesh(meshRenderers[j]->meshFilter);
-
-	// 	meshVAO[meshRenderers[j]->meshFilter].bind();
-	// 	meshVAO[meshRenderers[j]->meshFilter].draw((int)mesh->vertices.size());
-	// 	meshVAO[meshRenderers[j]->meshFilter].unbind();
-	// }
-
-	// std::vector<Cloth*> cloths = manager->getCloths();
-	// for(unsigned int j = 0; j < cloths.size(); j++){
-	// 	Transform *transform = cloths[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
-	// 	Material *material = manager->getMaterial(2);  // just geeting first material for right now, change later
-
-	// 	material->setMat4("model", transform->getModelMatrix());
-
-	// 	material->bind(state);
-
-	// 	int size = 9*2*(cloths[j]->nx - 1)*(cloths[j]->ny - 1);
-
-	// 	cloths[j]->clothVAO.bind();
-	// 	cloths[j]->clothVAO.draw(size);
-	// 	cloths[j]->clothVAO.unbind();
-	// }
-
-	// std::vector<Solid*> solids = manager->getSolids();
-	// for(unsigned int j = 0; j < solids.size(); j++){
-	// 	Transform *transform = solids[j]->getEntity(manager->getEntities())->getComponent<Transform>(manager->getTransforms());
-	// 	Material *material = manager->getMaterial(3);  // just geeting first material for right now, change later
-
-	// 	material->setMat4("model", transform->getModelMatrix());
-
-	// 	material->bind(state);
-
-	// 	int size = 3*(solids[j]->ne_b)*(solids[j]->npe_b);//9*2*(cloths[j]->nx - 1)*(cloths[j]->ny - 1);
-
-	// 	solids[j]->solidVAO.bind();
-	// 	solids[j]->solidVAO.draw(size);
-	// 	solids[j]->solidVAO.unbind();
-	// }
+		Graphics::bind(texture);
+		Graphics::bind(mesh);
+		Graphics::draw(mesh);
+		Graphics::unbind(mesh);
+		Graphics::checkError();
+	}
 }
 
 void RenderSystem::createShadowMaps()

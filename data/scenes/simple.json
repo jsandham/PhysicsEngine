@@ -2,7 +2,7 @@
   "id" : 10000000,
   "23424355" : {
     "type" : "Entity",
-    "components" : [34356423, 34343456, 56875838]
+    "components" : [34356423, 34343456, 56875838, 94235641]
   },
   "34356423" : {
     "type" : "Transform",
@@ -15,13 +15,21 @@
     "type" : "Camera",
     "entity" : 23424355,
     "position" : [0.0, 2.0, 0.0],
-    "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
+    "backgroundColor" : [1.0, 0.65, 0.15, 1.0]
   },
   "56875838" : {
     "type" : "MeshRenderer",
     "entity" : 23424355,
     "mesh" : 34763455,
-    "material" : 60859222
+    "material" : 12957442
+  },
+  "94235641" : {
+    "type" : "DirectionalLight",
+    "entity" : 23424355,
+    "direction" : [1.0, 2.0, 0.0],
+    "ambient" : [0.4, 0.4, 0.4],
+    "diffuse" : [1.0, 1.0, 1.0],
+    "specular" : [1.0, 1.0, 1.0]
   },
   "58692047" : {
     "type" : "Entity",
@@ -55,6 +63,6 @@
     "type" : "MeshRenderer",
     "entity" : 78692047,
     "mesh" : 11221434,
-    "material" : 47759201
+    "material" : 12957442
   }
 }

@@ -94,7 +94,7 @@ void main(void)
 	//finalLight += CalcSpotLight(material, Normal, FragPos, viewDir);
 	//finalLight += CalcPointLight(material, Normal, FragPos, viewDir);
 
-	FragColor = texture(mainTexture, TexCoord) * vec4(finalLight, 1.0f);
+	FragColor = vec3(1.0f, 0.0f, 0.0f, 1.0f);//texture(mainTexture, TexCoord) * vec4(finalLight, 1.0f);
 
 	/*if(ClipSpaceZ <= cascadeEnds[0]){
 		FragColor = texture(mainTexture, TexCoord) * vec4(finalLight, 1.0f) * vec4(1.0f, 0.0f, 0.0f, 1.0f);

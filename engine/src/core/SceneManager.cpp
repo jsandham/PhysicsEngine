@@ -79,7 +79,7 @@ void SceneManager::update()
 
 	if(activeScene != NULL){
 		//physicsSystem->update();
-		//renderSystem->update();
+		renderSystem->update();
 		playerSystem->update();
 	}
 	

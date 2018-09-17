@@ -26,7 +26,7 @@ namespace PhysicsEngine
 			Color getPixel(int x, int y);
 			TextureFormat getFormat();
 
-			void setRawTextureData(std::vector<unsigned char> data);
+			void setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format);
 			void setPixels(std::vector<Color> colors);
 			void setPixel(int x, int y, Color color);
 

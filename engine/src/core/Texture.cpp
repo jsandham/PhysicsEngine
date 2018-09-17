@@ -7,7 +7,6 @@ using namespace PhysicsEngine;
 Texture::Texture()
 {
 	textureId = -1;
-	// globalIndex = -1;
 }
 
 int Texture::getWidth() const
@@ -36,31 +35,16 @@ int Texture::calcNumChannels(TextureFormat format)
 
 	switch (format)
 	{
-	case Red:
-		nChannels = 1;
-		break;
-	case Green:
-		nChannels = 1;
-		break;
-	case Blue:
-		nChannels = 1;
-		break;
-	case Alpha:
-		nChannels = 1;
-		break;
 	case Depth:
 		nChannels = 1;
+		break;
+	case RG:
+		nChannels = 2;
 		break;
 	case RGB:
 		nChannels = 3;
 		break;
-	case BGR:
-		nChannels = 3;
-		break;
 	case RGBA:
-		nChannels = 4;
-		break;
-	case BGRA:
 		nChannels = 4;
 		break;
 	default:

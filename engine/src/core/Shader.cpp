@@ -6,7 +6,6 @@ using namespace PhysicsEngine;
 Shader::Shader()
 {
 	shaderId = -1;
-	//globalIndex = -1;
 	programCompiled = false;
 }
 

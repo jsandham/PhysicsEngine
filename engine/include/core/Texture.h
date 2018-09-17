@@ -14,15 +14,10 @@ namespace PhysicsEngine
 
 	typedef enum TextureFormat
 	{
-		Red,
-		Green,
-		Blue,
-		Alpha,
 		Depth,
+		RG,
 		RGB,
-		BGR,
-		RGBA,
-		BGRA
+		RGBA
 	};
 
 	class Texture
@@ -35,7 +30,6 @@ namespace PhysicsEngine
 
 		public:
 			int textureId;
-			// int globalIndex;
 
 			GLHandle handle;
 
