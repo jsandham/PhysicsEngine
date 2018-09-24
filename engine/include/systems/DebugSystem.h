@@ -8,9 +8,11 @@ namespace PhysicsEngine
 	class DebugSystem : public System
 	{
 		public:
-			DebugSystem(Manager* manager, SceneContext* context);
+			// DebugSystem(Manager* manager, SceneContext* context);
+			DebugSystem();
 			~DebugSystem();
 
+			size_t getSize();
 			void init();
 			void update();
 	};

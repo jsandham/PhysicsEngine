@@ -4,13 +4,15 @@
 #include <map>
 #include <string>
 
+#include "Scene.h"
+#include "Asset.h"
+#include "Entity.h"
 #include "Mesh.h"
 #include "GMesh.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Texture2D.h"
 
-#include "../core/Entity.h"
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
 #include "../components/Camera.h"
@@ -21,8 +23,11 @@
 #include "../components/Collider.h"
 #include "../components/SphereCollider.h"
 #include "../components/BoxCollider.h"
+#include "../components/CapsuleCollider.h"
 #include "../components/Joint.h"
 #include "../components/SpringJoint.h"
+
+#include "../systems/System.h"
 
 namespace PhysicsEngine
 {
@@ -40,15 +45,25 @@ namespace PhysicsEngine
 		unsigned int numberOfDirectionalLights;
 		unsigned int numberOfSpotLights;
 		unsigned int numberOfPointLights;
+		unsigned int numberOfBoxColliders;
+		unsigned int numberOfSphereColliders;
+		unsigned int numberOfCapsuleColliders;
 
-		unsigned int sizeOfEntity;
-		unsigned int sizeOfTransform;
-		unsigned int sizeOfRigidbody;
-		unsigned int sizeOfCamera;
-		unsigned int sizeOfMeshRenderer;
-		unsigned int sizeOfDirectionalLight;
-		unsigned int sizeOfSpotLight;
-		unsigned int sizeOfPointLight;
+		unsigned int numberOfSystems;
+
+		size_t sizeOfEntity;
+		size_t sizeOfTransform;
+		size_t sizeOfRigidbody;
+		size_t sizeOfCamera;
+		size_t sizeOfMeshRenderer;
+		size_t sizeOfDirectionalLight;
+		size_t sizeOfSpotLight;
+		size_t sizeOfPointLight;
+		size_t sizeOfBoxCollider;
+		size_t sizeOfSphereCollider;
+		size_t sizeOfCapsuleCollider;
+
+		size_t sizeOfAllSystems;
 	};
 #pragma pack(pop)
 
@@ -98,6 +113,10 @@ namespace PhysicsEngine
 		int maxAllowedDirectionalLights;
 		int maxAllowedSpotLights;
 		int maxAllowedPointLights;
+		int maxAllowedBoxColliders;
+		int maxAllowedSphereColliders;
+		int maxAllowedCapsuleColliders;
+		int maxAllowedSystems;
 
 		int maxAllowedMaterials;
 		int maxAllowedTextures;
@@ -107,22 +126,10 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
-	struct Scene
-	{
-		std::string name;
-		std::string filepath;
-		bool isLoaded;
-	};
-
-	struct Asset
-	{
-		std::string filepath;
-	};
-
 	class Manager
 	{
 		private:
-			// entities and components
+			// entities, components, & systems
 			int numberOfEntities;
 			int numberOfTransforms;
 			int numberOfRigidbodies;
@@ -131,6 +138,10 @@ namespace PhysicsEngine
 			int numberOfDirectionalLights;
 			int numberOfSpotLights;
 			int numberOfPointLights;
+			int numberOfBoxColliders;
+			int numberOfSphereColliders;
+			int numberOfCapsuleColliders;
+			int numberOfSystems;
 
 			// number of assets
 			int numberOfMaterials;
@@ -143,7 +154,7 @@ namespace PhysicsEngine
 			std::map<int, int> assetIdToGlobalIndexMap;
 			std::map<int, int> idToGlobalIndexMap;
 			std::map<int, int> componentIdToTypeMap;
-			//std::map<int, void*> temp;
+			std::map<int, Component*> componentIdToMemoryMap;
 
 			BuildSettings settings;
 
@@ -156,6 +167,12 @@ namespace PhysicsEngine
 			DirectionalLight* directionalLights;
 			SpotLight* spotLights;
 			PointLight* pointLights;
+			BoxCollider* boxColliders;
+			SphereCollider* sphereColliders;
+			CapsuleCollider* capsuleColliders;
+
+			// systems
+			std::vector<System*> systems;
 
 			// assets
 			Material* materials;
@@ -180,6 +197,11 @@ namespace PhysicsEngine
 			int getNumberOfDirectionalLights();
 			int getNumberOfSpotLights();
 			int getNumberOfPointLights();
+			int getNumberOfBoxColliders();
+			int getNumberOfSphereColliders();
+			int getNumberOfCapsuleColliders();
+
+			int getNumberOfSystems();
 
 			int getNumberOfMaterials();
 			int getNumberOfShaders();
@@ -195,6 +217,11 @@ namespace PhysicsEngine
 			DirectionalLight* getDirectionalLight(int id);
 			SpotLight* getSpotLight(int id);
 			PointLight* getPointLight(int id);
+			BoxCollider* getBoxCollider(int id);
+			SphereCollider* getSphereCollider(int id);
+			CapsuleCollider* getCapsuleCollider(int id);
+
+			System* getSystem(int id);
 
 			Material* getMaterial(int id);
 			Shader* getShader(int id);
@@ -210,6 +237,11 @@ namespace PhysicsEngine
 			DirectionalLight* getDirectionalLightByIndex(int index);
 			SpotLight* getSpotLightByIndex(int index);
 			PointLight* getPointLightByIndex(int index);
+			BoxCollider* getBoxColliderByIndex(int index);
+			SphereCollider* getSphereColliderByIndex(int index);
+			CapsuleCollider* getCapsuleColliderByIndex(int index);
+
+			System* getSystemByIndex(int index);
 
 			Material* getMaterialByIndex(int index);
 			Shader* getShaderByIndex(int index);
@@ -222,9 +254,7 @@ namespace PhysicsEngine
 			{
 				Entity* entity = getEntity(entityId);
 
-				if(entity == NULL){
-					return NULL;
-				}
+				if(entity == NULL){ return NULL; }
 
 				for(int i = 0; i < 8; i++){
 					int componentId = entity->componentIds[i];
@@ -245,7 +275,7 @@ namespace PhysicsEngine
 							return NULL;
 						}
 
-						if(componentType == getType<T>()){
+						if(componentType == Component::getType<T>()){
 							std::map<int, int>::iterator it2 = idToGlobalIndexMap.find(componentId);
 							if(it2 != idToGlobalIndexMap.end()){
 								componentGlobalIndex = it2->second;
@@ -255,74 +285,20 @@ namespace PhysicsEngine
 								return NULL;
 							}
 
-							// TODO: replace with map
-							// if(componentType == (int)ComponentType::TransformType){
-							void* component;
-							if(typeid(T) == typeid(Transform)){
-								component = &transforms[componentGlobalIndex];
-							}
-							// else if(componentType == (int)ComponentType::RigidbodyType){
-							else if(typeid(T) == typeid(Rigidbody)){
-								component = &rigidbodies[componentGlobalIndex];
-							}
-							// else if(componentType == (int)ComponentType::CameraType){
-							else if(typeid(T) == typeid(Camera)){
-								component = &cameras[componentGlobalIndex];
-							}
-							// else if(componentType == (int)ComponentType::MeshRendererType){
-							else if(typeid(T) == typeid(MeshRenderer)){
-								component = &meshRenderers[componentGlobalIndex];
-							}
-							else if(typeid(T) == typeid(DirectionalLight)){
-								component = &directionalLights[componentGlobalIndex];
-							}
-							// else if(componentType == (int)ComponentType::DirectionalLightType){
-							else if(typeid(T) == typeid(PointLight)){
-								component = &pointLights[componentGlobalIndex];
-							}
-							// else if(componentType == (int)ComponentType::SpotLightType){
-							else if(typeid(T) == typeid(SpotLight)){
-								component = &spotLights[componentGlobalIndex];
+							std::map<int, Component*>::iterator it3 = componentIdToMemoryMap.find(componentType);
+							if(it3 != componentIdToMemoryMap.end()){
+								T* component = static_cast<T*>(it3->second) + componentGlobalIndex;
+								return component;
 							}
 							else{
+								std::cout << "Error: When searching entity with id: " << entityId << " the component type searched for does not exist in map" << std::endl;
 								return NULL;
 							}
-
-							return static_cast<T*>(component);
 						}
 					}
 				}
 
 				return NULL;
-			}
-
-			template<typename T>
-			int getType()
-			{
-				int type = -1;
-				if(typeid(T) == typeid(Transform)){
-					type = 0;
-				}
-				else if(typeid(T) == typeid(Rigidbody)){
-					type = 1;
-				}
-				else if(typeid(T) == typeid(Camera)){
-					type = 2;
-				}
-				else if(typeid(T) == typeid(DirectionalLight)){
-					type = 3;
-				}
-				else if(typeid(T) == typeid(PointLight)){
-					type = 4;
-				}
-				else if(typeid(T) == typeid(SpotLight)){
-					type = 5;
-				}
-				else if(typeid(T) == typeid(MeshRenderer)){
-					type = 6;
-				}
-				
-				return type;
 			}
 
 
@@ -336,19 +312,6 @@ namespace PhysicsEngine
 			{
 
 			}
-
-		// private:
-		// 	template<typename T>
-		// 	void setGlobalIndexOnComponent(T* components, int numberOfComponents)
-		// 	{
-		// 		for(int i = 0; i < numberOfComponents; i++){
-		// 			components[i].globalComponentIndex = i;
-
-		// 			int entityId = components[i].entityId;
-		// 			int globalEntityIndex = idToGlobalIndexMap.find(entityId)->second;
-		// 			components[i].globalEntityIndex = globalEntityIndex;
-		// 		}
-		// 	}
 	};
 }
 

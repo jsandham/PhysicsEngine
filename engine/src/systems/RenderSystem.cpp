@@ -4,6 +4,8 @@
 
 #include "../../include/graphics/Graphics.h"
 
+#include "../../include/core/Manager.h"
+
 using namespace PhysicsEngine;
 
 const unsigned int SHADOW_WIDTH = 1000, SHADOW_HEIGHT = 1000;
@@ -11,9 +13,26 @@ const unsigned int DEBUG_WIDTH = 1000, DEBUG_HEIGHT = 1000;
 
 const unsigned int NUM_CASCADES = 5;
 
-RenderSystem::RenderSystem(Manager *manager, SceneContext* context)
+// RenderSystem::RenderSystem(Manager *manager, SceneContext* context)
+// {
+// 	this->manager = manager;
+
+// 	numLights = 0;
+
+// 	cascadeLightView.resize(NUM_CASCADES);
+// 	cascadeOrthoProj.resize(NUM_CASCADES);
+
+// 	cubeViewMatrices.resize(6);
+
+// 	cascadeTexture2D.resize(6);
+// 	shadowTexture2D = NULL;
+// 	shadowCubemap = NULL;
+// 	//shadowFBO = NULL;
+// }
+
+RenderSystem::RenderSystem()
 {
-	this->manager = manager;
+	std::cout << "render system constructor called" << std::endl;
 
 	numLights = 0;
 
@@ -39,9 +58,16 @@ RenderSystem::~RenderSystem()
 	//delete shadowFBO;
 }
 
+size_t RenderSystem::getSize()
+{
+	return sizeof(*this);
+}
+
 
 void RenderSystem::init()
 {
+	std::cout << "render system init called" << std::endl;
+
 	for(int i = 0; i < manager->getNumberOfTextures(); i++){
 		Graphics::generate(manager->getTexture2DByIndex(i));
 	}
@@ -130,17 +156,6 @@ void RenderSystem::update()
 
 		float ends[NUM_CASCADES] = { -2.0f, -4.0f, -10.0f, -20.0f, -100.0f };
 
-		// 	state.bind(UniformBuffer::ShadowBuffer);
-		// 	for (unsigned int i = 0; i < 5; i++){
-		// 		state.setLightProjectionMatrix(cascadeOrthoProj[i], i);
-		// 		state.setLightViewMatrix(cascadeLightView[i], i);
-
-		// 		glm::vec4 v(0.0f, 0.0f, ends[i], 1.0f);
-		// 		glm::vec4 zClip = projection*v;
-
-		// 		state.setCascadeEnd(zClip.z, i);
-		// 	}
-		// 	state.unbind(UniformBuffer::ShadowBuffer);
 		Graphics::bind(&shadowState);
 		for(unsigned int i = 0; i < 5; i++){
 			Graphics::setLightProjectionMatrix(&shadowState, cascadeOrthoProj[i], i);
@@ -177,10 +192,6 @@ void RenderSystem::update()
 
 		// renderShadowMap(shadowTexture2D, lightView, lightProjection);
 
-		// 	state.bind(UniformBuffer::ShadowBuffer);
-		// 	state.setLightProjectionMatrix(spotLights[i]->projection, 0);
-		// 	state.setLightViewMatrix(lightView, 0);
-		// 	state.unbind(UniformBuffer::ShadowBuffer);
 		Graphics::bind(&shadowState);
 		Graphics::setLightProjectionMatrix(&shadowState, spotLight->projection, 0);
 		Graphics::setLightViewMatrix(&shadowState, lightView, 0);
@@ -249,7 +260,7 @@ void RenderSystem::renderScene()
 		//std::cout << "entity id: " << meshRenderer->entityId << " mesh id: " << meshRenderer->meshId << " material id: " << meshRenderer->materialId << std::endl;
 
 		Mesh* mesh = manager->getMesh(meshRenderer->meshId);
-		Material* material = manager->getMaterial(meshRenderer->materialId);
+		Material* material = manager->getMaterial(meshRenderer->materialId);  // should I call somethig like Graphics::bind(material) and then have this internally use the shader and bind any textures?
 		Shader* shader = manager->getShader(material->shaderId);
 		Texture2D* texture = manager->getTexture2D(material->textureId);
 
@@ -260,18 +271,25 @@ void RenderSystem::renderScene()
 		// std::cout << model[1][0] << " " << model[1][1] << " " << model[1][2] << " " << model[1][3] << std::endl;
 		// std::cout << model[2][0] << " " << model[2][1] << " " << model[2][2] << " " << model[2][3] << std::endl;
 		// std::cout << model[3][0] << " " << model[3][1] << " " << model[3][2] << " " << model[3][3] << std::endl;
+		// glm::vec3 position = transform->position;
+		// glm::quat rotation = transform->rotation;
+		// glm::vec3 scale = transform->scale;
+
+		// std::cout << "transform i: " << i << std::endl;
+		// std::cout <<"position: " << position.x << " " << position.y << " " << position.z << std::endl;
+		// std::cout <<"rotation: " << rotation.x << " " << rotation.y << " " << rotation.z << " " << rotation.w << std::endl;
+		// std::cout <<"scale: " << scale.x << " " << scale.y << " " << scale.z << std::endl;
 
 		Graphics::use(shader);
-		//Graphics::setMat4(shader, "projection", projection);
-		//Graphics::setMat4(shader, "view", view);
 		Graphics::setMat4(shader, "model", model);
 
 		Graphics::bind(texture);
 		Graphics::bind(mesh);
 		Graphics::draw(mesh);
 		Graphics::unbind(mesh);
-		Graphics::checkError();
 	}
+
+	Graphics::checkError();
 }
 
 void RenderSystem::createShadowMaps()

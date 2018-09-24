@@ -8,6 +8,11 @@
     "maxAllowedDirectionalLights" : 20,
     "maxAllowedSpotLights" : 20,
     "maxAllowedPointLights" : 20,
+    "maxAllowedBoxColliders" : 20,
+    "maxAllowedSphereColliders" : 20,
+    "maxAllowedCapsuleColliders" : 20,
+    "maxAllowedSystems" : 20,
+
     "maxAllowedMaterials" : 15,
     "maxAllowedTextures" : 15,
     "maxAllowedShaders" : 15,

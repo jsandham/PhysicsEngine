@@ -12,14 +12,24 @@
 
 using namespace PhysicsEngine;
 
-DebugSystem::DebugSystem(Manager* manager, SceneContext* context)
+// DebugSystem::DebugSystem(Manager* manager, SceneContext* context)
+// {
+// 	this->manager = manager;
+// }
+DebugSystem::DebugSystem()
 {
-	this->manager = manager;
+	
 }
 
 DebugSystem::~DebugSystem()
 {
 	//delete lineMaterial;
+}
+
+
+size_t DebugSystem::getSize()
+{
+	return sizeof(*this);
 }
 
 void DebugSystem::init()

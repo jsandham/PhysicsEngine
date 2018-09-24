@@ -6,18 +6,22 @@ SceneManager::SceneManager()
 {
 	manager = new Manager();
 
-	playerSystem = new PlayerSystem(manager, &context);
-	physicsSystem = new PhysicsSystem(manager, &context);
-	renderSystem = new RenderSystem(manager, &context);
+	//playerSystem = new PlayerSystem(manager, &context);
+	//physicsSystem = new PhysicsSystem(manager, &context);
+	//renderSystem = new RenderSystem(manager, &context);
+
+	//std::cout << "size of player system: " << playerSystem->getSize() << std::endl;
+	//std::cout << "size of physics system: " << physicsSystem->getSize() << std::endl;
+	//std::cout << "size of render system: " << renderSystem->getSize() << std::endl;
 }
 
 SceneManager::~SceneManager()
 {
 	delete manager;
 
-	delete playerSystem;
-	delete physicsSystem;
-	delete renderSystem;
+	//delete playerSystem;
+	//delete physicsSystem;
+	//delete renderSystem;
 }
 
 void SceneManager::add(Scene scene)
@@ -66,11 +70,15 @@ void SceneManager::update()
 
 		load(*loadingScene, assets);
 
-		//compress();
+		for(int i = 0; i < manager->getNumberOfSystems(); i++){
+			// System* system = manager->getSystemByIndex(i);
 
-		playerSystem->init(); 
-		physicsSystem->init();
-		renderSystem->init();
+			// system->setSceneContext(&context);
+			// system->init();
+		}
+		//playerSystem->init(); 
+		//physicsSystem->init();
+		//renderSystem->init();
 
 		activeSceneIndex = loadingSceneIndex;
 		activeScene = loadingScene;
@@ -78,9 +86,14 @@ void SceneManager::update()
 	}
 
 	if(activeScene != NULL){
+		// for(int i = 0; i < manager->getNumberOfSystems(); i++){
+		// 	System* system = manager->getSystemByIndex(i);
+
+		// 	system->update();
+		// }
 		//physicsSystem->update();
-		renderSystem->update();
-		playerSystem->update();
+		//renderSystem->update();
+		//playerSystem->update();
 	}
 	
 }
@@ -94,8 +107,3 @@ void SceneManager::load(Scene scene, std::vector<Asset> assets)
 {
 	manager->load(scene, assets);
 }
-
-// void SceneManager::compress()
-// {
-// 	manager->compress();
-// }

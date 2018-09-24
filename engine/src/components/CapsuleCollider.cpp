@@ -6,7 +6,7 @@ using namespace PhysicsEngine;
 
 CapsuleCollider::CapsuleCollider()
 {
-
+	
 }
 
 CapsuleCollider::~CapsuleCollider()

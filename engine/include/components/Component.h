@@ -8,17 +8,6 @@ namespace PhysicsEngine
 	class Entity;
 	class Manager;
 
-	typedef enum ComponentType
-	{
-		TransformType,
-		RigidbodyType,
-		CameraType,
-		MeshRendererType,
-		DirectionalLightType,
-		SpotLightType,
-		PointLightType	
-	};
-
 	class Component
 	{
 		private:
@@ -27,8 +16,6 @@ namespace PhysicsEngine
 		public:
 			bool isActive;
 
-			//int globalEntityIndex;
-			//int globalComponentIndex;
 			int componentId;
 			int entityId;
 
@@ -46,6 +33,24 @@ namespace PhysicsEngine
 				Entity* entity = getEntity();
 
 				return entity->getComponent<T>();
+			}
+
+			template <typename T>
+			static int getType()
+			{
+				// static variables only run the first time the function is called
+			    static int id = nextValue();
+			    return id;
+			}
+
+		private:
+			static int nextValue()
+			{
+				// static variables only run the first time the function is called
+			    static int id = 0;
+			    int result = id;
+			    ++id;
+			    return result;
 			}
 	};
 }

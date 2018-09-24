@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../../include/core/SceneContext.h"
 
 using namespace PhysicsEngine;

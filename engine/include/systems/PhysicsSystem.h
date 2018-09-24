@@ -29,9 +29,11 @@ namespace PhysicsEngine
 			bool start = false;
 
 		public:
-			PhysicsSystem(Manager *manager, SceneContext* context);
+			PhysicsSystem();
+			// PhysicsSystem(Manager *manager, SceneContext* context);
 			~PhysicsSystem();
 
+			size_t getSize();
 			void init();
 			void update();
 	};

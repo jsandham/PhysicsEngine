@@ -3,6 +3,7 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Manager.h"
 
 using namespace PhysicsEngine;
 
@@ -10,15 +11,24 @@ const float PlayerSystem::PAN_SENSITIVITY = 0.01f;
 const float PlayerSystem::SCROLL_SENSITIVITY = 0.001f;
 const float PlayerSystem::TRANSLATE_SENSITIVITY = 0.05f;
 
-PlayerSystem::PlayerSystem(Manager *manager, SceneContext* context)
+// PlayerSystem::PlayerSystem(Manager *manager, SceneContext* context)
+// {
+// 	this->context = context;
+// 	this->manager = manager;
+// }
+PlayerSystem::PlayerSystem()
 {
-	this->context = context;
-	this->manager = manager;
+	
 }
 
 PlayerSystem::~PlayerSystem()
 {
 
+}
+
+size_t PlayerSystem::getSize()
+{
+	return sizeof(*this);
 }
 
 void PlayerSystem::init()

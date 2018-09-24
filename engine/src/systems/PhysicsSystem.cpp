@@ -4,6 +4,7 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/Bounds.h"
 #include "../../include/core/Physics.h"
+#include "../../include/core/Manager.h"
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/Fluid.h"
@@ -20,9 +21,14 @@
 
 using namespace PhysicsEngine;
 
-PhysicsSystem::PhysicsSystem(Manager *manager, SceneContext* context)
+// PhysicsSystem::PhysicsSystem(Manager *manager, SceneContext* context)
+// {
+// 	this->manager = manager;
+// }
+
+PhysicsSystem::PhysicsSystem()
 {
-	this->manager = manager;
+	
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -38,6 +44,11 @@ PhysicsSystem::~PhysicsSystem()
 	// for(unsigned int i = 0; i < cudaFluids.size(); i++){
 	// 	CudaPhysics::deallocate(&cudaFluids[i]);
 	// }
+}
+
+size_t PhysicsSystem::getSize()
+{
+	return sizeof(*this);
 }
 
 void PhysicsSystem::init()

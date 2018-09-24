@@ -9,6 +9,10 @@
 #include "../../include/json/json.hpp" 
 #include "../../include/stb_image/stb_image.h"
 
+
+#include "../../include/systems/PhysicsSystem.h"
+#include "../../include/systems/RenderSystem.h"
+
 using namespace json;
 using namespace PhysicsEngine;
 
@@ -22,6 +26,9 @@ Manager::Manager()
 	directionalLights = NULL;
 	spotLights = NULL;
 	pointLights = NULL;
+	boxColliders = NULL;
+	sphereColliders = NULL;
+	capsuleColliders = NULL;
 
 	materials = NULL;
 	shaders = NULL;
@@ -47,6 +54,10 @@ Manager::Manager()
 			settings.maxAllowedDirectionalLights = it->second["maxAllowedDirectionalLights"].ToInt();
 			settings.maxAllowedSpotLights = it->second["maxAllowedSpotLights"].ToInt();
 			settings.maxAllowedPointLights = it->second["maxAllowedPointLights"].ToInt();
+			settings.maxAllowedBoxColliders = it->second["maxAllowedBoxColliders"].ToInt();
+			settings.maxAllowedSphereColliders = it->second["maxAllowedSphereColliders"].ToInt();
+			settings.maxAllowedCapsuleColliders = it->second["maxAllowedCapsuleColliders"].ToInt();
+			settings.maxAllowedSystems = it->second["maxAllowedSystems"].ToInt();
 
 			settings.maxAllowedMaterials = it->second["maxAllowedMaterials"].ToInt();
 			settings.maxAllowedTextures = it->second["maxAllowedTextures"].ToInt();
@@ -64,6 +75,10 @@ Manager::Manager()
 	error |= settings.maxAllowedDirectionalLights <= 0;
 	error |= settings.maxAllowedSpotLights <= 0;
 	error |= settings.maxAllowedPointLights <= 0;
+	error |= settings.maxAllowedBoxColliders <= 0;
+	error |= settings.maxAllowedSphereColliders <= 0;
+	error |= settings.maxAllowedCapsuleColliders <= 0;
+	error |= settings.maxAllowedSystems <= 0;
 
 	error |= settings.maxAllowedMaterials <= 0;
 	error |= settings.maxAllowedTextures <= 0;
@@ -85,6 +100,9 @@ Manager::Manager()
 	directionalLights = new DirectionalLight[settings.maxAllowedDirectionalLights];
 	spotLights = new SpotLight[settings.maxAllowedSpotLights];
 	pointLights = new PointLight[settings.maxAllowedPointLights];
+	boxColliders = new BoxCollider[settings.maxAllowedBoxColliders];
+	sphereColliders = new SphereCollider[settings.maxAllowedSphereColliders];
+	capsuleColliders = new CapsuleCollider[settings.maxAllowedCapsuleColliders];
 
 	// allocate space for all assets
 	materials = new Material[settings.maxAllowedMaterials];
@@ -101,12 +119,31 @@ Manager::Manager()
 	numberOfDirectionalLights = 0;
 	numberOfSpotLights = 0;
 	numberOfPointLights = 0;
+	numberOfBoxColliders = 0;
+	numberOfSphereColliders = 0;
+	numberOfCapsuleColliders = 0;
+
+	numberOfSystems = 0;
 
 	numberOfMaterials = 0;
 	numberOfTextures = 0;
 	numberOfShaders = 0;
 	numberOfMeshes = 0;
 	numberOfGMeshes = 0;
+
+
+	componentIdToMemoryMap[Component::getType<Transform>()] = transforms;
+	componentIdToMemoryMap[Component::getType<Rigidbody>()] = rigidbodies;
+	componentIdToMemoryMap[Component::getType<Camera>()] = cameras;
+	componentIdToMemoryMap[Component::getType<MeshRenderer>()] = meshRenderers;
+	componentIdToMemoryMap[Component::getType<DirectionalLight>()] = directionalLights;
+	componentIdToMemoryMap[Component::getType<SpotLight>()] = spotLights;
+	componentIdToMemoryMap[Component::getType<PointLight>()] = pointLights;
+	componentIdToMemoryMap[Component::getType<BoxCollider>()] = boxColliders;
+	componentIdToMemoryMap[Component::getType<SphereCollider>()] = sphereColliders;
+	componentIdToMemoryMap[Component::getType<CapsuleCollider>()] = capsuleColliders;
+
+	systems.resize(settings.maxAllowedSystems);
 }
 
 Manager::~Manager()
@@ -119,6 +156,9 @@ Manager::~Manager()
 	delete [] directionalLights;
 	delete [] spotLights;
 	delete [] pointLights;
+	delete [] boxColliders;
+	delete [] sphereColliders;
+	delete [] capsuleColliders;
 
 	delete [] materials;
 	delete [] shaders;
@@ -229,6 +269,12 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 					return false;
 				}
 			}
+			else if(type == "PhysicsSystem"){
+
+			}
+			else if(type == "RenderSystem"){
+
+			}
 			else{
 				int entityId = it->second["entity"].ToInt();
 				if(componentIdToEntityIdMap.count(objectId) == 0){
@@ -272,32 +318,6 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 
 void Manager::load(Scene scene, std::vector<Asset> assets)
 {
-	// create asset id to filepath map
-	// for(unsigned int i = 0; i < assets.size(); i++){
-	// 	// open asset files json object and get asset id
-	// 	std::string jsonAssetFilePath = assets[i].filepath.substr(0, assets[i].filepath.find_last_of(".")) + ".json";
-	// 	std::cout << "jsonAssetFilePath: " << jsonAssetFilePath << std::endl;
-	// 	std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
-	// 	std::ostringstream contents; contents << in.rdbuf(); in.close();
-
-	// 	json::JSON jsonAsset = JSON::Load(contents.str());
-
-	// 	int assetId = jsonAsset["id"].ToInt();
-
-	// 	std::cout << "asset id: " << assetId << " file path: " << assets[i].filepath << std::endl;
-		
-	// 	assetIdToFilePathMap[assetId] = assets[i].filepath;
-	// }
-
-	//for(unsigned int i = 0; i < numberOfEntities; i++){
-	//	if(!entities[i].isActive){
-	//
-	//	}
-	//}
-
-	
-
-
 	std::cout << "scene file path: " << scene.filepath << std::endl;
 
 	std::string binarySceneFilePath = scene.filepath.substr(0, scene.filepath.find_last_of(".")) + ".scene";
@@ -320,6 +340,10 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
 		std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
 		std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
+		std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
+		std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
+		std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
+		std::cout << "sizeOfAllSystems: " << sceneHeader.sizeOfAllSystems << std::endl;
 
 		int existingNumberOfEntities = numberOfEntities;
 		int existingNumberOfTransforms = numberOfTransforms;
@@ -329,6 +353,10 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		int existingNumberOfDirectionalLights = numberOfDirectionalLights;
 		int existingNumberOfSpotLights = numberOfSpotLights;
 		int existingNumberOfPointLights = numberOfPointLights;
+		int existingNumberOfBoxColliders = numberOfBoxColliders;
+		int existingNumberOfSphereColliders = numberOfSphereColliders;
+		int existingNumberOfCapsuleColliders = numberOfCapsuleColliders;
+		int existingNumberOfSystems = numberOfSystems;
 
 		numberOfEntities = existingNumberOfEntities + sceneHeader.numberOfEntities;
 		numberOfTransforms = existingNumberOfTransforms + sceneHeader.numberOfTransforms;
@@ -338,6 +366,10 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		numberOfDirectionalLights = existingNumberOfDirectionalLights + sceneHeader.numberOfDirectionalLights;
 		numberOfSpotLights = existingNumberOfSpotLights + sceneHeader.numberOfSpotLights;
 		numberOfPointLights = existingNumberOfPointLights + sceneHeader.numberOfPointLights;
+		numberOfBoxColliders = existingNumberOfBoxColliders + sceneHeader.numberOfBoxColliders;
+		numberOfSphereColliders = existingNumberOfSphereColliders + sceneHeader.numberOfSphereColliders;
+		numberOfCapsuleColliders = existingNumberOfCapsuleColliders + sceneHeader.numberOfCapsuleColliders;
+		numberOfSystems = existingNumberOfSystems + sceneHeader.numberOfSystems;
 
 		std::cout << "numberOfEntities: " << numberOfEntities << std::endl;
 		std::cout << "numberOfTransforms: " << numberOfTransforms << std::endl;
@@ -347,6 +379,10 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "numberOfDirectionalLights: " << numberOfDirectionalLights << std::endl;
 		std::cout << "numberOfSpotLights: " << numberOfSpotLights << std::endl;
 		std::cout << "numberOfPointLights: " << numberOfPointLights << std::endl;
+		std::cout << "numberOfBoxColliders: " << numberOfBoxColliders << std::endl;
+		std::cout << "numberOfSphereColliders: " << numberOfSphereColliders << std::endl;
+		std::cout << "numberOfCapsuleColliders: " << numberOfCapsuleColliders << std::endl;
+		std::cout << "numberOfSystems: " << numberOfSystems << std::endl;
 
 		bool error = numberOfEntities > settings.maxAllowedEntities;
 		error |= numberOfTransforms > settings.maxAllowedTransforms;
@@ -356,9 +392,13 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		error |= numberOfDirectionalLights > settings.maxAllowedDirectionalLights;
 		error |= numberOfSpotLights > settings.maxAllowedSpotLights;
 		error |= numberOfPointLights > settings.maxAllowedPointLights;
+		error |= numberOfBoxColliders > settings.maxAllowedBoxColliders;
+		error |= numberOfSphereColliders > settings.maxAllowedSphereColliders;
+		error |= numberOfCapsuleColliders > settings.maxAllowedCapsuleColliders;
+		error |= numberOfSystems > settings.maxAllowedSystems;
 
 		if(error){
-			std::cout << "Error: Number of entities or components exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
+			std::cout << "Error: Number of entities, components, or systems exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
 			return;
 		}
 
@@ -370,11 +410,17 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		error |= settings.maxAllowedDirectionalLights <= 0;
 		error |= settings.maxAllowedSpotLights <= 0;
 		error |= settings.maxAllowedPointLights <= 0;
+		error |= settings.maxAllowedBoxColliders <= 0;
+		error |= settings.maxAllowedSphereColliders <= 0;
+		error |= settings.maxAllowedCapsuleColliders <= 0;
+		error |= settings.maxAllowedSystems <= 0;
 
 		if(error){
-			std::cout << "Error: Total number of entities and components must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
+			std::cout << "Error: Total number of entities, components, and systems must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
 			return;
 		}
+
+		std::cout << "size of all systems: " << sceneHeader.sizeOfAllSystems << std::endl;
 
 		// de-serialize entities and components
 		bytesRead = fread(&entities[existingNumberOfEntities], sceneHeader.numberOfEntities*sizeof(Entity), 1, file);
@@ -385,6 +431,11 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		bytesRead = fread(&directionalLights[existingNumberOfDirectionalLights], sceneHeader.numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
 		bytesRead = fread(&spotLights[existingNumberOfSpotLights], sceneHeader.numberOfSpotLights*sizeof(SpotLight), 1, file);
 		bytesRead = fread(&pointLights[existingNumberOfPointLights], sceneHeader.numberOfPointLights*sizeof(PointLight), 1, file);
+		bytesRead = fread(&boxColliders[existingNumberOfBoxColliders], sceneHeader.numberOfBoxColliders*sizeof(BoxCollider), 1, file);
+		bytesRead = fread(&sphereColliders[existingNumberOfSphereColliders], sceneHeader.numberOfSphereColliders*sizeof(SphereCollider), 1, file);
+		bytesRead = fread(&capsuleColliders[existingNumberOfCapsuleColliders], sceneHeader.numberOfCapsuleColliders*sizeof(CapsuleCollider), 1, file);
+
+		bytesRead = fread(&systems[0], sceneHeader.sizeOfAllSystems, 1, file);
 
 		fclose(file);
 	}
@@ -402,6 +453,25 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfDirectionalLights; i++){ directionalLights[i].setManager(this); }
 	for(int i = 0; i < numberOfSpotLights; i++){ spotLights[i].setManager(this); }
 	for(int i = 0; i < numberOfPointLights; i++){ pointLights[i].setManager(this); }
+	for(int i = 0; i < numberOfBoxColliders; i++){ boxColliders[i].setManager(this); }
+	for(int i = 0; i < numberOfSphereColliders; i++){ sphereColliders[i].setManager(this); }
+	for(int i = 0; i < numberOfCapsuleColliders; i++){ capsuleColliders[i].setManager(this); }
+
+	// set manager on systems
+	// int startIndex = 0;
+	// for(int i = 0; i < numberOfSystems; i++){
+	// 	systemIndices[i] = startIndex;
+
+	// 	System* system = reinterpret_cast<System*>(&systems[startIndex]);
+
+	// 	system->setManager(this);
+
+	// 	size_t systemSize = system->getSize();
+
+	// 	std::cout << "system size: " << systemSize << std::endl;
+
+	// 	startIndex += (int)systemSize;
+	// }
 
 	// map entity/component id to its global array index
 	for(int i = 0; i < numberOfEntities; i++){ idToGlobalIndexMap[entities[i].entityId] = i; }
@@ -412,45 +482,21 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfDirectionalLights; i++){ idToGlobalIndexMap[directionalLights[i].componentId] = i; }
 	for(int i = 0; i < numberOfSpotLights; i++){ idToGlobalIndexMap[spotLights[i].componentId] = i; }
 	for(int i = 0; i < numberOfPointLights; i++){ idToGlobalIndexMap[pointLights[i].componentId] = i; }
+	for(int i = 0; i < numberOfBoxColliders; i++){ idToGlobalIndexMap[boxColliders[i].componentId] = i; }
+	for(int i = 0; i < numberOfSphereColliders; i++){ idToGlobalIndexMap[sphereColliders[i].componentId] = i; }
+	for(int i = 0; i < numberOfCapsuleColliders; i++){ idToGlobalIndexMap[capsuleColliders[i].componentId] = i; }
 
 	// map component id to its type
-	for(int i = 0; i < numberOfTransforms; i++){ componentIdToTypeMap[transforms[i].componentId] = (int)ComponentType::TransformType; }
-	for(int i = 0; i < numberOfRigidbodies; i++){ componentIdToTypeMap[rigidbodies[i].componentId] = (int)ComponentType::RigidbodyType; }
-	for(int i = 0; i < numberOfCameras; i++){ componentIdToTypeMap[cameras[i].componentId] = (int)ComponentType::CameraType; }
-	for(int i = 0; i < numberOfMeshRenderers; i++){ componentIdToTypeMap[meshRenderers[i].componentId] = (int)ComponentType::MeshRendererType; }
-	for(int i = 0; i < numberOfDirectionalLights; i++){ componentIdToTypeMap[directionalLights[i].componentId] = (int)ComponentType::DirectionalLightType; }
-	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = (int)ComponentType::SpotLightType; }
-	for(int i = 0; i < numberOfPointLights; i++){ componentIdToTypeMap[pointLights[i].componentId] = (int)ComponentType::PointLightType; }
-
-
-
-
-
-
-	// set global indices in entities
-	// for(int i = 0; i < numberOfEntities; i++){
-	// 	entities[i].globalEntityIndex = i;
-
-	// 	for(int j = 0; j < 8; j++){
-	// 		int componentId = entities[i].componentIds[j];
-	// 		if(componentId != -1){
-	// 			int globalComponentIndex = idToGlobalIndexMap.find(componentId)->second;
-	// 			int componentType = componentIdToTypeMap.find(componentId)->second;
-
-	// 			entities[i].globalComponentIndices[j] = globalComponentIndex;
-	// 			entities[i].componentTypes[j] = componentType;
-	// 		}
-	// 	}
-	// }
-
-	// set global indices in components
-	// setGlobalIndexOnComponent<Transform>(transforms, numberOfTransforms);
-	// setGlobalIndexOnComponent<Rigidbody>(rigidbodies, numberOfRigidbodies);
-	// setGlobalIndexOnComponent<Camera>(cameras, numberOfCameras);
-	// setGlobalIndexOnComponent<MeshRenderer>(meshRenderers, numberOfMeshRenderers);
-	// setGlobalIndexOnComponent<DirectionalLight>(directionalLights, numberOfDirectionalLights);
-	// setGlobalIndexOnComponent<SpotLight>(spotLights, numberOfSpotLights);
-	// setGlobalIndexOnComponent<PointLight>(pointLights, numberOfPointLights);
+	for(int i = 0; i < numberOfTransforms; i++){ componentIdToTypeMap[transforms[i].componentId] = Component::getType<Transform>(); }
+	for(int i = 0; i < numberOfRigidbodies; i++){ componentIdToTypeMap[rigidbodies[i].componentId] = Component::getType<Rigidbody>(); }
+	for(int i = 0; i < numberOfCameras; i++){ componentIdToTypeMap[cameras[i].componentId] = Component::getType<Camera>(); }
+	for(int i = 0; i < numberOfMeshRenderers; i++){ componentIdToTypeMap[meshRenderers[i].componentId] = Component::getType<MeshRenderer>(); }
+	for(int i = 0; i < numberOfDirectionalLights; i++){ componentIdToTypeMap[directionalLights[i].componentId] = Component::getType<DirectionalLight>(); }
+	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = Component::getType<SpotLight>(); }
+	for(int i = 0; i < numberOfPointLights; i++){ componentIdToTypeMap[pointLights[i].componentId] = Component::getType<PointLight>(); }
+	for(int i = 0; i < numberOfBoxColliders; i++){ componentIdToTypeMap[boxColliders[i].componentId] = Component::getType<BoxCollider>(); }
+	for(int i = 0; i < numberOfSphereColliders; i++){ componentIdToTypeMap[sphereColliders[i].componentId] = Component::getType<SphereCollider>(); }
+	for(int i = 0; i < numberOfCapsuleColliders; i++){ componentIdToTypeMap[capsuleColliders[i].componentId] = Component::getType<CapsuleCollider>(); }
 
 	std::cout << "number of mesh renderers: " << numberOfMeshRenderers << std::endl;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
@@ -676,13 +722,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	    std::cout << vertexShader << std::endl;
 	}
 
-	// set global material, shader, and texture indices 
-	// for(unsigned int i = 0; i < materialIds.size(); i++){
-	// 	materials[i].globalMaterialIndex = i;
-	// 	materials[i].globalShaderIndex = assetIdToGlobalIndexMap[materials[i].shaderId];
-	// 	materials[i].globalTextureIndex = assetIdToGlobalIndexMap[materials[i].textureId];
-	// }
-
 	// find all unique meshes
 	std::vector<int> meshIds;
 	for(int i = 0; i < numberOfMeshRenderers; i++){
@@ -742,11 +781,13 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 
 	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
 
-	// set global mesh and material index on mesh renderers
-	// for(int i = 0; i < numberOfMeshRenderers; i++){
-	// 	meshRenderers[i].meshGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].meshId];
-	// 	meshRenderers[i].materialGlobalIndex = assetIdToGlobalIndexMap[meshRenderers[i].materialId];
-	// }	
+
+	std::cout << "transform type: " << Component::getType<Transform>() << std::endl;
+	std::cout << "transform type: " << Component::getType<Transform>() << std::endl;
+	std::cout << "rigidbody type: " << Component::getType<Rigidbody>() << std::endl;
+	std::cout << "camera type: " << Component::getType<Camera>() << std::endl;
+	std::cout << "mesh renderer type: " << Component::getType<MeshRenderer>() << std::endl;
+	std::cout << "camera type: " << Component::getType<Camera>() << std::endl;
 }
 
 int Manager::getNumberOfEntities()
@@ -812,6 +853,26 @@ int Manager::getNumberOfMeshes()
 int Manager::getNumberOfGmeshes()
 {
 	return numberOfGMeshes;
+}
+
+int Manager::getNumberOfBoxColliders()
+{
+	return numberOfBoxColliders;
+}
+
+int Manager::getNumberOfSphereColliders()
+{
+	return numberOfSphereColliders;
+}
+
+int Manager::getNumberOfCapsuleColliders()
+{
+	return numberOfCapsuleColliders;
+}
+
+int Manager::getNumberOfSystems()
+{
+	return numberOfSystems;
 }
 
 Entity* Manager::getEntity(int id)
@@ -908,6 +969,47 @@ PointLight* Manager::getPointLight(int id)
 		std::cout << "Error: No point light with id " << id << " was found" << std::endl;
 		return NULL;
 	}
+}
+
+BoxCollider* Manager::getBoxCollider(int id)
+{
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &boxColliders[it->second];
+	}
+	else{
+		std::cout << "Error: No box collider with id " << id << " was found" << std::endl;
+		return NULL;
+	}
+}
+
+SphereCollider* Manager::getSphereCollider(int id)
+{
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &sphereColliders[it->second];
+	}
+	else{
+		std::cout << "Error: No sphere colliders with id " << id << " was found" << std::endl;
+		return NULL;
+	}
+}
+
+CapsuleCollider* Manager::getCapsuleCollider(int id)
+{
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &capsuleColliders[it->second];
+	}
+	else{
+		std::cout << "Error: No capsule colliders with id " << id << " was found" << std::endl;
+		return NULL;
+	}
+}
+
+System* Manager::getSystem(int id)
+{
+	return NULL;
 }
 
 Material* Manager::getMaterial(int id)
@@ -1008,6 +1110,26 @@ SpotLight* Manager::getSpotLightByIndex(int index)
 PointLight* Manager::getPointLightByIndex(int index)
 {
 	return &pointLights[index];
+}
+
+BoxCollider* Manager::getBoxColliderByIndex(int index)
+{
+	return &boxColliders[index];
+}
+
+SphereCollider* Manager::getSphereColliderByIndex(int index)
+{
+	return &sphereColliders[index];
+}
+
+CapsuleCollider* Manager::getCapsuleColliderByIndex(int index)
+{
+	return &capsuleColliders[index];
+}
+
+System* Manager::getSystemByIndex(int index)
+{
+	return systems[index];
 }
 
 Material* Manager::getMaterialByIndex(int index)

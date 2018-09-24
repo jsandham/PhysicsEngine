@@ -18,9 +18,11 @@ namespace PhysicsEngine
 			Camera* camera;
 
 		public:
-			PlayerSystem(Manager *manager, SceneContext* context);
+			// PlayerSystem(Manager *manager, SceneContext* context);
+			PlayerSystem();
 			~PlayerSystem();
 
+			size_t getSize();
 			void init();
 			void update();
 	};

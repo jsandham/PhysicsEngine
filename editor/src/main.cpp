@@ -12,11 +12,10 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <core/Entity.h>
 #include <core/Manager.h>
-// #include <core/SceneSettings.h>
 #include <core/Mesh.h>
 #include <core/GMesh.h>
+#include <core/Entity.h>
 
 #include <components/Transform.h>
 #include <components/Rigidbody.h>
@@ -25,6 +24,12 @@
 #include <components/DirectionalLight.h>
 #include <components/SpotLight.h>
 #include <components/PointLight.h>
+#include <components/BoxCollider.h>
+#include <components/SphereCollider.h>
+#include <components/CapsuleCollider.h>
+
+#include <systems/PhysicsSystem.h>
+#include <systems/RenderSystem.h>
 
 #include <json/json.hpp>
 
@@ -43,9 +48,6 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 
 int main(int argc, char* argv[])
 {
-	//std::string scenePath = "../data/scenes/simple.json";
-	//std::string scenePath = "../data/scenes/empty.json";
-
 	if(!serializeScene("../data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
 	if(!serializeScene("../data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
@@ -130,7 +132,6 @@ int serializeScene(std::string scenePath)
 	json::JSON jsonScene = json::JSON::Load(jsonString);
 
 	// parse loaded json file
-	json::JSON sceneSettings;
 	json::JSON entities;
 	json::JSON transforms;
 	json::JSON rigidbodies;
@@ -139,17 +140,18 @@ int serializeScene(std::string scenePath)
 	json::JSON directionalLights;
 	json::JSON spotLights;
 	json::JSON pointLights;
+	json::JSON boxColliders;
+	json::JSON sphereColliders;
+	json::JSON capsuleColliders;
+	json::JSON systems;
 
 	json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
 	map<string,JSON>::iterator it;
 
+	size_t sizeOfAllSystems = 0;
 	for(it = objects.begin(); it != objects.end(); it++){
 		if(it->first == "id"){
 			std::cout << "scene id found " << (it->second).ToInt() << std::endl;
-			continue;
-		}
-		else if(it->first == "Settings"){
-			sceneSettings = it->second;
 			continue;
 		}
 
@@ -182,16 +184,39 @@ int serializeScene(std::string scenePath)
 		else if(type == "PointLight"){
 			pointLights[it->first] = it->second;
 		}
+		else if(type == "BoxCollider"){
+			boxColliders[it->first] = it->second;
+		}
+		else if(type == "SphereCollider"){
+			sphereColliders[it->first] = it->second;
+		}
+		else if(type == "CapsuleCollider"){
+			capsuleColliders[it->first] = it->second;
+		}
+		else if(type == "PhysicsSystem"){
+			std::cout << it->first << " is a PhysicsSystem" << std::endl;
+			systems[it->first] = it->second;
+			sizeOfAllSystems += sizeof(PhysicsSystem);
+		}
+		else if(type == "RenderSystem"){
+			std::cout << it->first << " is a RenderSystem" << std::endl;
+			systems[it->first] = it->second;
+			sizeOfAllSystems += sizeof(RenderSystem);
+		}
 	}
 
-	int numberOfEntities = std::max(0, entities.size());
-	int numberOfTransforms = std::max(0, transforms.size());
-	int numberOfRigidbodies = std::max(0, rigidbodies.size());
-	int numberOfCameras = std::max(0, cameras.size());
-	int numberOfMeshRenderers = std::max(0, meshRenderers.size());
-	int numberOfDirectionalLights = std::max(0, directionalLights.size());
-	int numberOfSpotLights = std::max(0, spotLights.size());
-	int numberOfPointLights = std::max(0, pointLights.size());
+	unsigned int numberOfEntities = std::max(0, entities.size());
+	unsigned int numberOfTransforms = std::max(0, transforms.size());
+	unsigned int numberOfRigidbodies = std::max(0, rigidbodies.size());
+	unsigned int numberOfCameras = std::max(0, cameras.size());
+	unsigned int numberOfMeshRenderers = std::max(0, meshRenderers.size());
+	unsigned int numberOfDirectionalLights = std::max(0, directionalLights.size());
+	unsigned int numberOfSpotLights = std::max(0, spotLights.size());
+	unsigned int numberOfPointLights = std::max(0, pointLights.size());
+	unsigned int numberOfBoxColliders = std::max(0, boxColliders.size());
+	unsigned int numberOfSphereColliders = std::max(0, sphereColliders.size());
+	unsigned int numberOfCapsuleColliders = std::max(0, capsuleColliders.size());
+	unsigned int numberOfSystems = std::max(0, systems.size());
 
 	std::cout << "number of entities found: " << numberOfEntities << std::endl;
 	std::cout << "number of transforms found: " << numberOfTransforms << std::endl;
@@ -201,18 +226,13 @@ int serializeScene(std::string scenePath)
 	std::cout << "number of directional lights found: " << numberOfDirectionalLights << std::endl;
 	std::cout << "number of spot lights found: " << numberOfSpotLights << std::endl;
 	std::cout << "number of point lights found: " << numberOfPointLights << std::endl;
+	std::cout << "number of box collider found: " << numberOfBoxColliders << std::endl;
+	std::cout << "number of sphere collider found: " << numberOfSphereColliders << std::endl;
+	std::cout << "number of capsule collider found: " << numberOfCapsuleColliders << std::endl;
+	std::cout << "number of systems found: " << numberOfSystems << std::endl;
 
 	// create scene header
 	SceneHeader header = {};
-
-	header.sizeOfEntity = sizeof(Entity);
-	header.sizeOfTransform = sizeof(Transform);
-	header.sizeOfRigidbody = sizeof(Rigidbody);
-	header.sizeOfCamera = sizeof(Camera);
-	header.sizeOfMeshRenderer = sizeof(MeshRenderer);
-	header.sizeOfDirectionalLight = sizeof(DirectionalLight);
-	header.sizeOfSpotLight = sizeof(SpotLight);
-	header.sizeOfPointLight = sizeof(PointLight);
 
 	header.numberOfEntities = numberOfEntities;
 	header.numberOfTransforms = numberOfTransforms;
@@ -222,6 +242,26 @@ int serializeScene(std::string scenePath)
 	header.numberOfDirectionalLights = numberOfDirectionalLights;
 	header.numberOfSpotLights = numberOfSpotLights;
 	header.numberOfPointLights = numberOfPointLights;
+	header.numberOfBoxColliders = numberOfBoxColliders;
+	header.numberOfSphereColliders = numberOfSphereColliders;
+	header.numberOfCapsuleColliders = numberOfCapsuleColliders;
+	header.numberOfSystems = numberOfSystems;
+
+	header.sizeOfEntity = sizeof(Entity);
+	header.sizeOfTransform = sizeof(Transform);
+	header.sizeOfRigidbody = sizeof(Rigidbody);
+	header.sizeOfCamera = sizeof(Camera);
+	header.sizeOfMeshRenderer = sizeof(MeshRenderer);
+	header.sizeOfDirectionalLight = sizeof(DirectionalLight);
+	header.sizeOfSpotLight = sizeof(SpotLight);
+	header.sizeOfPointLight = sizeof(PointLight);
+	header.sizeOfBoxCollider = sizeof(BoxCollider);
+	header.sizeOfSphereCollider = sizeof(SphereCollider);
+	header.sizeOfCapsuleCollider = sizeof(CapsuleCollider);
+
+	header.sizeOfAllSystems = sizeOfAllSystems;
+
+	std::cout << "size of all systems: " << sizeOfAllSystems << " size of physics system: " << sizeof(PhysicsSystem) << " size of render system: " << sizeof(RenderSystem) << std::endl;
 
 	// serialize scene header
 	FILE* file = fopen(outputPath.c_str(), "wb");
@@ -233,23 +273,6 @@ int serializeScene(std::string scenePath)
 		std::cout << "Failed to open file " << outputPath << " for writing" << std::endl;
 		return 0;
 	}
-
-	// serialize seetings
-	//SceneSettings settings;
-	//settings.maxAllowedEntities = sceneSettings["maxAllowedEntities"].ToInt();
-	//settings.maxAllowedTransforms = sceneSettings["maxAllowedTransforms"].ToInt();
-	//settings.maxAllowedRigidbodies = sceneSettings["maxAllowedRigidbodies"].ToInt();
-	//settings.maxAllowedCameras = sceneSettings["maxAllowedCameras"].ToInt();
-	//settings.maxAllowedMeshRenderers = sceneSettings["maxAllowedMeshRenderers"].ToInt();
-	//settings.maxAllowedDirectionalLights = sceneSettings["maxAllowedDirectionalLights"].ToInt();
-	//settings.maxAllowedSpotLights = sceneSettings["maxAllowedSpotLights"].ToInt();
-	//settings.maxAllowedPointLights = sceneSettings["maxAllowedPointLights"].ToInt();
-	
-	//fwrite(&settings, sizeof(SceneSettings), 1, file);
-
-	//std::cout << "maxAllowedEntities: " << settings.maxAllowedEntities << std::endl;
-	//std::cout << "maxAllowedPointLights: " << settings.maxAllowedPointLights << std::endl;
-	//std::cout << "maxAllowedCameras: " << settings.maxAllowedCameras << std::endl;
 
 	// serialize entities
 	objects = entities.ObjectRange();
@@ -285,7 +308,7 @@ int serializeScene(std::string scenePath)
 		transform.rotation.x = (float)it->second["rotation"][0].ToFloat();
 		transform.rotation.y = (float)it->second["rotation"][1].ToFloat();
 		transform.rotation.z = (float)it->second["rotation"][2].ToFloat();
-		transform.rotation.z = (float)it->second["rotation"][3].ToFloat();
+		transform.rotation.w = (float)it->second["rotation"][3].ToFloat();
 
 		transform.scale.x = (float)it->second["scale"][0].ToFloat();
 		transform.scale.y = (float)it->second["scale"][1].ToFloat();
@@ -462,6 +485,47 @@ int serializeScene(std::string scenePath)
 		fwrite(&pointLight, sizeof(PointLight), 1, file);
 	}
 
+	// serialize box collider
+	objects = boxColliders.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		BoxCollider boxCollider;
+	}
+
+	// serialize sphere collider
+	objects = sphereColliders.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		SphereCollider sphereCollider;
+	}
+
+	// serialize capsule collider
+	objects = capsuleColliders.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		CapsuleCollider capsuleCollider;
+
+		capsuleCollider.capsule.centre.x = (float)it->second["centre"][0].ToFloat();
+		capsuleCollider.capsule.centre.x = (float)it->second["centre"][1].ToFloat();
+		capsuleCollider.capsule.centre.x = (float)it->second["centre"][2].ToFloat();
+
+		capsuleCollider.capsule.radius = (float)it->second["radius"].ToFloat();
+		capsuleCollider.capsule.height = (float)it->second["height"].ToFloat();
+
+		fwrite(&capsuleCollider, sizeof(CapsuleCollider), 1, file);
+	}
+
+	// serialize systems;
+	objects = systems.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		if(it->second["type"].ToString() == "PhysicsSystem"){
+			PhysicsSystem physicsSystem;
+			fwrite(&physicsSystem, sizeof(PhysicsSystem), 1, file);
+
+		}
+		else if(it->second["type"].ToString() == "RenderSystem"){
+			RenderSystem renderSystem;
+			fwrite(&renderSystem, sizeof(RenderSystem), 1, file);
+		}
+	}
+
 	// close file
 	if(file){
 		fclose(file);
@@ -491,6 +555,9 @@ int serializeScene(std::string scenePath)
 	std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
 	std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
 	std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
+	std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
+	std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
+	std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
 
 	std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
 	std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
@@ -500,6 +567,9 @@ int serializeScene(std::string scenePath)
 	std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
 	std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
 	std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
+	std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
+	std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
+	std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
 
 	if(file2){
 		fclose(file2);
@@ -698,3 +768,22 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder)
     } 
     return names;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// preshing on programming

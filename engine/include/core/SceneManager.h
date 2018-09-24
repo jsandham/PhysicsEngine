@@ -6,9 +6,9 @@
 #include "SceneContext.h"
 #include "Manager.h"
 
-#include "../systems/PlayerSystem.h"
-#include "../systems/PhysicsSystem.h"
-#include "../systems/RenderSystem.h"
+// #include "../systems/PlayerSystem.h"
+// #include "../systems/PhysicsSystem.h"
+// #include "../systems/RenderSystem.h"
 
 namespace PhysicsEngine
 {
@@ -26,9 +26,9 @@ namespace PhysicsEngine
 			std::vector<Asset> assets;
 
 			Manager* manager;
-			PlayerSystem* playerSystem;
-			PhysicsSystem* physicsSystem;
-			RenderSystem* renderSystem;
+			//PlayerSystem* playerSystem;
+			//PhysicsSystem* physicsSystem;
+			//RenderSystem* renderSystem;
 
 		public:
 			SceneManager();

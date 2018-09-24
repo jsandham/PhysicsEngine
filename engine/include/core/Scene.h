@@ -1,3 +1,22 @@
+#ifndef __SCENE_H__
+#define __SCENE_H__
+
+#include <string>
+
+namespace PhysicsEngine
+{
+	struct Scene
+	{
+		std::string name;
+		std::string filepath;
+		bool isLoaded;
+	};
+}
+
+#endif
+
+
+
 // #ifndef __SCENE_H__
 // #define __SCENE_H__
 
@@ -47,7 +66,7 @@
 	// 		void init();
 	// 		void update();
 	// };
-}
+// }
 
 
 

@@ -2,8 +2,9 @@
 #define __SCENECONTEXT_H__
 
 #include <string>
+#include <vector>
 
-#include "Manager.h"
+#include "Scene.h"
 
 namespace PhysicsEngine
 {
