@@ -32,8 +32,7 @@ const unsigned int NUM_CASCADES = 5;
 
 RenderSystem::RenderSystem()
 {
-	std::cout << "render system constructor called" << std::endl;
-
+	type = 0;
 	numLights = 0;
 
 	cascadeLightView.resize(NUM_CASCADES);
@@ -47,6 +46,11 @@ RenderSystem::RenderSystem()
 	//shadowFBO = NULL;
 }
 
+RenderSystem::RenderSystem(unsigned char* data)
+{
+	type = 0;
+}
+
 RenderSystem::~RenderSystem()
 {
 	for (unsigned int i = 0; i < NUM_CASCADES; i++){
@@ -57,12 +61,6 @@ RenderSystem::~RenderSystem()
 	delete shadowCubemap;
 	//delete shadowFBO;
 }
-
-size_t RenderSystem::getSize()
-{
-	return sizeof(*this);
-}
-
 
 void RenderSystem::init()
 {
@@ -91,27 +89,27 @@ void RenderSystem::init()
 	}
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
-	for(int i = 0; i < manager->getNumberOfMeshes(); i++){
-		Mesh* mesh = manager->getMeshByIndex(i);
+	// for(int i = 0; i < manager->getNumberOfMeshes(); i++){
+	// 	Mesh* mesh = manager->getMeshByIndex(i);
 
-		Graphics::generate(mesh);
-	}
+	// 	Graphics::generate(mesh);
+	// }
 	
-	Graphics::generate(&cameraState);
-	Graphics::generate(&shadowState);
-	Graphics::generate(&directionLightState);
-	Graphics::generate(&spotLightState);
-	Graphics::generate(&pointLightState);
+	// Graphics::generate(&cameraState);
+	// Graphics::generate(&shadowState);
+	// Graphics::generate(&directionLightState);
+	// Graphics::generate(&spotLightState);
+	// Graphics::generate(&pointLightState);
 
-	createShadowMaps();
+	// createShadowMaps();
 
-	Graphics::enableDepthTest();
-	Graphics::enableCubemaps();
-	Graphics::enablePoints();
-	Graphics::checkError();
+	// Graphics::enableDepthTest();
+	// Graphics::enableCubemaps();
+	// Graphics::enablePoints();
+	// Graphics::checkError();
 
-	std::cout << "Render system init called" << std::endl;
-	std::cout << "GL_TEXTURE_2D: " << GL_TEXTURE_2D << std::endl;
+	// std::cout << "Render system init called" << std::endl;
+	// std::cout << "GL_TEXTURE_2D: " << GL_TEXTURE_2D << std::endl;
 }
 
 void RenderSystem::update()

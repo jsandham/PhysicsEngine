@@ -12,7 +12,6 @@ namespace PhysicsEngine
 			DebugSystem();
 			~DebugSystem();
 
-			size_t getSize();
 			void init();
 			void update();
 	};

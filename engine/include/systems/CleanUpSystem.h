@@ -12,7 +12,6 @@ namespace PhysicsEngine
 			CleanUpSystem();
 			~CleanUpSystem();
 
-			size_t getSize();
 			void init();
 			void update();
 	};

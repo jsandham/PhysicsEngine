@@ -28,7 +28,12 @@ using namespace PhysicsEngine;
 
 PhysicsSystem::PhysicsSystem()
 {
-	
+	type = 1;
+}
+
+PhysicsSystem::PhysicsSystem(unsigned char* data)
+{
+	type = 1;
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -46,13 +51,10 @@ PhysicsSystem::~PhysicsSystem()
 	// }
 }
 
-size_t PhysicsSystem::getSize()
-{
-	return sizeof(*this);
-}
-
 void PhysicsSystem::init()
 {
+	std::cout << "physics system init called" << std::endl;
+
 	// Bounds bounds(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(20.0f, 20.0f, 20.0f));
 
 	// Physics::init(bounds, 2);

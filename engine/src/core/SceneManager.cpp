@@ -5,23 +5,11 @@ using namespace PhysicsEngine;
 SceneManager::SceneManager()
 {
 	manager = new Manager();
-
-	//playerSystem = new PlayerSystem(manager, &context);
-	//physicsSystem = new PhysicsSystem(manager, &context);
-	//renderSystem = new RenderSystem(manager, &context);
-
-	//std::cout << "size of player system: " << playerSystem->getSize() << std::endl;
-	//std::cout << "size of physics system: " << physicsSystem->getSize() << std::endl;
-	//std::cout << "size of render system: " << renderSystem->getSize() << std::endl;
 }
 
 SceneManager::~SceneManager()
 {
 	delete manager;
-
-	//delete playerSystem;
-	//delete physicsSystem;
-	//delete renderSystem;
 }
 
 void SceneManager::add(Scene scene)
@@ -71,14 +59,11 @@ void SceneManager::update()
 		load(*loadingScene, assets);
 
 		for(int i = 0; i < manager->getNumberOfSystems(); i++){
-			// System* system = manager->getSystemByIndex(i);
+			System* system = manager->getSystemByIndex(i);
 
-			// system->setSceneContext(&context);
-			// system->init();
+			system->setSceneContext(&context);
+			system->init();
 		}
-		//playerSystem->init(); 
-		//physicsSystem->init();
-		//renderSystem->init();
 
 		activeSceneIndex = loadingSceneIndex;
 		activeScene = loadingScene;
@@ -91,9 +76,6 @@ void SceneManager::update()
 
 		// 	system->update();
 		// }
-		//physicsSystem->update();
-		//renderSystem->update();
-		//playerSystem->update();
 	}
 	
 }

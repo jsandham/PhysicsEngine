@@ -59,9 +59,9 @@ namespace PhysicsEngine
 		public:
 			// RenderSystem(Manager *manager, SceneContext* context);
 			RenderSystem();
+			RenderSystem(unsigned char* data);
 			~RenderSystem();
 
-			size_t getSize();
 			void init();
 			void update();
 

@@ -48,13 +48,13 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder, s
     return names;
 }
 
-std::vector<std::string> get_all_asset_files()
+std::vector<std::string> get_all_asset_files(std::string relativePath)
 {
-	std::vector<std::string> materialFilePaths = get_all_files_names_within_folder("../data/materials/", "mat");
-	std::vector<std::string> meshFilePaths = get_all_files_names_within_folder("../data/meshes/", "mesh");
-	std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder("../data/gmeshes/", "gmesh");
-	std::vector<std::string> textureFilePaths = get_all_files_names_within_folder("../data/textures/", "png");
-	std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder("../data/shaders/", "shader");
+	std::vector<std::string> materialFilePaths = get_all_files_names_within_folder(relativePath + "materials/", "mat");
+	std::vector<std::string> meshFilePaths = get_all_files_names_within_folder(relativePath + "meshes/", "mesh");
+	std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder(relativePath + "gmeshes/", "gmesh");
+	std::vector<std::string> textureFilePaths = get_all_files_names_within_folder(relativePath + "textures/", "png");
+	std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder(relativePath + "shaders/", "shader");
 
 	std::vector<std::string> assetFilePaths;
 	for(unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
@@ -337,7 +337,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		  	}
 
 		  	// fill in scene manager with all assets found in the data folder
-			std::vector<std::string> assetFilePaths = get_all_asset_files();
+			std::vector<std::string> assetFilePaths = get_all_asset_files("../data/");
 
 			for(unsigned int i = 0; i < assetFilePaths.size(); i++){ 
 				Asset asset;
@@ -393,6 +393,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 					Time::deltaTime = milliSecPerFrame;
 
 					Input::updateEOF();
+				}
+			}
+			else{
+				while(true){
+
 				}
 			}
 		}

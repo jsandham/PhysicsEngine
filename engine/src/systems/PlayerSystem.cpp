@@ -18,17 +18,17 @@ const float PlayerSystem::TRANSLATE_SENSITIVITY = 0.05f;
 // }
 PlayerSystem::PlayerSystem()
 {
-	
+	type = 2;
+}
+
+PlayerSystem::PlayerSystem(unsigned char* data)
+{
+	type = 2;
 }
 
 PlayerSystem::~PlayerSystem()
 {
 
-}
-
-size_t PlayerSystem::getSize()
-{
-	return sizeof(*this);
 }
 
 void PlayerSystem::init()

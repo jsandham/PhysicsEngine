@@ -63,7 +63,7 @@ namespace PhysicsEngine
 		size_t sizeOfSphereCollider;
 		size_t sizeOfCapsuleCollider;
 
-		size_t sizeOfAllSystems;
+		//size_t sizeOfAllSystems;
 	};
 #pragma pack(pop)
 

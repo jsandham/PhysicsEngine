@@ -26,12 +26,6 @@ DebugSystem::~DebugSystem()
 	//delete lineMaterial;
 }
 
-
-size_t DebugSystem::getSize()
-{
-	return sizeof(*this);
-}
-
 void DebugSystem::init()
 {/*
 	if (!lineMaterial->getShader()->compile()){

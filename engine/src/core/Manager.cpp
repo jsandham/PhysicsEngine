@@ -9,9 +9,10 @@
 #include "../../include/json/json.hpp" 
 #include "../../include/stb_image/stb_image.h"
 
-
-#include "../../include/systems/PhysicsSystem.h"
-#include "../../include/systems/RenderSystem.h"
+#include "../../include/systems/LoadSystem.h"
+#include "../../include/systems/LoadInternalSystem.h"
+// #include "../../include/systems/PhysicsSystem.h"
+// #include "../../include/systems/RenderSystem.h"
 
 using namespace json;
 using namespace PhysicsEngine;
@@ -143,7 +144,7 @@ Manager::Manager()
 	componentIdToMemoryMap[Component::getType<SphereCollider>()] = sphereColliders;
 	componentIdToMemoryMap[Component::getType<CapsuleCollider>()] = capsuleColliders;
 
-	systems.resize(settings.maxAllowedSystems);
+	//systems.resize(settings.maxAllowedSystems);
 }
 
 Manager::~Manager()
@@ -159,6 +160,10 @@ Manager::~Manager()
 	delete [] boxColliders;
 	delete [] sphereColliders;
 	delete [] capsuleColliders;
+
+	for(unsigned int i = 0; i < systems.size(); i++){
+		delete systems[i];
+	}
 
 	delete [] materials;
 	delete [] shaders;
@@ -270,10 +275,13 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 				}
 			}
 			else if(type == "PhysicsSystem"){
-
+				std::cout << "physics system found" << std::endl;
 			}
 			else if(type == "RenderSystem"){
-
+				std::cout << "render system found" << std::endl;
+			}
+			else if(type == "LogicSystem"){
+				std::cout << "logic system found" << std::endl;
 			}
 			else{
 				int entityId = it->second["entity"].ToInt();
@@ -290,12 +298,12 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 					int materialId = it->second["material"].ToInt();
 
 					if(assetIdToFilePathMap.count(meshId) != 1){
-						std::cout << "Error: Mesh id found on MeshRenderer does not match a mesh" << std::endl;
+						std::cout << "Error: Mesh id (" << meshId << ") found on MeshRenderer does not match a mesh" << std::endl;
 						return false;
 					}
 
 					if(assetIdToFilePathMap.count(materialId) != 1){
-						std::cout << "Error: Material id found on MeshRenderer does not match a material" << std::endl;
+						std::cout << "Error: Material id (" << materialId << ") found on MeshRenderer does not match a material" << std::endl;
 						return false;
 					}
 				}
@@ -343,7 +351,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
 		std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
 		std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
-		std::cout << "sizeOfAllSystems: " << sceneHeader.sizeOfAllSystems << std::endl;
+		//std::cout << "sizeOfAllSystems: " << sceneHeader.sizeOfAllSystems << std::endl;
 
 		int existingNumberOfEntities = numberOfEntities;
 		int existingNumberOfTransforms = numberOfTransforms;
@@ -420,8 +428,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 			return;
 		}
 
-		std::cout << "size of all systems: " << sceneHeader.sizeOfAllSystems << std::endl;
-
 		// de-serialize entities and components
 		bytesRead = fread(&entities[existingNumberOfEntities], sceneHeader.numberOfEntities*sizeof(Entity), 1, file);
 		bytesRead = fread(&transforms[existingNumberOfTransforms], sceneHeader.numberOfTransforms*sizeof(Transform), 1, file);
@@ -435,7 +441,44 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		bytesRead = fread(&sphereColliders[existingNumberOfSphereColliders], sceneHeader.numberOfSphereColliders*sizeof(SphereCollider), 1, file);
 		bytesRead = fread(&capsuleColliders[existingNumberOfCapsuleColliders], sceneHeader.numberOfCapsuleColliders*sizeof(CapsuleCollider), 1, file);
 
-		bytesRead = fread(&systems[0], sceneHeader.sizeOfAllSystems, 1, file);
+		// what if I wrote the size of the system in the binary file, followed by the actual system byte data?
+		for(int i = 0; i < numberOfSystems; i++){
+			size_t sizeOfSystem;
+			bytesRead = fread(&sizeOfSystem, sizeof(size_t), 1, file);
+
+			std::cout << "bytes read: " << bytesRead << " size of system data read: " << sizeOfSystem << std::endl;
+
+			//if(bytesRead != 1){ break; }
+
+			unsigned char* data = new unsigned char[sizeOfSystem];
+			bytesRead = fread(data, sizeOfSystem * sizeof(unsigned char), 1, file);
+
+			std::cout << "AAAAAAAAAAAAAAAAAAAAA" << std::endl;
+
+			int type = *reinterpret_cast<int*>(data);
+
+			std::cout << "type: " << type << std::endl;
+
+			System* system = NULL;
+			if(type < 10){
+				system = loadInternalSystem(data);
+			}
+			else
+			{
+				system = loadSystem(data);
+			}
+
+			std::cout << "BBBBBBBB" << std::endl;
+
+			if(system == NULL){
+				std::cout << "Error: Could not load system" << std::endl;
+				return;
+			}
+
+			systems.push_back(system);
+
+			delete [] data;
+		}
 
 		fclose(file);
 	}
@@ -458,20 +501,9 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfCapsuleColliders; i++){ capsuleColliders[i].setManager(this); }
 
 	// set manager on systems
-	// int startIndex = 0;
-	// for(int i = 0; i < numberOfSystems; i++){
-	// 	systemIndices[i] = startIndex;
-
-	// 	System* system = reinterpret_cast<System*>(&systems[startIndex]);
-
-	// 	system->setManager(this);
-
-	// 	size_t systemSize = system->getSize();
-
-	// 	std::cout << "system size: " << systemSize << std::endl;
-
-	// 	startIndex += (int)systemSize;
-	// }
+	for(unsigned int i = 0; i < systems.size(); i++){
+		systems[i]->setManager(this);
+	}
 
 	// map entity/component id to its global array index
 	for(int i = 0; i < numberOfEntities; i++){ idToGlobalIndexMap[entities[i].entityId] = i; }
@@ -758,7 +790,6 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 			bytesRead = fread(&header, sizeof(MeshHeader), 1, file);
 
 			meshes[i].meshId = header.meshId;
-			//meshes[i].globalIndex = i;
 
 			meshes[i].vertices.resize(header.verticesSize);
 			meshes[i].normals.resize(header.normalsSize);

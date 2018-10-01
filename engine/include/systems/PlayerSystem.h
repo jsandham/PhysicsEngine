@@ -20,9 +20,9 @@ namespace PhysicsEngine
 		public:
 			// PlayerSystem(Manager *manager, SceneContext* context);
 			PlayerSystem();
+			PlayerSystem(unsigned char* data);
 			~PlayerSystem();
 
-			size_t getSize();
 			void init();
 			void update();
 	};

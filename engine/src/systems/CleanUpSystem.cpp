@@ -16,12 +16,6 @@ CleanUpSystem::~CleanUpSystem()
 
 }
 
-
-size_t CleanUpSystem::getSize()
-{
-	return sizeof(*this);
-}
-
 void CleanUpSystem::init()
 {
 

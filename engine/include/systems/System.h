@@ -10,6 +10,8 @@ namespace PhysicsEngine
 	class System
 	{
 		protected:
+			int type;
+
 			SceneContext* context;
 			Manager* manager;
 
@@ -17,15 +19,12 @@ namespace PhysicsEngine
 			System();
 			virtual ~System() = 0;
 
-			virtual size_t getSize() = 0;
 			virtual void init() = 0;
 			virtual void update() = 0;
 
 			void setManager(Manager* manager);
 			void setSceneContext(SceneContext* context);
 	};
-
-	System* loadSystem(unsigned char* data);
 }
 
 #endif

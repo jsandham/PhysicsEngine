@@ -33,6 +33,8 @@
 
 #include <json/json.hpp>
 
+#include "../../sample_project/include/systems/LogicSystem.h"
+
 #include "../include/MeshLoader.h"
 
 using namespace json;
@@ -48,15 +50,20 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 
 int main(int argc, char* argv[])
 {
-	if(!serializeScene("../data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
-	if(!serializeScene("../data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
+	// relative path from editor to project directory
+	std::string projectDirectory = "../../sample_project/";
+
+
+
+	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
 	// material files
-	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder("../data/materials");
+	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
 	std::vector<std::string> materialFilePaths;
 	for(unsigned int i = 0; i < materialFolderFiles.size(); i++){
 		if(materialFolderFiles[i].substr(materialFolderFiles[i].find_last_of(".") + 1) == "json") {
-			materialFilePaths.push_back("../data/materials/" + materialFolderFiles[i]);
+			materialFilePaths.push_back(projectDirectory + "data/materials/" + materialFolderFiles[i]);
 		}
 		else
 		{
@@ -69,11 +76,11 @@ int main(int argc, char* argv[])
 	}
 
 	// mesh files
-	std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder("../data/meshes");
+	std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/meshes");
 	std::vector<std::string> meshFilePaths;
 	for(unsigned int i = 0; i < meshFolderFiles.size(); i++){
 		if(meshFolderFiles[i].substr(meshFolderFiles[i].find_last_of(".") + 1) == "json") {
-			meshFilePaths.push_back("../data/meshes/" + meshFolderFiles[i]);
+			meshFilePaths.push_back(projectDirectory + "data/meshes/" + meshFolderFiles[i]);
 		}
 		else
 		{
@@ -90,11 +97,11 @@ int main(int argc, char* argv[])
 	std::cout << "BBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
 	// gmesh files
-	std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder("../data/gmeshes");
+	std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/gmeshes");
 	std::vector<std::string> gmeshFilePaths;
 	for(unsigned int i = 0; i < gmeshFolderFiles.size(); i++){
 		if(gmeshFolderFiles[i].substr(gmeshFolderFiles[i].find_last_of(".") + 1) == "json") {
-			gmeshFilePaths.push_back("../data/gmeshes/" + gmeshFolderFiles[i]);
+			gmeshFilePaths.push_back(projectDirectory + "data/gmeshes/" + gmeshFolderFiles[i]);
 		}
 		else
 		{
@@ -196,12 +203,14 @@ int serializeScene(std::string scenePath)
 		else if(type == "PhysicsSystem"){
 			std::cout << it->first << " is a PhysicsSystem" << std::endl;
 			systems[it->first] = it->second;
-			sizeOfAllSystems += sizeof(PhysicsSystem);
 		}
 		else if(type == "RenderSystem"){
 			std::cout << it->first << " is a RenderSystem" << std::endl;
 			systems[it->first] = it->second;
-			sizeOfAllSystems += sizeof(RenderSystem);
+		}
+		else if(type == "LogicSystem"){
+			std::cout << it->first << " is a LogicSystem" << std::endl;
+			systems[it->first] = it->second;
 		}
 	}
 
@@ -259,9 +268,9 @@ int serializeScene(std::string scenePath)
 	header.sizeOfSphereCollider = sizeof(SphereCollider);
 	header.sizeOfCapsuleCollider = sizeof(CapsuleCollider);
 
-	header.sizeOfAllSystems = sizeOfAllSystems;
+	//header.sizeOfAllSystems = sizeOfAllSystems;
 
-	std::cout << "size of all systems: " << sizeOfAllSystems << " size of physics system: " << sizeof(PhysicsSystem) << " size of render system: " << sizeof(RenderSystem) << std::endl;
+	std::cout << "size of physics system: " << sizeof(PhysicsSystem) << " size of render system: " << sizeof(RenderSystem) << " size of logic system: "  << sizeof(LogicSystem) << std::endl;
 
 	// serialize scene header
 	FILE* file = fopen(outputPath.c_str(), "wb");
@@ -515,14 +524,33 @@ int serializeScene(std::string scenePath)
 	// serialize systems;
 	objects = systems.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		if(it->second["type"].ToString() == "PhysicsSystem"){
-			PhysicsSystem physicsSystem;
-			fwrite(&physicsSystem, sizeof(PhysicsSystem), 1, file);
+		size_t systemDataSize;
+		int systemType;
+
+		if(it->second["type"].ToString() == "RenderSystem"){
+			systemType = 0;
+			systemDataSize = sizeof(int);
+			fwrite(&systemDataSize, sizeof(size_t), 1, file);
+			fwrite(&systemType, systemDataSize, 1, file);
+			
+			// serialize any other system data here...
+		}
+		else if(it->second["type"].ToString() == "PhysicsSystem"){
+			systemType = 1;
+			systemDataSize = sizeof(int);
+			fwrite(&systemDataSize, sizeof(size_t), 1, file);
+			fwrite(&systemType, systemDataSize, 1, file);
+
+			// serialize any other system data here...
 
 		}
-		else if(it->second["type"].ToString() == "RenderSystem"){
-			RenderSystem renderSystem;
-			fwrite(&renderSystem, sizeof(RenderSystem), 1, file);
+		else if(it->second["type"].ToString() == "LogicSystem"){
+			systemType = 10;
+			systemDataSize = sizeof(int);
+			fwrite(&systemDataSize, sizeof(size_t), 1, file);
+			fwrite(&systemType, systemDataSize, 1, file);
+			
+			// serialize any other system data here...
 		}
 	}
 
