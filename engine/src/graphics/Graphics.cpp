@@ -246,6 +246,27 @@ void Graphics::unbind(Cubemap* cubemap)
 
 }
 
+void Graphics::bind(Material* material, glm::mat4 model)
+{
+	Shader* shader = material->getShader();
+	Texture2D* mainTexture = material->getMainTexture();
+
+	Graphics::use(shader);
+	Graphics::setMat4(shader, "model", model);
+	Graphics::setFloat(shader, "material.shininess", material->shininess);
+	Graphics::setVec3(shader, "material.ambient", material->ambient);
+	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shader, "material.specular", material->specular);
+
+	std::cout << "material ambient: " << material->ambient.x << " " << material->ambient.y << " " << material->ambient.z << std::endl;
+	Graphics::bind(mainTexture);
+}
+
+void Graphics::unbind(Material* material)
+{
+
+}
+
 void Graphics::compile(Shader* shader)
 {
 	const GLchar* vertexShader = shader->vertexShader.c_str();
@@ -406,7 +427,7 @@ void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
 		glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
 	else{
-		std::cout << "Error: set mt4 name: " << name << " location index: " << locationIndex << std::endl;
+		std::cout << "Error: set mat4 name: " << name << " location index: " << locationIndex << std::endl;
 	}
 }
 

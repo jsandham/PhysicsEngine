@@ -53,8 +53,6 @@ int main(int argc, char* argv[])
 	// relative path from editor to project directory
 	std::string projectDirectory = "../../sample_project/";
 
-
-
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
@@ -208,6 +206,10 @@ int serializeScene(std::string scenePath)
 			std::cout << it->first << " is a RenderSystem" << std::endl;
 			systems[it->first] = it->second;
 		}
+		else if(type == "PlayerSystem"){
+			std::cout << it->first << " is a PlayerSystem" << std::endl;
+			systems[it->first] = it->second;
+		}
 		else if(type == "LogicSystem"){
 			std::cout << it->first << " is a LogicSystem" << std::endl;
 			systems[it->first] = it->second;
@@ -290,9 +292,9 @@ int serializeScene(std::string scenePath)
 
 		entity.entityId = std::stoi(it->first);
 
-		for(int i = 0; i < it->second["components"].size(); i++){
-			entity.componentIds[i] = it->second["components"][i].ToInt();
-		}
+		// for(int i = 0; i < it->second["components"].size(); i++){
+		// 	entity.componentIds[i] = it->second["components"][i].ToInt();
+		// }
 
 		// for(int i = 0; i < 8; i++){
 		// 	std::cout << "component types: " << entity.componentTypes[i] << " globalComponentIndices: " << entity.globalComponentIndices[i] << std::endl;
@@ -552,6 +554,14 @@ int serializeScene(std::string scenePath)
 			
 			// serialize any other system data here...
 		}
+		else if(it->second["type"].ToString() == "PlayerSystem"){
+			systemType = 11;
+			systemDataSize = sizeof(int);
+			fwrite(&systemDataSize, sizeof(size_t), 1, file);
+			fwrite(&systemType, systemDataSize, 1, file);
+			
+			// serialize any other system data here...
+		}
 	}
 
 	// close file
@@ -621,6 +631,16 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 
 		Material material;
 		material.materialId = jsonMaterial["id"].ToInt();
+		material.shininess = (float)jsonMaterial["shininess"].ToFloat();
+		material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+		material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+		material.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+		material.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+		material.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+		material.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+		material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+		material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+		material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
 		material.shaderId  = jsonMaterial["shader"].ToInt();
 		material.textureId = jsonMaterial["mainTexture"].ToInt();
 

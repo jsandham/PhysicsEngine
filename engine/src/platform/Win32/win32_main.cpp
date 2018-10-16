@@ -215,6 +215,7 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 			KeyCode keyCode = GetKeyCode(vKCode);
 			Input::setKeyState(keyCode, isDown, wasDown);
+
 			break;
 		}
 		case WM_LBUTTONDOWN:

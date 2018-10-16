@@ -31,7 +31,6 @@ namespace PhysicsEngine
 		public:
 			PhysicsSystem();
 			PhysicsSystem(unsigned char* data);
-			// PhysicsSystem(Manager *manager, SceneContext* context);
 			~PhysicsSystem();
 
 			void init();

@@ -26,5 +26,5 @@ void LogicSystem::init()
 
 void LogicSystem::update()
 {
-	std::cout << "LogicSystem update called" << std::endl;
+	//std::cout << "LogicSystem update called" << std::endl;
 }

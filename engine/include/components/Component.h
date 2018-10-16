@@ -36,7 +36,7 @@ namespace PhysicsEngine
 			}
 
 			template <typename T>
-			static int getType()
+			static int getInstanceType()
 			{
 				// static variables only run the first time the function is called
 			    static int id = nextValue();

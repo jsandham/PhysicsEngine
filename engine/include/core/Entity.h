@@ -11,8 +11,6 @@ namespace PhysicsEngine
 			Manager* manager;
 
 		public:
-			bool isActive;
-
 			int entityId;
 			int componentIds[8];
 
@@ -22,10 +20,14 @@ namespace PhysicsEngine
 
 			void setManager(Manager* manager);
 
+			void latentDestroy();
+			void immediateDestroy();
+			Entity* instantiate();
+
 			template<typename T>
 			void addComponent()
 			{
-				// TODO....
+				manager->addComponent<T>(entityId);
 			}
 
 			template<typename T>

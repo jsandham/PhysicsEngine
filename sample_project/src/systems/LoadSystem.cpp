@@ -3,6 +3,7 @@
 #include <systems/LoadSystem.h>
 
 #include "../include/systems/LogicSystem.h"
+#include "../include/systems/PlayerSystem.h"
 
 using namespace PhysicsEngine;
 
@@ -10,10 +11,13 @@ System* PhysicsEngine::loadSystem(unsigned char* data)
 {
 	int type = *reinterpret_cast<int*>(data);
 
-	std::cout << "load internal system called system of type: " << type << std::endl;
+	//std::cout << "load internal system called system of type: " << type << std::endl;
 
 	if(type == 10){
 		return new LogicSystem(data);
+	}
+	else if(type == 11){
+		return new PlayerSystem(data);
 	}
 	else{
 		std::cout << "Error: Invalid system type (" << type << ") when trying to load internal system" << std::endl;

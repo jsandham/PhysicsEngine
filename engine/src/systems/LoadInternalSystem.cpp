@@ -3,7 +3,7 @@
 #include "../../include/systems/LoadInternalSystem.h"
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
-#include "../../include/systems/PlayerSystem.h"
+#include "../../include/systems/CleanUpSystem.h"
 
 using namespace	PhysicsEngine;
 
@@ -18,7 +18,7 @@ System* PhysicsEngine::loadInternalSystem(unsigned char* data)
 		return new PhysicsSystem(data);
 	}
 	else if(type == 2){
-		return new PlayerSystem(data);
+		return new CleanUpSystem(data);
 	}
 	else{
 		std::cout << "Error: Invalid system type (" << type << ") when trying to load internal system" << std::endl;

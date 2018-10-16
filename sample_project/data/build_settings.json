@@ -11,7 +11,6 @@
     "maxAllowedBoxColliders" : 20,
     "maxAllowedSphereColliders" : 20,
     "maxAllowedCapsuleColliders" : 20,
-    "maxAllowedSystems" : 20,
 
     "maxAllowedMaterials" : 15,
     "maxAllowedTextures" : 15,

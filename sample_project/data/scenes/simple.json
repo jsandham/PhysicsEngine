@@ -72,7 +72,17 @@
     "radius" : 1.2,
     "height" : 3.4
   },
-  "68390019" : {"type" : "PhysicsSystem"},
-  "78390019" : {"type" : "RenderSystem"},
-  "68795825" : {"type" : "LogicSystem"}
+  "68390019" : {
+    "type" : "PhysicsSystem"
+  },
+  "78390019" : {
+    "type" : "RenderSystem"
+  },
+  "12323345" : {  
+    "type" : "PlayerSystem"
+  },
+  "68795825" : {
+    "type" : "LogicSystem",
+    "material" : 60859222
+  }
 }

@@ -33,10 +33,6 @@ namespace PhysicsEngine
 			bool validate();
 			void init();
 			void update();
-
-		private:
-			bool validate(std::vector<Scene> scenes, std::vector<Asset> assets);
-			void load(Scene scene, std::vector<Asset> assets);
 	};
 }
 

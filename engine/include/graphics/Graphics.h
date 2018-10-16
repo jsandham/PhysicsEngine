@@ -8,6 +8,7 @@
 #include "../core/Cubemap.h"
 #include "../core/Shader.h"
 #include "../core/Mesh.h"
+#include "../core/Material.h"
 
 #include "../graphics/GLState.h"
 
@@ -48,6 +49,9 @@ namespace PhysicsEngine
 			static void destroy(Cubemap* cubemap);
 			static void bind(Cubemap* cubemap);
 			static void unbind(Cubemap* cubemap);
+
+			static void bind(Material* material, glm::mat4 model);
+			static void unbind(Material* material);
 
 			static void compile(Shader* shader);
 			static void use(Shader* shader);

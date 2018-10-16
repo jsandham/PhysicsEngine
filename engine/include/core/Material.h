@@ -1,6 +1,13 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
+#include "Shader.h"
+#include "Texture2D.h"
+
+#define GLM_FORCE_RADIANS
+
+#include "../glm/glm.hpp"
+
 namespace PhysicsEngine
 {
 	typedef enum TEXURESLOT
@@ -15,6 +22,8 @@ namespace PhysicsEngine
 		COUNT
 	}TEXTURESLOT;
 
+	class Manager;
+
 	class Material
 	{
 		public:
@@ -22,13 +31,22 @@ namespace PhysicsEngine
 			int shaderId;
 			int textureId;
 
-			// int globalMaterialIndex;
-			// int globalTextureIndex;
-			// int globalShaderIndex;
+			float shininess;
+			glm::vec3 ambient;
+			glm::vec3 diffuse;
+			glm::vec3 specular;
+
+		private:
+			Manager* manager;
 
 		public:
 			Material();
 			~Material();
+
+			void setManager(Manager* manager);
+
+			Shader* getShader();
+			Texture2D* getMainTexture();
 	};
 }
 

@@ -31,7 +31,7 @@ bool SceneManager::validate()
 		return false;
 	}
 
-	if(!validate(scenes, assets)){
+	if(!manager->validate(scenes, assets)){
 		std::cout << "Error: Validation failed" << std::endl;
 		return false;
 	}
@@ -56,7 +56,7 @@ void SceneManager::update()
 	if(loadingScene != NULL){
 		std::cout << "loading scene: " << loadingScene->filepath << std::endl;
 
-		load(*loadingScene, assets);
+		manager->load(*loadingScene, assets);
 
 		for(int i = 0; i < manager->getNumberOfSystems(); i++){
 			System* system = manager->getSystemByIndex(i);
@@ -71,21 +71,11 @@ void SceneManager::update()
 	}
 
 	if(activeScene != NULL){
-		// for(int i = 0; i < manager->getNumberOfSystems(); i++){
-		// 	System* system = manager->getSystemByIndex(i);
+		for(int i = 0; i < manager->getNumberOfSystems(); i++){
+			System* system = manager->getSystemByIndex(i);
 
-		// 	system->update();
-		// }
+			system->update();
+		}
 	}
 	
-}
-
-bool SceneManager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
-{
-	return manager->validate(scenes, assets);
-}
-
-void SceneManager::load(Scene scene, std::vector<Asset> assets)
-{
-	manager->load(scene, assets);
 }
