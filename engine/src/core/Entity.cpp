@@ -9,10 +9,6 @@ Entity::Entity()
 {
 	entityId = -1;
 	
-	for(int i = 0; i < 8; i++){
-		componentIds[i] = -1;
-	}	
-
 	manager = NULL;
 }
 

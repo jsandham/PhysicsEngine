@@ -21,6 +21,7 @@
 #include <components/Rigidbody.h>
 #include <components/Camera.h>
 #include <components/MeshRenderer.h>
+#include <components/LineRenderer.h>
 #include <components/DirectionalLight.h>
 #include <components/SpotLight.h>
 #include <components/PointLight.h>
@@ -54,6 +55,7 @@ int main(int argc, char* argv[])
 	std::string projectDirectory = "../../sample_project/";
 
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
 	// material files
@@ -142,6 +144,7 @@ int serializeScene(std::string scenePath)
 	json::JSON rigidbodies;
 	json::JSON cameras;
 	json::JSON meshRenderers;
+	json::JSON lineRenderers;
 	json::JSON directionalLights;
 	json::JSON spotLights;
 	json::JSON pointLights;
@@ -179,6 +182,9 @@ int serializeScene(std::string scenePath)
 		}
 		else if(type == "MeshRenderer"){
 			meshRenderers[it->first] = it->second;
+		}
+		else if(type == "LineRenderer"){
+			lineRenderers[it->first] = it->second;
 		}
 		else if(type == "DirectionalLight"){
 			directionalLights[it->first] = it->second;
@@ -221,6 +227,7 @@ int serializeScene(std::string scenePath)
 	unsigned int numberOfRigidbodies = std::max(0, rigidbodies.size());
 	unsigned int numberOfCameras = std::max(0, cameras.size());
 	unsigned int numberOfMeshRenderers = std::max(0, meshRenderers.size());
+	unsigned int numberOfLineRenderers = std::max(0, lineRenderers.size());
 	unsigned int numberOfDirectionalLights = std::max(0, directionalLights.size());
 	unsigned int numberOfSpotLights = std::max(0, spotLights.size());
 	unsigned int numberOfPointLights = std::max(0, pointLights.size());
@@ -234,6 +241,7 @@ int serializeScene(std::string scenePath)
 	std::cout << "number of rigidbodies found: " << numberOfRigidbodies << std::endl;
 	std::cout << "number of cameras found" << numberOfCameras << std::endl;
 	std::cout << "number of mesh renderers found: " << numberOfMeshRenderers << std::endl;
+	std::cout << "number of line renderers found: " << numberOfLineRenderers << std::endl;
 	std::cout << "number of directional lights found: " << numberOfDirectionalLights << std::endl;
 	std::cout << "number of spot lights found: " << numberOfSpotLights << std::endl;
 	std::cout << "number of point lights found: " << numberOfPointLights << std::endl;
@@ -250,6 +258,7 @@ int serializeScene(std::string scenePath)
 	header.numberOfRigidbodies = numberOfRigidbodies;
 	header.numberOfCameras = numberOfCameras;
 	header.numberOfMeshRenderers = numberOfMeshRenderers;
+	header.numberOfLineRenderers = numberOfLineRenderers;
 	header.numberOfDirectionalLights = numberOfDirectionalLights;
 	header.numberOfSpotLights = numberOfSpotLights;
 	header.numberOfPointLights = numberOfPointLights;
@@ -263,6 +272,7 @@ int serializeScene(std::string scenePath)
 	header.sizeOfRigidbody = sizeof(Rigidbody);
 	header.sizeOfCamera = sizeof(Camera);
 	header.sizeOfMeshRenderer = sizeof(MeshRenderer);
+	header.sizeOfLineRenderer = sizeof(LineRenderer);
 	header.sizeOfDirectionalLight = sizeof(DirectionalLight);
 	header.sizeOfSpotLight = sizeof(SpotLight);
 	header.sizeOfPointLight = sizeof(PointLight);
@@ -396,6 +406,33 @@ int serializeScene(std::string scenePath)
 	}
 
 	std::cout << "size of mesh renderer: " << sizeof(MeshRenderer) << std::endl;
+
+	// serialize line renderers
+	objects = lineRenderers.ObjectRange();
+	for(it = objects.begin(); it != objects.end(); it++){
+		LineRenderer lineRenderer;
+
+		lineRenderer.componentId = std::stoi(it->first);
+		lineRenderer.entityId = it->second["entity"].ToInt();
+
+		lineRenderer.start.x = (float)it->second["start"][0].ToFloat();
+		lineRenderer.start.y = (float)it->second["start"][1].ToFloat();
+		lineRenderer.start.z = (float)it->second["start"][2].ToFloat();
+
+		lineRenderer.end.x = (float)it->second["end"][0].ToFloat();
+		lineRenderer.end.y = (float)it->second["end"][1].ToFloat();
+		lineRenderer.end.z = (float)it->second["end"][2].ToFloat();
+
+		lineRenderer.color.x = (float)it->second["color"][0].ToFloat();
+		lineRenderer.color.y = (float)it->second["color"][1].ToFloat();
+		lineRenderer.color.z = (float)it->second["color"][2].ToFloat();
+
+		std::cout << "line renderer entity id: " << lineRenderer.entityId << "line renderer component id: " << lineRenderer.componentId << std::endl;
+
+		fwrite(&lineRenderer, sizeof(LineRenderer), 1, file);
+	}
+
+	std::cout << "size of line renderer: " << sizeof(LineRenderer) << std::endl;
 
 	// serialize directional lights
 	objects = directionalLights.ObjectRange();
@@ -590,6 +627,7 @@ int serializeScene(std::string scenePath)
 	std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
 	std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
 	std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
+	std::cout << "numberOfLineRenderers: " << sceneHeader.numberOfLineRenderers << std::endl;
 	std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
 	std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
 	std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
@@ -602,6 +640,7 @@ int serializeScene(std::string scenePath)
 	std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
 	std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
 	std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
+	std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
 	std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
 	std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
 	std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
@@ -643,6 +682,8 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 		material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
 		material.shaderId  = jsonMaterial["shader"].ToInt();
 		material.textureId = jsonMaterial["mainTexture"].ToInt();
+		material.normalMapId = jsonMaterial["normalMap"].ToInt();
+		material.specularMapId = jsonMaterial["specularMap"].ToInt();
 
 		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
 

@@ -12,7 +12,6 @@ namespace PhysicsEngine
 
 		public:
 			int entityId;
-			int componentIds[8];
 
 		public:
 			Entity();

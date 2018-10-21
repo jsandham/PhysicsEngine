@@ -5,6 +5,7 @@
     "maxAllowedRigidbodies" : 100,
     "maxAllowedCameras" : 10,
     "maxAllowedMeshRenderers" : 100,
+    "maxAllowedLineRenderers" : 100,
     "maxAllowedDirectionalLights" : 20,
     "maxAllowedSpotLights" : 20,
     "maxAllowedPointLights" : 20,

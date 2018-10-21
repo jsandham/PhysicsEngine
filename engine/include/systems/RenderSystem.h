@@ -21,13 +21,7 @@ namespace PhysicsEngine
 	class RenderSystem : public System
 	{
 		private:
-			unsigned int numLights;
 			unsigned int pass;
-
-			// camera data   //  Probably can get rid of this now that it is contained inside GLCamera???
-			glm::mat4 view;
-			glm::mat4 projection;
-			glm::vec3 cameraPos;
 
 			// internal graphics state
 			GLCamera cameraState;

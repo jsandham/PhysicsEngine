@@ -25,6 +25,11 @@ void Graphics::checkError()
 	}
 }
 
+void Graphics::enableBlend()
+{
+	glEnable(GL_BLEND);
+}
+
 void Graphics::enableDepthTest()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -39,6 +44,71 @@ void Graphics::enablePoints()
 {
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glEnable(GL_POINT_SPRITE);
+}
+
+void Graphics::setDepth(GLDepth depth)
+{
+	GLenum d;
+	switch(depth)
+	{
+		case GLDepth::Never:
+			d = GL_NEVER;
+			break;
+		case GLDepth::Less:
+			d = GL_LESS;
+			break;
+		case GLDepth::Equal:
+			d = GL_EQUAL;
+			break;
+		case GLDepth::LEqual:
+			d = GL_LEQUAL;
+			break;
+		case GLDepth::Greater:
+			d = GL_GREATER;
+			break;
+		case GLDepth::NotEqual:
+			d = GL_NOTEQUAL;
+			break;
+		case GLDepth::GEqual:
+			d = GL_GEQUAL;
+			break;
+		default:
+			d = GL_ALWAYS;
+	}
+
+	glDepthFunc(d);
+}
+
+void Graphics::setBlending(GLBlend src, GLBlend dest)
+{
+	GLenum s, d;
+
+	switch(src)
+	{
+		case GLBlend::Zero:
+			s = GL_ZERO;
+			break;
+		case GLBlend::One:
+			s = GL_ONE;
+			break;
+		default:
+			s = GL_ONE;
+	}
+
+	switch(dest)
+	{
+		case GLBlend::Zero:
+			d = GL_ZERO;
+			break;
+		case GLBlend::One:
+			d = GL_ONE;
+			break;
+		default:
+			d = GL_ONE;
+	}
+
+	glBlendFunc(s, d);
+	glBlendEquation(GL_FUNC_ADD);
 }
 
 void Graphics::setViewport(int x, int y, int width, int height)
@@ -107,8 +177,10 @@ void Graphics::generate(Texture2D* texture)
 
 	glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -249,7 +321,6 @@ void Graphics::unbind(Cubemap* cubemap)
 void Graphics::bind(Material* material, glm::mat4 model)
 {
 	Shader* shader = material->getShader();
-	Texture2D* mainTexture = material->getMainTexture();
 
 	Graphics::use(shader);
 	Graphics::setMat4(shader, "model", model);
@@ -258,8 +329,32 @@ void Graphics::bind(Material* material, glm::mat4 model)
 	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
 	Graphics::setVec3(shader, "material.specular", material->specular);
 
-	std::cout << "material ambient: " << material->ambient.x << " " << material->ambient.y << " " << material->ambient.z << std::endl;
-	Graphics::bind(mainTexture);
+	Texture2D* mainTexture = material->getMainTexture();
+	if(mainTexture != NULL){
+		Graphics::setInt(shader, "material.mainTexture", 0);
+
+		Graphics::active(mainTexture, 0);
+		Graphics::bind(mainTexture);
+	}
+
+	Texture2D* normalMap = material->getNormalMap();
+	if(normalMap != NULL){
+
+		Graphics::setInt(shader, "material.normalMap", 1);
+
+		Graphics::active(normalMap, 1);
+		Graphics::bind(normalMap);
+	}
+
+	Texture2D* specularMap = material->getSpecularMap();
+	if(specularMap != NULL){
+
+		Graphics::setInt(shader, "material.specularMap", 2);
+
+		std::cout << "specular map found " << specularMap->textureId << "  " << glGetUniformLocation(shader->program.handle, "mainTexture") << "  " << glGetUniformLocation(shader->program.handle, "specularMap") << "  " << GL_TEXTURE1 << std::endl;
+		Graphics::active(specularMap, 2);
+		Graphics::bind(specularMap);
+	}
 }
 
 void Graphics::unbind(Material* material)

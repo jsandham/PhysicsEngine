@@ -20,6 +20,7 @@
 #include "../components/PointLight.h"
 #include "../components/SpotLight.h"
 #include "../components/MeshRenderer.h"
+#include "../components/LineRenderer.h"
 #include "../components/Collider.h"
 #include "../components/SphereCollider.h"
 #include "../components/BoxCollider.h"
@@ -42,6 +43,7 @@ namespace PhysicsEngine
 		unsigned int numberOfRigidbodies;
 		unsigned int numberOfCameras;
 		unsigned int numberOfMeshRenderers;
+		unsigned int numberOfLineRenderers;
 		unsigned int numberOfDirectionalLights;
 		unsigned int numberOfSpotLights;
 		unsigned int numberOfPointLights;
@@ -56,6 +58,7 @@ namespace PhysicsEngine
 		size_t sizeOfRigidbody;
 		size_t sizeOfCamera;
 		size_t sizeOfMeshRenderer;
+		size_t sizeOfLineRenderer;
 		size_t sizeOfDirectionalLight;
 		size_t sizeOfSpotLight;
 		size_t sizeOfPointLight;
@@ -108,6 +111,7 @@ namespace PhysicsEngine
 		int maxAllowedRigidbodies;
 		int maxAllowedCameras;
 		int maxAllowedMeshRenderers;
+		int maxAllowedLineRenderers;
 		int maxAllowedDirectionalLights;
 		int maxAllowedSpotLights;
 		int maxAllowedPointLights;
@@ -132,6 +136,7 @@ namespace PhysicsEngine
 			int numberOfRigidbodies;
 			int numberOfCameras;
 			int numberOfMeshRenderers;
+			int numberOfLineRenderers;
 			int numberOfDirectionalLights;
 			int numberOfSpotLights;
 			int numberOfPointLights;
@@ -162,6 +167,7 @@ namespace PhysicsEngine
 			Rigidbody* rigidbodies;
 			Camera* cameras;
 			MeshRenderer* meshRenderers;
+			LineRenderer* lineRenderers;
 			DirectionalLight* directionalLights;
 			SpotLight* spotLights;
 			PointLight* pointLights;
@@ -195,6 +201,7 @@ namespace PhysicsEngine
 			int getNumberOfRigidbodies();
 			int getNumberOfCameras();
 			int getNumberOfMeshRenderers();
+			int getNumberOfLineRenderers();
 			int getNumberOfDirectionalLights();
 			int getNumberOfSpotLights();
 			int getNumberOfPointLights();
@@ -215,6 +222,7 @@ namespace PhysicsEngine
 			Rigidbody* getRigidbody(int id);
 			Camera* getCamera(int id);
 			MeshRenderer* getMeshRenderer(int id);
+			LineRenderer* getLineRenderer(int id);
 			DirectionalLight* getDirectionalLight(int id);
 			SpotLight* getSpotLight(int id);
 			PointLight* getPointLight(int id);
@@ -235,6 +243,7 @@ namespace PhysicsEngine
 			Rigidbody* getRigidbodyByIndex(int index);
 			Camera* getCameraByIndex(int index);
 			MeshRenderer* getMeshRendererByIndex(int index);
+			LineRenderer* getLineRendererByIndex(int index);
 			DirectionalLight* getDirectionalLightByIndex(int index);
 			SpotLight* getSpotLightByIndex(int index);
 			PointLight* getPointLightByIndex(int index);

@@ -14,15 +14,36 @@
 
 namespace PhysicsEngine
 {
+	typedef enum GLDepth
+	{
+		Never,
+		Less,
+		Equal,
+		LEqual,
+		Greater,
+		NotEqual,
+		GEqual,
+		Always
+	};
+
+	typedef enum GLBlend
+	{
+		Zero,
+		One, 
+	};
+
 	class Graphics
 	{
 		public:
 			static void initializeGraphicsAPI();
 
 			static void checkError();
+			static void enableBlend();
 			static void enableDepthTest();
 			static void enableCubemaps();
 			static void enablePoints();
+			static void setDepth(GLDepth depth);
+			static void setBlending(GLBlend src, GLBlend dest);
 			static void setViewport(int x, int y, int width, int height);
 			static void clearColorBuffer(glm::vec4 value);
 			static void clearDepthBuffer(float value);

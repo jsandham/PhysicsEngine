@@ -21,13 +21,11 @@ using namespace PhysicsEngine;
 RenderSystem::RenderSystem()
 {
 	type = 0;
-	numLights = 0;
 }
 
 RenderSystem::RenderSystem(unsigned char* data)
 {
 	type = 0;
-	numLights = 0;
 }
 
 RenderSystem::~RenderSystem()
@@ -40,6 +38,12 @@ void RenderSystem::init()
 
 	for(int i = 0; i < manager->getNumberOfTextures(); i++){
 		Graphics::generate(manager->getTexture2DByIndex(i));
+	}
+
+	for(int i = 0; i < manager->getNumberOfMaterials(); i++){
+		Material* material = manager->getMaterialByIndex(i);
+
+		std::cout << "main: " << material->textureId << " normal: " << material->normalMapId << " specular: " << material->specularMapId << std::endl;
 	}
 
 	for(int i = 0; i < manager->getNumberOfShaders(); i++){
@@ -71,9 +75,11 @@ void RenderSystem::init()
 	Graphics::generate(&spotLightState);
 	Graphics::generate(&pointLightState);
 
+	Graphics::enableBlend();
 	Graphics::enableDepthTest();
 	Graphics::enableCubemaps();
 	Graphics::enablePoints();
+
 	Graphics::checkError();
 
 	std::cout << "Render system init called" << std::endl;
@@ -98,10 +104,8 @@ void RenderSystem::update()
 	Graphics::setViewport(camera->x, camera->y, camera->width, camera->height);
 	Graphics::clearColorBuffer(camera->getBackgroundColor());
 	Graphics::clearDepthBuffer(1.0f);
-
-	projection = camera->getProjMatrix();
-	view = camera->getViewMatrix();
-	cameraPos = camera->getPosition();
+	Graphics::setDepth(GLDepth::LEqual);
+	Graphics::setBlending(GLBlend::One, GLBlend::Zero);
 
 	Graphics::bind(&cameraState);
 	Graphics::setProjectionMatrix(&cameraState, camera->getProjMatrix());
@@ -115,7 +119,7 @@ void RenderSystem::update()
 		DirectionalLight* directionalLight = manager->getDirectionalLightByIndex(0);
 
 		Graphics::bind(&directionLightState);
-		Graphics::setDirLightDirection(&directionLightState, -directionalLight->direction);
+		Graphics::setDirLightDirection(&directionLightState, directionalLight->direction);
 		Graphics::setDirLightAmbient(&directionLightState, directionalLight->ambient);
 		Graphics::setDirLightDiffuse(&directionLightState, directionalLight->diffuse);
 		Graphics::setDirLightSpecular(&directionLightState, directionalLight->specular);
@@ -127,12 +131,9 @@ void RenderSystem::update()
 	}
 
 	for(int i = 0; i < numberOfSpotLights; i++){
-		SpotLight* spotLight = manager->getSpotLightByIndex(i);
+		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
 
-		glm::vec3 position = spotLight->position;
-		glm::vec3 direction = spotLight->direction;
-		glm::mat4 lightProjection = spotLight->projection;
-		glm::mat4 lightView = glm::lookAt(position, position - direction, glm::vec3(0.0f, 1.0f, 0.0f));
+		SpotLight* spotLight = manager->getSpotLightByIndex(i);
 
 		Graphics::bind(&spotLightState);
 		Graphics::setSpotLightPosition(&spotLightState, spotLight->position);
@@ -153,10 +154,11 @@ void RenderSystem::update()
 	}
 
 	for(int i = 0; i < numberOfPointLights; i++){
+		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
+
 		PointLight* pointLight = manager->getPointLightByIndex(i);
 
-		glm::vec3 lightPosition = pointLight->position;
-		glm::mat4 lightProjection = pointLight->projection;
+		std::cout << "pointlight position: " << pointLight->position.x << " " << pointLight->position.y << " " << pointLight->position.z << " pass: " << pass << std::endl;
 
 		Graphics::bind(&pointLightState);
 		Graphics::setPointLightPosition(&pointLightState, pointLight->position);

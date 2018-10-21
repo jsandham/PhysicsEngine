@@ -22,6 +22,7 @@ Manager::Manager()
 	rigidbodies = NULL;
 	cameras = NULL;
 	meshRenderers = NULL;
+	lineRenderers = NULL;
 	directionalLights = NULL;
 	spotLights = NULL;
 	pointLights = NULL;
@@ -50,6 +51,7 @@ Manager::Manager()
 			settings.maxAllowedRigidbodies = it->second["maxAllowedRigidbodies"].ToInt();
 			settings.maxAllowedCameras = it->second["maxAllowedCameras"].ToInt();
 			settings.maxAllowedMeshRenderers = it->second["maxAllowedMeshRenderers"].ToInt();
+			settings.maxAllowedLineRenderers = it->second["maxAllowedLineRenderers"].ToInt();
 			settings.maxAllowedDirectionalLights = it->second["maxAllowedDirectionalLights"].ToInt();
 			settings.maxAllowedSpotLights = it->second["maxAllowedSpotLights"].ToInt();
 			settings.maxAllowedPointLights = it->second["maxAllowedPointLights"].ToInt();
@@ -70,6 +72,7 @@ Manager::Manager()
 	error |= settings.maxAllowedRigidbodies <= 0;
 	error |= settings.maxAllowedCameras <= 0;
 	error |= settings.maxAllowedMeshRenderers <= 0;
+	error |= settings.maxAllowedLineRenderers <= 0;
 	error |= settings.maxAllowedDirectionalLights <= 0;
 	error |= settings.maxAllowedSpotLights <= 0;
 	error |= settings.maxAllowedPointLights <= 0;
@@ -94,6 +97,7 @@ Manager::Manager()
 	rigidbodies = new Rigidbody[settings.maxAllowedRigidbodies];
 	cameras = new Camera[settings.maxAllowedCameras];
 	meshRenderers = new MeshRenderer[settings.maxAllowedMeshRenderers];
+	lineRenderers = new LineRenderer[settings.maxAllowedLineRenderers];
 	directionalLights = new DirectionalLight[settings.maxAllowedDirectionalLights];
 	spotLights = new SpotLight[settings.maxAllowedSpotLights];
 	pointLights = new PointLight[settings.maxAllowedPointLights];
@@ -113,6 +117,7 @@ Manager::Manager()
 	numberOfRigidbodies = 0;
 	numberOfCameras = 0;
 	numberOfMeshRenderers = 0;
+	numberOfLineRenderers = 0;
 	numberOfDirectionalLights = 0;
 	numberOfSpotLights = 0;
 	numberOfPointLights = 0;
@@ -133,6 +138,7 @@ Manager::Manager()
 	componentIdToMemoryMap[Component::getInstanceType<Rigidbody>()] = rigidbodies;
 	componentIdToMemoryMap[Component::getInstanceType<Camera>()] = cameras;
 	componentIdToMemoryMap[Component::getInstanceType<MeshRenderer>()] = meshRenderers;
+	componentIdToMemoryMap[Component::getInstanceType<LineRenderer>()] = lineRenderers;
 	componentIdToMemoryMap[Component::getInstanceType<DirectionalLight>()] = directionalLights;
 	componentIdToMemoryMap[Component::getInstanceType<SpotLight>()] = spotLights;
 	componentIdToMemoryMap[Component::getInstanceType<PointLight>()] = pointLights;
@@ -148,6 +154,7 @@ Manager::~Manager()
 	delete [] rigidbodies;
 	delete [] cameras;
 	delete [] meshRenderers;
+	delete [] lineRenderers;
 	delete [] directionalLights;
 	delete [] spotLights;
 	delete [] pointLights;
@@ -191,16 +198,26 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 			return false;
 		}
 
-		if(assets[i].filepath.substr(assets[i].filepath.find_last_of(".") + 1) == "material"){
-			materialShaderIds.push_back(jsonAsset["shaderId"].ToInt());
-			materialTextureIds.push_back(jsonAsset["textureId"].ToInt());
+		if(assets[i].filepath.substr(assets[i].filepath.find_last_of(".") + 1) == "mat"){
+			std::cout << "WTF" << std::endl;
+			int shaderId = jsonAsset["shader"].ToInt();
+			int mainTextureId = jsonAsset["mainTexture"].ToInt();
+			int normalMapId = jsonAsset["normalMap"].ToInt();
+			int specularMapId = jsonAsset["specularMap"].ToInt();
+
+			if(shaderId != -1) { materialShaderIds.push_back(shaderId); }
+			if(mainTextureId != -1) { materialTextureIds.push_back(mainTextureId); }
+			if(normalMapId != -1) { materialTextureIds.push_back(normalMapId); }
+			if(specularMapId != -1) { materialTextureIds.push_back(specularMapId); }
 		}
 	}
 
 	for(unsigned int i = 0; i < materialShaderIds.size(); i++){
 		std::map<int, std::string>::iterator it = assetIdToFilePathMap.find(materialShaderIds[i]);
+		std::cout << "shader id: " << materialShaderIds[i] << std::endl;
 		if(it != assetIdToFilePathMap.end()){
 			std::string filepath = it->second;
+			std::cout << "shader path: " << filepath << std::endl;
 			if(filepath.substr(filepath.find_last_of(".") + 1) != "shader"){
 				std::cout << "Error: Shader id found inside material does not correspond to a shader" << std::endl;
 				return false;
@@ -213,10 +230,12 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<Asset> assets)
 	}
 
 	for(unsigned int i = 0; i < materialTextureIds.size(); i++){
+		std::cout << "texture id: " << materialTextureIds[i] << std::endl;
 		std::map<int, std::string>::iterator it = assetIdToFilePathMap.find(materialTextureIds[i]);
 		if(it != assetIdToFilePathMap.end()){
 			std::string filepath = it->second;
-			if(filepath.substr(filepath.find_last_of(".") + 1) != "texture"){
+			std::cout << "texture: " << filepath << std::endl;
+			if(filepath.substr(filepath.find_last_of(".") + 1) != "png"){
 				std::cout << "Error: Texture id found inside material does not correspond to a texture" << std::endl;
 				return false;
 			}
@@ -371,6 +390,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "sizeOfRigidbodies: " << sceneHeader.sizeOfRigidbody << std::endl;
 		std::cout << "sizeOfCameras: " << sceneHeader.sizeOfCamera << std::endl;
 		std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
+		std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
 		std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
 		std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
 		std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
@@ -383,6 +403,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		int existingNumberOfRigidbodies = numberOfRigidbodies;
 		int existingNumberOfCameras = numberOfCameras;
 		int existingNumberOfMeshRenderers = numberOfMeshRenderers;
+		int existingNumberOfLineRenderers = numberOfLineRenderers;
 		int existingNumberOfDirectionalLights = numberOfDirectionalLights;
 		int existingNumberOfSpotLights = numberOfSpotLights;
 		int existingNumberOfPointLights = numberOfPointLights;
@@ -395,6 +416,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		numberOfRigidbodies = existingNumberOfRigidbodies + sceneHeader.numberOfRigidbodies;
 		numberOfCameras = existingNumberOfCameras + sceneHeader.numberOfCameras;
 		numberOfMeshRenderers = existingNumberOfMeshRenderers + sceneHeader.numberOfMeshRenderers;
+		numberOfLineRenderers = existingNumberOfLineRenderers + sceneHeader.numberOfLineRenderers;
 		numberOfDirectionalLights = existingNumberOfDirectionalLights + sceneHeader.numberOfDirectionalLights;
 		numberOfSpotLights = existingNumberOfSpotLights + sceneHeader.numberOfSpotLights;
 		numberOfPointLights = existingNumberOfPointLights + sceneHeader.numberOfPointLights;
@@ -407,6 +429,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		std::cout << "numberOfRigidbodies: " << numberOfRigidbodies << std::endl;
 		std::cout << "numberOfCameras: " << numberOfCameras << std::endl;
 		std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
+		std::cout << "numberOfLineRenderers: " << numberOfLineRenderers << std::endl;
 		std::cout << "numberOfDirectionalLights: " << numberOfDirectionalLights << std::endl;
 		std::cout << "numberOfSpotLights: " << numberOfSpotLights << std::endl;
 		std::cout << "numberOfPointLights: " << numberOfPointLights << std::endl;
@@ -420,6 +443,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		error |= numberOfRigidbodies > settings.maxAllowedRigidbodies;
 		error |= numberOfCameras > settings.maxAllowedCameras;
 		error |= numberOfMeshRenderers > settings.maxAllowedMeshRenderers;
+		error |= numberOfLineRenderers > settings.maxAllowedLineRenderers;
 		error |= numberOfDirectionalLights > settings.maxAllowedDirectionalLights;
 		error |= numberOfSpotLights > settings.maxAllowedSpotLights;
 		error |= numberOfPointLights > settings.maxAllowedPointLights;
@@ -437,6 +461,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		error |= settings.maxAllowedRigidbodies <= 0;
 		error |= settings.maxAllowedCameras <= 0;
 		error |= settings.maxAllowedMeshRenderers <= 0;
+		error |= settings.maxAllowedLineRenderers <= 0;
 		error |= settings.maxAllowedDirectionalLights <= 0;
 		error |= settings.maxAllowedSpotLights <= 0;
 		error |= settings.maxAllowedPointLights <= 0;
@@ -455,6 +480,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 		bytesRead = fread(&rigidbodies[existingNumberOfRigidbodies], sceneHeader.numberOfRigidbodies*sizeof(Rigidbody), 1, file);
 		bytesRead = fread(&cameras[existingNumberOfCameras], sceneHeader.numberOfCameras*sizeof(Camera), 1, file);
 		bytesRead = fread(&meshRenderers[existingNumberOfMeshRenderers], sceneHeader.numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
+		bytesRead = fread(&lineRenderers[existingNumberOfLineRenderers], sceneHeader.numberOfLineRenderers*sizeof(LineRenderer), 1, file);
 		bytesRead = fread(&directionalLights[existingNumberOfDirectionalLights], sceneHeader.numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
 		bytesRead = fread(&spotLights[existingNumberOfSpotLights], sceneHeader.numberOfSpotLights*sizeof(SpotLight), 1, file);
 		bytesRead = fread(&pointLights[existingNumberOfPointLights], sceneHeader.numberOfPointLights*sizeof(PointLight), 1, file);
@@ -519,6 +545,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfRigidbodies; i++){ rigidbodies[i].setManager(this); }
 	for(int i = 0; i < numberOfCameras; i++){ cameras[i].setManager(this); }
 	for(int i = 0; i < numberOfMeshRenderers; i++){ meshRenderers[i].setManager(this); }
+	for(int i = 0; i < numberOfLineRenderers; i++){ lineRenderers[i].setManager(this); }
 	for(int i = 0; i < numberOfDirectionalLights; i++){ directionalLights[i].setManager(this); }
 	for(int i = 0; i < numberOfSpotLights; i++){ spotLights[i].setManager(this); }
 	for(int i = 0; i < numberOfPointLights; i++){ pointLights[i].setManager(this); }
@@ -537,6 +564,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfRigidbodies; i++){ idToGlobalIndexMap[rigidbodies[i].componentId] = i; }
 	for(int i = 0; i < numberOfCameras; i++){ idToGlobalIndexMap[cameras[i].componentId] = i; }
 	for(int i = 0; i < numberOfMeshRenderers; i++){ idToGlobalIndexMap[meshRenderers[i].componentId] = i; }
+	for(int i = 0; i < numberOfLineRenderers; i++){ idToGlobalIndexMap[lineRenderers[i].componentId] = i; }
 	for(int i = 0; i < numberOfDirectionalLights; i++){ idToGlobalIndexMap[directionalLights[i].componentId] = i; }
 	for(int i = 0; i < numberOfSpotLights; i++){ idToGlobalIndexMap[spotLights[i].componentId] = i; }
 	for(int i = 0; i < numberOfPointLights; i++){ idToGlobalIndexMap[pointLights[i].componentId] = i; }
@@ -549,6 +577,7 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	for(int i = 0; i < numberOfRigidbodies; i++){ componentIdToTypeMap[rigidbodies[i].componentId] = Component::getInstanceType<Rigidbody>(); }
 	for(int i = 0; i < numberOfCameras; i++){ componentIdToTypeMap[cameras[i].componentId] = Component::getInstanceType<Camera>(); }
 	for(int i = 0; i < numberOfMeshRenderers; i++){ componentIdToTypeMap[meshRenderers[i].componentId] = Component::getInstanceType<MeshRenderer>(); }
+	for(int i = 0; i < numberOfLineRenderers; i++){ componentIdToTypeMap[lineRenderers[i].componentId] = Component::getInstanceType<LineRenderer>(); }
 	for(int i = 0; i < numberOfDirectionalLights; i++){ componentIdToTypeMap[directionalLights[i].componentId] = Component::getInstanceType<DirectionalLight>(); }
 	for(int i = 0; i < numberOfSpotLights; i++){ componentIdToTypeMap[spotLights[i].componentId] = Component::getInstanceType<SpotLight>(); }
 	for(int i = 0; i < numberOfPointLights; i++){ componentIdToTypeMap[pointLights[i].componentId] = Component::getInstanceType<PointLight>(); }
@@ -613,16 +642,46 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	std::vector<int> textureIds;
 	std::vector<int> shaderIds;
 	for(unsigned int i = 0; i < materialIds.size(); i++){
-		bool textureIdFound = false;
-		for(unsigned int j = 0; j < textureIds.size(); j++){
-			if(materials[i].textureId == textureIds[j]){
-				textureIdFound = true;
-				break;
+		if(materials[i].textureId != -1){
+			bool mainTextureIdFound = false;
+			for(unsigned int j = 0; j < textureIds.size(); j++){
+				if(materials[i].textureId == textureIds[j]){
+					mainTextureIdFound = true;
+					break;
+				}
+			}
+
+			if(!mainTextureIdFound){
+				textureIds.push_back(materials[i].textureId);
 			}
 		}
 
-		if(!textureIdFound){
-			textureIds.push_back(materials[i].textureId);
+		if(materials[i].normalMapId != -1){
+			bool normalMapIdFound = false;
+			for(unsigned int j = 0; j < textureIds.size(); j++){
+				if(materials[i].normalMapId == textureIds[j]){
+					normalMapIdFound = true;
+					break;
+				}
+			}
+
+			if(!normalMapIdFound){
+				textureIds.push_back(materials[i].normalMapId);
+			}
+		}
+
+		if(materials[i].specularMapId != -1){
+			bool specularMapIdFound = false;
+			for(unsigned int j = 0; j < textureIds.size(); j++){
+				if(materials[i].specularMapId == textureIds[j]){
+					specularMapIdFound = true;
+					break;
+				}
+			}
+
+			if(!specularMapIdFound){
+				textureIds.push_back(materials[i].specularMapId);
+			}
 		}
 
 		bool shaderIdFound = false;
@@ -782,8 +841,8 @@ void Manager::load(Scene scene, std::vector<Asset> assets)
 	    shaders[i].geometryShader = geometryShader;
 	    shaders[i].fragmentShader = fragmentShader;
 
-	    std::cout << vertexShader << std::endl;
-	    std::cout << fragmentShader << std::endl;
+	    //std::cout << vertexShader << std::endl;
+	    //std::cout << fragmentShader << std::endl;
 	}
 
 	// find all unique meshes
@@ -876,6 +935,11 @@ int Manager::getNumberOfCameras()
 int Manager::getNumberOfMeshRenderers()
 {
 	return numberOfMeshRenderers;
+}
+
+int Manager::getNumberOfLineRenderers()
+{
+	return numberOfLineRenderers;
 }
 
 int Manager::getNumberOfDirectionalLights()
@@ -998,6 +1062,18 @@ MeshRenderer* Manager::getMeshRenderer(int id)
 	}
 }
 
+LineRenderer* Manager::getLineRenderer(int id)
+{
+	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
+	if(it != idToGlobalIndexMap.end()){
+		return &lineRenderers[it->second];
+	}
+	else{
+		std::cout << "Error: No entity with id " << id << " was found" << std::endl;
+		return NULL;
+	}
+}
+
 DirectionalLight* Manager::getDirectionalLight(int id)
 {
 	std::map<int, int>::iterator it = idToGlobalIndexMap.find(id);
@@ -1106,7 +1182,7 @@ Texture2D* Manager::getTexture2D(int id)
 		return &textures[it->second];
 	}
 	else{
-		std::cout << "Error: No texture with id " << id << " was found" << std::endl;
+		//std::cout << "Error: No texture with id " << id << " was found" << std::endl;
 		return NULL;
 	}
 }
@@ -1158,6 +1234,11 @@ Camera* Manager::getCameraByIndex(int index)
 MeshRenderer* Manager::getMeshRendererByIndex(int index)
 {
 	return &meshRenderers[index];
+}
+
+LineRenderer* Manager::getLineRendererByIndex(int index)
+{
+	return &lineRenderers[index];
 }
 
 DirectionalLight* Manager::getDirectionalLightByIndex(int index)
@@ -1227,110 +1308,110 @@ void Manager::latentDestroy(int entityId)
 
 void Manager::immediateDestroy(int entityId)
 {
-	Entity* entity = getEntity(entityId);
+	// Entity* entity = getEntity(entityId);
 
-	if(entity == NULL){
-	 	std::cout << "Error: Could not find entity (" << entityId << ") when calling immediateDestroy" << std::endl;
-	 	return;
-	}
+	// if(entity == NULL){
+	//  	std::cout << "Error: Could not find entity (" << entityId << ") when calling immediateDestroy" << std::endl;
+	//  	return;
+	// }
 
-	int entityGlobalIndex = -1;
-	std::map<int, int>::iterator it1 = idToGlobalIndexMap.find(entityId);
-	if(it1 != idToGlobalIndexMap.end()){
-		entityGlobalIndex = it1->second;
-	}
-	else{
-		std::cout << "Error: When searching entity with id " << entityId << " no global index corresponding to this entity id was found" << std::endl;
-		return;
-	}
+	// int entityGlobalIndex = -1;
+	// std::map<int, int>::iterator it1 = idToGlobalIndexMap.find(entityId);
+	// if(it1 != idToGlobalIndexMap.end()){
+	// 	entityGlobalIndex = it1->second;
+	// }
+	// else{
+	// 	std::cout << "Error: When searching entity with id " << entityId << " no global index corresponding to this entity id was found" << std::endl;
+	// 	return;
+	// }
 
-	if(entityGlobalIndex < 0 || entityGlobalIndex >= numberOfEntities){
-		std::cout << "Error: Entity global index corresponding to entity with id " << entityId << " was out or range" << std::endl;
-		return;
-	}
+	// if(entityGlobalIndex < 0 || entityGlobalIndex >= numberOfEntities){
+	// 	std::cout << "Error: Entity global index corresponding to entity with id " << entityId << " was out or range" << std::endl;
+	// 	return;
+	// }
 
-	for(int i = 0; i < 8; i++){
-		int componentId = entity->componentIds[i];
-		if(componentId != -1){
-			std::map<int, int>::iterator it2 = componentIdToTypeMap.find(componentId);
-			int componentType = -1;
-			if(it2 != componentIdToTypeMap.end()){
-				componentType = it2->second;
-			}
-			else{
-				std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in component type map" << std::endl;
-				return;
-			}
+	// for(int i = 0; i < 8; i++){
+	// 	int componentId = entity->componentIds[i];
+	// 	if(componentId != -1){
+	// 		std::map<int, int>::iterator it2 = componentIdToTypeMap.find(componentId);
+	// 		int componentType = -1;
+	// 		if(it2 != componentIdToTypeMap.end()){
+	// 			componentType = it2->second;
+	// 		}
+	// 		else{
+	// 			std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in component type map" << std::endl;
+	// 			return;
+	// 		}
 
-			if(componentType == -1){
-				std::cout << "Error: When searching entity with id " << entityId << " the component type found corresponding to component " << componentId << " was invalid" << std::endl;
-				return;
-			}
+	// 		if(componentType == -1){
+	// 			std::cout << "Error: When searching entity with id " << entityId << " the component type found corresponding to component " << componentId << " was invalid" << std::endl;
+	// 			return;
+	// 		}
 
-			int componentGlobalIndex = -1;
-			std::map<int, int>::iterator it3 = idToGlobalIndexMap.find(componentId);
-			if(it3 != idToGlobalIndexMap.end()){
-				componentGlobalIndex = it3->second;
-			}
-			else{
-				std::cout << "Error: When searching component with id " << componentId << " no global index corresponding to this component id was found" << std::endl;
-				return;
-			}
+	// 		int componentGlobalIndex = -1;
+	// 		std::map<int, int>::iterator it3 = idToGlobalIndexMap.find(componentId);
+	// 		if(it3 != idToGlobalIndexMap.end()){
+	// 			componentGlobalIndex = it3->second;
+	// 		}
+	// 		else{
+	// 			std::cout << "Error: When searching component with id " << componentId << " no global index corresponding to this component id was found" << std::endl;
+	// 			return;
+	// 		}
 
-			if(componentGlobalIndex < 0){
-				std::cout << "Error: Component global index corresponding to component with id " << componentId << " was out or range" << std::endl;
-				return;
-			}
+	// 		if(componentGlobalIndex < 0){
+	// 			std::cout << "Error: Component global index corresponding to component with id " << componentId << " was out or range" << std::endl;
+	// 			return;
+	// 		}
 
-			if(componentType == Component::getInstanceType<Transform>()){
-				transforms[componentGlobalIndex] = transforms[numberOfTransforms - 1];
-				numberOfTransforms--;
-			}
-			else if(componentType == Component::getInstanceType<Rigidbody>()){
-				rigidbodies[componentGlobalIndex] = rigidbodies[numberOfRigidbodies- 1];
-				numberOfRigidbodies--;
-			}
-			else if(componentType == Component::getInstanceType<Camera>()){
-				cameras[componentGlobalIndex] = cameras[numberOfCameras - 1];
-				numberOfCameras--;
-			}
-			else if(componentType == Component::getInstanceType<MeshRenderer>()){
-				meshRenderers[componentGlobalIndex] = meshRenderers[numberOfMeshRenderers - 1];
-				numberOfMeshRenderers--;
-			}
-			else if(componentType == Component::getInstanceType<DirectionalLight>()){
-				directionalLights[componentGlobalIndex] = directionalLights[numberOfDirectionalLights - 1];
-				numberOfDirectionalLights--;
-			}
-			else if(componentType == Component::getInstanceType<SpotLight>()){
-				spotLights[componentGlobalIndex] = spotLights[numberOfSpotLights - 1];
-				numberOfSpotLights--;
-			}
-			else if(componentType == Component::getInstanceType<PointLight>()){
-				pointLights[componentGlobalIndex] = pointLights[numberOfPointLights - 1];
-				numberOfPointLights--;
-			}
-			else if(componentType == Component::getInstanceType<SphereCollider>()){
-				sphereColliders[componentGlobalIndex] = sphereColliders[numberOfSphereColliders - 1];
-				numberOfSphereColliders--;
-			}
-			else if(componentType == Component::getInstanceType<BoxCollider>()){
-				boxColliders[componentGlobalIndex] = boxColliders[numberOfBoxColliders - 1];
-				numberOfBoxColliders--;
-			}
-			else if(componentType == Component::getInstanceType<CapsuleCollider>()){
-				capsuleColliders[componentGlobalIndex] = capsuleColliders[numberOfCapsuleColliders - 1];
-				numberOfCapsuleColliders--;
-			}
-			else{
-				std::cout << "Error: Unknown component type found when calling immediateDestroy" << std::endl;
-				return;
-			}
-		}
-	}
+	// 		if(componentType == Component::getInstanceType<Transform>()){
+	// 			transforms[componentGlobalIndex] = transforms[numberOfTransforms - 1];
+	// 			numberOfTransforms--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<Rigidbody>()){
+	// 			rigidbodies[componentGlobalIndex] = rigidbodies[numberOfRigidbodies- 1];
+	// 			numberOfRigidbodies--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<Camera>()){
+	// 			cameras[componentGlobalIndex] = cameras[numberOfCameras - 1];
+	// 			numberOfCameras--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<MeshRenderer>()){
+	// 			meshRenderers[componentGlobalIndex] = meshRenderers[numberOfMeshRenderers - 1];
+	// 			numberOfMeshRenderers--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<DirectionalLight>()){
+	// 			directionalLights[componentGlobalIndex] = directionalLights[numberOfDirectionalLights - 1];
+	// 			numberOfDirectionalLights--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<SpotLight>()){
+	// 			spotLights[componentGlobalIndex] = spotLights[numberOfSpotLights - 1];
+	// 			numberOfSpotLights--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<PointLight>()){
+	// 			pointLights[componentGlobalIndex] = pointLights[numberOfPointLights - 1];
+	// 			numberOfPointLights--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<SphereCollider>()){
+	// 			sphereColliders[componentGlobalIndex] = sphereColliders[numberOfSphereColliders - 1];
+	// 			numberOfSphereColliders--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<BoxCollider>()){
+	// 			boxColliders[componentGlobalIndex] = boxColliders[numberOfBoxColliders - 1];
+	// 			numberOfBoxColliders--;
+	// 		}
+	// 		else if(componentType == Component::getInstanceType<CapsuleCollider>()){
+	// 			capsuleColliders[componentGlobalIndex] = capsuleColliders[numberOfCapsuleColliders - 1];
+	// 			numberOfCapsuleColliders--;
+	// 		}
+	// 		else{
+	// 			std::cout << "Error: Unknown component type found when calling immediateDestroy" << std::endl;
+	// 			return;
+	// 		}
+	// 	}
+	// }
 
-	entities[entityGlobalIndex] = entities[numberOfEntities - 1];
-	numberOfEntities--;
+	// entities[entityGlobalIndex] = entities[numberOfEntities - 1];
+	// numberOfEntities--;
 }
 
 bool Manager::isMarkedForLatentDestroy(int entityId)

@@ -5,5 +5,7 @@
 	"diffuse" : [0.8, 0.8, 0.8],
 	"specular" : [1.0, 1.0, 1.0],
 	"shader" : 67676767,
-	"mainTexture" : 87877887
+	"mainTexture" : 87877887,
+	"normalMap" : -1,
+	"specularMap" : -1
 }
