@@ -263,6 +263,7 @@ namespace PhysicsEngine
 			void immediateDestroy(int entityId);
 			bool isMarkedForLatentDestroy(int entityId);
 			std::vector<int> getEntitiesMarkedForLatentDestroy();
+			Entity* instantiate();
 			Entity* instantiate(int entityId);
 
 			template<typename T>
@@ -338,6 +339,7 @@ namespace PhysicsEngine
 
 				return NULL;
 			}
+
 	};
 }
 

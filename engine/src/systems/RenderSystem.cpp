@@ -4,8 +4,6 @@
 
 #include "../../include/graphics/Graphics.h"
 
-#include "../../include/core/Manager.h"
-
 #include "../../include/components/Transform.h"
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/DirectionalLight.h"
@@ -13,6 +11,7 @@
 #include "../../include/components/PointLight.h"
 #include "../../include/components/Camera.h"
 
+#include "../../include/core/Manager.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
 
@@ -34,16 +33,8 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::init()
 {
-	std::cout << "render system init called" << std::endl;
-
 	for(int i = 0; i < manager->getNumberOfTextures(); i++){
 		Graphics::generate(manager->getTexture2DByIndex(i));
-	}
-
-	for(int i = 0; i < manager->getNumberOfMaterials(); i++){
-		Material* material = manager->getMaterialByIndex(i);
-
-		std::cout << "main: " << material->textureId << " normal: " << material->normalMapId << " specular: " << material->specularMapId << std::endl;
 	}
 
 	for(int i = 0; i < manager->getNumberOfShaders(); i++){
@@ -54,8 +45,6 @@ void RenderSystem::init()
 		if(!shader->isCompiled()){
 			std::cout << "Shader failed to compile " << i << std::endl;
 		}
-
-		std::cout << "shader: " << shader->shaderId << std::endl;
 
 		Graphics::setUniformBlockToBindingPoint(shader, "CameraBlock", 0);
 		Graphics::setUniformBlockToBindingPoint(shader, "DirectionalLightBlock", 2);
@@ -81,9 +70,6 @@ void RenderSystem::init()
 	Graphics::enablePoints();
 
 	Graphics::checkError();
-
-	std::cout << "Render system init called" << std::endl;
-	std::cout << "GL_TEXTURE_2D: " << GL_TEXTURE_2D << std::endl;
 }
 
 void RenderSystem::update()
@@ -158,8 +144,6 @@ void RenderSystem::update()
 
 		PointLight* pointLight = manager->getPointLightByIndex(i);
 
-		std::cout << "pointlight position: " << pointLight->position.x << " " << pointLight->position.y << " " << pointLight->position.z << " pass: " << pass << std::endl;
-
 		Graphics::bind(&pointLightState);
 		Graphics::setPointLightPosition(&pointLightState, pointLight->position);
 		Graphics::setPointLightAmbient(&pointLightState, pointLight->ambient);
@@ -184,33 +168,10 @@ void RenderSystem::renderScene()
 		MeshRenderer* meshRenderer = manager->getMeshRendererByIndex(i);
 		Transform* transform = meshRenderer->getComponent<Transform>();
 
-		//std::cout << "entity id: " << meshRenderer->entityId << " mesh id: " << meshRenderer->meshId << " material id: " << meshRenderer->materialId << std::endl;
-
 		Mesh* mesh = manager->getMesh(meshRenderer->meshId);
-		Material* material = manager->getMaterial(meshRenderer->materialId);  // should I call somethig like Graphics::bind(material) and then have this internally use the shader and bind any textures?
-		//Shader* shader = manager->getShader(material->shaderId);
-		//Texture2D* texture = manager->getTexture2D(material->textureId);
+		Material* material = manager->getMaterial(meshRenderer->materialId);
 
 		glm::mat4 model = transform->getModelMatrix();
-
-		// std::cout << "shader compiled: " << shader->isCompiled() << " id: " << shader->shaderId << std::endl;
-		// std::cout << view[0][0] << " " << view[0][1] << " " << view[0][2] << " " << view[0][3] << std::endl;
-		// std::cout << view[1][0] << " " << view[1][1] << " " << view[1][2] << " " << view[1][3] << std::endl;
-		// std::cout << view[2][0] << " " << view[2][1] << " " << view[2][2] << " " << view[2][3] << std::endl;
-		// std::cout << view[3][0] << " " << view[3][1] << " " << view[3][2] << " " << view[3][3] << std::endl;
-		// glm::vec3 position = transform->position;
-		// glm::quat rotation = transform->rotation;
-		// glm::vec3 scale = transform->scale;
-
-		// std::cout << "transform i: " << i << std::endl;
-		// std::cout <<"position: " << position.x << " " << position.y << " " << position.z << std::endl;
-		// std::cout <<"rotation: " << rotation.x << " " << rotation.y << " " << rotation.z << " " << rotation.w << std::endl;
-		// std::cout <<"scale: " << scale.x << " " << scale.y << " " << scale.z << std::endl;
-
-		// Graphics::use(shader);
-		// Graphics::setMat4(shader, "model", model);
-
-		// Graphics::bind(texture);
 
 		Graphics::bind(material, model);
 		Graphics::bind(mesh);

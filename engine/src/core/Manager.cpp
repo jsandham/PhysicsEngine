@@ -1430,6 +1430,22 @@ std::vector<int> Manager::getEntitiesMarkedForLatentDestroy()
 	return entitiesMarkedForLatentDestroy;
 }
 
+Entity* Manager::instantiate()
+{
+	if(numberOfEntities == settings.maxAllowedEntities){
+		std::cout << "Error: Cannot instantiate entity because we are at the settings maximum of " << settings.maxAllowedEntities << std::endl;
+		return NULL;
+	}
+
+	numberOfEntities++;
+
+	Entity* entity = &entities[numberOfEntities - 1];
+
+	// TODO: set entity id on newly created entity and insert into idToGlobalIndexMap and entityIdToComponentIds maps
+
+	return entity;
+}
+
 Entity* Manager::instantiate(int entityId)
 {
 	// if(numberOfEntities == maxAllowedEntities){
