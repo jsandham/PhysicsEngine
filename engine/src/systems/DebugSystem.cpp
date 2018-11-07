@@ -4,21 +4,19 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/Physics.h"
 
-// #include "../graphics/Gizmos.h"
-#include "../../include/graphics/OpenGL.h"
-
 #include "../../include/glm/glm.hpp"
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 using namespace PhysicsEngine;
 
-// DebugSystem::DebugSystem(Manager* manager, SceneContext* context)
-// {
-// 	this->manager = manager;
-// }
 DebugSystem::DebugSystem()
 {
-	
+	type = 3;
+}
+
+DebugSystem::DebugSystem(unsigned char* data)
+{
+	type = 3;
 }
 
 DebugSystem::~DebugSystem()

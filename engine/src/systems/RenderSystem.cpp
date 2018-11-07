@@ -15,6 +15,8 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
 
+#include "../../include/core/Input.h"
+
 using namespace PhysicsEngine;
 
 RenderSystem::RenderSystem()
@@ -33,12 +35,12 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::init()
 {
-	for(int i = 0; i < manager->getNumberOfTextures(); i++){
-		Graphics::generate(manager->getTexture2DByIndex(i));
+	for(int i = 0; i < manager->getNumberOfAssets<Texture2D>(); i++){
+		Graphics::generate(manager->getAssetByIndex<Texture2D>(i));
 	}
 
-	for(int i = 0; i < manager->getNumberOfShaders(); i++){
-		Shader* shader = manager->getShaderByIndex(i);
+	for(int i = 0; i < manager->getNumberOfAssets<Shader>(); i++){
+		Shader* shader = manager->getAssetByIndex<Shader>(i);
 
 		shader->compile();
 
@@ -53,11 +55,15 @@ void RenderSystem::init()
 	}
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
-	for(int i = 0; i < manager->getNumberOfMeshes(); i++){
-		Mesh* mesh = manager->getMeshByIndex(i);
+	for(int i = 0; i < manager->getNumberOfAssets<Mesh>(); i++){
+		Mesh* mesh = manager->getAssetByIndex<Mesh>(i);
 
 		Graphics::generate(mesh);
 	}
+
+	Line* line = manager->getLine();
+
+	Graphics::generate(line);
 	
 	Graphics::generate(&cameraState);
 	Graphics::generate(&directionLightState);
@@ -74,13 +80,13 @@ void RenderSystem::init()
 
 void RenderSystem::update()
 {
-	int numberOfDirectionalLights = manager->getNumberOfDirectionalLights();
-	int numberOfSpotLights = manager->getNumberOfSpotLights();
-	int numberOfPointLights = manager->getNumberOfPointLights();
+	int numberOfDirectionalLights = manager->getNumberOfComponents<DirectionalLight>();
+	int numberOfSpotLights = manager->getNumberOfComponents<SpotLight>();
+	int numberOfPointLights = manager->getNumberOfComponents<PointLight>();
 
 	Camera* camera;
-	if(manager->getNumberOfCameras() > 0){
-		camera = manager->getCameraByIndex(0);
+	if(manager->getNumberOfComponents<Camera>() > 0){
+		camera = manager->getComponentByIndex<Camera>(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
@@ -102,7 +108,7 @@ void RenderSystem::update()
 	pass = 0;
 
 	if (numberOfDirectionalLights > 0){
-		DirectionalLight* directionalLight = manager->getDirectionalLightByIndex(0);
+		DirectionalLight* directionalLight = manager->getComponentByIndex<DirectionalLight>(0);
 
 		Graphics::bind(&directionLightState);
 		Graphics::setDirLightDirection(&directionLightState, directionalLight->direction);
@@ -119,7 +125,7 @@ void RenderSystem::update()
 	for(int i = 0; i < numberOfSpotLights; i++){
 		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
 
-		SpotLight* spotLight = manager->getSpotLightByIndex(i);
+		SpotLight* spotLight = manager->getComponentByIndex<SpotLight>(i);
 
 		Graphics::bind(&spotLightState);
 		Graphics::setSpotLightPosition(&spotLightState, spotLight->position);
@@ -142,7 +148,7 @@ void RenderSystem::update()
 	for(int i = 0; i < numberOfPointLights; i++){
 		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
 
-		PointLight* pointLight = manager->getPointLightByIndex(i);
+		PointLight* pointLight = manager->getComponentByIndex<PointLight>(i);
 
 		Graphics::bind(&pointLightState);
 		Graphics::setPointLightPosition(&pointLightState, pointLight->position);
@@ -159,17 +165,44 @@ void RenderSystem::update()
 		pass++;
 	}
 
+	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
+		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
+		Transform* transform = lineRenderer->getComponent<Transform>();
+
+		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
+
+		if(transform == NULL){
+			std::cout << "NO TRANSFORM" << std::endl;
+		}
+		
+		//std::cout << "component id: " << lineRenderer->componentId.toString() << " material id: " << material->assetId.toString() << std::endl;
+
+		// Line* line = manager->getLine();
+
+		// line->start = lineRenderer->start;
+		// line->end = lineRenderer->end;
+
+		// Graphics::apply(line);
+
+		// glm::mat4 model = transform->getModelMatrix();
+
+		// Graphics::bind(material, model);
+		// Graphics::bind(line);
+		// Graphics::draw(line);
+		// Graphics::unbind(line);
+	}
+
 	Graphics::checkError();
 }
 
 void RenderSystem::renderScene()
 {
-	for(int i = 0; i < manager->getNumberOfMeshRenderers(); i++){
-		MeshRenderer* meshRenderer = manager->getMeshRendererByIndex(i);
+	for(int i = 0; i < manager->getNumberOfComponents<MeshRenderer>(); i++){
+		MeshRenderer* meshRenderer = manager->getComponentByIndex<MeshRenderer>(i);
 		Transform* transform = meshRenderer->getComponent<Transform>();
 
-		Mesh* mesh = manager->getMesh(meshRenderer->meshId);
-		Material* material = manager->getMaterial(meshRenderer->materialId);
+		Material* material = manager->getAsset<Material>(meshRenderer->materialId); 
+		Mesh* mesh = manager->getAsset<Mesh>(meshRenderer->meshId);
 
 		glm::mat4 model = transform->getModelMatrix();
 

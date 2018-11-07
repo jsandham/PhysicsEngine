@@ -9,10 +9,8 @@ Component::Component()
 {
 	isActive = false;
 
-	//globalEntityIndex = -1;
-	//globalComponentIndex = -1;
-	componentId = -1;
-	entityId = -1;
+	componentId = Guid::INVALID;
+	entityId = Guid::INVALID;
 
 	manager = NULL;
 }

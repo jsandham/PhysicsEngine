@@ -351,7 +351,7 @@ void Graphics::bind(Material* material, glm::mat4 model)
 
 		Graphics::setInt(shader, "material.specularMap", 2);
 
-		std::cout << "specular map found " << specularMap->textureId << "  " << glGetUniformLocation(shader->program.handle, "mainTexture") << "  " << glGetUniformLocation(shader->program.handle, "specularMap") << "  " << GL_TEXTURE1 << std::endl;
+		//std::cout << "specular map found " << specularMap->textureId.toString() << "  " << glGetUniformLocation(shader->program.handle, "mainTexture") << "  " << glGetUniformLocation(shader->program.handle, "specularMap") << "  " << GL_TEXTURE1 << std::endl;
 		Graphics::active(specularMap, 2);
 		Graphics::bind(specularMap);
 	}
@@ -535,6 +535,66 @@ void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockNa
 	else{
 		std::cout << "error for block name: " << blockName << " block index: " << blockIndex << std::endl;
 	}
+}
+
+void Graphics::apply(Line* line)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, line->vertexVBO.handle);
+
+	float vertices[6];
+
+	vertices[0] = line->start.x;
+	vertices[1] = line->start.y;
+	vertices[2] = line->start.z;
+	vertices[3] = line->end.x;
+	vertices[4] = line->end.y;
+	vertices[5] = line->end.z;
+
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 6*sizeof(float), &vertices[0]);
+}
+
+void Graphics::generate(Line* line)
+{
+	glGenVertexArrays(1, &(line->lineVAO.handle));
+	glBindVertexArray(line->lineVAO.handle);
+
+	float vertices[6];
+
+	vertices[0] = line->start.x;
+	vertices[1] = line->start.y;
+	vertices[2] = line->start.z;
+	vertices[3] = line->end.x;
+	vertices[4] = line->end.y;
+	vertices[5] = line->end.z;
+
+	glGenBuffers(1, &(line->vertexVBO.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, line->vertexVBO.handle);
+	glBufferData(GL_ARRAY_BUFFER, 6*sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void Graphics::destroy(Line* line)
+{
+	glDeleteVertexArrays(1, &(line->lineVAO.handle));
+	glDeleteBuffers(1, &(line->vertexVBO.handle));
+}
+
+void Graphics::bind(Line* line)
+{
+	glBindVertexArray(line->lineVAO.handle);
+}
+
+void Graphics::unbind(Line* line)
+{
+	glBindVertexArray(0);
+}
+
+void Graphics::draw(Line* line)
+{
+	glDrawArrays(GL_LINES, 0, 6);
 }
 
 void Graphics::apply(Mesh* mesh)

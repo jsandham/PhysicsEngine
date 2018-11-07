@@ -1,6 +1,8 @@
 #ifndef __ENTITY_H__
 #define __ENTITY_H__
 
+#include "Guid.h"
+
 namespace PhysicsEngine
 {
 	class Manager;
@@ -11,7 +13,7 @@ namespace PhysicsEngine
 			Manager* manager;
 
 		public:
-			int entityId;
+			Guid entityId;
 
 		public:
 			Entity();
@@ -24,9 +26,9 @@ namespace PhysicsEngine
 			Entity* instantiate();
 
 			template<typename T>
-			void addComponent()
+			T* addComponent()
 			{
-				manager->addComponent<T>(entityId);
+				return manager->addComponent<T>(entityId);
 			}
 
 			template<typename T>

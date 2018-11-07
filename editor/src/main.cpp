@@ -16,6 +16,7 @@
 #include <core/Mesh.h>
 #include <core/GMesh.h>
 #include <core/Entity.h>
+#include <core/Guid.h>
 
 #include <components/Transform.h>
 #include <components/Rigidbody.h>
@@ -54,6 +55,7 @@ int main(int argc, char* argv[])
 	// relative path from editor to project directory
 	std::string projectDirectory = "../../sample_project/";
 
+	if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
@@ -300,7 +302,7 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		Entity entity;
 
-		entity.entityId = std::stoi(it->first);
+		entity.entityId = Guid(it->first);
 
 		// for(int i = 0; i < it->second["components"].size(); i++){
 		// 	entity.componentIds[i] = it->second["components"][i].ToInt();
@@ -319,8 +321,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		Transform transform;
 
-		transform.componentId = std::stoi(it->first);
-		transform.entityId = it->second["entity"].ToInt();
+		transform.componentId = Guid(it->first);
+		transform.entityId = Guid(it->second["entity"].ToString());
 
 		transform.position.x = (float)it->second["position"][0].ToFloat();
 		transform.position.y = (float)it->second["position"][1].ToFloat();
@@ -343,8 +345,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		Rigidbody rigidbody;
 
-		rigidbody.componentId = std::stoi(it->first);
-		rigidbody.entityId = it->second["entity"].ToInt();
+		rigidbody.componentId = Guid(it->first);
+		rigidbody.entityId = Guid(it->second["entity"].ToString());
 
 		rigidbody.useGravity = (bool)it->second["useGravity"].ToBool();
 		rigidbody.mass = (float)it->second["mass"].ToFloat();
@@ -374,8 +376,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		Camera camera;
 
-		camera.componentId = std::stoi(it->first);
-		camera.entityId = it->second["entity"].ToInt();
+		camera.componentId = Guid(it->first);
+		camera.entityId = Guid(it->second["entity"].ToString());
 
 		camera.position.x = (float)it->second["position"][0].ToFloat();
 		camera.position.y = (float)it->second["position"][1].ToFloat();
@@ -394,13 +396,13 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		MeshRenderer meshRenderer;
 
-		meshRenderer.componentId = std::stoi(it->first);
-		meshRenderer.entityId = it->second["entity"].ToInt();
+		meshRenderer.componentId = Guid(it->first);
+		meshRenderer.entityId = Guid(it->second["entity"].ToString());
 
-		meshRenderer.meshId = it->second["mesh"].ToInt();
-		meshRenderer.materialId = it->second["material"].ToInt();
+		meshRenderer.meshId = Guid(it->second["mesh"].ToString());
+		meshRenderer.materialId = Guid(it->second["material"].ToString());
 
-		std::cout << "mesh renderer entity id: " << meshRenderer.entityId << "mesh renderer component id: " << meshRenderer.componentId << " mesh renderer mesh id: " << meshRenderer.meshId << std::endl;
+		std::cout << "mesh renderer entity id: " << meshRenderer.entityId.toString() << "mesh renderer component id: " << meshRenderer.componentId.toString() << " mesh renderer mesh id: " << meshRenderer.meshId.toString() << std::endl;
 
 		fwrite(&meshRenderer, sizeof(MeshRenderer), 1, file);
 	}
@@ -412,8 +414,9 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		LineRenderer lineRenderer;
 
-		lineRenderer.componentId = std::stoi(it->first);
-		lineRenderer.entityId = it->second["entity"].ToInt();
+		lineRenderer.componentId = Guid(it->first);
+		lineRenderer.entityId = Guid(it->second["entity"].ToString());
+		lineRenderer.materialId = Guid(it->second["material"].ToString());
 
 		lineRenderer.start.x = (float)it->second["start"][0].ToFloat();
 		lineRenderer.start.y = (float)it->second["start"][1].ToFloat();
@@ -423,11 +426,12 @@ int serializeScene(std::string scenePath)
 		lineRenderer.end.y = (float)it->second["end"][1].ToFloat();
 		lineRenderer.end.z = (float)it->second["end"][2].ToFloat();
 
-		lineRenderer.color.x = (float)it->second["color"][0].ToFloat();
-		lineRenderer.color.y = (float)it->second["color"][1].ToFloat();
-		lineRenderer.color.z = (float)it->second["color"][2].ToFloat();
+		// lineRenderer.color.x = (float)it->second["color"][0].ToFloat();
+		// lineRenderer.color.y = (float)it->second["color"][1].ToFloat();
+		// lineRenderer.color.z = (float)it->second["color"][2].ToFloat();
+		// lineRenderer.color.w = (float)it->second["color"][3].ToFloat();
 
-		std::cout << "line renderer entity id: " << lineRenderer.entityId << "line renderer component id: " << lineRenderer.componentId << std::endl;
+		std::cout << "line renderer entity id: " << lineRenderer.entityId.toString() << "line renderer component id: " << lineRenderer.componentId.toString() << std::endl;
 
 		fwrite(&lineRenderer, sizeof(LineRenderer), 1, file);
 	}
@@ -439,8 +443,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		DirectionalLight directionalLight;
 
-		directionalLight.componentId = std::stoi(it->first);
-		directionalLight.entityId = it->second["entity"].ToInt();
+		directionalLight.componentId = Guid(it->first);
+		directionalLight.entityId = Guid(it->second["entity"].ToString());
 
 		directionalLight.direction.x = (float)it->second["direction"][0].ToFloat();
 		directionalLight.direction.y = (float)it->second["direction"][1].ToFloat();
@@ -466,8 +470,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		SpotLight spotLight;
 
-		spotLight.componentId = std::stoi(it->first);
-		spotLight.entityId = it->second["entity"].ToInt();
+		spotLight.componentId = Guid(it->first);
+		spotLight.entityId = Guid(it->second["entity"].ToString());
 
 		spotLight.constant = (float)it->second["constant"].ToFloat();
 		spotLight.linear = (float)it->second["linear"].ToFloat();
@@ -505,8 +509,8 @@ int serializeScene(std::string scenePath)
 	for(it = objects.begin(); it != objects.end(); it++){
 		PointLight pointLight;
 
-		pointLight.componentId = std::stoi(it->first);
-		pointLight.entityId = it->second["entity"].ToInt();
+		pointLight.componentId = Guid(it->first);
+		pointLight.entityId = Guid(it->second["entity"].ToString());
 
 		pointLight.constant = (float)it->second["constant"].ToFloat();
 		pointLight.linear = (float)it->second["linear"].ToFloat();
@@ -669,7 +673,7 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 		json::JSON jsonMaterial = JSON::Load(jsonString);
 
 		Material material;
-		material.materialId = jsonMaterial["id"].ToInt();
+		material.assetId = Guid(jsonMaterial["id"].ToString());
 		material.shininess = (float)jsonMaterial["shininess"].ToFloat();
 		material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
 		material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
@@ -680,14 +684,14 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 		material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
 		material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
 		material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
-		material.shaderId  = jsonMaterial["shader"].ToInt();
-		material.textureId = jsonMaterial["mainTexture"].ToInt();
-		material.normalMapId = jsonMaterial["normalMap"].ToInt();
-		material.specularMapId = jsonMaterial["specularMap"].ToInt();
+		material.shaderId  = Guid(jsonMaterial["shader"].ToString());
+		material.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+		material.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+		material.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
 
 		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
 
-		std::cout << "outputPath: " << outputPath << " material id: " << material.materialId << " shader id: " << material.shaderId << " main texture id: " << material.textureId << std::endl;
+		std::cout << "outputPath: " << outputPath << " material id: " << material.assetId.toString() << " shader id: " << material.shaderId.toString() << " main texture id: " << material.textureId.toString() << std::endl;
 
 		// serialize material
 		FILE* file = fopen(outputPath.c_str(), "wb");
@@ -730,7 +734,7 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 			
 			// create mesh header
 			MeshHeader header = {};
-			header.meshId = jsonMesh["id"].ToInt();
+			header.meshId = Guid(jsonMesh["id"].ToString());
 			header.verticesSize = (unsigned int)mesh.vertices.size();
 			header.normalsSize = (unsigned int)mesh.normals.size();
 			header.texCoordsSize = (unsigned int)mesh.texCoords.size();
@@ -791,7 +795,7 @@ int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
 			
 			// create gmesh header
 			GMeshHeader header = {};
-			header.gmeshId = jsonGMesh["id"].ToInt();
+			header.gmeshId = Guid(jsonGMesh["id"].ToString());
 			header.dim = gmesh.dim;
 			header.ng = gmesh.ng;
 		    header.n = gmesh.n;

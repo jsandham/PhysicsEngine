@@ -2,6 +2,7 @@
 #define __LINERENDERER_H__
 
 #include "Component.h"
+#include "../core/Guid.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -14,7 +15,8 @@ namespace PhysicsEngine
 		public:
 			glm::vec3 start;
 			glm::vec3 end;
-			glm::vec3 color;
+
+			Guid materialId;
 
 		public:
 			LineRenderer();

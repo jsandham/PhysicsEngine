@@ -1,31 +1,31 @@
 {
-  "id" : 20000000,
-  "43324355" : {
+  "id" : "6992adfa-bc98-4989-a47c-55127560250b",
+  "63e8fee2-c59a-41a4-b72f-790e735bf7c1" : {
     "type" : "Entity",
-    "components" : [97856423, 87943456, 11275838, 89122554]
+    "components" : ["fb698b95-4ec4-4046-8ce7-604b1bc7aa04", "e1cb9f0b-0a57-4628-8ba5-bac01fbafa04", "c20642e8-8f88-4b87-990a-9659e2ded2a4", "4ade255a-bffa-4098-871d-2b68ea22ef2a"]
   },
-  "97856423" : {
+  "fb698b95-4ec4-4046-8ce7-604b1bc7aa04" : {
     "type" : "Transform",
-    "entity" : 43324355,
+    "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
-  "87943456" : {
+  "e1cb9f0b-0a57-4628-8ba5-bac01fbafa04" : {
     "type" : "Camera",
-    "entity" : 43324355,
+    "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "position" : [0.0, 2.0, 0.0],
     "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
   },
-  "11275838" : {
+  "c20642e8-8f88-4b87-990a-9659e2ded2a4" : {
     "type" : "MeshRenderer",
-    "entity" : 43324355,
-    "mesh" : 34763455,
-    "material" : 60859222
+    "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
+    "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
   },
-  "89122554" : {
+  "4ade255a-bffa-4098-871d-2b68ea22ef2a" : {
     "type" : "DirectionalLight",
-    "entity" : 43324355,
+    "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "direction" : [1.0, 2.0, 0.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],

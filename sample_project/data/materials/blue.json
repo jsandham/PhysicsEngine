@@ -1,11 +1,12 @@
 {
-	"id" : 60859222,
+	"id" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
 	"shininess" : 1.0,
 	"ambient" : [0.5, 0.5, 0.5],
 	"diffuse" : [0.8, 0.8, 0.8],
 	"specular" : [1.0, 1.0, 1.0],
-	"shader" : 12121212,
-	"mainTexture" : 98721434,
-	"normalMap" : -1,
-	"specularMap" : -1
+	"color" : [1.0, 1.0, 1.0, 1.0],
+	"shader" : "2c8ecc08-7e5b-4d63-af97-15d9ccdba309",
+	"mainTexture" : "0d966e91-90fb-4654-877e-869ebbdf4810",
+	"normalMap" : "00000000-0000-0000-0000-000000000000",
+	"specularMap" : "00000000-0000-0000-0000-000000000000"
 }

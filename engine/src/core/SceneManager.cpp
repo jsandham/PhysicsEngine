@@ -19,9 +19,9 @@ void SceneManager::add(Scene scene)
 	context.add(scene);
 }
 
-void SceneManager::add(Asset asset)
+void SceneManager::add(AssetFile assetFile)
 {
-	assets.push_back(asset);
+	assetFiles.push_back(assetFile);
 }
 
 bool SceneManager::validate()
@@ -31,7 +31,7 @@ bool SceneManager::validate()
 		return false;
 	}
 
-	if(!manager->validate(scenes, assets)){
+	if(!manager->validate(scenes, assetFiles)){
 		std::cout << "Error: Validation failed" << std::endl;
 		return false;
 	}
@@ -56,7 +56,7 @@ void SceneManager::update()
 	if(loadingScene != NULL){
 		std::cout << "loading scene: " << loadingScene->filepath << std::endl;
 
-		manager->load(*loadingScene, assets);
+		manager->load(*loadingScene, assetFiles);
 
 		for(int i = 0; i < manager->getNumberOfSystems(); i++){
 			System* system = manager->getSystemByIndex(i);

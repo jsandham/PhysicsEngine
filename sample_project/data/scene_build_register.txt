@@ -1,2 +1,1 @@
-pointlight.scene
-empty.scene
+simple.scene

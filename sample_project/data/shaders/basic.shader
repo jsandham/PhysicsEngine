@@ -105,8 +105,8 @@ void main(void)
 {
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
-	//FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord); 
-	FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+	FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord); 
+	//FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 }
 
 vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir)

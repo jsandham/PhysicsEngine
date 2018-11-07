@@ -5,14 +5,16 @@ using namespace PhysicsEngine;
 
 Material::Material()
 {
-	materialId = -1;
-	shaderId = -1;
-	textureId = -1;
+	shaderId = Guid::INVALID;
+	textureId = Guid::INVALID;
+	normalMapId = Guid::INVALID;
+	specularMapId = Guid::INVALID;
 
 	shininess = 1.0f;
 	ambient = glm::vec3(0.25f, 0.25f, 0.25f);
 	diffuse = glm::vec3(0.75f, 0.75f, 0.75f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Material::~Material()
@@ -27,20 +29,20 @@ void Material::setManager(Manager* manager)
 
 Shader* Material::getShader()
 {
-	return manager->getShader(shaderId);
+	return manager->getAsset<Shader>(shaderId);
 }
 
 Texture2D* Material::getMainTexture()
 {
-	return manager->getTexture2D(textureId);
+	return manager->getAsset<Texture2D>(textureId);
 }
 
 Texture2D* Material::getNormalMap()
 {
-	return manager->getTexture2D(normalMapId);
+	return manager->getAsset<Texture2D>(normalMapId);
 }
 
 Texture2D* Material::getSpecularMap()
 {
-	return manager->getTexture2D(specularMapId);
+	return manager->getAsset<Texture2D>(specularMapId);
 }

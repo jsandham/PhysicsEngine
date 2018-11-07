@@ -19,7 +19,7 @@ namespace PhysicsEngine
 			Scene* loadingScene; 
 
 			std::vector<Scene> scenes;
-			std::vector<Asset> assets;
+			std::vector<AssetFile> assetFiles;
 
 			Manager* manager;
 
@@ -28,7 +28,7 @@ namespace PhysicsEngine
 			~SceneManager();
 
 			void add(Scene scene);
-			void add(Asset asset);
+			void add(AssetFile assetFile);
 
 			bool validate();
 			void init();

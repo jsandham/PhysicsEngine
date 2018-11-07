@@ -4,14 +4,19 @@
 
 #include "../../include/core/Guid.h"
 
+using namespace PhysicsEngine;
+
+const Guid Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
+
 Guid::Guid()
 {
-	std::cout << "guid constructor called" << std::endl;
+	for(int i = 0; i < 16; i++){
+		this->bytes[i] = '\0';
+	}
 }
 
 Guid::Guid(const Guid& guid)
 {
-	this->bytes.resize(16);
 	for(int i = 0; i < 16; i++){
 		this->bytes[i] = guid.bytes[i];
 	}
@@ -19,8 +24,6 @@ Guid::Guid(const Guid& guid)
 
 Guid::Guid(const std::string &str)
 {
-	this->bytes.resize(16);
-
 	char c1 = '\0';
 	char c2 = '\0';
 	bool firstCharFound = false;
@@ -90,7 +93,6 @@ Guid::Guid(const std::string &str)
 
 Guid::Guid(const std::vector<unsigned char> &bytes)
 {
-	this->bytes.resize(16);
 	for(int i = 0; i < 16; i++){
 		this->bytes[i] = bytes[i];
 	}
@@ -98,7 +100,6 @@ Guid::Guid(const std::vector<unsigned char> &bytes)
 
 Guid::Guid(const unsigned char* bytes)
 {
-	this->bytes.resize(16);
 	for(int i = 0; i < 16; i++){
 		this->bytes[i] = bytes[i];
 	}
@@ -121,7 +122,7 @@ Guid& Guid::operator=(const Guid& guid)
 	return *this;
 }
 
-bool Guid::operator==(const Guid& guid)
+bool Guid::operator==(const Guid& guid) const
 {
 	for(int i = 0; i < 16; i++){
 		if(bytes[i] != guid.bytes[i]){
@@ -132,7 +133,7 @@ bool Guid::operator==(const Guid& guid)
 	return true;
 }
 
-bool Guid::operator!=(const Guid& guid)
+bool Guid::operator!=(const Guid& guid) const
 {
 	for(int i = 0; i < 16; i++){
 		if(bytes[i] != guid.bytes[i]){
@@ -141,6 +142,24 @@ bool Guid::operator!=(const Guid& guid)
 	}
 
 	return false;
+}
+
+bool Guid::operator<(const Guid& guid) const
+{
+	return ( memcmp( this, &guid, sizeof(Guid) ) > 0 ? true : false );
+
+	//return (*this != guid);  // why doesnt this work??
+}
+
+bool Guid::isEmpty() const
+{
+	for(int i = 0; i < 16; i++){
+		if(bytes[i] != '\0'){
+			return false;
+		}
+	}
+
+	return true;
 }
 
 std::string Guid::toString() const

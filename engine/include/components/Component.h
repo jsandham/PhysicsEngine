@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "../core/Guid.h"
+
 namespace PhysicsEngine
 {
 	class Entity;
@@ -16,8 +18,8 @@ namespace PhysicsEngine
 		public:
 			bool isActive;
 
-			int componentId;
-			int entityId;
+			Guid componentId;
+			Guid entityId;
 
 		public:
 			Component();

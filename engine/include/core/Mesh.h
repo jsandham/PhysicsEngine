@@ -3,16 +3,16 @@
 
 #include<vector>
 
+#include "Guid.h"
+#include "Asset.h"
+
 #include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
-	class Mesh
+	class Mesh : public Asset
 	{
 		public:
-			int meshId;
-			//int globalIndex;
-
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;

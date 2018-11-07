@@ -1,6 +1,8 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
+#include "Guid.h"
+#include "Asset.h"
 #include "Shader.h"
 #include "Texture2D.h"
 
@@ -24,19 +26,19 @@ namespace PhysicsEngine
 
 	class Manager;
 
-	class Material
+	class Material : public Asset
 	{
 		public:
-			int materialId;
-			int shaderId;
-			int textureId;
-			int normalMapId;
-			int specularMapId;
+			Guid shaderId;
+			Guid textureId;
+			Guid normalMapId;
+			Guid specularMapId;
 
 			float shininess;
 			glm::vec3 ambient;
 			glm::vec3 diffuse;
 			glm::vec3 specular;
+			glm::vec4 color;
 
 		private:
 			Manager* manager;

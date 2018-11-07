@@ -44,7 +44,7 @@ void PlayerSystem::update()
 		context->setSceneToLoad("simple.scene");
 	}
 
-	Camera* camera = manager->getCameraByIndex(0);
+	Camera* camera = manager->getComponentByIndex<Camera>(0);
 
 	glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();

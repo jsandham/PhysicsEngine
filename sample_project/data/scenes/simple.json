@@ -1,88 +1,88 @@
 {
-  "id" : 10000000,
-  "23424355" : {
+  "id" : "09bb029b-fb53-4ffa-a87e-e67d3643d2f8",
+  "04cc2d39-150c-44f6-ab48-040492c547e3" : {
     "type" : "Entity",
-    "components" : [34356423, 34343456, 56875838, 94235641]
+    "components" : ["1bea3692-bd61-4022-9246-7ca734b5d001", "eee3280e-28f0-49d4-a420-3fbbcab57906", "33a0d380-6618-4be9-8f37-d166bbc28f64", "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc"]
   },
-  "34356423" : {
+  "1bea3692-bd61-4022-9246-7ca734b5d001" : {
     "type" : "Transform",
-    "entity" : 23424355,
+    "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
-  "34343456" : {
+  "eee3280e-28f0-49d4-a420-3fbbcab57906" : {
     "type" : "Camera",
-    "entity" : 23424355,
+    "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
     "position" : [0.0, 2.0, 0.0],
     "backgroundColor" : [1.0, 0.65, 0.15, 1.0]
   },
-  "56875838" : {
+  "33a0d380-6618-4be9-8f37-d166bbc28f64" : {
     "type" : "MeshRenderer",
-    "entity" : 23424355,
-    "mesh" : 34763455,
-    "material" : 12957442
+    "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
+    "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
   },
-  "94235641" : {
+  "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc" : {
     "type" : "DirectionalLight",
-    "entity" : 23424355,
+    "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
     "direction" : [-0.2, -1.0, -0.3],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0]
   },
-  "58692047" : {
+  "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",
-    "components" : [10592743, 66875838]
+    "components" : ["436fb057-e233-4485-95a2-112b6fa240af", "a18db4d6-ba13-422b-bac8-fbd313d740c8"]
   },
-  "10592743" : {
+  "436fb057-e233-4485-95a2-112b6fa240af" : {
     "type" : "Transform",
-    "entity" : 58692047,
+    "entity" : "9d443766-ab90-4546-ae84-6b54133cd46e",
     "position" : [5.2, 5.0, 5.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
-  "66875838" : {
+  "a18db4d6-ba13-422b-bac8-fbd313d740c8" : {
     "type" : "MeshRenderer",
-    "entity" : 58692047,
-    "mesh" : 12347344,
-    "material" : 12957442
+    "entity" : "9d443766-ab90-4546-ae84-6b54133cd46e",
+    "mesh" : "af41a30f-526a-4328-9495-af088a045a02",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
   },
-  "78692047" : {
+  "594a05f0-3d3b-472c-bb81-ae351a078500" : {
     "type" : "Entity",
-    "components" : [20592743, 76875838]
+    "components" : ["26bbe5f6-33ba-4361-bef9-e1663dfa6848", "84f8f37d-1d9e-4f0f-9cf3-98dca0883731", "b8102462-b436-4b49-b08b-e56ce7a3a4f5"]
   },
-  "20592743" : {
+  "26bbe5f6-33ba-4361-bef9-e1663dfa6848" : {
     "type" : "Transform",
-    "entity" : 78692047,
+    "entity" : "594a05f0-3d3b-472c-bb81-ae351a078500",
     "position" : [3.2, 1.0, 0.4],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 2.0, 3.0]
   },
-  "76875838" : {
+  "84f8f37d-1d9e-4f0f-9cf3-98dca0883731" : {
     "type" : "MeshRenderer",
-    "entity" : 78692047,
-    "mesh" : 11221434,
-    "material" : 12957442
+    "entity" : "594a05f0-3d3b-472c-bb81-ae351a078500",
+    "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
   },
-  "59610923" : {
+  "b8102462-b436-4b49-b08b-e56ce7a3a4f5" : {
     "type" : "CapsuleCollider",
-    "entity" : 78692047,
+    "entity" : "594a05f0-3d3b-472c-bb81-ae351a078500",
     "centre" : [0.0, 0.0, 0.0],
     "radius" : 1.2,
     "height" : 3.4
   },
-  "68390019" : {
+  "3592fd6a-041e-4afa-8687-0d1b8e5ba92e" : {
     "type" : "PhysicsSystem"
   },
-  "78390019" : {
+  "8d003d83-bbe0-4950-a7c8-f7a2719a354f" : {
     "type" : "RenderSystem"
   },
-  "12323345" : {  
+  "ee061fd0-f2f4-4be3-ac2b-6e71fcd9e95f" : {  
     "type" : "PlayerSystem"
   },
-  "68795825" : {
+  "c757fef5-31b6-46a6-acd9-346327fdc573" : {
     "type" : "LogicSystem",
-    "material" : 60859222
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
   }
 }

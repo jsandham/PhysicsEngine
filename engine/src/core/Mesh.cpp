@@ -6,8 +6,7 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh()
 {
-	meshId = -1;
-	//globalIndex = -1;
+
 }
 
 Mesh::~Mesh()

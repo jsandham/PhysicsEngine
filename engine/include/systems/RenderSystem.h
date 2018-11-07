@@ -9,6 +9,7 @@
 #include "System.h"
 
 #include "../graphics/GLState.h"
+#include "../graphics/GLHandle.h"
 
 #define GLM_FORCE_RADIANS
 

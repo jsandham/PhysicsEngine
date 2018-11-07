@@ -5,13 +5,15 @@
 #include <string>
 
 #include "Scene.h"
-#include "Asset.h"
 #include "Entity.h"
 #include "Mesh.h"
 #include "GMesh.h"
+#include "Line.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Texture2D.h"
+#include "Guid.h"
+#include "Pool.h"
 
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
@@ -73,7 +75,7 @@ namespace PhysicsEngine
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
-		unsigned int meshId;
+		Guid meshId;
 		unsigned int verticesSize;
 		unsigned int normalsSize;
 		unsigned int texCoordsSize;
@@ -85,7 +87,7 @@ namespace PhysicsEngine
 	{
 		unsigned short fileType;
 		unsigned int fileSize;
-		unsigned int gmeshId;
+		Guid gmeshId;
 		int dim;
 		int ng;
 	    int n;
@@ -106,231 +108,164 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct BuildSettings
 	{
-		int maxAllowedEntities;
-		int maxAllowedTransforms;
-		int maxAllowedRigidbodies;
-		int maxAllowedCameras;
-		int maxAllowedMeshRenderers;
-		int maxAllowedLineRenderers;
-		int maxAllowedDirectionalLights;
-		int maxAllowedSpotLights;
-		int maxAllowedPointLights;
-		int maxAllowedBoxColliders;
-		int maxAllowedSphereColliders;
-		int maxAllowedCapsuleColliders;
+		unsigned int maxAllowedEntities;
+		unsigned int maxAllowedTransforms;
+		unsigned int maxAllowedRigidbodies;
+		unsigned int maxAllowedCameras;
+		unsigned int maxAllowedMeshRenderers;
+		unsigned int maxAllowedLineRenderers;
+		unsigned int maxAllowedDirectionalLights;
+		unsigned int maxAllowedSpotLights;
+		unsigned int maxAllowedPointLights;
+		unsigned int maxAllowedBoxColliders;
+		unsigned int maxAllowedSphereColliders;
+		unsigned int maxAllowedCapsuleColliders;
 
-		int maxAllowedMaterials;
-		int maxAllowedTextures;
-		int maxAllowedShaders;
-		int maxAllowedMeshes;
-		int maxAllowedGMeshes;
+		unsigned int maxAllowedMaterials;
+		unsigned int maxAllowedTextures;
+		unsigned int maxAllowedShaders;
+		unsigned int maxAllowedMeshes;
+		unsigned int maxAllowedGMeshes;
 	};
 #pragma pack(pop)
 
 	class Manager
 	{
 		private:
-			// entities, components, & systems
-			int numberOfEntities;
-			int numberOfTransforms;
-			int numberOfRigidbodies;
-			int numberOfCameras;
-			int numberOfMeshRenderers;
-			int numberOfLineRenderers;
-			int numberOfDirectionalLights;
-			int numberOfSpotLights;
-			int numberOfPointLights;
-			int numberOfBoxColliders;
-			int numberOfSphereColliders;
-			int numberOfCapsuleColliders;
-			int numberOfSystems;
-
-			// number of assets
-			int numberOfMaterials;
-			int numberOfTextures;
-			int numberOfShaders;
-			int numberOfMeshes;
-			int numberOfGMeshes;
-
-			std::map<int, std::string> assetIdToFilePathMap;
-			std::map<int, int> assetIdToGlobalIndexMap;
-			std::map<int, int> idToGlobalIndexMap;
-			std::map<int, int> componentIdToTypeMap;
-			std::map<int, Component*> componentIdToMemoryMap; // to MemoryPointer?
-			std::map<int, std::vector<int>> entityIdToComponentIds; 
-
 			BuildSettings settings;
 
-			// entities and components
-			Entity* entities;
-			Transform* transforms;
-			Rigidbody* rigidbodies;
-			Camera* cameras;
-			MeshRenderer* meshRenderers;
-			LineRenderer* lineRenderers;
-			DirectionalLight* directionalLights;
-			SpotLight* spotLights;
-			PointLight* pointLights;
-			BoxCollider* boxColliders;
-			SphereCollider* sphereColliders;
-			CapsuleCollider* capsuleColliders;
+			Pool<Entity>* entities;
+			Pool<Transform>* transforms;
+			Pool<Rigidbody>* rigidbodies;
+			Pool<Camera>* cameras;
+			Pool<MeshRenderer>* meshRenderers;
+			Pool<LineRenderer>* lineRenderers;
+			Pool<DirectionalLight>* directionalLights;
+			Pool<SpotLight>* spotLights;
+			Pool<PointLight>* pointLights;
+			Pool<BoxCollider>* boxColliders;
+			Pool<SphereCollider>* sphereColliders;
+			Pool<CapsuleCollider>* capsuleColliders;
 
-			// systems
+			Pool<Material>* materials;
+			Pool<Texture2D>* textures;
+			Pool<Shader>* shaders;
+			Pool<Mesh>* meshes;
+			Pool<GMesh>* gmeshes;
+			
+			Line* line;
 			std::vector<System*> systems;
 
+			std::map<Guid, std::string> assetIdToFilePath;
+			std::map<Guid, int> assetIdToGlobalIndex;
+			std::map<Guid, int> idToGlobalIndex;
+			std::map<Guid, int> componentIdToType;
+			std::map<Guid, std::vector<Guid>> entityIdToComponentIds; 
+			std::map<int, void*> componentTypeToPool;
+
+			std::map<int, void*> assetTypeToPool;
+
 			// entities marked for cleanup
-			std::vector<int> entitiesMarkedForLatentDestroy;
-
-			// assets
-			Material* materials;
-			Shader* shaders;
-			Texture2D* textures;
-			Mesh* meshes;
-			GMesh* gmeshes;
-
+			std::vector<Guid> entityIdsMarkedForLatentDestroy;
 
 		public:
 			Manager();
 			~Manager();
 
-			bool validate(std::vector<Scene> scenes, std::vector<Asset> assets);
-			void load(Scene scene, std::vector<Asset> assets);
+			bool validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles);
+			void load(Scene scene, std::vector<AssetFile> assetFiles);
 
 			int getNumberOfEntities();
-			int getNumberOfTransforms();
-			int getNumberOfRigidbodies();
-			int getNumberOfCameras();
-			int getNumberOfMeshRenderers();
-			int getNumberOfLineRenderers();
-			int getNumberOfDirectionalLights();
-			int getNumberOfSpotLights();
-			int getNumberOfPointLights();
-			int getNumberOfBoxColliders();
-			int getNumberOfSphereColliders();
-			int getNumberOfCapsuleColliders();
-
 			int getNumberOfSystems();
 
-			int getNumberOfMaterials();
-			int getNumberOfShaders();
-			int getNumberOfTextures();
-			int getNumberOfMeshes();
-			int getNumberOfGmeshes();
-
-			Entity* getEntity(int id);
-			Transform* getTransform(int id);
-			Rigidbody* getRigidbody(int id);
-			Camera* getCamera(int id);
-			MeshRenderer* getMeshRenderer(int id);
-			LineRenderer* getLineRenderer(int id);
-			DirectionalLight* getDirectionalLight(int id);
-			SpotLight* getSpotLight(int id);
-			PointLight* getPointLight(int id);
-			BoxCollider* getBoxCollider(int id);
-			SphereCollider* getSphereCollider(int id);
-			CapsuleCollider* getCapsuleCollider(int id);
-
-			System* getSystem(int id);
-
-			Material* getMaterial(int id);
-			Shader* getShader(int id);
-			Texture2D* getTexture2D(int id);
-			Mesh* getMesh(int id);
-			GMesh* getGMesh(int id);
-
-			Entity* getEntityByIndex(int index);
-			Transform* getTransformByIndex(int index);
-			Rigidbody* getRigidbodyByIndex(int index);
-			Camera* getCameraByIndex(int index);
-			MeshRenderer* getMeshRendererByIndex(int index);
-			LineRenderer* getLineRendererByIndex(int index);
-			DirectionalLight* getDirectionalLightByIndex(int index);
-			SpotLight* getSpotLightByIndex(int index);
-			PointLight* getPointLightByIndex(int index);
-			BoxCollider* getBoxColliderByIndex(int index);
-			SphereCollider* getSphereColliderByIndex(int index);
-			CapsuleCollider* getCapsuleColliderByIndex(int index);
-
-			System* getSystemByIndex(int index);
-
-			Material* getMaterialByIndex(int index);
-			Shader* getShaderByIndex(int index);
-			Texture2D* getTexture2DByIndex(int index);
-			Mesh* getMeshByIndex(int index);
-			GMesh* getGMeshByIndex(int index);
-
-			void latentDestroy(int entityId);
-			void immediateDestroy(int entityId);
-			bool isMarkedForLatentDestroy(int entityId);
-			std::vector<int> getEntitiesMarkedForLatentDestroy();
-			Entity* instantiate();
-			Entity* instantiate(int entityId);
-
 			template<typename T>
-			T* addComponent(int entityId)
+			int getNumberOfComponents()
 			{
-				Entity* entity = getEntity(entityId);
+				int componentType = Component::getInstanceType<T>();
 
-				if(entity == NULL){ return NULL; }
+				std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
+				if(it != componentTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it->second);
 
-				return NULL;
+					return pool->getIndex();
+				}
+				else{
+					return 0;
+				}
 			}
 
 			template<typename T>
-			T* getComponent(int entityId)
+			int getNumberOfAssets()
+			{
+				int assetType = Asset::getInstanceType<T>();
+				std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
+				if(it1 != assetTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
+
+					return pool->getIndex();
+				}
+				else{
+					return 0;
+				}
+			}
+
+			Entity* getEntity(Guid id);
+			System* getSystem(Guid id);
+
+			template<typename T>
+			T* getComponent(Guid entityId)
 			{
 				Entity* entity = getEntity(entityId);
 
 				if(entity == NULL){ return NULL; }
 
-				std::vector<int> componentsOnEntity;
-				std::map<int, std::vector<int>>::iterator it1 = entityIdToComponentIds.find(entityId);
+				std::vector<Guid> componentsOnEntity;
+				std::map<Guid, std::vector<Guid>>::iterator it1 = entityIdToComponentIds.find(entityId);
 				if(it1 != entityIdToComponentIds.end()){
 					componentsOnEntity = it1->second;
 				}
 				else{
-					std::cout << "Error: When searching entity with id " << entityId << " no components were found in entity id to component ids map" << std::endl;
+					std::cout << "Error: When searching entity with id " << entityId.toString() << " no components were found in entity id to component ids map" << std::endl;
 					return NULL;
 				}
 
-
-
 				for(unsigned int i = 0; i < componentsOnEntity.size(); i++){
-					int componentId = componentsOnEntity[i];
+					Guid componentId = componentsOnEntity[i];
 					int componentType = -1;
 					int componentGlobalIndex = -1;
-					if(componentId != -1){
-						std::map<int, int>::iterator it2 = componentIdToTypeMap.find(componentId);
-						if(it2 != componentIdToTypeMap.end()){
+					if(componentId != Guid::INVALID){
+						std::map<Guid, int>::iterator it2 = componentIdToType.find(componentId);
+						if(it2 != componentIdToType.end()){
 							componentType = it2->second;
 						}
 						else{
-							std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in component type map" << std::endl;
+							std::cout << "Error: When searching entity with id " << entityId.toString() << " no component with id " << componentId.toString() << " was found in component type map" << std::endl;//
 							return NULL;
 						}
 
 						if(componentType == -1){
-							std::cout << "Error: When searching entity with id " << entityId << " the component type found corresponding to component " << componentId << " was invalid" << std::endl;
+							std::cout << "Error: When searching entity with id " << entityId.toString() << " the component type found corresponding to component " << componentId.toString() << " was invalid" << std::endl;
 							return NULL;
 						}
 
 						if(componentType == Component::getInstanceType<T>()){
-							std::map<int, int>::iterator it3 = idToGlobalIndexMap.find(componentId);
-							if(it3 != idToGlobalIndexMap.end()){
+							std::map<Guid, int>::iterator it3 = idToGlobalIndex.find(componentId);
+							if(it3 != idToGlobalIndex.end()){
 								componentGlobalIndex = it3->second;
 							}
 							else{
-								std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in map" << std::endl;
+								std::cout << "Error: When searching entity with id " << entityId.toString() << " no component with id " << componentId.toString() << " was found in map" << std::endl;
 								return NULL;
 							}
 
-							std::map<int, Component*>::iterator it4 = componentIdToMemoryMap.find(componentType);
-							if(it4 != componentIdToMemoryMap.end()){
-								T* component = static_cast<T*>(it4->second) + componentGlobalIndex;
-								return component;
+							std::map<int, void*>::iterator it4 = componentTypeToPool.find(componentType);
+							if(it4 != componentTypeToPool.end()){
+								Pool<T>* pool = static_cast<Pool<T>*>(it4->second);
+
+								return pool->get(componentGlobalIndex);
 							}
 							else{
-								std::cout << "Error: When searching entity with id: " << entityId << " the component type searched for does not exist in map" << std::endl;
+								std::cout << "Error: When searching entity with id: " << entityId.toString() << " the component type searched for does not exist in map" << std::endl;
 								return NULL;
 							}
 						}
@@ -340,6 +275,148 @@ namespace PhysicsEngine
 				return NULL;
 			}
 
+			template<typename T>
+			T* addComponent(Guid entityId)
+			{
+				Entity* entity = getEntity(entityId);
+
+				if(entity == NULL){ return NULL; }
+
+				int componentGlobalIndex = -1;
+				Guid componentId = Guid::newGuid();
+				T* component = NULL;
+
+				int componentType = Component::getInstanceType<T>();
+
+				componentIdToType[componentId] = componentType;
+
+				//std::cout << "componentType: " << componentType << std::endl;
+				std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
+				if(it != componentTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it->second);
+					
+					componentGlobalIndex = pool->getIndex();
+					idToGlobalIndex[componentId] = componentGlobalIndex;
+
+					pool->allocate();
+
+					component = pool->get(componentGlobalIndex);
+
+					component->entityId = entityId;
+					component->componentId = componentId;
+
+					std::map<Guid, std::vector<Guid>>::iterator it2 = entityIdToComponentIds.find(entityId);
+					if(it2 != entityIdToComponentIds.end()){
+						it2->second.push_back(componentId); 
+					}
+
+					component->setManager(this);
+				}
+				else
+				{
+					return NULL;
+				}
+
+				return component;
+			}
+
+			template<typename T>
+			T* getAsset(Guid id)
+			{
+				int assetType = Asset::getInstanceType<T>();
+				std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
+				if(it1 != assetTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
+
+					std::map<Guid, int>::iterator it2 = assetIdToGlobalIndex.find(id);
+					if(it2 != assetIdToGlobalIndex.end()){
+						return pool->get(it2->second);
+					} 
+					else{
+						return NULL;
+					}
+				}
+				else{
+					return NULL;
+				}
+			}
+
+			Entity* getEntityByIndex(int index);
+			System* getSystemByIndex(int index);
+
+			template<typename T>
+			T* getComponentByIndex(int index)
+			{
+				int componentType = Component::getInstanceType<T>();
+
+				std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
+				if(it != componentTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it->second);
+
+					return pool->get(index);
+				}
+				else{
+					return NULL;
+				}
+			}
+
+			template<typename T>
+			T* getAssetByIndex(int index)
+			{
+				int assetType = Asset::getInstanceType<T>();
+				std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
+				if(it1 != assetTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
+
+					return pool->get(index);
+				}
+				else{
+					return NULL;
+				}
+			}
+
+			template<typename T>
+			T* create() //createAsset??
+			{
+				T* asset = NULL;
+
+				int assetType = Asset::getInstanceType<T>();
+
+				std::cout << "asset type: " << assetType << std::endl;
+
+				std::map<int, void*>::iterator it = assetTypeToPool.find(assetType);
+				if(it != assetTypeToPool.end()){
+					Pool<T>* pool = static_cast<Pool<T>*>(it->second);
+
+					int index = pool->getIndex();
+
+					pool->allocate();
+
+					std::cout << "index: " << index << std::endl;
+
+					Guid assetId = Guid::newGuid();
+
+					assetIdToGlobalIndex[assetId] = index;
+
+					asset = pool->get(index);
+					asset->assetId = assetId;
+				}
+				else{
+					std::cout << "Error: Asset pool does not exist" << std::endl;
+					return NULL;
+				}
+
+				return asset;
+			}
+			
+			Line* getLine();
+
+			void latentDestroy(Guid entityId);
+			void immediateDestroy(Guid entityId);
+			bool isMarkedForLatentDestroy(Guid entityId);
+			std::vector<Guid> getEntitiesMarkedForLatentDestroy();
+			Entity* instantiate();
+			Entity* instantiate(Guid entityId);
 	};
 }
 

@@ -14,7 +14,7 @@ set OBJ_FILES=
 for /r %%v in (*.obj) do call :concat_obj %%v
 
 :: link to create project exe
-set Libs=user32.lib gdi32.lib xinput.lib opengl32.lib glew32.lib cudart.lib engine.lib
+set Libs=user32.lib gdi32.lib xinput.lib ole32.lib opengl32.lib glew32.lib cudart.lib engine.lib
 set LinkerFlags=/SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X64 /OUT:main.exe /DEBUG
 
 link %LinkerFlags% %OBJ_FILES% %Libs%

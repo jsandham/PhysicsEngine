@@ -1,0 +1,3209 @@
+{
+  "id" : "32acea02-44ac-4a78-8df3-8193b4fd0577",
+  "eb0276b2-3b42-4771-bc06-496e603531a3" : {
+    "type" : "Entity",
+    "components" : ["4312413c-d219-4371-9864-909df093daf5", "bcff09f3-2fa9-4e32-8d7d-08512dd12a87", "a6658c6d-bce0-4aca-8bdd-9c79fd7b3f05", "cff1d3dd-4bf6-4306-bd45-9c931156d3c6"]
+  },
+  "4312413c-d219-4371-9864-909df093daf5" : {
+    "type" : "Transform",
+    "entity" : "eb0276b2-3b42-4771-bc06-496e603531a3",
+    "position" : [0.3, 0.0, 0.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  },
+  "bcff09f3-2fa9-4e32-8d7d-08512dd12a87" : {
+    "type" : "Camera",
+    "entity" : "eb0276b2-3b42-4771-bc06-496e603531a3",
+    "position" : [0.0, 2.0, 0.0],
+    "backgroundColor" : [1.0, 0.65, 0.15, 1.0]
+  },
+  "a6658c6d-bce0-4aca-8bdd-9c79fd7b3f05" : {
+    "type" : "MeshRenderer",
+    "entity" : "eb0276b2-3b42-4771-bc06-496e603531a3",
+    "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "cff1d3dd-4bf6-4306-bd45-9c931156d3c6" : {
+    "type" : "DirectionalLight",
+    "entity" : "eb0276b2-3b42-4771-bc06-496e603531a3",
+    "direction" : [-0.2, -1.0, -0.3],
+    "ambient" : [0.4, 0.4, 0.4],
+    "diffuse" : [1.0, 1.0, 1.0],
+    "specular" : [1.0, 1.0, 1.0]
+  },
+  "d63f670d-90a0-477d-83d4-36132c5a4cd2" : {
+    "type" : "Entity",
+    "components" : ["ad2a1e90-5f15-4af8-86ac-b267d945de77", "3338cc40-51b2-4f76-a982-1ca2a3287abc"]
+  },
+  "ad2a1e90-5f15-4af8-86ac-b267d945de77" : {
+    "type" : "Transform",
+    "entity" : "d63f670d-90a0-477d-83d4-36132c5a4cd2",
+    "position" : [-5.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3338cc40-51b2-4f76-a982-1ca2a3287abc" : {
+    "type" : "MeshRenderer",
+    "entity" : "d63f670d-90a0-477d-83d4-36132c5a4cd2",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6c927b15-0069-4ccb-990b-082df1125564" : {
+    "type" : "Entity",
+    "components" : ["5f31644a-4582-4a8d-be92-b25e32e94367", "4a40b012-8d78-4043-8f51-a2794e21be3b"]
+  },
+  "5f31644a-4582-4a8d-be92-b25e32e94367" : {
+    "type" : "Transform",
+    "entity" : "6c927b15-0069-4ccb-990b-082df1125564",
+    "position" : [-3.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4a40b012-8d78-4043-8f51-a2794e21be3b" : {
+    "type" : "MeshRenderer",
+    "entity" : "6c927b15-0069-4ccb-990b-082df1125564",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e59bd32a-cfbf-45b1-bffd-446aab15c975" : {
+    "type" : "Entity",
+    "components" : ["e909277c-086b-4c45-96fb-2a7d20ae08ff", "471153c6-4b1e-4f0e-9ac2-574039d2784f"]
+  },
+  "e909277c-086b-4c45-96fb-2a7d20ae08ff" : {
+    "type" : "Transform",
+    "entity" : "e59bd32a-cfbf-45b1-bffd-446aab15c975",
+    "position" : [-1.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "471153c6-4b1e-4f0e-9ac2-574039d2784f" : {
+    "type" : "MeshRenderer",
+    "entity" : "e59bd32a-cfbf-45b1-bffd-446aab15c975",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "beca215b-cd32-4e7b-a2b6-59bdb3a0e9be" : {
+    "type" : "Entity",
+    "components" : ["3857742a-2d69-4eb7-810c-183a3532552e", "2253b4ea-3356-4d05-90d4-dea13b0f241d"]
+  },
+  "3857742a-2d69-4eb7-810c-183a3532552e" : {
+    "type" : "Transform",
+    "entity" : "beca215b-cd32-4e7b-a2b6-59bdb3a0e9be",
+    "position" : [1.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2253b4ea-3356-4d05-90d4-dea13b0f241d" : {
+    "type" : "MeshRenderer",
+    "entity" : "beca215b-cd32-4e7b-a2b6-59bdb3a0e9be",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "54e0b8ee-9e88-45e1-ab91-e8a237996f41" : {
+    "type" : "Entity",
+    "components" : ["0f70c68d-a199-454e-92a5-1f920ed1775a", "fa7925bb-a057-46c9-9dcf-e062541d641c"]
+  },
+  "0f70c68d-a199-454e-92a5-1f920ed1775a" : {
+    "type" : "Transform",
+    "entity" : "54e0b8ee-9e88-45e1-ab91-e8a237996f41",
+    "position" : [3.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fa7925bb-a057-46c9-9dcf-e062541d641c" : {
+    "type" : "MeshRenderer",
+    "entity" : "54e0b8ee-9e88-45e1-ab91-e8a237996f41",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "10d72795-1862-4b45-9df5-d1bccd28360a" : {
+    "type" : "Entity",
+    "components" : ["0c480803-c56a-4a41-b0d4-633038b583dc", "4a957621-43e2-4d85-a887-58fb207f8379"]
+  },
+  "0c480803-c56a-4a41-b0d4-633038b583dc" : {
+    "type" : "Transform",
+    "entity" : "10d72795-1862-4b45-9df5-d1bccd28360a",
+    "position" : [5.0, -5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4a957621-43e2-4d85-a887-58fb207f8379" : {
+    "type" : "MeshRenderer",
+    "entity" : "10d72795-1862-4b45-9df5-d1bccd28360a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8ba3b658-e84e-4d7e-90e8-44b6aeab0ba6" : {
+    "type" : "Entity",
+    "components" : ["8b663e22-7674-4357-b4c1-129552726407", "5faafea8-a757-4dd1-8ca2-f9e43a888596"]
+  },
+  "8b663e22-7674-4357-b4c1-129552726407" : {
+    "type" : "Transform",
+    "entity" : "8ba3b658-e84e-4d7e-90e8-44b6aeab0ba6",
+    "position" : [-5.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "5faafea8-a757-4dd1-8ca2-f9e43a888596" : {
+    "type" : "MeshRenderer",
+    "entity" : "8ba3b658-e84e-4d7e-90e8-44b6aeab0ba6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8596d210-5b07-4eb2-a4a5-680859b472c9" : {
+    "type" : "Entity",
+    "components" : ["018cc668-4fe2-4529-9797-51f3dcb31c76", "dafeb6a8-e9f6-475b-bc96-e0be5436a988"]
+  },
+  "018cc668-4fe2-4529-9797-51f3dcb31c76" : {
+    "type" : "Transform",
+    "entity" : "8596d210-5b07-4eb2-a4a5-680859b472c9",
+    "position" : [-3.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dafeb6a8-e9f6-475b-bc96-e0be5436a988" : {
+    "type" : "MeshRenderer",
+    "entity" : "8596d210-5b07-4eb2-a4a5-680859b472c9",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "49869d5f-e84a-475b-82ad-493b670846c3" : {
+    "type" : "Entity",
+    "components" : ["aa20d7a8-64de-4520-a1f2-1fd2fc0f10b0", "c6cbdd59-a993-4f9a-91af-387b1b1affe9"]
+  },
+  "aa20d7a8-64de-4520-a1f2-1fd2fc0f10b0" : {
+    "type" : "Transform",
+    "entity" : "49869d5f-e84a-475b-82ad-493b670846c3",
+    "position" : [-1.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c6cbdd59-a993-4f9a-91af-387b1b1affe9" : {
+    "type" : "MeshRenderer",
+    "entity" : "49869d5f-e84a-475b-82ad-493b670846c3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f3b72140-9cde-46f6-a589-36024cb3fbbe" : {
+    "type" : "Entity",
+    "components" : ["8855bdcc-e278-432a-a28a-d6e38d60e6ec", "afe378f4-3b49-4caa-8e4a-b9bc6e41a912"]
+  },
+  "8855bdcc-e278-432a-a28a-d6e38d60e6ec" : {
+    "type" : "Transform",
+    "entity" : "f3b72140-9cde-46f6-a589-36024cb3fbbe",
+    "position" : [1.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "afe378f4-3b49-4caa-8e4a-b9bc6e41a912" : {
+    "type" : "MeshRenderer",
+    "entity" : "f3b72140-9cde-46f6-a589-36024cb3fbbe",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "74f6bdc4-7efa-46f0-a2c4-218151efe884" : {
+    "type" : "Entity",
+    "components" : ["1bc5015c-1cd2-4118-a35f-889890ee31c5", "8181ed53-ceb5-4d3c-ad38-2309fc372cf2"]
+  },
+  "1bc5015c-1cd2-4118-a35f-889890ee31c5" : {
+    "type" : "Transform",
+    "entity" : "74f6bdc4-7efa-46f0-a2c4-218151efe884",
+    "position" : [3.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8181ed53-ceb5-4d3c-ad38-2309fc372cf2" : {
+    "type" : "MeshRenderer",
+    "entity" : "74f6bdc4-7efa-46f0-a2c4-218151efe884",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4b92aa5e-bfe7-45f9-9ade-92fa980a90ea" : {
+    "type" : "Entity",
+    "components" : ["0194dadb-e5d7-4730-85e9-b720a6b79c6f", "f686b79f-faa6-486d-ba4d-64f560c431b3"]
+  },
+  "0194dadb-e5d7-4730-85e9-b720a6b79c6f" : {
+    "type" : "Transform",
+    "entity" : "4b92aa5e-bfe7-45f9-9ade-92fa980a90ea",
+    "position" : [5.0, -3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "f686b79f-faa6-486d-ba4d-64f560c431b3" : {
+    "type" : "MeshRenderer",
+    "entity" : "4b92aa5e-bfe7-45f9-9ade-92fa980a90ea",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8f7598fb-0bac-42a9-8ba9-6f34958177d9" : {
+    "type" : "Entity",
+    "components" : ["8553ae89-989e-4995-800f-52b58b14b5e1", "20a7ec94-3a44-44be-b81b-a86f5da4ed33"]
+  },
+  "8553ae89-989e-4995-800f-52b58b14b5e1" : {
+    "type" : "Transform",
+    "entity" : "8f7598fb-0bac-42a9-8ba9-6f34958177d9",
+    "position" : [-5.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "20a7ec94-3a44-44be-b81b-a86f5da4ed33" : {
+    "type" : "MeshRenderer",
+    "entity" : "8f7598fb-0bac-42a9-8ba9-6f34958177d9",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e08b0a31-0986-43b8-91b0-9860830cefbb" : {
+    "type" : "Entity",
+    "components" : ["dba4b6c1-283a-4b89-a81d-07de1caa5b2a", "c836835f-5c0f-4cb0-8228-7fd8d8f14b5c"]
+  },
+  "dba4b6c1-283a-4b89-a81d-07de1caa5b2a" : {
+    "type" : "Transform",
+    "entity" : "e08b0a31-0986-43b8-91b0-9860830cefbb",
+    "position" : [-3.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c836835f-5c0f-4cb0-8228-7fd8d8f14b5c" : {
+    "type" : "MeshRenderer",
+    "entity" : "e08b0a31-0986-43b8-91b0-9860830cefbb",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "21f84016-4cbf-494b-a35e-256c84a3ce27" : {
+    "type" : "Entity",
+    "components" : ["5f60dc7d-4873-472c-b858-17a85d982549", "80333e9c-6df9-49cd-808e-a2c2f44d4747"]
+  },
+  "5f60dc7d-4873-472c-b858-17a85d982549" : {
+    "type" : "Transform",
+    "entity" : "21f84016-4cbf-494b-a35e-256c84a3ce27",
+    "position" : [-1.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "80333e9c-6df9-49cd-808e-a2c2f44d4747" : {
+    "type" : "MeshRenderer",
+    "entity" : "21f84016-4cbf-494b-a35e-256c84a3ce27",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a819a9fa-0f54-4c2c-a715-3db7d2d0495b" : {
+    "type" : "Entity",
+    "components" : ["756a9fbe-cdda-4845-acf8-e1aa3f2a4099", "6284c714-a014-4ff6-bbb9-0ac77954b27f"]
+  },
+  "756a9fbe-cdda-4845-acf8-e1aa3f2a4099" : {
+    "type" : "Transform",
+    "entity" : "a819a9fa-0f54-4c2c-a715-3db7d2d0495b",
+    "position" : [1.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6284c714-a014-4ff6-bbb9-0ac77954b27f" : {
+    "type" : "MeshRenderer",
+    "entity" : "a819a9fa-0f54-4c2c-a715-3db7d2d0495b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e4077041-4403-4412-bb26-ea14fc22f066" : {
+    "type" : "Entity",
+    "components" : ["43b3a49e-f808-4c86-8949-0dd310fd2ef5", "dca392e1-5af6-439c-8316-ebb565059913"]
+  },
+  "43b3a49e-f808-4c86-8949-0dd310fd2ef5" : {
+    "type" : "Transform",
+    "entity" : "e4077041-4403-4412-bb26-ea14fc22f066",
+    "position" : [3.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dca392e1-5af6-439c-8316-ebb565059913" : {
+    "type" : "MeshRenderer",
+    "entity" : "e4077041-4403-4412-bb26-ea14fc22f066",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5ddab450-1014-41aa-97e0-1586f9b4eb5b" : {
+    "type" : "Entity",
+    "components" : ["48cd9fd4-c996-43e2-9ad7-fcb33f381f77", "9761a399-5aec-4fc6-8f81-9fa56e139740"]
+  },
+  "48cd9fd4-c996-43e2-9ad7-fcb33f381f77" : {
+    "type" : "Transform",
+    "entity" : "5ddab450-1014-41aa-97e0-1586f9b4eb5b",
+    "position" : [5.0, -1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9761a399-5aec-4fc6-8f81-9fa56e139740" : {
+    "type" : "MeshRenderer",
+    "entity" : "5ddab450-1014-41aa-97e0-1586f9b4eb5b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a75c339a-3438-41a3-b75d-fd4efba4969a" : {
+    "type" : "Entity",
+    "components" : ["ba5c4396-4110-41e7-8ab2-1b086b00bf6d", "bdfd1f77-1e44-4e1e-80e4-25398d4fdad1"]
+  },
+  "ba5c4396-4110-41e7-8ab2-1b086b00bf6d" : {
+    "type" : "Transform",
+    "entity" : "a75c339a-3438-41a3-b75d-fd4efba4969a",
+    "position" : [-5.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "bdfd1f77-1e44-4e1e-80e4-25398d4fdad1" : {
+    "type" : "MeshRenderer",
+    "entity" : "a75c339a-3438-41a3-b75d-fd4efba4969a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5513fe35-b30b-436f-aa77-5631d4b367b7" : {
+    "type" : "Entity",
+    "components" : ["d487759e-d15c-436f-aff8-ed1084c2c71f", "dac48fdd-f374-4823-a171-772e0db926cc"]
+  },
+  "d487759e-d15c-436f-aff8-ed1084c2c71f" : {
+    "type" : "Transform",
+    "entity" : "5513fe35-b30b-436f-aa77-5631d4b367b7",
+    "position" : [-3.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dac48fdd-f374-4823-a171-772e0db926cc" : {
+    "type" : "MeshRenderer",
+    "entity" : "5513fe35-b30b-436f-aa77-5631d4b367b7",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "31ec706a-bed1-415d-bdfe-3e64b767b002" : {
+    "type" : "Entity",
+    "components" : ["9e9d5414-339e-4f64-942c-5302638fa518", "a8c3f19b-b643-450a-a766-bfb8c7555787"]
+  },
+  "9e9d5414-339e-4f64-942c-5302638fa518" : {
+    "type" : "Transform",
+    "entity" : "31ec706a-bed1-415d-bdfe-3e64b767b002",
+    "position" : [-1.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a8c3f19b-b643-450a-a766-bfb8c7555787" : {
+    "type" : "MeshRenderer",
+    "entity" : "31ec706a-bed1-415d-bdfe-3e64b767b002",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "219847c4-6b72-409e-8490-16ed0c7513f6" : {
+    "type" : "Entity",
+    "components" : ["46b1fe86-8aae-40bd-a0c8-9d4c65ffa397", "20bc409c-2260-4abb-a473-0601e08e7448"]
+  },
+  "46b1fe86-8aae-40bd-a0c8-9d4c65ffa397" : {
+    "type" : "Transform",
+    "entity" : "219847c4-6b72-409e-8490-16ed0c7513f6",
+    "position" : [1.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "20bc409c-2260-4abb-a473-0601e08e7448" : {
+    "type" : "MeshRenderer",
+    "entity" : "219847c4-6b72-409e-8490-16ed0c7513f6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f0edd137-dd9c-4e9c-8a50-e9be2ecb752d" : {
+    "type" : "Entity",
+    "components" : ["4419a339-8953-48ba-bbd7-5e7c8d668494", "6198bf3e-0311-4303-952a-ddfc7fd3ddcd"]
+  },
+  "4419a339-8953-48ba-bbd7-5e7c8d668494" : {
+    "type" : "Transform",
+    "entity" : "f0edd137-dd9c-4e9c-8a50-e9be2ecb752d",
+    "position" : [3.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6198bf3e-0311-4303-952a-ddfc7fd3ddcd" : {
+    "type" : "MeshRenderer",
+    "entity" : "f0edd137-dd9c-4e9c-8a50-e9be2ecb752d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "832d2265-7a1f-4755-a1b3-69c67907a9ca" : {
+    "type" : "Entity",
+    "components" : ["58f04a22-7233-4ca2-b065-5103c3d02213", "ecee110c-0346-4fb4-a049-b773bbcf89eb"]
+  },
+  "58f04a22-7233-4ca2-b065-5103c3d02213" : {
+    "type" : "Transform",
+    "entity" : "832d2265-7a1f-4755-a1b3-69c67907a9ca",
+    "position" : [5.0, 1.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ecee110c-0346-4fb4-a049-b773bbcf89eb" : {
+    "type" : "MeshRenderer",
+    "entity" : "832d2265-7a1f-4755-a1b3-69c67907a9ca",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "111979a3-2ccb-4923-a6d8-dcbeae2b9dd0" : {
+    "type" : "Entity",
+    "components" : ["9e12b05a-883a-4a42-9468-aabf56817bdc", "cfabaa63-2fb5-4a6b-b718-881645ee01a5"]
+  },
+  "9e12b05a-883a-4a42-9468-aabf56817bdc" : {
+    "type" : "Transform",
+    "entity" : "111979a3-2ccb-4923-a6d8-dcbeae2b9dd0",
+    "position" : [-5.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "cfabaa63-2fb5-4a6b-b718-881645ee01a5" : {
+    "type" : "MeshRenderer",
+    "entity" : "111979a3-2ccb-4923-a6d8-dcbeae2b9dd0",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "9aa8f1dd-8eaf-4af4-9366-db7bcc6d35fd" : {
+    "type" : "Entity",
+    "components" : ["de73e16c-3484-4dc1-a22a-9e965dfb2724", "08d8fb6f-0790-41d2-be37-2ac80534e065"]
+  },
+  "de73e16c-3484-4dc1-a22a-9e965dfb2724" : {
+    "type" : "Transform",
+    "entity" : "9aa8f1dd-8eaf-4af4-9366-db7bcc6d35fd",
+    "position" : [-3.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "08d8fb6f-0790-41d2-be37-2ac80534e065" : {
+    "type" : "MeshRenderer",
+    "entity" : "9aa8f1dd-8eaf-4af4-9366-db7bcc6d35fd",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e3f905ca-eba9-4e37-93bc-e6156704f0e0" : {
+    "type" : "Entity",
+    "components" : ["15893bef-4f1a-4ddc-b5f2-06c95c624be8", "4bf4db78-3da6-46e3-9441-e5780019dccd"]
+  },
+  "15893bef-4f1a-4ddc-b5f2-06c95c624be8" : {
+    "type" : "Transform",
+    "entity" : "e3f905ca-eba9-4e37-93bc-e6156704f0e0",
+    "position" : [-1.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4bf4db78-3da6-46e3-9441-e5780019dccd" : {
+    "type" : "MeshRenderer",
+    "entity" : "e3f905ca-eba9-4e37-93bc-e6156704f0e0",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "3a32d88d-8e53-481e-8553-6f6f9befb9f0" : {
+    "type" : "Entity",
+    "components" : ["ff4695c4-c731-4abd-ab51-5538951ceb2b", "8238f6ec-2d6b-4162-a615-adee99e797bc"]
+  },
+  "ff4695c4-c731-4abd-ab51-5538951ceb2b" : {
+    "type" : "Transform",
+    "entity" : "3a32d88d-8e53-481e-8553-6f6f9befb9f0",
+    "position" : [1.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8238f6ec-2d6b-4162-a615-adee99e797bc" : {
+    "type" : "MeshRenderer",
+    "entity" : "3a32d88d-8e53-481e-8553-6f6f9befb9f0",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "ccbbd617-ad2d-40c6-b545-1a6d5a4a05af" : {
+    "type" : "Entity",
+    "components" : ["e850a3fd-99d5-416a-b4ca-59f665a70ccc", "d5ed7cb6-754b-486b-8977-d42b1c0df9f2"]
+  },
+  "e850a3fd-99d5-416a-b4ca-59f665a70ccc" : {
+    "type" : "Transform",
+    "entity" : "ccbbd617-ad2d-40c6-b545-1a6d5a4a05af",
+    "position" : [3.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d5ed7cb6-754b-486b-8977-d42b1c0df9f2" : {
+    "type" : "MeshRenderer",
+    "entity" : "ccbbd617-ad2d-40c6-b545-1a6d5a4a05af",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "758940a6-8d1a-4c03-b231-6b911f35c097" : {
+    "type" : "Entity",
+    "components" : ["eab902a5-6228-4817-a3c1-25438f455775", "70399195-2197-4816-8861-e6ef1eab66fd"]
+  },
+  "eab902a5-6228-4817-a3c1-25438f455775" : {
+    "type" : "Transform",
+    "entity" : "758940a6-8d1a-4c03-b231-6b911f35c097",
+    "position" : [5.0, 3.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "70399195-2197-4816-8861-e6ef1eab66fd" : {
+    "type" : "MeshRenderer",
+    "entity" : "758940a6-8d1a-4c03-b231-6b911f35c097",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8bd9995a-c875-4295-9090-0665e63db19c" : {
+    "type" : "Entity",
+    "components" : ["21c1d22c-31a0-4c44-9a95-ec8c0075efc4", "d2b875a7-f85c-4475-9cba-9977c948ee43"]
+  },
+  "21c1d22c-31a0-4c44-9a95-ec8c0075efc4" : {
+    "type" : "Transform",
+    "entity" : "8bd9995a-c875-4295-9090-0665e63db19c",
+    "position" : [-5.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d2b875a7-f85c-4475-9cba-9977c948ee43" : {
+    "type" : "MeshRenderer",
+    "entity" : "8bd9995a-c875-4295-9090-0665e63db19c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a307cd67-d0d7-4caf-a072-959190e76d76" : {
+    "type" : "Entity",
+    "components" : ["9b69309d-762b-4936-903a-5cd71cec1790", "500e8c87-cbee-4084-a304-666e1ac5b20c"]
+  },
+  "9b69309d-762b-4936-903a-5cd71cec1790" : {
+    "type" : "Transform",
+    "entity" : "a307cd67-d0d7-4caf-a072-959190e76d76",
+    "position" : [-3.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "500e8c87-cbee-4084-a304-666e1ac5b20c" : {
+    "type" : "MeshRenderer",
+    "entity" : "a307cd67-d0d7-4caf-a072-959190e76d76",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a02ec502-52e3-4a72-ac0d-362d1693bc50" : {
+    "type" : "Entity",
+    "components" : ["c5a8f312-1bf0-457d-930d-187338481cbd", "ab9a64a9-2d20-463b-a12e-b8739127d73c"]
+  },
+  "c5a8f312-1bf0-457d-930d-187338481cbd" : {
+    "type" : "Transform",
+    "entity" : "a02ec502-52e3-4a72-ac0d-362d1693bc50",
+    "position" : [-1.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ab9a64a9-2d20-463b-a12e-b8739127d73c" : {
+    "type" : "MeshRenderer",
+    "entity" : "a02ec502-52e3-4a72-ac0d-362d1693bc50",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "54f23bdc-20d3-4d3f-88bc-916ce71fb2a9" : {
+    "type" : "Entity",
+    "components" : ["592d7d15-22f4-4f0d-80d6-1a0cb2902c4f", "89a2a683-0f28-4100-8cd2-df23daf91106"]
+  },
+  "592d7d15-22f4-4f0d-80d6-1a0cb2902c4f" : {
+    "type" : "Transform",
+    "entity" : "54f23bdc-20d3-4d3f-88bc-916ce71fb2a9",
+    "position" : [1.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "89a2a683-0f28-4100-8cd2-df23daf91106" : {
+    "type" : "MeshRenderer",
+    "entity" : "54f23bdc-20d3-4d3f-88bc-916ce71fb2a9",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "adf14b4d-7902-451f-8e20-7d36f956e6ba" : {
+    "type" : "Entity",
+    "components" : ["5e57ff5f-13a5-47d2-bfe7-ca33f52a0ca2", "2ca3b958-4be2-4d5f-8bc0-3d5f54c2ab6e"]
+  },
+  "5e57ff5f-13a5-47d2-bfe7-ca33f52a0ca2" : {
+    "type" : "Transform",
+    "entity" : "adf14b4d-7902-451f-8e20-7d36f956e6ba",
+    "position" : [3.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2ca3b958-4be2-4d5f-8bc0-3d5f54c2ab6e" : {
+    "type" : "MeshRenderer",
+    "entity" : "adf14b4d-7902-451f-8e20-7d36f956e6ba",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "17d58414-73f1-4c70-91e6-2c4583cfb1df" : {
+    "type" : "Entity",
+    "components" : ["658841c3-e5db-43a1-afbc-be1ba989d850", "b5f2487b-c03d-4e26-8069-596a48de88e1"]
+  },
+  "658841c3-e5db-43a1-afbc-be1ba989d850" : {
+    "type" : "Transform",
+    "entity" : "17d58414-73f1-4c70-91e6-2c4583cfb1df",
+    "position" : [5.0, 5.0, -5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b5f2487b-c03d-4e26-8069-596a48de88e1" : {
+    "type" : "MeshRenderer",
+    "entity" : "17d58414-73f1-4c70-91e6-2c4583cfb1df",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "55724b95-0faf-4b28-824d-d5b869054d47" : {
+    "type" : "Entity",
+    "components" : ["54bf75f4-fe3f-4081-8f0d-df1557792006", "7cdc0c1b-e675-4af4-be5a-2fc0232b4bc0"]
+  },
+  "54bf75f4-fe3f-4081-8f0d-df1557792006" : {
+    "type" : "Transform",
+    "entity" : "55724b95-0faf-4b28-824d-d5b869054d47",
+    "position" : [-5.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "7cdc0c1b-e675-4af4-be5a-2fc0232b4bc0" : {
+    "type" : "MeshRenderer",
+    "entity" : "55724b95-0faf-4b28-824d-d5b869054d47",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f0fee07b-6efb-414b-be50-788ea090de9b" : {
+    "type" : "Entity",
+    "components" : ["97f196e7-ca6a-48c0-8d9b-3e1d1ed131e7", "0c413c6b-693f-401a-b8f1-a736976fa87c"]
+  },
+  "97f196e7-ca6a-48c0-8d9b-3e1d1ed131e7" : {
+    "type" : "Transform",
+    "entity" : "f0fee07b-6efb-414b-be50-788ea090de9b",
+    "position" : [-3.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "0c413c6b-693f-401a-b8f1-a736976fa87c" : {
+    "type" : "MeshRenderer",
+    "entity" : "f0fee07b-6efb-414b-be50-788ea090de9b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b2ae2643-7d1c-4398-87e6-a4eb44f50d00" : {
+    "type" : "Entity",
+    "components" : ["394bf5c1-ec80-4e4c-8dda-8d9daad97215", "c3c9c6c8-f0c1-4772-987f-941f48a69cc3"]
+  },
+  "394bf5c1-ec80-4e4c-8dda-8d9daad97215" : {
+    "type" : "Transform",
+    "entity" : "b2ae2643-7d1c-4398-87e6-a4eb44f50d00",
+    "position" : [-1.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c3c9c6c8-f0c1-4772-987f-941f48a69cc3" : {
+    "type" : "MeshRenderer",
+    "entity" : "b2ae2643-7d1c-4398-87e6-a4eb44f50d00",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d8d499c0-631a-4073-855f-faa13b8ed094" : {
+    "type" : "Entity",
+    "components" : ["4c344787-eb6d-47e2-9568-fd343102fb88", "44617234-724a-40ab-8b11-440bf9b4d954"]
+  },
+  "4c344787-eb6d-47e2-9568-fd343102fb88" : {
+    "type" : "Transform",
+    "entity" : "d8d499c0-631a-4073-855f-faa13b8ed094",
+    "position" : [1.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "44617234-724a-40ab-8b11-440bf9b4d954" : {
+    "type" : "MeshRenderer",
+    "entity" : "d8d499c0-631a-4073-855f-faa13b8ed094",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e4a90604-199b-4d3d-a8c1-494b39b90f61" : {
+    "type" : "Entity",
+    "components" : ["2c63cc4a-beb7-4cdd-be50-6aa69118f004", "e6d5ef19-35aa-4be3-a1d5-e1bd85d6a912"]
+  },
+  "2c63cc4a-beb7-4cdd-be50-6aa69118f004" : {
+    "type" : "Transform",
+    "entity" : "e4a90604-199b-4d3d-a8c1-494b39b90f61",
+    "position" : [3.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e6d5ef19-35aa-4be3-a1d5-e1bd85d6a912" : {
+    "type" : "MeshRenderer",
+    "entity" : "e4a90604-199b-4d3d-a8c1-494b39b90f61",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4ef6e9ca-898c-42a5-9e6a-65003c33411d" : {
+    "type" : "Entity",
+    "components" : ["dc61f1f5-e956-4045-bdb5-7a81dccd93e2", "e5a7defb-f75e-4ff4-8f70-5135f474c017"]
+  },
+  "dc61f1f5-e956-4045-bdb5-7a81dccd93e2" : {
+    "type" : "Transform",
+    "entity" : "4ef6e9ca-898c-42a5-9e6a-65003c33411d",
+    "position" : [5.0, -5.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e5a7defb-f75e-4ff4-8f70-5135f474c017" : {
+    "type" : "MeshRenderer",
+    "entity" : "4ef6e9ca-898c-42a5-9e6a-65003c33411d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "3f92a16f-9468-4a0a-a9f7-60e45fda856b" : {
+    "type" : "Entity",
+    "components" : ["243cfc04-9389-4316-bcec-3d6f6caf44ee", "8b6c1d56-50a2-4533-9d57-fd60ec749140"]
+  },
+  "243cfc04-9389-4316-bcec-3d6f6caf44ee" : {
+    "type" : "Transform",
+    "entity" : "3f92a16f-9468-4a0a-a9f7-60e45fda856b",
+    "position" : [-5.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8b6c1d56-50a2-4533-9d57-fd60ec749140" : {
+    "type" : "MeshRenderer",
+    "entity" : "3f92a16f-9468-4a0a-a9f7-60e45fda856b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "fd29b172-2e96-42f0-9ac1-c569d29f69e2" : {
+    "type" : "Entity",
+    "components" : ["92780d2f-9c22-405e-8d95-910704e05610", "b3cf871a-71d5-45d8-b9a0-c25b208a23db"]
+  },
+  "92780d2f-9c22-405e-8d95-910704e05610" : {
+    "type" : "Transform",
+    "entity" : "fd29b172-2e96-42f0-9ac1-c569d29f69e2",
+    "position" : [-3.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b3cf871a-71d5-45d8-b9a0-c25b208a23db" : {
+    "type" : "MeshRenderer",
+    "entity" : "fd29b172-2e96-42f0-9ac1-c569d29f69e2",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "39b1a453-c306-4c41-adbf-d2882d31d82a" : {
+    "type" : "Entity",
+    "components" : ["766ef873-afa9-4333-b975-afe8031f8cae", "38f654e5-61f7-4e03-aad3-798cb7445271"]
+  },
+  "766ef873-afa9-4333-b975-afe8031f8cae" : {
+    "type" : "Transform",
+    "entity" : "39b1a453-c306-4c41-adbf-d2882d31d82a",
+    "position" : [-1.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "38f654e5-61f7-4e03-aad3-798cb7445271" : {
+    "type" : "MeshRenderer",
+    "entity" : "39b1a453-c306-4c41-adbf-d2882d31d82a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b179bbe2-3110-4faf-9451-d2021646aea8" : {
+    "type" : "Entity",
+    "components" : ["38d62bc1-fba5-4112-84ab-3d74c32a4f05", "84f19eaa-ab01-4053-b9ce-97ce53ddf980"]
+  },
+  "38d62bc1-fba5-4112-84ab-3d74c32a4f05" : {
+    "type" : "Transform",
+    "entity" : "b179bbe2-3110-4faf-9451-d2021646aea8",
+    "position" : [1.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "84f19eaa-ab01-4053-b9ce-97ce53ddf980" : {
+    "type" : "MeshRenderer",
+    "entity" : "b179bbe2-3110-4faf-9451-d2021646aea8",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2432f54b-aaa1-45a9-857f-d96e1a50feac" : {
+    "type" : "Entity",
+    "components" : ["cde6adfd-b2b3-4f3a-814f-e413f61cb5a2", "ac79572b-40b1-4ea7-af21-d371efc81f5c"]
+  },
+  "cde6adfd-b2b3-4f3a-814f-e413f61cb5a2" : {
+    "type" : "Transform",
+    "entity" : "2432f54b-aaa1-45a9-857f-d96e1a50feac",
+    "position" : [3.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ac79572b-40b1-4ea7-af21-d371efc81f5c" : {
+    "type" : "MeshRenderer",
+    "entity" : "2432f54b-aaa1-45a9-857f-d96e1a50feac",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6083ce3c-e981-4f6f-ad33-c9133e75896e" : {
+    "type" : "Entity",
+    "components" : ["b3ea40fc-67e7-479b-a7eb-a602891e237c", "b5bfca23-2509-48d0-9dd2-405bafd3fa80"]
+  },
+  "b3ea40fc-67e7-479b-a7eb-a602891e237c" : {
+    "type" : "Transform",
+    "entity" : "6083ce3c-e981-4f6f-ad33-c9133e75896e",
+    "position" : [5.0, -3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b5bfca23-2509-48d0-9dd2-405bafd3fa80" : {
+    "type" : "MeshRenderer",
+    "entity" : "6083ce3c-e981-4f6f-ad33-c9133e75896e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "7129852a-5dbf-41bc-8e30-b88d974a51dc" : {
+    "type" : "Entity",
+    "components" : ["f22b2c10-eaac-4b2b-9439-b6ec38e209a4", "3718e7f6-e321-4037-a492-021b039a8094"]
+  },
+  "f22b2c10-eaac-4b2b-9439-b6ec38e209a4" : {
+    "type" : "Transform",
+    "entity" : "7129852a-5dbf-41bc-8e30-b88d974a51dc",
+    "position" : [-5.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3718e7f6-e321-4037-a492-021b039a8094" : {
+    "type" : "MeshRenderer",
+    "entity" : "7129852a-5dbf-41bc-8e30-b88d974a51dc",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b6ccc8ea-22de-4954-b4c0-ffe50daee0fa" : {
+    "type" : "Entity",
+    "components" : ["d9c8881c-bbb5-4bb5-b61e-691a46bec44d", "8965b34b-138f-4243-aa47-606d3e181061"]
+  },
+  "d9c8881c-bbb5-4bb5-b61e-691a46bec44d" : {
+    "type" : "Transform",
+    "entity" : "b6ccc8ea-22de-4954-b4c0-ffe50daee0fa",
+    "position" : [-3.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8965b34b-138f-4243-aa47-606d3e181061" : {
+    "type" : "MeshRenderer",
+    "entity" : "b6ccc8ea-22de-4954-b4c0-ffe50daee0fa",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "0c4b74cb-e241-4e11-9bf0-087b6b2774e8" : {
+    "type" : "Entity",
+    "components" : ["02431751-bd83-4732-842a-e495574750ba", "023b59ad-1563-4baf-8202-3b015cc1964c"]
+  },
+  "02431751-bd83-4732-842a-e495574750ba" : {
+    "type" : "Transform",
+    "entity" : "0c4b74cb-e241-4e11-9bf0-087b6b2774e8",
+    "position" : [-1.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "023b59ad-1563-4baf-8202-3b015cc1964c" : {
+    "type" : "MeshRenderer",
+    "entity" : "0c4b74cb-e241-4e11-9bf0-087b6b2774e8",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2c8b4ac1-91c1-4f0c-9729-27a58a36f1b4" : {
+    "type" : "Entity",
+    "components" : ["1e322696-da0f-4582-a9a5-187d805a2da8", "b5fb539e-05ee-435a-b4cf-44fcb1bd9e03"]
+  },
+  "1e322696-da0f-4582-a9a5-187d805a2da8" : {
+    "type" : "Transform",
+    "entity" : "2c8b4ac1-91c1-4f0c-9729-27a58a36f1b4",
+    "position" : [1.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b5fb539e-05ee-435a-b4cf-44fcb1bd9e03" : {
+    "type" : "MeshRenderer",
+    "entity" : "2c8b4ac1-91c1-4f0c-9729-27a58a36f1b4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "db7f1954-0695-4e51-931a-2c125c12c9ce" : {
+    "type" : "Entity",
+    "components" : ["bf9ec692-ce02-4d3b-b22b-936f459fb381", "5efbfce0-4ea1-41f9-895f-b01e020b472b"]
+  },
+  "bf9ec692-ce02-4d3b-b22b-936f459fb381" : {
+    "type" : "Transform",
+    "entity" : "db7f1954-0695-4e51-931a-2c125c12c9ce",
+    "position" : [3.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "5efbfce0-4ea1-41f9-895f-b01e020b472b" : {
+    "type" : "MeshRenderer",
+    "entity" : "db7f1954-0695-4e51-931a-2c125c12c9ce",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "94177d17-289a-4584-9ff0-b85d5ec3d48c" : {
+    "type" : "Entity",
+    "components" : ["07db778f-39b1-430f-a2bb-1f9e62a91cf7", "c82e91b3-602e-4721-a983-14b2bc651421"]
+  },
+  "07db778f-39b1-430f-a2bb-1f9e62a91cf7" : {
+    "type" : "Transform",
+    "entity" : "94177d17-289a-4584-9ff0-b85d5ec3d48c",
+    "position" : [5.0, -1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c82e91b3-602e-4721-a983-14b2bc651421" : {
+    "type" : "MeshRenderer",
+    "entity" : "94177d17-289a-4584-9ff0-b85d5ec3d48c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "1d63132f-0a35-4600-a33b-820f37747fa2" : {
+    "type" : "Entity",
+    "components" : ["2be377ca-28ce-48b9-a0b4-5a14c8e5a47d", "2e238a43-93e4-4eee-9b5d-9576dc50f750"]
+  },
+  "2be377ca-28ce-48b9-a0b4-5a14c8e5a47d" : {
+    "type" : "Transform",
+    "entity" : "1d63132f-0a35-4600-a33b-820f37747fa2",
+    "position" : [-5.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2e238a43-93e4-4eee-9b5d-9576dc50f750" : {
+    "type" : "MeshRenderer",
+    "entity" : "1d63132f-0a35-4600-a33b-820f37747fa2",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5ce67f19-efc4-4d6d-978f-74be1931cf3e" : {
+    "type" : "Entity",
+    "components" : ["e83027ad-7c61-4e69-807c-b27119261fc6", "8e9cd452-667a-4371-8615-fa7343fb70a7"]
+  },
+  "e83027ad-7c61-4e69-807c-b27119261fc6" : {
+    "type" : "Transform",
+    "entity" : "5ce67f19-efc4-4d6d-978f-74be1931cf3e",
+    "position" : [-3.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8e9cd452-667a-4371-8615-fa7343fb70a7" : {
+    "type" : "MeshRenderer",
+    "entity" : "5ce67f19-efc4-4d6d-978f-74be1931cf3e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "3d9114ba-14de-412c-a240-4f6962d6b351" : {
+    "type" : "Entity",
+    "components" : ["fab9f8c7-b4ba-41b6-bd7f-2ff630d94190", "52b9311b-5fb0-4826-a9c5-511589c0ec05"]
+  },
+  "fab9f8c7-b4ba-41b6-bd7f-2ff630d94190" : {
+    "type" : "Transform",
+    "entity" : "3d9114ba-14de-412c-a240-4f6962d6b351",
+    "position" : [-1.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "52b9311b-5fb0-4826-a9c5-511589c0ec05" : {
+    "type" : "MeshRenderer",
+    "entity" : "3d9114ba-14de-412c-a240-4f6962d6b351",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "c8b9750b-7ee8-466f-a588-2fa5542d26b4" : {
+    "type" : "Entity",
+    "components" : ["0eb74e4c-5f18-4096-b647-a4c8125a75dd", "0d282301-b5d8-4cfb-a2fe-06384cc3622c"]
+  },
+  "0eb74e4c-5f18-4096-b647-a4c8125a75dd" : {
+    "type" : "Transform",
+    "entity" : "c8b9750b-7ee8-466f-a588-2fa5542d26b4",
+    "position" : [1.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "0d282301-b5d8-4cfb-a2fe-06384cc3622c" : {
+    "type" : "MeshRenderer",
+    "entity" : "c8b9750b-7ee8-466f-a588-2fa5542d26b4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "3a5908a5-370e-49de-b7b8-a2573e1c76a2" : {
+    "type" : "Entity",
+    "components" : ["1ca4d858-0ccc-4f4e-86a4-57cd1347500c", "5f816511-de0a-499c-aa93-52ba42e1ca26"]
+  },
+  "1ca4d858-0ccc-4f4e-86a4-57cd1347500c" : {
+    "type" : "Transform",
+    "entity" : "3a5908a5-370e-49de-b7b8-a2573e1c76a2",
+    "position" : [3.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "5f816511-de0a-499c-aa93-52ba42e1ca26" : {
+    "type" : "MeshRenderer",
+    "entity" : "3a5908a5-370e-49de-b7b8-a2573e1c76a2",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4526bd49-3bfc-4ced-97e6-5c5e87e432ba" : {
+    "type" : "Entity",
+    "components" : ["54e49a1e-41bf-429e-b282-c7a050c1a57e", "9a1818e1-dcfd-4290-aa6f-3a44610c1b30"]
+  },
+  "54e49a1e-41bf-429e-b282-c7a050c1a57e" : {
+    "type" : "Transform",
+    "entity" : "4526bd49-3bfc-4ced-97e6-5c5e87e432ba",
+    "position" : [5.0, 1.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9a1818e1-dcfd-4290-aa6f-3a44610c1b30" : {
+    "type" : "MeshRenderer",
+    "entity" : "4526bd49-3bfc-4ced-97e6-5c5e87e432ba",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "297c4c9c-fec0-41aa-84ae-ab4c3686e1cc" : {
+    "type" : "Entity",
+    "components" : ["273c6c33-9e8b-4288-b990-4ed6f666e666", "0f314180-d994-47a8-8a36-5478a003753f"]
+  },
+  "273c6c33-9e8b-4288-b990-4ed6f666e666" : {
+    "type" : "Transform",
+    "entity" : "297c4c9c-fec0-41aa-84ae-ab4c3686e1cc",
+    "position" : [-5.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "0f314180-d994-47a8-8a36-5478a003753f" : {
+    "type" : "MeshRenderer",
+    "entity" : "297c4c9c-fec0-41aa-84ae-ab4c3686e1cc",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4919681f-930b-4e98-bbc5-b4769e09f553" : {
+    "type" : "Entity",
+    "components" : ["9019f8af-9f17-4030-817f-beaaa2639a4e", "1558aad8-59a1-49d9-96d7-52daa99eafcb"]
+  },
+  "9019f8af-9f17-4030-817f-beaaa2639a4e" : {
+    "type" : "Transform",
+    "entity" : "4919681f-930b-4e98-bbc5-b4769e09f553",
+    "position" : [-3.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "1558aad8-59a1-49d9-96d7-52daa99eafcb" : {
+    "type" : "MeshRenderer",
+    "entity" : "4919681f-930b-4e98-bbc5-b4769e09f553",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2687a490-328e-437f-9aae-ea2c4506942a" : {
+    "type" : "Entity",
+    "components" : ["bb89a3a8-8fe8-47b7-9589-b54060a5b41f", "c4dccaee-7632-408a-a034-22b1aa09283f"]
+  },
+  "bb89a3a8-8fe8-47b7-9589-b54060a5b41f" : {
+    "type" : "Transform",
+    "entity" : "2687a490-328e-437f-9aae-ea2c4506942a",
+    "position" : [-1.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c4dccaee-7632-408a-a034-22b1aa09283f" : {
+    "type" : "MeshRenderer",
+    "entity" : "2687a490-328e-437f-9aae-ea2c4506942a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8f16532b-02c3-4a7e-89cc-b1460200b103" : {
+    "type" : "Entity",
+    "components" : ["c7a6d29c-3f20-41ed-9a60-d47aa40312ae", "7ffdefb8-6201-4bd9-9990-cc35035b0a8f"]
+  },
+  "c7a6d29c-3f20-41ed-9a60-d47aa40312ae" : {
+    "type" : "Transform",
+    "entity" : "8f16532b-02c3-4a7e-89cc-b1460200b103",
+    "position" : [1.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "7ffdefb8-6201-4bd9-9990-cc35035b0a8f" : {
+    "type" : "MeshRenderer",
+    "entity" : "8f16532b-02c3-4a7e-89cc-b1460200b103",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5ab19eb3-0997-4155-830f-1a07120f5bfc" : {
+    "type" : "Entity",
+    "components" : ["89ed1beb-d8a1-43aa-8bf7-ff9fc3199caf", "4939c5f0-35a4-47b0-9195-76272a125df5"]
+  },
+  "89ed1beb-d8a1-43aa-8bf7-ff9fc3199caf" : {
+    "type" : "Transform",
+    "entity" : "5ab19eb3-0997-4155-830f-1a07120f5bfc",
+    "position" : [3.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4939c5f0-35a4-47b0-9195-76272a125df5" : {
+    "type" : "MeshRenderer",
+    "entity" : "5ab19eb3-0997-4155-830f-1a07120f5bfc",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "37567822-7193-4efe-a3ee-2f3af11e7d54" : {
+    "type" : "Entity",
+    "components" : ["8166d63b-83be-49e4-9ee8-50c0ea129337", "80f95c11-144f-4ae6-8c24-68d0c04990fd"]
+  },
+  "8166d63b-83be-49e4-9ee8-50c0ea129337" : {
+    "type" : "Transform",
+    "entity" : "37567822-7193-4efe-a3ee-2f3af11e7d54",
+    "position" : [5.0, 3.0, -3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "80f95c11-144f-4ae6-8c24-68d0c04990fd" : {
+    "type" : "MeshRenderer",
+    "entity" : "37567822-7193-4efe-a3ee-2f3af11e7d54",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "c4338b3d-14bd-436e-9acf-162aacecfe50" : {
+    "type" : "Entity",
+    "components" : ["834fb44f-8483-4462-931a-423f7cdf7ccf", "44245042-a865-48f9-bf92-313c2e2fcaae"]
+  },
+  "834fb44f-8483-4462-931a-423f7cdf7ccf" : {
+    "type" : "Transform",
+    "entity" : "c4338b3d-14bd-436e-9acf-162aacecfe50",
+    "position" : [-5.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "44245042-a865-48f9-bf92-313c2e2fcaae" : {
+    "type" : "MeshRenderer",
+    "entity" : "c4338b3d-14bd-436e-9acf-162aacecfe50",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b05fc2a8-1606-45d7-b8ee-74690e5a2071" : {
+    "type" : "Entity",
+    "components" : ["4c62f9ea-3fc0-4893-9b9c-cfa2d5d5ab6d", "5c9394cc-edc5-4599-972a-c78c8a5f4d2c"]
+  },
+  "4c62f9ea-3fc0-4893-9b9c-cfa2d5d5ab6d" : {
+    "type" : "Transform",
+    "entity" : "b05fc2a8-1606-45d7-b8ee-74690e5a2071",
+    "position" : [-3.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "5c9394cc-edc5-4599-972a-c78c8a5f4d2c" : {
+    "type" : "MeshRenderer",
+    "entity" : "b05fc2a8-1606-45d7-b8ee-74690e5a2071",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "74351a9d-3358-4539-8243-7c7bbb6ea19f" : {
+    "type" : "Entity",
+    "components" : ["10a940ae-fdc7-4c6d-97a6-e09d3d7d284a", "7f446236-1e7e-442a-aef0-03f3fb753d20"]
+  },
+  "10a940ae-fdc7-4c6d-97a6-e09d3d7d284a" : {
+    "type" : "Transform",
+    "entity" : "74351a9d-3358-4539-8243-7c7bbb6ea19f",
+    "position" : [-1.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "7f446236-1e7e-442a-aef0-03f3fb753d20" : {
+    "type" : "MeshRenderer",
+    "entity" : "74351a9d-3358-4539-8243-7c7bbb6ea19f",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2a898fed-55ed-4de9-b5a8-7a238f51a91a" : {
+    "type" : "Entity",
+    "components" : ["f2e7c58a-0e12-4861-aa80-0a3a24d6745c", "6ac5c58b-eff0-48a9-8ec4-f2b43a219de4"]
+  },
+  "f2e7c58a-0e12-4861-aa80-0a3a24d6745c" : {
+    "type" : "Transform",
+    "entity" : "2a898fed-55ed-4de9-b5a8-7a238f51a91a",
+    "position" : [1.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6ac5c58b-eff0-48a9-8ec4-f2b43a219de4" : {
+    "type" : "MeshRenderer",
+    "entity" : "2a898fed-55ed-4de9-b5a8-7a238f51a91a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "0b815ab4-d719-431b-962a-c3e4c6426b3a" : {
+    "type" : "Entity",
+    "components" : ["4cb507ac-1296-4fa2-8172-a5e42017eb54", "2dacccc0-267c-4ebd-9076-3267f9099ea9"]
+  },
+  "4cb507ac-1296-4fa2-8172-a5e42017eb54" : {
+    "type" : "Transform",
+    "entity" : "0b815ab4-d719-431b-962a-c3e4c6426b3a",
+    "position" : [3.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2dacccc0-267c-4ebd-9076-3267f9099ea9" : {
+    "type" : "MeshRenderer",
+    "entity" : "0b815ab4-d719-431b-962a-c3e4c6426b3a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "9067b7cd-ae9d-4493-b3d6-0b6db9f05747" : {
+    "type" : "Entity",
+    "components" : ["35f415e9-5f98-4826-967c-2e8c1add65b7", "7eb61487-946d-4d19-bb80-1594ca3c61bc"]
+  },
+  "35f415e9-5f98-4826-967c-2e8c1add65b7" : {
+    "type" : "Transform",
+    "entity" : "9067b7cd-ae9d-4493-b3d6-0b6db9f05747",
+    "position" : [5.0, -5.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "7eb61487-946d-4d19-bb80-1594ca3c61bc" : {
+    "type" : "MeshRenderer",
+    "entity" : "9067b7cd-ae9d-4493-b3d6-0b6db9f05747",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "0cbee85c-d351-4f7b-8a31-c535efab9a5e" : {
+    "type" : "Entity",
+    "components" : ["a38e6273-fd76-409a-9b74-e0d03654ae13", "e49511a5-173b-4152-ac34-00cd476710cd"]
+  },
+  "a38e6273-fd76-409a-9b74-e0d03654ae13" : {
+    "type" : "Transform",
+    "entity" : "0cbee85c-d351-4f7b-8a31-c535efab9a5e",
+    "position" : [-5.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e49511a5-173b-4152-ac34-00cd476710cd" : {
+    "type" : "MeshRenderer",
+    "entity" : "0cbee85c-d351-4f7b-8a31-c535efab9a5e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "53a2105e-62e1-48d4-9d86-a896c2d756ab" : {
+    "type" : "Entity",
+    "components" : ["05897f1f-c14c-44e8-9db1-41aa2af1991f", "5efd1e40-0010-4104-a8a8-5ab1a192d6c4"]
+  },
+  "05897f1f-c14c-44e8-9db1-41aa2af1991f" : {
+    "type" : "Transform",
+    "entity" : "53a2105e-62e1-48d4-9d86-a896c2d756ab",
+    "position" : [-3.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "5efd1e40-0010-4104-a8a8-5ab1a192d6c4" : {
+    "type" : "MeshRenderer",
+    "entity" : "53a2105e-62e1-48d4-9d86-a896c2d756ab",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "fca3132f-9aa5-4df4-9a95-401d8ee1c5e1" : {
+    "type" : "Entity",
+    "components" : ["0d4f477e-c45a-450f-8f0c-a63b1b9ff604", "e11e7d84-cd32-40df-9cd4-c4592f79ce35"]
+  },
+  "0d4f477e-c45a-450f-8f0c-a63b1b9ff604" : {
+    "type" : "Transform",
+    "entity" : "fca3132f-9aa5-4df4-9a95-401d8ee1c5e1",
+    "position" : [-1.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e11e7d84-cd32-40df-9cd4-c4592f79ce35" : {
+    "type" : "MeshRenderer",
+    "entity" : "fca3132f-9aa5-4df4-9a95-401d8ee1c5e1",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5e147aa2-47c2-457f-b6fd-a4bfdcbdf72a" : {
+    "type" : "Entity",
+    "components" : ["ddc10d24-23f1-4e0c-a813-0d1c207a7080", "ad6f132d-6a10-4e91-932b-76bdfec219e5"]
+  },
+  "ddc10d24-23f1-4e0c-a813-0d1c207a7080" : {
+    "type" : "Transform",
+    "entity" : "5e147aa2-47c2-457f-b6fd-a4bfdcbdf72a",
+    "position" : [1.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ad6f132d-6a10-4e91-932b-76bdfec219e5" : {
+    "type" : "MeshRenderer",
+    "entity" : "5e147aa2-47c2-457f-b6fd-a4bfdcbdf72a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5e900d1f-cd0c-425f-b4bd-e1ae2b6be308" : {
+    "type" : "Entity",
+    "components" : ["044d4067-4962-485c-adfd-94462d6a528c", "ef15fee3-bbbb-4f1c-90a5-c3a6652543ba"]
+  },
+  "044d4067-4962-485c-adfd-94462d6a528c" : {
+    "type" : "Transform",
+    "entity" : "5e900d1f-cd0c-425f-b4bd-e1ae2b6be308",
+    "position" : [3.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ef15fee3-bbbb-4f1c-90a5-c3a6652543ba" : {
+    "type" : "MeshRenderer",
+    "entity" : "5e900d1f-cd0c-425f-b4bd-e1ae2b6be308",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6ce45c4b-bb4d-4029-8ee6-967945d7ff93" : {
+    "type" : "Entity",
+    "components" : ["f51b4573-c3e7-44ae-bf5d-f6d84b0feaf1", "294bfc51-008e-4056-b75e-d28ca25c760b"]
+  },
+  "f51b4573-c3e7-44ae-bf5d-f6d84b0feaf1" : {
+    "type" : "Transform",
+    "entity" : "6ce45c4b-bb4d-4029-8ee6-967945d7ff93",
+    "position" : [5.0, -3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "294bfc51-008e-4056-b75e-d28ca25c760b" : {
+    "type" : "MeshRenderer",
+    "entity" : "6ce45c4b-bb4d-4029-8ee6-967945d7ff93",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "39c50eb7-437c-43a3-9157-9bcd030ca622" : {
+    "type" : "Entity",
+    "components" : ["6a13c387-64a3-45e5-a612-d0cdc8c9f737", "6c35ffba-71e2-47cf-9f40-60dfaa0d6c46"]
+  },
+  "6a13c387-64a3-45e5-a612-d0cdc8c9f737" : {
+    "type" : "Transform",
+    "entity" : "39c50eb7-437c-43a3-9157-9bcd030ca622",
+    "position" : [-5.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6c35ffba-71e2-47cf-9f40-60dfaa0d6c46" : {
+    "type" : "MeshRenderer",
+    "entity" : "39c50eb7-437c-43a3-9157-9bcd030ca622",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f5633fea-5e22-4d20-b370-6dbd540cd34e" : {
+    "type" : "Entity",
+    "components" : ["599daf72-d3db-4919-a849-291917029b50", "832158b8-d8db-47b8-b09a-b2c45a2856ca"]
+  },
+  "599daf72-d3db-4919-a849-291917029b50" : {
+    "type" : "Transform",
+    "entity" : "f5633fea-5e22-4d20-b370-6dbd540cd34e",
+    "position" : [-3.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "832158b8-d8db-47b8-b09a-b2c45a2856ca" : {
+    "type" : "MeshRenderer",
+    "entity" : "f5633fea-5e22-4d20-b370-6dbd540cd34e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "395881b9-edd5-46e0-8f00-ee3b320ed139" : {
+    "type" : "Entity",
+    "components" : ["ffe728fa-4164-4faf-94ee-ca759520bc6c", "2b5df600-8cb6-4b0e-be24-e14890e02b49"]
+  },
+  "ffe728fa-4164-4faf-94ee-ca759520bc6c" : {
+    "type" : "Transform",
+    "entity" : "395881b9-edd5-46e0-8f00-ee3b320ed139",
+    "position" : [-1.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2b5df600-8cb6-4b0e-be24-e14890e02b49" : {
+    "type" : "MeshRenderer",
+    "entity" : "395881b9-edd5-46e0-8f00-ee3b320ed139",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2b8a9f2a-8b5d-4bed-af4c-828acf5e3392" : {
+    "type" : "Entity",
+    "components" : ["bca6d097-a8ec-4398-b0b8-00a26e4e03b7", "e4deee71-ddff-4d67-aefd-fee912bc2025"]
+  },
+  "bca6d097-a8ec-4398-b0b8-00a26e4e03b7" : {
+    "type" : "Transform",
+    "entity" : "2b8a9f2a-8b5d-4bed-af4c-828acf5e3392",
+    "position" : [1.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e4deee71-ddff-4d67-aefd-fee912bc2025" : {
+    "type" : "MeshRenderer",
+    "entity" : "2b8a9f2a-8b5d-4bed-af4c-828acf5e3392",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "69077996-abb8-4cb2-88ca-09e6e999cc03" : {
+    "type" : "Entity",
+    "components" : ["1ae6122b-57b9-48af-95f2-6bfbde079d6a", "d32eaa94-c736-4554-b5a6-8f41ca5ceb5c"]
+  },
+  "1ae6122b-57b9-48af-95f2-6bfbde079d6a" : {
+    "type" : "Transform",
+    "entity" : "69077996-abb8-4cb2-88ca-09e6e999cc03",
+    "position" : [3.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d32eaa94-c736-4554-b5a6-8f41ca5ceb5c" : {
+    "type" : "MeshRenderer",
+    "entity" : "69077996-abb8-4cb2-88ca-09e6e999cc03",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "26ad292e-f079-4102-84fd-3dffe6a241b5" : {
+    "type" : "Entity",
+    "components" : ["e6612d1f-c86a-42f4-8e60-ce0baf159a6b", "400a532d-8d68-4b42-9f18-263bfdb31025"]
+  },
+  "e6612d1f-c86a-42f4-8e60-ce0baf159a6b" : {
+    "type" : "Transform",
+    "entity" : "26ad292e-f079-4102-84fd-3dffe6a241b5",
+    "position" : [5.0, -1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "400a532d-8d68-4b42-9f18-263bfdb31025" : {
+    "type" : "MeshRenderer",
+    "entity" : "26ad292e-f079-4102-84fd-3dffe6a241b5",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2378ee67-6bdb-454d-adbb-6fbb3d2a3e5e" : {
+    "type" : "Entity",
+    "components" : ["c800e8a2-fdb4-4d74-875c-1ce30d4ee2ed", "20380bc4-8227-4d7f-b527-c5b65d4aa63c"]
+  },
+  "c800e8a2-fdb4-4d74-875c-1ce30d4ee2ed" : {
+    "type" : "Transform",
+    "entity" : "2378ee67-6bdb-454d-adbb-6fbb3d2a3e5e",
+    "position" : [-5.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "20380bc4-8227-4d7f-b527-c5b65d4aa63c" : {
+    "type" : "MeshRenderer",
+    "entity" : "2378ee67-6bdb-454d-adbb-6fbb3d2a3e5e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "73c535d8-78a7-4edb-a49c-5718f9159cbf" : {
+    "type" : "Entity",
+    "components" : ["7aeeb10a-ca14-4dc0-b346-f562c326cdea", "aa9097d6-91f9-4428-8acf-7cf4964a496f"]
+  },
+  "7aeeb10a-ca14-4dc0-b346-f562c326cdea" : {
+    "type" : "Transform",
+    "entity" : "73c535d8-78a7-4edb-a49c-5718f9159cbf",
+    "position" : [-3.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "aa9097d6-91f9-4428-8acf-7cf4964a496f" : {
+    "type" : "MeshRenderer",
+    "entity" : "73c535d8-78a7-4edb-a49c-5718f9159cbf",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "7be2b658-ab6d-46a9-a461-7a42bec300e8" : {
+    "type" : "Entity",
+    "components" : ["7c6de15d-ba17-44a4-a054-cb3278ef589d", "c9551cd6-26ae-4e08-8fcd-d1b2582fdd30"]
+  },
+  "7c6de15d-ba17-44a4-a054-cb3278ef589d" : {
+    "type" : "Transform",
+    "entity" : "7be2b658-ab6d-46a9-a461-7a42bec300e8",
+    "position" : [-1.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c9551cd6-26ae-4e08-8fcd-d1b2582fdd30" : {
+    "type" : "MeshRenderer",
+    "entity" : "7be2b658-ab6d-46a9-a461-7a42bec300e8",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a30eed32-545b-4129-a7ef-8eea31529c24" : {
+    "type" : "Entity",
+    "components" : ["3cf65a1d-45b6-4370-b7a7-1ba335d56c9d", "9418ec6b-9514-4026-aef3-0261e7d3cbf4"]
+  },
+  "3cf65a1d-45b6-4370-b7a7-1ba335d56c9d" : {
+    "type" : "Transform",
+    "entity" : "a30eed32-545b-4129-a7ef-8eea31529c24",
+    "position" : [1.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9418ec6b-9514-4026-aef3-0261e7d3cbf4" : {
+    "type" : "MeshRenderer",
+    "entity" : "a30eed32-545b-4129-a7ef-8eea31529c24",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2a8a2fd4-47bc-47b3-97e4-d66e5fbb34b4" : {
+    "type" : "Entity",
+    "components" : ["9d482d11-7be9-4520-8569-64197ffa3a76", "dee6566b-1f49-4fe4-ba86-09189b040ccf"]
+  },
+  "9d482d11-7be9-4520-8569-64197ffa3a76" : {
+    "type" : "Transform",
+    "entity" : "2a8a2fd4-47bc-47b3-97e4-d66e5fbb34b4",
+    "position" : [3.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dee6566b-1f49-4fe4-ba86-09189b040ccf" : {
+    "type" : "MeshRenderer",
+    "entity" : "2a8a2fd4-47bc-47b3-97e4-d66e5fbb34b4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d054bad0-7967-401b-a193-10cc779f371b" : {
+    "type" : "Entity",
+    "components" : ["c83fbf68-b56e-4ee1-937f-a610077c80ce", "a0f3494d-ee17-4cdf-88a4-3d31b9057554"]
+  },
+  "c83fbf68-b56e-4ee1-937f-a610077c80ce" : {
+    "type" : "Transform",
+    "entity" : "d054bad0-7967-401b-a193-10cc779f371b",
+    "position" : [5.0, 1.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a0f3494d-ee17-4cdf-88a4-3d31b9057554" : {
+    "type" : "MeshRenderer",
+    "entity" : "d054bad0-7967-401b-a193-10cc779f371b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a50668bd-363c-4c99-82d1-5b0b22ffc66d" : {
+    "type" : "Entity",
+    "components" : ["6c37e0be-18e6-4307-b22b-5ebc4f7bf835", "9a97e5c8-e67b-44de-a01d-2bfd938b61cc"]
+  },
+  "6c37e0be-18e6-4307-b22b-5ebc4f7bf835" : {
+    "type" : "Transform",
+    "entity" : "a50668bd-363c-4c99-82d1-5b0b22ffc66d",
+    "position" : [-5.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9a97e5c8-e67b-44de-a01d-2bfd938b61cc" : {
+    "type" : "MeshRenderer",
+    "entity" : "a50668bd-363c-4c99-82d1-5b0b22ffc66d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a74d7f29-9509-4499-8cce-e2cc5bde461a" : {
+    "type" : "Entity",
+    "components" : ["188230e6-ce85-4227-b9de-774cb1ed9411", "d2b414a6-5b3a-401c-b21b-fab29f980edc"]
+  },
+  "188230e6-ce85-4227-b9de-774cb1ed9411" : {
+    "type" : "Transform",
+    "entity" : "a74d7f29-9509-4499-8cce-e2cc5bde461a",
+    "position" : [-3.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d2b414a6-5b3a-401c-b21b-fab29f980edc" : {
+    "type" : "MeshRenderer",
+    "entity" : "a74d7f29-9509-4499-8cce-e2cc5bde461a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "1614cf78-5306-4428-8d92-66bb8001ab40" : {
+    "type" : "Entity",
+    "components" : ["2752cb0b-7801-467e-a13d-5aebc42b43a7", "64cd2e7d-585e-4e48-90e8-85e14a62c743"]
+  },
+  "2752cb0b-7801-467e-a13d-5aebc42b43a7" : {
+    "type" : "Transform",
+    "entity" : "1614cf78-5306-4428-8d92-66bb8001ab40",
+    "position" : [-1.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "64cd2e7d-585e-4e48-90e8-85e14a62c743" : {
+    "type" : "MeshRenderer",
+    "entity" : "1614cf78-5306-4428-8d92-66bb8001ab40",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e2a267ec-e79f-4fb6-811c-67f20f3dc1ce" : {
+    "type" : "Entity",
+    "components" : ["222acc82-b62a-4fea-9d1e-28dddc783615", "1af7d1cd-5fd5-4938-9793-6b87712dcc85"]
+  },
+  "222acc82-b62a-4fea-9d1e-28dddc783615" : {
+    "type" : "Transform",
+    "entity" : "e2a267ec-e79f-4fb6-811c-67f20f3dc1ce",
+    "position" : [1.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "1af7d1cd-5fd5-4938-9793-6b87712dcc85" : {
+    "type" : "MeshRenderer",
+    "entity" : "e2a267ec-e79f-4fb6-811c-67f20f3dc1ce",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "1a398d4e-2975-4264-9a83-ced6cfb6863e" : {
+    "type" : "Entity",
+    "components" : ["42d6a14a-1022-41b9-bb1a-5ca6e93b856f", "a6156bd0-4b99-45d9-83dc-49ddd83b7694"]
+  },
+  "42d6a14a-1022-41b9-bb1a-5ca6e93b856f" : {
+    "type" : "Transform",
+    "entity" : "1a398d4e-2975-4264-9a83-ced6cfb6863e",
+    "position" : [3.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a6156bd0-4b99-45d9-83dc-49ddd83b7694" : {
+    "type" : "MeshRenderer",
+    "entity" : "1a398d4e-2975-4264-9a83-ced6cfb6863e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "9c11ea27-9f30-4ef2-9aab-42ba3e288192" : {
+    "type" : "Entity",
+    "components" : ["be45fdeb-a45e-42b0-9baf-84d6c429759d", "a008d4b6-688d-4875-b46a-8c7a2bd524e8"]
+  },
+  "be45fdeb-a45e-42b0-9baf-84d6c429759d" : {
+    "type" : "Transform",
+    "entity" : "9c11ea27-9f30-4ef2-9aab-42ba3e288192",
+    "position" : [5.0, 3.0, -1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a008d4b6-688d-4875-b46a-8c7a2bd524e8" : {
+    "type" : "MeshRenderer",
+    "entity" : "9c11ea27-9f30-4ef2-9aab-42ba3e288192",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "68323e4a-909a-4c82-a217-bc949ef68031" : {
+    "type" : "Entity",
+    "components" : ["0e3e3d50-e9f5-42b3-b1c5-494a89373cbf", "e437bb56-804d-404a-b853-e64739921ce4"]
+  },
+  "0e3e3d50-e9f5-42b3-b1c5-494a89373cbf" : {
+    "type" : "Transform",
+    "entity" : "68323e4a-909a-4c82-a217-bc949ef68031",
+    "position" : [-5.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e437bb56-804d-404a-b853-e64739921ce4" : {
+    "type" : "MeshRenderer",
+    "entity" : "68323e4a-909a-4c82-a217-bc949ef68031",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "bf55ff94-9958-4b1d-bb92-51cb56e8ac55" : {
+    "type" : "Entity",
+    "components" : ["6f6c22c8-37ec-498b-b2ef-fc507babf5e6", "bcb97e2a-19bb-4278-a7dc-50df38f1d3a0"]
+  },
+  "6f6c22c8-37ec-498b-b2ef-fc507babf5e6" : {
+    "type" : "Transform",
+    "entity" : "bf55ff94-9958-4b1d-bb92-51cb56e8ac55",
+    "position" : [-3.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "bcb97e2a-19bb-4278-a7dc-50df38f1d3a0" : {
+    "type" : "MeshRenderer",
+    "entity" : "bf55ff94-9958-4b1d-bb92-51cb56e8ac55",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "871e98c8-dc9c-4ffd-95ba-94a525b8c6d1" : {
+    "type" : "Entity",
+    "components" : ["2a7b33ae-c85c-4103-87aa-4f27ba8b266c", "16ce8fba-6949-40d1-a2e3-5de16a306511"]
+  },
+  "2a7b33ae-c85c-4103-87aa-4f27ba8b266c" : {
+    "type" : "Transform",
+    "entity" : "871e98c8-dc9c-4ffd-95ba-94a525b8c6d1",
+    "position" : [-1.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "16ce8fba-6949-40d1-a2e3-5de16a306511" : {
+    "type" : "MeshRenderer",
+    "entity" : "871e98c8-dc9c-4ffd-95ba-94a525b8c6d1",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "12ae5838-ddfa-4c13-bb99-8a96d222cc04" : {
+    "type" : "Entity",
+    "components" : ["75d71e95-231b-45a0-a494-bd1edb1e7a1e", "f0b650bc-487d-435d-9748-1ce3fa2f4da1"]
+  },
+  "75d71e95-231b-45a0-a494-bd1edb1e7a1e" : {
+    "type" : "Transform",
+    "entity" : "12ae5838-ddfa-4c13-bb99-8a96d222cc04",
+    "position" : [1.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "f0b650bc-487d-435d-9748-1ce3fa2f4da1" : {
+    "type" : "MeshRenderer",
+    "entity" : "12ae5838-ddfa-4c13-bb99-8a96d222cc04",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "94849a7f-c110-44d7-8f08-8635335ccdcd" : {
+    "type" : "Entity",
+    "components" : ["c3fac3d6-7faf-4b00-9dc4-a9e2a4615363", "97ebb262-d26f-4f86-aaa7-683c5a00f464"]
+  },
+  "c3fac3d6-7faf-4b00-9dc4-a9e2a4615363" : {
+    "type" : "Transform",
+    "entity" : "94849a7f-c110-44d7-8f08-8635335ccdcd",
+    "position" : [3.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "97ebb262-d26f-4f86-aaa7-683c5a00f464" : {
+    "type" : "MeshRenderer",
+    "entity" : "94849a7f-c110-44d7-8f08-8635335ccdcd",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8beae7f2-fdfa-4d9d-a14f-adb47d6ad6e3" : {
+    "type" : "Entity",
+    "components" : ["8c9c5a1b-4f6e-4701-9404-30b1f412f6a6", "3dbf0c8a-7c8d-471f-8ab1-ff7c32ffbe15"]
+  },
+  "8c9c5a1b-4f6e-4701-9404-30b1f412f6a6" : {
+    "type" : "Transform",
+    "entity" : "8beae7f2-fdfa-4d9d-a14f-adb47d6ad6e3",
+    "position" : [5.0, -5.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3dbf0c8a-7c8d-471f-8ab1-ff7c32ffbe15" : {
+    "type" : "MeshRenderer",
+    "entity" : "8beae7f2-fdfa-4d9d-a14f-adb47d6ad6e3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "cf0d3a0e-673a-4ec1-808e-15ac71570dc5" : {
+    "type" : "Entity",
+    "components" : ["a7197992-155c-4c10-9e66-efed8cce748e", "bab358d3-d008-4515-9729-9d1828cdbc32"]
+  },
+  "a7197992-155c-4c10-9e66-efed8cce748e" : {
+    "type" : "Transform",
+    "entity" : "cf0d3a0e-673a-4ec1-808e-15ac71570dc5",
+    "position" : [-5.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "bab358d3-d008-4515-9729-9d1828cdbc32" : {
+    "type" : "MeshRenderer",
+    "entity" : "cf0d3a0e-673a-4ec1-808e-15ac71570dc5",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b06aa1e7-8ba7-492d-bda3-073b0bb1fd09" : {
+    "type" : "Entity",
+    "components" : ["8a2de3c0-a440-48f7-80ae-927d78d2352f", "a62165bd-16d1-434e-9cf5-0b129be0b382"]
+  },
+  "8a2de3c0-a440-48f7-80ae-927d78d2352f" : {
+    "type" : "Transform",
+    "entity" : "b06aa1e7-8ba7-492d-bda3-073b0bb1fd09",
+    "position" : [-3.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a62165bd-16d1-434e-9cf5-0b129be0b382" : {
+    "type" : "MeshRenderer",
+    "entity" : "b06aa1e7-8ba7-492d-bda3-073b0bb1fd09",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "80551496-48bf-4b19-b6a4-06e387d5cc6f" : {
+    "type" : "Entity",
+    "components" : ["fc0e6556-a00e-4a6a-aac4-f3fb0fe7bb9c", "bcfc0066-2daf-4239-9250-62d7081b352f"]
+  },
+  "fc0e6556-a00e-4a6a-aac4-f3fb0fe7bb9c" : {
+    "type" : "Transform",
+    "entity" : "80551496-48bf-4b19-b6a4-06e387d5cc6f",
+    "position" : [-1.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "bcfc0066-2daf-4239-9250-62d7081b352f" : {
+    "type" : "MeshRenderer",
+    "entity" : "80551496-48bf-4b19-b6a4-06e387d5cc6f",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "5e800329-bd00-48d3-a4c4-8db223e01c46" : {
+    "type" : "Entity",
+    "components" : ["0d30a360-e7fe-4931-85a8-425105b1c463", "2ea7d797-29c5-4aee-a1db-118f216e77de"]
+  },
+  "0d30a360-e7fe-4931-85a8-425105b1c463" : {
+    "type" : "Transform",
+    "entity" : "5e800329-bd00-48d3-a4c4-8db223e01c46",
+    "position" : [1.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2ea7d797-29c5-4aee-a1db-118f216e77de" : {
+    "type" : "MeshRenderer",
+    "entity" : "5e800329-bd00-48d3-a4c4-8db223e01c46",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "272736ec-6924-4425-932f-4609a520575a" : {
+    "type" : "Entity",
+    "components" : ["49314d68-e12d-4a11-bd47-3274de28e655", "2d7fabec-1ca8-4899-b2bb-25a9a2ad0302"]
+  },
+  "49314d68-e12d-4a11-bd47-3274de28e655" : {
+    "type" : "Transform",
+    "entity" : "272736ec-6924-4425-932f-4609a520575a",
+    "position" : [3.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2d7fabec-1ca8-4899-b2bb-25a9a2ad0302" : {
+    "type" : "MeshRenderer",
+    "entity" : "272736ec-6924-4425-932f-4609a520575a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "9353d4a3-3944-4b21-9e49-48ec2bb7ad87" : {
+    "type" : "Entity",
+    "components" : ["0a652c2f-73c3-4fca-bc1a-a96a854cfc7e", "64351362-c6e7-4c4e-a46a-50f45e857967"]
+  },
+  "0a652c2f-73c3-4fca-bc1a-a96a854cfc7e" : {
+    "type" : "Transform",
+    "entity" : "9353d4a3-3944-4b21-9e49-48ec2bb7ad87",
+    "position" : [5.0, -3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "64351362-c6e7-4c4e-a46a-50f45e857967" : {
+    "type" : "MeshRenderer",
+    "entity" : "9353d4a3-3944-4b21-9e49-48ec2bb7ad87",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d5249939-5556-4a5f-8713-4be84871ecd8" : {
+    "type" : "Entity",
+    "components" : ["bab8418a-6bf4-443c-a91e-64985ce2a4e7", "b70c0eaf-00df-4834-a280-78a469a5b0c7"]
+  },
+  "bab8418a-6bf4-443c-a91e-64985ce2a4e7" : {
+    "type" : "Transform",
+    "entity" : "d5249939-5556-4a5f-8713-4be84871ecd8",
+    "position" : [-5.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b70c0eaf-00df-4834-a280-78a469a5b0c7" : {
+    "type" : "MeshRenderer",
+    "entity" : "d5249939-5556-4a5f-8713-4be84871ecd8",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "21f1aee7-cee5-4936-9c62-1105b77a3af9" : {
+    "type" : "Entity",
+    "components" : ["a927e3e6-683f-4545-a052-0f643f89bd2a", "60ead9eb-dfe6-4e5f-9e78-cc464c6e4ba0"]
+  },
+  "a927e3e6-683f-4545-a052-0f643f89bd2a" : {
+    "type" : "Transform",
+    "entity" : "21f1aee7-cee5-4936-9c62-1105b77a3af9",
+    "position" : [-3.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "60ead9eb-dfe6-4e5f-9e78-cc464c6e4ba0" : {
+    "type" : "MeshRenderer",
+    "entity" : "21f1aee7-cee5-4936-9c62-1105b77a3af9",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "228bfb44-69be-4a5f-903d-d344e1bce616" : {
+    "type" : "Entity",
+    "components" : ["2dfe009e-f220-457d-a330-b5ddbd4a74f2", "48360116-7363-4b16-871d-3a42561b834f"]
+  },
+  "2dfe009e-f220-457d-a330-b5ddbd4a74f2" : {
+    "type" : "Transform",
+    "entity" : "228bfb44-69be-4a5f-903d-d344e1bce616",
+    "position" : [-1.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "48360116-7363-4b16-871d-3a42561b834f" : {
+    "type" : "MeshRenderer",
+    "entity" : "228bfb44-69be-4a5f-903d-d344e1bce616",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "30baa6a5-ba18-451c-9503-4f74e3f12e41" : {
+    "type" : "Entity",
+    "components" : ["26b177cb-49c0-4394-9acd-35ccc5801639", "3c1c8ee7-080f-42d3-b826-c42d1b1d9d18"]
+  },
+  "26b177cb-49c0-4394-9acd-35ccc5801639" : {
+    "type" : "Transform",
+    "entity" : "30baa6a5-ba18-451c-9503-4f74e3f12e41",
+    "position" : [1.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3c1c8ee7-080f-42d3-b826-c42d1b1d9d18" : {
+    "type" : "MeshRenderer",
+    "entity" : "30baa6a5-ba18-451c-9503-4f74e3f12e41",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d9df4075-c821-4fac-b347-20aca4482b7a" : {
+    "type" : "Entity",
+    "components" : ["4d5234f0-97ea-4b9a-b052-e87b3a81dc62", "e4aa4de4-5e17-482c-97b4-55438a9746c8"]
+  },
+  "4d5234f0-97ea-4b9a-b052-e87b3a81dc62" : {
+    "type" : "Transform",
+    "entity" : "d9df4075-c821-4fac-b347-20aca4482b7a",
+    "position" : [3.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e4aa4de4-5e17-482c-97b4-55438a9746c8" : {
+    "type" : "MeshRenderer",
+    "entity" : "d9df4075-c821-4fac-b347-20aca4482b7a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f80498b6-cdbc-4e9e-bdb6-78b2b7fcd3d4" : {
+    "type" : "Entity",
+    "components" : ["1c66b626-e601-4a3e-87a6-9f4ef0fdbf89", "858f8ddc-9bc6-4aeb-b816-69a8a388bac9"]
+  },
+  "1c66b626-e601-4a3e-87a6-9f4ef0fdbf89" : {
+    "type" : "Transform",
+    "entity" : "f80498b6-cdbc-4e9e-bdb6-78b2b7fcd3d4",
+    "position" : [5.0, -1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "858f8ddc-9bc6-4aeb-b816-69a8a388bac9" : {
+    "type" : "MeshRenderer",
+    "entity" : "f80498b6-cdbc-4e9e-bdb6-78b2b7fcd3d4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "aa3075f0-e39b-4010-9c3a-0547ee1977e3" : {
+    "type" : "Entity",
+    "components" : ["c159ec6f-4083-4321-92b0-d2ca5e87b934", "66ad9c0b-0d78-45e1-a1ee-66f65a3dc6dc"]
+  },
+  "c159ec6f-4083-4321-92b0-d2ca5e87b934" : {
+    "type" : "Transform",
+    "entity" : "aa3075f0-e39b-4010-9c3a-0547ee1977e3",
+    "position" : [-5.0, 1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "66ad9c0b-0d78-45e1-a1ee-66f65a3dc6dc" : {
+    "type" : "MeshRenderer",
+    "entity" : "aa3075f0-e39b-4010-9c3a-0547ee1977e3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b7c47931-63cd-4cba-8e8e-2e23846ba2d6" : {
+    "type" : "Entity",
+    "components" : ["dca9cdb1-eb1f-4be3-9c3b-48968d750c5b", "fa7e73a0-214a-4ddf-bfb9-c5a888f08e4c"]
+  },
+  "dca9cdb1-eb1f-4be3-9c3b-48968d750c5b" : {
+    "type" : "Transform",
+    "entity" : "b7c47931-63cd-4cba-8e8e-2e23846ba2d6",
+    "position" : [-3.0, 1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fa7e73a0-214a-4ddf-bfb9-c5a888f08e4c" : {
+    "type" : "MeshRenderer",
+    "entity" : "b7c47931-63cd-4cba-8e8e-2e23846ba2d6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f602d9ad-8cd6-4099-a32d-9cd5059ac108" : {
+    "type" : "Entity",
+    "components" : ["2ac6e46f-ab56-4cfb-a562-32fe4e68c11b", "ee08a3be-8556-4205-91d9-e89e8eea41c2"]
+  },
+  "2ac6e46f-ab56-4cfb-a562-32fe4e68c11b" : {
+    "type" : "Transform",
+    "entity" : "f602d9ad-8cd6-4099-a32d-9cd5059ac108",
+    "position" : [-1.0, 1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ee08a3be-8556-4205-91d9-e89e8eea41c2" : {
+    "type" : "MeshRenderer",
+    "entity" : "f602d9ad-8cd6-4099-a32d-9cd5059ac108",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "848cc900-3081-451e-a82c-9b095ea8d7ae" : {
+    "type" : "Entity",
+    "components" : ["41696fdf-d8b7-4ef6-9145-36ef49cbfbdb", "233783ee-0915-4388-accb-05fb5e58313e"]
+  },
+  "41696fdf-d8b7-4ef6-9145-36ef49cbfbdb" : {
+    "type" : "Transform",
+    "entity" : "848cc900-3081-451e-a82c-9b095ea8d7ae",
+    "position" : [0.1, 0.1, 0.1],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "233783ee-0915-4388-accb-05fb5e58313e" : {
+    "type" : "MeshRenderer",
+    "entity" : "848cc900-3081-451e-a82c-9b095ea8d7ae",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "02ee2f84-6d78-47dd-8f21-2075948aa323" : {
+    "type" : "Entity",
+    "components" : ["e8fcf628-9d04-4b20-925c-fc7c24e01d09", "ec788f35-02fa-4951-a1fb-8d84eb78028e"]
+  },
+  "e8fcf628-9d04-4b20-925c-fc7c24e01d09" : {
+    "type" : "Transform",
+    "entity" : "02ee2f84-6d78-47dd-8f21-2075948aa323",
+    "position" : [3.0, 1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ec788f35-02fa-4951-a1fb-8d84eb78028e" : {
+    "type" : "MeshRenderer",
+    "entity" : "02ee2f84-6d78-47dd-8f21-2075948aa323",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4fa3351c-1ccc-4b4c-acb3-a24dc5a2a083" : {
+    "type" : "Entity",
+    "components" : ["155e7f1f-afca-431f-8e40-96824d9cfba6", "47c448b2-bd03-441b-a146-f6b884bcfcfd"]
+  },
+  "155e7f1f-afca-431f-8e40-96824d9cfba6" : {
+    "type" : "Transform",
+    "entity" : "4fa3351c-1ccc-4b4c-acb3-a24dc5a2a083",
+    "position" : [5.0, 1.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "47c448b2-bd03-441b-a146-f6b884bcfcfd" : {
+    "type" : "MeshRenderer",
+    "entity" : "4fa3351c-1ccc-4b4c-acb3-a24dc5a2a083",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6927ecd0-89f1-4477-89bb-79684be91608" : {
+    "type" : "Entity",
+    "components" : ["9416fda3-ce62-42f1-b0ea-a0f75a4ffccf", "b36d501b-63ae-48fc-b67e-8dfdc3b53372"]
+  },
+  "9416fda3-ce62-42f1-b0ea-a0f75a4ffccf" : {
+    "type" : "Transform",
+    "entity" : "6927ecd0-89f1-4477-89bb-79684be91608",
+    "position" : [-5.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "b36d501b-63ae-48fc-b67e-8dfdc3b53372" : {
+    "type" : "MeshRenderer",
+    "entity" : "6927ecd0-89f1-4477-89bb-79684be91608",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "25ee097e-c208-4768-a98b-77dd6adb2c26" : {
+    "type" : "Entity",
+    "components" : ["bee5692e-d5ca-4ca6-8695-65f3de7b6de9", "e044bfcb-293e-42a3-a784-c9495f3946bf"]
+  },
+  "bee5692e-d5ca-4ca6-8695-65f3de7b6de9" : {
+    "type" : "Transform",
+    "entity" : "25ee097e-c208-4768-a98b-77dd6adb2c26",
+    "position" : [-3.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e044bfcb-293e-42a3-a784-c9495f3946bf" : {
+    "type" : "MeshRenderer",
+    "entity" : "25ee097e-c208-4768-a98b-77dd6adb2c26",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "81a6545c-15cb-4698-ae35-65457a587cf3" : {
+    "type" : "Entity",
+    "components" : ["db7ed849-db16-4896-bd7a-674a0689c040", "844260dd-eee2-469b-ba22-5cfb30fbfba6"]
+  },
+  "db7ed849-db16-4896-bd7a-674a0689c040" : {
+    "type" : "Transform",
+    "entity" : "81a6545c-15cb-4698-ae35-65457a587cf3",
+    "position" : [-1.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "844260dd-eee2-469b-ba22-5cfb30fbfba6" : {
+    "type" : "MeshRenderer",
+    "entity" : "81a6545c-15cb-4698-ae35-65457a587cf3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "0a2d632f-6eaf-4d19-92bc-71c5adf6de3a" : {
+    "type" : "Entity",
+    "components" : ["fb105eba-4332-4646-acbc-b727c1e2ab7f", "45ee5ba1-99ee-497c-8cda-21651073c53b"]
+  },
+  "fb105eba-4332-4646-acbc-b727c1e2ab7f" : {
+    "type" : "Transform",
+    "entity" : "0a2d632f-6eaf-4d19-92bc-71c5adf6de3a",
+    "position" : [1.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "45ee5ba1-99ee-497c-8cda-21651073c53b" : {
+    "type" : "MeshRenderer",
+    "entity" : "0a2d632f-6eaf-4d19-92bc-71c5adf6de3a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "854f8d72-2057-4743-a749-647c5ef2258a" : {
+    "type" : "Entity",
+    "components" : ["16e5afc5-9b11-405c-951b-eac3635dbf68", "9c961ce8-5f95-42bc-b467-b4a7d2343aac"]
+  },
+  "16e5afc5-9b11-405c-951b-eac3635dbf68" : {
+    "type" : "Transform",
+    "entity" : "854f8d72-2057-4743-a749-647c5ef2258a",
+    "position" : [3.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9c961ce8-5f95-42bc-b467-b4a7d2343aac" : {
+    "type" : "MeshRenderer",
+    "entity" : "854f8d72-2057-4743-a749-647c5ef2258a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8638c50d-69f7-4b5f-8532-81fd2d9e4702" : {
+    "type" : "Entity",
+    "components" : ["ee56012f-c64f-4c33-8ecb-635af8bc80d8", "abb96b64-4e91-45b2-aabd-aa230cbf570b"]
+  },
+  "ee56012f-c64f-4c33-8ecb-635af8bc80d8" : {
+    "type" : "Transform",
+    "entity" : "8638c50d-69f7-4b5f-8532-81fd2d9e4702",
+    "position" : [5.0, 3.0, 1.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "abb96b64-4e91-45b2-aabd-aa230cbf570b" : {
+    "type" : "MeshRenderer",
+    "entity" : "8638c50d-69f7-4b5f-8532-81fd2d9e4702",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "87a41001-a7e6-4575-81c3-ca617791bff2" : {
+    "type" : "Entity",
+    "components" : ["a6fda84a-7901-4ecb-bbed-a01c7811ebe9", "fb7cc5ce-2833-489d-9b4c-a8afd83dc672"]
+  },
+  "a6fda84a-7901-4ecb-bbed-a01c7811ebe9" : {
+    "type" : "Transform",
+    "entity" : "87a41001-a7e6-4575-81c3-ca617791bff2",
+    "position" : [-5.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fb7cc5ce-2833-489d-9b4c-a8afd83dc672" : {
+    "type" : "MeshRenderer",
+    "entity" : "87a41001-a7e6-4575-81c3-ca617791bff2",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "ccf4fbcf-7190-4e8d-a5cd-ad1f5ece6635" : {
+    "type" : "Entity",
+    "components" : ["9b8ca2b7-865d-4e17-8e4c-05db0f4a5507", "8fcf9bb8-d1b1-45ab-98d8-302745d749cf"]
+  },
+  "9b8ca2b7-865d-4e17-8e4c-05db0f4a5507" : {
+    "type" : "Transform",
+    "entity" : "ccf4fbcf-7190-4e8d-a5cd-ad1f5ece6635",
+    "position" : [-3.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8fcf9bb8-d1b1-45ab-98d8-302745d749cf" : {
+    "type" : "MeshRenderer",
+    "entity" : "ccf4fbcf-7190-4e8d-a5cd-ad1f5ece6635",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6a2886f6-d390-4fc1-be89-1da23a77137a" : {
+    "type" : "Entity",
+    "components" : ["1a990fa6-25ee-4816-b618-ef2bede6b875", "a4a0c64b-4dd9-45fd-870f-c7ef52697eaf"]
+  },
+  "1a990fa6-25ee-4816-b618-ef2bede6b875" : {
+    "type" : "Transform",
+    "entity" : "6a2886f6-d390-4fc1-be89-1da23a77137a",
+    "position" : [-1.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a4a0c64b-4dd9-45fd-870f-c7ef52697eaf" : {
+    "type" : "MeshRenderer",
+    "entity" : "6a2886f6-d390-4fc1-be89-1da23a77137a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "c70b9761-b343-4672-8e88-9a9774c59030" : {
+    "type" : "Entity",
+    "components" : ["aa715893-83c3-4521-90bc-c647d91b18b2", "d0c7405b-2cc4-4022-8c26-4aa55258886c"]
+  },
+  "aa715893-83c3-4521-90bc-c647d91b18b2" : {
+    "type" : "Transform",
+    "entity" : "c70b9761-b343-4672-8e88-9a9774c59030",
+    "position" : [1.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d0c7405b-2cc4-4022-8c26-4aa55258886c" : {
+    "type" : "MeshRenderer",
+    "entity" : "c70b9761-b343-4672-8e88-9a9774c59030",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "35577e9f-6b33-4848-b83a-f42264ece778" : {
+    "type" : "Entity",
+    "components" : ["cb87a295-01a5-49c2-8995-392cb545c7f9", "fea83494-a0ee-4fd7-8a4e-e3168223a726"]
+  },
+  "cb87a295-01a5-49c2-8995-392cb545c7f9" : {
+    "type" : "Transform",
+    "entity" : "35577e9f-6b33-4848-b83a-f42264ece778",
+    "position" : [3.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fea83494-a0ee-4fd7-8a4e-e3168223a726" : {
+    "type" : "MeshRenderer",
+    "entity" : "35577e9f-6b33-4848-b83a-f42264ece778",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b23e9066-66fa-4575-93b6-8b1cb7f814f6" : {
+    "type" : "Entity",
+    "components" : ["3b65051e-4002-4ab8-8317-284984c51bfc", "2b461720-cb2d-4812-a764-66305c3efd7b"]
+  },
+  "3b65051e-4002-4ab8-8317-284984c51bfc" : {
+    "type" : "Transform",
+    "entity" : "b23e9066-66fa-4575-93b6-8b1cb7f814f6",
+    "position" : [5.0, -5.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "2b461720-cb2d-4812-a764-66305c3efd7b" : {
+    "type" : "MeshRenderer",
+    "entity" : "b23e9066-66fa-4575-93b6-8b1cb7f814f6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "2270b93d-a341-4134-b1cd-d765a121f591" : {
+    "type" : "Entity",
+    "components" : ["dee9b044-0eb6-4b82-92e8-45d42c65129e", "706559de-4b45-4fcb-8670-7674be16f9eb"]
+  },
+  "dee9b044-0eb6-4b82-92e8-45d42c65129e" : {
+    "type" : "Transform",
+    "entity" : "2270b93d-a341-4134-b1cd-d765a121f591",
+    "position" : [-5.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "706559de-4b45-4fcb-8670-7674be16f9eb" : {
+    "type" : "MeshRenderer",
+    "entity" : "2270b93d-a341-4134-b1cd-d765a121f591",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "700c1715-bc55-4d3d-91e9-90afde3e7b9c" : {
+    "type" : "Entity",
+    "components" : ["63f7ab5e-c293-40fa-9427-6986f9b4561d", "fe180484-daf9-4cc7-9432-e97b0e2e9ed8"]
+  },
+  "63f7ab5e-c293-40fa-9427-6986f9b4561d" : {
+    "type" : "Transform",
+    "entity" : "700c1715-bc55-4d3d-91e9-90afde3e7b9c",
+    "position" : [-3.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fe180484-daf9-4cc7-9432-e97b0e2e9ed8" : {
+    "type" : "MeshRenderer",
+    "entity" : "700c1715-bc55-4d3d-91e9-90afde3e7b9c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "c698e61d-2713-4801-8773-3ee3ef5b73b4" : {
+    "type" : "Entity",
+    "components" : ["fbf0d69c-c87d-4a10-92e8-b75d8431f913", "3964d50b-eb3f-4bce-9f4a-49f7e5384421"]
+  },
+  "fbf0d69c-c87d-4a10-92e8-b75d8431f913" : {
+    "type" : "Transform",
+    "entity" : "c698e61d-2713-4801-8773-3ee3ef5b73b4",
+    "position" : [-1.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3964d50b-eb3f-4bce-9f4a-49f7e5384421" : {
+    "type" : "MeshRenderer",
+    "entity" : "c698e61d-2713-4801-8773-3ee3ef5b73b4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6d7c98d7-e39e-48d8-ab93-ae955700c1d1" : {
+    "type" : "Entity",
+    "components" : ["3ce592aa-26bd-4bc9-8764-5e8ce688a53b", "20a93aee-2c2f-4613-b030-21a11b321cf6"]
+  },
+  "3ce592aa-26bd-4bc9-8764-5e8ce688a53b" : {
+    "type" : "Transform",
+    "entity" : "6d7c98d7-e39e-48d8-ab93-ae955700c1d1",
+    "position" : [1.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "20a93aee-2c2f-4613-b030-21a11b321cf6" : {
+    "type" : "MeshRenderer",
+    "entity" : "6d7c98d7-e39e-48d8-ab93-ae955700c1d1",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "137ef739-cc65-44bc-8076-90a94b821fa3" : {
+    "type" : "Entity",
+    "components" : ["9626e5b9-d6af-4612-93f1-d3a154413d97", "d8fd5e51-5661-4c24-babd-cc3fa0e2d7f9"]
+  },
+  "9626e5b9-d6af-4612-93f1-d3a154413d97" : {
+    "type" : "Transform",
+    "entity" : "137ef739-cc65-44bc-8076-90a94b821fa3",
+    "position" : [3.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d8fd5e51-5661-4c24-babd-cc3fa0e2d7f9" : {
+    "type" : "MeshRenderer",
+    "entity" : "137ef739-cc65-44bc-8076-90a94b821fa3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d0295e14-2ab2-476a-9e76-0c8ce2746b37" : {
+    "type" : "Entity",
+    "components" : ["9e3bb861-c1a2-4c20-a5dd-36df1518d08c", "f25a8b69-0849-4822-bd05-4884da2891dd"]
+  },
+  "9e3bb861-c1a2-4c20-a5dd-36df1518d08c" : {
+    "type" : "Transform",
+    "entity" : "d0295e14-2ab2-476a-9e76-0c8ce2746b37",
+    "position" : [5.0, -3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "f25a8b69-0849-4822-bd05-4884da2891dd" : {
+    "type" : "MeshRenderer",
+    "entity" : "d0295e14-2ab2-476a-9e76-0c8ce2746b37",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "86756876-f869-4017-92d3-3b6b4e8ec25c" : {
+    "type" : "Entity",
+    "components" : ["486d5336-e848-4d5e-bc11-e8c6db6298b0", "3ac28438-ae8d-4379-9fb4-5a93e0142294"]
+  },
+  "486d5336-e848-4d5e-bc11-e8c6db6298b0" : {
+    "type" : "Transform",
+    "entity" : "86756876-f869-4017-92d3-3b6b4e8ec25c",
+    "position" : [-5.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3ac28438-ae8d-4379-9fb4-5a93e0142294" : {
+    "type" : "MeshRenderer",
+    "entity" : "86756876-f869-4017-92d3-3b6b4e8ec25c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "49f15051-cb22-4df2-be13-92041fa68b05" : {
+    "type" : "Entity",
+    "components" : ["866abe0f-a380-4030-98f7-d3a1ec967553", "522ccca6-c664-4279-8063-a76b884c6cdd"]
+  },
+  "866abe0f-a380-4030-98f7-d3a1ec967553" : {
+    "type" : "Transform",
+    "entity" : "49f15051-cb22-4df2-be13-92041fa68b05",
+    "position" : [-3.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "522ccca6-c664-4279-8063-a76b884c6cdd" : {
+    "type" : "MeshRenderer",
+    "entity" : "49f15051-cb22-4df2-be13-92041fa68b05",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "21630f0f-8797-4ee4-aaa7-1b8b86cd84a3" : {
+    "type" : "Entity",
+    "components" : ["006dfa91-96fe-4a78-93ed-4a413fca9552", "9ce45fc2-314f-4872-89ba-f65eb27ed05b"]
+  },
+  "006dfa91-96fe-4a78-93ed-4a413fca9552" : {
+    "type" : "Transform",
+    "entity" : "21630f0f-8797-4ee4-aaa7-1b8b86cd84a3",
+    "position" : [-1.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9ce45fc2-314f-4872-89ba-f65eb27ed05b" : {
+    "type" : "MeshRenderer",
+    "entity" : "21630f0f-8797-4ee4-aaa7-1b8b86cd84a3",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "eb531054-34d2-4253-baf9-5fd17a8995eb" : {
+    "type" : "Entity",
+    "components" : ["61cea3e0-a656-4c1c-a52d-0284067bbefc", "01563886-d35e-4472-9649-9b954fa65f62"]
+  },
+  "61cea3e0-a656-4c1c-a52d-0284067bbefc" : {
+    "type" : "Transform",
+    "entity" : "eb531054-34d2-4253-baf9-5fd17a8995eb",
+    "position" : [1.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "01563886-d35e-4472-9649-9b954fa65f62" : {
+    "type" : "MeshRenderer",
+    "entity" : "eb531054-34d2-4253-baf9-5fd17a8995eb",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "8d903a08-08fe-43e1-8a95-0ab33a715ef6" : {
+    "type" : "Entity",
+    "components" : ["1ada3639-8dd7-4d7a-ba53-773ace30913d", "6aa4d856-aae9-4d5f-80b6-fbf5045c9fab"]
+  },
+  "1ada3639-8dd7-4d7a-ba53-773ace30913d" : {
+    "type" : "Transform",
+    "entity" : "8d903a08-08fe-43e1-8a95-0ab33a715ef6",
+    "position" : [3.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6aa4d856-aae9-4d5f-80b6-fbf5045c9fab" : {
+    "type" : "MeshRenderer",
+    "entity" : "8d903a08-08fe-43e1-8a95-0ab33a715ef6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "ea4edcf4-34fe-4eef-b78c-b740dd93d486" : {
+    "type" : "Entity",
+    "components" : ["b65060a7-b28f-403b-9a87-c896b9594233", "6396d4ff-c459-4be0-84b1-15451b1359b0"]
+  },
+  "b65060a7-b28f-403b-9a87-c896b9594233" : {
+    "type" : "Transform",
+    "entity" : "ea4edcf4-34fe-4eef-b78c-b740dd93d486",
+    "position" : [5.0, -1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "6396d4ff-c459-4be0-84b1-15451b1359b0" : {
+    "type" : "MeshRenderer",
+    "entity" : "ea4edcf4-34fe-4eef-b78c-b740dd93d486",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b895ddc1-a973-4787-8652-3c2969299aaf" : {
+    "type" : "Entity",
+    "components" : ["2e680841-f9ac-4d04-a8d2-cec0871511cd", "dd011e2a-c0e1-42ce-a8cf-2605fdc108fc"]
+  },
+  "2e680841-f9ac-4d04-a8d2-cec0871511cd" : {
+    "type" : "Transform",
+    "entity" : "b895ddc1-a973-4787-8652-3c2969299aaf",
+    "position" : [-5.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dd011e2a-c0e1-42ce-a8cf-2605fdc108fc" : {
+    "type" : "MeshRenderer",
+    "entity" : "b895ddc1-a973-4787-8652-3c2969299aaf",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a6ec6dfa-dec4-4373-be4b-08418142a23d" : {
+    "type" : "Entity",
+    "components" : ["ef5fc2d7-edb6-42b4-8d87-b7267e035b20", "8afffa29-5dc6-4179-b00a-ee6f7778a756"]
+  },
+  "ef5fc2d7-edb6-42b4-8d87-b7267e035b20" : {
+    "type" : "Transform",
+    "entity" : "a6ec6dfa-dec4-4373-be4b-08418142a23d",
+    "position" : [-3.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8afffa29-5dc6-4179-b00a-ee6f7778a756" : {
+    "type" : "MeshRenderer",
+    "entity" : "a6ec6dfa-dec4-4373-be4b-08418142a23d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "038499ea-daad-4eba-a900-aa622a044609" : {
+    "type" : "Entity",
+    "components" : ["4ce98e44-cedb-4c39-a140-1a304df7dac7", "662e15c6-ae93-41b5-81cd-9265cd1d214d"]
+  },
+  "4ce98e44-cedb-4c39-a140-1a304df7dac7" : {
+    "type" : "Transform",
+    "entity" : "038499ea-daad-4eba-a900-aa622a044609",
+    "position" : [-1.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "662e15c6-ae93-41b5-81cd-9265cd1d214d" : {
+    "type" : "MeshRenderer",
+    "entity" : "038499ea-daad-4eba-a900-aa622a044609",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "7bbeef9d-ef53-4786-b6cc-187209f811e4" : {
+    "type" : "Entity",
+    "components" : ["68e9b473-cdee-467f-8776-5f94f5f17a0c", "68f0e763-38b6-4e87-9d42-5a80236b2bd9"]
+  },
+  "68e9b473-cdee-467f-8776-5f94f5f17a0c" : {
+    "type" : "Transform",
+    "entity" : "7bbeef9d-ef53-4786-b6cc-187209f811e4",
+    "position" : [1.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "68f0e763-38b6-4e87-9d42-5a80236b2bd9" : {
+    "type" : "MeshRenderer",
+    "entity" : "7bbeef9d-ef53-4786-b6cc-187209f811e4",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "f30dbcd4-48e5-42e7-995a-7838ae43001c" : {
+    "type" : "Entity",
+    "components" : ["737ffd44-5735-49d1-b21b-db1362e54c3a", "e10a52fe-dd24-4830-bb6d-c82815d6385c"]
+  },
+  "737ffd44-5735-49d1-b21b-db1362e54c3a" : {
+    "type" : "Transform",
+    "entity" : "f30dbcd4-48e5-42e7-995a-7838ae43001c",
+    "position" : [3.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e10a52fe-dd24-4830-bb6d-c82815d6385c" : {
+    "type" : "MeshRenderer",
+    "entity" : "f30dbcd4-48e5-42e7-995a-7838ae43001c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "ff74c8b3-0a02-44fc-a110-156dfd14ff0d" : {
+    "type" : "Entity",
+    "components" : ["e73dd47a-9ace-44b7-aca1-e70bb7eb0bd6", "9100ee1e-2e10-46d2-a4ef-3afd091d1b37"]
+  },
+  "e73dd47a-9ace-44b7-aca1-e70bb7eb0bd6" : {
+    "type" : "Transform",
+    "entity" : "ff74c8b3-0a02-44fc-a110-156dfd14ff0d",
+    "position" : [5.0, 1.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9100ee1e-2e10-46d2-a4ef-3afd091d1b37" : {
+    "type" : "MeshRenderer",
+    "entity" : "ff74c8b3-0a02-44fc-a110-156dfd14ff0d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "200804ee-ca6b-4077-a51a-554ed1ebcc2a" : {
+    "type" : "Entity",
+    "components" : ["0e2cd992-17fa-406d-bfa7-fa9018c17f30", "4c6ef1e4-396c-42fe-9b48-21fd7fdef425"]
+  },
+  "0e2cd992-17fa-406d-bfa7-fa9018c17f30" : {
+    "type" : "Transform",
+    "entity" : "200804ee-ca6b-4077-a51a-554ed1ebcc2a",
+    "position" : [-5.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4c6ef1e4-396c-42fe-9b48-21fd7fdef425" : {
+    "type" : "MeshRenderer",
+    "entity" : "200804ee-ca6b-4077-a51a-554ed1ebcc2a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "a78d293e-f7a1-4976-9b61-9e70504a3e7b" : {
+    "type" : "Entity",
+    "components" : ["a68d0414-8fb6-4dcb-8d39-47a70f6ebeb1", "dc183eec-b65f-47b7-8bd7-272a82ea7dfc"]
+  },
+  "a68d0414-8fb6-4dcb-8d39-47a70f6ebeb1" : {
+    "type" : "Transform",
+    "entity" : "a78d293e-f7a1-4976-9b61-9e70504a3e7b",
+    "position" : [-3.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dc183eec-b65f-47b7-8bd7-272a82ea7dfc" : {
+    "type" : "MeshRenderer",
+    "entity" : "a78d293e-f7a1-4976-9b61-9e70504a3e7b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "08af5678-471e-4b0b-9305-c27888b67a74" : {
+    "type" : "Entity",
+    "components" : ["17d44525-02ee-4191-b6b2-ee5311e46faf", "c18eddae-286f-41b4-b481-0d04b694b8dd"]
+  },
+  "17d44525-02ee-4191-b6b2-ee5311e46faf" : {
+    "type" : "Transform",
+    "entity" : "08af5678-471e-4b0b-9305-c27888b67a74",
+    "position" : [-1.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c18eddae-286f-41b4-b481-0d04b694b8dd" : {
+    "type" : "MeshRenderer",
+    "entity" : "08af5678-471e-4b0b-9305-c27888b67a74",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "d3cea95b-3b31-462b-b090-3a0b5f54d4f5" : {
+    "type" : "Entity",
+    "components" : ["29d7b5df-a00e-4d3d-8627-55a30979e13f", "cc0aa743-fca8-401a-9c1f-9e4f1e60d73e"]
+  },
+  "29d7b5df-a00e-4d3d-8627-55a30979e13f" : {
+    "type" : "Transform",
+    "entity" : "d3cea95b-3b31-462b-b090-3a0b5f54d4f5",
+    "position" : [1.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "cc0aa743-fca8-401a-9c1f-9e4f1e60d73e" : {
+    "type" : "MeshRenderer",
+    "entity" : "d3cea95b-3b31-462b-b090-3a0b5f54d4f5",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "c4b1815c-7b97-4181-aa31-47e0ac86bfc0" : {
+    "type" : "Entity",
+    "components" : ["42a1ca74-9ea8-4e73-ac77-34aa0524e0ae", "3f240430-8b0f-4065-be44-d291784cb585"]
+  },
+  "42a1ca74-9ea8-4e73-ac77-34aa0524e0ae" : {
+    "type" : "Transform",
+    "entity" : "c4b1815c-7b97-4181-aa31-47e0ac86bfc0",
+    "position" : [3.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3f240430-8b0f-4065-be44-d291784cb585" : {
+    "type" : "MeshRenderer",
+    "entity" : "c4b1815c-7b97-4181-aa31-47e0ac86bfc0",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "23e9551a-bfc9-4641-80b9-5da9cb7c65b6" : {
+    "type" : "Entity",
+    "components" : ["8484e1f1-d4c6-421e-b5d6-ec51847d7dcf", "8ffd8f64-c422-44b7-aa3b-075214e521c8"]
+  },
+  "8484e1f1-d4c6-421e-b5d6-ec51847d7dcf" : {
+    "type" : "Transform",
+    "entity" : "23e9551a-bfc9-4641-80b9-5da9cb7c65b6",
+    "position" : [5.0, 3.0, 3.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8ffd8f64-c422-44b7-aa3b-075214e521c8" : {
+    "type" : "MeshRenderer",
+    "entity" : "23e9551a-bfc9-4641-80b9-5da9cb7c65b6",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "0fee12a7-5374-43e1-873d-65ebf7974027" : {
+    "type" : "Entity",
+    "components" : ["007f14fc-0a45-4d5d-a525-667cbd7746d1", "64e494c0-6ddf-43c3-992a-ddfa8f7b3008"]
+  },
+  "007f14fc-0a45-4d5d-a525-667cbd7746d1" : {
+    "type" : "Transform",
+    "entity" : "0fee12a7-5374-43e1-873d-65ebf7974027",
+    "position" : [-5.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "64e494c0-6ddf-43c3-992a-ddfa8f7b3008" : {
+    "type" : "MeshRenderer",
+    "entity" : "0fee12a7-5374-43e1-873d-65ebf7974027",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "bc56d779-62bb-40f2-a724-b25bd099e872" : {
+    "type" : "Entity",
+    "components" : ["f9062bd3-f317-43c6-8414-feae2632064b", "c3e01916-70b7-4d5d-a740-63e2ee4d6b2a"]
+  },
+  "f9062bd3-f317-43c6-8414-feae2632064b" : {
+    "type" : "Transform",
+    "entity" : "bc56d779-62bb-40f2-a724-b25bd099e872",
+    "position" : [-3.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "c3e01916-70b7-4d5d-a740-63e2ee4d6b2a" : {
+    "type" : "MeshRenderer",
+    "entity" : "bc56d779-62bb-40f2-a724-b25bd099e872",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e5ed1e1b-d522-49e4-89b3-cc1257ee10ea" : {
+    "type" : "Entity",
+    "components" : ["e89a1071-3501-4ea6-9e7e-8b9153b1adad", "06b4875f-181a-428d-af5e-009967975a41"]
+  },
+  "e89a1071-3501-4ea6-9e7e-8b9153b1adad" : {
+    "type" : "Transform",
+    "entity" : "e5ed1e1b-d522-49e4-89b3-cc1257ee10ea",
+    "position" : [-1.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "06b4875f-181a-428d-af5e-009967975a41" : {
+    "type" : "MeshRenderer",
+    "entity" : "e5ed1e1b-d522-49e4-89b3-cc1257ee10ea",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b33871d9-09e2-47b8-9cac-dceaf029f19c" : {
+    "type" : "Entity",
+    "components" : ["0006e1ba-bb29-4d48-bf1e-6e624addeb81", "f0ae70d8-f889-41ae-a3af-73985addf0dc"]
+  },
+  "0006e1ba-bb29-4d48-bf1e-6e624addeb81" : {
+    "type" : "Transform",
+    "entity" : "b33871d9-09e2-47b8-9cac-dceaf029f19c",
+    "position" : [1.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "f0ae70d8-f889-41ae-a3af-73985addf0dc" : {
+    "type" : "MeshRenderer",
+    "entity" : "b33871d9-09e2-47b8-9cac-dceaf029f19c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "af0465a9-a454-43ec-93db-59231ed8e091" : {
+    "type" : "Entity",
+    "components" : ["9b8587d4-29f4-47ce-8d99-bc02f5e3c126", "4cbe2928-494f-4112-be82-f26a774d9cc0"]
+  },
+  "9b8587d4-29f4-47ce-8d99-bc02f5e3c126" : {
+    "type" : "Transform",
+    "entity" : "af0465a9-a454-43ec-93db-59231ed8e091",
+    "position" : [3.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "4cbe2928-494f-4112-be82-f26a774d9cc0" : {
+    "type" : "MeshRenderer",
+    "entity" : "af0465a9-a454-43ec-93db-59231ed8e091",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "604bea3e-a274-4b0c-a1fd-b99a16d30126" : {
+    "type" : "Entity",
+    "components" : ["80ca7e75-394d-4d1a-8716-9ec26f1372e2", "e7cdea1b-01a4-4aac-9ed0-8f657c9b7349"]
+  },
+  "80ca7e75-394d-4d1a-8716-9ec26f1372e2" : {
+    "type" : "Transform",
+    "entity" : "604bea3e-a274-4b0c-a1fd-b99a16d30126",
+    "position" : [5.0, -5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e7cdea1b-01a4-4aac-9ed0-8f657c9b7349" : {
+    "type" : "MeshRenderer",
+    "entity" : "604bea3e-a274-4b0c-a1fd-b99a16d30126",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "88552cfd-c2be-40ed-9f50-d78ba21ad63d" : {
+    "type" : "Entity",
+    "components" : ["df095e22-9668-4eb0-a007-7944ef9993cb", "a169fcaf-d629-45b5-9432-ea9c08342f58"]
+  },
+  "df095e22-9668-4eb0-a007-7944ef9993cb" : {
+    "type" : "Transform",
+    "entity" : "88552cfd-c2be-40ed-9f50-d78ba21ad63d",
+    "position" : [-5.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "a169fcaf-d629-45b5-9432-ea9c08342f58" : {
+    "type" : "MeshRenderer",
+    "entity" : "88552cfd-c2be-40ed-9f50-d78ba21ad63d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "487c202f-8caa-452e-8b5a-3999b2ac3363" : {
+    "type" : "Entity",
+    "components" : ["e381077b-463b-411c-860c-f3d051505d58", "d6494b37-8eff-485f-aba2-abd843464ec6"]
+  },
+  "e381077b-463b-411c-860c-f3d051505d58" : {
+    "type" : "Transform",
+    "entity" : "487c202f-8caa-452e-8b5a-3999b2ac3363",
+    "position" : [-3.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d6494b37-8eff-485f-aba2-abd843464ec6" : {
+    "type" : "MeshRenderer",
+    "entity" : "487c202f-8caa-452e-8b5a-3999b2ac3363",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "4f7ff44e-3917-4a9e-bff6-57d73c359e96" : {
+    "type" : "Entity",
+    "components" : ["d097c313-fedd-49e3-afcb-77c5b926a8f3", "bbe0c396-d847-4827-a169-a04935db7ff1"]
+  },
+  "d097c313-fedd-49e3-afcb-77c5b926a8f3" : {
+    "type" : "Transform",
+    "entity" : "4f7ff44e-3917-4a9e-bff6-57d73c359e96",
+    "position" : [-1.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "bbe0c396-d847-4827-a169-a04935db7ff1" : {
+    "type" : "MeshRenderer",
+    "entity" : "4f7ff44e-3917-4a9e-bff6-57d73c359e96",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "488269ad-e041-4707-9b6f-840168809a6b" : {
+    "type" : "Entity",
+    "components" : ["fd851efa-aff7-4173-b9e1-35ca03d9a7fb", "987b6e92-ea62-4f0b-86e0-e4c306c54c88"]
+  },
+  "fd851efa-aff7-4173-b9e1-35ca03d9a7fb" : {
+    "type" : "Transform",
+    "entity" : "488269ad-e041-4707-9b6f-840168809a6b",
+    "position" : [1.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "987b6e92-ea62-4f0b-86e0-e4c306c54c88" : {
+    "type" : "MeshRenderer",
+    "entity" : "488269ad-e041-4707-9b6f-840168809a6b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "01d45161-bdb9-4ff3-8236-f70cfc27f616" : {
+    "type" : "Entity",
+    "components" : ["be718ab7-7434-46f5-9ad3-4b0e2b85c2fe", "dc0fda8d-a146-4aab-9238-476b6df63b3e"]
+  },
+  "be718ab7-7434-46f5-9ad3-4b0e2b85c2fe" : {
+    "type" : "Transform",
+    "entity" : "01d45161-bdb9-4ff3-8236-f70cfc27f616",
+    "position" : [3.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "dc0fda8d-a146-4aab-9238-476b6df63b3e" : {
+    "type" : "MeshRenderer",
+    "entity" : "01d45161-bdb9-4ff3-8236-f70cfc27f616",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e9af65bf-9be0-4282-9514-a496e7bb082a" : {
+    "type" : "Entity",
+    "components" : ["8ae51249-2344-4bf0-9a39-3b32caa42469", "72856be9-8099-467a-9ca1-7bee99bd68e7"]
+  },
+  "8ae51249-2344-4bf0-9a39-3b32caa42469" : {
+    "type" : "Transform",
+    "entity" : "e9af65bf-9be0-4282-9514-a496e7bb082a",
+    "position" : [5.0, -3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "72856be9-8099-467a-9ca1-7bee99bd68e7" : {
+    "type" : "MeshRenderer",
+    "entity" : "e9af65bf-9be0-4282-9514-a496e7bb082a",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "edd45494-207f-4925-90d6-14e14203206e" : {
+    "type" : "Entity",
+    "components" : ["8f085089-c7cb-4aaf-864b-a42cb5b1dee9", "3f542379-a60c-4e1c-9655-82325dbb40cd"]
+  },
+  "8f085089-c7cb-4aaf-864b-a42cb5b1dee9" : {
+    "type" : "Transform",
+    "entity" : "edd45494-207f-4925-90d6-14e14203206e",
+    "position" : [-5.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "3f542379-a60c-4e1c-9655-82325dbb40cd" : {
+    "type" : "MeshRenderer",
+    "entity" : "edd45494-207f-4925-90d6-14e14203206e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "7eaa2b17-2cbd-4bfa-a77b-868b95b0e615" : {
+    "type" : "Entity",
+    "components" : ["9464d89b-d969-4843-bee7-5594cb6292b7", "e5083f3b-a798-4acc-b0c3-b804c40d1222"]
+  },
+  "9464d89b-d969-4843-bee7-5594cb6292b7" : {
+    "type" : "Transform",
+    "entity" : "7eaa2b17-2cbd-4bfa-a77b-868b95b0e615",
+    "position" : [-3.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e5083f3b-a798-4acc-b0c3-b804c40d1222" : {
+    "type" : "MeshRenderer",
+    "entity" : "7eaa2b17-2cbd-4bfa-a77b-868b95b0e615",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "bacfeaca-e442-43c2-b94c-98950c480f28" : {
+    "type" : "Entity",
+    "components" : ["ff436418-fb57-491f-863c-852dbe28f945", "8e860c7b-1564-414e-88bb-6f548dabe319"]
+  },
+  "ff436418-fb57-491f-863c-852dbe28f945" : {
+    "type" : "Transform",
+    "entity" : "bacfeaca-e442-43c2-b94c-98950c480f28",
+    "position" : [-1.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "8e860c7b-1564-414e-88bb-6f548dabe319" : {
+    "type" : "MeshRenderer",
+    "entity" : "bacfeaca-e442-43c2-b94c-98950c480f28",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "ffa13d0b-950b-4d5b-ba4f-6b42a88aaa54" : {
+    "type" : "Entity",
+    "components" : ["bcfac816-b43d-448b-89eb-49dd08872663", "d32ca6ad-f25d-434e-a48c-e49d1031b387"]
+  },
+  "bcfac816-b43d-448b-89eb-49dd08872663" : {
+    "type" : "Transform",
+    "entity" : "ffa13d0b-950b-4d5b-ba4f-6b42a88aaa54",
+    "position" : [1.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d32ca6ad-f25d-434e-a48c-e49d1031b387" : {
+    "type" : "MeshRenderer",
+    "entity" : "ffa13d0b-950b-4d5b-ba4f-6b42a88aaa54",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "1d05374f-407b-4bc4-8e75-82acc5eca62c" : {
+    "type" : "Entity",
+    "components" : ["89891e5b-cf7a-4ce7-8fb9-8ce3f8f98b2a", "71b36e4a-3067-4be2-8600-8cc34f0386c4"]
+  },
+  "89891e5b-cf7a-4ce7-8fb9-8ce3f8f98b2a" : {
+    "type" : "Transform",
+    "entity" : "1d05374f-407b-4bc4-8e75-82acc5eca62c",
+    "position" : [3.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "71b36e4a-3067-4be2-8600-8cc34f0386c4" : {
+    "type" : "MeshRenderer",
+    "entity" : "1d05374f-407b-4bc4-8e75-82acc5eca62c",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "b832ec01-aecc-4fcb-85b9-628d85a14a18" : {
+    "type" : "Entity",
+    "components" : ["37bf23ef-50a2-4b3f-999e-a4fc13ecfe70", "fa275aad-7734-4bff-b01b-93e4f38055b6"]
+  },
+  "37bf23ef-50a2-4b3f-999e-a4fc13ecfe70" : {
+    "type" : "Transform",
+    "entity" : "b832ec01-aecc-4fcb-85b9-628d85a14a18",
+    "position" : [5.0, -1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fa275aad-7734-4bff-b01b-93e4f38055b6" : {
+    "type" : "MeshRenderer",
+    "entity" : "b832ec01-aecc-4fcb-85b9-628d85a14a18",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "978054c4-3c4e-4a26-b91e-33544ac85efb" : {
+    "type" : "Entity",
+    "components" : ["cb96bd92-1b9b-4801-ad26-b8936330288b", "9dc3412a-d53e-4146-84cf-40250bfcf444"]
+  },
+  "cb96bd92-1b9b-4801-ad26-b8936330288b" : {
+    "type" : "Transform",
+    "entity" : "978054c4-3c4e-4a26-b91e-33544ac85efb",
+    "position" : [-5.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "9dc3412a-d53e-4146-84cf-40250bfcf444" : {
+    "type" : "MeshRenderer",
+    "entity" : "978054c4-3c4e-4a26-b91e-33544ac85efb",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "27b8bfe4-45a7-41ca-abdc-b4fc46284c20" : {
+    "type" : "Entity",
+    "components" : ["e20e0fb2-8294-4a74-831d-fd90332af0b3", "0dd85f41-f49c-411c-a6d1-d5aa51a50f78"]
+  },
+  "e20e0fb2-8294-4a74-831d-fd90332af0b3" : {
+    "type" : "Transform",
+    "entity" : "27b8bfe4-45a7-41ca-abdc-b4fc46284c20",
+    "position" : [-3.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "0dd85f41-f49c-411c-a6d1-d5aa51a50f78" : {
+    "type" : "MeshRenderer",
+    "entity" : "27b8bfe4-45a7-41ca-abdc-b4fc46284c20",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "dc0b4f56-d8a7-4595-8ab0-3f0f98079e8d" : {
+    "type" : "Entity",
+    "components" : ["98cea589-aad7-4837-a064-629147084936", "ea6f947f-b860-452f-af8f-dbd9a8f8be38"]
+  },
+  "98cea589-aad7-4837-a064-629147084936" : {
+    "type" : "Transform",
+    "entity" : "dc0b4f56-d8a7-4595-8ab0-3f0f98079e8d",
+    "position" : [-1.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "ea6f947f-b860-452f-af8f-dbd9a8f8be38" : {
+    "type" : "MeshRenderer",
+    "entity" : "dc0b4f56-d8a7-4595-8ab0-3f0f98079e8d",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "aae2c2b5-e6ca-47df-a77b-644ba3f35a4f" : {
+    "type" : "Entity",
+    "components" : ["5bea726c-0c3b-449c-9c6a-b23307735a33", "31e6d01a-0ca6-4801-90ab-afdc5dcf50f2"]
+  },
+  "5bea726c-0c3b-449c-9c6a-b23307735a33" : {
+    "type" : "Transform",
+    "entity" : "aae2c2b5-e6ca-47df-a77b-644ba3f35a4f",
+    "position" : [1.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "31e6d01a-0ca6-4801-90ab-afdc5dcf50f2" : {
+    "type" : "MeshRenderer",
+    "entity" : "aae2c2b5-e6ca-47df-a77b-644ba3f35a4f",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e64567eb-4cca-49fe-b595-34d92d8d7514" : {
+    "type" : "Entity",
+    "components" : ["8d85272e-ccca-4ff5-9844-41466e93add1", "f08af1c8-60b0-4976-8b80-ad93c55b17fd"]
+  },
+  "8d85272e-ccca-4ff5-9844-41466e93add1" : {
+    "type" : "Transform",
+    "entity" : "e64567eb-4cca-49fe-b595-34d92d8d7514",
+    "position" : [3.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "f08af1c8-60b0-4976-8b80-ad93c55b17fd" : {
+    "type" : "MeshRenderer",
+    "entity" : "e64567eb-4cca-49fe-b595-34d92d8d7514",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "1420f821-1405-4bfd-be29-bbeb91342872" : {
+    "type" : "Entity",
+    "components" : ["f41f358b-f2a9-407f-ac9e-587a5c14c43c", "e907d05e-2445-49a2-9abe-5c9e92a58986"]
+  },
+  "f41f358b-f2a9-407f-ac9e-587a5c14c43c" : {
+    "type" : "Transform",
+    "entity" : "1420f821-1405-4bfd-be29-bbeb91342872",
+    "position" : [5.0, 1.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "e907d05e-2445-49a2-9abe-5c9e92a58986" : {
+    "type" : "MeshRenderer",
+    "entity" : "1420f821-1405-4bfd-be29-bbeb91342872",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "bbfe0024-1c2b-4a3b-8b17-7de360585599" : {
+    "type" : "Entity",
+    "components" : ["8fc0b104-c65a-488a-a8c0-5bb50be9a29d", "7a682b78-c7d9-48b7-9b50-d43be45d39b6"]
+  },
+  "8fc0b104-c65a-488a-a8c0-5bb50be9a29d" : {
+    "type" : "Transform",
+    "entity" : "bbfe0024-1c2b-4a3b-8b17-7de360585599",
+    "position" : [-5.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "7a682b78-c7d9-48b7-9b50-d43be45d39b6" : {
+    "type" : "MeshRenderer",
+    "entity" : "bbfe0024-1c2b-4a3b-8b17-7de360585599",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "19a7229b-9294-4c17-8987-2d3c10818cfe" : {
+    "type" : "Entity",
+    "components" : ["648e665d-4077-4ba0-9f8f-babd67826879", "fcfac74a-8777-4001-be55-8bf29b86ee6b"]
+  },
+  "648e665d-4077-4ba0-9f8f-babd67826879" : {
+    "type" : "Transform",
+    "entity" : "19a7229b-9294-4c17-8987-2d3c10818cfe",
+    "position" : [-3.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "fcfac74a-8777-4001-be55-8bf29b86ee6b" : {
+    "type" : "MeshRenderer",
+    "entity" : "19a7229b-9294-4c17-8987-2d3c10818cfe",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "6d04a07f-951e-4a99-a93a-64175311229e" : {
+    "type" : "Entity",
+    "components" : ["b4ebfb15-8df5-41f2-936e-67bedcdbcf31", "53207237-0d66-4c21-b90a-034811742390"]
+  },
+  "b4ebfb15-8df5-41f2-936e-67bedcdbcf31" : {
+    "type" : "Transform",
+    "entity" : "6d04a07f-951e-4a99-a93a-64175311229e",
+    "position" : [-1.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "53207237-0d66-4c21-b90a-034811742390" : {
+    "type" : "MeshRenderer",
+    "entity" : "6d04a07f-951e-4a99-a93a-64175311229e",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "68c3a906-4846-4309-af4a-c0ec1003b8b0" : {
+    "type" : "Entity",
+    "components" : ["c4af77f1-d52a-48ce-9052-8553267cc9c6", "0f16632b-0259-4575-bdd9-496ad080dc1c"]
+  },
+  "c4af77f1-d52a-48ce-9052-8553267cc9c6" : {
+    "type" : "Transform",
+    "entity" : "68c3a906-4846-4309-af4a-c0ec1003b8b0",
+    "position" : [1.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "0f16632b-0259-4575-bdd9-496ad080dc1c" : {
+    "type" : "MeshRenderer",
+    "entity" : "68c3a906-4846-4309-af4a-c0ec1003b8b0",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "e57ea225-8cf7-4fcf-8081-36e988a2210b" : {
+    "type" : "Entity",
+    "components" : ["d5cc33b2-e3ef-4ee4-918d-f5013e760c41", "25bf738c-b614-47d8-9096-60d7b08af9de"]
+  },
+  "d5cc33b2-e3ef-4ee4-918d-f5013e760c41" : {
+    "type" : "Transform",
+    "entity" : "e57ea225-8cf7-4fcf-8081-36e988a2210b",
+    "position" : [3.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "25bf738c-b614-47d8-9096-60d7b08af9de" : {
+    "type" : "MeshRenderer",
+    "entity" : "e57ea225-8cf7-4fcf-8081-36e988a2210b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "41f4ed11-613a-4708-9f3f-deb0f33d8d8b" : {
+    "type" : "Entity",
+    "components" : ["8cffebce-3ffe-4210-af5a-0560a2299716", "d299e782-3c5c-48af-bd65-341f0accf8b1"]
+  },
+  "8cffebce-3ffe-4210-af5a-0560a2299716" : {
+    "type" : "Transform",
+    "entity" : "41f4ed11-613a-4708-9f3f-deb0f33d8d8b",
+    "position" : [5.0, 3.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [0.1, 0.1, 0.1]
+  },
+  "d299e782-3c5c-48af-bd65-341f0accf8b1" : {
+    "type" : "MeshRenderer",
+    "entity" : "41f4ed11-613a-4708-9f3f-deb0f33d8d8b",
+    "mesh" : "147e88cd-5d29-4cac-9bd0-e2c40684fa0a",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+  },
+  "987f321f-ea0c-4a6c-a5dd-40fc657e89f4" : {
+    "type" : "PhysicsSystem"
+  },
+  "49882b94-38f8-4f66-a8e2-34e213d4c5c5" : {
+    "type" : "RenderSystem"
+  },
+  "398f1b70-c04a-4854-8689-e94eed7c3ce4" : {  
+    "type" : "PlayerSystem"
+  },
+  "252cabb5-5709-4bc5-a68a-59374bd5d439" : {
+    "type" : "LogicSystem",
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+  }
+}

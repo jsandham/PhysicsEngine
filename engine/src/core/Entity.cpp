@@ -7,7 +7,7 @@ using namespace PhysicsEngine;
 
 Entity::Entity()
 {
-	entityId = -1;
+	entityId = Guid::INVALID;
 	
 	manager = NULL;
 }

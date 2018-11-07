@@ -7,16 +7,16 @@
 
 #include "../glm/glm.hpp"
 
+#include "Guid.h"
+#include "Asset.h"
+
 #include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
-	class Shader
+	class Shader : public Asset
 	{
 		public:
-			int shaderId;
-			//int globalIndex;
-
 			std::string vertexShader;
 			std::string fragmentShader;
 			std::string geometryShader;

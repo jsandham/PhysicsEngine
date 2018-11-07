@@ -9,6 +9,7 @@
 #include "../core/Shader.h"
 #include "../core/Mesh.h"
 #include "../core/Material.h"
+#include "../core/Line.h"
 
 #include "../graphics/GLState.h"
 
@@ -70,7 +71,7 @@ namespace PhysicsEngine
 			static void destroy(Cubemap* cubemap);
 			static void bind(Cubemap* cubemap);
 			static void unbind(Cubemap* cubemap);
-
+			
 			static void bind(Material* material, glm::mat4 model);
 			static void unbind(Material* material);
 
@@ -87,6 +88,13 @@ namespace PhysicsEngine
 			static void setMat3(Shader* shader, std::string name, glm::mat3 &mat);
 			static void setMat4(Shader* shader, std::string name, glm::mat4 &mat);
 			static void setUniformBlockToBindingPoint(Shader* shader, std::string blockName, unsigned int bindingPoint);
+
+			static void apply(Line* line);
+			static void generate(Line* line);
+			static void destroy(Line* line);
+			static void bind(Line* line);
+			static void unbind(Line* line);
+			static void draw(Line* line);
 
 			static void apply(Mesh* mesh);
 			static void generate(Mesh* mesh);

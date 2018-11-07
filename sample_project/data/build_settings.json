@@ -1,11 +1,11 @@
 {
   "Settings" : {
-    "maxAllowedEntities" : 100,
-    "maxAllowedTransforms" : 100,
-    "maxAllowedRigidbodies" : 100,
+    "maxAllowedEntities" : 200,
+    "maxAllowedTransforms" : 200,
+    "maxAllowedRigidbodies" : 200,
     "maxAllowedCameras" : 10,
-    "maxAllowedMeshRenderers" : 100,
-    "maxAllowedLineRenderers" : 100,
+    "maxAllowedMeshRenderers" : 200,
+    "maxAllowedLineRenderers" : 200,
     "maxAllowedDirectionalLights" : 20,
     "maxAllowedSpotLights" : 20,
     "maxAllowedPointLights" : 20,

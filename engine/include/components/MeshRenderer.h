@@ -2,16 +2,15 @@
 #define __MESHRENDERER_H__
 
 #include "Component.h"
+#include "../core/Guid.h"
 
 namespace PhysicsEngine
 {
 	class MeshRenderer : public Component
 	{
 		public:
-			int meshId;
-			int materialId;
-			int meshGlobalIndex;
-			int materialGlobalIndex;
+			Guid meshId;
+			Guid materialId;
 
 		public:
 			MeshRenderer();

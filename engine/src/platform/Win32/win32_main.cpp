@@ -341,10 +341,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			std::vector<std::string> assetFilePaths = get_all_asset_files("../data/");
 
 			for(unsigned int i = 0; i < assetFilePaths.size(); i++){ 
-				Asset asset;
-				asset.filepath = assetFilePaths[i];
+				AssetFile assetFile;
+				assetFile.filepath = assetFilePaths[i];
 
-				sceneManager.add(asset); 
+				sceneManager.add(assetFile); 
 			}
 
 			if(sceneManager.validate()){

@@ -11,6 +11,11 @@ namespace PhysicsEngine
 		std::string filepath;
 		bool isLoaded;
 	};
+
+	struct AssetFile
+	{
+		std::string filepath;
+	};
 }
 
 #endif

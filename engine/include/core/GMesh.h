@@ -3,13 +3,14 @@
 
 #include<vector>
 
+#include "Guid.h"
+#include "Asset.h"
+
 namespace PhysicsEngine
 {
-	class GMesh
+	class GMesh : public Asset
 	{
 		public:
-			int gmeshId;
-
 			int dim;                //dimension of mesh (1, 2, or 3) 
 		    int ng;                 //number of element groups
 		    int n;                  //total number of nodes                      
