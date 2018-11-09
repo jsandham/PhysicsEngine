@@ -154,6 +154,7 @@ namespace PhysicsEngine
 			Pool<GMesh>* gmeshes;
 			
 			Line* line;
+
 			std::vector<System*> systems;
 
 			std::map<Guid, std::string> assetIdToFilePath;
@@ -290,7 +291,6 @@ namespace PhysicsEngine
 
 				componentIdToType[componentId] = componentType;
 
-				//std::cout << "componentType: " << componentType << std::endl;
 				std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
 				if(it != componentTypeToPool.end()){
 					Pool<T>* pool = static_cast<Pool<T>*>(it->second);
@@ -408,7 +408,7 @@ namespace PhysicsEngine
 
 				return asset;
 			}
-			
+
 			Line* getLine();
 
 			void latentDestroy(Guid entityId);

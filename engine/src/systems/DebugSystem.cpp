@@ -1,13 +1,38 @@
+#include <iostream>
+
 #include "../../include/systems/DebugSystem.h"
 
-#include "../../include/core/Debug.h"
 #include "../../include/core/Input.h"
-#include "../../include/core/Physics.h"
+#include "../../include/core/Manager.h"
+
+#include "../../include/components/Transform.h"
+#include "../../include/components/LineRenderer.h"
 
 #include "../../include/glm/glm.hpp"
 #include "../../include/glm/gtc/type_ptr.hpp"
 
 using namespace PhysicsEngine;
+
+std::string vertexShader = "#version 330 core\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"uniform mat4 model;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+"}";
+
+std::string fragmentShader = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"}";
 
 DebugSystem::DebugSystem()
 {
@@ -21,11 +46,23 @@ DebugSystem::DebugSystem(unsigned char* data)
 
 DebugSystem::~DebugSystem()
 {
-	//delete lineMaterial;
+
 }
 
 void DebugSystem::init()
-{/*
+{
+	lineMaterial = manager->create<Material>();
+	lineMaterial->setManager(manager);
+	lineShader = manager->create<Shader>();
+
+	lineShader->vertexShader = vertexShader;
+	lineShader->fragmentShader = fragmentShader;
+
+	lineShader->compile();
+
+	lineMaterial->shaderId = lineShader->assetId;
+
+	/*
 	if (!lineMaterial->getShader()->compile()){
 		std::cout << "shader failed to compile" << std::endl;
 	}*/
@@ -96,4 +133,22 @@ void DebugSystem::update()
 
 	//Octtree tree = Physics::getOcttree();
 	//Gizmos::drawOcttree(&tree, Color::yellow);
+
+
+
+
+	//std::cout << "LogicSystem update called" << std::endl;
+
+	//std::cout << "line material guid: " << lineMaterial->assetId.toString() << "shader id: " << lineMaterial->shaderId.toString() << std::endl;
+
+	if(Input::getKeyDown(KeyCode::I)){
+		Entity* entity = manager->instantiate();
+		if(entity != NULL){
+			Transform* transform = entity->addComponent<Transform>();
+			LineRenderer* lineRenderer = entity->addComponent<LineRenderer>();
+			lineRenderer->materialId = lineMaterial->assetId;
+			lineRenderer->end = glm::vec3(10.0f, 0.0f, 1.0f);
+			std::cout << "Creating new entity with id: " << entity->entityId.toString() << " total entities now: " << manager->getNumberOfEntities() << " creating line renderer: " << lineRenderer->componentId.toString() << " total number of line renderers: " << manager->getNumberOfComponents<LineRenderer>() << " start: " << lineRenderer->start.x << " " << lineRenderer->start.y << " " << lineRenderer->start.z << " end: " << lineRenderer->end.x << " " << lineRenderer->end.y << " " << lineRenderer->end.z << std::endl;
+		}
+	}
 }

@@ -14,7 +14,7 @@
 #include "../../include/core/Manager.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
-
+#include "../../include/core/Line.h"
 #include "../../include/core/Input.h"
 
 using namespace PhysicsEngine;
@@ -170,26 +170,19 @@ void RenderSystem::update()
 		Transform* transform = lineRenderer->getComponent<Transform>();
 
 		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
+		Line* line = manager->getLine();
 
-		if(transform == NULL){
-			std::cout << "NO TRANSFORM" << std::endl;
-		}
-		
-		//std::cout << "component id: " << lineRenderer->componentId.toString() << " material id: " << material->assetId.toString() << std::endl;
+		line->start = lineRenderer->start;
+		line->end = lineRenderer->end;
 
-		// Line* line = manager->getLine();
+		Graphics::apply(line);
 
-		// line->start = lineRenderer->start;
-		// line->end = lineRenderer->end;
+		glm::mat4 model = transform->getModelMatrix();
 
-		// Graphics::apply(line);
-
-		// glm::mat4 model = transform->getModelMatrix();
-
-		// Graphics::bind(material, model);
-		// Graphics::bind(line);
-		// Graphics::draw(line);
-		// Graphics::unbind(line);
+		Graphics::bind(material, model);
+		Graphics::bind(line);
+		Graphics::draw(line);
+		Graphics::unbind(line);
 	}
 
 	Graphics::checkError();

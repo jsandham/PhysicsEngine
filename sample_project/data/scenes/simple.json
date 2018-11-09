@@ -81,8 +81,11 @@
   "ee061fd0-f2f4-4be3-ac2b-6e71fcd9e95f" : {  
     "type" : "PlayerSystem"
   },
-  "c757fef5-31b6-46a6-acd9-346327fdc573" : {
-    "type" : "LogicSystem",
+  "aba38b2e-e8ef-4e20-90a1-81d05568af6c" : {  
+    "type" : "DebugSystem",
     "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+  },
+  "c757fef5-31b6-46a6-acd9-346327fdc573" : {
+    "type" : "LogicSystem"
   }
 }

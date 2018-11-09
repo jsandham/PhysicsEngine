@@ -322,6 +322,16 @@ void Graphics::bind(Material* material, glm::mat4 model)
 {
 	Shader* shader = material->getShader();
 
+	if(shader == NULL){
+		std::cout << "Shader is NULL" << std::endl;
+		return;
+	}
+
+	if(!shader->isCompiled()){
+		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		return;
+	}
+
 	Graphics::use(shader);
 	Graphics::setMat4(shader, "model", model);
 	Graphics::setFloat(shader, "material.shininess", material->shininess);
@@ -351,7 +361,6 @@ void Graphics::bind(Material* material, glm::mat4 model)
 
 		Graphics::setInt(shader, "material.specularMap", 2);
 
-		//std::cout << "specular map found " << specularMap->textureId.toString() << "  " << glGetUniformLocation(shader->program.handle, "mainTexture") << "  " << glGetUniformLocation(shader->program.handle, "specularMap") << "  " << GL_TEXTURE1 << std::endl;
 		Graphics::active(specularMap, 2);
 		Graphics::bind(specularMap);
 	}

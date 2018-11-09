@@ -218,6 +218,10 @@ int serializeScene(std::string scenePath)
 			std::cout << it->first << " is a PlayerSystem" << std::endl;
 			systems[it->first] = it->second;
 		}
+		else if(type == "DebugSystem"){
+			std::cout << it->first << " is a DebugSystem" << std::endl;
+			systems[it->first] = it->second;
+		}
 		else if(type == "LogicSystem"){
 			std::cout << it->first << " is a LogicSystem" << std::endl;
 			systems[it->first] = it->second;
@@ -586,6 +590,14 @@ int serializeScene(std::string scenePath)
 
 			// serialize any other system data here...
 
+		}
+		else if(it->second["type"].ToString() == "DebugSystem"){
+			systemType = 3;
+			systemDataSize = sizeof(int);
+			fwrite(&systemDataSize, sizeof(size_t), 1, file);
+			fwrite(&systemType, systemDataSize, 1, file);
+			
+			// serialize any other system data here...
 		}
 		else if(it->second["type"].ToString() == "LogicSystem"){
 			systemType = 10;

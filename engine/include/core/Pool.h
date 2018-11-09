@@ -12,7 +12,7 @@ namespace PhysicsEngine
 			T* array;
 
 		public:
-			Pool(int size = 100) : size(size)
+			Pool(int size = 200) : size(size)
 			{
 				index = -1;
 				array = new T[size];

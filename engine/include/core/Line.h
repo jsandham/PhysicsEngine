@@ -1,13 +1,15 @@
 #ifndef __LINE_H__
 #define __LINE_H__
 
+#include "Asset.h"
+
 #include "../graphics/GLHandle.h"
 
 #include "../glm/glm.hpp"
 
 namespace PhysicsEngine
 {
-	class Line
+	class Line : public Asset
 	{
 		public:
 			glm::vec3 start;
