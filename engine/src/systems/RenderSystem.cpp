@@ -165,6 +165,14 @@ void RenderSystem::update()
 		pass++;
 	}
 
+	// glm::mat4 ortho = glm::ortho(0.0f, 1000.0f, 0.0f, 1000.0f, 0.1f, 100.0f);
+
+	// Graphics::bind(&cameraState);
+	// Graphics::setProjectionMatrix(&cameraState, camera->getProjMatrix());
+	// Graphics::setViewMatrix(&cameraState, camera->getViewMatrix());
+	// Graphics::setCameraPosition(&cameraState, camera->getPosition());
+	// Graphics::unbind(&cameraState);
+
 	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
 		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
 		Transform* transform = lineRenderer->getComponent<Transform>();

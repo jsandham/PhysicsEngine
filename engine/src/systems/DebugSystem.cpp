@@ -20,11 +20,10 @@ std::string vertexShader = "#version 330 core\n"
 "	mat4 view;\n"
 "	vec3 cameraPos;\n"
 "}Camera;\n"
-"uniform mat4 model;\n"
 "in vec3 position;\n"
 "void main()\n"
 "{\n"
-"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
 "}";
 
 std::string fragmentShader = "#version 330 core\n"
@@ -62,56 +61,11 @@ void DebugSystem::init()
 
 	lineMaterial->shaderId = lineShader->assetId;
 
-	/*
-	if (!lineMaterial->getShader()->compile()){
-		std::cout << "shader failed to compile" << std::endl;
-	}*/
-
 	// Gizmos::init();
 }
 
 void DebugSystem::update()
 {
-	// if (Input::getKeyDown(KeyCode::Space)){
-	// 	Camera* camera = manager->getCamera();
-
-	// 	Entity* entity = manager->createEntity();
-	// 	Transform* transform = manager->createTransform();
-
-	// 	LineRenderer* lineRenderer = manager->createLineRenderer();
-
-	// 	glm::mat4 view = camera->getViewMatrix();
-
-	// 	glm::vec4 start = glm::vec4(0.0f, 0.0f, 0.0f, 1.0);
-	// 	glm::vec4 end = glm::vec4(0.0f, 0.0f, 10.0f, 1.0f);
-
-	// 	glm::vec4 p1 = glm::inverse(view)*start;
-	// 	glm::vec4 p2 = glm::inverse(view)*end;
-
-	// 	std::vector<float> vertices;
-	// 	vertices.resize(6);
-	// 	vertices[0] = p1.x;
-	// 	vertices[1] = p1.y;
-	// 	vertices[2] = p1.z;
-	// 	vertices[3] = p2.x;
-	// 	vertices[4] = p2.y;
-	// 	vertices[5] = p2.z;
-
-	// 	std::cout << "start: " << p1.x << " " << p1.y << " " << p1.z << " end: " << p2.x << " " << p2.y << " " << p2.z << std::endl;
-
-	// 	//std::vector<float> vertices = { 0.2f, 0.0f, -1.0f, 0.0f, 1.0f, -10.0f };
-	// 	lineRenderer->setVertices(vertices);
-	// 	lineRenderer->setMaterialFilter(manager->getMaterialFilter("lineMat"));
-	// 	lineRenderer->initLineData();
-	// 	lineRenderer->updateLineData();
-
-	// 	entity->addComponent<Transform>(transform);
-	// 	entity->addComponent<LineRenderer>(lineRenderer);
-
-	// 	//Debug::drawLine(glm::vec3(0.2,0,-1), glm::vec3(0,1,-10));
-	// 	//std::cout << "space bar pressed" << std::endl;
-	// }
-
 	// Camera* camera = manager->getCamera();
 
 	//std::vector<MeshRenderer*> meshRenderers = manager->getMeshRenderers();
@@ -137,18 +91,103 @@ void DebugSystem::update()
 
 
 
-	//std::cout << "LogicSystem update called" << std::endl;
+	Camera* camera;
+	if(manager->getNumberOfComponents<Camera>() > 0){
+		camera = manager->getComponentByIndex<Camera>(0);
+	}
+	else{
+		std::cout << "Warning: No camera found" << std::endl;
+		return;
+	}
 
-	//std::cout << "line material guid: " << lineMaterial->assetId.toString() << "shader id: " << lineMaterial->shaderId.toString() << std::endl;
-
-	if(Input::getKeyDown(KeyCode::I)){
+	if (Input::getKeyDown(KeyCode::I)){
 		Entity* entity = manager->instantiate();
 		if(entity != NULL){
 			Transform* transform = entity->addComponent<Transform>();
 			LineRenderer* lineRenderer = entity->addComponent<LineRenderer>();
+
 			lineRenderer->materialId = lineMaterial->assetId;
-			lineRenderer->end = glm::vec3(10.0f, 0.0f, 1.0f);
-			std::cout << "Creating new entity with id: " << entity->entityId.toString() << " total entities now: " << manager->getNumberOfEntities() << " creating line renderer: " << lineRenderer->componentId.toString() << " total number of line renderers: " << manager->getNumberOfComponents<LineRenderer>() << " start: " << lineRenderer->start.x << " " << lineRenderer->start.y << " " << lineRenderer->start.z << " end: " << lineRenderer->end.x << " " << lineRenderer->end.y << " " << lineRenderer->end.z << std::endl;
+
+			glm::mat4 view = camera->getViewMatrix();
+			glm::mat4 projection = camera->getProjMatrix();
+			glm::mat4 projViewInv = glm::inverse(projection * view);
+			//glm::mat4 inverseView = glm::inverse(view);
+			//glm::mat4 inverseProj = glm::inverse(projection);
+
+			// std::cout << "view: " << std::endl;
+			// std::cout << view[0][0] << " " << view[0][1] << " " << view[0][2] << " " << view[0][3] << std::endl;
+			// std::cout << view[1][0] << " " << view[1][1] << " " << view[1][2] << " " << view[1][3] << std::endl;
+			// std::cout << view[2][0] << " " << view[2][1] << " " << view[2][2] << " " << view[2][3] << std::endl;
+			// std::cout << view[3][0] << " " << view[3][1] << " " << view[3][2] << " " << view[3][3] << std::endl;
+
+			// std::cout << "inverse: " << std::endl;
+			// std::cout << inverse[0][0] << " " << inverse[0][1] << " " << inverse[0][2] << " " << inverse[0][3] << std::endl;
+			// std::cout << inverse[1][0] << " " << inverse[1][1] << " " << inverse[1][2] << " " << inverse[1][3] << std::endl;
+			// std::cout << inverse[2][0] << " " << inverse[2][1] << " " << inverse[2][2] << " " << inverse[2][3] << std::endl;
+			// std::cout << inverse[3][0] << " " << inverse[3][1] << " " << inverse[3][2] << " " << inverse[3][3] << std::endl;
+
+			// std::cout << "projection: " << std::endl;
+			// std::cout << projection[0][0] << " " << projection[0][1] << " " << projection[0][2] << " " << projection[0][3] << std::endl;
+			// std::cout << projection[1][0] << " " << projection[1][1] << " " << projection[1][2] << " " << projection[1][3] << std::endl;
+			// std::cout << projection[2][0] << " " << projection[2][1] << " " << projection[2][2] << " " << projection[2][3] << std::endl;
+			// std::cout << projection[3][0] << " " << projection[3][1] << " " << projection[3][2] << " " << projection[3][3] << std::endl;
+
+			// std::cout << "inverse proj: " << std::endl;
+			// std::cout << inverseProj[0][0] << " " << inverseProj[0][1] << " " << inverseProj[0][2] << " " << inverseProj[0][3] << std::endl;
+			// std::cout << inverseProj[1][0] << " " << inverseProj[1][1] << " " << inverseProj[1][2] << " " << inverseProj[1][3] << std::endl;
+			// std::cout << inverseProj[2][0] << " " << inverseProj[2][1] << " " << inverseProj[2][2] << " " << inverseProj[2][3] << std::endl;
+			// std::cout << inverseProj[3][0] << " " << inverseProj[3][1] << " " << inverseProj[3][2] << " " << inverseProj[3][3] << std::endl;
+
+			std::cout << "projViewInv: " << std::endl;
+			std::cout << projViewInv[0][0] << " " << projViewInv[0][1] << " " << projViewInv[0][2] << " " << projViewInv[0][3] << std::endl;
+			std::cout << projViewInv[1][0] << " " << projViewInv[1][1] << " " << projViewInv[1][2] << " " << projViewInv[1][3] << std::endl;
+			std::cout << projViewInv[2][0] << " " << projViewInv[2][1] << " " << projViewInv[2][2] << " " << projViewInv[2][3] << std::endl;
+			std::cout << projViewInv[3][0] << " " << projViewInv[3][1] << " " << projViewInv[3][2] << " " << projViewInv[3][3] << std::endl;
+
+			int x = Input::getMousePosX();
+			int y = Input::getMousePosY();
+			int width = camera->width;
+			int height = camera->height;
+
+			std::cout << "x: " << x << " y: " << y << " width: " << width << " height: " << height << std::endl;
+
+			float screen_x = (x - 0.5f * width) / (0.5f * width);
+			float screen_y = (0.5f * height - y) / (0.5f * height);
+
+			std::cout << "screen_x: " << screen_x << " screen_y: " << screen_y << std::endl;
+
+			glm::vec4 nearPoint = projViewInv * glm::vec4(screen_x, screen_y, 0, 1);
+			glm::vec4 farPoint = projViewInv * glm::vec4(screen_x, screen_y, 1, 1);
+
+			std::cout << "near point: " << nearPoint.x << " " << nearPoint.y << " " << nearPoint.z << "far point: " << farPoint.x << " " << farPoint.y << " " << farPoint.z << std::endl;
+
+			lineRenderer->start = glm::vec3(nearPoint.x / nearPoint.w, nearPoint.y / nearPoint.w, nearPoint.z / nearPoint.w);
+			lineRenderer->end = glm::vec3(farPoint.x / farPoint.w, farPoint.y / farPoint.w, farPoint.z / farPoint.w);
+
+
+
+			// std::vector<float> vertices;
+			// vertices.resize(6);
+			// vertices[0] = p1.x;
+			// vertices[1] = p1.y;
+			// vertices[2] = p1.z;
+			// vertices[3] = p2.x;
+			// vertices[4] = p2.y;
+			// vertices[5] = p2.z;
+
+			// std::cout << "start: " << p1.x << " " << p1.y << " " << p1.z << " end: " << p2.x << " " << p2.y << " " << p2.z << std::endl;
+
+			// //std::vector<float> vertices = { 0.2f, 0.0f, -1.0f, 0.0f, 1.0f, -10.0f };
+			// lineRenderer->setVertices(vertices);
+			// lineRenderer->setMaterialFilter(manager->getMaterialFilter("lineMat"));
+			// lineRenderer->initLineData();
+			// lineRenderer->updateLineData();
 		}
+
+		//entity->addComponent<Transform>(transform);
+		//entity->addComponent<LineRenderer>(lineRenderer);
+
+		//Debug::drawLine(glm::vec3(0.2,0,-1), glm::vec3(0,1,-10));
+		//std::cout << "space bar pressed" << std::endl;
 	}
 }

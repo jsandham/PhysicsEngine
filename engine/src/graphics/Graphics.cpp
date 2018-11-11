@@ -530,9 +530,9 @@ void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
 	if (locationIndex != -1){
 		glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
-	else{
-		std::cout << "Error: set mat4 name: " << name << " location index: " << locationIndex << std::endl;
-	}
+	// else{
+	// 	std::cout << "Error: set mat4 name: " << name << " location index: " << locationIndex << std::endl;
+	// }
 }
 
 void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockName, unsigned int bindingPoint)
@@ -541,9 +541,9 @@ void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockNa
 	if (blockIndex != GL_INVALID_INDEX){
 		glUniformBlockBinding(shader->program.handle, blockIndex, bindingPoint);
 	}
-	else{
-		std::cout << "error for block name: " << blockName << " block index: " << blockIndex << std::endl;
-	}
+	//else{
+	//	std::cout << "error for block name: " << blockName << " block index: " << blockIndex << std::endl;
+	//}
 }
 
 void Graphics::apply(Line* line)

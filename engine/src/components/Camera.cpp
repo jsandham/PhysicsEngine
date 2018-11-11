@@ -23,13 +23,13 @@ Camera::Camera()
 
 	x = 0;
 	y = 0;
-	width = 1920;
-	height = 1080;
+	width = 1000;
+	height = 1000;
 
-	projection = glm::perspective(45.0f, 1.0f * 640 / 640, 0.1f, 100.0f);
+	projection = glm::perspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 100.0f);
 	view = glm::lookAt(position, position + front, up);
 
-	frustum.setPerspective(45.0f, 1.0f * 640 / 640, 0.1f, 100.0f);
+	frustum.setPerspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 100.0f);
 
 	frustum.setCamera(position, front, up, right);
 

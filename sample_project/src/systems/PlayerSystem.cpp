@@ -35,15 +35,6 @@ void PlayerSystem::init()
 
 void PlayerSystem::update()
 {
-	if(Input::getKey(KeyCode::A)){
-		std::cout << "A pressed" << std::endl;
-		context->setSceneToLoad("empty.scene");
-	}
-	else if(Input::getKey(KeyCode::B)){
-		std::cout << "B pressed" << std::endl;
-		context->setSceneToLoad("simple.scene");
-	}
-
 	Camera* camera = manager->getComponentByIndex<Camera>(0);
 
 	glm::vec3 position = camera->getPosition();
