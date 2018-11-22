@@ -3,8 +3,11 @@
 
 #include <vector>
 
-#include "../components/Collider.h"
+#include "Guid.h"
+#include "Sphere.h"
 #include "Bounds.h"
+#include "Capsule.h"
+#include "Ray.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -12,46 +15,91 @@
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
+#include "../components/Collider.h"
+
 
 namespace PhysicsEngine
 {
-	class Node
+	typedef struct Object
 	{
-		private:
-			std::vector<int> indices;
+		Guid id;
+		Sphere sphere;  //Primitive which sphere, bounds, capsule, triangle derive from?
+	}Object;
 
-		public:
-			Bounds bounds;
-			
-		public:
-			Node();
-			~Node();
-
-			bool containsAny();
-			bool contains(int index);
-			void add(int index);
-			void clear();
-	};
-
+	typedef struct Node 
+	{
+		glm::vec3 centre;
+		glm::vec3 extent;
+		std::vector<Object> objects;
+	}Node;
 
 	class Octtree
 	{
 		private:
+			int depth;
 			Bounds bounds;
-
 			std::vector<Node> nodes;
-			std::vector<Collider*> colliders;
 
 		public:
-			Octtree();
 			Octtree(Bounds bounds, int depth);
 			~Octtree();
 
-			void allocate(Bounds bounds, int depth);
-			void build(std::vector<Collider*> colliders);
+			void insert(Sphere sphere, Guid id);
 
-			std::vector<float> getWireframe();
+			Object* intersect(Ray ray);
+			Object* intersect(Sphere sphere);
 	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// class Node
+	// {
+	// 	private:
+	// 		std::vector<int> indices;
+
+	// 	public:
+	// 		Bounds bounds;
+			
+	// 	public:
+	// 		Node();
+	// 		~Node();
+
+	// 		bool containsAny();
+	// 		bool contains(int index);
+	// 		void add(int index);
+	// 		void clear();
+	// };
+
+
+	// class Octtree
+	// {
+	// 	private:
+	// 		Bounds bounds;
+
+	// 		std::vector<Node> nodes;
+	// 		std::vector<Collider*> colliders;
+
+	// 	public:
+	// 		Octtree();
+	// 		Octtree(Bounds bounds, int depth);
+	// 		~Octtree();
+
+	// 		void allocate(Bounds bounds, int depth);
+	// 		void build(std::vector<Collider*> colliders);
+
+	// 		std::vector<float> getWireframe();
+	// };
 }
 
 #endif

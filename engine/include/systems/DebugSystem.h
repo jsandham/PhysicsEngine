@@ -5,6 +5,9 @@
 
 #include "../core/Material.h"
 #include "../core/Shader.h"
+#include "../core/Texture2D.h"
+#include "../core/PerformanceGraph.h"
+#include "../core/DebugWindow.h"
 
 namespace PhysicsEngine
 {

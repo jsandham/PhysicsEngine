@@ -88,8 +88,8 @@ void Input::updateEOF()
 
 	mouseDelta = 0;
 
-	// for(unsigned int i = 0; i < keyIsDown.size(); i++){
-	// 	keyIsDown[i] = false;
-	// 	keyWasDown[i] = false;
-	// }
+	for(unsigned int i = 0; i < keyIsDown.size(); i++){
+		keyIsDown[i] = false;
+		keyWasDown[i] = false;
+	}
 }

@@ -10,6 +10,8 @@
 #include "../core/Mesh.h"
 #include "../core/Material.h"
 #include "../core/Line.h"
+#include "../core/PerformanceGraph.h"
+#include "../core/DebugWindow.h"
 
 #include "../graphics/GLState.h"
 
@@ -102,6 +104,20 @@ namespace PhysicsEngine
 			static void bind(Mesh* mesh);
 			static void unbind(Mesh* mesh);
 			static void draw(Mesh* mesh);
+
+			static void apply(PerformanceGraph* graph);
+			static void generate(PerformanceGraph* graph);
+			static void destroy(PerformanceGraph* graph);
+			static void bind(PerformanceGraph* graph);
+			static void unbind(PerformanceGraph* graph);
+			static void draw(PerformanceGraph* graph);
+
+			static void apply(DebugWindow* window);
+			static void generate(DebugWindow* window);
+			static void destroy(DebugWindow* window);
+			static void bind(DebugWindow* window);
+			static void unbind(DebugWindow* window);
+			static void draw(DebugWindow* window);
 
 			static void generate(GLCamera* state);
 			static void destroy(GLCamera* state);

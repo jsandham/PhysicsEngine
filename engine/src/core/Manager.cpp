@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "../../include/core/Manager.h"
+#include "../../include/core/Geometry.h"
 
 #include "../../include/json/json.hpp" 
 #include "../../include/stb_image/stb_image.h"
@@ -45,6 +46,16 @@ Manager::Manager()
 			settings.maxAllowedShaders = it->second["maxAllowedShaders"].ToInt();
 			settings.maxAllowedMeshes = it->second["maxAllowedMeshes"].ToInt();
 			settings.maxAllowedGMeshes = it->second["maxAllowedGMeshes"].ToInt();
+
+			settings.physicsDepth = it->second["physicsDepth"].ToInt();
+
+			settings.centre[0] = (float)it->second["centre"][0].ToFloat();
+			settings.centre[1] = (float)it->second["centre"][1].ToFloat();
+			settings.centre[2] = (float)it->second["centre"][2].ToFloat();
+
+			settings.extent[0] = (float)it->second["extent"][0].ToFloat();
+			settings.extent[1] = (float)it->second["extent"][1].ToFloat();
+			settings.extent[2] = (float)it->second["extent"][2].ToFloat();
 		}
 	}
 
@@ -93,6 +104,14 @@ Manager::Manager()
 
 	line = new Line();
 
+	glm::vec3 centre = glm::vec3(settings.centre[0], settings.centre[1], settings.centre[2]);
+	glm::vec3 extent = glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
+
+	std::cout << "manager constructor called" << std::endl;
+
+	bounds = new Bounds(centre, extent);
+	physics = new Octtree(*bounds, /*settings.physicsDepth*/4);
+
 	componentTypeToPool[Component::getInstanceType<Transform>()] = reinterpret_cast<Pool<Transform>*>(transforms);
 	componentTypeToPool[Component::getInstanceType<Rigidbody>()] = reinterpret_cast<Pool<Rigidbody>*>(rigidbodies);
 	componentTypeToPool[Component::getInstanceType<Camera>()] = reinterpret_cast<Pool<Camera>*>(cameras);
@@ -129,6 +148,8 @@ Manager::Manager()
 	shaders->allocate();
 	meshes->allocate();
 	gmeshes->allocate();
+
+	debug = false;
 }
 
 Manager::~Manager()
@@ -152,6 +173,9 @@ Manager::~Manager()
 	delete gmeshes;
 
 	delete line;
+
+	delete bounds;
+	delete physics;
 }
 
 bool Manager::validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles)
@@ -556,8 +580,6 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 	for(int i = 0; i < sphereColliders->getIndex(); i++){ componentIdToType[sphereColliders->get(i)->componentId] = Component::getInstanceType<SphereCollider>(); }
 	for(int i = 0; i < capsuleColliders->getIndex(); i++){ componentIdToType[capsuleColliders->get(i)->componentId] = Component::getInstanceType<CapsuleCollider>(); }
 
-	std::cout << "AAAAAAAAAAAA" << std::endl;
-
 	// find all unique materials
 	std::vector<Guid> materialIds;
 	for(int i = 0; i < meshRenderers->getIndex(); i++){
@@ -590,8 +612,6 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		}
 	}
 
-	std::cout << "BBBBBBBBBBBB" << std::endl;
-
 	// de-serialize all unique materials found
 	for(unsigned int i = 0; i < materialIds.size(); i++){
 		Guid materialId = materialIds[i];
@@ -616,8 +636,6 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 		std::cout << "material id: " << materials->get(i)->assetId.toString() << " texture id: " << materials->get(i)->textureId.toString() << " shader id: " << materials->get(i)->shaderId.toString() << std::endl;
 	}
-
-	std::cout << "CCCCCCCCCCCC" << std::endl;
 
 	// set manager on materials
 	for(int i = 0; i < materials->getIndex(); i++){
@@ -825,8 +843,8 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 	    shaders->allocate();
 
-	    std::cout << vertexShader << std::endl;
-	    std::cout << fragmentShader << std::endl;
+	    //std::cout << vertexShader << std::endl;
+	    //std::cout << fragmentShader << std::endl;
 	}
 
 	// find all unique meshes
@@ -883,16 +901,6 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 		std::cout << "mesh id: " << meshId.toString() << " mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
 	}
-
-	std::cout << "numberOfMeshRenderers: " << meshRenderers->getIndex() << std::endl;
-
-
-	std::cout << "transform type: " << Component::getInstanceType<Transform>() << std::endl;
-	std::cout << "transform type: " << Component::getInstanceType<Transform>() << std::endl;
-	std::cout << "rigidbody type: " << Component::getInstanceType<Rigidbody>() << std::endl;
-	std::cout << "camera type: " << Component::getInstanceType<Camera>() << std::endl;
-	std::cout << "mesh renderer type: " << Component::getInstanceType<MeshRenderer>() << std::endl;
-	std::cout << "camera type: " << Component::getInstanceType<Camera>() << std::endl;
 }
 
 int Manager::getNumberOfEntities()
@@ -935,6 +943,16 @@ System* Manager::getSystemByIndex(int index)
 Line* Manager::getLine()
 {
 	return line;
+}
+
+Bounds* Manager::getWorldBounds()
+{
+	return bounds;
+}
+
+Octtree* Manager::getPhysicsTree()
+{
+	return physics;
 }
 
 void Manager::latentDestroy(Guid entityId)
@@ -1126,4 +1144,41 @@ Entity* Manager::instantiate(Guid entityId)
 	// add components from component types found on input entity
 
 	return NULL;
+}
+
+bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
+{
+	Ray ray;
+
+	ray.origin = origin;
+	ray.direction = direction;
+
+	return physics->intersect(ray) != NULL;
+}
+
+// begin by only implementing for spheres first and later I will add for bounds, capsules etc
+bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider* collider)
+{
+	Ray ray;
+
+	ray.origin = origin;
+	ray.direction = direction;
+
+	Object* object = physics->intersect(ray);
+
+	if(object != NULL){
+		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);
+		if(it != idToGlobalIndex.end()){
+			int colliderIndex = it->second;
+			collider = getComponentByIndex<SphereCollider>(colliderIndex);
+		}
+		else{
+			std::cout << "Error: component id does not correspond to a global index" << std::endl;
+			return false;
+		}
+		
+		return true;
+	}
+
+	return false;
 }

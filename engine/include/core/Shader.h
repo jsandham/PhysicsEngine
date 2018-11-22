@@ -17,6 +17,14 @@ namespace PhysicsEngine
 	class Shader : public Asset
 	{
 		public:
+			static std::string lineVertexShader;
+			static std::string lineFragmentShader;
+			static std::string graphVertexShader;
+			static std::string graphFragmentShader;
+			static std::string normalMapVertexShader;
+			static std::string normalMapFragmentShader;
+
+		public:
 			std::string vertexShader;
 			std::string fragmentShader;
 			std::string geometryShader;

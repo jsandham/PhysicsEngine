@@ -14,6 +14,7 @@
 #include "Texture2D.h"
 #include "Guid.h"
 #include "Pool.h"
+#include "Octtree.h"
 
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
@@ -126,6 +127,10 @@ namespace PhysicsEngine
 		unsigned int maxAllowedShaders;
 		unsigned int maxAllowedMeshes;
 		unsigned int maxAllowedGMeshes;
+
+		int physicsDepth;
+		float centre[3];
+		float extent[3];
 	};
 #pragma pack(pop)
 
@@ -157,17 +162,22 @@ namespace PhysicsEngine
 
 			std::vector<System*> systems;
 
+			Bounds* bounds;
+			Octtree* physics;
+
 			std::map<Guid, std::string> assetIdToFilePath;
 			std::map<Guid, int> assetIdToGlobalIndex;
 			std::map<Guid, int> idToGlobalIndex;
 			std::map<Guid, int> componentIdToType;
 			std::map<Guid, std::vector<Guid>> entityIdToComponentIds; 
 			std::map<int, void*> componentTypeToPool;
-
 			std::map<int, void*> assetTypeToPool;
 
 			// entities marked for cleanup
 			std::vector<Guid> entityIdsMarkedForLatentDestroy;
+
+		public:
+			bool debug;
 
 		public:
 			Manager();
@@ -410,6 +420,12 @@ namespace PhysicsEngine
 			}
 
 			Line* getLine();
+			Bounds* getWorldBounds();
+			Octtree* getPhysicsTree();
+
+			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
+			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider* collider);
+
 
 			void latentDestroy(Guid entityId);
 			void immediateDestroy(Guid entityId);

@@ -16,6 +16,7 @@
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Line.h"
 #include "../../include/core/Input.h"
+#include "../../include/core/Time.h"
 
 using namespace PhysicsEngine;
 
@@ -31,6 +32,8 @@ RenderSystem::RenderSystem(unsigned char* data)
 
 RenderSystem::~RenderSystem()
 {
+	delete graph;
+	delete window;
 }
 
 void RenderSystem::init()
@@ -63,7 +66,32 @@ void RenderSystem::init()
 
 	Line* line = manager->getLine();
 
+	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
+	window = new DebugWindow(0.75f, 0.6f, 0.3f, 0.3f);
+
+	graphMaterial = manager->create<Material>();
+	graphMaterial->setManager(manager);
+	windowMaterial = manager->create<Material>();
+	windowMaterial->setManager(manager);
+
+	graphShader = manager->create<Shader>();
+	normalMapShader = manager->create<Shader>();
+
+	normalMap = manager->create<Texture2D>();
+
+	graphShader->vertexShader = Shader::graphVertexShader;
+	graphShader->fragmentShader = Shader::graphFragmentShader;
+	normalMapShader->vertexShader = Shader::normalMapVertexShader;
+	normalMapShader->fragmentShader = Shader::normalMapFragmentShader;
+
+	graphShader->compile();
+	normalMapShader->compile();
+
+	graphMaterial->shaderId = graphShader->assetId;
+
 	Graphics::generate(line);
+	Graphics::generate(graph);
+	Graphics::generate(window);
 	
 	Graphics::generate(&cameraState);
 	Graphics::generate(&directionLightState);
@@ -165,14 +193,6 @@ void RenderSystem::update()
 		pass++;
 	}
 
-	// glm::mat4 ortho = glm::ortho(0.0f, 1000.0f, 0.0f, 1000.0f, 0.1f, 100.0f);
-
-	// Graphics::bind(&cameraState);
-	// Graphics::setProjectionMatrix(&cameraState, camera->getProjMatrix());
-	// Graphics::setViewMatrix(&cameraState, camera->getViewMatrix());
-	// Graphics::setCameraPosition(&cameraState, camera->getPosition());
-	// Graphics::unbind(&cameraState);
-
 	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
 		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
 		Transform* transform = lineRenderer->getComponent<Transform>();
@@ -191,6 +211,22 @@ void RenderSystem::update()
 		Graphics::bind(line);
 		Graphics::draw(line);
 		Graphics::unbind(line);
+	}
+
+	if(manager->debug){
+		if(Time::frameCount % 10 == 0){
+			float deltaTime = Time::deltaTime;
+			float gpuDeltaTime = Time::gpuDeltaTime;
+
+			graph->add(deltaTime);
+
+			Graphics::apply(graph);
+		}
+		
+		Graphics::bind(graphMaterial, glm::mat4(1.0f));
+		Graphics::bind(graph);
+		Graphics::draw(graph);
+		Graphics::unbind(graph);
 	}
 
 	Graphics::checkError();

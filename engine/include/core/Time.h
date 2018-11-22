@@ -8,8 +8,10 @@ namespace PhysicsEngine
 		public:
 			static int frameCount;
 			static int deltaCycles;
+			static int gpuDeltaCycles;
 			static float time;
 			static float deltaTime;
+			static float gpuDeltaTime;
 
 		private:
 			Time();

@@ -660,6 +660,88 @@ void Graphics::draw(Mesh* mesh)
 	glDrawArrays(GL_TRIANGLES, 0, (int)mesh->vertices.size());
 }
 
+void Graphics::apply(PerformanceGraph* graph)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, graph->vertexVBO.handle);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 0, graph->vertices.size()*sizeof(float), &(graph->vertices[0]));
+}
+
+void Graphics::generate(PerformanceGraph* graph)
+{
+	glGenVertexArrays(1, &(graph->graphVAO.handle));
+	glBindVertexArray(graph->graphVAO.handle);
+
+	glGenBuffers(1, &(graph->vertexVBO.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, graph->vertexVBO.handle);
+	glBufferData(GL_ARRAY_BUFFER, graph->vertices.size()*sizeof(float), &(graph->vertices[0]), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void Graphics::destroy(PerformanceGraph* graph)
+{
+	glDeleteVertexArrays(1, &(graph->graphVAO.handle));
+	glDeleteBuffers(1, &(graph->vertexVBO.handle));
+}
+
+void Graphics::bind(PerformanceGraph* graph)
+{
+	glBindVertexArray(graph->graphVAO.handle);
+}
+
+void Graphics::unbind(PerformanceGraph* graph)
+{
+	glBindVertexArray(0);
+}
+
+void Graphics::draw(PerformanceGraph* graph)
+{
+	glDrawArrays(GL_TRIANGLES, 0, (int)graph->vertices.size());
+}
+
+void Graphics::apply(DebugWindow* window)
+{
+
+}
+
+void Graphics::generate(DebugWindow* window)
+{
+	glGenVertexArrays(1, &(window->windowVAO.handle));
+	glBindVertexArray(window->windowVAO.handle);
+
+	glGenBuffers(1, &(window->vertexVBO.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, window->vertexVBO.handle);
+	glBufferData(GL_ARRAY_BUFFER, window->vertices.size()*sizeof(float), &(window->vertices[0]), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void Graphics::destroy(DebugWindow* window)
+{
+	glDeleteVertexArrays(1, &(window->windowVAO.handle));
+	glDeleteBuffers(1, &(window->vertexVBO.handle));
+}
+
+void Graphics::bind(DebugWindow* window)
+{
+	glBindVertexArray(window->windowVAO.handle);
+}
+
+void Graphics::unbind(DebugWindow* window)
+{
+	glBindVertexArray(0);
+}
+
+void Graphics::draw(DebugWindow* window)
+{
+	glDrawArrays(GL_TRIANGLES, 0, (int)window->vertices.size());
+}
+
 void Graphics::generate(GLCamera* state)
 {
 	glGenBuffers(1, &(state->handle.handle));

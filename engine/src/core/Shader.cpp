@@ -3,6 +3,68 @@
 
 using namespace PhysicsEngine;
 
+std::string Shader::lineVertexShader = "#version 330 core\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
+"}";
+
+std::string Shader::lineFragmentShader = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"}";
+
+std::string Shader::graphVertexShader = "#version 330 core\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = vec4(position, 1.0);\n"
+"}";
+
+std::string Shader::graphFragmentShader = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"}";
+
+std::string Shader::normalMapVertexShader = "#version 330 core\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"in vec3 position;\n"
+"in vec3 normal;\n"
+"out vec3 Normal;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
+"   Normal = normal;\n"
+"}";
+
+std::string Shader::normalMapFragmentShader = "#version 330 core\n"
+"in vec3 Normal;\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(Normal.xyz, 1.0f);\n"
+"}";
+
+
+
+
+
 Shader::Shader()
 {
 	programCompiled = false;

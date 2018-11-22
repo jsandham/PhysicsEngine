@@ -17,6 +17,10 @@
     "maxAllowedTextures" : 15,
     "maxAllowedShaders" : 15,
     "maxAllowedMeshes" : 15,
-    "maxAllowedGMeshes" : 15
+    "maxAllowedGMeshes" : 15,
+
+    "physicsDepth" : 10,
+    "centre" : [0.0, 0.0, 0.0],
+    "extent" : [20.0, 20.0, 20.0]
   }
 }

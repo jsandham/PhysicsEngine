@@ -20,15 +20,15 @@ namespace PhysicsEngine
 	{
 		private:
 			static std::vector<Collider*> colliders;
-			static Octtree tree;
+			//static Octtree tree;
 
 		public:
 			static float gravity;
 			static float timestep;
 
 		public:
-			static void init(Bounds bounds, int depth);
-			static void update(std::vector<Collider*> colliders);
+			//static void init(Bounds bounds, int depth);
+			//static void update(std::vector<Collider*> colliders);
 
 			static bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			static bool linecast(glm::vec3 start, glm::vec3 end);

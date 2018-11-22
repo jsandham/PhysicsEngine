@@ -13,6 +13,24 @@
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 
+#ifndef WGL_EXT_extensions_string
+#define WGL_EXT_extensions_string 1
+#ifdef WGL_WGLEXT_PROTOTYPES
+extern const char * WINAPI wglGetExtensionsStringEXT (void);
+#endif /* WGL_WGLEXT_PROTOTYPES */
+typedef const char * (WINAPI * PFNWGLGETEXTENSIONSSTRINGEXTPROC) (void);
+#endif
+
+#ifndef WGL_EXT_swap_control
+#define WGL_EXT_swap_control 1
+#ifdef WGL_WGLEXT_PROTOTYPES
+extern BOOL WINAPI wglSwapIntervalEXT (int);
+extern int WINAPI wglGetSwapIntervalEXT (void);
+#endif /* WGL_WGLEXT_PROTOTYPES */
+typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int interval);
+typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
+#endif
+
 #include "../../../include/cuda/cuda_util.h"
 
 #include "../../../include/core/Input.h"
@@ -117,6 +135,24 @@ KeyCode GetKeyCode(unsigned int vKCode)
 	return keyCode;
 }
 
+bool WGLExtensionSupported(const char *extension_name)
+{
+    // this is pointer to function which returns pointer to string with list of all wgl extensions
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+
+    // determine pointer to wglGetExtensionsStringEXT function
+    _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
+
+    if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
+    {
+        // string was not found
+        return false;
+    }
+
+    // extension is supported
+    return true;
+}
+
 
 bool Win32InitOpenGL(HWND window)
 {
@@ -160,6 +196,22 @@ bool Win32InitOpenGL(HWND window)
 	else
 	{
 		OutputDebugStringA("INITIALIZED GLEW SUCCESSFULLY\n");
+	}
+
+	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
+	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
+
+	if (WGLExtensionSupported("WGL_EXT_swap_control"))
+	{
+		std::cout << "vsync extension supported" << std::endl;
+
+		// Extension is supported, init pointers.
+	    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
+
+	    // this is another function from WGL_EXT_swap_control extension
+	    wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
+
+	    wglSwapIntervalEXT(0);//vsync On: 1 Off: 0
 	}
 
 	cudaDeviceProp prop;
@@ -352,12 +404,21 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 				running = true;
 
+				// total frame timing
 				int frameCount = 0;
 				LARGE_INTEGER lastCounter;
 				QueryPerformanceCounter(&lastCounter);
 				unsigned long long lastCycleCount = __rdtsc();
+
+				// gpu only timing
+				GLuint query;
+				GLuint gpu_time;
+				glGenQueries(1, &query);
+
 				while(running)
 				{
+					glBeginQuery(GL_TIME_ELAPSED, query);
+
 					MSG message;
 					while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
 					{
@@ -388,10 +449,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 					lastCounter = endCounter;
 					frameCount++;
 
+					glEndQuery(GL_TIME_ELAPSED);
+					glGetQueryObjectuiv(query, GL_QUERY_RESULT, &gpu_time);
+
 					Time::frameCount = frameCount;
 					Time::deltaCycles = (int)cyclesElapsed;
 					Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
 					Time::deltaTime = milliSecPerFrame;
+					Time::gpuDeltaTime = gpu_time / 1000000.0f;
 
 					Input::updateEOF();
 				}
