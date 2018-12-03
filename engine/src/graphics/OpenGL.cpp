@@ -25,7 +25,7 @@ GLenum OpenGL::getTextureFormat(TextureFormat format)
 		openglFormat = GL_RGBA;
 		break;
 	default:
-		Log::Error("OpengGL: Invalid texture format");
+		std::cout << "OpengGL: Invalid texture format" << std::endl;
 	}
 
 	return openglFormat;
@@ -35,7 +35,7 @@ void OpenGL::checkError()
 {
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
-		Log::Error("OpenGL: Renderer failed with error code: %d", error);
+		std::cout << "OpenGL: Renderer failed with error code: " << error << std::endl;
 	}
 }
 

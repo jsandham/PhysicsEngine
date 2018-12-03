@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "../core/Texture2D.h"
 #include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
@@ -18,7 +19,10 @@ namespace PhysicsEngine
 		public:
 			GLHandle windowVAO;
 			GLHandle vertexVBO;
+			GLHandle texCoordVBO;
+
 			std::vector<float> vertices;
+			std::vector<float> texCoords;
 
 		public:
 			DebugWindow(float x, float y, float width, float height);

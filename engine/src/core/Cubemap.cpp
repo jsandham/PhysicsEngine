@@ -16,12 +16,11 @@ Cubemap::Cubemap(int width)
 	this->dimension = TextureDimension::Cube;
 
 	this->width = width;
-	this->height = width;
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
 
-	rawCubemapData.resize(6 * width*width*numChannels);
+	rawTextureData.resize(6 * width*width*numChannels);
 }
 
 Cubemap::Cubemap(int width, TextureFormat format)
@@ -29,12 +28,11 @@ Cubemap::Cubemap(int width, TextureFormat format)
 	this->dimension = TextureDimension::Cube;
 
 	this->width = width;
-	this->height = width;
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
 
-	rawCubemapData.resize(6 * width*width*numChannels);
+	rawTextureData.resize(6 * width*width*numChannels);
 }
 
 Cubemap::Cubemap(int width, int height, TextureFormat format)
@@ -42,12 +40,11 @@ Cubemap::Cubemap(int width, int height, TextureFormat format)
 	this->dimension = TextureDimension::Cube;
 
 	this->width = width;
-	this->height = height;
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
 
-	rawCubemapData.resize(6 * width*width*numChannels);
+	rawTextureData.resize(6 * width*width*numChannels);
 }
 
 Cubemap::~Cubemap()
@@ -55,9 +52,14 @@ Cubemap::~Cubemap()
 	
 }
 
+int Cubemap::getWidth() const
+{
+	return width;
+}
+
 std::vector<unsigned char> Cubemap::getRawCubemapData()
 {
-	return rawCubemapData;
+	return rawTextureData;
 }
 
 std::vector<Color> Cubemap::getPixels(CubemapFace face)
@@ -70,22 +72,22 @@ std::vector<Color> Cubemap::getPixels(CubemapFace face)
 	for (int i = start; i < end; i += numChannels){
 		Color color;
 		if (numChannels == 1){
-			color.r = rawCubemapData[i];
-			color.g = rawCubemapData[i];
-			color.b = rawCubemapData[i];
+			color.r = rawTextureData[i];
+			color.g = rawTextureData[i];
+			color.b = rawTextureData[i];
 			color.a = 0;
 		}
 		else if (numChannels == 3){
-			color.r = rawCubemapData[i];
-			color.g = rawCubemapData[i + 1];
-			color.b = rawCubemapData[i + 2];
+			color.r = rawTextureData[i];
+			color.g = rawTextureData[i + 1];
+			color.b = rawTextureData[i + 2];
 			color.a = 0;
 		}
 		else if (numChannels == 4){
-			color.r = rawCubemapData[i];
-			color.g = rawCubemapData[i + 1];
-			color.b = rawCubemapData[i + 2];
-			color.a = rawCubemapData[i + 3];
+			color.r = rawTextureData[i];
+			color.g = rawTextureData[i + 1];
+			color.b = rawTextureData[i + 2];
+			color.a = rawTextureData[i + 3];
 		}
 
 		colors.push_back(color);
@@ -98,28 +100,28 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y)
 {
 	int index =  (int)face*width*width*numChannels + numChannels * (x + width * y);
 
-	if (index + numChannels >= rawCubemapData.size()){
+	if (index + numChannels >= rawTextureData.size()){
 		Log::Error("Cubemap: pixel index out of range");
 	}
 
 	Color color;
 	if (numChannels == 1){
-		color.r = rawCubemapData[index];
-		color.g = rawCubemapData[index];
-		color.b = rawCubemapData[index];
+		color.r = rawTextureData[index];
+		color.g = rawTextureData[index];
+		color.b = rawTextureData[index];
 		color.a = 0;
 	}
 	else if (numChannels == 3){
-		color.r = rawCubemapData[index];
-		color.g = rawCubemapData[index + 1];
-		color.b = rawCubemapData[index + 2];
+		color.r = rawTextureData[index];
+		color.g = rawTextureData[index + 1];
+		color.b = rawTextureData[index + 2];
 		color.a = 0;
 	}
 	else if (numChannels == 4){
-		color.r = rawCubemapData[index];
-		color.g = rawCubemapData[index + 1];
-		color.b = rawCubemapData[index + 2];
-		color.a = rawCubemapData[index + 3];
+		color.r = rawTextureData[index];
+		color.g = rawTextureData[index + 1];
+		color.b = rawTextureData[index + 2];
+		color.a = rawTextureData[index + 3];
 	}
 
 	return color;
@@ -128,12 +130,12 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y)
 
 void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
 {
-	if (6*width*height*numChannels != data.size()){
+	if (6*width*width*numChannels != data.size()){
 		Log::Error("Cubemap: Raw texture data does not match size of cubemap");
 		return;
 	}
 
-	rawCubemapData = data;
+	rawTextureData = data;
 }
 
 void Cubemap::setPixels(CubemapFace face, int x, int y, Color color)
@@ -145,24 +147,24 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
 {
 	int index = (int)face*width*width*numChannels + numChannels * (x + width * y);
 
-	if (index + numChannels >= rawCubemapData.size()){
+	if (index + numChannels >= rawTextureData.size()){
 		Log::Error("Cubemap: pixel index out of range");
 		return;
 	}
 
 	if (numChannels == 1){
-		rawCubemapData[index] = color.r;
+		rawTextureData[index] = color.r;
 	}
 	else if (numChannels == 3){
-		rawCubemapData[index] = color.r;
-		rawCubemapData[index + 1] = color.g;
-		rawCubemapData[index + 2] = color.b;
+		rawTextureData[index] = color.r;
+		rawTextureData[index + 1] = color.g;
+		rawTextureData[index + 2] = color.b;
 	}
 	else if (numChannels == 4){
-		rawCubemapData[index] = color.r;
-		rawCubemapData[index + 1] = color.g;
-		rawCubemapData[index + 2] = color.b;
-		rawCubemapData[index + 3] = color.a;
+		rawTextureData[index] = color.r;
+		rawTextureData[index + 1] = color.g;
+		rawTextureData[index + 2] = color.b;
+		rawTextureData[index + 3] = color.a;
 	}
 }
 

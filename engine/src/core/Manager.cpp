@@ -130,52 +130,53 @@ Manager::Manager()
 	assetTypeToPool[Asset::getInstanceType<Mesh>()] = reinterpret_cast<Pool<Mesh>*>(meshes);
 	assetTypeToPool[Asset::getInstanceType<GMesh>()] = reinterpret_cast<Pool<GMesh>*>(gmeshes);
 
-	entities->allocate();
-	transforms->allocate();
-	rigidbodies->allocate();
-	cameras->allocate();
-	meshRenderers->allocate();
-	lineRenderers->allocate();
-	directionalLights->allocate();
-	spotLights->allocate();
-	pointLights->allocate();
-	boxColliders->allocate();
-	sphereColliders->allocate();
-	capsuleColliders->allocate();
-
-	materials->allocate();
-	textures->allocate();
-	shaders->allocate();
-	meshes->allocate();
-	gmeshes->allocate();
-
 	debug = false;
 }
 
 Manager::~Manager()
 {
-	delete transforms;
-	delete rigidbodies;
-	delete cameras;
-	delete meshRenderers;
-	delete lineRenderers;
-	delete directionalLights;
-	delete spotLights;
-	delete pointLights;
-	delete boxColliders;
-	delete sphereColliders;
-	delete capsuleColliders;
+	std::cout << "Manager destructor called!!!" << std::endl;
 
-	delete materials;
-	delete shaders;
-	delete textures;
-	delete meshes;
-	delete gmeshes;
+	std::cout << "deleting only entities pool" << std::endl;
+	delete entities;
+	// std::cout << "deleting transforms pool" << std::endl;
+	// delete transforms;
+	// std::cout << "deleting rigidbodies pool" << std::endl;
+	// delete rigidbodies;
+	// std::cout << "deleting cameras pool" << std::endl;
+	// delete cameras;
+	// std::cout << "deleting meshRenderers pool" << std::endl;
+	// delete meshRenderers;
+	// std::cout << "deleting lineRenderers pool" << std::endl;
+	// delete lineRenderers;
+	// std::cout << "deleting directionalLights pool" << std::endl;
+	// delete directionalLights;
+	// std::cout << "deleting spotLights pool" << std::endl;
+	// delete spotLights;
+	// std::cout << "deleting pointLights pool" << std::endl;
+	// delete pointLights;
+	// std::cout << "deleting boxColliders pool" << std::endl;
+	// delete boxColliders;
+	// std::cout << "deleting sphereColliders pool" << std::endl;
+	// delete sphereColliders;
+	// std::cout << "deleting capsuleColliders pool" << std::endl;
+	// delete capsuleColliders;
+
+
+	// delete materials;
+	// delete shaders;
+	// delete textures;
+	// delete meshes;
+	// delete gmeshes;
 
 	delete line;
 
 	delete bounds;
 	delete physics;
+
+	for(unsigned int i = 0; i < systems.size(); i++){
+		delete systems[i];
+	}
 }
 
 bool Manager::validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles)
@@ -391,15 +392,15 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 	std::string binarySceneFilePath = scene.filepath.substr(0, scene.filepath.find_last_of(".")) + ".scene";
 
-	std::cout << "scene file path: " << scene.filepath << " binary scene file path: " << binarySceneFilePath << " size of camera: " << sizeof(Camera) << std::endl;
-
 	SceneHeader sceneHeader = {};
 	FILE* file = fopen(binarySceneFilePath.c_str(), "rb");
 	size_t bytesRead;
 	if (file){
 		bytesRead = fread(&sceneHeader, sizeof(SceneHeader), 1, file);
 
-		systems.clear();
+		for(unsigned int i = 0; i < systems.size(); i++){ delete systems[i]; }
+
+		systems.clear(); 
 
 		std::cout << "de-serialized scene header file contains the following information: " << std::endl;
 
@@ -627,7 +628,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		if (file){
 			bytesRead = fread(materials->get(i), sizeof(Material), 1, file);
 			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
-			materials->allocate();
+			materials->increment();
 		}
 		else{
 			std::cout << "Error: Failed to open material binary file " << materialFilePath << " for reading" << std::endl;
@@ -701,10 +702,6 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		}
 	}
 
-	// TODO: maybe store internally used shaders a static strings directly in source code?
-	// include internally used depth shader
-	shaderIds.push_back(Guid("dac65c3e-8d43-46b7-9742-a8dfdbb5c3cc"));///////////////////
-
 	// de-serialize all unique textures and shaders found
 	for(unsigned int i = 0; i < textureIds.size(); i++){
 		Guid textureId = textureIds[i];
@@ -754,7 +751,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 			textures->get(i)->assetId = textureId;
 			textures->get(i)->setRawTextureData(data, width, height, format);
-			textures->allocate();
+			textures->increment();
 		}
 		else{
 			std::cout << "Error: stbi_load failed to load texture " << textureFilePath << " (" << textureId.toString() << ") with reported reason: " << stbi_failure_reason() << std::endl;
@@ -841,7 +838,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 	    shaders->get(i)->geometryShader = geometryShader;
 	    shaders->get(i)->fragmentShader = fragmentShader;
 
-	    shaders->allocate();
+	    shaders->increment();
 
 	    //std::cout << vertexShader << std::endl;
 	    //std::cout << fragmentShader << std::endl;
@@ -890,7 +887,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 			bytesRead += fread(&(meshes->get(i)->normals[0]), header.normalsSize*sizeof(float), 1, file);
 			bytesRead += fread(&(meshes->get(i)->texCoords[0]), header.texCoordsSize*sizeof(float), 1, file);
 
-			meshes->allocate();
+			meshes->increment();
 
 			fclose(file);
 		}
@@ -1095,7 +1092,7 @@ Entity* Manager::instantiate()
 
 	int index = entities->getIndex();
 
-	entities->allocate();
+	entities->increment();
 
 	std::cout << "number of entities: " << entities->getIndex() << std::endl;
 
@@ -1153,24 +1150,26 @@ bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 	ray.origin = origin;
 	ray.direction = direction;
 
-	return physics->intersect(ray) != NULL;
+	return physics->tempIntersect(ray) != NULL;
+	// return physics->intersect(ray) != NULL;
 }
 
 // begin by only implementing for spheres first and later I will add for bounds, capsules etc
-bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider* collider)
+bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider)
 {
 	Ray ray;
 
 	ray.origin = origin;
 	ray.direction = direction;
 
-	Object* object = physics->intersect(ray);
+	Object* object = physics->tempIntersect(ray);
+	// Object* object = physics->intersect(ray);
 
 	if(object != NULL){
 		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);
 		if(it != idToGlobalIndex.end()){
 			int colliderIndex = it->second;
-			collider = getComponentByIndex<SphereCollider>(colliderIndex);
+			*collider = getComponentByIndex<SphereCollider>(colliderIndex);
 		}
 		else{
 			std::cout << "Error: component id does not correspond to a global index" << std::endl;
@@ -1181,4 +1180,92 @@ bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, 
 	}
 
 	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool Manager::writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels)
+{
+	if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4){
+		std::cout << "TextureLoader: Number of channels must be 1, 2, 3, or 4 where each channel is 8 bits" << std::endl;
+		return false;
+	}
+
+	if (data.size() != width*height*numChannels){
+		std::cout << data.size() << " " << width << " " << height << " " << numChannels << std::endl;
+		std::cout << "TextureLoader: Data does not match width, height, and number of channels given" << std::endl;
+		return false;
+	}
+
+	std::vector<unsigned char> formatedData;
+	if (numChannels == 1){
+		formatedData.resize(3 * width*height);
+		for (int i = 0; i < width*height; i++){
+			formatedData[3 * i] = data[i];
+			formatedData[3 * i + 1] = data[i];
+			formatedData[3 * i + 2] = data[i];
+		}
+		numChannels = 3;
+	}
+	else {
+		formatedData.resize(numChannels * width * height);
+		for (int i = 0; i < numChannels*width*height; i++){
+			formatedData[i] = data[i];
+		}
+	}
+
+	BMPHeader header = {};
+
+	header.fileType = 0x4D42;
+	header.fileSize = sizeof(BMPHeader) + (unsigned int)formatedData.size();
+	header.bitmapOffset = sizeof(BMPHeader);
+	header.size = sizeof(BMPHeader) - 14;
+	header.width = width;
+	header.height = height;
+	header.planes = 1;
+	header.bitsPerPixel = (unsigned short)(numChannels * 8);
+	header.compression = 0;
+	header.sizeOfBitmap = (unsigned int)formatedData.size();
+	header.horizontalResolution = 0;
+	header.verticalResolution = 0;
+	header.colorsUsed = 0;
+	header.colorsImportant = 0;
+
+	FILE* file = fopen(filepath.c_str(), "wb");
+	if (file){
+		fwrite(&header, sizeof(BMPHeader), 1, file);
+		fwrite(&formatedData[0], formatedData.size(), 1, file);
+		fclose(file);
+	}
+	else{
+		std::cout << "TextureLoader: Failed to open file " << filepath << " for writing" << std::endl;
+		return false;
+	}
+
+	std::cout << "TextureLoader: Screen capture successful" << std::endl;
+
+	return true;
 }

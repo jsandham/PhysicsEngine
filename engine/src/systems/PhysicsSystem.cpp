@@ -46,10 +46,25 @@ void PhysicsSystem::update()
 	Octtree* physics = manager->getPhysicsTree();
 
 	// rebuild dynamic octtree for physics
+	// for(int i = 0; i < manager->getNumberOfComponents<SphereCollider>(); i++){
+	// 	SphereCollider* collider = manager->getComponentByIndex<SphereCollider>(i);
+
+	// 	physics->insert(collider->sphere, collider->componentId);
+	// }
+
+
+
+
+
+
+	physics->tempClear();
+	
+	// rebuild dynamic octtree for physics
 	for(int i = 0; i < manager->getNumberOfComponents<SphereCollider>(); i++){
 		SphereCollider* collider = manager->getComponentByIndex<SphereCollider>(i);
+		//std::cout << "collider: " << i << " centre: " << collider->sphere.centre.x << " " << collider->sphere.centre.y << " " << collider->sphere.centre.z << " radius: " << collider->sphere.radius << std::endl; 
 
-		//physics->insert(collider->sphere, collider->componentId);
+		physics->tempInsert(collider->sphere, collider->componentId);
 	}
 }
 

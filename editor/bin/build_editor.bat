@@ -14,8 +14,6 @@ set Libs=user32.lib gdi32.lib xinput.lib ole32.lib opengl32.lib glew32.lib cudar
 
 :: copy engine lib to editor bin folder
 copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\engine.lib" "C:\Users\James\Documents\PhysicsEngine\editor\bin"
-copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\obj\win32_main.obj" "C:\Users\James\Documents\PhysicsEngine\editor\bin\obj"
-copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\obj\Manager.obj" "C:\Users\James\Documents\PhysicsEngine\editor\bin\obj"
 
 :: compile project c++ files to obj
 cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\src\systems\LoadSystem.cpp

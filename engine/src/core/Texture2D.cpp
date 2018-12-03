@@ -48,6 +48,27 @@ Texture2D::~Texture2D()
 	
 }
 
+int Texture2D::getWidth() const
+{
+	return width;
+}
+
+int Texture2D::getHeight() const
+{
+	return height;
+}
+
+void Texture2D::redefine(int width, int height, TextureFormat format)
+{
+	this->width = width;
+	this->height = height;
+	this->format = format;
+
+	this->numChannels = calcNumChannels(format);
+
+	rawTextureData.resize(width*height*numChannels);
+}
+
 std::vector<unsigned char> Texture2D::getRawTextureData()
 {
 	return rawTextureData;

@@ -13,7 +13,9 @@
 #include "../core/PerformanceGraph.h"
 #include "../core/DebugWindow.h"
 
+#include "../graphics/GLFramebuffer.h"
 #include "../graphics/GLState.h"
+#include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
@@ -38,7 +40,10 @@ namespace PhysicsEngine
 	class Graphics
 	{
 		public:
-			static void initializeGraphicsAPI();
+			static GLHandle query;
+			static unsigned int gpu_time;
+
+			//static void initializeGraphicsAPI();
 
 			static void checkError();
 			static void enableBlend();
@@ -50,6 +55,14 @@ namespace PhysicsEngine
 			static void setViewport(int x, int y, int width, int height);
 			static void clearColorBuffer(glm::vec4 value);
 			static void clearDepthBuffer(float value);
+
+			static void beginGPUTimer();
+			static int endGPUTimer();
+
+			static void generate(GLFramebuffer* framebuffer);
+			static void bind(GLFramebuffer* framebuffer);
+			static void unbind(GLFramebuffer* framebuffer);
+
 
 			static void readPixels(Texture2D* texture);
 			static void apply(Texture2D* texture);

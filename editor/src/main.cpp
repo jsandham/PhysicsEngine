@@ -55,10 +55,10 @@ int main(int argc, char* argv[])
 	// relative path from editor to project directory
 	std::string projectDirectory = "../../sample_project/";
 
-	if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
+	//if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
-	if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
-	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
+	//if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
+	//if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 
 	// material files
 	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
@@ -139,6 +139,8 @@ int serializeScene(std::string scenePath)
 	in.close();
 	std::string jsonString = contents.str();
 	json::JSON jsonScene = json::JSON::Load(jsonString);
+
+	std::cout << "ABCD" <<std::endl;
 
 	// parse loaded json file
 	json::JSON entities;
@@ -551,12 +553,26 @@ int serializeScene(std::string scenePath)
 	objects = sphereColliders.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
 		SphereCollider sphereCollider;
+
+		sphereCollider.componentId = Guid(it->first);
+		sphereCollider.entityId = Guid(it->second["entity"].ToString());
+
+		sphereCollider.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
+		sphereCollider.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
+		sphereCollider.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
+
+		sphereCollider.sphere.radius = (float)it->second["radius"].ToFloat();
+
+		fwrite(&sphereCollider, sizeof(SphereCollider), 1, file);
 	}
 
 	// serialize capsule collider
 	objects = capsuleColliders.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
 		CapsuleCollider capsuleCollider;
+
+		capsuleCollider.componentId = Guid(it->first);
+		capsuleCollider.entityId = Guid(it->second["entity"].ToString());
 
 		capsuleCollider.capsule.centre.x = (float)it->second["centre"][0].ToFloat();
 		capsuleCollider.capsule.centre.x = (float)it->second["centre"][1].ToFloat();

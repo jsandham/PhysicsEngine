@@ -99,7 +99,7 @@ set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd421
 set OBJ_FILES=
 for /r %%v in (*.obj) do call :concat_obj %%v
 
-lib -nologo -out:engine.lib %OBJ_FILES%
+lib -out:engine.lib %OBJ_FILES%
 
 goto :eof
 :concat_obj

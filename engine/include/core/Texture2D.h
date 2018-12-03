@@ -11,15 +11,19 @@ namespace PhysicsEngine
 	class Texture2D : public Texture
 	{
 		private:
-			std::vector<unsigned char> rawTextureData;
-
-			TextureFormat format;
+			int width;
+			int height;
 
 		public:
 			Texture2D();
 			Texture2D(int width, int height);
 			Texture2D(int width, int height, TextureFormat format);
 			~Texture2D();
+
+			int getWidth() const;
+			int getHeight() const;
+
+			void redefine(int width, int height, TextureFormat format);
 
 			std::vector<unsigned char> getRawTextureData();
 			std::vector<Color> getPixels();

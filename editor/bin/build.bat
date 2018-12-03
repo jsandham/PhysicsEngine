@@ -6,8 +6,6 @@ if not defined DevEnvDir (
 
 :: copy engine lib to editor bin folder
 copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\engine.lib" "C:\Users\James\Documents\PhysicsEngine\editor\bin"
-copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\obj\win32_main.obj" "C:\Users\James\Documents\PhysicsEngine\editor\bin\obj"
-copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\obj\Manager.obj" "C:\Users\James\Documents\PhysicsEngine\editor\bin\obj"
 
 :: create list of .obj files
 set OBJ_FILES=

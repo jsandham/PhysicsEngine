@@ -3,6 +3,7 @@
 
 #include "../../include/core/OctTree.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
 
@@ -20,10 +21,12 @@ Octtree::Octtree(Bounds bounds, int depth)
 
 	nodes.resize(size + 1);
 
-	std::cout << "Number of nodes allocated: " << (size + 1) << " Size of a Node is: " << sizeof(nodes[0]) << std::endl;
+	std::cout << "Number of nodes allocated: " << nodes.size() << " Size of a Node is: " << sizeof(nodes[0]) << std::endl;
 
 	nodes[0].extent = bounds.size;
 	nodes[0].centre = bounds.centre;
+
+	std::cout << "root node centre: " << nodes[0].centre.x << " " << nodes[0].centre.y << " " << nodes[0].centre.z << " root node size: " << nodes[0].extent.x << " " << nodes[0].extent.y << " " << nodes[0].extent.z << std::endl;
 
 	std::stack<int> stack;
 
@@ -51,7 +54,7 @@ Octtree::Octtree(Bounds bounds, int depth)
 			}
 		}
 
-		std::cout << "currentIndex: " << currentIndex << std::endl;
+		//std::cout << "currentIndex: " << currentIndex << std::endl;
 	}
 
 	std::cout << "octtree contructor finished" << std::endl;
@@ -103,8 +106,38 @@ Object* Octtree::intersect(Ray ray)
 	return NULL;
 }
 
-Object* Octtree::intersect(Sphere sphere)
+
+
+
+
+
+
+
+
+
+
+void Octtree::tempClear()
 {
+	tempObjects.clear();
+}
+
+void Octtree::tempInsert(Sphere sphere, Guid id)
+{
+	Object obj;
+	obj.sphere = sphere;
+	obj.id = id;
+
+	tempObjects.push_back(obj);
+}
+
+Object* Octtree::tempIntersect(Ray ray)
+{
+	for(int i = 0; i < tempObjects.size(); i++){
+		if(Geometry::intersect(ray, tempObjects[i].sphere)){
+			return &tempObjects[i];
+		}
+	}
+
 	return NULL;
 }
 

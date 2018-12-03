@@ -26,10 +26,11 @@ namespace PhysicsEngine
 	class Texture : public Asset
 	{
 		protected:
-			int width;
-			int height;
 			int numChannels;
 			TextureDimension dimension;
+			TextureFormat format;
+
+			std::vector<unsigned char> rawTextureData;
 
 		public:
 			GLHandle handle;
@@ -38,10 +39,9 @@ namespace PhysicsEngine
 			Texture();
 			virtual ~Texture() {};
 
-			int getWidth() const;
-			int getHeight() const;
 			int getNumChannels() const;
 			TextureDimension getDimension() const;
+			TextureFormat getFormat() const;
 
 		protected:
 			int calcNumChannels(TextureFormat format);

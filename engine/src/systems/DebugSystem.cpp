@@ -3,7 +3,6 @@
 #include "../../include/systems/DebugSystem.h"
 
 #include "../../include/core/Input.h"
-#include "../../include/core/Time.h"
 #include "../../include/core/Manager.h"
 
 #include "../../include/components/Transform.h"
@@ -34,13 +33,11 @@ DebugSystem::~DebugSystem()
 void DebugSystem::init()
 {
 	lineMaterial = manager->create<Material>();
-	lineMaterial->setManager(manager);
-	
 	lineShader = manager->create<Shader>();
-	
+
 	lineShader->vertexShader = Shader::lineVertexShader;
 	lineShader->fragmentShader = Shader::lineFragmentShader;
-
+	
 	lineShader->compile();
 	
 	lineMaterial->shaderId = lineShader->assetId;
@@ -87,6 +84,22 @@ void DebugSystem::update()
 
 				lineRenderer->start = glm::vec3(nearPoint.x / nearPoint.w, nearPoint.y / nearPoint.w, nearPoint.z / nearPoint.w);
 				lineRenderer->end = glm::vec3(farPoint.x / farPoint.w, farPoint.y / farPoint.w, farPoint.z / farPoint.w);
+
+				Collider* hitCollider = NULL;
+				if(manager->raycast(lineRenderer->start, lineRenderer->end - lineRenderer->start, 100.0f, &hitCollider))
+				{
+					if(hitCollider == NULL){
+						std::cout << "Raycast hit sphere collider but reported hit collider as NULL???" << std::endl;
+					}
+					else
+					{
+						std::cout << "Raycast hit sphere collider: " << hitCollider->componentId.toString() << std::endl;
+					}
+				}
+				else
+				{
+					std::cout << "Raycast missed!!!" << std::endl;
+				}
 			}
 		}
 	}

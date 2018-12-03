@@ -22,11 +22,6 @@ Material::~Material()
 
 }
 
-void Material::setManager(Manager* manager)
-{
-	this->manager = manager;
-}
-
 Shader* Material::getShader()
 {
 	return manager->getAsset<Shader>(shaderId);

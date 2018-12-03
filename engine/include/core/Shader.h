@@ -21,8 +21,12 @@ namespace PhysicsEngine
 			static std::string lineFragmentShader;
 			static std::string graphVertexShader;
 			static std::string graphFragmentShader;
+			static std::string windowVertexShader;
+			static std::string windowFragmentShader;
 			static std::string normalMapVertexShader;
 			static std::string normalMapFragmentShader;
+			static std::string depthMapVertexShader;
+			static std::string depthMapFragmentShader;
 
 		public:
 			std::string vertexShader;

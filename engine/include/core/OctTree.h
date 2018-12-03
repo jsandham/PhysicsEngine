@@ -40,6 +40,8 @@ namespace PhysicsEngine
 			Bounds bounds;
 			std::vector<Node> nodes;
 
+			std::vector<Object> tempObjects; ///remove later. Just here for testing
+
 		public:
 			Octtree(Bounds bounds, int depth);
 			~Octtree();
@@ -47,7 +49,14 @@ namespace PhysicsEngine
 			void insert(Sphere sphere, Guid id);
 
 			Object* intersect(Ray ray);
-			Object* intersect(Sphere sphere);
+
+
+
+
+
+			void tempClear();
+			void tempInsert(Sphere sphere, Guid id);
+			Object* tempIntersect(Ray ray);
 	};
 
 

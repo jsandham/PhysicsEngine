@@ -24,8 +24,6 @@ namespace PhysicsEngine
 		COUNT
 	}TEXTURESLOT;
 
-	class Manager;
-
 	class Material : public Asset
 	{
 		public:
@@ -40,14 +38,9 @@ namespace PhysicsEngine
 			glm::vec3 specular;
 			glm::vec4 color;
 
-		private:
-			Manager* manager;
-
 		public:
 			Material();
 			~Material();
-
-			void setManager(Manager* manager);
 
 			Shader* getShader();
 			Texture2D* getMainTexture();

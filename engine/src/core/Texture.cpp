@@ -9,16 +9,6 @@ Texture::Texture()
 
 }
 
-int Texture::getWidth() const
-{
-	return width;
-}
-
-int Texture::getHeight() const
-{
-	return height;
-}
-
 int Texture::getNumChannels() const
 {
 	return numChannels;

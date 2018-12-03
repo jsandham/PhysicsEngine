@@ -8,6 +8,7 @@
 
 #include "System.h"
 
+#include "../graphics/GLFramebuffer.h" 
 #include "../graphics/GLState.h"
 #include "../graphics/GLHandle.h"
 
@@ -37,13 +38,22 @@ namespace PhysicsEngine
 			GLPointLight pointLightState;
 
 			PerformanceGraph* graph;
-			DebugWindow* window;
+			DebugWindow* debugWindow;
 
 			Material* graphMaterial;
 			Material* windowMaterial;
+			Material* normalMapMaterial;
+			Material* depthMapMaterial;
+
 			Shader* graphShader;
+			Shader* windowShader;
 			Shader* normalMapShader;
-			Texture2D* normalMap;
+			Shader* depthMapShader;
+
+			Material* debugMaterial;
+			Texture2D* debugBuffer;
+
+			GLFramebuffer fbo;
 
 		public:
 			RenderSystem();
@@ -55,6 +65,7 @@ namespace PhysicsEngine
 
 		private:
 			void renderScene();
+			void renderScene(Material* material);
 	};
 }
 

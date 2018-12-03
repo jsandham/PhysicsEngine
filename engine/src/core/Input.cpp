@@ -4,8 +4,8 @@
 
 using namespace PhysicsEngine;
 
-std::vector<bool> Input::keyIsDown(41, false);
-std::vector<bool> Input::keyWasDown(41, false);
+std::vector<bool> Input::keyIsDown(51, false);
+std::vector<bool> Input::keyWasDown(51, false);
 std::vector<bool> Input::buttonIsDown(3, false);
 std::vector<bool> Input::buttonWasDown(3, false);
 int Input::mousePosX = 0;

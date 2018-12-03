@@ -8,14 +8,19 @@
 
 using namespace PhysicsEngine;
 
-void Graphics::initializeGraphicsAPI()
-{
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if(err != GLEW_OK){
-		std::cout << "Error: Could not initialize GLEW" << std::endl;
-	}
-}
+GLHandle Graphics::query;
+unsigned int Graphics::gpu_time;
+
+// void Graphics::initializeGraphicsAPI()
+// {
+// 	glewExperimental = GL_TRUE;
+// 	GLenum err = glewInit();
+// 	if(err != GLEW_OK){
+// 		std::cout << "Error: Could not initialize GLEW" << std::endl;
+// 	}
+
+// 	glGenQueries(1, &query.handle);
+// }
 
 void Graphics::checkError()
 {
@@ -128,6 +133,98 @@ void Graphics::clearDepthBuffer(float value)
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
+void Graphics::beginGPUTimer()
+{
+	glBeginQuery(GL_TIME_ELAPSED, query.handle);
+}
+
+int Graphics::endGPUTimer()
+{
+	glEndQuery(GL_TIME_ELAPSED);
+	glGetQueryObjectuiv(query.handle, GL_QUERY_RESULT, &gpu_time);
+
+	return gpu_time;
+}
+
+void Graphics::generate(GLFramebuffer* framebuffer)
+{
+	// int width, height, numChannels;
+	// TextureFormat format;
+
+	glGenFramebuffers(1, &(framebuffer->handle));
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->handle);
+
+	if(framebuffer->colorBuffer != NULL){
+		int width = framebuffer->colorBuffer->getWidth();
+		int height = framebuffer->colorBuffer->getHeight();
+		int numChannels = framebuffer->colorBuffer->getNumChannels();
+		TextureFormat format = framebuffer->colorBuffer->getFormat();
+		std::vector<unsigned char> rawTextureData = framebuffer->colorBuffer->getRawTextureData();
+
+		glGenTextures(1, &(framebuffer->colorBuffer->handle.handle));
+		glBindTexture(GL_TEXTURE_2D, framebuffer->colorBuffer->handle.handle);
+
+		GLenum openglFormat = OpenGL::getTextureFormat(format);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebuffer->colorBuffer->handle.handle, 0);
+	}
+
+	if(framebuffer->depthBuffer != NULL){
+		int width = framebuffer->depthBuffer->getWidth();
+		int height = framebuffer->depthBuffer->getHeight();
+		int numChannels = framebuffer->depthBuffer->getNumChannels();
+		TextureFormat format = framebuffer->depthBuffer->getFormat();
+		std::vector<unsigned char> rawTextureData = framebuffer->depthBuffer->getRawTextureData();
+
+		glGenTextures(1, &(framebuffer->depthBuffer->handle.handle));
+		glBindTexture(GL_TEXTURE_2D, framebuffer->depthBuffer->handle.handle);
+
+		GLenum openglFormat = OpenGL::getTextureFormat(format);
+
+		std::cout << "depth opengl format: " << openglFormat << std::endl;
+
+		glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, framebuffer->depthBuffer->handle.handle, 0);
+	}
+
+	std::cout << "frame buffer handle: " << framebuffer->handle << " framebuffer buffer handle: " << framebuffer->colorBuffer->handle.handle << " framebuffer depth buffer handle: " << framebuffer->depthBuffer->handle.handle << std::endl;
+
+	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, DrawBuffers);
+
+	if ((framebuffer->framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE){
+		std::cout << "ERROR: FRAMEBUFFER 2D IS NOT COMPLETE " << framebuffer->framebufferStatus << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Graphics::bind(GLFramebuffer* framebuffer)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->handle);
+}
+
+void Graphics::unbind(GLFramebuffer* framebuffer)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Graphics::readPixels(Texture2D* texture)
 {
 	int width = texture->getWidth();
@@ -142,6 +239,8 @@ void Graphics::readPixels(Texture2D* texture)
 
 	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
 	
+	texture->setRawTextureData(rawTextureData, width, height, format);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -180,6 +279,7 @@ void Graphics::generate(Texture2D* texture)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -221,6 +321,8 @@ void Graphics::readPixels(Texture3D* texture)
 	GLenum openglFormat = OpenGL::getTextureFormat(format);
 
 	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
+
+	//texture->setRawTextureData(rawTextureData, width, height, depth, format);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
@@ -718,6 +820,15 @@ void Graphics::generate(DebugWindow* window)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
+	glGenBuffers(1, &(window->texCoordVBO.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, window->texCoordVBO.handle);
+	glBufferData(GL_ARRAY_BUFFER, window->texCoords.size()*sizeof(float), &(window->texCoords[0]), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	std::cout << "window vertices size: " << window->vertices.size() << " window texcoords size: " << window->texCoords.size() << std::endl;
+	std::cout << "texCoords[0]: " << window->texCoords[0] << " texCoords[1]: " << window->texCoords[1] << " texCoords[2]: " << window->texCoords[2] << " texCoords[3]: " << window->texCoords[3] << " texCoords[4]: " << window->texCoords[4] << std::endl;
+
 	glBindVertexArray(0);
 }
 
@@ -725,6 +836,7 @@ void Graphics::destroy(DebugWindow* window)
 {
 	glDeleteVertexArrays(1, &(window->windowVAO.handle));
 	glDeleteBuffers(1, &(window->vertexVBO.handle));
+	glDeleteBuffers(1, &(window->texCoordVBO.handle));
 }
 
 void Graphics::bind(DebugWindow* window)

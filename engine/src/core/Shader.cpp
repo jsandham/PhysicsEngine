@@ -37,6 +37,35 @@ std::string Shader::graphFragmentShader = "#version 330 core\n"
 "	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 "}";
 
+std::string Shader::windowVertexShader = "#version 330 core\n"
+"in vec3 position;\n"
+"in vec2 texCoord;\n"
+"out vec2 TexCoord;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = vec4(position, 1.0);\n"
+"   TexCoord = texCoord;\n"
+"}";
+
+std::string Shader::windowFragmentShader = "#version 330 core\n"
+"struct Material\n"
+"{\n"
+"	float shininess;\n"
+"	vec3 ambient;\n"
+"	vec3 diffuse;\n"
+"	vec3 specular;\n"
+"	sampler2D mainTexture;\n"
+"	sampler2D normalMap;\n"
+"	sampler2D specularMap;\n"
+"};\n"
+"uniform Material material;\n"
+"in vec2 TexCoord;\n"
+"out vec4 FragColor;\n" 
+"void main()\n"
+"{\n"
+"    FragColor = texture(material.mainTexture, TexCoord);\n"
+"}";
+
 std::string Shader::normalMapVertexShader = "#version 330 core\n"
 "layout (std140) uniform CameraBlock\n"
 "{\n"
@@ -44,12 +73,13 @@ std::string Shader::normalMapVertexShader = "#version 330 core\n"
 "	mat4 view;\n"
 "	vec3 cameraPos;\n"
 "}Camera;\n"
+"uniform mat4 model;\n"
 "in vec3 position;\n"
 "in vec3 normal;\n"
 "out vec3 Normal;\n"
 "void main()\n"
 "{\n"
-"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
+"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
 "   Normal = normal;\n"
 "}";
 
@@ -61,7 +91,24 @@ std::string Shader::normalMapFragmentShader = "#version 330 core\n"
 "	FragColor = vec4(Normal.xyz, 1.0f);\n"
 "}";
 
+std::string Shader::depthMapVertexShader = "#version 330 core\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"uniform mat4 model;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+"}";
 
+std::string Shader::depthMapFragmentShader = "#version 330 core\n"
+"void main()\n"
+"{\n"
+"}";
 
 
 

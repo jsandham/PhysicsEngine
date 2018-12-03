@@ -36,6 +36,31 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
+	struct BMPHeader
+	{
+		unsigned short fileType;
+		unsigned int fileSize;
+		unsigned short reserved1;
+		unsigned short reserved2;
+		unsigned int bitmapOffset;
+		unsigned int size;
+		int width;
+		int height;
+		unsigned short planes;
+		unsigned short bitsPerPixel;
+		unsigned int compression;
+		unsigned int sizeOfBitmap;
+		int horizontalResolution;
+		int verticalResolution;
+		unsigned int colorsUsed;
+		unsigned int colorsImportant;
+	};
+#pragma pack(pop)
+
+
+
+
+#pragma pack(push, 1)
 	struct SceneHeader
 	{
 		unsigned short fileType;
@@ -308,7 +333,7 @@ namespace PhysicsEngine
 					componentGlobalIndex = pool->getIndex();
 					idToGlobalIndex[componentId] = componentGlobalIndex;
 
-					pool->allocate();
+					pool->increment();
 
 					component = pool->get(componentGlobalIndex);
 
@@ -400,7 +425,7 @@ namespace PhysicsEngine
 
 					int index = pool->getIndex();
 
-					pool->allocate();
+					pool->increment();
 
 					std::cout << "index: " << index << std::endl;
 
@@ -410,6 +435,8 @@ namespace PhysicsEngine
 
 					asset = pool->get(index);
 					asset->assetId = assetId;
+
+					asset->setManager(this);
 				}
 				else{
 					std::cout << "Error: Asset pool does not exist" << std::endl;
@@ -424,7 +451,7 @@ namespace PhysicsEngine
 			Octtree* getPhysicsTree();
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
-			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider* collider);
+			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);
 
 
 			void latentDestroy(Guid entityId);
@@ -433,6 +460,18 @@ namespace PhysicsEngine
 			std::vector<Guid> getEntitiesMarkedForLatentDestroy();
 			Entity* instantiate();
 			Entity* instantiate(Guid entityId);
+
+
+
+
+
+
+
+
+
+
+
+			static bool writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels);
 	};
 }
 

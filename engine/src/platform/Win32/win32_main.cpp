@@ -1,3 +1,7 @@
+#define _CRTDBG_MAP_ALLOC  
+#include <stdlib.h>  
+#include <crtdbg.h> 
+
 #include <windows.h>
 #include <windowsx.h>
 #include <xinput.h>
@@ -129,6 +133,16 @@ KeyCode GetKeyCode(unsigned int vKCode)
 		case VK_LCONTROL:{ keyCode = KeyCode::LCtrl; break; }
 		case VK_RCONTROL:{ keyCode = KeyCode::RCtrl; break; }
 		case VK_ESCAPE:{ keyCode = KeyCode::Backspace; break; }
+		case VK_NUMPAD0:{ keyCode = KeyCode::NumPad0; break; }
+		case VK_NUMPAD1:{ keyCode = KeyCode::NumPad1; break; }
+		case VK_NUMPAD2:{ keyCode = KeyCode::NumPad2; break; }
+		case VK_NUMPAD3:{ keyCode = KeyCode::NumPad3; break; }
+		case VK_NUMPAD4:{ keyCode = KeyCode::NumPad4; break; }
+		case VK_NUMPAD5:{ keyCode = KeyCode::NumPad5; break; }
+		case VK_NUMPAD6:{ keyCode = KeyCode::NumPad6; break; }
+		case VK_NUMPAD7:{ keyCode = KeyCode::NumPad7; break; }
+		case VK_NUMPAD8:{ keyCode = KeyCode::NumPad8; break; }
+		case VK_NUMPAD9:{ keyCode = KeyCode::NumPad9; break; }
 		default:{ keyCode = KeyCode::Invalid; break; }
 	}	
 
@@ -340,12 +354,18 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	MessageBox(0, GetCommandLine(), "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
-	MessageBox(0, lpCmdLine, "PhysicsEngine", MB_OK|MB_ICONINFORMATION);
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 
-	LARGE_INTEGER perfCounterFrequencyResult;
-	QueryPerformanceFrequency(&perfCounterFrequencyResult);
-	long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+	if(AllocConsole()){
+		freopen("CONIN$", "r",stdin);
+		freopen("CONOUT$", "w",stdout);
+		freopen("CONOUT$", "w",stderr);
+	}
+	else{
+		std::cout << "Error: Failed to allocate console" << std::endl;
+		return 0;
+	}
 
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW|CS_VREDRAW;
@@ -353,126 +373,109 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	windowClass.hInstance = hInstance;
 	windowClass.lpszClassName = "PhysicsEngineWindowClass";
 	
-	if(RegisterClass(&windowClass))
-	{
-		AllocConsole();
-		freopen("CONIN$", "r",stdin);
-		freopen("CONOUT$", "w",stdout);
-		freopen("CONOUT$", "w",stderr);
-
-		HWND windowHandle = CreateWindowEx(0, windowClass.lpszClassName, "PhysicsEngine", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1000, 1000, 0, 0, hInstance, 0);
-
-		if(windowHandle)
-		{
-			if(!Win32InitOpenGL(windowHandle)){ return 0; }
-
-			SceneManager sceneManager;
-
-			// fill in scene manager with all scenes found in the scene build register
-			std::string sceneFileName;
-		  	std::ifstream sceneRegisterFile ("../data/scene_build_register.txt");
-		  	if (sceneRegisterFile.is_open()){
-		   		while ( getline (sceneRegisterFile, sceneFileName) ){
-		   			Scene scene;
-		   			scene.name = sceneFileName;
-		   			scene.filepath = "../data/scenes/" + sceneFileName;
-		   			scene.isLoaded = false;
-
-		   			sceneManager.add(scene);
-
-		      		std::cout << sceneFileName << std::endl;
-		    	}
-
-		    	sceneRegisterFile.close();
-		  	}
-		  	else{
-		  		std::cout << "Error: Could not open scene build register file" << std::endl;
-		  	}
-
-		  	// fill in scene manager with all assets found in the data folder
-			std::vector<std::string> assetFilePaths = get_all_asset_files("../data/");
-
-			for(unsigned int i = 0; i < assetFilePaths.size(); i++){ 
-				AssetFile assetFile;
-				assetFile.filepath = assetFilePaths[i];
-
-				sceneManager.add(assetFile); 
-			}
-
-			if(sceneManager.validate()){
-				sceneManager.init();
-
-				running = true;
-
-				// total frame timing
-				int frameCount = 0;
-				LARGE_INTEGER lastCounter;
-				QueryPerformanceCounter(&lastCounter);
-				unsigned long long lastCycleCount = __rdtsc();
-
-				// gpu only timing
-				GLuint query;
-				GLuint gpu_time;
-				glGenQueries(1, &query);
-
-				while(running)
-				{
-					glBeginQuery(GL_TIME_ELAPSED, query);
-
-					MSG message;
-					while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
-					{
-						if(message.message == WM_QUIT)
-						{
-							running = false;
-						}
-
-						TranslateMessage(&message);
-						DispatchMessage(&message);
-					}
-
-					sceneManager.update();
-
-					RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-					// record time
-					unsigned long long endCycleCount = __rdtsc();
-					LARGE_INTEGER endCounter;
-					QueryPerformanceCounter(&endCounter);
-
-					unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-					long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-					float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-					float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-					lastCycleCount = endCycleCount;
-					lastCounter = endCounter;
-					frameCount++;
-
-					glEndQuery(GL_TIME_ELAPSED);
-					glGetQueryObjectuiv(query, GL_QUERY_RESULT, &gpu_time);
-
-					Time::frameCount = frameCount;
-					Time::deltaCycles = (int)cyclesElapsed;
-					Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-					Time::deltaTime = milliSecPerFrame;
-					Time::gpuDeltaTime = gpu_time / 1000000.0f;
-
-					Input::updateEOF();
-				}
-			}
-			else{
-				while(true){
-
-				}
-			}
-		}
-		else{
-			// TODO handle unlikely error?
-		}
+	if(!RegisterClass(&windowClass)){
+		std::cout << "Error: Failed to register window class" << std::endl;
+		return 0;
 	}
-	else{
-		// TODO handle unlikely error?
+
+	HWND windowHandle = CreateWindowEx(0, windowClass.lpszClassName, "PhysicsEngine", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1000, 1000, 0, 0, hInstance, 0);
+
+	if(!windowHandle){
+		std::cout << "Error: Failed tocreate window handle" << std::endl;
+		return 0;
+	}
+
+	if(!Win32InitOpenGL(windowHandle)){  //call something like Graphics::init()??
+		std::cout << "Error: Failed to initialize graphics API" << std::endl;
+		return 0;
+	}
+
+	SceneManager sceneManager;
+
+	// fill in scene manager with all scenes found in the scene build register and all assets foudn in data folder
+	std::string sceneFileName;
+  	std::ifstream sceneRegisterFile ("../data/scene_build_register.txt");
+  	if (sceneRegisterFile.is_open()){
+   		while ( getline (sceneRegisterFile, sceneFileName) ){
+   			Scene scene;
+   			scene.name = sceneFileName;
+   			scene.filepath = "../data/scenes/" + sceneFileName;
+   			scene.isLoaded = false;
+
+   			sceneManager.add(scene);
+
+      		std::cout << "Adding scene: " << sceneFileName << std::endl;
+    	}
+
+    	sceneRegisterFile.close();
+  	}
+  	else{
+  		std::cout << "Error: Could not open scene build register file" << std::endl;
+  		return 0;
+  	}
+
+	std::vector<std::string> assetFilePaths = get_all_asset_files("../data/");
+	for(unsigned int i = 0; i < assetFilePaths.size(); i++){ 
+		AssetFile assetFile;
+		assetFile.filepath = assetFilePaths[i];
+
+		sceneManager.add(assetFile); 
+	}
+
+	if(sceneManager.validate()){
+		sceneManager.init();
+
+		running = true;
+
+		LARGE_INTEGER perfCounterFrequencyResult;
+		QueryPerformanceFrequency(&perfCounterFrequencyResult);
+		long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+
+		// total frame timing
+		int frameCount = 0;
+		LARGE_INTEGER lastCounter;
+		QueryPerformanceCounter(&lastCounter);
+		unsigned long long lastCycleCount = __rdtsc();
+
+		while(running)
+		{
+			MSG message;
+			while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+			{
+				if(message.message == WM_QUIT)
+				{
+					running = false;
+				}
+
+				TranslateMessage(&message);
+				DispatchMessage(&message);
+			}
+
+			sceneManager.update();
+
+			RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+			// record time
+			unsigned long long endCycleCount = __rdtsc();
+			LARGE_INTEGER endCounter;
+			QueryPerformanceCounter(&endCounter);
+
+			unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+			long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+			float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+			float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+			lastCycleCount = endCycleCount;
+			lastCounter = endCounter;
+			frameCount++;
+
+			Time::frameCount = frameCount;
+			Time::deltaCycles = (int)cyclesElapsed;
+			Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+			Time::deltaTime = milliSecPerFrame;
+
+			Input::updateEOF();
+		}
 	}
 	
 	return 0;

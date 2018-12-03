@@ -1,6 +1,8 @@
 #ifndef __POOL_H__
 #define __POOL_H__
 
+#include <vector>
+
 namespace PhysicsEngine
 {
 	template<class T>
@@ -9,18 +11,21 @@ namespace PhysicsEngine
 		private:
 			int index;
 			int size;
-			T* array;
+			std::vector<T> data;
+			//T* data;
 
 		public:
 			Pool(int size = 200) : size(size)
 			{
-				index = -1;
-				array = new T[size];
+				index = 0;
+				data.resize(size);
+				//data = new T[size];
 			}
 
 			~Pool()
 			{
-				delete [] array;
+				std::cout << "Pool destructor called. Size: " << size << std::endl;
+				// delete [] data;
 			}
 
 			int getIndex()
@@ -31,13 +36,13 @@ namespace PhysicsEngine
 			T* get(int index)
 			{
 				if(index >= 0 && index < size){
-					return &array[index];
+					return &data[index];
 				}
 
 				return NULL;
 			}
 
-			void allocate()
+			void increment()
 			{
 				if(index < size - 1)
 				{
@@ -45,7 +50,7 @@ namespace PhysicsEngine
 				}
 			}
 
-			void deallocate()
+			void decrement()
 			{
 				if(index > 0){
 					index--;

@@ -33,7 +33,7 @@ RenderSystem::RenderSystem(unsigned char* data)
 RenderSystem::~RenderSystem()
 {
 	delete graph;
-	delete window;
+	delete debugWindow;
 }
 
 void RenderSystem::init()
@@ -66,37 +66,60 @@ void RenderSystem::init()
 
 	Line* line = manager->getLine();
 
-	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
-	window = new DebugWindow(0.75f, 0.6f, 0.3f, 0.3f);
-
-	graphMaterial = manager->create<Material>();
-	graphMaterial->setManager(manager);
-	windowMaterial = manager->create<Material>();
-	windowMaterial->setManager(manager);
-
-	graphShader = manager->create<Shader>();
-	normalMapShader = manager->create<Shader>();
-
-	normalMap = manager->create<Texture2D>();
-
-	graphShader->vertexShader = Shader::graphVertexShader;
-	graphShader->fragmentShader = Shader::graphFragmentShader;
-	normalMapShader->vertexShader = Shader::normalMapVertexShader;
-	normalMapShader->fragmentShader = Shader::normalMapFragmentShader;
-
-	graphShader->compile();
-	normalMapShader->compile();
-
-	graphMaterial->shaderId = graphShader->assetId;
-
 	Graphics::generate(line);
-	Graphics::generate(graph);
-	Graphics::generate(window);
-	
+
 	Graphics::generate(&cameraState);
 	Graphics::generate(&directionLightState);
 	Graphics::generate(&spotLightState);
 	Graphics::generate(&pointLightState);
+
+	// debug 
+	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
+	debugWindow = new DebugWindow(0.5f, 0.5f, 0.5f, 0.5f);
+
+	graphMaterial = manager->create<Material>();
+	windowMaterial = manager->create<Material>();
+	normalMapMaterial = manager->create<Material>();
+	depthMapMaterial = manager->create<Material>();
+
+	graphShader = manager->create<Shader>();
+	windowShader = manager->create<Shader>();
+	normalMapShader = manager->create<Shader>();
+	depthMapShader = manager->create<Shader>();
+
+	graphShader->vertexShader = Shader::graphVertexShader;
+	graphShader->fragmentShader = Shader::graphFragmentShader;
+	windowShader->vertexShader = Shader::windowVertexShader;
+	windowShader->fragmentShader = Shader::windowFragmentShader;
+	normalMapShader->vertexShader = Shader::normalMapVertexShader;
+	normalMapShader->fragmentShader = Shader::normalMapFragmentShader;
+	depthMapShader->vertexShader = Shader::depthMapVertexShader;
+	depthMapShader->fragmentShader = Shader::depthMapFragmentShader;
+
+	graphShader->compile();
+	windowShader->compile();
+	normalMapShader->compile();
+	depthMapShader->compile();
+
+	graphMaterial->shaderId = graphShader->assetId;
+	windowMaterial->shaderId = windowShader->assetId;
+	normalMapMaterial->shaderId = normalMapShader->assetId;
+	depthMapMaterial->shaderId = depthMapShader->assetId;
+
+	Graphics::generate(graph);
+	Graphics::generate(debugWindow);
+
+	fbo.colorBuffer = manager->create<Texture2D>();
+	fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
+	fbo.depthBuffer = manager->create<Texture2D>();
+	fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
+
+	debugMaterial = normalMapMaterial;
+	debugBuffer = fbo.colorBuffer;
+
+	windowMaterial->textureId = fbo.colorBuffer->assetId;
+
+	Graphics::generate(&fbo);
 
 	Graphics::enableBlend();
 	Graphics::enableDepthTest();
@@ -108,6 +131,8 @@ void RenderSystem::init()
 
 void RenderSystem::update()
 {
+	//Graphics::beginGPUTimer();
+
 	int numberOfDirectionalLights = manager->getNumberOfComponents<DirectionalLight>();
 	int numberOfSpotLights = manager->getNumberOfComponents<SpotLight>();
 	int numberOfPointLights = manager->getNumberOfComponents<PointLight>();
@@ -213,7 +238,38 @@ void RenderSystem::update()
 		Graphics::unbind(line);
 	}
 
+	//int elapsedGPUTime = Graphics::endGPUTimer();
+
 	if(manager->debug){
+		if(Input::getKeyDown(KeyCode::NumPad0)){
+			debugMaterial = normalMapMaterial;
+			debugBuffer = fbo.colorBuffer;
+		}
+		else if(Input::getKeyDown(KeyCode::NumPad1)){
+			debugMaterial = depthMapMaterial;
+			debugBuffer = fbo.depthBuffer;
+		}
+
+		Graphics::bind(&fbo);
+		Graphics::clearColorBuffer(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		Graphics::clearDepthBuffer(1.0f);
+		renderScene(debugMaterial);
+		Graphics::unbind(&fbo);
+
+		if(Input::getKeyDown(KeyCode::P)){
+			debugBuffer->readPixels();
+			std::vector<unsigned char> temp = debugBuffer->getRawTextureData();
+
+			Manager::writeToBMP("test.bmp", temp, 1000, 1000, 3);
+		}
+
+		windowMaterial->textureId = debugBuffer->assetId;
+
+		//glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;
+		Graphics::bind(windowMaterial, glm::mat4(1.0f));
+		Graphics::bind(debugWindow);
+		Graphics::draw(debugWindow);
+
 		if(Time::frameCount % 10 == 0){
 			float deltaTime = Time::deltaTime;
 			float gpuDeltaTime = Time::gpuDeltaTime;
@@ -222,6 +278,8 @@ void RenderSystem::update()
 
 			Graphics::apply(graph);
 		}
+
+		//std::cout << "gpu time: " << elapsedGPUTime << std::endl;
 		
 		Graphics::bind(graphMaterial, glm::mat4(1.0f));
 		Graphics::bind(graph);
@@ -247,6 +305,24 @@ void RenderSystem::renderScene()
 		Graphics::bind(mesh);
 		Graphics::draw(mesh);
 		Graphics::unbind(mesh);
+	}
+
+	Graphics::checkError();
+}
+
+void RenderSystem::renderScene(Material* material)
+{
+	for(int i = 0; i < manager->getNumberOfComponents<MeshRenderer>(); i++){
+		MeshRenderer* meshRenderer = manager->getComponentByIndex<MeshRenderer>(i);
+		Transform* transform = meshRenderer->getComponent<Transform>();
+
+		Mesh* mesh = manager->getAsset<Mesh>(meshRenderer->meshId);
+
+		glm::mat4 model = transform->getModelMatrix();
+
+		Graphics::bind(material, model);
+		Graphics::bind(mesh);
+		Graphics::draw(mesh);
 	}
 
 	Graphics::checkError();

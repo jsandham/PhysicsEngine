@@ -33,11 +33,30 @@ Texture3D::~Texture3D()
 
 }
 
+int Texture3D::getWidth() const
+{
+	return width;
+}
+
+int Texture3D::getHeight() const
+{
+	return height;
+}
+
 int Texture3D::getDepth() const
 {
 	return depth;
 }
 
+void Texture3D::redefine(int width, int height, int depth, TextureFormat format)
+{
+	this->width = width;
+	this->height = height;
+	this->depth = depth;
+	this->format = TextureFormat::RGB;
+
+	this->numChannels = calcNumChannels(format);
+}
 
 std::vector<unsigned char> Texture3D::getRawTextureData()
 {

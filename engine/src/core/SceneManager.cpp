@@ -9,6 +9,7 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager()
 {
+	std::cout << "scene manager calling delete on manager" << std::endl;
 	delete manager;
 }
 

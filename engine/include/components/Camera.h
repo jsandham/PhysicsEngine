@@ -42,6 +42,7 @@ namespace PhysicsEngine
 
 		public:
 			Camera();
+			~Camera();
 
 			glm::vec3& getPosition();
 			glm::vec3& getFront();

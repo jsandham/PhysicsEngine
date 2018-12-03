@@ -22,9 +22,7 @@ namespace PhysicsEngine
 	class Cubemap : public Texture
 	{
 		private:
-			std::vector<unsigned char> rawCubemapData;
-
-			TextureFormat format;
+			int width;
 
 		public:
 			Cubemap();
@@ -32,6 +30,8 @@ namespace PhysicsEngine
 			Cubemap(int width, TextureFormat format);
 			Cubemap(int width, int height, TextureFormat format);
 			~Cubemap();
+
+			int getWidth() const;
 
 			std::vector<unsigned char> getRawCubemapData();
 			std::vector<Color> getPixels(CubemapFace face);

@@ -3,18 +3,25 @@
 
 #include <string>
 
-#include "../core/Guid.h"
+#include "Guid.h"
 
 namespace PhysicsEngine
 {
+	class Manager;
+
 	class Asset
 	{
+		protected:
+			Manager* manager;
+
 		public:
 			Guid assetId;
 
 		public:
 			Asset();
 			virtual ~Asset() = 0;
+
+			void setManager(Manager* manager);
 
 			template <typename T>
 			static int getInstanceType()
