@@ -107,8 +107,6 @@ Manager::Manager()
 	glm::vec3 centre = glm::vec3(settings.centre[0], settings.centre[1], settings.centre[2]);
 	glm::vec3 extent = glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
 
-	std::cout << "manager constructor called" << std::endl;
-
 	bounds = new Bounds(centre, extent);
 	physics = new Octtree(*bounds, /*settings.physicsDepth*/4);
 
@@ -135,39 +133,24 @@ Manager::Manager()
 
 Manager::~Manager()
 {
-	std::cout << "Manager destructor called!!!" << std::endl;
-
-	std::cout << "deleting only entities pool" << std::endl;
 	delete entities;
-	// std::cout << "deleting transforms pool" << std::endl;
-	// delete transforms;
-	// std::cout << "deleting rigidbodies pool" << std::endl;
-	// delete rigidbodies;
-	// std::cout << "deleting cameras pool" << std::endl;
-	// delete cameras;
-	// std::cout << "deleting meshRenderers pool" << std::endl;
-	// delete meshRenderers;
-	// std::cout << "deleting lineRenderers pool" << std::endl;
-	// delete lineRenderers;
-	// std::cout << "deleting directionalLights pool" << std::endl;
-	// delete directionalLights;
-	// std::cout << "deleting spotLights pool" << std::endl;
-	// delete spotLights;
-	// std::cout << "deleting pointLights pool" << std::endl;
-	// delete pointLights;
-	// std::cout << "deleting boxColliders pool" << std::endl;
-	// delete boxColliders;
-	// std::cout << "deleting sphereColliders pool" << std::endl;
-	// delete sphereColliders;
-	// std::cout << "deleting capsuleColliders pool" << std::endl;
-	// delete capsuleColliders;
+	delete transforms;
+	delete rigidbodies;
+	delete cameras;
+	delete meshRenderers;
+	delete lineRenderers;
+	delete directionalLights;
+	delete spotLights;
+	delete pointLights;
+	delete boxColliders;
+	delete sphereColliders;
+	delete capsuleColliders;
 
-
-	// delete materials;
-	// delete shaders;
-	// delete textures;
-	// delete meshes;
-	// delete gmeshes;
+	delete materials;
+	delete shaders;
+	delete textures;
+	delete meshes;
+	delete gmeshes;
 
 	delete line;
 
@@ -179,12 +162,217 @@ Manager::~Manager()
 	}
 }
 
-bool Manager::validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles)
-{
-	std::vector<Guid> materialShaderIds;
-	std::vector<Guid> materialTextureIds;
+// bool Manager::validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles)
+// {
+// 	std::vector<Guid> materialShaderIds;
+// 	std::vector<Guid> materialTextureIds;
 
-	// check that all asset id's are unique and that the shader and texture ids on materials match actual shaders and textures
+// 	// check that all asset id's are unique and that the shader and texture ids on materials match actual shaders and textures
+// 	for(unsigned int i = 0; i < assetFiles.size(); i++){
+// 		std::string jsonAssetFilePath = assetFiles[i].filepath.substr(0, assetFiles[i].filepath.find_last_of(".")) + ".json";
+// 		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
+// 		std::ostringstream contents; contents << in.rdbuf(); in.close();
+
+// 		json::JSON jsonAsset = JSON::Load(contents.str());
+
+// 		Guid assetId = jsonAsset["id"].ToString();
+		
+// 		if(assetIdToFilePath.count(assetId) == 0){
+// 			assetIdToFilePath[assetId] = assetFiles[i].filepath;
+// 		}
+// 		else{
+// 			std::cout << "Error: Duplicate asset id (" << assetId.toString() << ") exists" << std::endl;
+// 			return false;
+// 		}
+
+// 		if(assetFiles[i].filepath.substr(assetFiles[i].filepath.find_last_of(".") + 1) == "mat"){
+// 			Guid shaderId = jsonAsset["shader"].ToString();
+// 			Guid mainTextureId = jsonAsset["mainTexture"].ToString();
+// 			Guid normalMapId = jsonAsset["normalMap"].ToString();
+// 			Guid specularMapId = jsonAsset["specularMap"].ToString();
+
+// 			std::cout << "shaderId: " << shaderId.toString() << " mainTextureId: " << mainTextureId.toString() << " normalMapId: " << normalMapId.toString() << " specularMapId: " << specularMapId.toString() << std::endl;
+
+// 			if(shaderId != Guid::INVALID) { materialShaderIds.push_back(shaderId); }
+// 			if(mainTextureId != Guid::INVALID) { materialTextureIds.push_back(mainTextureId); }
+// 			if(normalMapId != Guid::INVALID) { materialTextureIds.push_back(normalMapId); }
+// 			if(specularMapId != Guid::INVALID) { materialTextureIds.push_back(specularMapId); }
+// 		}
+// 	}
+
+// 	for(unsigned int i = 0; i < materialShaderIds.size(); i++){
+// 		std::map<Guid, std::string>::iterator it = assetIdToFilePath.find(materialShaderIds[i]);
+// 		std::cout << "shader id: " << materialShaderIds[i].toString() << std::endl;
+// 		if(it != assetIdToFilePath.end()){
+// 			std::string filepath = it->second;
+// 			std::cout << "shader path: " << filepath << std::endl;
+// 			if(filepath.substr(filepath.find_last_of(".") + 1) != "shader"){
+// 				std::cout << "Error: Shader id found inside material does not correspond to a shader" << std::endl;
+// 				return false;
+// 			}
+// 		}
+// 		else{
+// 			std::cout << "Error: Shader id in material does not match any asset file path" << std::endl;
+// 			return false;
+// 		}
+// 	}
+
+// 	for(unsigned int i = 0; i < materialTextureIds.size(); i++){
+// 		std::cout << "texture id: " << materialTextureIds[i].toString() << std::endl;
+// 		std::map<Guid, std::string>::iterator it = assetIdToFilePath.find(materialTextureIds[i]);
+// 		if(it != assetIdToFilePath.end()){
+// 			std::string filepath = it->second;
+// 			std::cout << "texture: " << filepath << std::endl;
+// 			if(filepath.substr(filepath.find_last_of(".") + 1) != "png"){
+// 				std::cout << "Error: Texture id found inside material does not correspond to a texture" << std::endl;
+// 				return false;
+// 			}
+// 		}
+// 		else{
+// 			std::cout << "Error: Texture id in material does not match any asset file path" << std::endl;
+// 			return false;
+// 		}
+// 	}
+
+// 	// check that all entities and components have unique ids accross all scenes and that all scene ids are unique
+// 	// std::unordered_set<Guid> sceneIds;
+// 	// std::unordered_set<Guid> entityIds;
+// 	std::map<Guid, Guid> sceneIds;
+// 	std::map<Guid, Guid> entityIds;
+// 	std::map<Guid, Guid> componentIdToEntityId;
+// 	for(unsigned int i = 0; i < scenes.size(); i++){
+// 		std::cout << "validating scene: " << scenes[i].name << std::endl;
+
+// 		std::string jsonSceneFilePath = scenes[i].filepath.substr(0, scenes[i].filepath.find_last_of(".")) + ".json";
+// 		std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
+// 		std::ostringstream contents; contents << in.rdbuf(); in.close();
+
+// 		json::JSON jsonScene = JSON::Load(contents.str());
+
+// 		json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
+// 		map<string,JSON>::iterator it;
+
+// 		for(it = objects.begin(); it != objects.end(); it++){
+// 			if(it->first == "id"){ 
+// 				Guid sceneId = it->second.ToString();//////////////////////////////////////
+// 				if(sceneIds.find(sceneId) == sceneIds.end()){
+// 					sceneIds.insert(std::pair<Guid, Guid>(sceneId, sceneId));
+// 					continue;
+// 				} 
+// 				else{
+// 					std::cout << "Error: Duplicate scene id found" << std::endl;
+// 					return false;
+// 				}
+// 			}
+
+// 			Guid objectId = it->first; //////////////////////////
+// 			std::string type = it->second["type"].ToString();
+
+// 			if(type == "Entity"){
+// 				if (entityIds.find(objectId) == entityIds.end()) {
+// 					entityIds.insert(std::pair<Guid, Guid>(objectId, objectId));
+// 				}
+// 				else{
+// 					std::cout << "Error: Duplicate entity id found" << std::endl;
+// 					return false;
+// 				}
+// 			}
+// 			// else if(type == "MeshRenderer"){
+// 			// 	int entityId = it->second["entity"].ToInt();
+// 			// 	if(componentIdToEntityIdMap.count(objectId) == 0){
+// 			// 		componentIdToEntityIdMap[objectId] = entityId;
+// 			// 	}
+// 			// 	else{
+// 			// 		std::cout << "Error: Duplicate component ids exist" << std::endl;
+// 			// 		return false;
+// 			// 	}
+				
+// 			// 	int meshId = it->second["mesh"].ToInt();
+// 			// 	int materialId = it->second["material"].ToInt();
+
+// 			// 	if(assetIdToFilePathMap.count(meshId) != 1){
+// 			// 		std::cout << "Error: Mesh id (" << meshId << ") found on MeshRenderer does not match a mesh" << std::endl;
+// 			// 		return false;
+// 			// 	}
+
+// 			// 	if(assetIdToFilePathMap.count(materialId) != 1){
+// 			// 		std::cout << "Error: Material id (" << materialId << ") found on MeshRenderer does not match a material" << std::endl;
+// 			// 		return false;
+// 			// 	}
+// 			// }
+
+
+// 			else if(type == "PhysicsSystem"){
+// 				std::cout << "physics system found" << std::endl;
+// 			}
+// 			else if(type == "RenderSystem"){
+// 				std::cout << "render system found" << std::endl;
+// 			}
+// 			else if(type == "LogicSystem"){
+// 				std::cout << "logic system found" << std::endl;
+// 			}
+// 			else if(type == "PlayerSystem"){
+// 				std::cout << "player system found" << std::endl;
+// 			}
+// 			else if(type == "DebugSystem"){
+// 				std::cout << "debug system found" << std::endl;
+// 			}
+// 			else{
+// 				Guid entityId = it->second["entity"].ToString();
+// 				if(componentIdToEntityId.count(objectId) == 0){
+// 					componentIdToEntityId[objectId] = entityId;
+// 				}
+// 				else{
+// 					std::cout << "Error: Duplicate component ids exist" << std::endl;
+// 					return false;
+// 				}
+
+// 				entityIdToComponentIds[entityId].push_back(objectId);
+
+// 				if(type == "MeshRenderer"){
+// 					Guid meshId = it->second["mesh"].ToString();
+// 					Guid materialId = it->second["material"].ToString();
+
+// 					if(assetIdToFilePath.count(meshId) != 1){
+// 						std::cout << "Error: Mesh id (" << meshId.toString() << ") found on MeshRenderer does not match a mesh" << std::endl;
+// 						return false;
+// 					}
+
+// 					if(assetIdToFilePath.count(materialId) != 1){
+// 						std::cout << "Error: Material id (" << materialId.toString() << ") found on MeshRenderer does not match a material" << std::endl;
+// 						return false;
+// 					}
+// 				}
+
+// 				if(type == "LineRenderer"){
+// 					Guid materialId = it->second["material"].ToString();
+
+// 					if(assetIdToFilePath.count(materialId) != 1){
+// 						std::cout << "Error: Material id (" << materialId.toString() << ") found on LineRenderer does not match a material" << std::endl;
+// 						return false;
+// 					}
+// 				}
+// 			}
+// 		}
+
+// 		// check that every components entity id matches an existing entity
+// 		std::map<Guid, Guid>::iterator iter;
+// 		for(iter = componentIdToEntityId.begin(); iter != componentIdToEntityId.end(); iter++){
+// 			Guid entityId = iter->second;
+// 			if(entityIds.find(entityId) == entityIds.end()){
+// 				std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
+// 				return false;
+// 			}
+// 		}
+// 	}
+
+// 	return true;
+// }
+
+bool Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
+{
+	std::cout << "loading scene: " << scene.name << std::endl;
+
 	for(unsigned int i = 0; i < assetFiles.size(); i++){
 		std::string jsonAssetFilePath = assetFiles[i].filepath.substr(0, assetFiles[i].filepath.find_last_of(".")) + ".json";
 		std::ifstream in(jsonAssetFilePath, std::ios::in | std::ios::binary);
@@ -193,201 +381,14 @@ bool Manager::validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFi
 		json::JSON jsonAsset = JSON::Load(contents.str());
 
 		Guid assetId = jsonAsset["id"].ToString();
-		
-		if(assetIdToFilePath.count(assetId) == 0){
+
+		std::map<Guid, std::string>::iterator it = assetIdToFilePath.find(assetId);
+		if(it == assetIdToFilePath.end()){
 			assetIdToFilePath[assetId] = assetFiles[i].filepath;
-		}
-		else{
-			std::cout << "Error: Duplicate asset id (" << assetId.toString() << ") exists" << std::endl;
-			return false;
-		}
-
-		if(assetFiles[i].filepath.substr(assetFiles[i].filepath.find_last_of(".") + 1) == "mat"){
-			Guid shaderId = jsonAsset["shader"].ToString();
-			Guid mainTextureId = jsonAsset["mainTexture"].ToString();
-			Guid normalMapId = jsonAsset["normalMap"].ToString();
-			Guid specularMapId = jsonAsset["specularMap"].ToString();
-
-			std::cout << "shaderId: " << shaderId.toString() << " mainTextureId: " << mainTextureId.toString() << " normalMapId: " << normalMapId.toString() << " specularMapId: " << specularMapId.toString() << std::endl;
-
-			if(shaderId != Guid::INVALID) { materialShaderIds.push_back(shaderId); }
-			if(mainTextureId != Guid::INVALID) { materialTextureIds.push_back(mainTextureId); }
-			if(normalMapId != Guid::INVALID) { materialTextureIds.push_back(normalMapId); }
-			if(specularMapId != Guid::INVALID) { materialTextureIds.push_back(specularMapId); }
+			std::cout << "asset file: " << assetFiles[i].filepath << std::endl;
 		}
 	}
 
-	for(unsigned int i = 0; i < materialShaderIds.size(); i++){
-		std::map<Guid, std::string>::iterator it = assetIdToFilePath.find(materialShaderIds[i]);
-		std::cout << "shader id: " << materialShaderIds[i].toString() << std::endl;
-		if(it != assetIdToFilePath.end()){
-			std::string filepath = it->second;
-			std::cout << "shader path: " << filepath << std::endl;
-			if(filepath.substr(filepath.find_last_of(".") + 1) != "shader"){
-				std::cout << "Error: Shader id found inside material does not correspond to a shader" << std::endl;
-				return false;
-			}
-		}
-		else{
-			std::cout << "Error: Shader id in material does not match any asset file path" << std::endl;
-			return false;
-		}
-	}
-
-	for(unsigned int i = 0; i < materialTextureIds.size(); i++){
-		std::cout << "texture id: " << materialTextureIds[i].toString() << std::endl;
-		std::map<Guid, std::string>::iterator it = assetIdToFilePath.find(materialTextureIds[i]);
-		if(it != assetIdToFilePath.end()){
-			std::string filepath = it->second;
-			std::cout << "texture: " << filepath << std::endl;
-			if(filepath.substr(filepath.find_last_of(".") + 1) != "png"){
-				std::cout << "Error: Texture id found inside material does not correspond to a texture" << std::endl;
-				return false;
-			}
-		}
-		else{
-			std::cout << "Error: Texture id in material does not match any asset file path" << std::endl;
-			return false;
-		}
-	}
-
-	// check that all entities and components have unique ids accross all scenes and that all scene ids are unique
-	// std::unordered_set<Guid> sceneIds;
-	// std::unordered_set<Guid> entityIds;
-	std::map<Guid, Guid> sceneIds;
-	std::map<Guid, Guid> entityIds;
-	std::map<Guid, Guid> componentIdToEntityId;
-	for(unsigned int i = 0; i < scenes.size(); i++){
-		std::cout << "validating scene: " << scenes[i].name << std::endl;
-
-		std::string jsonSceneFilePath = scenes[i].filepath.substr(0, scenes[i].filepath.find_last_of(".")) + ".json";
-		std::ifstream in(jsonSceneFilePath, std::ios::in | std::ios::binary);
-		std::ostringstream contents; contents << in.rdbuf(); in.close();
-
-		json::JSON jsonScene = JSON::Load(contents.str());
-
-		json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
-		map<string,JSON>::iterator it;
-
-		for(it = objects.begin(); it != objects.end(); it++){
-			if(it->first == "id"){ 
-				Guid sceneId = it->second.ToString();//////////////////////////////////////
-				if(sceneIds.find(sceneId) == sceneIds.end()){
-					sceneIds.insert(std::pair<Guid, Guid>(sceneId, sceneId));
-					continue;
-				} 
-				else{
-					std::cout << "Error: Duplicate scene id found" << std::endl;
-					return false;
-				}
-			}
-
-			Guid objectId = it->first; //////////////////////////
-			std::string type = it->second["type"].ToString();
-
-			if(type == "Entity"){
-				if (entityIds.find(objectId) == entityIds.end()) {
-					entityIds.insert(std::pair<Guid, Guid>(objectId, objectId));
-				}
-				else{
-					std::cout << "Error: Duplicate entity id found" << std::endl;
-					return false;
-				}
-			}
-			// else if(type == "MeshRenderer"){
-			// 	int entityId = it->second["entity"].ToInt();
-			// 	if(componentIdToEntityIdMap.count(objectId) == 0){
-			// 		componentIdToEntityIdMap[objectId] = entityId;
-			// 	}
-			// 	else{
-			// 		std::cout << "Error: Duplicate component ids exist" << std::endl;
-			// 		return false;
-			// 	}
-				
-			// 	int meshId = it->second["mesh"].ToInt();
-			// 	int materialId = it->second["material"].ToInt();
-
-			// 	if(assetIdToFilePathMap.count(meshId) != 1){
-			// 		std::cout << "Error: Mesh id (" << meshId << ") found on MeshRenderer does not match a mesh" << std::endl;
-			// 		return false;
-			// 	}
-
-			// 	if(assetIdToFilePathMap.count(materialId) != 1){
-			// 		std::cout << "Error: Material id (" << materialId << ") found on MeshRenderer does not match a material" << std::endl;
-			// 		return false;
-			// 	}
-			// }
-
-
-			else if(type == "PhysicsSystem"){
-				std::cout << "physics system found" << std::endl;
-			}
-			else if(type == "RenderSystem"){
-				std::cout << "render system found" << std::endl;
-			}
-			else if(type == "LogicSystem"){
-				std::cout << "logic system found" << std::endl;
-			}
-			else if(type == "PlayerSystem"){
-				std::cout << "player system found" << std::endl;
-			}
-			else if(type == "DebugSystem"){
-				std::cout << "debug system found" << std::endl;
-			}
-			else{
-				Guid entityId = it->second["entity"].ToString();
-				if(componentIdToEntityId.count(objectId) == 0){
-					componentIdToEntityId[objectId] = entityId;
-				}
-				else{
-					std::cout << "Error: Duplicate component ids exist" << std::endl;
-					return false;
-				}
-
-				entityIdToComponentIds[entityId].push_back(objectId);
-
-				if(type == "MeshRenderer"){
-					Guid meshId = it->second["mesh"].ToString();
-					Guid materialId = it->second["material"].ToString();
-
-					if(assetIdToFilePath.count(meshId) != 1){
-						std::cout << "Error: Mesh id (" << meshId.toString() << ") found on MeshRenderer does not match a mesh" << std::endl;
-						return false;
-					}
-
-					if(assetIdToFilePath.count(materialId) != 1){
-						std::cout << "Error: Material id (" << materialId.toString() << ") found on MeshRenderer does not match a material" << std::endl;
-						return false;
-					}
-				}
-
-				if(type == "LineRenderer"){
-					Guid materialId = it->second["material"].ToString();
-
-					if(assetIdToFilePath.count(materialId) != 1){
-						std::cout << "Error: Material id (" << materialId.toString() << ") found on LineRenderer does not match a material" << std::endl;
-						return false;
-					}
-				}
-			}
-		}
-
-		// check that every components entity id matches an existing entity
-		std::map<Guid, Guid>::iterator iter;
-		for(iter = componentIdToEntityId.begin(); iter != componentIdToEntityId.end(); iter++){
-			Guid entityId = iter->second;
-			if(entityIds.find(entityId) == entityIds.end()){
-				std::cout << "Error: Component says it is attached to an entity that does not exist" << std::endl;
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
-{
 	std::cout << "scene file path: " << scene.filepath << std::endl;
 
 	std::string binarySceneFilePath = scene.filepath.substr(0, scene.filepath.find_last_of(".")) + ".scene";
@@ -445,7 +446,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 		if(error){
 			std::cout << "Error: Number of entities, components, or systems exceeds maximum allowed. Please increase max allowed in scene settings." << std::endl;
-			return;
+			return false;
 		}
 
 		error = settings.maxAllowedEntities <= 0;
@@ -463,37 +464,212 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 		if(error){
 			std::cout << "Error: Total number of entities, components, and systems must be strictly greater than zero. Please increase max allowed in scene settings." << std::endl;
-			return;
+			return false;
 		}
 
-		bytesRead = fread(entities->get(existingNumberOfEntities), sceneHeader.numberOfEntities*sizeof(Entity), 1, file);
-		bytesRead = fread(transforms->get(existingNumberOfTransforms), sceneHeader.numberOfTransforms*sizeof(Transform), 1, file);
-		bytesRead = fread(rigidbodies->get(existingNumberOfRigidbodies), sceneHeader.numberOfRigidbodies*sizeof(Rigidbody), 1, file);
-		bytesRead = fread(cameras->get(existingNumberOfCameras), sceneHeader.numberOfCameras*sizeof(Camera), 1, file);
-		bytesRead = fread(meshRenderers->get(existingNumberOfMeshRenderers), sceneHeader.numberOfMeshRenderers*sizeof(MeshRenderer), 1, file);
-		bytesRead = fread(lineRenderers->get(existingNumberOfLineRenderers), sceneHeader.numberOfLineRenderers*sizeof(LineRenderer), 1, file);
-		bytesRead = fread(directionalLights->get(existingNumberOfDirectionalLights), sceneHeader.numberOfDirectionalLights*sizeof(DirectionalLight), 1, file);
-		bytesRead = fread(spotLights->get(existingNumberOfSpotLights), sceneHeader.numberOfSpotLights*sizeof(SpotLight), 1, file);
-		bytesRead = fread(pointLights->get(existingNumberOfPointLights), sceneHeader.numberOfPointLights*sizeof(PointLight), 1, file);
-		bytesRead = fread(boxColliders->get(existingNumberOfBoxColliders), sceneHeader.numberOfBoxColliders*sizeof(BoxCollider), 1, file);
-		bytesRead = fread(sphereColliders->get(existingNumberOfSphereColliders), sceneHeader.numberOfSphereColliders*sizeof(SphereCollider), 1, file);
-		bytesRead = fread(capsuleColliders->get(existingNumberOfCapsuleColliders), sceneHeader.numberOfCapsuleColliders*sizeof(CapsuleCollider), 1, file);
+		if(sceneHeader.numberOfEntities > 0){
+			EntityData* entityData = new EntityData[sceneHeader.numberOfEntities];
+			bytesRead = fread(entityData, sceneHeader.numberOfEntities*sizeof(EntityData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfEntities; i++){ 
+				entities->get(i)->load(entityData[i]);
+				entities->get(i)->setManager(this); 
 
-		entities->setIndex(sceneHeader.numberOfEntities);
-		transforms->setIndex(sceneHeader.numberOfTransforms);
-		rigidbodies->setIndex(sceneHeader.numberOfRigidbodies);
-		cameras->setIndex(sceneHeader.numberOfCameras);
-		meshRenderers->setIndex(sceneHeader.numberOfMeshRenderers);
-		lineRenderers->setIndex(sceneHeader.numberOfLineRenderers);
-		directionalLights->setIndex(sceneHeader.numberOfDirectionalLights);
-		spotLights->setIndex(sceneHeader.numberOfSpotLights);
-		pointLights->setIndex(sceneHeader.numberOfPointLights);
-		boxColliders->setIndex(sceneHeader.numberOfBoxColliders);
-		sphereColliders->setIndex(sceneHeader.numberOfSphereColliders);
-		capsuleColliders->setIndex(sceneHeader.numberOfCapsuleColliders);
+				idToGlobalIndex[entities->get(i)->entityId] = i;
+			}
+
+			entities->setIndex(sceneHeader.numberOfEntities);
+
+			delete [] entityData; 
+		}
+
+		if(sceneHeader.numberOfTransforms > 0){
+			TransformData* transformData = new TransformData[sceneHeader.numberOfTransforms];
+			bytesRead = fread(transformData, sceneHeader.numberOfTransforms*sizeof(TransformData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfTransforms; i++){ 
+				transforms->get(i)->load(transformData[i]);
+				transforms->get(i)->setManager(this); 
+
+				idToGlobalIndex[transforms->get(i)->componentId] = i;
+				componentIdToType[transforms->get(i)->componentId] = Component::getInstanceType<Transform>(); 	
+				entityIdToComponentIds[transforms->get(i)->entityId].push_back(transforms->get(i)->componentId);			
+			}
+
+			transforms->setIndex(sceneHeader.numberOfTransforms);
+
+			delete [] transformData; 
+		}
+
+		if(sceneHeader.numberOfRigidbodies > 0){
+			RigidbodyData* rigidbodyData = new RigidbodyData[sceneHeader.numberOfRigidbodies];
+			bytesRead = fread(rigidbodyData, sceneHeader.numberOfRigidbodies*sizeof(RigidbodyData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfRigidbodies; i++){
+				rigidbodies->get(i)->load(rigidbodyData[i]); 
+				rigidbodies->get(i)->setManager(this); 
+
+				idToGlobalIndex[rigidbodies->get(i)->componentId] = i;
+				componentIdToType[rigidbodies->get(i)->componentId] = Component::getInstanceType<Rigidbody>(); 
+				entityIdToComponentIds[rigidbodies->get(i)->entityId].push_back(rigidbodies->get(i)->componentId);
+			}
+
+			rigidbodies->setIndex(sceneHeader.numberOfRigidbodies);
+
+			delete [] rigidbodyData; 
+		}	
+
+		if(sceneHeader.numberOfCameras > 0){
+			CameraData* cameraData = new CameraData[sceneHeader.numberOfCameras];
+			bytesRead = fread(cameraData, sceneHeader.numberOfCameras*sizeof(CameraData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfCameras; i++){
+				cameras->get(i)->load(cameraData[i]); 
+				cameras->get(i)->setManager(this); 
+
+				idToGlobalIndex[cameras->get(i)->componentId] = i;
+				componentIdToType[cameras->get(i)->componentId] = Component::getInstanceType<Camera>(); 
+				entityIdToComponentIds[cameras->get(i)->entityId].push_back(cameras->get(i)->componentId);
+			}
+
+			cameras->setIndex(sceneHeader.numberOfCameras);
+
+			delete [] cameraData; 
+		}	
+
+		if(sceneHeader.numberOfMeshRenderers > 0){
+			MeshRendererData* meshRendererData = new MeshRendererData[sceneHeader.numberOfMeshRenderers];
+			bytesRead = fread(meshRendererData, sceneHeader.numberOfMeshRenderers*sizeof(MeshRendererData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfMeshRenderers; i++){ 
+				meshRenderers->get(i)->load(meshRendererData[i]);
+				meshRenderers->get(i)->setManager(this); 
+
+				idToGlobalIndex[meshRenderers->get(i)->componentId] = i;
+				componentIdToType[meshRenderers->get(i)->componentId] = Component::getInstanceType<MeshRenderer>(); 
+				entityIdToComponentIds[meshRenderers->get(i)->entityId].push_back(meshRenderers->get(i)->componentId);
+			}
+
+			meshRenderers->setIndex(sceneHeader.numberOfMeshRenderers);
+
+			delete [] meshRendererData; 
+		}	
+
+		if(sceneHeader.numberOfLineRenderers > 0){
+			LineRendererData* lineRendererData = new LineRendererData[sceneHeader.numberOfLineRenderers];
+			bytesRead = fread(lineRendererData, sceneHeader.numberOfLineRenderers*sizeof(LineRendererData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfLineRenderers; i++){ 
+				lineRenderers->get(i)->load(lineRendererData[i]);
+				lineRenderers->get(i)->setManager(this); 
+
+				idToGlobalIndex[lineRenderers->get(i)->componentId] = i;
+				componentIdToType[lineRenderers->get(i)->componentId] = Component::getInstanceType<LineRenderer>(); 
+				entityIdToComponentIds[lineRenderers->get(i)->entityId].push_back(lineRenderers->get(i)->componentId);
+			}
+
+			lineRenderers->setIndex(sceneHeader.numberOfLineRenderers);
+
+			delete [] lineRendererData; 
+		}
+
+		if(sceneHeader.numberOfDirectionalLights > 0){
+			DirectionalLightData* directionalLightData = new DirectionalLightData[sceneHeader.numberOfDirectionalLights];
+			bytesRead = fread(directionalLightData, sceneHeader.numberOfDirectionalLights*sizeof(DirectionalLightData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfDirectionalLights; i++){
+				directionalLights->get(i)->load(directionalLightData[i]);
+				directionalLights->get(i)->setManager(this);
+
+				idToGlobalIndex[directionalLights->get(i)->componentId] = i;
+				componentIdToType[directionalLights->get(i)->componentId] = Component::getInstanceType<DirectionalLight>(); 
+				entityIdToComponentIds[directionalLights->get(i)->entityId].push_back(directionalLights->get(i)->componentId);
+			}
+
+			directionalLights->setIndex(sceneHeader.numberOfDirectionalLights);
+
+			delete [] directionalLightData; 
+		}	
+
+		if(sceneHeader.numberOfSpotLights > 0){
+			SpotLightData* spotLightData = new SpotLightData[sceneHeader.numberOfSpotLights];
+			bytesRead = fread(spotLightData, sceneHeader.numberOfSpotLights*sizeof(SpotLightData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfSpotLights; i++){
+				spotLights->get(i)->load(spotLightData[i]);
+				spotLights->get(i)->setManager(this); 
+
+				idToGlobalIndex[spotLights->get(i)->componentId] = i;
+				componentIdToType[spotLights->get(i)->componentId] = Component::getInstanceType<SpotLight>(); 
+				entityIdToComponentIds[spotLights->get(i)->entityId].push_back(spotLights->get(i)->componentId);
+			}
+
+			spotLights->setIndex(sceneHeader.numberOfSpotLights);
+
+			delete [] spotLightData; 
+		}	
+
+		if(sceneHeader.numberOfPointLights > 0){
+			PointLightData* pointLightData = new PointLightData[sceneHeader.numberOfPointLights];
+			bytesRead = fread(pointLightData, sceneHeader.numberOfPointLights*sizeof(PointLightData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfPointLights; i++){
+				pointLights->get(i)->load(pointLightData[i]);
+				pointLights->get(i)->setManager(this); 
+
+				idToGlobalIndex[pointLights->get(i)->componentId] = i;
+				componentIdToType[pointLights->get(i)->componentId] = Component::getInstanceType<PointLight>(); 
+				entityIdToComponentIds[pointLights->get(i)->entityId].push_back(pointLights->get(i)->componentId);
+			}
+
+			pointLights->setIndex(sceneHeader.numberOfPointLights);
+
+			delete [] pointLightData; 
+		}		
+
+		if(sceneHeader.numberOfBoxColliders > 0){
+			BoxColliderData* boxColliderData = new BoxColliderData[sceneHeader.numberOfBoxColliders];
+			bytesRead = fread(boxColliderData, sceneHeader.numberOfBoxColliders*sizeof(BoxColliderData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfBoxColliders; i++){
+				boxColliders->get(i)->load(boxColliderData[i]);
+				boxColliders->get(i)->setManager(this); 
+
+				idToGlobalIndex[boxColliders->get(i)->componentId] = i;
+				componentIdToType[boxColliders->get(i)->componentId] = Component::getInstanceType<BoxCollider>(); 
+				entityIdToComponentIds[boxColliders->get(i)->entityId].push_back(boxColliders->get(i)->componentId);
+			}
+
+			boxColliders->setIndex(sceneHeader.numberOfBoxColliders);
+
+			delete [] boxColliderData; 
+		}	
+
+		if(sceneHeader.numberOfSphereColliders > 0){
+			SphereColliderData* sphereColliderData = new SphereColliderData[sceneHeader.numberOfSphereColliders];
+			bytesRead = fread(sphereColliderData, sceneHeader.numberOfSphereColliders*sizeof(SphereColliderData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfSphereColliders; i++){
+				sphereColliders->get(i)->load(sphereColliderData[i]);
+				sphereColliders->get(i)->setManager(this); 
+
+				idToGlobalIndex[sphereColliders->get(i)->componentId] = i;
+				componentIdToType[sphereColliders->get(i)->componentId] = Component::getInstanceType<SphereCollider>(); 
+				entityIdToComponentIds[sphereColliders->get(i)->entityId].push_back(sphereColliders->get(i)->componentId);
+			}
+
+			sphereColliders->setIndex(sceneHeader.numberOfSphereColliders);
+
+			delete [] sphereColliderData; 
+		}	
+
+		if(sceneHeader.numberOfCapsuleColliders > 0){
+			CapsuleColliderData* capsuleColliderData = new CapsuleColliderData[sceneHeader.numberOfCapsuleColliders];
+			bytesRead = fread(capsuleColliderData, sceneHeader.numberOfCapsuleColliders*sizeof(CapsuleColliderData), 1, file);
+			for(unsigned int i = 0; i < sceneHeader.numberOfCapsuleColliders; i++){
+				capsuleColliders->get(i)->load(capsuleColliderData[i]); 
+				capsuleColliders->get(i)->setManager(this); 
+
+				idToGlobalIndex[capsuleColliders->get(i)->componentId] = i;
+				componentIdToType[capsuleColliders->get(i)->componentId] = Component::getInstanceType<CapsuleCollider>(); 
+				entityIdToComponentIds[capsuleColliders->get(i)->entityId].push_back(capsuleColliders->get(i)->componentId);
+			}
+
+			capsuleColliders->setIndex(sceneHeader.numberOfCapsuleColliders);
+
+			delete [] capsuleColliderData; 
+		}		
 
 		// what if I wrote the size of the system in the binary file, followed by the actual system byte data?
-		// for(int i = 0; i < numberOfSystems; i++){
 		while(true){
 			size_t sizeOfSystem;
 			bytesRead = fread(&sizeOfSystem, sizeof(size_t), 1, file);
@@ -522,8 +698,10 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 			if(system == NULL){
 				std::cout << "Error: Could not load system" << std::endl;
-				return;
+				return false;
 			}
+
+			system->setManager(this);
 
 			systems.push_back(system);
 
@@ -534,52 +712,8 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 	}
 	else{
 		std::cout << "Error: Failed to open scene binary file " << binarySceneFilePath << " for reading" << std::endl;
-		return;
+		return false;
 	}
-
-	// set manager on entites and components
-	for(int i = 0; i < entities->getIndex(); i++){ entities->get(i)->setManager(this); }
-	for(int i = 0; i < transforms->getIndex(); i++){ transforms->get(i)->setManager(this); }
-	for(int i = 0; i < rigidbodies->getIndex(); i++){ rigidbodies->get(i)->setManager(this); }
-	for(int i = 0; i < cameras->getIndex(); i++){ cameras->get(i)->setManager(this); }
-	for(int i = 0; i < meshRenderers->getIndex(); i++){ meshRenderers->get(i)->setManager(this); }
-	for(int i = 0; i < lineRenderers->getIndex(); i++){ lineRenderers->get(i)->setManager(this); }
-	for(int i = 0; i < directionalLights->getIndex(); i++){ directionalLights->get(i)->setManager(this); }
-	for(int i = 0; i < spotLights->getIndex(); i++){ spotLights->get(i)->setManager(this); }
-	for(int i = 0; i < pointLights->getIndex(); i++){ pointLights->get(i)->setManager(this); }
-	for(int i = 0; i < boxColliders->getIndex(); i++){ boxColliders->get(i)->setManager(this); }
-	for(int i = 0; i < sphereColliders->getIndex(); i++){ sphereColliders->get(i)->setManager(this); }
-	for(int i = 0; i < capsuleColliders->getIndex(); i++){ capsuleColliders->get(i)->setManager(this); }
-
-	// set manager on systems
-	for(unsigned int i = 0; i < systems.size(); i++){ systems[i]->setManager(this); }
-
-	// map entity/component id to its global array index
-	for(int i = 0; i < entities->getIndex(); i++){ idToGlobalIndex[entities->get(i)->entityId] = i; }
-	for(int i = 0; i < transforms->getIndex(); i++){ idToGlobalIndex[transforms->get(i)->componentId] = i; }
-	for(int i = 0; i < rigidbodies->getIndex(); i++){ idToGlobalIndex[rigidbodies->get(i)->componentId] = i; }
-	for(int i = 0; i < cameras->getIndex(); i++){ idToGlobalIndex[cameras->get(i)->componentId] = i; }
-	for(int i = 0; i < meshRenderers->getIndex(); i++){ idToGlobalIndex[meshRenderers->get(i)->componentId] = i; }
-	for(int i = 0; i < lineRenderers->getIndex(); i++){ idToGlobalIndex[lineRenderers->get(i)->componentId] = i; }
-	for(int i = 0; i < directionalLights->getIndex(); i++){ idToGlobalIndex[directionalLights->get(i)->componentId] = i; }
-	for(int i = 0; i < spotLights->getIndex(); i++){ idToGlobalIndex[spotLights->get(i)->componentId] = i; }
-	for(int i = 0; i < pointLights->getIndex(); i++){ idToGlobalIndex[pointLights->get(i)->componentId] = i; }
-	for(int i = 0; i < boxColliders->getIndex(); i++){ idToGlobalIndex[boxColliders->get(i)->componentId] = i; }
-	for(int i = 0; i < sphereColliders->getIndex(); i++){ idToGlobalIndex[sphereColliders->get(i)->componentId] = i; }
-	for(int i = 0; i < capsuleColliders->getIndex(); i++){ idToGlobalIndex[capsuleColliders->get(i)->componentId] = i; }
-
-	// map component id to its type
-	for(int i = 0; i < transforms->getIndex(); i++){ componentIdToType[transforms->get(i)->componentId] = Component::getInstanceType<Transform>(); }
-	for(int i = 0; i < rigidbodies->getIndex(); i++){ componentIdToType[rigidbodies->get(i)->componentId] = Component::getInstanceType<Rigidbody>(); }
-	for(int i = 0; i < cameras->getIndex(); i++){ componentIdToType[cameras->get(i)->componentId] = Component::getInstanceType<Camera>(); }
-	for(int i = 0; i < meshRenderers->getIndex(); i++){ componentIdToType[meshRenderers->get(i)->componentId] = Component::getInstanceType<MeshRenderer>(); }
-	for(int i = 0; i < lineRenderers->getIndex(); i++){ componentIdToType[lineRenderers->get(i)->componentId] = Component::getInstanceType<LineRenderer>(); }
-	for(int i = 0; i < directionalLights->getIndex(); i++){ componentIdToType[directionalLights->get(i)->componentId] = Component::getInstanceType<DirectionalLight>(); }
-	for(int i = 0; i < spotLights->getIndex(); i++){ componentIdToType[spotLights->get(i)->componentId] = Component::getInstanceType<SpotLight>(); }
-	for(int i = 0; i < pointLights->getIndex(); i++){ componentIdToType[pointLights->get(i)->componentId] = Component::getInstanceType<PointLight>(); }
-	for(int i = 0; i < boxColliders->getIndex(); i++){ componentIdToType[boxColliders->get(i)->componentId] = Component::getInstanceType<BoxCollider>(); }
-	for(int i = 0; i < sphereColliders->getIndex(); i++){ componentIdToType[sphereColliders->get(i)->componentId] = Component::getInstanceType<SphereCollider>(); }
-	for(int i = 0; i < capsuleColliders->getIndex(); i++){ componentIdToType[capsuleColliders->get(i)->componentId] = Component::getInstanceType<CapsuleCollider>(); }
 
 	// find all unique materials
 	std::vector<Guid> materialIds;
@@ -626,13 +760,16 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		FILE* file = fopen(materialFilePath.c_str(), "rb");
 		size_t bytesRead;
 		if (file){
-			bytesRead = fread(materials->get(i), sizeof(Material), 1, file);
+			MaterialData data;
+			bytesRead = fread(&data, sizeof(MaterialData), 1, file);
+			materials->get(i)->load(data);
+			// bytesRead = fread(materials->get(i), sizeof(Material), 1, file);
 			std::cout << "number of bytes read from file: " << bytesRead << std::endl;
 			materials->increment();
 		}
 		else{
 			std::cout << "Error: Failed to open material binary file " << materialFilePath << " for reading" << std::endl;
-			return;
+			return false;
 		}
 
 		std::cout << "material id: " << materials->get(i)->assetId.toString() << " texture id: " << materials->get(i)->textureId.toString() << " shader id: " << materials->get(i)->shaderId.toString() << std::endl;
@@ -746,7 +883,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 					break;
 				default:
 					std::cout << "Error: Unsupported number of channels (" << numChannels << ") found when loading texture " << textureFilePath << " (" << textureId.toString() << ")" << std::endl;
-					return;
+					return false;
 			}
 
 			textures->get(i)->assetId = textureId;
@@ -755,7 +892,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		}
 		else{
 			std::cout << "Error: stbi_load failed to load texture " << textureFilePath << " (" << textureId.toString() << ") with reported reason: " << stbi_failure_reason() << std::endl;
-			return;
+			return false;
 		}
 	}
 
@@ -783,7 +920,7 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 
 	    if(startOfVertexTag == std::string::npos || startOfFragmentTag == std::string::npos){
 	    	std::cout << "Error: Shader must contain both a vertex shader and a fragment shader" << std::endl;
-	    	return;
+	    	return false;
 	    }
 
 	    std::string vertexShader, geometryShader, fragmentShader;
@@ -893,11 +1030,13 @@ void Manager::load(Scene scene, std::vector<AssetFile> assetFiles)
 		}
 		else{
 			std::cout << "Error: Failed to open material binary file " << meshFilePath << " for reading" << std::endl;
-			return;
+			return false;
 		}
 
 		std::cout << "mesh id: " << meshId.toString() << " mesh header number of vertices: " << header.verticesSize << " number of normals: " << header.normalsSize << " number of texCoords: " << header.texCoordsSize << std::endl;
 	}
+
+	return true;
 }
 
 int Manager::getNumberOfEntities()

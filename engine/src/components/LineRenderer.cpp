@@ -14,3 +14,14 @@ LineRenderer::~LineRenderer()
 {
 
 }
+
+void LineRenderer::load(LineRendererData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	start = data.start;
+	end = data.end;
+
+	materialId = data.materialId;
+}

@@ -12,20 +12,17 @@ namespace PhysicsEngine
 			int index;
 			int size;
 			std::vector<T> data;
-			//T* data;
 
 		public:
 			Pool(int size = 200) : size(size)
 			{
 				index = 0;
 				data.resize(size);
-				//data = new T[size];
 			}
 
 			~Pool()
 			{
-				std::cout << "Pool destructor called. Size: " << size << std::endl;
-				// delete [] data;
+				
 			}
 
 			int getIndex()

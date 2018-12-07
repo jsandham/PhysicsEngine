@@ -10,6 +10,19 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct LineRendererData
+	{
+		Guid componentId;
+		Guid entityId;
+		glm::vec3 start;
+		glm::vec3 end;
+
+		Guid materialId;
+
+	};
+// #pragma pack(pop)
+
 	class LineRenderer : public Component
 	{
 		public:
@@ -21,6 +34,8 @@ namespace PhysicsEngine
 		public:
 			LineRenderer();
 			~LineRenderer();
+
+			void load(LineRendererData data);
 	};
 }
 

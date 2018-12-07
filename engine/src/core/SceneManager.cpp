@@ -25,20 +25,6 @@ void SceneManager::add(AssetFile assetFile)
 	assetFiles.push_back(assetFile);
 }
 
-bool SceneManager::validate()
-{
-	if(scenes.size() == 0){
-		std::cout << "Warning: No scenes found" << std::endl;
-		return false;
-	}
-
-	if(!manager->validate(scenes, assetFiles)){
-		std::cout << "Error: Validation failed" << std::endl;
-		return false;
-	}
-
-	return true;
-}
 
 void SceneManager::init()
 {
@@ -46,8 +32,10 @@ void SceneManager::init()
 	activeSceneIndex = -1;
 }
 
-void SceneManager::update()
+bool SceneManager::update()
 {
+	bool error = false;
+
 	int sceneToLoadIndex = context.getSceneToLoadIndex();
 	if(sceneToLoadIndex != activeSceneIndex){
 		loadingSceneIndex = sceneToLoadIndex;
@@ -55,28 +43,28 @@ void SceneManager::update()
 	}
 
 	if(loadingScene != NULL){
-		std::cout << "loading scene: " << loadingScene->filepath << std::endl;
+		error = !manager->load(*loadingScene, assetFiles); 
+		if(!error){
+			for(int i = 0; i < manager->getNumberOfSystems(); i++){
+				System* system = manager->getSystemByIndex(i);
 
-		manager->load(*loadingScene, assetFiles);
+				system->setSceneContext(&context);
+				system->init();
+			}
 
-		for(int i = 0; i < manager->getNumberOfSystems(); i++){
-			System* system = manager->getSystemByIndex(i);
-
-			system->setSceneContext(&context);
-			system->init();
+			activeSceneIndex = loadingSceneIndex;
+			activeScene = loadingScene;
+			loadingScene = NULL;
 		}
-
-		activeSceneIndex = loadingSceneIndex;
-		activeScene = loadingScene;
-		loadingScene = NULL;
 	}
 
-	if(activeScene != NULL){
+	if(activeScene != NULL && !error){
 		for(int i = 0; i < manager->getNumberOfSystems(); i++){
 			System* system = manager->getSystemByIndex(i);
 
 			system->update();
 		}
 	}
-	
+
+	return !error;
 }

@@ -11,6 +11,15 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct SphereColliderData
+	{
+		Guid componentId;
+		Guid entityId;
+		Sphere sphere;
+	};
+// #pragma pack(pop)
+
 	class SphereCollider : public Collider
 	{
 		public:
@@ -19,6 +28,8 @@ namespace PhysicsEngine
 		public:
 			SphereCollider();
 			~SphereCollider();
+
+			void load(SphereColliderData data);
 
 			bool intersect(Bounds bounds);
 	};

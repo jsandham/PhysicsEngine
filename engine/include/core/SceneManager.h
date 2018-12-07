@@ -30,9 +30,8 @@ namespace PhysicsEngine
 			void add(Scene scene);
 			void add(AssetFile assetFile);
 
-			bool validate();
 			void init();
-			void update();
+			bool update();
 	};
 }
 

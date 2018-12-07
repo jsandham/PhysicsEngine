@@ -12,6 +12,24 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct MaterialData
+	{
+		Guid assetId;
+		Guid shaderId;
+		Guid textureId;
+		Guid normalMapId;
+		Guid specularMapId;
+
+		float shininess;
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		glm::vec4 color;
+
+	};
+#pragma pack(pop)
+
 	typedef enum TEXURESLOT
 	{
 		MAINTEXTURE,
@@ -41,6 +59,8 @@ namespace PhysicsEngine
 		public:
 			Material();
 			~Material();
+
+			void load(MaterialData data);
 
 			Shader* getShader();
 			Texture2D* getMainTexture();

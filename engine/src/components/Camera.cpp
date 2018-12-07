@@ -41,6 +41,14 @@ Camera::~Camera()
 
 }
 
+void Camera::load(CameraData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	position = data.position;
+	backgroundColor = data.backgroundColor;
+}
 
 glm::vec3& Camera::getPosition() 
 {

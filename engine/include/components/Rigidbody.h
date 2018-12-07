@@ -9,6 +9,25 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct RigidbodyData
+	{
+		Guid componentId;
+		Guid entityId;
+		bool useGravity;
+		float mass;
+		float drag;
+		float angularDrag;
+
+		glm::vec3 velocity;
+		glm::vec3 angularVelocity;
+		glm::vec3 centreOfMass;
+		glm::mat3 inertiaTensor;
+		
+		glm::vec3 halfVelocity;
+	};
+// #pragma pack(pop)
+
 	class Rigidbody : public Component
 	{
 		public:
@@ -28,6 +47,8 @@ namespace PhysicsEngine
 		public:
 			Rigidbody();
 			~Rigidbody();
+
+			void load(RigidbodyData data);
 	};
 }
 

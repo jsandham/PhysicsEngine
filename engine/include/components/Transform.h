@@ -11,6 +11,18 @@
 
 namespace PhysicsEngine
 {
+//#pragma pack(push, 1)
+	struct TransformData
+	{
+		Guid componentId;
+		Guid entityId;
+		glm::vec3 position;
+		glm::quat rotation;
+		glm::vec3 scale;
+
+	};
+//#pragma pack(pop)
+
 	class Transform : public Component
 	{
 		public:
@@ -21,6 +33,8 @@ namespace PhysicsEngine
 		public:
 			Transform();
 			~Transform();
+
+			void load(TransformData data);
 
 			glm::vec3 getEulerAngles();
 			glm::mat4 getModelMatrix();

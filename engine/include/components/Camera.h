@@ -14,6 +14,16 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct CameraData
+	{
+		Guid componentId;
+		Guid entityId;
+		glm::vec3 position;
+		glm::vec4 backgroundColor;
+	};
+// #pragma pack(pop)
+
 	class Camera : public Component
 	{
 		public:
@@ -43,6 +53,8 @@ namespace PhysicsEngine
 		public:
 			Camera();
 			~Camera();
+
+			void load(CameraData data);
 
 			glm::vec3& getPosition();
 			glm::vec3& getFront();

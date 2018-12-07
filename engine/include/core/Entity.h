@@ -5,6 +5,13 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct EntityData
+	{
+		Guid entityId;
+	};
+// #pragma pack(pop)
+	
 	class Manager;
 
 	class Entity
@@ -18,6 +25,8 @@ namespace PhysicsEngine
 		public:
 			Entity();
 			~Entity();
+
+			void load(EntityData data);
 
 			void setManager(Manager* manager);
 

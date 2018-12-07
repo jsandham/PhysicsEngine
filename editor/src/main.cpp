@@ -306,140 +306,131 @@ int serializeScene(std::string scenePath)
 	// serialize entities
 	objects = entities.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		Entity entity;
+		EntityData data;
 
-		entity.entityId = Guid(it->first);
+		data.entityId = Guid(it->first);
 
-		// for(int i = 0; i < it->second["components"].size(); i++){
-		// 	entity.componentIds[i] = it->second["components"][i].ToInt();
-		// }
-
-		// for(int i = 0; i < 8; i++){
-		// 	std::cout << "component types: " << entity.componentTypes[i] << " globalComponentIndices: " << entity.globalComponentIndices[i] << std::endl;
-		// }
-
-
-		fwrite(&entity, sizeof(Entity), 1, file);
+		fwrite(&data, sizeof(EntityData), 1, file);
 	}
 
 	// serialize transforms
 	objects = transforms.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		Transform transform;
+		TransformData data;
 
-		transform.componentId = Guid(it->first);
-		transform.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		transform.position.x = (float)it->second["position"][0].ToFloat();
-		transform.position.y = (float)it->second["position"][1].ToFloat();
-		transform.position.z = (float)it->second["position"][2].ToFloat();
+		data.position.x = (float)it->second["position"][0].ToFloat();
+		data.position.y = (float)it->second["position"][1].ToFloat();
+		data.position.z = (float)it->second["position"][2].ToFloat();
 
-		transform.rotation.x = (float)it->second["rotation"][0].ToFloat();
-		transform.rotation.y = (float)it->second["rotation"][1].ToFloat();
-		transform.rotation.z = (float)it->second["rotation"][2].ToFloat();
-		transform.rotation.w = (float)it->second["rotation"][3].ToFloat();
+		data.rotation.x = (float)it->second["rotation"][0].ToFloat();
+		data.rotation.y = (float)it->second["rotation"][1].ToFloat();
+		data.rotation.z = (float)it->second["rotation"][2].ToFloat();
+		data.rotation.w = (float)it->second["rotation"][3].ToFloat();
 
-		transform.scale.x = (float)it->second["scale"][0].ToFloat();
-		transform.scale.y = (float)it->second["scale"][1].ToFloat();
-		transform.scale.z = (float)it->second["scale"][2].ToFloat();
+		data.scale.x = (float)it->second["scale"][0].ToFloat();
+		data.scale.y = (float)it->second["scale"][1].ToFloat();
+		data.scale.z = (float)it->second["scale"][2].ToFloat();
 
-		fwrite(&transform, sizeof(Transform), 1, file);
+		fwrite(&data, sizeof(TransformData), 1, file);
 	}
 
 	// serialize rigidbodies
 	objects = rigidbodies.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		Rigidbody rigidbody;
+		RigidbodyData data;
 
-		rigidbody.componentId = Guid(it->first);
-		rigidbody.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		rigidbody.useGravity = (bool)it->second["useGravity"].ToBool();
-		rigidbody.mass = (float)it->second["mass"].ToFloat();
-		rigidbody.drag = (float)it->second["drag"].ToFloat();
-		rigidbody.angularDrag = (float)it->second["angularDrag"].ToFloat();
+		data.useGravity = (bool)it->second["useGravity"].ToBool();
+		data.mass = (float)it->second["mass"].ToFloat();
+		data.drag = (float)it->second["drag"].ToFloat();
+		data.angularDrag = (float)it->second["angularDrag"].ToFloat();
 
-		rigidbody.velocity.x = (float)it->second["velocity"][0].ToFloat();
-		rigidbody.velocity.y = (float)it->second["velocity"][1].ToFloat();
-		rigidbody.velocity.z = (float)it->second["velocity"][2].ToFloat();
+		data.velocity.x = (float)it->second["velocity"][0].ToFloat();
+		data.velocity.y = (float)it->second["velocity"][1].ToFloat();
+		data.velocity.z = (float)it->second["velocity"][2].ToFloat();
 
-		rigidbody.angularVelocity.x = (float)it->second["angularVelocity"][0].ToFloat();
-		rigidbody.angularVelocity.y = (float)it->second["angularVelocity"][1].ToFloat();
-		rigidbody.angularVelocity.z = (float)it->second["angularVelocity"][2].ToFloat();
+		data.angularVelocity.x = (float)it->second["angularVelocity"][0].ToFloat();
+		data.angularVelocity.y = (float)it->second["angularVelocity"][1].ToFloat();
+		data.angularVelocity.z = (float)it->second["angularVelocity"][2].ToFloat();
 
-		rigidbody.centreOfMass.x = (float)it->second["centreOfMass"][0].ToFloat();
-		rigidbody.centreOfMass.y = (float)it->second["centreOfMass"][1].ToFloat();
-		rigidbody.centreOfMass.z = (float)it->second["centreOfMass"][2].ToFloat();
+		data.centreOfMass.x = (float)it->second["centreOfMass"][0].ToFloat();
+		data.centreOfMass.y = (float)it->second["centreOfMass"][1].ToFloat();
+		data.centreOfMass.z = (float)it->second["centreOfMass"][2].ToFloat();
 
-		rigidbody.inertiaTensor = glm::mat3(1.0f);
-		rigidbody.halfVelocity = glm::vec3(0.0f, 0.0f,0.0f);
+		data.inertiaTensor = glm::mat3(1.0f);
+		data.halfVelocity = glm::vec3(0.0f, 0.0f,0.0f);
 
-		fwrite(&rigidbody, sizeof(Rigidbody), 1, file);
+		fwrite(&data, sizeof(RigidbodyData), 1, file);
 	}
 
 	// serialize cameras 
 	objects = cameras.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		Camera camera;
+		CameraData data;
 
-		camera.componentId = Guid(it->first);
-		camera.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		camera.position.x = (float)it->second["position"][0].ToFloat();
-		camera.position.y = (float)it->second["position"][1].ToFloat();
-		camera.position.z = (float)it->second["position"][2].ToFloat();
+		data.position.x = (float)it->second["position"][0].ToFloat();
+		data.position.y = (float)it->second["position"][1].ToFloat();
+		data.position.z = (float)it->second["position"][2].ToFloat();
 
-		camera.backgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
-		camera.backgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
-		camera.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
-		camera.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
+		data.backgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
+		data.backgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
+		data.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
+		data.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
 
-		fwrite(&camera, sizeof(Camera), 1, file);
+		fwrite(&data, sizeof(CameraData), 1, file);
 	}
 
 	// serialize mesh renderers
 	objects = meshRenderers.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		MeshRenderer meshRenderer;
+		MeshRendererData data;
 
-		meshRenderer.componentId = Guid(it->first);
-		meshRenderer.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		meshRenderer.meshId = Guid(it->second["mesh"].ToString());
-		meshRenderer.materialId = Guid(it->second["material"].ToString());
+		data.meshId = Guid(it->second["mesh"].ToString());
+		data.materialId = Guid(it->second["material"].ToString());
 
-		std::cout << "mesh renderer entity id: " << meshRenderer.entityId.toString() << "mesh renderer component id: " << meshRenderer.componentId.toString() << " mesh renderer mesh id: " << meshRenderer.meshId.toString() << std::endl;
+		std::cout << "mesh renderer entity id: " << data.entityId.toString() << "mesh renderer component id: " << data.componentId.toString() << " mesh renderer mesh id: " << data.meshId.toString() << std::endl;
 
-		fwrite(&meshRenderer, sizeof(MeshRenderer), 1, file);
+		fwrite(&data, sizeof(MeshRendererData), 1, file);
 	}
 
-	std::cout << "size of mesh renderer: " << sizeof(MeshRenderer) << std::endl;
+	std::cout << "size of mesh renderer: " << sizeof(MeshRendererData) << std::endl;
 
 	// serialize line renderers
 	objects = lineRenderers.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		LineRenderer lineRenderer;
+		LineRendererData data;
 
-		lineRenderer.componentId = Guid(it->first);
-		lineRenderer.entityId = Guid(it->second["entity"].ToString());
-		lineRenderer.materialId = Guid(it->second["material"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
+		data.materialId = Guid(it->second["material"].ToString());
 
-		lineRenderer.start.x = (float)it->second["start"][0].ToFloat();
-		lineRenderer.start.y = (float)it->second["start"][1].ToFloat();
-		lineRenderer.start.z = (float)it->second["start"][2].ToFloat();
+		data.start.x = (float)it->second["start"][0].ToFloat();
+		data.start.y = (float)it->second["start"][1].ToFloat();
+		data.start.z = (float)it->second["start"][2].ToFloat();
 
-		lineRenderer.end.x = (float)it->second["end"][0].ToFloat();
-		lineRenderer.end.y = (float)it->second["end"][1].ToFloat();
-		lineRenderer.end.z = (float)it->second["end"][2].ToFloat();
+		data.end.x = (float)it->second["end"][0].ToFloat();
+		data.end.y = (float)it->second["end"][1].ToFloat();
+		data.end.z = (float)it->second["end"][2].ToFloat();
 
-		// lineRenderer.color.x = (float)it->second["color"][0].ToFloat();
-		// lineRenderer.color.y = (float)it->second["color"][1].ToFloat();
-		// lineRenderer.color.z = (float)it->second["color"][2].ToFloat();
-		// lineRenderer.color.w = (float)it->second["color"][3].ToFloat();
+		// data.color.x = (float)it->second["color"][0].ToFloat();
+		// data.color.y = (float)it->second["color"][1].ToFloat();
+		// data.color.z = (float)it->second["color"][2].ToFloat();
+		// data.color.w = (float)it->second["color"][3].ToFloat();
 
-		std::cout << "line renderer entity id: " << lineRenderer.entityId.toString() << "line renderer component id: " << lineRenderer.componentId.toString() << std::endl;
+		std::cout << "line renderer entity id: " << data.entityId.toString() << "line renderer component id: " << data.componentId.toString() << std::endl;
 
-		fwrite(&lineRenderer, sizeof(LineRenderer), 1, file);
+		fwrite(&data, sizeof(LineRendererData), 1, file);
 	}
 
 	std::cout << "size of line renderer: " << sizeof(LineRenderer) << std::endl;
@@ -447,141 +438,154 @@ int serializeScene(std::string scenePath)
 	// serialize directional lights
 	objects = directionalLights.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		DirectionalLight directionalLight;
+		DirectionalLightData data;
 
-		directionalLight.componentId = Guid(it->first);
-		directionalLight.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		directionalLight.direction.x = (float)it->second["direction"][0].ToFloat();
-		directionalLight.direction.y = (float)it->second["direction"][1].ToFloat();
-		directionalLight.direction.z = (float)it->second["direction"][2].ToFloat();
+		data.direction.x = (float)it->second["direction"][0].ToFloat();
+		data.direction.y = (float)it->second["direction"][1].ToFloat();
+		data.direction.z = (float)it->second["direction"][2].ToFloat();
 
-		directionalLight.ambient.x = (float)it->second["ambient"][0].ToFloat();
-		directionalLight.ambient.y = (float)it->second["ambient"][1].ToFloat();
-		directionalLight.ambient.z = (float)it->second["ambient"][2].ToFloat();
+		data.ambient.x = (float)it->second["ambient"][0].ToFloat();
+		data.ambient.y = (float)it->second["ambient"][1].ToFloat();
+		data.ambient.z = (float)it->second["ambient"][2].ToFloat();
 
-		directionalLight.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-		directionalLight.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-		directionalLight.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
+		data.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
+		data.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
+		data.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
 
-		directionalLight.specular.x = (float)it->second["specular"][0].ToFloat();
-		directionalLight.specular.y = (float)it->second["specular"][1].ToFloat();
-		directionalLight.specular.z = (float)it->second["specular"][2].ToFloat();
+		data.specular.x = (float)it->second["specular"][0].ToFloat();
+		data.specular.y = (float)it->second["specular"][1].ToFloat();
+		data.specular.z = (float)it->second["specular"][2].ToFloat();
 
-		fwrite(&directionalLight, sizeof(DirectionalLight), 1, file);
+		fwrite(&data, sizeof(DirectionalLightData), 1, file);
 	}
 
 	// serialize spot lights
 	objects = spotLights.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		SpotLight spotLight;
+		SpotLightData data;
 
-		spotLight.componentId = Guid(it->first);
-		spotLight.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		spotLight.constant = (float)it->second["constant"].ToFloat();
-		spotLight.linear = (float)it->second["linear"].ToFloat();
-		spotLight.quadratic = (float)it->second["quadratic"].ToFloat();
-		spotLight.cutOff = (float)it->second["cutOff"].ToFloat();
-		spotLight.outerCutOff = (float)it->second["outerCutOff"].ToFloat();
+		data.constant = (float)it->second["constant"].ToFloat();
+		data.linear = (float)it->second["linear"].ToFloat();
+		data.quadratic = (float)it->second["quadratic"].ToFloat();
+		data.cutOff = (float)it->second["cutOff"].ToFloat();
+		data.outerCutOff = (float)it->second["outerCutOff"].ToFloat();
 
-		spotLight.position.x = (float)it->second["position"][0].ToFloat();
-		spotLight.position.y = (float)it->second["position"][1].ToFloat();
-		spotLight.position.z = (float)it->second["position"][2].ToFloat();
+		data.position.x = (float)it->second["position"][0].ToFloat();
+		data.position.y = (float)it->second["position"][1].ToFloat();
+		data.position.z = (float)it->second["position"][2].ToFloat();
 
-		spotLight.direction.x = (float)it->second["direction"][0].ToFloat();
-		spotLight.direction.y = (float)it->second["direction"][1].ToFloat();
-		spotLight.direction.z = (float)it->second["direction"][2].ToFloat();
+		data.direction.x = (float)it->second["direction"][0].ToFloat();
+		data.direction.y = (float)it->second["direction"][1].ToFloat();
+		data.direction.z = (float)it->second["direction"][2].ToFloat();
 
-		spotLight.ambient.x = (float)it->second["ambient"][0].ToFloat();
-		spotLight.ambient.y = (float)it->second["ambient"][1].ToFloat();
-		spotLight.ambient.z = (float)it->second["ambient"][2].ToFloat();
+		data.ambient.x = (float)it->second["ambient"][0].ToFloat();
+		data.ambient.y = (float)it->second["ambient"][1].ToFloat();
+		data.ambient.z = (float)it->second["ambient"][2].ToFloat();
 
-		spotLight.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-		spotLight.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-		spotLight.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
+		data.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
+		data.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
+		data.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
 
-		spotLight.specular.x = (float)it->second["specular"][0].ToFloat();
-		spotLight.specular.y = (float)it->second["specular"][1].ToFloat();
-		spotLight.specular.z = (float)it->second["specular"][2].ToFloat();
+		data.specular.x = (float)it->second["specular"][0].ToFloat();
+		data.specular.y = (float)it->second["specular"][1].ToFloat();
+		data.specular.z = (float)it->second["specular"][2].ToFloat();
 
-		spotLight.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
+		data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
 
-		fwrite(&spotLight, sizeof(SpotLight), 1, file);
+		fwrite(&data, sizeof(SpotLightData), 1, file);
 	}
 
 	// serialize point lights
 	objects = pointLights.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		PointLight pointLight;
+		PointLightData data;
 
-		pointLight.componentId = Guid(it->first);
-		pointLight.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		pointLight.constant = (float)it->second["constant"].ToFloat();
-		pointLight.linear = (float)it->second["linear"].ToFloat();
-		pointLight.quadratic = (float)it->second["quadratic"].ToFloat();
+		data.constant = (float)it->second["constant"].ToFloat();
+		data.linear = (float)it->second["linear"].ToFloat();
+		data.quadratic = (float)it->second["quadratic"].ToFloat();
 
-		pointLight.position.x = (float)it->second["position"][0].ToFloat();
-		pointLight.position.y = (float)it->second["position"][1].ToFloat();
-		pointLight.position.z = (float)it->second["position"][2].ToFloat();
+		data.position.x = (float)it->second["position"][0].ToFloat();
+		data.position.y = (float)it->second["position"][1].ToFloat();
+		data.position.z = (float)it->second["position"][2].ToFloat();
 
-		pointLight.ambient.x = (float)it->second["ambient"][0].ToFloat();
-		pointLight.ambient.y = (float)it->second["ambient"][1].ToFloat();
-		pointLight.ambient.z = (float)it->second["ambient"][2].ToFloat();
+		data.ambient.x = (float)it->second["ambient"][0].ToFloat();
+		data.ambient.y = (float)it->second["ambient"][1].ToFloat();
+		data.ambient.z = (float)it->second["ambient"][2].ToFloat();
 
-		pointLight.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-		pointLight.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-		pointLight.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
+		data.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
+		data.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
+		data.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
 
-		pointLight.specular.x = (float)it->second["specular"][0].ToFloat();
-		pointLight.specular.y = (float)it->second["specular"][1].ToFloat();
-		pointLight.specular.z = (float)it->second["specular"][2].ToFloat();
+		data.specular.x = (float)it->second["specular"][0].ToFloat();
+		data.specular.y = (float)it->second["specular"][1].ToFloat();
+		data.specular.z = (float)it->second["specular"][2].ToFloat();
 
-		pointLight.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
+		data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
 
-		fwrite(&pointLight, sizeof(PointLight), 1, file);
+		fwrite(&data, sizeof(PointLightData), 1, file);
 	}
 
 	// serialize box collider
 	objects = boxColliders.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		BoxCollider boxCollider;
+		BoxColliderData data;
+
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
+
+		data.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
+		data.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
+		data.bounds.centre.z = (float)it->second["centre"][2].ToFloat();
+
+		data.bounds.size.x = (float)it->second["size"][0].ToFloat();
+		data.bounds.size.y = (float)it->second["size"][1].ToFloat();
+		data.bounds.size.z = (float)it->second["size"][2].ToFloat();
+
+		fwrite(&data, sizeof(BoxColliderData), 1, file);
 	}
 
 	// serialize sphere collider
 	objects = sphereColliders.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		SphereCollider sphereCollider;
+		SphereColliderData data;
 
-		sphereCollider.componentId = Guid(it->first);
-		sphereCollider.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		sphereCollider.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
-		sphereCollider.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
-		sphereCollider.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
+		data.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
+		data.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
+		data.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
 
-		sphereCollider.sphere.radius = (float)it->second["radius"].ToFloat();
+		data.sphere.radius = (float)it->second["radius"].ToFloat();
 
-		fwrite(&sphereCollider, sizeof(SphereCollider), 1, file);
+		fwrite(&data, sizeof(SphereColliderData), 1, file);
 	}
 
 	// serialize capsule collider
 	objects = capsuleColliders.ObjectRange();
 	for(it = objects.begin(); it != objects.end(); it++){
-		CapsuleCollider capsuleCollider;
+		CapsuleColliderData data;
 
-		capsuleCollider.componentId = Guid(it->first);
-		capsuleCollider.entityId = Guid(it->second["entity"].ToString());
+		data.componentId = Guid(it->first);
+		data.entityId = Guid(it->second["entity"].ToString());
 
-		capsuleCollider.capsule.centre.x = (float)it->second["centre"][0].ToFloat();
-		capsuleCollider.capsule.centre.x = (float)it->second["centre"][1].ToFloat();
-		capsuleCollider.capsule.centre.x = (float)it->second["centre"][2].ToFloat();
+		data.capsule.centre.x = (float)it->second["centre"][0].ToFloat();
+		data.capsule.centre.x = (float)it->second["centre"][1].ToFloat();
+		data.capsule.centre.x = (float)it->second["centre"][2].ToFloat();
 
-		capsuleCollider.capsule.radius = (float)it->second["radius"].ToFloat();
-		capsuleCollider.capsule.height = (float)it->second["height"].ToFloat();
+		data.capsule.radius = (float)it->second["radius"].ToFloat();
+		data.capsule.height = (float)it->second["height"].ToFloat();
 
-		fwrite(&capsuleCollider, sizeof(CapsuleCollider), 1, file);
+		fwrite(&data, sizeof(CapsuleColliderData), 1, file);
 	}
 
 	// serialize systems;
@@ -700,31 +704,31 @@ int serializeMaterials(std::vector<std::string> materialFilePaths)
 		std::string jsonString = contents.str();
 		json::JSON jsonMaterial = JSON::Load(jsonString);
 
-		Material material;
-		material.assetId = Guid(jsonMaterial["id"].ToString());
-		material.shininess = (float)jsonMaterial["shininess"].ToFloat();
-		material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
-		material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
-		material.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
-		material.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
-		material.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
-		material.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
-		material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
-		material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
-		material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
-		material.shaderId  = Guid(jsonMaterial["shader"].ToString());
-		material.textureId = Guid(jsonMaterial["mainTexture"].ToString());
-		material.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
-		material.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+		MaterialData data;
+		data.assetId = Guid(jsonMaterial["id"].ToString());
+		data.shininess = (float)jsonMaterial["shininess"].ToFloat();
+		data.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+		data.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+		data.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+		data.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+		data.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+		data.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+		data.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+		data.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+		data.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+		data.shaderId  = Guid(jsonMaterial["shader"].ToString());
+		data.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+		data.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+		data.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
 
 		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
 
-		std::cout << "outputPath: " << outputPath << " material id: " << material.assetId.toString() << " shader id: " << material.shaderId.toString() << " main texture id: " << material.textureId.toString() << std::endl;
+		std::cout << "outputPath: " << outputPath << " material id: " << data.assetId.toString() << " shader id: " << data.shaderId.toString() << " main texture id: " << data.textureId.toString() << std::endl;
 
 		// serialize material
 		FILE* file = fopen(outputPath.c_str(), "wb");
 		if (file){
-			size_t test = fwrite(&material, sizeof(Material), 1, file);
+			size_t test = fwrite(&data, sizeof(MaterialData), 1, file);
 			std::cout << "number of bytes written to file: " << test << std::endl;
 		}
 		else{
@@ -770,11 +774,6 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << std::endl;
 
 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
-
-			// for(unsigned int i = 0; i < mesh.vertices.size(); i++){
-			// 	std::cout << mesh.vertices[i] << " ";
-			// }
-			// std::cout << "" << std::endl;
 
 			// serialize scene header and mesh data
 			FILE* file = fopen(outputPath.c_str(), "wb");

@@ -16,8 +16,6 @@ namespace PhysicsEngine
 			Manager* manager;
 
 		public:
-			bool isActive;
-
 			Guid componentId;
 			Guid entityId;
 

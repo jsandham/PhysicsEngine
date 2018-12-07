@@ -14,6 +14,14 @@ CapsuleCollider::~CapsuleCollider()
 
 }
 
+void CapsuleCollider::load(CapsuleColliderData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	capsule = data.capsule;
+}
+
 bool CapsuleCollider::intersect(Bounds bounds)
 {
 	return Geometry::intersect(bounds, this->capsule);

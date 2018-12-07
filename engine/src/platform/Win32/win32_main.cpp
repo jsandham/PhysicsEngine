@@ -259,11 +259,13 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 		}
 		case WM_CLOSE:
 			running = false;
+			std::cout << "EXIT CALLED" << std::endl;
 			PostQuitMessage(0);
 			break;
 		case WM_DESTROY:
 		{
 			running = false;
+			std::cout << "EXIT CALLED" << std::endl;
 			break;
 		}
 		case WM_ACTIVATEAPP:
@@ -404,7 +406,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
    			sceneManager.add(scene);
 
-      		std::cout << "Adding scene: " << sceneFileName << std::endl;
+      		std::cout << "Adding scene: " << sceneFileName << " to scene manager" << std::endl;
     	}
 
     	sceneRegisterFile.close();
@@ -422,60 +424,54 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		sceneManager.add(assetFile); 
 	}
 
-	if(sceneManager.validate()){
-		sceneManager.init();
+	sceneManager.init();
 
-		running = true;
+	// total frame timing
+	int frameCount = 0;
+	LARGE_INTEGER lastCounter;
+	LARGE_INTEGER perfCounterFrequencyResult;
+	QueryPerformanceCounter(&lastCounter);
+	QueryPerformanceFrequency(&perfCounterFrequencyResult);
+	unsigned long long lastCycleCount = __rdtsc();
+	long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
 
-		LARGE_INTEGER perfCounterFrequencyResult;
-		QueryPerformanceFrequency(&perfCounterFrequencyResult);
-		long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+	running = true;
 
-		// total frame timing
-		int frameCount = 0;
-		LARGE_INTEGER lastCounter;
-		QueryPerformanceCounter(&lastCounter);
-		unsigned long long lastCycleCount = __rdtsc();
-
-		while(running)
+	while(running)
+	{
+		MSG message;
+		while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
 		{
-			MSG message;
-			while(PeekMessage(&message, 0, 0, 0, PM_REMOVE))
-			{
-				if(message.message == WM_QUIT)
-				{
-					running = false;
-				}
+			if(message.message == WM_QUIT){ running = false; }
 
-				TranslateMessage(&message);
-				DispatchMessage(&message);
-			}
-
-			sceneManager.update();
-
-			RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
-
-			// record time
-			unsigned long long endCycleCount = __rdtsc();
-			LARGE_INTEGER endCounter;
-			QueryPerformanceCounter(&endCounter);
-
-			unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-			long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-			float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-			float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-			lastCycleCount = endCycleCount;
-			lastCounter = endCounter;
-			frameCount++;
-
-			Time::frameCount = frameCount;
-			Time::deltaCycles = (int)cyclesElapsed;
-			Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-			Time::deltaTime = milliSecPerFrame;
-
-			Input::updateEOF();
+			TranslateMessage(&message);
+			DispatchMessage(&message);
 		}
+
+		if(!sceneManager.update()){ running = false; }
+
+		RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
+
+		// record time
+		unsigned long long endCycleCount = __rdtsc();
+		LARGE_INTEGER endCounter;
+		QueryPerformanceCounter(&endCounter);
+
+		unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+		long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+		float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+		float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+		lastCycleCount = endCycleCount;
+		lastCounter = endCounter;
+		frameCount++;
+
+		Time::frameCount = frameCount;
+		Time::deltaCycles = (int)cyclesElapsed;
+		Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+		Time::deltaTime = milliSecPerFrame;
+
+		Input::updateEOF();
 	}
 	
 	return 0;

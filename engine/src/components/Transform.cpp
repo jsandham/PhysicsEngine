@@ -16,6 +16,16 @@ Transform::~Transform()
 
 }
 
+void Transform::load(TransformData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	position = data.position;
+	rotation = data.rotation;
+	scale = data.scale;
+}
+
 glm::vec3 Transform::getEulerAngles()
 {
 	return glm::eulerAngles(rotation);

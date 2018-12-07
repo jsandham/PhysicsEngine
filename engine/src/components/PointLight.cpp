@@ -19,3 +19,17 @@ PointLight::~PointLight()
 {
 
 }
+
+void PointLight::load(PointLightData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	constant = data.constant;
+	linear = data.linear;
+	quadratic = data.quadratic;
+	position = data.position;
+	ambient = data.ambient;
+	diffuse = data.diffuse;
+	specular = data.specular;
+}

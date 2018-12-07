@@ -208,8 +208,7 @@ namespace PhysicsEngine
 			Manager();
 			~Manager();
 
-			bool validate(std::vector<Scene> scenes, std::vector<AssetFile> assetFiles);
-			void load(Scene scene, std::vector<AssetFile> assetFiles);
+			bool load(Scene scene, std::vector<AssetFile> assetFiles);
 
 			int getNumberOfEntities();
 			int getNumberOfSystems();

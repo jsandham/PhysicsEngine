@@ -22,3 +22,20 @@ SpotLight::~SpotLight()
 {
 
 }
+
+void SpotLight::load(SpotLightData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	constant = data.constant;
+	linear = data.linear;
+	quadratic = data.quadratic;
+	cutOff = data.cutOff;
+	outerCutOff = data.outerCutOff;
+	position = data.position;
+	direction = data.direction;
+	ambient = data.ambient;
+	diffuse = data.diffuse;
+	specular = data.specular;
+}

@@ -11,6 +11,15 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct CapsuleColliderData
+	{
+		Guid componentId;
+		Guid entityId;
+		Capsule capsule;
+	};
+// #pragma pack(pop)
+
 	class CapsuleCollider : public Collider
 	{
 		public:
@@ -19,6 +28,8 @@ namespace PhysicsEngine
 		public:
 			CapsuleCollider();
 			~CapsuleCollider();
+
+			void load(CapsuleColliderData data);
 
 			bool intersect(Bounds bounds);
 	};

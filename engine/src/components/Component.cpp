@@ -7,8 +7,6 @@ using namespace PhysicsEngine;
 
 Component::Component()
 {
-	isActive = false;
-
 	componentId = Guid::INVALID;
 	entityId = Guid::INVALID;
 

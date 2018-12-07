@@ -14,6 +14,14 @@ BoxCollider::~BoxCollider()
 
 }
 
+void BoxCollider::load(BoxColliderData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	bounds = data.bounds;
+}
+
 bool BoxCollider::intersect(Bounds bounds)
 {
 	return Geometry::intersect(this->bounds, bounds);

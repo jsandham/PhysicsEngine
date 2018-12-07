@@ -22,3 +22,21 @@ Rigidbody::~Rigidbody()
 {
 
 }
+
+void Rigidbody::load(RigidbodyData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	useGravity = data.useGravity;
+	mass = data.mass;
+	drag = data.drag;
+	angularDrag = data.angularDrag;
+
+	velocity = data.velocity;
+	centreOfMass = data.centreOfMass;
+	angularVelocity = data.angularVelocity;
+	inertiaTensor = data.inertiaTensor;
+
+	halfVelocity = data.halfVelocity;
+}

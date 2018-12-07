@@ -9,6 +9,15 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct BoxColliderData
+	{
+		Guid componentId;
+		Guid entityId;
+		Bounds bounds;
+	};
+// #pragma pack(pop)
+
 	class BoxCollider : public Collider
 	{
 		public:
@@ -17,6 +26,8 @@ namespace PhysicsEngine
 		public:
 			BoxCollider();
 			~BoxCollider();
+
+			void load(BoxColliderData data);
 
 			bool intersect(Bounds bounds);
 	};

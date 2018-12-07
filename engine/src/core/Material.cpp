@@ -22,6 +22,22 @@ Material::~Material()
 
 }
 
+void Material::load(MaterialData data)
+{
+	assetId = data.assetId;
+
+	shaderId = data.shaderId;
+	textureId = data.textureId;
+	normalMapId = data.normalMapId;
+	specularMapId = data.specularMapId;
+
+	shininess = data.shininess;
+	ambient = data.ambient;
+	diffuse = data.diffuse;
+	specular = data.specular;
+	color = data.color;
+}
+
 Shader* Material::getShader()
 {
 	return manager->getAsset<Shader>(shaderId);

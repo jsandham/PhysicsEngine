@@ -10,6 +10,25 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct SpotLightData
+	{
+		Guid componentId;
+		Guid entityId;
+		float constant;
+		float linear;
+		float quadratic;
+		float cutOff;
+		float outerCutOff;
+		glm::vec3 position;
+		glm::vec3 direction;
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		glm::mat4 projection;
+	};
+// #pragma pack(pop)
+
 	class SpotLight : public Component
 	{
 		public:
@@ -28,6 +47,8 @@ namespace PhysicsEngine
 		public:
 			SpotLight();
 			~SpotLight();
+
+			void load(SpotLightData data);
 	};
 }
 

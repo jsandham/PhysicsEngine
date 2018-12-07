@@ -17,6 +17,11 @@ Entity::~Entity()
 
 }
 
+void Entity::load(EntityData data)
+{
+	entityId = data.entityId;
+}
+
 void Entity::setManager(Manager* manager)
 {
 	this->manager = manager;

@@ -10,6 +10,22 @@
 
 namespace PhysicsEngine
 {
+// #pragma pack(push, 1)
+	struct PointLightData
+	{
+		Guid componentId;
+		Guid entityId;
+		float constant;
+		float linear;
+		float quadratic;
+		glm::vec3 position;
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		glm::mat4 projection;
+	};
+// #pragma pack(pop)
+
 	class PointLight : public Component
 	{
 		public:
@@ -25,6 +41,8 @@ namespace PhysicsEngine
 		public:
 			PointLight();
 			~PointLight();
+
+			void load(PointLightData data);
 	};
 }
 

@@ -11,3 +11,12 @@ MeshRenderer::MeshRenderer()
 MeshRenderer::~MeshRenderer()
 {
 }
+
+void MeshRenderer::load(MeshRendererData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	meshId = data.meshId;
+	materialId = data.materialId;
+}

@@ -16,3 +16,14 @@ DirectionalLight::~DirectionalLight()
 {
 
 }
+
+void DirectionalLight::load(DirectionalLightData data)
+{
+	entityId = data.entityId;
+	componentId = data.componentId;
+
+	direction = data.direction;
+	ambient = data.ambient;
+	diffuse = data.diffuse;
+	specular = data.specular;
+}
