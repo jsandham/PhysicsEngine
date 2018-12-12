@@ -12,6 +12,7 @@
 #include "../core/Line.h"
 #include "../core/PerformanceGraph.h"
 #include "../core/DebugWindow.h"
+#include "../core/SlabBuffer.h"
 
 #include "../graphics/GLFramebuffer.h"
 #include "../graphics/GLState.h"
@@ -131,6 +132,13 @@ namespace PhysicsEngine
 			static void bind(DebugWindow* window);
 			static void unbind(DebugWindow* window);
 			static void draw(DebugWindow* window);
+
+			static void apply(SlabNode* node);
+			static void generate(SlabNode* node);
+			static void destroy(SlabNode* node);
+			static void bind(SlabNode* node);
+			static void unbind(SlabNode* node);
+			static void draw(SlabNode* node);
 
 			static void generate(GLCamera* state);
 			static void destroy(GLCamera* state);

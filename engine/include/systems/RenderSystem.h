@@ -17,6 +17,7 @@
 #include "../core/Texture2D.h"
 #include "../core/PerformanceGraph.h"
 #include "../core/DebugWindow.h"
+#include "../core/SlabBuffer.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -44,16 +45,21 @@ namespace PhysicsEngine
 			Material* windowMaterial;
 			Material* normalMapMaterial;
 			Material* depthMapMaterial;
+			Material* lineMaterial;
 
 			Shader* graphShader;
 			Shader* windowShader;
 			Shader* normalMapShader;
 			Shader* depthMapShader;
+			Shader* lineShader;
 
 			Material* debugMaterial;
 			Texture2D* debugBuffer;
 
 			GLFramebuffer fbo;
+
+
+			SlabBuffer lineBuffer;
 
 		public:
 			RenderSystem();

@@ -53,9 +53,102 @@ Octtree::Octtree(Bounds bounds, int depth)
 				}
 			}
 		}
-
-		//std::cout << "currentIndex: " << currentIndex << std::endl;
 	}
+
+	lines.resize(6*12*nodes.size());
+
+	for(unsigned int i = 0; i < nodes.size(); i++){
+		Node* node = &nodes[i];
+
+		// top
+		lines[6*12*i] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 1] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 2] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 3] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 4] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 5] = node->centre.z + 0.5f*node->extent.z;
+
+		lines[6*12*i + 6] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 7] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 8] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 9] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 10] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 11] = node->centre.z + 0.5f*node->extent.z;
+
+		lines[6*12*i + 12] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 13] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 14] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 15] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 16] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 17] = node->centre.z + 0.5f*node->extent.z;
+
+		lines[6*12*i + 18] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 19] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 20] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 21] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 22] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 23] = node->centre.z + 0.5f*node->extent.z;
+
+		// bottom
+		lines[6*12*i + 24] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 25] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 26] = node->centre.z - 0.5f*node->extent.z;
+		lines[6*12*i + 27] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 28] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 29] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 30] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 31] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 32] = node->centre.z - 0.5f*node->extent.z;
+		lines[6*12*i + 33] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 34] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 35] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 36] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 37] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 38] = node->centre.z - 0.5f*node->extent.z;
+		lines[6*12*i + 39] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 40] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 41] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 42] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 43] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 44] = node->centre.z - 0.5f*node->extent.z;
+		lines[6*12*i + 45] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 46] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 47] = node->centre.z - 0.5f*node->extent.z;
+
+		// sides
+		lines[6*12*i + 48] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 49] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 50] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 51] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 52] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 53] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 54] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 55] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 56] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 57] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 58] = node->centre.y + 0.5f*node->extent.y;
+		lines[6*12*i + 59] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 60] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 61] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 62] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 63] = node->centre.x + 0.5f*node->extent.x;
+		lines[6*12*i + 64] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 65] = node->centre.z - 0.5f*node->extent.z;
+
+		lines[6*12*i + 66] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 67] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 68] = node->centre.z + 0.5f*node->extent.z;
+		lines[6*12*i + 69] = node->centre.x - 0.5f*node->extent.x;
+		lines[6*12*i + 70] = node->centre.y - 0.5f*node->extent.y;
+		lines[6*12*i + 71] = node->centre.z - 0.5f*node->extent.z;
+	}
+
+	std::cout << "lines count: " << lines.size() << std::endl;
 
 	std::cout << "octtree contructor finished" << std::endl;
 }
@@ -104,6 +197,11 @@ void Octtree::insert(Sphere sphere, Guid id)
 Object* Octtree::intersect(Ray ray)
 {
 	return NULL;
+}
+
+std::vector<float> Octtree::getLines()
+{
+	return lines;
 }
 
 

@@ -8,12 +8,7 @@
 #include "Bounds.h"
 #include "Capsule.h"
 #include "Ray.h"
-
-#define GLM_FORCE_RADIANS
-
-#include "../glm/glm.hpp"
-#include "../glm/gtc/matrix_transform.hpp"
-#include "../glm/gtc/type_ptr.hpp"
+#include "Line.h"
 
 #include "../components/Collider.h"
 
@@ -39,6 +34,7 @@ namespace PhysicsEngine
 			int depth;
 			Bounds bounds;
 			std::vector<Node> nodes;
+			std::vector<float> lines;  //use Line instead??
 
 			std::vector<Object> tempObjects; ///remove later. Just here for testing
 
@@ -49,6 +45,8 @@ namespace PhysicsEngine
 			void insert(Sphere sphere, Guid id);
 
 			Object* intersect(Ray ray);
+
+			std::vector<float> getLines();
 
 
 

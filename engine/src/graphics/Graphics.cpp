@@ -5,6 +5,7 @@
 #include "../../include/graphics/GLHandle.h"
 #include "../../include/graphics/OpenGL.h"
 #include "../../include/graphics/GLState.h"
+#include "../../include/core/SlabBuffer.h"
 
 using namespace PhysicsEngine;
 
@@ -852,6 +853,49 @@ void Graphics::unbind(DebugWindow* window)
 void Graphics::draw(DebugWindow* window)
 {
 	glDrawArrays(GL_TRIANGLES, 0, (int)window->vertices.size());
+}
+
+void Graphics::apply(SlabNode* node)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, node->vertexVBO.handle);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 6*node->numberOfLinesToDraw*sizeof(float), &(node->buffer[0]));
+}
+
+void Graphics::generate(SlabNode* node)
+{
+	glGenVertexArrays(1, &(node->nodeVAO.handle));
+	glBindVertexArray(node->nodeVAO.handle);
+
+	glGenBuffers(1, &(node->vertexVBO.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, node->vertexVBO.handle);
+	glBufferData(GL_ARRAY_BUFFER, 300000*sizeof(float), &(node->buffer[0]), GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void Graphics::destroy(SlabNode* node)
+{
+	glDeleteVertexArrays(1, &(node->nodeVAO.handle));
+	glDeleteBuffers(1, &(node->vertexVBO.handle));
+}
+
+void Graphics::bind(SlabNode* node)
+{
+	glBindVertexArray(node->nodeVAO.handle);
+}
+
+void Graphics::unbind(SlabNode* node)
+{
+	glBindVertexArray(0);
+}
+
+void Graphics::draw(SlabNode* node)
+{
+	//std::cout << "number of lines to draw: " << node->numberOfLinesToDraw << std::endl;
+	glDrawArrays(GL_LINES, 0, node->numberOfLinesToDraw/*6*node->numberOfLinesToDraw*/);  /////////////////ahhhhhhhhhhh fix all draw bugs like this!!!
 }
 
 void Graphics::generate(GLCamera* state)

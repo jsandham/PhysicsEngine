@@ -81,11 +81,13 @@ void RenderSystem::init()
 	windowMaterial = manager->create<Material>();
 	normalMapMaterial = manager->create<Material>();
 	depthMapMaterial = manager->create<Material>();
+	lineMaterial = manager->create<Material>();
 
 	graphShader = manager->create<Shader>();
 	windowShader = manager->create<Shader>();
 	normalMapShader = manager->create<Shader>();
 	depthMapShader = manager->create<Shader>();
+	lineShader = manager->create<Shader>();
 
 	graphShader->vertexShader = Shader::graphVertexShader;
 	graphShader->fragmentShader = Shader::graphFragmentShader;
@@ -95,16 +97,20 @@ void RenderSystem::init()
 	normalMapShader->fragmentShader = Shader::normalMapFragmentShader;
 	depthMapShader->vertexShader = Shader::depthMapVertexShader;
 	depthMapShader->fragmentShader = Shader::depthMapFragmentShader;
+	lineShader->vertexShader = Shader::lineVertexShader;
+	lineShader->fragmentShader = Shader::lineFragmentShader;
 
 	graphShader->compile();
 	windowShader->compile();
 	normalMapShader->compile();
 	depthMapShader->compile();
+	lineShader->compile();
 
 	graphMaterial->shaderId = graphShader->assetId;
 	windowMaterial->shaderId = windowShader->assetId;
 	normalMapMaterial->shaderId = normalMapShader->assetId;
 	depthMapMaterial->shaderId = depthMapShader->assetId;
+	lineMaterial->shaderId = lineShader->assetId;
 
 	Graphics::generate(graph);
 	Graphics::generate(debugWindow);
@@ -218,24 +224,60 @@ void RenderSystem::update()
 		pass++;
 	}
 
+	// for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
+	// 	LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
+	// 	Transform* transform = lineRenderer->getComponent<Transform>();
+
+	// 	Material* material = manager->getAsset<Material>(lineRenderer->materialId);
+	// 	Line* line = manager->getLine();
+
+	// 	line->start = lineRenderer->start;
+	// 	line->end = lineRenderer->end;
+
+	// 	Graphics::apply(line);
+
+	// 	glm::mat4 model = transform->getModelMatrix();
+
+	// 	//std::cout << "material id: " << material->assetId.toString() << std::endl;
+
+	// 	// std::cout << model[0][0] << " " << model[0][1] << " " << model[0][2] << " " << model[0][3] << " " <<std::endl;
+	// 	// std::cout << model[1][0] << " " << model[1][1] << " " << model[1][2] << " " << model[1][3] << " " <<std::endl;
+	// 	// std::cout << model[2][0] << " " << model[2][1] << " " << model[2][2] << " " << model[2][3] << " " <<std::endl;
+	// 	// std::cout << model[3][0] << " " << model[3][1] << " " << model[3][2] << " " << model[3][3] << " " <<std::endl;
+
+	// 	Graphics::bind(material, model);
+	// 	Graphics::bind(line);
+	// 	Graphics::draw(line);
+	// 	Graphics::unbind(line);
+	// }
+
+	lineBuffer.clear();
 	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
 		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
-		Transform* transform = lineRenderer->getComponent<Transform>();
-
 		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
-		Line* line = manager->getLine();
 
-		line->start = lineRenderer->start;
-		line->end = lineRenderer->end;
-
-		Graphics::apply(line);
-
+		Transform* transform = lineRenderer->getComponent<Transform>();
 		glm::mat4 model = transform->getModelMatrix();
 
-		Graphics::bind(material, model);
-		Graphics::bind(line);
-		Graphics::draw(line);
-		Graphics::unbind(line);
+		glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
+		glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
+
+		lineBuffer.add(start, end, material);
+	}
+
+	if(manager->debug){
+		std::vector<float> lines = manager->getPhysicsTree()->getLines();
+
+		lineBuffer.add(lines, lineMaterial);
+	}
+
+	while(lineBuffer.hasNext()){
+		SlabNode* node = lineBuffer.getNext();
+	 
+	 	Graphics::apply(node);
+		Graphics::bind(node->material, glm::mat4(1.0f));
+		Graphics::bind(node);
+		Graphics::draw(node);
 	}
 
 	//int elapsedGPUTime = Graphics::endGPUTimer();
