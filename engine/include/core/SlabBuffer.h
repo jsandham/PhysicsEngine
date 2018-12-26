@@ -14,35 +14,37 @@
 
 namespace PhysicsEngine
 {
-	struct SlabNode  //GLLineBufferNode??
+	struct SlabNode  
 	{
 		SlabNode* next;
-		int numberOfLinesToDraw;
+		size_t count;
+		size_t size;
 		Material* material;
-		GLHandle nodeVAO;
-		GLHandle vertexVBO;
-		float buffer[300000]; //vertices??
+		GLHandle vao;
+		GLHandle vbo;
+		float* buffer;
 	};
 
-	class SlabBuffer //LineBuffer??
+	class SlabBuffer
 	{
 		private:
 			SlabNode* root;
 			SlabNode* next;
+			size_t blockSize;
 
 			static int test;
 
 		public:
-			SlabBuffer();
+			SlabBuffer(size_t blockSize);
 			~SlabBuffer();
 
 			void clear();
-			void add(glm::vec3 start, glm::vec3 end, Material* material);
-			void add(std::vector<float> lines, Material* material);
+			// void add(glm::vec3 start, glm::vec3 end, Material* material);
+			void add(std::vector<float> data, Material* material);
 
 			bool hasNext();
 			SlabNode* getNext();
-
+			size_t getBlockSize();
 	};
 }
 

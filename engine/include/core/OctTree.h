@@ -37,14 +37,18 @@ namespace PhysicsEngine
 			std::vector<float> lines;  //use Line instead??
 
 			std::vector<Object> tempObjects; ///remove later. Just here for testing
+			std::vector<float> tempLines;
 
 		public:
 			Octtree(Bounds bounds, int depth);
 			~Octtree();
 
+			void clear();
 			void insert(Sphere sphere, Guid id);
 
 			Object* intersect(Ray ray);
+			int firstNode(float tx0, float ty0, float tz0, float txm, float tym, float tzm);
+			int nextNode(float tx, int i, float ty, int j, float tz, int k);
 
 			std::vector<float> getLines();
 
@@ -55,6 +59,7 @@ namespace PhysicsEngine
 			void tempClear();
 			void tempInsert(Sphere sphere, Guid id);
 			Object* tempIntersect(Ray ray);
+			std::vector<float> getLinesTemp();
 	};
 
 

@@ -105,9 +105,9 @@ Manager::Manager()
 	line = new Line();
 
 	glm::vec3 centre = glm::vec3(settings.centre[0], settings.centre[1], settings.centre[2]);
-	glm::vec3 extent = glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
+	glm::vec3 size = 2.0f * glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
 
-	bounds = new Bounds(centre, extent);
+	bounds = new Bounds(centre, size);
 	physics = new Octtree(*bounds, /*settings.physicsDepth*/4);
 
 	componentTypeToPool[Component::getInstanceType<Transform>()] = reinterpret_cast<Pool<Transform>*>(transforms);
@@ -1289,8 +1289,8 @@ bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 	ray.origin = origin;
 	ray.direction = direction;
 
-	return physics->tempIntersect(ray) != NULL;
-	// return physics->intersect(ray) != NULL;
+	// return physics->tempIntersect(ray) != NULL;
+	return physics->intersect(ray) != NULL;
 }
 
 // begin by only implementing for spheres first and later I will add for bounds, capsules etc
@@ -1301,8 +1301,8 @@ bool Manager::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, 
 	ray.origin = origin;
 	ray.direction = direction;
 
-	Object* object = physics->tempIntersect(ray);
-	// Object* object = physics->intersect(ray);
+	// Object* object = physics->tempIntersect(ray);
+	Object* object = physics->intersect(ray);
 
 	if(object != NULL){
 		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);

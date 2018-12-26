@@ -706,7 +706,7 @@ void Graphics::unbind(Line* line)
 
 void Graphics::draw(Line* line)
 {
-	glDrawArrays(GL_LINES, 0, 6);
+	glDrawArrays(GL_LINES, 0, 2);
 }
 
 void Graphics::apply(Mesh* mesh)
@@ -760,7 +760,7 @@ void Graphics::unbind(Mesh* mesh)
 
 void Graphics::draw(Mesh* mesh)
 {
-	glDrawArrays(GL_TRIANGLES, 0, (int)mesh->vertices.size());
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mesh->vertices.size() / 3);
 }
 
 void Graphics::apply(PerformanceGraph* graph)
@@ -802,7 +802,7 @@ void Graphics::unbind(PerformanceGraph* graph)
 
 void Graphics::draw(PerformanceGraph* graph)
 {
-	glDrawArrays(GL_TRIANGLES, 0, (int)graph->vertices.size());
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)graph->vertices.size() / 3);
 }
 
 void Graphics::apply(DebugWindow* window)
@@ -852,24 +852,24 @@ void Graphics::unbind(DebugWindow* window)
 
 void Graphics::draw(DebugWindow* window)
 {
-	glDrawArrays(GL_TRIANGLES, 0, (int)window->vertices.size());
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)window->vertices.size() / 3);
 }
 
 void Graphics::apply(SlabNode* node)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, node->vertexVBO.handle);
+	glBindBuffer(GL_ARRAY_BUFFER, node->vbo.handle);
 
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 6*node->numberOfLinesToDraw*sizeof(float), &(node->buffer[0]));
+	glBufferSubData(GL_ARRAY_BUFFER, 0, node->count*sizeof(float), &(node->buffer[0]));
 }
 
 void Graphics::generate(SlabNode* node)
 {
-	glGenVertexArrays(1, &(node->nodeVAO.handle));
-	glBindVertexArray(node->nodeVAO.handle);
+	glGenVertexArrays(1, &(node->vao.handle));
+	glBindVertexArray(node->vao.handle);
 
-	glGenBuffers(1, &(node->vertexVBO.handle));
-	glBindBuffer(GL_ARRAY_BUFFER, node->vertexVBO.handle);
-	glBufferData(GL_ARRAY_BUFFER, 300000*sizeof(float), &(node->buffer[0]), GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &(node->vbo.handle));
+	glBindBuffer(GL_ARRAY_BUFFER, node->vbo.handle);
+	glBufferData(GL_ARRAY_BUFFER, node->size*sizeof(float), &(node->buffer[0]), GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
@@ -878,13 +878,13 @@ void Graphics::generate(SlabNode* node)
 
 void Graphics::destroy(SlabNode* node)
 {
-	glDeleteVertexArrays(1, &(node->nodeVAO.handle));
-	glDeleteBuffers(1, &(node->vertexVBO.handle));
+	glDeleteVertexArrays(1, &(node->vao.handle));
+	glDeleteBuffers(1, &(node->vbo.handle));
 }
 
 void Graphics::bind(SlabNode* node)
 {
-	glBindVertexArray(node->nodeVAO.handle);
+	glBindVertexArray(node->vao.handle);
 }
 
 void Graphics::unbind(SlabNode* node)
@@ -894,8 +894,7 @@ void Graphics::unbind(SlabNode* node)
 
 void Graphics::draw(SlabNode* node)
 {
-	//std::cout << "number of lines to draw: " << node->numberOfLinesToDraw << std::endl;
-	glDrawArrays(GL_LINES, 0, node->numberOfLinesToDraw/*6*node->numberOfLinesToDraw*/);  /////////////////ahhhhhhhhhhh fix all draw bugs like this!!!
+	glDrawArrays(GL_LINES, 0, (GLsizei)node->count / 3);
 }
 
 void Graphics::generate(GLCamera* state)

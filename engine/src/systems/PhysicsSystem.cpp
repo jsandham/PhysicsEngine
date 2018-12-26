@@ -45,12 +45,14 @@ void PhysicsSystem::update()
 {
 	Octtree* physics = manager->getPhysicsTree();
 
-	// rebuild dynamic octtree for physics
-	// for(int i = 0; i < manager->getNumberOfComponents<SphereCollider>(); i++){
-	// 	SphereCollider* collider = manager->getComponentByIndex<SphereCollider>(i);
+	physics->clear();
 
-	// 	physics->insert(collider->sphere, collider->componentId);
-	// }
+	// rebuild dynamic octtree for physics
+	for(int i = 0; i < manager->getNumberOfComponents<SphereCollider>(); i++){
+		SphereCollider* collider = manager->getComponentByIndex<SphereCollider>(i);
+
+		physics->insert(collider->sphere, collider->componentId);
+	}
 
 
 

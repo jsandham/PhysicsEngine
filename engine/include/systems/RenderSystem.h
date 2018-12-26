@@ -59,7 +59,7 @@ namespace PhysicsEngine
 			GLFramebuffer fbo;
 
 
-			SlabBuffer lineBuffer;
+			SlabBuffer* lineBuffer;
 
 		public:
 			RenderSystem();

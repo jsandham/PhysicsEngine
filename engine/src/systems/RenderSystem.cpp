@@ -34,6 +34,8 @@ RenderSystem::~RenderSystem()
 {
 	delete graph;
 	delete debugWindow;
+
+	delete lineBuffer;
 }
 
 void RenderSystem::init()
@@ -65,6 +67,7 @@ void RenderSystem::init()
 	}
 
 	Line* line = manager->getLine();
+	lineBuffer = new SlabBuffer(60000);
 
 	Graphics::generate(line);
 
@@ -251,28 +254,30 @@ void RenderSystem::update()
 	// 	Graphics::unbind(line);
 	// }
 
-	lineBuffer.clear();
-	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
-		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
-		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
+	lineBuffer->clear();
+	// for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
+	// 	LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
+	// 	Material* material = manager->getAsset<Material>(lineRenderer->materialId);
 
-		Transform* transform = lineRenderer->getComponent<Transform>();
-		glm::mat4 model = transform->getModelMatrix();
+	// 	Transform* transform = lineRenderer->getComponent<Transform>();
+	// 	glm::mat4 model = transform->getModelMatrix();
 
-		glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
-		glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
+	// 	glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
+	// 	glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
 
-		lineBuffer.add(start, end, material);
-	}
+	// 	lineBuffer->add(start, end, material);
+	// }
 
 	if(manager->debug){
-		std::vector<float> lines = manager->getPhysicsTree()->getLines();
+		// std::vector<float> lines = manager->getPhysicsTree()->getLines();
+		std::vector<float> lines = manager->getPhysicsTree()->getLinesTemp();
 
-		lineBuffer.add(lines, lineMaterial);
+		lineBuffer->add(lines, lineMaterial);
 	}
+	//std::cout << "lines added" << std::endl;
 
-	while(lineBuffer.hasNext()){
-		SlabNode* node = lineBuffer.getNext();
+	while(lineBuffer->hasNext()){
+		SlabNode* node = lineBuffer->getNext();
 	 
 	 	Graphics::apply(node);
 		Graphics::bind(node->material, glm::mat4(1.0f));
