@@ -37,7 +37,7 @@ namespace PhysicsEngine
 			std::vector<float> lines;  //use Line instead??
 
 			std::vector<Object> tempObjects; ///remove later. Just here for testing
-			std::vector<float> tempLines;
+			std::vector<float> tempLines;  //remove later. Just here for testing
 
 		public:
 			Octtree(Bounds bounds, int depth);

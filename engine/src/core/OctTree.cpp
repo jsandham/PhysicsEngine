@@ -161,8 +161,6 @@ Octtree::Octtree(Bounds bounds, int depth)
 
 	std::cout << "lines count: " << lines.size() << std::endl;
 
-	std::cout << "octtree contructor finished" << std::endl;
-
 	tempLines.resize(lines.size());
 }
 
@@ -265,10 +263,6 @@ Object* Octtree::intersect(Ray ray)
 			continue;
 		}
 
-		// if(tx1 < 0.0f, || ty1 < 0.0f || tz1 < 0.0f){
-		// 	continue;
-		// }
-
 		float xmin = nodes[nodeIndex].centre.x - nodes[nodeIndex].extent.x;
 		float xmax = nodes[nodeIndex].centre.x + nodes[nodeIndex].extent.x;
 		float ymin = nodes[nodeIndex].centre.y - nodes[nodeIndex].extent.y;
@@ -284,6 +278,11 @@ Object* Octtree::intersect(Ray ray)
 		float tz1 = (zmax - ray.origin.z) / ray.direction.z;
 
 		std::cout << "node index: " << nodeIndex << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
+
+		// tx1, ty1, and tz1 cannot be negative if the ray intersects the octtree
+		if(tx1 < 0.0f || ty1 < 0.0f || tz1 < 0.0f){
+			continue;
+		}
 
 		if(std::max(tx0, std::max(ty0, tz0)) >= std::min(tx1, std::min(ty1, tz1))){
 			continue;

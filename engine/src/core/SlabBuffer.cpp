@@ -40,55 +40,6 @@ void SlabBuffer::clear()
 	}
 }
 
-// void SlabBuffer::add(glm::vec3 start, glm::vec3 end, Material* material)
-// {
-// 	SlabNode** current = &root;
-
-// 	bool hasAdded = false;
-// 	while(!hasAdded){
-
-// 		if(*current != NULL){
-// 			if(material->assetId == (*current)->material->assetId && 6*((*current)->count + 1) < blockSize){
-
-// 				(*current)->material = material;
-// 				(*current)->buffer[6*(*current)->count] = start.x;
-// 				(*current)->buffer[6*(*current)->count + 1] = start.y;
-// 				(*current)->buffer[6*(*current)->count + 2] = start.z;
-// 				(*current)->buffer[6*(*current)->count + 3] = end.x;
-// 				(*current)->buffer[6*(*current)->count + 4] = end.y;
-// 				(*current)->buffer[6*(*current)->count + 5] = end.z;
-// 				(*current)->numberOfLinesToDraw++;
-
-// 				hasAdded = true;
-// 			}
-// 			else{
-// 				*current = (*current)->next;
-// 			}
-// 		}
-// 		else{
-// 			SlabBuffer::test++;
-// 			std::cout << "creating new slab node " << SlabBuffer::test << std::endl;
-// 			*current = new SlabNode();
-// 			(*current)->material = material;
-// 			(*current)->buffer = new float[blockSize];
-
-// 			(*current)->buffer[0] = start.x;
-// 			(*current)->buffer[1] = start.y;
-// 			(*current)->buffer[2] = start.z;
-// 			(*current)->buffer[3] = end.x;
-// 			(*current)->buffer[4] = end.y;
-// 			(*current)->buffer[5] = end.z;
-
-// 			(*current)->count = 1;
-
-// 			Graphics::generate(*current);
-
-// 			hasAdded = true;
-// 		}
-// 	}
-// }
-
-
 void SlabBuffer::add(std::vector<float> data, Material* material)
 {
 	size_t startIndex = 0;

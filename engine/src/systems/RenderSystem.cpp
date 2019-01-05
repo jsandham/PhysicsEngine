@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <ctime>
 
 #include "../../include/systems/RenderSystem.h"
 
@@ -155,7 +156,7 @@ void RenderSystem::update()
 		return;
 	}
 
-	Graphics::setViewport(camera->x, camera->y, camera->width, camera->height);
+	Graphics::setViewport(camera->x, camera->y, camera->width, camera->height - 40);
 	Graphics::clearColorBuffer(camera->getBackgroundColor());
 	Graphics::clearDepthBuffer(1.0f);
 	Graphics::setDepth(GLDepth::LEqual);
@@ -227,54 +228,58 @@ void RenderSystem::update()
 		pass++;
 	}
 
-	// for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
-	// 	LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
-	// 	Transform* transform = lineRenderer->getComponent<Transform>();
-
-	// 	Material* material = manager->getAsset<Material>(lineRenderer->materialId);
-	// 	Line* line = manager->getLine();
-
-	// 	line->start = lineRenderer->start;
-	// 	line->end = lineRenderer->end;
-
-	// 	Graphics::apply(line);
-
-	// 	glm::mat4 model = transform->getModelMatrix();
-
-	// 	//std::cout << "material id: " << material->assetId.toString() << std::endl;
-
-	// 	// std::cout << model[0][0] << " " << model[0][1] << " " << model[0][2] << " " << model[0][3] << " " <<std::endl;
-	// 	// std::cout << model[1][0] << " " << model[1][1] << " " << model[1][2] << " " << model[1][3] << " " <<std::endl;
-	// 	// std::cout << model[2][0] << " " << model[2][1] << " " << model[2][2] << " " << model[2][3] << " " <<std::endl;
-	// 	// std::cout << model[3][0] << " " << model[3][1] << " " << model[3][2] << " " << model[3][3] << " " <<std::endl;
-
-	// 	Graphics::bind(material, model);
-	// 	Graphics::bind(line);
-	// 	Graphics::draw(line);
-	// 	Graphics::unbind(line);
-	// }
-
 	lineBuffer->clear();
-	// for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
-	// 	LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
-	// 	Material* material = manager->getAsset<Material>(lineRenderer->materialId);
 
-	// 	Transform* transform = lineRenderer->getComponent<Transform>();
-	// 	glm::mat4 model = transform->getModelMatrix();
+	std::vector<float> lines(6);
+	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
+		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
+		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
 
-	// 	glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
-	// 	glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
+		Transform* transform = lineRenderer->getComponent<Transform>();
+		glm::mat4 model = transform->getModelMatrix();
 
-	// 	lineBuffer->add(start, end, material);
-	// }
+		glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
+		glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
+
+		lines[0] = start.x;
+		lines[1] = start.y;
+		lines[2] = start.z;
+
+		lines[3] = end.x;
+		lines[4] = end.y;
+		lines[5] = end.z;
+
+		lineBuffer->add(lines, material);
+	}
+
+	int numDrawCalls = 0;
+	double duration;
+	std::clock_t start = std::clock();
 
 	if(manager->debug){
-		// std::vector<float> lines = manager->getPhysicsTree()->getLines();
-		std::vector<float> lines = manager->getPhysicsTree()->getLinesTemp();
+		lines = manager->getPhysicsTree()->getLines();//getLinesTemp();
 
 		lineBuffer->add(lines, lineMaterial);
+
+		// write the slow many draw call way of drawing lines here just for testing and comparing perf to slab buffer
+		// for(int i = 0; i < lines.size() / 6; i++){
+		// 		Line* line = manager->getLine();
+
+		// 		line->start.x = lines[6*i];
+		// 		line->start.y = lines[6*i + 1];
+		// 		line->start.z = lines[6*i + 2];
+		// 		line->end.x = lines[6*i + 3];
+		// 		line->end.y = lines[6*i + 4];
+		// 		line->end.z = lines[6*i + 5];
+
+		// 		Graphics::apply(line);
+		// 		Graphics::bind(lineMaterial, glm::mat4(1.0f));
+		// 		Graphics::bind(line);
+		// 		Graphics::draw(line);
+
+		// 		numDrawCalls++;
+		// }
 	}
-	//std::cout << "lines added" << std::endl;
 
 	while(lineBuffer->hasNext()){
 		SlabNode* node = lineBuffer->getNext();
@@ -283,7 +288,12 @@ void RenderSystem::update()
 		Graphics::bind(node->material, glm::mat4(1.0f));
 		Graphics::bind(node);
 		Graphics::draw(node);
+
+		numDrawCalls++;
 	}
+
+	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+	std::cout << "number of draw calls: " << numDrawCalls << " duration: " << duration << std::endl;
 
 	//int elapsedGPUTime = Graphics::endGPUTimer();
 

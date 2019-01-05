@@ -74,10 +74,12 @@ void DebugSystem::update()
 				int x = Input::getMousePosX();
 				int y = Input::getMousePosY();
 				int width = camera->width;
-				int height = camera->height;
+				int height = camera->height - 40;
 
 				float screen_x = (x - 0.5f * width) / (0.5f * width);
 				float screen_y = (0.5f * height - y) / (0.5f * height);
+
+				std::cout << "x: " << x << " y: " << y << " width: " << width << " height: " << height << " screen_x: " << screen_x << " screen_y: " << screen_y << std::endl;
 
 				glm::vec4 rayClip = glm::vec4(screen_x, screen_y, -1.0f, 1.0f);
 				glm::vec4 rayEye = glm::inverse(projection) * rayClip;
@@ -85,15 +87,8 @@ void DebugSystem::update()
 				glm::vec3 rayWorld = glm::vec3((glm::inverse(view) * rayEye));
 				rayWorld = glm::normalize(rayWorld);
 
-				std::cout << "ray world x: " << rayWorld.x << " " << rayWorld.y << " " << rayWorld.z << " camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
-
-				//glm::vec4 nearPoint = projViewInv * glm::vec4(screen_x, screen_y, 0, 1);
-				//glm::vec4 farPoint = projViewInv * glm::vec4(screen_x, screen_y, 1, 1);
-
-				lineRenderer->start = camera->position;//glm::vec3(nearPoint.x / nearPoint.w, nearPoint.y / nearPoint.w, nearPoint.z / nearPoint.w);
-				lineRenderer->end = camera->position + 10.0f * rayWorld;//glm::vec3(farPoint.x / farPoint.w, farPoint.y / farPoint.w, farPoint.z / farPoint.w);
-
-				std::cout << "start: " << lineRenderer->start.x << " " << lineRenderer->start.y << " " << lineRenderer->start.z << "  end: " << lineRenderer->end.x << " " << lineRenderer->end.y << " " << lineRenderer->end.z << std::endl;
+				lineRenderer->start = camera->position;
+				lineRenderer->end = camera->position + 10.0f * rayWorld;
 
 				Collider* hitCollider = NULL;
 				if(manager->raycast(lineRenderer->start, rayWorld, 100.0f, &hitCollider))
