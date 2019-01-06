@@ -8,6 +8,8 @@
 
 using namespace PhysicsEngine;
 
+size_t Octtree::test = 0;
+
 Octtree::Octtree(Bounds bounds, int depth)
 {
 	this->bounds = bounds;
@@ -221,47 +223,36 @@ void Octtree::insert(Sphere sphere, Guid id)
 // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
 Object* Octtree::intersect(Ray ray)
 {
-	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << std::endl;
+	test = 0;
+
+	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
 
 	unsigned int a = 0;
 	if(ray.direction.x < 0.0f){
-		// ray.origin.x = bounds.size.x - ray.origin.x;
 		ray.origin.x = 2.0f * bounds.centre.x - ray.origin.x;
 		ray.direction.x = -ray.direction.x;
-		a |= 4;
+		// a |= 4;
+		a |= 1;
 	}
 
 	if(ray.direction.y < 0.0f){
-		// ray.origin.y = bounds.size.y - ray.origin.y;
 		ray.origin.y = 2.0f * bounds.centre.y - ray.origin.y;
 		ray.direction.y = -ray.direction.y;
 		a |= 2;
 	}
 
 	if(ray.direction.z < 0.0f){
-		// ray.origin.z = bounds.size.z - ray.origin.z;
 		ray.origin.z = 2.0f * bounds.centre.z - ray.origin.z;
 		ray.direction.z = -ray.direction.z;
-		a |= 1;
+		// a |= 1;
+		a |= 4;
 	}
-
-	// if(std::max(tx0, std::max(ty0, tz0)) >= std::min(tx1, std::min(ty1, tz1))){
-	// 	return NULL;
-	// }
-
-	std::cout << "intersect called " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
 
 	std::stack<int> stack;
 	stack.push(0);
 	while(!stack.empty()){
 		int nodeIndex = stack.top();
 		stack.pop();
-
-		if(8*nodeIndex + 8 >= nodes.size()){
-			// nodeIndex is a child node. add objects in this node to list to search
-			//std::cout << "node index: " << nodeIndex << " is a child" << std::endl;
-			continue;
-		}
 
 		float xmin = nodes[nodeIndex].centre.x - nodes[nodeIndex].extent.x;
 		float xmax = nodes[nodeIndex].centre.x + nodes[nodeIndex].extent.x;
@@ -277,14 +268,23 @@ Object* Octtree::intersect(Ray ray)
 		float tz0 = (zmin - ray.origin.z) / ray.direction.z;
 		float tz1 = (zmax - ray.origin.z) / ray.direction.z;
 
-		std::cout << "node index: " << nodeIndex << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
+		std::cout << "node index: " << nodeIndex << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << " xmin: " << xmin << " xmax: " << xmax << " ymin: " << ymin << " ymax: " << ymax << " zmin: " << zmin << " zmax: " << zmax << " num objects: " << nodes[nodeIndex].objects.size() << std::endl;
 
-		// tx1, ty1, and tz1 cannot be negative if the ray intersects the octtree
+		// tx1, ty1, and tz1 cannot be negative if the ray intersects nodes[nodeIndex]
 		if(tx1 < 0.0f || ty1 < 0.0f || tz1 < 0.0f){
 			continue;
 		}
 
 		if(std::max(tx0, std::max(ty0, tz0)) >= std::min(tx1, std::min(ty1, tz1))){
+			continue;
+		}
+
+		// ray intersects node nodes[nodeIndex] therefore add all objects in this node to search list
+		test += nodes[nodeIndex].objects.size();
+
+		// if node is a child node then dont try and look for lower children 
+		if(8*nodeIndex + 8 >= nodes.size()){
+			//std::cout << "node index: " << nodeIndex << " is a child" << std::endl;
 			continue;
 		}
 
@@ -296,30 +296,38 @@ Object* Octtree::intersect(Ray ray)
 		int localNodeIndex = firstNode(tx0, ty0, tz0, txm, tym, tzm);
 
 		while(localNodeIndex < 8){
+			std::cout << "first local node index: " << localNodeIndex << " direction corrected first local node index: " << (localNodeIndex ^ a) << std::endl;
 			stack.push(8*nodeIndex + (localNodeIndex ^ a) + 1);
 
 			switch(localNodeIndex)
 			{
 				case 0:
-					localNodeIndex = nextNode(txm, 4, tym, 2, tzm, 1);
+					// localNodeIndex = nextNode(txm, 4, tym, 2, tzm, 1);
+					localNodeIndex = nextNode(txm, 1, tym, 2, tzm, 4);
 					break;
 				case 1:
-					localNodeIndex = nextNode(txm, 5, tym, 3, tz1, 8);
+					// localNodeIndex = nextNode(txm, 5, tym, 3, tz1, 8);
+					localNodeIndex = nextNode(tx1, 8, tym, 3, tzm, 5);
 					break;
 				case 2:
-					localNodeIndex = nextNode(txm, 6, ty1, 8, tzm, 3);
+					// localNodeIndex = nextNode(txm, 6, ty1, 8, tzm, 3);
+					localNodeIndex = nextNode(txm, 3, ty1, 8, tzm, 6);
 					break;
 				case 3:
-					localNodeIndex = nextNode(txm, 7, ty1, 8, tz1, 8);
+					// localNodeIndex = nextNode(txm, 7, ty1, 8, tz1, 8);
+					localNodeIndex = nextNode(tx1, 8, ty1, 8, tzm, 7);
 					break;
 				case 4:
-					localNodeIndex = nextNode(tx1, 8, tym, 6, tzm, 5);
+					// localNodeIndex = nextNode(tx1, 8, tym, 6, tzm, 5);
+					localNodeIndex = nextNode(txm, 5, tym, 6, tz1, 8);
 					break;
 				case 5:
+					// localNodeIndex = nextNode(tx1, 8, tym, 7, tz1, 8);
 					localNodeIndex = nextNode(tx1, 8, tym, 7, tz1, 8);
 					break;
 				case 6:
-					localNodeIndex = nextNode(tx1, 8, ty1, 8, tzm, 7);
+					// localNodeIndex = nextNode(tx1, 8, ty1, 8, tzm, 7);
+					localNodeIndex = nextNode(txm, 7, ty1, 8, tz1, 8);
 					break;
 				case 7:
 					localNodeIndex = 8;
@@ -327,6 +335,8 @@ Object* Octtree::intersect(Ray ray)
 			}
 		}
 	}
+
+	std::cout << "Number of objects that we need to test against: " << test << std::endl;
 
 	return NULL;
 }
@@ -337,15 +347,18 @@ int Octtree::firstNode(float tx0, float ty0, float tz0, float txm, float tym, fl
 {
 	int index = 0;
 	if(tx0 >= std::max(ty0, tz0)){ // enters YZ plane
+		std::cout << "enters YZ plane" << std::endl;
 		if(tym < tx0){ index = index | (1 << 1); }
 		if(tzm < tx0){ index = index | (1 << 2); }
 	}
 	else if(ty0 >= std::max(tx0, tz0)){ // enters XZ plane
-		if(txm < ty0){ index = index | (1 << 0); }
-		if(tzm < ty0){ index = index | (1 << 2); }
+		std::cout << "enters XZ plane" << std::endl;
+		if(txm < ty0){ index = index | (1 << 0); } //0
+		if(tzm < ty0){ index = index | (1 << 2); } //1 
 	}
 	else // enters XY plane
 	{
+		std::cout << "enters XY plane" << std::endl;
 		if(txm < tz0){ index = index | (1 << 0); }
 		if(tym < tz0){ index = index | (1 << 1); }
 	}
@@ -358,12 +371,15 @@ int Octtree::firstNode(float tx0, float ty0, float tz0, float txm, float tym, fl
 int Octtree::nextNode(float tx, int i, float ty, int j, float tz, int k)
 {
 	if(tx < std::min(ty, tz)){  // YZ plane
+		std::cout << "next enters YZ plane" << std::endl;
 		return i;
 	}
 	else if(ty < std::min(tx, tz)){ // XZ plane
+		std::cout << "ext enters XZ plane" << std::endl;
 		return j;
 	}
 	else{ // XY plane
+		std::cout << "next enters XY plane" << std::endl;
 		return k;
 	}
 }
@@ -454,6 +470,8 @@ std::vector<float> Octtree::getLinesTemp()
 	for(unsigned int i = 0; i < nodes.size(); i++){
 		Node* node = &nodes[i];
 		if(node->objects.size() > 0){
+			//std::cout << "node index with objects: " << i << std::endl;
+
 			// top
 			tempLines[6*12*index] = node->centre.x - node->extent.x;
 			tempLines[6*12*index + 1] = node->centre.y + node->extent.y;

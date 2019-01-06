@@ -252,12 +252,12 @@ void RenderSystem::update()
 		lineBuffer->add(lines, material);
 	}
 
-	int numDrawCalls = 0;
-	double duration;
-	std::clock_t start = std::clock();
+	// int numDrawCalls = 0;
+	// double duration;
+	// std::clock_t start = std::clock();
 
 	if(manager->debug){
-		lines = manager->getPhysicsTree()->getLines();//getLinesTemp();
+		lines = manager->getPhysicsTree()->getLines();
 
 		lineBuffer->add(lines, lineMaterial);
 
@@ -289,11 +289,11 @@ void RenderSystem::update()
 		Graphics::bind(node);
 		Graphics::draw(node);
 
-		numDrawCalls++;
+		//numDrawCalls++;
 	}
 
-	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-	std::cout << "number of draw calls: " << numDrawCalls << " duration: " << duration << std::endl;
+	//duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+	//std::cout << "number of draw calls: " << numDrawCalls << " duration: " << duration << std::endl;
 
 	//int elapsedGPUTime = Graphics::endGPUTimer();
 

@@ -1,1 +1,1 @@
-simple.scene
+sphere.scene

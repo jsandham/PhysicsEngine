@@ -20,7 +20,7 @@
     "maxAllowedGMeshes" : 15,
 
     "physicsDepth" : 10,
-    "centre" : [0.0, 0.0, 0.0],
+    "centre" : [0.0, 0.0, 20.0],
     "extent" : [20.0, 20.0, 20.0]
   }
 }

@@ -55,10 +55,11 @@ int main(int argc, char* argv[])
 	// relative path from editor to project directory
 	std::string projectDirectory = "../../sample_project/";
 
-	//if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
-	//if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
-	//if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
+	if(!serializeScene(projectDirectory + "data/scenes/sphere.json")){ std::cout << "Failed to serialize scene: sphere.json" << std::endl; }
 
 	// material files
 	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");

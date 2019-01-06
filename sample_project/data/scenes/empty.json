@@ -31,6 +31,8 @@
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0]
   },
-  "45347702" : {"type" : "PhysicsSystem"},
-  "98050738" : {"type" : "RenderSystem"}
+  "5e7a3ae3-78e3-4ed7-bcb5-eee232bc1ca2" : {"type" : "PhysicsSystem"},
+  "1e1848a0-aa11-4d52-95f6-c7363fa3d86d" : {"type" : "RenderSystem"},
+  "0821a8fb-17ee-45d9-ad4b-b096048cc9e8" : {"type" : "PlayerSystem"},
+  "7479877d-3507-4374-a535-e0e8bbcf8379" : {"type" : "DebugSystem","material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"}
 }

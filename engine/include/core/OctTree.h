@@ -34,10 +34,11 @@ namespace PhysicsEngine
 			int depth;
 			Bounds bounds;
 			std::vector<Node> nodes;
-			std::vector<float> lines;  //use Line instead??
+			std::vector<float> lines; 
 
 			std::vector<Object> tempObjects; ///remove later. Just here for testing
 			std::vector<float> tempLines;  //remove later. Just here for testing
+			static size_t test;
 
 		public:
 			Octtree(Bounds bounds, int depth);
