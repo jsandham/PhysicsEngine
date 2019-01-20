@@ -47,7 +47,7 @@ void PhysicsSystem::update()
 
 	physics->clear();
 
-	// rebuild dynamic octtree for physics
+	// rebuild dynamic octtree for physics raycasts
 	for(int i = 0; i < manager->getNumberOfComponents<SphereCollider>(); i++){
 		SphereCollider* collider = manager->getComponentByIndex<SphereCollider>(i);
 

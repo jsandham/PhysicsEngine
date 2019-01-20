@@ -108,7 +108,7 @@ Manager::Manager()
 	glm::vec3 size = 2.0f * glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
 
 	bounds = new Bounds(centre, size);
-	physics = new Octtree(*bounds, /*settings.physicsDepth*/1);
+	physics = new Octtree(*bounds, /*settings.physicsDepth*/2);
 
 	componentTypeToPool[Component::getInstanceType<Transform>()] = reinterpret_cast<Pool<Transform>*>(transforms);
 	componentTypeToPool[Component::getInstanceType<Rigidbody>()] = reinterpret_cast<Pool<Rigidbody>*>(rigidbodies);

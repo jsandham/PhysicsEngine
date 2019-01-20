@@ -162,7 +162,7 @@ namespace PhysicsEngine
 	class Manager
 	{
 		private:
-			BuildSettings settings;
+			BuildSettings settings; // rename to ManagerSettings?? and later WorldSettings
 
 			Pool<Entity>* entities;
 			Pool<Transform>* transforms;

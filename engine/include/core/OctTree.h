@@ -28,6 +28,17 @@ namespace PhysicsEngine
 		std::vector<Object> objects;
 	}Node;
 
+	typedef struct Cell
+	{
+		float tx0;
+		float ty0;
+		float tz0;
+		float tx1;
+		float ty1;
+		float tz1;
+		int nodeIndex;
+	}Cell;
+
 	class Octtree
 	{
 		private:

@@ -61,6 +61,8 @@ Octtree::Octtree(Bounds bounds, int depth)
 						nodes[index].extent = newExtent;
 						nodes[index].centre = newCentre;
 
+						if(index == 8) { std::cout << "centre: " << newCentre.x << " " << newCentre.y << " " << newCentre.z << " extent: " << newExtent.x << " " << newExtent.y << " " << newExtent.z << std::endl;}
+
 						stack.push(index);
 					}
 				}
@@ -218,7 +220,6 @@ void Octtree::insert(Sphere sphere, Guid id)
 	}
 }
 
-
 // Ray octtree intersection as described in the paper
 // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
 Object* Octtree::intersect(Ray ray)
@@ -229,6 +230,7 @@ Object* Octtree::intersect(Ray ray)
 
 	unsigned int a = 0;
 	if(ray.direction.x < 0.0f){
+		// ray.origin.x = bounds.size.x - ray.origin.x;
 		ray.origin.x = 2.0f * bounds.centre.x - ray.origin.x;
 		ray.direction.x = -ray.direction.x;
 		// a |= 4;
@@ -236,51 +238,62 @@ Object* Octtree::intersect(Ray ray)
 	}
 
 	if(ray.direction.y < 0.0f){
+		// ray.origin.y = bounds.size.y - ray.origin.y;
 		ray.origin.y = 2.0f * bounds.centre.y - ray.origin.y;
 		ray.direction.y = -ray.direction.y;
 		a |= 2;
 	}
 
 	if(ray.direction.z < 0.0f){
+		// ray.origin.z = bounds.size.z - ray.origin.z;
 		ray.origin.z = 2.0f * bounds.centre.z - ray.origin.z;
 		ray.direction.z = -ray.direction.z;
 		// a |= 1;
 		a |= 4;
 	}
 
-	std::stack<int> stack;
-	stack.push(0);
+	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
+
+
+	float xmin = nodes[nodeIndex].centre.x - nodes[nodeIndex].extent.x;
+	float xmax = nodes[nodeIndex].centre.x + nodes[nodeIndex].extent.x;
+	float ymin = nodes[nodeIndex].centre.y - nodes[nodeIndex].extent.y;
+	float ymax = nodes[nodeIndex].centre.y + nodes[nodeIndex].extent.y;
+	float zmin = nodes[nodeIndex].centre.z - nodes[nodeIndex].extent.z;
+	float zmax = nodes[nodeIndex].centre.z + nodes[nodeIndex].extent.z;
+
+	Cell rootCell;
+	rootCell.tx0 = (xmin - ray.origin.x) / ray.direction.x;
+	rootCell.tx1 = (xmax - ray.origin.x) / ray.direction.x;
+	rootCell.ty0 = (ymin - ray.origin.y) / ray.direction.y;
+	rootCell.ty1 = (ymax - ray.origin.y) / ray.direction.y;
+	rootCell.tz0 = (zmin - ray.origin.z) / ray.direction.z;
+	rootCell.tz1 = (zmax - ray.origin.z) / ray.direction.z;
+	rootCell.nodeIndex = 0;
+
+	std::stack<Cell> stack;
+	stack.push(rootCell);
 	while(!stack.empty()){
-		int nodeIndex = stack.top();
+		Cell currCell = stack.top();
 		stack.pop();
 
-		float xmin = nodes[nodeIndex].centre.x - nodes[nodeIndex].extent.x;
-		float xmax = nodes[nodeIndex].centre.x + nodes[nodeIndex].extent.x;
-		float ymin = nodes[nodeIndex].centre.y - nodes[nodeIndex].extent.y;
-		float ymax = nodes[nodeIndex].centre.y + nodes[nodeIndex].extent.y;
-		float zmin = nodes[nodeIndex].centre.z - nodes[nodeIndex].extent.z;
-		float zmax = nodes[nodeIndex].centre.z + nodes[nodeIndex].extent.z;
-
-		float tx0 = (xmin - ray.origin.x) / ray.direction.x;
-		float tx1 = (xmax - ray.origin.x) / ray.direction.x;
-		float ty0 = (ymin - ray.origin.y) / ray.direction.y;
-		float ty1 = (ymax - ray.origin.y) / ray.direction.y;
-		float tz0 = (zmin - ray.origin.z) / ray.direction.z;
-		float tz1 = (zmax - ray.origin.z) / ray.direction.z;
-
-		std::cout << "node index: " << nodeIndex << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << " xmin: " << xmin << " xmax: " << xmax << " ymin: " << ymin << " ymax: " << ymax << " zmin: " << zmin << " zmax: " << zmax << " num objects: " << nodes[nodeIndex].objects.size() << std::endl;
+		float tx0 = currCell.tx0;
+		float tx1 = currCell.tx1;
+		float ty0 = currCell.ty0;
+		float ty1 = currCell.ty1;
+		float tz0 = currCell.tz0;
+		float tz1 = currCell.tz1;	
+		int nodeIndex = currCell.nodeIndex;
 
 		// tx1, ty1, and tz1 cannot be negative if the ray intersects nodes[nodeIndex]
 		if(tx1 < 0.0f || ty1 < 0.0f || tz1 < 0.0f){
 			continue;
 		}
 
-		if(std::max(tx0, std::max(ty0, tz0)) >= std::min(tx1, std::min(ty1, tz1))){
-			continue;
-		}
+		std::cout << "Looking at node " << nodeIndex << " adjusted to: " << testNodeIndex << " for objects: " << nodes[testNodeIndex].objects.size() << "(node is a child: " << (8*nodeIndex + 8 >= nodes.size()) << ")" << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << "  tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << "  txm: " << (0.5f * (tx0 + tx1)) << " tym: " << (0.5f * (ty0 + ty1)) << " tzm: " << (0.5f * (tz0 + tz1)) << std::endl;
 
 		// ray intersects node nodes[nodeIndex] therefore add all objects in this node to search list
-		test += nodes[nodeIndex].objects.size();
+		test += nodes[testNodeIndex].objects.size();
 
 		// if node is a child node then dont try and look for lower children 
 		if(8*nodeIndex + 8 >= nodes.size()){
@@ -298,6 +311,8 @@ Object* Octtree::intersect(Ray ray)
 		while(localNodeIndex < 8){
 			std::cout << "first local node index: " << localNodeIndex << " direction corrected first local node index: " << (localNodeIndex ^ a) << std::endl;
 			stack.push(8*nodeIndex + (localNodeIndex ^ a) + 1);
+			//stack.push(8*nodeIndex + localNodeIndex + 1);
+			// testStack.push(8*testNodeIndex + (localNodeIndex ^ a) + 1);
 
 			switch(localNodeIndex)
 			{
@@ -341,24 +356,163 @@ Object* Octtree::intersect(Ray ray)
 	return NULL;
 }
 
+
+// // Ray octtree intersection as described in the paper
+// // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
+// Object* Octtree::intersect(Ray ray)
+// {
+// 	test = 0;
+
+// 	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
+
+// 	unsigned int a = 0;
+// 	if(ray.direction.x < 0.0f){
+// 		// ray.origin.x = bounds.size.x - ray.origin.x;
+// 		ray.origin.x = 2.0f * bounds.centre.x - ray.origin.x;
+// 		ray.direction.x = -ray.direction.x;
+// 		// a |= 4;
+// 		a |= 1;
+// 	}
+
+// 	if(ray.direction.y < 0.0f){
+// 		// ray.origin.y = bounds.size.y - ray.origin.y;
+// 		ray.origin.y = 2.0f * bounds.centre.y - ray.origin.y;
+// 		ray.direction.y = -ray.direction.y;
+// 		a |= 2;
+// 	}
+
+// 	if(ray.direction.z < 0.0f){
+// 		// ray.origin.z = bounds.size.z - ray.origin.z;
+// 		ray.origin.z = 2.0f * bounds.centre.z - ray.origin.z;
+// 		ray.direction.z = -ray.direction.z;
+// 		// a |= 1;
+// 		a |= 4;
+// 	}
+
+// 	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
+
+
+// 	//std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
+
+// 	std::cout << "nodes size: " << nodes.size() << std::endl;
+
+// 	std::stack<int> testStack; // contains the same indices as stack when the direction is positive. Instead of these two stack, use a single stack<Cell> stack
+// 	testStack.push(0);
+// 	std::stack<int> stack;
+// 	stack.push(0);
+// 	while(!stack.empty()){
+// 		int nodeIndex = stack.top();
+// 		stack.pop();
+
+// 		int testNodeIndex = testStack.top();
+// 		testStack.pop();
+
+// 		float xmin = nodes[nodeIndex].centre.x - nodes[nodeIndex].extent.x;
+// 		float xmax = nodes[nodeIndex].centre.x + nodes[nodeIndex].extent.x;
+// 		float ymin = nodes[nodeIndex].centre.y - nodes[nodeIndex].extent.y;
+// 		float ymax = nodes[nodeIndex].centre.y + nodes[nodeIndex].extent.y;
+// 		float zmin = nodes[nodeIndex].centre.z - nodes[nodeIndex].extent.z;
+// 		float zmax = nodes[nodeIndex].centre.z + nodes[nodeIndex].extent.z;
+
+// 		float tx0 = (xmin - ray.origin.x) / ray.direction.x;
+// 		float tx1 = (xmax - ray.origin.x) / ray.direction.x;
+// 		float ty0 = (ymin - ray.origin.y) / ray.direction.y;
+// 		float ty1 = (ymax - ray.origin.y) / ray.direction.y;
+// 		float tz0 = (zmin - ray.origin.z) / ray.direction.z;
+// 		float tz1 = (zmax - ray.origin.z) / ray.direction.z;
+
+// 		//std::cout << "node index: " << nodeIndex << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << " xmin: " << xmin << " xmax: " << xmax << " ymin: " << ymin << " ymax: " << ymax << " zmin: " << zmin << " zmax: " << zmax << " num objects: " << nodes[nodeIndex].objects.size() << std::endl;
+
+// 		// tx1, ty1, and tz1 cannot be negative if the ray intersects nodes[nodeIndex]
+// 		if(tx1 < 0.0f || ty1 < 0.0f || tz1 < 0.0f){
+// 			continue;
+// 		}
+
+// 		std::cout << "Looking at node " << nodeIndex << " adjusted to: " << testNodeIndex << " for objects: " << nodes[testNodeIndex].objects.size() << "(node is a child: " << (8*nodeIndex + 8 >= nodes.size()) << ")" << " tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << "  tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << "  txm: " << (0.5f * (tx0 + tx1)) << " tym: " << (0.5f * (ty0 + ty1)) << " tzm: " << (0.5f * (tz0 + tz1)) << std::endl;
+
+// 		// ray intersects node nodes[nodeIndex] therefore add all objects in this node to search list
+// 		test += nodes[testNodeIndex].objects.size();
+
+// 		// if node is a child node then dont try and look for lower children 
+// 		if(8*nodeIndex + 8 >= nodes.size()){
+// 			//std::cout << "node index: " << nodeIndex << " is a child" << std::endl;
+// 			continue;
+// 		}
+
+// 		float txm = 0.5f * (tx0 + tx1);
+// 		float tym = 0.5f * (ty0 + ty1);
+// 		float tzm = 0.5f * (tz0 + tz1);
+
+// 		// find first node
+// 		int localNodeIndex = firstNode(tx0, ty0, tz0, txm, tym, tzm);
+
+// 		while(localNodeIndex < 8){
+// 			int temp = (localNodeIndex ^ a);
+// 			std::cout << "first local node index: " << localNodeIndex << " direction corrected first local node index: " << temp << std::endl;
+// 			//stack.push(8*nodeIndex + (localNodeIndex ^ a) + 1);
+// 			stack.push(8*nodeIndex + localNodeIndex + 1);
+// 			testStack.push(8*testNodeIndex + (localNodeIndex ^ a) + 1);
+
+// 			switch(localNodeIndex)
+// 			{
+// 				case 0:
+// 					// localNodeIndex = nextNode(txm, 4, tym, 2, tzm, 1);
+// 					localNodeIndex = nextNode(txm, 1, tym, 2, tzm, 4);
+// 					break;
+// 				case 1:
+// 					// localNodeIndex = nextNode(txm, 5, tym, 3, tz1, 8);
+// 					localNodeIndex = nextNode(tx1, 8, tym, 3, tzm, 5);
+// 					break;
+// 				case 2:
+// 					// localNodeIndex = nextNode(txm, 6, ty1, 8, tzm, 3);
+// 					localNodeIndex = nextNode(txm, 3, ty1, 8, tzm, 6);
+// 					break;
+// 				case 3:
+// 					// localNodeIndex = nextNode(txm, 7, ty1, 8, tz1, 8);
+// 					localNodeIndex = nextNode(tx1, 8, ty1, 8, tzm, 7);
+// 					break;
+// 				case 4:
+// 					// localNodeIndex = nextNode(tx1, 8, tym, 6, tzm, 5);
+// 					localNodeIndex = nextNode(txm, 5, tym, 6, tz1, 8);
+// 					break;
+// 				case 5:
+// 					// localNodeIndex = nextNode(tx1, 8, tym, 7, tz1, 8);
+// 					localNodeIndex = nextNode(tx1, 8, tym, 7, tz1, 8);
+// 					break;
+// 				case 6:
+// 					// localNodeIndex = nextNode(tx1, 8, ty1, 8, tzm, 7);
+// 					localNodeIndex = nextNode(txm, 7, ty1, 8, tz1, 8);
+// 					break;
+// 				case 7:
+// 					localNodeIndex = 8;
+// 					break;
+// 			}
+// 		}
+// 	}
+
+// 	std::cout << "Number of objects that we need to test against: " << test << std::endl;
+
+// 	return NULL;
+// }
+
 // First node selection as described in the paper
 // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
 int Octtree::firstNode(float tx0, float ty0, float tz0, float txm, float tym, float tzm)
 {
 	int index = 0;
 	if(tx0 >= std::max(ty0, tz0)){ // enters YZ plane
-		std::cout << "enters YZ plane" << std::endl;
+		std::cout << "first enters YZ plane" << std::endl;
 		if(tym < tx0){ index = index | (1 << 1); }
 		if(tzm < tx0){ index = index | (1 << 2); }
 	}
 	else if(ty0 >= std::max(tx0, tz0)){ // enters XZ plane
-		std::cout << "enters XZ plane" << std::endl;
+		std::cout << "first enters XZ plane" << std::endl;
 		if(txm < ty0){ index = index | (1 << 0); } //0
 		if(tzm < ty0){ index = index | (1 << 2); } //1 
 	}
 	else // enters XY plane
 	{
-		std::cout << "enters XY plane" << std::endl;
+		std::cout << "first enters XY plane" << std::endl;
 		if(txm < tz0){ index = index | (1 << 0); }
 		if(tym < tz0){ index = index | (1 << 1); }
 	}
@@ -375,7 +529,7 @@ int Octtree::nextNode(float tx, int i, float ty, int j, float tz, int k)
 		return i;
 	}
 	else if(ty < std::min(tx, tz)){ // XZ plane
-		std::cout << "ext enters XZ plane" << std::endl;
+		std::cout << "next enters XZ plane" << std::endl;
 		return j;
 	}
 	else{ // XY plane
