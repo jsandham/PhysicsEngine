@@ -12,6 +12,7 @@
 #include "../graphics/GLState.h"
 #include "../graphics/GLHandle.h"
 
+#include "../core/Input.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
 #include "../core/Texture2D.h"
@@ -67,7 +68,7 @@ namespace PhysicsEngine
 			~RenderSystem();
 
 			void init();
-			void update();
+			void update(Input input);
 
 		private:
 			void renderScene();

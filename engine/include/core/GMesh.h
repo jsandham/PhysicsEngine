@@ -8,6 +8,27 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct GMeshHeader
+	{
+		Guid gmeshId;
+		int dim;
+		int ng;
+	    int n;
+	    int nte;
+	    int ne;
+	    int ne_b;
+	    int npe;
+	    int npe_b;
+	    int type;
+	    int type_b;
+		size_t verticesSize;
+		size_t connectSize;
+		size_t bconnectSize;
+		size_t groupsSize;
+	};
+#pragma pack(pop)
+
 	class GMesh : public Asset
 	{
 		public:

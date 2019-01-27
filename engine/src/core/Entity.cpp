@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../../include/core/Entity.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -9,7 +9,7 @@ Entity::Entity()
 {
 	entityId = Guid::INVALID;
 	
-	manager = NULL;
+	world = NULL;
 }
 
 Entity::~Entity()
@@ -22,22 +22,22 @@ void Entity::load(EntityData data)
 	entityId = data.entityId;
 }
 
-void Entity::setManager(Manager* manager)
+void Entity::setWorld(World* world)
 {
-	this->manager = manager;
+	this->world = world;
 }
 
 void Entity::latentDestroy()
 {
-	manager->latentDestroy(entityId);
+	world->latentDestroy(entityId);
 }
 
 void Entity::immediateDestroy()
 {
-	manager->immediateDestroy(entityId);
+	world->immediateDestroy(entityId);
 }
 
 Entity* Entity::instantiate()
 {
-	return manager->instantiate(entityId);
+	return world->instantiate(entityId);
 }

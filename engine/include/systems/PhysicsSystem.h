@@ -6,6 +6,8 @@
 
 #include "System.h"
 
+#include "../core/Input.h"
+
 #include "../components/Collider.h"
 #include "../components/Rigidbody.h"
 
@@ -34,7 +36,7 @@ namespace PhysicsEngine
 			~PhysicsSystem();
 
 			void init();
-			void update();
+			void update(Input input);
 	};
 }
 

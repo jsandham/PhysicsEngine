@@ -5,6 +5,44 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct SceneHeader
+	{
+		unsigned short fileType;
+		unsigned int fileSize;
+
+		unsigned int numberOfEntities;
+		unsigned int numberOfTransforms;
+		unsigned int numberOfRigidbodies;
+		unsigned int numberOfCameras;
+		unsigned int numberOfMeshRenderers;
+		unsigned int numberOfLineRenderers;
+		unsigned int numberOfDirectionalLights;
+		unsigned int numberOfSpotLights;
+		unsigned int numberOfPointLights;
+		unsigned int numberOfBoxColliders;
+		unsigned int numberOfSphereColliders;
+		unsigned int numberOfCapsuleColliders;
+
+		unsigned int numberOfSystems;
+
+		size_t sizeOfEntity;
+		size_t sizeOfTransform;
+		size_t sizeOfRigidbody;
+		size_t sizeOfCamera;
+		size_t sizeOfMeshRenderer;
+		size_t sizeOfLineRenderer;
+		size_t sizeOfDirectionalLight;
+		size_t sizeOfSpotLight;
+		size_t sizeOfPointLight;
+		size_t sizeOfBoxCollider;
+		size_t sizeOfSphereCollider;
+		size_t sizeOfCapsuleCollider;
+	};
+#pragma pack(pop)
+
+
+	
 	struct Scene
 	{
 		std::string name;

@@ -12,12 +12,12 @@ namespace PhysicsEngine
 	};
 // #pragma pack(pop)
 	
-	class Manager;
+	class World;
 
 	class Entity
 	{
 		private:
-			Manager* manager;
+			World* world;
 
 		public:
 			Guid entityId;
@@ -28,7 +28,7 @@ namespace PhysicsEngine
 
 			void load(EntityData data);
 
-			void setManager(Manager* manager);
+			void setWorld(World* world);
 
 			void latentDestroy();
 			void immediateDestroy();
@@ -37,13 +37,13 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addComponent()
 			{
-				return manager->addComponent<T>(entityId);
+				return world->addComponent<T>(entityId);
 			}
 
 			template<typename T>
 			T* getComponent()
 			{
-				return manager->getComponent<T>(entityId);
+				return world->getComponent<T>(entityId);
 			}
 	};
 }

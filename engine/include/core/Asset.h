@@ -7,12 +7,23 @@
 
 namespace PhysicsEngine
 {
-	class Manager;
+#pragma pack(push, 1)
+	struct AssetBundleHeader
+	{
+		unsigned int numberOfShaders;
+		unsigned int numberOfTextures;
+		unsigned int numberOfMaterials;
+		unsigned int numberOfMeshes;
+		unsigned int numberOfGMeshes;
+	};
+#pragma pack(pop)
+	
+	class World;
 
 	class Asset
 	{
 		protected:
-			Manager* manager;
+			World* world;
 
 		public:
 			Guid assetId;
@@ -21,7 +32,7 @@ namespace PhysicsEngine
 			Asset();
 			virtual ~Asset() = 0;
 
-			void setManager(Manager* manager);
+			void setManager(World* world);
 
 			template <typename T>
 			static int getInstanceType()

@@ -10,6 +10,16 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct MeshHeader
+	{
+		Guid meshId;
+		size_t verticesSize;
+		size_t normalsSize;
+		size_t texCoordsSize;
+	};
+#pragma pack(pop)
+
 	class Mesh : public Asset
 	{
 		public:

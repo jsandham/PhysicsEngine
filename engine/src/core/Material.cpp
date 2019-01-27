@@ -1,5 +1,5 @@
 #include "../../include/core/Material.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -22,7 +22,7 @@ Material::~Material()
 
 }
 
-void Material::load(MaterialData data)
+void Material::load(MaterialHeader data)
 {
 	assetId = data.assetId;
 
@@ -40,20 +40,20 @@ void Material::load(MaterialData data)
 
 Shader* Material::getShader()
 {
-	return manager->getAsset<Shader>(shaderId);
+	return world->getAsset<Shader>(shaderId);
 }
 
 Texture2D* Material::getMainTexture()
 {
-	return manager->getAsset<Texture2D>(textureId);
+	return world->getAsset<Texture2D>(textureId);
 }
 
 Texture2D* Material::getNormalMap()
 {
-	return manager->getAsset<Texture2D>(normalMapId);
+	return world->getAsset<Texture2D>(normalMapId);
 }
 
 Texture2D* Material::getSpecularMap()
 {
-	return manager->getAsset<Texture2D>(specularMapId);
+	return world->getAsset<Texture2D>(specularMapId);
 }

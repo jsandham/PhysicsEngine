@@ -14,6 +14,16 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct ShaderHeader
+	{
+		Guid shaderId;
+		size_t vertexShaderSize;
+		size_t geometryShaderSize;
+		size_t fragmentShaderSize;
+	};
+#pragma pack(pop)
+	
 	class Shader : public Asset
 	{
 		public:

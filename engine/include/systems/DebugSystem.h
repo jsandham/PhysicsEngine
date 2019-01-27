@@ -3,6 +3,7 @@
 
 #include "System.h"
 
+#include "../core/Input.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
 
@@ -20,7 +21,7 @@ namespace PhysicsEngine
 			~DebugSystem();
 
 			void init();
-			void update();
+			void update(Input input);
 	};
 }
 

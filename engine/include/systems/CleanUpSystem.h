@@ -3,6 +3,8 @@
 
 #include "System.h"
 
+#include "../core/Input.h"
+
 namespace PhysicsEngine
 {
 	class CleanUpSystem : public System
@@ -12,7 +14,7 @@ namespace PhysicsEngine
 			~CleanUpSystem();
 
 			void init();
-			void update();
+			void update(Input input);
 	};
 }
 

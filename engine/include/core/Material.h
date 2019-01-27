@@ -13,7 +13,7 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct MaterialData
+	struct MaterialHeader
 	{
 		Guid assetId;
 		Guid shaderId;
@@ -26,7 +26,6 @@ namespace PhysicsEngine
 		glm::vec3 diffuse;
 		glm::vec3 specular;
 		glm::vec4 color;
-
 	};
 #pragma pack(pop)
 
@@ -60,7 +59,7 @@ namespace PhysicsEngine
 			Material();
 			~Material();
 
-			void load(MaterialData data);
+			void load(MaterialHeader data);
 
 			Shader* getShader();
 			Texture2D* getMainTexture();

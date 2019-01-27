@@ -1,5 +1,5 @@
 #include "../../include/systems/System.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -13,9 +13,9 @@ System::~System()
 
 }
 
-void System::setManager(Manager* manager)
+void System::setWorld(World* world)
 {
-	this->manager = manager;
+	this->world = world;
 }
 
 void System::setSceneContext(SceneContext* context)

@@ -2,10 +2,11 @@
 #define __SYSTEM_H__
 
 #include "../core/SceneContext.h"
+#include "../core/Input.h"
 
 namespace PhysicsEngine
 {
-	class Manager;
+	class World;
 
 	class System
 	{
@@ -13,16 +14,16 @@ namespace PhysicsEngine
 			int type;
 
 			SceneContext* context;
-			Manager* manager;
+			World* world;
 
 		public:
 			System();
 			virtual ~System() = 0;
 
 			virtual void init() = 0;
-			virtual void update() = 0;
+			virtual void update(Input input) = 0;
 
-			void setManager(Manager* manager);
+			void setWorld(World* world);
 			void setSceneContext(SceneContext* context);
 	};
 }

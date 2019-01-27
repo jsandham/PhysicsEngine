@@ -70,34 +70,35 @@ namespace PhysicsEngine
 	class Input
 	{
 		private:
-			static std::vector<bool> keyIsDown;
-			static std::vector<bool> keyWasDown;
-			static std::vector<bool> buttonIsDown;
-			static std::vector<bool> buttonWasDown;
-			static int mousePosX;
-			static int mousePosY;
-			static int mouseDelta;
+			std::vector<bool> keyIsDown;
+			std::vector<bool> keyWasDown;
+			std::vector<bool> buttonIsDown;
+			std::vector<bool> buttonWasDown;
+
+			int mousePosX;
+			int mousePosY;
+			int mouseDelta;
 			
-		private:
+		public:
 			Input();
+			~Input();
 
 		public:
-			static bool getKey(KeyCode key);
-			static bool getKeyDown(KeyCode key);
-			static bool getKeyUp(KeyCode key);
+			bool getKey(KeyCode key);
+			bool getKeyDown(KeyCode key);
+			bool getKeyUp(KeyCode key);
 
-			static bool getMouseButton(MouseButton button);
-			static bool getMouseButtonDown(MouseButton button);
-			static bool getMouseButtonUp(MouseButton button);
-			static int getMousePosX();
-			static int getMousePosY();
-			static int getMouseDelta();
+			bool getMouseButton(MouseButton button);
+			bool getMouseButtonDown(MouseButton button);
+			bool getMouseButtonUp(MouseButton button);
+			int getMousePosX();
+			int getMousePosY();
+			int getMouseDelta();
 
-			static void setKeyState(KeyCode key, bool isDown, bool wasDown);
-			static void setMouseButtonState(MouseButton button, bool isDown, bool wasDown);
-			static void setMousePosition(int x, int y);
-			static void setMouseDelta(int delta);
-			static void updateEOF();
+			void setKeyState(KeyCode key, bool isDown, bool wasDown);
+			void setMouseButtonState(MouseButton button, bool isDown, bool wasDown);
+			void setMousePosition(int x, int y);
+			void setMouseDelta(int delta);
 	};
 }
 

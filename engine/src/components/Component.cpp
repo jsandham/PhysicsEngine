@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../../include/components/Component.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -10,7 +10,7 @@ Component::Component()
 	componentId = Guid::INVALID;
 	entityId = Guid::INVALID;
 
-	manager = NULL;
+	world = NULL;
 }
 
 Component::~Component()
@@ -18,12 +18,12 @@ Component::~Component()
 	
 }
 
-void Component::setManager(Manager* manager)
+void Component::setManager(World* world)
 {
-	this->manager = manager;
+	this->world = world;
 }
 
 Entity* Component::getEntity()
 {
-	return manager->getEntity(entityId);
+	return world->getEntity(entityId);
 }

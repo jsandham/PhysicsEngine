@@ -4,13 +4,22 @@
 
 using namespace PhysicsEngine;
 
-std::vector<bool> Input::keyIsDown(51, false);
-std::vector<bool> Input::keyWasDown(51, false);
-std::vector<bool> Input::buttonIsDown(3, false);
-std::vector<bool> Input::buttonWasDown(3, false);
-int Input::mousePosX = 0;
-int Input::mousePosY = 0;
-int Input::mouseDelta = 0;
+Input::Input()
+{
+	keyIsDown.resize(51, false);
+	keyWasDown.resize(51, false);
+	buttonIsDown.resize(3, false);
+	buttonWasDown.resize(3, false);
+
+	mousePosX = 0;
+	mousePosY = 0;
+	mouseDelta = 0;
+}
+
+Input::~Input()
+{
+
+}
 
 bool Input::getKey(KeyCode key)
 {
@@ -80,16 +89,16 @@ void Input::setMouseDelta(int delta)
 	mouseDelta = delta;
 }
 
-void Input::updateEOF()
-{
-	for(unsigned int i = 0; i < 3; i++){
-		buttonWasDown[i] = buttonIsDown[i];
-	}
+// void Input::updateEOF()
+// {
+// 	for(unsigned int i = 0; i < 3; i++){
+// 		buttonWasDown[i] = buttonIsDown[i];
+// 	}
 
-	mouseDelta = 0;
+// 	mouseDelta = 0;
 
-	for(unsigned int i = 0; i < keyIsDown.size(); i++){
-		keyIsDown[i] = false;
-		keyWasDown[i] = false;
-	}
-}
+// 	for(unsigned int i = 0; i < keyIsDown.size(); i++){
+// 		keyIsDown[i] = false;
+// 		keyWasDown[i] = false;
+// 	}
+// }

@@ -12,7 +12,11 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <core/Manager.h>
+#include <core/SerializationHeaders.h>
+#include <core/AssetLoader.h>
+#include <core/Material.h>
+#include <core/Shader.h>
+#include <core/Texture2D.h>
 #include <core/Mesh.h>
 #include <core/GMesh.h>
 #include <core/Entity.h>
@@ -37,13 +41,12 @@
 
 #include "../../sample_project/include/systems/LogicSystem.h"
 
-#include "../include/MeshLoader.h"
-
 using namespace json;
 using namespace PhysicsEngine;
 
 
 int serializeScene(std::string scenePath);
+int serializeAssets(std::string projectDirectory);
 int serializeMaterials(std::vector<std::string> materialFilePaths);
 int serializeMeshes(std::vector<std::string> meshFilePaths);
 int serializeGMeshes(std::vector<std::string> gmeshFilePaths);
@@ -53,7 +56,7 @@ std::vector<std::string> get_all_files_names_within_folder(std::string folder);
 int main(int argc, char* argv[])
 {
 	// relative path from editor to project directory
-	std::string projectDirectory = "../../sample_project/";
+	std::string projectDirectory = "../../sample_project/Demo/Demo";
 
 	if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
@@ -61,64 +64,66 @@ int main(int argc, char* argv[])
 	if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
 	if(!serializeScene(projectDirectory + "data/scenes/sphere.json")){ std::cout << "Failed to serialize scene: sphere.json" << std::endl; }
 
-	// material files
-	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
-	std::vector<std::string> materialFilePaths;
-	for(unsigned int i = 0; i < materialFolderFiles.size(); i++){
-		if(materialFolderFiles[i].substr(materialFolderFiles[i].find_last_of(".") + 1) == "json") {
-			materialFilePaths.push_back(projectDirectory + "data/materials/" + materialFolderFiles[i]);
-		}
-		else
-		{
-			std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
-		}
-	}
+	if(!serializeAssets(projectDirectory)){ std::cout << "Failed to serialize assets" << std::endl;}
 
-	if(!serializeMaterials(materialFilePaths)){
-		std::cout << "Failed to serialize materials" << std::endl;
-	}
+	// // material files
+	// std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
+	// std::vector<std::string> materialFilePaths;
+	// for(unsigned int i = 0; i < materialFolderFiles.size(); i++){
+	// 	if(materialFolderFiles[i].substr(materialFolderFiles[i].find_last_of(".") + 1) == "json") {
+	// 		materialFilePaths.push_back(projectDirectory + "data/materials/" + materialFolderFiles[i]);
+	// 	}
+	// 	else
+	// 	{
+	// 		std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
+	// 	}
+	// }
 
-	// mesh files
-	std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/meshes");
-	std::vector<std::string> meshFilePaths;
-	for(unsigned int i = 0; i < meshFolderFiles.size(); i++){
-		if(meshFolderFiles[i].substr(meshFolderFiles[i].find_last_of(".") + 1) == "json") {
-			meshFilePaths.push_back(projectDirectory + "data/meshes/" + meshFolderFiles[i]);
-		}
-		else
-		{
-			std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
-		}
-	}
+	// if(!serializeMaterials(materialFilePaths)){
+	// 	std::cout << "Failed to serialize materials" << std::endl;
+	// }
 
-	std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+	// // mesh files
+	// std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/meshes");
+	// std::vector<std::string> meshFilePaths;
+	// for(unsigned int i = 0; i < meshFolderFiles.size(); i++){
+	// 	if(meshFolderFiles[i].substr(meshFolderFiles[i].find_last_of(".") + 1) == "json") {
+	// 		meshFilePaths.push_back(projectDirectory + "data/meshes/" + meshFolderFiles[i]);
+	// 	}
+	// 	else
+	// 	{
+	// 		std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
+	// 	}
+	// }
 
-	if(!serializeMeshes(meshFilePaths)){
-		std::cout << "Failed to serialize meshes" << std::endl;
-	}
+	// std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 
-	std::cout << "BBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+	// if(!serializeMeshes(meshFilePaths)){
+	// 	std::cout << "Failed to serialize meshes" << std::endl;
+	// }
 
-	// gmesh files
-	std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/gmeshes");
-	std::vector<std::string> gmeshFilePaths;
-	for(unsigned int i = 0; i < gmeshFolderFiles.size(); i++){
-		if(gmeshFolderFiles[i].substr(gmeshFolderFiles[i].find_last_of(".") + 1) == "json") {
-			gmeshFilePaths.push_back(projectDirectory + "data/gmeshes/" + gmeshFolderFiles[i]);
-		}
-		else
-		{
-			std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
-		}
-	}
+	// std::cout << "BBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
-	std::cout << "CCCCCCCCCCCCCCCCCCCCC" << std::endl;
+	// // gmesh files
+	// std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/gmeshes");
+	// std::vector<std::string> gmeshFilePaths;
+	// for(unsigned int i = 0; i < gmeshFolderFiles.size(); i++){
+	// 	if(gmeshFolderFiles[i].substr(gmeshFolderFiles[i].find_last_of(".") + 1) == "json") {
+	// 		gmeshFilePaths.push_back(projectDirectory + "data/gmeshes/" + gmeshFolderFiles[i]);
+	// 	}
+	// 	else
+	// 	{
+	// 		std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
+	// 	}
+	// }
 
-	if(!serializeGMeshes(gmeshFilePaths)){
-		std::cout << "Failed to serialize gmeshes" << std::endl;
-	}
+	// std::cout << "CCCCCCCCCCCCCCCCCCCCC" << std::endl;
 
-	std::cout << "DDDDDDDDDDDDDDDDDDDDD" << std::endl;
+	// if(!serializeGMeshes(gmeshFilePaths)){
+	// 	std::cout << "Failed to serialize gmeshes" << std::endl;
+	// }
+
+	// std::cout << "DDDDDDDDDDDDDDDDDDDDD" << std::endl;
 
 	while(true)
 	{
@@ -692,61 +697,194 @@ int serializeScene(std::string scenePath)
 	return 1;
 }
 
-int serializeMaterials(std::vector<std::string> materialFilePaths)
-{
-	for(unsigned int i = 0; i < materialFilePaths.size(); i++){
 
+int serializeAssets(std::string projectDirectory)
+{
+	std::cout << "Serialize assets" << std::endl;
+
+	// shader files
+	std::vector<std::string> shaderFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/shaders");
+	std::vector<std::string> shaderFilePaths;
+	for(unsigned int i = 0; i < shaderFolderFiles.size(); i++){
+		if(shaderFolderFiles[i].substr(shaderFolderFiles[i].find_last_of(".") + 1) == "json") {
+			shaderFilePaths.push_back(projectDirectory + "data/shaders/" + shaderFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << shaderFolderFiles[i] << std::endl;
+		}
+	}
+
+	// texture files
+	std::vector<std::string> textureFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/textures");
+	std::vector<std::string> textureFilePaths;
+	for(unsigned int i = 0; i < textureFolderFiles.size(); i++){
+		if(textureFolderFiles[i].substr(textureFolderFiles[i].find_last_of(".") + 1) == "json") {
+			textureFilePaths.push_back(projectDirectory + "data/textures/" + textureFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << textureFolderFiles[i] << std::endl;
+		}
+	}
+
+	// material files
+	std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
+	std::vector<std::string> materialFilePaths;
+	for(unsigned int i = 0; i < materialFolderFiles.size(); i++){
+		if(materialFolderFiles[i].substr(materialFolderFiles[i].find_last_of(".") + 1) == "json") {
+			materialFilePaths.push_back(projectDirectory + "data/materials/" + materialFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
+		}
+	}
+
+	// mesh files
+	std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/meshes");
+	std::vector<std::string> meshFilePaths;
+	for(unsigned int i = 0; i < meshFolderFiles.size(); i++){
+		if(meshFolderFiles[i].substr(meshFolderFiles[i].find_last_of(".") + 1) == "json") {
+			meshFilePaths.push_back(projectDirectory + "data/meshes/" + meshFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
+		}
+	}
+
+	// gmesh files
+	std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/gmeshes");
+	std::vector<std::string> gmeshFilePaths;
+	for(unsigned int i = 0; i < gmeshFolderFiles.size(); i++){
+		if(gmeshFolderFiles[i].substr(gmeshFolderFiles[i].find_last_of(".") + 1) == "json") {
+			gmeshFilePaths.push_back(projectDirectory + "data/gmeshes/" + gmeshFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
+		}
+	}
+
+	AssetBundleHeader bundle;
+	bundle.numberOfShaders = (unsigned int)shaderFilePaths.size();
+	bundle.numberOfTextures = (unsigned int)textureFilePaths.size();
+	bundle.numberOfMaterials = (unsigned int)materialFilePaths.size();
+	bundle.numberOfMeshes = (unsigned int)meshFilePaths.size();
+	bundle.numberOfGMeshes = (unsigned int)gmeshFilePaths.size();
+
+	std::string bundleFileName = "bundle.assets";
+
+	FILE* file = fopen(bundleFileName.c_str(), "wb");
+	if(!file){
+		std::cout << "Failed to open file " << bundleFileName << " for writing" << std::endl;
+		return 0;
+	}
+
+	size_t size = fwrite(&bundle, sizeof(AssetBundleHeader), 1, file);
+
+	// write shaders out to bundle
+	for(size_t i = 0; i < shaderFilePaths.size(); i++){
+		// open json file and load to json object
+		std::ifstream in(shaderFilePaths[i], std::ios::in | std::ios::binary);
+		std::ostringstream contents;
+		contents << in.rdbuf();
+		in.close();
+
+		json::JSON jsonShader = JSON::Load(contents.str());
+
+		Shader shader;
+
+		std::string filePath = shaderFilePaths[i].substr(0, shaderFilePaths[i].find_last_of(".")) + ".shader";
+
+		if(AssetLoader::load(filePath, shader)){
+			ShaderHeader header;
+			header.shaderId = Guid(jsonShader["id"].ToString());
+			header.vertexShaderSize = shader.vertexShader.length();
+			header.geometryShaderSize = shader.geometryShader.length();
+			header.fragmentShaderSize = shader.fragmentShader.length();
+
+			size = fwrite(&header, sizeof(ShaderHeader), 1, file);
+			size += fwrite(shader.vertexShader.c_str(), sizeof(char), 1, file);
+			size += fwrite(shader.geometryShader.c_str(), sizeof(char), 1, file);
+			size += fwrite(shader.fragmentShader.c_str(), sizeof(char), 1, file);
+		}	
+		else{
+			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+			return 0;
+		}	
+	}
+
+	// write texture out to bundle
+	for(size_t i = 0; i < textureFilePaths.size(); i++){
+		// open json file and load to json object
+		std::ifstream in(textureFilePaths[i], std::ios::in | std::ios::binary);
+		std::ostringstream contents;
+		contents << in.rdbuf();
+		in.close();
+
+		json::JSON jsonTexture = JSON::Load(contents.str());
+
+		Texture2D texture;
+
+		std::string filePath = textureFilePaths[i].substr(0, textureFilePaths[i].find_last_of(".")) + ".png";
+
+		std::cout << "texture: " << filePath << std::endl;
+
+		if(AssetLoader::load(filePath, texture)){
+			std::vector<unsigned char> data = texture.getRawTextureData();
+
+			Texture2DHeader header;
+			header.textureId = Guid(jsonTexture["id"].ToString());
+			header.width = texture.getWidth();
+			header.height = texture.getHeight();
+			header.numChannels = texture.getNumChannels();
+			header.dimension = texture.getDimension();
+			header.textureSize = data.size();
+
+			std::cout << "data size: " << data.size() << std::endl;
+	
+			size = fwrite(&header, sizeof(Texture2DHeader), 1, file);
+			size = fwrite(&header, data.size() * sizeof(unsigned char), 1, file);
+		}	
+		else{
+			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+			return 0;
+		}	
+	}
+
+	// write materials out to bundle
+	for(size_t i = 0; i < materialFilePaths.size(); i++){
 		// open json file and load to json object
 		std::ifstream in(materialFilePaths[i], std::ios::in | std::ios::binary);
 		std::ostringstream contents;
 		contents << in.rdbuf();
 		in.close();
 
-		std::string jsonString = contents.str();
-		json::JSON jsonMaterial = JSON::Load(jsonString);
+		json::JSON jsonMaterial = JSON::Load(contents.str());
 
-		MaterialData data;
-		data.assetId = Guid(jsonMaterial["id"].ToString());
-		data.shininess = (float)jsonMaterial["shininess"].ToFloat();
-		data.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
-		data.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
-		data.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
-		data.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
-		data.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
-		data.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
-		data.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
-		data.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
-		data.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
-		data.shaderId  = Guid(jsonMaterial["shader"].ToString());
-		data.textureId = Guid(jsonMaterial["mainTexture"].ToString());
-		data.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
-		data.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+		MaterialHeader header;
+		header.assetId = Guid(jsonMaterial["id"].ToString());
+		header.shininess = (float)jsonMaterial["shininess"].ToFloat();
+		header.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+		header.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+		header.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+		header.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+		header.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+		header.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+		header.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+		header.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+		header.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+		header.shaderId  = Guid(jsonMaterial["shader"].ToString());
+		header.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+		header.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+		header.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
 
-		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
-
-		std::cout << "outputPath: " << outputPath << " material id: " << data.assetId.toString() << " shader id: " << data.shaderId.toString() << " main texture id: " << data.textureId.toString() << std::endl;
-
-		// serialize material
-		FILE* file = fopen(outputPath.c_str(), "wb");
-		if (file){
-			size_t test = fwrite(&data, sizeof(MaterialData), 1, file);
-			std::cout << "number of bytes written to file: " << test << std::endl;
-		}
-		else{
-			std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
-			return 0;
-		}
-
-		if(file){
-			fclose(file);
-		}
+		size = fwrite(&header, sizeof(MaterialHeader), 1, file);
 	}
 
-	return 1;
-}
-
-int serializeMeshes(std::vector<std::string> meshFilePaths)
-{
+	// write meshes out to bundle
 	for(unsigned int i = 0 ; i < meshFilePaths.size(); i++){
 		// open json file and load to json object
 		std::ifstream in(meshFilePaths[i], std::ios::in | std::ios::binary);
@@ -754,8 +892,7 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 		contents << in.rdbuf();
 		in.close();
 
-		std::string jsonString = contents.str();
-		json::JSON jsonMesh = JSON::Load(jsonString);
+		json::JSON jsonMesh = JSON::Load(contents.str());
 
 		Mesh mesh;
 
@@ -763,7 +900,7 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 
 		std::cout << "mesh filepath: " << filePath << std::endl;
 
-		if(MeshLoader::load(filePath, mesh)){
+		if(AssetLoader::load(filePath, mesh)){
 			
 			// create mesh header
 			MeshHeader header = {};
@@ -776,23 +913,10 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 
 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
 
-			// serialize scene header and mesh data
-			FILE* file = fopen(outputPath.c_str(), "wb");
-			if (file){
-				size_t test = fwrite(&header, sizeof(MeshHeader), 1, file);
-				test += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
-				test += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
-				test += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
-				std::cout << "number of bytes written to file: " << test << std::endl;
-			}
-			else{
-				std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
-				return 0;
-			}
-
-			if(file){
-				fclose(file);
-			}
+			size = fwrite(&header, sizeof(MeshHeader), 1, file);
+			size += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
+			size += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
+			size += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
 		}
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
@@ -800,26 +924,21 @@ int serializeMeshes(std::vector<std::string> meshFilePaths)
 		}
 	}
 
-	return 1;
-}
-
-int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
-{
+	// write gmeshes out to bundle
 	for(unsigned int i = 0 ; i < gmeshFilePaths.size(); i++){
-	// open json file and load to json object
+		// open json file and load to json object
 		std::ifstream in(gmeshFilePaths[i], std::ios::in | std::ios::binary);
 		std::ostringstream contents;
 		contents << in.rdbuf();
 		in.close();
 
-		std::string jsonString = contents.str();
-		json::JSON jsonGMesh = JSON::Load(jsonString);
+		json::JSON jsonGMesh = JSON::Load(contents.str());
 
 		GMesh gmesh;
 
 		std::string filePath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".msh";
 
-		if(MeshLoader::load(filePath, gmesh)){
+		if(AssetLoader::load(filePath, gmesh)){
 			
 			// create gmesh header
 			GMeshHeader header = {};
@@ -843,24 +962,11 @@ int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
 
 			std::string outputPath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".gmesh";
 
-			// serialize scene header and mesh data
-			FILE* file = fopen(outputPath.c_str(), "wb");
-			if (file){
-				size_t test = fwrite(&header, sizeof(GMeshHeader), 1, file);
-				test += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
-				test += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
-				test += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
-				test += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
-				std::cout << "number of bytes written to file: " << test << std::endl;
-			}
-			else{
-				std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
-				return 0;
-			}
-
-			if(file){
-				fclose(file);
-			}
+			size = fwrite(&header, sizeof(GMeshHeader), 1, file);
+			size += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
+			size += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
+			size += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
+			size += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
 		}
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
@@ -868,8 +974,390 @@ int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
 		}
 	}
 
+	std::cout << "Asset bundle successfully created" << std::endl;
+
+	if(file){
+		fclose(file);
+	}
+
+	while(true)
+	{
+
+	}
+
 	return 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// for(unsigned int i = 0; i < materialFilePaths.size(); i++){
+
+	// 	// open json file and load to json object
+	// 	std::ifstream in(materialFilePaths[i], std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents;
+	// 	contents << in.rdbuf();
+	// 	in.close();
+
+	// 	std::string jsonString = contents.str();
+	// 	json::JSON jsonMaterial = JSON::Load(jsonString);
+
+	// 	MaterialData data;
+	// 	data.assetId = Guid(jsonMaterial["id"].ToString());
+	// 	data.shininess = (float)jsonMaterial["shininess"].ToFloat();
+	// 	data.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+	// 	data.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+	// 	data.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+	// 	data.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+	// 	data.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+	// 	data.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+	// 	data.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+	// 	data.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+	// 	data.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+	// 	data.shaderId  = Guid(jsonMaterial["shader"].ToString());
+	// 	data.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+	// 	data.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+	// 	data.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+
+	// 	std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
+
+	// 	std::cout << "outputPath: " << outputPath << " material id: " << data.assetId.toString() << " shader id: " << data.shaderId.toString() << " main texture id: " << data.textureId.toString() << std::endl;
+
+	// 	// serialize material
+	// 	FILE* file = fopen(outputPath.c_str(), "wb");
+	// 	if (file){
+	// 		size_t test = fwrite(&data, sizeof(MaterialData), 1, file);
+	// 		std::cout << "number of bytes written to file: " << test << std::endl;
+	// 	}
+	// 	else{
+	// 		std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+	// 		return 0;
+	// 	}
+
+	// 	if(file){
+	// 		fclose(file);
+	// 	}
+	// }
+
+	// for(unsigned int i = 0 ; i < meshFilePaths.size(); i++){
+	// 	// open json file and load to json object
+	// 	std::ifstream in(meshFilePaths[i], std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents;
+	// 	contents << in.rdbuf();
+	// 	in.close();
+
+	// 	std::string jsonString = contents.str();
+	// 	json::JSON jsonMesh = JSON::Load(jsonString);
+
+	// 	Mesh mesh;
+
+	// 	std::string filePath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".txt";
+
+	// 	std::cout << "mesh filepath: " << filePath << std::endl;
+
+	// 	if(MeshLoader::load(filePath, mesh)){
+			
+	// 		// create mesh header
+	// 		MeshHeader header = {};
+	// 		header.meshId = Guid(jsonMesh["id"].ToString());
+	// 		header.verticesSize = (unsigned int)mesh.vertices.size();
+	// 		header.normalsSize = (unsigned int)mesh.normals.size();
+	// 		header.texCoordsSize = (unsigned int)mesh.texCoords.size();
+
+	// 		std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << std::endl;
+
+	// 		std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
+
+	// 		// serialize scene header and mesh data
+	// 		FILE* file = fopen(outputPath.c_str(), "wb");
+	// 		if (file){
+	// 			size_t test = fwrite(&header, sizeof(MeshHeader), 1, file);
+	// 			test += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
+	// 			test += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
+	// 			test += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
+	// 			std::cout << "number of bytes written to file: " << test << std::endl;
+	// 		}
+	// 		else{
+	// 			std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+	// 			return 0;
+	// 		}
+
+	// 		if(file){
+	// 			fclose(file);
+	// 		}
+	// 	}
+	// 	else{
+	// 		std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+	// 		return 0;
+	// 	}
+	// }
+
+	// for(unsigned int i = 0 ; i < gmeshFilePaths.size(); i++){
+	// // open json file and load to json object
+	// 	std::ifstream in(gmeshFilePaths[i], std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents;
+	// 	contents << in.rdbuf();
+	// 	in.close();
+
+	// 	std::string jsonString = contents.str();
+	// 	json::JSON jsonGMesh = JSON::Load(jsonString);
+
+	// 	GMesh gmesh;
+
+	// 	std::string filePath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".msh";
+
+	// 	if(MeshLoader::load(filePath, gmesh)){
+			
+	// 		// create gmesh header
+	// 		GMeshHeader header = {};
+	// 		header.gmeshId = Guid(jsonGMesh["id"].ToString());
+	// 		header.dim = gmesh.dim;
+	// 		header.ng = gmesh.ng;
+	// 	    header.n = gmesh.n;
+	// 	    header.nte = gmesh.nte;
+	// 	    header.ne = gmesh.ne;
+	// 	    header.ne_b = gmesh.ne_b;
+	// 	    header.npe = gmesh.npe;
+	// 	    header.npe_b = gmesh.npe_b;
+	// 	    header.type = gmesh.type;
+	// 	    header.type_b = gmesh.type_b;
+	// 		header.verticesSize = (unsigned int)gmesh.vertices.size();
+	// 		header.connectSize = (unsigned int)gmesh.connect.size();
+	// 		header.bconnectSize = (unsigned int)gmesh.bconnect.size();
+	// 		header.groupsSize = (unsigned int)gmesh.groups.size();
+
+	// 		std::cout << "vertices size: " << gmesh.vertices.size() << " connect size: " << gmesh.connect.size() << " bconnect size: " << gmesh.bconnect.size() << " groups size: " << gmesh.groups.size() << std::endl;
+
+	// 		std::string outputPath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".gmesh";
+
+	// 		// serialize scene header and mesh data
+	// 		FILE* file = fopen(outputPath.c_str(), "wb");
+	// 		if (file){
+	// 			size_t test = fwrite(&header, sizeof(GMeshHeader), 1, file);
+	// 			test += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
+	// 			test += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
+	// 			test += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
+	// 			test += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
+	// 			std::cout << "number of bytes written to file: " << test << std::endl;
+	// 		}
+	// 		else{
+	// 			std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+	// 			return 0;
+	// 		}
+
+	// 		if(file){
+	// 			fclose(file);
+	// 		}
+	// 	}
+	// 	else{
+	// 		std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+	// 		return 0;
+	// 	}
+	// }
+
+	// while(true)
+	// {
+
+	// }
+
+	// return 1;
 }
+
+
+
+// int serializeMaterials(std::vector<std::string> materialFilePaths)
+// {
+// 	for(unsigned int i = 0; i < materialFilePaths.size(); i++){
+
+// 		// open json file and load to json object
+// 		std::ifstream in(materialFilePaths[i], std::ios::in | std::ios::binary);
+// 		std::ostringstream contents;
+// 		contents << in.rdbuf();
+// 		in.close();
+
+// 		std::string jsonString = contents.str();
+// 		json::JSON jsonMaterial = JSON::Load(jsonString);
+
+// 		MaterialData data;
+// 		data.assetId = Guid(jsonMaterial["id"].ToString());
+// 		data.shininess = (float)jsonMaterial["shininess"].ToFloat();
+// 		data.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+// 		data.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+// 		data.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+// 		data.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+// 		data.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+// 		data.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+// 		data.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+// 		data.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+// 		data.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+// 		data.shaderId  = Guid(jsonMaterial["shader"].ToString());
+// 		data.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+// 		data.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+// 		data.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+
+// 		std::string outputPath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".mat";
+
+// 		std::cout << "outputPath: " << outputPath << " material id: " << data.assetId.toString() << " shader id: " << data.shaderId.toString() << " main texture id: " << data.textureId.toString() << std::endl;
+
+// 		// serialize material
+// 		FILE* file = fopen(outputPath.c_str(), "wb");
+// 		if (file){
+// 			size_t test = fwrite(&data, sizeof(MaterialData), 1, file);
+// 			std::cout << "number of bytes written to file: " << test << std::endl;
+// 		}
+// 		else{
+// 			std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+// 			return 0;
+// 		}
+
+// 		if(file){
+// 			fclose(file);
+// 		}
+// 	}
+
+// 	return 1;
+// }
+
+// int serializeMeshes(std::vector<std::string> meshFilePaths)
+// {
+// 	for(unsigned int i = 0 ; i < meshFilePaths.size(); i++){
+// 		// open json file and load to json object
+// 		std::ifstream in(meshFilePaths[i], std::ios::in | std::ios::binary);
+// 		std::ostringstream contents;
+// 		contents << in.rdbuf();
+// 		in.close();
+
+// 		std::string jsonString = contents.str();
+// 		json::JSON jsonMesh = JSON::Load(jsonString);
+
+// 		Mesh mesh;
+
+// 		std::string filePath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".txt";
+
+// 		std::cout << "mesh filepath: " << filePath << std::endl;
+
+// 		if(MeshLoader::load(filePath, mesh)){
+			
+// 			// create mesh header
+// 			MeshHeader header = {};
+// 			header.meshId = Guid(jsonMesh["id"].ToString());
+// 			header.verticesSize = (unsigned int)mesh.vertices.size();
+// 			header.normalsSize = (unsigned int)mesh.normals.size();
+// 			header.texCoordsSize = (unsigned int)mesh.texCoords.size();
+
+// 			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << std::endl;
+
+// 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
+
+// 			// serialize scene header and mesh data
+// 			FILE* file = fopen(outputPath.c_str(), "wb");
+// 			if (file){
+// 				size_t test = fwrite(&header, sizeof(MeshHeader), 1, file);
+// 				test += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
+// 				test += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
+// 				test += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
+// 				std::cout << "number of bytes written to file: " << test << std::endl;
+// 			}
+// 			else{
+// 				std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+// 				return 0;
+// 			}
+
+// 			if(file){
+// 				fclose(file);
+// 			}
+// 		}
+// 		else{
+// 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+// 			return 0;
+// 		}
+// 	}
+
+// 	return 1;
+// }
+
+// int serializeGMeshes(std::vector<std::string> gmeshFilePaths)
+// {
+// 	for(unsigned int i = 0 ; i < gmeshFilePaths.size(); i++){
+// 	// open json file and load to json object
+// 		std::ifstream in(gmeshFilePaths[i], std::ios::in | std::ios::binary);
+// 		std::ostringstream contents;
+// 		contents << in.rdbuf();
+// 		in.close();
+
+// 		std::string jsonString = contents.str();
+// 		json::JSON jsonGMesh = JSON::Load(jsonString);
+
+// 		GMesh gmesh;
+
+// 		std::string filePath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".msh";
+
+// 		if(MeshLoader::load(filePath, gmesh)){
+			
+// 			// create gmesh header
+// 			GMeshHeader header = {};
+// 			header.gmeshId = Guid(jsonGMesh["id"].ToString());
+// 			header.dim = gmesh.dim;
+// 			header.ng = gmesh.ng;
+// 		    header.n = gmesh.n;
+// 		    header.nte = gmesh.nte;
+// 		    header.ne = gmesh.ne;
+// 		    header.ne_b = gmesh.ne_b;
+// 		    header.npe = gmesh.npe;
+// 		    header.npe_b = gmesh.npe_b;
+// 		    header.type = gmesh.type;
+// 		    header.type_b = gmesh.type_b;
+// 			header.verticesSize = (unsigned int)gmesh.vertices.size();
+// 			header.connectSize = (unsigned int)gmesh.connect.size();
+// 			header.bconnectSize = (unsigned int)gmesh.bconnect.size();
+// 			header.groupsSize = (unsigned int)gmesh.groups.size();
+
+// 			std::cout << "vertices size: " << gmesh.vertices.size() << " connect size: " << gmesh.connect.size() << " bconnect size: " << gmesh.bconnect.size() << " groups size: " << gmesh.groups.size() << std::endl;
+
+// 			std::string outputPath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".gmesh";
+
+// 			// serialize scene header and mesh data
+// 			FILE* file = fopen(outputPath.c_str(), "wb");
+// 			if (file){
+// 				size_t test = fwrite(&header, sizeof(GMeshHeader), 1, file);
+// 				test += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
+// 				test += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
+// 				test += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
+// 				test += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
+// 				std::cout << "number of bytes written to file: " << test << std::endl;
+// 			}
+// 			else{
+// 				std::cout << "Failed to open file " << outputPath << " for writing." << std::endl;
+// 				return 0;
+// 			}
+
+// 			if(file){
+// 				fclose(file);
+// 			}
+// 		}
+// 		else{
+// 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+// 			return 0;
+// 		}
+// 	}
+
+// 	return 1;
+// }
 
 std::vector<std::string> get_all_files_names_within_folder(std::string folder)
 {

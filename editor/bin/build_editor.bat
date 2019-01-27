@@ -22,7 +22,6 @@ cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_proj
 
 
 :: compile editor c++ files to obj
-cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\src\MeshLoader.cpp
 cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\src\main.cpp
 
 :: create list of .obj files

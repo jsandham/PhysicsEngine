@@ -1,5 +1,5 @@
 #include "../../include/core/Asset.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -13,7 +13,7 @@ Asset::~Asset()
 
 }
 
-void Asset::setManager(Manager* manager)
+void Asset::setManager(World* world)
 {
-	this->manager = manager;
+	this->world = world;
 }

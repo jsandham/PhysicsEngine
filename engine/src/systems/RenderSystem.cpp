@@ -12,7 +12,7 @@
 #include "../../include/components/PointLight.h"
 #include "../../include/components/Camera.h"
 
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Line.h"
@@ -41,12 +41,12 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::init()
 {
-	for(int i = 0; i < manager->getNumberOfAssets<Texture2D>(); i++){
-		Graphics::generate(manager->getAssetByIndex<Texture2D>(i));
+	for(int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++){
+		Graphics::generate(world->getAssetByIndex<Texture2D>(i));
 	}
 
-	for(int i = 0; i < manager->getNumberOfAssets<Shader>(); i++){
-		Shader* shader = manager->getAssetByIndex<Shader>(i);
+	for(int i = 0; i < world->getNumberOfAssets<Shader>(); i++){
+		Shader* shader = world->getAssetByIndex<Shader>(i);
 
 		shader->compile();
 
@@ -61,13 +61,13 @@ void RenderSystem::init()
 	}
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
-	for(int i = 0; i < manager->getNumberOfAssets<Mesh>(); i++){
-		Mesh* mesh = manager->getAssetByIndex<Mesh>(i);
+	for(int i = 0; i < world->getNumberOfAssets<Mesh>(); i++){
+		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
 
 		Graphics::generate(mesh);
 	}
 
-	Line* line = manager->getLine();
+	Line* line = world->getLine();
 	lineBuffer = new SlabBuffer(60000);
 
 	Graphics::generate(line);
@@ -81,17 +81,17 @@ void RenderSystem::init()
 	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
 	debugWindow = new DebugWindow(0.5f, 0.5f, 0.5f, 0.5f);
 
-	graphMaterial = manager->create<Material>();
-	windowMaterial = manager->create<Material>();
-	normalMapMaterial = manager->create<Material>();
-	depthMapMaterial = manager->create<Material>();
-	lineMaterial = manager->create<Material>();
+	graphMaterial = world->create<Material>();
+	windowMaterial = world->create<Material>();
+	normalMapMaterial = world->create<Material>();
+	depthMapMaterial = world->create<Material>();
+	lineMaterial = world->create<Material>();
 
-	graphShader = manager->create<Shader>();
-	windowShader = manager->create<Shader>();
-	normalMapShader = manager->create<Shader>();
-	depthMapShader = manager->create<Shader>();
-	lineShader = manager->create<Shader>();
+	graphShader = world->create<Shader>();
+	windowShader = world->create<Shader>();
+	normalMapShader = world->create<Shader>();
+	depthMapShader = world->create<Shader>();
+	lineShader = world->create<Shader>();
 
 	graphShader->vertexShader = Shader::graphVertexShader;
 	graphShader->fragmentShader = Shader::graphFragmentShader;
@@ -119,9 +119,9 @@ void RenderSystem::init()
 	Graphics::generate(graph);
 	Graphics::generate(debugWindow);
 
-	fbo.colorBuffer = manager->create<Texture2D>();
+	fbo.colorBuffer = world->create<Texture2D>();
 	fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
-	fbo.depthBuffer = manager->create<Texture2D>();
+	fbo.depthBuffer = world->create<Texture2D>();
 	fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
 
 	debugMaterial = normalMapMaterial;
@@ -139,17 +139,17 @@ void RenderSystem::init()
 	Graphics::checkError();
 }
 
-void RenderSystem::update()
+void RenderSystem::update(Input input)
 {
 	//Graphics::beginGPUTimer();
 
-	int numberOfDirectionalLights = manager->getNumberOfComponents<DirectionalLight>();
-	int numberOfSpotLights = manager->getNumberOfComponents<SpotLight>();
-	int numberOfPointLights = manager->getNumberOfComponents<PointLight>();
+	int numberOfDirectionalLights = world->getNumberOfComponents<DirectionalLight>();
+	int numberOfSpotLights = world->getNumberOfComponents<SpotLight>();
+	int numberOfPointLights = world->getNumberOfComponents<PointLight>();
 
 	Camera* camera;
-	if(manager->getNumberOfComponents<Camera>() > 0){
-		camera = manager->getComponentByIndex<Camera>(0);
+	if(world->getNumberOfComponents<Camera>() > 0){
+		camera = world->getComponentByIndex<Camera>(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
@@ -171,7 +171,7 @@ void RenderSystem::update()
 	pass = 0;
 
 	if (numberOfDirectionalLights > 0){
-		DirectionalLight* directionalLight = manager->getComponentByIndex<DirectionalLight>(0);
+		DirectionalLight* directionalLight = world->getComponentByIndex<DirectionalLight>(0);
 
 		Graphics::bind(&directionLightState);
 		Graphics::setDirLightDirection(&directionLightState, directionalLight->direction);
@@ -188,7 +188,7 @@ void RenderSystem::update()
 	for(int i = 0; i < numberOfSpotLights; i++){
 		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
 
-		SpotLight* spotLight = manager->getComponentByIndex<SpotLight>(i);
+		SpotLight* spotLight = world->getComponentByIndex<SpotLight>(i);
 
 		Graphics::bind(&spotLightState);
 		Graphics::setSpotLightPosition(&spotLightState, spotLight->position);
@@ -211,7 +211,7 @@ void RenderSystem::update()
 	for(int i = 0; i < numberOfPointLights; i++){
 		if(pass >= 1){ Graphics::setBlending(GLBlend::One, GLBlend::One); }
 
-		PointLight* pointLight = manager->getComponentByIndex<PointLight>(i);
+		PointLight* pointLight = world->getComponentByIndex<PointLight>(i);
 
 		Graphics::bind(&pointLightState);
 		Graphics::setPointLightPosition(&pointLightState, pointLight->position);
@@ -231,9 +231,9 @@ void RenderSystem::update()
 	lineBuffer->clear();
 
 	std::vector<float> lines(6);
-	for(int i = 0; i < manager->getNumberOfComponents<LineRenderer>(); i++){
-		LineRenderer* lineRenderer = manager->getComponentByIndex<LineRenderer>(i);
-		Material* material = manager->getAsset<Material>(lineRenderer->materialId);
+	for(int i = 0; i < world->getNumberOfComponents<LineRenderer>(); i++){
+		LineRenderer* lineRenderer = world->getComponentByIndex<LineRenderer>(i);
+		Material* material = world->getAsset<Material>(lineRenderer->materialId);
 
 		Transform* transform = lineRenderer->getComponent<Transform>();
 		glm::mat4 model = transform->getModelMatrix();
@@ -256,14 +256,14 @@ void RenderSystem::update()
 	// double duration;
 	// std::clock_t start = std::clock();
 
-	if(manager->debug){
-		lines = manager->getPhysicsTree()->getLines();
+	if(world->debug){
+		lines = world->getPhysicsTree()->getLines();
 
 		lineBuffer->add(lines, lineMaterial);
 
 		// write the slow many draw call way of drawing lines here just for testing and comparing perf to slab buffer
 		// for(int i = 0; i < lines.size() / 6; i++){
-		// 		Line* line = manager->getLine();
+		// 		Line* line = world->getLine();
 
 		// 		line->start.x = lines[6*i];
 		// 		line->start.y = lines[6*i + 1];
@@ -297,12 +297,12 @@ void RenderSystem::update()
 
 	//int elapsedGPUTime = Graphics::endGPUTimer();
 
-	if(manager->debug){
-		if(Input::getKeyDown(KeyCode::NumPad0)){
+	if(world->debug){
+		if(input.getKeyDown(KeyCode::NumPad0)){
 			debugMaterial = normalMapMaterial;
 			debugBuffer = fbo.colorBuffer;
 		}
-		else if(Input::getKeyDown(KeyCode::NumPad1)){
+		else if(input.getKeyDown(KeyCode::NumPad1)){
 			debugMaterial = depthMapMaterial;
 			debugBuffer = fbo.depthBuffer;
 		}
@@ -313,11 +313,11 @@ void RenderSystem::update()
 		renderScene(debugMaterial);
 		Graphics::unbind(&fbo);
 
-		if(Input::getKeyDown(KeyCode::P)){
+		if(input.getKeyDown(KeyCode::P)){
 			debugBuffer->readPixels();
 			std::vector<unsigned char> temp = debugBuffer->getRawTextureData();
 
-			Manager::writeToBMP("test.bmp", temp, 1000, 1000, 3);
+			World::writeToBMP("test.bmp", temp, 1000, 1000, 3);
 		}
 
 		windowMaterial->textureId = debugBuffer->assetId;
@@ -349,12 +349,12 @@ void RenderSystem::update()
 
 void RenderSystem::renderScene()
 {
-	for(int i = 0; i < manager->getNumberOfComponents<MeshRenderer>(); i++){
-		MeshRenderer* meshRenderer = manager->getComponentByIndex<MeshRenderer>(i);
+	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
 		Transform* transform = meshRenderer->getComponent<Transform>();
 
-		Material* material = manager->getAsset<Material>(meshRenderer->materialId); 
-		Mesh* mesh = manager->getAsset<Mesh>(meshRenderer->meshId);
+		Material* material = world->getAsset<Material>(meshRenderer->materialId); 
+		Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 		glm::mat4 model = transform->getModelMatrix();
 
@@ -369,11 +369,11 @@ void RenderSystem::renderScene()
 
 void RenderSystem::renderScene(Material* material)
 {
-	for(int i = 0; i < manager->getNumberOfComponents<MeshRenderer>(); i++){
-		MeshRenderer* meshRenderer = manager->getComponentByIndex<MeshRenderer>(i);
+	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
 		Transform* transform = meshRenderer->getComponent<Transform>();
 
-		Mesh* mesh = manager->getAsset<Mesh>(meshRenderer->meshId);
+		Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 		glm::mat4 model = transform->getModelMatrix();
 

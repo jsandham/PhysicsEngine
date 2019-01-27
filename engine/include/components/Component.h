@@ -8,12 +8,12 @@
 namespace PhysicsEngine
 {
 	class Entity;
-	class Manager;
+	class World;
 
 	class Component
 	{
 		private:
-			Manager* manager;
+			World* world;
 
 		public:
 			Guid componentId;
@@ -23,7 +23,7 @@ namespace PhysicsEngine
 			Component();
 			virtual ~Component() = 0;
 
-			void setManager(Manager* manager);
+			void setManager(World* world);
 
 			Entity* getEntity();
 

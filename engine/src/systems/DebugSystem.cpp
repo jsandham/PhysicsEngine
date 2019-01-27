@@ -3,7 +3,7 @@
 #include "../../include/systems/DebugSystem.h"
 
 #include "../../include/core/Input.h"
-#include "../../include/core/Manager.h"
+#include "../../include/core/World.h"
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/LineRenderer.h"
@@ -32,8 +32,8 @@ DebugSystem::~DebugSystem()
 
 void DebugSystem::init()
 {
-	lineMaterial = manager->create<Material>();
-	lineShader = manager->create<Shader>();
+	lineMaterial = world->create<Material>();
+	lineShader = world->create<Shader>();
 
 	lineShader->vertexShader = Shader::lineVertexShader;
 	lineShader->fragmentShader = Shader::lineFragmentShader;
@@ -43,24 +43,24 @@ void DebugSystem::init()
 	lineMaterial->shaderId = lineShader->assetId;
 }
 
-void DebugSystem::update()
+void DebugSystem::update(Input input)
 {
 	Camera* camera;
-	if(manager->getNumberOfComponents<Camera>() > 0){
-		camera = manager->getComponentByIndex<Camera>(0);
+	if(world->getNumberOfComponents<Camera>() > 0){
+		camera = world->getComponentByIndex<Camera>(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
 		return;
 	}
 
-	if(Input::getKeyDown(KeyCode::D)){
-		manager->debug = !manager->debug;
+	if(input.getKeyDown(KeyCode::D)){
+		world->debug = !world->debug;
 	}
 
-	if(manager->debug){
-		if (Input::getKeyDown(KeyCode::I)){
-			Entity* entity = manager->instantiate();
+	if(world->debug){
+		if (input.getKeyDown(KeyCode::I)){
+			Entity* entity = world->instantiate();
 			if(entity != NULL){
 				Transform* transform = entity->addComponent<Transform>();
 				LineRenderer* lineRenderer = entity->addComponent<LineRenderer>();
@@ -71,8 +71,8 @@ void DebugSystem::update()
 				glm::mat4 projection = camera->getProjMatrix();
 				glm::mat4 projViewInv = glm::inverse(projection * view);
 		
-				int x = Input::getMousePosX();
-				int y = Input::getMousePosY();
+				int x = input.getMousePosX();
+				int y = input.getMousePosY();
 				int width = camera->width;
 				int height = camera->height - 40;
 
@@ -91,7 +91,7 @@ void DebugSystem::update()
 				lineRenderer->end = camera->position + 10.0f * rayWorld;
 
 				Collider* hitCollider = NULL;
-				if(manager->raycast(lineRenderer->start, rayWorld, 100.0f, &hitCollider))
+				if(world->raycast(lineRenderer->start, rayWorld, 100.0f, &hitCollider))
 				{
 					if(hitCollider == NULL){
 						std::cout << "Raycast hit sphere collider but reported hit collider as NULL???" << std::endl;
