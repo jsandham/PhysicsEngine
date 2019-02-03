@@ -9,8 +9,7 @@
 #include <windowsx.h>
 #include <tchar.h>
 #include <xinput.h>
-#include "GL/glew.h"
-//#include <GL/glew.h>
+#include <GL/glew.h>
 #include <gl/gl.h>
 #include <stdio.h>
 #include <iostream>
@@ -41,14 +40,10 @@ typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
 #endif
 
 //#include "../../../include/cuda/cuda_util.h"
-
-//#include "../../../include/core/Input.h"
-//#include "../../../include/core/Time.h"
-//#include "../../../include/core/Log.h"
-//#include "../../../include/core/SceneManager.h"
-
 //#include "cuda/cuda_util.h"
 
+#include "core/Scene.h"
+#include "core/Asset.h"
 #include "core/Input.h"
 #include "core/Time.h"
 #include "core/Log.h"
@@ -59,48 +54,6 @@ using namespace PhysicsEngine;
 static bool running;
 
 Input input;
-
-std::vector<std::string> get_all_files_names_within_folder(std::string folder, std::string extension)
-{
-	std::vector<std::string> names;
-	std::string search_path = folder + "/*.*";
-	WIN32_FIND_DATAA fd;
-	HANDLE hFind = ::FindFirstFileA(search_path.c_str(), &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		do {
-			// read all (real) files in current folder
-			// , delete '!' read other 2 default folder . and ..
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-
-				std::string file = fd.cFileName;
-				if (file.substr(file.find_last_of(".") + 1) == extension) {
-					names.push_back(folder + file);
-				}
-				//names.push_back(fd.cFileName);
-			}
-		} while (::FindNextFileA(hFind, &fd));
-		::FindClose(hFind);
-	}
-	return names;
-}
-
-std::vector<std::string> get_all_asset_files(std::string relativePath)
-{
-	std::vector<std::string> materialFilePaths = get_all_files_names_within_folder(relativePath + "materials/", "mat");
-	std::vector<std::string> meshFilePaths = get_all_files_names_within_folder(relativePath + "meshes/", "mesh");
-	std::vector<std::string> gmeshFilePaths = get_all_files_names_within_folder(relativePath + "gmeshes/", "gmesh");
-	std::vector<std::string> textureFilePaths = get_all_files_names_within_folder(relativePath + "textures/", "png");
-	std::vector<std::string> shaderFilePaths = get_all_files_names_within_folder(relativePath + "shaders/", "shader");
-
-	std::vector<std::string> assetFilePaths;
-	for (unsigned int i = 0; i < materialFilePaths.size(); i++){ assetFilePaths.push_back(materialFilePaths[i]); }
-	for (unsigned int i = 0; i < meshFilePaths.size(); i++){ assetFilePaths.push_back(meshFilePaths[i]); }
-	for (unsigned int i = 0; i < gmeshFilePaths.size(); i++){ assetFilePaths.push_back(gmeshFilePaths[i]); }
-	for (unsigned int i = 0; i < textureFilePaths.size(); i++){ assetFilePaths.push_back(textureFilePaths[i]); }
-	for (unsigned int i = 0; i < shaderFilePaths.size(); i++){ assetFilePaths.push_back(shaderFilePaths[i]); }
-
-	return assetFilePaths;
-}
 
 KeyCode GetKeyCode(unsigned int vKCode)
 {
@@ -365,8 +318,6 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return result;
 }
 
-
-
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -405,7 +356,25 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 0;
 	}
 
-	std::cout << "AAAAAAAAAAAAAA" << std::endl;
+	Scene scene;
+	AssetBundle assetBundle;
+
+	scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
+	assetBundle.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\bundle.assets";
+
+	WorldManager worldManager(scene, assetBundle);
+
+	worldManager.init();
+
+	/*std::vector<std::string> bundles = get_all_files_names_within_folder("", ".assets");
+	for (size_t i = 0; i < bundles.size(); i++){
+		std::cout << "asset bundle: " << bundles[i] << std::endl;
+	}
+*/
+	/*std::vector<std::string> scenes = get_all_files_names_within_folder("", ".scene");
+	for (size_t i = 0; i < scenes.size(); i++){
+		std::cout << "scene: " << scenes[i] << std::endl;
+	}*/
 
 	//WorldManager worldManager;
 

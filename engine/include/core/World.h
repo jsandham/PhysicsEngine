@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Scene.h"
+#include "Asset.h"
 #include "Entity.h"
 #include "Mesh.h"
 #include "GMesh.h"
@@ -112,7 +113,7 @@ namespace PhysicsEngine
 			World();
 			~World();
 
-			bool load(Scene scene, std::vector<AssetFile> assetFiles);
+			bool load(Scene scene, AssetBundle assetBundle);
 
 			int getNumberOfEntities();
 			int getNumberOfSystems();

@@ -16,9 +16,9 @@ set Libs=user32.lib gdi32.lib xinput.lib ole32.lib opengl32.lib glew32.lib cudar
 copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\engine.lib" "C:\Users\James\Documents\PhysicsEngine\editor\bin"
 
 :: compile project c++ files to obj
-cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\src\systems\LoadSystem.cpp
-cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\src\systems\LogicSystem.cpp
-cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\src\systems\PlayerSystem.cpp
+rem cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\Demo\Demo\src\LoadSystem.cpp
+rem cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\Demo\Demo\src\LogicSystem.cpp
+rem cl /c /I%PROJECT% /I%ENGINE% /I%GLEW% /I%CUDA% %CompilerFlags% ..\..\sample_project\Demo\Demo\src\PlayerSystem.cpp
 
 
 :: compile editor c++ files to obj

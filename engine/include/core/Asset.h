@@ -17,6 +17,11 @@ namespace PhysicsEngine
 		unsigned int numberOfGMeshes;
 	};
 #pragma pack(pop)
+
+	struct AssetBundle
+	{
+		std::string filepath;
+	};
 	
 	class World;
 

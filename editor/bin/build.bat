@@ -3,7 +3,8 @@
 copy "bundle.assets" "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug"
 copy "bundle.assets" "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release"
 
-
+for /R C:\Users\James\Documents\PhysicsEngine\editor\bin %%f in (*.scene) do copy %%f C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug
+for /R C:\Users\James\Documents\PhysicsEngine\editor\bin %%f in (*.scene) do copy %%f C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release
 
 
 

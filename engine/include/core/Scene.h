@@ -41,18 +41,11 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
-
-	
 	struct Scene
 	{
 		std::string name;
 		std::string filepath;
 		bool isLoaded;
-	};
-
-	struct AssetFile
-	{
-		std::string filepath;
 	};
 }
 
