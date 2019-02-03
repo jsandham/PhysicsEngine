@@ -117,6 +117,11 @@ Shader::Shader()
 	programCompiled = false;
 }
 
+Shader::Shader(unsigned char* data)
+{
+	
+}
+
 Shader::~Shader()
 {
 

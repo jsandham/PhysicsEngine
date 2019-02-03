@@ -46,6 +46,7 @@ namespace PhysicsEngine
 
 		public:
 			Rigidbody();
+			Rigidbody(unsigned char* data);
 			~Rigidbody();
 
 			void load(RigidbodyData data);

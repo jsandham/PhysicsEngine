@@ -24,6 +24,7 @@ namespace PhysicsEngine
 
 		public:
 			MeshRenderer();
+			MeshRenderer(unsigned char* data);
 			~MeshRenderer();
 
 			void load(MeshRendererData data);

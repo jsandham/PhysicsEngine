@@ -10,6 +10,11 @@ LineRenderer::LineRenderer()
 	materialId = Guid::INVALID;
 }
 
+LineRenderer::LineRenderer(unsigned char* data)
+{
+	
+}
+
 LineRenderer::~LineRenderer()
 {
 

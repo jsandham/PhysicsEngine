@@ -11,6 +11,11 @@ Transform::Transform()
 	this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
+Transform::Transform(unsigned char* data)
+{
+	
+}
+
 Transform::~Transform()
 {
 

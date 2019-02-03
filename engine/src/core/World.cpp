@@ -11,8 +11,8 @@
 #include "../../include/json/json.hpp" 
 #include "../../include/stb_image/stb_image.h"
 
-#include "../../include/systems/LoadSystem.h"
-#include "../../include/systems/LoadInternalSystem.h"
+#include "../../include/core/Load.h"
+#include "../../include/core/LoadInternal.h"
 
 using namespace json;
 using namespace PhysicsEngine;
@@ -307,7 +307,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	error |= settings.maxAllowedSpotLights < numberOfSpotLights;
 	error |= settings.maxAllowedPointLights < numberOfPointLights;
 	error |= settings.maxAllowedBoxColliders < numberOfBoxColliders;
-	error |= settings.maxAllowedSphereColliders < numberOfSphereColliders
+	error |= settings.maxAllowedSphereColliders < numberOfSphereColliders;
 	error |= settings.maxAllowedCapsuleColliders < numberOfCapsuleColliders;
 
 	if(error){

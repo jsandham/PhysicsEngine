@@ -9,6 +9,11 @@ BoxCollider::BoxCollider()
 
 }
 
+BoxCollider::BoxCollider(unsigned char* data)
+{
+
+}
+
 BoxCollider::~BoxCollider()
 {
 

@@ -7,6 +7,11 @@ GMesh::GMesh()
 
 }
 
+GMesh::GMesh(unsigned char* data)
+{
+
+}
+
 GMesh::~GMesh()
 {
 

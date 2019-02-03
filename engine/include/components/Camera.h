@@ -52,6 +52,7 @@ namespace PhysicsEngine
 
 		public:
 			Camera();
+			Camera(unsigned char* data);
 			~Camera();
 
 			void load(CameraData data);

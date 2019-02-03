@@ -17,6 +17,7 @@ namespace PhysicsEngine
 
 		public:
 			Texture3D();
+			Texture3D(unsigned char* data);
 			Texture3D(int width, int height, int depth, int numChannels);
 			~Texture3D();
 

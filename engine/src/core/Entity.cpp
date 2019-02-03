@@ -12,6 +12,11 @@ Entity::Entity()
 	world = NULL;
 }
 
+Entity::Entity(unsigned char* data)
+{
+	
+}
+
 Entity::~Entity()
 {
 

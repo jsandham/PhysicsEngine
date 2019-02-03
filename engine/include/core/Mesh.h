@@ -34,6 +34,7 @@ namespace PhysicsEngine
 
 		public:
 			Mesh();
+			Mesh(unsigned char* data);
 			~Mesh();
 
 			void apply();

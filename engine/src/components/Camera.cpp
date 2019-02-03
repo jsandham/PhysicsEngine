@@ -2,7 +2,6 @@
 
 using namespace PhysicsEngine;
 
-
 Camera::Camera()
 {
 	position = glm::vec3(0.0f, 2.0f, 0.0f);
@@ -34,6 +33,11 @@ Camera::Camera()
 	frustum.setCamera(position, front, up, right);
 
 	backgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
+}
+
+Camera::Camera(unsigned char* data)
+{
+	
 }
 
 Camera::~Camera()

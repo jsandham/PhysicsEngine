@@ -27,6 +27,7 @@ namespace PhysicsEngine
 
 		public:
 			SphereCollider();
+			SphereCollider(unsigned char* data);
 			~SphereCollider();
 
 			void load(SphereColliderData data);

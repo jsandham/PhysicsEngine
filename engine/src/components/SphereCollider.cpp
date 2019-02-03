@@ -9,6 +9,11 @@ SphereCollider::SphereCollider()
 
 }
 
+SphereCollider::SphereCollider(unsigned char* data)
+{
+
+}
+
 SphereCollider::~SphereCollider()
 {
 

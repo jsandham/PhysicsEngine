@@ -15,6 +15,11 @@ PointLight::PointLight()
 	projection = glm::perspective(glm::radians(90.0f), 1.0f * 1080 / 1080, 0.1f, 25.0f);
 }
 
+PointLight::PointLight(unsigned char* data)
+{
+	
+}
+
 PointLight::~PointLight()
 {
 

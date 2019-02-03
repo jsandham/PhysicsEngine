@@ -48,6 +48,7 @@ namespace PhysicsEngine
 
 		public:
 			Shader();
+			Shader(unsigned char* data);
 			~Shader();
 
 			bool isCompiled();

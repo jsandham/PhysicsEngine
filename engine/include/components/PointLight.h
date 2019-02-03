@@ -40,6 +40,7 @@ namespace PhysicsEngine
 
 		public:
 			PointLight();
+			PointLight(unsigned char* data);
 			~PointLight();
 
 			void load(PointLightData data);

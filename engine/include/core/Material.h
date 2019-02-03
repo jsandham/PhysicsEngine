@@ -57,6 +57,7 @@ namespace PhysicsEngine
 
 		public:
 			Material();
+			Material(unsigned char* data);
 			~Material();
 
 			void load(MaterialHeader data);

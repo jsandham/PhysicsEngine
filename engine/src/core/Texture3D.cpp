@@ -16,6 +16,11 @@ Texture3D::Texture3D()
 	this->numChannels = calcNumChannels(format);
 }
 
+Texture3D::Texture3D(unsigned char* data)
+{
+	
+}
+
 Texture3D::Texture3D(int width, int height, int depth, int numChannels)
 {
 	this->dimension = TextureDimension::Tex2D;

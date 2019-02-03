@@ -25,6 +25,7 @@ namespace PhysicsEngine
 
 		public:
 			BoxCollider();
+			BoxCollider(unsigned char* data);
 			~BoxCollider();
 
 			void load(BoxColliderData data);

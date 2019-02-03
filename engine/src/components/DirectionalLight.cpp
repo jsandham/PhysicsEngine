@@ -12,6 +12,11 @@ DirectionalLight::DirectionalLight()
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
+DirectionalLight::DirectionalLight(unsigned char* data)
+{
+	
+}
+
 DirectionalLight::~DirectionalLight()
 {
 

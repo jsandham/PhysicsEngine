@@ -9,6 +9,11 @@ Mesh::Mesh()
 
 }
 
+Mesh::Mesh(unsigned char* data)
+{
+
+}
+
 Mesh::~Mesh()
 {
 

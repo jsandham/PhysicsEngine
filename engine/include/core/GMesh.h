@@ -50,6 +50,7 @@ namespace PhysicsEngine
 
 		public:
 			GMesh();
+			GMesh(unsigned char* data);
 			~GMesh();
 	};
 }

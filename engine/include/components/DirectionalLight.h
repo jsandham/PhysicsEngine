@@ -31,6 +31,7 @@ namespace PhysicsEngine
 
 		public:
 			DirectionalLight();
+			DirectionalLight(unsigned char* data);
 			~DirectionalLight();
 
 			void load(DirectionalLightData data);

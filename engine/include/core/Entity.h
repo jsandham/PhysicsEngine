@@ -24,6 +24,7 @@ namespace PhysicsEngine
 
 		public:
 			Entity();
+			Entity(unsigned char* data);
 			~Entity();
 
 			void load(EntityData data);

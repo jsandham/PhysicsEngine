@@ -33,6 +33,7 @@ namespace PhysicsEngine
 
 		public:
 			LineRenderer();
+			LineRenderer(unsigned char* data);
 			~LineRenderer();
 
 			void load(LineRendererData data);

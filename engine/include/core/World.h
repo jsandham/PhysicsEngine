@@ -70,43 +70,24 @@ namespace PhysicsEngine
 		private:
 			BuildSettings settings; 
 
-			PoolAllocator<Entity> entities;
-			PoolAllocator<Transform> transforms;
-			PoolAllocator<Rigidbody> rigidbodies;
-			PoolAllocator<Camera> cameras;
-			PoolAllocator<MeshRenderer> meshRenderers;
-			PoolAllocator<LineRenderer> lineRenderers;
-			PoolAllocator<DirectionalLight> directionalLights;
-			PoolAllocator<SpotLight> spotLights;
-			PoolAllocator<PointLight> pointLights;
-			PoolAllocator<BoxCollider> boxColliders;
-			PoolAllocator<SphereCollider> sphereColliders;
-			PoolAllocator<CapsuleCollider> capsuleColliders;
+			Pool<Entity>* entities;
+			Pool<Transform>* transforms;
+			Pool<Rigidbody>* rigidbodies;
+			Pool<Camera>* cameras;
+			Pool<MeshRenderer>* meshRenderers;
+			Pool<LineRenderer>* lineRenderers;
+			Pool<DirectionalLight>* directionalLights;
+			Pool<SpotLight>* spotLights;
+			Pool<PointLight>* pointLights;
+			Pool<BoxCollider>* boxColliders;
+			Pool<SphereCollider>* sphereColliders;
+			Pool<CapsuleCollider>* capsuleColliders;
 
-			PoolAllocator<Material> materials;
-			PoolAllocator<Texture2D> textures;
-			PoolAllocator<Shader> shaders;
-			PoolAllocator<Mesh> meshes;
-			PoolAllocator<GMesh> gmeshes;
-
-			// Pool<Entity>* entities;
-			// Pool<Transform>* transforms;
-			// Pool<Rigidbody>* rigidbodies;
-			// Pool<Camera>* cameras;
-			// Pool<MeshRenderer>* meshRenderers;
-			// Pool<LineRenderer>* lineRenderers;
-			// Pool<DirectionalLight>* directionalLights;
-			// Pool<SpotLight>* spotLights;
-			// Pool<PointLight>* pointLights;
-			// Pool<BoxCollider>* boxColliders;
-			// Pool<SphereCollider>* sphereColliders;
-			// Pool<CapsuleCollider>* capsuleColliders;
-
-			// Pool<Material>* materials;
-			// Pool<Texture2D>* textures;
-			// Pool<Shader>* shaders;
-			// Pool<Mesh>* meshes;
-			// Pool<GMesh>* gmeshes;
+			Pool<Material>* materials;
+			Pool<Texture2D>* textures;
+			Pool<Shader>* shaders;
+			Pool<Mesh>* meshes;
+			Pool<GMesh>* gmeshes;
 			
 			Line* line;
 

@@ -27,6 +27,7 @@ namespace PhysicsEngine
 
 		public:
 			CapsuleCollider();
+			CapsuleCollider(unsigned char* data);
 			~CapsuleCollider();
 
 			void load(CapsuleColliderData data);

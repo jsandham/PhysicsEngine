@@ -46,6 +46,7 @@ namespace PhysicsEngine
 
 		public:
 			SpotLight();
+			SpotLight(unsigned char* data);
 			~SpotLight();
 
 			void load(SpotLightData data);

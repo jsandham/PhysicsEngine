@@ -32,6 +32,7 @@ namespace PhysicsEngine
 
 		public:
 			Transform();
+			Transform(unsigned char* data);
 			~Transform();
 
 			void load(TransformData data);
