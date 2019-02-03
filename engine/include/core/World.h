@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "PoolAllocator.h"
 #include "Scene.h"
 #include "Asset.h"
 #include "Entity.h"
@@ -69,24 +70,43 @@ namespace PhysicsEngine
 		private:
 			BuildSettings settings; 
 
-			Pool<Entity>* entities;
-			Pool<Transform>* transforms;
-			Pool<Rigidbody>* rigidbodies;
-			Pool<Camera>* cameras;
-			Pool<MeshRenderer>* meshRenderers;
-			Pool<LineRenderer>* lineRenderers;
-			Pool<DirectionalLight>* directionalLights;
-			Pool<SpotLight>* spotLights;
-			Pool<PointLight>* pointLights;
-			Pool<BoxCollider>* boxColliders;
-			Pool<SphereCollider>* sphereColliders;
-			Pool<CapsuleCollider>* capsuleColliders;
+			PoolAllocator<Entity> entities;
+			PoolAllocator<Transform> transforms;
+			PoolAllocator<Rigidbody> rigidbodies;
+			PoolAllocator<Camera> cameras;
+			PoolAllocator<MeshRenderer> meshRenderers;
+			PoolAllocator<LineRenderer> lineRenderers;
+			PoolAllocator<DirectionalLight> directionalLights;
+			PoolAllocator<SpotLight> spotLights;
+			PoolAllocator<PointLight> pointLights;
+			PoolAllocator<BoxCollider> boxColliders;
+			PoolAllocator<SphereCollider> sphereColliders;
+			PoolAllocator<CapsuleCollider> capsuleColliders;
 
-			Pool<Material>* materials;
-			Pool<Texture2D>* textures;
-			Pool<Shader>* shaders;
-			Pool<Mesh>* meshes;
-			Pool<GMesh>* gmeshes;
+			PoolAllocator<Material> materials;
+			PoolAllocator<Texture2D> textures;
+			PoolAllocator<Shader> shaders;
+			PoolAllocator<Mesh> meshes;
+			PoolAllocator<GMesh> gmeshes;
+
+			// Pool<Entity>* entities;
+			// Pool<Transform>* transforms;
+			// Pool<Rigidbody>* rigidbodies;
+			// Pool<Camera>* cameras;
+			// Pool<MeshRenderer>* meshRenderers;
+			// Pool<LineRenderer>* lineRenderers;
+			// Pool<DirectionalLight>* directionalLights;
+			// Pool<SpotLight>* spotLights;
+			// Pool<PointLight>* pointLights;
+			// Pool<BoxCollider>* boxColliders;
+			// Pool<SphereCollider>* sphereColliders;
+			// Pool<CapsuleCollider>* capsuleColliders;
+
+			// Pool<Material>* materials;
+			// Pool<Texture2D>* textures;
+			// Pool<Shader>* shaders;
+			// Pool<Mesh>* meshes;
+			// Pool<GMesh>* gmeshes;
 			
 			Line* line;
 
@@ -200,6 +220,8 @@ namespace PhysicsEngine
 
 							std::map<int, void*>::iterator it4 = componentTypeToPool.find(componentType);
 							if(it4 != componentTypeToPool.end()){
+								//PoolAllocator pool = getAllocator<T>();!?!?!!?!? does this work!?!?!?!?
+								//return pool.get(componentGlobalIndex);
 								Pool<T>* pool = static_cast<Pool<T>*>(it4->second);
 
 								return pool->get(componentGlobalIndex);

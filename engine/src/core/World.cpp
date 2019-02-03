@@ -296,6 +296,25 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	std::cout << "numberOfDirectionalLights: " << numberOfDirectionalLights << std::endl;
 	std::cout << "numberOfSpotLights: " << numberOfSpotLights << std::endl;
 
+	error = false;
+	error |= settings.maxAllowedEntities < numberOfEntities;
+	error |= settings.maxAllowedTransforms < numberOfTransforms;
+	error |= settings.maxAllowedRigidbodies < numberOfRigidbodies;
+	error |= settings.maxAllowedCameras < numberOfCameras;
+	error |= settings.maxAllowedMeshRenderers < numberOfMeshRenderers;
+	error |= settings.maxAllowedLineRenderers < numberOfLineRenderers;
+	error |= settings.maxAllowedDirectionalLights < numberOfDirectionalLights;
+	error |= settings.maxAllowedSpotLights < numberOfSpotLights;
+	error |= settings.maxAllowedPointLights < numberOfPointLights;
+	error |= settings.maxAllowedBoxColliders < numberOfBoxColliders;
+	error |= settings.maxAllowedSphereColliders < numberOfSphereColliders
+	error |= settings.maxAllowedCapsuleColliders < numberOfCapsuleColliders;
+
+	if(error){
+		std::cout << "Error: Number of entities or components is in excess of what is allowed from build settings" << std::endl;
+		return false;
+	}
+
 	return true;
 }
 
