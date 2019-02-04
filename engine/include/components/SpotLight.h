@@ -49,6 +49,9 @@ namespace PhysicsEngine
 			SpotLight(unsigned char* data);
 			~SpotLight();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(SpotLightData data);
 	};
 }

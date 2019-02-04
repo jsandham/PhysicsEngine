@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -51,6 +52,16 @@ Texture2D::Texture2D(int width, int height, TextureFormat format)
 Texture2D::~Texture2D()
 {
 	
+}
+
+void* Texture2D::operator new(size_t size)
+{
+	return getAllocator<Texture2D>().allocate();
+}
+
+void Texture2D::operator delete(void*)
+{
+
 }
 
 int Texture2D::getWidth() const

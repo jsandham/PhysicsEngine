@@ -32,6 +32,9 @@ namespace PhysicsEngine
 			Cubemap(int width, int height, TextureFormat format);
 			~Cubemap();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			int getWidth() const;
 
 			std::vector<unsigned char> getRawCubemapData();

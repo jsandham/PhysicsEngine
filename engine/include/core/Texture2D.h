@@ -56,6 +56,9 @@ namespace PhysicsEngine
 			Texture2D(int width, int height, TextureFormat format);
 			~Texture2D();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			int getWidth() const;
 			int getHeight() const;
 

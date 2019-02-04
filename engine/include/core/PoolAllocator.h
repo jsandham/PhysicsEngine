@@ -1,6 +1,8 @@
 #ifndef __POOL_ALLOCATOR_H__
 #define __POOL_ALLOCATOR_H__
 
+#include <vector>
+
 namespace PhysicsEngine
 {
 	template <class T, size_t T_per_page = 200>
@@ -22,11 +24,20 @@ namespace PhysicsEngine
 				alloc_pool();
 			}
 
-			T* allocate() {
+			// T* allocate() {
+			// 	if (next_pos == T_per_page)
+			// 		alloc_pool();
+
+			// 	T *ret = new(pools.back() + next_pos) T;
+			// 	++next_pos;
+			// 	return ret;
+			// }
+
+			void* allocate() {
 				if (next_pos == T_per_page)
 					alloc_pool();
 
-				T *ret = new(pools.back() + next_pos) T;
+				void* ret = pools.back() + next_pos;
 				++next_pos;
 				return ret;
 			}

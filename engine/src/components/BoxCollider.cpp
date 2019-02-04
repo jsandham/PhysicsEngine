@@ -1,5 +1,6 @@
 #include "../../include/components/BoxCollider.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -15,6 +16,16 @@ BoxCollider::BoxCollider(unsigned char* data)
 }
 
 BoxCollider::~BoxCollider()
+{
+
+}
+
+void* BoxCollider::operator new(size_t size)
+{
+	return getAllocator<BoxCollider>().allocate();
+}
+
+void BoxCollider::operator delete(void*)
 {
 
 }

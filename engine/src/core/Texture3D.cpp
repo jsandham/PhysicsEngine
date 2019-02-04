@@ -1,3 +1,4 @@
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Texture3D.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -34,6 +35,16 @@ Texture3D::Texture3D(int width, int height, int depth, int numChannels)
 }
 
 Texture3D::~Texture3D()
+{
+
+}
+
+void* Texture3D::operator new(size_t size)
+{
+	return getAllocator<Texture3D>().allocate();
+}
+
+void Texture3D::operator delete(void*)
 {
 
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Entity.h"
 #include "../../include/core/World.h"
 
@@ -18,6 +19,16 @@ Entity::Entity(unsigned char* data)
 }
 
 Entity::~Entity()
+{
+
+}
+
+void* Entity::operator new(size_t size)
+{
+	return getAllocator<Entity>().allocate();
+}
+
+void Entity::operator delete(void*)
 {
 
 }

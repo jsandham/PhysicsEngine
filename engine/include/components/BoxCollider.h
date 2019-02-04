@@ -28,6 +28,9 @@ namespace PhysicsEngine
 			BoxCollider(unsigned char* data);
 			~BoxCollider();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(BoxColliderData data);
 
 			bool intersect(Bounds bounds);

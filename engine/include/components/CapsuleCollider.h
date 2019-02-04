@@ -30,6 +30,9 @@ namespace PhysicsEngine
 			CapsuleCollider(unsigned char* data);
 			~CapsuleCollider();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(CapsuleColliderData data);
 
 			bool intersect(Bounds bounds);

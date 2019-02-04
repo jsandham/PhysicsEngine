@@ -2,6 +2,8 @@
 
 #include "../../include/components/DirectionalLight.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 DirectionalLight::DirectionalLight()
@@ -18,6 +20,16 @@ DirectionalLight::DirectionalLight(unsigned char* data)
 }
 
 DirectionalLight::~DirectionalLight()
+{
+
+}
+
+void* DirectionalLight::operator new(size_t size)
+{
+	return getAllocator<DirectionalLight>().allocate();
+}
+
+void DirectionalLight::operator delete(void*)
 {
 
 }

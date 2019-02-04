@@ -2,6 +2,8 @@
 
 #include "../../include/components/Transform.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 Transform::Transform()
@@ -17,6 +19,16 @@ Transform::Transform(unsigned char* data)
 }
 
 Transform::~Transform()
+{
+
+}
+
+void* Transform::operator new(size_t size)
+{
+	return getAllocator<Transform>().allocate();
+}
+
+void Transform::operator delete(void*)
 {
 
 }

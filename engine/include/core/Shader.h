@@ -51,6 +51,9 @@ namespace PhysicsEngine
 			Shader(unsigned char* data);
 			~Shader();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			bool isCompiled();
 			void compile();
 

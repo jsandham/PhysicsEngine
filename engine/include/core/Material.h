@@ -60,6 +60,9 @@ namespace PhysicsEngine
 			Material(unsigned char* data);
 			~Material();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(MaterialHeader data);
 
 			Shader* getShader();

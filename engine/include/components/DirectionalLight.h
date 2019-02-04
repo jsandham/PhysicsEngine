@@ -34,6 +34,9 @@ namespace PhysicsEngine
 			DirectionalLight(unsigned char* data);
 			~DirectionalLight();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(DirectionalLightData data);
 	};
 }

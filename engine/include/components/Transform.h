@@ -35,6 +35,9 @@ namespace PhysicsEngine
 			Transform(unsigned char* data);
 			~Transform();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(TransformData data);
 
 			glm::vec3 getEulerAngles();

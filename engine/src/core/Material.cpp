@@ -1,3 +1,4 @@
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
 
@@ -23,6 +24,16 @@ Material::Material(unsigned char* data)
 }
 
 Material::~Material()
+{
+
+}
+
+void* Material::operator new(size_t size)
+{
+	return getAllocator<Material>().allocate();
+}
+
+void Material::operator delete(void*)
 {
 
 }

@@ -1,5 +1,7 @@
 #include "../../include/components/SpotLight.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 SpotLight::SpotLight()
@@ -24,6 +26,16 @@ SpotLight::SpotLight(unsigned char* data)
 }
 
 SpotLight::~SpotLight()
+{
+
+}
+
+void* SpotLight::operator new(size_t size)
+{
+	return getAllocator<SpotLight>().allocate();
+}
+
+void SpotLight::operator delete(void*)
 {
 
 }

@@ -1,5 +1,6 @@
 #include "../../include/components/SphereCollider.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -15,6 +16,16 @@ SphereCollider::SphereCollider(unsigned char* data)
 }
 
 SphereCollider::~SphereCollider()
+{
+
+}
+
+void* SphereCollider::operator new(size_t size)
+{
+	return getAllocator<SphereCollider>().allocate();
+}
+
+void SphereCollider::operator delete(void*)
 {
 
 }

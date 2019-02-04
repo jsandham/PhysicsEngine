@@ -1,5 +1,7 @@
 #include "../../include/components/LineRenderer.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 LineRenderer::LineRenderer()
@@ -16,6 +18,16 @@ LineRenderer::LineRenderer(unsigned char* data)
 }
 
 LineRenderer::~LineRenderer()
+{
+
+}
+
+void* LineRenderer::operator new(size_t size)
+{
+	return getAllocator<LineRenderer>().allocate();
+}
+
+void LineRenderer::operator delete(void*)
 {
 
 }

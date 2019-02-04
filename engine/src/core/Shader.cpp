@@ -1,3 +1,4 @@
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Shader.h"
 #include "../../include/graphics/Graphics.h"
 
@@ -125,6 +126,16 @@ Shader::Shader(unsigned char* data)
 Shader::~Shader()
 {
 
+}
+
+void* Shader::operator new(size_t size)
+{
+	return getAllocator<Shader>().allocate();
+}
+
+void Shader::operator delete(void*)
+{
+	
 }
 
 bool Shader::isCompiled()

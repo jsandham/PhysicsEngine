@@ -1,5 +1,6 @@
 #include "../../include/components/CapsuleCollider.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -15,6 +16,16 @@ CapsuleCollider::CapsuleCollider(unsigned char* data)
 }
 
 CapsuleCollider::~CapsuleCollider()
+{
+
+}
+
+void* CapsuleCollider::operator new(size_t size)
+{
+	return getAllocator<CapsuleCollider>().allocate();
+}
+
+void CapsuleCollider::operator delete(void*)
 {
 
 }

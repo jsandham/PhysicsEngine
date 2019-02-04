@@ -30,6 +30,9 @@ namespace PhysicsEngine
 			SphereCollider(unsigned char* data);
 			~SphereCollider();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(SphereColliderData data);
 
 			bool intersect(Bounds bounds);

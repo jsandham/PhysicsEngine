@@ -27,6 +27,9 @@ namespace PhysicsEngine
 			Entity(unsigned char* data);
 			~Entity();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(EntityData data);
 
 			void setWorld(World* world);

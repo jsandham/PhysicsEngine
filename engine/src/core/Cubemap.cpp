@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -53,6 +54,16 @@ Cubemap::Cubemap(int width, int height, TextureFormat format)
 }
 
 Cubemap::~Cubemap()
+{
+	
+}
+
+void* Cubemap::operator new(size_t size)
+{
+	return getAllocator<Cubemap>().allocate();
+}
+
+void Cubemap::operator delete(void*)
 {
 	
 }

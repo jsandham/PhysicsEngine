@@ -1,3 +1,4 @@
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Mesh.h"
 
 #include "../../include/graphics/Graphics.h"
@@ -17,6 +18,16 @@ Mesh::Mesh(unsigned char* data)
 Mesh::~Mesh()
 {
 
+}
+
+void* Mesh::operator new(size_t size)
+{
+	return getAllocator<Mesh>().allocate();
+}
+
+void Mesh::operator delete(void*)
+{
+	
 }
 
 void Mesh::apply()

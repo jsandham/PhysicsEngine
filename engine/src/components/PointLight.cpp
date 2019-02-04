@@ -1,5 +1,7 @@
 #include "../../include/components/PointLight.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 PointLight::PointLight()
@@ -21,6 +23,16 @@ PointLight::PointLight(unsigned char* data)
 }
 
 PointLight::~PointLight()
+{
+
+}
+
+void* PointLight::operator new(size_t size)
+{
+	return getAllocator<PointLight>().allocate();
+}
+
+void PointLight::operator delete(void*)
 {
 
 }

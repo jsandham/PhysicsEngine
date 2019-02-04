@@ -1,5 +1,7 @@
 #include "../../include/components/Rigidbody.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 
@@ -24,6 +26,16 @@ Rigidbody::Rigidbody(unsigned char* data)
 }
 
 Rigidbody::~Rigidbody()
+{
+
+}
+
+void* Rigidbody::operator new(size_t size)
+{
+	return getAllocator<Rigidbody>().allocate();
+}
+
+void Rigidbody::operator delete(void*)
 {
 
 }

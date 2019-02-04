@@ -37,6 +37,9 @@ namespace PhysicsEngine
 			Mesh(unsigned char* data);
 			~Mesh();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void apply();
 	};
 }

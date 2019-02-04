@@ -1,5 +1,7 @@
 #include "../../include/components/Camera.h"
 
+#include "../../include/core/PoolAllocator.h"
+
 using namespace PhysicsEngine;
 
 Camera::Camera()
@@ -41,6 +43,16 @@ Camera::Camera(unsigned char* data)
 }
 
 Camera::~Camera()
+{
+
+}
+
+void* Camera::operator new(size_t size)
+{
+	return getAllocator<Camera>().allocate();
+}
+
+void Camera::operator delete(void*)
 {
 
 }

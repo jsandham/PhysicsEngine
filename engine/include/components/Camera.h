@@ -55,6 +55,9 @@ namespace PhysicsEngine
 			Camera(unsigned char* data);
 			~Camera();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(CameraData data);
 
 			glm::vec3& getPosition();

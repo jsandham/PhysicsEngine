@@ -52,6 +52,9 @@ namespace PhysicsEngine
 			GMesh();
 			GMesh(unsigned char* data);
 			~GMesh();
+
+			void* operator new(size_t size);
+			void operator delete(void*);
 	};
 }
 

@@ -36,6 +36,9 @@ namespace PhysicsEngine
 			LineRenderer(unsigned char* data);
 			~LineRenderer();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void load(LineRendererData data);
 	};
 }
