@@ -12,7 +12,7 @@ LineRenderer::LineRenderer()
 	materialId = Guid::INVALID;
 }
 
-LineRenderer::LineRenderer(unsigned char* data)
+LineRenderer::LineRenderer(std::vector<char> data)
 {
 	
 }

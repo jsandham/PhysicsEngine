@@ -20,7 +20,11 @@ WorldManager::~WorldManager()
 
 void WorldManager::init()
 {
-	world->load(scene, bundle);
+	if(!world->load(scene, bundle))
+	{
+		std::cout << "Error: World load failed!" << std::endl;
+		return;
+	}
 
 	for(int i = 0; i < world->getNumberOfSystems(); i++){
 		System* system = world->getSystemByIndex(i);

@@ -19,127 +19,127 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	settings.maxAllowedEntities = 2000;
-	settings.maxAllowedTransforms = 2000;
-	settings.maxAllowedRigidbodies = 2000;
-	settings.maxAllowedCameras = 10;
-	settings.maxAllowedMeshRenderers = 2000;
-	settings.maxAllowedLineRenderers = 2000;
-	settings.maxAllowedDirectionalLights = 20;
-	settings.maxAllowedSpotLights = 20;
-	settings.maxAllowedPointLights = 20;
-	settings.maxAllowedBoxColliders = 2000;
-	settings.maxAllowedSphereColliders = 2000;
-	settings.maxAllowedCapsuleColliders = 2000;
+	// settings.maxAllowedEntities = 2000;
+	// settings.maxAllowedTransforms = 2000;
+	// settings.maxAllowedRigidbodies = 2000;
+	// settings.maxAllowedCameras = 10;
+	// settings.maxAllowedMeshRenderers = 2000;
+	// settings.maxAllowedLineRenderers = 2000;
+	// settings.maxAllowedDirectionalLights = 20;
+	// settings.maxAllowedSpotLights = 20;
+	// settings.maxAllowedPointLights = 20;
+	// settings.maxAllowedBoxColliders = 2000;
+	// settings.maxAllowedSphereColliders = 2000;
+	// settings.maxAllowedCapsuleColliders = 2000;
 
-	settings.maxAllowedMaterials = 15;
-	settings.maxAllowedTextures = 15;
-	settings.maxAllowedShaders = 15;
-	settings.maxAllowedMeshes = 15;
-	settings.maxAllowedGMeshes = 15;
+	// settings.maxAllowedMaterials = 15;
+	// settings.maxAllowedTextures = 15;
+	// settings.maxAllowedShaders = 15;
+	// settings.maxAllowedMeshes = 15;
+	// settings.maxAllowedGMeshes = 15;
 
-	settings.physicsDepth = 10;
+	// settings.physicsDepth = 10;
 
-	settings.centre[0] = 0.0f;
-	settings.centre[1] = 20.0f;
-	settings.centre[2] = 20.0f;
+	// settings.centre[0] = 0.0f;
+	// settings.centre[1] = 20.0f;
+	// settings.centre[2] = 20.0f;
 
-	settings.extent[0] = 20.0f;
-	settings.extent[1] = 20.0f;
-	settings.extent[2] = 20.0f;
+	// settings.extent[0] = 20.0f;
+	// settings.extent[1] = 20.0f;
+	// settings.extent[2] = 20.0f;
 
-	bool error = settings.maxAllowedEntities <= 0;
-	error |= settings.maxAllowedTransforms <= 0;
-	error |= settings.maxAllowedRigidbodies <= 0;
-	error |= settings.maxAllowedCameras <= 0;
-	error |= settings.maxAllowedMeshRenderers <= 0;
-	error |= settings.maxAllowedLineRenderers <= 0;
-	error |= settings.maxAllowedDirectionalLights <= 0;
-	error |= settings.maxAllowedSpotLights <= 0;
-	error |= settings.maxAllowedPointLights <= 0;
-	error |= settings.maxAllowedBoxColliders <= 0;
-	error |= settings.maxAllowedSphereColliders <= 0;
-	error |= settings.maxAllowedCapsuleColliders <= 0;
+	// bool error = settings.maxAllowedEntities <= 0;
+	// error |= settings.maxAllowedTransforms <= 0;
+	// error |= settings.maxAllowedRigidbodies <= 0;
+	// error |= settings.maxAllowedCameras <= 0;
+	// error |= settings.maxAllowedMeshRenderers <= 0;
+	// error |= settings.maxAllowedLineRenderers <= 0;
+	// error |= settings.maxAllowedDirectionalLights <= 0;
+	// error |= settings.maxAllowedSpotLights <= 0;
+	// error |= settings.maxAllowedPointLights <= 0;
+	// error |= settings.maxAllowedBoxColliders <= 0;
+	// error |= settings.maxAllowedSphereColliders <= 0;
+	// error |= settings.maxAllowedCapsuleColliders <= 0;
 
-	error |= settings.maxAllowedMaterials <= 0;
-	error |= settings.maxAllowedTextures <= 0;
-	error |= settings.maxAllowedShaders <= 0;
-	error |= settings.maxAllowedMeshes <= 0;
-	error |= settings.maxAllowedGMeshes <= 0;
+	// error |= settings.maxAllowedMaterials <= 0;
+	// error |= settings.maxAllowedTextures <= 0;
+	// error |= settings.maxAllowedShaders <= 0;
+	// error |= settings.maxAllowedMeshes <= 0;
+	// error |= settings.maxAllowedGMeshes <= 0;
 
-	if(error){
-		std::cout << "Error: Max allowed values cannot be equal to or less than zero" << std::endl;
-		return;
-	}
+	// if(error){
+	// 	std::cout << "Error: Max allowed values cannot be equal to or less than zero" << std::endl;
+	// 	return;
+	// }
 
-	entities = new Pool<Entity>(settings.maxAllowedEntities);
-	transforms = new Pool<Transform>(settings.maxAllowedTransforms);
-	rigidbodies = new Pool<Rigidbody>(settings.maxAllowedRigidbodies);
-	cameras = new Pool<Camera>(settings.maxAllowedCameras);
-	meshRenderers = new Pool<MeshRenderer>(settings.maxAllowedMeshRenderers);
-	lineRenderers = new Pool<LineRenderer>(settings.maxAllowedLineRenderers);
-	directionalLights = new Pool<DirectionalLight>(settings.maxAllowedDirectionalLights);
-	spotLights = new Pool<SpotLight>(settings.maxAllowedSpotLights);
-	pointLights = new Pool<PointLight>(settings.maxAllowedPointLights);
-	boxColliders = new Pool<BoxCollider>(settings.maxAllowedBoxColliders);
-	sphereColliders = new Pool<SphereCollider>(settings.maxAllowedSphereColliders);
-	capsuleColliders = new Pool<CapsuleCollider>(settings.maxAllowedCapsuleColliders);
+	// entities = new Pool<Entity>(settings.maxAllowedEntities);
+	// transforms = new Pool<Transform>(settings.maxAllowedTransforms);
+	// rigidbodies = new Pool<Rigidbody>(settings.maxAllowedRigidbodies);
+	// cameras = new Pool<Camera>(settings.maxAllowedCameras);
+	// meshRenderers = new Pool<MeshRenderer>(settings.maxAllowedMeshRenderers);
+	// lineRenderers = new Pool<LineRenderer>(settings.maxAllowedLineRenderers);
+	// directionalLights = new Pool<DirectionalLight>(settings.maxAllowedDirectionalLights);
+	// spotLights = new Pool<SpotLight>(settings.maxAllowedSpotLights);
+	// pointLights = new Pool<PointLight>(settings.maxAllowedPointLights);
+	// boxColliders = new Pool<BoxCollider>(settings.maxAllowedBoxColliders);
+	// sphereColliders = new Pool<SphereCollider>(settings.maxAllowedSphereColliders);
+	// capsuleColliders = new Pool<CapsuleCollider>(settings.maxAllowedCapsuleColliders);
 
-	materials = new Pool<Material>(settings.maxAllowedMaterials);
-	textures = new Pool<Texture2D>(settings.maxAllowedTextures);
-	shaders = new Pool<Shader>(settings.maxAllowedShaders);
-	meshes = new Pool<Mesh>(settings.maxAllowedMeshes);
-	gmeshes = new Pool<GMesh>(settings.maxAllowedGMeshes);
+	// materials = new Pool<Material>(settings.maxAllowedMaterials);
+	// textures = new Pool<Texture2D>(settings.maxAllowedTextures);
+	// shaders = new Pool<Shader>(settings.maxAllowedShaders);
+	// meshes = new Pool<Mesh>(settings.maxAllowedMeshes);
+	// gmeshes = new Pool<GMesh>(settings.maxAllowedGMeshes);
 
 	line = new Line();
 
-	glm::vec3 centre = glm::vec3(settings.centre[0], settings.centre[1], settings.centre[2]);
-	glm::vec3 size = 2.0f * glm::vec3(settings.extent[0], settings.extent[1], settings.extent[2]);
+	glm::vec3 centre = glm::vec3(0.0f, 20.0f, 20.0f);
+	glm::vec3 size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
 
 	bounds = new Bounds(centre, size);
 	physics = new Octtree(*bounds, /*settings.physicsDepth*/2);
 
-	componentTypeToPool[Component::getInstanceType<Transform>()] = reinterpret_cast<Pool<Transform>*>(transforms);
-	componentTypeToPool[Component::getInstanceType<Rigidbody>()] = reinterpret_cast<Pool<Rigidbody>*>(rigidbodies);
-	componentTypeToPool[Component::getInstanceType<Camera>()] = reinterpret_cast<Pool<Camera>*>(cameras);
-	componentTypeToPool[Component::getInstanceType<MeshRenderer>()] = reinterpret_cast<Pool<MeshRenderer>*>(meshRenderers);
-	componentTypeToPool[Component::getInstanceType<LineRenderer>()] = reinterpret_cast<Pool<LineRenderer>*>(lineRenderers);
-	componentTypeToPool[Component::getInstanceType<DirectionalLight>()] = reinterpret_cast<Pool<DirectionalLight>*>(directionalLights);
-	componentTypeToPool[Component::getInstanceType<SpotLight>()] = reinterpret_cast<Pool<SpotLight>*>(spotLights);
-	componentTypeToPool[Component::getInstanceType<PointLight>()] = reinterpret_cast<Pool<PointLight>*>(pointLights);
-	componentTypeToPool[Component::getInstanceType<BoxCollider>()] = reinterpret_cast<Pool<BoxCollider>*>(boxColliders);
-	componentTypeToPool[Component::getInstanceType<SphereCollider>()] = reinterpret_cast<Pool<SphereCollider>*>(sphereColliders);
-	componentTypeToPool[Component::getInstanceType<CapsuleCollider>()] = reinterpret_cast<Pool<CapsuleCollider>*>(capsuleColliders);
+	// componentTypeToPool[Component::getInstanceType<Transform>()] = reinterpret_cast<Pool<Transform>*>(transforms);
+	// componentTypeToPool[Component::getInstanceType<Rigidbody>()] = reinterpret_cast<Pool<Rigidbody>*>(rigidbodies);
+	// componentTypeToPool[Component::getInstanceType<Camera>()] = reinterpret_cast<Pool<Camera>*>(cameras);
+	// componentTypeToPool[Component::getInstanceType<MeshRenderer>()] = reinterpret_cast<Pool<MeshRenderer>*>(meshRenderers);
+	// componentTypeToPool[Component::getInstanceType<LineRenderer>()] = reinterpret_cast<Pool<LineRenderer>*>(lineRenderers);
+	// componentTypeToPool[Component::getInstanceType<DirectionalLight>()] = reinterpret_cast<Pool<DirectionalLight>*>(directionalLights);
+	// componentTypeToPool[Component::getInstanceType<SpotLight>()] = reinterpret_cast<Pool<SpotLight>*>(spotLights);
+	// componentTypeToPool[Component::getInstanceType<PointLight>()] = reinterpret_cast<Pool<PointLight>*>(pointLights);
+	// componentTypeToPool[Component::getInstanceType<BoxCollider>()] = reinterpret_cast<Pool<BoxCollider>*>(boxColliders);
+	// componentTypeToPool[Component::getInstanceType<SphereCollider>()] = reinterpret_cast<Pool<SphereCollider>*>(sphereColliders);
+	// componentTypeToPool[Component::getInstanceType<CapsuleCollider>()] = reinterpret_cast<Pool<CapsuleCollider>*>(capsuleColliders);
 
-	assetTypeToPool[Asset::getInstanceType<Material>()] = reinterpret_cast<Pool<Material>*>(materials);
-	assetTypeToPool[Asset::getInstanceType<Texture2D>()] = reinterpret_cast<Pool<Texture2D>*>(textures);
-	assetTypeToPool[Asset::getInstanceType<Shader>()] = reinterpret_cast<Pool<Shader>*>(shaders);
-	assetTypeToPool[Asset::getInstanceType<Mesh>()] = reinterpret_cast<Pool<Mesh>*>(meshes);
-	assetTypeToPool[Asset::getInstanceType<GMesh>()] = reinterpret_cast<Pool<GMesh>*>(gmeshes);
+	// assetTypeToPool[Asset::getInstanceType<Material>()] = reinterpret_cast<Pool<Material>*>(materials);
+	// assetTypeToPool[Asset::getInstanceType<Texture2D>()] = reinterpret_cast<Pool<Texture2D>*>(textures);
+	// assetTypeToPool[Asset::getInstanceType<Shader>()] = reinterpret_cast<Pool<Shader>*>(shaders);
+	// assetTypeToPool[Asset::getInstanceType<Mesh>()] = reinterpret_cast<Pool<Mesh>*>(meshes);
+	// assetTypeToPool[Asset::getInstanceType<GMesh>()] = reinterpret_cast<Pool<GMesh>*>(gmeshes);
 
 	debug = false;
 }
 
 World::~World()
 {
-	delete entities;
-	delete transforms;
-	delete rigidbodies;
-	delete cameras;
-	delete meshRenderers;
-	delete lineRenderers;
-	delete directionalLights;
-	delete spotLights;
-	delete pointLights;
-	delete boxColliders;
-	delete sphereColliders;
-	delete capsuleColliders;
+	// delete entities;
+	// delete transforms;
+	// delete rigidbodies;
+	// delete cameras;
+	// delete meshRenderers;
+	// delete lineRenderers;
+	// delete directionalLights;
+	// delete spotLights;
+	// delete pointLights;
+	// delete boxColliders;
+	// delete sphereColliders;
+	// delete capsuleColliders;
 
-	delete materials;
-	delete shaders;
-	delete textures;
-	delete meshes;
-	delete gmeshes;
+	// delete materials;
+	// delete shaders;
+	// delete textures;
+	// delete meshes;
+	// delete gmeshes;
 
 	delete line;
 
@@ -156,7 +156,6 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	std::cout << "Loading asset bundle: " << assetBundle.filepath << std::endl;
 
 	std::ifstream assetBundleFile;
-
 	assetBundleFile.open(assetBundle.filepath, std::ios::binary);
 
 	if(!assetBundleFile.is_open()){
@@ -167,95 +166,48 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	AssetBundleHeader bundleHeader;
 	assetBundleFile.read(reinterpret_cast<char*>(&bundleHeader), sizeof(AssetBundleHeader));
 
-	unsigned int numberOfShaders = bundleHeader.numberOfShaders;
-	unsigned int numberOfTextures = bundleHeader.numberOfTextures;
-	unsigned int numberOfMaterials = bundleHeader.numberOfMaterials;
-	unsigned int numberOfMeshes = bundleHeader.numberOfMeshes;
-	unsigned int numberOfGMeshes = bundleHeader.numberOfGMeshes;
+	while( assetBundleFile.peek() != EOF )
+	{
+		size_t size;
+		assetBundleFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 
-	bool error = false;
-	error |= settings.maxAllowedMaterials < numberOfMaterials;
-	error |= settings.maxAllowedTextures < numberOfTextures;
-	error |= settings.maxAllowedShaders < numberOfShaders;
-	error |= settings.maxAllowedMeshes < numberOfMeshes;
-	error |= settings.maxAllowedGMeshes < numberOfGMeshes;
+		std::vector<char> data(size);
+		assetBundleFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));		
 
-	if(error){
-		std::cout << "Error: Number of assets is in excess of what is allowed from build settings" << std::endl;
-		return false;
-	}
+		int type = *reinterpret_cast<int*>(&data[0]);
 
-	for(unsigned int i = 0; i < numberOfShaders; i++){
-		if(deserializeShader(shaders->get(i), assetBundleFile)){
-			Shader* shader = shaders->get(i);
-			shaders->increment();
+		std::cout << "type: " << type << " size: " << size <<  std::endl;
 
-			std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(shader->assetId);
-			if(it == assetIdToGlobalIndex.end()){
-				assetIdToGlobalIndex[shader->assetId] = i;
-			}
-		}
-		else{
+		if(type <= -1){
+			std::cout << "Error: Type cannot be less than 0 when reading asset bundle file" << std::endl;
 			return false;
 		}
-	}
 
-	for(unsigned int i = 0; i < numberOfTextures; i++){
-		if(deserializeTexture2D(textures->get(i), assetBundleFile)){
-			Texture2D* texture = textures->get(i);
-			textures->increment();
-
-			std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(texture->assetId);
-			if(it == assetIdToGlobalIndex.end()){
-				assetIdToGlobalIndex[texture->assetId] = i;
-			}
-		}
-		else{
+		if(size <= 0){
+			std::cout << "Error: Size cannot be less than 1 when reading asset bundle file" << std::endl;
 			return false;
 		}
-	}
 
-	for(unsigned int i = 0; i < numberOfMaterials; i++){
-		if(deserializeMaterial(materials->get(i), assetBundleFile)){
-			Material* material = materials->get(i);
-			materials->increment();
-
-			std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(material->assetId);
-			if(it == assetIdToGlobalIndex.end()){
-				assetIdToGlobalIndex[material->assetId] = i;
-			}
+		int index = -1;
+		Asset* asset = NULL;
+		if(type < 20){
+			asset = loadInternalAsset(data);
 		}
 		else{
+			asset = loadAsset(data);
+		}
+
+		if(asset == NULL || index == -1){
+			std::cout << "Error: Could not load asset" << std::endl;
 			return false;
 		}
-	}
 
-	for(unsigned int i = 0; i < numberOfMeshes; i++){
-		if(deserializeMesh(meshes->get(i), assetBundleFile)){
-			Mesh* mesh = meshes->get(i);
-			meshes->increment();
-
-			std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(mesh->assetId);
-			if(it == assetIdToGlobalIndex.end()){
-				assetIdToGlobalIndex[mesh->assetId] = i;
-			}
-		}		
-		else{
-			return false;
-		}
-	}
-
-	for(unsigned int i = 0; i < numberOfGMeshes; i++){
-		if(deserializeGMesh(gmeshes->get(i), assetBundleFile)){
-			GMesh* gmesh = gmeshes->get(i);
-			gmeshes->increment();
-
-			std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(gmesh->assetId);
-			if(it == assetIdToGlobalIndex.end()){
-				assetIdToGlobalIndex[gmesh->assetId] = i;
-			}
+		std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(asset->assetId);
+		if(it == assetIdToGlobalIndex.end()){
+			assetIdToGlobalIndex[asset->assetId] = index;
 		}
 		else{
+			std::cout << "Error: Asset with id " << asset->assetId.toString() << " already exists in map" << std::endl;
 			return false;
 		}
 	}
@@ -263,7 +215,6 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	assetBundleFile.close();
 
 	std::ifstream sceneFile;
-
 	sceneFile.open(scene.filepath, std::ios::binary);
 
 	if(!sceneFile.is_open()){
@@ -274,46 +225,97 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 	SceneHeader sceneHeader;
 	sceneFile.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
 
-	unsigned int numberOfEntities = sceneHeader.numberOfEntities;
-	unsigned int numberOfTransforms = sceneHeader.numberOfTransforms;
-	unsigned int numberOfRigidbodies = sceneHeader.numberOfRigidbodies;
-	unsigned int numberOfCameras = sceneHeader.numberOfCameras;
-	unsigned int numberOfMeshRenderers = sceneHeader.numberOfMeshRenderers;
-	unsigned int numberOfLineRenderers = sceneHeader.numberOfLineRenderers;
-	unsigned int numberOfDirectionalLights = sceneHeader.numberOfDirectionalLights;
-	unsigned int numberOfSpotLights = sceneHeader.numberOfSpotLights;
-	unsigned int numberOfPointLights = sceneHeader.numberOfPointLights;
-	unsigned int numberOfBoxColliders = sceneHeader.numberOfBoxColliders;
-	unsigned int numberOfSphereColliders = sceneHeader.numberOfSphereColliders;
-	unsigned int numberOfCapsuleColliders = sceneHeader.numberOfCapsuleColliders;
+	while( sceneFile.peek() != EOF )
+	{
+		char classification;
+	    size_t size;
+		sceneFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
+		sceneFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 
-	std::cout << "numberOfEntities: " << numberOfEntities << std::endl;
-	std::cout << "numberOfTransforms: " << numberOfTransforms << std::endl;
-	std::cout << "numberOfRigidbodies: " << numberOfRigidbodies << std::endl;
-	std::cout << "numberOfCameras: " << numberOfCameras << std::endl;
-	std::cout << "numberOfMeshRenderers: " << numberOfMeshRenderers << std::endl;
-	std::cout << "numberOfLineRenderers: " << numberOfLineRenderers << std::endl;
-	std::cout << "numberOfDirectionalLights: " << numberOfDirectionalLights << std::endl;
-	std::cout << "numberOfSpotLights: " << numberOfSpotLights << std::endl;
+		std::vector<char> data(size);
+		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
-	error = false;
-	error |= settings.maxAllowedEntities < numberOfEntities;
-	error |= settings.maxAllowedTransforms < numberOfTransforms;
-	error |= settings.maxAllowedRigidbodies < numberOfRigidbodies;
-	error |= settings.maxAllowedCameras < numberOfCameras;
-	error |= settings.maxAllowedMeshRenderers < numberOfMeshRenderers;
-	error |= settings.maxAllowedLineRenderers < numberOfLineRenderers;
-	error |= settings.maxAllowedDirectionalLights < numberOfDirectionalLights;
-	error |= settings.maxAllowedSpotLights < numberOfSpotLights;
-	error |= settings.maxAllowedPointLights < numberOfPointLights;
-	error |= settings.maxAllowedBoxColliders < numberOfBoxColliders;
-	error |= settings.maxAllowedSphereColliders < numberOfSphereColliders;
-	error |= settings.maxAllowedCapsuleColliders < numberOfCapsuleColliders;
+		int type = *reinterpret_cast<int*>(&data[0]);
 
-	if(error){
-		std::cout << "Error: Number of entities or components is in excess of what is allowed from build settings" << std::endl;
-		return false;
+		std::cout << "classification: " << classification << " type: " << type << " size: " << size <<  std::endl;
+
+		if(type <= -1){
+			std::cout << "Error: Type cannot be less than 0 when reading scene file" << std::endl;
+			return false;
+		}
+
+		if(size <= 0){
+			std::cout << "Error: Size cannot be less than 1 when reading scene file" << std::endl;
+			return false;
+		}
+
+		int index = -1;
+		if(classification == 'e'){
+			Entity* entity = NULL;
+			if(type < 20){
+				entity = loadInternalEntity(data);
+			}
+
+			if(entity == NULL || index == -1){
+				std::cout << "Error: Could not load entity corresponding to type " << type << std::endl;
+				return false;
+			}
+
+			std::map<Guid, int>::iterator it = idToGlobalIndex.find(entity->entityId);
+			if(it == idToGlobalIndex.end()){
+				idToGlobalIndex[entity->entityId] = index;
+			}
+			else{
+				std::cout << "Error: Entity with id " << entity->entityId.toString() << " already exists in map" << std::endl;
+				return false;
+			}
+		}
+		else if(classification == 'c'){
+			Component* component = NULL;
+			if(type < 20){
+				component = loadInternalComponent(data);
+			}
+			else{
+				component = loadComponent(data);
+			}
+
+			if(component == NULL || index == -1){
+				std::cout << "Error: Could not load component corresponding to type " << type << std::endl;
+				return false;
+			}
+
+			std::map<Guid, int>::iterator it = idToGlobalIndex.find(component->componentId);
+			if(it == idToGlobalIndex.end()){
+				idToGlobalIndex[component->componentId] = index;
+			}
+			else{
+				std::cout << "Error: Component with id " << component->componentId.toString() << " already exists in map" << std::endl;
+				return false;
+			}
+		}
+		else if(classification == 's'){
+			System* system = NULL;
+			if(type < 20){
+				system = loadInternalSystem(data);
+			}
+			else{
+				system = loadSystem(data);
+			}
+
+			if(system == NULL || index == -1){
+				std::cout << "Error: Could not load system corresponding to type " << type << std::endl;
+				return false;
+			}
+
+			// maybe set system in vector??
+		}
+		else{
+			std::cout << "Error: Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)" << std::endl;
+			return false;
+		}
 	}
+
+	sceneFile.close();
 
 	return true;
 }
@@ -990,7 +992,8 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 int World::getNumberOfEntities()
 {
-	return entities->getIndex();
+	//return entities->getIndex();
+	return 0;
 }
 
 int World::getNumberOfSystems()
@@ -1000,14 +1003,15 @@ int World::getNumberOfSystems()
 
 Entity* World::getEntity(Guid id)
 {
-	std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
-	if(it != idToGlobalIndex.end()){
-		return entities->get(it->second);
-	}
-	else{
-		std::cout << "Error: No entity with id " << id.toString() << " was found" << std::endl;
-		return NULL;
-	}
+	// std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
+	// if(it != idToGlobalIndex.end()){
+	// 	return entities->get(it->second);
+	// }
+	// else{
+	// 	std::cout << "Error: No entity with id " << id.toString() << " was found" << std::endl;
+	// 	return NULL;
+	// }
+	return NULL;
 }
 
 System* World::getSystem(Guid id)
@@ -1017,7 +1021,8 @@ System* World::getSystem(Guid id)
 
 Entity* World::getEntityByIndex(int index)
 {
-	return entities->get(index);
+	// return entities->get(index);
+	return NULL;
 }
 
 System* World::getSystemByIndex(int index)
@@ -1171,42 +1176,43 @@ std::vector<Guid> World::getEntitiesMarkedForLatentDestroy()
 
 Entity* World::instantiate()
 {
-	if(entities->getIndex() == (int)settings.maxAllowedEntities){
-		std::cout << "Error: Cannot instantiate entity because we are at the settings maximum of " << settings.maxAllowedEntities << std::endl;
-		return NULL;
-	}
+	// if(entities->getIndex() == (int)settings.maxAllowedEntities){
+	// 	std::cout << "Error: Cannot instantiate entity because we are at the settings maximum of " << settings.maxAllowedEntities << std::endl;
+	// 	return NULL;
+	// }
 
-	std::cout << "number of entities: " << entities->getIndex() << std::endl;
+	// std::cout << "number of entities: " << entities->getIndex() << std::endl;
 
-	int index = entities->getIndex();
+	// int index = entities->getIndex();
 
-	entities->increment();
+	// entities->increment();
 
-	std::cout << "number of entities: " << entities->getIndex() << std::endl;
+	// std::cout << "number of entities: " << entities->getIndex() << std::endl;
 
-	Entity* entity = entities->get(index);
-	entity->entityId = Guid::newGuid();
+	// Entity* entity = entities->get(index);
+	// entity->entityId = Guid::newGuid();
 
-	if(idToGlobalIndex.count(entity->entityId) == 0){
-		idToGlobalIndex[entity->entityId] = index;
-	}
-	else{
-		std::cout << "Error: Duplicate guid generated by Guid::newGuid???" << std::endl;
-		return NULL;
-	}
+	// if(idToGlobalIndex.count(entity->entityId) == 0){
+	// 	idToGlobalIndex[entity->entityId] = index;
+	// }
+	// else{
+	// 	std::cout << "Error: Duplicate guid generated by Guid::newGuid???" << std::endl;
+	// 	return NULL;
+	// }
 
-	if(entityIdToComponentIds.count(entity->entityId) == 0){
-		entityIdToComponentIds[entity->entityId] = std::vector<Guid>();
-	}
-	else
-	{
-		std::cout << "Error: Duplicate guid generated by Guid::newGuid???" << std::endl;
-		return NULL;
-	}
+	// if(entityIdToComponentIds.count(entity->entityId) == 0){
+	// 	entityIdToComponentIds[entity->entityId] = std::vector<Guid>();
+	// }
+	// else
+	// {
+	// 	std::cout << "Error: Duplicate guid generated by Guid::newGuid???" << std::endl;
+	// 	return NULL;
+	// }
 
-	entity->setWorld(this);
+	// entity->setWorld(this);
 
-	return entity;
+	// return entity;
+	return NULL;
 }
 
 Entity* World::instantiate(Guid entityId)

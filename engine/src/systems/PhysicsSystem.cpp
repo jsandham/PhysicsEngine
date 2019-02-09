@@ -26,7 +26,7 @@ PhysicsSystem::PhysicsSystem()
 	type = 1;
 }
 
-PhysicsSystem::PhysicsSystem(unsigned char* data)
+PhysicsSystem::PhysicsSystem(std::vector<char> data)
 {
 	type = 1;
 }

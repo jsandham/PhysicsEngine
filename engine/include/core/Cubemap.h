@@ -26,7 +26,7 @@ namespace PhysicsEngine
 
 		public:
 			Cubemap();
-			Cubemap(unsigned char* data);
+			Cubemap(std::vector<char> data);
 			Cubemap(int width);
 			Cubemap(int width, TextureFormat format);
 			Cubemap(int width, int height, TextureFormat format);

@@ -2,6 +2,7 @@
 #define __CAMERA_H__
 
 #include <iostream>
+#include <vector>
 
 #define GLM_FORCE_RADIANS
 
@@ -52,7 +53,7 @@ namespace PhysicsEngine
 
 		public:
 			Camera();
-			Camera(unsigned char* data);
+			Camera(std::vector<char> data);
 			~Camera();
 
 			void* operator new(size_t size);

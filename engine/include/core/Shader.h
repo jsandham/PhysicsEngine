@@ -4,6 +4,7 @@
 #define NOMINMAX
 
 #include <string>
+#include <vector>
 
 #include "../glm/glm.hpp"
 
@@ -48,7 +49,7 @@ namespace PhysicsEngine
 
 		public:
 			Shader();
-			Shader(unsigned char* data);
+			Shader(std::vector<char> data);
 			~Shader();
 
 			void* operator new(size_t size);

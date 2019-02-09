@@ -17,7 +17,7 @@ Texture3D::Texture3D()
 	this->numChannels = calcNumChannels(format);
 }
 
-Texture3D::Texture3D(unsigned char* data)
+Texture3D::Texture3D(std::vector<char> data)
 {
 	
 }

@@ -20,7 +20,7 @@ SpotLight::SpotLight()
 	projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
 }
 
-SpotLight::SpotLight(unsigned char* data)
+SpotLight::SpotLight(std::vector<char> data)
 {
 	
 }

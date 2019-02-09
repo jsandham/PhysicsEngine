@@ -1,6 +1,8 @@
 #ifndef __ENTITY_H__
 #define __ENTITY_H__
 
+#include <vector>
+
 #include "Guid.h"
 
 namespace PhysicsEngine
@@ -24,7 +26,7 @@ namespace PhysicsEngine
 
 		public:
 			Entity();
-			Entity(unsigned char* data);
+			Entity(std::vector<char> data);
 			~Entity();
 
 			void* operator new(size_t size);

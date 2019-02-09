@@ -26,7 +26,7 @@ RenderSystem::RenderSystem()
 	type = 0;
 }
 
-RenderSystem::RenderSystem(unsigned char* data)
+RenderSystem::RenderSystem(std::vector<char> data)
 {
 	type = 0;
 }

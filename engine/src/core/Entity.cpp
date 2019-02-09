@@ -13,7 +13,7 @@ Entity::Entity()
 	world = NULL;
 }
 
-Entity::Entity(unsigned char* data)
+Entity::Entity(std::vector<char> data)
 {
 	
 }

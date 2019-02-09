@@ -1,7 +1,10 @@
 #include "../../include/core/LoadInternal.h"
 
+#include "../../include/core/Entity.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/Texture2D.h"
+#include "../../include/core/Texture3D.h"
+#include "../../include/core/Cubemap.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/Mesh.h"
 
@@ -24,9 +27,9 @@
 
 using namespace PhysicsEngine;
 
-Asset* loadInternalAsset(unsigned char* data)
+Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data)  // could pass as out parameter an int for the index location of the newly created asset in the pool???
 {
-	int type = *reinterpret_cast<int*>(data);
+	int type = *reinterpret_cast<int*>(&data[0]);
 
 	if(type == 0){
 		return new Shader(data);
@@ -35,9 +38,15 @@ Asset* loadInternalAsset(unsigned char* data)
 		return new Texture2D(data);
 	}
 	else if(type == 2){
-		return new Material(data);
+		return new Texture3D(data);
 	}
 	else if(type == 3){
+		return new Cubemap(data);
+	}
+	else if(type == 4){
+		return new Material(data);
+	}
+	else if(type == 5){
 		return new Mesh(data);
 	}
 	else{
@@ -46,14 +55,14 @@ Asset* loadInternalAsset(unsigned char* data)
 	}
 }
 
-Entity* loadInternalEntity(unsigned char* data)
+Entity* PhysicsEngine::loadInternalEntity(std::vector<char> data)
 {
 	return new Entity(data);
 }
 
-Component* loadInternalComponent(unsigned char* data)
+Component* PhysicsEngine::loadInternalComponent(std::vector<char> data)
 {
-	int type = *reinterpret_cast<int*>(data);
+	int type = *reinterpret_cast<int*>(&data[0]);
 
 	if(type == 0){
 		return new Transform(data);
@@ -94,9 +103,9 @@ Component* loadInternalComponent(unsigned char* data)
 	}
 }
 
-System* PhysicsEngine::loadInternalSystem(unsigned char* data)
+System* PhysicsEngine::loadInternalSystem(std::vector<char> data)
 {
-	int type = *reinterpret_cast<int*>(data);
+	int type = *reinterpret_cast<int*>(&data[0]);
 
 	if(type == 0){
 		return new RenderSystem(data);

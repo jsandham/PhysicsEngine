@@ -20,7 +20,7 @@ Rigidbody::Rigidbody()
 	halfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(unsigned char* data)
+Rigidbody::Rigidbody(std::vector<char> data)
 {
 	
 }

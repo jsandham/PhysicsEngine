@@ -1,6 +1,8 @@
 #ifndef __LOADINTERNAL_H__
 #define __LOADINTERNAL_H__
 
+#include <vector>
+
 #include "Asset.h"
 #include "Entity.h"
 #include "../components/Component.h"
@@ -8,11 +10,10 @@
 
 namespace PhysicsEngine
 {
-	Asset* loadInternalAsset(unsigned char* data);
-	Entity* loadInternalEntity(unsigned char* data);
-	Component* loadInternalComponent(unsigned char* data);
-	System* loadInternalSystem(unsigned char* data);
-
+	Asset* loadInternalAsset(std::vector<char> data);
+	Entity* loadInternalEntity(std::vector<char> data);
+	Component* loadInternalComponent(std::vector<char> data);
+	System* loadInternalSystem(std::vector<char> data);
 }
 
 #endif

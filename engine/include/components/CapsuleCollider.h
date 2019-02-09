@@ -1,6 +1,8 @@
 #ifndef __CAPSULECOLLIDER_H__
 #define __CAPSULECOLLIDER_H__
 
+#include <vector>
+
 #include "Collider.h"
 
 #include "../core/Capsule.h"
@@ -27,7 +29,7 @@ namespace PhysicsEngine
 
 		public:
 			CapsuleCollider();
-			CapsuleCollider(unsigned char* data);
+			CapsuleCollider(std::vector<char> data);
 			~CapsuleCollider();
 
 			void* operator new(size_t size);

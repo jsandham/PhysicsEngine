@@ -1,6 +1,8 @@
 #ifndef __RIGIDBODY_H__
 #define __RIGIDBODY_H__
 
+#include <vector>
+
 #include "Component.h"
 
 #define GLM_FORCE_RADIANS
@@ -46,7 +48,7 @@ namespace PhysicsEngine
 
 		public:
 			Rigidbody();
-			Rigidbody(unsigned char* data);
+			Rigidbody(std::vector<char> data);
 			~Rigidbody();
 
 			void* operator new(size_t size);

@@ -37,7 +37,7 @@ Camera::Camera()
 	backgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
 }
 
-Camera::Camera(unsigned char* data)
+Camera::Camera(std::vector<char> data)
 {
 	
 }

@@ -64,7 +64,7 @@ namespace PhysicsEngine
 
 		public:
 			RenderSystem();
-			RenderSystem(unsigned char* data);
+			RenderSystem(std::vector<char> data);
 			~RenderSystem();
 
 			void init();

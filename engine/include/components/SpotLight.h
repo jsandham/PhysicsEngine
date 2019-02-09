@@ -1,6 +1,8 @@
 #ifndef __SPOTLIGHT_H__
 #define __SPOTLIGHT_H__
 
+#include <vector>
+
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
@@ -46,7 +48,7 @@ namespace PhysicsEngine
 
 		public:
 			SpotLight();
-			SpotLight(unsigned char* data);
+			SpotLight(std::vector<char> data);
 			~SpotLight();
 
 			void* operator new(size_t size);

@@ -38,8 +38,9 @@
 
 #include <json/json.hpp>
 
-
+#include "../../sample_project/Demo/Demo/include/Load.h"
 #include "../../sample_project/Demo/Demo/include/LogicSystem.h"
+#include "../../sample_project/Demo/Demo/include/PlayerSystem.h"
 
 using namespace json;
 using namespace PhysicsEngine;
@@ -334,6 +335,16 @@ int serializeScenes(std::string projectDirectory)
 
 			data.entityId = Guid(it->first);
 
+			int type = 0;
+			char classification = 'e';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(EntityData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 			fwrite(&data, sizeof(EntityData), 1, file);
 		}
 
@@ -357,6 +368,17 @@ int serializeScenes(std::string projectDirectory)
 			data.scale.x = (float)it->second["scale"][0].ToFloat();
 			data.scale.y = (float)it->second["scale"][1].ToFloat();
 			data.scale.z = (float)it->second["scale"][2].ToFloat();
+
+			int type = 0;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(TransformData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 
 			fwrite(&data, sizeof(TransformData), 1, file);
 		}
@@ -389,6 +411,17 @@ int serializeScenes(std::string projectDirectory)
 			data.inertiaTensor = glm::mat3(1.0f);
 			data.halfVelocity = glm::vec3(0.0f, 0.0f,0.0f);
 
+			int type = 1;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(RigidbodyData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(RigidbodyData), 1, file);
 		}
 
@@ -409,6 +442,17 @@ int serializeScenes(std::string projectDirectory)
 			data.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
 			data.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
 
+			int type = 2;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(CameraData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(CameraData), 1, file);
 		}
 
@@ -423,7 +467,16 @@ int serializeScenes(std::string projectDirectory)
 			data.meshId = Guid(it->second["mesh"].ToString());
 			data.materialId = Guid(it->second["material"].ToString());
 
-			//std::cout << "mesh renderer entity id: " << data.entityId.toString() << "mesh renderer component id: " << data.componentId.toString() << " mesh renderer mesh id: " << data.meshId.toString() << std::endl;
+			int type = 3;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(MeshRendererData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 
 			fwrite(&data, sizeof(MeshRendererData), 1, file);
 		}
@@ -454,6 +507,17 @@ int serializeScenes(std::string projectDirectory)
 
 			//std::cout << "line renderer entity id: " << data.entityId.toString() << "line renderer component id: " << data.componentId.toString() << std::endl;
 
+			int type = 4;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(LineRendererData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(LineRendererData), 1, file);
 		}
 
@@ -482,6 +546,17 @@ int serializeScenes(std::string projectDirectory)
 			data.specular.x = (float)it->second["specular"][0].ToFloat();
 			data.specular.y = (float)it->second["specular"][1].ToFloat();
 			data.specular.z = (float)it->second["specular"][2].ToFloat();
+
+			int type = 5;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(DirectionalLightData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 
 			fwrite(&data, sizeof(DirectionalLightData), 1, file);
 		}
@@ -522,6 +597,17 @@ int serializeScenes(std::string projectDirectory)
 
 			data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
 
+			int type = 6;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(SpotLightData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(SpotLightData), 1, file);
 		}
 
@@ -555,6 +641,17 @@ int serializeScenes(std::string projectDirectory)
 
 			data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
 
+			int type = 7;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(PointLightData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(PointLightData), 1, file);
 		}
 
@@ -574,6 +671,17 @@ int serializeScenes(std::string projectDirectory)
 			data.bounds.size.y = (float)it->second["size"][1].ToFloat();
 			data.bounds.size.z = (float)it->second["size"][2].ToFloat();
 
+			int type = 8;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(BoxColliderData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(BoxColliderData), 1, file);
 		}
 
@@ -590,6 +698,17 @@ int serializeScenes(std::string projectDirectory)
 			data.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
 
 			data.sphere.radius = (float)it->second["radius"].ToFloat();
+
+			int type = 9;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(SphereColliderData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 
 			fwrite(&data, sizeof(SphereColliderData), 1, file);
 		}
@@ -609,56 +728,52 @@ int serializeScenes(std::string projectDirectory)
 			data.capsule.radius = (float)it->second["radius"].ToFloat();
 			data.capsule.height = (float)it->second["height"].ToFloat();
 
+			int type = 10;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(CapsuleColliderData);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
 			fwrite(&data, sizeof(CapsuleColliderData), 1, file);
 		}
 
 		// serialize systems;
 		objects = systems.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			size_t systemDataSize;
-			int systemType;
+			size_t totalSize;
+			int type;
+			char classification = 's';
 
 			if(it->second["type"].ToString() == "RenderSystem"){
-				systemType = 0;
-				systemDataSize = sizeof(int);
-				fwrite(&systemDataSize, sizeof(size_t), 1, file);
-				fwrite(&systemType, systemDataSize, 1, file);
-				
-				// serialize any other system data here...
+				type = 0;
 			}
 			else if(it->second["type"].ToString() == "PhysicsSystem"){
-				systemType = 1;
-				systemDataSize = sizeof(int);
-				fwrite(&systemDataSize, sizeof(size_t), 1, file);
-				fwrite(&systemType, systemDataSize, 1, file);
-
-				// serialize any other system data here...
-
+				type = 1;
+			}
+			else if(it->second["type"].ToString() == "CleanUpSystem"){
+				type = 2;
 			}
 			else if(it->second["type"].ToString() == "DebugSystem"){
-				systemType = 3;
-				systemDataSize = sizeof(int);
-				fwrite(&systemDataSize, sizeof(size_t), 1, file);
-				fwrite(&systemType, systemDataSize, 1, file);
-				
-				// serialize any other system data here...
+				type = 3;
 			}
 			else if(it->second["type"].ToString() == "LogicSystem"){
-				systemType = 10;
-				systemDataSize = sizeof(int);
-				fwrite(&systemDataSize, sizeof(size_t), 1, file);
-				fwrite(&systemType, systemDataSize, 1, file);
-				
-				// serialize any other system data here...
+				type = 10;
 			}
 			else if(it->second["type"].ToString() == "PlayerSystem"){
-				systemType = 11;
-				systemDataSize = sizeof(int);
-				fwrite(&systemDataSize, sizeof(size_t), 1, file);
-				fwrite(&systemType, systemDataSize, 1, file);
-				
-				// serialize any other system data here...
+				type = 11;
 			}
+
+			totalSize = sizeof(int);
+			totalSize += sizeof(char);
+
+			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 		}
 
 		// close file
@@ -801,7 +916,7 @@ int serializeAssets(std::string projectDirectory)
 		return 0;
 	}
 
-	size_t size = fwrite(&bundle, sizeof(AssetBundleHeader), 1, file);
+	fwrite(&bundle, sizeof(AssetBundleHeader), 1, file);
 
 	// write shaders out to bundle
 	for(size_t i = 0; i < shaderFilePaths.size(); i++){
@@ -824,10 +939,20 @@ int serializeAssets(std::string projectDirectory)
 			header.geometryShaderSize = shader.geometryShader.length();
 			header.fragmentShaderSize = shader.fragmentShader.length();
 
-			size = fwrite(&header, sizeof(ShaderHeader), 1, file);
-			size += fwrite(shader.vertexShader.c_str(), shader.vertexShader.length() * sizeof(char), 1, file);
-			size += fwrite(shader.geometryShader.c_str(), shader.geometryShader.length() * sizeof(char), 1, file);
-			size += fwrite(shader.fragmentShader.c_str(), shader.fragmentShader.length() * sizeof(char), 1, file);
+			int type = 0;
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(ShaderHeader);
+			totalSize += shader.vertexShader.length() * sizeof(char);
+			totalSize += shader.geometryShader.length() * sizeof(char);
+			totalSize += shader.fragmentShader.length() * sizeof(char);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&header, sizeof(ShaderHeader), 1, file);
+			fwrite(shader.vertexShader.c_str(), shader.vertexShader.length() * sizeof(char), 1, file);
+			fwrite(shader.geometryShader.c_str(), shader.geometryShader.length() * sizeof(char), 1, file);
+			fwrite(shader.fragmentShader.c_str(), shader.fragmentShader.length() * sizeof(char), 1, file);
 		}	
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
@@ -863,10 +988,18 @@ int serializeAssets(std::string projectDirectory)
 			header.format = texture.getFormat();
 			header.textureSize = data.size();
 
+			int type = 1;
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(Texture2DHeader);
+			totalSize += data.size() * sizeof(unsigned char);
+
 			std::cout << "data size: " << data.size() << " format: " << texture.getFormat() << std::endl;
 	
-			size = fwrite(&header, sizeof(Texture2DHeader), 1, file);
-			size = fwrite(&(data[0]), data.size() * sizeof(unsigned char), 1, file);
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&header, sizeof(Texture2DHeader), 1, file);
+			fwrite(&(data[0]), data.size() * sizeof(unsigned char), 1, file);
 		}	
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
@@ -901,11 +1034,18 @@ int serializeAssets(std::string projectDirectory)
 		header.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
 		header.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
 
-		size = fwrite(&header, sizeof(MaterialHeader), 1, file);
+		int type = 4;
+
+		size_t totalSize = sizeof(int);
+		totalSize += sizeof(MaterialHeader);
+
+		fwrite(&totalSize, sizeof(size_t), 1, file);
+		fwrite(&type, sizeof(int), 1, file);
+		fwrite(&header, sizeof(MaterialHeader), 1, file);
 	}
 
 	// write meshes out to bundle
-	for(unsigned int i = 0 ; i < meshFilePaths.size(); i++){
+	for(size_t i = 0 ; i < meshFilePaths.size(); i++){
 		// open json file and load to json object
 		std::ifstream in(meshFilePaths[i], std::ios::in | std::ios::binary);
 		std::ostringstream contents;
@@ -929,14 +1069,24 @@ int serializeAssets(std::string projectDirectory)
 			header.normalsSize = (unsigned int)mesh.normals.size();
 			header.texCoordsSize = (unsigned int)mesh.texCoords.size();
 
+			int type = 5;
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(MeshHeader);
+			totalSize += mesh.vertices.size()*sizeof(float);
+			totalSize += mesh.normals.size()*sizeof(float);
+			totalSize += mesh.texCoords.size()*sizeof(float);
+
 			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << std::endl;
 
 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
 
-			size = fwrite(&header, sizeof(MeshHeader), 1, file);
-			size += fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
-			size += fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
-			size += fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&header, sizeof(MeshHeader), 1, file);
+			fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
+			fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
+			fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
 		}
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
@@ -945,54 +1095,54 @@ int serializeAssets(std::string projectDirectory)
 	}
 
 	// write gmeshes out to bundle
-	for(unsigned int i = 0 ; i < gmeshFilePaths.size(); i++){
-		// open json file and load to json object
-		std::ifstream in(gmeshFilePaths[i], std::ios::in | std::ios::binary);
-		std::ostringstream contents;
-		contents << in.rdbuf();
-		in.close();
+	// for(unsigned int i = 0 ; i < gmeshFilePaths.size(); i++){
+	// 	// open json file and load to json object
+	// 	std::ifstream in(gmeshFilePaths[i], std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents;
+	// 	contents << in.rdbuf();
+	// 	in.close();
 
-		json::JSON jsonGMesh = JSON::Load(contents.str());
+	// 	json::JSON jsonGMesh = JSON::Load(contents.str());
 
-		GMesh gmesh;
+	// 	GMesh gmesh;
 
-		std::string filePath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".msh";
+	// 	std::string filePath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".msh";
 
-		if(AssetLoader::load(filePath, gmesh)){
+	// 	if(AssetLoader::load(filePath, gmesh)){
 			
-			// create gmesh header
-			GMeshHeader header = {};
-			header.gmeshId = Guid(jsonGMesh["id"].ToString());
-			header.dim = gmesh.dim;
-			header.ng = gmesh.ng;
-		    header.n = gmesh.n;
-		    header.nte = gmesh.nte;
-		    header.ne = gmesh.ne;
-		    header.ne_b = gmesh.ne_b;
-		    header.npe = gmesh.npe;
-		    header.npe_b = gmesh.npe_b;
-		    header.type = gmesh.type;
-		    header.type_b = gmesh.type_b;
-			header.verticesSize = gmesh.vertices.size();
-			header.connectSize = gmesh.connect.size();
-			header.bconnectSize = gmesh.bconnect.size();
-			header.groupsSize = gmesh.groups.size();
+	// 		// create gmesh header
+	// 		GMeshHeader header = {};
+	// 		header.gmeshId = Guid(jsonGMesh["id"].ToString());
+	// 		header.dim = gmesh.dim;
+	// 		header.ng = gmesh.ng;
+	// 	    header.n = gmesh.n;
+	// 	    header.nte = gmesh.nte;
+	// 	    header.ne = gmesh.ne;
+	// 	    header.ne_b = gmesh.ne_b;
+	// 	    header.npe = gmesh.npe;
+	// 	    header.npe_b = gmesh.npe_b;
+	// 	    header.type = gmesh.type;
+	// 	    header.type_b = gmesh.type_b;
+	// 		header.verticesSize = gmesh.vertices.size();
+	// 		header.connectSize = gmesh.connect.size();
+	// 		header.bconnectSize = gmesh.bconnect.size();
+	// 		header.groupsSize = gmesh.groups.size();
 
-			std::cout << "vertices size: " << gmesh.vertices.size() << " connect size: " << gmesh.connect.size() << " bconnect size: " << gmesh.bconnect.size() << " groups size: " << gmesh.groups.size() << std::endl;
+	// 		std::cout << "vertices size: " << gmesh.vertices.size() << " connect size: " << gmesh.connect.size() << " bconnect size: " << gmesh.bconnect.size() << " groups size: " << gmesh.groups.size() << std::endl;
 
-			std::string outputPath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".gmesh";
+	// 		std::string outputPath = gmeshFilePaths[i].substr(0, gmeshFilePaths[i].find_last_of(".")) + ".gmesh";
 
-			size = fwrite(&header, sizeof(GMeshHeader), 1, file);
-			size += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
-			size += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
-			size += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
-			size += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
-		}
-		else{
-			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
-			return 0;
-		}
-	}
+	// 		size = fwrite(&header, sizeof(GMeshHeader), 1, file);
+	// 		size += fwrite(&gmesh.vertices[0], gmesh.vertices.size()*sizeof(float), 1, file);
+	// 		size += fwrite(&gmesh.connect[0], gmesh.connect.size()*sizeof(float), 1, file);
+	// 		size += fwrite(&gmesh.bconnect[0], gmesh.bconnect.size()*sizeof(float), 1, file);
+	// 		size += fwrite(&gmesh.groups[0], gmesh.groups.size()*sizeof(float), 1, file);
+	// 	}
+	// 	else{
+	// 		std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+	// 		return 0;
+	// 	}
+	// }
 
 	std::cout << "Asset bundle successfully created" << std::endl;
 

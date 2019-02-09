@@ -18,7 +18,7 @@ Material::Material()
 	color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
-Material::Material(unsigned char* data)
+Material::Material(std::vector<char> data)
 {
 	
 }

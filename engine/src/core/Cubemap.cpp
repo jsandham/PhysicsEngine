@@ -12,7 +12,7 @@ Cubemap::Cubemap()
 	this->dimension = TextureDimension::Cube;
 }
 
-Cubemap::Cubemap(unsigned char* data)
+Cubemap::Cubemap(std::vector<char> data)
 {
 	
 }

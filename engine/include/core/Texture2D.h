@@ -51,7 +51,7 @@ namespace PhysicsEngine
 
 		public:
 			Texture2D();
-			Texture2D(unsigned char* data);
+			Texture2D(std::vector<char> data);
 			Texture2D(int width, int height);
 			Texture2D(int width, int height, TextureFormat format);
 			~Texture2D();

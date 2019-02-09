@@ -1,6 +1,8 @@
 #ifndef __DEBUGSYSTEM_H__
 #define __DEBUGSYSTEM_H__
 
+#include <vector>
+
 #include "System.h"
 
 #include "../core/Input.h"
@@ -17,7 +19,7 @@ namespace PhysicsEngine
 
 		public:
 			DebugSystem();
-			DebugSystem(unsigned char* data);
+			DebugSystem(std::vector<char> data);
 			~DebugSystem();
 
 			void init();

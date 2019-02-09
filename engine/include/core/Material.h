@@ -57,7 +57,7 @@ namespace PhysicsEngine
 
 		public:
 			Material();
-			Material(unsigned char* data);
+			Material(std::vector<char> data);
 			~Material();
 
 			void* operator new(size_t size);

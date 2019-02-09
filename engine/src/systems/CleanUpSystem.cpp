@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-CleanUpSystem::CleanUpSystem(unsigned char* data)
+CleanUpSystem::CleanUpSystem(std::vector<char> data)
 {
 	type = 2;
 }

@@ -1,6 +1,8 @@
 #ifndef __DIRECTIONALLIGHT_H__
 #define __DIRECTIONALLIGHT_H__
 
+#include <vector>
+
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
@@ -31,7 +33,7 @@ namespace PhysicsEngine
 
 		public:
 			DirectionalLight();
-			DirectionalLight(unsigned char* data);
+			DirectionalLight(std::vector<char> data);
 			~DirectionalLight();
 
 			void* operator new(size_t size);

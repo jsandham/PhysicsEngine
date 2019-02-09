@@ -8,7 +8,7 @@ GMesh::GMesh()
 
 }
 
-GMesh::GMesh(unsigned char* data)
+GMesh::GMesh(std::vector<char> data)
 {
 
 }

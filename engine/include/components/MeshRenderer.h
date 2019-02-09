@@ -1,8 +1,9 @@
 #ifndef __MESHRENDERER_H__
 #define __MESHRENDERER_H__
 
+#include <vector>
+
 #include "Component.h"
-#include "../core/Guid.h"
 
 namespace PhysicsEngine
 {
@@ -24,7 +25,7 @@ namespace PhysicsEngine
 
 		public:
 			MeshRenderer();
-			MeshRenderer(unsigned char* data);
+			MeshRenderer(std::vector<char> data);
 			~MeshRenderer();
 
 			void* operator new(size_t size);

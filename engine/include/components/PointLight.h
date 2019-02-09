@@ -1,6 +1,8 @@
 #ifndef __POINTLIGHT_H__
 #define __POINTLIGHT_H__
 
+#include <vector>
+
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
@@ -40,7 +42,7 @@ namespace PhysicsEngine
 
 		public:
 			PointLight();
-			PointLight(unsigned char* data);
+			PointLight(std::vector<char> data);
 			~PointLight();
 
 			void* operator new(size_t size);

@@ -10,7 +10,7 @@ BoxCollider::BoxCollider()
 
 }
 
-BoxCollider::BoxCollider(unsigned char* data)
+BoxCollider::BoxCollider(std::vector<char> data)
 {
 
 }

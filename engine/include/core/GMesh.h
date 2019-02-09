@@ -50,7 +50,7 @@ namespace PhysicsEngine
 
 		public:
 			GMesh();
-			GMesh(unsigned char* data);
+			GMesh(std::vector<char> data);
 			~GMesh();
 
 			void* operator new(size_t size);

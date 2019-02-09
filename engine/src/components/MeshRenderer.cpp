@@ -10,7 +10,7 @@ MeshRenderer::MeshRenderer()
 	materialId = Guid::INVALID;
 }
 
-MeshRenderer::MeshRenderer(unsigned char* data)
+MeshRenderer::MeshRenderer(std::vector<char> data)
 {
 	
 }

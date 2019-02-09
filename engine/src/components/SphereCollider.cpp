@@ -10,7 +10,7 @@ SphereCollider::SphereCollider()
 
 }
 
-SphereCollider::SphereCollider(unsigned char* data)
+SphereCollider::SphereCollider(std::vector<char> data)
 {
 
 }

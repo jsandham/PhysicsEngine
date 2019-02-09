@@ -1,8 +1,9 @@
 #ifndef __LINERENDERER_H__
 #define __LINERENDERER_H__
 
+#include <vector>
+
 #include "Component.h"
-#include "../core/Guid.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -33,7 +34,7 @@ namespace PhysicsEngine
 
 		public:
 			LineRenderer();
-			LineRenderer(unsigned char* data);
+			LineRenderer(std::vector<char> data);
 			~LineRenderer();
 
 			void* operator new(size_t size);

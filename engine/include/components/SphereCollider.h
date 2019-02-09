@@ -1,6 +1,8 @@
 #ifndef __SPHERECOLLIDER_H__
 #define __SPHERECOLLIDER_H__
 
+#include <vector>
+
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS
@@ -27,7 +29,7 @@ namespace PhysicsEngine
 
 		public:
 			SphereCollider();
-			SphereCollider(unsigned char* data);
+			SphereCollider(std::vector<char> data);
 			~SphereCollider();
 
 			void* operator new(size_t size);

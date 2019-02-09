@@ -10,7 +10,7 @@ Mesh::Mesh()
 
 }
 
-Mesh::Mesh(unsigned char* data)
+Mesh::Mesh(std::vector<char> data)
 {
 
 }

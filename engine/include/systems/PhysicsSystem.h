@@ -1,6 +1,8 @@
 #ifndef __PHYSICSSYSTEM_H__
 #define __PHYSICSSYSTEM_H__
 
+#include <vector>
+
 #include <GL/glew.h>
 #include <gl/gl.h>
 
@@ -32,7 +34,7 @@ namespace PhysicsEngine
 
 		public:
 			PhysicsSystem();
-			PhysicsSystem(unsigned char* data);
+			PhysicsSystem(std::vector<char> data);
 			~PhysicsSystem();
 
 			void init();

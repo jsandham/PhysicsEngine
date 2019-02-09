@@ -34,7 +34,7 @@ namespace PhysicsEngine
 
 		public:
 			Mesh();
-			Mesh(unsigned char* data);
+			Mesh(std::vector<char> data);
 			~Mesh();
 
 			void* operator new(size_t size);

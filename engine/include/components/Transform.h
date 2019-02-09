@@ -1,6 +1,8 @@
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 
+#include <vector>
+
 #include "Component.h"
 
 #define GLM_FORCE_RADIANS
@@ -32,7 +34,7 @@ namespace PhysicsEngine
 
 		public:
 			Transform();
-			Transform(unsigned char* data);
+			Transform(std::vector<char> data);
 			~Transform();
 
 			void* operator new(size_t size);

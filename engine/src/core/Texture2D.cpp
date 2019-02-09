@@ -18,7 +18,7 @@ Texture2D::Texture2D()
 	this->numChannels = calcNumChannels(format);
 }
 
-Texture2D::Texture2D(unsigned char* data)
+Texture2D::Texture2D(std::vector<char> data)
 {
 	
 }

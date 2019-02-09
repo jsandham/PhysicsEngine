@@ -20,7 +20,7 @@ DebugSystem::DebugSystem()
 	type = 3;
 }
 
-DebugSystem::DebugSystem(unsigned char* data)
+DebugSystem::DebugSystem(std::vector<char> data)
 {
 	type = 3;
 }

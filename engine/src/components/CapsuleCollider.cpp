@@ -10,7 +10,7 @@ CapsuleCollider::CapsuleCollider()
 	
 }
 
-CapsuleCollider::CapsuleCollider(unsigned char* data)
+CapsuleCollider::CapsuleCollider(std::vector<char> data)
 {
 	
 }

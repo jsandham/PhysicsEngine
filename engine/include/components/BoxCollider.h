@@ -1,6 +1,8 @@
 #ifndef __BOXCOLLIDER_H__
 #define __BOXCOLLIDER_H__
 
+#include <vector>
+
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS
@@ -25,7 +27,7 @@ namespace PhysicsEngine
 
 		public:
 			BoxCollider();
-			BoxCollider(unsigned char* data);
+			BoxCollider(std::vector<char> data);
 			~BoxCollider();
 
 			void* operator new(size_t size);
