@@ -14,7 +14,25 @@ Cubemap::Cubemap()
 
 Cubemap::Cubemap(std::vector<char> data)
 {
+	size_t index = sizeof(int);
+	CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[index]);
+
+	assetId = header->textureId;
+	width = header->width;
+	numChannels = header->numChannels;
+	dimension = static_cast<TextureDimension>(header->dimension);
+	format = static_cast<TextureFormat>(header->format);
 	
+	index += sizeof(CubemapHeader);
+
+	rawTextureData.resize(header->textureSize);
+	for(size_t i = 0; i < header->textureSize; i++){
+		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[index + sizeof(unsigned char) * i]);
+	}
+
+	index += rawTextureData.size() * sizeof(unsigned char);
+
+	std::cout << "Cubemap index: " << index << " data size: " << data.size() << std::endl;
 }
 
 Cubemap::Cubemap(int width)

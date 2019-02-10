@@ -20,7 +20,26 @@ Texture2D::Texture2D()
 
 Texture2D::Texture2D(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	Texture2DHeader* header = reinterpret_cast<Texture2DHeader*>(&data[index]);
+
+	assetId = header->textureId;
+	width = header->width;
+	height = header->height;
+	numChannels = header->numChannels;
+	dimension = static_cast<TextureDimension>(header->dimension);
+	format = static_cast<TextureFormat>(header->format);
+
+	index += sizeof(Texture2DHeader);
+
+	rawTextureData.resize(header->textureSize);
+	for(size_t i = 0; i < header->textureSize; i++){
+		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[index + sizeof(unsigned char) * i]);
+	}
+
+	index += rawTextureData.size() * sizeof(unsigned char);
+
+	std::cout << "Texture2D index: " << index << " data size: " << data.size() << std::endl;
 }
 
 Texture2D::Texture2D(int width, int height)

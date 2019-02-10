@@ -12,7 +12,13 @@ CapsuleCollider::CapsuleCollider()
 
 CapsuleCollider::CapsuleCollider(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	capsule = header->capsule;
 }
 
 CapsuleCollider::~CapsuleCollider()
@@ -28,14 +34,6 @@ void* CapsuleCollider::operator new(size_t size)
 void CapsuleCollider::operator delete(void*)
 {
 
-}
-
-void CapsuleCollider::load(CapsuleColliderData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	capsule = data.capsule;
 }
 
 bool CapsuleCollider::intersect(Bounds bounds)

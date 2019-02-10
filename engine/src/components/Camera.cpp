@@ -39,7 +39,14 @@ Camera::Camera()
 
 Camera::Camera(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	position = header->position;
+	backgroundColor = header->backgroundColor;
 }
 
 Camera::~Camera()
@@ -55,15 +62,6 @@ void* Camera::operator new(size_t size)
 void Camera::operator delete(void*)
 {
 
-}
-
-void Camera::load(CameraData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	position = data.position;
-	backgroundColor = data.backgroundColor;
 }
 
 glm::vec3& Camera::getPosition() 

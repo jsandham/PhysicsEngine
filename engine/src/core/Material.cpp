@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
@@ -20,7 +22,24 @@ Material::Material()
 
 Material::Material(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[index]);
+
+	assetId = header->assetId;
+	shaderId = header->shaderId;
+	textureId = header->textureId;
+	normalMapId = header->normalMapId;
+	specularMapId = header->specularMapId;
+
+	shininess = header->shininess;
+	ambient = header->ambient;
+	diffuse = header->diffuse;
+	specular = header->specular;
+	color = header->color;
+
+	index += sizeof(MaterialHeader);
+
+	std::cout << "material index: " << index << " data size: " << data.size() << std::endl;
 }
 
 Material::~Material()

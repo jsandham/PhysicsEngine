@@ -7,15 +7,15 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct MeshRendererData
+#pragma pack(push, 1)
+	struct MeshRendererHeader
 	{
 		Guid componentId;
 		Guid entityId;
 		Guid meshId;
 		Guid materialId;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class MeshRenderer : public Component
 	{
@@ -30,8 +30,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(MeshRendererData data);
 	};
 }
 

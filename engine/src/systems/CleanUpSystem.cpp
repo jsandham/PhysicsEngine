@@ -1,5 +1,6 @@
 #include "../../include/systems/CleanUpSystem.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
@@ -10,6 +11,16 @@ CleanUpSystem::CleanUpSystem(std::vector<char> data)
 }
 
 CleanUpSystem::~CleanUpSystem()
+{
+
+}
+
+void* CleanUpSystem::operator new(size_t size)
+{
+	return getAllocator<CleanUpSystem>().allocate();
+}
+
+void CleanUpSystem::operator delete(void*)
 {
 
 }

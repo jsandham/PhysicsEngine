@@ -11,8 +11,8 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct RigidbodyData
+#pragma pack(push, 1)
+	struct RigidbodyHeader
 	{
 		Guid componentId;
 		Guid entityId;
@@ -28,7 +28,7 @@ namespace PhysicsEngine
 		
 		glm::vec3 halfVelocity;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class Rigidbody : public Component
 	{
@@ -53,8 +53,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(RigidbodyData data);
 	};
 }
 

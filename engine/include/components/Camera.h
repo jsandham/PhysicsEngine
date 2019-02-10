@@ -15,15 +15,15 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct CameraData
+#pragma pack(push, 1)
+	struct CameraHeader
 	{
 		Guid componentId;
 		Guid entityId;
 		glm::vec3 position;
 		glm::vec4 backgroundColor;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class Camera : public Component
 	{
@@ -58,8 +58,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(CameraData data);
 
 			glm::vec3& getPosition();
 			glm::vec3& getFront();

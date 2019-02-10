@@ -191,16 +191,18 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = loadInternalAsset(data);
+			asset = loadInternalAsset(data, &index);
 		}
 		else{
-			asset = loadAsset(data);
+			asset = loadAsset(data, &index);
 		}
 
 		if(asset == NULL || index == -1){
 			std::cout << "Error: Could not load asset" << std::endl;
 			return false;
 		}
+
+		std::cout << "index: " << index << " asset id: " << asset->assetId.toString() << std::endl;
 
 		std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(asset->assetId);
 		if(it == assetIdToGlobalIndex.end()){
@@ -227,17 +229,16 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 	while( sceneFile.peek() != EOF )
 	{
-		char classification;
 	    size_t size;
-		sceneFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
 		sceneFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 
 		std::vector<char> data(size);
 		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
 		int type = *reinterpret_cast<int*>(&data[0]);
+		char classification = *reinterpret_cast<char*>(&data[sizeof(int)]);
 
-		std::cout << "classification: " << classification << " type: " << type << " size: " << size <<  std::endl;
+		std::cout << "classification: " << classification << " type: " << type << " size: " << size << std::endl;
 
 		if(type <= -1){
 			std::cout << "Error: Type cannot be less than 0 when reading scene file" << std::endl;
@@ -253,7 +254,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		if(classification == 'e'){
 			Entity* entity = NULL;
 			if(type < 20){
-				entity = loadInternalEntity(data);
+				entity = loadInternalEntity(data, &index);
 			}
 
 			if(entity == NULL || index == -1){
@@ -273,10 +274,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		else if(classification == 'c'){
 			Component* component = NULL;
 			if(type < 20){
-				component = loadInternalComponent(data);
+				component = loadInternalComponent(data, &index);
 			}
 			else{
-				component = loadComponent(data);
+				component = loadComponent(data, &index);
 			}
 
 			if(component == NULL || index == -1){
@@ -296,10 +297,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		else if(classification == 's'){
 			System* system = NULL;
 			if(type < 20){
-				system = loadInternalSystem(data);
+				system = loadInternalSystem(data, &index);
 			}
 			else{
-				system = loadSystem(data);
+				system = loadSystem(data, &index);
 			}
 
 			if(system == NULL || index == -1){

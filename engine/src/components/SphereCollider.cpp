@@ -12,7 +12,13 @@ SphereCollider::SphereCollider()
 
 SphereCollider::SphereCollider(std::vector<char> data)
 {
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[index]);
 
+	componentId = header->componentId;
+	entityId = header->entityId;
+	sphere = header->sphere;
 }
 
 SphereCollider::~SphereCollider()
@@ -28,14 +34,6 @@ void* SphereCollider::operator new(size_t size)
 void SphereCollider::operator delete(void*)
 {
 
-}
-
-void SphereCollider::load(SphereColliderData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	sphere = data.sphere;
 }
 
 bool SphereCollider::intersect(Bounds bounds)

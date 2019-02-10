@@ -12,8 +12,8 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct SpotLightData
+#pragma pack(push, 1)
+	struct SpotLightHeader
 	{
 		Guid componentId;
 		Guid entityId;
@@ -29,7 +29,7 @@ namespace PhysicsEngine
 		glm::vec3 specular;
 		glm::mat4 projection;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class SpotLight : public Component
 	{
@@ -53,8 +53,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(SpotLightData data);
 	};
 }
 

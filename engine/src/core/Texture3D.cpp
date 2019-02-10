@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Texture3D.h"
 #include "../../include/core/Log.h"
@@ -19,7 +21,27 @@ Texture3D::Texture3D()
 
 Texture3D::Texture3D(std::vector<char> data)
 {
+	size_t index = sizeof(int);
+	Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[index]);
+
+	assetId = header->textureId;
+	width = header->width;
+	height = header->height;
+	depth = header->depth;
+	numChannels = header->numChannels;
+	dimension = static_cast<TextureDimension>(header->dimension);
+	format = static_cast<TextureFormat>(header->format);
 	
+	index += sizeof(Texture3DHeader);
+
+	rawTextureData.resize(header->textureSize);
+	for(size_t i = 0; i < header->textureSize; i++){
+		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[index + sizeof(unsigned char) * i]);
+	}
+
+	index += rawTextureData.size() * sizeof(unsigned char);
+
+	std::cout << "Texture3D index: " << index << " data size: " << data.size() << std::endl;
 }
 
 Texture3D::Texture3D(int width, int height, int depth, int numChannels)

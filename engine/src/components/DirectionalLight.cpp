@@ -16,7 +16,16 @@ DirectionalLight::DirectionalLight()
 
 DirectionalLight::DirectionalLight(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	DirectionalLightHeader* header = reinterpret_cast<DirectionalLightHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	direction = header->direction;
+	ambient = header->ambient;
+	diffuse = header->diffuse;
+	specular = header->specular;
 }
 
 DirectionalLight::~DirectionalLight()
@@ -32,15 +41,4 @@ void* DirectionalLight::operator new(size_t size)
 void DirectionalLight::operator delete(void*)
 {
 
-}
-
-void DirectionalLight::load(DirectionalLightData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	direction = data.direction;
-	ambient = data.ambient;
-	diffuse = data.diffuse;
-	specular = data.specular;
 }

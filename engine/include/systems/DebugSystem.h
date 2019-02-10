@@ -22,6 +22,9 @@ namespace PhysicsEngine
 			DebugSystem(std::vector<char> data);
 			~DebugSystem();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void init();
 			void update(Input input);
 	};

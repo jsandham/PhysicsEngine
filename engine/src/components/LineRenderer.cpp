@@ -14,7 +14,15 @@ LineRenderer::LineRenderer()
 
 LineRenderer::LineRenderer(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	LineRendererHeader* header = reinterpret_cast<LineRendererHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	start = header->start;
+	end = header->end;
+	materialId = header->materialId;
 }
 
 LineRenderer::~LineRenderer()
@@ -30,15 +38,4 @@ void* LineRenderer::operator new(size_t size)
 void LineRenderer::operator delete(void*)
 {
 
-}
-
-void LineRenderer::load(LineRendererData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	start = data.start;
-	end = data.end;
-
-	materialId = data.materialId;
 }

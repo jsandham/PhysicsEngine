@@ -1,5 +1,6 @@
 #include "../../include/systems/PhysicsSystem.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/Bounds.h"
@@ -34,6 +35,16 @@ PhysicsSystem::PhysicsSystem(std::vector<char> data)
 PhysicsSystem::~PhysicsSystem()
 {
 	
+}
+
+void* PhysicsSystem::operator new(size_t size)
+{
+	return getAllocator<PhysicsSystem>().allocate();
+}
+
+void PhysicsSystem::operator delete(void*)
+{
+
 }
 
 void PhysicsSystem::init()

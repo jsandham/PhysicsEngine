@@ -22,7 +22,22 @@ Rigidbody::Rigidbody()
 
 Rigidbody::Rigidbody(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	useGravity = header->useGravity;
+	mass = header->mass;
+	drag = header->drag;
+	angularDrag = header->angularDrag;
+	velocity = header->velocity;
+	angularVelocity = header->angularVelocity;
+	centreOfMass = header->centreOfMass;
+	inertiaTensor = header->inertiaTensor;
+
+	halfVelocity = header->halfVelocity;
 }
 
 Rigidbody::~Rigidbody()
@@ -38,22 +53,4 @@ void* Rigidbody::operator new(size_t size)
 void Rigidbody::operator delete(void*)
 {
 
-}
-
-void Rigidbody::load(RigidbodyData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	useGravity = data.useGravity;
-	mass = data.mass;
-	drag = data.drag;
-	angularDrag = data.angularDrag;
-
-	velocity = data.velocity;
-	centreOfMass = data.centreOfMass;
-	angularVelocity = data.angularVelocity;
-	inertiaTensor = data.inertiaTensor;
-
-	halfVelocity = data.halfVelocity;
 }

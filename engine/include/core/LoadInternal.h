@@ -10,10 +10,10 @@
 
 namespace PhysicsEngine
 {
-	Asset* loadInternalAsset(std::vector<char> data);
-	Entity* loadInternalEntity(std::vector<char> data);
-	Component* loadInternalComponent(std::vector<char> data);
-	System* loadInternalSystem(std::vector<char> data);
+	Asset* loadInternalAsset(std::vector<char> data, int* index);
+	Entity* loadInternalEntity(std::vector<char> data, int* index);
+	Component* loadInternalComponent(std::vector<char> data, int* index);
+	System* loadInternalSystem(std::vector<char> data, int* index);
 }
 
 #endif

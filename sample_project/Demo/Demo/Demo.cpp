@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #pragma warning(disable:4996)
 #define _CRTDBG_MAP_ALLOC  
 

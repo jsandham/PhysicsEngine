@@ -12,6 +12,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <core/Load.h>
 #include <core/AssetLoader.h>
 #include <core/Material.h>
 #include <core/Shader.h>
@@ -38,7 +39,6 @@
 
 #include <json/json.hpp>
 
-#include "../../sample_project/Demo/Demo/include/Load.h"
 #include "../../sample_project/Demo/Demo/include/LogicSystem.h"
 #include "../../sample_project/Demo/Demo/include/PlayerSystem.h"
 
@@ -48,89 +48,35 @@ using namespace PhysicsEngine;
 
 int serializeScenes(std::string projectDirectory);
 int serializeAssets(std::string projectDirectory);
-int serializeMaterials(std::vector<std::string> materialFilePaths);
-int serializeMeshes(std::vector<std::string> meshFilePaths);
-int serializeGMeshes(std::vector<std::string> gmeshFilePaths);
 
-std::vector<std::string> get_all_files_names_within_folder(std::string folder);
+std::vector<std::string> get_all_files_names_within_folder(std::string folder)
+{
+    std::vector<std::string> names;
+    std::string search_path = folder + "/*.*";
+    WIN32_FIND_DATA fd; 
+    HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd); 
+    if(hFind != INVALID_HANDLE_VALUE) { 
+        do { 
+            // read all (real) files in current folder
+            // , delete '!' read other 2 default folder . and ..
+            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+                names.push_back(fd.cFileName);
+            }
+        }while(::FindNextFile(hFind, &fd)); 
+        ::FindClose(hFind); 
+    } 
+    return names;
+}
 
 int main(int argc, char* argv[])
 {
 	// relative path from editor to project directory
 	std::string projectDirectory = "../../sample_project/Demo/Demo/";
 
-	// if(!serializeScene(projectDirectory + "data/scenes/drawcall.json")){ std::cout << "Failed to serialize scene: drawcall.json" << std::endl; }
-	// if(!serializeScene(projectDirectory + "data/scenes/simple.json")){ std::cout << "Failed to serialize scene: simple.json" << std::endl; }
-	// if(!serializeScene(projectDirectory + "data/scenes/pointlight.json")){ std::cout << "Failed to serialize scene: pointlight.json" << std::endl; }
-	// if(!serializeScene(projectDirectory + "data/scenes/empty.json")){ std::cout << "Failed to serialize scene: empty.json" << std::endl; }
-	// if(!serializeScene(projectDirectory + "data/scenes/sphere.json")){ std::cout << "Failed to serialize scene: sphere.json" << std::endl; }
-
 	if(!serializeScenes(projectDirectory)){ std::cout << "Failed to serialize scenes" << std::endl; }
 	if(!serializeAssets(projectDirectory)){ std::cout << "Failed to serialize assets" << std::endl; }
 
-	// // material files
-	// std::vector<std::string> materialFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/materials");
-	// std::vector<std::string> materialFilePaths;
-	// for(unsigned int i = 0; i < materialFolderFiles.size(); i++){
-	// 	if(materialFolderFiles[i].substr(materialFolderFiles[i].find_last_of(".") + 1) == "json") {
-	// 		materialFilePaths.push_back(projectDirectory + "data/materials/" + materialFolderFiles[i]);
-	// 	}
-	// 	else
-	// 	{
-	// 		std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
-	// 	}
-	// }
-
-	// if(!serializeMaterials(materialFilePaths)){
-	// 	std::cout << "Failed to serialize materials" << std::endl;
-	// }
-
-	// // mesh files
-	// std::vector<std::string> meshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/meshes");
-	// std::vector<std::string> meshFilePaths;
-	// for(unsigned int i = 0; i < meshFolderFiles.size(); i++){
-	// 	if(meshFolderFiles[i].substr(meshFolderFiles[i].find_last_of(".") + 1) == "json") {
-	// 		meshFilePaths.push_back(projectDirectory + "data/meshes/" + meshFolderFiles[i]);
-	// 	}
-	// 	else
-	// 	{
-	// 		std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
-	// 	}
-	// }
-
-	// std::cout << "AAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-
-	// if(!serializeMeshes(meshFilePaths)){
-	// 	std::cout << "Failed to serialize meshes" << std::endl;
-	// }
-
-	// std::cout << "BBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
-
-	// // gmesh files
-	// std::vector<std::string> gmeshFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/gmeshes");
-	// std::vector<std::string> gmeshFilePaths;
-	// for(unsigned int i = 0; i < gmeshFolderFiles.size(); i++){
-	// 	if(gmeshFolderFiles[i].substr(gmeshFolderFiles[i].find_last_of(".") + 1) == "json") {
-	// 		gmeshFilePaths.push_back(projectDirectory + "data/gmeshes/" + gmeshFolderFiles[i]);
-	// 	}
-	// 	else
-	// 	{
-	// 		std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
-	// 	}
-	// }
-
-	// std::cout << "CCCCCCCCCCCCCCCCCCCCC" << std::endl;
-
-	// if(!serializeGMeshes(gmeshFilePaths)){
-	// 	std::cout << "Failed to serialize gmeshes" << std::endl;
-	// }
-
-	// std::cout << "DDDDDDDDDDDDDDDDDDDDD" << std::endl;
-
-	while(true)
-	{
-
-	}
+	while(true){}
 
 	return 0;
 }
@@ -156,8 +102,6 @@ int serializeScenes(std::string projectDirectory)
 		std::string outputPath = sceneFilePaths[i].substr(sceneFilePaths[i].find_last_of("\\/") + 1);
 		outputPath = outputPath.substr(0, outputPath.find_last_of(".")) + ".scene";
 		std::cout << "output path: " << outputPath << std::endl;
-
-
 
 		// open json file and load to json object
 		std::ifstream in(sceneFilePaths[i], std::ios::in | std::ios::binary);
@@ -331,7 +275,7 @@ int serializeScenes(std::string projectDirectory)
 		// serialize entities
 		objects = entities.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			EntityData data;
+			EntityHeader data;
 
 			data.entityId = Guid(it->first);
 
@@ -340,18 +284,18 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(EntityData);
+			totalSize += sizeof(EntityHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
-			fwrite(&data, sizeof(EntityData), 1, file);
+			fwrite(&data, sizeof(EntityHeader), 1, file);
 		}
 
 		// serialize transforms
 		objects = transforms.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			TransformData data;
+			TransformHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -374,19 +318,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(TransformData);
+			totalSize += sizeof(TransformHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(TransformData), 1, file);
+			fwrite(&data, sizeof(TransformHeader), 1, file);
 		}
 
 		// serialize rigidbodies
 		objects = rigidbodies.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			RigidbodyData data;
+			RigidbodyHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -416,19 +360,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(RigidbodyData);
+			totalSize += sizeof(RigidbodyHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(RigidbodyData), 1, file);
+			fwrite(&data, sizeof(RigidbodyHeader), 1, file);
 		}
 
 		// serialize cameras 
 		objects = cameras.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			CameraData data;
+			CameraHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -447,19 +391,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(CameraData);
+			totalSize += sizeof(CameraHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(CameraData), 1, file);
+			fwrite(&data, sizeof(CameraHeader), 1, file);
 		}
 
 		// serialize mesh renderers
 		objects = meshRenderers.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			MeshRendererData data;
+			MeshRendererHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -472,21 +416,21 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(MeshRendererData);
+			totalSize += sizeof(MeshRendererHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(MeshRendererData), 1, file);
+			fwrite(&data, sizeof(MeshRendererHeader), 1, file);
 		}
 
-		std::cout << "size of mesh renderer: " << sizeof(MeshRendererData) << std::endl;
+		std::cout << "size of mesh renderer: " << sizeof(MeshRendererHeader) << std::endl;
 
 		// serialize line renderers
 		objects = lineRenderers.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			LineRendererData data;
+			LineRendererHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -512,13 +456,13 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(LineRendererData);
+			totalSize += sizeof(LineRendererHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(LineRendererData), 1, file);
+			fwrite(&data, sizeof(LineRendererHeader), 1, file);
 		}
 
 		std::cout << "size of line renderer: " << sizeof(LineRenderer) << std::endl;
@@ -526,7 +470,7 @@ int serializeScenes(std::string projectDirectory)
 		// serialize directional lights
 		objects = directionalLights.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			DirectionalLightData data;
+			DirectionalLightHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -552,19 +496,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(DirectionalLightData);
+			totalSize += sizeof(DirectionalLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(DirectionalLightData), 1, file);
+			fwrite(&data, sizeof(DirectionalLightHeader), 1, file);
 		}
 
 		// serialize spot lights
 		objects = spotLights.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			SpotLightData data;
+			SpotLightHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -602,19 +546,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(SpotLightData);
+			totalSize += sizeof(SpotLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(SpotLightData), 1, file);
+			fwrite(&data, sizeof(SpotLightHeader), 1, file);
 		}
 
 		// serialize point lights
 		objects = pointLights.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			PointLightData data;
+			PointLightHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -646,19 +590,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(PointLightData);
+			totalSize += sizeof(PointLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(PointLightData), 1, file);
+			fwrite(&data, sizeof(PointLightHeader), 1, file);
 		}
 
 		// serialize box collider
 		objects = boxColliders.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			BoxColliderData data;
+			BoxColliderHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -676,19 +620,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(BoxColliderData);
+			totalSize += sizeof(BoxColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(BoxColliderData), 1, file);
+			fwrite(&data, sizeof(BoxColliderHeader), 1, file);
 		}
 
 		// serialize sphere collider
 		objects = sphereColliders.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			SphereColliderData data;
+			SphereColliderHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -704,19 +648,19 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(SphereColliderData);
+			totalSize += sizeof(SphereColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(SphereColliderData), 1, file);
+			fwrite(&data, sizeof(SphereColliderHeader), 1, file);
 		}
 
 		// serialize capsule collider
 		objects = capsuleColliders.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			CapsuleColliderData data;
+			CapsuleColliderHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
@@ -733,13 +677,13 @@ int serializeScenes(std::string projectDirectory)
 
 			size_t totalSize = sizeof(int);
 			totalSize += sizeof(char);
-			totalSize += sizeof(CapsuleColliderData);
+			totalSize += sizeof(CapsuleColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 
-			fwrite(&data, sizeof(CapsuleColliderData), 1, file);
+			fwrite(&data, sizeof(CapsuleColliderHeader), 1, file);
 		}
 
 		// serialize systems;
@@ -762,18 +706,18 @@ int serializeScenes(std::string projectDirectory)
 				type = 3;
 			}
 			else if(it->second["type"].ToString() == "LogicSystem"){
-				type = 10;
+				type = 20;
 			}
 			else if(it->second["type"].ToString() == "PlayerSystem"){
-				type = 11;
+				type = 21;
 			}
 
 			totalSize = sizeof(int);
 			totalSize += sizeof(char);
 
-			fwrite(&classification, sizeof(char), 1, file);
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
 		}
 
 		// close file
@@ -795,33 +739,33 @@ int serializeScenes(std::string projectDirectory)
 			return 0;
 		}
 
-		// std::cout << "de-serialized scene header file contains the following information: " << std::endl;
-		// std::cout << "fileSize: " << sceneHeader.fileSize << std::endl;
+		std::cout << "de-serialized scene header file contains the following information: " << std::endl;
+		std::cout << "fileSize: " << sceneHeader.fileSize << std::endl;
 
-		// std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
-		// std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
-		// std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
-		// std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
-		// std::cout << "numberOfLineRenderers: " << sceneHeader.numberOfLineRenderers << std::endl;
-		// std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
-		// std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
-		// std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
-		// std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
-		// std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
-		// std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
+		std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
+		std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
+		std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
+		std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
+		std::cout << "numberOfLineRenderers: " << sceneHeader.numberOfLineRenderers << std::endl;
+		std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
+		std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
+		std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
+		std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
+		std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
+		std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
 
-		// std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
-		// std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
-		// std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
-		// std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
-		// std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
-		// std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
-		// std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
-		// std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
-		// std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
-		// std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
-		// std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
-		// std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
+		std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
+		std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
+		std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
+		std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
+		std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
+		std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
+		std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
+		std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
+		std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
+		std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
+		std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
+		std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
 
 		if(file2){
 			fclose(file2);
@@ -1528,22 +1472,3 @@ int serializeAssets(std::string projectDirectory)
 
 // 	return 1;
 // }
-
-std::vector<std::string> get_all_files_names_within_folder(std::string folder)
-{
-    std::vector<std::string> names;
-    std::string search_path = folder + "/*.*";
-    WIN32_FIND_DATA fd; 
-    HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd); 
-    if(hFind != INVALID_HANDLE_VALUE) { 
-        do { 
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-                names.push_back(fd.cFileName);
-            }
-        }while(::FindNextFile(hFind, &fd)); 
-        ::FindClose(hFind); 
-    } 
-    return names;
-}

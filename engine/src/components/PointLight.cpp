@@ -19,7 +19,20 @@ PointLight::PointLight()
 
 PointLight::PointLight(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	PointLightHeader* header = reinterpret_cast<PointLightHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	constant = header->constant;
+	linear = header->linear;
+	quadratic = header->quadratic;
+	position = header->position;
+	ambient = header->ambient;
+	diffuse = header->diffuse;
+	specular = header->specular;
+	projection = header->projection;
 }
 
 PointLight::~PointLight()
@@ -35,18 +48,4 @@ void* PointLight::operator new(size_t size)
 void PointLight::operator delete(void*)
 {
 
-}
-
-void PointLight::load(PointLightData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	constant = data.constant;
-	linear = data.linear;
-	quadratic = data.quadratic;
-	position = data.position;
-	ambient = data.ambient;
-	diffuse = data.diffuse;
-	specular = data.specular;
 }

@@ -2,6 +2,7 @@
 
 #include "../../include/systems/DebugSystem.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/World.h"
 
@@ -28,6 +29,16 @@ DebugSystem::DebugSystem(std::vector<char> data)
 DebugSystem::~DebugSystem()
 {
 	
+}
+
+void* DebugSystem::operator new(size_t size)
+{
+	return getAllocator<DebugSystem>().allocate();
+}
+
+void DebugSystem::operator delete(void*)
+{
+
 }
 
 void DebugSystem::init()

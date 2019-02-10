@@ -15,7 +15,11 @@ Entity::Entity()
 
 Entity::Entity(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	EntityHeader* header = reinterpret_cast<EntityHeader*>(&data[index]);
+
+	entityId = header->entityId;
 }
 
 Entity::~Entity()
@@ -31,11 +35,6 @@ void* Entity::operator new(size_t size)
 void Entity::operator delete(void*)
 {
 
-}
-
-void Entity::load(EntityData data)
-{
-	entityId = data.entityId;
 }
 
 void Entity::setWorld(World* world)

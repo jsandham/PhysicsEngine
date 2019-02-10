@@ -15,7 +15,15 @@ Transform::Transform()
 
 Transform::Transform(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	position = header->position;
+	rotation = header->rotation;
+	scale = header->scale;
 }
 
 Transform::~Transform()
@@ -31,16 +39,6 @@ void* Transform::operator new(size_t size)
 void Transform::operator delete(void*)
 {
 
-}
-
-void Transform::load(TransformData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	position = data.position;
-	rotation = data.rotation;
-	scale = data.scale;
 }
 
 glm::vec3 Transform::getEulerAngles()

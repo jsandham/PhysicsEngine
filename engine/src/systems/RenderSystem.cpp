@@ -12,6 +12,7 @@
 #include "../../include/components/PointLight.h"
 #include "../../include/components/Camera.h"
 
+#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
@@ -37,6 +38,16 @@ RenderSystem::~RenderSystem()
 	delete debugWindow;
 
 	delete lineBuffer;
+}
+
+void* RenderSystem::operator new(size_t size)
+{
+	return getAllocator<RenderSystem>().allocate();
+}
+
+void RenderSystem::operator delete(void*)
+{
+
 }
 
 void RenderSystem::init()

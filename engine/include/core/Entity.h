@@ -7,12 +7,12 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct EntityData
+#pragma pack(push, 1)
+	struct EntityHeader
 	{
 		Guid entityId;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 	
 	class World;
 
@@ -31,8 +31,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(EntityData data);
 
 			void setWorld(World* world);
 

@@ -8,6 +8,20 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct Texture3DHeader
+	{
+		Guid textureId;
+		int width;
+		int height;
+		int depth;
+		int numChannels;
+		int dimension;
+		int format;
+		size_t textureSize;
+	};
+#pragma pack(pop)
+
 	class Texture3D : public Texture
 	{
 		private:

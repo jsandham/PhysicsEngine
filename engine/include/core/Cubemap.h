@@ -9,6 +9,18 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct CubemapHeader
+	{
+		Guid textureId;
+		int width;
+		int numChannels;
+		int dimension;
+		int format;
+		size_t textureSize;
+	};
+#pragma pack(pop)
+
 	typedef enum CubemapFace
 	{
 		PositiveX,

@@ -11,8 +11,8 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct DirectionalLightData
+#pragma pack(push, 1)
+	struct DirectionalLightHeader
 	{
 		Guid componentId;
 		Guid entityId;
@@ -21,7 +21,7 @@ namespace PhysicsEngine
 		glm::vec3 diffuse;
 		glm::vec3 specular;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class DirectionalLight : public Component
 	{
@@ -38,8 +38,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(DirectionalLightData data);
 	};
 }
 

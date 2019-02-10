@@ -1,6 +1,8 @@
 #ifndef __PLAYERSYSTEM_H__
 #define __PLAYERSYSTEM_H__
 
+#include <vector>
+
 #include <systems/System.h>
 
 #include <components/Camera.h>
@@ -21,8 +23,11 @@ namespace PhysicsEngine
 
 	public:
 		PlayerSystem();
-		PlayerSystem(unsigned char* data);
+		PlayerSystem(std::vector<char> data);
 		~PlayerSystem();
+
+		void* operator new(size_t size);
+		void operator delete(void*);
 
 		void init();
 		void update(Input input);

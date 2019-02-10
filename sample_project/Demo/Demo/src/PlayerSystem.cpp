@@ -1,8 +1,8 @@
-#include "stdafx.h"
 #include "../include/PlayerSystem.h"
 
 #include <components/Camera.h>
 
+#include <core/PoolAllocator.h>
 #include <core/Input.h>
 #include <core/Time.h>
 #include <core/Log.h>
@@ -19,12 +19,22 @@ PlayerSystem::PlayerSystem()
 	type = 11;
 }
 
-PlayerSystem::PlayerSystem(unsigned char* data)
+PlayerSystem::PlayerSystem(std::vector<char> data)
 {
 	type = 11;
 }
 
 PlayerSystem::~PlayerSystem()
+{
+
+}
+
+void* PlayerSystem::operator new(size_t size)
+{
+	return getAllocator<PlayerSystem>().allocate();
+}
+
+void PlayerSystem::operator delete(void*)
 {
 
 }

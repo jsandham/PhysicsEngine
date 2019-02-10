@@ -12,7 +12,13 @@ BoxCollider::BoxCollider()
 
 BoxCollider::BoxCollider(std::vector<char> data)
 {
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[index]);
 
+	componentId = header->componentId;
+	entityId = header->entityId;
+	bounds = header->bounds;
 }
 
 BoxCollider::~BoxCollider()
@@ -28,14 +34,6 @@ void* BoxCollider::operator new(size_t size)
 void BoxCollider::operator delete(void*)
 {
 
-}
-
-void BoxCollider::load(BoxColliderData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	bounds = data.bounds;
 }
 
 bool BoxCollider::intersect(Bounds bounds)

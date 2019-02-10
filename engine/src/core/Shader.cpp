@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Shader.h"
 #include "../../include/graphics/Graphics.h"
@@ -120,7 +122,36 @@ Shader::Shader()
 
 Shader::Shader(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[index]);
+
+	assetId = header->shaderId;
+	size_t vertexShaderSize = header->vertexShaderSize;
+	size_t geometryShaderSize = header->geometryShaderSize;
+	size_t fragmentShaderSize = header->fragmentShaderSize;
+
+	index += sizeof(ShaderHeader);
+
+	std::vector<char>::iterator start = data.begin();
+	std::vector<char>::iterator end = data.begin();
+	start += index;
+	end += index + vertexShaderSize;
+
+	vertexShader = std::string(start, end);
+
+	start +=vertexShaderSize;
+	end += geometryShaderSize;
+
+	geometryShader = std::string(start, end);
+
+	start += geometryShaderSize;
+	end += fragmentShaderSize;
+
+	fragmentShader = std::string(start, end);
+
+	index += vertexShaderSize + geometryShaderSize + fragmentShaderSize;
+
+	std::cout << "shader index: " << index << " data size: " << data.size() << std::endl;
 }
 
 Shader::~Shader()

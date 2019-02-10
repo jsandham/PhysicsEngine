@@ -37,6 +37,9 @@ namespace PhysicsEngine
 			PhysicsSystem(std::vector<char> data);
 			~PhysicsSystem();
 
+			void* operator new(size_t size);
+			void operator delete(void*);
+
 			void init();
 			void update(Input input);
 	};

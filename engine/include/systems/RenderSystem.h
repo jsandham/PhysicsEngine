@@ -59,13 +59,15 @@ namespace PhysicsEngine
 
 			GLFramebuffer fbo;
 
-
 			SlabBuffer* lineBuffer;
 
 		public:
 			RenderSystem();
 			RenderSystem(std::vector<char> data);
 			~RenderSystem();
+
+			void* operator new(size_t size);
+			void operator delete(void*);
 
 			void init();
 			void update(Input input);

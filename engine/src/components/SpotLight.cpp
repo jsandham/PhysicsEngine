@@ -22,7 +22,23 @@ SpotLight::SpotLight()
 
 SpotLight::SpotLight(std::vector<char> data)
 {
-	
+	size_t index = sizeof(int);
+	index += sizeof(char);
+	SpotLightHeader* header = reinterpret_cast<SpotLightHeader*>(&data[index]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	constant = header->constant;
+	linear = header->linear;
+	quadratic = header->quadratic;
+	cutOff = header->cutOff;
+	outerCutOff = header->outerCutOff;
+	position = header->position;
+	direction = header->direction;
+	ambient = header->ambient;
+	diffuse = header->diffuse;
+	specular = header->specular;
+	projection = header->projection;
 }
 
 SpotLight::~SpotLight()
@@ -38,21 +54,4 @@ void* SpotLight::operator new(size_t size)
 void SpotLight::operator delete(void*)
 {
 
-}
-
-void SpotLight::load(SpotLightData data)
-{
-	entityId = data.entityId;
-	componentId = data.componentId;
-
-	constant = data.constant;
-	linear = data.linear;
-	quadratic = data.quadratic;
-	cutOff = data.cutOff;
-	outerCutOff = data.outerCutOff;
-	position = data.position;
-	direction = data.direction;
-	ambient = data.ambient;
-	diffuse = data.diffuse;
-	specular = data.specular;
 }

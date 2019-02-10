@@ -1,6 +1,8 @@
 #ifndef __LOGICSYSTEM_H__
 #define __LOGICSYSTEM_H__
 
+#include <vector>
+
 #include <systems/System.h>
 
 #include <core/Input.h>
@@ -11,8 +13,11 @@ namespace PhysicsEngine
 	{
 	public:
 		LogicSystem();
-		LogicSystem(unsigned char* data);
+		LogicSystem(std::vector<char> data);
 		~LogicSystem();
+
+		void* operator new(size_t size);
+		void operator delete(void*);
 
 		void init();
 		void update(Input input);

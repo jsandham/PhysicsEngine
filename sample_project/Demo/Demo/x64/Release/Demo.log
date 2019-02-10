@@ -1,11 +1,11 @@
-﻿Build started 2/2/2019 9:15:58 PM.
+﻿Build started 2/9/2019 6:39:15 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\Demo.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
          stdafx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\Demo.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\LoadSystem.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\Load.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
          Demo.cpp
-         LoadSystem.cpp
+         Load.cpp
          LogicSystem.cpp
          PlayerSystem.cpp
        ResourceCompile:
@@ -13,18 +13,15 @@
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
          x64\Release\Demo.obj
-         x64\Release\LoadSystem.obj
+         x64\Release\Load.obj
          x64\Release\LogicSystem.obj
          x64\Release\PlayerSystem.obj
          x64\Release\stdafx.obj
-     1>engine.lib(World.obj) : error LNK2001: unresolved external symbol "bool __cdecl PhysicsEngine::deserializeShader(class PhysicsEngine::Shader *,class std::basic_ifstream<char,struct std::char_traits<char> > &)" (?deserializeShader@PhysicsEngine@@YA_NPEAVShader@1@AEAV?$basic_ifstream@DU?$char_traits@D@std@@@std@@@Z)
-     1>engine.lib(World.obj) : error LNK2001: unresolved external symbol "bool __cdecl PhysicsEngine::deserializeTexture2D(class PhysicsEngine::Texture2D *,class std::basic_ifstream<char,struct std::char_traits<char> > &)" (?deserializeTexture2D@PhysicsEngine@@YA_NPEAVTexture2D@1@AEAV?$basic_ifstream@DU?$char_traits@D@std@@@std@@@Z)
-     1>engine.lib(World.obj) : error LNK2001: unresolved external symbol "bool __cdecl PhysicsEngine::deserializeMaterial(class PhysicsEngine::Material *,class std::basic_ifstream<char,struct std::char_traits<char> > &)" (?deserializeMaterial@PhysicsEngine@@YA_NPEAVMaterial@1@AEAV?$basic_ifstream@DU?$char_traits@D@std@@@std@@@Z)
-     1>engine.lib(World.obj) : error LNK2001: unresolved external symbol "bool __cdecl PhysicsEngine::deserializeMesh(class PhysicsEngine::Mesh *,class std::basic_ifstream<char,struct std::char_traits<char> > &)" (?deserializeMesh@PhysicsEngine@@YA_NPEAVMesh@1@AEAV?$basic_ifstream@DU?$char_traits@D@std@@@std@@@Z)
-     1>engine.lib(World.obj) : error LNK2001: unresolved external symbol "bool __cdecl PhysicsEngine::deserializeGMesh(class PhysicsEngine::GMesh *,class std::basic_ifstream<char,struct std::char_traits<char> > &)" (?deserializeGMesh@PhysicsEngine@@YA_NPEAVGMesh@1@AEAV?$basic_ifstream@DU?$char_traits@D@std@@@std@@@Z)
-     1>C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe : fatal error LNK1120: 5 unresolved externals
-     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Rebuild target(s)) -- FAILED.
+         Generating code
+         Finished generating code
+         Demo.vcxproj -> C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe
+     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Rebuild target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:04.74
+Time Elapsed 00:00:05.66

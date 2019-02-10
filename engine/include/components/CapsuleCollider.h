@@ -13,14 +13,14 @@
 
 namespace PhysicsEngine
 {
-// #pragma pack(push, 1)
-	struct CapsuleColliderData
+#pragma pack(push, 1)
+	struct CapsuleColliderHeader
 	{
 		Guid componentId;
 		Guid entityId;
 		Capsule capsule;
 	};
-// #pragma pack(pop)
+#pragma pack(pop)
 
 	class CapsuleCollider : public Collider
 	{
@@ -34,8 +34,6 @@ namespace PhysicsEngine
 
 			void* operator new(size_t size);
 			void operator delete(void*);
-
-			void load(CapsuleColliderData data);
 
 			bool intersect(Bounds bounds);
 	};
