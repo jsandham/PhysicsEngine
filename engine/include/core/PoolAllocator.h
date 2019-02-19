@@ -1,6 +1,7 @@
 #ifndef __POOL_ALLOCATOR_H__
 #define __POOL_ALLOCATOR_H__
 
+#include <iostream>
 #include <vector>
 
 namespace PhysicsEngine
@@ -49,13 +50,14 @@ namespace PhysicsEngine
 
 			T* get(size_t index) const
 			{
-				if (index >= count()) { return NULL; }
+				if (index >= getCount()) { return NULL; }
 
 				size_t poolIndex = index / T_per_page;
 				return pools[poolIndex] + (index % T_per_page);
 			}
 
 			~PoolAllocator() {
+				std::cout << "POOL ALLOCATOR DESTRUCTOR CALLED" << std::endl;
 				while (!pools.empty()) {
 					T *p = pools.back();
 					for (size_t pos = T_per_page; pos > 0; --pos)

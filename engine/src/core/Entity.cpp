@@ -9,8 +9,6 @@ using namespace PhysicsEngine;
 Entity::Entity()
 {
 	entityId = Guid::INVALID;
-	
-	world = NULL;
 }
 
 Entity::Entity(std::vector<char> data)
@@ -37,22 +35,17 @@ void Entity::operator delete(void*)
 
 }
 
-void Entity::setWorld(World* world)
-{
-	this->world = world;
-}
-
-void Entity::latentDestroy()
+void Entity::latentDestroy(World* world)
 {
 	world->latentDestroy(entityId);
 }
 
-void Entity::immediateDestroy()
+void Entity::immediateDestroy(World* world)
 {
 	world->immediateDestroy(entityId);
 }
 
-Entity* Entity::instantiate()
+Entity* Entity::instantiate(World* world)
 {
 	return world->instantiate(entityId);
 }

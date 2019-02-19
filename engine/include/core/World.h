@@ -40,25 +40,6 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct BuildSettings // rename to WorldSettings or maybe even get rid of??
 	{
-		unsigned int maxAllowedEntities;
-		unsigned int maxAllowedTransforms;
-		unsigned int maxAllowedRigidbodies;
-		unsigned int maxAllowedCameras;
-		unsigned int maxAllowedMeshRenderers;
-		unsigned int maxAllowedLineRenderers;
-		unsigned int maxAllowedDirectionalLights;
-		unsigned int maxAllowedSpotLights;
-		unsigned int maxAllowedPointLights;
-		unsigned int maxAllowedBoxColliders;
-		unsigned int maxAllowedSphereColliders;
-		unsigned int maxAllowedCapsuleColliders;
-
-		unsigned int maxAllowedMaterials;
-		unsigned int maxAllowedTextures;
-		unsigned int maxAllowedShaders;
-		unsigned int maxAllowedMeshes;
-		unsigned int maxAllowedGMeshes;
-
 		int physicsDepth;
 		float centre[3];
 		float extent[3];
@@ -68,41 +49,15 @@ namespace PhysicsEngine
 	class World
 	{
 		private:
-			// BuildSettings settings; 
-
-			// Pool<Entity>* entities;
-			// Pool<Transform>* transforms;
-			// Pool<Rigidbody>* rigidbodies;
-			// Pool<Camera>* cameras;
-			// Pool<MeshRenderer>* meshRenderers;
-			// Pool<LineRenderer>* lineRenderers;
-			// Pool<DirectionalLight>* directionalLights;
-			// Pool<SpotLight>* spotLights;
-			// Pool<PointLight>* pointLights;
-			// Pool<BoxCollider>* boxColliders;
-			// Pool<SphereCollider>* sphereColliders;
-			// Pool<CapsuleCollider>* capsuleColliders;
-
-			// Pool<Material>* materials;
-			// Pool<Texture2D>* textures;
-			// Pool<Shader>* shaders;
-			// Pool<Mesh>* meshes;
-			// Pool<GMesh>* gmeshes;
-			
-			Line* line;
-
 			std::vector<System*> systems;
 
+			Line* line;
 			Bounds* bounds;
 			Octtree* physics;
 
-			//std::map<Guid, std::string> assetIdToFilePath;
 			std::map<Guid, int> assetIdToGlobalIndex;
 			std::map<Guid, int> idToGlobalIndex;
-			std::map<Guid, int> componentIdToType;
-			std::map<Guid, std::vector<Guid>> entityIdToComponentIds; 
-			//std::map<int, void*> componentTypeToPool;
-			//std::map<int, void*> assetTypeToPool;
+			std::map<Guid, std::vector<std::pair<Guid, int>>> entityIdToComponentIds; 
 
 			// entities marked for cleanup
 			std::vector<Guid> entityIdsMarkedForLatentDestroy;
@@ -122,34 +77,13 @@ namespace PhysicsEngine
 			template<typename T>
 			int getNumberOfComponents()
 			{
-				// int componentType = Component::getInstanceType<T>();
-
-				// std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
-				// if(it != componentTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it->second);
-
-				// 	return pool->getIndex();
-				// }
-				// else{
-				// 	return 0;
-				// }
-				return 0;
+				return (int)getAllocator<T>().getCount();
 			}
 
 			template<typename T>
 			int getNumberOfAssets()
 			{
-				// int assetType = Asset::getInstanceType<T>();
-				// std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
-				// if(it1 != assetTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
-
-				// 	return pool->getIndex();
-				// }
-				// else{
-				// 	return 0;
-				// }
-				return 0;
+				return (int)getAllocator<T>().getCount();
 			}
 
 			Entity* getEntity(Guid id);
@@ -158,64 +92,35 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponent(Guid entityId)
 			{
-				// Entity* entity = getEntity(entityId);
+				std::vector<std::pair<Guid, int>> componentsOnEntity;
+				std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
+				if(it1 != entityIdToComponentIds.end()){
+					componentsOnEntity = it1->second;
+				}
+				else{
+					std::cout << "Error: When calling get component on entity with id " << entityId.toString() << " the entity could not be found in the map" << std::endl;
+					return NULL;
+				}
 
-				// if(entity == NULL){ return NULL; }
+				Guid componentId = Guid::INVALID;
+				for(size_t i = 0; i < componentsOnEntity.size(); i++){
+					if(Component::getInstanceType<T>() == componentsOnEntity[i].second){
+						componentId = componentsOnEntity[i].first;
+						break;
+					}	
+				}
 
-				// std::vector<Guid> componentsOnEntity;
-				// std::map<Guid, std::vector<Guid>>::iterator it1 = entityIdToComponentIds.find(entityId);
-				// if(it1 != entityIdToComponentIds.end()){
-				// 	componentsOnEntity = it1->second;
-				// }
-				// else{
-				// 	std::cout << "Error: When searching entity with id " << entityId.toString() << " no components were found in entity id to component ids map" << std::endl;
-				// 	return NULL;
-				// }
+				if(componentId == Guid::INVALID){
+					std::cout << "Error: When calling get component on entity with id " << entityId.toString() << " the component found had an invalid guid id" << std::endl;
+					return NULL;
+				}
 
-				// for(unsigned int i = 0; i < componentsOnEntity.size(); i++){
-				// 	Guid componentId = componentsOnEntity[i];
-				// 	int componentType = -1;
-				// 	int componentGlobalIndex = -1;
-				// 	if(componentId != Guid::INVALID){
-				// 		std::map<Guid, int>::iterator it2 = componentIdToType.find(componentId);
-				// 		if(it2 != componentIdToType.end()){
-				// 			componentType = it2->second;
-				// 		}
-				// 		else{
-				// 			std::cout << "Error: When searching entity with id " << entityId.toString() << " no component with id " << componentId.toString() << " was found in component type map" << std::endl;//
-				// 			return NULL;
-				// 		}
+				std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(componentId);
+				if( it2 != idToGlobalIndex.end()){
+					int globalIndex = it2->second;
 
-				// 		if(componentType == -1){
-				// 			std::cout << "Error: When searching entity with id " << entityId.toString() << " the component type found corresponding to component " << componentId.toString() << " was invalid" << std::endl;
-				// 			return NULL;
-				// 		}
-
-				// 		if(componentType == Component::getInstanceType<T>()){
-				// 			std::map<Guid, int>::iterator it3 = idToGlobalIndex.find(componentId);
-				// 			if(it3 != idToGlobalIndex.end()){
-				// 				componentGlobalIndex = it3->second;
-				// 			}
-				// 			else{
-				// 				std::cout << "Error: When searching entity with id " << entityId.toString() << " no component with id " << componentId.toString() << " was found in map" << std::endl;
-				// 				return NULL;
-				// 			}
-
-				// 			std::map<int, void*>::iterator it4 = componentTypeToPool.find(componentType);
-				// 			if(it4 != componentTypeToPool.end()){
-				// 				//PoolAllocator pool = getAllocator<T>();!?!?!!?!? does this work!?!?!?!?
-				// 				//return pool.get(componentGlobalIndex);
-				// 				Pool<T>* pool = static_cast<Pool<T>*>(it4->second);
-
-				// 				return pool->get(componentGlobalIndex);
-				// 			}
-				// 			else{
-				// 				std::cout << "Error: When searching entity with id: " << entityId.toString() << " the component type searched for does not exist in map" << std::endl;
-				// 				return NULL;
-				// 			}
-				// 		}
-				// 	}
-				// }
+					return getAllocator<T>().get(globalIndex);
+				}
 
 				return NULL;
 			}
@@ -223,68 +128,35 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addComponent(Guid entityId)
 			{
-				// Entity* entity = getEntity(entityId);
+				int componentGlobalIndex = (int)getAllocator<T>().getCount();
+				int componentType = Component::getInstanceType<T>();
+				Guid componentId = Guid::newGuid();
+				
+				std::cout << "componentGlobalIndex: " << componentGlobalIndex << " componentType: " << componentType << " componentId: " << componentId.toString() << std::endl;
 
-				// if(entity == NULL){ return NULL; }
+				T* component = new T;//static_cast<T*>(getAllocator<T>().allocate());
 
-				// int componentGlobalIndex = -1;
-				// Guid componentId = Guid::newGuid();
-				// T* component = NULL;
+				component->entityId = entityId;
+				component->componentId = componentId;
 
-				// int componentType = Component::getInstanceType<T>();
+				idToGlobalIndex[componentId] = componentGlobalIndex;
 
-				// componentIdToType[componentId] = componentType;
+				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
 
-				// std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
-				// if(it != componentTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it->second);
-					
-				// 	componentGlobalIndex = pool->getIndex();
-				// 	idToGlobalIndex[componentId] = componentGlobalIndex;
-
-				// 	pool->increment();
-
-				// 	component = pool->get(componentGlobalIndex);
-
-				// 	component->entityId = entityId;
-				// 	component->componentId = componentId;
-
-				// 	std::map<Guid, std::vector<Guid>>::iterator it2 = entityIdToComponentIds.find(entityId);
-				// 	if(it2 != entityIdToComponentIds.end()){
-				// 		it2->second.push_back(componentId); 
-				// 	}
-
-				// 	component->setManager(this);
-				// }
-				// else
-				// {
-				// 	return NULL;
-				// }
-
-				// return component;
-				return NULL;
+				return component;
 			}
 
 			template<typename T>
 			T* getAsset(Guid id)
 			{
-				// int assetType = Asset::getInstanceType<T>();
-				// std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
-				// if(it1 != assetTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
-
-				// 	std::map<Guid, int>::iterator it2 = assetIdToGlobalIndex.find(id);
-				// 	if(it2 != assetIdToGlobalIndex.end()){
-				// 		return pool->get(it2->second);
-				// 	} 
-				// 	else{
-				// 		return NULL;
-				// 	}
-				// }
-				// else{
-				// 	return NULL;
-				// }
-				return NULL;
+				std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(id);
+				if(it != assetIdToGlobalIndex.end()){
+					return getAllocator<T>().get(it->second);
+				}
+				else{
+					//std::cout << "Error: No asset with id " << id.toString() << " was found" << std::endl;
+					return NULL;
+				}
 			}
 
 			Entity* getEntityByIndex(int index);
@@ -293,71 +165,35 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponentByIndex(int index)
 			{
-				// int componentType = Component::getInstanceType<T>();
-
-				// std::map<int, void*>::iterator it = componentTypeToPool.find(componentType);
-				// if(it != componentTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it->second);
-
-				// 	return pool->get(index);
-				// }
-				// else{
-				// 	return NULL;
-				// }
-				return NULL;
+				return getAllocator<T>().get(index);
 			}
 
 			template<typename T>
 			T* getAssetByIndex(int index)
 			{
-				// int assetType = Asset::getInstanceType<T>();
-				// std::map<int, void*>::iterator it1 = assetTypeToPool.find(assetType);
-				// if(it1 != assetTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it1->second);
-
-				// 	return pool->get(index);
-				// }
-				// else{
-				// 	return NULL;
-				// }
-				return NULL;
+				return getAllocator<T>().get(index);
 			}
 
 			template<typename T>
 			T* create() //createAsset??
 			{
-				// T* asset = NULL;
+				int index = (int)getAllocator<T>().getCount();
+				Guid id = Guid::newGuid();
 
-				// int assetType = Asset::getInstanceType<T>();
+				std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(id);
+				if(it == assetIdToGlobalIndex.end()){
+					assetIdToGlobalIndex[id] = index;
+				}
+				else{
+					std::cout << "Error: Newly created asset id (" << id.toString() << ") already exists in map?" << std::endl;
+					return NULL;
+				}
 
-				// std::cout << "asset type: " << assetType << std::endl;
+				T* asset = new T;
 
-				// std::map<int, void*>::iterator it = assetTypeToPool.find(assetType);
-				// if(it != assetTypeToPool.end()){
-				// 	Pool<T>* pool = static_cast<Pool<T>*>(it->second);
+				asset->assetId = id;
 
-				// 	int index = pool->getIndex();
-
-				// 	pool->increment();
-
-				// 	std::cout << "index: " << index << std::endl;
-
-				// 	Guid assetId = Guid::newGuid();
-
-				// 	assetIdToGlobalIndex[assetId] = index;
-
-				// 	asset = pool->get(index);
-				// 	asset->assetId = assetId;
-
-				// 	asset->setManager(this);
-				// }
-				// else{
-				// 	std::cout << "Error: Asset pool does not exist" << std::endl;
-				// 	return NULL;
-				// }
-
-				// return asset;
-				return NULL;
+				return asset;
 			}
 
 			Line* getLine();

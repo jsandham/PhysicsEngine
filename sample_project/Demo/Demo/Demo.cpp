@@ -358,7 +358,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Scene scene;
 	AssetBundle assetBundle;
 
-	scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
+	scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\simple.scene";
 	assetBundle.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\bundle.assets";
 
 	WorldManager worldManager(scene, assetBundle);
@@ -435,7 +435,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			DispatchMessage(&message);
 		}
 
-		//if (!sceneManager.update()){ running = false; }
+		if (!worldManager.update(input)){ running = false; }
 
 		RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
 

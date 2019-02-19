@@ -12,8 +12,3 @@ Asset::~Asset()
 {
 
 }
-
-void Asset::setManager(World* world)
-{
-	this->world = world;
-}

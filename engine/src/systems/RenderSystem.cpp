@@ -50,8 +50,10 @@ void RenderSystem::operator delete(void*)
 
 }
 
-void RenderSystem::init()
+void RenderSystem::init(World* world)
 {
+	this->world = world;
+
 	for(int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++){
 		Graphics::generate(world->getAssetByIndex<Texture2D>(i));
 	}
@@ -70,6 +72,8 @@ void RenderSystem::init()
 		Graphics::setUniformBlockToBindingPoint(shader, "SpotLightBlock", 3);
 		Graphics::setUniformBlockToBindingPoint(shader, "PointLightBlock", 4);
 	}
+
+	Graphics::checkError();
 
 	// for each loaded mesh in cpu, generate VBO's and VAO's on gpu
 	for(int i = 0; i < world->getNumberOfAssets<Mesh>(); i++){
@@ -246,7 +250,7 @@ void RenderSystem::update(Input input)
 		LineRenderer* lineRenderer = world->getComponentByIndex<LineRenderer>(i);
 		Material* material = world->getAsset<Material>(lineRenderer->materialId);
 
-		Transform* transform = lineRenderer->getComponent<Transform>();
+		Transform* transform = lineRenderer->getComponent<Transform>(world);
 		glm::mat4 model = transform->getModelMatrix();
 
 		glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
@@ -296,7 +300,7 @@ void RenderSystem::update(Input input)
 		SlabNode* node = lineBuffer->getNext();
 	 
 	 	Graphics::apply(node);
-		Graphics::bind(node->material, glm::mat4(1.0f));
+		Graphics::bind(world, node->material, glm::mat4(1.0f));
 		Graphics::bind(node);
 		Graphics::draw(node);
 
@@ -334,7 +338,7 @@ void RenderSystem::update(Input input)
 		windowMaterial->textureId = debugBuffer->assetId;
 
 		//glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;
-		Graphics::bind(windowMaterial, glm::mat4(1.0f));
+		Graphics::bind(world, windowMaterial, glm::mat4(1.0f));
 		Graphics::bind(debugWindow);
 		Graphics::draw(debugWindow);
 
@@ -349,7 +353,7 @@ void RenderSystem::update(Input input)
 
 		//std::cout << "gpu time: " << elapsedGPUTime << std::endl;
 		
-		Graphics::bind(graphMaterial, glm::mat4(1.0f));
+		Graphics::bind(world, graphMaterial, glm::mat4(1.0f));
 		Graphics::bind(graph);
 		Graphics::draw(graph);
 		Graphics::unbind(graph);
@@ -362,14 +366,14 @@ void RenderSystem::renderScene()
 {
 	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
 		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
-		Transform* transform = meshRenderer->getComponent<Transform>();
+		Transform* transform = meshRenderer->getComponent<Transform>(world);
 
 		Material* material = world->getAsset<Material>(meshRenderer->materialId); 
 		Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 		glm::mat4 model = transform->getModelMatrix();
 
-		Graphics::bind(material, model);
+		Graphics::bind(world, material, model);
 		Graphics::bind(mesh);
 		Graphics::draw(mesh);
 		Graphics::unbind(mesh);
@@ -382,13 +386,13 @@ void RenderSystem::renderScene(Material* material)
 {
 	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
 		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
-		Transform* transform = meshRenderer->getComponent<Transform>();
+		Transform* transform = meshRenderer->getComponent<Transform>(world);
 
 		Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 		glm::mat4 model = transform->getModelMatrix();
 
-		Graphics::bind(material, model);
+		Graphics::bind(world, material, model);
 		Graphics::bind(mesh);
 		Graphics::draw(mesh);
 	}

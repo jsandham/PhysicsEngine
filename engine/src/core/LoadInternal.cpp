@@ -70,52 +70,63 @@ Entity* PhysicsEngine::loadInternalEntity(std::vector<char> data, int* index)
 	return new Entity(data);
 }
 
-Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index)
+Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index, int* instanceType)
 {
 	int type = *reinterpret_cast<int*>(&data[0]);
 
 	if(type == 0){
 		*index = (int)getAllocator<Transform>().getCount();
+		*instanceType = (int)Component::getInstanceType<Transform>();
 		return new Transform(data);
 	}
 	else if(type == 1){
 		*index = (int)getAllocator<Rigidbody>().getCount();
+		*instanceType = (int)Component::getInstanceType<Rigidbody>();
 		return new Rigidbody(data);
 	}
 	else if(type == 2){
 		*index = (int)getAllocator<Camera>().getCount();
+		*instanceType = (int)Component::getInstanceType<Camera>();
 		return new Camera(data);
 	}
 	else if(type == 3){
 		*index = (int)getAllocator<MeshRenderer>().getCount();
+		*instanceType = (int)Component::getInstanceType<MeshRenderer>();
 		return new MeshRenderer(data);
 	}
 	else if(type == 4){
 		*index = (int)getAllocator<LineRenderer>().getCount();
+		*instanceType = (int)Component::getInstanceType<LineRenderer>();
 		return new LineRenderer(data);
 	}
 	else if(type == 5){
 		*index = (int)getAllocator<DirectionalLight>().getCount();
+		*instanceType = (int)Component::getInstanceType<DirectionalLight>();
 		return new DirectionalLight(data);
 	}
 	else if(type == 6){
 		*index = (int)getAllocator<SpotLight>().getCount();
+		*instanceType = (int)Component::getInstanceType<SpotLight>();
 		return new SpotLight(data);
 	}
 	else if(type == 7){
 		*index = (int)getAllocator<PointLight>().getCount();
+		*instanceType = (int)Component::getInstanceType<PointLight>();
 		return new PointLight(data);
 	}
 	else if(type == 8){
 		*index = (int)getAllocator<BoxCollider>().getCount();
+		*instanceType = (int)Component::getInstanceType<BoxCollider>();
 		return new BoxCollider(data);
 	}
 	else if(type == 9){
 		*index = (int)getAllocator<SphereCollider>().getCount();
+		*instanceType = (int)Component::getInstanceType<SphereCollider>();
 		return new SphereCollider(data);
 	}
 	else if(type == 10){
 		*index = (int)getAllocator<CapsuleCollider>().getCount();
+		*instanceType = (int)Component::getInstanceType<CapsuleCollider>();
 		return new CapsuleCollider(data);
 	}
 	else{

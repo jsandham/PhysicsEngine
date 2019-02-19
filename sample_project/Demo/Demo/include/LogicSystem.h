@@ -19,7 +19,7 @@ namespace PhysicsEngine
 		void* operator new(size_t size);
 		void operator delete(void*);
 
-		void init();
+		void init(World* world);
 		void update(Input input);
 	};
 }

@@ -3,6 +3,7 @@
 
 #include "../glm/glm.hpp"
 
+#include "../core/World.h"
 #include "../core/Texture2D.h"
 #include "../core/Texture3D.h"
 #include "../core/Cubemap.h"
@@ -88,7 +89,7 @@ namespace PhysicsEngine
 			static void bind(Cubemap* cubemap);
 			static void unbind(Cubemap* cubemap);
 			
-			static void bind(Material* material, glm::mat4 model);
+			static void bind(World* world, Material* material, glm::mat4 model);
 			static void unbind(Material* material);
 
 			static void compile(Shader* shader);

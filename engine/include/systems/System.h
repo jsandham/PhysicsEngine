@@ -20,10 +20,9 @@ namespace PhysicsEngine
 			System();
 			virtual ~System() = 0;
 
-			virtual void init() = 0;
+			virtual void init(World* world) = 0;
 			virtual void update(Input input) = 0;
 
-			void setWorld(World* world);
 			void setSceneContext(SceneContext* context);
 	};
 }

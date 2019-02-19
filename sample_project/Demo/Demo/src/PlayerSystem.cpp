@@ -39,9 +39,9 @@ void PlayerSystem::operator delete(void*)
 
 }
 
-void PlayerSystem::init()
+void PlayerSystem::init(World* world)
 {
-
+	this->world = world;
 }
 
 void PlayerSystem::update(Input input)

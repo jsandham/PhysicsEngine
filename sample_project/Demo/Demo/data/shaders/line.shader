@@ -25,7 +25,7 @@ FRAGMENT:
 
 #version 330 core
 
-int float z;
+in float z;
 out vec4 FragColor;
 
 void main()

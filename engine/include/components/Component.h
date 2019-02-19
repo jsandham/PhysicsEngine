@@ -12,9 +12,6 @@ namespace PhysicsEngine
 
 	class Component
 	{
-		private:
-			World* world;
-
 		public:
 			Guid componentId;
 			Guid entityId;
@@ -23,16 +20,14 @@ namespace PhysicsEngine
 			Component();
 			virtual ~Component() = 0;
 
-			void setManager(World* world);
-
-			Entity* getEntity();
+			Entity* getEntity(World* world);
 
 			template<typename T>
-			T* getComponent()
+			T* getComponent(World* world)
 			{
-				Entity* entity = getEntity();
+				Entity* entity = getEntity(world);
 
-				return entity->getComponent<T>();
+				return entity->getComponent<T>(world);
 			}
 
 			template <typename T>

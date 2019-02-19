@@ -19,11 +19,12 @@ Asset* PhysicsEngine::loadAsset(std::vector<char> data, int* index)
 	return NULL;
 }
 
-Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index)
+Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index, int* instanceType)
 {
 	int type = *reinterpret_cast<int*>(&data[0]);
 
 	*index = -1;
+	*instanceType = -1;// Component::getInstanceType<>();
 
 	std::cout << "Error: Invalid component type (" << type << ") when trying to load component" << std::endl;
 	return NULL;

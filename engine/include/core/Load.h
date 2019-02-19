@@ -13,7 +13,7 @@ namespace PhysicsEngine
 	Asset* loadAsset(std::vector<char> data, int* index);
 
 	// load external components defined by the user (components with type 20 or greater)
-	Component* loadComponent(std::vector<char> data, int* index);
+	Component* loadComponent(std::vector<char> data, int* index, int* instanceType);
 
 	// load external systems defined by the user (systems with type 10 or greater)
 	System* loadSystem(std::vector<char> data, int* index);

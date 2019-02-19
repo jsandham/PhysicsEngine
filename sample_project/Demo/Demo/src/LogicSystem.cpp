@@ -34,9 +34,9 @@ void LogicSystem::operator delete(void*)
 
 }
 
-void LogicSystem::init()
+void LogicSystem::init(World* world)
 {
-
+	this->world = world;
 }
 
 void LogicSystem::update(Input input)

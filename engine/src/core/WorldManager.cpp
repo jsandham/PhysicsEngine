@@ -26,11 +26,11 @@ void WorldManager::init()
 		return;
 	}
 
-	// for(int i = 0; i < world->getNumberOfSystems(); i++){
-	// 	System* system = world->getSystemByIndex(i);
+	for(int i = 0; i < world->getNumberOfSystems(); i++){
+		System* system = world->getSystemByIndex(i);
 
-	// 	system->init();
-	// }
+		system->init(world);
+	}
 }
 
 bool WorldManager::update(Input input)
@@ -39,15 +39,14 @@ bool WorldManager::update(Input input)
 	// world->input = input; ???
 
 
-	// for(int i = 0; i < world->getNumberOfSystems(); i++){
-	// 	System* system = world->getSystemByIndex(i);
+	for(int i = 0; i < world->getNumberOfSystems(); i++){
+		System* system = world->getSystemByIndex(i);
 
-	// 	system->update(input);
-	// 	//system->update();
-	// }
+		system->update(input);
+	}
 
 
-	return false;
+	return true;
 }
 
 

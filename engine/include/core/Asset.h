@@ -27,17 +27,12 @@ namespace PhysicsEngine
 
 	class Asset
 	{
-		protected:
-			World* world;
-
 		public:
 			Guid assetId;
 
 		public:
 			Asset();
 			virtual ~Asset() = 0;
-
-			void setManager(World* world);
 
 			template <typename T>
 			static int getInstanceType()

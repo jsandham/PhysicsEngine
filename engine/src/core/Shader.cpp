@@ -151,6 +151,8 @@ Shader::Shader(std::vector<char> data)
 
 	index += vertexShaderSize + geometryShaderSize + fragmentShaderSize;
 
+	programCompiled = false;
+
 	std::cout << "shader index: " << index << " data size: " << data.size() << std::endl;
 }
 

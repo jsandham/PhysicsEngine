@@ -64,11 +64,6 @@ namespace PhysicsEngine
 			void operator delete(void*);
 
 			void load(MaterialHeader data);
-
-			Shader* getShader();
-			Texture2D* getMainTexture();
-			Texture2D* getNormalMap();
-			Texture2D* getSpecularMap();
 	};
 }
 

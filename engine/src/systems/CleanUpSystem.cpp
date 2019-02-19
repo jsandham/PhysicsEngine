@@ -25,9 +25,9 @@ void CleanUpSystem::operator delete(void*)
 
 }
 
-void CleanUpSystem::init()
+void CleanUpSystem::init(World* world)
 {
-
+	this->world = world;
 }
 
 void CleanUpSystem::update(Input input)

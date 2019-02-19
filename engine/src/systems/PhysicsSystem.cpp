@@ -47,9 +47,10 @@ void PhysicsSystem::operator delete(void*)
 
 }
 
-void PhysicsSystem::init()
+void PhysicsSystem::init(World* world)
 {
 	std::cout << "physics system init called" << std::endl;
+	this->world = world;
 }
 
 void PhysicsSystem::update(Input input)

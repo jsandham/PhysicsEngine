@@ -18,9 +18,6 @@ namespace PhysicsEngine
 
 	class Entity
 	{
-		private:
-			World* world;
-
 		public:
 			Guid entityId;
 
@@ -32,20 +29,18 @@ namespace PhysicsEngine
 			void* operator new(size_t size);
 			void operator delete(void*);
 
-			void setWorld(World* world);
-
-			void latentDestroy();
-			void immediateDestroy();
-			Entity* instantiate();
+			void latentDestroy(World* world);
+			void immediateDestroy(World* world);
+			Entity* instantiate(World* world);
 
 			template<typename T>
-			T* addComponent()
+			T* addComponent(World* world)
 			{
 				return world->addComponent<T>(entityId);
 			}
 
 			template<typename T>
-			T* getComponent()
+			T* getComponent(World* world)
 			{
 				return world->getComponent<T>(entityId);
 			}

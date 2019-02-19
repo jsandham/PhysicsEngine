@@ -9,8 +9,6 @@ Component::Component()
 {
 	componentId = Guid::INVALID;
 	entityId = Guid::INVALID;
-
-	world = NULL;
 }
 
 Component::~Component()
@@ -18,12 +16,7 @@ Component::~Component()
 	
 }
 
-void Component::setManager(World* world)
-{
-	this->world = world;
-}
-
-Entity* Component::getEntity()
+Entity* Component::getEntity(World* world)
 {
 	return world->getEntity(entityId);
 }

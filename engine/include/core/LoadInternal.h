@@ -12,7 +12,7 @@ namespace PhysicsEngine
 {
 	Asset* loadInternalAsset(std::vector<char> data, int* index);
 	Entity* loadInternalEntity(std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::vector<char> data, int* index);
+	Component* loadInternalComponent(std::vector<char> data, int* index, int* instanceType);
 	System* loadInternalSystem(std::vector<char> data, int* index);
 }
 

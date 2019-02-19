@@ -72,23 +72,3 @@ void Material::load(MaterialHeader data)
 	specular = data.specular;
 	color = data.color;
 }
-
-Shader* Material::getShader()
-{
-	return world->getAsset<Shader>(shaderId);
-}
-
-Texture2D* Material::getMainTexture()
-{
-	return world->getAsset<Texture2D>(textureId);
-}
-
-Texture2D* Material::getNormalMap()
-{
-	return world->getAsset<Texture2D>(normalMapId);
-}
-
-Texture2D* Material::getSpecularMap()
-{
-	return world->getAsset<Texture2D>(specularMapId);
-}

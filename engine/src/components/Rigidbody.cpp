@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../../include/components/Rigidbody.h"
 
 #include "../../include/core/PoolAllocator.h"
@@ -7,6 +8,8 @@ using namespace PhysicsEngine;
 
 Rigidbody::Rigidbody()
 {
+	std::cout << "Rigidbody default constructor called" << std::endl;
+
 	useGravity = true;
 	mass = 1.0f;
 	drag = 0.0f;
@@ -47,6 +50,7 @@ Rigidbody::~Rigidbody()
 
 void* Rigidbody::operator new(size_t size)
 {
+	std::cout << "Rigidbody new called" << std::endl;
 	return getAllocator<Rigidbody>().allocate();
 }
 

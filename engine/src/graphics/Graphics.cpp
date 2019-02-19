@@ -421,9 +421,9 @@ void Graphics::unbind(Cubemap* cubemap)
 
 }
 
-void Graphics::bind(Material* material, glm::mat4 model)
+void Graphics::bind(World* world, Material* material, glm::mat4 model)
 {
-	Shader* shader = material->getShader();
+	Shader* shader = world->getAsset<Shader>(material->shaderId);
 
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -442,7 +442,7 @@ void Graphics::bind(Material* material, glm::mat4 model)
 	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
 	Graphics::setVec3(shader, "material.specular", material->specular);
 
-	Texture2D* mainTexture = material->getMainTexture();
+	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
 	if(mainTexture != NULL){
 		Graphics::setInt(shader, "material.mainTexture", 0);
 
@@ -450,7 +450,7 @@ void Graphics::bind(Material* material, glm::mat4 model)
 		Graphics::bind(mainTexture);
 	}
 
-	Texture2D* normalMap = material->getNormalMap();
+	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
 	if(normalMap != NULL){
 
 		Graphics::setInt(shader, "material.normalMap", 1);
@@ -459,7 +459,7 @@ void Graphics::bind(Material* material, glm::mat4 model)
 		Graphics::bind(normalMap);
 	}
 
-	Texture2D* specularMap = material->getSpecularMap();
+	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
 	if(specularMap != NULL){
 
 		Graphics::setInt(shader, "material.specularMap", 2);
