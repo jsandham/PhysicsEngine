@@ -13,8 +13,6 @@
 #include "../components/Collider.h"
 #include "../components/Rigidbody.h"
 
-#include "../cuda/CudaPhysics.cuh"
-
 namespace PhysicsEngine
 {
 	class PhysicsSystem : public System
@@ -22,10 +20,6 @@ namespace PhysicsEngine
 		private:
 			std::vector<Collider*> colliders;
 			std::vector<Rigidbody*> rigidbodies;
-
-			std::vector<CudaCloth> cudaCloths;
-			std::vector<CudaFluid> cudaFluids;
-			std::vector<CudaSolid> cudaSolids;
 
 			float timestep;
 			float gravity;

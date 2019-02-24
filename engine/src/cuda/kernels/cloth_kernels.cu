@@ -1,8 +1,10 @@
-#include "../../include/cuda/cloth_kernels.cuh"
+#include "../../../include/cuda/kernels/cloth_kernels.cuh"
 
-#include "../../include/cuda/helper_math.h"
+#include "../../../include/cuda/helper_math.h"
 
 #include <stdio.h>
+
+using namespace ClothKernels;
 
 __device__ int2 nextNeigh(int n)
 {
@@ -23,7 +25,7 @@ __device__ int2 nextNeigh(int n)
 	return make_int2(0, 0);
 }
 
-__global__ void calculate_forces
+__global__ void ClothKernels::calculate_forces
 (
 	float4 *pos,
 	float4 *oldPos,
@@ -86,7 +88,7 @@ __global__ void calculate_forces
 	acc[index].z = mass * force.z;
 }
 
-__global__ void verlet_integration
+__global__ void ClothKernels::verlet_integration
 (
 	float4 *pos,
 	float4 *oldPos,
@@ -138,7 +140,7 @@ __global__ void verlet_integration
 	//output[3 * index + 2] = my_pos.z;
 }
 
-__global__ void update_triangle_mesh
+__global__ void ClothKernels::update_triangle_mesh
 (
 	float4 *pos,
 	int *triangleIndices,
@@ -180,7 +182,7 @@ __global__ void update_triangle_mesh
 
 
 
-__global__ void apply_constraints
+__global__ void ClothKernels::apply_constraints
 (
 	float4 *pos,
 	int nx,
@@ -243,7 +245,7 @@ __global__ void apply_constraints
 
 
 
-// __global__ void verlet(	float4 * g_pos_in, float4 * g_pos_old_in, float4 * g_pos_out, float4 * g_pos_old_out, 
+// __global__ void ClothKernels::verlet(	float4 * g_pos_in, float4 * g_pos_old_in, float4 * g_pos_out, float4 * g_pos_old_out, 
 // 							int side, float stiffness, float damp, float inverse_mass, int coll_primitives )
 // {
 //     uint index = blockIdx.x * blockDim.x + threadIdx.x;

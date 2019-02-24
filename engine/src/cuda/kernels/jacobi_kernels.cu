@@ -1,4 +1,4 @@
-#include "../../include/cuda/jacobi_kernels.cuh"
+#include "../../../include/cuda/kernels/jacobi_kernels.cuh"
 
 __global__ void jacobi
 (

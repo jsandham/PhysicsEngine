@@ -23,6 +23,7 @@ namespace PhysicsEngine
 		unsigned int numberOfBoxColliders;
 		unsigned int numberOfSphereColliders;
 		unsigned int numberOfCapsuleColliders;
+		unsigned int numberOfBoids;
 
 		unsigned int numberOfSystems;
 
@@ -38,6 +39,7 @@ namespace PhysicsEngine
 		size_t sizeOfBoxCollider;
 		size_t sizeOfSphereCollider;
 		size_t sizeOfCapsuleCollider;
+		size_t sizeOfBoids;
 	};
 #pragma pack(pop)
 

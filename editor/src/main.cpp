@@ -33,6 +33,7 @@
 #include <components/BoxCollider.h>
 #include <components/SphereCollider.h>
 #include <components/CapsuleCollider.h>
+#include <components/Boids.h>
 
 #include <systems/PhysicsSystem.h>
 #include <systems/RenderSystem.h>
@@ -124,6 +125,7 @@ int serializeScenes(std::string projectDirectory)
 		json::JSON boxColliders;
 		json::JSON sphereColliders;
 		json::JSON capsuleColliders;
+		json::JSON boids;
 		json::JSON systems;
 
 		json::JSON::JSONWrapper<map<string,JSON>> objects = jsonScene.ObjectRange();
@@ -177,6 +179,9 @@ int serializeScenes(std::string projectDirectory)
 			else if(type == "CapsuleCollider"){
 				capsuleColliders[it->first] = it->second;
 			}
+			else if(type == "Boids"){
+				boids[it->first] = it->second;
+			}
 			else if(type == "PhysicsSystem"){
 				//std::cout << it->first << " is a PhysicsSystem" << std::endl;
 				systems[it->first] = it->second;
@@ -191,6 +196,10 @@ int serializeScenes(std::string projectDirectory)
 			}
 			else if(type == "DebugSystem"){
 				//std::cout << it->first << " is a DebugSystem" << std::endl;
+				systems[it->first] = it->second;
+			}
+			else if(type == "BoidsSystem"){
+				//std::cout << it->first << " is a LogicSystem" << std::endl;
 				systems[it->first] = it->second;
 			}
 			else if(type == "LogicSystem"){
@@ -211,6 +220,7 @@ int serializeScenes(std::string projectDirectory)
 		unsigned int numberOfBoxColliders = std::max(0, boxColliders.size());
 		unsigned int numberOfSphereColliders = std::max(0, sphereColliders.size());
 		unsigned int numberOfCapsuleColliders = std::max(0, capsuleColliders.size());
+		unsigned int numberOfBoids = std::max(0, boids.size());
 		unsigned int numberOfSystems = std::max(0, systems.size());
 
 		std::cout << "number of entities found: " << numberOfEntities << std::endl;
@@ -225,6 +235,7 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "number of box collider found: " << numberOfBoxColliders << std::endl;
 		std::cout << "number of sphere collider found: " << numberOfSphereColliders << std::endl;
 		std::cout << "number of capsule collider found: " << numberOfCapsuleColliders << std::endl;
+		std::cout << "number of boids found: " << numberOfBoids << std::endl;
 		std::cout << "number of systems found: " << numberOfSystems << std::endl;
 
 		// create scene header
@@ -242,6 +253,7 @@ int serializeScenes(std::string projectDirectory)
 		header.numberOfBoxColliders = numberOfBoxColliders;
 		header.numberOfSphereColliders = numberOfSphereColliders;
 		header.numberOfCapsuleColliders = numberOfCapsuleColliders;
+		header.numberOfBoids = numberOfBoids;
 		header.numberOfSystems = numberOfSystems;
 
 		header.sizeOfEntity = sizeof(Entity);
@@ -256,6 +268,7 @@ int serializeScenes(std::string projectDirectory)
 		header.sizeOfBoxCollider = sizeof(BoxCollider);
 		header.sizeOfSphereCollider = sizeof(SphereCollider);
 		header.sizeOfCapsuleCollider = sizeof(CapsuleCollider);
+		header.sizeOfBoids = sizeof(Boids);
 
 		//header.sizeOfAllSystems = sizeOfAllSystems;
 
@@ -686,6 +699,39 @@ int serializeScenes(std::string projectDirectory)
 			fwrite(&data, sizeof(CapsuleColliderHeader), 1, file);
 		}
 
+		// serialize boids
+		objects = boids.ObjectRange();
+		for(it = objects.begin(); it != objects.end(); it++){
+			BoidsHeader data;
+
+			data.componentId = Guid(it->first);
+			data.entityId = Guid(it->second["entity"].ToString());
+			data.meshId = Guid(it->second["mesh"].ToString());
+			data.materialId = Guid(it->second["material"].ToString());
+
+			data.numBoids = it->second["numBoids"].ToInt();
+			data.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
+			data.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
+			data.bounds.centre.z = (float)it->second["centre"][2].ToFloat();
+
+			data.bounds.size.x = (float)it->second["size"][0].ToFloat();
+			data.bounds.size.y = (float)it->second["size"][1].ToFloat();
+			data.bounds.size.z = (float)it->second["size"][2].ToFloat();
+
+			int type = 11;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(int);
+			totalSize += sizeof(char);
+			totalSize += sizeof(BoidsHeader);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+
+			fwrite(&data, sizeof(BoidsHeader), 1, file);
+		}
+
 		// serialize systems;
 		objects = systems.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
@@ -704,6 +750,9 @@ int serializeScenes(std::string projectDirectory)
 			}
 			else if(it->second["type"].ToString() == "DebugSystem"){
 				type = 3;
+			}
+			else if(it->second["type"].ToString() == "BoidsSystem"){
+				type = 4;
 			}
 			else if(it->second["type"].ToString() == "LogicSystem"){
 				type = 20;
@@ -753,6 +802,7 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
 		std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
 		std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
+		std::cout << "numberOfBoids: " << sceneHeader.numberOfBoids << std::endl;
 
 		std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
 		std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
@@ -766,6 +816,7 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
 		std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
 		std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
+		std::cout << "sizeOfBoids: " << sceneHeader.sizeOfBoids << std::endl;
 
 		if(file2){
 			fclose(file2);

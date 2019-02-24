@@ -59,34 +59,34 @@ void PlayerSystem::update(Input input)
 	int currentPosX = camera->currentPosX;
 	int currentPosY = camera->currentPosY;
 
-	if (input.getKey(KeyCode::Up)){
+	if (getKey(input, KeyCode::Up)){
 		position += up * PlayerSystem::TRANSLATE_SENSITIVITY;
 	}
-	if (input.getKey(KeyCode::Down)){
+	if (getKey(input, KeyCode::Down)){
 		position -= up * PlayerSystem::TRANSLATE_SENSITIVITY;
 	}
-	if (input.getKey(KeyCode::Left)){
+	if (getKey(input, KeyCode::Left)){
 		position -= right * PlayerSystem::TRANSLATE_SENSITIVITY;
 	}
-	if (input.getKey(KeyCode::Right)){
+	if (getKey(input, KeyCode::Right)){
 		position += right * PlayerSystem::TRANSLATE_SENSITIVITY;
 	}
 
 	glm::vec2 mouseDelta = glm::vec2(0.0f, 0.0f);
 
-	position += PlayerSystem::SCROLL_SENSITIVITY * input.getMouseDelta() * front;
+	position += PlayerSystem::SCROLL_SENSITIVITY * input.mouseDelta * front;
 
-	if (input.getMouseButtonDown(LButton)){
-		currentPosX = input.getMousePosX();
-		currentPosY = input.getMousePosY();
+	if (getMouseButtonDown(input, LButton)){
+		currentPosX = input.mousePosX;
+		currentPosY = input.mousePosY;
 	}
-	else if (input.getMouseButton(LButton)){
-		currentPosX = input.getMousePosX();
-		currentPosY = input.getMousePosY();
+	else if (getMouseButton(input, LButton)){
+		currentPosX = input.mousePosX;
+		currentPosY = input.mousePosY;
 		mouseDelta.x = PlayerSystem::PAN_SENSITIVITY * (currentPosX - lastPosX);
 		mouseDelta.y = PlayerSystem::PAN_SENSITIVITY * (currentPosY - lastPosY);
 	}
-	else if (input.getMouseButtonUp(LButton)){
+	else if (getMouseButtonUp(input, LButton)){
 		mouseDelta = glm::vec2(0.0f, 0.0f);
 	}
 
@@ -119,9 +119,29 @@ void PlayerSystem::update(Input input)
 
 
 
+	if (getKeyDown(input, KeyCode::A)){
+		std::cout << "Key code A down" << std::endl;
+	}
+	if (getKey(input, KeyCode::B)){
+		std::cout << "Key code B" << std::endl;
+	}
+	if (getKeyUp(input, KeyCode::C)){
+		std::cout << "Key code C" << std::endl;
+	}
 
 
+	/*if (getMouseButtonDown(input, LButton)){
+		std::cout << "Left button down" << std::endl;
+	}*/
 
+
+	/*if (getMouseButtonDown(input, LButton)){
+		std::cout << "Left button down" << std::endl;
+	}
+
+	if (getMouseButton(input, RButton)){
+		std::cout << "Right button down" << std::endl;
+	}*/
 
 
 

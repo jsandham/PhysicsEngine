@@ -1,4 +1,4 @@
-#include "../../include/cuda/pcg_kernels.cuh"
+#include "../../../include/cuda/kernels/pcg_kernels.cuh"
 
 __global__ void pcg
 (

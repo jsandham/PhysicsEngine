@@ -247,52 +247,59 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 		bool isDown = ((lParam & (1 << 31)) == 0);
 
 		KeyCode keyCode = GetKeyCode(vKCode);
-		input.setKeyState(keyCode, isDown, wasDown);
-
+		input.keyIsDown[(int)keyCode] = isDown;
+		input.keyWasDown[(int)keyCode] = wasDown;
+		//std::cout << "keyCode: " << keyCode << " is down: " << isDown << " was down: " << wasDown << std::endl;
 		break;
 	}
 	case WM_LBUTTONDOWN:
 	{
-		input.setMouseButtonState(LButton, true, false);
+		input.buttonIsDown[(int)LButton] = true;
+		input.buttonWasDown[(int)LButton] = false;
 		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		input.setMouseButtonState(MButton, true, false);
+		input.buttonIsDown[(int)MButton] = true;
+		input.buttonWasDown[(int)MButton] = false;
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		input.setMouseButtonState(RButton, true, false);
+		input.buttonIsDown[(int)RButton] = true;
+		input.buttonWasDown[(int)RButton] = false;
 		break;
 	}
 	case WM_LBUTTONUP:
 	{
-		input.setMouseButtonState(LButton, false, true);
+		input.buttonIsDown[(int)LButton] = false;
+		input.buttonWasDown[(int)LButton] = true;
 		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		input.setMouseButtonState(MButton, false, true);
+		input.buttonIsDown[(int)MButton] = false;
+		input.buttonWasDown[(int)MButton] = true;
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		input.setMouseButtonState(RButton, false, true);
+		input.buttonIsDown[(int)RButton] = false;
+		input.buttonWasDown[(int)RButton] = true;
 		break;
 	}
 	case WM_MOUSEMOVE:
 	{
 		int x = GET_X_LPARAM(lParam);
 		int y = GET_Y_LPARAM(lParam);
-		input.setMousePosition(x, y);
+		input.mousePosX = x;
+		input.mousePosY = y;
 		break;
 	}
 	case WM_MOUSEWHEEL:
 	{
 		int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-
-		input.setMouseDelta(delta);
+		input.mouseDelta = delta;
 		break;
 	}
 	case WM_PAINT:
@@ -365,54 +372,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	worldManager.init();
 
-	/*std::vector<std::string> bundles = get_all_files_names_within_folder("", ".assets");
-	for (size_t i = 0; i < bundles.size(); i++){
-		std::cout << "asset bundle: " << bundles[i] << std::endl;
-	}
-*/
-	/*std::vector<std::string> scenes = get_all_files_names_within_folder("", ".scene");
-	for (size_t i = 0; i < scenes.size(); i++){
-		std::cout << "scene: " << scenes[i] << std::endl;
-	}*/
-
-	//WorldManager worldManager;
-
-	//std::cout << "BBBBBBBBBBBBBBBBBBBB" << std::endl;
-
-	// fill in scene manager with all scenes found in the scene build register and all assets foudn in data folder
-	/*std::string sceneFileName;
-	std::ifstream sceneRegisterFile("../data/scene_build_register.txt");
-
-	std::cout << "CCCCCCCCCCCCCCC" << std::endl;
-	if (sceneRegisterFile.is_open()){
-		while (getline(sceneRegisterFile, sceneFileName)){
-			Scene scene;
-			scene.name = sceneFileName;
-			scene.filepath = "../data/scenes/" + sceneFileName;
-			scene.isLoaded = false;
-
-			worldManager.add(scene);
-
-			std::cout << "Adding scene: " << sceneFileName << " to scene manager" << std::endl;
-		}
-
-		sceneRegisterFile.close();
-	}
-	else{
-		std::cout << "Error: Could not open scene build register file" << std::endl;
-		return 0;
-	}*/
-
-	/*std::vector<std::string> assetFilePaths = get_all_asset_files("../data/");
-	for (unsigned int i = 0; i < assetFilePaths.size(); i++){
-		AssetFile assetFile;
-		assetFile.filepath = assetFilePaths[i];
-
-		worldManager.add(assetFile);
-	}*/
-
-	//worldManager.init();
-
 	// total frame timing
 	int frameCount = 0;
 	LARGE_INTEGER lastCounter;
@@ -458,7 +417,18 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
 		Time::deltaTime = milliSecPerFrame;
 
-		//Input::updateEOF();
+		// input
+		for(int i = 0; i < 3; i++){
+			input.buttonWasDown[i] = input.buttonIsDown[i];
+			//input.buttonIsDown[i] = false;
+		}
+
+		input.mouseDelta = 0;
+
+		for(int i = 0; i < 51; i++){
+		 	input.keyIsDown[i] = false;
+			input.keyWasDown[i] = false;// input.keyIsDown[i];// false
+		}
 	}
 
 	return 0;

@@ -21,11 +21,19 @@
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/CapsuleCollider.h"
+#include "../../include/components/Boids.h"
+#include "../../include/components/Cloth.h"
+#include "../../include/components/Fluid.h"
+#include "../../include/components/Solid.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
 #include "../../include/systems/CleanUpSystem.h"
 #include "../../include/systems/DebugSystem.h"
+#include "../../include/systems/BoidsSystem.h"
+#include "../../include/systems/ClothSystem.h"
+#include "../../include/systems/FluidSystem.h"
+#include "../../include/systems/SolidSystem.h"
 
 using namespace PhysicsEngine;
 
@@ -129,6 +137,26 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* ind
 		*instanceType = (int)Component::getInstanceType<CapsuleCollider>();
 		return new CapsuleCollider(data);
 	}
+	else if(type == 11){
+		*index = (int)getAllocator<Boids>().getCount();
+		*instanceType = (int)Component::getInstanceType<Boids>();
+		return new Boids(data);
+	}
+	else if(type == 12){
+		*index = (int)getAllocator<Cloth>().getCount();
+		*instanceType = (int)Component::getInstanceType<Cloth>();
+		return new Cloth(data);
+	}
+	else if(type == 13){
+		*index = (int)getAllocator<Fluid>().getCount();
+		*instanceType = (int)Component::getInstanceType<Fluid>();
+		return new Fluid(data);
+	}
+	else if(type == 14){
+		*index = (int)getAllocator<Solid>().getCount();
+		*instanceType = (int)Component::getInstanceType<Solid>();
+		return new Solid(data);
+	}
 	else{
 		std::cout << "Error: Invalid component type (" << type << ") when trying to load internal component" << std::endl;
 		return NULL;
@@ -154,6 +182,22 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
 	else if(type == 3){
 		*index = (int)getAllocator<DebugSystem>().getCount();
 		return new DebugSystem(data);
+	}
+	else if(type == 4){
+		*index = (int)getAllocator<BoidsSystem>().getCount();
+		return new BoidsSystem(data);
+	}
+	else if(type == 5){
+		*index = (int)getAllocator<ClothSystem>().getCount();
+		return new ClothSystem(data);
+	}
+	else if(type == 6){
+		*index = (int)getAllocator<FluidSystem>().getCount();
+		return new FluidSystem(data);
+	}
+	else if(type == 7){
+		*index = (int)getAllocator<SolidSystem>().getCount();
+		return new SolidSystem(data);
 	}
 	else{
 		std::cout << "Error: Invalid system type (" << type << ") when trying to load internal system" << std::endl;

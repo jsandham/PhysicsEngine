@@ -1,5 +1,7 @@
 #include "../../include/components/Cloth.h"
+
 #include "../../include/core/Input.h"
+#include "../../include/core/PoolAllocator.h"
 
 using namespace PhysicsEngine;
 
@@ -10,7 +12,22 @@ Cloth::Cloth()
 	mass = 64.0f / (256 * 256);
 }
 
+Cloth::Cloth(std::vector<char> data)
+{
+	
+}
+
 Cloth::~Cloth()
 {
 	
+}
+
+void* Cloth::operator new(size_t size)
+{
+	return getAllocator<Cloth>().allocate();
+}
+
+void Cloth::operator delete(void*)
+{
+
 }

@@ -1,8 +1,10 @@
-#include "../../include/cuda/fluid_kernels.cuh"
+#include "../../../include/cuda/kernels/fluid_kernels.cuh"
 
-#include "../../include/cuda/helper_math.h"
+#include "../../../include/cuda/helper_math.h"
 
 #include <stdio.h>
+
+using namespace FluidKernels;
 
 #define PI 3.14159265358979323846264f
 
@@ -12,7 +14,7 @@ __device__ const float f2 = 45.0f/PI;
 __device__ const float nu = 0.05f;// 3.5 * 0.0075f;
 
 
-__device__ int3 calcGridPosition(float4 pos, int3 grid, float3 gridSize)
+__device__ int3 FluidKernels::calcGridPosition(float4 pos, int3 grid, float3 gridSize)
 {
 	int3 gridPosition;
 	/*gridPosition.x = __float2int_rd(pos.x * grid.x / gridSize.x);
@@ -27,14 +29,14 @@ __device__ int3 calcGridPosition(float4 pos, int3 grid, float3 gridSize)
 
 
 // what index the given gridPos corresponds to in the 1D array of cells
-__device__ int calcCellIndex(int3 gridPos, int3 grid)
+__device__ int FluidKernels::calcCellIndex(int3 gridPos, int3 grid)
 {
 	return grid.y * grid.x * gridPos.z + grid.x * gridPos.y + gridPos.x;
 }
 
 
 // calculate spatial has for infinite domains
-__device__ int calcGridHash(int3 gridPos, int numBuckets)
+__device__ int FluidKernels::calcGridHash(int3 gridPos, int numBuckets)
 {
 	const uint p1 = 73856093;
 	const uint p2 = 19349663;
@@ -45,7 +47,7 @@ __device__ int calcGridHash(int3 gridPos, int numBuckets)
 }
 
 // penalty force boundary conditions http://n-e-r-v-o-u-s.com/education/simulation/week6.php
-__device__ void boundary(float4 *pos, float4 *vel, float h, float3 gridSize)
+__device__ void FluidKernels::boundary(float4 *pos, float4 *vel, float h, float3 gridSize)
 {
 	float d;
 	float n = 1.0f;
@@ -106,7 +108,7 @@ __device__ void boundary(float4 *pos, float4 *vel, float h, float3 gridSize)
 }
 
 
-__global__ void build_spatial_grid
+__global__ void FluidKernels::build_spatial_grid
 (
 	float4 *pos,
 	int *particleIndex,
@@ -133,7 +135,7 @@ __global__ void build_spatial_grid
 	}
 }
 
-__global__ void reorder_particles
+__global__ void FluidKernels::reorder_particles
 (
 	float4 *pos,
 	float4 *spos,
@@ -190,7 +192,7 @@ __global__ void reorder_particles
 }
 
 
-__global__ void calculate_fluid_particle_density
+__global__ void FluidKernels::calculate_fluid_particle_density
 (
 	float4 *pos,
 	float *rho,
@@ -250,7 +252,7 @@ __global__ void calculate_fluid_particle_density
 }
 
 
-__global__ void calculate_solid_particle_density
+__global__ void FluidKernels::calculate_solid_particle_density
 (
 	float4 *pos,
 	float *rho,
@@ -314,7 +316,7 @@ __global__ void calculate_solid_particle_density
 }
 
 
-__global__ void calculate_pressure
+__global__ void FluidKernels::calculate_pressure
 (
 	float *rho,
 	float *rho0,
@@ -335,7 +337,7 @@ __global__ void calculate_pressure
 	}
 }
 
-__global__ void apply_pressure_and_gravity_acceleration
+__global__ void FluidKernels::apply_pressure_and_gravity_acceleration
 (
 	float4 *pos,
 	float4 *vel,
@@ -421,7 +423,7 @@ __global__ void apply_pressure_and_gravity_acceleration
 }
 
 
-__global__ void compute_solid_particle_velocity
+__global__ void FluidKernels::compute_solid_particle_velocity
 (
 	float4 *pos,
 	float4 *vel,
@@ -443,7 +445,7 @@ __global__ void compute_solid_particle_velocity
 	}
 }
 
-__global__ void apply_xsph_viscosity
+__global__ void FluidKernels::apply_xsph_viscosity
 (
 	float4 *pos,
 	float4 *vel,
@@ -525,7 +527,7 @@ __global__ void apply_xsph_viscosity
 	}
 }
 
-__global__ void update_particles
+__global__ void FluidKernels::update_particles
 (
 	float4 *pos,
 	float4 *vel,
@@ -559,7 +561,7 @@ __global__ void update_particles
 }
 
 
-__global__ void copy_sph_arrays
+__global__ void FluidKernels::copy_sph_arrays
 (
 	float4 *pos,
 	float4 *spos,
@@ -594,7 +596,7 @@ __global__ void copy_sph_arrays
 
 
 
-// __global__ void update_particles2
+// __global__ void FluidKernels::update_particles2
 // (
 // 	float4 *pos,
 // 	float4 *oldPos,
@@ -635,7 +637,7 @@ __global__ void copy_sph_arrays
 // }
 
 
-// __global__ void reorder_particles2
+// __global__ void FluidKernels::reorder_particles2
 // (
 // float4 *pos,
 // float4 *oldPos,
@@ -699,7 +701,7 @@ __global__ void copy_sph_arrays
 
 
 // // collide two particles using the DEM method from the NVIDIA CUDA SDK sample code
-// __device__ float3 collideParticles(float4 pos1, float4 pos2, float4 vel1, float4 vel2, float radius1, float radius2, float spring, float damping, float shear, float attraction)
+// __device__ float3 FluidKernels::collideParticles(float4 pos1, float4 pos2, float4 vel1, float4 vel2, float radius1, float radius2, float spring, float damping, float shear, float attraction)
 // {
 // 	// calculate relative position
 // 	float3 relPos;
@@ -737,7 +739,7 @@ __global__ void copy_sph_arrays
 // }
 
 
-// __global__ void	calculate_collisions
+// __global__ void	FluidKernels::calculate_collisions
 // (
 // float4 *pos,
 // float4 *oldPos,
@@ -792,7 +794,7 @@ __global__ void copy_sph_arrays
 // 	}
 // }
 
-// __global__ void copy_arrays
+// __global__ void FluidKernels::copy_arrays
 // (
 // float4 *pos,
 // float4 *oldPos,
@@ -822,7 +824,7 @@ __global__ void copy_sph_arrays
 // 	}
 // }
 
-//__global__ void copy_arrays
+//__global__ void FluidKernels::copy_arrays
 //(
 //float4 *pos,
 //float4 *oldPos,
@@ -876,7 +878,7 @@ __global__ void copy_sph_arrays
 
 
 
-//__global__ void	calculate_collisions
+//__global__ void	FluidKernels::calculate_collisions
 //	(
 //		float4 *pos,
 //		float4 *vel,
@@ -931,7 +933,7 @@ __global__ void copy_sph_arrays
 //}
 //
 //
-//__global__ void update_particles2
+//__global__ void FluidKernels::update_particles2
 //	(
 //		float4 *pos,
 //		float4 *vel,

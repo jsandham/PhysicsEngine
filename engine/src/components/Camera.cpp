@@ -47,6 +47,33 @@ Camera::Camera(std::vector<char> data)
 	entityId = header->entityId;
 	position = header->position;
 	backgroundColor = header->backgroundColor;
+
+	front = glm::vec3(0.0f, 0.0f, -1.0f);
+	up = glm::vec3(0.0f, 1.0f, 0.0f);
+	right = glm::normalize(glm::cross(front, up));
+
+	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	lastPosX = 0;
+	lastPosY = 0;
+
+	currentPosX = 0;
+	currentPosY = 0;
+
+	enabled = true;
+	priority = 10;
+
+	x = 0;
+	y = 0;
+	width = 1000;
+	height = 1000;
+
+	projection = glm::perspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 100.0f);
+	view = glm::lookAt(position, position + front, up);
+
+	frustum.setPerspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 100.0f);
+
+	frustum.setCamera(position, front, up, right);
 }
 
 Camera::~Camera()

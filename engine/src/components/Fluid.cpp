@@ -1,7 +1,9 @@
 #include <iostream>
 
 #include "../../include/components/Fluid.h"
+
 #include "../../include/core/Input.h"
+#include "../../include/core/PoolAllocator.h"
 
 using namespace PhysicsEngine;
 
@@ -11,10 +13,26 @@ Fluid::Fluid()
 	//physics = new CudaFluidPhysics();
 }
 
+Fluid::Fluid(std::vector<char> data)
+{
+	//std::cout << "fluid particles constructor called" << std::endl;
+	//physics = new CudaFluidPhysics();
+}
+
 Fluid::~Fluid()
 {
 	//std::cout << "FluidParticles destructor called" << std::endl;
 	//delete physics;
+}
+
+void* Fluid::operator new(size_t size)
+{
+	return getAllocator<Fluid>().allocate();
+}
+
+void Fluid::operator delete(void*)
+{
+
 }
 
 // void Fluid::init()

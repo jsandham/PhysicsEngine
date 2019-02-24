@@ -313,11 +313,11 @@ void RenderSystem::update(Input input)
 	//int elapsedGPUTime = Graphics::endGPUTimer();
 
 	if(world->debug){
-		if(input.getKeyDown(KeyCode::NumPad0)){
+		if(getKeyDown(input, KeyCode::NumPad0)){
 			debugMaterial = normalMapMaterial;
 			debugBuffer = fbo.colorBuffer;
 		}
-		else if(input.getKeyDown(KeyCode::NumPad1)){
+		else if(getKeyDown(input, KeyCode::NumPad1)){
 			debugMaterial = depthMapMaterial;
 			debugBuffer = fbo.depthBuffer;
 		}
@@ -328,7 +328,7 @@ void RenderSystem::update(Input input)
 		renderScene(debugMaterial);
 		Graphics::unbind(&fbo);
 
-		if(input.getKeyDown(KeyCode::P)){
+		if(getKeyDown(input, KeyCode::P)){
 			debugBuffer->readPixels();
 			std::vector<unsigned char> temp = debugBuffer->getRawTextureData();
 

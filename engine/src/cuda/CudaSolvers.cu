@@ -1,7 +1,7 @@
 #include "../../include/cuda/CudaSolvers.cuh"
 
-#include "../../include/cuda/math_kernels.cuh"
-#include "../../include/cuda/jacobi_kernels.cuh"
+#include "../../include/cuda/kernels/math_kernels.cuh"
+#include "../../include/cuda/kernels/jacobi_kernels.cuh"
 
 using namespace PhysicsEngine;
 

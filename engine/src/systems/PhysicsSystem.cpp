@@ -8,17 +8,6 @@
 #include "../../include/core/World.h"
 
 #include "../../include/components/Transform.h"
-#include "../../include/components/Fluid.h"
-#include "../../include/components/Cloth.h"
-#include "../../include/components/Solid.h"
-
-#include "../../include/cuda/CudaPhysics.cuh"
-
-#include <cuda.h>
-#include <cudagl.h>
-#include <cuda_runtime.h>
-#include <cuda_runtime_api.h>
-#include <cuda_gl_interop.h>
 
 using namespace PhysicsEngine;
 
@@ -49,8 +38,9 @@ void PhysicsSystem::operator delete(void*)
 
 void PhysicsSystem::init(World* world)
 {
-	std::cout << "physics system init called" << std::endl;
 	this->world = world;
+
+	
 }
 
 void PhysicsSystem::update(Input input)

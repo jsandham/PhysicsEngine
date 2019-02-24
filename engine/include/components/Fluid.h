@@ -22,7 +22,11 @@ namespace PhysicsEngine
 
 		public:
 			Fluid();
+			Fluid(std::vector<char> data);
 			~Fluid();
+
+			void* operator new(size_t size);
+			void operator delete(void*);
 
 			// void init();
 			// void update();

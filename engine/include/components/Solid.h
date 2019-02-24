@@ -40,7 +40,11 @@ namespace PhysicsEngine
 
 		public:
 			Solid();
+			Solid(std::vector<char> data);
 			~Solid();
+
+			void* operator new(size_t size);
+			void operator delete(void*);
 	};
 }
 

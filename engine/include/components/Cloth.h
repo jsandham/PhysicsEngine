@@ -28,7 +28,11 @@ namespace PhysicsEngine
 
 		public:
 			Cloth();
+			Cloth(std::vector<char> data);
 			~Cloth();
+
+			void* operator new(size_t size);
+			void operator delete(void*);
 	};
 }
 

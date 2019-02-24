@@ -1,12 +1,17 @@
-﻿Build started 2/18/2019 6:24:15 PM.
-     1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2/24/2019 12:04:23 AM.
+     1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\Demo.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\Load.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
          Demo.cpp
+         Load.cpp
          LogicSystem.cpp
          PlayerSystem.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"x64\Release\Demo.res" Demo.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib opengl32.lib cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
          x64\Release\Demo.obj
          x64\Release\Load.obj
          x64\Release\LogicSystem.obj
@@ -15,8 +20,8 @@
          Generating code
          Finished generating code
          Demo.vcxproj -> C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe
-     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:04.35
+Time Elapsed 00:00:05.44

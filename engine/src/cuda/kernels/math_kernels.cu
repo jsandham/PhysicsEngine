@@ -1,4 +1,4 @@
-#include "../../include/cuda/math_kernels.cuh"
+#include "../../../include/cuda/kernels/math_kernels.cuh"
 
 // sparse CRS matrix vector product
 __global__ void crs_spmv

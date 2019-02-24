@@ -1,8 +1,6 @@
 #ifndef __INPUT_H__
 #define __INPUT_H__
 
-#include <vector>
-
 namespace PhysicsEngine
 {
 	typedef enum KeyCode
@@ -67,39 +65,23 @@ namespace PhysicsEngine
 		RButton
 	};
 
-	class Input
+	struct Input
 	{
-		private:
-			std::vector<bool> keyIsDown;
-			std::vector<bool> keyWasDown;
-			std::vector<bool> buttonIsDown;
-			std::vector<bool> buttonWasDown;
-
-			int mousePosX;
-			int mousePosY;
-			int mouseDelta;
-			
-		public:
-			Input();
-			~Input();
-
-		public:
-			bool getKey(KeyCode key);
-			bool getKeyDown(KeyCode key);
-			bool getKeyUp(KeyCode key);
-
-			bool getMouseButton(MouseButton button);
-			bool getMouseButtonDown(MouseButton button);
-			bool getMouseButtonUp(MouseButton button);
-			int getMousePosX();
-			int getMousePosY();
-			int getMouseDelta();
-
-			void setKeyState(KeyCode key, bool isDown, bool wasDown);
-			void setMouseButtonState(MouseButton button, bool isDown, bool wasDown);
-			void setMousePosition(int x, int y);
-			void setMouseDelta(int delta);
+		bool keyIsDown[51];
+		bool keyWasDown[51];
+		bool buttonIsDown[3];
+		bool buttonWasDown[3];
+		int mousePosX;
+		int mousePosY;
+		int mouseDelta;
 	};
+
+	bool getKey(Input input, KeyCode key);
+	bool getKeyDown(Input input, KeyCode key);
+	bool getKeyUp(Input input, KeyCode key);
+	bool getMouseButton(Input input, MouseButton button);
+	bool getMouseButtonDown(Input input, MouseButton button);
+	bool getMouseButtonUp(Input input, MouseButton button);
 }
 
 

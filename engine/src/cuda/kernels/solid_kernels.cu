@@ -1,6 +1,8 @@
 #include <stdio.h>
 
-#include "../../include/cuda/solid_kernels.cuh"
+#include "../../../include/cuda/kernels/solid_kernels.cuh"
+
+using namespace SolidKernels;
 
 const int MAX_NPE = 4;
 const int MAX_DIM = 3;
@@ -17,7 +19,7 @@ __constant__ float tet3d5_w[5] = {-0.13333333333333f, 0.075000000000000f, 0.0750
 
 
 
-__global__ void compute_local_stiffness_matrices
+__global__ void SolidKernels::compute_local_stiffness_matrices
 (
 	float4* pos,
 	float* localStiffnessMatrices,
@@ -159,7 +161,7 @@ __global__ void compute_local_stiffness_matrices
 	}
 }
 
-__global__ void compute_local_mass_matrices
+__global__ void SolidKernels::compute_local_mass_matrices
 (
 	float4* pos,
 	float* localMassMatrices,
