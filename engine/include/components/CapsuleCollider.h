@@ -32,9 +32,6 @@ namespace PhysicsEngine
 			CapsuleCollider(std::vector<char> data);
 			~CapsuleCollider();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			bool intersect(Bounds bounds);
 	};
 }

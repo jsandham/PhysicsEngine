@@ -50,9 +50,9 @@ __device__ int BoidsKernels::calcGridHash(int3 gridPos, int numBuckets)
 __global__ void BoidsKernels::build_spatial_grid
 (
 	float4 *pos,
-	int *particleIndex,
+	int *boidsIndex,
 	int *cellIndex,
-	int numParticles,
+	int numBoids,
 	int3 grid,
 	float3 gridSize
 )
@@ -60,33 +60,31 @@ __global__ void BoidsKernels::build_spatial_grid
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
 	int offset = 0;
 
-	while (index + offset < numParticles){
+	while (index + offset < numBoids){
 		// find which grid cell the particle is in
 		int3 gridPos = calcGridPosition(pos[index + offset], grid, gridSize);
 
 		// compute cell index 
 		int cindex = calcCellIndex(gridPos, grid);
 
-		particleIndex[index + offset] = index + offset;
+		boidsIndex[index + offset] = index + offset;
 		cellIndex[index + offset] = cindex;
 
 		offset += blockDim.x*gridDim.x;
 	}
 }
 
-__global__ void BoidsKernels::reorder_particles
+__global__ void BoidsKernels::reorder_boids
 (
 	float4 *pos,
 	float4 *spos,
 	float4 *vel,
 	float4 *svel,
-	int *particleType,
-	int *sparticleType,
 	int *cellStartIndex,
 	int *cellEndIndex,
 	int *cellIndex,
-	int *particleIndex,
-	int numParticles
+	int *boidsIndex,
+	int numBoids
 )
 {
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
@@ -94,11 +92,11 @@ __global__ void BoidsKernels::reorder_particles
 
 	__shared__ int sharedcellIndex[blockSize + 1];  //blockSize + 1
 
-	while (index + offset < numParticles){
+	while (index + offset < numBoids){
 		sharedcellIndex[threadIdx.x] = cellIndex[index + offset];
 		if (threadIdx.x == blockDim.x - 1)
 		{
-			if (index + offset + 1 < numParticles){
+			if (index + offset + 1 < numBoids){
 				sharedcellIndex[threadIdx.x + 1] = cellIndex[index + offset + 1];
 			}
 			else{
@@ -115,10 +113,9 @@ __global__ void BoidsKernels::reorder_particles
 		}
 
 		// reorder position and velocity
-		int p = particleIndex[index + offset];
+		int p = boidsIndex[index + offset];
 		spos[index + offset] = pos[p];
 		svel[index + offset] = vel[p];
-		sparticleType[index + offset] = particleType[p];
 
 		offset += blockDim.x*gridDim.x;
 	}
@@ -129,3 +126,168 @@ __global__ void BoidsKernels::reorder_particles
 		cellStartIndex[sharedcellIndex[0]] = 0;
 	}
 }
+
+
+__global__ void BoidsKernels::calculate_boids_direction
+(
+	float4 *pos,
+	float4 *vel,
+	float4 *scratch,
+	int *cellStartIndex,
+	int *cellEndIndex,
+	int *cellIndex,
+	int *boidsIndex,
+	int numBoids,
+	int3 grid
+)
+{
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
+	int offset = 0;
+	int maxIndex = grid.x*grid.y*grid.z;
+
+	while (index + offset < numBoids){
+
+		float4 position = pos[index + offset];
+		float4 velocity = vel[index + offset];
+
+		// 'centre of mass' of local boid positions
+		float4 com = make_float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+		// 'centre of mass' of local boid velocities
+		float4 vcom = make_float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+		// number of local boids
+		int numLocalBoids = 0;
+
+		// vector to steer boids that are too close to each other away
+		float4 close = make_float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+		int c = cellIndex[index + offset];
+		for (int k = -1; k <= 1; k++){
+			for (int j = -1; j <= 1; j++){
+				for (int i = -1; i <= 1; i++){
+					int hash = c + grid.y*grid.x*k + grid.x*j + i;
+					if (hash >= 0 && hash < maxIndex){
+
+						// loop through all boids in this cell
+						for (int l = cellStartIndex[hash]; l < cellEndIndex[hash]; l++){
+							float4 p = pos[l];
+							float4 v = vel[l];
+
+							com += p;
+							com += v;
+							numLocalBoids++;
+
+							float4 r = position - p;
+							float radius2 = r.x*r.x + r.y*r.y + r.z*r.z;
+							if (radius2 < 0.1f){
+								close = close + r;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		com = com / numLocalBoids;
+		vcom = vcom / numLocalBoids;
+
+		scratch[index + offset] += 0.01f * (com - position) + 0.125f * (vcom - velocity) + close;
+
+		offset += blockDim.x * gridDim.x;
+	}
+}
+
+__global__ void BoidsKernels::update_boids
+(
+	float4 *pos,
+	float4 *vel,
+	float4 *scratch,
+	float *model,
+	float dt,
+	float h,
+	int numBoids,
+	float3 gridSize
+)
+{
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
+	int offset = 0;
+
+	while (index + offset < numBoids){
+		float4 my_pos = pos[index + offset];
+		float4 my_vel = vel[index + offset];
+		float4 s = scratch[index + offset];
+
+		my_vel = my_vel + s;
+		my_pos = my_pos + my_vel;
+
+
+		pos[index + offset] = my_pos;
+		vel[index + offset] = my_vel;
+
+		offset += blockDim.x * gridDim.x;
+	}
+}
+
+
+
+// // penalty force boundary conditions http://n-e-r-v-o-u-s.com/education/simulation/week6.php
+// __device__ void FluidKernels::boundary(float4 *pos, float4 *vel, float h, float3 gridSize)
+// {
+// 	float d;
+// 	float n = 1.0f;
+
+// 	d = -n*(gridSize.x - (*pos).x) + h;
+// 	if(d > 0.0f){
+// 		(*pos).x += d*(-0.5f);
+// 		(*vel).x -= 1.9*(*vel).x*(-0.5f)*(-0.5f);
+
+// 		// (*acc).x += 10000*(-n)*d;
+// 		// (*acc).x += -0.9 * (*vel).x*(-n)*(-n);
+// 	} 
+
+// 	d = n*(0.0f - (*pos).x) + h;
+// 	if(d > 0.0f){
+// 		(*pos).x += d*(0.5f);
+// 		(*vel).x -= 1.9*(*vel).x*(0.5f)*(0.5f);
+
+// 		// (*acc).x += 10000*(n)*d;
+// 		// (*acc).x += -0.9 * (*vel).x*(n)*(n);
+// 	} 
+
+// 	d = -n*(gridSize.y - (*pos).y) + h;
+// 	if(d > 0.0f){
+// 		(*pos).y += d*(-0.5f);
+// 		(*vel).y -= 1.9*(*vel).y*(-0.5f)*(-0.5f);
+
+// 		// (*acc).y += 10000*(-n)*d;
+// 		// (*acc).y += -0.9 * (*vel).y*(-n)*(-n);
+// 	} 
+
+// 	d = n*(0.0f - (*pos).y) + h;
+// 	if(d > 0.0f){
+// 		(*pos).y += d*(0.5f);
+// 		(*vel).y -= 1.9*(*vel).y*(0.5f)*(0.5f);
+
+// 		// (*acc).y += 10000*(n)*d;
+// 		// (*acc).y += -0.9 * (*vel).y*(n)*(n);
+// 	} 
+
+// 	d = -n*(gridSize.z - (*pos).z) + h;
+// 	if(d > 0.0f){
+// 		(*pos).z += d*(-0.5f);
+// 		(*vel).z -= 1.9*(*vel).z*(-0.5f)*(-0.5f);
+
+// 		// (*acc).z += 10000*(-n)*d;
+// 		// (*acc).z += -0.9 * (*vel).z*(-n)*(-n);
+// 	} 
+
+// 	d = n*(0.0f - (*pos).z) + h;
+// 	if(d > 0.0f){
+// 		(*pos).z += d*(0.5f);
+// 		(*vel).z -= 1.9*(*vel).z*(0.5f)*(0.5f);
+
+// 		// (*acc).z += 10000*(n)*d;
+// 		// (*acc).z += -0.9 * (*vel).z*(n)*(n);
+// 	} 
+// }

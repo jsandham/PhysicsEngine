@@ -26,16 +26,6 @@ BoxCollider::~BoxCollider()
 
 }
 
-void* BoxCollider::operator new(size_t size)
-{
-	return getAllocator<BoxCollider>().allocate();
-}
-
-void BoxCollider::operator delete(void*)
-{
-
-}
-
 bool BoxCollider::intersect(Bounds bounds)
 {
 	return Geometry::intersect(this->bounds, bounds);

@@ -35,9 +35,6 @@ namespace PhysicsEngine
 			Texture3D(int width, int height, int depth, int numChannels);
 			~Texture3D();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			int getWidth() const;
 			int getHeight() const;
 			int getDepth() const;

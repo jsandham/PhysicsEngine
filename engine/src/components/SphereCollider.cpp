@@ -26,16 +26,6 @@ SphereCollider::~SphereCollider()
 
 }
 
-void* SphereCollider::operator new(size_t size)
-{
-	return getAllocator<SphereCollider>().allocate();
-}
-
-void SphereCollider::operator delete(void*)
-{
-
-}
-
 bool SphereCollider::intersect(Bounds bounds)
 {
 	return Geometry::intersect(this->sphere, bounds);

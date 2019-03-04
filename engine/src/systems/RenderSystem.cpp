@@ -40,16 +40,6 @@ RenderSystem::~RenderSystem()
 	delete lineBuffer;
 }
 
-void* RenderSystem::operator new(size_t size)
-{
-	return getAllocator<RenderSystem>().allocate();
-}
-
-void RenderSystem::operator delete(void*)
-{
-
-}
-
 void RenderSystem::init(World* world)
 {
 	this->world = world;
@@ -96,17 +86,17 @@ void RenderSystem::init(World* world)
 	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
 	debugWindow = new DebugWindow(0.5f, 0.5f, 0.5f, 0.5f);
 
-	graphMaterial = world->create<Material>();
-	windowMaterial = world->create<Material>();
-	normalMapMaterial = world->create<Material>();
-	depthMapMaterial = world->create<Material>();
-	lineMaterial = world->create<Material>();
+	graphMaterial = world->createAsset<Material>();
+	windowMaterial = world->createAsset<Material>();
+	normalMapMaterial = world->createAsset<Material>();
+	depthMapMaterial = world->createAsset<Material>();
+	lineMaterial = world->createAsset<Material>();
 
-	graphShader = world->create<Shader>();
-	windowShader = world->create<Shader>();
-	normalMapShader = world->create<Shader>();
-	depthMapShader = world->create<Shader>();
-	lineShader = world->create<Shader>();
+	graphShader = world->createAsset<Shader>();
+	windowShader = world->createAsset<Shader>();
+	normalMapShader = world->createAsset<Shader>();
+	depthMapShader = world->createAsset<Shader>();
+	lineShader = world->createAsset<Shader>();
 
 	graphShader->vertexShader = Shader::graphVertexShader;
 	graphShader->fragmentShader = Shader::graphFragmentShader;
@@ -134,9 +124,9 @@ void RenderSystem::init(World* world)
 	Graphics::generate(graph);
 	Graphics::generate(debugWindow);
 
-	fbo.colorBuffer = world->create<Texture2D>();
+	fbo.colorBuffer = world->createAsset<Texture2D>();
 	fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
-	fbo.depthBuffer = world->create<Texture2D>();
+	fbo.depthBuffer = world->createAsset<Texture2D>();
 	fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
 
 	debugMaterial = normalMapMaterial;

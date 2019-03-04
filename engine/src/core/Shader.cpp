@@ -161,16 +161,6 @@ Shader::~Shader()
 
 }
 
-void* Shader::operator new(size_t size)
-{
-	return getAllocator<Shader>().allocate();
-}
-
-void Shader::operator delete(void*)
-{
-	
-}
-
 bool Shader::isCompiled()
 {
 	return programCompiled;

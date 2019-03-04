@@ -29,15 +29,15 @@ PlayerSystem::~PlayerSystem()
 
 }
 
-void* PlayerSystem::operator new(size_t size)
-{
-	return getAllocator<PlayerSystem>().allocate();
-}
-
-void PlayerSystem::operator delete(void*)
-{
-
-}
+//void* PlayerSystem::operator new(size_t size)
+//{
+//	return getAllocator<PlayerSystem>().allocate();
+//}
+//
+//void PlayerSystem::operator delete(void*)
+//{
+//
+//}
 
 void PlayerSystem::init(World* world)
 {

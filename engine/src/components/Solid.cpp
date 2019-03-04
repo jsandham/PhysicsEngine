@@ -18,13 +18,3 @@ Solid::~Solid()
 {
 	
 }
-
-void* Solid::operator new(size_t size)
-{
-	return getAllocator<Solid>().allocate();
-}
-
-void Solid::operator delete(void*)
-{
-
-}

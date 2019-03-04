@@ -36,9 +36,6 @@ namespace PhysicsEngine
 			Transform(std::vector<char> data);
 			~Transform();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			glm::vec3 getEulerAngles();
 			glm::mat4 getModelMatrix();
 

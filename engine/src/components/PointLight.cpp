@@ -39,13 +39,3 @@ PointLight::~PointLight()
 {
 
 }
-
-void* PointLight::operator new(size_t size)
-{
-	return getAllocator<PointLight>().allocate();
-}
-
-void PointLight::operator delete(void*)
-{
-
-}

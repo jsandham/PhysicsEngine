@@ -60,9 +60,6 @@ namespace PhysicsEngine
 			Material(std::vector<char> data);
 			~Material();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			void load(MaterialHeader data);
 	};
 }

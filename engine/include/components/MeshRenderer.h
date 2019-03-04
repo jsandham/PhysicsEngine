@@ -27,9 +27,6 @@ namespace PhysicsEngine
 			MeshRenderer();
 			MeshRenderer(std::vector<char> data);
 			~MeshRenderer();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

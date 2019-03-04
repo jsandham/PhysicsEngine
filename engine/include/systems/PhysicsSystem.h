@@ -31,8 +31,8 @@ namespace PhysicsEngine
 			PhysicsSystem(std::vector<char> data);
 			~PhysicsSystem();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
+			//void* operator new(size_t size);
+			//void operator delete(void*);
 
 			void init(World* world);
 			void update(Input input);

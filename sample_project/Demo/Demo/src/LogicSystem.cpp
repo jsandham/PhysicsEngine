@@ -24,15 +24,15 @@ LogicSystem::~LogicSystem()
 
 }
 
-void* LogicSystem::operator new(size_t size)
-{
-	return getAllocator<LogicSystem>().allocate();
-}
-
-void LogicSystem::operator delete(void*)
-{
-
-}
+//void* LogicSystem::operator new(size_t size)
+//{
+//	return getAllocator<LogicSystem>().allocate();
+//}
+//
+//void LogicSystem::operator delete(void*)
+//{
+//
+//}
 
 void LogicSystem::init(World* world)
 {

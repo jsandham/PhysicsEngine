@@ -25,16 +25,6 @@ Entity::~Entity()
 
 }
 
-void* Entity::operator new(size_t size)
-{
-	return getAllocator<Entity>().allocate();
-}
-
-void Entity::operator delete(void*)
-{
-
-}
-
 void Entity::latentDestroy(World* world)
 {
 	world->latentDestroy(entityId);

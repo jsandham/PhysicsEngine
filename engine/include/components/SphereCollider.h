@@ -32,9 +32,6 @@ namespace PhysicsEngine
 			SphereCollider(std::vector<char> data);
 			~SphereCollider();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			bool intersect(Bounds bounds);
 	};
 }

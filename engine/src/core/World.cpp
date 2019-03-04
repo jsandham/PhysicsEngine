@@ -254,12 +254,12 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		std::cout << rigidbody->halfVelocity.x << " " << rigidbody->halfVelocity.y << " " << rigidbody->halfVelocity.z << std::endl;
 	}
 
-	// Texture2D* t1 = create<Texture2D>();
-	// Material* ma1 = create<Material>();
-	// Mesh* me1 = create<Mesh>();
-	// Texture2D* t2 = create<Texture2D>();
+	Texture2D* t1 = createAsset<Texture2D>();
+	Material* ma1 = createAsset<Material>();
+	Mesh* me1 = createAsset<Mesh>();
+	Texture2D* t2 = createAsset<Texture2D>();
 
-	// std::cout << "Texture id: " << t1->assetId.toString() << std::endl;
+	std::cout << "Texture id: " << t1->assetId.toString() << std::endl;
 
 
 	sceneFile.close();
@@ -326,12 +326,28 @@ void World::latentDestroy(Guid entityId)
 
 void World::immediateDestroy(Guid entityId)
 {
-	// Entity* entity = getEntity(entityId);
+	Entity* entity = getEntity(entityId);
 
-	// if(entity == NULL){
-	//  	std::cout << "Error: Could not find entity (" << entityId << ") when calling immediateDestroy" << std::endl;
-	//  	return;
+	if(entity == NULL){
+	 	std::cout << "Error: Could not find entity (" << entityId.toString() << ") when calling immediateDestroy" << std::endl;
+	 	return;
+	}
+
+	// std::vector<std::pair<Guid, int>> componentsOnEntity;
+
+	// std::map<Guid, std::vector<std::pair, int>>>::iterator it = entityIdToComponentIds.find(entityId);
+	// if(it != entityIdToComponentIds.end()){
+	// 	componentsOnEntity = it->second;
 	// }
+	// else{
+	// 	std::cout << "Error: Entity id (" << entityId.toString() << ") does not exist in entity id to component id map" << std::endl;
+	// 	return;
+	// }
+
+	
+
+
+
 
 	// int entityGlobalIndex = -1;
 	// std::map<int, int>::iterator it1 = idToGlobalIndexMap.find(entityId);
@@ -456,7 +472,7 @@ Entity* World::instantiate()
 	idToGlobalIndex[entityId] = globalIndex;
 	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 
-	Entity* entity = new Entity;
+	Entity* entity = create<Entity>();//new Entity;
 
 	entity->entityId = entityId;
 

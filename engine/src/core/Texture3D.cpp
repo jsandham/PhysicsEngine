@@ -61,16 +61,6 @@ Texture3D::~Texture3D()
 
 }
 
-void* Texture3D::operator new(size_t size)
-{
-	return getAllocator<Texture3D>().allocate();
-}
-
-void Texture3D::operator delete(void*)
-{
-
-}
-
 int Texture3D::getWidth() const
 {
 	return width;

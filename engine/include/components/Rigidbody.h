@@ -50,9 +50,6 @@ namespace PhysicsEngine
 			Rigidbody();
 			Rigidbody(std::vector<char> data);
 			~Rigidbody();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

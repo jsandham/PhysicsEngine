@@ -17,13 +17,3 @@ GMesh::~GMesh()
 {
 
 }
-
-void* GMesh::operator new(size_t size)
-{
-	return getAllocator<GMesh>().allocate();
-}
-
-void GMesh::operator delete(void*)
-{
-	
-}

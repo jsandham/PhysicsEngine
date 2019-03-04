@@ -21,13 +21,3 @@ Cloth::~Cloth()
 {
 	
 }
-
-void* Cloth::operator new(size_t size)
-{
-	return getAllocator<Cloth>().allocate();
-}
-
-void Cloth::operator delete(void*)
-{
-
-}

@@ -52,9 +52,6 @@ namespace PhysicsEngine
 			GMesh();
 			GMesh(std::vector<char> data);
 			~GMesh();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

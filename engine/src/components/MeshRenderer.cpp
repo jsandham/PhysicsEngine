@@ -25,13 +25,3 @@ MeshRenderer::MeshRenderer(std::vector<char> data)
 MeshRenderer::~MeshRenderer()
 {
 }
-
-void* MeshRenderer::operator new(size_t size)
-{
-	return getAllocator<MeshRenderer>().allocate();
-}
-
-void MeshRenderer::operator delete(void*)
-{
-
-}

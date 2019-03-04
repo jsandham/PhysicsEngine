@@ -25,16 +25,6 @@ Fluid::~Fluid()
 	//delete physics;
 }
 
-void* Fluid::operator new(size_t size)
-{
-	return getAllocator<Fluid>().allocate();
-}
-
-void Fluid::operator delete(void*)
-{
-
-}
-
 // void Fluid::init()
 // {
 // 	std::cout << "FluidParticles init called" << std::endl;

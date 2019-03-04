@@ -9,12 +9,6 @@
 #include "../../include/components/Transform.h"
 #include "../../include/components/Fluid.h"
 
-// #include <cuda.h>
-// #include <cudagl.h>
-// #include <cuda_runtime.h>
-// #include <cuda_runtime_api.h>
-// #include <cuda_gl_interop.h>
-
 using namespace PhysicsEngine;
 
 FluidSystem::FluidSystem()
@@ -30,16 +24,6 @@ FluidSystem::FluidSystem(std::vector<char> data)
 FluidSystem::~FluidSystem()
 {
 	
-}
-
-void* FluidSystem::operator new(size_t size)
-{
-	return getAllocator<FluidSystem>().allocate();
-}
-
-void FluidSystem::operator delete(void*)
-{
-
 }
 
 void FluidSystem::init(World* world)

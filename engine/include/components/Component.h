@@ -27,7 +27,7 @@ namespace PhysicsEngine
 
 				return entity->getComponent<T>(world);
 			}
-
+			
 			template <typename T>
 			static int getInstanceType()
 			{

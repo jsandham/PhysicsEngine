@@ -17,6 +17,7 @@ namespace PhysicsEngine
 		Guid meshId;
 		Guid materialId;
 		int numBoids;
+		float h;
 		Bounds bounds;
 	};
 #pragma pack(pop)
@@ -28,15 +29,13 @@ namespace PhysicsEngine
 			Guid materialId;
 
 			int numBoids;
+			float h;
 			Bounds bounds;
 
 		public:
 			Boids();
 			Boids(std::vector<char> data);
 			~Boids();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

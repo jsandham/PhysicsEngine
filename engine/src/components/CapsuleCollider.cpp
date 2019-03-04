@@ -26,16 +26,6 @@ CapsuleCollider::~CapsuleCollider()
 
 }
 
-void* CapsuleCollider::operator new(size_t size)
-{
-	return getAllocator<CapsuleCollider>().allocate();
-}
-
-void CapsuleCollider::operator delete(void*)
-{
-
-}
-
 bool CapsuleCollider::intersect(Bounds bounds)
 {
 	return Geometry::intersect(bounds, this->capsule);

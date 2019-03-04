@@ -45,13 +45,3 @@ SpotLight::~SpotLight()
 {
 
 }
-
-void* SpotLight::operator new(size_t size)
-{
-	return getAllocator<SpotLight>().allocate();
-}
-
-void SpotLight::operator delete(void*)
-{
-
-}

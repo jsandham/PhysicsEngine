@@ -47,14 +47,3 @@ Rigidbody::~Rigidbody()
 {
 
 }
-
-void* Rigidbody::operator new(size_t size)
-{
-	std::cout << "Rigidbody new called" << std::endl;
-	return getAllocator<Rigidbody>().allocate();
-}
-
-void Rigidbody::operator delete(void*)
-{
-
-}

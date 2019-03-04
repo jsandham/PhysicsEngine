@@ -24,8 +24,8 @@ namespace PhysicsEngine
 			FluidSystem(std::vector<char> data);
 			~FluidSystem();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
+			//void* operator new(size_t size);
+			//void operator delete(void*);
 
 			void init(World* world);
 			void update(Input input);

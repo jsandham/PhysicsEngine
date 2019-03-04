@@ -2,7 +2,7 @@
   "id" : "09bb029b-fb53-4ffa-a87e-e67d3643d2f8",
   "04cc2d39-150c-44f6-ab48-040492c547e3" : {
     "type" : "Entity",
-    "components" : ["1bea3692-bd61-4022-9246-7ca734b5d001", "eee3280e-28f0-49d4-a420-3fbbcab57906", "33a0d380-6618-4be9-8f37-d166bbc28f64", "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc", "ac386336-87e0-408c-a215-2f7bd2fbcf7e"]
+    "components" : ["1bea3692-bd61-4022-9246-7ca734b5d001", "eee3280e-28f0-49d4-a420-3fbbcab57906", "33a0d380-6618-4be9-8f37-d166bbc28f64", "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc"]
   },
   "1bea3692-bd61-4022-9246-7ca734b5d001" : {
     "type" : "Transform",
@@ -30,15 +30,6 @@
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0]
-  },
-  "ac386336-87e0-408c-a215-2f7bd2fbcf7e" : {
-    "type" : "Boids",
-    "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
-    "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
-    "numBoids" : 10,
-    "centre" : [0.0, 0.0, 0.0],
-    "size" : [10.0, 10.0, 10.0]
   },
   "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",
@@ -693,7 +684,4 @@
   },
   "c757fef5-31b6-46a6-acd9-346327fdc573" : {
     "type" : "LogicSystem"
-  },
-  "42b86da4-390f-4ae6-96d1-2c5904ece5b8" : {
-    "type" : "BoidsSystem"
   }

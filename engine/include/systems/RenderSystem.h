@@ -66,8 +66,8 @@ namespace PhysicsEngine
 			RenderSystem(std::vector<char> data);
 			~RenderSystem();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
+			//void* operator new(size_t size);
+			//void operator delete(void*);
 
 			void init(World* world);
 			void update(Input input);

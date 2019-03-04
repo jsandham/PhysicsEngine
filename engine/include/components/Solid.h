@@ -5,9 +5,6 @@
 
 #include "Component.h"
 
-// #include "../graphics/Buffer.h"
-// #include "../graphics/VertexArrayObject.h"
-
 namespace PhysicsEngine
 {
 	class Solid : public Component
@@ -42,9 +39,6 @@ namespace PhysicsEngine
 			Solid();
 			Solid(std::vector<char> data);
 			~Solid();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

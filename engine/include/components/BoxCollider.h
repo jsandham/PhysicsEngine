@@ -30,9 +30,6 @@ namespace PhysicsEngine
 			BoxCollider(std::vector<char> data);
 			~BoxCollider();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			bool intersect(Bounds bounds);
 	};
 }

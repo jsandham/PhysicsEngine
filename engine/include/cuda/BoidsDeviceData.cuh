@@ -22,19 +22,15 @@ namespace PhysicsEngine
 {
 	struct BoidsDeviceData
 	{
-		float h;               // grid parameters
-		float dt;              // TODO: remove. use Physics.time instead
-
 		int numBoids;          // number of boids
-		int numCells;          // number of cells
-		int3 boidsGridDim;     // number of voxels in grid for x, y, and z directions 
-		float3 boidsGridSize;  // size of grid for x, y, and z directions
+		int numVoxels;         // number of voxels
+		float h;
+		int3 voxelGridDim;     // number of voxels in grid for x, y, and z directions 
+		float3 voxelGridSize;  // size of grid for x, y, and z directions
 
 		// used for timing
 		float elapsedTime;
 		cudaEvent_t start, stop;
-
-		bool initCalled;
 
 		// pointers to host memory
 		float4 *h_pos;
@@ -43,28 +39,21 @@ namespace PhysicsEngine
 		float4 *h_svel;
 		int *h_cellStartIndex;
 		int *h_cellEndIndex;
-		int *h_cellIndex;
-		// int *h_particleIndex;
-		// int *h_particleType;
-		// int *h_sparticleType;
-		int *h_triangleIndices;
-		float *h_triangleVertices;
-		float *h_triangleNormals;
+		int *h_cellHash;
+		int *h_boidsIndex;
+		float *h_modelMatrices;
 
 		// pointers to device memory
 		float4 *d_pos;
 		float4 *d_vel;
 		float4 *d_spos;
 		float4 *d_svel;
+		float4 *d_scratch;
 		int *d_cellStartIndex;
 		int *d_cellEndIndex;
 		int *d_cellHash;
-		// int *d_particleIndex;
-		// int *d_particleType;
-		// int *d_sparticleType;
-		int *d_triangleIndices;
-		float *d_triangleVertices;
-		float *d_triangleNormals;
+		int *d_boidsIndex;
+		float *d_modelMatrices;
 
 		struct cudaGraphicsResource* cudaVertexVBO;
 		struct cudaGraphicsResource* cudaNormalVBO;

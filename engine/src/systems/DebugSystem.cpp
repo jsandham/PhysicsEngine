@@ -31,22 +31,12 @@ DebugSystem::~DebugSystem()
 	
 }
 
-void* DebugSystem::operator new(size_t size)
-{
-	return getAllocator<DebugSystem>().allocate();
-}
-
-void DebugSystem::operator delete(void*)
-{
-
-}
-
 void DebugSystem::init(World* world)
 {
 	this->world = world;
 
-	lineMaterial = world->create<Material>();
-	lineShader = world->create<Shader>();
+	lineMaterial = world->createAsset<Material>();
+	lineShader = world->createAsset<Shader>();
 
 	lineShader->vertexShader = Shader::lineVertexShader;
 	lineShader->fragmentShader = Shader::lineFragmentShader;

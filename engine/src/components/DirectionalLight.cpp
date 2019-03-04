@@ -32,13 +32,3 @@ DirectionalLight::~DirectionalLight()
 {
 
 }
-
-void* DirectionalLight::operator new(size_t size)
-{
-	return getAllocator<DirectionalLight>().allocate();
-}
-
-void DirectionalLight::operator delete(void*)
-{
-
-}

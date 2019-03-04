@@ -52,9 +52,6 @@ namespace PhysicsEngine
 			Shader(std::vector<char> data);
 			~Shader();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			bool isCompiled();
 			void compile();
 

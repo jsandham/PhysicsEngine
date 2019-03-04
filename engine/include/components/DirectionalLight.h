@@ -35,9 +35,6 @@ namespace PhysicsEngine
 			DirectionalLight();
 			DirectionalLight(std::vector<char> data);
 			~DirectionalLight();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

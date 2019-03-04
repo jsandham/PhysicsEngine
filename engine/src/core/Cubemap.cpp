@@ -76,16 +76,6 @@ Cubemap::~Cubemap()
 	
 }
 
-void* Cubemap::operator new(size_t size)
-{
-	return getAllocator<Cubemap>().allocate();
-}
-
-void Cubemap::operator delete(void*)
-{
-	
-}
-
 int Cubemap::getWidth() const
 {
 	return width;

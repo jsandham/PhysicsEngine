@@ -47,16 +47,6 @@ Material::~Material()
 
 }
 
-void* Material::operator new(size_t size)
-{
-	return getAllocator<Material>().allocate();
-}
-
-void Material::operator delete(void*)
-{
-
-}
-
 void Material::load(MaterialHeader data)
 {
 	assetId = data.assetId;

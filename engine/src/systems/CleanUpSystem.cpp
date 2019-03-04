@@ -15,16 +15,6 @@ CleanUpSystem::~CleanUpSystem()
 
 }
 
-void* CleanUpSystem::operator new(size_t size)
-{
-	return getAllocator<CleanUpSystem>().allocate();
-}
-
-void CleanUpSystem::operator delete(void*)
-{
-
-}
-
 void CleanUpSystem::init(World* world)
 {
 	this->world = world;
@@ -32,8 +22,9 @@ void CleanUpSystem::init(World* world)
 
 void CleanUpSystem::update(Input input)
 {
-	// std::vector<int> entitiesMarkedForLatentDestroy;
-	// for(int i = 0; i < entitiesMarkedForLatentDestroy.size(); i++){
-	// 	manager->immediateDestroy(entitiesMarkedForLatentDestroy[i]):
+	// std::vector<Guid> entityIdsMarkedForLatentDestroy = world->entityIdsMarkedForLatentDestroy;
+	// for(int i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++){
+	// 	std::cout << "Clean up system attempting to destroy entity " << entityIdsMarkedForLatentDestroy[i].toString() << std::endl;
+	// 	world->immediateDestroy(entityIdsMarkedForLatentDestroy[i]):
 	// }
 }

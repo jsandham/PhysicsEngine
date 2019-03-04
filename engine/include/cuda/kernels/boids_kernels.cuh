@@ -14,27 +14,51 @@ namespace BoidsKernels
 	__global__ void build_spatial_grid
 		(
 			float4 *pos, 
-			int *particlesIndex, 
+			int *boidsIndex, 
 			int *cellIndex, 
-			int numParticles, 
+			int numBoids, 
 			int3 grid,
 			float3 gridSize
 		);
 
-	__global__ void reorder_particles
+	__global__ void reorder_boids
 		(
 			float4 *pos,
 			float4 *spos,
 			float4 *vel,
 			float4 *svel,
-			int *particleType,
-			int *sparticleType,
 			int *cellStartIndex,
 			int *cellEndIndex,
 			int *cellIndex,
-			int *particleIndex,
-			int numParticles
+			int *boidsIndex,
+			int numBoids
 		);
+
+	__global__ void calculate_boids_direction
+		(
+			float4 *pos,  
+			float4 *vel,
+			float4 *scratch,
+			int *cellStartIndex,
+			int *cellEndIndex,
+			int *cellIndex,
+			int *boidsIndex,
+			int numBoids,
+			int3 grid
+		);
+
+	__global__ void update_boids
+		(
+			float4 *pos, 
+			float4 *vel, 
+			float4 *scratch,
+			float *model,
+			float dt, 
+			float h,
+			int numBoids,
+			float3 gridSize
+		);
+
 }
 
 

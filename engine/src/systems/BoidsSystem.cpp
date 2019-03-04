@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "../../include/systems/BoidsSystem.h"
 
 #include "../../include/core/PoolAllocator.h"
@@ -8,12 +10,6 @@
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/Boids.h"
-
-// #include <cuda.h>
-// #include <cudagl.h>
-// #include <cuda_runtime.h>
-// #include <cuda_runtime_api.h>
-// #include <cuda_gl_interop.h>
 
 using namespace PhysicsEngine;
 
@@ -32,16 +28,6 @@ BoidsSystem::~BoidsSystem()
 	
 }
 
-void* BoidsSystem::operator new(size_t size)
-{
-	return getAllocator<BoidsSystem>().allocate();
-}
-
-void BoidsSystem::operator delete(void*)
-{
-
-}
-
 void BoidsSystem::init(World* world)
 {
 	this->world = world;
@@ -49,10 +35,32 @@ void BoidsSystem::init(World* world)
 	for(int i = 0; i < world->getNumberOfComponents<Boids>(); i++){
 		Boids* boids = world->getComponentByIndex<Boids>(i);
 
+		glm::vec3 boundsSize = boids->bounds.size;
+		float h = boids->h;
+
+		int voxelXDim = (int)ceil(boundsSize.x / h);
+		int voxelYDim = (int)ceil(boundsSize.y / h);
+		int voxelZDim = (int)ceil(boundsSize.z / h);
+
+		glm::vec3 voxelGridSize = glm::vec3(h * voxelXDim, h * voxelYDim, h * voxelZDim);
+
+		int numVoxels = voxelXDim * voxelYDim * voxelZDim;
+
 		BoidsDeviceData boidsDeviceData;
 		boidsDeviceData.numBoids = boids->numBoids;
+		boidsDeviceData.numVoxels = numVoxels;
+		boidsDeviceData.h = h;
+		boidsDeviceData.voxelGridDim.x = voxelXDim;
+		boidsDeviceData.voxelGridDim.y = voxelYDim;
+		boidsDeviceData.voxelGridDim.z = voxelZDim;
+		boidsDeviceData.voxelGridSize.x = voxelGridSize.x;
+		boidsDeviceData.voxelGridSize.y = voxelGridSize.y;
+		boidsDeviceData.voxelGridSize.z = voxelGridSize.z;
 
-		deviceData.push_back(BoidsDeviceData());
+		std::cout << "numBoids: " << boidsDeviceData.numBoids << " numVoxels: " << numVoxels << " h: " << h << " voxel grid dim: " << voxelXDim << " " << voxelYDim << " " << voxelZDim << " voxel grid size: " << voxelGridSize.x << " " << voxelGridSize.y << " " << voxelGridSize.z << std::endl;
+
+
+		deviceData.push_back(boidsDeviceData);
 	}
 
 	for(size_t i = 0; i < deviceData.size(); i++){

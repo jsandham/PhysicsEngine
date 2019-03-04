@@ -81,16 +81,6 @@ Camera::~Camera()
 
 }
 
-void* Camera::operator new(size_t size)
-{
-	return getAllocator<Camera>().allocate();
-}
-
-void Camera::operator delete(void*)
-{
-
-}
-
 glm::vec3& Camera::getPosition() 
 {
 	return position;

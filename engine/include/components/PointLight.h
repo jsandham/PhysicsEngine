@@ -44,9 +44,6 @@ namespace PhysicsEngine
 			PointLight();
 			PointLight(std::vector<char> data);
 			~PointLight();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

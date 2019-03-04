@@ -56,9 +56,6 @@ namespace PhysicsEngine
 			Camera(std::vector<char> data);
 			~Camera();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			glm::vec3& getPosition();
 			glm::vec3& getFront();
 			glm::vec3& getUp();

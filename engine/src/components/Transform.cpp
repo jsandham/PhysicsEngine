@@ -31,16 +31,6 @@ Transform::~Transform()
 
 }
 
-void* Transform::operator new(size_t size)
-{
-	return getAllocator<Transform>().allocate();
-}
-
-void Transform::operator delete(void*)
-{
-
-}
-
 glm::vec3 Transform::getEulerAngles()
 {
 	return glm::eulerAngles(rotation);

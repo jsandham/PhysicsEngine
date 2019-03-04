@@ -9,12 +9,6 @@
 #include "../../include/components/Transform.h"
 #include "../../include/components/Cloth.h"
 
-// #include <cuda.h>
-// #include <cudagl.h>
-// #include <cuda_runtime.h>
-// #include <cuda_runtime_api.h>
-// #include <cuda_gl_interop.h>
-
 using namespace PhysicsEngine;
 
 ClothSystem::ClothSystem()
@@ -30,16 +24,6 @@ ClothSystem::ClothSystem(std::vector<char> data)
 ClothSystem::~ClothSystem()
 {
 	
-}
-
-void* ClothSystem::operator new(size_t size)
-{
-	return getAllocator<ClothSystem>().allocate();
-}
-
-void ClothSystem::operator delete(void*)
-{
-
 }
 
 void ClothSystem::init(World* world)

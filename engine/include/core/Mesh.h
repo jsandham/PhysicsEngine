@@ -37,9 +37,6 @@ namespace PhysicsEngine
 			Mesh(std::vector<char> data);
 			~Mesh();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			void apply();
 	};
 }

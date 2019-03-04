@@ -29,13 +29,3 @@ LineRenderer::~LineRenderer()
 {
 
 }
-
-void* LineRenderer::operator new(size_t size)
-{
-	return getAllocator<LineRenderer>().allocate();
-}
-
-void LineRenderer::operator delete(void*)
-{
-
-}

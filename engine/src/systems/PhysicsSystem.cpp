@@ -26,16 +26,6 @@ PhysicsSystem::~PhysicsSystem()
 	
 }
 
-void* PhysicsSystem::operator new(size_t size)
-{
-	return getAllocator<PhysicsSystem>().allocate();
-}
-
-void PhysicsSystem::operator delete(void*)
-{
-
-}
-
 void PhysicsSystem::init(World* world)
 {
 	this->world = world;

@@ -50,9 +50,6 @@ namespace PhysicsEngine
 			SpotLight();
 			SpotLight(std::vector<char> data);
 			~SpotLight();
-
-			void* operator new(size_t size);
-			void operator delete(void*);
 	};
 }
 

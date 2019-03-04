@@ -73,16 +73,6 @@ Texture2D::~Texture2D()
 	
 }
 
-void* Texture2D::operator new(size_t size)
-{
-	return getAllocator<Texture2D>().allocate();
-}
-
-void Texture2D::operator delete(void*)
-{
-
-}
-
 int Texture2D::getWidth() const
 {
 	return width;

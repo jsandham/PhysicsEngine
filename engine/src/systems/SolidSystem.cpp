@@ -9,12 +9,6 @@
 #include "../../include/components/Transform.h"
 #include "../../include/components/Solid.h"
 
-// #include <cuda.h>
-// #include <cudagl.h>
-// #include <cuda_runtime.h>
-// #include <cuda_runtime_api.h>
-// #include <cuda_gl_interop.h>
-
 using namespace PhysicsEngine;
 
 SolidSystem::SolidSystem()
@@ -30,16 +24,6 @@ SolidSystem::SolidSystem(std::vector<char> data)
 SolidSystem::~SolidSystem()
 {
 	
-}
-
-void* SolidSystem::operator new(size_t size)
-{
-	return getAllocator<SolidSystem>().allocate();
-}
-
-void SolidSystem::operator delete(void*)
-{
-
 }
 
 void SolidSystem::init(World* world)

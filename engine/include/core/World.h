@@ -17,6 +17,7 @@
 #include "Guid.h"
 #include "Input.h"
 #include "Octtree.h"
+#include "LoadInternal.h"
 
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
@@ -134,7 +135,7 @@ namespace PhysicsEngine
 				
 				std::cout << "componentGlobalIndex: " << componentGlobalIndex << " componentType: " << componentType << " componentId: " << componentId.toString() << std::endl;
 
-				T* component = new T;//static_cast<T*>(getAllocator<T>().allocate());
+				T* component = create<T>();//new T;//static_cast<T*>(getAllocator<T>().allocate());
 
 				component->entityId = entityId;
 				component->componentId = componentId;
@@ -175,7 +176,7 @@ namespace PhysicsEngine
 			}
 
 			template<typename T>
-			T* create() //createAsset??
+			T* createAsset()
 			{
 				int index = (int)getAllocator<T>().getCount();
 				Guid id = Guid::newGuid();
@@ -189,7 +190,7 @@ namespace PhysicsEngine
 					return NULL;
 				}
 
-				T* asset = new T;
+				T* asset = create<T>();//new T;
 
 				asset->assetId = id;
 

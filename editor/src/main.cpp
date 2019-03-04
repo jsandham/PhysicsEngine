@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 int serializeScenes(std::string projectDirectory)
 {
-	// shader files
+	// scene files
 	std::vector<std::string> sceneFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/scenes");
 	std::vector<std::string> sceneFilePaths;
 	for(unsigned int i = 0; i < sceneFolderFiles.size(); i++){
@@ -710,6 +710,7 @@ int serializeScenes(std::string projectDirectory)
 			data.materialId = Guid(it->second["material"].ToString());
 
 			data.numBoids = it->second["numBoids"].ToInt();
+			data.h = (float)it->second["h"].ToFloat();
 			data.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
 			data.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
 			data.bounds.centre.z = (float)it->second["centre"][2].ToFloat();

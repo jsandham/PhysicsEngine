@@ -26,9 +26,6 @@ namespace PhysicsEngine
 			Entity(std::vector<char> data);
 			~Entity();
 
-			void* operator new(size_t size);
-			void operator delete(void*);
-
 			void latentDestroy(World* world);
 			void immediateDestroy(World* world);
 			Entity* instantiate(World* world);
