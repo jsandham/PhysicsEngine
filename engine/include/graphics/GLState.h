@@ -11,10 +11,10 @@ namespace PhysicsEngine
 	typedef enum UniformBuffer
 	{
 		CameraBuffer,
-		ShadowBuffer,
 		DirectionalLightBuffer,
 		SpotLightBuffer,
-		PointLightBuffer
+		PointLightBuffer,
+		ShadowBuffer
 	}UniformBuffer;
 
 	struct GLCamera

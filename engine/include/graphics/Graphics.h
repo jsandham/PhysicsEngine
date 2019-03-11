@@ -19,6 +19,8 @@
 #include "../graphics/GLState.h"
 #include "../graphics/GLHandle.h"
 
+#include "../components/Boids.h"
+
 namespace PhysicsEngine
 {
 	typedef enum GLDepth
@@ -119,6 +121,13 @@ namespace PhysicsEngine
 			static void bind(Mesh* mesh);
 			static void unbind(Mesh* mesh);
 			static void draw(Mesh* mesh);
+
+			static void apply(Boids* boids);
+			static void generate(Boids* boids);
+			static void destroy(Boids* boids);
+			static void bind(Boids* boids);
+			static void unbind(Boids* boids);
+			static void draw(Boids* boids);
 
 			static void apply(PerformanceGraph* graph);
 			static void generate(PerformanceGraph* graph);

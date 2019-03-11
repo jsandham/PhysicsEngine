@@ -10,7 +10,7 @@ layout (std140) uniform CameraBlock
 }Camera;
 
 
-uniform mat4 model;
+// uniform mat4 model;
 
 in vec3 position;
 in vec3 normal;
@@ -23,11 +23,13 @@ out vec2 TexCoord;
 
 void main()
 {
-    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);
+	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);
 
-    FragPos = vec3(model * vec4(position, 1.0));
+    // FragPos = vec3(model * vec4(position, 1.0));
+    FragPos = position;//vec3(model * vec4(position, 1.0));
     CameraPos = Camera.cameraPos;
-    Normal = mat3(transpose(inverse(model))) * normal;
+    // Normal = mat3(transpose(inverse(model))) * normal;
+    Normal = normal;
     TexCoord = texCoord;
 }
 

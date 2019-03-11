@@ -14,8 +14,6 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	line = new Line();
-
 	glm::vec3 centre = glm::vec3(0.0f, 20.0f, 20.0f);
 	glm::vec3 size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
 
@@ -27,7 +25,6 @@ World::World()
 
 World::~World()
 {
-	delete line;
 	delete bounds;
 	delete physics;
 }
@@ -199,67 +196,67 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 	std::cout << "Number of systems: " << systems.size() << std::endl;
 
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it;
-	for(it = entityIdToComponentIds.begin(); it != entityIdToComponentIds.end(); it++){
-		std::vector<std::pair<Guid, int>> temp = it->second;
-		std::cout << "Entity " << it->first.toString() << " has components: ";
-		for(int i = 0; i < temp.size(); i++){
-			std::cout << temp[i].first.toString() << " instance type: " << temp[i].second << " ";
-		}
-		std::cout << "" <<std::endl;
-	}
+	// std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it;
+	// for(it = entityIdToComponentIds.begin(); it != entityIdToComponentIds.end(); it++){
+	// 	std::vector<std::pair<Guid, int>> temp = it->second;
+	// 	std::cout << "Entity " << it->first.toString() << " has components: ";
+	// 	for(int i = 0; i < temp.size(); i++){
+	// 		std::cout << temp[i].first.toString() << " instance type: " << temp[i].second << " ";
+	// 	}
+	// 	std::cout << "" <<std::endl;
+	// }
 
-	for(int i = 0; i < getNumberOfEntities(); i++){
-		Entity* entity = getEntityByIndex(i);
+	// for(int i = 0; i < getNumberOfEntities(); i++){
+	// 	Entity* entity = getEntityByIndex(i);
 
-		std::cout << "Entity id: " << entity->entityId.toString() << std::endl;
+	// 	std::cout << "Entity id: " << entity->entityId.toString() << std::endl;
 
-		Transform* transform = getComponent<Transform>(entity->entityId);
-		if(transform != NULL){
-			std::cout << "Transform found with id: " << transform->componentId.toString() << std::endl;
-		}
-	}
+	// 	Transform* transform = getComponent<Transform>(entity->entityId);
+	// 	if(transform != NULL){
+	// 		std::cout << "Transform found with id: " << transform->componentId.toString() << std::endl;
+	// 	}
+	// }
 
-	Entity* entity = getAllocator<Entity>().get(0);
+	// Entity* entity = getAllocator<Entity>().get(0);
 
-	std::cout << "entity id: " << entity->entityId.toString() << std::endl;
+	// std::cout << "entity id: " << entity->entityId.toString() << std::endl;
 
-	std::cout << "count: " << getAllocator<Entity>().getCount() << std::endl;
-	std::cout << "count: " << getAllocator<Transform>().getCount() << std::endl;
-	std::cout << "count: " << getAllocator<Camera>().getCount() << std::endl;
-	std::cout << "count: " << getAllocator<Rigidbody>().getCount() << std::endl;
-	std::cout << "count: " << getAllocator<DirectionalLight>().getCount() << std::endl;
+	// std::cout << "count: " << getAllocator<Entity>().getCount() << std::endl;
+	// std::cout << "count: " << getAllocator<Transform>().getCount() << std::endl;
+	// std::cout << "count: " << getAllocator<Camera>().getCount() << std::endl;
+	// std::cout << "count: " << getAllocator<Rigidbody>().getCount() << std::endl;
+	// std::cout << "count: " << getAllocator<DirectionalLight>().getCount() << std::endl;
 
 
-	Rigidbody* r = addComponent<Rigidbody>(entity->entityId);
+	// Rigidbody* r = addComponent<Rigidbody>(entity->entityId);
 
-	if(r != NULL){
-		std::cout << "Rigidbody " << r->componentId.toString() << " found on entity" << std::endl;
-	}
+	// if(r != NULL){
+	// 	std::cout << "Rigidbody " << r->componentId.toString() << " found on entity" << std::endl;
+	// }
 
-	Rigidbody* rigidbody = getComponent<Rigidbody>(entity->entityId);
+	// Rigidbody* rigidbody = getComponent<Rigidbody>(entity->entityId);
 
-	if(rigidbody != NULL){
-		std::cout << "Rigidbody " << rigidbody->componentId.toString() << " found on entity" << std::endl;
+	// if(rigidbody != NULL){
+	// 	std::cout << "Rigidbody " << rigidbody->componentId.toString() << " found on entity" << std::endl;
 
-		std::cout << rigidbody->useGravity << std::endl;
-		std::cout << rigidbody->mass << std::endl;
-		std::cout << rigidbody->drag << std::endl;
-		std::cout << rigidbody->angularDrag << std::endl;
+	// 	std::cout << rigidbody->useGravity << std::endl;
+	// 	std::cout << rigidbody->mass << std::endl;
+	// 	std::cout << rigidbody->drag << std::endl;
+	// 	std::cout << rigidbody->angularDrag << std::endl;
 
-		std::cout << rigidbody->velocity.x << " " << rigidbody->velocity.y << " " << rigidbody->velocity.z << std::endl;
-		std::cout << rigidbody->centreOfMass.x << " " << rigidbody->centreOfMass.y << " " << rigidbody->centreOfMass.z << std::endl;
-		std::cout << rigidbody->angularVelocity.x << " " << rigidbody->angularVelocity.y << " " << rigidbody->angularVelocity.z << std::endl;
+	// 	std::cout << rigidbody->velocity.x << " " << rigidbody->velocity.y << " " << rigidbody->velocity.z << std::endl;
+	// 	std::cout << rigidbody->centreOfMass.x << " " << rigidbody->centreOfMass.y << " " << rigidbody->centreOfMass.z << std::endl;
+	// 	std::cout << rigidbody->angularVelocity.x << " " << rigidbody->angularVelocity.y << " " << rigidbody->angularVelocity.z << std::endl;
 
-		std::cout << rigidbody->halfVelocity.x << " " << rigidbody->halfVelocity.y << " " << rigidbody->halfVelocity.z << std::endl;
-	}
+	// 	std::cout << rigidbody->halfVelocity.x << " " << rigidbody->halfVelocity.y << " " << rigidbody->halfVelocity.z << std::endl;
+	// }
 
-	Texture2D* t1 = createAsset<Texture2D>();
-	Material* ma1 = createAsset<Material>();
-	Mesh* me1 = createAsset<Mesh>();
-	Texture2D* t2 = createAsset<Texture2D>();
+	// Texture2D* t1 = createAsset<Texture2D>();
+	// Material* ma1 = createAsset<Material>();
+	// Mesh* me1 = createAsset<Mesh>();
+	// Texture2D* t2 = createAsset<Texture2D>();
 
-	std::cout << "Texture id: " << t1->assetId.toString() << std::endl;
+	// std::cout << "Texture id: " << t1->assetId.toString() << std::endl;
 
 
 	sceneFile.close();
@@ -302,11 +299,6 @@ Entity* World::getEntityByIndex(int index)
 System* World::getSystemByIndex(int index)
 {
 	return systems[index];
-}
-
-Line* World::getLine()
-{
-	return line;
 }
 
 Bounds* World::getWorldBounds()

@@ -59,7 +59,6 @@ void BoidsSystem::init(World* world)
 
 		std::cout << "numBoids: " << boidsDeviceData.numBoids << " numVoxels: " << numVoxels << " h: " << h << " voxel grid dim: " << voxelXDim << " " << voxelYDim << " " << voxelZDim << " voxel grid size: " << voxelGridSize.x << " " << voxelGridSize.y << " " << voxelGridSize.z << std::endl;
 
-
 		deviceData.push_back(boidsDeviceData);
 	}
 

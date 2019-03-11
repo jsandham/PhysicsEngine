@@ -14,6 +14,8 @@ Boids::Boids()
 	h = 1.0f;
 	bounds.centre = glm::vec3(0.0f, 0.0f, 0.0f);
 	bounds.size = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	modelMatrices = new glm::mat4[numBoids];
 }
 
 Boids::Boids(std::vector<char> data)
@@ -29,9 +31,11 @@ Boids::Boids(std::vector<char> data)
 	numBoids = header->numBoids;
 	h = header->h;
 	bounds = header->bounds;
+
+	modelMatrices = new glm::mat4[numBoids];
 }
 
 Boids::~Boids()
 {
-	
+	delete [] modelMatrices;
 }

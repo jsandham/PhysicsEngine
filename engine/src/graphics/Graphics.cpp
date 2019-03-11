@@ -495,6 +495,7 @@ void Graphics::compile(Shader* shader)
 	{
 	    glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
 	    std::cout << "Shader: Vertex shader compilation failed" << std::endl;
+	    std::cout << vertexShader << std::endl;
 	    return;
 	}
 
@@ -763,6 +764,57 @@ void Graphics::draw(Mesh* mesh)
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mesh->vertices.size() / 3);
 }
 
+void Graphics::apply(Boids* boids)
+{
+
+}
+
+void Graphics::generate(Boids* boids)
+{
+	// glGenBuffers(1, &boids->handle.handle);
+	// glBindBuffer(GL_ARRAY_BUFFER, boids->handle.handle);
+	// glBufferData(GL_ARRAY_BUFFER, boids->numBoids * sizeof(glm::mat4), &modelMatrices[0], GL_DYNAMIC_DRAW);
+
+	// unsigned int VAO = rock.meshes[i].VAO;
+ //    glBindVertexArray(VAO);
+ //    // vertex Attributes
+ //    glEnableVertexAttribArray(3); 
+ //    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)0);
+ //    glEnableVertexAttribArray(4); 
+ //    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(sizeof(glm::vec4)));
+ //    glEnableVertexAttribArray(5); 
+ //    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(2 * sizeof(glm::vec4)));
+ //    glEnableVertexAttribArray(6); 
+ //    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*)(3 * sizeof(glm::vec4)));
+
+ //    glVertexAttribDivisor(3, 1);
+ //    glVertexAttribDivisor(4, 1);
+ //    glVertexAttribDivisor(5, 1);
+ //    glVertexAttribDivisor(6, 1);
+
+ //    glBindVertexArray(0);
+}
+
+void Graphics::destroy(Boids* boids)
+{
+
+}
+
+void Graphics::bind(Boids* boids)
+{
+
+}
+
+void Graphics::unbind(Boids* boids)
+{
+
+}
+
+void Graphics::draw(Boids* boids)
+{
+
+}
+
 void Graphics::apply(PerformanceGraph* graph)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, graph->vertexVBO.handle);
@@ -947,7 +999,7 @@ void Graphics::generate(GLShadow* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 736, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->handle.handle, 0, 736);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 4, state->handle.handle, 0, 736);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -991,7 +1043,7 @@ void Graphics::generate(GLDirectionalLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 64, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 2, state->handle.handle, 0, 64);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->handle.handle, 0, 64);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -1043,7 +1095,7 @@ void Graphics::generate(GLSpotLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 100, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 3, state->handle.handle, 0, 100);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 2, state->handle.handle, 0, 100);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -1137,7 +1189,7 @@ void Graphics::generate(GLPointLight* state)
 	glGenBuffers(1, &(state->handle.handle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->handle.handle);
 	glBufferData(GL_UNIFORM_BUFFER, 76, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 4, state->handle.handle, 0, 76);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 3, state->handle.handle, 0, 76);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

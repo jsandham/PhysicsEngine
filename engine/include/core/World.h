@@ -52,7 +52,6 @@ namespace PhysicsEngine
 		private:
 			std::vector<System*> systems;
 
-			Line* line;
 			Bounds* bounds;
 			Octtree* physics;
 
@@ -197,7 +196,6 @@ namespace PhysicsEngine
 				return asset;
 			}
 
-			Line* getLine();
 			Bounds* getWorldBounds();
 			Octtree* getPhysicsTree();
 
