@@ -610,3 +610,9 @@ bool AssetLoader::load(const std::string& filepath, GMesh& gmesh)
 
 	return true;
 }
+
+
+// bool AssetLoader::load(const std::string& filepath, Font& font)
+// {
+
+// }

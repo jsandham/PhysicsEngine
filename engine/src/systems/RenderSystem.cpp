@@ -1,9 +1,11 @@
+#include <iostream>
 #include <cstddef>
 #include <ctime>
 
 #include "../../include/systems/RenderSystem.h"
 
 #include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/GraphicsQuery.h"
 
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
@@ -29,12 +31,25 @@ void RenderSystem::init(World* world)
 	this->world = world;
 
 	renderer.init(world);
-	
+
+
+	debugRenderer.init(world);
+	if(world->debug){
+		//debugRenderer.init(world);
+	}
 }
 
 void RenderSystem::update(Input input)
 {
 	renderer.update();
+
+	if(world->debug){
+		GraphicsQuery query = renderer.getGraphicsQuery();
+
+		std::cout << "Number of batches draw calls: " << query.numBatchDrawCalls << " number of draw calls: " << query.numDrawCalls << " Elapsed time: " << query.totalElapsedTime << std::endl;
+
+		//debugRenderer.update();
+	}
 }
 
 

@@ -5,6 +5,7 @@
 #include "../core/Shader.h"
 #include "../core/Material.h"
 #include "../core/Texture2D.h"
+#include "../core/Font.h"
 #include "../core/PerformanceGraph.h"
 #include "../core/DebugWindow.h"
 #include "../core/SlabBuffer.h"
@@ -33,11 +34,17 @@ namespace PhysicsEngine
 			Shader* normalMapShader;
 			Shader* depthMapShader;
 			Shader* lineShader;
+			Shader* fontShader;
+
+			Font* font;
 
 			Material* debugMaterial;
 			Texture2D* debugBuffer;
 
 			GLFramebuffer fbo;
+
+			GLuint vao;
+			GLuint vbo;
 
 		public:
 			DebugRenderer();

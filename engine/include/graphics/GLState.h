@@ -1,10 +1,11 @@
 #ifndef __GRAPHICSTATE_H__
 #define __GRAPHICSTATE_H__
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #include "../glm/glm.hpp"
 #include "../glm/gtc/type_ptr.hpp"
-
-#include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
@@ -23,7 +24,7 @@ namespace PhysicsEngine
 		glm::mat4 view;               // 64
 		glm::vec3 cameraPos;          // 128
 
-		GLHandle handle;
+		GLuint handle;
 	};
 
 	struct GLShadow
@@ -33,46 +34,46 @@ namespace PhysicsEngine
 		float cascadeEnd[5];          // 640  656  672  688  704
 		float farPlane;               // 720
 
-		GLHandle handle;
+		GLuint handle;
 	};
 
 	struct GLDirectionalLight
 	{
-		glm::vec3 dirLightDirection;  // 0
-		glm::vec3 dirLightAmbient;    // 16
-		glm::vec3 dirLightDiffuse;    // 32
-		glm::vec3 dirLightSpecular;   // 48
+		glm::vec3 direction;  // 0
+		glm::vec3 ambient;    // 16
+		glm::vec3 diffuse;    // 32
+		glm::vec3 specular;   // 48
 
-		GLHandle handle;
+		GLuint handle;
 	};
 
 	struct GLSpotLight
 	{
-		glm::vec3 spotLightPosition;  // 0
-		glm::vec3 spotLightDirection; // 16
-		glm::vec3 spotLightAmbient;   // 32
-		glm::vec3 spotLightDiffuse;   // 48
-		glm::vec3 spotLightSpecular;  // 64
-		float spotLightConstant;      // 80
-		float spotLightLinear;        // 84
-		float spotLightQuadratic;     // 88
-		float spotLightCutoff;        // 92
-		float spotLightOuterCutoff;   // 96
+		glm::vec3 position;  // 0
+		glm::vec3 direction; // 16
+		glm::vec3 ambient;   // 32
+		glm::vec3 diffuse;   // 48
+		glm::vec3 specular;  // 64
+		float constant;      // 80
+		float linear;        // 84
+		float quadratic;     // 88
+		float cutOff;        // 92
+		float outerCutOff;   // 96
 
-		GLHandle handle;
+		GLuint handle;
 	};
 
 	struct GLPointLight
 	{
-		glm::vec3 pointLightPosition; // 0
-		glm::vec3 pointLightAmbient;  // 16
-		glm::vec3 pointLightDiffuse;  // 32
-		glm::vec3 pointLightSpecular; // 48
-		float pointLightConstant;     // 64
-		float pointLightLinear;       // 68
-		float pointLightQuadratic;    // 72
+		glm::vec3 position; // 0
+		glm::vec3 ambient;  // 16
+		glm::vec3 diffuse;  // 32
+		glm::vec3 specular; // 48
+		float constant;     // 64
+		float linear;       // 68
+		float quadratic;    // 72
 
-		GLHandle handle;
+		GLuint handle;
 	};
 }
 

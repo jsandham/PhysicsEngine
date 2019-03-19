@@ -9,7 +9,7 @@
 #include "../core/World.h"
 
 #include "../graphics/Renderer.h"
-
+#include "../graphics/DebugRenderer.h"
 
 namespace PhysicsEngine
 {
@@ -19,6 +19,7 @@ namespace PhysicsEngine
 			unsigned int pass;
 
 			Renderer renderer;
+			DebugRenderer debugRenderer;
 
 		public:
 			RenderSystem();

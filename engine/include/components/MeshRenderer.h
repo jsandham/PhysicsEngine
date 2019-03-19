@@ -14,6 +14,7 @@ namespace PhysicsEngine
 		Guid entityId;
 		Guid meshId;
 		Guid materialId;
+		bool isStatic;
 	};
 #pragma pack(pop)
 
@@ -22,6 +23,7 @@ namespace PhysicsEngine
 		public:
 			Guid meshId;
 			Guid materialId;
+			bool isStatic;
 
 		public:
 			MeshRenderer();

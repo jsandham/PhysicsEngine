@@ -1,4 +1,5 @@
 #include "../../include/graphics/DebugRenderer.h"
+#include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
 
@@ -7,6 +8,9 @@ DebugRenderer::DebugRenderer()
 	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
 	debugWindow = new DebugWindow(0.5f, 0.5f, 0.5f, 0.5f);
 	lineBuffer = new SlabBuffer(60000);	
+	font = new Font("C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\Demo\\data\\fonts\\arial.ttf");
+
+	font->load();
 }
 
 DebugRenderer::~DebugRenderer()
@@ -14,10 +18,13 @@ DebugRenderer::~DebugRenderer()
 	delete graph;
 	delete debugWindow;
 	delete lineBuffer;
+	delete font;
 }
 
 void DebugRenderer::init(World* world)
 {
+	std::cout << "Debug renderer init called" << std::endl;
+
 	graphMaterial = world->createAsset<Material>();
 	windowMaterial = world->createAsset<Material>();
 	normalMapMaterial = world->createAsset<Material>();
@@ -29,6 +36,7 @@ void DebugRenderer::init(World* world)
 	normalMapShader = world->createAsset<Shader>();
 	depthMapShader = world->createAsset<Shader>();
 	lineShader = world->createAsset<Shader>();
+	fontShader = world->createAsset<Shader>();
 
 	graphShader->vertexShader = Shader::graphVertexShader;
 	graphShader->fragmentShader = Shader::graphFragmentShader;
@@ -40,12 +48,15 @@ void DebugRenderer::init(World* world)
 	depthMapShader->fragmentShader = Shader::depthMapFragmentShader;
 	lineShader->vertexShader = Shader::lineVertexShader;
 	lineShader->fragmentShader = Shader::lineFragmentShader;
+	fontShader->vertexShader = Shader::fontVertexShader;
+	fontShader->fragmentShader = Shader::fontFragmentShader;
 
 	graphShader->compile();
 	windowShader->compile();
 	normalMapShader->compile();
 	depthMapShader->compile();
 	lineShader->compile();
+	fontShader->compile();
 
 	graphMaterial->shaderId = graphShader->assetId;
 	windowMaterial->shaderId = windowShader->assetId;
@@ -53,26 +64,38 @@ void DebugRenderer::init(World* world)
 	depthMapMaterial->shaderId = depthMapShader->assetId;
 	lineMaterial->shaderId = lineShader->assetId;
 
-	Graphics::generate(graph);
-	Graphics::generate(debugWindow);
+	// Graphics::generate(graph);
+	// Graphics::generate(debugWindow);
 
-	fbo.colorBuffer = world->createAsset<Texture2D>();
-	fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
-	fbo.depthBuffer = world->createAsset<Texture2D>();
-	fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
+	// fbo.colorBuffer = world->createAsset<Texture2D>();
+	// fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
+	// fbo.depthBuffer = world->createAsset<Texture2D>();
+	// fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
 
-	debugMaterial = normalMapMaterial;
-	debugBuffer = fbo.colorBuffer;
+	// debugMaterial = normalMapMaterial;
+	// debugBuffer = fbo.colorBuffer;
 
-	windowMaterial->textureId = fbo.colorBuffer->assetId;
+	// windowMaterial->textureId = fbo.colorBuffer->assetId;
 
-	Graphics::generate(&fbo);
+	// Graphics::generate(&fbo);
+
+	glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
 	Graphics::checkError();
 }
 
 void DebugRenderer::update()
 {
+	Graphics::renderText(world, font, fontShader, vao, vbo, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+
 	// 	lineBuffer->clear();
 
 	// 	std::vector<float> lines(6);

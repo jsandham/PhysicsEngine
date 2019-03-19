@@ -9,6 +9,7 @@
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/Mesh.h"
+#include "../../include/core/Font.h"
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/Rigidbody.h"
@@ -65,6 +66,10 @@ Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int* index)
 	else if(type == 5){
 		*index = (int)getAllocator<Mesh>().getCount();
 		return create<Mesh>(data);
+	}
+	else if(type == 6){
+		*index = (int)getAllocator<Font>().getCount();
+		return create<Font>(data);
 	}
 	else{
 		std::cout << "Error: Invalid asset type (" << type << ") when trying to load internal asset" << std::endl;

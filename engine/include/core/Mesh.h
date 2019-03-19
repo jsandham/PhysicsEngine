@@ -27,17 +27,15 @@ namespace PhysicsEngine
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 
-			GLHandle meshVAO;
-			GLHandle vertexVBO;
-			GLHandle normalVBO;
-			GLHandle texCoordVBO;
+			// GLHandle meshVAO;
+			// GLHandle vertexVBO;
+			// GLHandle normalVBO;
+			// GLHandle texCoordVBO;
 
 		public:
 			Mesh();
 			Mesh(std::vector<char> data);
 			~Mesh();
-
-			void apply();
 	};
 }
 

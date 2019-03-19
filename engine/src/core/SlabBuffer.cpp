@@ -92,7 +92,7 @@ void SlabBuffer::add(std::vector<float> data, Material* material)
 
 			(*current)->count = (endIndex - startIndex);
 
-			Graphics::generate(*current);
+			//Graphics::generate(*current);
 
 			startIndex = endIndex;
 			endIndex = data.size();

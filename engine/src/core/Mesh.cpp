@@ -49,8 +49,3 @@ Mesh::~Mesh()
 {
 
 }
-
-void Mesh::apply()
-{
-	Graphics::apply(this);
-}

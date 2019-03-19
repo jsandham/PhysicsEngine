@@ -8,6 +8,8 @@ MeshRenderer::MeshRenderer()
 {
 	meshId = Guid::INVALID;
 	materialId = Guid::INVALID;
+
+	isStatic = false;
 }
 
 MeshRenderer::MeshRenderer(std::vector<char> data)
@@ -20,6 +22,7 @@ MeshRenderer::MeshRenderer(std::vector<char> data)
 	entityId = header->entityId;
 	meshId = header->meshId;
 	materialId = header->materialId;
+	isStatic = header->isStatic;
 }
 
 MeshRenderer::~MeshRenderer()

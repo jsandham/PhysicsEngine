@@ -19,6 +19,7 @@
 #include <core/Texture2D.h>
 #include <core/Mesh.h>
 #include <core/GMesh.h>
+#include <core/Font.h>
 #include <core/Entity.h>
 #include <core/Guid.h>
 
@@ -423,6 +424,7 @@ int serializeScenes(std::string projectDirectory)
 
 			data.meshId = Guid(it->second["mesh"].ToString());
 			data.materialId = Guid(it->second["material"].ToString());
+			data.isStatic = true;//it->second["isStatic"];
 
 			int type = 3;
 			char classification = 'c';
@@ -897,12 +899,26 @@ int serializeAssets(std::string projectDirectory)
 		}
 	}
 
+	// font files
+	std::vector<std::string> fontFolderFiles = get_all_files_names_within_folder(projectDirectory + "data/fonts");
+	std::vector<std::string> fontFilePaths;
+	for(unsigned int i = 0; i < fontFolderFiles.size(); i++){
+		if(fontFolderFiles[i].substr(fontFolderFiles[i].find_last_of(".") + 1) == "json") {
+			fontFilePaths.push_back(projectDirectory + "data/fonts/" + fontFolderFiles[i]);
+		}
+		else
+		{
+			std::cout << "invalid file: " << fontFolderFiles[i] << std::endl;
+		}
+	}
+
 	AssetBundleHeader bundle;
 	bundle.numberOfShaders = (unsigned int)shaderFilePaths.size();
 	bundle.numberOfTextures = (unsigned int)textureFilePaths.size();
 	bundle.numberOfMaterials = (unsigned int)materialFilePaths.size();
 	bundle.numberOfMeshes = (unsigned int)meshFilePaths.size();
 	bundle.numberOfGMeshes = (unsigned int)gmeshFilePaths.size();
+	bundle.numberOfFonts = (unsigned int)fontFilePaths.size();
 
 	std::string bundleFileName = "bundle.assets";
 
@@ -1138,6 +1154,36 @@ int serializeAssets(std::string projectDirectory)
 	// 		std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
 	// 		return 0;
 	// 	}
+	// }
+
+	// write fonts out to bundle
+	// for(size_t i = 0 ; i < fontFilePaths.size(); i++){
+	// 	// open json file and load to json object
+	// 	std::ifstream in(fontFilePaths[i], std::ios::in | std::ios::binary);
+	// 	std::ostringstream contents;
+	// 	contents << in.rdbuf();
+	// 	in.close();
+
+	// 	json::JSON jsonFont = JSON::Load(contents.str());
+
+	// 	std::string filePath = fontFilePaths[i].substr(0, fontFilePaths[i].find_last_of(".")) + ".ttf";
+
+	// 	std::cout << "font filepath: " << filePath << std::endl;
+
+	// 	FontHeader header = {};
+	// 	header.fontId = Guid(jsonFont["id"].ToString());
+	// 	header.filepathSize = filePath.length();
+
+	// 	int type = 6;
+
+	// 	size_t totalSize = sizeof(int);
+	// 	totalSize += sizeof(FontHeader);
+	// 	totalSize += filePath.length()*sizeof(char);
+
+	// 	fwrite(&totalSize, sizeof(size_t), 1, file);
+	// 	fwrite(&type, sizeof(int), 1, file);
+	// 	fwrite(&header, sizeof(FontHeader), 1, file);
+	// 	fwrite(filePath.c_str(), filePath.length()*sizeof(char), 1, file);
 	// }
 
 	std::cout << "Asset bundle successfully created" << std::endl;

@@ -1,10 +1,12 @@
-#ifndef __BATCH_H__
-#define __BATCH_H__
+#ifndef __BATCHMANAGER_H__
+#define __BATCHMANAGER_H__
 
 #include <vector>
 #include <map>
 
 #include <GL/glew.h>
+
+#include "GraphicsQuery.h"
 
 #include "../glm/glm.hpp"
 
@@ -50,11 +52,21 @@ namespace PhysicsEngine
 			return true;
 		}
 
-		void add(Mesh* mesh)
+		void add(Mesh* mesh, glm::mat4 model)
 		{
 			if(mesh->vertices.size() != mesh->normals.size() || 2*mesh->vertices.size()/3 != mesh->texCoords.size()){
 				std::cout << "Error: Cannot add mesh to batch" << std::endl;
 				return;
+			}
+
+			std::vector<float> worldSpaceVertices;
+			worldSpaceVertices.resize(mesh->vertices.size());
+
+			for(size_t i = 0; i < mesh->vertices.size() / 3; i++){
+				glm::vec4 vertex = model * glm::vec4(mesh->vertices[3*i], mesh->vertices[3*i + 1], mesh->vertices[3*i + 2], 1.0f);
+				worldSpaceVertices[3*i] = vertex.x;
+				worldSpaceVertices[3*i + 1] = vertex.y;
+				worldSpaceVertices[3*i + 2] = vertex.z;
 			}
 
 			unsigned int verticesOffset = 3 * currentNumOfVertices;
@@ -64,7 +76,7 @@ namespace PhysicsEngine
 			glBindVertexArray(VAO);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-			glBufferSubData( GL_ARRAY_BUFFER, verticesOffset * sizeof(float), mesh->vertices.size() * sizeof(float), &mesh->vertices[0] );
+			glBufferSubData( GL_ARRAY_BUFFER, verticesOffset * sizeof(float), worldSpaceVertices.size() * sizeof(float), &worldSpaceVertices[0] );
 
 			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 			glBufferSubData( GL_ARRAY_BUFFER, normalsOffset * sizeof(float), mesh->normals.size() * sizeof(float), &mesh->normals[0] );
@@ -74,7 +86,7 @@ namespace PhysicsEngine
 
 			glBindVertexArray(0);
 
-			currentNumOfVertices += (unsigned int)mesh->vertices.size() / 3;
+			currentNumOfVertices += (unsigned int)worldSpaceVertices.size() / 3;
 
 			GLenum error;
 			while ((error = glGetError()) != GL_NO_ERROR){
@@ -154,9 +166,10 @@ namespace PhysicsEngine
 			BatchManager(unsigned int maxNumOfVerticesPerBatch, unsigned int maxNumOfMeshesPerBatch);
 			~BatchManager();
 
-			void add(Material* material, Mesh* mesh);
-			void render(World* world);
-			void render(World* world, Material* material);
+			void add(Material* material, Mesh* mesh, glm::mat4 model);
+
+			void render(World* world, GraphicsQuery* query);
+			void render(World* world, Material* material, GraphicsQuery* query);
 	};
 }
 

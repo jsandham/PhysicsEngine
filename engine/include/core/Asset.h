@@ -15,6 +15,7 @@ namespace PhysicsEngine
 		unsigned int numberOfMaterials;
 		unsigned int numberOfMeshes;
 		unsigned int numberOfGMeshes;
+		unsigned int numberOfFonts;
 	};
 #pragma pack(pop)
 

@@ -10,7 +10,7 @@ set ENGINE="C:\Users\James\Documents\PhysicsEngine\engine\include"
 set PROJECT="C:\Users\James\Documents\PhysicsEngine\sample_project\include"
 
 set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -wd4512 -Zi /Fo"obj"\ /Fd"obj"\
-set Libs=user32.lib gdi32.lib xinput.lib ole32.lib opengl32.lib glew32.lib cudart.lib engine.lib
+set Libs=user32.lib gdi32.lib xinput.lib ole32.lib opengl32.lib glew32.lib cudart.lib engine.lib freetype.lib
 
 :: copy engine lib to editor bin folder
 copy "C:\Users\James\Documents\PhysicsEngine\engine\lib\engine.lib" "C:\Users\James\Documents\PhysicsEngine\editor\bin"

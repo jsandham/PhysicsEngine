@@ -20,7 +20,7 @@ BatchManager::~BatchManager()
 
 }
 
-void BatchManager::add(Material* material, Mesh* mesh)
+void BatchManager::add(Material* material, Mesh* mesh, glm::mat4 model)
 {
 	Guid materialId = material->assetId;
 
@@ -32,7 +32,7 @@ void BatchManager::add(Material* material, Mesh* mesh)
 
 		for(size_t i = 0; i < batches.size(); i++){
 			if(batches[i].hasEnoughRoom(numOfVerticesInMesh)){
-				batches[i].add(mesh);
+				batches[i].add(mesh, model);
 				return;
 			}
 		}	
@@ -43,7 +43,7 @@ void BatchManager::add(Material* material, Mesh* mesh)
 		batch.materialId = materialId;
 		if(batch.hasEnoughRoom(numOfVerticesInMesh)){
 			batch.generate();
-			batch.add(mesh);
+			batch.add(mesh, model);
 
 			batches.push_back(batch);
 		}
@@ -55,7 +55,7 @@ void BatchManager::add(Material* material, Mesh* mesh)
 		batch.materialId = materialId;
 		if(batch.hasEnoughRoom(numOfVerticesInMesh)){
 			batch.generate();
-			batch.add(mesh);
+			batch.add(mesh, model);
 
 			std::vector<Batch> batches;
 			batches.push_back(batch);
@@ -65,80 +65,34 @@ void BatchManager::add(Material* material, Mesh* mesh)
 	}
 }
 
-void BatchManager::render(World* world)
+void BatchManager::render(World* world, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
 		std::vector<Batch> batches = it->second;
 
+		query->numBatchDrawCalls += (unsigned int)batches.size();
+
 		for(size_t i = 0; i < batches.size(); i++){
 			Guid materialId = batches[i].materialId;
 
 			Material* material = world->getAsset<Material>(materialId);
-			Shader* shader = world->getAsset<Shader>(material->shaderId);
 
-			if(material == NULL){
-				std::cout << "Material is NULL" << std::endl;
-				return;
-			}
-
-			if(shader == NULL){
-				std::cout << "Shader is NULL" << std::endl;
-				return;
-			}
-
-			if(!shader->isCompiled()){
-				std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
-				return;
-			}
-
-			Graphics::use(shader);
-			Graphics::setFloat(shader, "material.shininess", material->shininess);
-			Graphics::setVec3(shader, "material.ambient", material->ambient);
-			Graphics::setVec3(shader, "material.diffuse", material->diffuse);
-			Graphics::setVec3(shader, "material.specular", material->specular);
-
-			Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-			if(mainTexture != NULL){
-				Graphics::setInt(shader, "material.mainTexture", 0);
-
-				Graphics::active(mainTexture, 0);
-				Graphics::bind(mainTexture);
-			}
-
-			Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-			if(normalMap != NULL){
-
-				Graphics::setInt(shader, "material.normalMap", 1);
-
-				Graphics::active(normalMap, 1);
-				Graphics::bind(normalMap);
-			}
-
-			Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
-			if(specularMap != NULL){
-
-				Graphics::setInt(shader, "material.specularMap", 2);
-
-				Graphics::active(specularMap, 2);
-				Graphics::bind(specularMap);
-			}
-
-			glBindVertexArray(batches[i].VAO);
-
-			//std::cout << batches[i].currentNumOfVertices << "  " << batches[i].VAO << " " << batches[i].vertexVBO << " " << batches[i].normalVBO << " " << batches[i].texCoordVBO << " " << std::endl;
-
-			glDrawArrays(GL_TRIANGLES, 0, batches[i].currentNumOfVertices);
-
-			GLenum error;
-			while ((error = glGetError()) != GL_NO_ERROR){
-				std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
-			}
+			Graphics::render(world, material, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
 		}
 	}
 }
 
-void BatchManager::render(World* world, Material* material)
+void BatchManager::render(World* world, Material* material, GraphicsQuery* query)
 {
+	std::map<Guid, std::vector<Batch>>::iterator it;
+	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
+		std::vector<Batch> batches = it->second;
 
+		query->numBatchDrawCalls += (unsigned int)batches.size();
+
+		for(size_t i = 0; i < batches.size(); i++){
+			Graphics::render(world, material, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
+		}
+	}
 }
