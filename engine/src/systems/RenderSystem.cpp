@@ -31,12 +31,7 @@ void RenderSystem::init(World* world)
 	this->world = world;
 
 	renderer.init(world);
-
-
 	debugRenderer.init(world);
-	if(world->debug){
-		//debugRenderer.init(world);
-	}
 }
 
 void RenderSystem::update(Input input)
@@ -45,10 +40,9 @@ void RenderSystem::update(Input input)
 
 	if(world->debug){
 		GraphicsQuery query = renderer.getGraphicsQuery();
+		GraphicsDebug debug = renderer.getGraphicsDebug();
 
-		std::cout << "Number of batches draw calls: " << query.numBatchDrawCalls << " number of draw calls: " << query.numDrawCalls << " Elapsed time: " << query.totalElapsedTime << std::endl;
-
-		//debugRenderer.update();
+		debugRenderer.update(input, debug, query);
 	}
 }
 

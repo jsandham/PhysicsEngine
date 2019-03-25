@@ -11,6 +11,7 @@
 #include "GLState.h"
 #include "BatchManager.h"
 #include "GraphicsQuery.h"
+#include "GraphicsDebug.h"
 
 namespace PhysicsEngine
 {
@@ -38,7 +39,9 @@ namespace PhysicsEngine
 			BatchManager batchManager;
 			std::map<Guid, InternalMesh> meshIdToInternalMesh; 
 
-			GraphicsQuery query;
+			// maybe move these into render system istead and pass them in by pointer to be updated
+			GraphicsQuery query;  
+			GraphicsDebug debug;
 
 			unsigned int pass;
 
@@ -50,9 +53,11 @@ namespace PhysicsEngine
 			void update();
 
 			GraphicsQuery getGraphicsQuery();
+			GraphicsDebug getGraphicsDebug();
 
 		private:
 			void render();
+			void renderDebug();
 	};
 }
 

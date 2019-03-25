@@ -6,7 +6,7 @@ using namespace PhysicsEngine;
 
 Texture::Texture()
 {
-
+	assetId = Guid::INVALID;
 }
 
 int Texture::getNumChannels() const

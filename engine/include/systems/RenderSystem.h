@@ -18,7 +18,7 @@ namespace PhysicsEngine
 		private:
 			unsigned int pass;
 
-			Renderer renderer;
+			Renderer renderer;  // rename to ForwardRenderer
 			DebugRenderer debugRenderer;
 
 		public:

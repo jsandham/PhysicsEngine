@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <GL/glew.h>
 
 #include "../../include/graphics/Graphics.h"
@@ -8,6 +9,191 @@
 #include "../../include/core/SlabBuffer.h"
 
 using namespace PhysicsEngine;
+
+
+void DebugWindow::init()
+{
+	shader.vertexShader = Shader::windowVertexShader;
+	shader.fragmentShader = Shader::windowFragmentShader;
+
+	shader.compile();
+
+	x = fmin(fmax(x, 0.0f), 1.0f);
+	y = fmin(fmax(y, 0.0f), 1.0f);
+	width = fmin(fmax(width, 0.0f), 1.0f);
+	height = fmin(fmax(height, 0.0f), 1.0f);
+
+	float x_ndc = 2.0f * x - 1.0f; 
+	float y_ndc = 1.0f - 2.0f * y; 
+
+	float width_ndc = 2.0f * width;
+	float height_ndc = 2.0f * height;
+
+	float vertices[18];
+	float texCoords[12];
+
+	vertices[0] = x_ndc; 
+	vertices[1] = y_ndc;
+	vertices[2] = 0.0f;
+
+	vertices[3] = x_ndc; 
+	vertices[4] = y_ndc - height_ndc; 
+	vertices[5] = 0.0f; 
+
+	vertices[6] = x_ndc + width_ndc; 
+	vertices[7] = y_ndc;
+	vertices[8] = 0.0f;  
+
+	vertices[9] = x_ndc + width_ndc; 
+	vertices[10] = y_ndc;  
+	vertices[11] = 0.0f; 
+
+	vertices[12] = x_ndc; 
+	vertices[13] = y_ndc - height_ndc; 
+	vertices[14] = 0.0f;  
+
+	vertices[15] = x_ndc + width_ndc; 
+	vertices[16] = y_ndc - height_ndc; 
+	vertices[17] = 0.0f; 
+
+	texCoords[0] = 0.0f;
+	texCoords[1] = 1.0f;
+
+	texCoords[2] = 0.0f;
+	texCoords[3] = 0.0f;
+
+	texCoords[4] = 1.0f;
+	texCoords[5] = 1.0f;
+
+	texCoords[6] = 1.0f;
+	texCoords[7] = 1.0f;
+
+	texCoords[8] = 0.0f;
+	texCoords[9] = 0.0f;
+
+	texCoords[10] = 1.0f;
+	texCoords[11] = 0.0f;
+
+	// for(int i = 0; i < 18; i++){
+	// 	std::cout << vertices[i] << " ";
+	// }
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &vertexVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+	glBufferData(GL_ARRAY_BUFFER, 18*sizeof(float), &(vertices[0]), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glGenBuffers(1, &texCoordVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), &(texCoords[0]), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void PerformanceGraph::init()
+{
+	shader.vertexShader = Shader::graphVertexShader;
+	shader.fragmentShader = Shader::graphFragmentShader;
+
+	shader.compile();
+
+	x = fmin(fmax(x, 0.0f), 1.0f);
+	y = fmin(fmax(y, 0.0f), 1.0f);
+	width = fmin(fmax(width, 0.0f), 1.0f);
+	height = fmin(fmax(height, 0.0f), 1.0f);
+	rangeMin = fmin(rangeMin, rangeMax);
+	rangeMax = fmax(rangeMin, rangeMax);
+	currentSample = 0.0f;
+	numberOfSamples = std::max(2, numberOfSamples);
+
+	samples.resize(18*numberOfSamples - 18);
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, samples.size()*sizeof(float), &(samples[0]), GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+}
+
+void PerformanceGraph::add(float sample)
+{
+	float oldSample = currentSample;
+	currentSample = fmin(fmax(sample, rangeMin), rangeMax);
+
+	float dx = width / (numberOfSamples - 1);
+	for(int i = 0; i < numberOfSamples - 2; i++){
+		samples[18*i] = samples[18*(i+1)] - dx;
+		samples[18*i + 1] = samples[18*(i+1) + 1];
+		samples[18*i + 2] = samples[18*(i+1) + 2];
+
+		samples[18*i + 3] = samples[18*(i+1) + 3] - dx;
+		samples[18*i + 4] = samples[18*(i+1) + 4];
+		samples[18*i + 5] = samples[18*(i+1) + 5];
+
+		samples[18*i + 6] = samples[18*(i+1) + 6] - dx;
+		samples[18*i + 7] = samples[18*(i+1) + 7];
+		samples[18*i + 8] = samples[18*(i+1) + 8];
+
+		samples[18*i + 9] = samples[18*(i+1) + 9] - dx;
+		samples[18*i + 10] = samples[18*(i+1) + 10];
+		samples[18*i + 11] = samples[18*(i+1) + 11];
+
+		samples[18*i + 12] = samples[18*(i+1) + 12] - dx;
+		samples[18*i + 13] = samples[18*(i+1) + 13];
+		samples[18*i + 14] = samples[18*(i+1) + 14];
+
+		samples[18*i + 15] = samples[18*(i+1) + 15] - dx;
+		samples[18*i + 16] = samples[18*(i+1) + 16];
+		samples[18*i + 17] = samples[18*(i+1) + 17];
+	}
+
+	float dz1 = 1.0f - (currentSample - rangeMin) / (rangeMax - rangeMin);
+	float dz2 = 1.0f - (oldSample - rangeMin) / (rangeMax - rangeMin);
+
+	float x_ndc = 2.0f * x - 1.0f;
+	float y0_ndc = 1.0f - 2.0f * (y + height);
+	float y1_ndc = 1.0f - 2.0f * (y + height * dz1);
+	float y2_ndc = 1.0f - 2.0f * (y + height * dz2);
+
+	samples[18*(numberOfSamples - 2)] = x_ndc + dx * (numberOfSamples - 2);
+	samples[18*(numberOfSamples - 2) + 1] = y2_ndc;
+	samples[18*(numberOfSamples - 2) + 2] = 0.0f;
+
+	samples[18*(numberOfSamples - 2) + 3] = x_ndc + dx * (numberOfSamples - 2);
+	samples[18*(numberOfSamples - 2) + 4] = y0_ndc;
+	samples[18*(numberOfSamples - 2) + 5] = 0.0f;
+
+	samples[18*(numberOfSamples - 2) + 6] = x_ndc + dx * (numberOfSamples - 1);
+	samples[18*(numberOfSamples - 2) + 7] = y0_ndc;
+	samples[18*(numberOfSamples - 2) + 8] = 0.0f;
+
+	samples[18*(numberOfSamples - 2) + 9] = x_ndc + dx * (numberOfSamples - 2); 
+	samples[18*(numberOfSamples - 2) + 10] = y2_ndc;
+	samples[18*(numberOfSamples - 2) + 11] = 0.0f;
+
+	samples[18*(numberOfSamples - 2) + 12] = x_ndc + dx * (numberOfSamples - 1);
+	samples[18*(numberOfSamples - 2) + 13] = y0_ndc;
+	samples[18*(numberOfSamples - 2) + 14] = 0.0f;
+
+	samples[18*(numberOfSamples - 2) + 15] = x_ndc + dx * (numberOfSamples - 1);
+	samples[18*(numberOfSamples - 2) + 16] = y1_ndc;
+	samples[18*(numberOfSamples - 2) + 17] = 0.0f;
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 0, samples.size()*sizeof(float), &(samples[0]));
+}
 
 // GLHandle Graphics::query;
 // unsigned int Graphics::gpu_time;
@@ -1312,13 +1498,13 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 
 	glBindVertexArray(vao);
 
-	if(world->debug){
+	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
-	if(world->debug){
+	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
@@ -1342,10 +1528,11 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 	}
 }
 
-void Graphics::renderText(World* world, Font* font, Shader* shader, GLuint vao, GLuint vbo, std::string text, float x, float y, float scale, glm::vec3 color)
+void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
 {
 	if(shader == NULL){
-		std::cout << "Error: Shader is NULL" << std::endl;
+		std::cout << "Shader is NULL" << std::endl;
+		return;
 	}
 
 	if(!shader->isCompiled()){
@@ -1354,10 +1541,107 @@ void Graphics::renderText(World* world, Font* font, Shader* shader, GLuint vao, 
 	}
 
 	Graphics::use(shader);
-	Graphics::setVec3(shader, "textColor", color);
+	Graphics::setMat4(shader, "model", model);
+
+	if(texture != NULL){
+		Graphics::setInt(shader, "texture0", 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+	}
+
+	glBindVertexArray(vao);
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	}
+
+	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime;
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime;
+		query->numDrawCalls++;
+	}
+
+	GLenum error;
+	while ((error = glGetError()) != GL_NO_ERROR){
+		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	}
+}
+
+void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
+{
+	if(shader == NULL){
+		std::cout << "Shader is NULL" << std::endl;
+		return;
+	}
+
+	if(!shader->isCompiled()){
+		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		return;
+	}
+
+	Graphics::use(shader);
+	Graphics::setMat4(shader, "model", model);
+
+	glBindVertexArray(vao);
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	}
+
+	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime;
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime;
+		query->numDrawCalls++;
+	}
+
+	GLenum error;
+	while ((error = glGetError()) != GL_NO_ERROR){
+		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	}
+}
+
+void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
+{
+	if(!font->shader.isCompiled()){
+		std::cout << "Shader " << font->shader.assetId.toString() << " has not been compiled." << std::endl;
+		return;
+	}
+
+	Graphics::use(&font->shader);
+	Graphics::setMat4(&font->shader, "projection", glm::ortho(0.0f, (float)camera->width, 0.0f, (float)camera->height));
+	Graphics::setVec3(&font->shader, "textColor", color);
 
 	glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(vao);
+    glBindVertexArray(font->vao.handle);
 
     // Iterate through all characters
     std::string::const_iterator it;
@@ -1384,7 +1668,7 @@ void Graphics::renderText(World* world, Font* font, Shader* shader, GLuint vao, 
         glBindTexture(GL_TEXTURE_2D, ch.glyphId.handle);
 
         // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, font->vbo.handle);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

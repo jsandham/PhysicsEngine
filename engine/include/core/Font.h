@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Asset.h"
+#include "Shader.h"
 
 #include "../graphics/GLHandle.h"
 
@@ -36,12 +37,17 @@ namespace PhysicsEngine
 			std::map<char, Character> characters;
 
 		public:
+			Shader shader;
+			GLHandle vao;
+			GLHandle vbo;
+
+		public:
 			Font();
 			Font(std::string filepath);
 			Font(std::vector<char> data);
 			~Font();
 
-			void load();
+			void load(std::string filepath);
 
 			Character getCharacter(char c) const;
 	};

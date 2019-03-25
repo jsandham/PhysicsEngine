@@ -1,100 +1,79 @@
 #include "../../include/graphics/DebugRenderer.h"
 #include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/GLHandle.h"
+#include "../../include/graphics/OpenGL.h"
+
+#include "../../include/components/Camera.h"
 
 using namespace PhysicsEngine;
 
 DebugRenderer::DebugRenderer()
 {
-	graph = new PerformanceGraph(0.75f, 0.15f, 0.4f, 0.1f, 0.0f, 60.0f, 40);
-	debugWindow = new DebugWindow(0.5f, 0.5f, 0.5f, 0.5f);
 	lineBuffer = new SlabBuffer(60000);	
-	font = new Font("C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\Demo\\data\\fonts\\arial.ttf");
-
-	font->load();
 }
 
 DebugRenderer::~DebugRenderer()
 {
-	delete graph;
-	delete debugWindow;
 	delete lineBuffer;
-	delete font;
 }
 
 void DebugRenderer::init(World* world)
 {
 	std::cout << "Debug renderer init called" << std::endl;
 
-	graphMaterial = world->createAsset<Material>();
-	windowMaterial = world->createAsset<Material>();
-	normalMapMaterial = world->createAsset<Material>();
-	depthMapMaterial = world->createAsset<Material>();
+	this->world = world;
+
+	font.load("C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\Demo\\data\\fonts\\arial.ttf");
+
+	window.x = 0.5f;
+	window.y = 0.5f;
+	window.width = 0.5f;
+	window.height = 0.5f;
+
+	graph.x =  0.75f;
+	graph.y = 0.15f;
+	graph.width = 0.4f;
+	graph.height = 0.1f;
+	graph.rangeMin = 0.0f;
+	graph.rangeMax = 60.0f;
+	graph.numberOfSamples = 40;
+
+	window.init();
+	graph.init();
+
+	windowTexture = NULL;
+
 	lineMaterial = world->createAsset<Material>();
-
-	graphShader = world->createAsset<Shader>();
-	windowShader = world->createAsset<Shader>();
-	normalMapShader = world->createAsset<Shader>();
-	depthMapShader = world->createAsset<Shader>();
 	lineShader = world->createAsset<Shader>();
-	fontShader = world->createAsset<Shader>();
-
-	graphShader->vertexShader = Shader::graphVertexShader;
-	graphShader->fragmentShader = Shader::graphFragmentShader;
-	windowShader->vertexShader = Shader::windowVertexShader;
-	windowShader->fragmentShader = Shader::windowFragmentShader;
-	normalMapShader->vertexShader = Shader::normalMapVertexShader;
-	normalMapShader->fragmentShader = Shader::normalMapFragmentShader;
-	depthMapShader->vertexShader = Shader::depthMapVertexShader;
-	depthMapShader->fragmentShader = Shader::depthMapFragmentShader;
 	lineShader->vertexShader = Shader::lineVertexShader;
 	lineShader->fragmentShader = Shader::lineFragmentShader;
-	fontShader->vertexShader = Shader::fontVertexShader;
-	fontShader->fragmentShader = Shader::fontFragmentShader;
-
-	graphShader->compile();
-	windowShader->compile();
-	normalMapShader->compile();
-	depthMapShader->compile();
 	lineShader->compile();
-	fontShader->compile();
-
-	graphMaterial->shaderId = graphShader->assetId;
-	windowMaterial->shaderId = windowShader->assetId;
-	normalMapMaterial->shaderId = normalMapShader->assetId;
-	depthMapMaterial->shaderId = depthMapShader->assetId;
 	lineMaterial->shaderId = lineShader->assetId;
-
-	// Graphics::generate(graph);
-	// Graphics::generate(debugWindow);
-
-	// fbo.colorBuffer = world->createAsset<Texture2D>();
-	// fbo.colorBuffer->redefine(1000, 1000, TextureFormat::RGB);
-	// fbo.depthBuffer = world->createAsset<Texture2D>();
-	// fbo.depthBuffer->redefine(1000, 1000, TextureFormat::Depth);
-
-	// debugMaterial = normalMapMaterial;
-	// debugBuffer = fbo.colorBuffer;
-
-	// windowMaterial->textureId = fbo.colorBuffer->assetId;
-
-	// Graphics::generate(&fbo);
-
-	glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
 	Graphics::checkError();
 }
 
-void DebugRenderer::update()
+void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query)
 {
-	Graphics::renderText(world, font, fontShader, vao, vbo, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	Camera* camera;
+	if(world->getNumberOfComponents<Camera>() > 0){
+		camera = world->getComponentByIndex<Camera>(0);
+	}
+	else{
+		std::cout << "Warning: No camera found" << std::endl;
+		return;
+	}
+
+	glViewport(camera->x, camera->y, camera->width, camera->height - 40);
+
+	glClearDepth(1.0f);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	Graphics::renderText(world, camera, &font, "Number of batches draw calls: " + std::to_string(query.numBatchDrawCalls), 25.0f, 500.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Number of draw calls: " + std::to_string(query.numDrawCalls), 25.0f, 400.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Elapsed time: " + std::to_string(query.totalElapsedTime), 25.0f, 300.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
 	// 	lineBuffer->clear();
 
@@ -135,50 +114,23 @@ void DebugRenderer::update()
 	// 		Graphics::draw(node);
 	// 	}
 
-	// 	if(world->debug){
-	// 		if(getKeyDown(input, KeyCode::NumPad0)){
-	// 			debugMaterial = normalMapMaterial;
-	// 			debugBuffer = fbo.colorBuffer;
-	// 		}
-	// 		else if(getKeyDown(input, KeyCode::NumPad1)){
-	// 			debugMaterial = depthMapMaterial;
-	// 			debugBuffer = fbo.depthBuffer;
-	// 		}
+		graph.add(1.0f);
 
-	// 		Graphics::bind(&fbo);
-	// 		Graphics::clearColorBuffer(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	// 		Graphics::clearDepthBuffer(1.0f);
-	// 		renderScene(debugMaterial);
-	// 		Graphics::unbind(&fbo);
+		if(getKeyDown(input, KeyCode::NumPad0)){
+			windowTexture = &debug.fbo[0].depthBuffer;
+		}
+		else if(getKeyDown(input, KeyCode::NumPad1)){
+			windowTexture = &debug.fbo[1].colorBuffer;
+		}
+		else if(getKeyDown(input, KeyCode::NumPad2)){
+			windowTexture = &debug.fbo[2].colorBuffer;
+		}
 
-	// 		if(getKeyDown(input, KeyCode::P)){
-	// 			debugBuffer->readPixels();
-	// 			std::vector<unsigned char> temp = debugBuffer->getRawTextureData();
+		if(windowTexture != NULL){
+			Graphics::render(world, &window.shader, windowTexture, glm::mat4(1.0f), window.VAO, 6, NULL);
+		}
 
-	// 			World::writeToBMP("test.bmp", temp, 1000, 1000, 3);
-	// 		}
+		Graphics::render(world, &graph.shader, glm::mat4(1.0f), graph.VAO, 6*(graph.numberOfSamples - 1), NULL);
 
-	// 		windowMaterial->textureId = debugBuffer->assetId;
-
-	// 		//glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;
-	// 		Graphics::bind(world, windowMaterial, glm::mat4(1.0f));
-	// 		Graphics::bind(debugWindow);
-	// 		Graphics::draw(debugWindow);
-
-	// 		if(Time::frameCount % 10 == 0){
-	// 			float deltaTime = Time::deltaTime;
-	// 			float gpuDeltaTime = Time::gpuDeltaTime;
-
-	// 			graph->add(deltaTime);
-
-	// 			Graphics::apply(graph);
-	// 		}
-			
-	// 		Graphics::bind(world, graphMaterial, glm::mat4(1.0f));
-	// 		Graphics::bind(graph);
-	// 		Graphics::draw(graph);
-	// 		Graphics::unbind(graph);
-	// 	}
-
-	// 	Graphics::checkError();
+		Graphics::checkError();
 }

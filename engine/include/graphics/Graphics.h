@@ -12,14 +12,11 @@
 #include "../core/Mesh.h"
 #include "../core/Material.h"
 #include "../core/Line.h"
-#include "../core/PerformanceGraph.h"
-#include "../core/DebugWindow.h"
 #include "../core/SlabBuffer.h"
 
-#include "../graphics/GLFramebuffer.h"
-#include "../graphics/GLState.h"
-#include "../graphics/GLHandle.h"
-#include "../graphics/GraphicsQuery.h"
+#include "GLState.h"
+#include "GLHandle.h"
+#include "GraphicsQuery.h"
 
 #include "../components/Boids.h"
 
@@ -41,6 +38,53 @@ namespace PhysicsEngine
 	{
 		Zero,
 		One, 
+	};
+
+	struct Framebuffer 
+	{
+		GLenum framebufferStatus;
+		GLuint handle;
+		Texture2D colorBuffer;
+		Texture2D depthBuffer;
+	};
+
+	struct DebugWindow
+	{
+		float x;
+		float y;
+		float width;
+		float height;
+
+		GLuint VAO;
+		GLuint vertexVBO;
+		GLuint texCoordVBO;
+
+		Shader shader;
+
+		void init();
+	};
+
+
+	struct PerformanceGraph
+	{
+		float x;
+		float y;
+		float width;
+		float height;
+		float rangeMin;
+		float rangeMax;
+		float currentSample;
+		int numberOfSamples;
+
+		std::vector<float> samples;
+
+		GLuint VAO;
+		GLuint VBO;
+
+		Shader shader;
+
+		void init();
+		void add(float sample);
 	};
 
 	class Graphics
@@ -207,8 +251,9 @@ namespace PhysicsEngine
 
 
 			static void render(World* world, Material* material, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void renderText(World* world, Font* font, Shader* shader, GLuint vao, GLuint vbo, std::string text, float x, float y, float scale, glm::vec3 color);
-
+			static void render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
+			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
 	};
 }
 

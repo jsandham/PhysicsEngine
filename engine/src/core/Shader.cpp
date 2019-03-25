@@ -51,22 +51,12 @@ std::string Shader::windowVertexShader = "#version 330 core\n"
 "}";
 
 std::string Shader::windowFragmentShader = "#version 330 core\n"
-"struct Material\n"
-"{\n"
-"	float shininess;\n"
-"	vec3 ambient;\n"
-"	vec3 diffuse;\n"
-"	vec3 specular;\n"
-"	sampler2D mainTexture;\n"
-"	sampler2D normalMap;\n"
-"	sampler2D specularMap;\n"
-"};\n"
-"uniform Material material;\n"
+"uniform sampler2D texture0;\n"
 "in vec2 TexCoord;\n"
 "out vec4 FragColor;\n" 
 "void main()\n"
 "{\n"
-"    FragColor = texture(material.mainTexture, TexCoord);\n"
+"    FragColor = texture(texture0, TexCoord);\n"
 "}";
 
 std::string Shader::normalMapVertexShader = "#version 330 core\n"
@@ -113,6 +103,27 @@ std::string Shader::depthMapFragmentShader = "#version 330 core\n"
 "{\n"
 "}";
 
+std::string Shader::overdrawVertexShader = "#version 330 core\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"uniform mat4 model;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+"}";
+
+std::string Shader::overdrawFragmentShader = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0, 0.0, 0.0, 0.1);\n"
+"}";
+
 std::string Shader::fontVertexShader = "#version 330 core\n"
 "layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n"
 "out vec2 TexCoords;\n"
@@ -139,6 +150,7 @@ std::string Shader::fontFragmentShader = "#version 330 core\n"
 Shader::Shader()
 {
 	programCompiled = false;
+	assetId = Guid::INVALID;
 }
 
 Shader::Shader(std::vector<char> data)

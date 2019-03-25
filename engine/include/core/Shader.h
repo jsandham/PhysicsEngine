@@ -38,6 +38,8 @@ namespace PhysicsEngine
 			static std::string normalMapFragmentShader;
 			static std::string depthMapVertexShader;
 			static std::string depthMapFragmentShader;
+			static std::string overdrawVertexShader;
+			static std::string overdrawFragmentShader;
 			static std::string fontVertexShader;
 			static std::string fontFragmentShader;
 

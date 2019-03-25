@@ -169,7 +169,8 @@ namespace PhysicsEngine
 			void add(Material* material, Mesh* mesh, glm::mat4 model);
 
 			void render(World* world, GraphicsQuery* query);
-			void render(World* world, Material* material, GraphicsQuery* query);
+			void render(World* world, Material* material, GraphicsQuery* query); // do I even need this now?? I think I was using this for rendering debug info.
+			void render(World* world, Shader* shader, GraphicsQuery* query);
 	};
 }
 

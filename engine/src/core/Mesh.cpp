@@ -9,7 +9,7 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh()
 {
-
+	assetId = Guid::INVALID;
 }
 
 Mesh::Mesh(std::vector<char> data)

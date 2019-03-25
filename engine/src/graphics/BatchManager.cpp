@@ -71,7 +71,9 @@ void BatchManager::render(World* world, GraphicsQuery* query)
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
 		std::vector<Batch> batches = it->second;
 
-		query->numBatchDrawCalls += (unsigned int)batches.size();
+		if(query != NULL){
+			query->numBatchDrawCalls += (unsigned int)batches.size();
+		}
 
 		for(size_t i = 0; i < batches.size(); i++){
 			Guid materialId = batches[i].materialId;
@@ -89,10 +91,28 @@ void BatchManager::render(World* world, Material* material, GraphicsQuery* query
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
 		std::vector<Batch> batches = it->second;
 
-		query->numBatchDrawCalls += (unsigned int)batches.size();
+		if(query != NULL){
+			query->numBatchDrawCalls += (unsigned int)batches.size();
+		}
 
 		for(size_t i = 0; i < batches.size(); i++){
 			Graphics::render(world, material, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
+		}
+	}
+}
+
+void BatchManager::render(World* world, Shader* shader, GraphicsQuery* query)
+{
+	std::map<Guid, std::vector<Batch>>::iterator it;
+	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
+		std::vector<Batch> batches = it->second;
+
+		if(query != NULL){
+			query->numBatchDrawCalls += (unsigned int)batches.size();
+		}
+
+		for(size_t i = 0; i < batches.size(); i++){
+			Graphics::render(world, shader, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
 		}
 	}
 }

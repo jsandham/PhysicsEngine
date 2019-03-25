@@ -45,8 +45,10 @@ Font::~Font()
 
 }
 
-void Font::load()
+void Font::load(std::string filepath)
 {
+    this->filepath = filepath;
+
 	FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
     if (FT_Init_FreeType(&ft)){
@@ -70,7 +72,7 @@ void Font::load()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
 
     // Load first 128 characters of ASCII set
-    for (char c = 0; c < 128; c++)
+    for (unsigned char c = 0; c < 128; c++)
     {
         // Load character glyph 
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -109,13 +111,28 @@ void Font::load()
             face->glyph->advance.x
         };
 
-        std::cout << "character: " << c << " " << face->glyph->bitmap.width << " " << face->glyph->bitmap.rows << std::endl;
+        //std::cout << "character: " << c << " " << face->glyph->bitmap.width << " " << face->glyph->bitmap.rows << std::endl;
 
         characters.insert(std::pair<GLchar, Character>(c, character));
     }
 
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
+
+    shader.vertexShader = Shader::fontVertexShader;
+    shader.fragmentShader = Shader::fontFragmentShader;
+
+    shader.compile();
+
+    glGenVertexArrays(1, &vao.handle);
+    glGenBuffers(1, &vbo.handle);
+    glBindVertexArray(vao.handle);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.handle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 Character Font::getCharacter(char c) const

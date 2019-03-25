@@ -190,6 +190,8 @@ void Renderer::init(World* world)
 	glBindBufferRange(GL_UNIFORM_BUFFER, 3, pointLightState.handle, 0, 76);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	debug.init();
+
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
 		std::cout << "Error: Renderer failed with error code: " << error << " during initialization" << std::endl;;
@@ -321,6 +323,10 @@ void Renderer::update()
 		pass++;
 	}
 
+	if(world->debug){
+		renderDebug();
+	}
+
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
 		std::cout << "Error: Renderer failed with error code: " << error << " during update" << std::endl;;
@@ -330,6 +336,11 @@ void Renderer::update()
 GraphicsQuery Renderer::getGraphicsQuery()
 {
 	return query;
+}
+
+GraphicsDebug Renderer::getGraphicsDebug()
+{
+	return debug;
 }
 
 void Renderer::render()
@@ -348,5 +359,27 @@ void Renderer::render()
 
 			// get internal mesh and render
 		}
+	}
+}
+
+void Renderer::renderDebug()
+{			
+	for(int i = 0; i < 3; i++){
+		glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[i].handle);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
+
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearDepth(1.0f);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		batchManager.render(world, &debug.shaders[i], NULL);
+
+		// TODO: render non static meshes here
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
