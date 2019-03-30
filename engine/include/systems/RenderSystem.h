@@ -8,7 +8,7 @@
 #include "../core/Input.h"
 #include "../core/World.h"
 
-#include "../graphics/Renderer.h"
+#include "../graphics/ForwardRenderer.h"
 #include "../graphics/DebugRenderer.h"
 
 namespace PhysicsEngine
@@ -18,7 +18,7 @@ namespace PhysicsEngine
 		private:
 			unsigned int pass;
 
-			Renderer renderer;  // rename to ForwardRenderer
+			ForwardRenderer forwardRenderer;  
 			DebugRenderer debugRenderer;
 
 		public:

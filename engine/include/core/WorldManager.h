@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "SceneContext.h"
 #include "World.h"
 #include "Input.h"
 

@@ -1,7 +1,5 @@
 #include "../../include/graphics/DebugRenderer.h"
 #include "../../include/graphics/Graphics.h"
-#include "../../include/graphics/GLHandle.h"
-#include "../../include/graphics/OpenGL.h"
 
 #include "../../include/components/Camera.h"
 
@@ -77,33 +75,9 @@ void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query
 
 	// 	lineBuffer->clear();
 
-	// 	std::vector<float> lines(6);
-	// 	for(int i = 0; i < world->getNumberOfComponents<LineRenderer>(); i++){
-	// 		LineRenderer* lineRenderer = world->getComponentByIndex<LineRenderer>(i);
-	// 		Material* material = world->getAsset<Material>(lineRenderer->materialId);
+	// 	lines = world->getPhysicsTree()->getLines();
 
-	// 		Transform* transform = lineRenderer->getComponent<Transform>(world);
-	// 		glm::mat4 model = transform->getModelMatrix();
-
-	// 		glm::vec3 start = glm::vec3(model * glm::vec4(lineRenderer->start, 1.0f));
-	// 		glm::vec3 end = glm::vec3(model * glm::vec4(lineRenderer->end, 1.0f));
-
-	// 		lines[0] = start.x;
-	// 		lines[1] = start.y;
-	// 		lines[2] = start.z;
-
-	// 		lines[3] = end.x;
-	// 		lines[4] = end.y;
-	// 		lines[5] = end.z;
-
-	// 		lineBuffer->add(lines, material);
-	// 	}
-
-	// 	if(world->debug){
-	// 		lines = world->getPhysicsTree()->getLines();
-
-	// 		lineBuffer->add(lines, lineMaterial);
-	// 	}
+	// 	lineBuffer->add(lines, lineMaterial);
 
 	// 	while(lineBuffer->hasNext()){
 	// 		SlabNode* node = lineBuffer->getNext();
@@ -114,23 +88,23 @@ void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query
 	// 		Graphics::draw(node);
 	// 	}
 
-		graph.add(1.0f);
+	graph.add(1.0f);
 
-		if(getKeyDown(input, KeyCode::NumPad0)){
-			windowTexture = &debug.fbo[0].depthBuffer;
-		}
-		else if(getKeyDown(input, KeyCode::NumPad1)){
-			windowTexture = &debug.fbo[1].colorBuffer;
-		}
-		else if(getKeyDown(input, KeyCode::NumPad2)){
-			windowTexture = &debug.fbo[2].colorBuffer;
-		}
+	if(getKeyDown(input, KeyCode::NumPad0)){
+		windowTexture = &debug.fbo[0].depthBuffer;
+	}
+	else if(getKeyDown(input, KeyCode::NumPad1)){
+		windowTexture = &debug.fbo[1].colorBuffer;
+	}
+	else if(getKeyDown(input, KeyCode::NumPad2)){
+		windowTexture = &debug.fbo[2].colorBuffer;
+	}
 
-		if(windowTexture != NULL){
-			Graphics::render(world, &window.shader, windowTexture, glm::mat4(1.0f), window.VAO, 6, NULL);
-		}
+	if(windowTexture != NULL){
+		Graphics::render(world, &window.shader, windowTexture, glm::mat4(1.0f), window.VAO, 6, NULL);
+	}
 
-		Graphics::render(world, &graph.shader, glm::mat4(1.0f), graph.VAO, 6*(graph.numberOfSamples - 1), NULL);
+	Graphics::render(world, &graph.shader, glm::mat4(1.0f), graph.VAO, 6*(graph.numberOfSamples - 1), NULL);
 
-		Graphics::checkError();
+	Graphics::checkError();
 }

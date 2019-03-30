@@ -42,36 +42,28 @@ namespace PhysicsEngine
 	class Octtree
 	{
 		private:
+			int maxNumOfObjectsPerNode;
 			int depth;
 			Bounds bounds;
 			std::vector<Node> nodes;
 			std::vector<float> lines; 
 
-			std::vector<Object> tempObjects; ///remove later. Just here for testing
-			std::vector<float> tempLines;  //remove later. Just here for testing
-			static size_t test;
-
 		public:
-			Octtree(Bounds bounds, int depth);
+			Octtree();
 			~Octtree();
 
 			void clear();
+			void create(Bounds bounds, int depth, int maxNumOfObjectsPerNode);
 			void insert(Sphere sphere, Guid id);
-
 			Object* intersect(Ray ray);
+
+			int getDepth() const;
+			Bounds getBounds() const;
+			std::vector<float> getLines() const;
+
+		private:
 			int firstNode(float tx0, float ty0, float tz0, float txm, float tym, float tzm);
 			int nextNode(float tx, int i, float ty, int j, float tz, int k);
-
-			std::vector<float> getLines();
-
-
-
-
-
-			void tempClear();
-			void tempInsert(Sphere sphere, Guid id);
-			Object* tempIntersect(Ray ray);
-			std::vector<float> getLinesTemp();
 	};
 
 

@@ -5,11 +5,16 @@
 
 #include <vector_types.h>
 
+#include <GL/glew.h>
 #include <cuda.h>
 // #include <cudagl.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
+
+#include "../core/Mesh.h"
+// #include "../core/Material.h"
+#include "../core/Shader.h"
 
 #include "kernels/boids_kernels.cuh"
 
@@ -54,6 +59,16 @@ namespace PhysicsEngine
 		int *d_cellHash;
 		int *d_boidsIndex;
 		float *d_modelMatrices;
+
+		Mesh* mesh;
+		Shader* shader;
+		//Material* material;
+
+		GLuint VAO;
+		GLuint vertexVBO;
+		GLuint normalVBO;
+		GLuint texCoordVBO;
+		GLuint instanceModelVBO;
 
 		struct cudaGraphicsResource* cudaVertexVBO;
 		struct cudaGraphicsResource* cudaNormalVBO;

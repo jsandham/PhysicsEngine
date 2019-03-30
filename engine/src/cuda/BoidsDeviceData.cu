@@ -128,8 +128,8 @@ void PhysicsEngine::initializeBoidsDeviceData(BoidsDeviceData* boids)
 
 void PhysicsEngine::updateBoidsDeviceData(BoidsDeviceData* boids)
 {
-	dim3 gridSize(16,1,1);
-	dim3 blockSize(16,1,1);
+	dim3 gridSize(4,1,1);
+	dim3 blockSize(4,1,1);
 	set_array_to_value<int> <<< gridSize, blockSize >>>(boids->d_cellStartIndex, -1, boids->numVoxels);
 	set_array_to_value<int> <<< gridSize, blockSize >>>(boids->d_cellEndIndex, -1, boids->numVoxels);
 
@@ -180,6 +180,10 @@ void PhysicsEngine::updateBoidsDeviceData(BoidsDeviceData* boids)
 		boids->voxelGridDim
 	);
 
+	// for(int i = 0; i < boids->numBoids; i++){
+	// 	std::cout << boids->h_pos[i].x << "  " << boids->h_pos[i].y << "  " << boids->h_pos[i].z << "  " << std::endl;
+	// }	
+
 	update_boids<<< gridSize, blockSize >>>
 	(
 		boids->d_spos,
@@ -193,4 +197,16 @@ void PhysicsEngine::updateBoidsDeviceData(BoidsDeviceData* boids)
 	);
 
 	gpuErrchk(cudaMemcpy(boids->h_modelMatrices, boids->d_modelMatrices, 16*boids->numBoids*sizeof(float), cudaMemcpyDeviceToHost));
+
+	// for(int i = 0; i < boids->numBoids; i++){
+	// 	for(int j = 0; j < 4; j++){
+	// 		std::cout << boids->h_modelMatrices[16*i + 4*j + 0] << " ";
+	// 		std::cout << boids->h_modelMatrices[16*i + 4*j + 1] << " ";
+	// 		std::cout << boids->h_modelMatrices[16*i + 4*j + 2] << " ";
+	// 		std::cout << boids->h_modelMatrices[16*i + 4*j + 3] << " ";
+	// 		std::cout << "" << std::endl;
+	// 	}
+
+	// 	std::cout << "" << std::endl;
+	// }
 }

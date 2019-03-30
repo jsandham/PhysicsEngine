@@ -14,32 +14,11 @@
 #include "../core/Line.h"
 #include "../core/SlabBuffer.h"
 
-#include "GLState.h"
-#include "GLHandle.h"
+#include "GraphicsState.h"
 #include "GraphicsQuery.h"
-
-#include "../components/Boids.h"
 
 namespace PhysicsEngine
 {
-	typedef enum GLDepth
-	{
-		Never,
-		Less,
-		Equal,
-		LEqual,
-		Greater,
-		NotEqual,
-		GEqual,
-		Always
-	};
-
-	typedef enum GLBlend
-	{
-		Zero,
-		One, 
-	};
-
 	struct Framebuffer 
 	{
 		GLenum framebufferStatus;
@@ -96,6 +75,7 @@ namespace PhysicsEngine
 			//static void initializeGraphicsAPI();
 
 			static void checkError();
+			static GLenum getTextureFormat(TextureFormat format);
 			// static void enableBlend();
 			// static void enableDepthTest();
 			// static void enableCubemaps();

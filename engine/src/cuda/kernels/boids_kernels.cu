@@ -222,8 +222,14 @@ __global__ void BoidsKernels::update_boids
 		my_pos = my_pos + my_vel;
 
 
-		pos[index + offset] = my_pos;
-		vel[index + offset] = my_vel;
+		//pos[index + offset] = my_pos;
+		//vel[index + offset] = my_vel;
+
+		// use column major ordering in line with glm and opengl
+		model[16 * (index + offset) + 12] = my_pos.x; 
+		model[16 * (index + offset) + 13] = my_pos.y;
+		model[16 * (index + offset) + 14] = my_pos.z;
+		model[16 * (index + offset) + 15] = 1.0f;
 
 		offset += blockDim.x * gridDim.x;
 	}

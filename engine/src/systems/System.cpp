@@ -11,8 +11,3 @@ System::~System()
 {
 
 }
-
-void System::setSceneContext(SceneContext* context)
-{
-	this->context = context;
-}

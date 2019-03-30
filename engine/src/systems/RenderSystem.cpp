@@ -4,7 +4,7 @@
 
 #include "../../include/systems/RenderSystem.h"
 
-#include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/ForwardRenderer.h"
 #include "../../include/graphics/GraphicsQuery.h"
 
 #include "../../include/core/Input.h"
@@ -30,17 +30,17 @@ void RenderSystem::init(World* world)
 {
 	this->world = world;
 
-	renderer.init(world);
+	forwardRenderer.init(world);
 	debugRenderer.init(world);
 }
 
 void RenderSystem::update(Input input)
 {
-	renderer.update();
+	forwardRenderer.update();
 
 	if(world->debug){
-		GraphicsQuery query = renderer.getGraphicsQuery();
-		GraphicsDebug debug = renderer.getGraphicsDebug();
+		GraphicsQuery query = forwardRenderer.getGraphicsQuery();
+		GraphicsDebug debug = forwardRenderer.getGraphicsDebug();
 
 		debugRenderer.update(input, debug, query);
 	}

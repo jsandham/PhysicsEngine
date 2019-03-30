@@ -52,8 +52,9 @@ namespace PhysicsEngine
 		private:
 			std::vector<System*> systems;
 
-			Bounds* bounds;
-			Octtree* physics;
+			Bounds bounds;
+			Octtree stree; // octtree for static colliders
+			Octtree dtree; // octtree for dynamic colliders
 
 			std::map<Guid, int> assetIdToGlobalIndex;
 			std::map<Guid, int> idToGlobalIndex;
@@ -197,7 +198,8 @@ namespace PhysicsEngine
 			}
 
 			Bounds* getWorldBounds();
-			Octtree* getPhysicsTree();
+			Octtree* getStaticPhysicsTree();
+			Octtree* getDynamicPhysicsTree();
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);

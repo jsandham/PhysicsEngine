@@ -1,4 +1,4 @@
-#include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/ForwardRenderer.h"
 #include "../../include/graphics/Graphics.h"
 
 #include "../../include/components/Transform.h"
@@ -17,17 +17,17 @@
 
 using namespace PhysicsEngine;
 
-Renderer::Renderer()
+ForwardRenderer::ForwardRenderer()
 {
 
 }
 
-Renderer::~Renderer()
+ForwardRenderer::~ForwardRenderer()
 {
 
 }
 
-void Renderer::init(World* world)
+void ForwardRenderer::init(World* world)
 {
 	this->world = world;
 
@@ -194,11 +194,11 @@ void Renderer::init(World* world)
 
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << " during initialization" << std::endl;;
+		std::cout << "Error: Forward Renderer failed with error code: " << error << " during initialization" << std::endl;;
 	}
 }
 
-void Renderer::update()
+void ForwardRenderer::update()
 {
 	query.numBatchDrawCalls = 0;
 	query.numDrawCalls = 0;
@@ -329,21 +329,21 @@ void Renderer::update()
 
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << " during update" << std::endl;;
+		std::cout << "Error: Forward Renderer failed with error code: " << error << " during update" << std::endl;;
 	}
 }
 
-GraphicsQuery Renderer::getGraphicsQuery()
+GraphicsQuery ForwardRenderer::getGraphicsQuery()
 {
 	return query;
 }
 
-GraphicsDebug Renderer::getGraphicsDebug()
+GraphicsDebug ForwardRenderer::getGraphicsDebug()
 {
 	return debug;
 }
 
-void Renderer::render()
+void ForwardRenderer::render()
 {
 	batchManager.render(world, &query);
 
@@ -362,7 +362,7 @@ void Renderer::render()
 	}
 }
 
-void Renderer::renderDebug()
+void ForwardRenderer::renderDebug()
 {			
 	for(int i = 0; i < 3; i++){
 		glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[i].handle);

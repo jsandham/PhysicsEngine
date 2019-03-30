@@ -145,6 +145,25 @@ std::string Shader::fontFragmentShader = "#version 330 core\n"
 "    color = vec4(textColor, 1.0) * sampled;\n"
 "}";
 
+std::string Shader::instanceVertexShader = "#version 330 core\n"
+"out vec4 FragColor;\n" 
+"in vec3 fColor;\n"
+"void main()\n"
+"{\n"
+"    FragColor = vec4(fColor, 1.0);\n"
+"}";
+
+std::string Shader::instanceFragmentShader = "#version 330 core\n"
+"layout (location = 0) in vec2 aPos;\n"
+"layout (location = 1) in vec3 aColor;\n"
+"layout (location = 2) in vec2 aOffset;\n"
+"out vec3 fColor;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = vec4(aPos + aOffset, 0.0, 1.0);\n"
+"    fColor = aColor;\n"
+"}";
+
 
 
 Shader::Shader()

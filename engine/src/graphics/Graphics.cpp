@@ -3,9 +3,7 @@
 #include <GL/glew.h>
 
 #include "../../include/graphics/Graphics.h"
-#include "../../include/graphics/GLHandle.h"
-#include "../../include/graphics/OpenGL.h"
-#include "../../include/graphics/GLState.h"
+#include "../../include/graphics/GraphicsState.h"
 #include "../../include/core/SlabBuffer.h"
 
 using namespace PhysicsEngine;
@@ -217,6 +215,31 @@ void Graphics::checkError()
 	}
 }
 
+GLenum Graphics::getTextureFormat(TextureFormat format)
+{
+	GLenum openglFormat = GL_DEPTH_COMPONENT;
+
+	switch (format)
+	{
+	case Depth:
+		openglFormat = GL_DEPTH_COMPONENT;
+		break;
+	case RG:
+		openglFormat = GL_RG;
+		break;
+	case RGB:
+		openglFormat = GL_RGB;
+		break;
+	case RGBA:
+		openglFormat = GL_RGBA;
+		break;
+	default:
+		std::cout << "OpengGL: Invalid texture format" << std::endl;
+	}
+
+	return openglFormat;
+}
+
 // void Graphics::enableBlend()
 // {
 // 	glEnable(GL_BLEND);
@@ -422,7 +445,7 @@ void Graphics::readPixels(Texture2D* texture)
 
 	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
 
-	GLenum openglFormat = OpenGL::getTextureFormat(format);
+	GLenum openglFormat = Graphics::getTextureFormat(format);
 
 	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
 	
@@ -441,7 +464,7 @@ void Graphics::apply(Texture2D* texture)
 
 	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
 
-	GLenum openglFormat = OpenGL::getTextureFormat(format);
+	GLenum openglFormat = Graphics::getTextureFormat(format);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
@@ -505,7 +528,7 @@ void Graphics::readPixels(Texture3D* texture)
 
 	glBindTexture(GL_TEXTURE_3D, texture->handle.handle);
 
-	GLenum openglFormat = OpenGL::getTextureFormat(format);
+	GLenum openglFormat = Graphics::getTextureFormat(format);
 
 	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
 
@@ -525,7 +548,7 @@ void Graphics::apply(Texture3D* texture)
 
 	glBindTexture(GL_TEXTURE_3D, texture->handle.handle);
 
-	GLenum openglFormat = OpenGL::getTextureFormat(format);
+	GLenum openglFormat = Graphics::getTextureFormat(format);
 
 	glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 

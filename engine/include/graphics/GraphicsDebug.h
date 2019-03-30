@@ -5,8 +5,6 @@
 #include "../core/Texture2D.h"
 
 #include "Graphics.h"
-#include "GLHandle.h"
-#include "OpenGL.h"
 
 namespace PhysicsEngine
 {
@@ -45,7 +43,7 @@ namespace PhysicsEngine
 				glGenTextures(1, &(fbo[i].colorBuffer.handle.handle));
 				glBindTexture(GL_TEXTURE_2D, fbo[i].colorBuffer.handle.handle);
 
-				GLenum openglFormat = OpenGL::getTextureFormat(format);
+				GLenum openglFormat = Graphics::getTextureFormat(format);
 
 				glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
@@ -68,7 +66,7 @@ namespace PhysicsEngine
 				glGenTextures(1, &(fbo[i].depthBuffer.handle.handle));
 				glBindTexture(GL_TEXTURE_2D, fbo[i].depthBuffer.handle.handle);
 
-				openglFormat = OpenGL::getTextureFormat(format);
+				openglFormat = Graphics::getTextureFormat(format);
 
 				glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 

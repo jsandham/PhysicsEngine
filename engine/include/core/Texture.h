@@ -4,7 +4,7 @@
 #include "Guid.h"
 #include "Asset.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 namespace PhysicsEngine
 {
@@ -13,7 +13,7 @@ namespace PhysicsEngine
 		Tex2D,
 		Tex3D,
 		Cube
-	};
+	}TextureDimension;
 
 	typedef enum TextureFormat
 	{
@@ -21,7 +21,7 @@ namespace PhysicsEngine
 		RG,
 		RGB,
 		RGBA
-	};
+	}TextureFormat;
 
 	class Texture : public Asset
 	{
@@ -33,7 +33,7 @@ namespace PhysicsEngine
 			std::vector<unsigned char> rawTextureData;
 
 		public:
-			GLHandle handle;
+			GraphicsHandle handle;
 
 		public:
 			Texture();

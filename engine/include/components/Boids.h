@@ -6,7 +6,6 @@
 #include "Component.h"
 
 #include "../core/Bounds.h"
-#include "../graphics/GLHandle.h"
 
 namespace PhysicsEngine
 {
@@ -16,7 +15,7 @@ namespace PhysicsEngine
 		Guid componentId;
 		Guid entityId;
 		Guid meshId;
-		Guid materialId;
+		Guid shaderId;
 		int numBoids;
 		float h;
 		Bounds bounds;
@@ -27,14 +26,11 @@ namespace PhysicsEngine
 	{
 		public:
 			Guid meshId;
-			Guid materialId;
+			Guid shaderId;
 
 			int numBoids;
 			float h;
 			Bounds bounds;
-
-			GLHandle handle;
-			glm::mat4* modelMatrices;
 
 		public:
 			Boids();

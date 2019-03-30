@@ -26,7 +26,6 @@ namespace PhysicsEngine
 			DebugWindow window;
 			Font font;
 
-
 			SlabBuffer* lineBuffer;
 			Material* lineMaterial;
 			Shader* lineShader;

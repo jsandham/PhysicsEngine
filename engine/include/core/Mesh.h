@@ -6,7 +6,7 @@
 #include "Guid.h"
 #include "Asset.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 namespace PhysicsEngine
 {

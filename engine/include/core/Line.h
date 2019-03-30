@@ -3,20 +3,20 @@
 
 #include "Asset.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 #include "../glm/glm.hpp"
 
 namespace PhysicsEngine
 {
-	class Line : public Asset
+	class Line : public Asset // why is this an asset??? Do we even use this class or need to use it?
 	{
 		public:
 			glm::vec3 start;
 			glm::vec3 end;
 
-			GLHandle lineVAO;
-			GLHandle vertexVBO;
+			GraphicsHandle lineVAO;
+			GraphicsHandle vertexVBO;
 
 		public:
 			Line();

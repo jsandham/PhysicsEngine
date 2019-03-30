@@ -11,7 +11,7 @@
 #include "Guid.h"
 #include "Asset.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 namespace PhysicsEngine
 {
@@ -42,6 +42,8 @@ namespace PhysicsEngine
 			static std::string overdrawFragmentShader;
 			static std::string fontVertexShader;
 			static std::string fontFragmentShader;
+			static std::string instanceVertexShader;
+			static std::string instanceFragmentShader;
 
 		public:
 			std::string vertexShader;
@@ -49,7 +51,7 @@ namespace PhysicsEngine
 			std::string geometryShader;
 
 			bool programCompiled;
-			GLHandle program;
+			GraphicsHandle program;
 
 		public:
 			Shader();

@@ -24,9 +24,6 @@ namespace PhysicsEngine
 			BoidsSystem(std::vector<char> data);
 			~BoidsSystem();
 
-			//void* operator new(size_t size);
-			//void operator delete(void*);
-
 			void init(World* world);
 			void update(Input input);
 	};

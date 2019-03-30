@@ -8,16 +8,33 @@
 
 using namespace PhysicsEngine;
 
-size_t Octtree::test = 0;
+Octtree::Octtree()
+{
+	
+}
 
-Octtree::Octtree(Bounds bounds, int depth)
+Octtree::~Octtree()
+{
+	
+}
+
+void Octtree::clear()
+{
+	for(size_t i = 0; i < nodes.size(); i++){
+		nodes[i].objects.clear();
+	}
+}
+
+void Octtree::create(Bounds bounds, int depth, int maxNumOfObjectsPerNode)
 {
 	this->bounds = bounds;
 	this->depth = depth;
+	this->maxNumOfObjectsPerNode = maxNumOfObjectsPerNode;
 
-	int d = 0;
-	int levelSize = 1;
-	int totalSize = levelSize;
+	// find total number of nodes in octtree corresponding to input max tree depth
+	int d = 0;                  // depth
+	int levelSize = 1;          // number of nodes only at depth d
+	int totalSize = levelSize;  // total number of nodes at all depths
 	while(d < depth){
 		levelSize *= 8;
 		d++;
@@ -26,21 +43,35 @@ Octtree::Octtree(Bounds bounds, int depth)
 
 	nodes.resize(totalSize);
 
-	std::cout << "Number of nodes allocated: " << nodes.size() << " Size of a Node is: " << sizeof(nodes[0]) << std::endl;
+	// initialize all octtree nodes to zero
+	for(size_t i = 0; i < nodes.size(); i++){
+		nodes[i].centre = glm::vec3(0.0f, 0.0f, 0.0f);
+		nodes[i].extent = glm::vec3(0.0f, 0.0f, 0.0f);
+		nodes[i].objects.resize(maxNumOfObjectsPerNode);
+		for(size_t j = 0; j < nodes[i].objects.size(); j++){
+			nodes[i].objects[j].id = Guid::INVALID;
+			nodes[i].objects[j].sphere.radius = 0.0f;
+			nodes[i].objects[j].sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
+	}
 
+	std::cout << "Number of nodes allocated: " << nodes.size() << " where each Node is: " << sizeof(nodes[0]) << " bytes" << std::endl;
+
+	// for all nodes in octtree, determine centre and extents of node
 	nodes[0].extent = 0.5f * bounds.size;
 	nodes[0].centre = bounds.centre;
 
 	std::cout << "root node centre: " << nodes[0].centre.x << " " << nodes[0].centre.y << " " << nodes[0].centre.z << " root node extents: " << nodes[0].extent.x << " " << nodes[0].extent.y << " " << nodes[0].extent.z << std::endl;
 
 	std::stack<int> stack;
-
 	stack.push(0);
 	while(!stack.empty()){
 		int currentIndex = stack.top();
 		stack.pop();
 
-		if(8*currentIndex + 8 < nodes.size()){
+		int maximumPossibleNodeIndex = 8*currentIndex + 8;
+
+		if(maximumPossibleNodeIndex < nodes.size()){
 			for(int i = -1; i <= 1; i += 2){
 				for(int j = -1; j <= 1; j += 2){
 					for(int k = -1; k <= 1; k += 2){
@@ -61,8 +92,6 @@ Octtree::Octtree(Bounds bounds, int depth)
 						nodes[index].extent = newExtent;
 						nodes[index].centre = newCentre;
 
-						if(index == 8) { std::cout << "centre: " << newCentre.x << " " << newCentre.y << " " << newCentre.z << " extent: " << newExtent.x << " " << newExtent.y << " " << newExtent.z << std::endl;}
-
 						stack.push(index);
 					}
 				}
@@ -70,6 +99,11 @@ Octtree::Octtree(Bounds bounds, int depth)
 		}
 	}
 
+	for(size_t i = 0; i < nodes.size(); i++){
+		std::cout << "i: " << i << " " << nodes[i].centre.x << " " << nodes[i].centre.y << " " << nodes[i].centre.z << " " << nodes[i].extent.x << " " << nodes[i].extent.y << " " << nodes[i].extent.z << std::endl;
+	}
+
+	// create lines array
 	lines.resize(6*12*nodes.size());
 
 	for(unsigned int i = 0; i < nodes.size(); i++){
@@ -165,19 +199,7 @@ Octtree::Octtree(Bounds bounds, int depth)
 
 	std::cout << "lines count: " << lines.size() << std::endl;
 
-	tempLines.resize(lines.size());
-}
-
-Octtree::~Octtree()
-{
-	
-}
-
-void Octtree::clear()
-{
-	for(unsigned int i = 0; i < nodes.size(); i++){
-		nodes[i].objects.clear();
-	}
+	//tempLines.resize(lines.size());
 }
 
 void Octtree::insert(Sphere sphere, Guid id)
@@ -218,6 +240,21 @@ void Octtree::insert(Sphere sphere, Guid id)
 
 		currentDepth++;
 	}
+}
+
+int Octtree::getDepth() const
+{
+	return depth;
+}
+
+Bounds Octtree::getBounds() const
+{
+	return bounds;
+}
+
+std::vector<float> Octtree::getLines() const
+{
+	return lines;
 }
 
 // Ray octtree intersection as described in the paper
@@ -361,7 +398,7 @@ void Octtree::insert(Sphere sphere, Guid id)
 // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
 Object* Octtree::intersect(Ray ray)
 {
-	test = 0;
+	size_t test = 0;
 
 	std::cout << "origin.x: " << ray.origin.x << " origin.y: " << ray.origin.y << " origin.z: " << ray.origin.z << " direction.x: " << ray.direction.x << " direction.y: " << ray.direction.y << " ray.direction.z: " << ray.direction.z << "  bounds: " << bounds.size.x << " " << bounds.size.y << " " << bounds.size.z << std::endl;
 
@@ -539,10 +576,6 @@ int Octtree::nextNode(float tx, int i, float ty, int j, float tz, int k)
 }
 
 
-std::vector<float> Octtree::getLines()
-{
-	return lines;
-}
 
 
 
@@ -584,141 +617,139 @@ std::vector<float> Octtree::getLines()
 
 
 
+// size_t Octtree::test = 0;
 
+// void Octtree::tempClear()
+// {
+// 	tempObjects.clear();
+// }
 
+// void Octtree::tempInsert(Sphere sphere, Guid id)
+// {
+// 	Object obj;
+// 	obj.sphere = sphere;
+// 	obj.id = id;
 
+// 	tempObjects.push_back(obj);
+// }
 
-void Octtree::tempClear()
-{
-	tempObjects.clear();
-}
+// Object* Octtree::tempIntersect(Ray ray)
+// {
+// 	for(int i = 0; i < tempObjects.size(); i++){
+// 		if(Geometry::intersect(ray, tempObjects[i].sphere)){
+// 			return &tempObjects[i];
+// 		}
+// 	}
 
-void Octtree::tempInsert(Sphere sphere, Guid id)
-{
-	Object obj;
-	obj.sphere = sphere;
-	obj.id = id;
+// 	return NULL;
+// }
 
-	tempObjects.push_back(obj);
-}
+// std::vector<float> Octtree::getLinesTemp()
+// {
+// 	// tempLines.clear();
+// 	for(unsigned int i = 0; i < tempLines.size(); i++){
+// 		tempLines[i] = 0.0f;
+// 	}
 
-Object* Octtree::tempIntersect(Ray ray)
-{
-	for(int i = 0; i < tempObjects.size(); i++){
-		if(Geometry::intersect(ray, tempObjects[i].sphere)){
-			return &tempObjects[i];
-		}
-	}
+// 	int index = 0;
+// 	for(unsigned int i = 0; i < nodes.size(); i++){
+// 		Node* node = &nodes[i];
+// 		if(node->objects.size() > 0){
+// 			//std::cout << "node index with objects: " << i << std::endl;
 
-	return NULL;
-}
+// 			// top
+// 			tempLines[6*12*index] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 1] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 2] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 3] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 4] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 5] = node->centre.z + node->extent.z;
 
-std::vector<float> Octtree::getLinesTemp()
-{
-	// tempLines.clear();
-	for(unsigned int i = 0; i < tempLines.size(); i++){
-		tempLines[i] = 0.0f;
-	}
+// 			tempLines[6*12*index + 6] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 7] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 8] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 9] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 10] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 11] = node->centre.z + node->extent.z;
 
-	int index = 0;
-	for(unsigned int i = 0; i < nodes.size(); i++){
-		Node* node = &nodes[i];
-		if(node->objects.size() > 0){
-			//std::cout << "node index with objects: " << i << std::endl;
-
-			// top
-			tempLines[6*12*index] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 1] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 2] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 3] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 4] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 5] = node->centre.z + node->extent.z;
-
-			tempLines[6*12*index + 6] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 7] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 8] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 9] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 10] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 11] = node->centre.z + node->extent.z;
-
-			tempLines[6*12*index + 12] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 13] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 14] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 15] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 16] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 17] = node->centre.z + node->extent.z;
-
-			tempLines[6*12*index + 18] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 19] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 20] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 21] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 22] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 23] = node->centre.z + node->extent.z;
-
-			// bottom
-			tempLines[6*12*index + 24] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 25] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 26] = node->centre.z - node->extent.z;
-			tempLines[6*12*index + 27] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 28] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 29] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 30] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 31] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 32] = node->centre.z - node->extent.z;
-			tempLines[6*12*index + 33] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 34] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 35] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 36] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 37] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 38] = node->centre.z - node->extent.z;
-			tempLines[6*12*index + 39] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 40] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 41] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 42] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 43] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 44] = node->centre.z - node->extent.z;
-			tempLines[6*12*index + 45] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 46] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 47] = node->centre.z - node->extent.z;
-
-			// sides
-			tempLines[6*12*index + 48] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 49] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 50] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 51] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 52] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 53] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 54] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 55] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 56] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 57] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 58] = node->centre.y + node->extent.y;
-			tempLines[6*12*index + 59] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 60] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 61] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 62] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 63] = node->centre.x + node->extent.x;
-			tempLines[6*12*index + 64] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 65] = node->centre.z - node->extent.z;
-
-			tempLines[6*12*index + 66] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 67] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 68] = node->centre.z + node->extent.z;
-			tempLines[6*12*index + 69] = node->centre.x - node->extent.x;
-			tempLines[6*12*index + 70] = node->centre.y - node->extent.y;
-			tempLines[6*12*index + 71] = node->centre.z - node->extent.z;
-
-			index++;
-		}
-	}
-
-	return tempLines;
-}
+// 			tempLines[6*12*index + 12] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 13] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 14] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 15] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 16] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 17] = node->centre.z + node->extent.z;
+
+// 			tempLines[6*12*index + 18] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 19] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 20] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 21] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 22] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 23] = node->centre.z + node->extent.z;
+
+// 			// bottom
+// 			tempLines[6*12*index + 24] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 25] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 26] = node->centre.z - node->extent.z;
+// 			tempLines[6*12*index + 27] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 28] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 29] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 30] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 31] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 32] = node->centre.z - node->extent.z;
+// 			tempLines[6*12*index + 33] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 34] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 35] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 36] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 37] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 38] = node->centre.z - node->extent.z;
+// 			tempLines[6*12*index + 39] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 40] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 41] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 42] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 43] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 44] = node->centre.z - node->extent.z;
+// 			tempLines[6*12*index + 45] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 46] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 47] = node->centre.z - node->extent.z;
+
+// 			// sides
+// 			tempLines[6*12*index + 48] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 49] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 50] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 51] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 52] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 53] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 54] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 55] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 56] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 57] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 58] = node->centre.y + node->extent.y;
+// 			tempLines[6*12*index + 59] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 60] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 61] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 62] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 63] = node->centre.x + node->extent.x;
+// 			tempLines[6*12*index + 64] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 65] = node->centre.z - node->extent.z;
+
+// 			tempLines[6*12*index + 66] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 67] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 68] = node->centre.z + node->extent.z;
+// 			tempLines[6*12*index + 69] = node->centre.x - node->extent.x;
+// 			tempLines[6*12*index + 70] = node->centre.y - node->extent.y;
+// 			tempLines[6*12*index + 71] = node->centre.z - node->extent.z;
+
+// 			index++;
+// 		}
+// 	}
+
+// 	return tempLines;
+// }
 
 
 

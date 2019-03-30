@@ -8,7 +8,7 @@
 #include "Asset.h"
 #include "Shader.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 #include "../glm/glm.hpp"
 
@@ -24,7 +24,7 @@ namespace PhysicsEngine
 
 	struct Character
 	{
-		GLHandle glyphId;    // ID handle of the glyph texture
+		GraphicsHandle glyphId;    // ID handle of the glyph texture
 	    glm::ivec2 size;     // Size of glyph
 	    glm::ivec2 bearing;  // Offset from baseline to left/top of glyph
 	    unsigned int advance;   
@@ -38,8 +38,8 @@ namespace PhysicsEngine
 
 		public:
 			Shader shader;
-			GLHandle vao;
-			GLHandle vbo;
+			GraphicsHandle vao;
+			GraphicsHandle vbo;
 
 		public:
 			Font();

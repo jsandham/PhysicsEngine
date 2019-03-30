@@ -111,8 +111,6 @@ void Font::load(std::string filepath)
             face->glyph->advance.x
         };
 
-        //std::cout << "character: " << c << " " << face->glyph->bitmap.width << " " << face->glyph->bitmap.rows << std::endl;
-
         characters.insert(std::pair<GLchar, Character>(c, character));
     }
 

@@ -8,25 +8,23 @@
 #include "../../include/core/LoadInternal.h"
 #include "../../include/core/World.h"
 #include "../../include/core/Geometry.h"
-#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 
 World::World()
 {
-	glm::vec3 centre = glm::vec3(0.0f, 20.0f, 20.0f);
-	glm::vec3 size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
+	bounds.centre = glm::vec3(0.0f, 20.0f, 20.0f);
+	bounds.size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
 
-	bounds = new Bounds(centre, size);
-	physics = new Octtree(*bounds, /*settings.physicsDepth*/2);
+	stree.create(bounds, 2, 5);
+	dtree.create(bounds, 2, 5);
 
 	debug = false;
 }
 
 World::~World()
 {
-	delete bounds;
-	delete physics;
+
 }
 
 bool World::load(Scene scene, AssetBundle assetBundle)
@@ -54,7 +52,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 		int type = *reinterpret_cast<int*>(&data[0]);
 
-		std::cout << "type: " << type << " size: " << size <<  std::endl;
+		//std::cout << "type: " << type << " size: " << size <<  std::endl;
 
 		if(type <= -1){
 			std::cout << "Error: Type cannot be less than 0 when reading asset bundle file" << std::endl;
@@ -113,7 +111,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		int type = *reinterpret_cast<int*>(&data[0]);
 		char classification = *reinterpret_cast<char*>(&data[sizeof(int)]);
 
-		std::cout << "classification: " << classification << " type: " << type << " size: " << size << std::endl;
+		//std::cout << "classification: " << classification << " type: " << type << " size: " << size << std::endl;
 
 		if(type <= -1){
 			std::cout << "Error: Type cannot be less than 0 when reading scene file" << std::endl;
@@ -168,7 +166,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 				return false;
 			}
 
-			std::cout << "entity id: " << component->entityId.toString() << std::endl;
+			//std::cout << "entity id: " << component->entityId.toString() << std::endl;
 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, instanceType));
 		}
 		else if(classification == 's'){
@@ -194,7 +192,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		}
 	}
 
-	std::cout << "Number of systems: " << systems.size() << std::endl;
+	//std::cout << "Number of systems: " << systems.size() << std::endl;
 
 	// std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it;
 	// for(it = entityIdToComponentIds.begin(); it != entityIdToComponentIds.end(); it++){
@@ -303,12 +301,17 @@ System* World::getSystemByIndex(int index)
 
 Bounds* World::getWorldBounds()
 {
-	return bounds;
+	return &bounds;
 }
 
-Octtree* World::getPhysicsTree()
+Octtree* World::getStaticPhysicsTree()
 {
-	return physics;
+	return &stree;
+}
+
+Octtree* World::getDynamicPhysicsTree()
+{
+	return &dtree;
 }
 
 void World::latentDestroy(Guid entityId)
@@ -513,8 +516,7 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 	ray.origin = origin;
 	ray.direction = direction;
 
-	// return physics->tempIntersect(ray) != NULL;
-	return physics->intersect(ray) != NULL;
+	return stree.intersect(ray) != NULL || dtree.intersect(ray) != NULL;
 }
 
 // begin by only implementing for spheres first and later I will add for bounds, capsules etc
@@ -525,8 +527,7 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 	ray.origin = origin;
 	ray.direction = direction;
 
-	// Object* object = physics->tempIntersect(ray);
-	Object* object = physics->intersect(ray);
+	Object* object = stree.intersect(ray);
 
 	if(object != NULL){
 		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);

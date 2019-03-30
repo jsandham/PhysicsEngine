@@ -709,7 +709,7 @@ int serializeScenes(std::string projectDirectory)
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
 			data.meshId = Guid(it->second["mesh"].ToString());
-			data.materialId = Guid(it->second["material"].ToString());
+			data.shaderId = Guid(it->second["shader"].ToString());
 
 			data.numBoids = it->second["numBoids"].ToInt();
 			data.h = (float)it->second["h"].ToFloat();

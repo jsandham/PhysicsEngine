@@ -8,15 +8,15 @@
 #include "../core/World.h"
 #include "../core/Guid.h"
 
-#include "GLState.h"
 #include "BatchManager.h"
+#include "GraphicsState.h"
 #include "GraphicsQuery.h"
 #include "GraphicsDebug.h"
 
 namespace PhysicsEngine
 {
 	// where should this live? Graphics? GLState? 
-	struct InternalMesh  //OpenGLMesh? InternalMesh? DynamicMesh?
+	struct InternalMesh  //OpenGLMesh? InternalMesh? DynamicMesh? Maybe I should put this back in Mesh and just not use it when batching?
 	{
 		GLuint VAO;
 		GLuint vertexVBO;
@@ -25,7 +25,7 @@ namespace PhysicsEngine
 	};
 
 
-	class Renderer
+	class ForwardRenderer
 	{
 		private:
 			World* world;
@@ -46,8 +46,8 @@ namespace PhysicsEngine
 			unsigned int pass;
 
 		public:
-			Renderer();
-			~Renderer();
+			ForwardRenderer();
+			~ForwardRenderer();
 
 			void init(World* world);
 			void update();

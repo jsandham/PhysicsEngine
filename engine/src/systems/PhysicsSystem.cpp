@@ -35,15 +35,15 @@ void PhysicsSystem::init(World* world)
 
 void PhysicsSystem::update(Input input)
 {
-	Octtree* physics = world->getPhysicsTree();
+	Octtree* stree = world->getStaticPhysicsTree();
 
-	physics->clear();
+	stree->clear();
 
 	// rebuild dynamic octtree for physics raycasts
 	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
 		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
 
-		physics->insert(collider->sphere, collider->componentId);
+		stree->insert(collider->sphere, collider->componentId);
 	}
 
 
@@ -51,15 +51,15 @@ void PhysicsSystem::update(Input input)
 
 
 
-	physics->tempClear();
+	// physics->tempClear();
 	
-	// rebuild dynamic octtree for physics
-	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
-		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
-		//std::cout << "collider: " << i << " centre: " << collider->sphere.centre.x << " " << collider->sphere.centre.y << " " << collider->sphere.centre.z << " radius: " << collider->sphere.radius << std::endl; 
+	// // rebuild dynamic octtree for physics
+	// for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
+	// 	SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
+	// 	//std::cout << "collider: " << i << " centre: " << collider->sphere.centre.x << " " << collider->sphere.centre.y << " " << collider->sphere.centre.z << " radius: " << collider->sphere.radius << std::endl; 
 
-		physics->tempInsert(collider->sphere, collider->componentId);
-	}
+	// 	physics->tempInsert(collider->sphere, collider->componentId);
+	// }
 }
 
 

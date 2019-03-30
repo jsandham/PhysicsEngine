@@ -4,7 +4,7 @@
 #include "Line.h"
 #include "Material.h"
 
-#include "../graphics/GLHandle.h"
+#include "../graphics/GraphicsHandle.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -20,8 +20,8 @@ namespace PhysicsEngine
 		size_t count;
 		size_t size;
 		Material* material;
-		GLHandle vao;
-		GLHandle vbo;
+		GraphicsHandle vao;
+		GraphicsHandle vbo;
 		float* buffer;
 	};
 
