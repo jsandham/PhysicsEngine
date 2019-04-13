@@ -12,8 +12,8 @@ CapsuleCollider::CapsuleCollider()
 
 CapsuleCollider::CapsuleCollider(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[index]);
 
 	componentId = header->componentId;

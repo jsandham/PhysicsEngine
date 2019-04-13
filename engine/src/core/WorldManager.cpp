@@ -30,6 +30,8 @@ void WorldManager::init()
 		System* system = world->getSystemByIndex(i);
 
 		system->init(world);
+
+		std::cout << "initializing system type: " << system->getType() << " with order: " << system->getOrder() << std::endl;
 	}
 }
 

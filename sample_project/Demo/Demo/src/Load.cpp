@@ -21,7 +21,7 @@ Asset* PhysicsEngine::loadAsset(std::vector<char> data, int* index)
 
 Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index, int* instanceType)
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	*index = -1;
 	*instanceType = -1;// Component::getInstanceType<>();
@@ -32,7 +32,7 @@ Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index, int*
 
 System* PhysicsEngine::loadSystem(std::vector<char> data, int* index)
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	//std::cout << "load internal system called system of type: " << type << std::endl;
 

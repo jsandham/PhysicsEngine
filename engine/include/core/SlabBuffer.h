@@ -19,7 +19,7 @@ namespace PhysicsEngine
 		SlabNode* next;
 		size_t count;
 		size_t size;
-		Material* material;
+		Shader* shader;
 		GraphicsHandle vao;
 		GraphicsHandle vbo;
 		float* buffer;
@@ -39,7 +39,7 @@ namespace PhysicsEngine
 			~SlabBuffer();
 
 			void clear();
-			void add(std::vector<float> data, Material* material);
+			void add(std::vector<float> data, Shader* shader);
 
 			bool hasNext();
 			SlabNode* getNext();

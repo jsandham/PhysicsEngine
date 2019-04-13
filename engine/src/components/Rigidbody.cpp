@@ -25,8 +25,8 @@ Rigidbody::Rigidbody()
 
 Rigidbody::Rigidbody(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[index]);
 
 	componentId = header->componentId;

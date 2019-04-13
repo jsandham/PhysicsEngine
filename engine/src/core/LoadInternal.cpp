@@ -40,7 +40,7 @@ using namespace PhysicsEngine;
 
 Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int* index)  
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	int type = *reinterpret_cast<int*>(&data[0]); //maybe should add classification to assets? Just for consistency with components, entities, and systems?
 
 	if(type == 0){
 		std::cout << "a shader allocator count: " << getAllocator<Shader>().getCount() << std::endl;
@@ -85,7 +85,8 @@ Entity* PhysicsEngine::loadInternalEntity(std::vector<char> data, int* index)
 
 Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index, int* instanceType)
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	//char classification = *reinterpret_cast<char*>(&data[0]);
+	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	if(type == 0){
 		*index = (int)getAllocator<Transform>().getCount();
@@ -170,7 +171,8 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* ind
 
 System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	//char classification = *reinterpret_cast<char*>(&data[0]);
+	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	if(type == 0){
 		*index = (int)getAllocator<RenderSystem>().getCount();

@@ -39,8 +39,8 @@ Camera::Camera()
 
 Camera::Camera(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[index]);
 
 	componentId = header->componentId;

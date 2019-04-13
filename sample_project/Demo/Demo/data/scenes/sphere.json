@@ -77,8 +77,21 @@
     "centre" : [12.0, 12.0, 32.0],
     "radius" : 1.0
   },
-  "48dfab4a-73f3-4c01-a667-0bdd2d88f287" : {"type" : "PhysicsSystem"},
-  "6b12828d-0d82-4623-b43a-8bd07860fd85" : {"type" : "RenderSystem"},
-  "a590e9e4-0c73-45db-9963-5c32e119ccf6" : {"type" : "PlayerSystem"},
-  "394ace23-1d4d-4439-8f53-c18b6475bd56" : {"type" : "DebugSystem","material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"}
+  "48dfab4a-73f3-4c01-a667-0bdd2d88f287" : {
+    "type" : "PhysicsSystem",
+    "order" : 0
+  },
+  "6b12828d-0d82-4623-b43a-8bd07860fd85" : {
+    "type" : "RenderSystem",
+    "order" : 1
+  },
+  "a590e9e4-0c73-45db-9963-5c32e119ccf6" : {
+    "type" : "PlayerSystem",
+    "order" : 2
+  },
+  "394ace23-1d4d-4439-8f53-c18b6475bd56" : {
+    "type" : "DebugSystem",
+    "order" : 3,
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+  }
 }

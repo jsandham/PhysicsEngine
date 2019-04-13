@@ -12,8 +12,8 @@ BoxCollider::BoxCollider()
 
 BoxCollider::BoxCollider(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[index]);
 
 	componentId = header->componentId;

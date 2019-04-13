@@ -16,8 +16,8 @@ DirectionalLight::DirectionalLight()
 
 DirectionalLight::DirectionalLight(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	DirectionalLightHeader* header = reinterpret_cast<DirectionalLightHeader*>(&data[index]);
 
 	componentId = header->componentId;

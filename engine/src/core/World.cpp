@@ -13,7 +13,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	bounds.centre = glm::vec3(0.0f, 20.0f, 20.0f);
+	bounds.centre = glm::vec3(0.0f, 0.0f, 20.0f);
 	bounds.size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
 
 	stree.create(bounds, 2, 5);
@@ -108,9 +108,8 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		std::vector<char> data(size);
 		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
-		int type = *reinterpret_cast<int*>(&data[0]);
-		char classification = *reinterpret_cast<char*>(&data[sizeof(int)]);
-
+		char classification = *reinterpret_cast<char*>(&data[0]);
+		int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 		//std::cout << "classification: " << classification << " type: " << type << " size: " << size << std::endl;
 
 		if(type <= -1){
@@ -191,6 +190,23 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 			return false;
 		}
 	}
+
+	// sort systems by order
+	for(size_t i = 0; i < systems.size(); i++){
+		int minOrder = systems[i]->getOrder();
+		int minOrderIndex = (int)i;
+		for(size_t j = i + 1; j < systems.size(); j++){
+			if(systems[j]->getOrder() < minOrder){
+				minOrder = systems[j]->getOrder();
+				minOrderIndex = (int)j;
+			}
+		}
+
+		System* temp = systems[i];
+		systems[i] = systems[minOrderIndex];
+		systems[minOrderIndex] = temp;
+	}
+
 
 	//std::cout << "Number of systems: " << systems.size() << std::endl;
 
@@ -312,6 +328,11 @@ Octtree* World::getStaticPhysicsTree()
 Octtree* World::getDynamicPhysicsTree()
 {
 	return &dtree;
+}
+
+UniformGrid* World::getStaticPhysicsGrid()
+{
+	return &sgrid;
 }
 
 void World::latentDestroy(Guid entityId)

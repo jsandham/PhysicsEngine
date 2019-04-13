@@ -40,7 +40,7 @@ void SlabBuffer::clear()
 	}
 }
 
-void SlabBuffer::add(std::vector<float> data, Material* material)
+void SlabBuffer::add(std::vector<float> data, Shader* shader)
 {
 	size_t startIndex = 0;
 	size_t endIndex = data.size();
@@ -51,13 +51,13 @@ void SlabBuffer::add(std::vector<float> data, Material* material)
 
 		if(*current != NULL){
 			size_t count = (*current)->count;
-			if(material->assetId == (*current)->material->assetId && count < blockSize){
+			if(shader->assetId == (*current)->shader->assetId && count < blockSize){
 
 				if((count + endIndex - startIndex) > blockSize){
 					endIndex = startIndex + blockSize - count;
 				}
 
-				(*current)->material = material;
+				(*current)->shader = shader;
 				for(size_t i = 0; i < endIndex-startIndex; i++){
 					(*current)->buffer[count + i] = data[startIndex + i];
 				}
@@ -77,7 +77,7 @@ void SlabBuffer::add(std::vector<float> data, Material* material)
 			SlabBuffer::test++;
 			std::cout << "creating new slab node " << SlabBuffer::test << std::endl;
 			*current = new SlabNode();
-			(*current)->material = material;
+			(*current)->shader = shader;
 			(*current)->buffer = new float[blockSize];
 			(*current)->size = blockSize;
 
@@ -93,6 +93,14 @@ void SlabBuffer::add(std::vector<float> data, Material* material)
 			(*current)->count = (endIndex - startIndex);
 
 			//Graphics::generate(*current);
+			glGenVertexArrays(1, &((*current)->vao.handle));
+			glBindVertexArray((*current)->vao.handle);
+			glGenBuffers(1, &((*current)->vbo.handle));
+			glBindBuffer(GL_ARRAY_BUFFER, (*current)->vbo.handle);
+			glBufferData(GL_ARRAY_BUFFER, (*current)->size*sizeof(float), &((*current)->buffer[0]), GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0); // IS THIS WRONG FOR LINES?
+			glBindVertexArray(0);
 
 			startIndex = endIndex;
 			endIndex = data.size();

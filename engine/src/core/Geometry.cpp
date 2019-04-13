@@ -78,12 +78,23 @@ bool Geometry::intersect(Sphere sphere, Bounds bounds)
 		if (sphere.centre[i] < min[i]){
 			distSqr += (sphere.centre[i] - min[i]) * (sphere.centre[i] - min[i]);
 		}
-		else if (sphere.centre.x > max.x){
+		else if (sphere.centre[i] > max[i]){
 			distSqr += (sphere.centre[i] - max[i]) * (sphere.centre[i] - max[i]);
 		}
 	}
 	
 	return distSqr <= radiusSqr;
+
+
+	// same algorithm probably faster?
+	// glm::vec3 min = bounds.getMin();
+	// glm::vec3 max = bounds.getMax();
+
+	// float ex = std::max(min.x - center.x, 0.0f) + std::max(center.x - max.x, 0.0f);
+	// float ey = std::max(min.y - center.y, 0.0f) + std::max(center.y - max.y, 0.0f);
+	// float ez = std::max(min.z - center.z, 0.0f) + std::max(center.z - max.z, 0.0f);
+
+	// return (ex < sphere.radius) && (ey < sphere.radius) && (ez < sphere.radius) && (ex * ex + ey * ey + ez * ez < sphere.radius * sphere.radius);
 }
 
 bool Geometry::intersect(Sphere sphere1, Sphere sphere2)

@@ -17,6 +17,7 @@
 #include "Guid.h"
 #include "Input.h"
 #include "Octtree.h"
+#include "UniformGrid.h"
 #include "LoadInternal.h"
 
 #include "../components/Transform.h"
@@ -55,6 +56,7 @@ namespace PhysicsEngine
 			Bounds bounds;
 			Octtree stree; // octtree for static colliders
 			Octtree dtree; // octtree for dynamic colliders
+			UniformGrid sgrid; // uniform grid for static colliders
 
 			std::map<Guid, int> assetIdToGlobalIndex;
 			std::map<Guid, int> idToGlobalIndex;
@@ -200,6 +202,7 @@ namespace PhysicsEngine
 			Bounds* getWorldBounds();
 			Octtree* getStaticPhysicsTree();
 			Octtree* getDynamicPhysicsTree();
+			UniformGrid* getStaticPhysicsGrid();
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);

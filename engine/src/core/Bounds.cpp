@@ -23,17 +23,17 @@ Bounds::~Bounds()
 
 }
 
-glm::vec3 Bounds::getExtents()
+glm::vec3 Bounds::getExtents() const
 {
 	return 0.5f * size;
 }
 
-glm::vec3 Bounds::getMin()
+glm::vec3 Bounds::getMin() const
 {
 	return centre - 0.5f * size;
 }
 
-glm::vec3 Bounds::getMax()
+glm::vec3 Bounds::getMax() const
 {
 	return centre + 0.5f * size;
 }

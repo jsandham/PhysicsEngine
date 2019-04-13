@@ -12,8 +12,8 @@ SphereCollider::SphereCollider()
 
 SphereCollider::SphereCollider(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[index]);
 
 	componentId = header->componentId;

@@ -23,7 +23,14 @@ DebugSystem::DebugSystem()
 
 DebugSystem::DebugSystem(std::vector<char> data)
 {
-	type = 3;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 3){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 DebugSystem::~DebugSystem()

@@ -19,8 +19,8 @@ PointLight::PointLight()
 
 PointLight::PointLight(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	PointLightHeader* header = reinterpret_cast<PointLightHeader*>(&data[index]);
 
 	componentId = header->componentId;

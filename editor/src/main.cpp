@@ -95,7 +95,7 @@ int serializeScenes(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << sceneFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << sceneFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -296,13 +296,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 0;
 			char classification = 'e';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(EntityHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&data, sizeof(EntityHeader), 1, file);
 		}
 
@@ -330,13 +330,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 0;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(TransformHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(TransformHeader), 1, file);
 		}
@@ -372,13 +372,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 1;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(RigidbodyHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(RigidbodyHeader), 1, file);
 		}
@@ -403,13 +403,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 2;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(CameraHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(CameraHeader), 1, file);
 		}
@@ -429,13 +429,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 3;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(MeshRendererHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(MeshRendererHeader), 1, file);
 		}
@@ -469,13 +469,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 4;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(LineRendererHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(LineRendererHeader), 1, file);
 		}
@@ -509,13 +509,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 5;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(DirectionalLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(DirectionalLightHeader), 1, file);
 		}
@@ -559,13 +559,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 6;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(SpotLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(SpotLightHeader), 1, file);
 		}
@@ -603,13 +603,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 7;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(PointLightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(PointLightHeader), 1, file);
 		}
@@ -633,13 +633,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 8;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(BoxColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(BoxColliderHeader), 1, file);
 		}
@@ -661,13 +661,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 9;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(SphereColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(SphereColliderHeader), 1, file);
 		}
@@ -690,13 +690,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 10;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(CapsuleColliderHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(CapsuleColliderHeader), 1, file);
 		}
@@ -724,13 +724,13 @@ int serializeScenes(std::string projectDirectory)
 			int type = 11;
 			char classification = 'c';
 
-			size_t totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
 			totalSize += sizeof(BoidsHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(BoidsHeader), 1, file);
 		}
@@ -741,6 +741,8 @@ int serializeScenes(std::string projectDirectory)
 			size_t totalSize;
 			int type;
 			char classification = 's';
+
+			std::cout << "System type: " << it->second["type"].ToString() << std::endl;
 
 			if(it->second["type"].ToString() == "RenderSystem"){
 				type = 0;
@@ -764,12 +766,16 @@ int serializeScenes(std::string projectDirectory)
 				type = 21;
 			}
 
-			totalSize = sizeof(int);
-			totalSize += sizeof(char);
+			int order = it->second["order"].ToInt();
+
+			totalSize = sizeof(char);
+			totalSize += sizeof(int);
+			totalSize += sizeof(int);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&order, sizeof(int), 1, file);
 		}
 
 		// close file
@@ -794,32 +800,32 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "de-serialized scene header file contains the following information: " << std::endl;
 		std::cout << "fileSize: " << sceneHeader.fileSize << std::endl;
 
-		std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
-		std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
-		std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
-		std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
-		std::cout << "numberOfLineRenderers: " << sceneHeader.numberOfLineRenderers << std::endl;
-		std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
-		std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
-		std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
-		std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
-		std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
-		std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
-		std::cout << "numberOfBoids: " << sceneHeader.numberOfBoids << std::endl;
+		// std::cout << "numberOfEntities: " << sceneHeader.numberOfEntities << std::endl;
+		// std::cout << "numberOfTransforms: " << sceneHeader.numberOfTransforms << std::endl;
+		// std::cout << "numberOfRigidbodies: " << sceneHeader.numberOfRigidbodies << std::endl;
+		// std::cout << "numberOfMeshRenderers: " << sceneHeader.numberOfMeshRenderers << std::endl;
+		// std::cout << "numberOfLineRenderers: " << sceneHeader.numberOfLineRenderers << std::endl;
+		// std::cout << "numberOfDirectionalLights: " << sceneHeader.numberOfDirectionalLights << std::endl;
+		// std::cout << "numberOfSpotLights: " << sceneHeader.numberOfSpotLights << std::endl;
+		// std::cout << "numberOfPointLights: " << sceneHeader.numberOfPointLights << std::endl;
+		// std::cout << "numberOfBoxColliders: " << sceneHeader.numberOfBoxColliders << std::endl;
+		// std::cout << "numberOfSphereColliders: " << sceneHeader.numberOfSphereColliders << std::endl;
+		// std::cout << "numberOfCapsuleColliders: " << sceneHeader.numberOfCapsuleColliders << std::endl;
+		// std::cout << "numberOfBoids: " << sceneHeader.numberOfBoids << std::endl;
 
-		std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
-		std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
-		std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
-		std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
-		std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
-		std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
-		std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
-		std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
-		std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
-		std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
-		std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
-		std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
-		std::cout << "sizeOfBoids: " << sceneHeader.sizeOfBoids << std::endl;
+		// std::cout << "sizeOfEntity: " << sceneHeader.sizeOfEntity << std::endl;
+		// std::cout << "sizeOfTransform: " << sceneHeader.sizeOfTransform << std::endl;
+		// std::cout << "sizeOfRigidbody: " << sceneHeader.sizeOfRigidbody << std::endl;
+		// std::cout << "sizeOfCamera: " << sceneHeader.sizeOfCamera << std::endl;
+		// std::cout << "sizeOfMeshRenderer: " << sceneHeader.sizeOfMeshRenderer << std::endl;
+		// std::cout << "sizeOfLineRenderer: " << sceneHeader.sizeOfLineRenderer << std::endl;
+		// std::cout << "sizeOfDirectionalLight: " << sceneHeader.sizeOfDirectionalLight << std::endl;
+		// std::cout << "sizeOfSpotLight: " << sceneHeader.sizeOfSpotLight << std::endl;
+		// std::cout << "sizeOfPointLight: " << sceneHeader.sizeOfPointLight << std::endl;
+		// std::cout << "sizeOfBoxCollider: " << sceneHeader.sizeOfBoxCollider << std::endl;
+		// std::cout << "sizeOfSphereCollider: " << sceneHeader.sizeOfSphereCollider << std::endl;
+		// std::cout << "sizeOfCapsuleCollider: " << sceneHeader.sizeOfCapsuleCollider << std::endl;
+		// std::cout << "sizeOfBoids: " << sceneHeader.sizeOfBoids << std::endl;
 
 		if(file2){
 			fclose(file2);
@@ -843,7 +849,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << shaderFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << shaderFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -856,7 +862,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << textureFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << textureFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -869,7 +875,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << materialFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -882,7 +888,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << meshFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -895,7 +901,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << gmeshFolderFiles[i] << std::endl;
 		}
 	}
 
@@ -908,7 +914,7 @@ int serializeAssets(std::string projectDirectory)
 		}
 		else
 		{
-			std::cout << "invalid file: " << fontFolderFiles[i] << std::endl;
+			//std::cout << "invalid file: " << fontFolderFiles[i] << std::endl;
 		}
 	}
 

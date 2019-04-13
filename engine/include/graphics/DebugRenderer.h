@@ -7,7 +7,7 @@
 #include "../core/Texture2D.h"
 #include "../core/Font.h"
 #include "../core/Input.h"
-#include "../core/SlabBuffer.h"
+// #include "../core/SlabBuffer.h"
 
 #include "../graphics/Graphics.h"
 #include "../graphics/GraphicsQuery.h"
@@ -25,10 +25,10 @@ namespace PhysicsEngine
 			PerformanceGraph graph;
 			DebugWindow window;
 			Font font;
+			LineBuffer buffer;
 
-			SlabBuffer* lineBuffer;
-			Material* lineMaterial;
-			Shader* lineShader;
+			//SlabBuffer* lineBuffer;
+			//Shader* lineShader;
 
 		public:
 			DebugRenderer();

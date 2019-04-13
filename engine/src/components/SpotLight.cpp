@@ -22,8 +22,8 @@ SpotLight::SpotLight()
 
 SpotLight::SpotLight(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	SpotLightHeader* header = reinterpret_cast<SpotLightHeader*>(&data[index]);
 
 	componentId = header->componentId;

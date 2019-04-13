@@ -11,6 +11,7 @@ namespace PhysicsEngine
 	{
 		protected:
 			int type;
+			int order;
 
 			World* world;
 
@@ -20,6 +21,9 @@ namespace PhysicsEngine
 
 			virtual void init(World* world) = 0;
 			virtual void update(Input input) = 0;
+
+			int getType() const;
+			int getOrder() const;
 	};
 }
 

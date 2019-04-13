@@ -15,8 +15,8 @@ Transform::Transform()
 
 Transform::Transform(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[index]);
 
 	componentId = header->componentId;

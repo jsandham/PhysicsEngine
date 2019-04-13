@@ -14,8 +14,8 @@ MeshRenderer::MeshRenderer()
 
 MeshRenderer::MeshRenderer(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
+	size_t index = sizeof(char);
+	index += sizeof(int);
 	MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[index]);
 
 	componentId = header->componentId;

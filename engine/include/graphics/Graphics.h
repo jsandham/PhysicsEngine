@@ -66,6 +66,20 @@ namespace PhysicsEngine
 		void add(float sample);
 	};
 
+	struct LineBuffer 
+	{
+		size_t size;
+		Shader shader;
+		GLuint VAO;
+		GLuint VBO;
+
+		void init(std::vector<float> lines);
+	};
+
+
+
+
+
 	class Graphics
 	{
 		public:
@@ -232,7 +246,7 @@ namespace PhysicsEngine
 
 			static void render(World* world, Material* material, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
 			static void render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
 			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
 	};
 }

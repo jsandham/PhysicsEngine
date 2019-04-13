@@ -19,7 +19,14 @@ RenderSystem::RenderSystem()
 
 RenderSystem::RenderSystem(std::vector<char> data)
 {
-	type = 0;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 0){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 RenderSystem::~RenderSystem()
@@ -28,6 +35,7 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::init(World* world)
 {
+	std::cout << "Render System init called" << std::endl;
 	this->world = world;
 
 	forwardRenderer.init(world);

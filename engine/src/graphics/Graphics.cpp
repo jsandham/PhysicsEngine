@@ -193,6 +193,25 @@ void PerformanceGraph::add(float sample)
 	glBufferSubData(GL_ARRAY_BUFFER, 0, samples.size()*sizeof(float), &(samples[0]));
 }
 
+void LineBuffer::init(std::vector<float> lines)
+{
+	shader.vertexShader = Shader::lineVertexShader;
+	shader.fragmentShader = Shader::lineFragmentShader;
+
+	shader.compile();
+
+	size = lines.size();
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, lines.size() * sizeof(float), &lines[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+	glBindVertexArray(0);
+}
+
 // GLHandle Graphics::query;
 // unsigned int Graphics::gpu_time;
 
@@ -1118,7 +1137,7 @@ void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
 
 // void Graphics::apply(SlabNode* node)
 // {
-// 	glBindBuffer(GL_ARRAY_BUFFER, node->vbo.handle);
+// 	glBindBuffer(GL_ARRAY_BUFFER, node->vbo.handle); 
 
 // 	glBufferSubData(GL_ARRAY_BUFFER, 0, node->count*sizeof(float), &(node->buffer[0]));
 // }
@@ -1605,7 +1624,7 @@ void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat
 	}
 }
 
-void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
+void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query)
 {
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -1626,7 +1645,7 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao,
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
-	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	glDrawArrays(mode, 0, numVertices);
 
 	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);

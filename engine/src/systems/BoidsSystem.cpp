@@ -23,7 +23,14 @@ BoidsSystem::BoidsSystem()
 
 BoidsSystem::BoidsSystem(std::vector<char> data)
 {
-	type = 4;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 4){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 BoidsSystem::~BoidsSystem()
@@ -41,6 +48,7 @@ void BoidsSystem::init(World* world)
 		Mesh* mesh = world->getAsset<Mesh>(boids->meshId);
 		// Material* material = world->getAsset<Material>(boids->materialId);
 		Shader* shader = world->getAsset<Shader>(boids->shaderId);
+
 
 		if(mesh != NULL && shader != NULL){
 			glm::vec3 boundsSize = boids->bounds.size;

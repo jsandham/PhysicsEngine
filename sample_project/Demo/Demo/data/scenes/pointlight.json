@@ -87,16 +87,20 @@
     "height" : 3.4
   },
   "837dd766-a52b-4077-910d-da838039a031" : {
-    "type" : "PhysicsSystem"
+    "type" : "PhysicsSystem",
+    "order" : 0
   },
   "f3321303-88e6-449d-a957-82eef6ab81b3" : {
-    "type" : "RenderSystem"
+    "type" : "RenderSystem",
+    "order" : 1
   },
   "81b9ed7a-bf21-4762-a0ab-2a15a2a1a57f" : {  
-    "type" : "PlayerSystem"
+    "type" : "PlayerSystem",
+    "order" : 2
   },
   "51272a14-1f1f-46bc-8209-a6cc64317a4a" : {
     "type" : "LogicSystem",
+    "order" : 3,
     "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
   }
 }

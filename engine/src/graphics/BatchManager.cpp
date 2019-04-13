@@ -112,7 +112,7 @@ void BatchManager::render(World* world, Shader* shader, GraphicsQuery* query)
 		}
 
 		for(size_t i = 0; i < batches.size(); i++){
-			Graphics::render(world, shader, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
+			Graphics::render(world, shader, glm::mat4( 1.0 ), batches[i].VAO, GL_TRIANGLES, batches[i].currentNumOfVertices, query);
 		}
 	}
 }

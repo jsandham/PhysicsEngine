@@ -6,6 +6,7 @@
 #include "../../include/core/Bounds.h"
 #include "../../include/core/Physics.h"
 #include "../../include/core/World.h"
+#include "../../include/core/UniformGrid.h"
 
 #include "../../include/components/Transform.h"
 
@@ -18,7 +19,14 @@ PhysicsSystem::PhysicsSystem()
 
 PhysicsSystem::PhysicsSystem(std::vector<char> data)
 {
-	type = 1;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 1){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -28,9 +36,33 @@ PhysicsSystem::~PhysicsSystem()
 
 void PhysicsSystem::init(World* world)
 {
+	std::cout << "Physics System init called" << std::endl;
 	this->world = world;
 
-	
+	UniformGrid* grid = world->getStaticPhysicsGrid();
+
+	float maxDiameter = 2.0f;
+
+	std::vector<SphereObject> objects;
+	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
+		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
+
+		SphereObject object;
+		object.sphere = collider->sphere;
+		object.id = collider->componentId;
+
+		objects.push_back(object);
+
+		if(2.0f * object.sphere.radius > maxDiameter){
+			maxDiameter = 2.0f * object.sphere.radius;
+		}
+	}
+
+	Bounds worldBounds = *world->getWorldBounds();
+
+	glm::ivec3 gridDim = glm::ivec3(worldBounds.size.x / maxDiameter, worldBounds.size.y / maxDiameter, worldBounds.size.z / maxDiameter);
+
+	grid->create(worldBounds, gridDim, objects);
 }
 
 void PhysicsSystem::update(Input input)

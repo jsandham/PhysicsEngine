@@ -4649,19 +4649,24 @@
     "radius" : 0.430418
   },
   "3592fd6a-041e-4afa-8687-0d1b8e5ba92e" : {
-    "type" : "PhysicsSystem"
+    "type" : "PhysicsSystem",
+    "order" : 0
   },
   "8d003d83-bbe0-4950-a7c8-f7a2719a354f" : {
-    "type" : "RenderSystem"
+    "type" : "RenderSystem",
+    "order" : 1
   },
   "ee061fd0-f2f4-4be3-ac2b-6e71fcd9e95f" : {
-    "type" : "PlayerSystem"
+    "type" : "PlayerSystem",
+    "order" : 2
   },
   "aba38b2e-e8ef-4e20-90a1-81d05568af6c" : {
     "type" : "DebugSystem",
+    "order" : 3,
     "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
   },
   "c757fef5-31b6-46a6-acd9-346327fdc573" : {
-    "type" : "LogicSystem"
+    "type" : "LogicSystem",
+    "order" : 4
   }
 }

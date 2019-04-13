@@ -18,7 +18,14 @@ SolidSystem::SolidSystem()
 
 SolidSystem::SolidSystem(std::vector<char> data)
 {
-	type = 7;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 7){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 SolidSystem::~SolidSystem()

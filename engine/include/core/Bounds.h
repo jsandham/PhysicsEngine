@@ -18,9 +18,9 @@ namespace PhysicsEngine
 			Bounds(glm::vec3 centre, glm::vec3 size);
 			~Bounds();
 
-			glm::vec3 getExtents();
-			glm::vec3 getMin();
-			glm::vec3 getMax();
+			glm::vec3 getExtents() const;
+			glm::vec3 getMin() const;
+			glm::vec3 getMax() const;
 	};
 }
 

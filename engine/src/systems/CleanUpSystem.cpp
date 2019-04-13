@@ -7,7 +7,14 @@ using namespace PhysicsEngine;
 
 CleanUpSystem::CleanUpSystem(std::vector<char> data)
 {
-	type = 2;
+	size_t index = sizeof(char);
+	type = *reinterpret_cast<int*>(&data[index]);
+	index += sizeof(int);
+	order = *reinterpret_cast<int*>(&data[index]);
+
+	if(type != 2){
+		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	}
 }
 
 CleanUpSystem::~CleanUpSystem()
