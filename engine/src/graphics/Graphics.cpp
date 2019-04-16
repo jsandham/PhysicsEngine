@@ -212,6 +212,19 @@ void LineBuffer::init(std::vector<float> lines)
 	glBindVertexArray(0);
 }
 
+void LineBuffer::update(std::vector<float> lines)
+{
+	if(lines.size() != size){
+		std::cout << "Error: Cannot change buffer size after initialiation" << std::endl;
+		return;
+	}
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(float), &lines[0]);
+	glBindVertexArray(0);
+}
+
 // GLHandle Graphics::query;
 // unsigned int Graphics::gpu_time;
 

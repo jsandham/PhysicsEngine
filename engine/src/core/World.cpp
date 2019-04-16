@@ -16,8 +16,8 @@ World::World()
 	bounds.centre = glm::vec3(0.0f, 0.0f, 20.0f);
 	bounds.size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
 
-	stree.create(bounds, 2, 5);
-	dtree.create(bounds, 2, 5);
+	//stree.create(bounds, 2, 5);
+	//dtree.create(bounds, 2, 5);
 
 	debug = false;
 }
@@ -320,15 +320,15 @@ Bounds* World::getWorldBounds()
 	return &bounds;
 }
 
-Octtree* World::getStaticPhysicsTree()
-{
-	return &stree;
-}
+// Octtree* World::getStaticPhysicsTree()
+// {
+// 	return &stree;
+// }
 
-Octtree* World::getDynamicPhysicsTree()
-{
-	return &dtree;
-}
+// Octtree* World::getDynamicPhysicsTree()
+// {
+// 	return &dtree;
+// }
 
 UniformGrid* World::getStaticPhysicsGrid()
 {
@@ -537,7 +537,8 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 	ray.origin = origin;
 	ray.direction = direction;
 
-	return stree.intersect(ray) != NULL || dtree.intersect(ray) != NULL;
+	return sgrid.intersect(ray) != NULL;// || dtree.intersect(ray) != NULL;
+	// return stree.intersect(ray) != NULL || dtree.intersect(ray) != NULL;
 }
 
 // begin by only implementing for spheres first and later I will add for bounds, capsules etc
@@ -548,7 +549,8 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 	ray.origin = origin;
 	ray.direction = direction;
 
-	Object* object = stree.intersect(ray);
+	// Object* object = stree.intersect(ray);
+	SphereObject* object = sgrid.intersect(ray);
 
 	if(object != NULL){
 		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);
@@ -563,8 +565,6 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 		
 		return true;
 	}
-
-	return false;
 }
 
 

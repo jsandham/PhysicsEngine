@@ -54,8 +54,8 @@ namespace PhysicsEngine
 			std::vector<System*> systems;
 
 			Bounds bounds;
-			Octtree stree; // octtree for static colliders
-			Octtree dtree; // octtree for dynamic colliders
+			//Octtree stree; // octtree for static colliders
+			//Octtree dtree; // octtree for dynamic colliders
 			UniformGrid sgrid; // uniform grid for static colliders
 
 			std::map<Guid, int> assetIdToGlobalIndex;
@@ -200,8 +200,8 @@ namespace PhysicsEngine
 			}
 
 			Bounds* getWorldBounds();
-			Octtree* getStaticPhysicsTree();
-			Octtree* getDynamicPhysicsTree();
+			//Octtree* getStaticPhysicsTree();
+			//Octtree* getDynamicPhysicsTree();
 			UniformGrid* getStaticPhysicsGrid();
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);

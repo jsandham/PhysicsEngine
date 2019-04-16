@@ -8,15 +8,18 @@
 #include "../core/Input.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
+#include "../graphics/Graphics.h"
 
 namespace PhysicsEngine
 {
 	class DebugSystem : public System
 	{
 		private:
-			Material* lineMaterial;
-			Shader* lineShader;
+			// Material* lineMaterial;
+			// Shader* lineShader;
 			Shader* fontShader;
+
+			LineBuffer buffer;
 
 		public:
 			DebugSystem();

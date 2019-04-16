@@ -14,7 +14,7 @@ namespace PhysicsEngine
 			Scene scene;
 			AssetBundle bundle;
 
-			World* world;
+			World world;
 
 		public:
 			WorldManager(Scene scene, AssetBundle bundle);

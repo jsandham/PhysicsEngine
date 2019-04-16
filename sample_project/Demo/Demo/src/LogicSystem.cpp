@@ -11,7 +11,7 @@ using namespace PhysicsEngine;
 
 LogicSystem::LogicSystem()
 {
-	type = 10;
+	type = 20;
 }
 
 LogicSystem::LogicSystem(std::vector<char> data)
@@ -21,7 +21,7 @@ LogicSystem::LogicSystem(std::vector<char> data)
 	index += sizeof(int);
 	order = *reinterpret_cast<int*>(&data[index]);
 
-	if (type != 10){
+	if (type != 20){
 		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
 	}
 }

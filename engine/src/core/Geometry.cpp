@@ -116,6 +116,15 @@ bool Geometry::intersect(Bounds bounds1, Bounds bounds2)
 	bool overlap_z = std::abs(bounds1.centre.z - bounds2.centre.z) <= 0.5f * (bounds1.size.z + bounds2.size.z);
 
 	return overlap_x && overlap_y && overlap_z;
+
+	// same algorithm slightly re-written
+	// glm::vec3 d = bounds1.center - bounds2.center;
+
+	// float ex = Math.Abs(d.x) - (bounds1.halfsize.x + bounds2.halfsize.x);
+	// float ey = Math.Abs(d.y) - (bounds1.halfsize.y + bounds2.halfsize.y);
+	// float ez = Math.Abs(d.z) - (bounds1.halfsize.z + bounds2.halfsize.z);
+
+	// return (ex < 0) && (ey < 0) && (ez < 0);
 }
 
 bool Geometry::intersect(Bounds bounds, Capsule capsule)

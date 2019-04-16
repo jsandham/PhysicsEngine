@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <math.h>
 #include <cmath>
 
@@ -19,8 +20,6 @@ UniformGrid::~UniformGrid()
 
 void UniformGrid::create(Bounds bounds, glm::ivec3 gridDim, std::vector<SphereObject> objects)
 {
-	std::cout << "Uniform grid create called" << std::endl;
-
 	if(gridDim.x % 2 != 0 || gridDim.y % 2 != 0 || gridDim.z % 2 != 0){
 		std::cout << "Error: Grid dimension for uniform grid must be divisible by 2" << std::endl;
 		return;
@@ -34,22 +33,13 @@ void UniformGrid::create(Bounds bounds, glm::ivec3 gridDim, std::vector<SphereOb
 	cellSize.z = bounds.size.z / gridDim.z;
 
 	grid.resize(gridDim.x*gridDim.y*gridDim.z, 0);
+	count.resize(gridDim.x*gridDim.y*gridDim.z, 0);
 	startIndex.resize(gridDim.x*gridDim.y*gridDim.z, -1);
-
-	sphereObjects.resize(objects.size());
-	for(size_t i = 0; i < sphereObjects.size(); i++){
-		sphereObjects[i].sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
-		sphereObjects[i].sphere.radius = 0.0f;
-		sphereObjects[i].id = Guid::INVALID;
-	}
-
-	firstPass(objects);
-	//secondPass(objects);
 
 	std::cout << "bounds centre: " << bounds.centre.x << " " << bounds.centre.y << " " << bounds.centre.z << " min: " << bounds.getMin().x << " " << bounds.getMin().y << " " << bounds.getMin().z << " max: " << bounds.getMax().x << " " << bounds.getMax().y << " " << bounds.getMax().z << std::endl;
 
-	Bounds test = computeCellBounds(0);
-	std::cout << "Grid size: " << grid.size() << " " << test.centre.x << " " << test.centre.y << " " << test.centre.z << std::endl;
+	firstPass(objects);
+	secondPass(objects);
 
 	// create lines array
 	lines.resize(6*12*grid.size());
@@ -242,6 +232,97 @@ void UniformGrid::create(Bounds bounds, glm::ivec3 gridDim, std::vector<SphereOb
 // John Amanatides & Andrew Woo
 SphereObject* UniformGrid::intersect(Ray ray)
 {
+	// find starting voxel
+	int cellIndex = computeCellIndex(ray.origin);
+
+	std::cout << "cell Index: " << cellIndex << std::endl;
+
+	if(cellIndex == -1){
+		return NULL;
+	}
+
+	Bounds cellBounds = computeCellBounds(cellIndex);
+
+	std::cout << "cell centre: " << cellBounds.centre.x << " " << cellBounds.centre.y << " " << cellBounds.centre.z << std::endl;
+
+	int stepX = ray.direction.x < 0.0f ? -1 : 1;
+	int stepY = ray.direction.y < 0.0f ? -gridDim.x : gridDim.x;
+	int stepZ = ray.direction.z < 0.0f ? -gridDim.y*gridDim.x : gridDim.y*gridDim.x;
+
+	glm::vec3 cellCentre = cellBounds.centre;
+	glm::vec3 cellExtents = cellBounds.getExtents();
+
+	float xmin = cellCentre.x - cellExtents.x;
+	float xmax = cellCentre.x + cellExtents.x;
+	float ymin = cellCentre.y - cellExtents.y;
+	float ymax = cellCentre.y + cellExtents.y;
+	float zmin = cellCentre.z - cellExtents.z;
+	float zmax = cellCentre.z + cellExtents.z;
+	
+	float tx0 = (xmin - ray.origin.x) / ray.direction.x;
+	float tx1 = (xmax - ray.origin.x) / ray.direction.x;
+	float ty0 = (ymin - ray.origin.y) / ray.direction.y;
+	float ty1 = (ymax - ray.origin.y) / ray.direction.y;
+	float tz0 = (zmin - ray.origin.z) / ray.direction.z;
+	float tz1 = (zmax - ray.origin.z) / ray.direction.z;
+
+	float tMaxX = std::max(tx0, tx1);
+	float tMaxY = std::max(ty0, ty1);
+	float tMaxZ = std::max(tz0, tz1);
+
+	float tDeltaX = abs(tx1 - tx0);
+	float tDeltaY = abs(ty1 - ty0);
+	float tDeltaZ = abs(tz1 - tz0);
+
+	//std::cout << "tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
+	std::cout << "tDeltaX: " << tDeltaX << " tDeltaY: " << tDeltaY << " tDeltaZ: " << tDeltaZ << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
+
+	int foundIndex = -1;
+
+	while(true){
+		std::cout << "cell index: " << cellIndex << " tMaxX: " << tMaxX << " tMaxY: " << tMaxY << " tMaxZ: " << tMaxZ << std::endl;
+		if(tMaxX < std::min(tMaxY, tMaxZ)){
+			cellIndex += stepX;
+			if(cellIndex < 0 || cellIndex >= grid.size()){
+				break;
+			}
+			tMaxX = tMaxX + tDeltaX;
+		}
+		else if(tMaxY < std::min(tMaxX, tMaxZ)){
+			cellIndex += stepY;
+			if(cellIndex < 0 || cellIndex >= grid.size()){
+				break;
+			}
+			tMaxY = tMaxY + tDeltaY;
+		}
+		else{
+			cellIndex += stepZ;
+			if(cellIndex < 0 || cellIndex >= grid.size()){
+				break;
+			}
+			tMaxZ = tMaxZ + tDeltaZ;
+		}
+
+		int start = startIndex[cellIndex];
+		int end = start + grid[cellIndex];
+		if(start != -1){
+			for(int i = start; i < end; i++){
+				if(Geometry::intersect(ray, sphereObjects[i].sphere)){
+					foundIndex = i; // just find first for now
+					break;
+				}
+			}
+		}
+
+		if(foundIndex != -1){
+			break;
+		}
+	}
+
+	std::cout << "found index: " << foundIndex << std::endl;
+
+	return NULL;
+
 	// bool flag = true;
 	// while(flag);  
 	// { 
@@ -277,9 +358,6 @@ SphereObject* UniformGrid::intersect(Ray ray)
 	// } 
 
 	// return(list);
-
-
-	return NULL;
 }
 
 void UniformGrid::firstPass(std::vector<SphereObject> objects)
@@ -289,6 +367,8 @@ void UniformGrid::firstPass(std::vector<SphereObject> objects)
 		int cellIndex = computeCellIndex(objects[i].sphere.centre);
 		if(cellIndex != -1){
 			grid[cellIndex]++;
+
+			// std::cout << "i: " << i << " centre: " << objects[i].sphere.centre.x << " " << objects[i].sphere.centre.y << " " << objects[i].sphere.centre.z << " radius: " << objects[i].sphere.radius << " cellIndex: " << cellIndex << " grid: " << grid[cellIndex] << std::endl;
 
 			// check neighbouring 26 cells
 			for(int x = -1; x <= 1; x++){
@@ -314,52 +394,42 @@ void UniformGrid::firstPass(std::vector<SphereObject> objects)
 			totalCount += grid[i];
 		}
 	}
+
+	sphereObjects.resize(totalCount);
+	for(size_t i = 0; i < sphereObjects.size(); i++){
+		sphereObjects[i].sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
+		sphereObjects[i].sphere.radius = 0.0f;
+		sphereObjects[i].id = Guid::INVALID;
+	}
 }
 
 void UniformGrid::secondPass(std::vector<SphereObject> objects)
 {
 	for(size_t i = 0; i < objects.size(); i++){
+
 		int cellIndex = computeCellIndex(objects[i].sphere.centre);
+
 		if(cellIndex != -1){
-			int start = startIndex[cellIndex];
-			int end = start + grid[cellIndex];
+			int location = startIndex[cellIndex] + count[cellIndex];
+			count[cellIndex]++;
 
-			if(start == -1){
-				std::cout << "Error: start index of -1 found during second pass of uniform grid generation" << std::endl;
-				return;
-			}
-
-			for(int j = start; j < end; j++){
-				if(sphereObjects[j].id == Guid::INVALID){
-					sphereObjects[j].sphere = objects[i].sphere;
-					sphereObjects[j].id = objects[i].id;
-					break;
-				}
-			}
+			sphereObjects[location].sphere = objects[i].sphere;
+			sphereObjects[location].id = objects[i].id;
 
 			// check neighbouring 26 cells
 			for(int x = -1; x <= 1; x++){
 				for(int y = -1; y <= 1; y++){
 					for(int z = -1; z <= 1; z++){
 						int neighbourCellIndex = cellIndex + gridDim.x * gridDim.y * z + gridDim.x * y + x;
-						if(neighbourCellIndex != cellIndex && neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){
-							Bounds cellBounds = computeCellBounds(neighbourCellIndex);
-							if(Geometry::intersect(objects[i].sphere, cellBounds)){
-								start = startIndex[neighbourCellIndex];
-								end = start + grid[neighbourCellIndex];
+						if(neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){
+							Bounds neighbourCellBounds = computeCellBounds(neighbourCellIndex);
+							if(Geometry::intersect(objects[i].sphere, neighbourCellBounds)){
 
-								if(start == -1){
-									std::cout << "Error: start index of -1 found during second pass of uniform grid generation" << std::endl;
-									return;
-								}
+								location = startIndex[neighbourCellIndex] + count[neighbourCellIndex];
+								count[neighbourCellIndex]++;
 
-								for(int j = start; j < end; j++){
-									if(sphereObjects[j].id == Guid::INVALID){
-										sphereObjects[j].sphere = objects[i].sphere;
-										sphereObjects[j].id = objects[i].id;
-										break;
-									}
-								}
+								sphereObjects[location].sphere = objects[i].sphere;
+								sphereObjects[location].id = objects[i].id;
 							}
 						}
 					}

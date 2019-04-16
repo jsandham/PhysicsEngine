@@ -36,7 +36,6 @@ PhysicsSystem::~PhysicsSystem()
 
 void PhysicsSystem::init(World* world)
 {
-	std::cout << "Physics System init called" << std::endl;
 	this->world = world;
 
 	UniformGrid* grid = world->getStaticPhysicsGrid();
@@ -67,16 +66,16 @@ void PhysicsSystem::init(World* world)
 
 void PhysicsSystem::update(Input input)
 {
-	Octtree* stree = world->getStaticPhysicsTree();
+	// Octtree* stree = world->getStaticPhysicsTree();
 
-	stree->clear();
+	// stree->clear();
 
-	// rebuild dynamic octtree for physics raycasts
-	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
-		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
+	// // rebuild dynamic octtree for physics raycasts
+	// for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
+	// 	SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
 
-		stree->insert(collider->sphere, collider->componentId);
-	}
+	// 	stree->insert(collider->sphere, collider->componentId);
+	// }
 
 
 

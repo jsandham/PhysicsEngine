@@ -31,6 +31,8 @@ namespace PhysicsEngine
 			std::vector<int> startIndex;
 			std::vector<SphereObject> sphereObjects;
 
+			std::vector<int> count;
+
 			std::vector<float> lines;
 			std::vector<float> occupiedLines;
 

@@ -16,7 +16,7 @@ const float PlayerSystem::TRANSLATE_SENSITIVITY = 0.05f;
 
 PlayerSystem::PlayerSystem()
 {
-	type = 11;
+	type = 21;
 }
 
 PlayerSystem::PlayerSystem(std::vector<char> data)
@@ -26,7 +26,7 @@ PlayerSystem::PlayerSystem(std::vector<char> data)
 	index += sizeof(int);
 	order = *reinterpret_cast<int*>(&data[index]);
 
-	if (type != 11){
+	if (type != 21){
 		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
 	}
 }

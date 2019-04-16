@@ -74,6 +74,7 @@ namespace PhysicsEngine
 		GLuint VBO;
 
 		void init(std::vector<float> lines);
+		void update(std::vector<float> lines);
 	};
 
 
