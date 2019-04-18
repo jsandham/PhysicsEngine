@@ -42,16 +42,6 @@ void DebugSystem::init(World* world)
 {
 	this->world = world;
 
-	//lineMaterial = world->createAsset<Material>();
-	//lineShader = world->createAsset<Shader>();
-
-	//lineShader->vertexShader = Shader::lineVertexShader;
-	//lineShader->fragmentShader = Shader::lineFragmentShader;
-	
-	//lineShader->compile();
-	
-	//lineMaterial->shaderId = lineShader->assetId;
-
 	std::vector<float> lines;
 	lines.resize(6, 0.0f);
 

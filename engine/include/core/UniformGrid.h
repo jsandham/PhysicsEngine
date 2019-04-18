@@ -28,10 +28,9 @@ namespace PhysicsEngine
 			glm::ivec3 gridDim;
 			glm::vec3 cellSize;
 			std::vector<int> grid;
+			std::vector<int> count;
 			std::vector<int> startIndex;
 			std::vector<SphereObject> sphereObjects;
-
-			std::vector<int> count;
 
 			std::vector<float> lines;
 			std::vector<float> occupiedLines;

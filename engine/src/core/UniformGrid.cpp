@@ -243,11 +243,19 @@ SphereObject* UniformGrid::intersect(Ray ray)
 
 	Bounds cellBounds = computeCellBounds(cellIndex);
 
-	std::cout << "cell centre: " << cellBounds.centre.x << " " << cellBounds.centre.y << " " << cellBounds.centre.z << std::endl;
+	std::cout << "cell index: " << cellIndex << " cell centre: " << cellBounds.centre.x << " " << cellBounds.centre.y << " " << cellBounds.centre.z << std::endl;
+
+	int z = cellIndex / (gridDim.y * gridDim.x);
+	cellIndex = cellIndex % (gridDim.y * gridDim.x);
+	int y = cellIndex / gridDim.x;
+	cellIndex = cellIndex % gridDim.x;
+	int x = cellIndex;
+
+	std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;
 
 	int stepX = ray.direction.x < 0.0f ? -1 : 1;
-	int stepY = ray.direction.y < 0.0f ? -gridDim.x : gridDim.x;
-	int stepZ = ray.direction.z < 0.0f ? -gridDim.y*gridDim.x : gridDim.y*gridDim.x;
+	int stepY = ray.direction.y < 0.0f ? -1 : 1;
+	int stepZ = ray.direction.z < 0.0f ? -1 : 1;
 
 	glm::vec3 cellCentre = cellBounds.centre;
 	glm::vec3 cellExtents = cellBounds.getExtents();
@@ -275,33 +283,36 @@ SphereObject* UniformGrid::intersect(Ray ray)
 	float tDeltaZ = abs(tz1 - tz0);
 
 	//std::cout << "tx0: " << tx0 << " ty0: " << ty0 << " tz0: " << tz0 << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
-	std::cout << "tDeltaX: " << tDeltaX << " tDeltaY: " << tDeltaY << " tDeltaZ: " << tDeltaZ << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
+	//std::cout << "tDeltaX: " << tDeltaX << " tDeltaY: " << tDeltaY << " tDeltaZ: " << tDeltaZ << " tx1: " << tx1 << " ty1: " << ty1 << " tz1: " << tz1 << std::endl;
 
 	int foundIndex = -1;
 
 	while(true){
-		std::cout << "cell index: " << cellIndex << " tMaxX: " << tMaxX << " tMaxY: " << tMaxY << " tMaxZ: " << tMaxZ << std::endl;
 		if(tMaxX < std::min(tMaxY, tMaxZ)){
-			cellIndex += stepX;
-			if(cellIndex < 0 || cellIndex >= grid.size()){
+			x += stepX;
+			if(x < 0 || x >= gridDim.x){
 				break;
 			}
 			tMaxX = tMaxX + tDeltaX;
 		}
 		else if(tMaxY < std::min(tMaxX, tMaxZ)){
-			cellIndex += stepY;
-			if(cellIndex < 0 || cellIndex >= grid.size()){
+			y += stepY;
+			if(y < 0 || y >= gridDim.y){
 				break;
 			}
 			tMaxY = tMaxY + tDeltaY;
 		}
 		else{
-			cellIndex += stepZ;
-			if(cellIndex < 0 || cellIndex >= grid.size()){
+			z += stepZ;
+			if(z < 0 || z >= gridDim.z){
 				break;
 			}
 			tMaxZ = tMaxZ + tDeltaZ;
 		}
+
+		cellIndex = gridDim.y * gridDim.x * z + gridDim.x * y + x;
+
+		std::cout << "cell index: " << cellIndex << "x: " << x << " y: " << y << " z: " << z << " tMaxX: " << tMaxX << " tMaxY: " << tMaxY << " tMaxZ: " << tMaxZ << std::endl;
 
 		int start = startIndex[cellIndex];
 		int end = start + grid[cellIndex];
@@ -319,45 +330,16 @@ SphereObject* UniformGrid::intersect(Ray ray)
 		}
 	}
 
-	std::cout << "found index: " << foundIndex << std::endl;
+	if(foundIndex >= (int)sphereObjects.size()){
+		std::cout << "Error: found index (" << foundIndex << ") is outside array bounds" << std::endl;
+		return NULL;
+	}
+
+	if(foundIndex != -1){
+		std::cout << "found index: " << foundIndex << " sphere id: " << sphereObjects[foundIndex].id.toString() << std::endl;
+	}
 
 	return NULL;
-
-	// bool flag = true;
-	// while(flag);  
-	// { 
-	// 	if(tMaxX < tMaxY) { 
-	// 		if(tMaxX < tMaxZ) { 
-	// 			X= X + stepX; 
-	// 			if(X == justOutX) 
-	// 				return(NIL); /* outside grid */ 
-	// 			tMaxX= tMaxX + tDeltaX; 
-	// 		} 
-	// 		else { 
-	// 			Z= Z + stepZ; 
-	// 			if(Z == justOutZ) 
-	// 				return(NIL); 
-	// 			tMaxZ= tMaxZ + tDeltaZ; 
-	// 		} 
-	// 	} 
-	// 	else { 
-	// 		if(tMaxY < tMaxZ) { 
-	// 			Y= Y + stepY; 
-	// 			if(Y == justOutY) 
-	// 				return(NIL); 
-	// 			tMaxY= tMaxY + tDeltaY; 
-	// 		} 
-	// 		else { 
-	// 			Z= Z + stepZ; 
-	// 			if(Z == justOutZ) 
-	// 				return(NIL); 
-	// 			tMaxZ= tMaxZ + tDeltaZ; 
-	// 		} 
-	// 	} 
-	// 	list= ObjectList[X][Y][Z]; 
-	// } 
-
-	// return(list);
 }
 
 void UniformGrid::firstPass(std::vector<SphereObject> objects)
@@ -489,5 +471,3 @@ std::vector<float> UniformGrid::getOccupiedLines() const
 
 //    |     |     |     |     |     |     |     |     |
 //   -4    -3    -2    -1     0     1     2     3     4
-
-

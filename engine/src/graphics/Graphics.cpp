@@ -4,7 +4,6 @@
 
 #include "../../include/graphics/Graphics.h"
 #include "../../include/graphics/GraphicsState.h"
-#include "../../include/core/SlabBuffer.h"
 
 using namespace PhysicsEngine;
 

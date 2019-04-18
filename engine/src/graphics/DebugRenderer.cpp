@@ -7,12 +7,10 @@ using namespace PhysicsEngine;
 
 DebugRenderer::DebugRenderer()
 {
-	//lineBuffer = new SlabBuffer(600000);	
 }
 
 DebugRenderer::~DebugRenderer()
 {
-	//delete lineBuffer;
 }
 
 void DebugRenderer::init(World* world)
@@ -48,13 +46,6 @@ void DebugRenderer::init(World* world)
 
 	// buffer.init(lines);
 	buffer.init(occupiedLines);
-
-	//lineMaterial = world->createAsset<Material>();
-	//lineShader = world->createAsset<Shader>();
-	//lineShader->vertexShader = Shader::lineVertexShader;
-	//lineShader->fragmentShader = Shader::lineFragmentShader;
-	//lineShader->compile();
-	//lineMaterial->shaderId = lineShader->assetId;
 
 	Graphics::checkError();
 }

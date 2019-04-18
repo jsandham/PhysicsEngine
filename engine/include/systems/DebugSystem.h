@@ -15,8 +15,6 @@ namespace PhysicsEngine
 	class DebugSystem : public System
 	{
 		private:
-			// Material* lineMaterial;
-			// Shader* lineShader;
 			Shader* fontShader;
 
 			LineBuffer buffer;

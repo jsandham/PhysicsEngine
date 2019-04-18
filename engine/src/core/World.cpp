@@ -557,14 +557,15 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 		if(it != idToGlobalIndex.end()){
 			int colliderIndex = it->second;
 			*collider = getComponentByIndex<SphereCollider>(colliderIndex);
+			return true;
 		}
 		else{
 			std::cout << "Error: component id does not correspond to a global index" << std::endl;
 			return false;
 		}
-		
-		return true;
 	}
+
+	return false;
 }
 
 

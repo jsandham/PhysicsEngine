@@ -1,7 +1,6 @@
 #include "../../include/systems/PhysicsSystem.h"
 
 #include "../../include/core/PoolAllocator.h"
-#include "../../include/core/Log.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/Bounds.h"
 #include "../../include/core/Physics.h"
