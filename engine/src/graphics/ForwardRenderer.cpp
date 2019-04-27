@@ -324,7 +324,7 @@ void ForwardRenderer::update()
 	}
 
 	if(world->debug){
-		renderDebug();
+		renderDebug(world->debugView);
 	}
 
 	GLenum error;
@@ -358,28 +358,57 @@ void ForwardRenderer::render()
 			glm::mat4 model = transform->getModelMatrix();
 
 			// get internal mesh and render
+			std::map<Guid,InternalMesh>::iterator it = meshIdToInternalMesh.find(mesh->assetId);
+			if(it != meshIdToInternalMesh.end()){
+				InternalMesh internalMesh = it->second;
+
+				Graphics::render(world, material, model, internalMesh.VAO, (int)mesh->vertices.size() / 3, &query);
+			}
+
 		}
 	}
 }
 
-void ForwardRenderer::renderDebug()
-{			
-	for(int i = 0; i < 3; i++){
-		glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[i].handle);
+void ForwardRenderer::renderDebug(int view)
+{		
+	std::cout << "view: " << view << std::endl;
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[view].handle);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearDepth(1.0f);
-		glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
 
-		batchManager.render(world, &debug.shaders[i], NULL);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearDepth(1.0f);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
-		// TODO: render non static meshes here
+	if(view == 0 || view == 1 || view == 2){
+		batchManager.render(world, &debug.shaders[view], NULL);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// render non static meshes here
+		for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
+			MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
+
+			if(meshRenderer != NULL && !meshRenderer->isStatic){
+				Transform* transform = meshRenderer->getComponent<Transform>(world);
+				Material* material = world->getAsset<Material>(meshRenderer->materialId);
+				Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
+
+				glm::mat4 model = transform->getModelMatrix();
+
+				// get internal mesh and render
+				std::map<Guid,InternalMesh>::iterator it = meshIdToInternalMesh.find(mesh->assetId);
+				if(it != meshIdToInternalMesh.end()){
+					InternalMesh internalMesh = it->second;
+
+					Graphics::render(world, material, model, internalMesh.VAO, (int)mesh->vertices.size() / 3, &query);
+				}
+
+			}
+		}
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

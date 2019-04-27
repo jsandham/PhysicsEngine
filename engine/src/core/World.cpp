@@ -13,13 +13,14 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	bounds.centre = glm::vec3(0.0f, 0.0f, 20.0f);
-	bounds.size = 2.0f * glm::vec3(20.0f, 20.0f, 20.0f);
+	bounds.centre = glm::vec3(0.0f, 0.0f, 40.0f);
+	bounds.size = 2.0f * glm::vec3(200.0f, 200.0f, 200.0f);
 
 	//stree.create(bounds, 2, 5);
 	//dtree.create(bounds, 2, 5);
 
 	debug = false;
+	debugView = 0;
 }
 
 World::~World()
@@ -550,13 +551,23 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 	ray.direction = direction;
 
 	// Object* object = stree.intersect(ray);
-	SphereObject* object = sgrid.intersect(ray);
+	BoundingSphere* boundingSphere = sgrid.intersect(ray);
 
-	if(object != NULL){
-		std::map<Guid, int>::iterator it = idToGlobalIndex.find(object->id);
+	if(boundingSphere != NULL){
+		std::cout << "AAAAAA id: " << boundingSphere->id.toString() << std::endl;
+		std::map<Guid, int>::iterator it = idToGlobalIndex.find(boundingSphere->id);
 		if(it != idToGlobalIndex.end()){
 			int colliderIndex = it->second;
-			*collider = getComponentByIndex<SphereCollider>(colliderIndex);
+
+			if(boundingSphere->primitiveType == 0){
+				*collider = getComponentByIndex<SphereCollider>(colliderIndex);
+			}
+			else if(boundingSphere->primitiveType == 1){
+				*collider = getComponentByIndex<BoxCollider>(colliderIndex);
+			}
+			else{
+				*collider = getComponentByIndex<MeshCollider>(colliderIndex);
+			}
 			return true;
 		}
 		else{

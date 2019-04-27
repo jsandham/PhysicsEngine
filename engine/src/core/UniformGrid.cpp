@@ -2,9 +2,12 @@
 #include <algorithm>
 #include <math.h>
 #include <cmath>
+#include <limits>
 
 #include "../../include/core/UniformGrid.h"
 #include "../../include/core/Geometry.h"
+
+#include "../../include/glm/gtx/norm.hpp"
 
 using namespace PhysicsEngine;
 
@@ -18,219 +21,76 @@ UniformGrid::~UniformGrid()
 
 }
 
-void UniformGrid::create(Bounds bounds, glm::ivec3 gridDim, std::vector<SphereObject> objects)
+void UniformGrid::create(Bounds worldBounds, glm::ivec3 gridDim, std::vector<BoundingSphere> boundingSpheres, std::vector<Sphere> spheres, std::vector<Bounds> bounds, std::vector<Triangle> triangles)
 {
-	if(gridDim.x % 2 != 0 || gridDim.y % 2 != 0 || gridDim.z % 2 != 0){
-		std::cout << "Error: Grid dimension for uniform grid must be divisible by 2" << std::endl;
-		return;
-	}
+	if(gridDim.x % 2 != 0){ gridDim.x--; }
+	if(gridDim.y % 2 != 0){ gridDim.y--; }
+	if(gridDim.z % 2 != 0){ gridDim.z--; }
 
-	this->bounds = bounds;
+	this->worldBounds = worldBounds;
 	this->gridDim = gridDim;
+
+	this->boundingSpheres = boundingSpheres;
+
+	this->spheres = spheres;
+	this->bounds = bounds;
+	this->triangles = triangles;
 	
-	cellSize.x = bounds.size.x / gridDim.x;
-	cellSize.y = bounds.size.y / gridDim.y;
-	cellSize.z = bounds.size.z / gridDim.z;
+	cellSize.x = worldBounds.size.x / gridDim.x;
+	cellSize.y = worldBounds.size.y / gridDim.y;
+	cellSize.z = worldBounds.size.z / gridDim.z;
 
 	grid.resize(gridDim.x*gridDim.y*gridDim.z, 0);
 	count.resize(gridDim.x*gridDim.y*gridDim.z, 0);
 	startIndex.resize(gridDim.x*gridDim.y*gridDim.z, -1);
 
-	std::cout << "bounds centre: " << bounds.centre.x << " " << bounds.centre.y << " " << bounds.centre.z << " min: " << bounds.getMin().x << " " << bounds.getMin().y << " " << bounds.getMin().z << " max: " << bounds.getMax().x << " " << bounds.getMax().y << " " << bounds.getMax().z << std::endl;
+	std::cout << "world bounds centre: " << worldBounds.centre.x << " " << worldBounds.centre.y << " " << worldBounds.centre.z << " min: " << worldBounds.getMin().x << " " << worldBounds.getMin().y << " " << worldBounds.getMin().z << " max: " << worldBounds.getMax().x << " " << worldBounds.getMax().y << " " << worldBounds.getMax().z << std::endl;
 
-	firstPass(objects);
-	secondPass(objects);
-
-	// create lines array
-	lines.resize(6*12*grid.size());
+	firstPass(boundingSpheres);
+	secondPass(boundingSpheres);
 
 	for(size_t i = 0; i < grid.size(); i++){
-		Bounds cellBounds = computeCellBounds((int)i);
-
-		glm::vec3 centre = cellBounds.centre;
-		glm::vec3 extent = cellBounds.getExtents();
-
-		// top
-		lines[6*12*i] = centre.x - extent.x;
-		lines[6*12*i + 1] = centre.y + extent.y;
-		lines[6*12*i + 2] = centre.z + extent.z;
-		lines[6*12*i + 3] = centre.x + extent.x;
-		lines[6*12*i + 4] = centre.y + extent.y;
-		lines[6*12*i + 5] = centre.z + extent.z;
-
-		lines[6*12*i + 6] = centre.x + extent.x;
-		lines[6*12*i + 7] = centre.y + extent.y;
-		lines[6*12*i + 8] = centre.z + extent.z;
-		lines[6*12*i + 9] = centre.x + extent.x;
-		lines[6*12*i + 10] = centre.y - extent.y;
-		lines[6*12*i + 11] = centre.z + extent.z;
-
-		lines[6*12*i + 12] = centre.x + extent.x;
-		lines[6*12*i + 13] = centre.y - extent.y;
-		lines[6*12*i + 14] = centre.z + extent.z;
-		lines[6*12*i + 15] = centre.x - extent.x;
-		lines[6*12*i + 16] = centre.y - extent.y;
-		lines[6*12*i + 17] = centre.z + extent.z;
-
-		lines[6*12*i + 18] = centre.x - extent.x;
-		lines[6*12*i + 19] = centre.y - extent.y;
-		lines[6*12*i + 20] = centre.z + extent.z;
-		lines[6*12*i + 21] = centre.x - extent.x;
-		lines[6*12*i + 22] = centre.y + extent.y;
-		lines[6*12*i + 23] = centre.z + extent.z;
-
-		// bottom
-		lines[6*12*i + 24] = centre.x - extent.x;
-		lines[6*12*i + 25] = centre.y + extent.y;
-		lines[6*12*i + 26] = centre.z - extent.z;
-		lines[6*12*i + 27] = centre.x + extent.x;
-		lines[6*12*i + 28] = centre.y + extent.y;
-		lines[6*12*i + 29] = centre.z - extent.z;
-
-		lines[6*12*i + 30] = centre.x + extent.x;
-		lines[6*12*i + 31] = centre.y + extent.y;
-		lines[6*12*i + 32] = centre.z - extent.z;
-		lines[6*12*i + 33] = centre.x + extent.x;
-		lines[6*12*i + 34] = centre.y - extent.y;
-		lines[6*12*i + 35] = centre.z - extent.z;
-
-		lines[6*12*i + 36] = centre.x + extent.x;
-		lines[6*12*i + 37] = centre.y - extent.y;
-		lines[6*12*i + 38] = centre.z - extent.z;
-		lines[6*12*i + 39] = centre.x - extent.x;
-		lines[6*12*i + 40] = centre.y - extent.y;
-		lines[6*12*i + 41] = centre.z - extent.z;
-
-		lines[6*12*i + 42] = centre.x - extent.x;
-		lines[6*12*i + 43] = centre.y - extent.y;
-		lines[6*12*i + 44] = centre.z - extent.z;
-		lines[6*12*i + 45] = centre.x - extent.x;
-		lines[6*12*i + 46] = centre.y + extent.y;
-		lines[6*12*i + 47] = centre.z - extent.z;
-
-		// sides
-		lines[6*12*i + 48] = centre.x - extent.x;
-		lines[6*12*i + 49] = centre.y + extent.y;
-		lines[6*12*i + 50] = centre.z + extent.z;
-		lines[6*12*i + 51] = centre.x - extent.x;
-		lines[6*12*i + 52] = centre.y + extent.y;
-		lines[6*12*i + 53] = centre.z - extent.z;
-
-		lines[6*12*i + 54] = centre.x + extent.x;
-		lines[6*12*i + 55] = centre.y + extent.y;
-		lines[6*12*i + 56] = centre.z + extent.z;
-		lines[6*12*i + 57] = centre.x + extent.x;
-		lines[6*12*i + 58] = centre.y + extent.y;
-		lines[6*12*i + 59] = centre.z - extent.z;
-
-		lines[6*12*i + 60] = centre.x + extent.x;
-		lines[6*12*i + 61] = centre.y - extent.y;
-		lines[6*12*i + 62] = centre.z + extent.z;
-		lines[6*12*i + 63] = centre.x + extent.x;
-		lines[6*12*i + 64] = centre.y - extent.y;
-		lines[6*12*i + 65] = centre.z - extent.z;
-
-		lines[6*12*i + 66] = centre.x - extent.x;
-		lines[6*12*i + 67] = centre.y - extent.y;
-		lines[6*12*i + 68] = centre.z + extent.z;
-		lines[6*12*i + 69] = centre.x - extent.x;
-		lines[6*12*i + 70] = centre.y - extent.y;
-		lines[6*12*i + 71] = centre.z - extent.z;
-
 		if(grid[i] > 0){
+			Bounds cellBounds = computeCellBounds((int)i);
+
+			glm::vec3 centre = cellBounds.centre;
+			glm::vec3 extents = cellBounds.getExtents();
+
+			float xf[] = {-1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f};
+			float yf[] = {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f};
+			float zf[] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+
 			// top
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
+			for(int j = 0; j < 8; j++){
+				lines.push_back(centre.x + xf[j] * extents.x);
+				lines.push_back(centre.y + yf[j] * extents.y);
+				lines.push_back(centre.z + zf[j] * extents.z);
+			}
 
 			// bottom
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
+			for(int j = 0; j < 8; j++){
+				lines.push_back(centre.x + xf[j] * extents.x);
+				lines.push_back(centre.y + yf[j] * extents.y);
+				lines.push_back(centre.z - zf[j] * extents.z);
+			}
 
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
+			float xg[] = {-1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f};
+			float yg[] = {1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f};
+			float zg[] = {-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f};
 
 			// sides
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y + extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x + extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
-
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z + extent.z);
-			occupiedLines.push_back(centre.x - extent.x);
-			occupiedLines.push_back(centre.y - extent.y);
-			occupiedLines.push_back(centre.z - extent.z);
+			for(int j = 0; j < 8; j++){
+				lines.push_back(centre.x + xg[j] * extents.x);
+				lines.push_back(centre.y + yg[j] * extents.y);
+				lines.push_back(centre.z + zg[j] * extents.z);
+			}
 		}
 	}
 }
 
 // A Fast Voxel Traversal Algorithm for Ray Tracing
 // John Amanatides & Andrew Woo
-SphereObject* UniformGrid::intersect(Ray ray)
+BoundingSphere* UniformGrid::intersect(Ray ray)
 {
 	// find starting voxel
 	int cellIndex = computeCellIndex(ray.origin);
@@ -243,7 +103,7 @@ SphereObject* UniformGrid::intersect(Ray ray)
 
 	Bounds cellBounds = computeCellBounds(cellIndex);
 
-	std::cout << "cell index: " << cellIndex << " cell centre: " << cellBounds.centre.x << " " << cellBounds.centre.y << " " << cellBounds.centre.z << std::endl;
+	//std::cout << "cell index: " << cellIndex << " cell centre: " << cellBounds.centre.x << " " << cellBounds.centre.y << " " << cellBounds.centre.z << std::endl;
 
 	int z = cellIndex / (gridDim.y * gridDim.x);
 	cellIndex = cellIndex % (gridDim.y * gridDim.x);
@@ -251,7 +111,7 @@ SphereObject* UniformGrid::intersect(Ray ray)
 	cellIndex = cellIndex % gridDim.x;
 	int x = cellIndex;
 
-	std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;
+	//std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;
 
 	int stepX = ray.direction.x < 0.0f ? -1 : 1;
 	int stepY = ray.direction.y < 0.0f ? -1 : 1;
@@ -312,15 +172,24 @@ SphereObject* UniformGrid::intersect(Ray ray)
 
 		cellIndex = gridDim.y * gridDim.x * z + gridDim.x * y + x;
 
-		std::cout << "cell index: " << cellIndex << "x: " << x << " y: " << y << " z: " << z << " tMaxX: " << tMaxX << " tMaxY: " << tMaxY << " tMaxZ: " << tMaxZ << std::endl;
+		//std::cout << startIndex.size() << std::endl;
+		//std::cout << "cell index: " << cellIndex << "x: " << x << " y: " << y << " z: " << z << " tMaxX: " << tMaxX << " tMaxY: " << tMaxY << " tMaxZ: " << tMaxZ << std::endl;
 
 		int start = startIndex[cellIndex];
 		int end = start + grid[cellIndex];
 		if(start != -1){
+			float maxDistanceSqr = std::numeric_limits<float>::max();
 			for(int i = start; i < end; i++){
-				if(Geometry::intersect(ray, sphereObjects[i].sphere)){
-					foundIndex = i; // just find first for now
-					break;
+				Sphere sphere = boundingSpheres[data[i]].sphere;
+
+				//std::cout << "primitive type: " << boundingSpheres[data[i]].primitiveType << " data[i]: " << data[i] << " start: " << start << " end: " << end << " checking sphere: " << sphere.centre.x << " " << sphere.centre.y << " " << sphere.centre.z << " radius: " << sphere.radius << std::endl;
+
+				if(Geometry::intersect(ray, sphere)){
+					float distanceSqr = glm::length2(ray.origin - sphere.centre) - sphere.radius * sphere.radius;
+					if(distanceSqr > 0.0f && distanceSqr < maxDistanceSqr){
+						maxDistanceSqr = distanceSqr;
+						foundIndex = i;
+					}
 				}
 			}
 		}
@@ -330,27 +199,68 @@ SphereObject* UniformGrid::intersect(Ray ray)
 		}
 	}
 
-	if(foundIndex >= (int)sphereObjects.size()){
-		std::cout << "Error: found index (" << foundIndex << ") is outside array bounds" << std::endl;
+	// if(foundIndex >= (int)sphereObjects.size()){
+	if(foundIndex >= (int)data.size()){
+		std::cout << "Error: found index (" << foundIndex << ") is outside array world bounds" << std::endl;
 		return NULL;
 	}
 
 	if(foundIndex != -1){
-		std::cout << "found index: " << foundIndex << " sphere id: " << sphereObjects[foundIndex].id.toString() << std::endl;
+		// std::cout << "found index: " << foundIndex << " sphere id: " << sphereObjects[foundIndex].id.toString() << std::endl;
+		// return &sphereObjects[foundIndex];
+		std::cout << "found index: " << foundIndex << " sphere id: " << boundingSpheres[data[foundIndex]].id.toString() << std::endl;
+		return &boundingSpheres[data[foundIndex]];
 	}
 
 	return NULL;
 }
 
-void UniformGrid::firstPass(std::vector<SphereObject> objects)
+std::vector<BoundingSphere> UniformGrid::intersect(Sphere sphere)
 {
-	for(size_t i = 0; i < objects.size(); i++){
+	std::vector<BoundingSphere> foundBoundingSpheres;
+
+	// For uniform grids sphere radius cannot be larger than the cell size
+	if(sphere.radius > cellSize.x || sphere.radius > cellSize.y || sphere.radius > cellSize.z){
+		std::cout << "Warning: Sphere radius must be less than or equal to the uniform grid cell size" << std::endl;
+		return foundBoundingSpheres;
+	}
+
+	int cellIndex = computeCellIndex(sphere.centre);
+
+	std::cout << "cell index: " << cellIndex << std::endl;
+
+	if(cellIndex != -1){
+		for(int x = -1; x <= 1; x++){
+			for(int y = -1; y <= 1; y++){
+				for(int z = -1; z <= 1; z++){
+					int neighbourCellIndex = cellIndex + gridDim.x * gridDim.y * z + gridDim.x * y + x;
+					if(neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){
+
+						int start = startIndex[neighbourCellIndex];
+						int end = start + grid[neighbourCellIndex];
+						for(int i = start; i < end; i++){
+							if(Geometry::intersect(boundingSpheres[data[i]].sphere, sphere)){
+								foundBoundingSpheres.push_back(boundingSpheres[data[i]]);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return foundBoundingSpheres;
+}
+
+void UniformGrid::firstPass(std::vector<BoundingSphere> boundingSpheres)
+{
+	for(size_t i = 0; i < boundingSpheres.size(); i++){
 		
-		int cellIndex = computeCellIndex(objects[i].sphere.centre);
+		int cellIndex = computeCellIndex(boundingSpheres[i].sphere.centre);
 		if(cellIndex != -1){
 			grid[cellIndex]++;
 
-			// std::cout << "i: " << i << " centre: " << objects[i].sphere.centre.x << " " << objects[i].sphere.centre.y << " " << objects[i].sphere.centre.z << " radius: " << objects[i].sphere.radius << " cellIndex: " << cellIndex << " grid: " << grid[cellIndex] << std::endl;
+			// std::cout << "i: " << i << " centre: " << boundingSpheres[i].sphere.centre.x << " " << boundingSpheres[i].sphere.centre.y << " " << boundingSpheres[i].sphere.centre.z << " radius: " << boundingSpheres[i].sphere.radius << " cellIndex: " << cellIndex << " grid: " << grid[cellIndex] << std::endl;
 
 			// check neighbouring 26 cells
 			for(int x = -1; x <= 1; x++){
@@ -359,7 +269,7 @@ void UniformGrid::firstPass(std::vector<SphereObject> objects)
 						int neighbourCellIndex = cellIndex + gridDim.x * gridDim.y * z + gridDim.x * y + x;
 						if(neighbourCellIndex != cellIndex && neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){
 							Bounds neighbourCellBounds = computeCellBounds(neighbourCellIndex);
-							if(Geometry::intersect(objects[i].sphere, neighbourCellBounds)){
+							if(Geometry::intersect(boundingSpheres[i].sphere, neighbourCellBounds)){
 								grid[neighbourCellIndex]++;
 							}
 						}
@@ -377,41 +287,43 @@ void UniformGrid::firstPass(std::vector<SphereObject> objects)
 		}
 	}
 
-	sphereObjects.resize(totalCount);
-	for(size_t i = 0; i < sphereObjects.size(); i++){
-		sphereObjects[i].sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
-		sphereObjects[i].sphere.radius = 0.0f;
-		sphereObjects[i].id = Guid::INVALID;
+	std::cout << "total count: " << totalCount << std::endl;
+
+	data.resize(totalCount);
+	for(size_t i = 0; i < data.size(); i++){
+		data[i] = -1;
 	}
 }
 
-void UniformGrid::secondPass(std::vector<SphereObject> objects)
+void UniformGrid::secondPass(std::vector<BoundingSphere> boundingSpheres)
 {
-	for(size_t i = 0; i < objects.size(); i++){
+	for(size_t i = 0; i < boundingSpheres.size(); i++){
 
-		int cellIndex = computeCellIndex(objects[i].sphere.centre);
+		int cellIndex = computeCellIndex(boundingSpheres[i].sphere.centre);
 
 		if(cellIndex != -1){
 			int location = startIndex[cellIndex] + count[cellIndex];
 			count[cellIndex]++;
 
-			sphereObjects[location].sphere = objects[i].sphere;
-			sphereObjects[location].id = objects[i].id;
+			// sphereObjects[location].sphere = boundingSpheres[i].sphere;
+			// sphereObjects[location].id = boundingSpheres[i].id;
+			data[location] = (int)i;//boundingSpheres[i].index;
 
 			// check neighbouring 26 cells
 			for(int x = -1; x <= 1; x++){
 				for(int y = -1; y <= 1; y++){
 					for(int z = -1; z <= 1; z++){
 						int neighbourCellIndex = cellIndex + gridDim.x * gridDim.y * z + gridDim.x * y + x;
-						if(neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){
+						if(neighbourCellIndex >= 0 && neighbourCellIndex < grid.size()){  //////////////////// should I add neighbourCellIndex != cellIndex check here????
 							Bounds neighbourCellBounds = computeCellBounds(neighbourCellIndex);
-							if(Geometry::intersect(objects[i].sphere, neighbourCellBounds)){
+							if(Geometry::intersect(boundingSpheres[i].sphere, neighbourCellBounds)){
 
 								location = startIndex[neighbourCellIndex] + count[neighbourCellIndex];
 								count[neighbourCellIndex]++;
 
-								sphereObjects[location].sphere = objects[i].sphere;
-								sphereObjects[location].id = objects[i].id;
+								// sphereObjects[location].sphere = boundingSpheres[i].sphere;
+								// sphereObjects[location].id = boundingSpheres[i].id;
+								data[location] = (int)i;//boundingSpheres[i].index;
 							}
 						}
 					}
@@ -423,7 +335,7 @@ void UniformGrid::secondPass(std::vector<SphereObject> objects)
 
 int UniformGrid::computeCellIndex(glm::vec3 point) const
 {
-	glm::vec3 localPoint = point - bounds.centre;
+	glm::vec3 localPoint = point - worldBounds.centre;
 	glm::ivec3 gridPos = glm::ivec3(floor(localPoint.x / cellSize.x), floor(localPoint.y / cellSize.y), floor(localPoint.z / cellSize.z));
 	gridPos += gridDim / 2;
 
@@ -446,7 +358,7 @@ Bounds UniformGrid::computeCellBounds(int cellIndex) const
 	index = index % (gridDim.x);
 	gridPos.x = index;
 
-	glm::vec3 min = bounds.getMin();
+	glm::vec3 min = worldBounds.getMin();
 
 	Bounds cellBounds;
 	cellBounds.size = cellSize;
@@ -460,11 +372,6 @@ Bounds UniformGrid::computeCellBounds(int cellIndex) const
 std::vector<float> UniformGrid::getLines() const
 {
 	return lines;
-}
-
-std::vector<float> UniformGrid::getOccupiedLines() const
-{
-	return occupiedLines;
 }
 
 

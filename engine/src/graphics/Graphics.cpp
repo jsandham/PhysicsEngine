@@ -1690,8 +1690,10 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 		return;
 	}
 
+	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->width, 0.0f, (float)camera->height);
+
 	Graphics::use(&font->shader);
-	Graphics::setMat4(&font->shader, "projection", glm::ortho(0.0f, (float)camera->width, 0.0f, (float)camera->height));
+	Graphics::setMat4(&font->shader, "projection", ortho);
 	Graphics::setVec3(&font->shader, "textColor", color);
 
 	glActiveTexture(GL_TEXTURE0);

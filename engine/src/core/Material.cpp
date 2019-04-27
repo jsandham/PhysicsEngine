@@ -17,7 +17,7 @@ Material::Material()
 	ambient = glm::vec3(0.25f, 0.25f, 0.25f);
 	diffuse = glm::vec3(0.75f, 0.75f, 0.75f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Material::Material(std::vector<char> data)

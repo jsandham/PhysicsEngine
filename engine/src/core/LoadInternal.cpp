@@ -21,7 +21,8 @@
 #include "../../include/components/PointLight.h"
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/SphereCollider.h"
-#include "../../include/components/CapsuleCollider.h"
+#include "../../include/components/SphereCollider.h"
+#include "../../include/components/MeshCollider.h"
 #include "../../include/components/Boids.h"
 #include "../../include/components/Cloth.h"
 #include "../../include/components/Fluid.h"
@@ -137,6 +138,11 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* ind
 		*index = (int)getAllocator<SphereCollider>().getCount();
 		*instanceType = (int)Component::getInstanceType<SphereCollider>();
 		return create<SphereCollider>(data);
+	}
+	else if(type == 15){
+		*index = (int)getAllocator<MeshCollider>().getCount();
+		*instanceType = (int)Component::getInstanceType<MeshCollider>();
+		return create<MeshCollider>(data);
 	}
 	else if(type == 10){
 		*index = (int)getAllocator<CapsuleCollider>().getCount();

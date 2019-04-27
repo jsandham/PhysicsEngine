@@ -31,6 +31,7 @@
 #include "../components/Collider.h"
 #include "../components/SphereCollider.h"
 #include "../components/BoxCollider.h"
+#include "../components/MeshCollider.h"
 #include "../components/CapsuleCollider.h"
 #include "../components/Joint.h"
 #include "../components/SpringJoint.h"
@@ -67,6 +68,7 @@ namespace PhysicsEngine
 
 		public:
 			bool debug;
+			int debugView;
 
 		public:
 			World();

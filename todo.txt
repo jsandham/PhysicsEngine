@@ -1,0 +1,13 @@
+TODO:
+
+ - COMPLETE - change debug screens (depth, normals etc) to be full screen insted of quarter screen
+------------- test sphere intersection in uniform grid
+------------- add vao/vbo for rendering frustrum
+------------- add debug screen that gives a top down view (will allow us to see frustrum and frustrum culling in the future and collider intersection tests etc)
+------------- add debug screen for displaying colliders and/or bounding spheres for testing ray casting and collider intersection
+------------- test and fix bugs to get ray casting working with uniform grid.
+------------- get uniform grid to test against spheres, bounds, and triangles properly
+------------- write algorithm to calculate bounding sphere of a triangle
+------------- add layers to colliders and add in frustrum culling
+------------- render using scene graph for non-static meshes
+------------- add text debug information about number of drawcalls

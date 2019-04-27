@@ -5,49 +5,56 @@
 
 #include "../glm/glm.hpp"
 
-#include "../../include/core/Guid.h"
-#include "../../include/core/Ray.h"
-#include "../../include/core/Sphere.h"
-#include "../../include/core/Bounds.h"
+#include "Guid.h"
+#include "Ray.h"
+#include "Sphere.h"
+#include "Bounds.h"
+#include "Triangle.h"
 
 namespace PhysicsEngine
 {
-	// uniform grids only operate of sphere objects.
-	typedef struct SphereObject
+	typedef struct BoundingSphere
 	{
 		Guid id;
-		Sphere sphere; 
-	}SphereObject;
+		Sphere sphere;
+		int primitiveType;
+		int index;
+	}BoundingSphere;
 
 
 	// UniformGrid only works with spheres, Prob use bounding spheres of other collider types
 	class UniformGrid // rename to SUniformGrid? or StaticUniformGrid?
 	{
 		private:
-			Bounds bounds;
+			Bounds worldBounds;
 			glm::ivec3 gridDim;
 			glm::vec3 cellSize;
 			std::vector<int> grid;
 			std::vector<int> count;
 			std::vector<int> startIndex;
-			std::vector<SphereObject> sphereObjects;
+			std::vector<int> data;
+
+			std::vector<BoundingSphere> boundingSpheres;
+			std::vector<Sphere> spheres;
+			std::vector<Bounds> bounds;
+			std::vector<Triangle> triangles;
 
 			std::vector<float> lines;
-			std::vector<float> occupiedLines;
+			//std::vector<float> occupiedLines;
 
 		public:
 			UniformGrid();
 			~UniformGrid();
 
-			void create(Bounds bounds, glm::ivec3 gridDim, std::vector<SphereObject> objects);
+			void create(Bounds worldBounds, glm::ivec3 gridDim, std::vector<BoundingSphere> boundingSpheres, std::vector<Sphere> spheres, std::vector<Bounds> bounds, std::vector<Triangle> triangles);
 
-			SphereObject* intersect(Ray ray);
+			BoundingSphere* intersect(Ray ray);
+			std::vector<BoundingSphere> intersect(Sphere sphere);
 			std::vector<float> getLines() const;
-			std::vector<float> getOccupiedLines() const;
 
 		private:
-			void firstPass(std::vector<SphereObject> objects);
-			void secondPass(std::vector<SphereObject> objects);
+			void firstPass(std::vector<BoundingSphere> boundingSpheres);
+			void secondPass(std::vector<BoundingSphere> boundingSpheres);
 			int computeCellIndex(glm::vec3 point) const;
 			Bounds computeCellBounds(int cellIndex) const;
 	};

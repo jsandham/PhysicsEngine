@@ -31,6 +31,8 @@ namespace PhysicsEngine
 			~BoxCollider();
 
 			bool intersect(Bounds bounds);
+
+			std::vector<float> getLines() const;
 	};
 }
 

@@ -33,6 +33,7 @@
 #include <components/PointLight.h>
 #include <components/BoxCollider.h>
 #include <components/SphereCollider.h>
+#include <components/MeshCollider.h>
 #include <components/CapsuleCollider.h>
 #include <components/Boids.h>
 
@@ -125,6 +126,7 @@ int serializeScenes(std::string projectDirectory)
 		json::JSON pointLights;
 		json::JSON boxColliders;
 		json::JSON sphereColliders;
+		json::JSON meshColliders;
 		json::JSON capsuleColliders;
 		json::JSON boids;
 		json::JSON systems;
@@ -177,6 +179,9 @@ int serializeScenes(std::string projectDirectory)
 			else if(type == "SphereCollider"){
 				sphereColliders[it->first] = it->second;
 			}
+			else if(type == "MeshCollider"){
+				meshColliders[it->first] = it->second;
+			}
 			else if(type == "CapsuleCollider"){
 				capsuleColliders[it->first] = it->second;
 			}
@@ -220,6 +225,7 @@ int serializeScenes(std::string projectDirectory)
 		unsigned int numberOfPointLights = std::max(0, pointLights.size());
 		unsigned int numberOfBoxColliders = std::max(0, boxColliders.size());
 		unsigned int numberOfSphereColliders = std::max(0, sphereColliders.size());
+		unsigned int numberOfMeshColliders = std::max(0, meshColliders.size());
 		unsigned int numberOfCapsuleColliders = std::max(0, capsuleColliders.size());
 		unsigned int numberOfBoids = std::max(0, boids.size());
 		unsigned int numberOfSystems = std::max(0, systems.size());
@@ -235,6 +241,7 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "number of point lights found: " << numberOfPointLights << std::endl;
 		std::cout << "number of box collider found: " << numberOfBoxColliders << std::endl;
 		std::cout << "number of sphere collider found: " << numberOfSphereColliders << std::endl;
+		std::cout << "number of mesh collider found: " << numberOfMeshColliders << std::endl;
 		std::cout << "number of capsule collider found: " << numberOfCapsuleColliders << std::endl;
 		std::cout << "number of boids found: " << numberOfBoids << std::endl;
 		std::cout << "number of systems found: " << numberOfSystems << std::endl;
@@ -253,6 +260,7 @@ int serializeScenes(std::string projectDirectory)
 		header.numberOfPointLights = numberOfPointLights;
 		header.numberOfBoxColliders = numberOfBoxColliders;
 		header.numberOfSphereColliders = numberOfSphereColliders;
+		header.numberOfMeshColliders = numberOfMeshColliders;
 		header.numberOfCapsuleColliders = numberOfCapsuleColliders;
 		header.numberOfBoids = numberOfBoids;
 		header.numberOfSystems = numberOfSystems;
@@ -268,6 +276,7 @@ int serializeScenes(std::string projectDirectory)
 		header.sizeOfPointLight = sizeof(PointLight);
 		header.sizeOfBoxCollider = sizeof(BoxCollider);
 		header.sizeOfSphereCollider = sizeof(SphereCollider);
+		header.sizeOfMeshCollider = sizeof(MeshCollider);
 		header.sizeOfCapsuleCollider = sizeof(CapsuleCollider);
 		header.sizeOfBoids = sizeof(Boids);
 
@@ -670,6 +679,35 @@ int serializeScenes(std::string projectDirectory)
 			fwrite(&type, sizeof(int), 1, file);
 
 			fwrite(&data, sizeof(SphereColliderHeader), 1, file);
+		}
+
+		// serialize mesh collider
+		objects = meshColliders.ObjectRange();
+		for(it = objects.begin(); it != objects.end(); it++){
+			MeshColliderHeader data;
+
+			data.componentId = Guid(it->first);
+			data.entityId = Guid(it->second["entity"].ToString());
+			data.meshId = Guid(it->second["mesh"].ToString());
+
+			// data.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
+			// data.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
+			// data.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
+
+			// data.sphere.radius = (float)it->second["radius"].ToFloat();
+
+			int type = 15;
+			char classification = 'c';
+
+			size_t totalSize = sizeof(char);
+			totalSize += sizeof(int);
+			totalSize += sizeof(MeshColliderHeader);
+
+			fwrite(&totalSize, sizeof(size_t), 1, file);
+			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+
+			fwrite(&data, sizeof(MeshColliderHeader), 1, file);
 		}
 
 		// serialize capsule collider

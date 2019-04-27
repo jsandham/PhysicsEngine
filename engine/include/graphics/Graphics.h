@@ -18,15 +18,15 @@
 
 namespace PhysicsEngine
 {
-	struct Framebuffer 
+	typedef struct Framebuffer 
 	{
 		GLenum framebufferStatus;
 		GLuint handle;
 		Texture2D colorBuffer;
 		Texture2D depthBuffer;
-	};
+	}Framebuffer;
 
-	struct DebugWindow
+	typedef struct DebugWindow
 	{
 		float x;
 		float y;
@@ -40,10 +40,10 @@ namespace PhysicsEngine
 		Shader shader;
 
 		void init();
-	};
+	}DebugWindow;
 
 
-	struct PerformanceGraph
+	typedef struct PerformanceGraph
 	{
 		float x;
 		float y;
@@ -63,9 +63,9 @@ namespace PhysicsEngine
 
 		void init();
 		void add(float sample);
-	};
+	}PerformanceGraph;
 
-	struct LineBuffer 
+	typedef struct LineBuffer 
 	{
 		size_t size;
 		Shader shader;
@@ -74,7 +74,13 @@ namespace PhysicsEngine
 
 		void init(std::vector<float> lines);
 		void update(std::vector<float> lines);
-	};
+	}LineBuffer;
+
+	// create a MeshBuffer?
+	//struct MeshBuffer
+	//{
+    //
+	//}
 
 
 

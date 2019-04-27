@@ -22,6 +22,7 @@ namespace PhysicsEngine
 		unsigned int numberOfPointLights;
 		unsigned int numberOfBoxColliders;
 		unsigned int numberOfSphereColliders;
+		unsigned int numberOfMeshColliders;
 		unsigned int numberOfCapsuleColliders;
 		unsigned int numberOfBoids;
 
@@ -38,6 +39,7 @@ namespace PhysicsEngine
 		size_t sizeOfPointLight;
 		size_t sizeOfBoxCollider;
 		size_t sizeOfSphereCollider;
+		size_t sizeOfMeshCollider;
 		size_t sizeOfCapsuleCollider;
 		size_t sizeOfBoids;
 	};

@@ -8,10 +8,18 @@
 
 namespace PhysicsEngine
 {
-	struct GraphicsDebug
+	// typedef enum DebugView
+	// {
+	// 	DepthView,
+	// 	NormalsView,
+	// 	OverdrawView,
+	// 	CollidersView
+	// }DebugView;
+
+	typedef struct GraphicsDebug
 	{
-		Framebuffer fbo[3];
-		Shader shaders[3];
+		Framebuffer fbo[4];
+		Shader shaders[4];
 
 		void init()
 		{
@@ -21,12 +29,15 @@ namespace PhysicsEngine
 			shaders[1].fragmentShader = Shader::normalMapFragmentShader;
 			shaders[2].vertexShader	= Shader::overdrawVertexShader;
 			shaders[2].fragmentShader = Shader::overdrawFragmentShader;
+			shaders[3].vertexShader	= Shader::lineVertexShader;
+			shaders[3].fragmentShader = Shader::lineFragmentShader;	
 
 			shaders[0].compile();
 			shaders[1].compile();
 			shaders[2].compile();
+			shaders[3].compile();
 
-			for(int i = 0; i < 3; i++){
+			for(int i = 0; i < 4; i++){
 				fbo[i].colorBuffer.redefine(1000, 1000, TextureFormat::RGB);
 				fbo[i].depthBuffer.redefine(1000, 1000, TextureFormat::Depth);
 
@@ -89,9 +100,8 @@ namespace PhysicsEngine
 				}
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			}
-			
 		}
-	};
+	}GraphicsDebug;
 }
 
 

@@ -25,6 +25,7 @@ namespace PhysicsEngine
 			DebugWindow window;
 			Font font;
 			LineBuffer buffer;
+			LineBuffer colliderBuffer;
 
 		public:
 			DebugRenderer();

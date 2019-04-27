@@ -57,7 +57,7 @@ namespace PhysicsEngine
 
 		private:
 			void render();
-			void renderDebug();
+			void renderDebug(int view);
 	};
 }
 

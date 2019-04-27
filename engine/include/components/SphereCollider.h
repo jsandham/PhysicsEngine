@@ -33,6 +33,8 @@ namespace PhysicsEngine
 			~SphereCollider();
 
 			bool intersect(Bounds bounds);
+
+			std::vector<float> getLines() const;
 	};
 }
 
