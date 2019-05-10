@@ -9,6 +9,7 @@
 #include "../core/World.h"
 
 #include "../graphics/ForwardRenderer.h"
+#include "../graphics/DeferredRenderer.h"
 #include "../graphics/DebugRenderer.h"
 
 namespace PhysicsEngine
@@ -18,7 +19,8 @@ namespace PhysicsEngine
 		private:
 			unsigned int pass;
 
-			ForwardRenderer forwardRenderer;  
+			ForwardRenderer forwardRenderer;
+			DeferredRenderer deferredRenderer;  
 			DebugRenderer debugRenderer;
 
 		public:

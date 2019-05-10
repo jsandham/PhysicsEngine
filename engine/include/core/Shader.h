@@ -46,6 +46,8 @@ namespace PhysicsEngine
 			static std::string fontFragmentShader;
 			static std::string instanceVertexShader;
 			static std::string instanceFragmentShader;
+			static std::string gbufferVertexShader;
+			static std::string gbufferFragmentShader;
 
 		public:
 			std::string vertexShader;

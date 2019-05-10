@@ -9,9 +9,13 @@ namespace PhysicsEngine
 	{
 		unsigned int numBatchDrawCalls;
 		unsigned int numDrawCalls;
+		unsigned int verts;
+		unsigned int tris;
+		unsigned int lines;
+		unsigned int points;
 
 		GLuint queryId;
-		GLuint64 totalElapsedTime;
+		float totalElapsedTime;
 	};
 }
 

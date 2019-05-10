@@ -193,6 +193,59 @@ std::string Shader::instanceFragmentShader = "#version 330 core\n"
 
 
 
+
+
+std::string Shader::gbufferVertexShader = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aNormal;\n"
+"layout (location = 2) in vec2 aTexCoords;\n"
+
+"out vec3 FragPos;\n"
+"out vec2 TexCoords;\n"
+"out vec3 Normal;\n"
+
+"uniform mat4 model;\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+
+"void main()\n"
+"{\n"
+"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+"    FragPos = worldPos.xyz;\n" 
+"    TexCoords = aTexCoords;\n"
+    
+"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+"    Normal = normalMatrix * aNormal;\n"
+
+"    gl_Position = projection * view * worldPos;\n"
+"}\n";
+
+std::string Shader::gbufferFragmentShader = "#version 330 core\n"
+"layout (location = 0) out vec3 gPosition;\n"
+"layout (location = 1) out vec3 gNormal;\n"
+"layout (location = 2) out vec4 gAlbedoSpec;\n"
+
+"in vec2 TexCoords;\n"
+"in vec3 FragPos;\n"
+"in vec3 Normal;\n"
+
+"uniform sampler2D texture_diffuse1;\n"
+"uniform sampler2D texture_specular1;\n"
+
+"void main()\n"
+"{\n"    
+"    // store the fragment position vector in the first gbuffer texture\n"
+"    gPosition = FragPos;\n"
+"    // also store the per-fragment normals into the gbuffer\n"
+"    gNormal = normalize(Normal);\n"
+"    // and the diffuse per-fragment color\n"
+"    gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;\n"
+"    // store specular intensity in gAlbedoSpec's alpha component\n"
+"    gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;\n"
+"}\n";
+
+
+
 Shader::Shader()
 {
 	programCompiled = false;

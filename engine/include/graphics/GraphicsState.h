@@ -9,16 +9,7 @@
 
 namespace PhysicsEngine
 {
-	typedef enum UniformBuffer
-	{
-		CameraBuffer,
-		DirectionalLightBuffer,
-		SpotLightBuffer,
-		PointLightBuffer,
-		ShadowBuffer
-	}UniformBuffer;
-
-	struct GLCamera
+	struct GraphicsCameraState
 	{
 		glm::mat4 projection;         // 0
 		glm::mat4 view;               // 64
@@ -27,7 +18,7 @@ namespace PhysicsEngine
 		GLuint handle;
 	};
 
-	struct GLShadow
+	struct GraphicsShadowState
 	{
 		glm::mat4 lightProjection[5]; // 0    64   128  192  256
 		glm::mat4 lightView[5];       // 320  384  448  512  576 
@@ -37,7 +28,7 @@ namespace PhysicsEngine
 		GLuint handle;
 	};
 
-	struct GLDirectionalLight
+	struct GraphicsDirectionalLightState
 	{
 		glm::vec3 direction;  // 0
 		glm::vec3 ambient;    // 16
@@ -47,7 +38,7 @@ namespace PhysicsEngine
 		GLuint handle;
 	};
 
-	struct GLSpotLight
+	struct GraphicsSpotLightState
 	{
 		glm::vec3 position;  // 0
 		glm::vec3 direction; // 16
@@ -63,7 +54,7 @@ namespace PhysicsEngine
 		GLuint handle;
 	};
 
-	struct GLPointLight
+	struct GraphicsPointLightState
 	{
 		glm::vec3 position; // 0
 		glm::vec3 ambient;  // 16

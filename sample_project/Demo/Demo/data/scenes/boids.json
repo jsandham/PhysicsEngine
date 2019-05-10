@@ -6,6 +6,7 @@
   },
   "f7b2ad35-68f2-4367-b769-3ff3c4d43c7c" : {
     "type" : "Transform",
+    "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "d34cf96d-bf69-4a01-9333-e2304679160a",
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -21,7 +22,8 @@
     "type" : "MeshRenderer",
     "entity" : "d34cf96d-bf69-4a01-9333-e2304679160a",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
+    "isStatic" : false
   },
   "9350b857-a508-4c6d-8c7b-4f5b94bc69d3" : {
     "type" : "DirectionalLight",
@@ -47,6 +49,7 @@
   },
   "13d93035-f7b1-4bbc-b3d7-99e330bd2c03" : {
     "type" : "Transform",
+    "parent" : "f7b2ad35-68f2-4367-b769-3ff3c4d43c7c",
     "entity" : "3c787efe-0682-416a-86b2-859764b54b67",
     "position" : [-20.0, -20.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -56,7 +59,8 @@
     "type" : "MeshRenderer",
     "entity" : "3c787efe-0682-416a-86b2-859764b54b67",
     "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
-    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
+    "isStatic" : false
   },
   "cfbac7a1-6e7e-43f7-94b1-afbb9264fd36" : {
     "type" : "PhysicsSystem",

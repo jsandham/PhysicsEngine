@@ -187,9 +187,12 @@ void PerformanceGraph::add(float sample)
 	samples[18*(numberOfSamples - 2) + 16] = y1_ndc;
 	samples[18*(numberOfSamples - 2) + 17] = 0.0f;
 
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	glBufferSubData(GL_ARRAY_BUFFER, 0, samples.size()*sizeof(float), &(samples[0]));
+
+	glBindVertexArray(0);
 }
 
 void LineBuffer::init(std::vector<float> lines)
@@ -224,6 +227,80 @@ void LineBuffer::update(std::vector<float> lines)
 	glBindVertexArray(0);
 }
 
+
+
+MeshBuffer::MeshBuffer()
+{
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glGenBuffers(3, &vbo[0]);
+	glBindVertexArray(0);
+}
+
+MeshBuffer::~MeshBuffer()
+{
+	glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(3, &vbo[0]);
+}
+
+void MeshBuffer::init()
+{
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, normals.size()*sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size()*sizeof(float), &texCoords[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+
+	GLenum error;
+	while ((error = glGetError()) != GL_NO_ERROR){
+		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	}
+}
+
+void MeshBuffer::update(int vboIndex, int offset, int size)
+{
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[vboIndex]);
+
+	if(vboIndex == 0){
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(vertices[0]));
+	}
+	else if(vboIndex == 1){
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(normals[0]));
+	}
+	else{
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(texCoords[0]));
+	}
+
+	glBindVertexArray(0);
+}
+
+int MeshBuffer::getIndex(Guid meshId)
+{
+	for(int i = 0; i < meshIds.size(); i++){
+		if(meshIds[i] == meshId){
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+
+
+
 // GLHandle Graphics::query;
 // unsigned int Graphics::gpu_time;
 
@@ -242,7 +319,32 @@ void Graphics::checkError()
 {
 	GLenum error;
 	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+		std::string errorStr;
+		switch( error ) {
+			case GL_INVALID_ENUM:
+				errorStr = "GL_INVALID_ENUM";
+				break;
+			case GL_INVALID_VALUE:
+				errorStr = "GL_INVALID_VALUE";
+				break;
+			case GL_INVALID_OPERATION:
+				errorStr = "GL_INVALID_OPERATION";
+				break;
+			case GL_STACK_OVERFLOW:
+				errorStr = "GL_STACK_OVERFLOW";
+				break;
+			case GL_STACK_UNDERFLOW:
+				errorStr = "GL_STACK_UNDERFLOW";
+				break;
+			case GL_OUT_OF_MEMORY:
+				errorStr = "GL_OUT_OF_MEMORY";
+				break;
+			default:
+				errorStr = "UNKNOWN ERROR";
+				break;
+		}
+
+		std::cout << "Error: Renderer failed with error code: " << errorStr << " (" << error << ")" << std::endl;;
 	}
 }
 
@@ -1550,13 +1652,13 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
 	}
 
-	glBindVertexArray(vao);
-
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
+	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	glBindVertexArray(0);
 
 	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
@@ -1569,11 +1671,13 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 		}
 
 		// get the query result
-		GLuint64 elapsedTime;
+		GLuint64 elapsedTime; // in nanoseconds
 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime;
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
 		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
 	}
 
 	GLenum error;
@@ -1604,13 +1708,13 @@ void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat
 		glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
 	}
 
-	glBindVertexArray(vao);
-
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
+	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	glBindVertexArray(0);
 
 	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
@@ -1623,11 +1727,13 @@ void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat
 		}
 
 		// get the query result
-		GLuint64 elapsedTime;
+		GLuint64 elapsedTime; // in nanoseconds
 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime;
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
 		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
 	}
 
 	GLenum error;
@@ -1651,13 +1757,13 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao,
 	Graphics::use(shader);
 	Graphics::setMat4(shader, "model", model);
 
-	glBindVertexArray(vao);
-
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
+	glBindVertexArray(vao);
 	glDrawArrays(mode, 0, numVertices);
+	glBindVertexArray(0);
 
 	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
@@ -1670,11 +1776,21 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao,
 		}
 
 		// get the query result
-		GLuint64 elapsedTime;
+		GLuint64 elapsedTime; // in nanoseconds
 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime;
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
 		query->numDrawCalls++;
+		query->verts += numVertices;
+		if(mode == GL_TRIANGLES){
+			query->tris += numVertices / 3;
+		}
+		else if(mode == GL_LINES){
+			query->lines += numVertices / 2;
+		}
+		else if(mode == GL_POINTS){
+			query->points += numVertices;
+		}
 	}
 
 	GLenum error;
@@ -1735,4 +1851,153 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void Graphics::render(World* world, Material* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+{
+	Shader* shader = world->getAsset<Shader>(material->shaderId);
+
+	if(material == NULL){
+		std::cout << "Material is NULL" << std::endl;
+		return;
+	}
+
+	if(shader == NULL){
+		std::cout << "Shader is NULL" << std::endl;
+		return;
+	}
+
+	if(!shader->isCompiled()){
+		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		return;
+	}
+
+	Graphics::use(shader);
+	Graphics::setMat4(shader, "model", model);
+	Graphics::setFloat(shader, "material.shininess", material->shininess);
+	Graphics::setVec3(shader, "material.ambient", material->ambient);
+	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shader, "material.specular", material->specular);
+
+	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
+	if(mainTexture != NULL){
+		Graphics::setInt(shader, "material.mainTexture", 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
+	}
+
+	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
+	if(normalMap != NULL){
+
+		Graphics::setInt(shader, "material.normalMap", 1);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
+	}
+
+	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+	if(specularMap != NULL){
+
+		Graphics::setInt(shader, "material.specularMap", 2);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
+	}
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	}
+
+	GLsizei numVertices = size / 3;
+	GLint startIndex = start / 3;
+
+	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime; // in nanoseconds
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
+		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
+	}
+
+	GLenum error;
+	while ((error = glGetError()) != GL_NO_ERROR){
+		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	}
+}
+
+
+void Graphics::render(World* world, Shader* shader, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+{
+	if(shader == NULL){
+		std::cout << "Shader is NULL" << std::endl;
+		return;
+	}
+
+	if(!shader->isCompiled()){
+		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		return;
+	}
+
+	Graphics::use(shader);
+	Graphics::setMat4(shader, "model", model);
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	}
+
+	GLsizei numVertices = size / 3;
+	GLint startIndex = start / 3;
+
+	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime; // in nanoseconds
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
+		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
+	}
+
+	GLenum error;
+	while ((error = glGetError()) != GL_NO_ERROR){
+		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	}
 }

@@ -6,6 +6,7 @@
   },
   "73545eb4-60eb-4bee-b82d-892332f3df61" : {
     "type" : "Transform",
+    "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -21,7 +22,8 @@
     "type" : "MeshRenderer",
     "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "58011868-b463-46ce-8a0e-241d19d15a3e" : {
     "type" : "PointLight",
@@ -40,6 +42,7 @@
   },
   "3cfc71fb-91aa-4efa-b2c9-6b8bf4f78115" : {
     "type" : "Transform",
+    "parent" : "73545eb4-60eb-4bee-b82d-892332f3df61",
     "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
     "position" : [5.2, 5.0, 5.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -60,7 +63,8 @@
     "type" : "MeshRenderer",
     "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
     "mesh" : "af41a30f-526a-4328-9495-af088a045a02",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "db3efe0b-ab34-4be6-a8e5-1c76e638a994" : {
     "type" : "Entity",
@@ -68,6 +72,7 @@
   },
   "e0af7629-aff7-4b52-9306-aec11bd69fb5" : {
     "type" : "Transform",
+    "parent" : "73545eb4-60eb-4bee-b82d-892332f3df61",
     "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
     "position" : [3.2, 1.0, 0.4],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -77,7 +82,8 @@
     "type" : "MeshRenderer",
     "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
     "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "59610923" : {
     "type" : "CapsuleCollider",

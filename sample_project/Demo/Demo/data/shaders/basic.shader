@@ -23,7 +23,7 @@ out vec2 TexCoord;
 
 void main()
 {
-	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);
+	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);
 
     FragPos = vec3(model * vec4(position, 1.0));
     //FragPos = position;//vec3(model * vec4(position, 1.0));

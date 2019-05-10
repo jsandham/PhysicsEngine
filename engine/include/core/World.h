@@ -179,6 +179,9 @@ namespace PhysicsEngine
 				return getAllocator<T>().get(index);
 			}
 
+			int getIndexOf(Guid id);
+			int getIndexOfAsset(Guid id);
+
 			template<typename T>
 			T* createAsset()
 			{

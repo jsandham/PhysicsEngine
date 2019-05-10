@@ -1,7 +1,6 @@
 #include <fstream>
 
 #include "../../include/core/Log.h"
-#include "../../include/core/Time.h"
 
 using namespace PhysicsEngine;
 
@@ -64,7 +63,7 @@ void Log::Info(const char* format, ...)
 	va_end(args);
 
 	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Info]: " << message << " (frame " << Time::frameCount << ")" << std::endl;
+	logFile << "[Info]: " << message << std::endl;
 }
 
 void Log::Warn(const char* format, ...)
@@ -77,7 +76,7 @@ void Log::Warn(const char* format, ...)
 	va_end(args);
 
 	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Warn]: " << message << " (frame " << Time::frameCount << ")" << std::endl;
+	logFile << "[Warn]: " << message << std::endl;
 }
 
 void Log::Error(const char* format, ...)
@@ -90,5 +89,5 @@ void Log::Error(const char* format, ...)
 	va_end(args);
 
 	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Error]: " << message << " (frame " << Time::frameCount << ")" << std::endl;
+	logFile << "[Error]: " << message << std::endl;
 }

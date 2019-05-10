@@ -65,15 +65,39 @@ namespace PhysicsEngine
 		RButton
 	};
 
+	typedef enum XboxButton
+	{
+		LeftDPad,
+		RightDPad,
+		UpDPad,
+		DownDPad,
+		Start,
+		Back,
+		LeftThumb,
+		RightThumb,
+		LeftShoulder,
+		RightShoulder,
+		AButton,
+		BButton,
+		XButton,
+		YButton
+	};
+
 	struct Input
 	{
 		bool keyIsDown[51];
 		bool keyWasDown[51];
-		bool buttonIsDown[3];
-		bool buttonWasDown[3];
+		bool mouseButtonIsDown[3];
+		bool mouseButtonWasDown[3];
+		bool xboxButtonIsDown[14];
+		bool xboxButtonWasDown[14];
 		int mousePosX;
 		int mousePosY;
 		int mouseDelta;
+		int leftStickX;
+		int leftStickY;
+		int rightStickX;
+		int rightStickY;
 	};
 
 	bool getKey(Input input, KeyCode key);
@@ -82,6 +106,9 @@ namespace PhysicsEngine
 	bool getMouseButton(Input input, MouseButton button);
 	bool getMouseButtonDown(Input input, MouseButton button);
 	bool getMouseButtonUp(Input input, MouseButton button);
+	bool getXboxButton(Input input, XboxButton button);
+	bool getXboxButtonDown(Input input, XboxButton button);
+	bool getXboxButtonUp(Input input, XboxButton button);
 }
 
 

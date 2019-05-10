@@ -316,6 +316,26 @@ System* World::getSystemByIndex(int index)
 	return systems[index];
 }
 
+int World::getIndexOf(Guid id)
+{
+	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(id);
+	if( it2 != idToGlobalIndex.end()){
+		return it2->second;
+	}
+
+	return -1;
+}
+
+int World::getIndexOfAsset(Guid id)
+{
+	std::map<Guid, int>::iterator it2 = assetIdToGlobalIndex.find(id);
+	if( it2 != assetIdToGlobalIndex.end()){
+		return it2->second;
+	}
+
+	return -1;
+}
+
 Bounds* World::getWorldBounds()
 {
 	return &bounds;

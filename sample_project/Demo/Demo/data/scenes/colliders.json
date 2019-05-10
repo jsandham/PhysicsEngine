@@ -6,6 +6,7 @@
   },
   "766f6803-8e46-4dec-ba88-a840583b137c" : {
     "type" : "Transform",
+    "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "0720d51a-7596-427d-a3cc-8821d4bf6f17",
     "position" : [0.0, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -21,7 +22,8 @@
     "type" : "MeshRenderer",
     "entity" : "0720d51a-7596-427d-a3cc-8821d4bf6f17",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
+    "isStatic" : false
   },
   "befab12a-8f36-4d1d-bd48-4f535d7f7424" : {
     "type" : "DirectionalLight",
@@ -37,6 +39,7 @@
   },
   "6164d9e4-990b-42c1-ae7c-59d38db72c4d" : {
     "type" : "Transform",
+    "parent" : "766f6803-8e46-4dec-ba88-a840583b137c",
     "entity" : "dfe510a7-a281-425f-8238-ea83d16389e0",
     "position" : [19.949949, -2.543413, 4.866085],
     "rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
@@ -46,7 +49,8 @@
     "type" : "MeshRenderer",
     "entity" : "dfe510a7-a281-425f-8238-ea83d16389e0",
     "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "43022623-51b1-4951-a371-b613f435911d" : {
     "type" : "SphereCollider",
@@ -60,6 +64,7 @@
   },
   "6f8c834b-7152-4c4f-9256-ac69f8f3f7d7" : {
     "type" : "Transform",
+    "parent" : "766f6803-8e46-4dec-ba88-a840583b137c",
     "entity" : "4372710c-a1f4-4630-8c3d-50c765b8ebb5",
     "position" : [-1.949949, 2.543413, 1.866085],
     "rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
@@ -69,7 +74,8 @@
     "type" : "MeshRenderer",
     "entity" : "4372710c-a1f4-4630-8c3d-50c765b8ebb5",
     "mesh" : "af41a30f-526a-4328-9495-af088a045a02",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "6cc81701-f2a9-4cc3-8542-e7cad85c381d" : {
     "type" : "BoxCollider",
@@ -83,6 +89,7 @@
   },
   "c9ad3e81-5f88-441d-8a35-b3b8009bf791" : {
     "type" : "Transform",
+    "parent" : "766f6803-8e46-4dec-ba88-a840583b137c",
     "entity" : "dd12dde4-ed28-4428-9a4b-05cf2fabc47b",
     "position" : [9.949949, -17.543413, 4.866085],
     "rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
@@ -92,7 +99,8 @@
     "type" : "MeshRenderer",
     "entity" : "dd12dde4-ed28-4428-9a4b-05cf2fabc47b",
     "mesh" : "5fccfe1d-03c3-4d61-beb7-948a48d739c1",
-    "material" : "843489ae-b5ff-4df3-a655-695101482a60"
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
   },
   "9c52e0f4-c941-4239-a7c7-e5970906d42a" : {
     "type" : "MeshCollider",

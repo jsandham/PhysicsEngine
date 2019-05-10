@@ -18,6 +18,17 @@
 
 namespace PhysicsEngine
 {
+	typedef struct GBuffer
+	{
+		GLenum gBufferStatus;
+		GLuint handle;
+		GLuint color0; // position
+		GLuint color1; // normal
+		GLuint color2; // color + spec
+		GLuint depth;
+		Shader shader;
+	}GBuffer;
+
 	typedef struct Framebuffer 
 	{
 		GLenum framebufferStatus;
@@ -76,14 +87,27 @@ namespace PhysicsEngine
 		void update(std::vector<float> lines);
 	}LineBuffer;
 
-	// create a MeshBuffer?
-	//struct MeshBuffer
-	//{
-    //
-	//}
+	typedef struct MeshBuffer
+	{
+		std::vector<Guid> meshIds;
+		std::vector<int> start;
+		std::vector<int> count;
+		std::vector<float> vertices;
+		std::vector<float> normals;
+		std::vector<float> texCoords;
+		std::vector<Sphere> boundingSpheres;
 
+		GLuint vao;
+		GLuint vbo[3];
 
+    	MeshBuffer();
+    	~MeshBuffer();
 
+    	void init();
+    	void update(int vboIndex, int offset, int size);
+
+    	int getIndex(Guid meshId);
+	}MeshBuffer;
 
 
 	class Graphics
@@ -254,6 +278,11 @@ namespace PhysicsEngine
 			static void render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
 			static void render(World* world, Shader* shader, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
 			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
+
+
+
+			static void render(World* world, Material* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
+			static void render(World* world, Shader* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
 	};
 }
 

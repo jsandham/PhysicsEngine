@@ -39,11 +39,13 @@ void RenderSystem::init(World* world)
 	this->world = world;
 
 	forwardRenderer.init(world);
+	//deferredRenderer.init(world);
 	debugRenderer.init(world);
 }
 
 void RenderSystem::update(Input input)
 {
+	//deferredRenderer.update(input);
 	forwardRenderer.update();
 
 	if(world->debug){

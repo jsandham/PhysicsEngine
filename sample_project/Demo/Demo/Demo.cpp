@@ -52,7 +52,14 @@ using namespace PhysicsEngine;
 
 static bool running;
 
+Time time;
 Input input;
+
+size_t frameCount = 0;
+LARGE_INTEGER lastCounter;
+LARGE_INTEGER perfCounterFrequencyResult;
+unsigned long long lastCycleCount;
+long long perfCounterFrequency;
 
 KeyCode GetKeyCode(unsigned int vKCode)
 {
@@ -254,38 +261,38 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	}
 	case WM_LBUTTONDOWN:
 	{
-		input.buttonIsDown[(int)LButton] = true;
-		input.buttonWasDown[(int)LButton] = false;
+		input.mouseButtonIsDown[(int)LButton] = true;
+		input.mouseButtonWasDown[(int)LButton] = false;
 		break;
 	}
 	case WM_MBUTTONDOWN:
 	{
-		input.buttonIsDown[(int)MButton] = true;
-		input.buttonWasDown[(int)MButton] = false;
+		input.mouseButtonIsDown[(int)MButton] = true;
+		input.mouseButtonWasDown[(int)MButton] = false;
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
-		input.buttonIsDown[(int)RButton] = true;
-		input.buttonWasDown[(int)RButton] = false;
+		input.mouseButtonIsDown[(int)RButton] = true;
+		input.mouseButtonWasDown[(int)RButton] = false;
 		break;
 	}
 	case WM_LBUTTONUP:
 	{
-		input.buttonIsDown[(int)LButton] = false;
-		input.buttonWasDown[(int)LButton] = true;
+		input.mouseButtonIsDown[(int)LButton] = false;
+		input.mouseButtonWasDown[(int)LButton] = true;
 		break;
 	}
 	case WM_MBUTTONUP:
 	{
-		input.buttonIsDown[(int)MButton] = false;
-		input.buttonWasDown[(int)MButton] = true;
+		input.mouseButtonIsDown[(int)MButton] = false;
+		input.mouseButtonWasDown[(int)MButton] = true;
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
-		input.buttonIsDown[(int)RButton] = false;
-		input.buttonWasDown[(int)RButton] = true;
+		input.mouseButtonIsDown[(int)RButton] = false;
+		input.mouseButtonWasDown[(int)RButton] = true;
 		break;
 	}
 	case WM_MOUSEMOVE:
@@ -324,7 +331,7 @@ LRESULT CALLBACK MainWindowCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return result;
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+void CreateConsole()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
@@ -334,10 +341,47 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		freopen("CONOUT$", "w", stdout);
 		freopen("CONOUT$", "w", stderr);
 	}
-	else{
-		std::cout << "Error: Failed to allocate console" << std::endl;
-		return 0;
-	}
+}
+
+void StartTime()
+{
+	frameCount = 0;
+	QueryPerformanceCounter(&lastCounter);
+	QueryPerformanceFrequency(&perfCounterFrequencyResult);
+	lastCycleCount = __rdtsc();
+	perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+
+	time.frameCount = 0;
+	time.time = 0.0f;
+	time.deltaTime = 0.0f;
+	time.deltaCycles = 0;
+}
+
+void RecordTime()
+{
+	unsigned long long endCycleCount = __rdtsc();
+	LARGE_INTEGER endCounter;
+	QueryPerformanceCounter(&endCounter);
+
+	unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
+	long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+	float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
+	float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+
+	lastCycleCount = endCycleCount;
+	lastCounter = endCounter;
+	frameCount++;
+
+	time.frameCount = frameCount;
+	time.time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
+	time.deltaTime = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
+	time.deltaCycles = (size_t)cyclesElapsed;
+}
+
+
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	CreateConsole();
 
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -346,19 +390,27 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	windowClass.lpszClassName = _T("PhysicsEngineWindowClass");
 
 	if (!RegisterClass(&windowClass)){
-		std::cout << "Error: Failed to register window class" << std::endl;
 		return 0;
 	}
 
-	HWND windowHandle = CreateWindowEx(0, windowClass.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1000, 1000, 0, 0, hInstance, 0);
+	HWND windowHandle = CreateWindowEx(0, 
+		windowClass.lpszClassName, 
+		_T("PhysicsEngine"), 
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
+		CW_USEDEFAULT, 
+		CW_USEDEFAULT, 
+		1000, 
+		1000, 
+		0, 
+		0, 
+		hInstance, 
+		0);
 
 	if (!windowHandle){
-		std::cout << "Error: Failed tocreate window handle" << std::endl;
 		return 0;
 	}
 
-	if (!Win32InitOpenGL(windowHandle)){  //call something like Graphics::init()??
-		std::cout << "Error: Failed to initialize graphics API" << std::endl;
+	if (!Win32InitOpenGL(windowHandle)){  
 		return 0;
 	}
 
@@ -372,14 +424,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	worldManager.init();
 
-	// total frame timing
-	int frameCount = 0;
-	LARGE_INTEGER lastCounter;
-	LARGE_INTEGER perfCounterFrequencyResult;
-	QueryPerformanceCounter(&lastCounter);
-	QueryPerformanceFrequency(&perfCounterFrequencyResult);
-	unsigned long long lastCycleCount = __rdtsc();
-	long long perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+	StartTime();
 
 	running = true;
 
@@ -394,32 +439,46 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			DispatchMessage(&message);
 		}
 
-		if (!worldManager.update(input)){ running = false; }
+		for (DWORD controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++)
+		{
+			XINPUT_STATE ControllerState;
+			if (XInputGetState(controllerIndex, &ControllerState) == ERROR_SUCCESS){
+				XINPUT_GAMEPAD *Pad = &ControllerState.Gamepad;
+
+				input.xboxButtonIsDown[(int)XboxButton::LeftDPad] = (Pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
+				input.xboxButtonIsDown[(int)XboxButton::RightDPad] = (Pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
+				input.xboxButtonIsDown[(int)XboxButton::UpDPad] = (Pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
+				input.xboxButtonIsDown[(int)XboxButton::DownDPad] = (Pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
+				input.xboxButtonIsDown[(int)XboxButton::Start] = (Pad->wButtons & XINPUT_GAMEPAD_START);
+				input.xboxButtonIsDown[(int)XboxButton::Back] = (Pad->wButtons & XINPUT_GAMEPAD_BACK);
+				input.xboxButtonIsDown[(int)XboxButton::LeftThumb] = (Pad->wButtons & XINPUT_GAMEPAD_LEFT_THUMB);
+				input.xboxButtonIsDown[(int)XboxButton::RightThumb] = (Pad->wButtons & XINPUT_GAMEPAD_RIGHT_THUMB);
+				input.xboxButtonIsDown[(int)XboxButton::LeftShoulder] = (Pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
+				input.xboxButtonIsDown[(int)XboxButton::RightShoulder] = (Pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
+				input.xboxButtonIsDown[(int)XboxButton::AButton] = (Pad->wButtons & XINPUT_GAMEPAD_A);
+				input.xboxButtonIsDown[(int)XboxButton::BButton] = (Pad->wButtons & XINPUT_GAMEPAD_B);
+				input.xboxButtonIsDown[(int)XboxButton::XButton] = (Pad->wButtons & XINPUT_GAMEPAD_X);
+				input.xboxButtonIsDown[(int)XboxButton::YButton] = (Pad->wButtons & XINPUT_GAMEPAD_Y);
+
+				input.leftStickX = Pad->sThumbLX;
+				input.leftStickY = Pad->sThumbLY;
+				input.rightStickX = Pad->sThumbRX;
+				input.rightStickY = Pad->sThumbRY;
+			}
+			else{
+
+			}
+		}
+
+		worldManager.update(time, input);
 
 		RedrawWindow(windowHandle, 0, 0, RDW_INVALIDATE);
 
-		// record time
-		unsigned long long endCycleCount = __rdtsc();
-		LARGE_INTEGER endCounter;
-		QueryPerformanceCounter(&endCounter);
-
-		unsigned long long cyclesElapsed = endCycleCount - lastCycleCount;
-		long long counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-		float megaCyclesPerFrame = ((float)cyclesElapsed / (1000.0f * 1000.0f));
-		float milliSecPerFrame = ((1000.0f*(float)counterElapsed) / (float)perfCounterFrequency);
-
-		lastCycleCount = endCycleCount;
-		lastCounter = endCounter;
-		frameCount++;
-
-		Time::frameCount = frameCount;
-		Time::deltaCycles = (int)cyclesElapsed;
-		Time::time = (1000.0f * (float)lastCounter.QuadPart) / ((float)perfCounterFrequency);
-		Time::deltaTime = milliSecPerFrame;
+		RecordTime();
 
 		// input
 		for(int i = 0; i < 3; i++){
-			input.buttonWasDown[i] = input.buttonIsDown[i];
+			input.mouseButtonWasDown[i] = input.mouseButtonIsDown[i];
 			//input.buttonIsDown[i] = false;
 		}
 
@@ -429,7 +488,282 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		 	input.keyIsDown[i] = false;
 			input.keyWasDown[i] = false;// input.keyIsDown[i];// false
 		}
+
+		for (int i = 0; i < 14; i++){
+			input.xboxButtonWasDown[i] = input.xboxButtonIsDown[i];
+			input.xboxButtonIsDown[i] = false;
+		}
 	}
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#define IS_INTRESOURCE(_r) ((((ULONG_PTR)(_r)) >> 16) == 0)
+//#define MAKEINTRESOURCEA(i) ((LPSTR)((ULONG_PTR)((WORD)(i))))
+//#define MAKEINTRESOURCEW(i) ((LPWSTR)((ULONG_PTR)((WORD)(i))))
+//#ifdef UNICODE
+//#define MAKEINTRESOURCE  MAKEINTRESOURCEW
+//#else
+//#define MAKEINTRESOURCE  MAKEINTRESOURCEA
+//#endif // !UNICODE
+//
+//#define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y,\
+//nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)\
+//CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y,\
+//nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
+//#define CreateWindowW(lpClassName, lpWindowName, dwStyle, x, y,\
+//nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)\
+//CreateWindowExW(0L, lpClassName, lpWindowName, dwStyle, x, y,\
+//nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
+//#ifdef UNICODE
+//#define CreateWindow  CreateWindowW
+//#else
+//#define CreateWindow  CreateWindowA
+//#endif // !UNICODE
+//
+//#ifdef UNICODE
+//#define MAKEINTRESOURCE  MAKEINTRESOURCEW
+//#else
+//#define MAKEINTRESOURCE  MAKEINTRESOURCEA
+//#endif // !UNICODE
+//
+//#define IDI_ICON1                                4001
+//
+//#define GAME_NAME						"DOOM 3"	
+//
+//#define	COMMAND_HISTORY	64
+//#define GWL_WNDPROC         (-4)
+//#define INPUT_ID		101
+//#define EDIT_ID			100
+//
+//typedef struct {
+//	HWND			hWnd;
+//	HINSTANCE		hInstance;
+//
+//	OSVERSIONINFOEX	osversion;
+//
+//	//cpuid_t			cpuid;
+//
+//	// when we get a windows message, we store the time off so keyboard processing
+//	// can know the exact time of an event (not really needed now that we use async direct input)
+//	int				sysMsgTime;
+//
+//	bool			windowClassRegistered;
+//
+//	WNDPROC			wndproc;
+//
+//	HDC				hDC;							// handle to device context
+//	HGLRC			hGLRC;						// handle to GL rendering context
+//	PIXELFORMATDESCRIPTOR pfd;
+//	int				pixelformat;
+//
+//	HINSTANCE		hinstOpenGL;	// HINSTANCE for the OpenGL library
+//
+//	int				desktopBitsPixel;
+//	int				desktopWidth, desktopHeight;
+//
+//	bool			cdsFullscreen;
+//
+//	FILE			*log_fp;
+//
+//} Win32Vars_t;
+//
+//typedef struct {
+//	HWND		hWnd;
+//	HWND		hwndBuffer;
+//
+//	HWND		hwndButtonClear;
+//	HWND		hwndButtonCopy;
+//	HWND		hwndButtonQuit;
+//
+//	HWND		hwndErrorBox;
+//	HWND		hwndErrorText;
+//
+//	HBITMAP		hbmLogo;
+//	HBITMAP		hbmClearBitmap;
+//
+//	HBRUSH		hbrEditBackground;
+//	HBRUSH		hbrErrorBackground;
+//
+//	HFONT		hfBufferFont;
+//	HFONT		hfButtonFont;
+//
+//	HWND		hwndInputLine;
+//
+//	char		errorString[80];
+//
+//	char		consoleText[512], returnedText[512];
+//	bool		quitOnClose;
+//	int			windowWidth, windowHeight;
+//
+//	WNDPROC		SysInputLineWndProc;
+//
+//	//idEditField	historyEditLines[COMMAND_HISTORY];
+//
+//	int			nextHistoryLine;// the last line in the history buffer, not masked
+//	int			historyLine;	// the line being displayed from history buffer
+//
+//} WinConData;
+//
+//
+//
+//Win32Vars_t	win32;
+//static WinConData s_wcd;
+//
+//static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+//	return 0;
+//}
+//
+//LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+//	return 0;
+//}
+//
+///*
+//** Sys_CreateConsole
+//*/
+//void Sys_CreateConsole(void) {
+//	HDC hDC;
+//	WNDCLASS wc;
+//	RECT rect;
+//	const char *DEDCLASS = "DOOM 3 WinConsole";// WIN32_CONSOLE_CLASS;
+//	int nHeight;
+//	int swidth, sheight;
+//	int DEDSTYLE = WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX;
+//	int i;
+//
+//	memset(&wc, 0, sizeof(wc));
+//
+//	wc.style = 0;
+//	wc.lpfnWndProc = (WNDPROC)MainWindowCallback;
+//	wc.cbClsExtra = 0;
+//	wc.cbWndExtra = 0;
+//	wc.hInstance = win32.hInstance;
+//	wc.hIcon = LoadIcon(win32.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+//	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+//	wc.hbrBackground = (struct HBRUSH__ *)COLOR_WINDOW;
+//	wc.lpszMenuName = 0;
+//	wc.lpszClassName = DEDCLASS;
+//
+//	if (!RegisterClass(&wc)) {
+//		return;
+//	}
+//
+//	rect.left = 0;
+//	rect.right = 540;
+//	rect.top = 0;
+//	rect.bottom = 450;
+//	AdjustWindowRect(&rect, DEDSTYLE, FALSE);
+//
+//	hDC = GetDC(GetDesktopWindow());
+//	swidth = GetDeviceCaps(hDC, HORZRES);
+//	sheight = GetDeviceCaps(hDC, VERTRES);
+//	ReleaseDC(GetDesktopWindow(), hDC);
+//
+//	s_wcd.windowWidth = rect.right - rect.left + 1;
+//	s_wcd.windowHeight = rect.bottom - rect.top + 1;
+//
+//	//s_wcd.hbmLogo = LoadBitmap( win32.hInstance, MAKEINTRESOURCE( IDB_BITMAP_LOGO) );
+//
+//	s_wcd.hWnd = CreateWindowEx(0,
+//		DEDCLASS,
+//		GAME_NAME,
+//		DEDSTYLE,
+//		(swidth - 600) / 2, (sheight - 450) / 2, rect.right - rect.left + 1, rect.bottom - rect.top + 1,
+//		NULL,
+//		NULL,
+//		win32.hInstance,
+//		NULL);
+//
+//	if (s_wcd.hWnd == NULL) {
+//		return;
+//	}
+//
+//	////
+//	//// create fonts
+//	////
+//	//hDC = GetDC(s_wcd.hWnd);
+//	//nHeight = -MulDiv(8, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+//
+//	//s_wcd.hfBufferFont = CreateFont(nHeight, 0, 0, 0, FW_LIGHT, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_MODERN | FIXED_PITCH, "Courier New");
+//
+//	//ReleaseDC(s_wcd.hWnd, hDC);
+//
+//	////
+//	//// create the input line
+//	////
+//	//s_wcd.hwndInputLine = CreateWindow("edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER |
+//	//	ES_LEFT | ES_AUTOHSCROLL,
+//	//	6, 400, 528, 20,
+//	//	s_wcd.hWnd,
+//	//	(HMENU)INPUT_ID,	// child window ID
+//	//	win32.hInstance, NULL);
+//
+//	////
+//	//// create the scrollbuffer
+//	////
+//	//s_wcd.hwndBuffer = CreateWindow("edit", NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER |
+//	//	ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+//	//	6, 40, 526, 354,
+//	//	s_wcd.hWnd,
+//	//	(HMENU)EDIT_ID,	// child window ID
+//	//	win32.hInstance, NULL);
+//	//SendMessage(s_wcd.hwndBuffer, WM_SETFONT, (WPARAM)s_wcd.hfBufferFont, 0);
+//
+//	//s_wcd.SysInputLineWndProc = (WNDPROC)SetWindowLong(s_wcd.hwndInputLine, GWL_WNDPROC, (long)InputLineWndProc);
+//	//SendMessage(s_wcd.hwndInputLine, WM_SETFONT, (WPARAM)s_wcd.hfBufferFont, 0);
+//}
+//
+///*
+//** Sys_DestroyConsole
+//*/
+//void Sys_DestroyConsole(void) {
+//	if (s_wcd.hWnd) {
+//		ShowWindow(s_wcd.hWnd, SW_HIDE);
+//		CloseWindow(s_wcd.hWnd);
+//		DestroyWindow(s_wcd.hWnd);
+//		s_wcd.hWnd = 0;
+//	}
+//}
+//
+///*
+//** Sys_ShowConsole
+//*/
+//void Sys_ShowConsole(int visLevel, bool quitOnClose) {
+//
+//	s_wcd.quitOnClose = quitOnClose;
+//
+//	if (!s_wcd.hWnd) {
+//		return;
+//	}
+//
+//	switch (visLevel) {
+//	case 0:
+//		ShowWindow(s_wcd.hWnd, SW_HIDE);
+//		break;
+//	case 1:
+//		ShowWindow(s_wcd.hWnd, SW_SHOWNORMAL);
+//		SendMessage(s_wcd.hwndBuffer, EM_LINESCROLL, 0, 0xffff);
+//		break;
+//	case 2:
+//		ShowWindow(s_wcd.hWnd, SW_MINIMIZE);
+//		break;
+//	default:
+//		//Sys_Error("Invalid visLevel %d sent to Sys_ShowConsole\n", visLevel);
+//		break;
+//	}
+//}

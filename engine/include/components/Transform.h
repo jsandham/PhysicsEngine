@@ -17,6 +17,7 @@ namespace PhysicsEngine
 	struct TransformHeader
 	{
 		Guid componentId;
+		Guid parentId;
 		Guid entityId;
 		glm::vec3 position;
 		glm::quat rotation;
@@ -27,6 +28,7 @@ namespace PhysicsEngine
 	class Transform : public Component
 	{
 		public:
+			Guid parentId;
 			glm::vec3 position;
 			glm::quat rotation;
 			glm::vec3 scale;

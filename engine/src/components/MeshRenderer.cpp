@@ -9,7 +9,7 @@ MeshRenderer::MeshRenderer()
 	meshId = Guid::INVALID;
 	materialId = Guid::INVALID;
 
-	isStatic = false;
+	isStatic = true;
 }
 
 MeshRenderer::MeshRenderer(std::vector<char> data)

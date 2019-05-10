@@ -6,6 +6,7 @@
   },
   "fb698b95-4ec4-4046-8ce7-604b1bc7aa04" : {
     "type" : "Transform",
+    "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "position" : [0.3, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
@@ -21,7 +22,8 @@
     "type" : "MeshRenderer",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
+    "isStatic" : false
   },
   "4ade255a-bffa-4098-871d-2b68ea22ef2a" : {
     "type" : "DirectionalLight",

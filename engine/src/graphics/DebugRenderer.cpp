@@ -118,9 +118,13 @@ void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Graphics::renderText(world, camera, &font, title, 450.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	Graphics::renderText(world, camera, &font, "Number of batches draw calls: " + std::to_string(query.numBatchDrawCalls), 25.0f, 500.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	Graphics::renderText(world, camera, &font, "Number of draw calls: " + std::to_string(query.numDrawCalls), 25.0f, 400.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	Graphics::renderText(world, camera, &font, "Elapsed time: " + std::to_string(query.totalElapsedTime), 25.0f, 300.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Number of batches draw calls: " + std::to_string(query.numBatchDrawCalls), 25.0f, 980.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Number of draw calls: " + std::to_string(query.numDrawCalls), 25.0f, 955.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Elapsed time: " + std::to_string(query.totalElapsedTime) + " (ms)", 25.0f, 930.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Vertices: " + std::to_string(query.verts), 25.0f, 905.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Triangles: " + std::to_string(query.tris), 25.0f, 880.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Lines: " + std::to_string(query.lines), 25.0f, 855.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
+	Graphics::renderText(world, camera, &font, "Points: " + std::to_string(query.points), 25.0f, 830.0f, 0.5f, glm::vec3(0.5, 0.8f, 0.2f));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

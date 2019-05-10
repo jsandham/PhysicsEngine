@@ -321,6 +321,7 @@ int serializeScenes(std::string projectDirectory)
 			TransformHeader data;
 
 			data.componentId = Guid(it->first);
+			data.parentId = Guid(it->second["parent"].ToString());
 			data.entityId = Guid(it->second["entity"].ToString());
 
 			data.position.x = (float)it->second["position"][0].ToFloat();
@@ -433,7 +434,7 @@ int serializeScenes(std::string projectDirectory)
 
 			data.meshId = Guid(it->second["mesh"].ToString());
 			data.materialId = Guid(it->second["material"].ToString());
-			data.isStatic = true;//it->second["isStatic"];
+			data.isStatic = it->second["isStatic"].ToBool();
 
 			int type = 3;
 			char classification = 'c';

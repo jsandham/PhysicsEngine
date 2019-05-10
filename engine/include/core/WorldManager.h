@@ -5,6 +5,7 @@
 
 #include "World.h"
 #include "Input.h"
+#include "Time.h"
 
 namespace PhysicsEngine
 {
@@ -21,7 +22,7 @@ namespace PhysicsEngine
 			~WorldManager();
 
 			void init();
-			bool update(Input input);
+			bool update(Time time, Input input);
 	};
 }
 

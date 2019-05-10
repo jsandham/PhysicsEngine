@@ -3,19 +3,15 @@
 
 namespace PhysicsEngine
 {
-	class Time
+	struct Time
 	{
-		public:
-			static int frameCount;
-			static int deltaCycles;
-			static int gpuDeltaCycles;
-			static float time;
-			static float deltaTime;
-			static float gpuDeltaTime;
-
-		private:
-			Time();
+		size_t frameCount;
+		float time;
+		float deltaTime;
+		size_t deltaCycles;
 	};
+
+	float getFPS(Time time);
 }
 
 #endif

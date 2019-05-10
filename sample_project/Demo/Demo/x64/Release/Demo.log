@@ -1,7 +1,7 @@
-﻿Build started 4/27/2019 10:41:04 AM.
+﻿Build started 5/9/2019 10:31:16 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Build target(s)).
      1>Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
          x64\Release\Demo.obj
          x64\Release\Load.obj
          x64\Release\LogicSystem.obj
@@ -14,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.31
+Time Elapsed 00:00:02.07

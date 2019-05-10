@@ -5,8 +5,11 @@
 
 #include "Guid.h"
 #include "Asset.h"
+#include "Sphere.h"
 
-#include "../graphics/GraphicsHandle.h"
+#include "../glm/glm.hpp"
+#include "../glm/gtc/type_ptr.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
 
 namespace PhysicsEngine
 {
@@ -27,15 +30,12 @@ namespace PhysicsEngine
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 
-			// GLHandle meshVAO;
-			// GLHandle vertexVBO;
-			// GLHandle normalVBO;
-			// GLHandle texCoordVBO;
-
 		public:
 			Mesh();
 			Mesh(std::vector<char> data);
 			~Mesh();
+
+			Sphere getBoundingSphere() const;
 	};
 }
 
