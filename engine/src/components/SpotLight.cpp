@@ -18,6 +18,9 @@ SpotLight::SpotLight()
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
+
+	lightType = LightType::Spot;
+	shadowType = ShadowType::Hard;
 }
 
 SpotLight::SpotLight(std::vector<char> data)
@@ -39,6 +42,9 @@ SpotLight::SpotLight(std::vector<char> data)
 	diffuse = header->diffuse;
 	specular = header->specular;
 	projection = header->projection;
+
+	lightType = LightType::Spot;
+	shadowType = ShadowType::Hard;
 }
 
 SpotLight::~SpotLight()

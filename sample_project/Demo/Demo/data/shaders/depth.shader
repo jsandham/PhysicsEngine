@@ -1,7 +1,5 @@
 VERTEX:
 
-#version 330 core
-
 in vec3 position;
 
 uniform mat4 model;
@@ -16,8 +14,6 @@ void main()
 
 
 FRAGMENT:
-
-#version 330 core
 
 void main()
 {

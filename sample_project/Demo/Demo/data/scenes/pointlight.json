@@ -16,7 +16,17 @@
     "type" : "Camera",
     "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
     "position" : [0.0, 2.0, 0.0],
-    "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
+    "front" : [0.0, 0.0, -1.0],
+    "up" : [0.0, 1.0, 0.0],
+    "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
+    "x" : 0,
+    "y" : 0,
+    "width" : 1000,
+    "height" : 1000,
+    "fov" : 45.0,
+    "aspectRatio" : 1.0,
+    "near" : 0.1,
+    "far" : 250.0
   },
   "737fcfec-9518-43eb-b3a9-6047758dc5f8" : {
     "type" : "MeshRenderer",
@@ -68,7 +78,7 @@
   },
   "db3efe0b-ab34-4be6-a8e5-1c76e638a994" : {
     "type" : "Entity",
-    "components" : ["e0af7629-aff7-4b52-9306-aec11bd69fb5", "98cc0e3c-c9bc-4100-a9f0-6b8408edf114"]
+    "components" : ["e0af7629-aff7-4b52-9306-aec11bd69fb5", "98cc0e3c-c9bc-4100-a9f0-6b8408edf114", "a89f1ead-a7c5-469e-867c-3b74ba2af33b"]
   },
   "e0af7629-aff7-4b52-9306-aec11bd69fb5" : {
     "type" : "Transform",
@@ -85,7 +95,7 @@
     "material" : "843489ae-b5ff-4df3-a655-695101482a60",
     "isStatic" : false
   },
-  "59610923" : {
+  "a89f1ead-a7c5-469e-867c-3b74ba2af33b" : {
     "type" : "CapsuleCollider",
     "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
     "centre" : [0.0, 0.0, 0.0],

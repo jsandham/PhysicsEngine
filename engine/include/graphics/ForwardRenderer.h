@@ -8,6 +8,7 @@
 
 #include "../core/World.h"
 #include "../core/Guid.h"
+#include "../core/Input.h"
 
 #include "../components/MeshRenderer.h"
 
@@ -20,27 +21,33 @@
 
 namespace PhysicsEngine
 {
-	// where should this live? Graphics? GLState? 
-	// struct InternalMesh  //OpenGLMesh? InternalMesh? DynamicMesh? Maybe I should put this back in Mesh and just not use it when batching?
-	// {
-	// 	GLuint VAO;
-	// 	GLuint vertexVBO;
-	// 	GLuint normalVBO;
-	// 	GLuint texCoordVBO;
-	// };
-
 	class ForwardRenderer
 	{
 		private:
 			World* world;
 			Camera* camera;
 
-			// fbo
-			GLenum framebufferStatus;
+			// main fbo
 			GLuint fbo;
 			GLuint color;
 			GLuint depth;
 			Shader depthShader;
+
+			// directional light cascade shadow map data
+			GLuint shadowCascadeFBO[5];
+			GLuint shadowCascadeDepth[5];
+			float cascadeEnds[6];
+			glm::mat4 cascadeOrthoProj[5];
+			glm::mat4 cascadeLightView[5];
+
+			// spotlight shadow map data
+			GLuint shadowSpotlightFBO;
+			GLuint shadowSpotlightDepth;
+
+			// pointlight cubemap shadow map data
+			GLuint shadowCubemapFBO;
+			GLuint shadowCubemapDepth;
+			glm::mat4 cubeViewMatrices[6];
 
 			// quad
 			GLuint quadVAO;
@@ -50,13 +57,12 @@ namespace PhysicsEngine
 			BatchManager batchManager;
 			MeshBuffer meshBuffer;
 			std::vector<RenderObject> renderObjects;
-			//std::map<Guid, InternalMesh> meshIdToInternalMesh; 
 
 			// internal graphics state
 			GraphicsCameraState cameraState; 
-			GraphicsDirectionalLightState directionLightState; 
-			GraphicsSpotLightState spotLightState;
-			GraphicsPointLightState pointLightState;
+			GraphicsLightState lightState; 
+
+			// timing and debug
 			GraphicsQuery query;  
 			GraphicsDebug debug;
 
@@ -67,8 +73,7 @@ namespace PhysicsEngine
 			~ForwardRenderer();
 
 			void init(World* world);
-			void update();
-			void sort();
+			void update(Input input);
 			void add(MeshRenderer* meshRenderer);
 			void remove(MeshRenderer* meshRenderer);
 
@@ -76,22 +81,38 @@ namespace PhysicsEngine
 			GraphicsDebug getGraphicsDebug();
 
 		private:
-			void render();
+			void render(GLuint fbo, ShaderVariant variant); //renderScene?
+			void renderShadowMap(GLuint fbo, glm::mat4 lightView, glm::mat4 lightProjection);
 			void renderDebug(int view);
+
+			void beginFrame(Camera* camera, GLuint fbo);
+			void endFrame(GLuint tex);
+			void renderDirectionalLights();
+			void renderSpotLights();
+			void renderPointLights();
+
+			void createTextures();
+			void createShaderPrograms();
+			void createMeshBuffers();
+			void createMainFBO();
+			void createShadowMapFBOs();
+			void calcShadowmapCascades(float nearDist, float farDist);
+			void calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction);
+			void calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection);
+
+			//void renderTextureToScreen(GLuint tex); //could call endFrame()?
+
 
 
 
 			void initCameraUniformState();
-			void initDirectionalLightUniformState();
-			void initSpotLightUniformState();
-			void initPointLightUniformState();
+			void initLightUniformState();
 
-			void updateCameraUniformState();
-			void updateDirectionalLightUniformState(DirectionalLight* light);
-			void updateSpotLightUniformState(SpotLight* light);
-			void updatePointLightUniformState(PointLight* light);
 
-			void createShadowMapTextures();
+			void updateCameraUniformState(Camera* camera);
+			void updateLightUniformState(DirectionalLight* light);
+			void updateLightUniformState(SpotLight* light);
+			void updateLightUniformState(PointLight* light);
 	};
 }
 

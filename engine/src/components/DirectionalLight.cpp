@@ -12,6 +12,9 @@ DirectionalLight::DirectionalLight()
 	ambient = glm::vec3(0.4f, 0.4f, 0.4f);
 	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	lightType = LightType::Directional;
+	shadowType = ShadowType::Hard;
 }
 
 DirectionalLight::DirectionalLight(std::vector<char> data)
@@ -26,6 +29,9 @@ DirectionalLight::DirectionalLight(std::vector<char> data)
 	ambient = header->ambient;
 	diffuse = header->diffuse;
 	specular = header->specular;
+
+	lightType = LightType::Directional;
+	shadowType = ShadowType::Hard;
 }
 
 DirectionalLight::~DirectionalLight()

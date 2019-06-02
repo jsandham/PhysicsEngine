@@ -16,7 +16,17 @@
     "type" : "Camera",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "position" : [0.0, 2.0, 0.0],
-    "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
+    "front" : [0.0, 0.0, -1.0],
+    "up" : [0.0, 1.0, 0.0],
+    "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
+    "x" : 0,
+    "y" : 0,
+    "width" : 1000,
+    "height" : 1000,
+    "fov" : 45.0,
+    "aspectRatio" : 1.0,
+    "near" : 0.1,
+    "far" : 250.0
   },
   "c20642e8-8f88-4b87-990a-9659e2ded2a4" : {
     "type" : "MeshRenderer",

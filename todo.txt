@@ -15,3 +15,4 @@ TODO:
 - COMPLETE - add text debug information about number of drawcalls
 ------------ create raytracer renderer
 ------------ create deferred renderer
+------------ call all glDelete* methods 

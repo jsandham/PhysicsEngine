@@ -160,11 +160,13 @@ void BoidsSystem::update(Input input)
 		glBindBuffer(GL_ARRAY_BUFFER, deviceData[i].instanceModelVBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, deviceData[i].numBoids*sizeof(glm::mat4), deviceData[i].h_modelMatrices);
 
-		Graphics::use(deviceData[i].shader);
-		Graphics::setMat4(deviceData[i].shader, "projection", camera->getProjMatrix());
-		Graphics::setMat4(deviceData[i].shader, "view", camera->getViewMatrix());
+		Graphics::use(deviceData[i].shader, ShaderVariant::None);
+		Graphics::setMat4(deviceData[i].shader, ShaderVariant::None, "projection", camera->getProjMatrix());
+		Graphics::setMat4(deviceData[i].shader, ShaderVariant::None, "view", camera->getViewMatrix());
 
 		glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)deviceData[i].mesh->vertices.size() / 3, deviceData[i].numBoids);
+
+		glBindVertexArray(0);
 	}
 
 	GLenum error;

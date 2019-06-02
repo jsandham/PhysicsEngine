@@ -24,6 +24,20 @@ namespace PhysicsEngine
 		size_t fragmentShaderSize;
 	};
 #pragma pack(pop)
+
+	enum ShaderVariant
+	{
+		Directional,
+		Directional_Hard,
+		Directional_Soft,
+		Spot,
+		Spot_Hard,
+		Spot_Soft,
+		Point,
+		Point_Hard,
+		Point_Soft,
+		None
+	};
 	
 	class Shader : public Asset
 	{
@@ -40,6 +54,8 @@ namespace PhysicsEngine
 			static std::string normalMapFragmentShader;
 			static std::string depthMapVertexShader;
 			static std::string depthMapFragmentShader;
+			static std::string shadowDepthMapVertexShader;
+			static std::string shadowDepthMapFragmentShader;
 			static std::string overdrawVertexShader;
 			static std::string overdrawFragmentShader;
 			static std::string fontVertexShader;
@@ -55,7 +71,8 @@ namespace PhysicsEngine
 			std::string geometryShader;
 
 			bool programCompiled;
-			GraphicsHandle program;
+
+			GraphicsHandle programs[10]; // could call this variants??
 
 		public:
 			Shader();
@@ -64,16 +81,17 @@ namespace PhysicsEngine
 
 			bool isCompiled();
 			void compile();
+			void setUniformBlock(std::string blockName, int bindingPoint);
 
-			void setBool(std::string name, bool value);
-			void setInt(std::string name, int value);
-			void setFloat(std::string name, float value);
-			void setVec2(std::string name, glm::vec2 &vec);
-			void setVec3(std::string name, glm::vec3 &vec);
-			void setVec4(std::string name, glm::vec4 &vec);
-			void setMat2(std::string name, glm::mat2 &mat);
-			void setMat3(std::string name, glm::mat3 &mat);
-			void setMat4(std::string name, glm::mat4 &mat);
+			void setBool(std::string name, ShaderVariant variant, bool value);
+			void setInt(std::string name, ShaderVariant variant, int value);
+			void setFloat(std::string name, ShaderVariant variant, float value);
+			void setVec2(std::string name, ShaderVariant variant, glm::vec2 &vec);
+			void setVec3(std::string name, ShaderVariant variant, glm::vec3 &vec);
+			void setVec4(std::string name, ShaderVariant variant, glm::vec4 &vec);
+			void setMat2(std::string name, ShaderVariant variant, glm::mat2 &mat);
+			void setMat3(std::string name, ShaderVariant variant, glm::mat3 &mat);
+			void setMat4(std::string name, ShaderVariant variant, glm::mat4 &mat);
 	};
 }
 

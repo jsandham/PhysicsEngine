@@ -84,10 +84,7 @@ void DeferredRenderer::init(World* world)
 										   "PointLightBlock"};
 
 			for(int i = 0; i < 4; i++){
-				GLuint blockIndex = glGetUniformBlockIndex(shader->program.handle, uniformBlocks[i].c_str()); 
-				if (blockIndex != GL_INVALID_INDEX){
-					glUniformBlockBinding(shader->program.handle, blockIndex, i);
-				}
+				shader->setUniformBlock(uniformBlocks[i], i);
 			}
 		}
 	}
@@ -145,8 +142,8 @@ void DeferredRenderer::init(World* world)
 		return;
 	}
 
-	int width = camera->width;
-	int height = camera->height;
+	int width = camera->viewport.width;
+	int height = camera->viewport.height;
 
 	// generate G-Buffer
 	glGenFramebuffers(1, &gbuffer.handle);
@@ -225,11 +222,9 @@ void DeferredRenderer::update(Input input)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(meshBuffer.vao);
-
-	Graphics::use(&gbuffer.shader);
-	gbuffer.shader.setMat4("projection", projection);
-	gbuffer.shader.setMat4("view", view);
+	Graphics::use(&gbuffer.shader, ShaderVariant::None);
+	gbuffer.shader.setMat4("projection", ShaderVariant::None, projection);
+	gbuffer.shader.setMat4("view", ShaderVariant::None, view);
 
 	std::cout << "number of render objects: " << renderObjects.size() << std::endl;
 
@@ -239,16 +234,20 @@ void DeferredRenderer::update(Input input)
 		renderObjects[i].model = transform->getModelMatrix();
 	}
 
+	glBindVertexArray(meshBuffer.vao);
+
 	for(size_t i = 0; i < renderObjects.size(); i++){
 		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
 
-		gbuffer.shader.setMat4("model", renderObjects[i].model);
+		gbuffer.shader.setMat4("model", ShaderVariant::None, renderObjects[i].model);
 
 		GLsizei numVertices = renderObjects[i].size / 3;
 		GLint startIndex = renderObjects[i].start / 3;
 
 		glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
 	}
+
+	glBindVertexArray(0);
 
 	// if(getKeyDown(input, KeyCode::X)){
 	// 	std::cout << "XXXXXXXXXXXXXX" << std::endl;

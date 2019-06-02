@@ -405,10 +405,28 @@ int serializeScenes(std::string projectDirectory)
 			data.position.y = (float)it->second["position"][1].ToFloat();
 			data.position.z = (float)it->second["position"][2].ToFloat();
 
+			data.front.x = (float)it->second["front"][0].ToFloat();
+			data.front.y = (float)it->second["front"][1].ToFloat();
+			data.front.z = (float)it->second["front"][2].ToFloat();
+
+			data.up.x = (float)it->second["up"][0].ToFloat();
+			data.up.y = (float)it->second["up"][1].ToFloat();
+			data.up.z = (float)it->second["up"][2].ToFloat();
+
 			data.backgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
 			data.backgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
 			data.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
 			data.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
+
+			data.x = (int)it->second["x"].ToInt();
+			data.y = (int)it->second["y"].ToInt();
+			data.width = (int)it->second["width"].ToInt();
+			data.height = (int)it->second["height"].ToInt();
+
+			data.fov = (float)it->second["fov"].ToFloat();
+			data.aspectRatio = (float)it->second["aspectRatio"].ToFloat();
+			data.nearPlane = (float)it->second["near"].ToFloat();
+			data.farPlane = (float)it->second["far"].ToFloat();
 
 			int type = 2;
 			char classification = 'c';

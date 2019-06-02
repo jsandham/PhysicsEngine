@@ -86,7 +86,7 @@ namespace PhysicsEngine
 
 			T* get(size_t index) const
 			{
-				if (index >= getCount()) { return NULL; }
+				if (index < 0 || index >= getCount()) { return NULL; }
 
 				size_t poolIndex = index / T_per_page;
 				return pools[poolIndex] + (index % T_per_page);

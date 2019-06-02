@@ -111,8 +111,8 @@ void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		Graphics::render(world, &colliderBuffer.shader, glm::mat4(1.0f), colliderBuffer.VAO, GL_LINES, (GLsizei)colliderBuffer.size / 3, NULL);
-		Graphics::render(world, &buffer.shader, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
+		Graphics::render(world, &colliderBuffer.shader, ShaderVariant::None, glm::mat4(1.0f), colliderBuffer.VAO, GL_LINES, (GLsizei)colliderBuffer.size / 3, NULL);
+		Graphics::render(world, &buffer.shader, ShaderVariant::None, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
 	}
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -129,10 +129,10 @@ void DebugRenderer::update(Input input, GraphicsDebug debug, GraphicsQuery query
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	if(windowTexture != NULL){
-		Graphics::render(world, &window.shader, windowTexture, glm::mat4(1.0f), window.VAO, 6, NULL);
+		Graphics::render(world, &window.shader, ShaderVariant::None, windowTexture, glm::mat4(1.0f), window.VAO, 6, NULL);
 	}
 
-	Graphics::render(world, &graph.shader, glm::mat4(1.0f), graph.VAO, GL_TRIANGLES, 6*(graph.numberOfSamples - 1), NULL);
+	Graphics::render(world, &graph.shader, ShaderVariant::None, glm::mat4(1.0f), graph.VAO, GL_TRIANGLES, 6*(graph.numberOfSamples - 1), NULL);
 
 	Graphics::checkError();
 }

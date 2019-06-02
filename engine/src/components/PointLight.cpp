@@ -15,6 +15,9 @@ PointLight::PointLight()
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	projection = glm::perspective(glm::radians(90.0f), 1.0f * 1080 / 1080, 0.1f, 25.0f);
+
+	lightType = LightType::Point;
+	shadowType = ShadowType::Hard;
 }
 
 PointLight::PointLight(std::vector<char> data)
@@ -33,6 +36,9 @@ PointLight::PointLight(std::vector<char> data)
 	diffuse = header->diffuse;
 	specular = header->specular;
 	projection = header->projection;
+
+	lightType = LightType::Point;
+	shadowType = ShadowType::Hard;
 }
 
 PointLight::~PointLight()

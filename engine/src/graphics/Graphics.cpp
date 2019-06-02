@@ -322,29 +322,72 @@ void Graphics::checkError()
 		std::string errorStr;
 		switch( error ) {
 			case GL_INVALID_ENUM:
-				errorStr = "GL_INVALID_ENUM";
+				errorStr = "Error: An unacceptable value is specified for an enumerated argument";
 				break;
 			case GL_INVALID_VALUE:
-				errorStr = "GL_INVALID_VALUE";
+				errorStr = "Error: A numeric argument is out of range";
 				break;
 			case GL_INVALID_OPERATION:
-				errorStr = "GL_INVALID_OPERATION";
+				errorStr = "Error: The specified operation is not allowed in the current state";
 				break;
-			case GL_STACK_OVERFLOW:
-				errorStr = "GL_STACK_OVERFLOW";
-				break;
-			case GL_STACK_UNDERFLOW:
-				errorStr = "GL_STACK_UNDERFLOW";
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				errorStr = "Error: The framebuffer object is not complete";
 				break;
 			case GL_OUT_OF_MEMORY:
-				errorStr = "GL_OUT_OF_MEMORY";
+				errorStr = "Error: There is not enough money left to execute the command";
+				break;
+			case GL_STACK_UNDERFLOW:
+				errorStr = "Error: An attempt has been made to perform an operation that would cause an internal stack to underflow";
+				break;
+			case GL_STACK_OVERFLOW:
+				errorStr = "Error: An attempt has been made to perform an operation that would cause an internal stack to overflow";
 				break;
 			default:
-				errorStr = "UNKNOWN ERROR";
+				errorStr = "Error: Unknown error";
 				break;
 		}
 
-		std::cout << "Error: Renderer failed with error code: " << errorStr << " (" << error << ")" << std::endl;;
+		std::cout << errorStr << " (" << error << ")" << std::endl;
+	}
+}
+
+void Graphics::checkFrambufferError()
+{
+	GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE){
+		std::string errorStr;
+		switch(framebufferStatus)
+		{
+			case GL_FRAMEBUFFER_UNDEFINED:
+				errorStr = "Error: The current FBO binding is 0 but no default framebuffer exists";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+				errorStr = "Error: One of the buffers enabled for rendering is incomplete";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+				errorStr = "Error: No buffers are attached to the FBO and it is not configured for rendering without attachments";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+				errorStr = "Error: Not all attachments enabled via glDrawBuffers exists in framebuffer";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+				errorStr = "Error: Not all buffers specified via glReadBuffer exists in framebuffer";
+				break;
+			case GL_FRAMEBUFFER_UNSUPPORTED:
+				errorStr = "Error: The combination of internal buffer formats is unsupported";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+				errorStr = "Error: The number of samples for each attachment is not the same";
+				break;
+			case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+				errorStr = "Error: Not all color attachments are layered textures or bound to the same target";
+				break;
+			default:
+				errorStr = "Error: Unknown framebuffer status error";
+				break;
+		}
+
+		std::cout << errorStr << " (" << framebufferStatus << ")" << std::endl;
 	}
 }
 
@@ -818,87 +861,111 @@ void Graphics::apply(Cubemap* cubemap)
 
 void Graphics::compile(Shader* shader)
 {
-	const GLchar* vertexShader = shader->vertexShader.c_str();
-	const GLchar* geometryShader = shader->geometryShader.c_str();
-	const GLchar* fragmentShader = shader->fragmentShader.c_str();
+	std::string version = "#version 330 core\n";
 
-	GLuint vertexShaderObj = 0;
-	GLuint fragmentShaderObj = 0;
-	GLuint geometryShaderObj = 0;
-	GLchar infoLog[512];
+	// Note: Ordering must match shader variants enum
+	std::string defines[] = {"#define DIRECTIONALLIGHT\n #define NOSHADOWS\n",
+							 "#define DIRECTIONALLIGHT\n #define HARDSHADOWS\n",
+							 "#define DIRECTIONALLIGHT\n #define SOFTSHADOWS\n", 
+							 "#define SPOTLIGHT\n #define NOSHADOWS\n",
+							 "#define SPOTLIGHT\n #define HARDSHADOWS\n",
+							 "#define SPOTLIGHT\n #define SOFTSHADOWS\n",
+							 "#define POINTLIGHT\n #define NOSHADOWS\n",
+							 "#define POINTLIGHT\n #define HARDSHADOWS\n",
+							 "#define POINTLIGHT\n #define SOFTSHADOWS\n",
+							 "#define NOLIGHT\n #define NOSHADOWS\n",
+							};
+
+	// compile shader for each light type
 	GLint success = 0;
+	for(int i = 0; i < 10; i++){
+		std::string preProcessedVertexShader = version + defines[i] + shader->vertexShader;
+		std::string preProcessedGeometryShader = version + defines[i] + shader->geometryShader;
+		std::string preProcessedFragmentShader = version + defines[i] + shader->fragmentShader;
 
-	// vertex shader
-	vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShaderObj, 1, &vertexShader, NULL);
-	glCompileShader(vertexShaderObj);
-	glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-	    glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
-	    std::cout << "Shader: Vertex shader compilation failed" << std::endl;
-	    std::cout << vertexShader << std::endl;
-	    return;
-	}
+		const GLchar* vertexShader = preProcessedVertexShader.c_str();
+		const GLchar* geometryShader = preProcessedGeometryShader.c_str();
+		const GLchar* fragmentShader = preProcessedFragmentShader.c_str();
 
-	// fragment shader
-	fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShaderObj, 1, &fragmentShader, NULL);
-	glCompileShader(fragmentShaderObj);
-	glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-	    glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
-	    std::cout << "Shader: Fragment shader compilation failed" << std::endl;
-	    return;
-	}
+		GLuint vertexShaderObj = 0;
+		GLuint fragmentShaderObj = 0;
+		GLuint geometryShaderObj = 0;
+		GLchar infoLog[512];
 
-	// geometry shader
-	if (!shader->geometryShader.empty()){
-		geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
-		glShaderSource(geometryShaderObj, 1, &geometryShader, NULL);
-		glCompileShader(geometryShaderObj);
-		glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &success);
+		// vertex shader
+		vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShaderObj, 1, &vertexShader, NULL);
+		glCompileShader(vertexShaderObj);
+		glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
-			glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
-			std::cout << "Shader: Geometry shader compilation failed" << std::endl;
-			return;
+		    glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
+		    std::cout << "Shader: Vertex shader compilation failed" << std::endl;
+		    std::cout << vertexShader << std::endl;
+		    return;
 		}
-	}
 
-	// shader program
-	shader->program.handle = glCreateProgram();
-	glAttachShader(shader->program.handle, vertexShaderObj);
-	glAttachShader(shader->program.handle, fragmentShaderObj);
-	if (geometryShaderObj != 0){
-		glAttachShader(shader->program.handle, geometryShaderObj);
-	}
+		// fragment shader
+		fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShaderObj, 1, &fragmentShader, NULL);
+		glCompileShader(fragmentShaderObj);
+		glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+		    glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
+		    std::cout << "Shader: Fragment shader compilation failed" << std::endl;
+		    return;
+		}
 
-	glLinkProgram(shader->program.handle);
-	glGetProgramiv(shader->program.handle, GL_LINK_STATUS, &success);
-	if (!success) {
-	    glGetProgramInfoLog(shader->program.handle, 512, NULL, infoLog);
-	    std::cout << "Shader: Shader program linking failed" << std::endl;
-	    return;
-	}
-	glDeleteShader(vertexShaderObj);
-	glDeleteShader(fragmentShaderObj);
-	if (!shader->geometryShader.empty()){
-		glDeleteShader(geometryShaderObj);
+		// geometry shader
+		if (!shader->geometryShader.empty()){
+			geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometryShaderObj, 1, &geometryShader, NULL);
+			glCompileShader(geometryShaderObj);
+			glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
+				std::cout << "Shader: Geometry shader compilation failed" << std::endl;
+				return;
+			}
+		}
+
+		// shader program
+		shader->programs[i].handle = glCreateProgram();
+		glAttachShader(shader->programs[i].handle, vertexShaderObj);
+		glAttachShader(shader->programs[i].handle, fragmentShaderObj);
+		if (geometryShaderObj != 0){
+			glAttachShader(shader->programs[i].handle, geometryShaderObj);
+		}
+
+		glLinkProgram(shader->programs[i].handle);
+		glGetProgramiv(shader->programs[i].handle, GL_LINK_STATUS, &success);
+		if (!success) {
+		    glGetProgramInfoLog(shader->programs[i].handle, 512, NULL, infoLog);
+		    std::cout << "Shader: Shader program linking failed" << std::endl;
+		    return;
+		}
+		glDeleteShader(vertexShaderObj);
+		glDeleteShader(fragmentShaderObj);
+		if (!shader->geometryShader.empty()){
+			glDeleteShader(geometryShaderObj);
+		}
 	}
 
 	shader->programCompiled = (success != 0);
 }
 
-void Graphics::use(Shader* shader)
+void Graphics::use(Shader* shader, ShaderVariant variant)
 {
 	if(!shader->isCompiled()){
 		std::cout << "Error: Must compile shader before using" << std::endl;
 		return;
 	}
 
-	glUseProgram(shader->program.handle);
+	// glUseProgram(shader->programs[(int)lightType].handle);
+
+	Graphics::use(shader->programs[(int)variant].handle);
 }
 
 void Graphics::unuse(Shader* shader)
@@ -906,79 +973,186 @@ void Graphics::unuse(Shader* shader)
 	glUseProgram(0);
 }
 
-void Graphics::setBool(Shader* shader, std::string name, bool value)
+void Graphics::setUniformBlock(Shader* shader, std::string blockName, int bindingPoint)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	//set uniform block on all shader programs
+	for(int i = 0; i < 10; i++){
+		GLuint blockIndex = glGetUniformBlockIndex(shader->programs[i].handle, blockName.c_str()); 
+		if (blockIndex != GL_INVALID_INDEX){
+			glUniformBlockBinding(shader->programs[i].handle, blockIndex, bindingPoint);
+		}
+	}
+}
+
+void Graphics::setBool(Shader* shader, ShaderVariant variant, std::string name, bool value)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform1i(locationIndex, (int)value);
+	// }
+
+	Graphics::setBool(shader->programs[(int)variant].handle, name, value);
+}
+
+void Graphics::setInt(Shader* shader, ShaderVariant variant, std::string name, int value)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform1i(locationIndex, (int)value);
+	// }
+
+	Graphics::setInt(shader->programs[(int)variant].handle, name, value);
+}
+
+void Graphics::setFloat(Shader* shader, ShaderVariant variant, std::string name, float value)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform1f(locationIndex, value);
+	// }
+
+	Graphics::setFloat(shader->programs[(int)variant].handle, name, value);
+}
+
+void Graphics::setVec2(Shader* shader, ShaderVariant variant, std::string name, glm::vec2 vec)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform2fv(locationIndex, 1, &vec[0]);
+	// }
+
+	Graphics::setVec2(shader->programs[(int)variant].handle, name, vec);
+}
+
+void Graphics::setVec3(Shader* shader, ShaderVariant variant, std::string name, glm::vec3 vec)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform3fv(locationIndex, 1, &vec[0]);
+	// }
+
+	Graphics::setVec3(shader->programs[(int)variant].handle, name, vec);
+}
+
+void Graphics::setVec4(Shader* shader, ShaderVariant variant, std::string name, glm::vec4 vec)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniform4fv(locationIndex, 1, &vec[0]);
+	// }
+
+	Graphics::setVec4(shader->programs[(int)variant].handle, name, vec);
+}
+
+void Graphics::setMat2(Shader* shader, ShaderVariant variant, std::string name, glm::mat2 mat)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniformMatrix2fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+	// }
+
+	Graphics::setMat2(shader->programs[(int)variant].handle, name, mat);
+}
+
+void Graphics::setMat3(Shader* shader, ShaderVariant variant, std::string name, glm::mat3 mat)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniformMatrix3fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+	// }
+
+	Graphics::setMat3(shader->programs[(int)variant].handle, name, mat);
+}
+
+void Graphics::setMat4(Shader* shader, ShaderVariant variant, std::string name, glm::mat4 mat)
+{
+	// GLint locationIndex = glGetUniformLocation(shader->programs[(int)lightType].handle, name.c_str());
+	// if (locationIndex != -1){
+	// 	glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+	// }
+
+	Graphics::setMat4(shader->programs[(int)variant].handle, name, mat);
+}
+
+
+
+
+
+void Graphics::use(GLuint shaderProgram)
+{
+	 glUseProgram(shaderProgram);
+}
+
+void Graphics::setBool(GLuint shaderProgram, std::string name, bool value)
+{
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform1i(locationIndex, (int)value);
 	}
 }
 
-void Graphics::setInt(Shader* shader, std::string name, int value)
+void Graphics::setInt(GLuint shaderProgram, std::string name, int value)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform1i(locationIndex, (int)value);
 	}
 }
 
-void Graphics::setFloat(Shader* shader, std::string name, float value)
+void Graphics::setFloat(GLuint shaderProgram, std::string name, float value)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform1f(locationIndex, value);
 	}
 }
 
-void Graphics::setVec2(Shader* shader, std::string name, glm::vec2 &vec)
+void Graphics::setVec2(GLuint shaderProgram, std::string name, glm::vec2 vec)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform2fv(locationIndex, 1, &vec[0]);
 	}
 }
 
-void Graphics::setVec3(Shader* shader, std::string name, glm::vec3 &vec)
+void Graphics::setVec3(GLuint shaderProgram, std::string name, glm::vec3 vec)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform3fv(locationIndex, 1, &vec[0]);
 	}
 }
 
-void Graphics::setVec4(Shader* shader, std::string name, glm::vec4 &vec)
+void Graphics::setVec4(GLuint shaderProgram, std::string name, glm::vec4 vec)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniform4fv(locationIndex, 1, &vec[0]);
 	}
 }
 
-void Graphics::setMat2(Shader* shader, std::string name, glm::mat2 &mat)
+void Graphics::setMat2(GLuint shaderProgram, std::string name, glm::mat2 mat)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniformMatrix2fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
-void Graphics::setMat3(Shader* shader, std::string name, glm::mat3 &mat)
+void Graphics::setMat3(GLuint shaderProgram, std::string name, glm::mat3 mat)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniformMatrix3fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
-void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
+void Graphics::setMat4(GLuint shaderProgram, std::string name, glm::mat4 mat)
 {
-	GLint locationIndex = glGetUniformLocation(shader->program.handle, name.c_str());
+	GLint locationIndex = glGetUniformLocation(shaderProgram, name.c_str());
 	if (locationIndex != -1){
 		glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 	}
-	// else{
-	// 	std::cout << "Error: set mat4 name: " << name << " location index: " << locationIndex << std::endl;
-	// }
 }
 
 // void Graphics::setUniformBlockToBindingPoint(Shader* shader, std::string blockName, unsigned int bindingPoint)
@@ -1600,14 +1774,14 @@ void Graphics::setMat4(Shader* shader, std::string name, glm::mat4 &mat)
 // }
 
 
-void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query) 
+void Graphics::render(World* world, Material* material, ShaderVariant variant, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query) 
 {
-	Shader* shader = world->getAsset<Shader>(material->shaderId);
-
 	if(material == NULL){
 		std::cout << "Material is NULL" << std::endl;
 		return;
 	}
+
+	Shader* shader = world->getAsset<Shader>(material->shaderId);
 
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -1619,16 +1793,16 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 		return;
 	}
 
-	Graphics::use(shader);
-	Graphics::setMat4(shader, "model", model);
-	Graphics::setFloat(shader, "material.shininess", material->shininess);
-	Graphics::setVec3(shader, "material.ambient", material->ambient);
-	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
-	Graphics::setVec3(shader, "material.specular", material->specular);
+	Graphics::use(shader, variant);
+	Graphics::setMat4(shader, variant, "model", model);
+	Graphics::setFloat(shader, variant, "material.shininess", material->shininess);
+	Graphics::setVec3(shader, variant, "material.ambient", material->ambient);
+	Graphics::setVec3(shader, variant, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shader, variant, "material.specular", material->specular);
 
 	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
 	if(mainTexture != NULL){
-		Graphics::setInt(shader, "material.mainTexture", 0);
+		Graphics::setInt(shader, variant, "material.mainTexture", 0);
 
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
@@ -1637,7 +1811,7 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
 	if(normalMap != NULL){
 
-		Graphics::setInt(shader, "material.normalMap", 1);
+		Graphics::setInt(shader, variant, "material.normalMap", 1);
 
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
@@ -1646,7 +1820,7 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
 	if(specularMap != NULL){
 
-		Graphics::setInt(shader, "material.specularMap", 2);
+		Graphics::setInt(shader, variant, "material.specularMap", 2);
 
 		glActiveTexture(GL_TEXTURE0 + 2);
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
@@ -1680,13 +1854,10 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, GLuint 
 		query->tris += numVertices / 3;
 	}
 
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
-	}
+	Graphics::checkError();
 }
 
-void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
+void Graphics::render(World* world, Shader* shader, ShaderVariant variant, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
 {
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -1698,11 +1869,11 @@ void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat
 		return;
 	}
 
-	Graphics::use(shader);
-	Graphics::setMat4(shader, "model", model);
+	Graphics::use(shader, variant);
+	Graphics::setMat4(shader, variant, "model", model);
 
 	if(texture != NULL){
-		Graphics::setInt(shader, "texture0", 0);
+		Graphics::setInt(shader, variant, "texture0", 0);
 
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
@@ -1736,13 +1907,10 @@ void Graphics::render(World* world, Shader* shader, Texture2D* texture, glm::mat
 		query->tris += numVertices / 3;
 	}
 
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
-	}
+	Graphics::checkError();
 }
 
-void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query)
+void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query)
 {
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -1754,8 +1922,8 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao,
 		return;
 	}
 
-	Graphics::use(shader);
-	Graphics::setMat4(shader, "model", model);
+	Graphics::use(shader, variant);
+	Graphics::setMat4(shader, variant, "model", model);
 
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
@@ -1793,10 +1961,7 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, GLuint vao,
 		}
 	}
 
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
-	}
+	Graphics::checkError();
 }
 
 void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
@@ -1806,11 +1971,11 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 		return;
 	}
 
-	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->width, 0.0f, (float)camera->height);
+	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->viewport.width, 0.0f, (float)camera->viewport.height);
 
-	Graphics::use(&font->shader);
-	Graphics::setMat4(&font->shader, "projection", ortho);
-	Graphics::setVec3(&font->shader, "textColor", color);
+	Graphics::use(&font->shader, ShaderVariant::None);
+	Graphics::setMat4(&font->shader, ShaderVariant::None, "projection", ortho);
+	Graphics::setVec3(&font->shader, ShaderVariant::None, "textColor", color);
 
 	glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(font->vao.handle);
@@ -1848,9 +2013,11 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
     glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+
+    Graphics::checkError();
 }
 
 
@@ -1864,64 +2031,139 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 
 
 
-void Graphics::render(World* world, Material* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+// void Graphics::render(World* world, Material* material, LightType lightType, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+// {
+// 	if(material == NULL){
+// 		std::cout << "Material is NULL" << std::endl;
+// 		return;
+// 	}
+
+// 	Shader* shader = world->getAsset<Shader>(material->shaderId);
+
+// 	if(shader == NULL){
+// 		std::cout << "Shader is NULL" << std::endl;
+// 		return;
+// 	}
+
+// 	if(!shader->isCompiled()){
+// 		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+// 		return;
+// 	}
+
+// 	Graphics::use(shader, lightType);
+// 	Graphics::setMat4(shader, lightType, "model", model);
+// 	Graphics::setFloat(shader, lightType, "material.shininess", material->shininess);
+// 	Graphics::setVec3(shader, lightType, "material.ambient", material->ambient);
+// 	Graphics::setVec3(shader, lightType, "material.diffuse", material->diffuse);
+// 	Graphics::setVec3(shader, lightType, "material.specular", material->specular);
+
+// 	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
+// 	if(mainTexture != NULL){
+// 		Graphics::setInt(shader, lightType, "material.mainTexture", 0);
+
+// 		glActiveTexture(GL_TEXTURE0 + 0);
+// 		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
+// 	}
+
+// 	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
+// 	if(normalMap != NULL){
+
+// 		Graphics::setInt(shader, lightType, "material.normalMap", 1);
+
+// 		glActiveTexture(GL_TEXTURE0 + 1);
+// 		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
+// 	}
+
+// 	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+// 	if(specularMap != NULL){
+
+// 		Graphics::setInt(shader, lightType, "material.specularMap", 2);
+
+// 		glActiveTexture(GL_TEXTURE0 + 2);
+// 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
+// 	}
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = size / 3;
+// 	GLint startIndex = start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+
+void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query)
 {
-	Shader* shader = world->getAsset<Shader>(material->shaderId);
+	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
 
-	if(material == NULL){
-		std::cout << "Material is NULL" << std::endl;
-		return;
-	}
+	GLuint shaderProgram = renderObject.shaders[(int)variant];
 
-	if(shader == NULL){
-		std::cout << "Shader is NULL" << std::endl;
-		return;
-	}
+	Graphics::use(shaderProgram);
+	Graphics::setMat4(shaderProgram, "model", renderObject.model);
+	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
 
-	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
-		return;
-	}
-
-	Graphics::use(shader);
-	Graphics::setMat4(shader, "model", model);
-	Graphics::setFloat(shader, "material.shininess", material->shininess);
-	Graphics::setVec3(shader, "material.ambient", material->ambient);
-	Graphics::setVec3(shader, "material.diffuse", material->diffuse);
-	Graphics::setVec3(shader, "material.specular", material->specular);
-
-	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-	if(mainTexture != NULL){
-		Graphics::setInt(shader, "material.mainTexture", 0);
+	if(renderObject.mainTexture != -1){
+		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
 
 		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
 	}
 
-	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-	if(normalMap != NULL){
-
-		Graphics::setInt(shader, "material.normalMap", 1);
+	if(renderObject.normalMap != -1){
+		Graphics::setInt(shaderProgram, "material.normalMap", 1);
 
 		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
 	}
 
-	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
-	if(specularMap != NULL){
-
-		Graphics::setInt(shader, "material.specularMap", 2);
+	if(renderObject.specularMap != -1){
+		Graphics::setInt(shaderProgram, "material.specularMap", 2);
 
 		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
 	}
+
+	// for(int i = 0; i < 5; i++){
+	// 	if(renderObject.shadowMap[i] != -1){
+	// 		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
+
+	// 		glActiveTexture(GL_TEXTURE0 + 3 + i);
+	// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.shadowMap[i]);
+	// 	}
+	// }
 
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
-	GLsizei numVertices = size / 3;
-	GLint startIndex = start / 3;
+	GLsizei numVertices = renderObject.size / 3;
+	GLint startIndex = renderObject.start / 3;
 
 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
 
@@ -1945,27 +2187,88 @@ void Graphics::render(World* world, Material* material, glm::mat4 model, int sta
 		query->tris += numVertices / 3;
 	}
 
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	Graphics::checkError();
+}
+
+void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query)
+{
+	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
+
+	GLuint shaderProgram = renderObject.shaders[(int)variant];
+
+	Graphics::use(shaderProgram);
+	Graphics::setMat4(shaderProgram, "model", renderObject.model);
+	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
+
+	if(renderObject.mainTexture != -1){
+		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
 	}
+
+	if(renderObject.normalMap != -1){
+		Graphics::setInt(shaderProgram, "material.normalMap", 1);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
+	}
+
+	if(renderObject.specularMap != -1){
+		Graphics::setInt(shaderProgram, "material.specularMap", 2);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
+	}
+
+	for(int i = 0; i < shadowMapCount; i++){
+		//std::cout << "shadowMap[" + std::to_string(i) + "]: " << 3 + i << std::endl;
+		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
+
+		glActiveTexture(GL_TEXTURE0 + 3 + i);
+		glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
+	}
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	}
+
+	GLsizei numVertices = renderObject.size / 3;
+	GLint startIndex = renderObject.start / 3;
+
+	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime; // in nanoseconds
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
+		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
+	}
+
+	Graphics::checkError();
 }
 
 
-void Graphics::render(World* world, Shader* shader, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
 {
-	if(shader == NULL){
-		std::cout << "Shader is NULL" << std::endl;
-		return;
-	}
-
-	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
-		return;
-	}
-
-	Graphics::use(shader);
-	Graphics::setMat4(shader, "model", model);
+	Graphics::use(shader, variant);
+	Graphics::setMat4(shader, variant, "model", model);
 
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
@@ -1996,8 +2299,44 @@ void Graphics::render(World* world, Shader* shader, glm::mat4 model, int start, 
 		query->tris += numVertices / 3;
 	}
 
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
+	Graphics::checkError();
+}
+
+void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query)
+{
+	Graphics::use(shader, variant);
+	Graphics::setMat4(shader, variant, "model", model);
+	Graphics::setMat4(shader, variant, "view", view);
+	Graphics::setMat4(shader, variant, "projection", projection);
+
+	if(world->debug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
+
+	GLsizei numVertices = size / 3;
+	GLint startIndex = start / 3;
+
+	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+	if(world->debug && query != NULL){
+		glEndQuery(GL_TIME_ELAPSED);
+
+		GLint done = 0;
+	    while (!done) {
+		    glGetQueryObjectiv(query->queryId, 
+		            GL_QUERY_RESULT_AVAILABLE, 
+		            &done);
+		}
+
+		// get the query result
+		GLuint64 elapsedTime; // in nanoseconds
+		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+		query->totalElapsedTime += elapsedTime / 1000000.0f;
+		query->numDrawCalls++;
+		query->verts += numVertices;
+		query->tris += numVertices / 3;
+	}
+
+	Graphics::checkError();
 }

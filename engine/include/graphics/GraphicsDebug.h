@@ -8,14 +8,6 @@
 
 namespace PhysicsEngine
 {
-	// typedef enum DebugView
-	// {
-	// 	DepthView,
-	// 	NormalsView,
-	// 	OverdrawView,
-	// 	CollidersView
-	// }DebugView;
-
 	typedef struct GraphicsDebug
 	{
 		Framebuffer fbo[4];

@@ -8,7 +8,7 @@
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 
-#include "Component.h"
+#include "Light.h"
 
 namespace PhysicsEngine
 {
@@ -31,7 +31,7 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
-	class SpotLight : public Component
+	class SpotLight : public Light
 	{
 		public:
 			float constant;

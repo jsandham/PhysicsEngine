@@ -1,7 +1,5 @@
 VERTEX:
 
-#version 330 core
-
 layout (std140) uniform CameraBlock
 {
 	mat4 projection;
@@ -22,8 +20,6 @@ void main()
 
 
 FRAGMENT:
-
-#version 330 core
 
 in float z;
 out vec4 FragColor;

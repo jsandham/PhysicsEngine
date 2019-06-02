@@ -7,7 +7,7 @@
 
 #include "../glm/glm.hpp"
 
-#include "Component.h"
+#include "Light.h"
 
 namespace PhysicsEngine
 {
@@ -23,7 +23,7 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
-	class DirectionalLight : public Component
+	class DirectionalLight : public Light
 	{
 		public:
 			glm::vec3 direction;

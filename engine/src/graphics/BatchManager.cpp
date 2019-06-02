@@ -65,7 +65,7 @@ void BatchManager::add(Material* material, Mesh* mesh, glm::mat4 model)
 	}
 }
 
-void BatchManager::render(World* world, GraphicsQuery* query)
+void BatchManager::render(World* world, ShaderVariant variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
@@ -80,12 +80,12 @@ void BatchManager::render(World* world, GraphicsQuery* query)
 
 			Material* material = world->getAsset<Material>(materialId);
 
-			Graphics::render(world, material, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
+			Graphics::render(world, material, variant, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
 		}
 	}
 }
 
-void BatchManager::render(World* world, Material* material, GraphicsQuery* query)
+void BatchManager::render(World* world, Material* material, ShaderVariant variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
@@ -96,12 +96,12 @@ void BatchManager::render(World* world, Material* material, GraphicsQuery* query
 		}
 
 		for(size_t i = 0; i < batches.size(); i++){
-			Graphics::render(world, material, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
+			Graphics::render(world, material, variant, glm::mat4( 1.0 ), batches[i].VAO, batches[i].currentNumOfVertices, query);
 		}
 	}
 }
 
-void BatchManager::render(World* world, Shader* shader, GraphicsQuery* query)
+void BatchManager::render(World* world, Shader* shader, ShaderVariant variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
@@ -112,7 +112,7 @@ void BatchManager::render(World* world, Shader* shader, GraphicsQuery* query)
 		}
 
 		for(size_t i = 0; i < batches.size(); i++){
-			Graphics::render(world, shader, glm::mat4( 1.0 ), batches[i].VAO, GL_TRIANGLES, batches[i].currentNumOfVertices, query);
+			Graphics::render(world, shader, variant, glm::mat4( 1.0 ), batches[i].VAO, GL_TRIANGLES, batches[i].currentNumOfVertices, query);
 		}
 	}
 }

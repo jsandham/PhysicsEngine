@@ -399,8 +399,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
 		CW_USEDEFAULT, 
 		CW_USEDEFAULT, 
-		1000, 
-		1000, 
+		1024, 
+		1024, 
 		0, 
 		0, 
 		hInstance, 
@@ -417,7 +417,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Scene scene;
 	AssetBundle assetBundle;
 
-	scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\colliders.scene";
+	scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
 	assetBundle.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\bundle.assets";
 
 	WorldManager worldManager(scene, assetBundle);

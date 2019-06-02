@@ -16,7 +16,17 @@
     "type" : "Camera",
     "entity" : "0720d51a-7596-427d-a3cc-8821d4bf6f17",
     "position" : [0.0, 2.0, 0.0],
-    "backgroundColor" : [0.15, 0.15, 0.15, 1.0]
+    "front" : [0.0, 0.0, -1.0],
+    "up" : [0.0, 1.0, 0.0],
+    "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
+    "x" : 0,
+    "y" : 0,
+    "width" : 1000,
+    "height" : 1000,
+    "fov" : 45.0,
+    "aspectRatio" : 1.0,
+    "near" : 0.1,
+    "far" : 250.0
   },
   "cd71bb2c-3b2e-4d06-a4cb-584afc7ecbe0" : {
     "type" : "MeshRenderer",
@@ -28,7 +38,7 @@
   "befab12a-8f36-4d1d-bd48-4f535d7f7424" : {
     "type" : "DirectionalLight",
     "entity" : "0720d51a-7596-427d-a3cc-8821d4bf6f17",
-    "direction" : [1.0, 2.0, 0.0],
+    "direction" : [100.0, 200.0, 150.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0]

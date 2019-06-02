@@ -29,6 +29,11 @@ PlayerSystem::PlayerSystem(std::vector<char> data)
 	if (type != 21){
 		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
 	}
+
+	lastPosX = 0;
+	lastPosY = 0;
+	currentPosX = 0;
+	currentPosY = 0;
 }
 
 PlayerSystem::~PlayerSystem()
@@ -55,7 +60,7 @@ void PlayerSystem::update(Input input)
 {
 	Camera* camera = world->getComponentByIndex<Camera>(0);
 
-	glm::vec3 position = camera->getPosition();
+	/*glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();
 	glm::vec3 up = camera->getUp();
 	glm::vec3 right = camera->getRight();
@@ -64,7 +69,11 @@ void PlayerSystem::update(Input input)
 	int lastPosY = camera->lastPosY;
 
 	int currentPosX = camera->currentPosX;
-	int currentPosY = camera->currentPosY;
+	int currentPosY = camera->currentPosY;*/
+	glm::vec3 position = camera->position;
+	glm::vec3 front = camera->front;
+	glm::vec3 up = camera->up;
+	glm::vec3 right = camera->right;
 
 	if (getKey(input, KeyCode::Up)){
 		position += up * PlayerSystem::TRANSLATE_SENSITIVITY;
@@ -113,7 +122,7 @@ void PlayerSystem::update(Input input)
 
 	up = glm::normalize(glm::cross(right, front));
 
-	camera->setPosition(position);
+	/*camera->setPosition(position);
 	camera->setFront(front);
 	camera->setUp(up);
 	camera->setRight(right);
@@ -121,7 +130,18 @@ void PlayerSystem::update(Input input)
 	camera->lastPosX = lastPosX;
 	camera->lastPosY = lastPosY;
 	camera->currentPosX = currentPosX;
-	camera->currentPosY = currentPosY;
+	camera->currentPosY = currentPosY;*/
+	camera->position = position;
+	camera->front = front;
+	camera->up = up;
+	
+
+	//camera->lastPosX = lastPosX;
+	//camera->lastPosY = lastPosY;
+	//camera->currentPosX = currentPosX;
+	//camera->currentPosY = currentPosY;
+
+	camera->updateInternalCameraState();
 
 
 

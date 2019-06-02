@@ -15,6 +15,7 @@
 
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"
+#include "RenderObject.h"
 
 namespace PhysicsEngine
 {
@@ -119,6 +120,7 @@ namespace PhysicsEngine
 			//static void initializeGraphicsAPI();
 
 			static void checkError();
+			static void checkFrambufferError();
 			static GLenum getTextureFormat(TextureFormat format);
 			// static void enableBlend();
 			// static void enableDepthTest();
@@ -165,17 +167,30 @@ namespace PhysicsEngine
 			// static void unbind(Material* material);
 
 			static void compile(Shader* shader);
-			static void use(Shader* shader);
+			static void use(Shader* shader, ShaderVariant variant);
 			static void unuse(Shader* shader);
-			static void setBool(Shader* shader, std::string name, bool value);
-			static void setInt(Shader* shader, std::string name, int value);
-			static void setFloat(Shader* shader, std::string name, float value);
-			static void setVec2(Shader* shader, std::string name, glm::vec2 &vec);
-			static void setVec3(Shader* shader, std::string name, glm::vec3 &vec);
-			static void setVec4(Shader* shader, std::string name, glm::vec4 &vec);
-			static void setMat2(Shader* shader, std::string name, glm::mat2 &mat);
-			static void setMat3(Shader* shader, std::string name, glm::mat3 &mat);
-			static void setMat4(Shader* shader, std::string name, glm::mat4 &mat);
+			static void setUniformBlock(Shader* shader, std::string blockName, int bindingPoint);
+			static void setBool(Shader* shader, ShaderVariant variant, std::string name, bool value);
+			static void setInt(Shader* shader, ShaderVariant variant, std::string name, int value);
+			static void setFloat(Shader* shader, ShaderVariant variant, std::string name, float value);
+			static void setVec2(Shader* shader, ShaderVariant variant, std::string name, glm::vec2 vec);
+			static void setVec3(Shader* shader, ShaderVariant variant, std::string name, glm::vec3 vec);
+			static void setVec4(Shader* shader, ShaderVariant variant, std::string name, glm::vec4 vec);
+			static void setMat2(Shader* shader, ShaderVariant variant, std::string name, glm::mat2 mat);
+			static void setMat3(Shader* shader, ShaderVariant variant, std::string name, glm::mat3 mat);
+			static void setMat4(Shader* shader, ShaderVariant variant, std::string name, glm::mat4 mat);
+
+
+			static void use(GLuint shaderProgram);
+			static void setBool(GLuint shaderProgram, std::string name, bool value);
+			static void setInt(GLuint shaderProgram, std::string name, int value);
+			static void setFloat(GLuint shaderProgram, std::string name, float value);
+			static void setVec2(GLuint shaderProgram, std::string name, glm::vec2 vec);
+			static void setVec3(GLuint shaderProgram, std::string name, glm::vec3 vec);
+			static void setVec4(GLuint shaderProgram, std::string name, glm::vec4 vec);
+			static void setMat2(GLuint shaderProgram, std::string name, glm::mat2 mat);
+			static void setMat3(GLuint shaderProgram, std::string name, glm::mat3 mat);
+			static void setMat4(GLuint shaderProgram, std::string name, glm::mat4 mat);
 			// static void setUniformBlockToBindingPoint(Shader* shader, std::string blockName, unsigned int bindingPoint);
 
 			// static void apply(Line* line);
@@ -274,15 +289,16 @@ namespace PhysicsEngine
 			// static void setPointLightQuadratic(GLPointLight* state, float quadratic);
 
 
-			static void render(World* world, Material* material, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
+			static void render(World* world, Material* material, ShaderVariant variant, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, ShaderVariant variant, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
 			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
 
 
-
-			static void render(World* world, Material* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
-			static void render(World* world, Shader* material, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
+			static void render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query);
+			static void render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
+			static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query);
 	};
 }
 

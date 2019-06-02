@@ -12,7 +12,12 @@ namespace PhysicsEngine
 		int size;  // size of vbo
 		int transformIndex;
 		int materialIndex;
-		int shaderIndex;
+
+		GLuint shaders[10];
+		GLint mainTexture;
+		GLint normalMap;
+		GLint specularMap;
+
 		Sphere boundingSphere;
 
 		glm::mat4 model;

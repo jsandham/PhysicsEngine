@@ -21,6 +21,11 @@ namespace PhysicsEngine
 	private:
 		Camera* camera;
 
+		int lastPosX;
+		int lastPosY;
+		int currentPosX;
+		int currentPosY;
+
 	public:
 		PlayerSystem();
 		PlayerSystem(std::vector<char> data);

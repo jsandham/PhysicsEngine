@@ -76,8 +76,8 @@ void DebugSystem::update(Input input)
 	
 			int x = input.mousePosX;
 			int y = input.mousePosY;
-			int width = camera->width;
-			int height = camera->height - 40;
+			int width = camera->viewport.width;
+			int height = camera->viewport.height - 40;
 
 			float screen_x = (x - 0.5f * width) / (0.5f * width);
 			float screen_y = (0.5f * height - y) / (0.5f * height);
@@ -128,5 +128,5 @@ void DebugSystem::update(Input input)
 		}
 	}
 
-	Graphics::render(world, &buffer.shader, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
+	Graphics::render(world, &buffer.shader, ShaderVariant::None, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
 }

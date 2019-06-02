@@ -46,7 +46,7 @@ void RenderSystem::init(World* world)
 void RenderSystem::update(Input input)
 {
 	//deferredRenderer.update(input);
-	forwardRenderer.update();
+	forwardRenderer.update(input);
 
 	if(world->debug){
 		GraphicsQuery query = forwardRenderer.getGraphicsQuery();

@@ -4,37 +4,73 @@
 
 using namespace PhysicsEngine;
 
+float Plane::distance(glm::vec3 point) const
+{
+	float d = -glm::dot(n,x0);
+
+	return (glm::dot(n,point) + d) / sqrt(glm::dot(n,n));
+}
+
+int Frustum::checkPoint(glm::vec3 point) const
+{
+	// loop over all 6 planes
+	for(int i = 0; i < 6; i++){
+		if(planes[i].distance(point) < 0){
+			return -1; // outside
+		}
+	}
+
+	return 1; // inside
+}
+
+int Frustum::checkSphere(glm::vec3 centre, float radius) const
+{
+	bool answer = 1;
+
+	// loop over all 6 planes
+	for(int i = 0; i < 6; i++){
+		float distance = planes[i].distance(centre);
+		if(distance < -radius){
+			return -1; // outside
+		}
+		else if(distance < radius){
+			answer = 0; // intersect
+		}
+	}
+
+	return answer; // inside
+}
+
+int Frustum::checkAABB(glm::vec3 min, glm::vec3 max) const
+{
+	return 1;
+}
+
+
+
+
 Camera::Camera()
 {
+	componentId = Guid::INVALID;
+	entityId = Guid::INVALID;
+
+	viewport.x = 0;
+	viewport.y = 0;
+	viewport.width = 1024;
+	viewport.height = 1024;
+
+	frustum.fov = 45.0f;
+	frustum.aspectRatio = 1.0f;
+	frustum.nearPlane = 0.1f;
+	frustum.farPlane = 250.0f;
+
 	position = glm::vec3(0.0f, 2.0f, 0.0f);
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	right = glm::normalize(glm::cross(front, up));
-
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	lastPosX = 0;
-	lastPosY = 0;
-
-	currentPosX = 0;
-	currentPosY = 0;
-
-	enabled = true;
-	priority = 10;
-
-	x = 0;
-	y = 0;
-	width = 1000;
-	height = 1000;
-
-	projection = glm::perspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 1000.0f);
-	view = glm::lookAt(position, position + front, up);
-
-	frustum.setPerspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 1000.0f);
-
-	frustum.setCamera(position, front, up, right);
-
 	backgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
+
+	updateInternalCameraState();
 }
 
 Camera::Camera(std::vector<char> data)
@@ -45,35 +81,24 @@ Camera::Camera(std::vector<char> data)
 
 	componentId = header->componentId;
 	entityId = header->entityId;
+
+	viewport.x = header->x;
+	viewport.y = header->y;
+	viewport.width = header->width;
+	viewport.height = header->height;
+
+	frustum.fov = header->fov;
+	frustum.aspectRatio = header->aspectRatio;
+	frustum.nearPlane = header->nearPlane;
+	frustum.farPlane = header->farPlane;
+
 	position = header->position;
+	front = header->front;
+	up = header->up;
+	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	backgroundColor = header->backgroundColor;
 
-	front = glm::vec3(0.0f, 0.0f, -1.0f);
-	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	right = glm::normalize(glm::cross(front, up));
-
-	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	lastPosX = 0;
-	lastPosY = 0;
-
-	currentPosX = 0;
-	currentPosY = 0;
-
-	enabled = true;
-	priority = 10;
-
-	x = 0;
-	y = 0;
-	width = 1000;
-	height = 1000;
-
-	projection = glm::perspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 1000.0f);
-	view = glm::lookAt(position, position + front, up);
-
-	frustum.setPerspective(45.0f, 1.0f * 1000 / 1000, 0.1f, 1000.0f);
-
-	frustum.setCamera(position, front, up, right);
+	updateInternalCameraState();
 }
 
 Camera::~Camera()
@@ -81,97 +106,72 @@ Camera::~Camera()
 
 }
 
-glm::vec3& Camera::getPosition() 
+void Camera::updateInternalCameraState()
 {
-	return position;
+	this->front = glm::normalize(front);
+	this->up = glm::normalize(up);
+	this->right = glm::normalize(glm::cross(front, up));
+
+	float tan = (float)glm::tan(glm::radians(0.5f * frustum.fov));
+	float nearPlaneHeight = frustum.nearPlane * tan;
+	float nearPlaneWidth = frustum.aspectRatio * nearPlaneHeight;
+	float farPlaneHeight = frustum.farPlane * tan;
+	float farPlaneWidth = frustum.aspectRatio * farPlaneHeight;
+
+	// far and near plane intersection along front line
+	glm::vec3 fc = position + frustum.farPlane * front;
+	glm::vec3 nc = position + frustum.nearPlane * front;
+
+	frustum.planes[NEAR].n = front;
+	frustum.planes[NEAR].x0 = nc;
+
+	frustum.planes[FAR].n = -front;
+	frustum.planes[FAR].x0 = fc;
+
+	glm::vec3 temp;
+
+	temp = (nc + nearPlaneHeight*up) - position;
+	temp = glm::normalize(temp);
+	frustum.planes[TOP].n = glm::cross(temp, right);
+	frustum.planes[TOP].x0 = nc + nearPlaneHeight*up;
+
+	temp = (nc - nearPlaneHeight*up) - position;
+	temp = glm::normalize(temp);
+	frustum.planes[BOTTOM].n = -glm::cross(temp, right);
+	frustum.planes[BOTTOM].x0 = nc - nearPlaneHeight*up;
+
+	temp = (nc - nearPlaneWidth*right) - position;
+	temp = glm::normalize(temp);
+	frustum.planes[LEFT].n = glm::cross(temp, up);
+	frustum.planes[LEFT].x0 = nc - nearPlaneWidth*right;
+
+	temp = (nc + nearPlaneWidth*right) - position;
+	temp = glm::normalize(temp);
+	frustum.planes[RIGHT].n = -glm::cross(temp, up);
+	frustum.planes[RIGHT].x0 = nc + nearPlaneWidth*right;
 }
 
-glm::vec3& Camera::getFront() 
+glm::mat4 Camera::getViewMatrix() const
 {
-	return front;
+	return glm::lookAt(position, position + front, up);
 }
 
-glm::vec3& Camera::getUp() 
+glm::mat4 Camera::getProjMatrix() const
 {
-	return up;
+	return glm::perspective(frustum.fov, frustum.aspectRatio, frustum.nearPlane, frustum.farPlane);
 }
 
-
-glm::vec3& Camera::getRight() 
-{
-	return right;
-}
-
-glm::vec3& Camera::getWorldUp()
-{
-	return worldUp;
-}
-
-
-glm::mat4& Camera::getViewMatrix()
-{
-	view = glm::lookAt(position, position + front, up);
-	return view;
-}
-
-
-glm::mat4& Camera::getProjMatrix()
-{
-	return projection;
-}
-
-glm::vec4& Camera::getBackgroundColor()
-{
-	return backgroundColor;
-}
-
-
-void Camera::setPosition(glm::vec3& position)
-{
-	this->position = position;
-}
-
-
-void Camera::setFront(glm::vec3& front)
-{
-	this->front = front;
-}
-
-
-void Camera::setUp(glm::vec3& up)
-{
-	this->up = up;
-}
-
-void Camera::setRight(glm::vec3& right)
-{
-	this->right = right;
-}
-
-void Camera::setProjMatrix(glm::mat4& projection)
-{
-	this->projection = projection;
-}
-
-void Camera::setBackgroundColor(glm::vec4& backgroundColor)
-{
-	this->backgroundColor = backgroundColor;
-}
-
-
-int Camera::checkPointInFrustum(glm::vec3 point)
+int Camera::checkPointInFrustum(glm::vec3 point) const
 {
 	return frustum.checkPoint(point);
 }
 
-
-int Camera::checkSphereInFrustum(glm::vec3 centre, float radius)
+int Camera::checkSphereInFrustum(glm::vec3 centre, float radius) const
 {
 	return frustum.checkSphere(centre, radius);
 }
 
-
-int Camera::checkAABBInFrustum(glm::vec3 min, glm::vec3 max)
+int Camera::checkAABBInFrustum(glm::vec3 min, glm::vec3 max) const
 {
 	return frustum.checkAABB(min, max);
 }

@@ -4,6 +4,11 @@
 #include <iostream>
 #include <vector>
 
+#undef NEAR
+#undef FAR
+#undef near
+#undef far
+
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
@@ -11,7 +16,6 @@
 #include "../glm/gtc/type_ptr.hpp"
 
 #include "Component.h"
-#include "../core/Frustum.h"
 
 namespace PhysicsEngine
 {
@@ -21,67 +25,87 @@ namespace PhysicsEngine
 		Guid componentId;
 		Guid entityId;
 		glm::vec3 position;
+		glm::vec3 front;
+		glm::vec3 up;
 		glm::vec4 backgroundColor;
+		int x;
+		int y;
+		int width;
+		int height;
+		float fov;
+		float aspectRatio;
+		float nearPlane;
+		float farPlane;
 	};
 #pragma pack(pop)
+
+	// plane defined by n.x*x + n.y*y + n.z*z + d = 0, where d = -dot(n, x0)
+	struct Plane
+	{
+		glm::vec3 n;
+		glm::vec3 x0;
+
+		float distance(glm::vec3 point) const;
+	};
+
+	struct Viewport
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	};
+
+	struct Frustum
+	{
+		Plane planes[6];
+
+		float fov;
+		float aspectRatio;
+		float nearPlane;
+		float farPlane;
+
+		int checkPoint(glm::vec3 point) const;
+		int checkSphere(glm::vec3 centre, float radius) const;
+		int checkAABB(glm::vec3 min, glm::vec3 max) const;
+	};
 
 	class Camera : public Component
 	{
 		public:
 			Frustum frustum;
+			Viewport viewport;
+
+			enum {
+				TOP = 0,
+				BOTTOM,
+				LEFT,
+				RIGHT,
+				NEAR,
+				FAR
+			};
 
 			glm::vec3 position;
 			glm::vec3 front;
 			glm::vec3 up;
 			glm::vec3 right;
 			glm::vec3 worldUp;
-
-			glm::mat4 projection;
-			glm::mat4 view;
 			glm::vec4 backgroundColor;
-
-		public:
-			bool enabled;
-			int priority;
-			int x, y;
-			int width, height;
-
-			int lastPosX;
-			int lastPosY;
-			int currentPosX;
-			int currentPosY;
 
 		public:
 			Camera();
 			Camera(std::vector<char> data);
 			~Camera();
 
-			glm::vec3& getPosition();
-			glm::vec3& getFront();
-			glm::vec3& getUp();
-			glm::vec3& getRight();
-			glm::vec3& getWorldUp();
-			//int2& getLastPosition();
-			//int2& getCurrentPosition();
-			glm::mat4& getViewMatrix();
-			glm::mat4& getProjMatrix();
-			glm::vec4& getBackgroundColor();
+			void updateInternalCameraState();
 
-			void setPosition(glm::vec3& position);
-			void setFront(glm::vec3& front);
-			void setUp(glm::vec3& up);
-			void setRight(glm::vec3& right);
-			//void setLastPosition(int2& lastPos);
-			//void setCurrentPosition(int2& currentPos);
-			void setProjMatrix(glm::mat4& projection);
-			void setBackgroundColor(glm::vec4& backgroundColor);
+			glm::mat4 getViewMatrix() const;
+			glm::mat4 getProjMatrix() const;
 
-			int checkPointInFrustum(glm::vec3 point);
-			int checkSphereInFrustum(glm::vec3 centre, float radius);
-			int checkAABBInFrustum(glm::vec3 min, glm::vec3 max);
+			int checkPointInFrustum(glm::vec3 point) const;
+			int checkSphereInFrustum(glm::vec3 centre, float radius) const;
+			int checkAABBInFrustum(glm::vec3 min, glm::vec3 max) const;
 	};
-
 }
-
 
 #endif
