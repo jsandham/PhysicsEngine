@@ -17,7 +17,7 @@ SpotLight::SpotLight()
 	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(outerCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
 
 	lightType = LightType::Spot;
 	shadowType = ShadowType::Hard;
@@ -34,8 +34,8 @@ SpotLight::SpotLight(std::vector<char> data)
 	constant = header->constant;
 	linear = header->linear;
 	quadratic = header->quadratic;
-	cutOff = header->cutOff;
-	outerCutOff = header->outerCutOff;
+	cutOff = glm::cos(glm::radians(header->cutOff));
+	outerCutOff = glm::cos(glm::radians(header->outerCutOff));
 	position = header->position;
 	direction = header->direction;
 	ambient = header->ambient;

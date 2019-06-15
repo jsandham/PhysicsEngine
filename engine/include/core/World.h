@@ -137,7 +137,7 @@ namespace PhysicsEngine
 				int componentType = Component::getInstanceType<T>();
 				Guid componentId = Guid::newGuid();
 				
-				std::cout << "componentGlobalIndex: " << componentGlobalIndex << " componentType: " << componentType << " componentId: " << componentId.toString() << std::endl;
+				//std::cout << "componentGlobalIndex: " << componentGlobalIndex << " componentType: " << componentType << " componentId: " << componentId.toString() << std::endl;
 
 				T* component = create<T>();//new T;//static_cast<T*>(getAllocator<T>().allocate());
 
@@ -231,6 +231,7 @@ namespace PhysicsEngine
 
 
 			static bool writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels);
+			static bool writeToBMP(const std::string& filepath, std::vector<float>& data, int width, int height, int numChannels);
 	};
 }
 

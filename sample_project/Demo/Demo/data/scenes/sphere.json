@@ -8,23 +8,22 @@
     "type" : "Transform",
     "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "3efb1a5f-2271-4f2a-8780-272d44aed1fe",
-    "position" : [0.3, 0.0, 0.0],
+    "position" : [0.0, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
   "4b1e86bd-d9b8-436f-b59b-58bcdbdc72e6" : {
     "type" : "Camera",
     "entity" : "3efb1a5f-2271-4f2a-8780-272d44aed1fe",
-    "position" : [0.0, 2.0, 0.0],
-    "front" : [0.0, 0.0, -1.0],
-    "up" : [0.0, 1.0, 0.0],
+    "position" : [0.0, 0.0, 1.0],
+    "front" : [1.0, 0.0, 0.0],
+    "up" : [0.0, 0.0, 1.0],
     "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
     "x" : 0,
     "y" : 0,
-    "width" : 1000,
-    "height" : 1000,
+    "width" : 1024,
+    "height" : 1024,
     "fov" : 45.0,
-    "aspectRatio" : 1.0,
     "near" : 0.1,
     "far" : 250.0
   },
@@ -38,7 +37,7 @@
   "4efb1a60-f094-4fe2-b05f-2d15901038c5" : {
     "type" : "DirectionalLight",
     "entity" : "3efb1a5f-2271-4f2a-8780-272d44aed1fe",
-    "direction" : [1.0, 2.0, 0.0],
+    "direction" : [0.0, 0.0, 1.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0]
@@ -51,7 +50,7 @@
     "type" : "Transform",
     "parent" : "d24dd9da-d7e8-4b12-9b3f-bd408235dd44",
     "entity" : "bccfb4fd-4e46-48dd-8990-81e1c7263ded",
-    "position" : [2.0, 2.0, 22.0],
+    "position" : [4.0, 0.0, 1.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
@@ -65,7 +64,7 @@
   "7c7dcaea-18a5-4e9d-9f35-67e1efc03402" : {
     "type" : "SphereCollider",
     "entity" : "bccfb4fd-4e46-48dd-8990-81e1c7263ded",
-    "centre" : [2.0, 2.0, 22.0],
+    "centre" : [4.0, 0.0, 1.0],
     "radius" : 1.0
   },
   "dbeb932a-cac7-48bc-92ce-5ed9fcdf944c" : {
@@ -76,7 +75,7 @@
     "type" : "Transform",
     "parent" : "d24dd9da-d7e8-4b12-9b3f-bd408235dd44",
     "entity" : "dbeb932a-cac7-48bc-92ce-5ed9fcdf944c",
-    "position" : [12.0, 12.0, 32.0],
+    "position" : [6.0, 0.0, 2.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
@@ -90,7 +89,7 @@
   "4270e2fe-5d99-48d4-8303-8bdc52cf4db8" : {
     "type" : "SphereCollider",
     "entity" : "dbeb932a-cac7-48bc-92ce-5ed9fcdf944c",
-    "centre" : [12.0, 12.0, 32.0],
+    "centre" : [6.0, 0.0, 2.0],
     "radius" : 1.0
   },
   "48dfab4a-73f3-4c01-a667-0bdd2d88f287" : {

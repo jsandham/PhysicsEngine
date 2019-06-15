@@ -424,7 +424,6 @@ int serializeScenes(std::string projectDirectory)
 			data.height = (int)it->second["height"].ToInt();
 
 			data.fov = (float)it->second["fov"].ToFloat();
-			data.aspectRatio = (float)it->second["aspectRatio"].ToFloat();
 			data.nearPlane = (float)it->second["near"].ToFloat();
 			data.farPlane = (float)it->second["far"].ToFloat();
 
@@ -582,7 +581,7 @@ int serializeScenes(std::string projectDirectory)
 			data.specular.y = (float)it->second["specular"][1].ToFloat();
 			data.specular.z = (float)it->second["specular"][2].ToFloat();
 
-			data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
+			data.projection = glm::perspective(2.0f * glm::radians(data.outerCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
 
 			int type = 6;
 			char classification = 'c';

@@ -54,23 +54,11 @@ void ForwardRenderer::init(World* world)
 	// generate fbo
 	createMainFBO();
 
+	// generate ssao fbo
+	createSSAOFBO();
+
     // generate shadow map fbos
     createShadowMapFBOs();
-
-	// batch all static meshes by material
-	// for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
-	// 	MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
-
-	// 	if(meshRenderer != NULL && meshRenderer->isStatic){
-	// 		Transform* transform = meshRenderer->getComponent<Transform>(world);
-	// 		Material* material = world->getAsset<Material>(meshRenderer->materialId);
-	// 		Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
-
-	// 		glm::mat4 model = transform->getModelMatrix();
-
-	// 		batchManager.add(material, mesh, model);
-	// 	}
-	// }
 
 	// generate render objects list
 	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
@@ -92,7 +80,7 @@ void ForwardRenderer::update(Input input)
 {
 	if(camera == NULL) { return; }
 
-	std::cout << "camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
+	// std::cout << "camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
 
 	query.numBatchDrawCalls = 0;
 	query.numDrawCalls = 0;
@@ -119,11 +107,31 @@ void ForwardRenderer::update(Input input)
 
 	beginFrame(camera, fbo);
 
+	//std::cout << "camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
+
 	pass = 0;
 
-	renderDirectionalLights();
-	renderSpotLights();
-	renderPointLights();
+	directionalLightPass();
+	spotLightPass();
+	pointLightPass();
+
+
+	if (world->getNumberOfComponents<SpotLight>() > 0){
+		SpotLight* spotLight = world->getComponentByIndex<SpotLight>(0);
+
+		if(getKey(input, KeyCode::O)){
+			spotLight->direction.x += 0.01f;
+		}
+		else if(getKey(input, KeyCode::P)){
+			spotLight->direction.x -= 0.01f;
+		}
+		else if(getKey(input, KeyCode::U)){
+			spotLight->position.z += 0.01f;
+		}
+		else if(getKey(input, KeyCode::I)){
+			spotLight->position.z -= 0.01f;
+		}
+	}
 
 	if(getKeyDown(input, KeyCode::Z)){
 		std::cout << "recording depth texture data" << std::endl;
@@ -139,10 +147,52 @@ void ForwardRenderer::update(Input input)
 		World::writeToBMP("shadow_depth_data3.bmp", data, 1024, 1024, 1);
 		glGetTextureImage(shadowCascadeDepth[4], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
 		World::writeToBMP("shadow_depth_data4.bmp", data, 1024, 1024, 1);
+
+
+		glGetTextureImage(shadowSpotlightDepth, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
+		World::writeToBMP("spotlight_shadow_depth_data.bmp", data, 1024, 1024, 1);
+	}
+
+	if(getKeyDown(input, KeyCode::X)){
+		std::cout << "recording position and normal texture data" << std::endl;
+		std::vector<unsigned char> data;
+		data.resize(1024*1024*4);
+		glGetTextureImage(position, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
+		World::writeToBMP("position.bmp", data, 1024, 1024, 4);
+		glGetTextureImage(normal, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
+		World::writeToBMP("normal.bmp", data, 1024, 1024, 4);
+	}
+
+	if(getKeyDown(input, KeyCode::C)){
+		std::cout << "recording cube depth texture data" << std::endl;
+		std::vector<unsigned char> data;
+		data.resize(1024*1024*1);
+
+		for(size_t i = 0; i < data.size(); i++){
+			if(i % 3 == 0){
+				data[i] = 255;
+			}
+			data[i] = 0;
+		}
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCubemapDepth);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
+		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+		World::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
 	if(world->debug){
-		renderDebug(world->debugView);
+		debugPass();
 	}
 
 	endFrame(color);
@@ -178,9 +228,9 @@ void ForwardRenderer::add(MeshRenderer* meshRenderer)
 
 		int index = meshBuffer.getIndex(meshRenderer->meshId);
 
-		std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
+		//std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
 
-		std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
+		// std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
 
 		if(index != -1){
 			RenderObject renderObject;
@@ -189,7 +239,7 @@ void ForwardRenderer::add(MeshRenderer* meshRenderer)
 			renderObject.transformIndex = transformIndex;
 			renderObject.materialIndex = materialIndex;
 
-			for(int i = 0; i < 4; i++){
+			for(int i = 0; i < 10; i++){
 				renderObject.shaders[i] = shader->programs[i].handle;
 			}
 
@@ -225,17 +275,29 @@ GraphicsDebug ForwardRenderer::getGraphicsDebug()
 
 void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 {
+	updateCameraUniformState(camera);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
 	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	updateCameraUniformState(camera);
+	// fill position, normal, and depth buffers
+	// glBindVertexArray(meshBuffer.vao);
+
+	// for(int i = 0; i < renderObjects.size(); i++){
+	// 	Graphics::render(world, &mainShader, ShaderVariant::None, renderObjects[i].model, renderObjects[i].start, renderObjects[i].size, &query);
+	// }
+
+	// glBindVertexArray(0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void ForwardRenderer::endFrame(GLuint tex)
@@ -253,19 +315,34 @@ void ForwardRenderer::endFrame(GLuint tex)
     glBindVertexArray(0);
 }
 
-void ForwardRenderer::renderDirectionalLights()
+void ForwardRenderer::directionalLightPass()
 {
 	if (world->getNumberOfComponents<DirectionalLight>() > 0){
 		DirectionalLight* directionalLight = world->getComponentByIndex<DirectionalLight>(0);
 
-		//lightView = glm::lookAt(directionalLight->direction, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		// lightView = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), directionalLight->direction, glm::vec3(0.0f, 1.0f, 0.0f));
-		// calcCascadeOrthoProj(camera->getViewMatrix(), lightView, directionalLight->direction);
 		calcShadowmapCascades(camera->frustum.nearPlane, camera->frustum.farPlane);
 		calcCascadeOrthoProj(camera->getViewMatrix(), directionalLight->direction);
 
-		for(int j = 0; j < 5; j++){
-			renderShadowMap(shadowCascadeFBO[j], cascadeLightView[j], cascadeOrthoProj[j]);
+		for(int i = 0; i < 5; i++){
+			glBindFramebuffer(GL_FRAMEBUFFER, shadowCascadeFBO[i]);
+			glBindVertexArray(meshBuffer.vao);
+
+			glClearDepth(1.0f);
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			GLuint shaderProgram = depthShader.programs[ShaderVariant::None].handle;
+
+			Graphics::use(shaderProgram);
+			Graphics::setMat4(shaderProgram, "view", cascadeLightView[i]);
+			Graphics::setMat4(shaderProgram, "projection", cascadeOrthoProj[i]);
+
+			for(int j = 0; j < renderObjects.size(); j++){
+				Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
+				Graphics::render(world, renderObjects[j], &query);
+			}
+
+			glBindVertexArray(0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
 		updateLightUniformState(directionalLight);
@@ -278,18 +355,64 @@ void ForwardRenderer::renderDirectionalLights()
 			variant = ShaderVariant::Directional_Soft;
 		}
 
-		render(fbo, variant);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindVertexArray(meshBuffer.vao);
+
+		for(int i = 0; i < renderObjects.size(); i++){
+			GLuint shaderProgram = renderObjects[i].shaders[(int)variant];
+
+			Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
+
+			Graphics::use(shaderProgram);
+			Graphics::use(shaderProgram, material, renderObjects[i]);
+			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
+
+			for(int j = 0; j < 5; j++){
+				Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(j) + "]", 3 + j);
+
+				glActiveTexture(GL_TEXTURE0 + 3 + j);
+				glBindTexture(GL_TEXTURE_2D, shadowCascadeDepth[j]);
+			}
+
+			Graphics::render(world, renderObjects[i], &query);
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		pass++;
 	}
 }
 
-void ForwardRenderer::renderSpotLights()
+void ForwardRenderer::spotLightPass()
 {
 	for(int i = 0; i < world->getNumberOfComponents<SpotLight>(); i++){
-		if(pass >= 1){ glBlendFunc(GL_ONE, GL_ONE); }
+		//if(pass >= 1){ glBlendFunc(GL_ONE, GL_ONE); }
 
 		SpotLight* spotLight = world->getComponentByIndex<SpotLight>(i);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowSpotlightFBO);
+		glBindVertexArray(meshBuffer.vao);
+
+		glClearDepth(1.0f);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		GLuint shaderProgram = depthShader.programs[ShaderVariant::None].handle;
+
+		shadowProjMatrix = spotLight->projection;
+		shadowViewMatrix = glm::lookAt(spotLight->position, spotLight->position + spotLight->direction, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		Graphics::use(shaderProgram);
+		Graphics::setMat4(shaderProgram, "projection", shadowProjMatrix);
+		Graphics::setMat4(shaderProgram, "view", shadowViewMatrix);
+
+		for(int j = 0; j < renderObjects.size(); j++){
+			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
+			Graphics::render(world, renderObjects[j], &query);
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		updateLightUniformState(spotLight);
 
@@ -301,93 +424,118 @@ void ForwardRenderer::renderSpotLights()
 			variant = ShaderVariant::Spot_Soft;
 		}
 
-		render(fbo, variant);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindVertexArray(meshBuffer.vao);
+
+		for(int j = 0; j < renderObjects.size(); j++){
+			GLuint shaderProgram = renderObjects[j].shaders[variant];
+			Material* material = world->getAssetByIndex<Material>(renderObjects[j].materialIndex);
+
+			Graphics::use(shaderProgram);
+			Graphics::use(shaderProgram, material, renderObjects[j]);
+			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
+			Graphics::setInt(shaderProgram, "shadowMap[0]", 3);
+
+			glActiveTexture(GL_TEXTURE0 + 3);
+			glBindTexture(GL_TEXTURE_2D, shadowSpotlightDepth);
+
+			Graphics::render(world, renderObjects[j], &query);
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		Graphics::checkError();
 
 		pass++;
 	}
 }
 
-void ForwardRenderer::renderPointLights()
+void ForwardRenderer::pointLightPass()
 {
 	for(int i = 0; i < world->getNumberOfComponents<PointLight>(); i++){
 		if(pass >= 1){ glBlendFunc(GL_ONE, GL_ONE); }
 
 		PointLight* pointLight = world->getComponentByIndex<PointLight>(i);
 
+		calcCubeViewMatrices(pointLight->position, pointLight->projection);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowCubemapFBO);
+		glBindVertexArray(meshBuffer.vao);
+
+		glClearDepth(1.0f);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		GLuint shaderProgram = depthCubemapShader.programs[ShaderVariant::None].handle;
+
+		//std::cout << "shader program: " << shaderProgram << "  " << depthCubemapShader.programs[0].handle << " " << depthCubemapShader.programs[1].handle << " " << depthCubemapShader.programs[9].handle << std::endl;
+
+		Graphics::use(shaderProgram);
+		Graphics::setVec3(shaderProgram, "lightPos", pointLight->position);
+		Graphics::setFloat(shaderProgram, "farPlane", camera->frustum.farPlane);
+		for(int j = 0; j < 6; j++){
+			Graphics::setMat4(shaderProgram, "cubeViewProjMatrices[" + std::to_string(j) + "]", cubeViewProjMatrices[j]);
+		}
+
+		for(int j = 0; j < renderObjects.size(); j++){
+			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
+			Graphics::render(world, renderObjects[j], &query);
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		updateLightUniformState(pointLight);
 
 		ShaderVariant variant = ShaderVariant::Point;
-		if(pointLight->shadowType == ShadowType::Hard){
-			variant = ShaderVariant::Point_Hard;
-		}
-		else if(pointLight->shadowType == ShadowType::Soft){
-			variant = ShaderVariant::Point_Soft;
+		// if(pointLight->shadowType == ShadowType::Hard){
+		// 	variant = ShaderVariant::Point_Hard;
+		// }
+		// else if(pointLight->shadowType == ShadowType::Soft){
+		// 	variant = ShaderVariant::Point_Soft;
+		// }
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindVertexArray(meshBuffer.vao);
+
+		for(int j = 0; j < renderObjects.size(); j++){
+			GLuint shaderProgram = renderObjects[j].shaders[(int)variant];
+			Material* material = world->getAssetByIndex<Material>(renderObjects[j].materialIndex);
+
+			Graphics::use(shaderProgram);
+			Graphics::use(shaderProgram, material, renderObjects[j]);
+			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
+			Graphics::render(world, renderObjects[j], &query);
 		}
 
-		render(fbo, variant);
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			
 		pass++;
 	}
 }
 
-void ForwardRenderer::render(GLuint fbo, ShaderVariant variant)
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glBindVertexArray(meshBuffer.vao);
+void ForwardRenderer::debugPass()
+{		
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	int view = world->debugView;
 
-	for(int i = 0; i < renderObjects.size(); i++){
-		// Graphics::render(world, renderObjects[i], variant, &query);
-		Graphics::render(world, renderObjects[i], variant, &shadowCascadeDepth[0], 5, &query);
-	}
-
-	glBindVertexArray(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void ForwardRenderer::renderShadowMap(GLuint fbo, glm::mat4 lightView, glm::mat4 lightProjection)
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	glEnable(GL_DEPTH_TEST); 
-	//glDepthFunc(GL_LEQUAL);
-	//glDepthFunc(GL_ALWAYS);
+	glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[view].handle);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(meshBuffer.vao);
-
-	for(int i = 0; i < renderObjects.size(); i++){
-		Graphics::render(world, &depthShader, ShaderVariant::None, renderObjects[i].model, lightView, lightProjection, renderObjects[i].start, renderObjects[i].size, &query);
-	}
-
-	glBindVertexArray(0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void ForwardRenderer::renderDebug(int view)
-{		
-	glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[view].handle);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearDepth(1.0f);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
 	if(view == 0 || view == 1 || view == 2){
-		batchManager.render(world, &debug.shaders[view], ShaderVariant::None, NULL);
-
-		//render non static meshes here
 		glBindVertexArray(meshBuffer.vao);
 
+		GLuint shaderProgram = debug.shaders[view].programs[(int)ShaderVariant::None].handle;
+
+		Graphics::use(shaderProgram);
+
 		for(int i = 0; i < renderObjects.size(); i++){
-			Graphics::render(world, &debug.shaders[view], ShaderVariant::None, renderObjects[i].model, renderObjects[i].start, renderObjects[i].size, &query);
+			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
+			Graphics::render(world, renderObjects[i], &query);
 		}
 
 		glBindVertexArray(0);
@@ -464,13 +612,31 @@ void ForwardRenderer::createShaderPrograms()
 		}
 	}
 
+	mainShader.vertexShader = Shader::mainVertexShader;
+	mainShader.fragmentShader = Shader::mainFragmentShader;
+	mainShader.compile();
+
+	mainShader.setUniformBlock("CameraBlock", 0);
+
+	ssaoShader.vertexShader = Shader::ssaoVertexShader;
+	ssaoShader.fragmentShader = Shader::ssaoFragmentShader;
+	ssaoShader.compile();
+
 	depthShader.vertexShader = Shader::shadowDepthMapVertexShader;
 	depthShader.fragmentShader = Shader::shadowDepthMapFragmentShader;
 	depthShader.compile();
 
+	depthCubemapShader.vertexShader = Shader::shadowDepthCubemapVertexShader;
+	//depthCubemapShader.geometryShader = Shader::shadowDepthCubemapGeometryShader;
+	depthCubemapShader.fragmentShader = Shader::shadowDepthCubemapFragmentShader;
+	depthCubemapShader.compile();
+
 	quadShader.vertexShader = Shader::windowVertexShader;
 	quadShader.fragmentShader = Shader::windowFragmentShader;
 	quadShader.compile();
+
+	std::cout << "DEPTH VERTEX: " << depthShader.vertexShader << std::endl;
+	std::cout << "FRAGMENT VERTEX: " << depthShader.fragmentShader << std::endl;
 }
 
 void ForwardRenderer::createMeshBuffers()
@@ -494,7 +660,7 @@ void ForwardRenderer::createMeshBuffers()
 	for(int i = 0; i < world->getNumberOfAssets<Mesh>(); i++){
 		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
 
-		std::cout << "adding mesh: " << mesh->assetId.toString() << " start index: " << startIndex << std::endl;
+		//std::cout << "adding mesh: " << mesh->assetId.toString() << " start index: " << startIndex << std::endl;
 
 		meshBuffer.meshIds.push_back(mesh->assetId);
 		meshBuffer.start.push_back(startIndex);
@@ -509,7 +675,7 @@ void ForwardRenderer::createMeshBuffers()
 
 	meshBuffer.init();
 
-	std::cout << "mesh buffer size: " << meshBuffer.vertices.size() << " " << meshBuffer.normals.size() << " " << meshBuffer.texCoords.size() << std::endl;
+	//std::cout << "mesh buffer size: " << meshBuffer.vertices.size() << " " << meshBuffer.normals.size() << " " << meshBuffer.texCoords.size() << std::endl;
 }
 
 void ForwardRenderer::createMainFBO()
@@ -523,18 +689,33 @@ void ForwardRenderer::createMainFBO()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+	glGenTextures(1, &position);
+	glBindTexture(GL_TEXTURE_2D, position);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glGenTextures(1, &normal);
+	glBindTexture(GL_TEXTURE_2D, normal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	glGenTextures(1, &depth);
 	glBindTexture(GL_TEXTURE_2D, depth);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, position, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, normal, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[1] = { GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, attachments);
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, attachments);
 
 	Graphics::checkFrambufferError();
 	
@@ -552,8 +733,6 @@ void ForwardRenderer::createMainFBO()
 	glGenVertexArrays(1, &quadVAO);
 	glBindVertexArray(quadVAO);
 
-	std::cout << "quadVAO: " << quadVAO << std::endl;
-
 	glGenBuffers(1, &quadVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
@@ -565,6 +744,24 @@ void ForwardRenderer::createMainFBO()
     glBindVertexArray(0);
 }
 
+void ForwardRenderer::createSSAOFBO()
+{
+	glGenFramebuffers(1, &ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+
+	glGenTextures(1, &ssaoColor);
+	glBindTexture(GL_TEXTURE_2D, ssaoColor);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, camera->viewport.width, camera->viewport.height, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	  
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColor, 0);  
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void ForwardRenderer::createShadowMapFBOs()
 {
 	// create directional light cascade shadow map fbo
@@ -574,9 +771,12 @@ void ForwardRenderer::createShadowMapFBOs()
 	for(int i = 0; i < 5; i++){
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowCascadeFBO[i]);
 		glBindTexture(GL_TEXTURE_2D, shadowCascadeDepth[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+		// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
@@ -596,9 +796,12 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowSpotlightFBO);
 	glBindTexture(GL_TEXTURE_2D, shadowSpotlightDepth);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
@@ -649,33 +852,23 @@ void ForwardRenderer::calcShadowmapCascades(float nearDist, float farDist)
 
     	cascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
 
-    	std::cout << "i: " << i << " " << cascadeEnds[i] << std::endl;
+    	//std::cout << "i: " << i << " " << cascadeEnds[i] << std::endl;
     }
 }
 
 void ForwardRenderer::calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction)
 {
-	// std::cout << view[0][0] << " " << view[0][1] << " " << view[0][2] << " " << view[0][3] << std::endl;
-	// std::cout << view[1][0] << " " << view[1][1] << " " << view[1][2] << " " << view[1][3] << std::endl;
-	// std::cout << view[2][0] << " " << view[2][1] << " " << view[2][2] << " " << view[2][3] << std::endl;
-	// std::cout << view[3][0] << " " << view[3][1] << " " << view[3][2] << " " << view[3][3] << std::endl;
-
 	glm::mat4 viewInv = glm::inverse(view);
 	float fov = camera->frustum.fov;
-	float aspect = camera->frustum.aspectRatio;
+	float aspect = camera->viewport.getAspectRatio();
 	float tanHalfHFOV = glm::tan(glm::radians(0.5f * fov));
 	float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
-
-	//std::cout << "fov: " << fov << " aspect: " << aspect << " tanHalfHFOV: " << tanHalfHFOV << " tanHalfVFOV: " << tanHalfVFOV << std::endl;
-	// float factor = glm::tan(glm::radians(45.0f));
 
 	for (unsigned int i = 0; i < 5; i++){
 		float xn = -1.0f * cascadeEnds[i] * tanHalfHFOV;
 		float xf = -1.0f * cascadeEnds[i + 1] * tanHalfHFOV;
 		float yn = -1.0f * cascadeEnds[i] * tanHalfVFOV;
 		float yf = -1.0f * cascadeEnds[i + 1] * tanHalfVFOV;
-
-		//std::cout << "i: " << i << " xn: " << xn << " xf: " << xf << " yn: " << yn << " yf: " << yf << std::endl;
 
 		glm::vec4 frustumCorners[8];
 		frustumCorners[0] = glm::vec4(xn, yn, cascadeEnds[i], 1.0f);
@@ -702,11 +895,11 @@ void ForwardRenderer::calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction)
 
 		// Transform the frustum centre from view to world space
 		glm::vec4 frustrumCentreWorldSpace = viewInv * frustumCentre;
-		float d = 20.0f;//cascadeEnds[i + 1] - cascadeEnds[i];
+		float d = 40.0f;//cascadeEnds[i + 1] - cascadeEnds[i];
 
 		glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d*direction.x, frustrumCentreWorldSpace.y + d*direction.y, frustrumCentreWorldSpace.z + d*direction.z);
 
-		cascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace.x, frustrumCentreWorldSpace.y, frustrumCentreWorldSpace.z), glm::vec3(0.0f, 1.0f, 0.0f));
+		cascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace.x, frustrumCentreWorldSpace.y, frustrumCentreWorldSpace.z), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		float minX = std::numeric_limits<float>::max();
 		float maxX = std::numeric_limits<float>::lowest();
@@ -718,13 +911,9 @@ void ForwardRenderer::calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction)
 			// Transform the frustum coordinate from view to world space
 			glm::vec4 vW = viewInv * frustumCorners[j];
 
-			// if(i == 0){
-			// 	std::cout << "j: " << j << " " << vW.x << " " << vW.y << " " << vW.z << " " << vW.w << std::endl;
-			// }
 			//std::cout << "j: " << j << " " << vW.x << " " << vW.y << " " << vW.z << " " << vW.w << std::endl;
 
 			// Transform the frustum coordinate from world to light space
-			// glm::vec4 vL = lightView * vW;
 			glm::vec4 vL = cascadeLightView[i] * vW;
 
 			//std::cout << "j: " << j << " " << vL.x << " " << vL.y << " " << vL.z << " " << vL.w << std::endl;
@@ -737,22 +926,49 @@ void ForwardRenderer::calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction)
 			maxZ = glm::max(maxZ, vL.z);
 		}
 
-		//std::cout << "i: " << i << " " << minX << " " << maxX << " " << minY << " " << maxY << " " << minZ << " " << maxZ << "      " << p.x << " " << p.y << " " << p.z << "      " << frustrumCentreWorldSpace.x << " " << frustrumCentreWorldSpace.y << " " << frustrumCentreWorldSpace.z << std::endl;
+		// std::cout << "i: " << i << " " << minX << " " << maxX << " " << minY << " " << maxY << " " << minZ << " " << maxZ << "      " << p.x << " " << p.y << " " << p.z << "      " << frustrumCentreWorldSpace.x << " " << frustrumCentreWorldSpace.y << " " << frustrumCentreWorldSpace.z << std::endl;
 
 		cascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
-		// cascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
-		//cascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, minZ, maxZ);
 	}
+
+
+	// glm::vec4 test(1.0f, 1.0f, 1.0f,1.0f);
+	// glm::vec4 test2(-1.0f, -1.0f, -1.0f, 1.0f);
+	// glm::mat4 testingMatrix = glm::inverse(camera->getProjMatrix() * camera->getViewMatrix());
+
+	// test = testingMatrix*test;
+	// test2 = testingMatrix*test2;
+
+	// test2.x /= test2.w;
+	// test2.y /= test2.w;
+	// test2.z /= test2.w;
+
+	// test.x /= test.w;
+	// test.y /= test.w;
+	// test.z /= test.w;
+
+	// std::cout << "test: " << test.x << " " << test.y << " " << test.z << " test2: " << test2.x << " " << test2.y << " " << test2.z << std::endl;
+
+	// test = camera->getViewMatrix() * test;
+	// test2 = camera->getViewMatrix() * test2;
+
+	// std::cout << "test: " << test.x << " " << test.y << " " << test.z << " test2: " << test2.x << " " << test2.y << " " << test2.z << std::endl;
+
+	// glm::mat4 test = cascadeOrthoProj[0] * cascadeLightView[0];
+	// std::cout << test[0][0] << " " << test[0][1] << " " << test[0][2] << " " << test[0][3] << std::endl;
+	// std::cout << test[1][0] << " " << test[1][1] << " " << test[1][2] << " " << test[1][3] << std::endl;
+	// std::cout << test[2][0] << " " << test[2][1] << " " << test[2][2] << " " << test[2][3] << std::endl;
+	// std::cout << test[3][0] << " " << test[3][1] << " " << test[3][2] << " " << test[3][3] << std::endl;
 }
 
 void ForwardRenderer::calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection)
 {
-	cubeViewMatrices[0] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	cubeViewMatrices[1] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	cubeViewMatrices[2] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-	cubeViewMatrices[3] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-	cubeViewMatrices[4] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-	cubeViewMatrices[5] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+	cubeViewProjMatrices[0] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	cubeViewProjMatrices[1] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	cubeViewProjMatrices[2] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+	cubeViewProjMatrices[3] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+	cubeViewProjMatrices[4] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+	cubeViewProjMatrices[5] = (lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 }
 
 void ForwardRenderer::initCameraUniformState()
@@ -796,7 +1012,7 @@ void ForwardRenderer::updateLightUniformState(DirectionalLight* light)
 	for(int i = 0; i < 5; i++){
 		lightState.lightProjection[i] = cascadeOrthoProj[i];
 
-		glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, cascadeEnds[i+1], 1.0f);
+		glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, cascadeEnds[i + 1], 1.0f);
 		glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
 		lightState.cascadeEnds[i] = clipSpaceCascadeEnd.z;
 
@@ -834,7 +1050,20 @@ void ForwardRenderer::updateLightUniformState(SpotLight* light)
 	lightState.cutOff = light->cutOff;
 	lightState.outerCutOff = light->outerCutOff;
 
+	for(int i = 0; i < 5; i++){
+		lightState.lightProjection[i] = shadowProjMatrix;
+		lightState.lightView[i] = shadowViewMatrix;
+	}
+
+	// glm::mat4 test = lightState.lightProjection[0] * lightState.lightView[0];
+	// std::cout << test[0][0] << " " << test[0][1] << " " << test[0][2] << " " << test[0][3] << std::endl;
+	// std::cout << test[1][0] << " " << test[1][1] << " " << test[1][2] << " " << test[1][3] << std::endl;
+	// std::cout << test[2][0] << " " << test[2][1] << " " << test[2][2] << " " << test[2][3] << std::endl;
+	// std::cout << test[3][0] << " " << test[3][1] << " " << test[3][2] << " " << test[3][3] << std::endl;
+
 	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.lightProjection[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.lightView[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.position));
 	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.direction));
 	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.ambient));

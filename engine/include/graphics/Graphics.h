@@ -166,6 +166,8 @@ namespace PhysicsEngine
 			// static void bind(World* world, Material* material, glm::mat4 model);
 			// static void unbind(Material* material);
 
+			static void use(GLuint shaderProgram, Material* material, RenderObject renderObject);
+
 			static void compile(Shader* shader);
 			static void use(Shader* shader, ShaderVariant variant);
 			static void unuse(Shader* shader);
@@ -295,10 +297,12 @@ namespace PhysicsEngine
 			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
 
 
-			static void render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query);
-			static void render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query);
+			//static void render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query);
+			// static void render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query);
+			//static void render(World* world, RenderObject renderObject, GLuint shaderProgram, GraphicsQuery* query);
+			//static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query);
+			// static void render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query);
+			static void render(World* world, RenderObject renderObject, GraphicsQuery* query);
 	};
 }
 

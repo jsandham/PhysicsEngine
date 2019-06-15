@@ -859,21 +859,50 @@ void Graphics::apply(Cubemap* cubemap)
 
 // }
 
+void Graphics::use(GLuint shaderProgram, Material* material, RenderObject renderObject)
+{
+	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
+
+	if(renderObject.mainTexture != -1){
+		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+	}
+
+	if(renderObject.normalMap != -1){
+		Graphics::setInt(shaderProgram, "material.normalMap", 1);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
+	}
+
+	if(renderObject.specularMap != -1){
+		Graphics::setInt(shaderProgram, "material.specularMap", 2);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
+	}
+}
+
 void Graphics::compile(Shader* shader)
 {
-	std::string version = "#version 330 core\n";
+	std::string version = "#version 430 core\n";
 
 	// Note: Ordering must match shader variants enum
-	std::string defines[] = {"#define DIRECTIONALLIGHT\n #define NOSHADOWS\n",
-							 "#define DIRECTIONALLIGHT\n #define HARDSHADOWS\n",
-							 "#define DIRECTIONALLIGHT\n #define SOFTSHADOWS\n", 
-							 "#define SPOTLIGHT\n #define NOSHADOWS\n",
-							 "#define SPOTLIGHT\n #define HARDSHADOWS\n",
-							 "#define SPOTLIGHT\n #define SOFTSHADOWS\n",
-							 "#define POINTLIGHT\n #define NOSHADOWS\n",
-							 "#define POINTLIGHT\n #define HARDSHADOWS\n",
-							 "#define POINTLIGHT\n #define SOFTSHADOWS\n",
-							 "#define NOLIGHT\n #define NOSHADOWS\n",
+	std::string defines[] = {"#define DIRECTIONALLIGHT\n#define NOSHADOWS\n",
+							 "#define DIRECTIONALLIGHT\n#define HARDSHADOWS\n",
+							 "#define DIRECTIONALLIGHT\n#define SOFTSHADOWS\n", 
+							 "#define SPOTLIGHT\n#define NOSHADOWS\n",
+							 "#define SPOTLIGHT\n#define HARDSHADOWS\n",
+							 "#define SPOTLIGHT\n#define SOFTSHADOWS\n",
+							 "#define POINTLIGHT\n#define NOSHADOWS\n",
+							 "#define POINTLIGHT\n#define HARDSHADOWS\n",
+							 "#define POINTLIGHT\n#define SOFTSHADOWS\n",
+							 "#define NOLIGHT\n#define NOSHADOWS\n",
 							};
 
 	// compile shader for each light type
@@ -882,6 +911,10 @@ void Graphics::compile(Shader* shader)
 		std::string preProcessedVertexShader = version + defines[i] + shader->vertexShader;
 		std::string preProcessedGeometryShader = version + defines[i] + shader->geometryShader;
 		std::string preProcessedFragmentShader = version + defines[i] + shader->fragmentShader;
+
+		// if(i == 3){
+		// 	std::cout << "preProcessedVertexShader: " << preProcessedVertexShader << std::endl;
+		// }
 
 		const GLchar* vertexShader = preProcessedVertexShader.c_str();
 		const GLchar* geometryShader = preProcessedGeometryShader.c_str();
@@ -2115,206 +2148,293 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 // 	Graphics::checkError();
 // }
 
-void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query)
+// void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query)
+// {
+// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
+
+// 	GLuint shaderProgram = renderObject.shaders[(int)variant];
+
+// 	Graphics::use(shaderProgram);
+// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
+// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
+
+// 	if(renderObject.mainTexture != -1){
+// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
+
+// 		glActiveTexture(GL_TEXTURE0 + 0);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+// 	}
+
+// 	if(renderObject.normalMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
+
+// 		glActiveTexture(GL_TEXTURE0 + 1);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
+// 	}
+
+// 	if(renderObject.specularMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
+
+// 		glActiveTexture(GL_TEXTURE0 + 2);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
+// 	}
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = renderObject.size / 3;
+// 	GLint startIndex = renderObject.start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+
+// void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query)
+// {
+// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
+
+// 	GLuint shaderProgram = renderObject.shaders[(int)variant];
+
+// 	Graphics::use(shaderProgram);
+// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
+// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
+
+// 	if(renderObject.mainTexture != -1){
+// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
+
+// 		glActiveTexture(GL_TEXTURE0 + 0);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+// 	}
+
+// 	if(renderObject.normalMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
+
+// 		glActiveTexture(GL_TEXTURE0 + 1);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
+// 	}
+
+// 	if(renderObject.specularMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
+
+// 		glActiveTexture(GL_TEXTURE0 + 2);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
+// 	}
+
+// 	for(int i = 0; i < shadowMapCount; i++){
+// 		//std::cout << "shadowMap[" + std::to_string(i) + "]: " << 3 + i << std::endl;
+// 		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
+
+// 		glActiveTexture(GL_TEXTURE0 + 3 + i);
+// 		glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
+// 	}
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = renderObject.size / 3;
+// 	GLint startIndex = renderObject.start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+// void Graphics::render(World* world, RenderObject renderObject, GLuint shaderProgram, GraphicsQuery* query)
+// {
+// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
+
+// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
+// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
+// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
+// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
+// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
+
+// 	if(renderObject.mainTexture != -1){
+// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
+
+// 		glActiveTexture(GL_TEXTURE0 + 0);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+// 	}
+
+// 	if(renderObject.normalMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
+
+// 		glActiveTexture(GL_TEXTURE0 + 1);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
+// 	}
+
+// 	if(renderObject.specularMap != -1){
+// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
+
+// 		glActiveTexture(GL_TEXTURE0 + 2);
+// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
+// 	}
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = renderObject.size / 3;
+// 	GLint startIndex = renderObject.start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+
+
+// void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
+// {
+// 	Graphics::use(shader, variant);
+// 	Graphics::setMat4(shader, variant, "model", model);
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = size / 3;
+// 	GLint startIndex = start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+
+// void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query)
+// {
+// 	Graphics::use(shader, variant);
+// 	Graphics::setMat4(shader, variant, "model", model);
+// 	Graphics::setMat4(shader, variant, "view", view);
+// 	Graphics::setMat4(shader, variant, "projection", projection);
+
+// 	if(world->debug && query != NULL){
+// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+// 	}
+
+// 	GLsizei numVertices = size / 3;
+// 	GLint startIndex = start / 3;
+
+// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+
+// 	if(world->debug && query != NULL){
+// 		glEndQuery(GL_TIME_ELAPSED);
+
+// 		GLint done = 0;
+// 	    while (!done) {
+// 		    glGetQueryObjectiv(query->queryId, 
+// 		            GL_QUERY_RESULT_AVAILABLE, 
+// 		            &done);
+// 		}
+
+// 		// get the query result
+// 		GLuint64 elapsedTime; // in nanoseconds
+// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+
+// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
+// 		query->numDrawCalls++;
+// 		query->verts += numVertices;
+// 		query->tris += numVertices / 3;
+// 	}
+
+// 	Graphics::checkError();
+// }
+
+void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* query)
 {
-	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
-
-	GLuint shaderProgram = renderObject.shaders[(int)variant];
-
-	Graphics::use(shaderProgram);
-	Graphics::setMat4(shaderProgram, "model", renderObject.model);
-	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
-	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
-	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
-	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
-
-	if(renderObject.mainTexture != -1){
-		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
-
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
-	}
-
-	if(renderObject.normalMap != -1){
-		Graphics::setInt(shaderProgram, "material.normalMap", 1);
-
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
-	}
-
-	if(renderObject.specularMap != -1){
-		Graphics::setInt(shaderProgram, "material.specularMap", 2);
-
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
-	}
-
-	// for(int i = 0; i < 5; i++){
-	// 	if(renderObject.shadowMap[i] != -1){
-	// 		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
-
-	// 		glActiveTexture(GL_TEXTURE0 + 3 + i);
-	// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.shadowMap[i]);
-	// 	}
-	// }
-
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
 	}
 
 	GLsizei numVertices = renderObject.size / 3;
 	GLint startIndex = renderObject.start / 3;
-
-	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-	if(world->debug && query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
-
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
-
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
-	}
-
-	Graphics::checkError();
-}
-
-void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query)
-{
-	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
-
-	GLuint shaderProgram = renderObject.shaders[(int)variant];
-
-	Graphics::use(shaderProgram);
-	Graphics::setMat4(shaderProgram, "model", renderObject.model);
-	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
-	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
-	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
-	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
-
-	if(renderObject.mainTexture != -1){
-		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
-
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
-	}
-
-	if(renderObject.normalMap != -1){
-		Graphics::setInt(shaderProgram, "material.normalMap", 1);
-
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
-	}
-
-	if(renderObject.specularMap != -1){
-		Graphics::setInt(shaderProgram, "material.specularMap", 2);
-
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
-	}
-
-	for(int i = 0; i < shadowMapCount; i++){
-		//std::cout << "shadowMap[" + std::to_string(i) + "]: " << 3 + i << std::endl;
-		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
-
-		glActiveTexture(GL_TEXTURE0 + 3 + i);
-		glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
-	}
-
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-	}
-
-	GLsizei numVertices = renderObject.size / 3;
-	GLint startIndex = renderObject.start / 3;
-
-	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-	if(world->debug && query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
-
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
-
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
-	}
-
-	Graphics::checkError();
-}
-
-
-void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
-{
-	Graphics::use(shader, variant);
-	Graphics::setMat4(shader, variant, "model", model);
-
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-	}
-
-	GLsizei numVertices = size / 3;
-	GLint startIndex = start / 3;
-
-	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-	if(world->debug && query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
-
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
-
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
-	}
-
-	Graphics::checkError();
-}
-
-void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query)
-{
-	Graphics::use(shader, variant);
-	Graphics::setMat4(shader, variant, "model", model);
-	Graphics::setMat4(shader, variant, "view", view);
-	Graphics::setMat4(shader, variant, "projection", projection);
-
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-	}
-
-	GLsizei numVertices = size / 3;
-	GLint startIndex = start / 3;
 
 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
 

@@ -30,8 +30,15 @@ namespace PhysicsEngine
 			// main fbo
 			GLuint fbo;
 			GLuint color;
+			GLuint position;
+			GLuint normal;
 			GLuint depth;
-			Shader depthShader;
+			Shader mainShader;  // whats a good name for this shader which fills depth, normals, and position? geometryShader? forwardGbufferShader?
+
+			// ssao fbo
+			GLuint ssaoFBO;
+			GLuint ssaoColor;
+			Shader ssaoShader;
 
 			// directional light cascade shadow map data
 			GLuint shadowCascadeFBO[5];
@@ -39,15 +46,19 @@ namespace PhysicsEngine
 			float cascadeEnds[6];
 			glm::mat4 cascadeOrthoProj[5];
 			glm::mat4 cascadeLightView[5];
+			Shader depthShader;
 
 			// spotlight shadow map data
 			GLuint shadowSpotlightFBO;
 			GLuint shadowSpotlightDepth;
+			glm::mat4 shadowViewMatrix;
+			glm::mat4 shadowProjMatrix;
 
 			// pointlight cubemap shadow map data
 			GLuint shadowCubemapFBO;
 			GLuint shadowCubemapDepth;
-			glm::mat4 cubeViewMatrices[6];
+			glm::mat4 cubeViewProjMatrices[6];
+			Shader depthCubemapShader;
 
 			// quad
 			GLuint quadVAO;
@@ -81,20 +92,20 @@ namespace PhysicsEngine
 			GraphicsDebug getGraphicsDebug();
 
 		private:
-			void render(GLuint fbo, ShaderVariant variant); //renderScene?
-			void renderShadowMap(GLuint fbo, glm::mat4 lightView, glm::mat4 lightProjection);
 			void renderDebug(int view);
 
 			void beginFrame(Camera* camera, GLuint fbo);
 			void endFrame(GLuint tex);
-			void renderDirectionalLights();
-			void renderSpotLights();
-			void renderPointLights();
+			void directionalLightPass();
+			void spotLightPass();
+			void pointLightPass();
+			void debugPass();
 
 			void createTextures();
 			void createShaderPrograms();
 			void createMeshBuffers();
 			void createMainFBO();
+			void createSSAOFBO();
 			void createShadowMapFBOs();
 			void calcShadowmapCascades(float nearDist, float farDist);
 			void calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction);
@@ -107,8 +118,6 @@ namespace PhysicsEngine
 
 			void initCameraUniformState();
 			void initLightUniformState();
-
-
 			void updateCameraUniformState(Camera* camera);
 			void updateLightUniformState(DirectionalLight* light);
 			void updateLightUniformState(SpotLight* light);

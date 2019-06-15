@@ -11,6 +11,11 @@ float Plane::distance(glm::vec3 point) const
 	return (glm::dot(n,point) + d) / sqrt(glm::dot(n,n));
 }
 
+float Viewport::getAspectRatio() const
+{
+	return (float)height / (float)width;
+}
+
 int Frustum::checkPoint(glm::vec3 point) const
 {
 	// loop over all 6 planes
@@ -60,14 +65,12 @@ Camera::Camera()
 	viewport.height = 1024;
 
 	frustum.fov = 45.0f;
-	frustum.aspectRatio = 1.0f;
 	frustum.nearPlane = 0.1f;
 	frustum.farPlane = 250.0f;
 
 	position = glm::vec3(0.0f, 2.0f, 0.0f);
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	backgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
 
 	updateInternalCameraState();
@@ -88,14 +91,12 @@ Camera::Camera(std::vector<char> data)
 	viewport.height = header->height;
 
 	frustum.fov = header->fov;
-	frustum.aspectRatio = header->aspectRatio;
 	frustum.nearPlane = header->nearPlane;
 	frustum.farPlane = header->farPlane;
 
 	position = header->position;
 	front = header->front;
 	up = header->up;
-	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	backgroundColor = header->backgroundColor;
 
 	updateInternalCameraState();
@@ -114,9 +115,9 @@ void Camera::updateInternalCameraState()
 
 	float tan = (float)glm::tan(glm::radians(0.5f * frustum.fov));
 	float nearPlaneHeight = frustum.nearPlane * tan;
-	float nearPlaneWidth = frustum.aspectRatio * nearPlaneHeight;
+	float nearPlaneWidth = viewport.getAspectRatio() * nearPlaneHeight;
 	float farPlaneHeight = frustum.farPlane * tan;
-	float farPlaneWidth = frustum.aspectRatio * farPlaneHeight;
+	float farPlaneWidth = viewport.getAspectRatio() * farPlaneHeight;
 
 	// far and near plane intersection along front line
 	glm::vec3 fc = position + frustum.farPlane * front;
@@ -158,7 +159,7 @@ glm::mat4 Camera::getViewMatrix() const
 
 glm::mat4 Camera::getProjMatrix() const
 {
-	return glm::perspective(frustum.fov, frustum.aspectRatio, frustum.nearPlane, frustum.farPlane);
+	return glm::perspective(glm::radians(frustum.fov), viewport.getAspectRatio(), frustum.nearPlane, frustum.farPlane);
 }
 
 int Camera::checkPointInFrustum(glm::vec3 point) const

@@ -14,7 +14,7 @@ PointLight::PointLight()
 	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	projection = glm::perspective(glm::radians(90.0f), 1.0f * 1080 / 1080, 0.1f, 25.0f);
+	projection = glm::perspective(glm::radians(90.0f), 1.0f * 1024 / 1024, 0.1f, 250.0f);
 
 	lightType = LightType::Point;
 	shadowType = ShadowType::Hard;

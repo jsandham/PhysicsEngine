@@ -145,6 +145,54 @@ std::string Shader::shadowDepthMapFragmentShader =
 "{\n"
 "}";
 
+
+
+
+
+
+std::string Shader::shadowDepthCubemapVertexShader = 
+"in vec3 position;\n"
+"uniform mat4 model;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = model * vec4(position, 1.0);\n"
+"}";
+
+std::string Shader::shadowDepthCubemapGeometryShader =
+"layout (triangles) in;\n"
+"layout (triangle_strip, max_vertices=18) out;\n"
+"uniform mat4 cubeViewProjMatrices[6];\n"
+"out vec4 FragPos;\n"
+"void main()\n"
+"{\n"
+"	for(int i = 0; i < 6; i++){\n"
+"		gl_Layer = i;\n"
+"		for(int j = 0; j < 3; j++){\n"
+"			FragPos = gl_in[j].gl_Position;\n"
+"			gl_Position = cubeViewProjMatrices[i] * FragPos;\n"
+"			EmitVertex();\n"
+"		}\n"
+"		EndPrimitive();\n"
+"	}\n"
+"}";
+
+std::string Shader::shadowDepthCubemapFragmentShader = 
+"in vec4 FragPos;\n"
+"uniform vec3 lightPos;\n"
+"uniform float farPlane;\n"
+"void main()\n"
+"{\n"
+"	float lightDistance = length(FragPos.xyz - lightPos);\n"    
+"   lightDistance = lightDistance / farPlane;\n"
+"   gl_FragDepth = 1.0f;\n"
+"}";
+
+
+
+
+
+
+
 std::string Shader::overdrawVertexShader = 
 "layout (std140) uniform CameraBlock\n"
 "{\n"
@@ -259,6 +307,62 @@ std::string Shader::gbufferFragmentShader =
 "    gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;\n"
 "}\n";
 
+
+std::string Shader::mainVertexShader = 
+"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aNormal;\n"
+
+"out vec3 FragPos;\n"
+"out vec3 Normal;\n"
+
+"uniform mat4 model;\n"
+
+"void main()\n"
+"{\n"
+"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+"    FragPos = worldPos.xyz;\n" 
+    
+"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+"    Normal = normalMatrix * aNormal;\n"
+
+"    gl_Position = worldPos;\n"
+"}\n";
+
+std::string Shader::mainFragmentShader = 
+"layout (location = 1) out vec3 gPosition;\n"
+"layout (location = 2) out vec3 gNormal;\n"
+
+"in vec3 FragPos;\n"
+"in vec3 Normal;\n"
+
+"void main()\n"
+"{\n"    
+"    // store the fragment position vector in the first gbuffer texture\n"
+"    gPosition = FragPos;\n"
+"    // also store the per-fragment normals into the gbuffer\n"
+"    gNormal = normalize(Normal);\n"
+"}\n";
+
+
+std::string Shader::ssaoVertexShader = 
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
+"}";
+
+std::string Shader::ssaoFragmentShader = 
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"}";
 
 
 Shader::Shader()

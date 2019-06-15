@@ -21,10 +21,9 @@
     "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
     "x" : 0,
     "y" : 0,
-    "width" : 1000,
-    "height" : 1000,
+    "width" : 1024,
+    "height" : 1024,
     "fov" : 45.0,
-    "aspectRatio" : 1.0,
     "near" : 0.1,
     "far" : 250.0
   },

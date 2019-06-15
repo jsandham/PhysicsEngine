@@ -33,7 +33,6 @@ namespace PhysicsEngine
 		int width;
 		int height;
 		float fov;
-		float aspectRatio;
 		float nearPlane;
 		float farPlane;
 	};
@@ -54,6 +53,8 @@ namespace PhysicsEngine
 		int y;
 		int width;
 		int height;
+
+		float getAspectRatio() const;
 	};
 
 	struct Frustum
@@ -61,7 +62,6 @@ namespace PhysicsEngine
 		Plane planes[6];
 
 		float fov;
-		float aspectRatio;
 		float nearPlane;
 		float farPlane;
 
@@ -89,7 +89,6 @@ namespace PhysicsEngine
 			glm::vec3 front;
 			glm::vec3 up;
 			glm::vec3 right;
-			glm::vec3 worldUp;
 			glm::vec4 backgroundColor;
 
 		public:

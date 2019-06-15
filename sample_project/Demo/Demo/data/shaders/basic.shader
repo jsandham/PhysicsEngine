@@ -125,8 +125,6 @@ void main(void)
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
 #if defined(DIRECTIONALLIGHT)
-	//FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord); 
-
 	if(ClipSpaceZ <= Light.cascadeEnds[0]){
 		FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord) * vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
@@ -145,30 +143,12 @@ void main(void)
 	else{
 		FragColor = vec4(0.5, 0.5, 0.5, 1.0);
 	}
-	// if(ClipSpaceZ <= Light.cascadeEnds[0]){
-	// 	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	// }
-	// else if(ClipSpaceZ <= Light.cascadeEnds[1]){
-	// 	FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	// }
-	// else if(ClipSpaceZ <= Light.cascadeEnds[2]){
-	// 	FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-	// }
-	// else if(ClipSpaceZ <= Light.cascadeEnds[3]){
-	// 	FragColor = vec4(0.0f, 1.0f, 1.0f, 1.0f);
-	// }
-	// else if(ClipSpaceZ <= Light.cascadeEnds[4]){
-	// 	FragColor = vec4(0.6f, 0.0f, 0.6f, 1.0f);
-	// }
-	// else{
-	// 	FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-	// }
 #elif defined(SPOTLIGHT)
 	FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 #elif defined(POINTLIGHT)
 	FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 #else 
-	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	FragColor = vec4(0.5, 0.5, 0.5, 1.0);
 #endif
 }
 
@@ -206,22 +186,28 @@ vec3 CalcSpotLight(Material material, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 	float ambientStrength = 1.0f;
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
-	float specularStrength = 1.0f;//pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-
-	float attenuation = 1.0f / (1.0f + 0.01f*pow(length(Light.position - fragPos), 2));
+	float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
 
 	float theta = dot(lightDir, normalize(-Light.direction));
 	float epsilon = Light.cutOff - Light.outerCutOff;
 	float intensity = clamp((theta - Light.outerCutOff) / epsilon, 0.0f, 1.0f);
 
-	vec3 ambient = Light.ambient * material.ambient * ambientStrength;
-	vec3 diffuse = Light.diffuse * material.diffuse * diffuseStrength;
-	vec3 specular = Light.specular * material.specular * vec3(texture(material.specularMap, TexCoord)) * specularStrength;
+	float shadow = CalcShadow(0, FragPosLightSpace[0]);
 
-	ambient *= attenuation * intensity;
+	//float attenuation = 1.0f / (1.0f + 0.01f*pow(length(Light.position - fragPos), 2));
+	float distance = length(Light.position - fragPos);
+	float attenuation = 1.0f / (Light.constant + Light.linear * distance + Light.quadratic * distance * distance);
+
+	vec3 ambient = Light.ambient * material.ambient * ambientStrength;
+	vec3 diffuse = (1.0f - shadow) * Light.diffuse * material.diffuse * diffuseStrength;
+	vec3 specular = (1.0f - shadow) * Light.specular * material.specular * vec3(texture(material.specularMap, TexCoord)) * specularStrength;
+
+	ambient *= attenuation;
 	diffuse *= attenuation * intensity;
 	specular *= attenuation * intensity;
 
+	// return vec3(FragPosLightSpace[0].x/FragPosLightSpace[0].w, FragPosLightSpace[0].y/FragPosLightSpace[0].w, FragPosLightSpace[0].z/FragPosLightSpace[0].w);//vec3(ambient + diffuse + specular);
+	// return vec3(0.0f, 0.0f, FragPosLightSpace[0].z/FragPosLightSpace[0].w);
 	return vec3(ambient + diffuse + specular);
 }
 
@@ -264,7 +250,11 @@ float CalcShadow(int index, vec4 fragPosLightSpace)
     // check whether current frag pos is in shadow
     float shadow = closestDepth < currentDepth ? 1.0f : 0.0f;
 
+    //float z = closestDepth * 2.0 - 1.0; // back to NDC 
+    //return (2.0 * 0.1f * 250.0f) / (250.0f + 0.1f - z * (250.0f - 0.1f));
+
     return shadow;
+    // return projCoords.z;// > 2000000.0f ? 1.0f : 0.0f;
 
 	// float bias = 0.005f;
 	// float shadow = 0.0f;

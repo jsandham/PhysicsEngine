@@ -56,6 +56,9 @@ namespace PhysicsEngine
 			static std::string depthMapFragmentShader;
 			static std::string shadowDepthMapVertexShader;
 			static std::string shadowDepthMapFragmentShader;
+			static std::string shadowDepthCubemapVertexShader;
+			static std::string shadowDepthCubemapGeometryShader;
+			static std::string shadowDepthCubemapFragmentShader;
 			static std::string overdrawVertexShader;
 			static std::string overdrawFragmentShader;
 			static std::string fontVertexShader;
@@ -64,6 +67,10 @@ namespace PhysicsEngine
 			static std::string instanceFragmentShader;
 			static std::string gbufferVertexShader;
 			static std::string gbufferFragmentShader;
+			static std::string mainVertexShader;
+			static std::string mainFragmentShader;
+			static std::string ssaoVertexShader;
+			static std::string ssaoFragmentShader;
 
 		public:
 			std::string vertexShader;
