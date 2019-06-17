@@ -29,6 +29,8 @@ void CleanUpSystem::init(World* world)
 
 void CleanUpSystem::update(Input input)
 {
+	world->clearIdsMarked();
+
 	// std::vector<Guid> entityIdsMarkedForLatentDestroy = world->entityIdsMarkedForLatentDestroy;
 	// for(int i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++){
 	// 	std::cout << "Clean up system attempting to destroy entity " << entityIdsMarkedForLatentDestroy[i].toString() << std::endl;

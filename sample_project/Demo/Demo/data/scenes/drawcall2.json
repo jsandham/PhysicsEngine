@@ -35,18 +35,20 @@
     "isStatic" : false
   },
   "47d58a2d-25b8-4a1e-bc7f-984d961f73b6" : {
-    "type" : "SpotLight",
+    "type" : "Light",
     "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
+    "position" : [0.0, 0.0, 10.0],
+    "direction" : [0.0, 0.0, -1.0],
+    "ambient" : [0.1, 0.1, 0.1],
+    "diffuse" : [1.0, 1.0, 1.0],
+    "specular" : [1.0, 1.0, 1.0],
     "constant" : 1.0,
     "linear" : 0.0,
     "quadratic" : 0.0,
     "cutOff" : 10.0,
     "outerCutOff" : 20.0,
-    "position" : [0.0, 0.0, 10.0],
-    "direction" : [0.0, 0.0, -1.0],
-    "ambient" : [0.1, 0.1, 0.1],
-    "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "lightType" : 1,
+    "shadowType" : 1
   },
   "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",
@@ -5087,5 +5089,9 @@
   "c757fef5-31b6-46a6-acd9-346327fdc573" : {
     "type" : "LogicSystem",
     "order" : 4
+  },
+  "e7731d8c-8f2c-4179-a893-dcbb86fbf88e" : {
+    "type" : "CleanUpSystem",
+    "order" : 5
   }
 }

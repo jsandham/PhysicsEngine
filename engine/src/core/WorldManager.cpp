@@ -34,8 +34,6 @@ void WorldManager::init()
 
 bool WorldManager::update(Time time, Input input)
 {
-	//std::cout << "Time: " << time.deltaTime << " " << getFPS(time) << std::endl;
-
 	if(getKeyDown(input, KeyCode::D)){
 		world.debug = !world.debug;
 	}

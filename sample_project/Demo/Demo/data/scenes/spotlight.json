@@ -35,18 +35,18 @@
     "isStatic" : false
   },
   "47d58a2d-25b8-4a1e-bc7f-984d961f73b6" : {
-    "type" : "SpotLight",
+    "type" : "Light",
     "entity" : "0f17f8a7-9db8-4a91-aa34-a6140d376b73",
-    "constant" : 1.0,
-    "linear" : 0.0,
-    "quadratic" : 0.0,
-    "cutOff" : 10.0,
-    "outerCutOff" : 25.0,
     "position" : [0.0, 0.0, 6.0],
     "direction" : [0.0, 0.0, -1.0],
     "ambient" : [0.2, 0.2, 0.2],
     "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
   },
   "b99dcfec-19bc-4390-a9bb-a98c834b2812" : {
     "type" : "Entity",

@@ -23,9 +23,7 @@
 #include "../components/Transform.h"
 #include "../components/Rigidbody.h"
 #include "../components/Camera.h"
-#include "../components/DirectionalLight.h"
-#include "../components/PointLight.h"
-#include "../components/SpotLight.h"
+#include "../components/Light.h"
 #include "../components/MeshRenderer.h"
 #include "../components/LineRenderer.h"
 #include "../components/Collider.h"
@@ -63,8 +61,10 @@ namespace PhysicsEngine
 			std::map<Guid, int> idToGlobalIndex;
 			std::map<Guid, std::vector<std::pair<Guid, int>>> entityIdToComponentIds; 
 
-			// entities marked for cleanup
-			std::vector<Guid> entityIdsMarkedForLatentDestroy;
+			std::vector<Guid> entityIdsMarkedCreated;
+			std::vector<Guid> entityIdsMarkedLatentDestroy;
+			std::vector<std::pair<Guid, int>> componentIdsMarkedCreated;
+			std::vector<std::pair<Guid, int>> componentIdsMarkedLatentDestroy;
 
 		public:
 			bool debug;
@@ -148,6 +148,8 @@ namespace PhysicsEngine
 
 				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
 
+				componentIdsMarkedCreated.push_back(std::make_pair(componentId, componentType));
+
 				return component;
 			}
 
@@ -204,6 +206,27 @@ namespace PhysicsEngine
 				return asset;
 			}
 
+			Entity* createEntity();
+			Entity* createEntity(Guid entityId);
+
+			void latentDestroyEntity(Guid entityId);
+			void immediateDestroyEntity(Guid entityId);
+			void latentDestroyComponent(Guid componentId, int componentInstanceType);
+			void immediateDestroyComponent(Guid componentId, int componentInstanceType);
+			bool isMarkedForLatentDestroy(Guid id);
+			void clearIdsMarked();
+
+			std::vector<Guid> getEntityIdsMarkedCreated();
+			std::vector<Guid> getEntityIdsMarkedLatentDestroy();
+			std::vector<std::pair<Guid, int>> getComponentIdsMarkedCreated();
+			std::vector<std::pair<Guid, int>> getComponentIdsMarkedLatentDestroy();
+
+
+
+
+
+
+
 			Bounds* getWorldBounds();
 			//Octtree* getStaticPhysicsTree();
 			//Octtree* getDynamicPhysicsTree();
@@ -211,24 +234,6 @@ namespace PhysicsEngine
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);
-
-
-			void latentDestroy(Guid entityId);
-			void immediateDestroy(Guid entityId);
-			bool isMarkedForLatentDestroy(Guid entityId);
-			std::vector<Guid> getEntitiesMarkedForLatentDestroy();
-			Entity* instantiate();
-			Entity* instantiate(Guid entityId);
-
-
-
-
-
-
-
-
-
-
 
 			static bool writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels);
 			static bool writeToBMP(const std::string& filepath, std::vector<float>& data, int width, int height, int numChannels);

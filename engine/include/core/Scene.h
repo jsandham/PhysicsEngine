@@ -17,9 +17,10 @@ namespace PhysicsEngine
 		unsigned int numberOfCameras;
 		unsigned int numberOfMeshRenderers;
 		unsigned int numberOfLineRenderers;
-		unsigned int numberOfDirectionalLights;
-		unsigned int numberOfSpotLights;
-		unsigned int numberOfPointLights;
+		unsigned int numberOfLights;
+		// unsigned int numberOfDirectionalLights;
+		// unsigned int numberOfSpotLights;
+		// unsigned int numberOfPointLights;
 		unsigned int numberOfBoxColliders;
 		unsigned int numberOfSphereColliders;
 		unsigned int numberOfMeshColliders;
@@ -34,9 +35,10 @@ namespace PhysicsEngine
 		size_t sizeOfCamera;
 		size_t sizeOfMeshRenderer;
 		size_t sizeOfLineRenderer;
-		size_t sizeOfDirectionalLight;
-		size_t sizeOfSpotLight;
-		size_t sizeOfPointLight;
+		size_t sizeOfLight;
+		// size_t sizeOfDirectionalLight;
+		// size_t sizeOfSpotLight;
+		// size_t sizeOfPointLight;
 		size_t sizeOfBoxCollider;
 		size_t sizeOfSphereCollider;
 		size_t sizeOfMeshCollider;

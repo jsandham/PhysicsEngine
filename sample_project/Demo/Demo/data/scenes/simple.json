@@ -35,12 +35,18 @@
     "isStatic" : false
   },
   "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc" : {
-    "type" : "DirectionalLight",
+    "type" : "Light",
     "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
+    "position" : [0.0, 0.0, 0.0],
     "direction" : [0.2, 1.0, 0.3],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
   },
   "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",

@@ -7,7 +7,7 @@ namespace PhysicsEngine
 {
 	typedef struct RenderObject
 	{
-		bool culled;
+		Guid id;
 		int start; // start index in vbo
 		int size;  // size of vbo
 		int transformIndex;
@@ -21,6 +21,8 @@ namespace PhysicsEngine
 		Sphere boundingSphere;
 
 		glm::mat4 model;
+
+		bool culled;
 	}RenderObject;
 }
 

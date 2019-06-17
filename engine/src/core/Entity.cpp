@@ -27,15 +27,10 @@ Entity::~Entity()
 
 void Entity::latentDestroy(World* world)
 {
-	world->latentDestroy(entityId);
+	world->latentDestroyEntity(entityId);
 }
 
 void Entity::immediateDestroy(World* world)
 {
-	world->immediateDestroy(entityId);
-}
-
-Entity* Entity::instantiate(World* world)
-{
-	return world->instantiate(entityId);
+	world->immediateDestroyEntity(entityId);
 }

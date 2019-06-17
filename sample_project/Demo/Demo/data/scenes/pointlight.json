@@ -35,15 +35,18 @@
     "isStatic" : false
   },
   "58011868-b463-46ce-8a0e-241d19d15a3e" : {
-    "type" : "PointLight",
+    "type" : "Light",
     "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
-    "constant" : 1.0,
-    "linear" : 0.5,
-    "quadratic" : 0.25,
+    "direction" : [0.0, 0.0, 1.0],
     "position" : [-5.0, 2.0, 0.6],
     "ambient" : [0.2, 0.2, 0.2],
     "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
   },
   "a0a845cf-b0e3-45df-99cf-47745cd99edc" : {
     "type" : "Entity",
@@ -58,15 +61,18 @@
     "scale" : [1.0, 1.0, 1.0]
   },
   "b7108a91-54c2-42c0-9c7d-723f18fe2486" : {
-    "type" : "PointLight",
+    "type" : "Light",
     "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
-    "constant" : 1.0,
-    "linear" : 0.25,
-    "quadratic" : 0.1,
     "position" : [1.0, 2.0, 0.5],
+    "direction" : [0.0, 0.0, 1.0],
     "ambient" : [0.2, 0.2, 0.2],
     "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
   },
   "19804f45-c771-47d0-9be6-6efd38672c42" : {
     "type" : "MeshRenderer",

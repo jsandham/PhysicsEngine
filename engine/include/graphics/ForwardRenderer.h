@@ -10,6 +10,7 @@
 #include "../core/Guid.h"
 #include "../core/Input.h"
 
+#include "../components/Light.h"
 #include "../components/MeshRenderer.h"
 
 #include "BatchManager.h"
@@ -85,8 +86,6 @@ namespace PhysicsEngine
 
 			void init(World* world);
 			void update(Input input);
-			void add(MeshRenderer* meshRenderer);
-			void remove(MeshRenderer* meshRenderer);
 
 			GraphicsQuery getGraphicsQuery();
 			GraphicsDebug getGraphicsDebug();
@@ -96,10 +95,13 @@ namespace PhysicsEngine
 
 			void beginFrame(Camera* camera, GLuint fbo);
 			void endFrame(GLuint tex);
-			void directionalLightPass();
-			void spotLightPass();
-			void pointLightPass();
+			void cullingPass();
+			void lightPass(Light* light);
 			void debugPass();
+			void initRenderObjectsList();
+			void updateRenderObjectsList();
+			void addToRenderObjectsList(MeshRenderer* meshRenderer);
+			void removeFromRenderObjectsList(MeshRenderer* meshRenderer); 
 
 			void createTextures();
 			void createShaderPrograms();
@@ -111,17 +113,10 @@ namespace PhysicsEngine
 			void calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction);
 			void calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection);
 
-			//void renderTextureToScreen(GLuint tex); //could call endFrame()?
-
-
-
-
 			void initCameraUniformState();
 			void initLightUniformState();
 			void updateCameraUniformState(Camera* camera);
-			void updateLightUniformState(DirectionalLight* light);
-			void updateLightUniformState(SpotLight* light);
-			void updateLightUniformState(PointLight* light);
+			void updateLightUniformState(Light* light);
 	};
 }
 

@@ -35,12 +35,20 @@
     "isStatic" : false
   },
   "705622b7-d3b4-4c9b-86ce-28e5cba4a0fc" : {
-    "type" : "DirectionalLight",
+    "type" : "Light",
     "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
+    "position" : [0.0, 0.0, 0.0],
     "direction" : [2.0, 1.0, 1.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
-    "specular" : [1.0, 1.0, 1.0]
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0,
+    "lightType" : 0,
+    "shadowType" : 1
   },
   "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",
@@ -5081,5 +5089,9 @@
   "c757fef5-31b6-46a6-acd9-346327fdc573" : {
     "type" : "LogicSystem",
     "order" : 4
+  },
+  "e7731d8c-8f2c-4179-a893-dcbb86fbf88e" : {
+    "type" : "CleanUpSystem",
+    "order" : 5
   }
 }

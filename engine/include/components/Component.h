@@ -21,6 +21,18 @@ namespace PhysicsEngine
 			Entity* getEntity(World* world);
 
 			template<typename T>
+			void latentDestroy(World* world)
+			{
+				world->latentDestroyComponent(componentId, getInstanceType<T>());
+			}
+
+			template<typename T>
+			void immediateDestroy(World* world)
+			{
+				world->immediateDestroyComponent(componentId, getInstanceType<T>());
+			}
+
+			template<typename T>
 			T* getComponent(World* world)
 			{
 				Entity* entity = getEntity(world);

@@ -16,9 +16,7 @@
 #include "../../include/components/Camera.h"
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/LineRenderer.h"
-#include "../../include/components/DirectionalLight.h"
-#include "../../include/components/SpotLight.h"
-#include "../../include/components/PointLight.h"
+#include "../../include/components/Light.h"
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/SphereCollider.h"
@@ -44,7 +42,6 @@ Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int* index)
 	int type = *reinterpret_cast<int*>(&data[0]); //maybe should add classification to assets? Just for consistency with components, entities, and systems?
 
 	if(type == 0){
-		std::cout << "a shader allocator count: " << getAllocator<Shader>().getCount() << std::endl;
 		*index = (int)getAllocator<Shader>().getCount();
 		return create<Shader>(data);
 	}
@@ -115,19 +112,9 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* ind
 		return create<LineRenderer>(data);
 	}
 	else if(type == 5){
-		*index = (int)getAllocator<DirectionalLight>().getCount();
-		*instanceType = (int)Component::getInstanceType<DirectionalLight>();
-		return create<DirectionalLight>(data);
-	}
-	else if(type == 6){
-		*index = (int)getAllocator<SpotLight>().getCount();
-		*instanceType = (int)Component::getInstanceType<SpotLight>();
-		return create<SpotLight>(data);
-	}
-	else if(type == 7){
-		*index = (int)getAllocator<PointLight>().getCount();
-		*instanceType = (int)Component::getInstanceType<PointLight>();
-		return create<PointLight>(data);
+		*index = (int)getAllocator<Light>().getCount();
+		*instanceType = (int)Component::getInstanceType<Light>();
+		return create<Light>(data);
 	}
 	else if(type == 8){
 		*index = (int)getAllocator<BoxCollider>().getCount();

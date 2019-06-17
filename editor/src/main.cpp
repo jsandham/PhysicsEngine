@@ -28,9 +28,7 @@
 #include <components/Camera.h>
 #include <components/MeshRenderer.h>
 #include <components/LineRenderer.h>
-#include <components/DirectionalLight.h>
-#include <components/SpotLight.h>
-#include <components/PointLight.h>
+
 #include <components/BoxCollider.h>
 #include <components/SphereCollider.h>
 #include <components/MeshCollider.h>
@@ -121,9 +119,10 @@ int serializeScenes(std::string projectDirectory)
 		json::JSON cameras;
 		json::JSON meshRenderers;
 		json::JSON lineRenderers;
-		json::JSON directionalLights;
-		json::JSON spotLights;
-		json::JSON pointLights;
+		json::JSON lights;
+		// json::JSON directionalLights;
+		// json::JSON spotLights;
+		// json::JSON pointLights;
 		json::JSON boxColliders;
 		json::JSON sphereColliders;
 		json::JSON meshColliders;
@@ -164,14 +163,8 @@ int serializeScenes(std::string projectDirectory)
 			else if(type == "LineRenderer"){
 				lineRenderers[it->first] = it->second;
 			}
-			else if(type == "DirectionalLight"){
-				directionalLights[it->first] = it->second;
-			}
-			else if(type == "SpotLight"){
-				spotLights[it->first] = it->second;
-			}
-			else if(type == "PointLight"){
-				pointLights[it->first] = it->second;
+			else if(type == "Light"){
+				lights[it->first] = it->second;
 			}
 			else if(type == "BoxCollider"){
 				boxColliders[it->first] = it->second;
@@ -194,6 +187,10 @@ int serializeScenes(std::string projectDirectory)
 			}
 			else if(type == "RenderSystem"){
 				//std::cout << it->first << " is a RenderSystem" << std::endl;
+				systems[it->first] = it->second;
+			}
+			else if(type == "CleanUpSystem"){
+				//std::cout << it->first << " is a PhysicsSystem" << std::endl;
 				systems[it->first] = it->second;
 			}
 			else if(type == "PlayerSystem"){
@@ -220,9 +217,10 @@ int serializeScenes(std::string projectDirectory)
 		unsigned int numberOfCameras = std::max(0, cameras.size());
 		unsigned int numberOfMeshRenderers = std::max(0, meshRenderers.size());
 		unsigned int numberOfLineRenderers = std::max(0, lineRenderers.size());
-		unsigned int numberOfDirectionalLights = std::max(0, directionalLights.size());
-		unsigned int numberOfSpotLights = std::max(0, spotLights.size());
-		unsigned int numberOfPointLights = std::max(0, pointLights.size());
+		unsigned int numberOfLights = std::max(0, lights.size());
+		// unsigned int numberOfDirectionalLights = std::max(0, directionalLights.size());
+		// unsigned int numberOfSpotLights = std::max(0, spotLights.size());
+		// unsigned int numberOfPointLights = std::max(0, pointLights.size());
 		unsigned int numberOfBoxColliders = std::max(0, boxColliders.size());
 		unsigned int numberOfSphereColliders = std::max(0, sphereColliders.size());
 		unsigned int numberOfMeshColliders = std::max(0, meshColliders.size());
@@ -236,9 +234,7 @@ int serializeScenes(std::string projectDirectory)
 		std::cout << "number of cameras found" << numberOfCameras << std::endl;
 		std::cout << "number of mesh renderers found: " << numberOfMeshRenderers << std::endl;
 		std::cout << "number of line renderers found: " << numberOfLineRenderers << std::endl;
-		std::cout << "number of directional lights found: " << numberOfDirectionalLights << std::endl;
-		std::cout << "number of spot lights found: " << numberOfSpotLights << std::endl;
-		std::cout << "number of point lights found: " << numberOfPointLights << std::endl;
+		std::cout << "number of lights found: " << numberOfLights << std::endl;
 		std::cout << "number of box collider found: " << numberOfBoxColliders << std::endl;
 		std::cout << "number of sphere collider found: " << numberOfSphereColliders << std::endl;
 		std::cout << "number of mesh collider found: " << numberOfMeshColliders << std::endl;
@@ -255,9 +251,7 @@ int serializeScenes(std::string projectDirectory)
 		header.numberOfCameras = numberOfCameras;
 		header.numberOfMeshRenderers = numberOfMeshRenderers;
 		header.numberOfLineRenderers = numberOfLineRenderers;
-		header.numberOfDirectionalLights = numberOfDirectionalLights;
-		header.numberOfSpotLights = numberOfSpotLights;
-		header.numberOfPointLights = numberOfPointLights;
+		header.numberOfLights = numberOfLights;
 		header.numberOfBoxColliders = numberOfBoxColliders;
 		header.numberOfSphereColliders = numberOfSphereColliders;
 		header.numberOfMeshColliders = numberOfMeshColliders;
@@ -271,16 +265,12 @@ int serializeScenes(std::string projectDirectory)
 		header.sizeOfCamera = sizeof(Camera);
 		header.sizeOfMeshRenderer = sizeof(MeshRenderer);
 		header.sizeOfLineRenderer = sizeof(LineRenderer);
-		header.sizeOfDirectionalLight = sizeof(DirectionalLight);
-		header.sizeOfSpotLight = sizeof(SpotLight);
-		header.sizeOfPointLight = sizeof(PointLight);
+		header.sizeOfLight = sizeof(Light);
 		header.sizeOfBoxCollider = sizeof(BoxCollider);
 		header.sizeOfSphereCollider = sizeof(SphereCollider);
 		header.sizeOfMeshCollider = sizeof(MeshCollider);
 		header.sizeOfCapsuleCollider = sizeof(CapsuleCollider);
 		header.sizeOfBoids = sizeof(Boids);
-
-		//header.sizeOfAllSystems = sizeOfAllSystems;
 
 		std::cout << "size of physics system: " << sizeof(PhysicsSystem) << " size of render system: " << sizeof(RenderSystem) << " size of logic system: "  << sizeof(LogicSystem) << std::endl;
 
@@ -509,13 +499,17 @@ int serializeScenes(std::string projectDirectory)
 
 		std::cout << "size of line renderer: " << sizeof(LineRenderer) << std::endl;
 
-		// serialize directional lights
-		objects = directionalLights.ObjectRange();
+		// serialize lights
+		objects = lights.ObjectRange();
 		for(it = objects.begin(); it != objects.end(); it++){
-			DirectionalLightHeader data;
+			LightHeader data;
 
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
+
+			data.position.x = (float)it->second["position"][0].ToFloat();
+			data.position.y = (float)it->second["position"][1].ToFloat();
+			data.position.z = (float)it->second["position"][2].ToFloat();
 
 			data.direction.x = (float)it->second["direction"][0].ToFloat();
 			data.direction.y = (float)it->second["direction"][1].ToFloat();
@@ -532,28 +526,6 @@ int serializeScenes(std::string projectDirectory)
 			data.specular.x = (float)it->second["specular"][0].ToFloat();
 			data.specular.y = (float)it->second["specular"][1].ToFloat();
 			data.specular.z = (float)it->second["specular"][2].ToFloat();
-
-			int type = 5;
-			char classification = 'c';
-
-			size_t totalSize = sizeof(char);
-			totalSize += sizeof(int);
-			totalSize += sizeof(DirectionalLightHeader);
-
-			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&classification, sizeof(char), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
-
-			fwrite(&data, sizeof(DirectionalLightHeader), 1, file);
-		}
-
-		// serialize spot lights
-		objects = spotLights.ObjectRange();
-		for(it = objects.begin(); it != objects.end(); it++){
-			SpotLightHeader data;
-
-			data.componentId = Guid(it->first);
-			data.entityId = Guid(it->second["entity"].ToString());
 
 			data.constant = (float)it->second["constant"].ToFloat();
 			data.linear = (float)it->second["linear"].ToFloat();
@@ -561,84 +533,23 @@ int serializeScenes(std::string projectDirectory)
 			data.cutOff = (float)it->second["cutOff"].ToFloat();
 			data.outerCutOff = (float)it->second["outerCutOff"].ToFloat();
 
-			data.position.x = (float)it->second["position"][0].ToFloat();
-			data.position.y = (float)it->second["position"][1].ToFloat();
-			data.position.z = (float)it->second["position"][2].ToFloat();
-
-			data.direction.x = (float)it->second["direction"][0].ToFloat();
-			data.direction.y = (float)it->second["direction"][1].ToFloat();
-			data.direction.z = (float)it->second["direction"][2].ToFloat();
-
-			data.ambient.x = (float)it->second["ambient"][0].ToFloat();
-			data.ambient.y = (float)it->second["ambient"][1].ToFloat();
-			data.ambient.z = (float)it->second["ambient"][2].ToFloat();
-
-			data.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-			data.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-			data.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
-
-			data.specular.x = (float)it->second["specular"][0].ToFloat();
-			data.specular.y = (float)it->second["specular"][1].ToFloat();
-			data.specular.z = (float)it->second["specular"][2].ToFloat();
+			data.lightType = (int)it->second["lightType"].ToInt();
+			data.shadowType = (int)it->second["shadowType"].ToInt();
 
 			data.projection = glm::perspective(2.0f * glm::radians(data.outerCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
 
-			int type = 6;
+			int type = 5;
 			char classification = 'c';
 
 			size_t totalSize = sizeof(char);
 			totalSize += sizeof(int);
-			totalSize += sizeof(SpotLightHeader);
+			totalSize += sizeof(LightHeader);
 
 			fwrite(&totalSize, sizeof(size_t), 1, file);
 			fwrite(&classification, sizeof(char), 1, file);
 			fwrite(&type, sizeof(int), 1, file);
 
-			fwrite(&data, sizeof(SpotLightHeader), 1, file);
-		}
-
-		// serialize point lights
-		objects = pointLights.ObjectRange();
-		for(it = objects.begin(); it != objects.end(); it++){
-			PointLightHeader data;
-
-			data.componentId = Guid(it->first);
-			data.entityId = Guid(it->second["entity"].ToString());
-
-			data.constant = (float)it->second["constant"].ToFloat();
-			data.linear = (float)it->second["linear"].ToFloat();
-			data.quadratic = (float)it->second["quadratic"].ToFloat();
-
-			data.position.x = (float)it->second["position"][0].ToFloat();
-			data.position.y = (float)it->second["position"][1].ToFloat();
-			data.position.z = (float)it->second["position"][2].ToFloat();
-
-			data.ambient.x = (float)it->second["ambient"][0].ToFloat();
-			data.ambient.y = (float)it->second["ambient"][1].ToFloat();
-			data.ambient.z = (float)it->second["ambient"][2].ToFloat();
-
-			data.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-			data.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-			data.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
-
-			data.specular.x = (float)it->second["specular"][0].ToFloat();
-			data.specular.y = (float)it->second["specular"][1].ToFloat();
-			data.specular.z = (float)it->second["specular"][2].ToFloat();
-
-			data.projection = glm::perspective(glm::radians(45.0f), 1.0f * 640 / 480, 0.1f, 100.0f);
-
-			int type = 7;
-			char classification = 'c';
-
-			size_t totalSize = sizeof(char);
-			totalSize += sizeof(int);
-			totalSize += sizeof(PointLightHeader);
-
-			fwrite(&totalSize, sizeof(size_t), 1, file);
-			fwrite(&classification, sizeof(char), 1, file);
-			fwrite(&type, sizeof(int), 1, file);
-
-			fwrite(&data, sizeof(PointLightHeader), 1, file);
+			fwrite(&data, sizeof(LightHeader), 1, file);
 		}
 
 		// serialize box collider

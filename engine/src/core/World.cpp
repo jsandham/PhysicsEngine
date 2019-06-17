@@ -336,6 +336,120 @@ int World::getIndexOfAsset(Guid id)
 	return -1;
 }
 
+Entity* World::createEntity()
+{
+	int globalIndex = (int)getAllocator<Entity>().getCount();
+	Guid entityId = Guid::newGuid();
+
+	Entity* entity = create<Entity>();
+	entity->entityId = entityId;
+
+	idToGlobalIndex[entityId] = globalIndex;
+	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+
+	entityIdsMarkedCreated.push_back(entityId);
+
+	return entity;
+}
+
+Entity* World::createEntity(Guid entityId)
+{
+	Entity* oldEntity = getEntity(entityId);
+
+	if(oldEntity == NULL){ 
+		std::cout << "Error: Could not find entity (" << entityId.toString() << ") when trying to create entity" << std::endl;
+		return NULL;
+	}
+
+	std::vector<std::pair<Guid, int>> oldComponents;
+
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
+	if(it != entityIdToComponentIds.end()){
+		oldComponents = it->second;
+	}
+	else{
+		std::cout << "Error: " << std::endl;
+		return NULL;
+	}
+
+	Entity* newEntity = createEntity();
+
+	// add components to new entity
+	for(size_t i = 0; i < oldComponents.size(); i++){
+		Guid oldComponentId = oldComponents[i].first;
+		int oldComponentType = oldComponents[i].second;
+
+		// TODO: How do I add the new component using the instance type and old component Id???
+	}
+
+	return NULL;
+}
+
+void World::latentDestroyEntity(Guid entityId)
+{
+	entityIdsMarkedLatentDestroy.push_back(entityId);
+}
+
+void World::immediateDestroyEntity(Guid entityId)
+{
+	std::cout << "Error: Immediate destroy not yet implemented" << std::endl;
+}
+
+void World::latentDestroyComponent(Guid componentId, int componentInstanceType)
+{
+	componentIdsMarkedLatentDestroy.push_back(std::make_pair(componentId, componentInstanceType));
+}
+
+void World::immediateDestroyComponent(Guid componentId, int componentInstanceType)
+{
+	std::cout << "Error: Immediate destroy not yet implemented" << std::endl;
+}
+
+bool World::isMarkedForLatentDestroy(Guid id)
+{
+	for(unsigned int i = 0; i < entityIdsMarkedLatentDestroy.size(); i++){
+		if(entityIdsMarkedLatentDestroy[i] == id){
+			return true;
+		}
+	}
+
+	for(unsigned int i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
+		if(componentIdsMarkedLatentDestroy[i].first == id){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void World::clearIdsMarked()
+{
+	entityIdsMarkedCreated.clear();
+	entityIdsMarkedLatentDestroy.clear();
+	componentIdsMarkedCreated.clear();
+	componentIdsMarkedLatentDestroy.clear();
+}
+
+std::vector<Guid> World::getEntityIdsMarkedCreated()
+{
+	return entityIdsMarkedCreated;
+}
+
+std::vector<Guid> World::getEntityIdsMarkedLatentDestroy()
+{
+	return entityIdsMarkedLatentDestroy;
+}
+			
+std::vector<std::pair<Guid, int>> World::getComponentIdsMarkedCreated()
+{
+	return componentIdsMarkedCreated;
+}
+
+std::vector<std::pair<Guid, int>> World::getComponentIdsMarkedLatentDestroy()
+{
+	return componentIdsMarkedLatentDestroy;
+}
+
 Bounds* World::getWorldBounds()
 {
 	return &bounds;
@@ -354,199 +468,6 @@ Bounds* World::getWorldBounds()
 UniformGrid* World::getStaticPhysicsGrid()
 {
 	return &sgrid;
-}
-
-void World::latentDestroy(Guid entityId)
-{
-	entityIdsMarkedForLatentDestroy.push_back(entityId);
-}
-
-void World::immediateDestroy(Guid entityId)
-{
-	Entity* entity = getEntity(entityId);
-
-	if(entity == NULL){
-	 	std::cout << "Error: Could not find entity (" << entityId.toString() << ") when calling immediateDestroy" << std::endl;
-	 	return;
-	}
-
-	// std::vector<std::pair<Guid, int>> componentsOnEntity;
-
-	// std::map<Guid, std::vector<std::pair, int>>>::iterator it = entityIdToComponentIds.find(entityId);
-	// if(it != entityIdToComponentIds.end()){
-	// 	componentsOnEntity = it->second;
-	// }
-	// else{
-	// 	std::cout << "Error: Entity id (" << entityId.toString() << ") does not exist in entity id to component id map" << std::endl;
-	// 	return;
-	// }
-
-	
-
-
-
-
-	// int entityGlobalIndex = -1;
-	// std::map<int, int>::iterator it1 = idToGlobalIndexMap.find(entityId);
-	// if(it1 != idToGlobalIndexMap.end()){
-	// 	entityGlobalIndex = it1->second;
-	// }
-	// else{
-	// 	std::cout << "Error: When searching entity with id " << entityId << " no global index corresponding to this entity id was found" << std::endl;
-	// 	return;
-	// }
-
-	// if(entityGlobalIndex < 0 || entityGlobalIndex >= numberOfEntities){
-	// 	std::cout << "Error: Entity global index corresponding to entity with id " << entityId << " was out or range" << std::endl;
-	// 	return;
-	// }
-
-	// for(int i = 0; i < 8; i++){
-	// 	int componentId = entity->componentIds[i];
-	// 	if(componentId != -1){
-	// 		std::map<int, int>::iterator it2 = componentIdToTypeMap.find(componentId);
-	// 		int componentType = -1;
-	// 		if(it2 != componentIdToTypeMap.end()){
-	// 			componentType = it2->second;
-	// 		}
-	// 		else{
-	// 			std::cout << "Error: When searching entity with id " << entityId << " no component with id " << componentId << " was found in component type map" << std::endl;
-	// 			return;
-	// 		}
-
-	// 		if(componentType == -1){
-	// 			std::cout << "Error: When searching entity with id " << entityId << " the component type found corresponding to component " << componentId << " was invalid" << std::endl;
-	// 			return;
-	// 		}
-
-	// 		int componentGlobalIndex = -1;
-	// 		std::map<int, int>::iterator it3 = idToGlobalIndexMap.find(componentId);
-	// 		if(it3 != idToGlobalIndexMap.end()){
-	// 			componentGlobalIndex = it3->second;
-	// 		}
-	// 		else{
-	// 			std::cout << "Error: When searching component with id " << componentId << " no global index corresponding to this component id was found" << std::endl;
-	// 			return;
-	// 		}
-
-	// 		if(componentGlobalIndex < 0){
-	// 			std::cout << "Error: Component global index corresponding to component with id " << componentId << " was out or range" << std::endl;
-	// 			return;
-	// 		}
-
-	// 		if(componentType == Component::getInstanceType<Transform>()){
-	// 			transforms[componentGlobalIndex] = transforms[numberOfTransforms - 1];
-	// 			numberOfTransforms--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<Rigidbody>()){
-	// 			rigidbodies[componentGlobalIndex] = rigidbodies[numberOfRigidbodies- 1];
-	// 			numberOfRigidbodies--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<Camera>()){
-	// 			cameras[componentGlobalIndex] = cameras[numberOfCameras - 1];
-	// 			numberOfCameras--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<MeshRenderer>()){
-	// 			meshRenderers[componentGlobalIndex] = meshRenderers[numberOfMeshRenderers - 1];
-	// 			numberOfMeshRenderers--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<DirectionalLight>()){
-	// 			directionalLights[componentGlobalIndex] = directionalLights[numberOfDirectionalLights - 1];
-	// 			numberOfDirectionalLights--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<SpotLight>()){
-	// 			spotLights[componentGlobalIndex] = spotLights[numberOfSpotLights - 1];
-	// 			numberOfSpotLights--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<PointLight>()){
-	// 			pointLights[componentGlobalIndex] = pointLights[numberOfPointLights - 1];
-	// 			numberOfPointLights--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<SphereCollider>()){
-	// 			sphereColliders[componentGlobalIndex] = sphereColliders[numberOfSphereColliders - 1];
-	// 			numberOfSphereColliders--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<BoxCollider>()){
-	// 			boxColliders[componentGlobalIndex] = boxColliders[numberOfBoxColliders - 1];
-	// 			numberOfBoxColliders--;
-	// 		}
-	// 		else if(componentType == Component::getInstanceType<CapsuleCollider>()){
-	// 			capsuleColliders[componentGlobalIndex] = capsuleColliders[numberOfCapsuleColliders - 1];
-	// 			numberOfCapsuleColliders--;
-	// 		}
-	// 		else{
-	// 			std::cout << "Error: Unknown component type found when calling immediateDestroy" << std::endl;
-	// 			return;
-	// 		}
-	// 	}
-	// }
-
-	// entities[entityGlobalIndex] = entities[numberOfEntities - 1];
-	// numberOfEntities--;
-}
-
-bool World::isMarkedForLatentDestroy(Guid entityId)
-{
-	for(unsigned int i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++){
-		if(entityIdsMarkedForLatentDestroy[i] == entityId){
-			return true;
-		}
-	}
-
-	return false;
-}
-
-std::vector<Guid> World::getEntitiesMarkedForLatentDestroy()
-{
-	return entityIdsMarkedForLatentDestroy;
-}
-
-Entity* World::instantiate()
-{
-	int globalIndex = (int)getAllocator<Entity>().getCount();
-	Guid entityId = Guid::newGuid();
-
-	idToGlobalIndex[entityId] = globalIndex;
-	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
-
-	Entity* entity = create<Entity>();//new Entity;
-
-	entity->entityId = entityId;
-
-	return entity;
-}
-
-Entity* World::instantiate(Guid entityId)
-{
-	Entity* oldEntity = getEntity(entityId);
-
-	if(oldEntity == NULL){ 
-		std::cout << "Error: Could not find entity (" << entityId.toString() << ") when trying to instantiate" << std::endl;
-		return NULL;
-	}
-
-	std::vector<std::pair<Guid, int>> oldComponents;
-
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
-	if(it != entityIdToComponentIds.end()){
-		oldComponents = it->second;
-	}
-	else{
-		std::cout << "Error: " << std::endl;
-		return NULL;
-	}
-
-	Entity* newEntity = instantiate();
-
-	// add components to new entity
-	for(size_t i = 0; i < oldComponents.size(); i++){
-		Guid oldComponentId = oldComponents[i].first;
-		int oldComponentType = oldComponents[i].second;
-
-		// TODO: How do I add the new component using the instance type and old component Id???
-	}
-
-	return NULL;
 }
 
 bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

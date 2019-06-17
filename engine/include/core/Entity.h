@@ -28,7 +28,6 @@ namespace PhysicsEngine
 
 			void latentDestroy(World* world);
 			void immediateDestroy(World* world);
-			Entity* instantiate(World* world);
 
 			template<typename T>
 			T* addComponent(World* world)

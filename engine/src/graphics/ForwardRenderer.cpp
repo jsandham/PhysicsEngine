@@ -3,9 +3,6 @@
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/MeshRenderer.h"
-#include "../../include/components/DirectionalLight.h"
-#include "../../include/components/SpotLight.h"
-#include "../../include/components/PointLight.h"
 #include "../../include/components/Camera.h"
 
 #include "../../include/core/Shader.h"
@@ -60,13 +57,7 @@ void ForwardRenderer::init(World* world)
     // generate shadow map fbos
     createShadowMapFBOs();
 
-	// generate render objects list
-	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
-		if(meshRenderer != NULL){
-			add(meshRenderer);
-		}
-	}
+    initRenderObjectsList();
 
 	initCameraUniformState();
 	initLightUniformState();
@@ -80,8 +71,6 @@ void ForwardRenderer::update(Input input)
 {
 	if(camera == NULL) { return; }
 
-	// std::cout << "camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
-
 	query.numBatchDrawCalls = 0;
 	query.numDrawCalls = 0;
 	query.totalElapsedTime = 0.0f;
@@ -90,46 +79,32 @@ void ForwardRenderer::update(Input input)
 	query.lines = 0;
 	query.points = 0;
 
-	// cull render objects based on camera frustrum
-	for(size_t i = 0; i < renderObjects.size(); i++){
-		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
+	updateRenderObjectsList();
 
-		renderObjects[i].model = transform->getModelMatrix();
-
-		glm::vec4 temp = renderObjects[i].model * glm::vec4(renderObjects[i].boundingSphere.centre, 1.0f);
-		glm::vec3 centre = glm::vec3(temp.x, temp.y, temp.z);
-		float radius = renderObjects[i].boundingSphere.radius;
-
-		//if(camera->checkSphereInFrustum(centre, radius)){
-		//	std::cout << "Render object inside camera frustrum " << centre.x << " " << centre.y << " " << centre.z << " " << radius << std::endl;
-		//}
-	}
+	cullingPass();
 
 	beginFrame(camera, fbo);
 
-	//std::cout << "camera position: " << camera->position.x << " " << camera->position.y << " " << camera->position.z << std::endl;
-
 	pass = 0;
 
-	directionalLightPass();
-	spotLightPass();
-	pointLightPass();
+	for(int i = 0; i < world->getNumberOfComponents<Light>(); i++){
+		lightPass(world->getComponentByIndex<Light>(i));
+	}
 
-
-	if (world->getNumberOfComponents<SpotLight>() > 0){
-		SpotLight* spotLight = world->getComponentByIndex<SpotLight>(0);
+	if (world->getNumberOfComponents<Light>() > 0){
+		Light* light = world->getComponentByIndex<Light>(0);
 
 		if(getKey(input, KeyCode::O)){
-			spotLight->direction.x += 0.01f;
+			light->direction.x += 0.01f;
 		}
 		else if(getKey(input, KeyCode::P)){
-			spotLight->direction.x -= 0.01f;
+			light->direction.x -= 0.01f;
 		}
 		else if(getKey(input, KeyCode::U)){
-			spotLight->position.z += 0.01f;
+			light->position.z += 0.01f;
 		}
 		else if(getKey(input, KeyCode::I)){
-			spotLight->position.z -= 0.01f;
+			light->position.z -= 0.01f;
 		}
 	}
 
@@ -163,33 +138,33 @@ void ForwardRenderer::update(Input input)
 		World::writeToBMP("normal.bmp", data, 1024, 1024, 4);
 	}
 
-	if(getKeyDown(input, KeyCode::C)){
-		std::cout << "recording cube depth texture data" << std::endl;
-		std::vector<unsigned char> data;
-		data.resize(1024*1024*1);
+	// if(getKeyDown(input, KeyCode::C)){
+	// 	std::cout << "recording cube depth texture data" << std::endl;
+	// 	std::vector<unsigned char> data;
+	// 	data.resize(1024*1024*1);
 
-		for(size_t i = 0; i < data.size(); i++){
-			if(i % 3 == 0){
-				data[i] = 255;
-			}
-			data[i] = 0;
-		}
+	// 	for(size_t i = 0; i < data.size(); i++){
+	// 		if(i % 3 == 0){
+	// 			data[i] = 255;
+	// 		}
+	// 		data[i] = 0;
+	// 	}
 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCubemapDepth);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
-		glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-		World::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	}
+	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCubemapDepth);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
+	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
+	// 	World::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
+	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	// }
 
 	if(world->debug){
 		debugPass();
@@ -200,67 +175,77 @@ void ForwardRenderer::update(Input input)
     Graphics::checkError();
 }
 
-void ForwardRenderer::add(MeshRenderer* meshRenderer)
+void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 {
-	if(meshRenderer != NULL && !meshRenderer->isStatic){
-		Transform* transform = meshRenderer->getComponent<Transform>(world);
+	Transform* transform = meshRenderer->getComponent<Transform>(world);
 
-		int transformIndex = world->getIndexOf(transform->componentId);
-		int materialIndex = world->getIndexOfAsset(meshRenderer->materialId);
+	if(transform == NULL){ return; }
 
-		Material* material = world->getAssetByIndex<Material>(materialIndex);
+	int transformIndex = world->getIndexOf(transform->componentId);
+	int materialIndex = world->getIndexOfAsset(meshRenderer->materialId);
 
-		if(material == NULL){
-			std::cout << "Error: Trying to add mesh renderer with null material" << std::endl;
-			return;
-		}
-		
-		Shader* shader = world->getAsset<Shader>(material->shaderId);
+	//std::cout << "material index: " << materialIndex << std::endl;
 
-		if(shader == NULL){
-			std::cout << "Error: Trying to add mesh renderer with null shader" << std::endl;
-			return;
-		}
+	if(materialIndex == -1){ return; }
 
-		Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-		Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-		Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+	Material* material = world->getAssetByIndex<Material>(materialIndex);
 
-		int index = meshBuffer.getIndex(meshRenderer->meshId);
-
-		//std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
-
-		// std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
-
-		if(index != -1){
-			RenderObject renderObject;
-			renderObject.start = meshBuffer.start[index];
-			renderObject.size = meshBuffer.count[index];
-			renderObject.transformIndex = transformIndex;
-			renderObject.materialIndex = materialIndex;
-
-			for(int i = 0; i < 10; i++){
-				renderObject.shaders[i] = shader->programs[i].handle;
-			}
-
-			renderObject.mainTexture = -1;
-			renderObject.normalMap = -1;
-			renderObject.specularMap = -1;
-			
-			if(mainTexture != NULL){ renderObject.mainTexture = mainTexture->handle.handle; }
-			if(normalMap != NULL){ renderObject.normalMap = normalMap->handle.handle; }
-			if(specularMap != NULL){ renderObject.specularMap = specularMap->handle.handle; }
-
-			renderObject.boundingSphere = meshBuffer.boundingSpheres[index];
-
-			renderObjects.push_back(renderObject);
-		}		
+	if(material == NULL){
+		std::cout << "Error: Trying to add mesh renderer with null material" << std::endl;
+		return;
 	}
+	
+	Shader* shader = world->getAsset<Shader>(material->shaderId);
+
+	if(shader == NULL){
+		std::cout << "Error: Trying to add mesh renderer with null shader" << std::endl;
+		return;
+	}
+
+	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
+	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
+	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+
+	int index = meshBuffer.getIndex(meshRenderer->meshId);
+
+	//std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
+
+	// std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
+
+	if(index != -1){
+		RenderObject renderObject;
+		renderObject.id = meshRenderer->componentId;
+		renderObject.start = meshBuffer.start[index];
+		renderObject.size = meshBuffer.count[index];
+		renderObject.transformIndex = transformIndex;
+		renderObject.materialIndex = materialIndex;
+
+		for(int i = 0; i < 10; i++){
+			renderObject.shaders[i] = shader->programs[i].handle;
+		}
+
+		renderObject.mainTexture = -1;
+		renderObject.normalMap = -1;
+		renderObject.specularMap = -1;
+		
+		if(mainTexture != NULL){ renderObject.mainTexture = mainTexture->handle.handle; }
+		if(normalMap != NULL){ renderObject.normalMap = normalMap->handle.handle; }
+		if(specularMap != NULL){ renderObject.specularMap = specularMap->handle.handle; }
+
+		renderObject.boundingSphere = meshBuffer.boundingSpheres[index];
+
+		renderObjects.push_back(renderObject);
+	}		
 }
 
-void ForwardRenderer::remove(MeshRenderer* meshRenderer)
+void ForwardRenderer::removeFromRenderObjectsList(MeshRenderer* meshRenderer)
 {
+	//mmm his is slow...need a faster way of removing render objects
+	for(size_t i = 0; i < renderObjects.size(); i++){
+		if(meshRenderer->componentId == renderObjects[i].id){
 
+		}
+	}
 }
 
 GraphicsQuery ForwardRenderer::getGraphicsQuery()
@@ -315,13 +300,42 @@ void ForwardRenderer::endFrame(GLuint tex)
     glBindVertexArray(0);
 }
 
-void ForwardRenderer::directionalLightPass()
+void ForwardRenderer::cullingPass()
 {
-	if (world->getNumberOfComponents<DirectionalLight>() > 0){
-		DirectionalLight* directionalLight = world->getComponentByIndex<DirectionalLight>(0);
+	// cull render objects based on camera frustrum
+	for(size_t i = 0; i < renderObjects.size(); i++){
+		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
+
+		renderObjects[i].model = transform->getModelMatrix();
+
+		glm::vec4 temp = renderObjects[i].model * glm::vec4(renderObjects[i].boundingSphere.centre, 1.0f);
+		glm::vec3 centre = glm::vec3(temp.x, temp.y, temp.z);
+		float radius = renderObjects[i].boundingSphere.radius;
+
+		//if(camera->checkSphereInFrustum(centre, radius)){
+		//	std::cout << "Render object inside camera frustrum " << centre.x << " " << centre.y << " " << centre.z << " " << radius << std::endl;
+		//}
+	}
+}
+
+void ForwardRenderer::lightPass(Light* light)
+{
+	LightType lightType = light->lightType;
+	ShadowType shadowType = light->shadowType;
+	ShaderVariant variant = ShaderVariant::None;
+
+	//std::cout << "id: " << light->componentId.toString() << " light type: " << (int)lightType << " shadow type: " << (int)shadowType << " variant: " << (int)variant << std::endl;
+
+	if(lightType == LightType::Directional){
+		if(shadowType == ShadowType::Hard){
+			variant = ShaderVariant::Directional_Hard;
+		}
+		else if(shadowType == ShadowType::Soft){
+			variant = ShaderVariant::Directional_Soft;
+		}
 
 		calcShadowmapCascades(camera->frustum.nearPlane, camera->frustum.farPlane);
-		calcCascadeOrthoProj(camera->getViewMatrix(), directionalLight->direction);
+		calcCascadeOrthoProj(camera->getViewMatrix(), light->direction);
 
 		for(int i = 0; i < 5; i++){
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowCascadeFBO[i]);
@@ -344,52 +358,14 @@ void ForwardRenderer::directionalLightPass()
 			glBindVertexArray(0);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		updateLightUniformState(directionalLight);
-
-		ShaderVariant variant = ShaderVariant::Directional;
-		if(directionalLight->shadowType == ShadowType::Hard){
-			variant = ShaderVariant::Directional_Hard;
-		}
-		else if(directionalLight->shadowType == ShadowType::Soft){
-			variant = ShaderVariant::Directional_Soft;
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glBindVertexArray(meshBuffer.vao);
-
-		for(int i = 0; i < renderObjects.size(); i++){
-			GLuint shaderProgram = renderObjects[i].shaders[(int)variant];
-
-			Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
-
-			Graphics::use(shaderProgram);
-			Graphics::use(shaderProgram, material, renderObjects[i]);
-			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
-
-			for(int j = 0; j < 5; j++){
-				Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(j) + "]", 3 + j);
-
-				glActiveTexture(GL_TEXTURE0 + 3 + j);
-				glBindTexture(GL_TEXTURE_2D, shadowCascadeDepth[j]);
-			}
-
-			Graphics::render(world, renderObjects[i], &query);
-		}
-
-		glBindVertexArray(0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		pass++;
 	}
-}
-
-void ForwardRenderer::spotLightPass()
-{
-	for(int i = 0; i < world->getNumberOfComponents<SpotLight>(); i++){
-		//if(pass >= 1){ glBlendFunc(GL_ONE, GL_ONE); }
-
-		SpotLight* spotLight = world->getComponentByIndex<SpotLight>(i);
+	else if(lightType == LightType::Spot){
+		if(shadowType == ShadowType::Hard){
+			variant = ShaderVariant::Spot_Hard;
+		}
+		else if(shadowType == ShadowType::Soft){
+			variant = ShaderVariant::Spot_Soft;
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowSpotlightFBO);
 		glBindVertexArray(meshBuffer.vao);
@@ -399,66 +375,30 @@ void ForwardRenderer::spotLightPass()
 
 		GLuint shaderProgram = depthShader.programs[ShaderVariant::None].handle;
 
-		shadowProjMatrix = spotLight->projection;
-		shadowViewMatrix = glm::lookAt(spotLight->position, spotLight->position + spotLight->direction, glm::vec3(0.0f, 1.0f, 0.0f));
+		shadowProjMatrix = light->projection;
+		shadowViewMatrix = glm::lookAt(light->position, light->position + light->direction, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		Graphics::use(shaderProgram);
 		Graphics::setMat4(shaderProgram, "projection", shadowProjMatrix);
 		Graphics::setMat4(shaderProgram, "view", shadowViewMatrix);
 
-		for(int j = 0; j < renderObjects.size(); j++){
-			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
-			Graphics::render(world, renderObjects[j], &query);
+		for(int i = 0; i < renderObjects.size(); i++){
+			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
+			Graphics::render(world, renderObjects[i], &query);
 		}
 
 		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		updateLightUniformState(spotLight);
-
-		ShaderVariant variant = ShaderVariant::Spot;
-		if(spotLight->shadowType == ShadowType::Hard){
-			variant = ShaderVariant::Spot_Hard;
-		}
-		else if(spotLight->shadowType == ShadowType::Soft){
-			variant = ShaderVariant::Spot_Soft;
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glBindVertexArray(meshBuffer.vao);
-
-		for(int j = 0; j < renderObjects.size(); j++){
-			GLuint shaderProgram = renderObjects[j].shaders[variant];
-			Material* material = world->getAssetByIndex<Material>(renderObjects[j].materialIndex);
-
-			Graphics::use(shaderProgram);
-			Graphics::use(shaderProgram, material, renderObjects[j]);
-			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
-			Graphics::setInt(shaderProgram, "shadowMap[0]", 3);
-
-			glActiveTexture(GL_TEXTURE0 + 3);
-			glBindTexture(GL_TEXTURE_2D, shadowSpotlightDepth);
-
-			Graphics::render(world, renderObjects[j], &query);
-		}
-
-		glBindVertexArray(0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		Graphics::checkError();
-
-		pass++;
 	}
-}
+	else if(lightType == LightType::Point){
+		if(shadowType == ShadowType::Hard){
+			variant = ShaderVariant::Point_Hard;
+		}
+		else if(shadowType == ShadowType::Soft){
+			variant = ShaderVariant::Point_Soft;
+		}
 
-void ForwardRenderer::pointLightPass()
-{
-	for(int i = 0; i < world->getNumberOfComponents<PointLight>(); i++){
-		if(pass >= 1){ glBlendFunc(GL_ONE, GL_ONE); }
-
-		PointLight* pointLight = world->getComponentByIndex<PointLight>(i);
-
-		calcCubeViewMatrices(pointLight->position, pointLight->projection);
+		calcCubeViewMatrices(light->position, light->projection);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowCubemapFBO);
 		glBindVertexArray(meshBuffer.vao);
@@ -468,51 +408,59 @@ void ForwardRenderer::pointLightPass()
 
 		GLuint shaderProgram = depthCubemapShader.programs[ShaderVariant::None].handle;
 
-		//std::cout << "shader program: " << shaderProgram << "  " << depthCubemapShader.programs[0].handle << " " << depthCubemapShader.programs[1].handle << " " << depthCubemapShader.programs[9].handle << std::endl;
+		Graphics::use(shaderProgram);
+		Graphics::setVec3(shaderProgram, "lightPos", light->position);
+		Graphics::setFloat(shaderProgram, "farPlane", camera->frustum.farPlane);
+		for(int i = 0; i < 6; i++){
+			Graphics::setMat4(shaderProgram, "cubeViewProjMatrices[" + std::to_string(i) + "]", cubeViewProjMatrices[i]);
+		}
+
+		for(int i = 0; i < renderObjects.size(); i++){
+			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
+			Graphics::render(world, renderObjects[i], &query);
+		}
+
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	updateLightUniformState(light);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glBindVertexArray(meshBuffer.vao);
+
+	for(int i = 0; i < renderObjects.size(); i++){
+		GLuint shaderProgram = renderObjects[i].shaders[(int)variant];
+		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
 
 		Graphics::use(shaderProgram);
-		Graphics::setVec3(shaderProgram, "lightPos", pointLight->position);
-		Graphics::setFloat(shaderProgram, "farPlane", camera->frustum.farPlane);
-		for(int j = 0; j < 6; j++){
-			Graphics::setMat4(shaderProgram, "cubeViewProjMatrices[" + std::to_string(j) + "]", cubeViewProjMatrices[j]);
+		Graphics::use(shaderProgram, material, renderObjects[i]);
+		Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
+
+		if(lightType == LightType::Directional){
+			for(int j = 0; j < 5; j++){
+				Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(j) + "]", 3 + j);
+
+				glActiveTexture(GL_TEXTURE0 + 3 + j);
+				glBindTexture(GL_TEXTURE_2D, shadowCascadeDepth[j]);
+			}
+		}
+		else if(lightType == LightType::Spot){
+			Graphics::setInt(shaderProgram, "shadowMap[0]", 3);
+
+			glActiveTexture(GL_TEXTURE0 + 3);
+			glBindTexture(GL_TEXTURE_2D, shadowSpotlightDepth);
 		}
 
-		for(int j = 0; j < renderObjects.size(); j++){
-			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
-			Graphics::render(world, renderObjects[j], &query);
-		}
-
-		glBindVertexArray(0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		updateLightUniformState(pointLight);
-
-		ShaderVariant variant = ShaderVariant::Point;
-		// if(pointLight->shadowType == ShadowType::Hard){
-		// 	variant = ShaderVariant::Point_Hard;
-		// }
-		// else if(pointLight->shadowType == ShadowType::Soft){
-		// 	variant = ShaderVariant::Point_Soft;
-		// }
-
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glBindVertexArray(meshBuffer.vao);
-
-		for(int j = 0; j < renderObjects.size(); j++){
-			GLuint shaderProgram = renderObjects[j].shaders[(int)variant];
-			Material* material = world->getAssetByIndex<Material>(renderObjects[j].materialIndex);
-
-			Graphics::use(shaderProgram);
-			Graphics::use(shaderProgram, material, renderObjects[j]);
-			Graphics::setMat4(shaderProgram, "model", renderObjects[j].model);
-			Graphics::render(world, renderObjects[j], &query);
-		}
-
-		glBindVertexArray(0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			
-		pass++;
+		Graphics::render(world, renderObjects[i], &query);
 	}
+
+	glBindVertexArray(0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	pass++;
+
+	Graphics::checkError();
 }
 
 void ForwardRenderer::debugPass()
@@ -842,6 +790,43 @@ void ForwardRenderer::createShadowMapFBOs()
 	std::cout << "Pointlight shadow maps created" << std::endl;
 }
 
+void ForwardRenderer::initRenderObjectsList()
+{
+	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
+		if(meshRenderer != NULL && !meshRenderer->isStatic){
+			addToRenderObjectsList(meshRenderer);
+		}
+	}
+}
+
+void ForwardRenderer::updateRenderObjectsList()
+{
+	int meshRendererInstanceType = Component::getInstanceType<MeshRenderer>();
+	std::vector<Guid> meshRendererIdsAdded;
+
+	std::vector<std::pair<Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
+	for(size_t i = 0; i < componentIdsAdded.size(); i++){
+		if(componentIdsAdded[i].second == meshRendererInstanceType){
+			meshRendererIdsAdded.push_back(componentIdsAdded[i].first);
+		}
+	}
+
+	for(size_t i = 0; i < meshRendererIdsAdded.size(); i++){
+		int globalIndex = world->getIndexOf(meshRendererIdsAdded[i]);
+
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
+
+		//std::cout << "global index: " << globalIndex << std::endl;
+
+		if(meshRenderer != NULL && !meshRenderer->isStatic){
+			addToRenderObjectsList(meshRenderer);
+		}
+	}
+
+	//std::cout << "number of components marked created: " << componentIdsAdded.size() << std::endl;
+}
+
 void ForwardRenderer::calcShadowmapCascades(float nearDist, float farDist)
 {
 	const float splitWeight = 0.95f;
@@ -851,8 +836,6 @@ void ForwardRenderer::calcShadowmapCascades(float nearDist, float farDist)
     	const float si = i / 5.0f;
 
     	cascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
-
-    	//std::cout << "i: " << i << " " << cascadeEnds[i] << std::endl;
     }
 }
 
@@ -1002,21 +985,36 @@ void ForwardRenderer::updateCameraUniformState(Camera* camera)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void ForwardRenderer::updateLightUniformState(DirectionalLight* light)
+void ForwardRenderer::updateLightUniformState(Light* light)
 {
+	lightState.position = light->position;
 	lightState.direction = light->direction;
 	lightState.ambient = light->ambient;
 	lightState.diffuse = light->diffuse;
 	lightState.specular = light->specular;
 
-	for(int i = 0; i < 5; i++){
-		lightState.lightProjection[i] = cascadeOrthoProj[i];
+	lightState.constant = light->constant;
+	lightState.linear = light->linear;
+	lightState.quadratic = light->quadratic;
+	lightState.cutOff = light->cutOff;
+	lightState.outerCutOff = light->outerCutOff;
 
-		glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, cascadeEnds[i + 1], 1.0f);
-		glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-		lightState.cascadeEnds[i] = clipSpaceCascadeEnd.z;
+	if(light->lightType == LightType::Directional){
+		for(int i = 0; i < 5; i++){
+			lightState.lightProjection[i] = cascadeOrthoProj[i];
 
-		lightState.lightView[i] = cascadeLightView[i];
+			glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, cascadeEnds[i + 1], 1.0f);
+			glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
+			lightState.cascadeEnds[i] = clipSpaceCascadeEnd.z;
+
+			lightState.lightView[i] = cascadeLightView[i];
+		}
+	}
+	else if(light->lightType == LightType::Spot){
+		for(int i = 0; i < 5; i++){
+			lightState.lightProjection[i] = shadowProjMatrix;
+			lightState.lightView[i] = shadowViewMatrix;
+		}
 	}
 
 	lightState.farPlane = camera->frustum.farPlane;
@@ -1024,6 +1022,7 @@ void ForwardRenderer::updateLightUniformState(DirectionalLight* light)
 	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.lightProjection[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.lightView[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.position));
 	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.direction));
 	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.ambient));
 	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.diffuse));
@@ -1034,66 +1033,10 @@ void ForwardRenderer::updateLightUniformState(DirectionalLight* light)
 	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &lightState.cascadeEnds[3]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &lightState.cascadeEnds[4]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &lightState.farPlane);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void ForwardRenderer::updateLightUniformState(SpotLight* light)
-{
-	lightState.position = light->position;
-	lightState.direction = light->direction;
-	lightState.ambient = light->ambient;
-	lightState.diffuse = light->diffuse;
-	lightState.specular = light->specular;
-	lightState.constant = light->constant;
-	lightState.linear = light->linear;
-	lightState.quadratic = light->quadratic;
-	lightState.cutOff = light->cutOff;
-	lightState.outerCutOff = light->outerCutOff;
-
-	for(int i = 0; i < 5; i++){
-		lightState.lightProjection[i] = shadowProjMatrix;
-		lightState.lightView[i] = shadowViewMatrix;
-	}
-
-	// glm::mat4 test = lightState.lightProjection[0] * lightState.lightView[0];
-	// std::cout << test[0][0] << " " << test[0][1] << " " << test[0][2] << " " << test[0][3] << std::endl;
-	// std::cout << test[1][0] << " " << test[1][1] << " " << test[1][2] << " " << test[1][3] << std::endl;
-	// std::cout << test[2][0] << " " << test[2][1] << " " << test[2][2] << " " << test[2][3] << std::endl;
-	// std::cout << test[3][0] << " " << test[3][1] << " " << test[3][2] << " " << test[3][3] << std::endl;
-
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.lightProjection[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.lightView[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.position));
-	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.direction));
-	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.ambient));
-	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.diffuse));
-	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(lightState.specular));
 	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(lightState.constant));
 	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(lightState.linear));
 	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(lightState.quadratic));
 	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.cutOff));
 	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.outerCutOff));
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}	
-
-void ForwardRenderer::updateLightUniformState(PointLight* light)
-{
-	lightState.position = light->position;
-	lightState.ambient = light->ambient;
-	lightState.diffuse = light->diffuse;
-	lightState.specular = light->specular;
-	lightState.constant = light->constant;
-	lightState.linear = light->linear;
-	lightState.quadratic = light->quadratic;
-
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
-	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.position));
-	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.ambient));
-	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.diffuse));
-	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(lightState.specular));
-	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &lightState.constant);
-	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &lightState.linear);
-	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &lightState.quadratic);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
