@@ -182,7 +182,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	if(transform == NULL){ return; }
 
 	int transformIndex = world->getIndexOf(transform->componentId);
-	int materialIndex = world->getIndexOfAsset(meshRenderer->materialId);
+	int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[0]);
 
 	//std::cout << "material index: " << materialIndex << std::endl;
 
@@ -243,7 +243,7 @@ void ForwardRenderer::removeFromRenderObjectsList(MeshRenderer* meshRenderer)
 	//mmm his is slow...need a faster way of removing render objects
 	for(size_t i = 0; i < renderObjects.size(); i++){
 		if(meshRenderer->componentId == renderObjects[i].id){
-
+			renderObjects.erase(renderObjects.begin() + i);
 		}
 	}
 }
@@ -304,6 +304,7 @@ void ForwardRenderer::cullingPass()
 {
 	// cull render objects based on camera frustrum
 	for(size_t i = 0; i < renderObjects.size(); i++){
+		//std::cout << "render object id: " << renderObjects[i].id.toString() << " transform index: " << renderObjects[i].transformIndex << std::endl;
 		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
 
 		renderObjects[i].model = transform->getModelMatrix();
@@ -803,12 +804,15 @@ void ForwardRenderer::initRenderObjectsList()
 void ForwardRenderer::updateRenderObjectsList()
 {
 	int meshRendererInstanceType = Component::getInstanceType<MeshRenderer>();
+	int transformInstanceType = Component::getInstanceType<Transform>();
+
+	// add created mesh renderers to render object list
 	std::vector<Guid> meshRendererIdsAdded;
 
-	std::vector<std::pair<Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
+	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
 	for(size_t i = 0; i < componentIdsAdded.size(); i++){
-		if(componentIdsAdded[i].second == meshRendererInstanceType){
-			meshRendererIdsAdded.push_back(componentIdsAdded[i].first);
+		if(componentIdsAdded[i].third == meshRendererInstanceType){
+			meshRendererIdsAdded.push_back(componentIdsAdded[i].second);
 		}
 	}
 
@@ -816,15 +820,68 @@ void ForwardRenderer::updateRenderObjectsList()
 		int globalIndex = world->getIndexOf(meshRendererIdsAdded[i]);
 
 		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-
-		//std::cout << "global index: " << globalIndex << std::endl;
-
 		if(meshRenderer != NULL && !meshRenderer->isStatic){
 			addToRenderObjectsList(meshRenderer);
 		}
 	}
 
-	//std::cout << "number of components marked created: " << componentIdsAdded.size() << std::endl;
+	// remove destroyed mesh renderers from render objects list
+	std::vector<Guid> meshRendererIdsDestroyed;
+
+	std::vector<triple<Guid, Guid, int>> componentIdsDestroyed = world->getComponentIdsMarkedLatentDestroy();
+	for(size_t i = 0; i < componentIdsDestroyed.size(); i++){
+		if(componentIdsDestroyed[i].third == meshRendererInstanceType){
+			meshRendererIdsDestroyed.push_back(componentIdsDestroyed[i].second);
+		}
+	}
+
+	for(size_t i = 0; i < meshRendererIdsDestroyed.size(); i++){
+		int globalIndex = world->getIndexOf(meshRendererIdsDestroyed[i]);
+
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
+		if(meshRenderer != NULL && !meshRenderer->isStatic){
+			removeFromRenderObjectsList(meshRenderer);
+		}
+	}
+
+	// update mesh renderers that have been moved in their global arrays
+	std::vector<std::pair<int, int>> transformIndicesMoved;
+
+	std::vector<triple<Guid, int, int>> componentIdsMoved = world->getComponentIdsMarkedMoved();
+	for(size_t i = 0; i < componentIdsMoved.size(); i++){
+		if(componentIdsMoved[i].second == transformInstanceType){
+			int oldIndex = componentIdsMoved[i].third;
+			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
+			//std::cout << "transform id: " << componentIdsMoved[i].first.toString() << " old index: " << oldIndex << " new index: " << newIndex << std::endl;
+			transformIndicesMoved.push_back(std::make_pair(oldIndex, newIndex));
+		}
+	}
+
+	for(size_t i = 0; i < transformIndicesMoved.size(); i++){
+		for(size_t j = 0; j < renderObjects.size(); j++){
+			if(transformIndicesMoved[i].first == renderObjects[j].transformIndex){
+				//std::cout << "render object id: " << renderObjects[j].id.toString() << " old transform index: " << renderObjects[j].transformIndex << " new transform index: " << transformIndicesMoved[i].second << std::endl;
+				renderObjects[j].transformIndex = transformIndicesMoved[i].second;
+			}
+		}
+	}
+
+	// for(size_t i = 0; i < meshRendererIdsMoved.size(); i++){
+	// 	int globalIndex = world->getIndexOf(meshRendererIdsMoved[i]);
+
+	// 	MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
+
+	// 	std::cout << "Moved mesh renderer: " << meshRenderer->componentId.toString() << " at global index: " << globalIndex << std::endl;
+	// 	for(size_t j = 0; j < renderObjects.size(); j++){
+	// 		if(meshRenderer->componentId == renderObjects[j].id){
+	// 			Transform* transform = meshRenderer->getComponent<Transform>(world);
+	// 			renderObjects[j].transformIndex = world->getIndexOf(transform->componentId);
+
+	// 			std::cout << "transform " << transform->componentId.toString() << " index: " << renderObjects[j].transformIndex << std::endl;
+	// 			break;
+	// 		}
+	// 	}
+	// }
 }
 
 void ForwardRenderer::calcShadowmapCascades(float nearDist, float farDist)

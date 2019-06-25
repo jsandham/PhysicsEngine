@@ -7,7 +7,10 @@ using namespace PhysicsEngine;
 MeshRenderer::MeshRenderer()
 {
 	meshId = Guid::INVALID;
-	materialId = Guid::INVALID;
+
+	for(int i = 0; i < 8; i++){
+		materialIds[i] = Guid::INVALID;
+	}
 
 	isStatic = true;
 }
@@ -21,7 +24,9 @@ MeshRenderer::MeshRenderer(std::vector<char> data)
 	componentId = header->componentId;
 	entityId = header->entityId;
 	meshId = header->meshId;
-	materialId = header->materialId;
+	for(int i = 0; i < 8; i++){
+		materialIds[i] = header->materialIds[i];
+	}
 	isStatic = header->isStatic;
 }
 

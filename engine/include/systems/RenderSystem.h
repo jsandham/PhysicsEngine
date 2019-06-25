@@ -23,6 +23,9 @@ namespace PhysicsEngine
 			DeferredRenderer deferredRenderer;  
 			DebugRenderer debugRenderer;
 
+
+			Guid testId;
+
 		public:
 			RenderSystem();
 			RenderSystem(std::vector<char> data);

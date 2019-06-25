@@ -297,6 +297,9 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 	mesh.vertices.clear();
 	mesh.normals.clear();
 	mesh.texCoords.clear();
+	mesh.subMeshStartIndicies.clear();
+
+	mesh.subMeshStartIndicies.push_back(0);
 
 	// set triangle vertices, texture coords, and normals
 	for (int i = 0; i<f_v.size(); i++){

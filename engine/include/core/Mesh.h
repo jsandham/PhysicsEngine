@@ -20,6 +20,7 @@ namespace PhysicsEngine
 		size_t verticesSize;
 		size_t normalsSize;
 		size_t texCoordsSize;
+		size_t subMeshStartIndiciesSize;
 	};
 #pragma pack(pop)
 
@@ -29,6 +30,7 @@ namespace PhysicsEngine
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;
+			std::vector<int> subMeshStartIndicies;
 
 		public:
 			Mesh();

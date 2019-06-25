@@ -388,21 +388,143 @@ Entity* World::createEntity(Guid entityId)
 void World::latentDestroyEntity(Guid entityId)
 {
 	entityIdsMarkedLatentDestroy.push_back(entityId);
+
+	// add any components found on the entity to the latent destroy component list
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
+	if(it != entityIdToComponentIds.end()){
+		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
+		for(size_t i = 0; i < componentsOnEntity.size(); i++){
+			Guid componentId = componentsOnEntity[i].first;
+			int instanceType = componentsOnEntity[i].second;
+
+			//std::cout << "component id: " << componentId.toString() << " type: " << instanceType << std::endl;
+
+			latentDestroyComponent(entityId, componentId, instanceType);
+		}
+	}
+	else{
+		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to add to latent destroy list" << std::endl;
+		return;
+	}
 }
 
 void World::immediateDestroyEntity(Guid entityId)
 {
-	std::cout << "Error: Immediate destroy not yet implemented" << std::endl;
+	//std::cout << "Immediate destroy entity called" << std::endl;
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
+	if(it1 != entityIdToComponentIds.end()){
+		std::vector<std::pair<Guid, int>> componentsOnEntity = it1->second;
+
+		//std::cout << "number of remaining components on entity: " << componentsOnEntity.size() << std::endl;
+
+		for(size_t i = 0; i < componentsOnEntity.size(); i++){
+			Guid componentId = componentsOnEntity[i].first;
+			int instanceType = componentsOnEntity[i].second;
+
+			immediateDestroyComponent(entityId, componentId, instanceType);
+		}
+
+		//std::cout << "erasing entity id " << entityId.toString() << " from entity id to component ids map" << std::endl;
+		entityIdToComponentIds.erase(it1);
+	}
+	else{
+		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to delete" << std::endl;
+		return;
+	}
+
+	//std::cout << "erasing entity id " << entityId.toString() << " from entity id to global index map" << std::endl;
+
+	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(entityId);
+	if(it2 != idToGlobalIndex.end()){
+		int index = it2->second;
+
+		//std::cout << "calling destroy internal entity for entity id " << entityId.toString() << " located at global index: " << index << std::endl;
+
+		Entity* swappedEntity = destroyInternalEntity(index);
+
+		idToGlobalIndex.erase(it2);
+
+		if(swappedEntity != NULL){
+			//std::cout << "giving swapped entity " << swappedEntity->entityId.toString() << " new global index: " << index << std::endl;
+
+			entityIdsMarkedMoved.push_back(std::make_pair(swappedEntity->entityId, idToGlobalIndex[swappedEntity->entityId]));
+
+			idToGlobalIndex[swappedEntity->entityId] = index;
+		}
+	}
+	else{
+		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to delete" << std::endl;
+		return;
+	}
+
+	//std::cout << "COMPLETE DESTORYING ENTITY" << std::endl;
 }
 
-void World::latentDestroyComponent(Guid componentId, int componentInstanceType)
+void World::latentDestroyComponent(Guid entityId, Guid componentId, int componentInstanceType)
 {
-	componentIdsMarkedLatentDestroy.push_back(std::make_pair(componentId, componentInstanceType));
+	componentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentInstanceType));
 }
 
-void World::immediateDestroyComponent(Guid componentId, int componentInstanceType)
+void World::immediateDestroyComponent(Guid entityId, Guid componentId, int componentInstanceType)
 {
-	std::cout << "Error: Immediate destroy not yet implemented" << std::endl;
+	//std::cout << " " << std::endl;
+	//std::cout << "Immediate destroy component called" << std::endl;
+	//std::cout << "Immediate component destroy called with entity id: " << entityId.toString() << " component id: " << componentId.toString() << " type: " << componentInstanceType << std::endl;
+
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
+	if(it1 != entityIdToComponentIds.end()){
+		//std::cout << "size of vector in entity id to component ids before erase: " << it1->second.size() << std::endl;
+		for(size_t i = 0; i < it1->second.size(); i++){
+			if(it1->second[i].first == componentId){
+				it1->second.erase(it1->second.begin() + i);
+			}
+		}
+
+		//std::cout << "size of vector in entity id to component ids after erase: " << it1->second.size() << std::endl;
+	}
+
+	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(componentId);
+	if(it2 != idToGlobalIndex.end()){
+		int index = it2->second;
+
+		//std::cout << "component id: " << componentId.toString() << " found at global index: " << index << " componentInstanceType: " << componentInstanceType << std::endl;
+
+		Component* swappedComponent = NULL;
+		swappedComponent = destroyInternalComponent(componentInstanceType, index);
+		// if(componentInstanceType < 20){
+		// 	swappedComponent = destroyInternalComponent(componentInstanceType, index);
+		// }
+		// else{
+		// 	swappedComponent = destroyComponent(componentInstanceType, index);
+		// }
+
+		idToGlobalIndex.erase(it2);
+
+		if(swappedComponent != NULL){
+			// int oldIndex = 0;
+			// std::map<Guid, int>::iterator test = idToGlobalIndex.find(swappedComponent->componentId);
+			// if(test != idToGlobalIndex.end()){
+			// 	oldIndex = test->second;
+			// }
+			// else{
+			// 	std::cout << "Error" << std::endl;
+			// }
+			//std::cout << "Swapped component " << swappedComponent->componentId.toString() << " old global index: " << oldIndex << " new global index: " << index << std::endl;
+
+			componentIdsMarkedMoved.push_back(make_triple(swappedComponent->componentId, componentInstanceType, idToGlobalIndex[swappedComponent->componentId]));
+
+			idToGlobalIndex[swappedComponent->componentId] = index;
+		}
+	}
+	else{
+		std::cout << "Error: component id " << componentId.toString() << " not found in map when trying to destroy" << std::endl;
+	}
+
+
+
+
+	//std::map<Guid, int> idToGlobalIndex;
+	//std::map<Guid, std::vector<std::pair<Guid, int>>> entityIdToComponentIds; 
 }
 
 bool World::isMarkedForLatentDestroy(Guid id)
@@ -414,7 +536,7 @@ bool World::isMarkedForLatentDestroy(Guid id)
 	}
 
 	for(unsigned int i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
-		if(componentIdsMarkedLatentDestroy[i].first == id){
+		if(componentIdsMarkedLatentDestroy[i].second == id){
 			return true;
 		}
 	}
@@ -426,8 +548,16 @@ void World::clearIdsMarked()
 {
 	entityIdsMarkedCreated.clear();
 	entityIdsMarkedLatentDestroy.clear();
+	// entityIdsMarkedMoved.clear();
 	componentIdsMarkedCreated.clear();
 	componentIdsMarkedLatentDestroy.clear();
+	// componentIdsMarkedMoved.clear();
+}
+
+void World::clearMovedIds()
+{
+	entityIdsMarkedMoved.clear();
+	componentIdsMarkedMoved.clear();
 }
 
 std::vector<Guid> World::getEntityIdsMarkedCreated()
@@ -439,15 +569,25 @@ std::vector<Guid> World::getEntityIdsMarkedLatentDestroy()
 {
 	return entityIdsMarkedLatentDestroy;
 }
+
+std::vector<std::pair<Guid, int>> World::getEntityIdsMarkedMoved()
+{
+	return entityIdsMarkedMoved;
+}
 			
-std::vector<std::pair<Guid, int>> World::getComponentIdsMarkedCreated()
+std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedCreated()
 {
 	return componentIdsMarkedCreated;
 }
 
-std::vector<std::pair<Guid, int>> World::getComponentIdsMarkedLatentDestroy()
+std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestroy()
 {
 	return componentIdsMarkedLatentDestroy;
+}
+
+std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved()
+{
+	return componentIdsMarkedMoved;
 }
 
 Bounds* World::getWorldBounds()

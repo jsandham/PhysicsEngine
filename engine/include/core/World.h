@@ -47,6 +47,25 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
+	template<typename T, typename U, typename V>
+	struct triple
+	{
+		T first;
+		U second;
+		V third;
+	};
+
+	template<typename T, typename U, typename V>
+	triple<T, U, V> make_triple(T first, U second, V third)
+	{
+		triple<T, U, V> triple;
+		triple.first = first;
+		triple.second = second;
+		triple.third = third;
+
+		return triple;
+	}
+
 	class World
 	{
 		private:
@@ -63,8 +82,10 @@ namespace PhysicsEngine
 
 			std::vector<Guid> entityIdsMarkedCreated;
 			std::vector<Guid> entityIdsMarkedLatentDestroy;
-			std::vector<std::pair<Guid, int>> componentIdsMarkedCreated;
-			std::vector<std::pair<Guid, int>> componentIdsMarkedLatentDestroy;
+			std::vector<std::pair<Guid, int>> entityIdsMarkedMoved;
+			std::vector<triple<Guid, Guid, int>> componentIdsMarkedCreated;
+			std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy;
+			std::vector<triple<Guid, int, int>> componentIdsMarkedMoved;
 
 		public:
 			bool debug;
@@ -148,7 +169,7 @@ namespace PhysicsEngine
 
 				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
 
-				componentIdsMarkedCreated.push_back(std::make_pair(componentId, componentType));
+				componentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
 
 				return component;
 			}
@@ -211,15 +232,18 @@ namespace PhysicsEngine
 
 			void latentDestroyEntity(Guid entityId);
 			void immediateDestroyEntity(Guid entityId);
-			void latentDestroyComponent(Guid componentId, int componentInstanceType);
-			void immediateDestroyComponent(Guid componentId, int componentInstanceType);
+			void latentDestroyComponent(Guid entityId, Guid componentId, int componentInstanceType);
+			void immediateDestroyComponent(Guid entityId, Guid componentId, int componentInstanceType);
 			bool isMarkedForLatentDestroy(Guid id);
 			void clearIdsMarked();
+			void clearMovedIds();
 
 			std::vector<Guid> getEntityIdsMarkedCreated();
 			std::vector<Guid> getEntityIdsMarkedLatentDestroy();
-			std::vector<std::pair<Guid, int>> getComponentIdsMarkedCreated();
-			std::vector<std::pair<Guid, int>> getComponentIdsMarkedLatentDestroy();
+			std::vector<std::pair<Guid, int>> getEntityIdsMarkedMoved();
+			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedCreated();
+			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedLatentDestroy();
+			std::vector<triple<Guid, int, int>> getComponentIdsMarkedMoved();
 
 
 

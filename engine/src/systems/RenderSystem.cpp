@@ -40,6 +40,8 @@ void RenderSystem::init(World* world)
 	forwardRenderer.init(world);
 	//deferredRenderer.init(world);
 	debugRenderer.init(world);
+
+	testId = Guid::INVALID;
 }
 
 void RenderSystem::update(Input input)
@@ -47,6 +49,7 @@ void RenderSystem::update(Input input)
 	// if(getKeyDown(input, KeyCode::N)){
 	// 	std::cout << "N pressed " << world->getNumberOfEntities() << std::endl;
 	// 	Entity* entity = world->createEntity();
+	// 	testId = entity->entityId; 
 	// 	if(entity != NULL){
 	// 		Transform* transform = entity->addComponent<Transform>(world);
 	// 		transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -58,17 +61,43 @@ void RenderSystem::update(Input input)
 
 	// 		MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world);
 	// 		meshRenderer->isStatic = false;
-	// 		meshRenderer->materialId = materialId;
+	// 		meshRenderer->materialIds[0] = materialId;
 	// 		meshRenderer->meshId = meshId;
 
+	// 		//Rigidbody* rigidbody = entity->addComponent<Rigidbody>(world);
 
+
+	// 		// std::cout << "newly created entity id: " << entity->entityId.toString() << " transform id: " << transform->componentId.toString() << " mesh renderer id: " << meshRenderer->componentId.toString() << " and rigidbody id: " << rigidbody->componentId.toString() << std::endl;
 	// 		std::cout << "newly created entity id: " << entity->entityId.toString() << " transform id: " << transform->componentId.toString() << " mesh renderer id: " << meshRenderer->componentId.toString() << std::endl;
 	// 	}
 
-	// 	std::vector<std::pair<Guid,int> > temp = world->getComponentIdsMarkedCreated();
+	// 	std::vector<triple<Guid, Guid, int> > temp = world->getComponentIdsMarkedCreated();
 
 	// 	std::cout << "number of component ids marked created: " << temp.size() << std::endl;
 	// }
+
+	// if(getKeyDown(input, KeyCode::M) && testId != Guid::INVALID){
+	// 	std::cout << "M pressed " << world->getNumberOfEntities() << std::endl;
+	// 	Entity* entity = world->getEntity(testId);
+	// 	if(entity != NULL){
+	// 		entity->latentDestroy(world);
+	// 		testId = Guid::INVALID;
+	// 	}
+	// }
+
+	if(getKeyDown(input, KeyCode::V)){
+		std::cout << "V pressed" << std::endl;
+		//std::cout << "transform instance type: " << Component::getInstanceType<Transform>() << " mesh renderer: " << Component::getInstanceType<MeshRenderer>() << " sphere collider: " << Component::getInstanceType<SphereCollider>() << std::endl;
+		int index = world->getNumberOfEntities();
+		//std::cout << "Total number of entities: " << index << std::endl;
+		if(index > 0){
+			Entity* entity = world->getEntityByIndex(index - 1);
+			//std::cout << "Calling latent Destroy on entity id: " << entity->entityId.toString() << " at global index: " << index - 1 << std::endl;
+			entity->latentDestroy(world);
+		}
+	}
+
+	//std::cout << "Number of entities: " << world->getNumberOfEntities() << " number of transform: " << world->getNumberOfComponents<Transform>() << std::endl;
 
 
 

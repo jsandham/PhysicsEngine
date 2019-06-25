@@ -116,7 +116,7 @@ void DebugSystem::update(Input input)
 					MeshRenderer* meshRenderer = world->getComponent<MeshRenderer>(hitCollider->entityId);
 					if(meshRenderer != NULL){
 						std::cout << "Setting material to " << colorMat->assetId.toString() << " mesh renderer is static? " << meshRenderer->isStatic << std::endl;
-						meshRenderer->materialId = colorMat->assetId;
+						meshRenderer->materialIds[0] = colorMat->assetId;
 						meshRenderer->isStatic = false;
 					}
 				}

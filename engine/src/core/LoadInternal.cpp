@@ -204,3 +204,119 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
 		return NULL;
 	}
 }
+
+Asset* PhysicsEngine::destroyInternalAsset(int instanceType, int index)
+{
+	if(instanceType == 0){
+		return destroy<Shader>(index);
+	}
+	else if(instanceType == 1){
+		return destroy<Texture2D>(index);
+	}
+	else if(instanceType == 2){
+		return destroy<Texture3D>(index);
+	}
+	else if(instanceType == 3){
+		return destroy<Cubemap>(index);
+	}
+	else if(instanceType == 4){
+		return destroy<Material>(index);
+	}
+	else if(instanceType == 5){
+		return destroy<Mesh>(index);
+	}
+	else if(instanceType == 6){
+		return destroy<Font>(index);
+	}
+	else{
+		std::cout << "Error: Invalid asset instance type (" << instanceType << ") when trying to destroy internal asset" << std::endl;
+		return NULL;
+	}
+}
+
+Entity* PhysicsEngine::destroyInternalEntity(int index)
+{
+	return destroy<Entity>(index);
+}
+
+Component* PhysicsEngine::destroyInternalComponent(int instanceType, int index)
+{
+	if(instanceType == Component::getInstanceType<Transform>()){
+		return destroy<Transform>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Rigidbody>()){
+		return destroy<Rigidbody>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Camera>()){
+		return destroy<Camera>(index);
+	}
+	else if(instanceType == Component::getInstanceType<MeshRenderer>()){
+		return destroy<MeshRenderer>(index);
+	}
+	else if(instanceType == Component::getInstanceType<LineRenderer>()){
+		return destroy<LineRenderer>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Light>()){
+		return destroy<Light>(index);
+	}
+	else if(instanceType == Component::getInstanceType<BoxCollider>()){
+		return destroy<BoxCollider>(index);
+	}
+	else if(instanceType == Component::getInstanceType<SphereCollider>()){
+		return destroy<SphereCollider>(index);
+	}
+	else if(instanceType == Component::getInstanceType<MeshCollider>()){
+		return destroy<MeshCollider>(index);
+	}
+	else if(instanceType == Component::getInstanceType<CapsuleCollider>()){
+		return destroy<CapsuleCollider>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Boids>()){
+		return destroy<Boids>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Cloth>()){
+		return destroy<Cloth>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Fluid>()){
+		return destroy<Fluid>(index);
+	}
+	else if(instanceType == Component::getInstanceType<Solid>()){
+		return destroy<Solid>(index);
+	}
+	else{
+		std::cout << "Error: Invalid component instance type (" << instanceType << ") when trying to destroy internal component" << std::endl;
+		return NULL;
+	}
+}
+
+System* PhysicsEngine::destroyInternalSystem(int instanceType, int index)
+{
+	if(instanceType == 0){
+		return destroy<RenderSystem>(index);
+	}
+	else if(instanceType == 1){
+		return destroy<PhysicsSystem>(index);
+	}
+	else if(instanceType == 2){
+		return destroy<CleanUpSystem>(index);
+	}
+	else if(instanceType == 3){
+		return destroy<DebugSystem>(index);
+	}
+	else if(instanceType == 4){
+		return destroy<BoidsSystem>(index);
+	}
+	else if(instanceType == 5){
+		return destroy<ClothSystem>(index);
+	}
+	else if(instanceType == 6){
+		return destroy<FluidSystem>(index);
+	}
+	else if(instanceType == 7){
+		return destroy<SolidSystem>(index);
+	}
+	else{
+		std::cout << "Error: Invalid system instance type (" << instanceType << ") when trying to destroy internal system" << std::endl;
+		return NULL;
+	}
+}

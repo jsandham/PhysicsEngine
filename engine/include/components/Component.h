@@ -23,13 +23,13 @@ namespace PhysicsEngine
 			template<typename T>
 			void latentDestroy(World* world)
 			{
-				world->latentDestroyComponent(componentId, getInstanceType<T>());
+				world->latentDestroyComponent(entityId, componentId, getInstanceType<T>());
 			}
 
 			template<typename T>
 			void immediateDestroy(World* world)
 			{
-				world->immediateDestroyComponent(componentId, getInstanceType<T>());
+				world->immediateDestroyComponent(entityId, componentId, getInstanceType<T>());
 			}
 
 			template<typename T>
@@ -39,7 +39,7 @@ namespace PhysicsEngine
 
 				return entity->getComponent<T>(world);
 			}
-			
+
 			template <typename T>
 			static int getInstanceType()
 			{

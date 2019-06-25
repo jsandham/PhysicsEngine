@@ -17,6 +17,15 @@ namespace PhysicsEngine
 
 	// load external systems defined by the user (systems with type 10 or greater)
 	System* loadSystem(std::vector<char> data, int* index);
+
+	// destroy external asset defined by the user
+	Asset* destroyAsset(int instanceType, int index);
+
+	// destroy external components defined by the user 
+	Component* destroyComponent(int instanceType, int index);
+	
+	// destroy external systems defined by the user 
+	System* destroySystem(int instanceType, int index);
 }
 
 #endif

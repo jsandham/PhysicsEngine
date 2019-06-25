@@ -298,7 +298,7 @@ void DeferredRenderer::add(MeshRenderer* meshRenderer)
 		Transform* transform = meshRenderer->getComponent<Transform>(world);
 
 		int transformIndex = world->getIndexOf(transform->componentId);
-		int materialIndex = world->getIndexOfAsset(meshRenderer->materialId);
+		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[0]);
 
 		int index = meshBuffer.getIndex(meshRenderer->meshId);
 

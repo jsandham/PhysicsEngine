@@ -3,9 +3,9 @@
 
 #include <vector>
 
+#include "PoolAllocator.h"
 #include "Asset.h"
 #include "Entity.h"
-#include "PoolAllocator.h"
 #include "../components/Component.h"
 #include "../systems/System.h"
 
@@ -23,10 +23,21 @@ namespace PhysicsEngine
 		return getAllocator<T>().construct(data);
 	}
 
+	template<typename T>
+	static T* destroy(int index)
+	{	
+		return getAllocator<T>().destruct(index);
+	}
+
 	Asset* loadInternalAsset(std::vector<char> data, int* index);
 	Entity* loadInternalEntity(std::vector<char> data, int* index);
 	Component* loadInternalComponent(std::vector<char> data, int* index, int* instanceType);
 	System* loadInternalSystem(std::vector<char> data, int* index);
+
+	Asset* destroyInternalAsset(int instanceType, int index); //maybe dont allow deleting of assets???
+	Entity* destroyInternalEntity(int index);
+	Component* destroyInternalComponent(int instanceType, int index);
+	System* destroyInternalSystem(int instanceType, int index);  // maybe dont allow deleting of systems??
 }
 
 #endif

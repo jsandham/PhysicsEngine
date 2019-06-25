@@ -13,7 +13,7 @@ namespace PhysicsEngine
 		Guid componentId;
 		Guid entityId;
 		Guid meshId;
-		Guid materialId;
+		Guid materialIds[8];
 		bool isStatic;
 	};
 #pragma pack(pop)
@@ -22,7 +22,7 @@ namespace PhysicsEngine
 	{
 		public:
 			Guid meshId;
-			Guid materialId;
+			Guid materialIds[8];
 			bool isStatic;
 
 		public:
