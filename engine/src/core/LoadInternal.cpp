@@ -81,79 +81,79 @@ Entity* PhysicsEngine::loadInternalEntity(std::vector<char> data, int* index)
 	return create<Entity>(data);
 }
 
-Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index, int* instanceType)
+Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index, itype* instanceType)
 {
 	//char classification = *reinterpret_cast<char*>(&data[0]);
 	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	if(type == 0){
 		*index = (int)getAllocator<Transform>().getCount();
-		*instanceType = (int)Component::getInstanceType<Transform>();
+		*instanceType = Component::getInstanceType<Transform>();
 		return create<Transform>(data);
 	}
 	else if(type == 1){
 		*index = (int)getAllocator<Rigidbody>().getCount();
-		*instanceType = (int)Component::getInstanceType<Rigidbody>();
+		*instanceType = Component::getInstanceType<Rigidbody>();
 		return create<Rigidbody>(data);
 	}
 	else if(type == 2){
 		*index = (int)getAllocator<Camera>().getCount();
-		*instanceType = (int)Component::getInstanceType<Camera>();
+		*instanceType = Component::getInstanceType<Camera>();
 		return create<Camera>(data);
 	}
 	else if(type == 3){
 		*index = (int)getAllocator<MeshRenderer>().getCount();
-		*instanceType = (int)Component::getInstanceType<MeshRenderer>();
+		*instanceType = Component::getInstanceType<MeshRenderer>();
 		return create<MeshRenderer>(data);
 	}
 	else if(type == 4){
 		*index = (int)getAllocator<LineRenderer>().getCount();
-		*instanceType = (int)Component::getInstanceType<LineRenderer>();
+		*instanceType = Component::getInstanceType<LineRenderer>();
 		return create<LineRenderer>(data);
 	}
 	else if(type == 5){
 		*index = (int)getAllocator<Light>().getCount();
-		*instanceType = (int)Component::getInstanceType<Light>();
+		*instanceType = Component::getInstanceType<Light>();
 		return create<Light>(data);
 	}
 	else if(type == 8){
 		*index = (int)getAllocator<BoxCollider>().getCount();
-		*instanceType = (int)Component::getInstanceType<BoxCollider>();
+		*instanceType = Component::getInstanceType<BoxCollider>();
 		return create<BoxCollider>(data);
 	}
 	else if(type == 9){
 		*index = (int)getAllocator<SphereCollider>().getCount();
-		*instanceType = (int)Component::getInstanceType<SphereCollider>();
+		*instanceType = Component::getInstanceType<SphereCollider>();
 		return create<SphereCollider>(data);
 	}
 	else if(type == 15){
 		*index = (int)getAllocator<MeshCollider>().getCount();
-		*instanceType = (int)Component::getInstanceType<MeshCollider>();
+		*instanceType = Component::getInstanceType<MeshCollider>();
 		return create<MeshCollider>(data);
 	}
 	else if(type == 10){
 		*index = (int)getAllocator<CapsuleCollider>().getCount();
-		*instanceType = (int)Component::getInstanceType<CapsuleCollider>();
+		*instanceType = Component::getInstanceType<CapsuleCollider>();
 		return create<CapsuleCollider>(data);
 	}
 	else if(type == 11){
 		*index = (int)getAllocator<Boids>().getCount();
-		*instanceType = (int)Component::getInstanceType<Boids>();
+		*instanceType = Component::getInstanceType<Boids>();
 		return create<Boids>(data);
 	}
 	else if(type == 12){
 		*index = (int)getAllocator<Cloth>().getCount();
-		*instanceType = (int)Component::getInstanceType<Cloth>();
+		*instanceType = Component::getInstanceType<Cloth>();
 		return create<Cloth>(data);
 	}
 	else if(type == 13){
 		*index = (int)getAllocator<Fluid>().getCount();
-		*instanceType = (int)Component::getInstanceType<Fluid>();
+		*instanceType = Component::getInstanceType<Fluid>();
 		return create<Fluid>(data);
 	}
 	else if(type == 14){
 		*index = (int)getAllocator<Solid>().getCount();
-		*instanceType = (int)Component::getInstanceType<Solid>();
+		*instanceType = Component::getInstanceType<Solid>();
 		return create<Solid>(data);
 	}
 	else{
@@ -205,41 +205,12 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
 	}
 }
 
-Asset* PhysicsEngine::destroyInternalAsset(int instanceType, int index)
-{
-	if(instanceType == 0){
-		return destroy<Shader>(index);
-	}
-	else if(instanceType == 1){
-		return destroy<Texture2D>(index);
-	}
-	else if(instanceType == 2){
-		return destroy<Texture3D>(index);
-	}
-	else if(instanceType == 3){
-		return destroy<Cubemap>(index);
-	}
-	else if(instanceType == 4){
-		return destroy<Material>(index);
-	}
-	else if(instanceType == 5){
-		return destroy<Mesh>(index);
-	}
-	else if(instanceType == 6){
-		return destroy<Font>(index);
-	}
-	else{
-		std::cout << "Error: Invalid asset instance type (" << instanceType << ") when trying to destroy internal asset" << std::endl;
-		return NULL;
-	}
-}
-
 Entity* PhysicsEngine::destroyInternalEntity(int index)
 {
 	return destroy<Entity>(index);
 }
 
-Component* PhysicsEngine::destroyInternalComponent(int instanceType, int index)
+Component* PhysicsEngine::destroyInternalComponent(itype instanceType, int index)
 {
 	if(instanceType == Component::getInstanceType<Transform>()){
 		return destroy<Transform>(index);
@@ -285,38 +256,6 @@ Component* PhysicsEngine::destroyInternalComponent(int instanceType, int index)
 	}
 	else{
 		std::cout << "Error: Invalid component instance type (" << instanceType << ") when trying to destroy internal component" << std::endl;
-		return NULL;
-	}
-}
-
-System* PhysicsEngine::destroyInternalSystem(int instanceType, int index)
-{
-	if(instanceType == 0){
-		return destroy<RenderSystem>(index);
-	}
-	else if(instanceType == 1){
-		return destroy<PhysicsSystem>(index);
-	}
-	else if(instanceType == 2){
-		return destroy<CleanUpSystem>(index);
-	}
-	else if(instanceType == 3){
-		return destroy<DebugSystem>(index);
-	}
-	else if(instanceType == 4){
-		return destroy<BoidsSystem>(index);
-	}
-	else if(instanceType == 5){
-		return destroy<ClothSystem>(index);
-	}
-	else if(instanceType == 6){
-		return destroy<FluidSystem>(index);
-	}
-	else if(instanceType == 7){
-		return destroy<SolidSystem>(index);
-	}
-	else{
-		std::cout << "Error: Invalid system instance type (" << instanceType << ") when trying to destroy internal system" << std::endl;
 		return NULL;
 	}
 }

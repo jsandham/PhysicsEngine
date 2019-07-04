@@ -13,19 +13,13 @@ namespace PhysicsEngine
 	Asset* loadAsset(std::vector<char> data, int* index);
 
 	// load external components defined by the user (components with type 20 or greater)
-	Component* loadComponent(std::vector<char> data, int* index, int* instanceType);
+	Component* loadComponent(std::vector<char> data, int* index, itype* instanceType);
 
 	// load external systems defined by the user (systems with type 10 or greater)
 	System* loadSystem(std::vector<char> data, int* index);
 
-	// destroy external asset defined by the user
-	Asset* destroyAsset(int instanceType, int index);
-
 	// destroy external components defined by the user 
-	Component* destroyComponent(int instanceType, int index);
-	
-	// destroy external systems defined by the user 
-	System* destroySystem(int instanceType, int index);
+	Component* destroyComponent(itype instanceType, int index);
 }
 
 #endif

@@ -19,7 +19,7 @@ Mesh::Mesh(std::vector<char> data)
 	vertices.resize(header->verticesSize);
 	normals.resize(header->normalsSize);
 	texCoords.resize(header->texCoordsSize);
-	subMeshStartIndicies.resize(header->subMeshStartIndiciesSize);
+	subMeshStartIndices.resize(header->subMeshStartIndiciesSize);
 
 	index += sizeof(MeshHeader);
 
@@ -42,10 +42,10 @@ Mesh::Mesh(std::vector<char> data)
 	index += texCoords.size() * sizeof(float);
 
 	for(size_t i = 0; i < header->subMeshStartIndiciesSize; i++){
-		subMeshStartIndicies[i] = *reinterpret_cast<int*>(&data[index + sizeof(int) * i]);
+		subMeshStartIndices[i] = *reinterpret_cast<int*>(&data[index + sizeof(int) * i]);
 	}
 
-	index += subMeshStartIndicies.size() * sizeof(int);
+	index += subMeshStartIndices.size() * sizeof(int);
 
 	std::cout << "mesh index: " << index << " data size: " << data.size() << std::endl;
 }

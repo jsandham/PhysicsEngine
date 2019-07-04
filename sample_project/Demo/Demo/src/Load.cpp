@@ -50,26 +50,7 @@ System* PhysicsEngine::loadSystem(std::vector<char> data, int* index)
 	}
 }
 
-Asset* PhysicsEngine::destroyAsset(int type, int index)
-{
-	return NULL;
-}
-
 Component* PhysicsEngine::destroyComponent(int type, int index)
 {
 	return NULL;
-}
-
-System* PhysicsEngine::destroySystem(int type, int index)
-{
-	if (type == 20){
-		return NULL;
-	}
-	else if (type == 21){
-		return NULL;
-	}
-	else{
-		std::cout << "Error: Invalid system type (" << type << ") when trying to load system" << std::endl;
-		return NULL;
-	}
 }

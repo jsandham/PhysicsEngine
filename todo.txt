@@ -16,3 +16,9 @@ TODO:
 ------------ create raytracer renderer
 ------------ create deferred renderer
 ------------ call all glDelete* methods 
+------------ rewrite obj parser to allow for multiple materials
+------------ change engine code to allow for multiple materials
+------------ change editor code to allow for serialization of meesh renderers with multiple materials
+------------ figure out directional light bug that causes first cascade to be dark
+------------ combine all light types into one Light class
+------------ write material mtl parser for generating json material files from mtl files

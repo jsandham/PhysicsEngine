@@ -30,7 +30,7 @@ namespace PhysicsEngine
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;
-			std::vector<int> subMeshStartIndicies;
+			std::vector<int> subMeshStartIndices;
 
 		public:
 			Mesh();

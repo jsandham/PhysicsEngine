@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "common.h"
+
 #include "PoolAllocator.h"
 #include "Asset.h"
 #include "Entity.h"
@@ -31,13 +33,11 @@ namespace PhysicsEngine
 
 	Asset* loadInternalAsset(std::vector<char> data, int* index);
 	Entity* loadInternalEntity(std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::vector<char> data, int* index, int* instanceType);
+	Component* loadInternalComponent(std::vector<char> data, int* index, itype* instanceType);
 	System* loadInternalSystem(std::vector<char> data, int* index);
 
-	Asset* destroyInternalAsset(int instanceType, int index); //maybe dont allow deleting of assets???
 	Entity* destroyInternalEntity(int index);
-	Component* destroyInternalComponent(int instanceType, int index);
-	System* destroyInternalSystem(int instanceType, int index);  // maybe dont allow deleting of systems??
+	Component* destroyInternalComponent(itype instanceType, int index);
 }
 
 #endif

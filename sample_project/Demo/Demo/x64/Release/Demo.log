@@ -1,7 +1,7 @@
-﻿Build started 6/24/2019 8:22:11 PM.
+﻿Build started 7/3/2019 7:14:08 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _MBCS /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\Load.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _MBCS /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp
          Demo.cpp
      1>Demo.cpp(448): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
      1>Demo.cpp(449): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
@@ -16,9 +16,6 @@
      1>Demo.cpp(459): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
      1>Demo.cpp(460): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
      1>Demo.cpp(461): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-         Load.cpp
-         LogicSystem.cpp
-         PlayerSystem.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release\Demo.lib" /MACHINE:X64 x64\Release\Demo.res
          x64\Release\Demo.obj
@@ -33,4 +30,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.84
+Time Elapsed 00:00:03.95

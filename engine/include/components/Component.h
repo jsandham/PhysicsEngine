@@ -1,6 +1,8 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
+#include "../core/common.h"
+
 #include "../core/Guid.h"
 
 namespace PhysicsEngine
@@ -41,19 +43,19 @@ namespace PhysicsEngine
 			}
 
 			template <typename T>
-			static int getInstanceType()
+			static itype getInstanceType()
 			{
 				// static variables only run the first time the function is called
-			    static int id = nextValue();
+			    static itype id = nextValue();
 			    return id;
 			}
 
 		private:
-			static int nextValue()
+			static itype nextValue()
 			{
 				// static variables only run the first time the function is called
-			    static int id = 0;
-			    int result = id;
+			    static itype id = 0;
+			    itype result = id;
 			    ++id;
 			    return result;
 			}

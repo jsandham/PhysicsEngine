@@ -439,20 +439,27 @@ int serializeScenes(std::string projectDirectory)
 			data.componentId = Guid(it->first);
 			data.entityId = Guid(it->second["entity"].ToString());
 			data.meshId = Guid(it->second["mesh"].ToString());
-			//data.materialId = Guid(it->second["material"].ToString());
 
-			// data.materialId0 = Guid(it->second["material0"].ToString());
-			// data.materialId1 = Guid(it->second["material1"].ToString());
-			// data.materialId2 = Guid(it->second["material2"].ToString());
-			// data.materialId3 = Guid(it->second["material3"].ToString());
-			// data.materialId4 = Guid(it->second["material4"].ToString());
-			// data.materialId5 = Guid(it->second["material5"].ToString());
-			// data.materialId6 = Guid(it->second["material6"].ToString());
-			// data.materialId7 = Guid(it->second["material7"].ToString());
+			if(it->second.hasKey("material")){
+				data.materialIds[0] = Guid(it->second["material"].ToString());
+				for(int j = 1; j < 8; j++){
+					data.materialIds[j] = Guid::INVALID;
+				}
+			}
+			else if(it->second.hasKey("materials")){
+				int materialCount = it->second["materials"].length();
+				if(materialCount > 8){
+					std::cout << "Error: Currently only support at most 8 materials" << std::endl;
+					return 0;
+				}
 
-			data.materialIds[0] = Guid(it->second["material"].ToString());
-			for(int m = 1; m < 8; m++){
-				data.materialIds[m] = Guid::INVALID;
+				for(int j = 0; j < materialCount; j++){
+					data.materialIds[j] = Guid(it->second["materials"][j].ToString());
+				}
+
+				for(int j = materialCount; j < 8; j++){
+					data.materialIds[j] = Guid::INVALID;
+				}
 			}
 
 			data.isStatic = it->second["isStatic"].ToBool();
@@ -1067,7 +1074,7 @@ int serializeAssets(std::string projectDirectory)
 			header.verticesSize = (unsigned int)mesh.vertices.size();
 			header.normalsSize = (unsigned int)mesh.normals.size();
 			header.texCoordsSize = (unsigned int)mesh.texCoords.size();
-			header.subMeshStartIndiciesSize = (unsigned int)mesh.subMeshStartIndicies.size();
+			header.subMeshStartIndiciesSize = (unsigned int)mesh.subMeshStartIndices.size();
 
 			int type = 5;
 
@@ -1076,9 +1083,9 @@ int serializeAssets(std::string projectDirectory)
 			totalSize += mesh.vertices.size()*sizeof(float);
 			totalSize += mesh.normals.size()*sizeof(float);
 			totalSize += mesh.texCoords.size()*sizeof(float);
-			totalSize += mesh.subMeshStartIndicies.size()*sizeof(int);
+			totalSize += mesh.subMeshStartIndices.size()*sizeof(int);
 
-			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << " subMeshStartIndicies size: " << mesh.subMeshStartIndicies.size() << std::endl;
+			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << " subMeshStartIndicies size: " << mesh.subMeshStartIndices.size() << std::endl;
 
 			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
 
@@ -1088,7 +1095,7 @@ int serializeAssets(std::string projectDirectory)
 			fwrite(&(mesh.vertices[0]), mesh.vertices.size()*sizeof(float), 1, file);
 			fwrite(&(mesh.normals[0]), mesh.normals.size()*sizeof(float), 1, file);
 			fwrite(&(mesh.texCoords[0]), mesh.texCoords.size()*sizeof(float), 1, file);
-			fwrite(&(mesh.subMeshStartIndicies[0]), mesh.subMeshStartIndicies.size()*sizeof(int), 1, file);
+			fwrite(&(mesh.subMeshStartIndices[0]), mesh.subMeshStartIndices.size()*sizeof(int), 1, file);
 		}
 		else{
 			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;

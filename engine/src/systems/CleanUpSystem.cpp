@@ -29,21 +29,17 @@ void CleanUpSystem::init(World* world)
 
 void CleanUpSystem::update(Input input)
 {
-	world->clearMovedIds();
+	world->clearIdsMarkedMoved();
 
-	std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy = world->getComponentIdsMarkedLatentDestroy();
-	for(int i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
-		//std::cout << "Entity id: " << componentIdsMarkedLatentDestroy[i].first.toString() << " Component id: " << componentIdsMarkedLatentDestroy[i].second.toString() << " and type: " << componentIdsMarkedLatentDestroy[i].third << " is marked for latent destroy" << std::endl;
-
+	std::vector<triple<Guid, Guid, itype>> componentIdsMarkedLatentDestroy = world->getComponentIdsMarkedLatentDestroy();
+	for(size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
 		world->immediateDestroyComponent(componentIdsMarkedLatentDestroy[i].first, componentIdsMarkedLatentDestroy[i].second, componentIdsMarkedLatentDestroy[i].third);
 	}
 
 	std::vector<Guid> entityIdsMarkedForLatentDestroy = world->getEntityIdsMarkedLatentDestroy();
-	for(int i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++){
-		//std::cout << "Entity id: " << entityIdsMarkedForLatentDestroy[i].toString() << " is marked for latent destroy" << std::endl;
-		
+	for(size_t i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++){
 		world->immediateDestroyEntity(entityIdsMarkedForLatentDestroy[i]);
 	}
 
-	world->clearIdsMarked();
+	world->clearIdsMarkedCreatedOrDestroyed();
 }

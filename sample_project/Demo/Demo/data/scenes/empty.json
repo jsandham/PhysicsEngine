@@ -8,16 +8,16 @@
     "type" : "Transform",
     "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
-    "position" : [0.3, 0.0, 0.0],
+    "position" : [0.0, 0.0, 0.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
   "e1cb9f0b-0a57-4628-8ba5-bac01fbafa04" : {
     "type" : "Camera",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
-    "position" : [0.0, 2.0, 0.0],
-    "front" : [0.0, 0.0, -1.0],
-    "up" : [0.0, 1.0, 0.0],
+    "position" : [0.0, 0.0, 1.0],
+    "front" : [1.0, 0.0, 0.0],
+    "up" : [0.0, 0.0, 1.0],
     "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
     "x" : 0,
     "y" : 0,
@@ -31,14 +31,14 @@
     "type" : "MeshRenderer",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b",
+    "materials" : ["5cfa48d6-497e-4cce-b2bb-ddb619f1049b"],
     "isStatic" : false
   },
   "4ade255a-bffa-4098-871d-2b68ea22ef2a" : {
     "type" : "Light",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "position" : [0.0, 0.0, 0.0],
-    "direction" : [1.0, 2.0, 0.0],
+    "direction" : [2.0, 1.0, 1.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0],
@@ -46,7 +46,9 @@
     "linear" : 0.0,
     "quadratic" : 0.0,
     "cutOff" : 10.0,
-    "outerCutOff" : 25.0
+    "outerCutOff" : 25.0,
+    "lightType" : 0,
+    "shadowType" : 1
   },
   "5e7a3ae3-78e3-4ed7-bcb5-eee232bc1ca2" : {
     "type" : "PhysicsSystem",
@@ -64,5 +66,9 @@
     "type" : "DebugSystem",
     "order" : 3,
     "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+  },
+  "c2901dbc-3433-4ba8-8fa0-7c3d6e784796" : {
+    "type" : "CleanUpSystem",
+    "order" : 4
   }
 }

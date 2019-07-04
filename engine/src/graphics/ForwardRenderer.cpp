@@ -182,60 +182,62 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	if(transform == NULL){ return; }
 
 	int transformIndex = world->getIndexOf(transform->componentId);
-	int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[0]);
+	int meshStartIndex = meshBuffer.getIndex(meshRenderer->meshId); // could pass in sub mesh index here?
 
-	//std::cout << "material index: " << materialIndex << std::endl;
-
-	if(materialIndex == -1){ return; }
-
-	Material* material = world->getAssetByIndex<Material>(materialIndex);
-
-	if(material == NULL){
-		std::cout << "Error: Trying to add mesh renderer with null material" << std::endl;
-		return;
-	}
-	
-	Shader* shader = world->getAsset<Shader>(material->shaderId);
-
-	if(shader == NULL){
-		std::cout << "Error: Trying to add mesh renderer with null shader" << std::endl;
+	if(meshStartIndex == -1){
 		return;
 	}
 
-	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+	for(int i = 0; i < 8; i++){
+		if(meshRenderer->materialIds[i] == Guid::INVALID){
+			break;
+		}
 
-	int index = meshBuffer.getIndex(meshRenderer->meshId);
+		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[i]);
 
-	//std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
+		if(materialIndex == -1){ return; }
 
-	// std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
+		Material* material = world->getAssetByIndex<Material>(materialIndex);
 
-	if(index != -1){
+		if(material == NULL){
+			std::cout << "Error: Trying to add mesh renderer with null material" << std::endl;
+			return;
+		}
+		
+		Shader* shader = world->getAsset<Shader>(material->shaderId);
+
+		if(shader == NULL){
+			std::cout << "Error: Trying to add mesh renderer with null shader" << std::endl;
+			return;
+		}
+
 		RenderObject renderObject;
 		renderObject.id = meshRenderer->componentId;
-		renderObject.start = meshBuffer.start[index];
-		renderObject.size = meshBuffer.count[index];
+		renderObject.start = meshBuffer.start[meshStartIndex];
+		renderObject.size = meshBuffer.count[meshStartIndex];
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
 
-		for(int i = 0; i < 10; i++){
-			renderObject.shaders[i] = shader->programs[i].handle;
+		for(int j = 0; j < 10; j++){
+			renderObject.shaders[j] = shader->programs[j].handle;
 		}
 
 		renderObject.mainTexture = -1;
 		renderObject.normalMap = -1;
 		renderObject.specularMap = -1;
-		
+
+		Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
+		Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
+		Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
+
 		if(mainTexture != NULL){ renderObject.mainTexture = mainTexture->handle.handle; }
 		if(normalMap != NULL){ renderObject.normalMap = normalMap->handle.handle; }
 		if(specularMap != NULL){ renderObject.specularMap = specularMap->handle.handle; }
 
-		renderObject.boundingSphere = meshBuffer.boundingSpheres[index];
+		renderObject.boundingSphere = meshBuffer.boundingSpheres[meshStartIndex];
 
-		renderObjects.push_back(renderObject);
-	}		
+		renderObjects.push_back(renderObject);	
+	}
 }
 
 void ForwardRenderer::removeFromRenderObjectsList(MeshRenderer* meshRenderer)
@@ -852,7 +854,7 @@ void ForwardRenderer::updateRenderObjectsList()
 		if(componentIdsMoved[i].second == transformInstanceType){
 			int oldIndex = componentIdsMoved[i].third;
 			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
-			//std::cout << "transform id: " << componentIdsMoved[i].first.toString() << " old index: " << oldIndex << " new index: " << newIndex << std::endl;
+	
 			transformIndicesMoved.push_back(std::make_pair(oldIndex, newIndex));
 		}
 	}
@@ -860,28 +862,10 @@ void ForwardRenderer::updateRenderObjectsList()
 	for(size_t i = 0; i < transformIndicesMoved.size(); i++){
 		for(size_t j = 0; j < renderObjects.size(); j++){
 			if(transformIndicesMoved[i].first == renderObjects[j].transformIndex){
-				//std::cout << "render object id: " << renderObjects[j].id.toString() << " old transform index: " << renderObjects[j].transformIndex << " new transform index: " << transformIndicesMoved[i].second << std::endl;
 				renderObjects[j].transformIndex = transformIndicesMoved[i].second;
 			}
 		}
 	}
-
-	// for(size_t i = 0; i < meshRendererIdsMoved.size(); i++){
-	// 	int globalIndex = world->getIndexOf(meshRendererIdsMoved[i]);
-
-	// 	MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-
-	// 	std::cout << "Moved mesh renderer: " << meshRenderer->componentId.toString() << " at global index: " << globalIndex << std::endl;
-	// 	for(size_t j = 0; j < renderObjects.size(); j++){
-	// 		if(meshRenderer->componentId == renderObjects[j].id){
-	// 			Transform* transform = meshRenderer->getComponent<Transform>(world);
-	// 			renderObjects[j].transformIndex = world->getIndexOf(transform->componentId);
-
-	// 			std::cout << "transform " << transform->componentId.toString() << " index: " << renderObjects[j].transformIndex << std::endl;
-	// 			break;
-	// 		}
-	// 	}
-	// }
 }
 
 void ForwardRenderer::calcShadowmapCascades(float nearDist, float farDist)
