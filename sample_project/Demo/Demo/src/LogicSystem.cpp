@@ -11,19 +11,12 @@ using namespace PhysicsEngine;
 
 LogicSystem::LogicSystem()
 {
-	type = 20;
+	
 }
 
 LogicSystem::LogicSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if (type != 20){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 LogicSystem::~LogicSystem()
@@ -31,15 +24,20 @@ LogicSystem::~LogicSystem()
 
 }
 
-//void* LogicSystem::operator new(size_t size)
-//{
-//	return getAllocator<LogicSystem>().allocate();
-//}
-//
-//void LogicSystem::operator delete(void*)
-//{
-//
-//}
+std::vector<char> LogicSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void LogicSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
+}
 
 void LogicSystem::init(World* world)
 {

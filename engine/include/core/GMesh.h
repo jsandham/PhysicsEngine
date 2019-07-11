@@ -52,6 +52,9 @@ namespace PhysicsEngine
 			GMesh();
 			GMesh(std::vector<char> data);
 			~GMesh();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

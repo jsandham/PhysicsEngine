@@ -20,6 +20,9 @@ namespace PhysicsEngine
 			SpringJoint();
 			~SpringJoint();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			glm::vec3 getTargetPosition();
 	};
 }

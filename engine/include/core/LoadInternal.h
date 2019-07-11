@@ -31,10 +31,10 @@ namespace PhysicsEngine
 		return getAllocator<T>().destruct(index);
 	}
 
-	Asset* loadInternalAsset(std::vector<char> data, int* index);
+	Asset* loadInternalAsset(std::vector<char> data, int type, int* index);
 	Entity* loadInternalEntity(std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::vector<char> data, int* index, itype* instanceType);
-	System* loadInternalSystem(std::vector<char> data, int* index);
+	Component* loadInternalComponent(std::vector<char> data, int type, int* index, itype* instanceType);
+	System* loadInternalSystem(std::vector<char> data, int type, int* index);
 
 	Entity* destroyInternalEntity(int index);
 	Component* destroyInternalComponent(itype instanceType, int index);

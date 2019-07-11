@@ -258,9 +258,6 @@ namespace PhysicsEngine
 
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);
-
-			static bool writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels);
-			static bool writeToBMP(const std::string& filepath, std::vector<float>& data, int width, int height, int numChannels);
 	};
 }
 

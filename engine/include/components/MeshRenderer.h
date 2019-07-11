@@ -29,6 +29,9 @@ namespace PhysicsEngine
 			MeshRenderer();
 			MeshRenderer(std::vector<char> data);
 			~MeshRenderer();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

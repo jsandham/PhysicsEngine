@@ -26,6 +26,9 @@ namespace PhysicsEngine
 			Entity(std::vector<char> data);
 			~Entity();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void latentDestroy(World* world);
 			void immediateDestroy(World* world);
 

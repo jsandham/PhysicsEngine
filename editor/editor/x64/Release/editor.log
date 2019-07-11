@@ -1,0 +1,168 @@
+﻿Build started 7/9/2019 8:42:57 PM.
+     1>Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\editor.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt editor.cpp src\Load.cpp
+         editor.cpp
+     1>editor.cpp(433): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(434): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(436): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(437): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(438): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(439): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(440): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(441): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(442): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(443): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(444): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(445): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(446): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+         Load.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"x64\Release\editor.res" editor.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Release\editor.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\lib glew32.lib engine.lib xinput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Release\editor.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Release\editor.lib" /MACHINE:X64 x64\Release\editor.res
+         x64\Release\editor.obj
+         x64\Release\Load.obj
+         x64\Release\stdafx.obj
+     1>editor.obj : error LNK2001: unresolved external symbol __imp_wglCreateContext
+     1>editor.obj : error LNK2001: unresolved external symbol __imp_wglMakeCurrent
+     1>editor.obj : error LNK2001: unresolved external symbol __imp_wglGetProcAddress
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp_glGenTextures
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glGenTextures
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glGenTextures
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp_glPixelStorei
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp_glTexParameteri
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexParameteri
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexParameteri
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_Init_FreeType
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_Done_FreeType
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_New_Face
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_Done_Face
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_Set_Pixel_Sizes
+     1>engine.lib(Font.obj) : error LNK2001: unresolved external symbol FT_Load_Char
+     1>engine.lib(BoidsSystem.obj) : error LNK2001: unresolved external symbol __imp_glGetError
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glGetError
+     1>engine.lib(BatchManager.obj) : error LNK2001: unresolved external symbol __imp_glGetError
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glDrawArrays
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDrawArrays
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDrawArrays
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBlendFunc
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBlendFunc
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClear
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClear
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClear
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearDepth
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearDepth
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDepthFunc
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDrawBuffer
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glEnable
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glEnable
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glEnable
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glReadBuffer
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glViewport
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetAttribute
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetAttribute
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetSharedMemConfig
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetSharedMemConfig
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaPeekAtLastError
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaPeekAtLastError
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetDevice
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetDevice
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaFuncGetAttributes
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFuncGetAttributes
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpyAsync
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpyAsync
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceSetSharedMemConfig
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceSetSharedMemConfig
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaStreamSynchronize
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaStreamSynchronize
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsMapResources
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsMapResources
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsUnmapResources
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsUnmapResources
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsResourceGetMappedPointer
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsResourceGetMappedPointer
+     1>C:\Users\James\Documents\PhysicsEngine\editor\x64\Release\editor.exe : fatal error LNK1120: 47 unresolved externals
+     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.54

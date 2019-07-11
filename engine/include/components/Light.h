@@ -67,6 +67,9 @@ namespace PhysicsEngine
 			Light();
 			Light(std::vector<char> data);
 			~Light();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

@@ -30,6 +30,9 @@ namespace PhysicsEngine
 			BoxCollider(std::vector<char> data);
 			~BoxCollider();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			bool intersect(Bounds bounds);
 
 			std::vector<float> getLines() const;

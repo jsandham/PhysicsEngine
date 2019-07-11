@@ -13,16 +13,33 @@ Entity::Entity()
 
 Entity::Entity(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	index += sizeof(char);
-	EntityHeader* header = reinterpret_cast<EntityHeader*>(&data[index]);
-
-	entityId = header->entityId;
+	deserialize(data);
 }
 
 Entity::~Entity()
 {
 
+}
+
+std::vector<char> Entity::serialize()
+{
+	EntityHeader header;
+	header.entityId = entityId;
+
+	int numberOfBytes = sizeof(EntityHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(EntityHeader));
+
+	return data;
+}
+
+void Entity::deserialize(std::vector<char> data)
+{
+	EntityHeader* header = reinterpret_cast<EntityHeader*>(&data[0]);
+
+	entityId = header->entityId;
 }
 
 void Entity::latentDestroy(World* world)

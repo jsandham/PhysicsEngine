@@ -12,47 +12,78 @@ Mesh::Mesh()
 
 Mesh::Mesh(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	MeshHeader* header = reinterpret_cast<MeshHeader*>(&data[index]);
-
-	assetId = header->meshId;
-	vertices.resize(header->verticesSize);
-	normals.resize(header->normalsSize);
-	texCoords.resize(header->texCoordsSize);
-	subMeshStartIndices.resize(header->subMeshStartIndiciesSize);
-
-	index += sizeof(MeshHeader);
-
-	for(size_t i = 0; i < header->verticesSize; i++){
-		vertices[i] = *reinterpret_cast<float*>(&data[index + sizeof(float) * i]);
-	}
-
-	index += vertices.size() * sizeof(float);
-
-	for(size_t i = 0; i < header->normalsSize; i++){
-		normals[i] = *reinterpret_cast<float*>(&data[index + sizeof(float) * i]);
-	}
-
-	index += normals.size() * sizeof(float);
-
-	for(size_t i = 0; i < header->texCoordsSize; i++){
-		texCoords[i] = *reinterpret_cast<float*>(&data[index + sizeof(float) * i]);
-	}
-
-	index += texCoords.size() * sizeof(float);
-
-	for(size_t i = 0; i < header->subMeshStartIndiciesSize; i++){
-		subMeshStartIndices[i] = *reinterpret_cast<int*>(&data[index + sizeof(int) * i]);
-	}
-
-	index += subMeshStartIndices.size() * sizeof(int);
-
-	std::cout << "mesh index: " << index << " data size: " << data.size() << std::endl;
+	deserialize(data);
 }
 
 Mesh::~Mesh()
 {
 
+}
+
+std::vector<char> Mesh::serialize()
+{
+	MeshHeader header;
+	header.meshId = assetId;
+	header.verticesSize = vertices.size();
+	header.normalsSize = normals.size();
+	header.texCoordsSize = texCoords.size();
+	header.subMeshVertexStartIndiciesSize = subMeshVertexStartIndices.size();
+
+	size_t numberOfBytes = sizeof(MeshHeader) +
+	 					vertices.size() * sizeof(float) + 
+	 					normals.size() * sizeof(float) + 
+	 					texCoords.size() * sizeof(float) + 
+	 					subMeshVertexStartIndices.size() * sizeof(int);
+
+	std::vector<char> data(numberOfBytes);
+
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(MeshHeader);
+	size_t start3 = start2 + sizeof(float) * vertices.size();
+	size_t start4 = start3 + sizeof(float) * normals.size();
+	size_t start5 = start4 + sizeof(float) * texCoords.size();
+
+	memcpy(&data[start1], &header, sizeof(MeshHeader));
+	memcpy(&data[start2], &vertices[0], sizeof(float) * vertices.size());
+	memcpy(&data[start3], &normals[0], sizeof(float) * normals.size());
+	memcpy(&data[start4], &texCoords[0], sizeof(float) * texCoords.size());
+	memcpy(&data[start5], &subMeshVertexStartIndices[0], sizeof(int) * subMeshVertexStartIndices.size());
+
+	return data;
+}
+
+void Mesh::deserialize(std::vector<char> data)
+{
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(MeshHeader);
+
+	MeshHeader* header = reinterpret_cast<MeshHeader*>(&data[start1]);
+
+	assetId = header->meshId;
+	vertices.resize(header->verticesSize);
+	normals.resize(header->normalsSize);
+	texCoords.resize(header->texCoordsSize);
+	subMeshVertexStartIndices.resize(header->subMeshVertexStartIndiciesSize);
+
+	size_t start3 = start2 + sizeof(float) * vertices.size();
+	size_t start4 = start3 + sizeof(float) * normals.size();
+	size_t start5 = start4 + sizeof(float) * texCoords.size();
+
+	for(size_t i = 0; i < header->verticesSize; i++){
+		vertices[i] = *reinterpret_cast<float*>(&data[start2 + sizeof(float) * i]);
+	}
+
+	for(size_t i = 0; i < header->normalsSize; i++){
+		normals[i] = *reinterpret_cast<float*>(&data[start3 + sizeof(float) * i]);
+	}
+
+	for(size_t i = 0; i < header->texCoordsSize; i++){
+		texCoords[i] = *reinterpret_cast<float*>(&data[start4 + sizeof(float) * i]);
+	}
+
+	for(size_t i = 0; i < header->subMeshVertexStartIndiciesSize; i++){
+		subMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
+	}
 }
 
 Sphere Mesh::getBoundingSphere() const

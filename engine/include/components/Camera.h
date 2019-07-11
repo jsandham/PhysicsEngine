@@ -96,6 +96,9 @@ namespace PhysicsEngine
 			Camera(std::vector<char> data);
 			~Camera();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void updateInternalCameraState();
 
 			glm::mat4 getViewMatrix() const;

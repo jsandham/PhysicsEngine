@@ -28,7 +28,7 @@ void WorldManager::init()
 
 		system->init(&world);
 
-		std::cout << "initializing system type: " << system->getType() << " with order: " << system->getOrder() << std::endl;
+		std::cout << "initializing system with order: " << system->getOrder() << std::endl;
 	}
 }
 
@@ -58,7 +58,6 @@ bool WorldManager::update(Time time, Input input)
 
 		system->update(input);
 	}
-
 
 	return true;
 }

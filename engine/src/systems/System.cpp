@@ -12,10 +12,10 @@ System::~System()
 
 }
 
-int System::getType() const
-{
-	return type;
-}
+// int System::getType() const
+// {
+// 	return type;
+// }
 
 int System::getOrder() const
 {

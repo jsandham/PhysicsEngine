@@ -32,6 +32,9 @@ namespace PhysicsEngine
 			SphereCollider(std::vector<char> data);
 			~SphereCollider();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			bool intersect(Bounds bounds);
 
 			std::vector<float> getLines() const;

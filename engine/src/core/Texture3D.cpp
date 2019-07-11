@@ -21,27 +21,7 @@ Texture3D::Texture3D()
 
 Texture3D::Texture3D(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[index]);
-
-	assetId = header->textureId;
-	width = header->width;
-	height = header->height;
-	depth = header->depth;
-	numChannels = header->numChannels;
-	dimension = static_cast<TextureDimension>(header->dimension);
-	format = static_cast<TextureFormat>(header->format);
-	
-	index += sizeof(Texture3DHeader);
-
-	rawTextureData.resize(header->textureSize);
-	for(size_t i = 0; i < header->textureSize; i++){
-		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[index + sizeof(unsigned char) * i]);
-	}
-
-	index += rawTextureData.size() * sizeof(unsigned char);
-
-	std::cout << "Texture3D index: " << index << " data size: " << data.size() << std::endl;
+	deserialize(data);
 }
 
 Texture3D::Texture3D(int width, int height, int depth, int numChannels)
@@ -59,6 +39,55 @@ Texture3D::Texture3D(int width, int height, int depth, int numChannels)
 Texture3D::~Texture3D()
 {
 
+}
+
+std::vector<char> Texture3D::serialize()
+{
+	Texture3DHeader header;
+	header.textureId = assetId;
+	header.width = width;
+	header.height = height;
+	header.depth = depth;
+	header.numChannels = numChannels;
+	header.dimension = dimension;
+	header.format = format;
+	header.textureSize = rawTextureData.size();
+
+	size_t numberOfBytes = sizeof(Texture3DHeader) + 
+						sizeof(unsigned char) * rawTextureData.size();
+
+	std::vector<char> data(numberOfBytes);
+
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(Texture3DHeader);
+
+	memcpy(&data[start1], &header, sizeof(Texture3DHeader));
+	memcpy(&data[start2], &rawTextureData[0], sizeof(unsigned char) * rawTextureData.size());
+
+	return data;
+}
+
+void Texture3D::deserialize(std::vector<char> data)
+{
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(Texture3DHeader);
+
+	Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[start1]);
+
+	assetId = header->textureId;
+	width = header->width;
+	height = header->height;
+	depth = header->depth;
+	numChannels = header->numChannels;
+	dimension = static_cast<TextureDimension>(header->dimension);
+	format = static_cast<TextureFormat>(header->format);
+
+	rawTextureData.resize(header->textureSize);
+	for(size_t i = 0; i < header->textureSize; i++){
+		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+	}
+
+	std::cout << "Texture3D data size: " << data.size() << std::endl;
 }
 
 int Texture3D::getWidth() const

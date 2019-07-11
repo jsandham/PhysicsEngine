@@ -121,7 +121,25 @@ void DeferredRenderer::init(World* world)
 		startIndex += (int)mesh->vertices.size();
 	}
 
-	meshBuffer.init();
+	glBindVertexArray(meshBuffer.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[0]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.vertices.size()*sizeof(float), &meshBuffer.vertices[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.normals.size()*sizeof(float), &meshBuffer.normals[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[2]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.texCoords.size()*sizeof(float), &meshBuffer.texCoords[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+
+	Graphics::checkError();
 
 	std::cout << "mesh buffer size: " << meshBuffer.vertices.size() << " " << meshBuffer.normals.size() << " " << meshBuffer.texCoords.size() << std::endl;
 

@@ -32,6 +32,9 @@ namespace PhysicsEngine
 			CapsuleCollider(std::vector<char> data);
 			~CapsuleCollider();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			bool intersect(Bounds bounds);
 	};
 }

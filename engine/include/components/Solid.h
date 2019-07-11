@@ -39,6 +39,9 @@ namespace PhysicsEngine
 			Solid();
 			Solid(std::vector<char> data);
 			~Solid();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

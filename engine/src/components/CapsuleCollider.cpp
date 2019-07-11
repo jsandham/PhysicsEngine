@@ -12,18 +12,37 @@ CapsuleCollider::CapsuleCollider()
 
 CapsuleCollider::CapsuleCollider(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[index]);
-
-	componentId = header->componentId;
-	entityId = header->entityId;
-	capsule = header->capsule;
+	deserialize(data);
 }
 
 CapsuleCollider::~CapsuleCollider()
 {
 
+}
+
+std::vector<char> CapsuleCollider::serialize()
+{
+	CapsuleColliderHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.capsule = capsule;
+
+	int numberOfBytes = sizeof(CapsuleColliderHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(CapsuleColliderHeader));
+
+	return data;
+}
+
+void CapsuleCollider::deserialize(std::vector<char> data)
+{
+	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[0]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	capsule = header->capsule;
 }
 
 bool CapsuleCollider::intersect(Bounds bounds)

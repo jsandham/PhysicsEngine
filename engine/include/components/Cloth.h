@@ -5,9 +5,6 @@
 
 #include "Component.h"
 
-// #include "../graphics/Buffer.h"
-// #include "../graphics/VertexArrayObject.h"
-
 namespace PhysicsEngine
 {
 	class Cloth : public Component
@@ -30,6 +27,9 @@ namespace PhysicsEngine
 			Cloth();
 			Cloth(std::vector<char> data);
 			~Cloth();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

@@ -60,7 +60,8 @@ namespace PhysicsEngine
 			Material(std::vector<char> data);
 			~Material();
 
-			void load(MaterialHeader data);
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

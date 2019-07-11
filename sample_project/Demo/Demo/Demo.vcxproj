@@ -102,13 +102,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include;C:\Users\James\Documents\PhysicsEngine\engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include;C:\Users\James\Documents\PhysicsEngine\engine\include;C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Include;C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib;C:\Users\James\Documents\PhysicsEngine\engine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

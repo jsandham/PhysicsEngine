@@ -44,6 +44,9 @@ namespace PhysicsEngine
 			Cubemap(int width, int height, TextureFormat format);
 			~Cubemap();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			int getWidth() const;
 
 			std::vector<unsigned char> getRawCubemapData();

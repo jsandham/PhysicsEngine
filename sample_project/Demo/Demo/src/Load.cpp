@@ -9,9 +9,9 @@
 
 using namespace PhysicsEngine;
 
-Asset* PhysicsEngine::loadAsset(std::vector<char> data, int* index)
+Asset* PhysicsEngine::loadAsset(std::vector<char> data, int type, int* index)
 {
-	int type = *reinterpret_cast<int*>(&data[0]);
+	//int type = *reinterpret_cast<int*>(&data[0]);
 
 	*index = -1;
 
@@ -19,9 +19,9 @@ Asset* PhysicsEngine::loadAsset(std::vector<char> data, int* index)
 	return NULL;
 }
 
-Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index, int* instanceType)
+Component* PhysicsEngine::loadComponent(std::vector<char> data, int type, int* index, int* instanceType)
 {
-	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
+	//int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	*index = -1;
 	*instanceType = -1;// Component::getInstanceType<>();
@@ -30,9 +30,9 @@ Component* PhysicsEngine::loadComponent(std::vector<char> data, int* index, int*
 	return NULL;
 }
 
-System* PhysicsEngine::loadSystem(std::vector<char> data, int* index)
+System* PhysicsEngine::loadSystem(std::vector<char> data, int type, int* index)
 {
-	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
+	//int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
 
 	//std::cout << "load internal system called system of type: " << type << std::endl;
 

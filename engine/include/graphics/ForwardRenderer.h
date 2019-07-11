@@ -17,7 +17,6 @@
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"
 #include "GraphicsDebug.h"
-#include "VertexBuffer.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine

@@ -31,6 +31,9 @@ namespace PhysicsEngine
 			RenderSystem(std::vector<char> data);
 			~RenderSystem();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void init(World* world);
 			void update(Input input);
 	};

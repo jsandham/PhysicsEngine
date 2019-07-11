@@ -20,7 +20,7 @@ namespace PhysicsEngine
 		size_t verticesSize;
 		size_t normalsSize;
 		size_t texCoordsSize;
-		size_t subMeshStartIndiciesSize;
+		size_t subMeshVertexStartIndiciesSize;
 	};
 #pragma pack(pop)
 
@@ -30,12 +30,15 @@ namespace PhysicsEngine
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;
-			std::vector<int> subMeshStartIndices;
+			std::vector<int> subMeshVertexStartIndices;
 
 		public:
 			Mesh();
 			Mesh(std::vector<char> data);
 			~Mesh();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 
 			Sphere getBoundingSphere() const;
 	};

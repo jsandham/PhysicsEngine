@@ -14,18 +14,37 @@ SphereCollider::SphereCollider()
 
 SphereCollider::SphereCollider(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[index]);
-
-	componentId = header->componentId;
-	entityId = header->entityId;
-	sphere = header->sphere;
+	deserialize(data);
 }
 
 SphereCollider::~SphereCollider()
 {
 
+}
+
+std::vector<char> SphereCollider::serialize()
+{
+	SphereColliderHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.sphere = sphere;
+
+	int numberOfBytes = sizeof(SphereColliderHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(SphereColliderHeader));
+
+	return data;
+}
+
+void SphereCollider::deserialize(std::vector<char> data)
+{
+	SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[0]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	sphere = header->sphere;
 }
 
 bool SphereCollider::intersect(Bounds bounds)

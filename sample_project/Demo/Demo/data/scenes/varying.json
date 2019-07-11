@@ -15,9 +15,9 @@
   "eee3280e-28f0-49d4-a420-3fbbcab57906" : {
     "type" : "Camera",
     "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
-    "position" : [0.0, 2.0, 0.0],
-    "front" : [0.0, 0.0, -1.0],
-    "up" : [0.0, 1.0, 0.0],
+    "position" : [0.0, 0.0, 1.0],
+    "front" : [1.0, 0.0, 0.0],
+    "up" : [0.0, 0.0, 1.0],
     "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
     "x" : 0,
     "y" : 0,
@@ -38,7 +38,7 @@
     "type" : "Light",
     "entity" : "04cc2d39-150c-44f6-ab48-040492c547e3",
     "position" : [0.0, 0.0, 0.0],
-    "direction" : [0.2, 1.0, 0.3],
+    "direction" : [2.0, 1.0, 1.0],
     "ambient" : [0.4, 0.4, 0.4],
     "diffuse" : [1.0, 1.0, 1.0],
     "specular" : [1.0, 1.0, 1.0],
@@ -46,7 +46,9 @@
     "linear" : 0.0,
     "quadratic" : 0.0,
     "cutOff" : 10.0,
-    "outerCutOff" : 25.0
+    "outerCutOff" : 25.0,
+    "lightType" : 0,
+    "shadowType" : 1
   },
   "9d443766-ab90-4546-ae84-6b54133cd46e" : {
     "type" : "Entity",

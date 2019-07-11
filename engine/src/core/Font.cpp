@@ -22,27 +22,52 @@ Font::Font(std::string filepath)
 
 Font::Font(std::vector<char> data)
 {
-	int index = sizeof(int);
-	FontHeader* header = reinterpret_cast<FontHeader*>(&data[index]);
-	
-	assetId = header->fontId;
-
-	index += sizeof(FontHeader);
-
-	if(header->filepathSize > 0 && header->filepathSize < 256){
-		filepath = std::string(&data[index], header->filepathSize);
-
-		std::cout << "font filepath loaded: " << filepath << std::endl;
-	}
-	else{
-		std::cout << "Error: Font filepath size (" << header->filepathSize << ") is invalid" << std::endl;
-		return; 
-	}
+	deserialize(data);
 }
 
 Font::~Font()
 {
 
+}
+
+std::vector<char> Font::serialize()
+{
+    FontHeader header;
+    header.fontId = assetId;
+    header.filepathSize = filepath.length();
+        
+    size_t numberOfBytes = sizeof(FontHeader) + 
+                        sizeof(char) * filepath.length();
+
+    std::vector<char> data(numberOfBytes);
+
+    size_t start1 = 0;
+    size_t start2 = start1 + sizeof(FontHeader);
+
+    memcpy(&data[start1], &header, sizeof(FontHeader));
+    memcpy(&data[start2], filepath.c_str(), sizeof(char) * filepath.length());
+
+    return data;
+}
+
+void Font::deserialize(std::vector<char> data)
+{
+    int index = sizeof(int);
+    FontHeader* header = reinterpret_cast<FontHeader*>(&data[index]);
+    
+    assetId = header->fontId;
+
+    index += sizeof(FontHeader);
+
+    if(header->filepathSize > 0 && header->filepathSize < 256){
+        filepath = std::string(&data[index], header->filepathSize);
+
+        std::cout << "font filepath loaded: " << filepath << std::endl;
+    }
+    else{
+        std::cout << "Error: Font filepath size (" << header->filepathSize << ") is invalid" << std::endl;
+        return; 
+    }
 }
 
 void Font::load(std::string filepath)

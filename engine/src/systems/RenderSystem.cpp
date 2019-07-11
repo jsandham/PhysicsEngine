@@ -14,23 +14,31 @@ using namespace PhysicsEngine;
 
 RenderSystem::RenderSystem()
 {
-	type = 0;
+
 }
 
 RenderSystem::RenderSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if(type != 0){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 RenderSystem::~RenderSystem()
 {
+}
+
+std::vector<char> RenderSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void RenderSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
 }
 
 void RenderSystem::init(World* world)

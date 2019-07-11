@@ -18,6 +18,10 @@ namespace PhysicsEngine
 		public:
 			HingeJoint();
 			~HingeJoint();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 	};
 }
 

@@ -19,6 +19,18 @@ SpringJoint::~SpringJoint()
 	
 }
 
+std::vector<char> SpringJoint::serialize()
+{
+	std::vector<char> data;
+
+	return data;
+}
+
+void SpringJoint::deserialize(std::vector<char> data)
+{
+
+}
+
 glm::vec3 SpringJoint::getTargetPosition()
 {
 	glm::vec3 ca = getConnectedAnchor();

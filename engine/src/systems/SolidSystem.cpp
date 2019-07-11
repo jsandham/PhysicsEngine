@@ -13,24 +13,40 @@ using namespace PhysicsEngine;
 
 SolidSystem::SolidSystem()
 {
-	type = 7;
+	
 }
 
 SolidSystem::SolidSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if(type != 7){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 SolidSystem::~SolidSystem()
 {
 	
+}
+
+std::vector<char> SolidSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void SolidSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
+	// size_t index = sizeof(char);
+	// type = *reinterpret_cast<int*>(&data[index]);
+	// index += sizeof(int);
+	// order = *reinterpret_cast<int*>(&data[index]);
+
+	// if(type != 0){
+	// 	std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	// }
 }
 
 void SolidSystem::init(World* world)

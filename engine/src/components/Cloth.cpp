@@ -21,3 +21,15 @@ Cloth::~Cloth()
 {
 	
 }
+
+std::vector<char> Cloth::serialize()
+{
+	std::vector<char> data;
+
+	return data;
+}
+
+void Cloth::deserialize(std::vector<char> data)
+{
+	
+}

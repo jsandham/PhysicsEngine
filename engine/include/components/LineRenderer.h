@@ -35,6 +35,9 @@ namespace PhysicsEngine
 			LineRenderer();
 			LineRenderer(std::vector<char> data);
 			~LineRenderer();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

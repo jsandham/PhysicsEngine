@@ -18,24 +18,32 @@ using namespace PhysicsEngine;
 
 DebugSystem::DebugSystem()
 {
-	type = 3;
+	
 }
 
 DebugSystem::DebugSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if(type != 3){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 DebugSystem::~DebugSystem()
 {
 	
+}
+
+std::vector<char> DebugSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void DebugSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
 }
 
 void DebugSystem::init(World* world)
@@ -45,7 +53,17 @@ void DebugSystem::init(World* world)
 	std::vector<float> lines;
 	lines.resize(6, 0.0f);
 
-	buffer.init(lines);
+	buffer.size = lines.size();
+	buffer.shader.vertexShader = Shader::lineVertexShader;
+	buffer.shader.fragmentShader = Shader::lineFragmentShader;
+	buffer.shader.compile();
+
+	glBindVertexArray(buffer.VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer.VBO);
+	glBufferData(GL_ARRAY_BUFFER, lines.size() * sizeof(float), &lines[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+	glBindVertexArray(0);
 
 	colorShader = world->createAsset<Shader>();
 	colorShader->vertexShader = Shader::colorVertexShader;
@@ -101,7 +119,11 @@ void DebugSystem::update(Input input)
 			temp[3] = end.x;
 			temp[4] = end.y;
 			temp[5] = end.z;
-			buffer.update(temp);
+
+			glBindVertexArray(buffer.VAO);
+			glBindBuffer(GL_ARRAY_BUFFER, buffer.VBO);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, temp.size() * sizeof(float), &temp[0]);
+			glBindVertexArray(0);
 
 			Collider* hitCollider = NULL;
 			if(world->raycast(start, rayWorld, 100.0f, &hitCollider))

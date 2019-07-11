@@ -35,6 +35,9 @@ namespace PhysicsEngine
 			Asset();
 			virtual ~Asset() = 0;
 
+			virtual std::vector<char> serialize() = 0;
+			virtual void deserialize(std::vector<char> data) = 0;
+
 			template <typename T>
 			static int getInstanceType()
 			{

@@ -1,6 +1,8 @@
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
 
+#include <vector>
+
 #include "../core/Input.h"
 
 namespace PhysicsEngine
@@ -10,7 +12,7 @@ namespace PhysicsEngine
 	class System
 	{
 		protected:
-			int type;
+			//int type;
 			int order;
 
 			World* world;
@@ -19,10 +21,13 @@ namespace PhysicsEngine
 			System();
 			virtual ~System() = 0;
 
+			virtual std::vector<char> serialize() = 0;
+			virtual void deserialize(std::vector<char> data) = 0;
+
 			virtual void init(World* world) = 0;
 			virtual void update(Input input) = 0;
 
-			int getType() const;
+			//int getType() const;
 			int getOrder() const;
 	};
 }

@@ -45,15 +45,17 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 	while( assetBundleFile.peek() != EOF )
 	{
+		char classification;
+		assetBundleFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
+
+		int type;
+		assetBundleFile.read(reinterpret_cast<char*>(&type), sizeof(int));
+
 		size_t size;
 		assetBundleFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 
 		std::vector<char> data(size);
 		assetBundleFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));		
-
-		int type = *reinterpret_cast<int*>(&data[0]);
-
-		//std::cout << "type: " << type << " size: " << size <<  std::endl;
 
 		if(type <= -1){
 			std::cout << "Error: Type cannot be less than 0 when reading asset bundle file" << std::endl;
@@ -68,10 +70,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = loadInternalAsset(data, &index);
+			asset = loadInternalAsset(data, type, &index);
 		}
 		else{
-			asset = loadAsset(data, &index);
+			asset = loadAsset(data, type, &index);
 		}
 
 		if(asset == NULL || index == -1){
@@ -90,6 +92,8 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 	assetBundleFile.close();
 
+	std::cout << "done loading assets" << std::endl;
+
 	std::ifstream sceneFile;
 	sceneFile.open(scene.filepath, std::ios::binary);
 
@@ -100,18 +104,20 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 
 	SceneHeader sceneHeader;
 	sceneFile.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
-
 	while( sceneFile.peek() != EOF )
 	{
+		char classification;
+		sceneFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
+
+		int type;
+		sceneFile.read(reinterpret_cast<char*>(&type), sizeof(int));
+
 	    size_t size;
 		sceneFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 
 		std::vector<char> data(size);
-		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
-		char classification = *reinterpret_cast<char*>(&data[0]);
-		int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
-		//std::cout << "classification: " << classification << " type: " << type << " size: " << size << std::endl;
+		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
 		if(type <= -1){
 			std::cout << "Error: Type cannot be less than 0 when reading scene file" << std::endl;
@@ -126,8 +132,12 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		int index = -1;
 		if(classification == 'e'){
 			Entity* entity = NULL;
-			if(type < 20){
+			if(type == 0){
 				entity = loadInternalEntity(data, &index);
+			}
+			else{
+				std::cout << "Error: Entity must be of type 0" << std::endl;
+				return false;
 			}
 
 			if(entity == NULL || index == -1){
@@ -147,10 +157,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 			Component* component = NULL;
 			itype instanceType = -1;
 			if(type < 20){
-				component = loadInternalComponent(data, &index, &instanceType);
+				component = loadInternalComponent(data, type, &index, &instanceType);
 			}
 			else{
-				component = loadComponent(data, &index, &instanceType);
+				component = loadComponent(data, type, &index, &instanceType);
 			}
 
 			if(component == NULL || index == -1 || instanceType == -1){
@@ -172,10 +182,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		else if(classification == 's'){
 			System* system = NULL;
 			if(type < 20){
-				system = loadInternalSystem(data, &index);
+				system = loadInternalSystem(data, type, &index);
 			}
 			else{
-				system = loadSystem(data, &index);
+				system = loadSystem(data, type, &index);
 			}
 
 			if(system == NULL || index == -1){
@@ -207,72 +217,6 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		systems[i] = systems[minOrderIndex];
 		systems[minOrderIndex] = temp;
 	}
-
-
-	//std::cout << "Number of systems: " << systems.size() << std::endl;
-
-	// std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it;
-	// for(it = entityIdToComponentIds.begin(); it != entityIdToComponentIds.end(); it++){
-	// 	std::vector<std::pair<Guid, int>> temp = it->second;
-	// 	std::cout << "Entity " << it->first.toString() << " has components: ";
-	// 	for(int i = 0; i < temp.size(); i++){
-	// 		std::cout << temp[i].first.toString() << " instance type: " << temp[i].second << " ";
-	// 	}
-	// 	std::cout << "" <<std::endl;
-	// }
-
-	// for(int i = 0; i < getNumberOfEntities(); i++){
-	// 	Entity* entity = getEntityByIndex(i);
-
-	// 	std::cout << "Entity id: " << entity->entityId.toString() << std::endl;
-
-	// 	Transform* transform = getComponent<Transform>(entity->entityId);
-	// 	if(transform != NULL){
-	// 		std::cout << "Transform found with id: " << transform->componentId.toString() << std::endl;
-	// 	}
-	// }
-
-	// Entity* entity = getAllocator<Entity>().get(0);
-
-	// std::cout << "entity id: " << entity->entityId.toString() << std::endl;
-
-	// std::cout << "count: " << getAllocator<Entity>().getCount() << std::endl;
-	// std::cout << "count: " << getAllocator<Transform>().getCount() << std::endl;
-	// std::cout << "count: " << getAllocator<Camera>().getCount() << std::endl;
-	// std::cout << "count: " << getAllocator<Rigidbody>().getCount() << std::endl;
-	// std::cout << "count: " << getAllocator<DirectionalLight>().getCount() << std::endl;
-
-
-	// Rigidbody* r = addComponent<Rigidbody>(entity->entityId);
-
-	// if(r != NULL){
-	// 	std::cout << "Rigidbody " << r->componentId.toString() << " found on entity" << std::endl;
-	// }
-
-	// Rigidbody* rigidbody = getComponent<Rigidbody>(entity->entityId);
-
-	// if(rigidbody != NULL){
-	// 	std::cout << "Rigidbody " << rigidbody->componentId.toString() << " found on entity" << std::endl;
-
-	// 	std::cout << rigidbody->useGravity << std::endl;
-	// 	std::cout << rigidbody->mass << std::endl;
-	// 	std::cout << rigidbody->drag << std::endl;
-	// 	std::cout << rigidbody->angularDrag << std::endl;
-
-	// 	std::cout << rigidbody->velocity.x << " " << rigidbody->velocity.y << " " << rigidbody->velocity.z << std::endl;
-	// 	std::cout << rigidbody->centreOfMass.x << " " << rigidbody->centreOfMass.y << " " << rigidbody->centreOfMass.z << std::endl;
-	// 	std::cout << rigidbody->angularVelocity.x << " " << rigidbody->angularVelocity.y << " " << rigidbody->angularVelocity.z << std::endl;
-
-	// 	std::cout << rigidbody->halfVelocity.x << " " << rigidbody->halfVelocity.y << " " << rigidbody->halfVelocity.z << std::endl;
-	// }
-
-	// Texture2D* t1 = createAsset<Texture2D>();
-	// Material* ma1 = createAsset<Material>();
-	// Mesh* me1 = createAsset<Mesh>();
-	// Texture2D* t2 = createAsset<Texture2D>();
-
-	// std::cout << "Texture id: " << t1->assetId.toString() << std::endl;
-
 
 	sceneFile.close();
 
@@ -615,158 +559,4 @@ bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Co
 	}
 
 	return false;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-bool World::writeToBMP(const std::string& filepath, std::vector<unsigned char>& data, int width, int height, int numChannels)
-{
-	if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4){
-		std::cout << "TextureLoader: Number of channels must be 1, 2, 3, or 4 where each channel is 8 bits" << std::endl;
-		return false;
-	}
-
-	if (data.size() != width*height*numChannels){
-		std::cout << data.size() << " " << width << " " << height << " " << numChannels << std::endl;
-		std::cout << "TextureLoader: Data does not match width, height, and number of channels given" << std::endl;
-		return false;
-	}
-
-	std::vector<unsigned char> formatedData;
-	if (numChannels == 1){
-		formatedData.resize(3 * width*height);
-		for (int i = 0; i < width*height; i++){
-			formatedData[3 * i] = data[i];
-			formatedData[3 * i + 1] = data[i];
-			formatedData[3 * i + 2] = data[i];
-		}
-		numChannels = 3;
-	}
-	else {
-		formatedData.resize(numChannels * width * height);
-		for (int i = 0; i < numChannels*width*height; i++){
-			formatedData[i] = data[i];
-		}
-	}
-
-	BMPHeader header = {};
-
-	header.fileType = 0x4D42;
-	header.fileSize = sizeof(BMPHeader) + (unsigned int)formatedData.size();
-	header.bitmapOffset = sizeof(BMPHeader);
-	header.size = sizeof(BMPHeader) - 14;
-	header.width = width;
-	header.height = height;
-	header.planes = 1;
-	header.bitsPerPixel = (unsigned short)(numChannels * 8);
-	header.compression = 0;
-	header.sizeOfBitmap = (unsigned int)formatedData.size();
-	header.horizontalResolution = 0;
-	header.verticalResolution = 0;
-	header.colorsUsed = 0;
-	header.colorsImportant = 0;
-
-	FILE* file = fopen(filepath.c_str(), "wb");
-	if (file){
-		fwrite(&header, sizeof(BMPHeader), 1, file);
-		fwrite(&formatedData[0], formatedData.size(), 1, file);
-		fclose(file);
-	}
-	else{
-		std::cout << "TextureLoader: Failed to open file " << filepath << " for writing" << std::endl;
-		return false;
-	}
-
-	std::cout << "TextureLoader: Screen capture successful" << std::endl;
-
-	return true;
-}
-
-
-
-
-bool World::writeToBMP(const std::string& filepath, std::vector<float>& data, int width, int height, int numChannels)
-{
-	if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4){
-		std::cout << "TextureLoader: Number of channels must be 1, 2, 3, or 4 where each channel is 8 bits" << std::endl;
-		return false;
-	}
-
-	if (data.size() != width*height*numChannels){
-		std::cout << data.size() << " " << width << " " << height << " " << numChannels << std::endl;
-		std::cout << "TextureLoader: Data does not match width, height, and number of channels given" << std::endl;
-		return false;
-	}
-
-	std::vector<unsigned char> formatedData;
-	if (numChannels == 1){
-		formatedData.resize(3 * width*height);
-		for (int i = 0; i < width*height; i++){
-			formatedData[3 * i] = (unsigned char)(255 * data[i]);
-			formatedData[3 * i + 1] = (unsigned char)(255 * data[i]);
-			formatedData[3 * i + 2] = (unsigned char)(255 * data[i]);
-		}
-		numChannels = 3;
-	}
-	else {
-		formatedData.resize(numChannels * width * height);
-		for (int i = 0; i < numChannels*width*height; i++){
-			formatedData[i] = (unsigned char)(255 * data[i]);
-		}
-	}
-
-	BMPHeader header = {};
-
-	header.fileType = 0x4D42;
-	header.fileSize = sizeof(BMPHeader) + (unsigned int)formatedData.size();
-	header.bitmapOffset = sizeof(BMPHeader);
-	header.size = sizeof(BMPHeader) - 14;
-	header.width = width;
-	header.height = height;
-	header.planes = 1;
-	header.bitsPerPixel = (unsigned short)(numChannels * 8);
-	header.compression = 0;
-	header.sizeOfBitmap = (unsigned int)formatedData.size();
-	header.horizontalResolution = 0;
-	header.verticalResolution = 0;
-	header.colorsUsed = 0;
-	header.colorsImportant = 0;
-
-	FILE* file = fopen(filepath.c_str(), "wb");
-	if (file){
-		fwrite(&header, sizeof(BMPHeader), 1, file);
-		fwrite(&formatedData[0], formatedData.size(), 1, file);
-		fclose(file);
-	}
-	else{
-		std::cout << "TextureLoader: Failed to open file " << filepath << " for writing" << std::endl;
-		return false;
-	}
-
-	std::cout << "TextureLoader: Screen capture successful" << std::endl;
-
-	return true;
 }

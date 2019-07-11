@@ -26,9 +26,45 @@ Light::Light()
 
 Light::Light(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	LightHeader* header = reinterpret_cast<LightHeader*>(&data[index]);
+	deserialize(data);
+}
+
+Light::~Light()
+{
+
+}
+
+std::vector<char> Light::serialize()
+{
+	LightHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.projection = projection;
+	header.position = position;
+	header.direction = direction;
+	header.ambient = ambient;
+	header.diffuse = diffuse;
+	header.specular = specular;
+	header.constant = constant;
+	header.linear = linear;
+	header.quadratic = quadratic;
+	header.cutOff = cutOff;
+	header.outerCutOff = outerCutOff;
+	header.lightType = static_cast<int>(lightType);
+	header.shadowType = static_cast<int>(shadowType);
+
+	int numberOfBytes = sizeof(LightHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(LightHeader));
+
+	return data;
+}
+
+void Light::deserialize(std::vector<char> data)
+{
+	LightHeader* header = reinterpret_cast<LightHeader*>(&data[0]);
 
 	componentId = header->componentId;
 	entityId = header->entityId;
@@ -48,11 +84,6 @@ Light::Light(std::vector<char> data)
 
 	lightType = static_cast<LightType>(header->lightType);
 	shadowType = static_cast<ShadowType>(header->shadowType);
-}
-
-Light::~Light()
-{
-
 }
 
 

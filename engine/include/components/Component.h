@@ -20,6 +20,9 @@ namespace PhysicsEngine
 			Component();
 			virtual ~Component() = 0;
 
+			virtual std::vector<char> serialize() = 0;
+			virtual void deserialize(std::vector<char> data) = 0;
+
 			Entity* getEntity(World* world);
 
 			template<typename T>

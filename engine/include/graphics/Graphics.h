@@ -84,18 +84,19 @@ namespace PhysicsEngine
 		GLuint VAO;
 		GLuint VBO;
 
-		void init(std::vector<float> lines);
-		void update(std::vector<float> lines);
+		LineBuffer();
+		~LineBuffer();
 	}LineBuffer;
 
 	typedef struct MeshBuffer
 	{
 		std::vector<Guid> meshIds;
-		std::vector<int> start;
+		std::vector<int> start;  
 		std::vector<int> count;
-		std::vector<float> vertices;
+		std::vector<float> vertices; //could instead hold the mesh global index instead of duplicating vertices, normals, texcoords?? Or not hold them at all as they are just needed for filling out the mesh buffer vbo's??
 		std::vector<float> normals;
 		std::vector<float> texCoords;
+
 		std::vector<Sphere> boundingSpheres;
 
 		GLuint vao;
@@ -103,9 +104,6 @@ namespace PhysicsEngine
 
     	MeshBuffer();
     	~MeshBuffer();
-
-    	void init();
-    	void update(int vboIndex, int offset, int size);
 
     	int getIndex(Guid meshId);
 	}MeshBuffer;

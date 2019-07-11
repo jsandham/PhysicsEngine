@@ -16,9 +16,36 @@ Transform::Transform()
 
 Transform::Transform(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[index]);
+	deserialize(data);
+}
+
+Transform::~Transform()
+{
+
+}
+
+std::vector<char> Transform::serialize()
+{
+	TransformHeader header;
+	header.componentId = componentId;
+	header.parentId = parentId;
+	header.entityId = entityId;
+	header.position = position;
+	header.rotation = rotation;
+	header.scale = scale;
+
+	int numberOfBytes = sizeof(TransformHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(TransformHeader));
+
+	return data;
+}
+
+void Transform::deserialize(std::vector<char> data)
+{
+	TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[0]);
 
 	componentId = header->componentId;
 	parentId = header->parentId;
@@ -26,11 +53,6 @@ Transform::Transform(std::vector<char> data)
 	position = header->position;
 	rotation = header->rotation;
 	scale = header->scale;
-}
-
-Transform::~Transform()
-{
-
 }
 
 glm::vec3 Transform::getEulerAngles()

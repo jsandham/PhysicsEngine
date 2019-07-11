@@ -125,6 +125,7 @@ void main(void)
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
 #if defined(DIRECTIONALLIGHT)
+	//FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 	if(ClipSpaceZ <= Light.cascadeEnds[0]){
 		FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord) * vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}

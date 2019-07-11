@@ -50,6 +50,9 @@ namespace PhysicsEngine
 			Rigidbody();
 			Rigidbody(std::vector<char> data);
 			~Rigidbody();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

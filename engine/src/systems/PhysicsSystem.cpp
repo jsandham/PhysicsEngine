@@ -20,24 +20,32 @@ using namespace PhysicsEngine;
 
 PhysicsSystem::PhysicsSystem()
 {
-	type = 1;
+
 }
 
 PhysicsSystem::PhysicsSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if(type != 1){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 PhysicsSystem::~PhysicsSystem()
 {
 	
+}
+
+std::vector<char> PhysicsSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void PhysicsSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
 }
 
 void PhysicsSystem::init(World* world)

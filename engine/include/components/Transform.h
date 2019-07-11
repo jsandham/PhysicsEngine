@@ -38,6 +38,9 @@ namespace PhysicsEngine
 			Transform(std::vector<char> data);
 			~Transform();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			glm::vec3 getEulerAngles();
 			glm::mat4 getModelMatrix();
 

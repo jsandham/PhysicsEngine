@@ -30,6 +30,9 @@ namespace PhysicsEngine
 			MeshCollider(std::vector<char> data);
 			~MeshCollider();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			bool intersect(Bounds bounds);
 	};
 }

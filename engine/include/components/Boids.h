@@ -36,6 +36,9 @@ namespace PhysicsEngine
 			Boids();
 			Boids(std::vector<char> data);
 			~Boids();
+
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
 	};
 }
 

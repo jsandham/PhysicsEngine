@@ -133,7 +133,9 @@ void AssetLoader::split(const std::string &s, char delim, std::vector<std::strin
 	std::stringstream ss(s);
 	std::string item;
 	while (getline(ss, item, delim)) {
-		elems.push_back(item);
+		if(item.length() > 0){
+			elems.push_back(item);
+		}
 	}
 }
 
@@ -165,7 +167,7 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 	std::vector<std::string> usemtl;
 
 	int faceCount = 0;
-	std::vector<int> subMeshStartIndices;
+	std::vector<int> subMeshFaceStartIndices;
 
 	std::vector<int> faceStartIndices;
 	faceStartIndices.push_back(0);
@@ -312,7 +314,7 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 		else if (command == "g"){
 		}
 		else if (command == "usemtl"){
-			subMeshStartIndices.push_back(faceCount);
+			subMeshFaceStartIndices.push_back(faceCount);
 		}
 
 		if (error){
@@ -320,7 +322,7 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 		}
 	}
 
-	subMeshStartIndices.push_back(faceCount);
+	subMeshFaceStartIndices.push_back(faceCount);
 
 	// calculate normals if not given
 	if (vn.size() == 0){
@@ -383,157 +385,179 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 	std::vector<float> vertices;
 	std::vector<float> normals;
 	std::vector<float> texCoords;
+	std::vector<int> subMeshVertexStartIndices;
 
-	for (size_t i = 0; i < faceStartIndices.size() - 1; i++){
-		int startIndex = faceStartIndices[i];
-		int endIndex = faceStartIndices[i + 1];
+	// loop through each sub mesh
+	for (size_t i = 0; i < subMeshFaceStartIndices.size() - 1; i++){
+		int subMeshFaceStartIndex = subMeshFaceStartIndices[i];
+		int subMeshFaceEndIndex = subMeshFaceStartIndices[i + 1];
 
-		if (endIndex - startIndex == 3 /*triangle face*/){
-			int f_v1 = f_v[startIndex + 0] - 1;
-			int f_v2 = f_v[startIndex + 1] - 1;
-			int f_v3 = f_v[startIndex + 2] - 1;
+		subMeshVertexStartIndices.push_back((int)vertices.size());
 
-			vertices.push_back(v[4 * f_v1 + 0]);
-			vertices.push_back(v[4 * f_v1 + 1]);
-			vertices.push_back(v[4 * f_v1 + 2]);
+		// loop through all faces in sub mesh
+		for (size_t j = subMeshFaceStartIndex; j < subMeshFaceEndIndex; j++){
+			int startIndex = faceStartIndices[j];
+			int endIndex = faceStartIndices[j + 1];
 
-			vertices.push_back(v[4 * f_v2 + 0]);
-			vertices.push_back(v[4 * f_v2 + 1]);
-			vertices.push_back(v[4 * f_v2 + 2]);
 
-			vertices.push_back(v[4 * f_v3 + 0]);
-			vertices.push_back(v[4 * f_v3 + 1]);
-			vertices.push_back(v[4 * f_v3 + 2]);
+			// n = 0;
+			// triangles[n++] = [values[0], values[1], values[2]];
+			// for(i = 3; i < count(values); ++i)
+			//   triangles[n++] = [
+			//     values[i - 3],
+			//     values[i - 1],
+			//     values[i]
+			//   ];
 
-			if (f_vt.size() > 0){
-				int f_vt1 = f_vt[startIndex + 0] - 1;
-				int f_vt2 = f_vt[startIndex + 1] - 1;
-				int f_vt3 = f_vt[startIndex + 2] - 1;
+			if (endIndex - startIndex == 3 /*triangle face*/){
+				int f_v1 = f_v[startIndex + 0] - 1;
+				int f_v2 = f_v[startIndex + 1] - 1;
+				int f_v3 = f_v[startIndex + 2] - 1;
 
-				texCoords.push_back(vt[3 * f_vt1 + 0]);
-				texCoords.push_back(vt[3 * f_vt1 + 1]);
+				vertices.push_back(v[4 * f_v1 + 0]);
+				vertices.push_back(v[4 * f_v1 + 1]);
+				vertices.push_back(v[4 * f_v1 + 2]);
 
-				texCoords.push_back(vt[3 * f_vt2 + 0]);
-				texCoords.push_back(vt[3 * f_vt2 + 1]);
+				vertices.push_back(v[4 * f_v2 + 0]);
+				vertices.push_back(v[4 * f_v2 + 1]);
+				vertices.push_back(v[4 * f_v2 + 2]);
 
-				texCoords.push_back(vt[3 * f_vt3 + 0]);
-				texCoords.push_back(vt[3 * f_vt3 + 1]);
+				vertices.push_back(v[4 * f_v3 + 0]);
+				vertices.push_back(v[4 * f_v3 + 1]);
+				vertices.push_back(v[4 * f_v3 + 2]);
+
+				if (f_vt.size() > 0){
+					int f_vt1 = f_vt[startIndex + 0] - 1;
+					int f_vt2 = f_vt[startIndex + 1] - 1;
+					int f_vt3 = f_vt[startIndex + 2] - 1;
+
+					texCoords.push_back(vt[3 * f_vt1 + 0]);
+					texCoords.push_back(vt[3 * f_vt1 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt2 + 0]);
+					texCoords.push_back(vt[3 * f_vt2 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt3 + 0]);
+					texCoords.push_back(vt[3 * f_vt3 + 1]);
+				}
+
+				if (f_vn.size() > 0){
+					int f_vn1 = f_vn[startIndex + 0] - 1;
+					int f_vn2 = f_vn[startIndex + 1] - 1;
+					int f_vn3 = f_vn[startIndex + 2] - 1;
+
+					normals.push_back(vn[3 * f_vn1 + 0]);
+					normals.push_back(vn[3 * f_vn1 + 1]);
+					normals.push_back(vn[3 * f_vn1 + 2]);
+
+					normals.push_back(vn[3 * f_vn2 + 0]);
+					normals.push_back(vn[3 * f_vn2 + 1]);
+					normals.push_back(vn[3 * f_vn2 + 2]);
+
+					normals.push_back(vn[3 * f_vn3 + 0]);
+					normals.push_back(vn[3 * f_vn3 + 1]);
+					normals.push_back(vn[3 * f_vn3 + 2]);
+				}
 			}
+			else if (endIndex - startIndex == 4 /*quadrilateral face*/){
+				int f_v1 = f_v[startIndex + 0] - 1;
+				int f_v2 = f_v[startIndex + 1] - 1;
+				int f_v3 = f_v[startIndex + 2] - 1;
+				int f_v4 = f_v[startIndex + 3] - 1;
 
-			if (f_vn.size() > 0){
-				int f_vn1 = f_vn[startIndex + 0] - 1;
-				int f_vn2 = f_vn[startIndex + 1] - 1;
-				int f_vn3 = f_vn[startIndex + 2] - 1;
+				vertices.push_back(v[4 * f_v1 + 0]);
+				vertices.push_back(v[4 * f_v1 + 1]);
+				vertices.push_back(v[4 * f_v1 + 2]);
 
-				normals.push_back(vn[3 * f_vn1 + 0]);
-				normals.push_back(vn[3 * f_vn1 + 1]);
-				normals.push_back(vn[3 * f_vn1 + 2]);
+				vertices.push_back(v[4 * f_v2 + 0]);
+				vertices.push_back(v[4 * f_v2 + 1]);
+				vertices.push_back(v[4 * f_v2 + 2]);
 
-				normals.push_back(vn[3 * f_vn2 + 0]);
-				normals.push_back(vn[3 * f_vn2 + 1]);
-				normals.push_back(vn[3 * f_vn2 + 2]);
+				vertices.push_back(v[4 * f_v3 + 0]);
+				vertices.push_back(v[4 * f_v3 + 1]);
+				vertices.push_back(v[4 * f_v3 + 2]);
 
-				normals.push_back(vn[3 * f_vn3 + 0]);
-				normals.push_back(vn[3 * f_vn3 + 1]);
-				normals.push_back(vn[3 * f_vn3 + 2]);
+				vertices.push_back(v[4 * f_v1 + 0]);
+				vertices.push_back(v[4 * f_v1 + 1]);
+				vertices.push_back(v[4 * f_v1 + 2]);
+
+				vertices.push_back(v[4 * f_v3 + 0]);
+				vertices.push_back(v[4 * f_v3 + 1]);
+				vertices.push_back(v[4 * f_v3 + 2]);
+
+				vertices.push_back(v[4 * f_v4 + 0]);
+				vertices.push_back(v[4 * f_v4 + 1]);
+				vertices.push_back(v[4 * f_v4 + 2]);
+
+				if (f_vt.size() > 0){
+					int f_vt1 = f_vt[startIndex + 0] - 1;
+					int f_vt2 = f_vt[startIndex + 1] - 1;
+					int f_vt3 = f_vt[startIndex + 2] - 1;
+					int f_vt4 = f_vt[startIndex + 3] - 1;
+
+					texCoords.push_back(vt[3 * f_vt1 + 0]);
+					texCoords.push_back(vt[3 * f_vt1 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt2 + 0]);
+					texCoords.push_back(vt[3 * f_vt2 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt3 + 0]);
+					texCoords.push_back(vt[3 * f_vt3 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt1 + 0]);
+					texCoords.push_back(vt[3 * f_vt1 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt3 + 0]);
+					texCoords.push_back(vt[3 * f_vt3 + 1]);
+
+					texCoords.push_back(vt[3 * f_vt4 + 0]);
+					texCoords.push_back(vt[3 * f_vt4 + 1]);
+				}
+
+				if (f_vn.size() > 0){
+					int f_vn1 = f_vn[startIndex + 0] - 1;
+					int f_vn2 = f_vn[startIndex + 1] - 1;
+					int f_vn3 = f_vn[startIndex + 2] - 1;
+					int f_vn4 = f_vn[startIndex + 3] - 1;
+
+					normals.push_back(vn[3 * f_vn1 + 0]);
+					normals.push_back(vn[3 * f_vn1 + 1]);
+					normals.push_back(vn[3 * f_vn1 + 2]);
+
+					normals.push_back(vn[3 * f_vn2 + 0]);
+					normals.push_back(vn[3 * f_vn2 + 1]);
+					normals.push_back(vn[3 * f_vn2 + 2]);
+
+					normals.push_back(vn[3 * f_vn3 + 0]);
+					normals.push_back(vn[3 * f_vn3 + 1]);
+					normals.push_back(vn[3 * f_vn3 + 2]);
+
+					normals.push_back(vn[3 * f_vn1 + 0]);
+					normals.push_back(vn[3 * f_vn1 + 1]);
+					normals.push_back(vn[3 * f_vn1 + 2]);
+
+					normals.push_back(vn[3 * f_vn3 + 0]);
+					normals.push_back(vn[3 * f_vn3 + 1]);
+					normals.push_back(vn[3 * f_vn3 + 2]);
+
+					normals.push_back(vn[3 * f_vn4 + 0]);
+					normals.push_back(vn[3 * f_vn4 + 1]);
+					normals.push_back(vn[3 * f_vn4 + 2]);
+				}
 			}
-		}
-		else if (endIndex - startIndex == 4 /*quadrilateral face*/){
-			int f_v1 = f_v[startIndex + 0] - 1;
-			int f_v2 = f_v[startIndex + 1] - 1;
-			int f_v3 = f_v[startIndex + 2] - 1;
-			int f_v4 = f_v[startIndex + 3] - 1;
-
-			vertices.push_back(v[4 * f_v1 + 0]);
-			vertices.push_back(v[4 * f_v1 + 1]);
-			vertices.push_back(v[4 * f_v1 + 2]);
-
-			vertices.push_back(v[4 * f_v2 + 0]);
-			vertices.push_back(v[4 * f_v2 + 1]);
-			vertices.push_back(v[4 * f_v2 + 2]);
-
-			vertices.push_back(v[4 * f_v3 + 0]);
-			vertices.push_back(v[4 * f_v3 + 1]);
-			vertices.push_back(v[4 * f_v3 + 2]);
-
-			vertices.push_back(v[4 * f_v3 + 0]);
-			vertices.push_back(v[4 * f_v3 + 1]);
-			vertices.push_back(v[4 * f_v3 + 2]);
-
-			vertices.push_back(v[4 * f_v1 + 0]);
-			vertices.push_back(v[4 * f_v1 + 1]);
-			vertices.push_back(v[4 * f_v1 + 2]);
-
-			vertices.push_back(v[4 * f_v4 + 0]);
-			vertices.push_back(v[4 * f_v4 + 1]);
-			vertices.push_back(v[4 * f_v4 + 2]);
-
-			if (f_vt.size() > 0){
-				int f_vt1 = f_vt[startIndex + 0] - 1;
-				int f_vt2 = f_vt[startIndex + 1] - 1;
-				int f_vt3 = f_vt[startIndex + 2] - 1;
-				int f_vt4 = f_vt[startIndex + 3] - 1;
-
-				texCoords.push_back(vt[3 * f_vt1 + 0]);
-				texCoords.push_back(vt[3 * f_vt1 + 1]);
-
-				texCoords.push_back(vt[3 * f_vt2 + 0]);
-				texCoords.push_back(vt[3 * f_vt2 + 1]);
-
-				texCoords.push_back(vt[3 * f_vt3 + 0]);
-				texCoords.push_back(vt[3 * f_vt3 + 1]);
-
-				texCoords.push_back(vt[3 * f_vt3 + 0]);
-				texCoords.push_back(vt[3 * f_vt3 + 1]);
-
-				texCoords.push_back(vt[3 * f_vt1 + 0]);
-				texCoords.push_back(vt[3 * f_vt1 + 1]);
-
-				texCoords.push_back(vt[3 * f_vt4 + 0]);
-				texCoords.push_back(vt[3 * f_vt4 + 1]);
+			else{
+				error = true;
+				errorString = "Error: face (" + std::to_string(faceCount) + ") with " + std::to_string(endIndex - startIndex) + " vertices not currently supported";
 			}
-
-			if (f_vn.size() > 0){
-				int f_vn1 = f_vn[startIndex + 0] - 1;
-				int f_vn2 = f_vn[startIndex + 1] - 1;
-				int f_vn3 = f_vn[startIndex + 2] - 1;
-				int f_vn4 = f_vn[startIndex + 2] - 1;
-
-				normals.push_back(vn[3 * f_vn1 + 0]);
-				normals.push_back(vn[3 * f_vn1 + 1]);
-				normals.push_back(vn[3 * f_vn1 + 2]);
-
-				normals.push_back(vn[3 * f_vn2 + 0]);
-				normals.push_back(vn[3 * f_vn2 + 1]);
-				normals.push_back(vn[3 * f_vn2 + 2]);
-
-				normals.push_back(vn[3 * f_vn3 + 0]);
-				normals.push_back(vn[3 * f_vn3 + 1]);
-				normals.push_back(vn[3 * f_vn3 + 2]);
-
-				normals.push_back(vn[3 * f_vn3 + 0]);
-				normals.push_back(vn[3 * f_vn3 + 1]);
-				normals.push_back(vn[3 * f_vn3 + 2]);
-
-				normals.push_back(vn[3 * f_vn1 + 0]);
-				normals.push_back(vn[3 * f_vn1 + 1]);
-				normals.push_back(vn[3 * f_vn1 + 2]);
-
-				normals.push_back(vn[3 * f_vn4 + 0]);
-				normals.push_back(vn[3 * f_vn4 + 1]);
-				normals.push_back(vn[3 * f_vn4 + 2]);
-			}
-		}
-		else{
-			error = true;
-			errorString = "Error: face (" + std::to_string(faceCount) + ") with " + std::to_string(endIndex - startIndex) + " vertices not currently supported";
 		}
 	}
+
+	subMeshVertexStartIndices.push_back((int)vertices.size());
 
 	mesh.vertices = vertices;
 	mesh.normals = normals;
 	mesh.texCoords = texCoords;
-	mesh.subMeshStartIndices = subMeshStartIndices;
+	mesh.subMeshVertexStartIndices = subMeshVertexStartIndices;
 
 	if (error){
 		std::cout << "Error: " << errorString << std::endl;

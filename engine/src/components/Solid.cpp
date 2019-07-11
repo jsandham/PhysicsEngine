@@ -18,3 +18,15 @@ Solid::~Solid()
 {
 	
 }
+
+std::vector<char> Solid::serialize()
+{
+	std::vector<char> data;
+
+	return data;
+}
+
+void Solid::deserialize(std::vector<char> data)
+{
+
+}

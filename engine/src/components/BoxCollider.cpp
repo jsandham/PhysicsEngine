@@ -12,18 +12,37 @@ BoxCollider::BoxCollider()
 
 BoxCollider::BoxCollider(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[index]);
-
-	componentId = header->componentId;
-	entityId = header->entityId;
-	bounds = header->bounds;
+	deserialize(data);
 }
 
 BoxCollider::~BoxCollider()
 {
 
+}
+
+std::vector<char> BoxCollider::serialize()
+{
+	BoxColliderHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.bounds = bounds;
+
+	int numberOfBytes = sizeof(BoxColliderHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(BoxColliderHeader));
+
+	return data;
+}
+
+void BoxCollider::deserialize(std::vector<char> data)
+{
+	BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[0]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	bounds = header->bounds;
 }
 
 bool BoxCollider::intersect(Bounds bounds)

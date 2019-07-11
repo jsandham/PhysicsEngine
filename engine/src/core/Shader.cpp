@@ -373,20 +373,59 @@ Shader::Shader()
 
 Shader::Shader(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[index]);
+	deserialize(data);
+}
+
+Shader::~Shader()
+{
+
+}
+
+std::vector<char> Shader::serialize()
+{
+	ShaderHeader header;
+	header.shaderId = assetId;
+	header.vertexShaderSize = vertexShader.length();
+	header.geometryShaderSize = geometryShader.length();
+	header.fragmentShaderSize = fragmentShader.length();
+
+	size_t numberOfBytes = sizeof(ShaderHeader) + 
+						sizeof(char) * vertexShader.length() +
+						sizeof(char) * fragmentShader.length() +
+						sizeof(char) * geometryShader.length();
+
+	std::vector<char> data(numberOfBytes);
+
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(ShaderHeader);
+	size_t start3 = start2 + sizeof(char) * vertexShader.length();
+	size_t start4 = start3 + sizeof(char) * geometryShader.length();
+	size_t start5 = start4 + sizeof(char) * fragmentShader.length();
+
+	memcpy(&data[start1], &header, sizeof(ShaderHeader));
+	memcpy(&data[start2], vertexShader.c_str(), sizeof(char) * vertexShader.length());
+	memcpy(&data[start3], geometryShader.c_str(), sizeof(char) * geometryShader.length());
+	memcpy(&data[start4], fragmentShader.c_str(), sizeof(char) * fragmentShader.length());
+
+	return data;
+}
+
+void Shader::deserialize(std::vector<char> data)
+{
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(ShaderHeader);
+
+	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[start1]);
 
 	assetId = header->shaderId;
 	size_t vertexShaderSize = header->vertexShaderSize;
 	size_t geometryShaderSize = header->geometryShaderSize;
 	size_t fragmentShaderSize = header->fragmentShaderSize;
 
-	index += sizeof(ShaderHeader);
-
 	std::vector<char>::iterator start = data.begin();
 	std::vector<char>::iterator end = data.begin();
-	start += index;
-	end += index + vertexShaderSize;
+	start += start2;
+	end += start2 + vertexShaderSize;
 
 	vertexShader = std::string(start, end);
 
@@ -400,16 +439,9 @@ Shader::Shader(std::vector<char> data)
 
 	fragmentShader = std::string(start, end);
 
-	index += vertexShaderSize + geometryShaderSize + fragmentShaderSize;
-
 	programCompiled = false;
 
-	std::cout << "shader index: " << index << " data size: " << data.size() << std::endl;
-}
-
-Shader::~Shader()
-{
-
+	std::cout << vertexShader << std::endl;
 }
 
 bool Shader::isCompiled()

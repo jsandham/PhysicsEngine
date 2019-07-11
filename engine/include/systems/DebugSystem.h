@@ -25,6 +25,9 @@ namespace PhysicsEngine
 			DebugSystem(std::vector<char> data);
 			~DebugSystem();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void init(World* world);
 			void update(Input input);
 	};

@@ -8,7 +8,7 @@
 namespace PhysicsEngine
 {
 	// load external systems defined by the user (systems with type 10 or greater)
-	System* loadSystem(std::vector<char> data);
+	//System* loadSystem(std::vector<char> data);
 }
 
 #endif

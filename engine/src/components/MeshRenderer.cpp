@@ -17,9 +17,36 @@ MeshRenderer::MeshRenderer()
 
 MeshRenderer::MeshRenderer(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[index]);
+	deserialize(data);
+}
+
+MeshRenderer::~MeshRenderer()
+{
+}
+
+std::vector<char> MeshRenderer::serialize()
+{
+	MeshRendererHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.meshId = meshId;
+	for(int i = 0; i < 8; i++){
+		header.materialIds[i] = materialIds[i];
+	}
+	header.isStatic = isStatic;
+
+	int numberOfBytes = sizeof(MeshRendererHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(MeshRendererHeader));
+
+	return data;
+}
+
+void MeshRenderer::deserialize(std::vector<char> data)
+{
+	MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[0]);
 
 	componentId = header->componentId;
 	entityId = header->entityId;
@@ -28,8 +55,4 @@ MeshRenderer::MeshRenderer(std::vector<char> data)
 		materialIds[i] = header->materialIds[i];
 	}
 	isStatic = header->isStatic;
-}
-
-MeshRenderer::~MeshRenderer()
-{
 }

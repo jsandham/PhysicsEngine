@@ -11,6 +11,7 @@
 #include "../../include/core/Line.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
+#include "../../include/core/Util.h"
 
 using namespace PhysicsEngine;
 
@@ -113,19 +114,19 @@ void ForwardRenderer::update(Input input)
 		std::vector<unsigned char> data;
 		data.resize(1024*1024);
 		glGetTextureImage(shadowCascadeDepth[0], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("shadow_depth_data0.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("shadow_depth_data0.bmp", data, 1024, 1024, 1);
 		glGetTextureImage(shadowCascadeDepth[1], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("shadow_depth_data1.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("shadow_depth_data1.bmp", data, 1024, 1024, 1);
 		glGetTextureImage(shadowCascadeDepth[2], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("shadow_depth_data2.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("shadow_depth_data2.bmp", data, 1024, 1024, 1);
 		glGetTextureImage(shadowCascadeDepth[3], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("shadow_depth_data3.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("shadow_depth_data3.bmp", data, 1024, 1024, 1);
 		glGetTextureImage(shadowCascadeDepth[4], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("shadow_depth_data4.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("shadow_depth_data4.bmp", data, 1024, 1024, 1);
 
 
 		glGetTextureImage(shadowSpotlightDepth, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		World::writeToBMP("spotlight_shadow_depth_data.bmp", data, 1024, 1024, 1);
+		Util::writeToBMP("spotlight_shadow_depth_data.bmp", data, 1024, 1024, 1);
 	}
 
 	if(getKeyDown(input, KeyCode::X)){
@@ -133,9 +134,9 @@ void ForwardRenderer::update(Input input)
 		std::vector<unsigned char> data;
 		data.resize(1024*1024*4);
 		glGetTextureImage(position, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
-		World::writeToBMP("position.bmp", data, 1024, 1024, 4);
+		Util::writeToBMP("position.bmp", data, 1024, 1024, 4);
 		glGetTextureImage(normal, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
-		World::writeToBMP("normal.bmp", data, 1024, 1024, 4);
+		Util::writeToBMP("normal.bmp", data, 1024, 1024, 4);
 	}
 
 	// if(getKeyDown(input, KeyCode::C)){
@@ -152,17 +153,17 @@ void ForwardRenderer::update(Input input)
 
 	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCubemapDepth);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
 	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	World::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
+	// 	Util::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
 	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	// }
 
@@ -178,45 +179,33 @@ void ForwardRenderer::update(Input input)
 void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 {
 	Transform* transform = meshRenderer->getComponent<Transform>(world);
-
-	if(transform == NULL){ return; }
+	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 	int transformIndex = world->getIndexOf(transform->componentId);
-	int meshStartIndex = meshBuffer.getIndex(meshRenderer->meshId); // could pass in sub mesh index here?
+	int meshIndexInBuffer = meshBuffer.getIndex(meshRenderer->meshId); 
 
-	if(meshStartIndex == -1){
-		return;
-	}
-
+	std::cout << "" << std::endl;
 	for(int i = 0; i < 8; i++){
 		if(meshRenderer->materialIds[i] == Guid::INVALID){
 			break;
 		}
 
 		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[i]);
-
-		if(materialIndex == -1){ return; }
+		int subMeshVertexStartIndex = mesh->subMeshVertexStartIndices[i];
+		int subMeshVertexEndIndex = mesh->subMeshVertexStartIndices[i + 1];
+		int subMeshVerticesCount = subMeshVertexEndIndex - subMeshVertexStartIndex;
 
 		Material* material = world->getAssetByIndex<Material>(materialIndex);
-
-		if(material == NULL){
-			std::cout << "Error: Trying to add mesh renderer with null material" << std::endl;
-			return;
-		}
-		
 		Shader* shader = world->getAsset<Shader>(material->shaderId);
-
-		if(shader == NULL){
-			std::cout << "Error: Trying to add mesh renderer with null shader" << std::endl;
-			return;
-		}
 
 		RenderObject renderObject;
 		renderObject.id = meshRenderer->componentId;
-		renderObject.start = meshBuffer.start[meshStartIndex];
-		renderObject.size = meshBuffer.count[meshStartIndex];
+		renderObject.start = meshBuffer.start[meshIndexInBuffer] + subMeshVertexStartIndex;
+		renderObject.size = subMeshVerticesCount;
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
+
+		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " start: " << renderObject.start << " size: " << renderObject.size << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << std::endl;
 
 		for(int j = 0; j < 10; j++){
 			renderObject.shaders[j] = shader->programs[j].handle;
@@ -234,7 +223,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 		if(normalMap != NULL){ renderObject.normalMap = normalMap->handle.handle; }
 		if(specularMap != NULL){ renderObject.specularMap = specularMap->handle.handle; }
 
-		renderObject.boundingSphere = meshBuffer.boundingSpheres[meshStartIndex];
+		renderObject.boundingSphere = meshBuffer.boundingSpheres[meshIndexInBuffer];
 
 		renderObjects.push_back(renderObject);	
 	}
@@ -624,7 +613,25 @@ void ForwardRenderer::createMeshBuffers()
 		startIndex += (int)mesh->vertices.size();
 	}
 
-	meshBuffer.init();
+	glBindVertexArray(meshBuffer.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[0]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.vertices.size()*sizeof(float), &meshBuffer.vertices[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.normals.size()*sizeof(float), &meshBuffer.normals[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[2]);
+	glBufferData(GL_ARRAY_BUFFER, meshBuffer.texCoords.size()*sizeof(float), &meshBuffer.texCoords[0], GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+
+	Graphics::checkError();
 
 	//std::cout << "mesh buffer size: " << meshBuffer.vertices.size() << " " << meshBuffer.normals.size() << " " << meshBuffer.texCoords.size() << std::endl;
 }

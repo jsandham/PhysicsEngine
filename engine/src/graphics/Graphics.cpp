@@ -195,39 +195,19 @@ void PerformanceGraph::add(float sample)
 	glBindVertexArray(0);
 }
 
-void LineBuffer::init(std::vector<float> lines)
+LineBuffer::LineBuffer()
 {
-	shader.vertexShader = Shader::lineVertexShader;
-	shader.fragmentShader = Shader::lineFragmentShader;
-
-	shader.compile();
-
-	size = lines.size();
-
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, lines.size() * sizeof(float), &lines[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 	glBindVertexArray(0);
 }
 
-void LineBuffer::update(std::vector<float> lines)
+LineBuffer::~LineBuffer()
 {
-	if(lines.size() != size){
-		std::cout << "Error: Cannot change buffer size after initialiation" << std::endl;
-		return;
-	}
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(float), &lines[0]);
-	glBindVertexArray(0);
+	glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }
-
-
 
 MeshBuffer::MeshBuffer()
 {
@@ -241,50 +221,6 @@ MeshBuffer::~MeshBuffer()
 {
 	glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(3, &vbo[0]);
-}
-
-void MeshBuffer::init()
-{
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, normals.size()*sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-	glBufferData(GL_ARRAY_BUFFER, texCoords.size()*sizeof(float), &texCoords[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
-
-	glBindVertexArray(0);
-
-	GLenum error;
-	while ((error = glGetError()) != GL_NO_ERROR){
-		std::cout << "Error: Renderer failed with error code: " << error << std::endl;;
-	}
-}
-
-void MeshBuffer::update(int vboIndex, int offset, int size)
-{
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[vboIndex]);
-
-	if(vboIndex == 0){
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(vertices[0]));
-	}
-	else if(vboIndex == 1){
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(normals[0]));
-	}
-	else{
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size*sizeof(float), &(texCoords[0]));
-	}
-
-	glBindVertexArray(0);
 }
 
 int MeshBuffer::getIndex(Guid meshId)

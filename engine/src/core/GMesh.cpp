@@ -17,3 +17,15 @@ GMesh::~GMesh()
 {
 
 }
+
+std::vector<char> serialize()
+{
+	std::vector<char> data;
+
+	return data;
+}
+
+void deserialize(std::vector<char> data)
+{
+
+}

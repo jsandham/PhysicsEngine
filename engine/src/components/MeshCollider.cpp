@@ -12,18 +12,37 @@ MeshCollider::MeshCollider()
 
 MeshCollider::MeshCollider(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	MeshColliderHeader* header = reinterpret_cast<MeshColliderHeader*>(&data[index]);
-
-	componentId = header->componentId;
-	entityId = header->entityId;
-	meshId = header->meshId;
+	deserialize(data);
 }
 
 MeshCollider::~MeshCollider()
 {
 
+}
+
+std::vector<char> MeshCollider::serialize()
+{
+	MeshColliderHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.meshId = meshId;
+
+	int numberOfBytes = sizeof(MeshColliderHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(MeshColliderHeader));
+
+	return data;
+}
+
+void MeshCollider::deserialize(std::vector<char> data)
+{
+	MeshColliderHeader* header = reinterpret_cast<MeshColliderHeader*>(&data[0]);
+
+	componentId = header->componentId;
+	entityId = header->entityId;
+	meshId = header->meshId;
 }
 
 bool MeshCollider::intersect(Bounds bounds)

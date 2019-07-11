@@ -25,9 +25,43 @@ Rigidbody::Rigidbody()
 
 Rigidbody::Rigidbody(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[index]);
+	deserialize(data);
+}
+
+Rigidbody::~Rigidbody()
+{
+
+}
+
+std::vector<char> Rigidbody::serialize()
+{
+	RigidbodyHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.useGravity = useGravity;
+	header.mass = mass;
+	header.drag = drag;
+	header.angularDrag = angularDrag;
+
+	header.velocity = velocity;
+	header.angularVelocity = angularVelocity;
+	header.centreOfMass = centreOfMass;
+	header.inertiaTensor = inertiaTensor;
+	
+	header.halfVelocity = halfVelocity;
+
+	int numberOfBytes = sizeof(RigidbodyHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(RigidbodyHeader));
+
+	return data;
+}
+
+void Rigidbody::deserialize(std::vector<char> data)
+{
+	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[0]);
 
 	componentId = header->componentId;
 	entityId = header->entityId;
@@ -41,9 +75,4 @@ Rigidbody::Rigidbody(std::vector<char> data)
 	inertiaTensor = header->inertiaTensor;
 
 	halfVelocity = header->halfVelocity;
-}
-
-Rigidbody::~Rigidbody()
-{
-
 }

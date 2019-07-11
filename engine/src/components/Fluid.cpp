@@ -25,6 +25,19 @@ Fluid::~Fluid()
 	//delete physics;
 }
 
+std::vector<char> Fluid::serialize()
+{
+	std::vector<char> data;
+
+	return data;
+}
+
+void Fluid::deserialize(std::vector<char> data)
+{
+
+}
+
+
 // void Fluid::init()
 // {
 // 	std::cout << "FluidParticles init called" << std::endl;

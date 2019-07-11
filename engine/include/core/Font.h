@@ -47,6 +47,9 @@ namespace PhysicsEngine
 			Font(std::vector<char> data);
 			~Font();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void load(std::string filepath);
 
 			Character getCharacter(char c) const;

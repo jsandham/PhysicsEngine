@@ -21,26 +21,24 @@
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/MeshCollider.h"
-#include "../../include/components/Boids.h"
-#include "../../include/components/Cloth.h"
-#include "../../include/components/Fluid.h"
-#include "../../include/components/Solid.h"
+// #include "../../include/components/Cloth.h"
+// #include "../../include/components/Fluid.h"
+// #include "../../include/components/Solid.h"
+// #include "../../include/components/Boids.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
 #include "../../include/systems/CleanUpSystem.h"
 #include "../../include/systems/DebugSystem.h"
-#include "../../include/systems/BoidsSystem.h"
-#include "../../include/systems/ClothSystem.h"
-#include "../../include/systems/FluidSystem.h"
-#include "../../include/systems/SolidSystem.h"
+// #include "../../include/systems/BoidsSystem.h"
+// #include "../../include/systems/ClothSystem.h"
+// #include "../../include/systems/FluidSystem.h"
+// #include "../../include/systems/SolidSystem.h"
 
 using namespace PhysicsEngine;
 
-Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int* index)  
+Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int type, int* index)  
 {
-	int type = *reinterpret_cast<int*>(&data[0]); //maybe should add classification to assets? Just for consistency with components, entities, and systems?
-
 	if(type == 0){
 		*index = (int)getAllocator<Shader>().getCount();
 		return create<Shader>(data);
@@ -81,11 +79,8 @@ Entity* PhysicsEngine::loadInternalEntity(std::vector<char> data, int* index)
 	return create<Entity>(data);
 }
 
-Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* index, itype* instanceType)
+Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int type, int* index, itype* instanceType)
 {
-	//char classification = *reinterpret_cast<char*>(&data[0]);
-	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
-
 	if(type == 0){
 		*index = (int)getAllocator<Transform>().getCount();
 		*instanceType = Component::getInstanceType<Transform>();
@@ -136,37 +131,34 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int* ind
 		*instanceType = Component::getInstanceType<CapsuleCollider>();
 		return create<CapsuleCollider>(data);
 	}
-	else if(type == 11){
-		*index = (int)getAllocator<Boids>().getCount();
-		*instanceType = Component::getInstanceType<Boids>();
-		return create<Boids>(data);
-	}
-	else if(type == 12){
-		*index = (int)getAllocator<Cloth>().getCount();
-		*instanceType = Component::getInstanceType<Cloth>();
-		return create<Cloth>(data);
-	}
-	else if(type == 13){
-		*index = (int)getAllocator<Fluid>().getCount();
-		*instanceType = Component::getInstanceType<Fluid>();
-		return create<Fluid>(data);
-	}
-	else if(type == 14){
-		*index = (int)getAllocator<Solid>().getCount();
-		*instanceType = Component::getInstanceType<Solid>();
-		return create<Solid>(data);
-	}
+	// else if(type == 11){
+	// 	*index = (int)getAllocator<Boids>().getCount();
+	// 	*instanceType = Component::getInstanceType<Boids>();
+	// 	return create<Boids>(data);
+	// }
+	// else if(type == 12){
+	// 	*index = (int)getAllocator<Cloth>().getCount();
+	// 	*instanceType = Component::getInstanceType<Cloth>();
+	// 	return create<Cloth>(data);
+	// }
+	// else if(type == 13){
+	// 	*index = (int)getAllocator<Fluid>().getCount();
+	// 	*instanceType = Component::getInstanceType<Fluid>();
+	// 	return create<Fluid>(data);
+	// }
+	// else if(type == 14){
+	// 	*index = (int)getAllocator<Solid>().getCount();
+	// 	*instanceType = Component::getInstanceType<Solid>();
+	// 	return create<Solid>(data);
+	// }
 	else{
 		std::cout << "Error: Invalid component type (" << type << ") when trying to load internal component" << std::endl;
 		return NULL;
 	}
 }
 
-System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
+System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int type, int* index)
 {
-	//char classification = *reinterpret_cast<char*>(&data[0]);
-	int type = *reinterpret_cast<int*>(&data[sizeof(char)]);
-
 	if(type == 0){
 		*index = (int)getAllocator<RenderSystem>().getCount();
 		return create<RenderSystem>(data);
@@ -183,22 +175,22 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int* index)
 		*index = (int)getAllocator<DebugSystem>().getCount();
 		return create<DebugSystem>(data);
 	}
-	else if(type == 4){
-		*index = (int)getAllocator<BoidsSystem>().getCount();
-		return create<BoidsSystem>(data);
-	}
-	else if(type == 5){
-		*index = (int)getAllocator<ClothSystem>().getCount();
-		return create<ClothSystem>(data);
-	}
-	else if(type == 6){
-		*index = (int)getAllocator<FluidSystem>().getCount();
-		return create<FluidSystem>(data);
-	}
-	else if(type == 7){
-		*index = (int)getAllocator<SolidSystem>().getCount();
-		return create<SolidSystem>(data);
-	}
+	// else if(type == 4){
+	// 	*index = (int)getAllocator<BoidsSystem>().getCount();
+	// 	return create<BoidsSystem>(data);
+	// }
+	// else if(type == 5){
+	// 	*index = (int)getAllocator<ClothSystem>().getCount();
+	// 	return create<ClothSystem>(data);
+	// }
+	// else if(type == 6){
+	// 	*index = (int)getAllocator<FluidSystem>().getCount();
+	// 	return create<FluidSystem>(data);
+	// }
+	// else if(type == 7){
+	// 	*index = (int)getAllocator<SolidSystem>().getCount();
+	// 	return create<SolidSystem>(data);
+	// }
 	else{
 		std::cout << "Error: Invalid system type (" << type << ") when trying to load internal system" << std::endl;
 		return NULL;
@@ -242,18 +234,18 @@ Component* PhysicsEngine::destroyInternalComponent(itype instanceType, int index
 	else if(instanceType == Component::getInstanceType<CapsuleCollider>()){
 		return destroy<CapsuleCollider>(index);
 	}
-	else if(instanceType == Component::getInstanceType<Boids>()){
-		return destroy<Boids>(index);
-	}
-	else if(instanceType == Component::getInstanceType<Cloth>()){
-		return destroy<Cloth>(index);
-	}
-	else if(instanceType == Component::getInstanceType<Fluid>()){
-		return destroy<Fluid>(index);
-	}
-	else if(instanceType == Component::getInstanceType<Solid>()){
-		return destroy<Solid>(index);
-	}
+	// else if(instanceType == Component::getInstanceType<Boids>()){
+	// 	return destroy<Boids>(index);
+	// }
+	// else if(instanceType == Component::getInstanceType<Cloth>()){
+	// 	return destroy<Cloth>(index);
+	// }
+	// else if(instanceType == Component::getInstanceType<Fluid>()){
+	// 	return destroy<Fluid>(index);
+	// }
+	// else if(instanceType == Component::getInstanceType<Solid>()){
+	// 	return destroy<Solid>(index);
+	// }
 	else{
 		std::cout << "Error: Invalid component instance type (" << instanceType << ") when trying to destroy internal component" << std::endl;
 		return NULL;

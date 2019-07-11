@@ -22,8 +22,41 @@ Material::Material()
 
 Material::Material(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[index]);
+	deserialize(data);
+}
+
+Material::~Material()
+{
+
+}
+
+std::vector<char> Material::serialize()
+{
+	MaterialHeader header;
+	header.assetId = assetId;
+	header.shaderId = shaderId;
+	header.textureId = textureId;
+	header.normalMapId = normalMapId;
+	header.specularMapId = specularMapId;
+
+	header.shininess = shininess;
+	header.ambient = ambient;
+	header.diffuse = diffuse;
+	header.specular = specular;
+	header.color = color;
+
+	size_t numberOfBytes = sizeof(MaterialHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(MaterialHeader));
+
+	return data;
+}
+
+void Material::deserialize(std::vector<char> data)
+{
+	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[0]);
 
 	assetId = header->assetId;
 	shaderId = header->shaderId;
@@ -36,29 +69,4 @@ Material::Material(std::vector<char> data)
 	diffuse = header->diffuse;
 	specular = header->specular;
 	color = header->color;
-
-	index += sizeof(MaterialHeader);
-
-	std::cout << "material index: " << index << " data size: " << data.size() << std::endl;
-}
-
-Material::~Material()
-{
-
-}
-
-void Material::load(MaterialHeader data)
-{
-	assetId = data.assetId;
-
-	shaderId = data.shaderId;
-	textureId = data.textureId;
-	normalMapId = data.normalMapId;
-	specularMapId = data.specularMapId;
-
-	shininess = data.shininess;
-	ambient = data.ambient;
-	diffuse = data.diffuse;
-	specular = data.specular;
-	color = data.color;
 }

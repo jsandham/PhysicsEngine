@@ -25,6 +25,9 @@ namespace PhysicsEngine
 			Fluid(std::vector<char> data);
 			~Fluid();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			// void init();
 			// void update();
 

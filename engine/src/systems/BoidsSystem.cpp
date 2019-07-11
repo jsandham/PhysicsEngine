@@ -18,24 +18,40 @@ using namespace PhysicsEngine;
 
 BoidsSystem::BoidsSystem()
 {
-	type = 4;
+	
 }
 
 BoidsSystem::BoidsSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if(type != 4){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 }
 
 BoidsSystem::~BoidsSystem()
 {
 	
+}
+
+std::vector<char> BoidsSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void BoidsSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
+	// size_t index = sizeof(char);
+	// type = *reinterpret_cast<int*>(&data[index]);
+	// index += sizeof(int);
+	// order = *reinterpret_cast<int*>(&data[index]);
+
+	// if(type != 0){
+	// 	std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
+	// }
 }
 
 void BoidsSystem::init(World* world)

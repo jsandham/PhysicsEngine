@@ -14,25 +14,7 @@ Cubemap::Cubemap()
 
 Cubemap::Cubemap(std::vector<char> data)
 {
-	size_t index = sizeof(int);
-	CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[index]);
-
-	assetId = header->textureId;
-	width = header->width;
-	numChannels = header->numChannels;
-	dimension = static_cast<TextureDimension>(header->dimension);
-	format = static_cast<TextureFormat>(header->format);
-	
-	index += sizeof(CubemapHeader);
-
-	rawTextureData.resize(header->textureSize);
-	for(size_t i = 0; i < header->textureSize; i++){
-		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[index + sizeof(unsigned char) * i]);
-	}
-
-	index += rawTextureData.size() * sizeof(unsigned char);
-
-	std::cout << "Cubemap index: " << index << " data size: " << data.size() << std::endl;
+	deserialize(data);
 }
 
 Cubemap::Cubemap(int width)
@@ -74,6 +56,51 @@ Cubemap::Cubemap(int width, int height, TextureFormat format)
 Cubemap::~Cubemap()
 {
 	
+}
+
+std::vector<char> Cubemap::serialize()
+{
+	CubemapHeader header;
+	header.textureId = assetId;
+	header.width = width;
+	header.numChannels = numChannels;
+	header.dimension = dimension;
+	header.format = format;
+	header.textureSize = rawTextureData.size();
+
+	size_t numberOfBytes = sizeof(CubemapHeader) + 
+						sizeof(unsigned char) * rawTextureData.size();
+
+	std::vector<char> data(numberOfBytes);
+
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(CubemapHeader);
+
+	memcpy(&data[start1], &header, sizeof(CubemapHeader));
+	memcpy(&data[start2], &rawTextureData[0], sizeof(unsigned char) * rawTextureData.size());
+
+	return data;
+}
+
+void Cubemap::deserialize(std::vector<char> data)
+{
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(CubemapHeader);
+
+	CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[start1]);
+
+	assetId = header->textureId;
+	width = header->width;
+	numChannels = header->numChannels;
+	dimension = static_cast<TextureDimension>(header->dimension);
+	format = static_cast<TextureFormat>(header->format);
+
+	rawTextureData.resize(header->textureSize);
+	for(size_t i = 0; i < header->textureSize; i++){
+		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+	}
+
+	std::cout << "Cubemap data size: " << data.size() << std::endl;
 }
 
 int Cubemap::getWidth() const

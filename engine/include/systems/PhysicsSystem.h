@@ -31,6 +31,9 @@ namespace PhysicsEngine
 			PhysicsSystem(std::vector<char> data);
 			~PhysicsSystem();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			void init(World* world);
 			void update(Input input);
 	};

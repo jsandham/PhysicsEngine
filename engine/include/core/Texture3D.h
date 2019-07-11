@@ -35,6 +35,9 @@ namespace PhysicsEngine
 			Texture3D(int width, int height, int depth, int numChannels);
 			~Texture3D();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			int getWidth() const;
 			int getHeight() const;
 			int getDepth() const;

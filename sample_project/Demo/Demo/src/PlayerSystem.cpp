@@ -16,19 +16,12 @@ const float PlayerSystem::TRANSLATE_SENSITIVITY = 0.05f;
 
 PlayerSystem::PlayerSystem()
 {
-	type = 21;
+	
 }
 
 PlayerSystem::PlayerSystem(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	type = *reinterpret_cast<int*>(&data[index]);
-	index += sizeof(int);
-	order = *reinterpret_cast<int*>(&data[index]);
-
-	if (type != 21){
-		std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	}
+	deserialize(data);
 
 	lastPosX = 0;
 	lastPosY = 0;
@@ -41,15 +34,20 @@ PlayerSystem::~PlayerSystem()
 
 }
 
-//void* PlayerSystem::operator new(size_t size)
-//{
-//	return getAllocator<PlayerSystem>().allocate();
-//}
-//
-//void PlayerSystem::operator delete(void*)
-//{
-//
-//}
+std::vector<char> PlayerSystem::serialize()
+{
+	size_t numberOfBytes = sizeof(int);
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &order, sizeof(int));
+
+	return data;
+}
+
+void PlayerSystem::deserialize(std::vector<char> data)
+{
+	order = *reinterpret_cast<int*>(&data[0]);
+}
 
 void PlayerSystem::init(World* world)
 {

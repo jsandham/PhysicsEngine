@@ -86,6 +86,9 @@ namespace PhysicsEngine
 			Shader(std::vector<char> data);
 			~Shader();
 
+			std::vector<char> serialize();
+			void deserialize(std::vector<char> data);
+
 			bool isCompiled();
 			void compile();
 			void setUniformBlock(std::string blockName, int bindingPoint);

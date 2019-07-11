@@ -65,7 +65,7 @@
   "a18db4d6-ba13-422b-bac8-fbd313d740c8" : {
     "type" : "MeshRenderer",
     "entity" : "9d443766-ab90-4546-ae84-6b54133cd46e",
-    "mesh" : "af41a30f-526a-4328-9495-af088a045a02",
+    "mesh" : "ce7516b7-f889-4948-9f4c-9f43058d61c1",
     "material" : "843489ae-b5ff-4df3-a655-695101482a60",
     "isStatic" : false
   },

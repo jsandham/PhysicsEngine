@@ -78,9 +78,45 @@ Camera::Camera()
 
 Camera::Camera(std::vector<char> data)
 {
-	size_t index = sizeof(char);
-	index += sizeof(int);
-	CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[index]);
+	deserialize(data);
+
+	updateInternalCameraState();
+}
+
+Camera::~Camera()
+{
+
+}
+
+std::vector<char> Camera::serialize()
+{
+	CameraHeader header;
+	header.componentId = componentId;
+	header.entityId = entityId;
+	header.position = position;
+	header.front = front;
+	header.up = up;
+	header.backgroundColor = backgroundColor;
+	header.x = viewport.x;
+	header.y = viewport.y;
+	header.width = viewport.width;
+	header.height = viewport.height;
+	header.fov = frustum.fov;
+	header.nearPlane = frustum.nearPlane;
+	header.farPlane = frustum.farPlane;
+
+	int numberOfBytes = sizeof(CameraHeader);
+
+	std::vector<char> data(numberOfBytes);
+
+	memcpy(&data[0], &header, sizeof(CameraHeader));
+
+	return data;
+}
+
+void Camera::deserialize(std::vector<char> data)
+{
+	CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[0]);
 
 	componentId = header->componentId;
 	entityId = header->entityId;
@@ -98,13 +134,6 @@ Camera::Camera(std::vector<char> data)
 	front = header->front;
 	up = header->up;
 	backgroundColor = header->backgroundColor;
-
-	updateInternalCameraState();
-}
-
-Camera::~Camera()
-{
-
 }
 
 void Camera::updateInternalCameraState()

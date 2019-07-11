@@ -1,0 +1,374 @@
+﻿Build started 7/9/2019 7:13:18 PM.
+     1>Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Debug\editor.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt editor.cpp
+         editor.cpp
+     1>editor.cpp(433): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(434): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(436): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(437): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(438): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(439): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(440): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(441): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(442): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(443): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(444): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(445): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>editor.cpp(446): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"x64\Debug\editor.res" editor.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\lib glew32.lib engine.lib xinput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\editor.res
+         x64\Debug\editor.obj
+         x64\Debug\stdafx.obj
+     1>engine.lib(WorldManager.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(WorldManager.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(System.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(System.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(World.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(World.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Guid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Guid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Entity.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Entity.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(LoadInternal.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(LoadInternal.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Bounds.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Bounds.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Ray.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Ray.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(UniformGrid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(UniformGrid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Shader.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Shader.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Cubemap.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Cubemap.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Material.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Material.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Mesh.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Mesh.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Font.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Font.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Transform.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Transform.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Camera.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Camera.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Light.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Light.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(MeshCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(MeshCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Boids.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Boids.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Cloth.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Cloth.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Fluid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Fluid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Solid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Solid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(BoidsSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(BoidsSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(ClothSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(ClothSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(FluidSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(FluidSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(SolidSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(SolidSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Sphere.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Sphere.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Triangle.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Triangle.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Geometry.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Geometry.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Asset.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Asset.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Graphics.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Graphics.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Texture.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Texture.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Log.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Log.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Component.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Component.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Collider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Collider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(Capsule.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(Capsule.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(ForwardRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(ForwardRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(DeferredRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(DeferredRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(DebugRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(DebugRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(ClothDeviceData.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(ClothDeviceData.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(FluidDeviceData.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(FluidDeviceData.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(SolidDeviceData.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(SolidDeviceData.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(BatchManager.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(BatchManager.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(boids_kernels.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(boids_kernels.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(cloth_kernels.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(cloth_kernels.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(fluid_kernels.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(fluid_kernels.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>engine.lib(solid_kernels.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>engine.lib(solid_kernels.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __cdecl std::locale::id::id(unsigned __int64)" (??0id@locale@std@@QEAA@_K@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: bool __cdecl std::ios_base::good(void)const " (?good@ios_base@std@@QEBA_NXZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: int __cdecl std::ios_base::flags(void)const " (?flags@ios_base@std@@QEBAHXZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::ios_base::width(void)const " (?width@ios_base@std@@QEBA_JXZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::ios_base::width(__int64)" (?width@ios_base@std@@QEAA_J_J@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: int __cdecl std::basic_streambuf<char,struct std::char_traits<char> >::sputc(char)" (?sputc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHD@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::basic_streambuf<char,struct std::char_traits<char> >::sputn(char const *,__int64)" (?sputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAA_JPEBD_J@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: void __cdecl std::basic_ios<char,struct std::char_traits<char> >::setstate(int,bool)" (?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QEAAXH_N@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > * __cdecl std::basic_ios<char,struct std::char_traits<char> >::tie(void)const " (?tie@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBAPEAV?$basic_ostream@DU?$char_traits@D@std@@@2@XZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_streambuf<char,struct std::char_traits<char> > * __cdecl std::basic_ios<char,struct std::char_traits<char> >::rdbuf(void)const " (?rdbuf@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBAPEAV?$basic_streambuf@DU?$char_traits@D@std@@@2@XZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: char __cdecl std::basic_ios<char,struct std::char_traits<char> >::fill(void)const " (?fill@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBADXZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: char __cdecl std::basic_ios<char,struct std::char_traits<char> >::widen(char)const " (?widen@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBADD@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: void __cdecl std::basic_ostream<char,struct std::char_traits<char> >::_Osfx(void)" (?_Osfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAXXZ) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::operator<<(class std::basic_ostream<char,struct std::char_traits<char> > & (__cdecl*)(class std::basic_ostream<char,struct std::char_traits<char> > &))" (??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@P6AAEAV01@AEAV01@@Z@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::put(char)" (?put@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@D@Z) already defined in engine.lib(WorldManager.obj)
+     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::flush(void)" (?flush@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@XZ) already defined in engine.lib(WorldManager.obj)
+     1>libcpmt.lib(locale0.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(locale0.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(locale0.obj) : error LNK2005: "void __cdecl std::_Facet_Register(class std::_Facet_base *)" (?_Facet_Register@std@@YAXPEAV_Facet_base@1@@Z) already defined in msvcprtd.lib(locale0_implib.obj)
+     1>libcpmt.lib(locale0.obj) : error LNK2005: "private: static class std::locale::_Locimp * __cdecl std::locale::_Getgloballocale(void)" (?_Getgloballocale@locale@std@@CAPEAV_Locimp@12@XZ) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(locale0.obj) : error LNK2005: "private: static class std::locale::_Locimp * __cdecl std::locale::_Init(bool)" (?_Init@locale@std@@CAPEAV_Locimp@12@_N@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(locale0.obj) : error LNK2005: "public: static void __cdecl std::_Locinfo::_Locinfo_ctor(class std::_Locinfo *,char const *)" (?_Locinfo_ctor@_Locinfo@std@@SAXPEAV12@PEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(locale0.obj) : error LNK2005: "public: static void __cdecl std::_Locinfo::_Locinfo_dtor(class std::_Locinfo *)" (?_Locinfo_dtor@_Locinfo@std@@SAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(cout.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(cout.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(ios.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(ios.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(ios.obj) : error LNK2005: "public: static void __cdecl std::ios_base::_Addstd(class std::ios_base *)" (?_Addstd@ios_base@std@@SAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(ios.obj) : error LNK2005: "private: static void __cdecl std::ios_base::_Ios_base_dtor(class std::ios_base *)" (?_Ios_base_dtor@ios_base@std@@CAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(iosptrs.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(iosptrs.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(locale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(locale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xlock.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(xlock.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xlock.obj) : error LNK2005: "public: __cdecl std::_Lockit::_Lockit(int)" (??0_Lockit@std@@QEAA@H@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(xlock.obj) : error LNK2005: "public: __cdecl std::_Lockit::~_Lockit(void)" (??1_Lockit@std@@QEAA@XZ) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(xthrow.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(xthrow.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xbad_alloc(void)" (?_Xbad_alloc@std@@YAXXZ) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xlength_error(char const *)" (?_Xlength_error@std@@YAXPEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xout_of_range(char const *)" (?_Xout_of_range@std@@YAXPEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>libcpmt.lib(wlocale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(wlocale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xlocale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(xlocale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xdateord.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in editor.obj
+     1>libcpmt.lib(xdateord.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in editor.obj
+     1>libcpmt.lib(xwctomb.obj) : error LNK2005: _Getcvt already defined in msvcprtd.lib(MSVCP120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::bad_cast::bad_cast(class std::bad_cast const &)" (??0bad_cast@std@@QEAA@AEBV01@@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::bad_cast::bad_cast(char const *)" (??0bad_cast@std@@QEAA@PEBD@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::exception::exception(char const * const &)" (??0exception@std@@QEAA@AEBQEBD@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::exception::exception(char const * const &,int)" (??0exception@std@@QEAA@AEBQEBDH@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::exception::exception(class std::exception const &)" (??0exception@std@@QEAA@AEBV01@@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual __cdecl std::bad_cast::~bad_cast(void)" (??1bad_cast@std@@UEAA@XZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual __cdecl std::exception::~exception(void)" (??1exception@std@@UEAA@XZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual char const * __cdecl std::exception::what(void)const " (?what@exception@std@@UEBAPEBDXZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtCaptureCurrentContext already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtCapturePreviousContext already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtGetShowWindowMode already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtSetUnhandledExceptionFilter already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtTerminateProcess already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtUnhandledException already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _amsg_exit already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _cexit already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _exit already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _initterm_e already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: exit already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(wsetloca.obj) : error LNK2005: _configthreadlocale already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(hooks.obj) : error LNK2005: "void __cdecl terminate(void)" (?terminate@@YAXXZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xi_a already defined in MSVCRTD.lib(cinitexe.obj)
+     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xi_z already defined in MSVCRTD.lib(cinitexe.obj)
+     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xc_a already defined in MSVCRTD.lib(cinitexe.obj)
+     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xc_z already defined in MSVCRTD.lib(cinitexe.obj)
+     1>LIBCMT.lib(errmode.obj) : error LNK2005: __set_app_type already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(lconv.obj) : error LNK2005: localeconv already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(mlock.obj) : error LNK2005: _lock already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(mlock.obj) : error LNK2005: _unlock already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(winxfltr.obj) : error LNK2005: _XcptFilter already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(fflush.obj) : error LNK2005: fflush already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(_file.obj) : error LNK2005: __iob_func already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(_file.obj) : error LNK2005: _lock_file already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LIBCMT.lib(_file.obj) : error LNK2005: _unlock_file already defined in MSVCRTD.lib(MSVCR120D.dll)
+     1>LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+     1>LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+     1>editor.obj : error LNK2019: unresolved external symbol __imp_wglCreateContext referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPEAUHWND__@@@Z)
+     1>editor.obj : error LNK2019: unresolved external symbol __imp_wglGetProcAddress referenced in function "bool __cdecl WGLExtensionSupported(char const *)" (?WGLExtensionSupported@@YA_NPEBD@Z)
+     1>editor.obj : error LNK2019: unresolved external symbol __imp_wglMakeCurrent referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPEAUHWND__@@@Z)
+     1>engine.lib(World.obj) : error LNK2019: unresolved external symbol "class PhysicsEngine::Asset * __cdecl PhysicsEngine::loadAsset(class std::vector<char,class std::allocator<char> >,int,int *)" (?loadAsset@PhysicsEngine@@YAPEAVAsset@1@V?$vector@DV?$allocator@D@std@@@std@@HPEAH@Z) referenced in function "public: bool __cdecl PhysicsEngine::World::load(struct PhysicsEngine::Scene,struct PhysicsEngine::AssetBundle)" (?load@World@PhysicsEngine@@QEAA_NUScene@2@UAssetBundle@2@@Z)
+     1>engine.lib(World.obj) : error LNK2019: unresolved external symbol "class PhysicsEngine::Component * __cdecl PhysicsEngine::loadComponent(class std::vector<char,class std::allocator<char> >,int,int *,int *)" (?loadComponent@PhysicsEngine@@YAPEAVComponent@1@V?$vector@DV?$allocator@D@std@@@std@@HPEAH1@Z) referenced in function "public: bool __cdecl PhysicsEngine::World::load(struct PhysicsEngine::Scene,struct PhysicsEngine::AssetBundle)" (?load@World@PhysicsEngine@@QEAA_NUScene@2@UAssetBundle@2@@Z)
+     1>engine.lib(World.obj) : error LNK2019: unresolved external symbol "class PhysicsEngine::System * __cdecl PhysicsEngine::loadSystem(class std::vector<char,class std::allocator<char> >,int,int *)" (?loadSystem@PhysicsEngine@@YAPEAVSystem@1@V?$vector@DV?$allocator@D@std@@@std@@HPEAH@Z) referenced in function "public: bool __cdecl PhysicsEngine::World::load(struct PhysicsEngine::Scene,struct PhysicsEngine::AssetBundle)" (?load@World@PhysicsEngine@@QEAA_NUScene@2@UAssetBundle@2@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol __imp_glBindTexture referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBindTexture
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol __imp_glGenTextures referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glGenTextures
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glGenTextures
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol __imp_glPixelStorei referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol __imp_glTexImage2D referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexImage2D
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol __imp_glTexParameteri referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexParameteri
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glTexParameteri
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_Init_FreeType referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_Done_FreeType referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_New_Face referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_Done_Face referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_Set_Pixel_Sizes referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(Font.obj) : error LNK2019: unresolved external symbol FT_Load_Char referenced in function "public: void __cdecl PhysicsEngine::Font::load(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (?load@Font@PhysicsEngine@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+     1>engine.lib(BoidsSystem.obj) : error LNK2019: unresolved external symbol __imp_glGetError referenced in function "public: virtual void __cdecl PhysicsEngine::BoidsSystem::init(class PhysicsEngine::World *)" (?init@BoidsSystem@PhysicsEngine@@UEAAXPEAVWorld@2@@Z)
+     1>engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp_glGetError
+     1>engine.lib(BatchManager.obj) : error LNK2001: unresolved external symbol __imp_glGetError
+     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glDrawArrays referenced in function "public: static void __cdecl PhysicsEngine::Graphics::render(class PhysicsEngine::World *,class PhysicsEngine::Material *,enum PhysicsEngine::ShaderVariant,struct glm::detail::tmat4x4<float,0>,unsigned int,int,struct PhysicsEngine::GraphicsQuery *)" (?render@Graphics@PhysicsEngine@@SAXPEAVWorld@2@PEAVMaterial@2@W4ShaderVariant@2@U?$tmat4x4@M$0A@@detail@glm@@IHPEAUGraphicsQuery@2@@Z)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDrawArrays
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glDrawArrays
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glBlendFunc referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glBlendFunc
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glClear referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClear
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClear
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glClearColor referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glClearDepth referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glClearDepth
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glDepthFunc referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glDrawBuffer referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::createShadowMapFBOs(void)" (?createShadowMapFBOs@ForwardRenderer@PhysicsEngine@@AEAAXXZ)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glEnable referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(DeferredRenderer.obj) : error LNK2001: unresolved external symbol __imp_glEnable
+     1>engine.lib(DebugRenderer.obj) : error LNK2001: unresolved external symbol __imp_glEnable
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glReadBuffer referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::createShadowMapFBOs(void)" (?createShadowMapFBOs@ForwardRenderer@PhysicsEngine@@AEAAXXZ)
+     1>engine.lib(ForwardRenderer.obj) : error LNK2019: unresolved external symbol __imp_glViewport referenced in function "private: void __cdecl PhysicsEngine::ForwardRenderer::beginFrame(class PhysicsEngine::Camera *,unsigned int)" (?beginFrame@ForwardRenderer@PhysicsEngine@@AEAAXPEAVCamera@2@I@Z)
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaDeviceGetAttribute referenced in function "public: static enum cudaError __cdecl thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::Dispatch<void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(void *,unsigned __int64 &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,int,int,int,struct CUstream_st *,bool,void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$Dispatch@P6AXPEAH0HHH_NU?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@ZP6AX0H@ZP6AX00000HHH112@Z@?$DeviceRadixSortDispatch@$0A@HHH@cub_@detail@cuda@system@thrust@@SA?AW4cudaError@@PEAXAEA_KAEAU?$DoubleBuffer@H@12345@2HHHPEAUCUstream_st@@_NP6AXPEAH5HHH4U?$GridEvenShare@H@12345@@Z7P6AX5H@ZP6AX55555HHH446@Z9@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetAttribute
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaDeviceGetSharedMemConfig referenced in function "public: static enum cudaError __cdecl thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::Dispatch<void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,int *,int,int,int,int,struct CUstream_st *,bool,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$Dispatch@P6AXPEAH0HHH_NU?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@ZP6AX0H@ZP6AX00000HHH112@Z@?$DeviceRadixSortDispatch@$0A@HHH@cub_@detail@cuda@system@thrust@@SA?AW4cudaError@@AEAU?$DoubleBuffer@H@12345@0PEAHHHHHPEAUCUstream_st@@_NAEAUKernelConfig@012345@44P6AX11HHH3U?$GridEvenShare@H@12345@@ZP6AX1H@ZP6AX11111HHH335@Z@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceGetSharedMemConfig
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaPeekAtLastError referenced in function "public: static enum cudaError __cdecl thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::Dispatch<void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,int *,int,int,int,int,struct CUstream_st *,bool,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$Dispatch@P6AXPEAH0HHH_NU?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@ZP6AX0H@ZP6AX00000HHH112@Z@?$DeviceRadixSortDispatch@$0A@HHH@cub_@detail@cuda@system@thrust@@SA?AW4cudaError@@AEAU?$DoubleBuffer@H@12345@0PEAHHHHHPEAUCUstream_st@@_NAEAUKernelConfig@012345@44P6AX11HHH3U?$GridEvenShare@H@12345@@ZP6AX1H@ZP6AX11111HHH335@Z@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaPeekAtLastError
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaGetErrorString referenced in function "void __cdecl gpuAssert(enum cudaError,char const *,int,bool)" (?gpuAssert@@YAXW4cudaError@@PEBDH_N@Z)
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetErrorString
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaGetDevice referenced in function "public: static enum cudaError __cdecl thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::Dispatch<void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(void *,unsigned __int64 &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,int,int,int,struct CUstream_st *,bool,void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$Dispatch@P6AXPEAH0HHH_NU?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@ZP6AX0H@ZP6AX00000HHH112@Z@?$DeviceRadixSortDispatch@$0A@HHH@cub_@detail@cuda@system@thrust@@SA?AW4cudaError@@PEAXAEA_KAEAU?$DoubleBuffer@H@12345@2HHHPEAUCUstream_st@@_NP6AXPEAH5HHH4U?$GridEvenShare@H@12345@@Z7P6AX5H@ZP6AX55555HHH446@Z9@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGetDevice
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaFuncGetAttributes referenced in function "enum cudaError __cdecl cudaFuncGetAttributes<void __cdecl(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(struct cudaFuncAttributes *,void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$cudaFuncGetAttributes@$$A6AXPEAH0000HHH_N1U?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@Z@@YA?AW4cudaError@@PEAUcudaFuncAttributes@@P6AXPEAH1111HHH_N2U?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@Z@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFuncGetAttributes
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaFree referenced in function "void __cdecl PhysicsEngine::deallocateBoidsDeviceData(struct PhysicsEngine::BoidsDeviceData *)" (?deallocateBoidsDeviceData@PhysicsEngine@@YAXPEAUBoidsDeviceData@1@@Z)
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaFree
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaMalloc referenced in function "void __cdecl PhysicsEngine::allocateBoidsDeviceData(struct PhysicsEngine::BoidsDeviceData *)" (?allocateBoidsDeviceData@PhysicsEngine@@YAXPEAUBoidsDeviceData@1@@Z)
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMalloc
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaMemcpyAsync referenced in function "void __cdecl thrust::system::cuda::detail::trivial_copy_detail::checked_cudaMemcpyAsync(void *,void const *,unsigned __int64,enum cudaMemcpyKind,struct CUstream_st *)" (?checked_cudaMemcpyAsync@trivial_copy_detail@detail@cuda@system@thrust@@YAXPEAXPEBX_KW4cudaMemcpyKind@@PEAUCUstream_st@@@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpyAsync
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaDeviceSetSharedMemConfig referenced in function "public: static enum cudaError __cdecl thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::Dispatch<void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>)>(struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,struct thrust::system::cuda::detail::cub_::DoubleBuffer<int> &,int *,int,int,int,int,struct CUstream_st *,bool,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,struct thrust::system::cuda::detail::cub_::DeviceRadixSortDispatch<0,int,int,int>::KernelConfig &,void (__cdecl*)(int *,int *,int,int,int,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>),void (__cdecl*)(int *,int),void (__cdecl*)(int *,int *,int *,int *,int *,int,int,int,bool,bool,struct thrust::system::cuda::detail::cub_::GridEvenShare<int>))" (??$Dispatch@P6AXPEAH0HHH_NU?$GridEvenShare@H@cub_@detail@cuda@system@thrust@@@ZP6AX0H@ZP6AX00000HHH112@Z@?$DeviceRadixSortDispatch@$0A@HHH@cub_@detail@cuda@system@thrust@@SA?AW4cudaError@@AEAU?$DoubleBuffer@H@12345@0PEAHHHHHPEAUCUstream_st@@_NAEAUKernelConfig@012345@44P6AX11HHH3U?$GridEvenShare@H@12345@@ZP6AX1H@ZP6AX11111HHH335@Z@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaDeviceSetSharedMemConfig
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaStreamSynchronize referenced in function "enum cudaError __cdecl thrust::system::cuda::detail::cub_::SyncStream(struct CUstream_st *)" (?SyncStream@cub_@detail@cuda@system@thrust@@YA?AW4cudaError@@PEAUCUstream_st@@@Z)
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaStreamSynchronize
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaConfigureCall referenced in function "void __cdecl PhysicsEngine::updateBoidsDeviceData(struct PhysicsEngine::BoidsDeviceData *)" (?updateBoidsDeviceData@PhysicsEngine@@YAXPEAUBoidsDeviceData@1@@Z)
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaConfigureCall
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol cudaSetupArgument
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaLaunch
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2019: unresolved external symbol cudaMemcpy referenced in function "void __cdecl PhysicsEngine::initializeBoidsDeviceData(struct PhysicsEngine::BoidsDeviceData *)" (?initializeBoidsDeviceData@PhysicsEngine@@YAXPEAUBoidsDeviceData@1@@Z)
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaMemcpy
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFatBinary
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaUnregisterFatBinary
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterVar
+     1>engine.lib(boids_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(cloth_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(fluid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(solid_kernels.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(BoidsDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(ClothDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(FluidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol __cudaRegisterFunction
+     1>engine.lib(ClothDeviceData.obj) : error LNK2019: unresolved external symbol cudaGraphicsMapResources referenced in function "void __cdecl PhysicsEngine::initializeClothDeviceData(struct PhysicsEngine::ClothDeviceData *)" (?initializeClothDeviceData@PhysicsEngine@@YAXPEAUClothDeviceData@1@@Z)
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsMapResources
+     1>engine.lib(ClothDeviceData.obj) : error LNK2019: unresolved external symbol cudaGraphicsUnmapResources referenced in function "void __cdecl PhysicsEngine::initializeClothDeviceData(struct PhysicsEngine::ClothDeviceData *)" (?initializeClothDeviceData@PhysicsEngine@@YAXPEAUClothDeviceData@1@@Z)
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsUnmapResources
+     1>engine.lib(ClothDeviceData.obj) : error LNK2019: unresolved external symbol cudaGraphicsResourceGetMappedPointer referenced in function "void __cdecl PhysicsEngine::initializeClothDeviceData(struct PhysicsEngine::ClothDeviceData *)" (?initializeClothDeviceData@PhysicsEngine@@YAXPEAUClothDeviceData@1@@Z)
+     1>engine.lib(SolidDeviceData.obj) : error LNK2001: unresolved external symbol cudaGraphicsResourceGetMappedPointer
+     1>C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.exe : fatal error LNK1120: 50 unresolved externals
+     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.78

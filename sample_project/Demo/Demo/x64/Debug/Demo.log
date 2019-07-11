@@ -1,237 +1,39 @@
-﻿Build started 1/20/2019 2:30:48 PM.
+﻿Build started 7/10/2019 8:32:58 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Debug\Demo.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Debug\Demo.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
          stdafx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Debug\Demo.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp LoadSystem.cpp LogicSystem.cpp PlayerSystem.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\include /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Include /IC:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Demo.cpp src\Load.cpp src\LogicSystem.cpp src\PlayerSystem.cpp
          PlayerSystem.cpp
          LogicSystem.cpp
-         LoadSystem.cpp
+         Load.cpp
          Demo.cpp
-     1>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\crtdbg.h(586): warning C4005: '_malloca' : macro redefinition
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\malloc.h(224) : see previous definition of '_malloca'
+     1>Demo.cpp(450): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(451): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(453): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(454): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(455): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(456): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(457): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(458): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(459): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(460): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(461): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(462): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>Demo.cpp(463): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
          Generating Code...
        ResourceCompile:
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"x64\Debug\Demo.res" Demo.rc 
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /l"0x0409" /nologo /fo"x64\Debug\Demo.res" Demo.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.lib" /MACHINE:X64 x64\Debug\Demo.res
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Dependencies\glew\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.lib" /MACHINE:X64 x64\Debug\Demo.res
          x64\Debug\Demo.obj
-         x64\Debug\LoadSystem.obj
+         x64\Debug\Load.obj
          x64\Debug\LogicSystem.obj
          x64\Debug\PlayerSystem.obj
          x64\Debug\stdafx.obj
-     1>engine.lib(Input.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Input.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(System.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(System.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Camera.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Camera.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Guid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Guid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Component.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Component.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Frustum.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Frustum.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Manager.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Manager.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Entity.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Entity.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Asset.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Asset.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Mesh.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Mesh.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(GMesh.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(GMesh.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Line.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Line.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Shader.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Shader.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Material.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Material.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Sphere.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Sphere.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Bounds.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Bounds.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Capsule.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Capsule.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Ray.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Ray.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Octtree.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Octtree.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Transform.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Transform.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(DirectionalLight.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(DirectionalLight.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(PointLight.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(PointLight.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(SpotLight.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(SpotLight.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(LoadInternalSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(LoadInternalSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Graphics.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Graphics.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Texture.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Texture.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Log.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Log.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Geometry.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Geometry.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Collider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Collider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(OpenGL.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(OpenGL.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(PerformanceGraph.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(PerformanceGraph.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(DebugWindow.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(DebugWindow.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>engine.lib(SlabBuffer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>engine.lib(SlabBuffer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __cdecl std::_Container_base12::_Container_base12(void)" (??0_Container_base12@std@@QEAA@XZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __cdecl std::_Container_base12::~_Container_base12(void)" (??1_Container_base12@std@@QEAA@XZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: void __cdecl std::_Container_base12::_Orphan_all(void)" (?_Orphan_all@_Container_base12@std@@QEAAXXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __cdecl std::locale::id::id(unsigned __int64)" (??0id@locale@std@@QEAA@_K@Z) already defined in engine.lib(System.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: bool __cdecl std::ios_base::good(void)const " (?good@ios_base@std@@QEBA_NXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: int __cdecl std::ios_base::flags(void)const " (?flags@ios_base@std@@QEBAHXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::ios_base::width(void)const " (?width@ios_base@std@@QEBA_JXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::ios_base::width(__int64)" (?width@ios_base@std@@QEAA_J_J@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: int __cdecl std::basic_streambuf<char,struct std::char_traits<char> >::sputc(char)" (?sputc@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAAHD@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: __int64 __cdecl std::basic_streambuf<char,struct std::char_traits<char> >::sputn(char const *,__int64)" (?sputn@?$basic_streambuf@DU?$char_traits@D@std@@@std@@QEAA_JPEBD_J@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: void __cdecl std::basic_ios<char,struct std::char_traits<char> >::setstate(int,bool)" (?setstate@?$basic_ios@DU?$char_traits@D@std@@@std@@QEAAXH_N@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > * __cdecl std::basic_ios<char,struct std::char_traits<char> >::tie(void)const " (?tie@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBAPEAV?$basic_ostream@DU?$char_traits@D@std@@@2@XZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_streambuf<char,struct std::char_traits<char> > * __cdecl std::basic_ios<char,struct std::char_traits<char> >::rdbuf(void)const " (?rdbuf@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBAPEAV?$basic_streambuf@DU?$char_traits@D@std@@@2@XZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: char __cdecl std::basic_ios<char,struct std::char_traits<char> >::fill(void)const " (?fill@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBADXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: char __cdecl std::basic_ios<char,struct std::char_traits<char> >::widen(char)const " (?widen@?$basic_ios@DU?$char_traits@D@std@@@std@@QEBADD@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: void __cdecl std::basic_ostream<char,struct std::char_traits<char> >::_Osfx(void)" (?_Osfx@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAXXZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::operator<<(class std::basic_ostream<char,struct std::char_traits<char> > & (__cdecl*)(class std::basic_ostream<char,struct std::char_traits<char> > &))" (??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@P6AAEAV01@AEAV01@@Z@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::put(char)" (?put@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@D@Z) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::flush(void)" (?flush@?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV12@XZ) already defined in engine.lib(Manager.obj)
-     1>msvcprtd.lib(MSVCP120D.dll) : error LNK2005: "public: class std::basic_ostream<char,struct std::char_traits<char> > & __cdecl std::basic_ostream<char,struct std::char_traits<char> >::operator<<(int)" (??6?$basic_ostream@DU?$char_traits@D@std@@@std@@QEAAAEAV01@H@Z) already defined in engine.lib(Manager.obj)
-     1>libcpmt.lib(ios.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(ios.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(ios.obj) : error LNK2005: "public: static void __cdecl std::ios_base::_Addstd(class std::ios_base *)" (?_Addstd@ios_base@std@@SAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(ios.obj) : error LNK2005: "private: static void __cdecl std::ios_base::_Ios_base_dtor(class std::ios_base *)" (?_Ios_base_dtor@ios_base@std@@CAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(locale0.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(locale0.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(locale0.obj) : error LNK2005: "void __cdecl std::_Facet_Register(class std::_Facet_base *)" (?_Facet_Register@std@@YAXPEAV_Facet_base@1@@Z) already defined in msvcprtd.lib(locale0_implib.obj)
-     1>libcpmt.lib(locale0.obj) : error LNK2005: "private: static class std::locale::_Locimp * __cdecl std::locale::_Getgloballocale(void)" (?_Getgloballocale@locale@std@@CAPEAV_Locimp@12@XZ) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(locale0.obj) : error LNK2005: "private: static class std::locale::_Locimp * __cdecl std::locale::_Init(bool)" (?_Init@locale@std@@CAPEAV_Locimp@12@_N@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(locale0.obj) : error LNK2005: "public: static void __cdecl std::_Locinfo::_Locinfo_ctor(class std::_Locinfo *,char const *)" (?_Locinfo_ctor@_Locinfo@std@@SAXPEAV12@PEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(locale0.obj) : error LNK2005: "public: static void __cdecl std::_Locinfo::_Locinfo_dtor(class std::_Locinfo *)" (?_Locinfo_dtor@_Locinfo@std@@SAXPEAV12@@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(cout.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(cout.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(cerr.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(cerr.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(iosptrs.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(iosptrs.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(locale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(locale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xlock.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(xlock.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xlock.obj) : error LNK2005: "public: __cdecl std::_Lockit::_Lockit(int)" (??0_Lockit@std@@QEAA@H@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(xlock.obj) : error LNK2005: "public: __cdecl std::_Lockit::~_Lockit(void)" (??1_Lockit@std@@QEAA@XZ) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(xthrow.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(xthrow.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xbad_alloc(void)" (?_Xbad_alloc@std@@YAXXZ) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xinvalid_argument(char const *)" (?_Xinvalid_argument@std@@YAXPEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xlength_error(char const *)" (?_Xlength_error@std@@YAXPEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(xthrow.obj) : error LNK2005: "void __cdecl std::_Xout_of_range(char const *)" (?_Xout_of_range@std@@YAXPEBD@Z) already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>libcpmt.lib(wlocale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(wlocale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xlocale.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(xlocale.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xdateord.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Demo.obj
-     1>libcpmt.lib(xdateord.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value 'MDd_DynamicDebug' in Demo.obj
-     1>libcpmt.lib(xwctomb.obj) : error LNK2005: _Getcvt already defined in msvcprtd.lib(MSVCP120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::bad_cast::bad_cast(class std::bad_cast const &)" (??0bad_cast@std@@QEAA@AEBV01@@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::bad_cast::bad_cast(char const *)" (??0bad_cast@std@@QEAA@PEBD@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::exception::exception(char const * const &)" (??0exception@std@@QEAA@AEBQEBD@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: __cdecl std::exception::exception(class std::exception const &)" (??0exception@std@@QEAA@AEBV01@@Z) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual __cdecl std::bad_cast::~bad_cast(void)" (??1bad_cast@std@@UEAA@XZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual __cdecl std::exception::~exception(void)" (??1exception@std@@UEAA@XZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(stdexcpt.obj) : error LNK2005: "public: virtual char const * __cdecl std::exception::what(void)const " (?what@exception@std@@UEBAPEBDXZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtCaptureCurrentContext already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtCapturePreviousContext already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtGetShowWindowMode already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtSetUnhandledExceptionFilter already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtTerminateProcess already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winapisupp.obj) : error LNK2005: __crtUnhandledException already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(_ctype.obj) : error LNK2005: isspace already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(invarg.obj) : error LNK2005: _invalid_parameter already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(wsetloca.obj) : error LNK2005: _configthreadlocale already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(dosmap.obj) : error LNK2005: _errno already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(lconv.obj) : error LNK2005: localeconv already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(mlock.obj) : error LNK2005: _lock already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(mlock.obj) : error LNK2005: _unlock already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _amsg_exit already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _cexit already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _exit already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: _initterm_e already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0dat.obj) : error LNK2005: exit already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(winxfltr.obj) : error LNK2005: _XcptFilter already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(hooks.obj) : error LNK2005: "void __cdecl terminate(void)" (?terminate@@YAXXZ) already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xi_a already defined in MSVCRTD.lib(cinitexe.obj)
-     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xi_z already defined in MSVCRTD.lib(cinitexe.obj)
-     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xc_a already defined in MSVCRTD.lib(cinitexe.obj)
-     1>LIBCMT.lib(crt0init.obj) : error LNK2005: __xc_z already defined in MSVCRTD.lib(cinitexe.obj)
-     1>LIBCMT.lib(strtol.obj) : error LNK2005: strtol already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(errmode.obj) : error LNK2005: __set_app_type already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(fflush.obj) : error LNK2005: fflush already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(_file.obj) : error LNK2005: __iob_func already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(_file.obj) : error LNK2005: _lock_file already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(_file.obj) : error LNK2005: _unlock_file already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LIBCMT.lib(strtod.obj) : error LNK2005: strtod already defined in MSVCRTD.lib(MSVCR120D.dll)
-     1>LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
-     1>LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-     1>Demo.obj : error LNK2019: unresolved external symbol __imp_wglCreateContext referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPEAUHWND__@@@Z)
-     1>Demo.obj : error LNK2019: unresolved external symbol __imp_wglGetProcAddress referenced in function "bool __cdecl WGLExtensionSupported(char const *)" (?WGLExtensionSupported@@YA_NPEBD@Z)
-     1>Demo.obj : error LNK2019: unresolved external symbol __imp_wglMakeCurrent referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPEAUHWND__@@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glBindTexture referenced in function "public: static void __cdecl PhysicsEngine::Graphics::generate(struct PhysicsEngine::GLFramebuffer *)" (?generate@Graphics@PhysicsEngine@@SAXPEAUGLFramebuffer@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glBlendFunc referenced in function "public: static void __cdecl PhysicsEngine::Graphics::setBlending(enum PhysicsEngine::GLBlend,enum PhysicsEngine::GLBlend)" (?setBlending@Graphics@PhysicsEngine@@SAXW4GLBlend@2@0@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glClear referenced in function "public: static void __cdecl PhysicsEngine::Graphics::clearColorBuffer(struct glm::detail::tvec4<float,0>)" (?clearColorBuffer@Graphics@PhysicsEngine@@SAXU?$tvec4@M$0A@@detail@glm@@@Z)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glClear
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glClearColor referenced in function "public: static void __cdecl PhysicsEngine::Graphics::clearColorBuffer(struct glm::detail::tvec4<float,0>)" (?clearColorBuffer@Graphics@PhysicsEngine@@SAXU?$tvec4@M$0A@@detail@glm@@@Z)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glClearColor
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glClearDepth referenced in function "public: static void __cdecl PhysicsEngine::Graphics::clearDepthBuffer(float)" (?clearDepthBuffer@Graphics@PhysicsEngine@@SAXM@Z)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glClearDepth
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glDeleteTextures referenced in function "public: static void __cdecl PhysicsEngine::Graphics::destroy(class PhysicsEngine::Texture2D *)" (?destroy@Graphics@PhysicsEngine@@SAXPEAVTexture2D@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glDepthFunc referenced in function "public: static void __cdecl PhysicsEngine::Graphics::setDepth(enum PhysicsEngine::GLDepth)" (?setDepth@Graphics@PhysicsEngine@@SAXW4GLDepth@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glDrawArrays referenced in function "public: static void __cdecl PhysicsEngine::Graphics::draw(class PhysicsEngine::Line *)" (?draw@Graphics@PhysicsEngine@@SAXPEAVLine@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glEnable referenced in function "public: static void __cdecl PhysicsEngine::Graphics::enableBlend(void)" (?enableBlend@Graphics@PhysicsEngine@@SAXXZ)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glEnable
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glGenTextures referenced in function "public: static void __cdecl PhysicsEngine::Graphics::generate(struct PhysicsEngine::GLFramebuffer *)" (?generate@Graphics@PhysicsEngine@@SAXPEAUGLFramebuffer@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glGetError referenced in function "public: static void __cdecl PhysicsEngine::Graphics::checkError(void)" (?checkError@Graphics@PhysicsEngine@@SAXXZ)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glGetError
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glTexImage2D referenced in function "public: static void __cdecl PhysicsEngine::Graphics::generate(struct PhysicsEngine::GLFramebuffer *)" (?generate@Graphics@PhysicsEngine@@SAXPEAUGLFramebuffer@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glTexParameteri referenced in function "public: static void __cdecl PhysicsEngine::Graphics::generate(struct PhysicsEngine::GLFramebuffer *)" (?generate@Graphics@PhysicsEngine@@SAXPEAUGLFramebuffer@2@@Z)
-     1>engine.lib(Graphics.obj) : error LNK2019: unresolved external symbol __imp_glViewport referenced in function "public: static void __cdecl PhysicsEngine::Graphics::setViewport(int,int,int,int)" (?setViewport@Graphics@PhysicsEngine@@SAXHHHH@Z)
-     1>engine.lib(OpenGL.obj) : error LNK2001: unresolved external symbol __imp_glViewport
-     1>C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe : fatal error LNK1120: 17 unresolved externals
-     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Rebuild target(s)) -- FAILED.
+         Demo.vcxproj -> C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe
+     1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\Demo\Demo.vcxproj" (Rebuild target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:06.40
+Time Elapsed 00:00:05.19
