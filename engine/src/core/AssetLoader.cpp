@@ -85,6 +85,8 @@ bool AssetLoader::load(const std::string& filepath, Shader& shader)
 
 bool AssetLoader::load(const std::string& filepath, Texture2D& texture)
 {
+	stbi_set_flip_vertically_on_load(true); 
+
 	int width, height, numChannels;
 	unsigned char* raw = stbi_load(filepath.c_str(), &width, &height, &numChannels, 0);
 
@@ -386,6 +388,11 @@ bool AssetLoader::load(const std::string& filepath, Mesh& mesh)
 	std::vector<float> normals;
 	std::vector<float> texCoords;
 	std::vector<int> subMeshVertexStartIndices;
+
+	// std::cout << "f_vt: " << std::endl;
+	// for(size_t i = 0; i < 20; i++){
+	// 	std::cout << f_vt[i] << " ";
+	// }
 
 	// loop through each sub mesh
 	for (size_t i = 0; i < subMeshFaceStartIndices.size() - 1; i++){

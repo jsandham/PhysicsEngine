@@ -312,28 +312,28 @@ void DeferredRenderer::sort()
 
 void DeferredRenderer::add(MeshRenderer* meshRenderer)
 {
-	if(meshRenderer != NULL && !meshRenderer->isStatic){
-		Transform* transform = meshRenderer->getComponent<Transform>(world);
+	// if(meshRenderer != NULL && !meshRenderer->isStatic){
+	// 	Transform* transform = meshRenderer->getComponent<Transform>(world);
 
-		int transformIndex = world->getIndexOf(transform->componentId);
-		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[0]);
+	// 	int transformIndex = world->getIndexOf(transform->componentId);
+	// 	int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[0]);
 
-		int index = meshBuffer.getIndex(meshRenderer->meshId);
+	// 	int index = meshBuffer.getIndex(meshRenderer->meshId);
 
-		std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
+	// 	std::cout << "transform index: " << transformIndex << " " << materialIndex << " mesh id: " << meshRenderer->meshId.toString() << " index: " << index << std::endl;
 
-		std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
+	// 	std::cout << "index: " << index << "  " << meshBuffer.start[index] << " " << meshBuffer.count[index] << "  " << transformIndex << " " << materialIndex << std::endl;
 
-		if(transformIndex != -1 && materialIndex != -1 && index != -1){
-			RenderObject renderObject;
-			renderObject.start = meshBuffer.start[index];
-			renderObject.size = meshBuffer.count[index];
-			renderObject.transformIndex = transformIndex;
-			renderObject.materialIndex = materialIndex;
+	// 	if(transformIndex != -1 && materialIndex != -1 && index != -1){
+	// 		RenderObject renderObject;
+	// 		renderObject.start = meshBuffer.start[index];
+	// 		renderObject.size = meshBuffer.count[index];
+	// 		renderObject.transformIndex = transformIndex;
+	// 		renderObject.materialIndex = materialIndex;
 
-			renderObjects.push_back(renderObject);
-		}		
-	}
+	// 		renderObjects.push_back(renderObject);
+	// 	}		
+	// }
 }
 
 void DeferredRenderer::remove(MeshRenderer* meshRenderer)

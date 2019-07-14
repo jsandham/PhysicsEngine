@@ -1,41 +1,26 @@
-﻿Build started 7/9/2019 7:08:32 PM.
+﻿Build started 7/13/2019 12:45:28 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\editor.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
-         stdafx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /IC:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt editor.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt src\editor.cpp
          editor.cpp
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(433): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(434): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(436): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(437): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(438): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(439): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(440): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(441): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(442): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(443): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(444): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(445): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\james\documents\physicsengine\editor\editor\editor.cpp(446): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-       ResourceCompile:
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\editor.res" editor.rc 
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(433): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(434): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(436): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(437): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(438): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(439): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(440): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(441): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(442): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(443): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(444): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(445): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\james\documents\physicsengine\editor\editor\src\editor.cpp(446): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib /LIBPATH:C:\Users\James\Documents\PhysicsEngine\editor\editor\Dependencies\glew\lib glew32.lib engine.lib xinput.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.lib" /MACHINE:X86 Debug\editor.res
-         Debug\editor.obj
-         Debug\stdafx.obj
-     1>editor.obj : error LNK2019: unresolved external symbol __imp__wglCreateContext@4 referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPAUHWND__@@@Z)
-     1>editor.obj : error LNK2019: unresolved external symbol __imp__wglGetProcAddress@4 referenced in function "bool __cdecl WGLExtensionSupported(char const *)" (?WGLExtensionSupported@@YA_NPBD@Z)
-     1>editor.obj : error LNK2019: unresolved external symbol __imp__wglMakeCurrent@8 referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPAUHWND__@@@Z)
-     1>editor.obj : error LNK2019: unresolved external symbol __imp__glewInit@0 referenced in function "bool __cdecl Win32InitOpenGL(struct HWND__ *)" (?Win32InitOpenGL@@YA_NPAUHWND__@@@Z)
-     1>editor.obj : error LNK2019: unresolved external symbol "public: __thiscall PhysicsEngine::WorldManager::WorldManager(struct PhysicsEngine::Scene,struct PhysicsEngine::AssetBundle)" (??0WorldManager@PhysicsEngine@@QAE@UScene@1@UAssetBundle@1@@Z) referenced in function _WinMain@16
-     1>editor.obj : error LNK2019: unresolved external symbol "public: __thiscall PhysicsEngine::WorldManager::~WorldManager(void)" (??1WorldManager@PhysicsEngine@@QAE@XZ) referenced in function _WinMain@16
-     1>editor.obj : error LNK2019: unresolved external symbol "public: void __thiscall PhysicsEngine::WorldManager::init(void)" (?init@WorldManager@PhysicsEngine@@QAEXXZ) referenced in function _WinMain@16
-     1>editor.obj : error LNK2019: unresolved external symbol "public: bool __thiscall PhysicsEngine::WorldManager::update(struct PhysicsEngine::Time,struct PhysicsEngine::Input)" (?update@WorldManager@PhysicsEngine@@QAE_NUTime@2@UInput@2@@Z) referenced in function _WinMain@16
-     1>editor.obj : error LNK2001: unresolved external symbol __imp__glewExperimental
-     1>C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.exe : fatal error LNK1120: 9 unresolved externals
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib glew32.dll kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\editor\Debug\editor.lib" /MACHINE:X86 Debug\editor.obj
+     1>C:\Users\James\Documents\PhysicsEngine\engine\lib\glew32.dll : fatal error LNK1107: invalid or corrupt file: cannot read at 0x2D8
      1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:02.49
+Time Elapsed 00:00:01.43

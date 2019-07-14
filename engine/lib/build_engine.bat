@@ -106,14 +106,16 @@ cl /c /I%GLEW% %CompilerFlags% ..\src\graphics\ForwardRenderer.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\graphics\DeferredRenderer.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\graphics\DebugRenderer.cpp
 
-:: create lib library
-set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi -nologo -LD -FS
+:: set CompilerFlags=-Oi -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -Zi -nologo -LD -FS
 
 :: create list of .obj files
 set OBJ_FILES=
 for /r %%v in (*.obj) do call :concat_obj %%v
 
-lib -out:engine.lib %OBJ_FILES%
+:: create static lib library
+lib -out:engine.lib %OBJ_FILES% 
+lib /list engine.lib
+rem lib /list glew32.lib
 
 goto :eof
 :concat_obj

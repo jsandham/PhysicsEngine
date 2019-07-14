@@ -223,16 +223,40 @@ MeshBuffer::~MeshBuffer()
     glDeleteBuffers(3, &vbo[0]);
 }
 
-int MeshBuffer::getIndex(Guid meshId)
+int MeshBuffer::getStartIndex(Guid meshId)
 {
 	for(int i = 0; i < meshIds.size(); i++){
 		if(meshIds[i] == meshId){
-			return i;
+			return start[i];
 		}
 	}
 
 	return -1;
 }
+
+Sphere MeshBuffer::getBoundingSphere(Guid meshId)
+{
+	for(int i = 0; i < meshIds.size(); i++){
+		if(meshIds[i] == meshId){
+			return boundingSpheres[i];
+		}
+	}
+
+	Sphere sphere;
+
+	return sphere;
+}
+
+// int MeshBuffer::getIndex(Guid meshId)
+// {
+// 	for(int i = 0; i < meshIds.size(); i++){
+// 		if(meshIds[i] == meshId){
+// 			return i;
+// 		}
+// 	}
+
+// 	return -1;
+// }
 
 
 

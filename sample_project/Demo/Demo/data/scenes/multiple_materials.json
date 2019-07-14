@@ -80,15 +80,15 @@
     "type" : "Transform",
     "parent" : "00000000-0000-0000-0000-000000000000",
     "entity" : "a3849a35-cca3-4a15-bd97-3b5a90b29a23",
-    "position" : [10.0, 0.0, 0.0],
+    "position" : [10.0, 0.0, 5.0],
     "rotation" : [0.0, 0.0, 0.0, 1.0],
     "scale" : [1.0, 1.0, 1.0]
   },
   "921797ab-d0da-4d19-89b2-969d12352f6f" : {
     "type" : "MeshRenderer",
     "entity" : "a3849a35-cca3-4a15-bd97-3b5a90b29a23",
-    "mesh" : "ce7516b7-f889-4948-9f4c-9f43058d61c1",
-    "materials" : ["5cfa48d6-497e-4cce-b2bb-ddb619f1049b"],
+    "mesh" : "91b0a842-f944-4c06-be13-d37108dee931",
+    "materials" : ["2a3efce9-081f-4483-a1d3-74287a051510"],
     "isStatic" : false
   },
   "78e7cb42-c92e-4db1-b114-f5c118ceacbd" : {

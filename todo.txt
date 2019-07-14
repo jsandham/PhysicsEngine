@@ -9,6 +9,7 @@ TODO:
 ------------ get uniform grid to test against spheres, bounds, and triangles properly
 ------------ write algorithm to calculate bounding sphere of a triangle
 ------------ add layers to colliders and add in frustrum culling
+------------ perform camera frustum culling
 - COMPLETE - add parent to transforms
 ------------ create scene graph from hierarchy of transforms
 ------------ render using scene graph for non-static meshes
@@ -16,9 +17,10 @@ TODO:
 ------------ create raytracer renderer
 ------------ create deferred renderer
 ------------ call all glDelete* methods 
------------- rewrite obj parser to allow for multiple materials
------------- change engine code to allow for multiple materials
------------- change editor code to allow for serialization of meesh renderers with multiple materials
+- COMPLETE - rewrite obj parser to allow for multiple materials
+- COMPLETE - change engine code to allow for multiple materials
+- COMPLETE - change editor code to allow for serialization of mesh renderers with multiple materials
 ------------ figure out directional light bug that causes first cascade to be dark
------------- combine all light types into one Light class
+- COMPLETE - combine all light types into one Light class
 ------------ write material mtl parser for generating json material files from mtl files
+- COMPLETE - get minimal imgui editor project set up and working

@@ -105,7 +105,9 @@ namespace PhysicsEngine
     	MeshBuffer();
     	~MeshBuffer();
 
-    	int getIndex(Guid meshId);
+    	// int getIndex(Guid meshId);
+    	int getStartIndex(Guid meshId);
+    	Sphere getBoundingSphere(Guid meshId);
 	}MeshBuffer;
 
 

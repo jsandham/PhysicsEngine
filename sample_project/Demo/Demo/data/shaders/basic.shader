@@ -125,8 +125,8 @@ void main(void)
 	vec3 viewDir = normalize(CameraPos - FragPos);
 
 #if defined(DIRECTIONALLIGHT)
-	//FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
-	if(ClipSpaceZ <= Light.cascadeEnds[0]){
+	FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+	/*if(ClipSpaceZ <= Light.cascadeEnds[0]){
 		FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord) * vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 	else if(ClipSpaceZ <= Light.cascadeEnds[1]){
@@ -143,7 +143,7 @@ void main(void)
 	}
 	else{
 		FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-	}
+	}*/
 #elif defined(SPOTLIGHT)
 	FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 #elif defined(POINTLIGHT)

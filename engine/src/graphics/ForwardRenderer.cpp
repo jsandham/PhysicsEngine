@@ -181,8 +181,9 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	Transform* transform = meshRenderer->getComponent<Transform>(world);
 	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
-	int transformIndex = world->getIndexOf(transform->componentId);
-	int meshIndexInBuffer = meshBuffer.getIndex(meshRenderer->meshId); 
+	int transformIndex = world->getIndexOf(transform->componentId); 
+	int meshStartIndex = meshBuffer.getStartIndex(meshRenderer->meshId);
+	Sphere boundingSphere = meshBuffer.getBoundingSphere(meshRenderer->meshId);
 
 	std::cout << "" << std::endl;
 	for(int i = 0; i < 8; i++){
@@ -200,12 +201,12 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 
 		RenderObject renderObject;
 		renderObject.id = meshRenderer->componentId;
-		renderObject.start = meshBuffer.start[meshIndexInBuffer] + subMeshVertexStartIndex;
+		renderObject.start = meshStartIndex + subMeshVertexStartIndex;
 		renderObject.size = subMeshVerticesCount;
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
 
-		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " start: " << renderObject.start << " size: " << renderObject.size << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << std::endl;
+		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
 
 		for(int j = 0; j < 10; j++){
 			renderObject.shaders[j] = shader->programs[j].handle;
@@ -223,7 +224,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 		if(normalMap != NULL){ renderObject.normalMap = normalMap->handle.handle; }
 		if(specularMap != NULL){ renderObject.specularMap = specularMap->handle.handle; }
 
-		renderObject.boundingSphere = meshBuffer.boundingSpheres[meshIndexInBuffer];
+		renderObject.boundingSphere = boundingSphere;
 
 		renderObjects.push_back(renderObject);	
 	}
@@ -807,6 +808,11 @@ void ForwardRenderer::initRenderObjectsList()
 		if(meshRenderer != NULL && !meshRenderer->isStatic){
 			addToRenderObjectsList(meshRenderer);
 		}
+	}
+
+	std::cout <<"Mesh buffer start indices" << std::endl;
+	for(size_t i = 0; i < meshBuffer.start.size(); i++){
+		std::cout << meshBuffer.start[i] << " ";
 	}
 }
 
