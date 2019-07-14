@@ -24,3 +24,4 @@ TODO:
 - COMPLETE - combine all light types into one Light class
 ------------ write material mtl parser for generating json material files from mtl files
 - COMPLETE - get minimal imgui editor project set up and working
+------------ add ReadMe file
