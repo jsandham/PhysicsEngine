@@ -11,20 +11,28 @@ namespace PhysicsEditor
 {
 	class Filebrowser
 	{
-		public:
-			bool isVisible;
-			
 		private:
 			std::string currentPath;
 			std::vector<std::string> currentFiles;
 
 			bool wasVisible;
+			char inputBuf[256];
+			std::vector<char> inputBuffer;
+			std::string currentFilter;
 
 		public:
 			Filebrowser();
 			~Filebrowser();
 
-			void render();
+			void render(bool isVisible);
+
+
+			bool BeginFilterDropdown(std::string filter);
+			void EndFilterDropdown();
+
+
+			//bool BeginButtonDropDown(const char* label, ImVec2 buttonSize);
+			//void EndButtonDropDown();
 
 	};
 
@@ -91,6 +99,12 @@ namespace PhysicsEditor
 		}
 		return files;
 	}
+
+	/*static std::vector<std::string> getDirectories()
+	{
+		std::vector<std::string> directories;
+		std::string search_path = ""
+	}*/
 }
 
 

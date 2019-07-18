@@ -10,6 +10,8 @@ namespace PhysicsEditor
 		private:
 			Filebrowser filebrowser;
 
+			bool fileBrowserClicked;
+
 		public:
 			MainMenuBar();
 			~MainMenuBar();

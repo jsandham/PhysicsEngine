@@ -9,7 +9,7 @@ using namespace PhysicsEditor;
 
 MainMenuBar::MainMenuBar()
 {
-	
+	fileBrowserClicked = false;
 }
 
 MainMenuBar::~MainMenuBar()
@@ -40,9 +40,7 @@ void MainMenuBar::render()
 		ImGui::EndMainMenuBar();
 	}
 
-	if (filebrowser.isVisible){
-		filebrowser.render();
-	}
+	filebrowser.render(fileBrowserClicked);
 
 	/*if (ImGui::Button("button")){
 	ImGui::OpenPopup("another popup");
@@ -59,9 +57,11 @@ void MainMenuBar::ShowMenuFile()
 	ImGui::MenuItem("(dummy menu)", NULL, false, false);
 	if (ImGui::MenuItem("New")) {}
 
+	fileBrowserClicked = false;
 	if (ImGui::MenuItem("Open", "Ctrl+O"))
 	{
-		filebrowser.isVisible = true;
+		fileBrowserClicked = true;
+		//filebrowser.isVisible = true;
 	}
 
 	if (ImGui::BeginMenu("Open Recent"))
