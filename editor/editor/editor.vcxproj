@@ -151,8 +151,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AboutPopup.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
+    <ClCompile Include="src\Hierarchy.cpp" />
     <ClCompile Include="src\Inspector.cpp" />
     <ClCompile Include="src\Load.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -165,7 +167,9 @@
     <ClCompile Include="src\MainMenuBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AboutPopup.h" />
     <ClInclude Include="include\Editor.h" />
+    <ClInclude Include="include\Hierarchy.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />

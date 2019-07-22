@@ -9,7 +9,14 @@ using namespace PhysicsEditor;
 
 MainMenuBar::MainMenuBar()
 {
-	fileBrowserClicked = false;
+	newClicked = false;
+	openClicked = false;
+	saveClicked = false;
+	saveAsClicked = false;
+	quitClicked = false;
+	openInspectorClicked = false;
+	openHierarchyClicked = false;
+	aboutClicked = false;
 }
 
 MainMenuBar::~MainMenuBar()
@@ -19,71 +26,109 @@ MainMenuBar::~MainMenuBar()
 
 void MainMenuBar::render()
 {
-	//show Main Window
+	newClicked = false;
+	openClicked = false;
+	saveClicked = false;
+	saveAsClicked = false;
+	quitClicked = false;
+	openInspectorClicked = false;
+	openHierarchyClicked = false;
+	aboutClicked = false;
+
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			ShowMenuFile();
+			showMenuFile();
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Edit"))
 		{
-			if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-			if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-			ImGui::Separator();
-			if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-			if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-			if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+			showMenuEdit();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Windows")){
+			showMenuWindow();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help")){
+			showMenuHelp();
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
 	}
 
-	filebrowser.render(fileBrowserClicked);
-
-	/*if (ImGui::Button("button")){
-	ImGui::OpenPopup("another popup");
-	if (ImGui::BeginPopup("another popup"))
-	{
-	ImGui::TextWrapped("Enter 'HELP' for help, press TAB to use text completion.");
-	ImGui::EndPopup();
+	if (openClicked){
+		filebrowser.setMode(FilebrowserMode::Open);
 	}
-	}*/
+	else if (saveAsClicked){
+		filebrowser.setMode(FilebrowserMode::Save);
+	}
+
+	filebrowser.render(openClicked | saveAsClicked);
+
+	aboutPopup.render(aboutClicked);
 }
 
-void MainMenuBar::ShowMenuFile()
+bool MainMenuBar::isNewClicked()
+{
+	return newClicked;
+}
+
+bool MainMenuBar::isOpenClicked()
+{
+	return openClicked;
+}
+
+bool MainMenuBar::isSaveClicked()
+{
+	return saveClicked;
+}
+
+bool MainMenuBar::isSaveAsClicked()
+{
+	return saveAsClicked;
+}
+
+bool MainMenuBar::isQuitClicked()
+{
+	return quitClicked;
+}
+
+bool MainMenuBar::isOpenInspectorCalled()
+{
+	return openInspectorClicked;
+}
+
+bool MainMenuBar::isOpenHierarchyCalled()
+{
+	return openHierarchyClicked;
+}
+
+bool MainMenuBar::isAboutClicked()
+{
+	return aboutClicked;
+}
+
+void MainMenuBar::showMenuFile()
 {
 	ImGui::MenuItem("(dummy menu)", NULL, false, false);
-	if (ImGui::MenuItem("New")) {}
-
-	fileBrowserClicked = false;
+	if (ImGui::MenuItem("New")) {
+		newClicked = true;
+	}
 	if (ImGui::MenuItem("Open", "Ctrl+O"))
 	{
-		fileBrowserClicked = true;
-		//filebrowser.isVisible = true;
+		openClicked = true;
+	}
+	if (ImGui::MenuItem("Save", "Ctrl+S")) {
+		saveClicked = true;
+	}
+	if (ImGui::MenuItem("Save As..")) {
+		saveAsClicked = true;
 	}
 
-	if (ImGui::BeginMenu("Open Recent"))
-	{
-		ImGui::MenuItem("fish_hat.c");
-		ImGui::MenuItem("fish_hat.inl");
-		ImGui::MenuItem("fish_hat.h");
-		if (ImGui::BeginMenu("More.."))
-		{
-			ImGui::MenuItem("Hello");
-			ImGui::MenuItem("Sailor");
-			if (ImGui::BeginMenu("Recurse.."))
-			{
-				ShowMenuFile();
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenu();
-	}
-	if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-	if (ImGui::MenuItem("Save As..")) {}
+
+
 	ImGui::Separator();
 	if (ImGui::BeginMenu("Options"))
 	{
@@ -116,15 +161,35 @@ void MainMenuBar::ShowMenuFile()
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Disabled", false)) // Disabled
-	{
-		IM_ASSERT(0);
+
+	if (ImGui::MenuItem("Quit", "Alt+F4")) {
+		quitClicked = true;
 	}
-	if (ImGui::MenuItem("Checked", NULL, true)) {}
-	if (ImGui::MenuItem("Quit", "Alt+F4")) {}
 }
 
-void MainMenuBar::ShowMenuEdit()
+void MainMenuBar::showMenuEdit()
 {
+	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+	ImGui::Separator();
+	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+}
 
+void MainMenuBar::showMenuWindow()
+{
+	if (ImGui::MenuItem("Heirarchy")){
+		openHierarchyClicked = true;
+	}
+	if (ImGui::MenuItem("Inspector")){
+		openInspectorClicked = true;
+	}
+}
+
+void MainMenuBar::showMenuHelp()
+{
+	if (ImGui::MenuItem("About PhysicsEngine")) {
+		aboutClicked = true;
+	}
 }

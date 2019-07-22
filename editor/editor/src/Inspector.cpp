@@ -17,35 +17,96 @@ Inspector::~Inspector()
 
 }
 
-void Inspector::render()
+void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 {
-	bool my_tool_active = true;
-	ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-			if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
-			if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
+	static bool inspectorActive = true;
+
+	if (isOpenedThisFrame){
+		inspectorActive = true;
 	}
 
-	// Edit a color (stored as ~4 floats)
-	//float my_color = 0.5f;
-	//ImGui::ColorEdit4("Color", &my_color);
+	if (!inspectorActive){
+		return;
+	}
 
-	// Plot some values
-	//const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
-	//ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
+	if (ImGui::Begin("Inspector", &inspectorActive))
+	{
+		if (entity != NULL){
 
-	// Display contents in a scrolling region
-	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
-	ImGui::BeginChild("Scrolling");
-	for (int n = 0; n < 50; n++)
-		ImGui::Text("%04d: Some text", n);
-	ImGui::EndChild();
-	ImGui::End();
+
+
+
+			std::string componentToAdd = "";
+			if (BeginAddComponentDropdown("Add component", componentToAdd)){
+
+
+				EndAddComponentDropdown();
+			}
+		}
+
+		ImGui::End();
+	}
+}
+
+bool Inspector::BeginAddComponentDropdown(std::string name, std::string& componentToAdd)
+{
+	ImGui::SameLine(0.f, 0.f);
+	ImGui::PushID("##Dropdown");
+	bool pressed = ImGui::Button(name.c_str());
+	ImGui::PopID();
+
+	if (pressed)
+	{
+		ImGui::OpenPopup("##Dropdown");
+	}
+
+	if (ImGui::BeginPopup("##Dropdown"))
+	{
+		std::vector<char> inputBuffer(128);
+		if (ImGui::InputTextWithHint("##Search string", "search...", &inputBuffer[0], (int)inputBuffer.size())){
+			
+		}
+
+		std::vector<std::string> components = { "Transform",
+												"Camera",
+												"Light",
+												"Rigidbody",
+												"MeshRenderer",
+												"LineRenderer",
+												"BoxCollider",
+												"SphereCollider"};
+
+		ImGuiTextFilter componentFilter(&inputBuffer[0]);
+		std::vector<std::string> filteredComponents;
+		for (size_t i = 0; i < components.size(); i++){
+			if (componentFilter.PassFilter(components[i].c_str()))
+			{
+				filteredComponents.push_back(components[i]);
+			}
+		}
+
+		if (filteredComponents.size() == 0){
+			filteredComponents.push_back("");
+		}
+
+		std::vector<const char*> cStrFilteredComponents;
+		for (size_t i = 0; i < filteredComponents.size(); ++i)
+		{
+			cStrFilteredComponents.push_back(filteredComponents[i].c_str());
+		}
+
+		int s = 0;
+		if (ImGui::ListBox("##Filter", &s, &cStrFilteredComponents[0], (int)cStrFilteredComponents.size(), 4)) {
+			componentToAdd = filteredComponents[s];
+			ImGui::CloseCurrentPopup();
+		}
+		return true;
+	}
+
+	return false;
+}
+
+void Inspector::EndAddComponentDropdown()
+{
+	ImGui::EndPopup();
 }

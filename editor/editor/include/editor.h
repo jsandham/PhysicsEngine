@@ -7,6 +7,7 @@
 
 #include "MainMenuBar.h"
 #include "Inspector.h"
+#include "Hierarchy.h"
 
 using namespace PhysicsEngine;
 
@@ -19,7 +20,9 @@ namespace PhysicsEditor
 
 			MainMenuBar mainMenu;
 			Inspector inspector;
+			Hierarchy hierarchy;
 
+			bool quitCalled;
 			bool isInspectorVisible;
 			bool isHierarchyVisible;
 
@@ -30,6 +33,8 @@ namespace PhysicsEditor
 			void init(HWND window, int width, int height);
 			void cleanUp();
 			void render();
+
+			bool isQuitCalled();
 
 		private:
 			void ShowExampleMenuFile();

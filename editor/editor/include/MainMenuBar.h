@@ -2,6 +2,7 @@
 #define __MAIN_MENU_BAR_H__
 
 #include "Filebrowser.h"
+#include "AboutPopup.h"
 
 namespace PhysicsEditor
 {
@@ -9,8 +10,16 @@ namespace PhysicsEditor
 	{
 		private:
 			Filebrowser filebrowser;
+			AboutPopup aboutPopup;
 
-			bool fileBrowserClicked;
+			bool newClicked;
+			bool openClicked;
+			bool saveClicked;
+			bool saveAsClicked;
+			bool quitClicked;
+			bool openInspectorClicked;
+			bool openHierarchyClicked;
+			bool aboutClicked;
 
 		public:
 			MainMenuBar();
@@ -18,9 +27,20 @@ namespace PhysicsEditor
 
 			void render();
 
+			bool isNewClicked();
+			bool isOpenClicked();
+			bool isSaveClicked();
+			bool isSaveAsClicked();
+			bool isQuitClicked();
+			bool isOpenInspectorCalled();
+			bool isOpenHierarchyCalled();
+			bool isAboutClicked();
+
 		private:
-			void ShowMenuFile();
-			void ShowMenuEdit();
+			void showMenuFile();
+			void showMenuEdit();
+			void showMenuWindow();
+			void showMenuHelp();
 	};
 }
 

@@ -1,5 +1,9 @@
-#ifndef __INSPECTOR1_H__
-#define __INSPECTOR1_H__
+#ifndef __INSPECTOR_H__
+#define __INSPECTOR_H__
+
+#include "core\Entity.h"
+
+using namespace PhysicsEngine;
 
 namespace PhysicsEditor
 {
@@ -9,7 +13,14 @@ namespace PhysicsEditor
 			Inspector();
 			~Inspector();
 
-			void render();
+			void render(Entity* entity, bool isOpenedThisFrame);
+
+
+
+
+
+			bool BeginAddComponentDropdown(std::string filter, std::string& componentToAdd);
+			void EndAddComponentDropdown();
 	};
 }
 

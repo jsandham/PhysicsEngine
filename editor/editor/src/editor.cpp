@@ -9,6 +9,7 @@ using namespace PhysicsEditor;
 
 Editor::Editor()
 {
+	quitCalled = false;
 	isInspectorVisible = true;
 	isHierarchyVisible = true;
 }
@@ -48,8 +49,6 @@ void Editor::cleanUp()
 	ImGui_ImplWin32_Shutdown();
 }
 
-static bool open = true;
-
 void Editor::render()
 {
 	// Start the Dear ImGui frame
@@ -58,41 +57,18 @@ void Editor::render()
 	ImGui::NewFrame();
 
 	ImGui::ShowDemoWindow();
-	//ImGui::ShowDemoWindowWidgets();
 
 	mainMenu.render();
-	//inspector.render();
 
+	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
+	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
 
-	//HelpMarker("BeginGroup() basically locks the horizontal position for new line. EndGroup() bundles the whole group so that you can use \"item\" functions such as IsItemHovered()/IsItemActive() or SameLine() etc. on the whole group.");
-	//ImGui::BeginGroup();
-	//{
-	//	ImGui::BeginGroup();
-	//	ImGui::Button("AAA");
-	//	ImGui::SameLine();
-	//	ImGui::Button("BBB");
-	//	ImGui::SameLine();
-	//	ImGui::BeginGroup();
-	//	ImGui::Button("CCC");
-	//	ImGui::Button("DDD");
-	//	ImGui::EndGroup();
-	//	ImGui::SameLine();
-	//	ImGui::Button("EEE");
-	//	ImGui::EndGroup();
-	//	if (ImGui::IsItemHovered())
-	//		ImGui::SetTooltip("First group hovered");
-	//}
-	//ImGui::SameLine();
-	//// Capture the group size and create widgets using the same size
-	//ImVec2 size = ImGui::GetItemRectSize();
-	//const float values[5] = { 0.5f, 0.20f, 0.80f, 0.60f, 0.25f };
-	//ImGui::PlotHistogram("##values", values, IM_ARRAYSIZE(values), 0, NULL, 0.0f, 1.0f, size);
+	inspector.render(NULL, inspectorOpenedThisFrame);
+	hierarchy.render(hierarchyOpenedThisFrame);
 
-	//ImGui::Button("ACTION", ImVec2((size.x - ImGui::GetStyle().ItemSpacing.x)*0.5f, size.y));
-	//ImGui::SameLine();
-	//ImGui::Button("REACTION", ImVec2((size.x - ImGui::GetStyle().ItemSpacing.x)*0.5f, size.y));
-	//ImGui::EndGroup();
-
+	if (mainMenu.isQuitClicked()){
+		quitCalled = true;
+	}
 
 	// Rendering
 	ImGui::Render();
@@ -105,6 +81,11 @@ void Editor::render()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	//wglMakeCurrent(deviceContext, renderContext);
 	//SwapBuffers(deviceContext);
+}
+
+bool Editor::isQuitCalled()
+{
+	return quitCalled;
 }
 
 
