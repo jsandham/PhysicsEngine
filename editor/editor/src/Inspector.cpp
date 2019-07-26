@@ -1,4 +1,7 @@
 #include "../include/Inspector.h"
+#include "../include/LoadInspectorDrawerInternal.h"
+
+#include "../include/CameraDrawer.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -9,12 +12,12 @@ using namespace PhysicsEditor;
 
 Inspector::Inspector()
 {
-
+	
 }
 
 Inspector::~Inspector()
 {
-
+	
 }
 
 void Inspector::render(Entity* entity, bool isOpenedThisFrame)
@@ -31,11 +34,20 @@ void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
+		// make static?
+		InspectorDrawer* transformDrawer = loadInternalInspectorDrawer(0);
+		InspectorDrawer* cameraDrawer = loadInternalInspectorDrawer(2);
+		InspectorDrawer* lightDrawer = loadInternalInspectorDrawer(5);
+
+		transformDrawer->render(&transform);
+		cameraDrawer->render(&camera);
+		lightDrawer->render(&light);
+
+		delete cameraDrawer;
+		delete lightDrawer;
+
+
 		if (entity != NULL){
-
-
-
-
 			std::string componentToAdd = "";
 			if (BeginAddComponentDropdown("Add component", componentToAdd)){
 

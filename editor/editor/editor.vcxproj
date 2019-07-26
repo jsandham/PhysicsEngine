@@ -152,11 +152,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\AboutPopup.cpp" />
+    <ClCompile Include="src\CameraDrawer.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\Hierarchy.cpp" />
     <ClCompile Include="src\Inspector.cpp" />
+    <ClCompile Include="src\InspectorDrawer.cpp" />
+    <ClCompile Include="src\LightDrawer.cpp" />
     <ClCompile Include="src\Load.cpp" />
+    <ClCompile Include="src\LoadInspectorDrawerInternal.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />
@@ -165,9 +169,12 @@
     <ClCompile Include="src\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="src\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\MainMenuBar.cpp" />
+    <ClCompile Include="src\RigidbodyDrawer.cpp" />
+    <ClCompile Include="src\TransformDrawer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AboutPopup.h" />
+    <ClInclude Include="include\CameraDrawer.h" />
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\Hierarchy.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -179,7 +186,11 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\Inspector.h" />
+    <ClInclude Include="include\InspectorDrawer.h" />
+    <ClInclude Include="include\LightDrawer.h" />
+    <ClInclude Include="include\LoadInspectorDrawerInternal.h" />
     <ClInclude Include="include\MainMenuBar.h" />
+    <ClInclude Include="include\TransformDrawer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

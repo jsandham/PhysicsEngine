@@ -1,15 +1,25 @@
-﻿Build started 7/21/2019 5:03:31 PM.
+﻿Build started 7/23/2019 10:33:30 PM.
      1>Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt src\main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\James\Documents\PhysicsEngine\engine\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt src\Editor.cpp src\Inspector.cpp src\TransformDrawer.cpp src\main.cpp
+         TransformDrawer.cpp
+         Inspector.cpp
+         Generating Code...
+         Compiling...
          main.cpp
+         Editor.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\James\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
+         x64\Debug\CameraDrawer.obj
          x64\Debug\Editor.obj
          x64\Debug\Filebrowser.obj
          x64\Debug\Hierarchy.obj
          x64\Debug\Inspector.obj
+         x64\Debug\InspectorDrawer.obj
+         x64\Debug\LightDrawer.obj
          x64\Debug\Load.obj
+         x64\Debug\LoadInspectorDrawerInternal.obj
          x64\Debug\main.obj
          x64\Debug\imgui.obj
          x64\Debug\imgui_demo.obj
@@ -18,9 +28,10 @@
          x64\Debug\imgui_impl_win32.obj
          x64\Debug\imgui_widgets.obj
          x64\Debug\MainMenuBar.obj
+         x64\Debug\TransformDrawer.obj
          editor.vcxproj -> C:\Users\James\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
      1>Done Building Project "C:\Users\James\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.75
+Time Elapsed 00:00:03.97
