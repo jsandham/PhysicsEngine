@@ -35,9 +35,6 @@ namespace PhysicsEditor
 			void render();
 
 			bool isQuitCalled();
-
-		private:
-			void ShowExampleMenuFile();
 	};
 }
 

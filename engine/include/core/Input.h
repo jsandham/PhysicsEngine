@@ -56,14 +56,14 @@ namespace PhysicsEngine
 		NumPad8,
 		NumPad9,
 		Invalid
-	};
+	}KeyCode;
 
 	typedef enum MouseButton
 	{
 		LButton,
 		MButton,
 		RButton
-	};
+	}MouseButton;
 
 	typedef enum XboxButton
 	{
@@ -81,7 +81,7 @@ namespace PhysicsEngine
 		BButton,
 		XButton,
 		YButton
-	};
+	}XboxButton;
 
 	struct Input
 	{

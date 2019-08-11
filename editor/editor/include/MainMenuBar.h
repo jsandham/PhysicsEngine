@@ -32,9 +32,14 @@ namespace PhysicsEditor
 			bool isSaveClicked();
 			bool isSaveAsClicked();
 			bool isQuitClicked();
+			bool isFilebrowserOpenClicked();
+			bool isFilebrowserSaveClicked();
 			bool isOpenInspectorCalled();
 			bool isOpenHierarchyCalled();
 			bool isAboutClicked();
+
+			std::string getOpenFile();
+			std::string getSaveFile();
 
 		private:
 			void showMenuFile();

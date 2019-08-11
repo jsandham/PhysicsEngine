@@ -53,6 +53,7 @@ PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT;
 int     g_display_w = 800;
 int     g_display_h = 600;
+Input input;
 
 // =============================================================================
 //                             FOWARD DECLARATIONS
@@ -161,6 +162,88 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 		PostQuitMessage(0);
 		return 0;
 	}
+//	case WM_SYSKEYDOWN:
+//	case WM_KEYDOWN:
+//	case WM_SYSKEYUP:
+//	case WM_KEYUP:
+//	{
+//		unsigned int vKCode = (unsigned int)wParam;
+//		bool wasDown = ((lParam & (1 << 30)) != 0);
+//		bool isDown = ((lParam & (1 << 31)) == 0);
+//
+//		KeyCode keyCode = GetKeyCode(vKCode);
+//		input.keyIsDown[(int)keyCode] = isDown;
+//		input.keyWasDown[(int)keyCode] = wasDown;
+//		break;
+//	}
+//	case WM_LBUTTONDOWN:
+//	{
+//		input.mouseButtonIsDown[(int)LButton] = true;
+//		input.mouseButtonWasDown[(int)LButton] = false;
+//		break;
+//	}
+//	case WM_MBUTTONDOWN:
+//	{
+//		input.mouseButtonIsDown[(int)MButton] = true;
+//		input.mouseButtonWasDown[(int)MButton] = false;
+//		break;
+//	}
+//	case WM_RBUTTONDOWN:
+//	{
+//		input.mouseButtonIsDown[(int)RButton] = true;
+//		input.mouseButtonWasDown[(int)RButton] = false;
+//		break;
+//	}
+//	case WM_LBUTTONUP:
+//	{
+//		input.mouseButtonIsDown[(int)LButton] = false;
+//		input.mouseButtonWasDown[(int)LButton] = true;
+//		break;
+//	}
+//	case WM_MBUTTONUP:
+//	{
+//		input.mouseButtonIsDown[(int)MButton] = false;
+//		input.mouseButtonWasDown[(int)MButton] = true;
+//		break;
+//	}
+//	case WM_RBUTTONUP:
+//	{
+//		input.mouseButtonIsDown[(int)RButton] = false;
+//		input.mouseButtonWasDown[(int)RButton] = true;
+//		break;
+//	}
+//	case WM_MOUSEMOVE:
+//	{
+//		int x = GET_X_LPARAM(lParam);
+//		int y = GET_Y_LPARAM(lParam);
+//		input.mousePosX = x;
+//		input.mousePosY = y;
+//		break;
+//	}
+//	case WM_MOUSEWHEEL:
+//	{
+//		int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+//		input.mouseDelta = delta;
+//		break;
+//	}
+//	case WM_PAINT:
+//	{
+//		PAINTSTRUCT paint;
+//		HDC deviceContext = BeginPaint(hwnd, &paint);
+//		int x = paint.rcPaint.left;
+//		int y = paint.rcPaint.top;
+//		int width = paint.rcPaint.right - paint.rcPaint.left;
+//		int height = paint.rcPaint.bottom - paint.rcPaint.top;
+//		Win32UpdateWindow(deviceContext, x, y, width, height);
+//		EndPaint(hwnd, &paint);
+//		break;
+//	}
+//	default:
+//	{
+//		result = DefWindowProc(hwnd, uMsg, wParam, lParam);
+//		break;
+//	}
+
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
@@ -228,39 +311,6 @@ bool WGLExtensionSupported(const char *extension_name){
 	// extension is supported
 	return true;
 }
-//
-//static std::string current_working_directory()
-//{
-//	char* cwd = _getcwd(0, 0); // **** microsoft specific ****
-//	std::string working_directory(cwd);
-//	std::free(cwd);
-//	return working_directory;
-//}
-
-//static std::vector<std::string> get_all_files_names_within_folder(std::string folder, std::string extension)
-//{
-//	std::vector<std::string> names;
-//	std::string search_path = folder + "/*.*";
-//	WIN32_FIND_DATA fd;
-//	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
-//	if (hFind != INVALID_HANDLE_VALUE) {
-//		do {
-//			// read all (real) files in current folder
-//			// , delete '!' read other 2 default folder . and ..
-//			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-//
-//				std::string file = fd.cFileName;
-//				if (file.substr(file.find_last_of(".") + 1) == extension) {
-//					names.push_back(folder + file);
-//				}
-//				//names.push_back(fd.cFileName);
-//			}
-//		} while (::FindNextFile(hFind, &fd));
-//		::FindClose(hFind);
-//	}
-//	return names;
-//}
-
 
 
 

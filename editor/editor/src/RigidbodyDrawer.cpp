@@ -25,11 +25,11 @@ void RigidbodyDrawer::render(Component* component)
 	{
 		Rigidbody* rigidbody = dynamic_cast<Rigidbody*>(component);
 
-		bool useGravity;
-		float mass;
-		float drag;
-		float angularDrag;
+		ImGui::Checkbox("Use Gravity", &rigidbody->useGravity);
+		ImGui::InputFloat("Mass", &rigidbody->mass);
+		ImGui::InputFloat("Drag", &rigidbody->drag);
+		ImGui::InputFloat("Angular Drag", &rigidbody->angularDrag);
 
-		ImGui::InputCheck("Use Gravity", &rigidbody->useGravity);
+		ImGui::TreePop();
 	}
 }

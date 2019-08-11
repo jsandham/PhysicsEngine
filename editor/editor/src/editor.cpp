@@ -63,12 +63,32 @@ void Editor::render()
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
 	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
 
-	inspector.render(NULL, inspectorOpenedThisFrame);
-	hierarchy.render(hierarchyOpenedThisFrame);
+	hierarchy.render(world, hierarchyOpenedThisFrame);
+
+	Entity* selectedEntity = hierarchy.getSelectedEntity();
+
+	inspector.render(selectedEntity, inspectorOpenedThisFrame);
 
 	if (mainMenu.isQuitClicked()){
 		quitCalled = true;
 	}
+
+	if (mainMenu.isFilebrowserOpenClicked()) {
+		Scene scene;
+		scene.filepath = mainMenu.getOpenFile();
+
+		AssetBundle bundle;
+
+		ImGui::Text(scene.filepath.c_str());
+
+		/*if (world.load(scene, bundle)) {
+
+		}*/
+	}
+	else if (mainMenu.isFilebrowserSaveClicked()) {
+		std::string fileToSave = mainMenu.getSaveFile();
+	}
+
 
 	// Rendering
 	ImGui::Render();

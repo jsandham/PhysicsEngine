@@ -15,7 +15,7 @@ namespace PhysicsEditor
 	{
 		Open,
 		Save
-	};
+	}FilebrowserMode;
 
 	class Filebrowser
 	{
@@ -23,28 +23,32 @@ namespace PhysicsEditor
 			std::string currentDirectory;    // current directory the file browser is in
 			std::vector<std::string> currentFiles;    // files located in the current directory
 			std::vector<std::string> currentDirectories;    // directories located in the current directory
-			std::vector<std::string> currentDirectoryShortPaths;    // current directory path short names
-			std::vector<std::string> currentDirectoryLongPaths;    // current directory path long names
 
 			bool isVisible;
+			bool openClicked;
+			bool saveClicked;
 			FilebrowserMode mode;
 			std::vector<char> inputBuffer;
 			std::string currentFilter;
+			std::string openFile;
+			std::string saveFile;
 
 		public:
 			Filebrowser();
 			~Filebrowser();
 
+			void updateCurrentDirectory(std::string currentDirectory);
+
 			void render(bool becomeVisibleThisFrame);
-			void renderOpenMode();
-			void renderSaveMode();
 			void setMode(FilebrowserMode mode);
+			std::string getOpenFile();
+			std::string getSaveFile();
+			bool isOpenClicked();
+			bool isSaveClicked();
 
 		private:
-			void renderOpen();
-			void renderSave();
-			bool BeginFilterDropdown(std::string filter);
-			void EndFilterDropdown();
+			void renderOpenMode();
+			void renderSaveMode();
 	};
 
 
@@ -59,7 +63,7 @@ namespace PhysicsEditor
 		return elems;
 	}
 
-	static std::vector<std::string> getDirectoryLongPaths(const std::string path)
+	static std::vector<std::string> getDirectoryPaths(const std::string path)
 	{
 		std::string temp = path;
 		std::vector<std::string> directories;
@@ -101,7 +105,7 @@ namespace PhysicsEditor
 
 		do {
 			const std::string file_name = file_data.cFileName;
-			const std::string full_file_name = directory + "/" + file_name;
+			const std::string full_file_name = directory + "\\" + file_name;
 			const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
 			if (file_name[0] == '.')

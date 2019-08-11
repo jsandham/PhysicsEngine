@@ -1,8 +1,6 @@
 #include "../include/Inspector.h"
 #include "../include/LoadInspectorDrawerInternal.h"
 
-#include "../include/CameraDrawer.h"
-
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
 #include "../include/imgui/imgui_impl_opengl3.h"
@@ -38,14 +36,35 @@ void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 		InspectorDrawer* transformDrawer = loadInternalInspectorDrawer(0);
 		InspectorDrawer* cameraDrawer = loadInternalInspectorDrawer(2);
 		InspectorDrawer* lightDrawer = loadInternalInspectorDrawer(5);
+		InspectorDrawer* rigidbodyDrawer = loadInternalInspectorDrawer(1);
+		InspectorDrawer* meshRendererDrawer = loadInternalInspectorDrawer(3);
+		InspectorDrawer* lineRendererDrawer = loadInternalInspectorDrawer(4);
+		InspectorDrawer* boxColliderDrawer = loadInternalInspectorDrawer(8);
+		InspectorDrawer* sphereColliderDrawer = loadInternalInspectorDrawer(9);
+		InspectorDrawer* capsuleColliderDrawer = loadInternalInspectorDrawer(10);
+		InspectorDrawer* meshColliderDrawer = loadInternalInspectorDrawer(15);
 
 		transformDrawer->render(&transform);
 		cameraDrawer->render(&camera);
 		lightDrawer->render(&light);
+		rigidbodyDrawer->render(&rigidbody);
+		meshRendererDrawer->render(&meshRenderer);
+		lineRendererDrawer->render(&lineRenderer);
+		boxColliderDrawer->render(&boxCollider);
+		sphereColliderDrawer->render(&sphereCollider);
+		capsuleColliderDrawer->render(&capsuleCollider);
+		meshColliderDrawer->render(&meshCollider);
 
+		delete transformDrawer;
 		delete cameraDrawer;
 		delete lightDrawer;
-
+		delete rigidbodyDrawer;
+		delete meshRendererDrawer;
+		delete lineRendererDrawer;
+		delete boxColliderDrawer;
+		delete sphereColliderDrawer;
+		delete capsuleColliderDrawer;
+		delete meshColliderDrawer;
 
 		if (entity != NULL){
 			std::string componentToAdd = "";

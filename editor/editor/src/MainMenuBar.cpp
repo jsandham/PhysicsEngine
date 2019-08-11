@@ -67,6 +67,13 @@ void MainMenuBar::render()
 
 	filebrowser.render(openClicked | saveAsClicked);
 
+	if (filebrowser.isOpenClicked()) {
+
+	}
+	else if (filebrowser.isSaveClicked()) {
+
+	}
+
 	aboutPopup.render(aboutClicked);
 }
 
@@ -95,6 +102,16 @@ bool MainMenuBar::isQuitClicked()
 	return quitClicked;
 }
 
+bool MainMenuBar::isFilebrowserOpenClicked()
+{
+	return filebrowser.isOpenClicked();
+}
+
+bool MainMenuBar::isFilebrowserSaveClicked()
+{
+	return filebrowser.isSaveClicked();
+}
+
 bool MainMenuBar::isOpenInspectorCalled()
 {
 	return openInspectorClicked;
@@ -108,6 +125,16 @@ bool MainMenuBar::isOpenHierarchyCalled()
 bool MainMenuBar::isAboutClicked()
 {
 	return aboutClicked;
+}
+
+std::string MainMenuBar::getOpenFile()
+{
+	return filebrowser.getOpenFile();
+}
+
+std::string MainMenuBar::getSaveFile()
+{
+	return filebrowser.getSaveFile();
 }
 
 void MainMenuBar::showMenuFile()
@@ -126,8 +153,6 @@ void MainMenuBar::showMenuFile()
 	if (ImGui::MenuItem("Save As..")) {
 		saveAsClicked = true;
 	}
-
-
 
 	ImGui::Separator();
 	if (ImGui::BeginMenu("Options"))

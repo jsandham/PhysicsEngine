@@ -29,7 +29,7 @@ namespace PhysicsEngine
 		NegativeY,
 		PositiveZ,
 		NegativeZ
-	};
+	}CubemapFace;
 
 	class Cubemap : public Texture
 	{
