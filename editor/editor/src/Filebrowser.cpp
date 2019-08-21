@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "../include/FileBrowser.h"
+#include "../include/FileSystemUtil.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -18,9 +19,10 @@ Filebrowser::Filebrowser()
 	isVisible = false;
 	openClicked = false;
 	saveClicked = false;
+	selectFolderClicked = false;
 	mode = FilebrowserMode::Open;
 
-	currentDirectory = currentWorkingDirectory();
+	currentDirectoryPath = PhysicsEditor::currentWorkingDirectoryPath();
 
 	inputBuffer.resize(256);
 
@@ -28,6 +30,7 @@ Filebrowser::Filebrowser()
 
 	openFile = "";
 	saveFile = "";
+	selectedFolder = "";
 }
 
 Filebrowser::~Filebrowser()
@@ -46,7 +49,8 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 	if (isVisible != becomeVisibleThisFrame){
 		isVisible = becomeVisibleThisFrame;
 		if (becomeVisibleThisFrame){
-			updateCurrentDirectory(currentDirectory);
+			currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+			currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
 
 			ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 400.0f), ImVec2(1920.0f, 1080.0f));
 			ImGui::OpenPopup("Filebrowser");
@@ -57,47 +61,40 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 	{
 		float windowWidth = ImGui::GetWindowWidth();
 
-		ImGui::Text(currentDirectory.c_str());
+		ImGui::Text(currentDirectoryPath.c_str());
 
-		for (auto x: currentDirectories) {
-			ImGui::Text(x.c_str());
-		}
-
-		std::vector<std::string> directoryNamesInCurrentDirectoryPath = split(currentDirectory, '\\');
-		std::vector<std::string> directoryPathsInCurrentDirectoryPath = getDirectoryPaths(currentDirectory);
+		std::vector<std::string> directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
+		std::vector<std::string> directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
 
 		for (size_t i = 0; i < directoryNamesInCurrentDirectoryPath.size(); i++){
 
-			std::string directory = directoryPathsInCurrentDirectoryPath[directoryPathsInCurrentDirectoryPath.size() - i - 1];
+			std::string directoryPath = directoryPathsInCurrentDirectoryPath[directoryPathsInCurrentDirectoryPath.size() - i - 1];
 
 			if (ImGui::Button(directoryNamesInCurrentDirectoryPath[i].c_str()))
 			{
-				currentDirectory = directory;
+				currentDirectoryPath = directoryPath;
 
-				currentFiles = getFilesInDirectory(currentDirectory);
-				currentDirectories = getDirectoriesInDirectory(currentDirectory);
-				directoryNamesInCurrentDirectoryPath = split(currentDirectory, '\\');
-				directoryPathsInCurrentDirectoryPath = getDirectoryPaths(currentDirectory);
+				currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+				currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+				directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
+				directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
 			}
 
-			std::vector<std::string> directories = getDirectoriesInDirectory(directory);
-			std::vector<std::string> directoryNames;
-			for (size_t j = 0; j < directories.size(); j++) {
-				directoryNames.push_back(directories[j].substr(directories[j].find_last_of("/\\") + 1));
-			}
+			std::vector<std::string> directories = PhysicsEditor::getDirectoriesInDirectory(directoryPath);
+			std::vector<std::string> directoryPaths = PhysicsEditor::getDirectoriesInDirectory(directoryPath, true);
 
 			if (directories.size() > 0) {
 				ImGui::SameLine(0, 0);
 				
 				int s = -1;
-				if (BeginDropdown(">##" + std::to_string(i), directoryNames, &s)) {
+				if (BeginDropdown(">##" + std::to_string(i), directories, &s)) {
 					if (s >= 0) {
-						currentDirectory = directories[s];
+						currentDirectoryPath = directoryPaths[s];
 
-						currentFiles = getFilesInDirectory(currentDirectory);
-						currentDirectories = getDirectoriesInDirectory(currentDirectory);
-						directoryNamesInCurrentDirectoryPath = split(currentDirectory, '\\');
-						directoryPathsInCurrentDirectoryPath = getDirectoryPaths(currentDirectory);
+						currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+						currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+						directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
+						directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
 					}
 
 					EndDropdown();
@@ -108,7 +105,7 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 				ImGui::SameLine(0, 0);
 			}
 		}
-		
+
 		ImGuiTextFilter textFilter(currentFilter.c_str());
 		std::vector<std::string> filteredCurrentFiles;
 		for (size_t i = 0; i < currentFiles.size(); i++){
@@ -122,31 +119,71 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 			filteredCurrentFiles.push_back("");
 		}
 
-		std::vector<const char*> cStrFilteredCurrentFiles;
-		for (size_t i = 0; i < filteredCurrentFiles.size(); ++i)
-		{
-			cStrFilteredCurrentFiles.push_back(filteredCurrentFiles[i].c_str());
+		std::vector<FilebrowserItem> items;
+		for (size_t i = 0; i < currentDirectories.size(); i++) {
+			FilebrowserItem item;
+			item.name = currentDirectories[i];
+			item.type = 0;
+			item.selected = false;
+
+			items.push_back(item);
 		}
 
-		ImGui::PushItemWidth(windowWidth);
+		if (mode != FilebrowserMode::SelectFolder) {
+			for (size_t i = 0; i < filteredCurrentFiles.size(); i++) {
+				FilebrowserItem item;
+				item.name = filteredCurrentFiles[i];
+				item.type = 1;
+				item.selected = false;
+
+				items.push_back(item);
+			}
+		}
+
 		static int selection = 0;
-		if (ImGui::ListBox("##Current directory contents", &selection, &cStrFilteredCurrentFiles[0], (int)cStrFilteredCurrentFiles.size(), 10)) {
-			for (int i = 0; i < std::min(256, (int)filteredCurrentFiles[selection].length()); i++){
-				inputBuffer[i] = filteredCurrentFiles[selection][i];
+		ImGui::PushItemWidth(-1);
+		ImGui::ListBoxHeader("##Current directory contents", (int)items.size(), 10);
+		for (size_t i = 0; i < items.size(); i++)
+		{
+			if (i == selection) {
+				items[i].selected = true;
 			}
-			for (int i = std::min(256, (int)filteredCurrentFiles[selection].length()); i < 256; i++){
-				inputBuffer[i] = ' ';
+
+			if (ImGui::Selectable(items[i].name.c_str(), items[i].selected, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				selection = (int)i;
+				
+				if (items[i].type == 0){
+					if (ImGui::IsMouseDoubleClicked(0)) {
+						currentDirectoryPath = currentDirectoryPath + "\\" + items[i].name;
+
+						currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+						currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+						directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
+						directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+					}
+				}
+				else if (items[i].type == 1) {
+					for (int j = 0; j < std::min(256, (int)items[selection].name.length()); j++) {
+						inputBuffer[j] = items[selection].name[j];
+					}
+					for (int j = std::min(256, (int)items[selection].name.length()); j < 256; j++) {
+						inputBuffer[j] = ' ';
+					}
+				}
 			}
 		}
+		ImGui::ListBoxFooter();
 		ImGui::PopItemWidth();
-
-
 
 		if (mode == FilebrowserMode::Open){
 			renderOpenMode();
 		}
 		else if (mode == FilebrowserMode::Save){
 			renderSaveMode();
+		}
+		else if (mode == FilebrowserMode::SelectFolder) {
+			renderSelectFolderMode();
 		}
 
 		ImGui::EndPopup();
@@ -189,6 +226,7 @@ void Filebrowser::renderOpenMode()
 	if (ImGui::Button("Open")){
 		openClicked = true;
 		openFile = std::string(inputBuffer.begin(), inputBuffer.end());
+		ImGui::CloseCurrentPopup();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel")){
@@ -226,14 +264,47 @@ void Filebrowser::renderSaveMode()
 	ImGui::SetNextItemWidth(saveAsTypeDropDownWidth);
 	ImGui::Combo("##Filter", &saveAsTypeIndex, saveAsTypeNames, IM_ARRAYSIZE(saveAsTypeNames));
 
-	//currentFilter = saveAsTypes[saveAsTypeIndex];
-
 	if (ImGui::Button("Save")){
 		saveClicked = true;
 		saveFile = "";
+		ImGui::CloseCurrentPopup();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel")){
+		ImGui::CloseCurrentPopup();
+	}
+}
+
+void Filebrowser::renderSelectFolderMode()
+{
+	float windowWidth = ImGui::GetWindowWidth();
+
+	float folderTitleWidth = 120.0f;
+	float inputTextWidth = windowWidth - folderTitleWidth - 10.0f;
+	float saveAsTypeDropDownWidth = windowWidth - folderTitleWidth - 10.0f;
+
+	ImGui::SetNextItemWidth(folderTitleWidth);
+	ImGui::Text("Folder");
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(inputTextWidth);
+	if (ImGui::InputText("##File Name", &inputBuffer[0], (int)inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue)) {
+
+	}
+
+	if (ImGui::Button("Select Folder")) {
+		selectFolderClicked = true;
+		int index = 0;
+		for (size_t i = 0; i < inputBuffer.size(); i++) {
+			if (inputBuffer[i] == '\0') {
+				index = (int)i;
+				break;
+			}
+		}
+		selectedFolder = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+		ImGui::CloseCurrentPopup();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel")) {
 		ImGui::CloseCurrentPopup();
 	}
 }
@@ -243,30 +314,37 @@ void Filebrowser::setMode(FilebrowserMode mode)
 	this->mode = mode;
 }
 
-std::string Filebrowser::getOpenFile()
+std::string Filebrowser::getOpenFile() const
 {
 	return openFile;
 }
 
-std::string Filebrowser::getSaveFile()
+std::string Filebrowser::getSaveFile() const
 {
 	return saveFile;
 }
 
-bool Filebrowser::isOpenClicked()
+std::string Filebrowser::getSelectedFolder() const
+{
+	return selectedFolder;
+}
+
+std::string Filebrowser::getCurrentDirectoryPath() const
+{
+	return currentDirectoryPath;
+}
+
+bool Filebrowser::isOpenClicked() const
 {
 	return openClicked;
 }
 
-bool Filebrowser::isSaveClicked()
+bool Filebrowser::isSaveClicked() const
 {
 	return saveClicked;
 }
 
-void Filebrowser::updateCurrentDirectory(std::string currentDirectory)
+bool Filebrowser::isSelectFolderClicked() const
 {
-	currentFiles = getFilesInDirectory(currentDirectory);
-	currentDirectories = getDirectoriesInDirectory(currentDirectory);
-	//currentDirectoryShortPaths = split(currentDirectory, '\\');
-	//currentDirectoryLongPaths = getDirectoryLongPaths(currentDirectory);
+	return selectFolderClicked;
 }

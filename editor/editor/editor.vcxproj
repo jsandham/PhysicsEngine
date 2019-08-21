@@ -92,6 +92,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,6 +109,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,6 +130,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,15 +151,18 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>engine.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\AboutPopup.cpp" />
     <ClCompile Include="src\BoxColliderDrawer.cpp" />
+    <ClCompile Include="src\BuildWindow.cpp" />
     <ClCompile Include="src\CameraDrawer.cpp" />
     <ClCompile Include="src\CapsuleColliderDrawer.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
+    <ClCompile Include="src\FileSystemUtil.cpp" />
     <ClCompile Include="src\Hierarchy.cpp" />
     <ClCompile Include="src\imgui_extensions.cpp" />
     <ClCompile Include="src\Inspector.cpp" />
@@ -175,6 +181,8 @@
     <ClCompile Include="src\MainMenuBar.cpp" />
     <ClCompile Include="src\MeshColliderDrawer.cpp" />
     <ClCompile Include="src\MeshRendererDrawer.cpp" />
+    <ClCompile Include="src\Project.cpp" />
+    <ClCompile Include="src\ProjectWindow.cpp" />
     <ClCompile Include="src\RigidbodyDrawer.cpp" />
     <ClCompile Include="src\SphereColliderDrawer.cpp" />
     <ClCompile Include="src\TransformDrawer.cpp" />
@@ -182,10 +190,12 @@
   <ItemGroup>
     <ClInclude Include="include\AboutPopup.h" />
     <ClInclude Include="include\BoxColliderDrawer.h" />
+    <ClInclude Include="include\BuildWindow.h" />
     <ClInclude Include="include\CameraDrawer.h" />
     <ClInclude Include="include\CapsuleColliderDrawer.h" />
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\Filebrowser.h" />
+    <ClInclude Include="include\FileSystemUtil.h" />
     <ClInclude Include="include\Hierarchy.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />
@@ -204,6 +214,8 @@
     <ClInclude Include="include\MainMenuBar.h" />
     <ClInclude Include="include\MeshColliderDrawer.h" />
     <ClInclude Include="include\MeshRendererDrawer.h" />
+    <ClInclude Include="include\Project.h" />
+    <ClInclude Include="include\ProjectWindow.h" />
     <ClInclude Include="include\SphereColliderDrawer.h" />
     <ClInclude Include="include\TransformDrawer.h" />
   </ItemGroup>

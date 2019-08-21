@@ -32,13 +32,19 @@ void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
+		/*for ()
+		{
+
+		}*/
+
+
 		// make static?
 		InspectorDrawer* transformDrawer = loadInternalInspectorDrawer(0);
-		InspectorDrawer* cameraDrawer = loadInternalInspectorDrawer(2);
-		InspectorDrawer* lightDrawer = loadInternalInspectorDrawer(5);
 		InspectorDrawer* rigidbodyDrawer = loadInternalInspectorDrawer(1);
+		InspectorDrawer* cameraDrawer = loadInternalInspectorDrawer(2);
 		InspectorDrawer* meshRendererDrawer = loadInternalInspectorDrawer(3);
 		InspectorDrawer* lineRendererDrawer = loadInternalInspectorDrawer(4);
+		InspectorDrawer* lightDrawer = loadInternalInspectorDrawer(5);
 		InspectorDrawer* boxColliderDrawer = loadInternalInspectorDrawer(8);
 		InspectorDrawer* sphereColliderDrawer = loadInternalInspectorDrawer(9);
 		InspectorDrawer* capsuleColliderDrawer = loadInternalInspectorDrawer(10);

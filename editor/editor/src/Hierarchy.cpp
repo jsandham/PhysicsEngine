@@ -25,13 +25,12 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 		hierarchyActive = true;
 
 		entities.clear();
+	}
 
-		int numberOfEntities = world.getNumberOfEntities();
-
-		entities.resize(numberOfEntities);
-		for (int i = 0; i < numberOfEntities; i++) {
-			entities[i] = *world.getEntityByIndex(i);
-		}
+	int numberOfEntities = world.getNumberOfEntities();
+	entities.resize(numberOfEntities);
+	for (int i = 0; i < numberOfEntities; i++) {
+		entities[i] = *world.getEntityByIndex(i);
 	}
 
 	if (!hierarchyActive){

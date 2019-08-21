@@ -35,6 +35,9 @@ namespace PhysicsEngine
 
 			bool intersect(Bounds bounds);
 	};
+
+	template <>
+	const int ComponentType<MeshCollider>::type = 15;
 }
 
 #endif

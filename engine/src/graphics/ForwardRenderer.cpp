@@ -547,8 +547,8 @@ void ForwardRenderer::createShaderPrograms()
 			std::string uniformBlocks[] = {"CameraBlock", 
 										   "LightBlock"};
 
-			for(int i = 0; i < 2; i++){
-				shader->setUniformBlock(uniformBlocks[i], i);
+			for(int j = 0; j < 2; j++){
+				shader->setUniformBlock(uniformBlocks[j], j);
 			}
 		}
 	}

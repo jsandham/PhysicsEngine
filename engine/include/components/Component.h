@@ -10,6 +10,12 @@ namespace PhysicsEngine
 	class Entity;
 	class World;
 
+	template <typename T>
+	struct ComponentType { static const int type; };
+
+	template <typename T>
+	const int ComponentType<T>::type = -1;
+
 	class Component
 	{
 		public:

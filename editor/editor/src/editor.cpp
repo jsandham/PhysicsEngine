@@ -1,4 +1,5 @@
 #include "../include/Editor.h"
+#include "../include/FileSystemUtil.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -60,6 +61,41 @@ void Editor::render()
 
 	mainMenu.render();
 
+	if (mainMenu.isOpenClicked()) {
+		filebrowser.setMode(FilebrowserMode::Open);
+	}
+	else if (mainMenu.isSaveAsClicked()) {
+		filebrowser.setMode(FilebrowserMode::Save);
+	}
+
+	filebrowser.render(mainMenu.isOpenClicked() | mainMenu.isSaveAsClicked());
+
+	if (filebrowser.isOpenClicked()) {
+		openScene(filebrowser.getOpenFile());
+	}
+	else if (filebrowser.isSaveClicked()) {
+
+	}
+
+	if (mainMenu.isOpenProjectClicked()) {
+		projectWindow.setMode(ProjectWindowMode::OpenProject);
+	}
+	else if (mainMenu.isNewProjectClicked()) {
+		projectWindow.setMode(ProjectWindowMode::NewProject);
+	}
+
+	projectWindow.render(mainMenu.isOpenProjectClicked() | mainMenu.isNewProjectClicked());
+
+	if (projectWindow.isOpenClicked()) {
+		
+	}
+	else if (projectWindow.isCreateClicked()) {
+		std::string projectPath = projectWindow.getSelectedFolder() + "\\" + projectWindow.getProjectName();
+		createProject(projectPath);
+	}
+
+	aboutPopup.render(mainMenu.isAboutClicked());
+
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
 	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
 
@@ -73,21 +109,26 @@ void Editor::render()
 		quitCalled = true;
 	}
 
-	if (mainMenu.isFilebrowserOpenClicked()) {
-		Scene scene;
-		scene.filepath = mainMenu.getOpenFile();
+	//if (filebrowser.isOpenClicked()) {
+	//	Scene scene;
+	//	scene.filepath = filebrowser.getOpenFile();
 
-		AssetBundle bundle;
+	//	AssetBundle bundle;
 
-		ImGui::Text(scene.filepath.c_str());
+	//	ImGui::Text(scene.filepath.c_str());
 
-		/*if (world.load(scene, bundle)) {
+	//	/*if (world.load(scene, bundle)) {
 
-		}*/
-	}
-	else if (mainMenu.isFilebrowserSaveClicked()) {
-		std::string fileToSave = mainMenu.getSaveFile();
-	}
+	//	}*/
+	//}
+	//else if (filebrowser.isSaveClicked()) {
+	//	std::string fileToSave = filebrowser.getSaveFile();
+	//}
+
+
+	ImGui::Text(std::to_string(ComponentType<Transform>::type).c_str());
+	ImGui::Text(std::to_string(ComponentType<Rigidbody>::type).c_str());
+	ImGui::Text(std::to_string(ComponentType<Camera>::type).c_str());
 
 
 	// Rendering
@@ -103,9 +144,52 @@ void Editor::render()
 	//SwapBuffers(deviceContext);
 }
 
-bool Editor::isQuitCalled()
+bool Editor::isQuitCalled() const
 {
 	return quitCalled;
+}
+
+void Editor::newScene(std::string path)
+{
+
+}
+
+void Editor::openScene(std::string path)
+{
+	for (int i = 0; i < 5; i++) {
+		Entity* entity = world.createEntity();
+
+
+	}
+
+	/*Scene scene;
+	scene.filepath = filebrowser.getOpenFile();
+
+	AssetBundle bundle;
+
+	ImGui::Text(scene.filepath.c_str());*/
+
+	/*if (world.load(scene, bundle)) {
+
+	}*/
+}
+
+void Editor::createProject(std::string path)
+{
+	if (PhysicsEditor::createDirectory(path))
+	{
+		createDirectory(path + "\\data");
+		createDirectory(path + "\\data\\scenes");
+		createDirectory(path + "\\data\\textures");
+		createDirectory(path + "\\data\\meshes");
+		createDirectory(path + "\\data\\materials");
+		createDirectory(path + "\\data\\shaders");
+	}
+}
+
+void Editor::openProject(std::string path)
+{
+
 }
 
 

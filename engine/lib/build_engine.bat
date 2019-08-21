@@ -8,7 +8,7 @@ rem set CUDA="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include"
 set GLEW="../include/glew-2.1.0"
 set FREETYPE="../include/freetype"
 
-set CompilerFlags= /MDd -Od -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -wd4512 -Zi -nologo /Fo"obj"\ /Fd"obj"\
+set CompilerFlags= /MDd -Od -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -wd4512 -wd4458 -Zi -nologo /Fo"obj"\ /Fd"obj"\
 rem set CompilerFlags= -Od -W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -wd4512 -Zi -nologo /Fo"obj"\ /Fd"obj"\
 
 :: compile engine cuda source files to obj

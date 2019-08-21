@@ -39,6 +39,9 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 	};
+
+	template <>
+	const int ComponentType<LineRenderer>::type = 4;
 }
 
 #endif

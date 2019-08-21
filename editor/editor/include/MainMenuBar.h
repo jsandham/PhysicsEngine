@@ -1,21 +1,22 @@
 #ifndef __MAIN_MENU_BAR_H__
 #define __MAIN_MENU_BAR_H__
 
-#include "Filebrowser.h"
-#include "AboutPopup.h"
-
 namespace PhysicsEditor
 {
 	class MainMenuBar
 	{
 		private:
-			Filebrowser filebrowser;
-			AboutPopup aboutPopup;
-
 			bool newClicked;
 			bool openClicked;
 			bool saveClicked;
 			bool saveAsClicked;
+
+			bool newProjectClicked;
+			bool openProjectClicked;
+			bool saveProjectClicked;
+
+			bool buildClicked;
+
 			bool quitClicked;
 			bool openInspectorClicked;
 			bool openHierarchyClicked;
@@ -27,19 +28,17 @@ namespace PhysicsEditor
 
 			void render();
 
-			bool isNewClicked();
-			bool isOpenClicked();
-			bool isSaveClicked();
-			bool isSaveAsClicked();
-			bool isQuitClicked();
-			bool isFilebrowserOpenClicked();
-			bool isFilebrowserSaveClicked();
-			bool isOpenInspectorCalled();
-			bool isOpenHierarchyCalled();
-			bool isAboutClicked();
-
-			std::string getOpenFile();
-			std::string getSaveFile();
+			bool isNewClicked() const;
+			bool isOpenClicked() const;
+			bool isSaveClicked() const;
+			bool isSaveAsClicked() const;
+			bool isBuildClicked() const;
+			bool isQuitClicked() const;
+			bool isNewProjectClicked() const;
+			bool isOpenProjectClicked() const;
+			bool isOpenInspectorCalled() const;
+			bool isOpenHierarchyCalled() const;
+			bool isAboutClicked() const;
 
 		private:
 			void showMenuFile();

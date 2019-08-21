@@ -33,6 +33,9 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 	};
+
+	template <>
+	const int ComponentType<MeshRenderer>::type = 3;
 }
 
 #endif

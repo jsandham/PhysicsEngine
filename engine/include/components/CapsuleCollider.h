@@ -37,6 +37,9 @@ namespace PhysicsEngine
 
 			bool intersect(Bounds bounds);
 	};
+
+	template <>
+	const int ComponentType<CapsuleCollider>::type = 10;
 }
 
 #endif

@@ -39,6 +39,9 @@ namespace PhysicsEngine
 
 			std::vector<float> getLines() const;
 	};
+
+	template <>
+	const int ComponentType<SphereCollider>::type = 9;
 }
 
 #endif

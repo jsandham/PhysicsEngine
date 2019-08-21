@@ -108,6 +108,9 @@ namespace PhysicsEngine
 			int checkSphereInFrustum(glm::vec3 centre, float radius) const;
 			int checkAABBInFrustum(glm::vec3 min, glm::vec3 max) const;
 	};
+
+	template <>
+	const int ComponentType<Camera>::type = 2;
 }
 
 #endif

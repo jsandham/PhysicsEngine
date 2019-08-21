@@ -13,6 +13,10 @@ MainMenuBar::MainMenuBar()
 	openClicked = false;
 	saveClicked = false;
 	saveAsClicked = false;
+	newProjectClicked = false;
+	openProjectClicked = false;
+	saveProjectClicked = false;
+	buildClicked = false;
 	quitClicked = false;
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
@@ -30,6 +34,10 @@ void MainMenuBar::render()
 	openClicked = false;
 	saveClicked = false;
 	saveAsClicked = false;
+	newProjectClicked = false;
+	openProjectClicked = false;
+	saveProjectClicked = false;
+	buildClicked = false;
 	quitClicked = false;
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
@@ -57,84 +65,61 @@ void MainMenuBar::render()
 		}
 		ImGui::EndMainMenuBar();
 	}
-
-	if (openClicked){
-		filebrowser.setMode(FilebrowserMode::Open);
-	}
-	else if (saveAsClicked){
-		filebrowser.setMode(FilebrowserMode::Save);
-	}
-
-	filebrowser.render(openClicked | saveAsClicked);
-
-	if (filebrowser.isOpenClicked()) {
-
-	}
-	else if (filebrowser.isSaveClicked()) {
-
-	}
-
-	aboutPopup.render(aboutClicked);
 }
 
-bool MainMenuBar::isNewClicked()
+bool MainMenuBar::isNewClicked() const
 {
 	return newClicked;
 }
 
-bool MainMenuBar::isOpenClicked()
+bool MainMenuBar::isOpenClicked() const
 {
 	return openClicked;
 }
 
-bool MainMenuBar::isSaveClicked()
+bool MainMenuBar::isSaveClicked() const
 {
 	return saveClicked;
 }
 
-bool MainMenuBar::isSaveAsClicked()
+bool MainMenuBar::isSaveAsClicked() const
 {
 	return saveAsClicked;
 }
 
-bool MainMenuBar::isQuitClicked()
+bool MainMenuBar::isBuildClicked() const
+{
+	return buildClicked;
+}
+
+bool MainMenuBar::isQuitClicked() const
 {
 	return quitClicked;
 }
 
-bool MainMenuBar::isFilebrowserOpenClicked()
+bool MainMenuBar::isNewProjectClicked() const
 {
-	return filebrowser.isOpenClicked();
+	return newProjectClicked;
 }
 
-bool MainMenuBar::isFilebrowserSaveClicked()
+bool MainMenuBar::isOpenProjectClicked() const
 {
-	return filebrowser.isSaveClicked();
+	return openProjectClicked;
 }
 
-bool MainMenuBar::isOpenInspectorCalled()
+bool MainMenuBar::isOpenInspectorCalled() const
 {
 	return openInspectorClicked;
 }
 
-bool MainMenuBar::isOpenHierarchyCalled()
+bool MainMenuBar::isOpenHierarchyCalled() const
 {
 	return openHierarchyClicked;
 }
 
-bool MainMenuBar::isAboutClicked()
+bool MainMenuBar::isAboutClicked() const
 {
 	return aboutClicked;
-}
-
-std::string MainMenuBar::getOpenFile()
-{
-	return filebrowser.getOpenFile();
-}
-
-std::string MainMenuBar::getSaveFile()
-{
-	return filebrowser.getSaveFile();
 }
 
 void MainMenuBar::showMenuFile()
@@ -147,6 +132,9 @@ void MainMenuBar::showMenuFile()
 	{
 		openClicked = true;
 	}
+
+	ImGui::Separator();
+
 	if (ImGui::MenuItem("Save", "Ctrl+S")) {
 		saveClicked = true;
 	}
@@ -155,36 +143,19 @@ void MainMenuBar::showMenuFile()
 	}
 
 	ImGui::Separator();
-	if (ImGui::BeginMenu("Options"))
-	{
-		static bool enabled = true;
-		ImGui::MenuItem("Enabled", "", &enabled);
-		ImGui::BeginChild("child", ImVec2(0, 60), true);
-		for (int i = 0; i < 10; i++)
-			ImGui::Text("Scrolling Text %d", i);
-		ImGui::EndChild();
-		static float f = 0.5f;
-		static int n = 0;
-		static bool b = true;
-		ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-		ImGui::InputFloat("Input", &f, 0.1f);
-		ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-		ImGui::Checkbox("Check", &b);
-		ImGui::EndMenu();
+
+	if (ImGui::MenuItem("New Project")) {
+		newProjectClicked = true;
 	}
-	if (ImGui::BeginMenu("Colors"))
+	if (ImGui::MenuItem("Open Project"))
 	{
-		float sz = ImGui::GetTextLineHeight();
-		for (int i = 0; i < ImGuiCol_COUNT; i++)
-		{
-			const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
-			ImVec2 p = ImGui::GetCursorScreenPos();
-			ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
-			ImGui::Dummy(ImVec2(sz, sz));
-			ImGui::SameLine();
-			ImGui::MenuItem(name);
-		}
-		ImGui::EndMenu();
+		openProjectClicked = true;
+	}
+	if (ImGui::MenuItem("Save Project")) {
+		saveProjectClicked = true;
+	}
+	if (ImGui::MenuItem("Build")) {
+		buildClicked = true;
 	}
 
 	if (ImGui::MenuItem("Quit", "Alt+F4")) {

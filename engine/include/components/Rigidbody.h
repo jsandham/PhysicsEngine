@@ -54,6 +54,9 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 	};
+
+	template <>
+	const int ComponentType<Rigidbody>::type = 1;
 }
 
 

@@ -46,6 +46,9 @@ namespace PhysicsEngine
 
 			void setEulerAngles(glm::vec3 eulerAngles);
 	};
+
+	template <>
+	const int ComponentType<Transform>::type = 0;
 }
 
 #endif

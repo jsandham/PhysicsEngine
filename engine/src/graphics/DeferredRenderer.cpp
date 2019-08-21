@@ -83,8 +83,8 @@ void DeferredRenderer::init(World* world)
 										   "SpotLightBlock", 
 										   "PointLightBlock"};
 
-			for(int i = 0; i < 4; i++){
-				shader->setUniformBlock(uniformBlocks[i], i);
+			for(int j = 0; j < 4; j++){
+				shader->setUniformBlock(uniformBlocks[j], j);
 			}
 		}
 	}

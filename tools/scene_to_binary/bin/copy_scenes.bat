@@ -1,10 +1,10 @@
 @echo off
 
-copy "bundle.assets" "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug"
-copy "bundle.assets" "C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release"
+copy "bundle.assets" "C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Debug"
+copy "bundle.assets" "C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Release"
 
-for /R C:\Users\James\Documents\PhysicsEngine\tools\scene_to_binary\bin %%f in (*.scene) do copy %%f C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Debug
-for /R C:\Users\James\Documents\PhysicsEngine\tools\scene_to_binary\bin %%f in (*.scene) do copy %%f C:\Users\James\Documents\PhysicsEngine\sample_project\Demo\x64\Release
+for /R C:\Users\jsand\Documents\PhysicsEngine\tools\scene_to_binary\bin %%f in (*.scene) do copy %%f C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Debug
+for /R C:\Users\jsand\Documents\PhysicsEngine\tools\scene_to_binary\bin %%f in (*.scene) do copy %%f C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Release
 
 
 

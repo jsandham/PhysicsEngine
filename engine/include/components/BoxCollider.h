@@ -37,6 +37,9 @@ namespace PhysicsEngine
 
 			std::vector<float> getLines() const;
 	};
+
+	template <>
+	const int ComponentType<BoxCollider>::type = 8;
 }
 
 #endif
