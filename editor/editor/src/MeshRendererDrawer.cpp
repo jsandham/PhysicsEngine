@@ -19,11 +19,14 @@ MeshRendererDrawer::~MeshRendererDrawer()
 
 }
 
-void MeshRendererDrawer::render(Component* component)
+void MeshRendererDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if(ImGui::TreeNode("MeshRenderer"))
 	{
-		MeshRenderer* meshRenderer = dynamic_cast<MeshRenderer*>(component);
+		MeshRenderer* meshRenderer = world.getComponentById<MeshRenderer>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		//Guid meshId;
 		//Guid materialIds[8];

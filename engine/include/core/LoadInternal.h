@@ -33,11 +33,11 @@ namespace PhysicsEngine
 
 	Asset* loadInternalAsset(std::vector<char> data, int type, int* index);
 	Entity* loadInternalEntity(std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::vector<char> data, int type, int* index, itype* instanceType);
+	Component* loadInternalComponent(std::vector<char> data, int type, int* index);
 	System* loadInternalSystem(std::vector<char> data, int type, int* index);
 
 	Entity* destroyInternalEntity(int index);
-	Component* destroyInternalComponent(itype instanceType, int index);
+	Component* destroyInternalComponent(int type, int index);
 }
 
 #endif

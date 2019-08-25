@@ -19,10 +19,13 @@ LineRendererDrawer::~LineRendererDrawer()
 
 }
 
-void LineRendererDrawer::render(Component* component)
+void LineRendererDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("LineRenderer")) {
-		LineRenderer* lineRenderer = dynamic_cast<LineRenderer*>(component);
+		LineRenderer* lineRenderer = world.getComponentById<LineRenderer>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		float start[3];
 		start[0] = lineRenderer->start.x;

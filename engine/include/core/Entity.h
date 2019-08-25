@@ -43,6 +43,8 @@ namespace PhysicsEngine
 			{
 				return world->getComponent<T>(entityId);
 			}
+
+			std::vector<std::pair<Guid, int>> getComponentsOnEntity(World* world);
 	};
 }
 

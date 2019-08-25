@@ -51,3 +51,8 @@ void Entity::immediateDestroy(World* world)
 {
 	world->immediateDestroyEntity(entityId);
 }
+
+std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity(World* world)
+{
+	return world->getComponentsOnEntity(entityId);
+}

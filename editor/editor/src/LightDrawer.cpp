@@ -19,11 +19,14 @@ LightDrawer::~LightDrawer()
 
 }
 
-void LightDrawer::render(Component* component)
+void LightDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if(ImGui::TreeNode("Light"))
 	{
-		Light* light = dynamic_cast<Light*>(component);
+		Light* light = world.getComponentById<Light>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		float position[3];
 		position[0] = light->position.x;

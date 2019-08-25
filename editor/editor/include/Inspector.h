@@ -5,7 +5,8 @@
 
 #include "InspectorDrawer.h"
 
-#include "core\Entity.h"
+#include "core/World.h"
+#include "core/Entity.h"
 
 #include "components/Transform.h"
 #include "components/Light.h"
@@ -41,7 +42,7 @@ namespace PhysicsEditor
 			Inspector();
 			~Inspector();
 
-			void render(Entity* entity, bool isOpenedThisFrame);
+			void render(World world, Entity* entity, bool isOpenedThisFrame);
 
 
 

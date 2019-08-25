@@ -100,14 +100,10 @@ void RenderSystem::update(Input input)
 		//std::cout << "Total number of entities: " << index << std::endl;
 		if(index > 0){
 			Entity* entity = world->getEntityByIndex(index - 1);
-			//std::cout << "Calling latent Destroy on entity id: " << entity->entityId.toString() << " at global index: " << index - 1 << std::endl;
+			std::cout << "Calling latent Destroy on entity id: " << entity->entityId.toString() << " at global index: " << index - 1 << std::endl;
 			entity->latentDestroy(world);
 		}
 	}
-
-	//std::cout << "Number of entities: " << world->getNumberOfEntities() << " number of transform: " << world->getNumberOfComponents<Transform>() << std::endl;
-
-
 
 	//deferredRenderer.update(input);
 	forwardRenderer.update(input);

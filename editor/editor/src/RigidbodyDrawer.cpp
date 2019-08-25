@@ -19,11 +19,14 @@ RigidbodyDrawer::~RigidbodyDrawer()
 
 }
 
-void RigidbodyDrawer::render(Component* component)
+void RigidbodyDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("Rigidbody"))
 	{
-		Rigidbody* rigidbody = dynamic_cast<Rigidbody*>(component);
+		Rigidbody* rigidbody = world.getComponentById<Rigidbody>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		ImGui::Checkbox("Use Gravity", &rigidbody->useGravity);
 		ImGui::InputFloat("Mass", &rigidbody->mass);

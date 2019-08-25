@@ -44,6 +44,7 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 			
 			static bool selected = false;
 			if (ImGui::Selectable(name.c_str(), &selected)) {
+				selectedEntity = &entities[i];
 			}
 		}
 

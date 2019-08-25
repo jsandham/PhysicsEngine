@@ -6,6 +6,8 @@
 
 #include "core/World.h"
 
+#include "AssetDirectory.h"
+
 #include "MainMenuBar.h"
 #include "Inspector.h"
 #include "Hierarchy.h"
@@ -24,13 +26,15 @@ namespace PhysicsEditor
 		private:
 			World world;
 
+			AssetDirectory assetDirectory;
+
 			MainMenuBar mainMenu;
 			Inspector inspector;
 			Hierarchy hierarchy;
 			Project project;
 
 			Filebrowser filebrowser;
-			ProjectWindow projectWindow;
+			ProjectWindow projectWindow; //ProjectBrowser?
 			BuildWindow buildWindow;
 			AboutPopup aboutPopup;
 
@@ -50,6 +54,8 @@ namespace PhysicsEditor
 			void render();
 
 			bool isQuitCalled() const;
+			std::string getCurrentProjectPath() const;
+			std::string getCurrentScenePath() const;
 
 		private:
 			void newScene(std::string path);

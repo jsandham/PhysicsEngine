@@ -818,15 +818,15 @@ void ForwardRenderer::initRenderObjectsList()
 
 void ForwardRenderer::updateRenderObjectsList()
 {
-	int meshRendererInstanceType = Component::getInstanceType<MeshRenderer>();
-	int transformInstanceType = Component::getInstanceType<Transform>();
+	int meshRendererType = ComponentType<MeshRenderer>::type;
+	int transformType = ComponentType<Transform>::type;
 
 	// add created mesh renderers to render object list
 	std::vector<Guid> meshRendererIdsAdded;
 
 	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
 	for(size_t i = 0; i < componentIdsAdded.size(); i++){
-		if(componentIdsAdded[i].third == meshRendererInstanceType){
+		if(componentIdsAdded[i].third == meshRendererType){
 			meshRendererIdsAdded.push_back(componentIdsAdded[i].second);
 		}
 	}
@@ -845,7 +845,7 @@ void ForwardRenderer::updateRenderObjectsList()
 
 	std::vector<triple<Guid, Guid, int>> componentIdsDestroyed = world->getComponentIdsMarkedLatentDestroy();
 	for(size_t i = 0; i < componentIdsDestroyed.size(); i++){
-		if(componentIdsDestroyed[i].third == meshRendererInstanceType){
+		if(componentIdsDestroyed[i].third == meshRendererType){
 			meshRendererIdsDestroyed.push_back(componentIdsDestroyed[i].second);
 		}
 	}
@@ -864,7 +864,7 @@ void ForwardRenderer::updateRenderObjectsList()
 
 	std::vector<triple<Guid, int, int>> componentIdsMoved = world->getComponentIdsMarkedMoved();
 	for(size_t i = 0; i < componentIdsMoved.size(); i++){
-		if(componentIdsMoved[i].second == transformInstanceType){
+		if(componentIdsMoved[i].second == transformType){
 			int oldIndex = componentIdsMoved[i].third;
 			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
 	

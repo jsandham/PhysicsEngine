@@ -50,24 +50,6 @@ namespace PhysicsEngine
 
 				return entity->getComponent<T>(world);
 			}
-
-			template <typename T>
-			static itype getInstanceType()
-			{
-				// static variables only run the first time the function is called
-			    static itype id = nextValue();
-			    return id;
-			}
-
-		private:
-			static itype nextValue()
-			{
-				// static variables only run the first time the function is called
-			    static itype id = 0;
-			    itype result = id;
-			    ++id;
-			    return result;
-			}
 	};
 }
 

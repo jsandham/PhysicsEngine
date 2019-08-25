@@ -155,7 +155,7 @@ void PhysicsSystem::init(World* world)
 		std::cout << "centre: " << sphere.centre.x << " " << sphere.centre.y << " " << sphere.centre.z << " " << sphere.radius << " id: " << boundingSpheres[i].id.toString() << std::endl;
 	}
 
-	grid->create(worldBounds, gridDim, boundingSpheres, spheres, bounds, triangles);
+	//grid->create(worldBounds, gridDim, boundingSpheres, spheres, bounds, triangles);
 }
 
 void PhysicsSystem::update(Input input)

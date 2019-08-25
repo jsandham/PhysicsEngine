@@ -19,10 +19,13 @@ BoxColliderDrawer::~BoxColliderDrawer()
 
 }
 
-void BoxColliderDrawer::render(Component* component)
+void BoxColliderDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("BoxCollider")) {
-		BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(component);
+		BoxCollider* boxCollider = world.getComponentById<BoxCollider>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		if (ImGui::TreeNode("Bounds")) {
 			float centre[3];

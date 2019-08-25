@@ -19,11 +19,14 @@ SphereColliderDrawer::~SphereColliderDrawer()
 
 }
 
-void SphereColliderDrawer::render(Component* component)
+void SphereColliderDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("SphereCollider")) 
 	{
-		SphereCollider* sphereCollider = dynamic_cast<SphereCollider*>(component);
+		SphereCollider* sphereCollider = world.getComponentById<SphereCollider>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		if (ImGui::TreeNode("Sphere")) {
 			float centre[3];

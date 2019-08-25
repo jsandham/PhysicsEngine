@@ -1,5 +1,6 @@
 #include "../include/Inspector.h"
 #include "../include/LoadInspectorDrawerInternal.h"
+#include "../include/FileSystemUtil.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -18,7 +19,7 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render(Entity* entity, bool isOpenedThisFrame)
+void Inspector::render(World world, Entity* entity, bool isOpenedThisFrame)
 {
 	static bool inspectorActive = true;
 
@@ -32,47 +33,26 @@ void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
-		/*for ()
-		{
-
-		}*/
-
-
-		// make static?
-		InspectorDrawer* transformDrawer = loadInternalInspectorDrawer(0);
-		InspectorDrawer* rigidbodyDrawer = loadInternalInspectorDrawer(1);
-		InspectorDrawer* cameraDrawer = loadInternalInspectorDrawer(2);
-		InspectorDrawer* meshRendererDrawer = loadInternalInspectorDrawer(3);
-		InspectorDrawer* lineRendererDrawer = loadInternalInspectorDrawer(4);
-		InspectorDrawer* lightDrawer = loadInternalInspectorDrawer(5);
-		InspectorDrawer* boxColliderDrawer = loadInternalInspectorDrawer(8);
-		InspectorDrawer* sphereColliderDrawer = loadInternalInspectorDrawer(9);
-		InspectorDrawer* capsuleColliderDrawer = loadInternalInspectorDrawer(10);
-		InspectorDrawer* meshColliderDrawer = loadInternalInspectorDrawer(15);
-
-		transformDrawer->render(&transform);
-		cameraDrawer->render(&camera);
-		lightDrawer->render(&light);
-		rigidbodyDrawer->render(&rigidbody);
-		meshRendererDrawer->render(&meshRenderer);
-		lineRendererDrawer->render(&lineRenderer);
-		boxColliderDrawer->render(&boxCollider);
-		sphereColliderDrawer->render(&sphereCollider);
-		capsuleColliderDrawer->render(&capsuleCollider);
-		meshColliderDrawer->render(&meshCollider);
-
-		delete transformDrawer;
-		delete cameraDrawer;
-		delete lightDrawer;
-		delete rigidbodyDrawer;
-		delete meshRendererDrawer;
-		delete lineRendererDrawer;
-		delete boxColliderDrawer;
-		delete sphereColliderDrawer;
-		delete capsuleColliderDrawer;
-		delete meshColliderDrawer;
-
 		if (entity != NULL){
+			std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(&world);
+			for (size_t i = 0; i < componentsOnEntity.size(); i++)
+			{
+				Guid componentId = componentsOnEntity[i].first;
+				int componentType = componentsOnEntity[i].second;
+
+				InspectorDrawer* drawer = NULL;
+				if (componentType < 20) {
+					drawer = loadInternalInspectorDrawer(componentType);
+				}
+				else {
+					//drawer = loadInspectorDrawer(componentType);
+				}
+
+				drawer->render(world, entity->entityId, componentId);
+
+				delete drawer;
+			}
+
 			std::string componentToAdd = "";
 			if (BeginAddComponentDropdown("Add component", componentToAdd)){
 
@@ -87,7 +67,6 @@ void Inspector::render(Entity* entity, bool isOpenedThisFrame)
 
 bool Inspector::BeginAddComponentDropdown(std::string name, std::string& componentToAdd)
 {
-	ImGui::SameLine(0.f, 0.f);
 	ImGui::PushID("##Dropdown");
 	bool pressed = ImGui::Button(name.c_str());
 	ImGui::PopID();

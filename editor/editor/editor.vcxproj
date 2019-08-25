@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\AboutPopup.cpp" />
+    <ClCompile Include="src\AssetDirectory.cpp" />
     <ClCompile Include="src\BoxColliderDrawer.cpp" />
     <ClCompile Include="src\BuildWindow.cpp" />
     <ClCompile Include="src\CameraDrawer.cpp" />
@@ -188,7 +189,9 @@
     <ClCompile Include="src\TransformDrawer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header.h" />
     <ClInclude Include="include\AboutPopup.h" />
+    <ClInclude Include="include\AssetDirectory.h" />
     <ClInclude Include="include\BoxColliderDrawer.h" />
     <ClInclude Include="include\BuildWindow.h" />
     <ClInclude Include="include\CameraDrawer.h" />
@@ -216,6 +219,7 @@
     <ClInclude Include="include\MeshRendererDrawer.h" />
     <ClInclude Include="include\Project.h" />
     <ClInclude Include="include\ProjectWindow.h" />
+    <ClInclude Include="include\RigidbodyDrawer.h" />
     <ClInclude Include="include\SphereColliderDrawer.h" />
     <ClInclude Include="include\TransformDrawer.h" />
   </ItemGroup>

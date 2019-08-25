@@ -19,11 +19,14 @@ CameraDrawer::~CameraDrawer()
 
 }
 
-void CameraDrawer::render(Component* component)
+void CameraDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("Camera"))
 	{
-		Camera* camera = dynamic_cast<Camera*>(component);
+		Camera* camera = world.getComponentById<Camera>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		float position[3];
 		position[0] = camera->position.x;

@@ -19,11 +19,14 @@ TransformDrawer::~TransformDrawer()
 
 }
 
-void TransformDrawer::render(Component* component)
+void TransformDrawer::render(World world, Guid entityId, Guid componentId)
 {
 	if (ImGui::TreeNode("Transform"))
 	{
-		Transform* transform = dynamic_cast<Transform*>(component);
+		Transform* transform = world.getComponentById<Transform>(componentId);
+
+		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		float position[3];
 		position[0] = transform->position.x;

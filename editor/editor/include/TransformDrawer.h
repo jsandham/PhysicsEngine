@@ -11,7 +11,7 @@ namespace PhysicsEditor
 			TransformDrawer();
 			~TransformDrawer();
 
-			void render(Component* component);
+			void render(World world, Guid entityId, Guid componentId);
 	};
 }
 

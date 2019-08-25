@@ -12,7 +12,7 @@ Asset* PhysicsEngine::loadAsset(std::vector<char> data, int type, int* index)
 	return NULL;
 }
 
-Component* PhysicsEngine::loadComponent(std::vector<char> data, int type, int* index, int* instanceType)
+Component* PhysicsEngine::loadComponent(std::vector<char> data, int type, int* index)
 {
 	std::cout << "Error: Invalid component type (" << type << ") when trying to load component" << std::endl;
 	return NULL;

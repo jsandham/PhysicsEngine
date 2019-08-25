@@ -80,14 +80,14 @@ namespace PhysicsEngine
 
 			std::map<Guid, int> assetIdToGlobalIndex;
 			std::map<Guid, int> idToGlobalIndex;
-			std::map<Guid, std::vector<std::pair<Guid, itype>>> entityIdToComponentIds; 
+			std::map<Guid, std::vector<std::pair<Guid, int>>> entityIdToComponentIds; 
 
 			std::vector<Guid> entityIdsMarkedCreated;
 			std::vector<Guid> entityIdsMarkedLatentDestroy;
 			std::vector<std::pair<Guid, int>> entityIdsMarkedMoved;
-			std::vector<triple<Guid, Guid, itype>> componentIdsMarkedCreated;
-			std::vector<triple<Guid, Guid, itype>> componentIdsMarkedLatentDestroy;
-			std::vector<triple<Guid, itype, int>> componentIdsMarkedMoved;
+			std::vector<triple<Guid, Guid, int>> componentIdsMarkedCreated;
+			std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy;
+			std::vector<triple<Guid, int, int>> componentIdsMarkedMoved;
 
 		public:
 			bool debug;
@@ -120,8 +120,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponent(Guid entityId)
 			{
-				std::vector<std::pair<Guid, itype>> componentsOnEntity;
-				std::map<Guid, std::vector<std::pair<Guid, itype>>>::iterator it1 = entityIdToComponentIds.find(entityId);
+				std::vector<std::pair<Guid, int>> componentsOnEntity;
+				std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
 				if(it1 != entityIdToComponentIds.end()){
 					componentsOnEntity = it1->second;
 				}
@@ -132,7 +132,7 @@ namespace PhysicsEngine
 
 				Guid componentId = Guid::INVALID;
 				for(size_t i = 0; i < componentsOnEntity.size(); i++){
-					if(Component::getInstanceType<T>() == componentsOnEntity[i].second){
+					if(ComponentType<T>::type == componentsOnEntity[i].second){
 						componentId = componentsOnEntity[i].first;
 						break;
 					}	
@@ -157,7 +157,7 @@ namespace PhysicsEngine
 			T* addComponent(Guid entityId)
 			{
 				int componentGlobalIndex = (int)getAllocator<T>().getCount();
-				itype instanceType = Component::getInstanceType<T>();
+				int componentType = ComponentType<T>::type;
 				Guid componentId = Guid::newGuid();
 				
 				T* component = create<T>();//new T;//static_cast<T*>(getAllocator<T>().allocate());
@@ -167,9 +167,9 @@ namespace PhysicsEngine
 
 				idToGlobalIndex[componentId] = componentGlobalIndex;
 
-				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, instanceType));
+				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
 
-				componentIdsMarkedCreated.push_back(make_triple(entityId, componentId, instanceType));
+				componentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
 
 				return component;
 			}
@@ -197,6 +197,17 @@ namespace PhysicsEngine
 			}
 
 			template<typename T>
+			T* getComponentById(Guid componentId)
+			{
+				std::map<Guid, int>::iterator it = idToGlobalIndex.find(componentId);
+				if(it != idToGlobalIndex.end()){
+					return getComponentByIndex<T>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
 			T* getAssetByIndex(int index)
 			{
 				return getAllocator<T>().get(index);
@@ -220,7 +231,7 @@ namespace PhysicsEngine
 					return NULL;
 				}
 
-				T* asset = create<T>();//new T;
+				T* asset = create<T>();
 
 				asset->assetId = id;
 
@@ -232,18 +243,20 @@ namespace PhysicsEngine
 
 			void latentDestroyEntity(Guid entityId);
 			void immediateDestroyEntity(Guid entityId);
-			void latentDestroyComponent(Guid entityId, Guid componentId, itype instanceType);
-			void immediateDestroyComponent(Guid entityId, Guid componentId, itype instanceType);
+			void latentDestroyComponent(Guid entityId, Guid componentId, int componentType);
+			void immediateDestroyComponent(Guid entityId, Guid componentId, int componentType);
 			bool isMarkedForLatentDestroy(Guid id);
 			void clearIdsMarkedCreatedOrDestroyed();
 			void clearIdsMarkedMoved();
 
+			std::vector<std::pair<Guid, int>> getComponentsOnEntity(Guid entityId);
+
 			std::vector<Guid> getEntityIdsMarkedCreated();
 			std::vector<Guid> getEntityIdsMarkedLatentDestroy();
 			std::vector<std::pair<Guid, int>> getEntityIdsMarkedMoved();
-			std::vector<triple<Guid, Guid, itype>> getComponentIdsMarkedCreated();
-			std::vector<triple<Guid, Guid, itype>> getComponentIdsMarkedLatentDestroy();
-			std::vector<triple<Guid, itype, int>> getComponentIdsMarkedMoved();
+			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedCreated();
+			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedLatentDestroy();
+			std::vector<triple<Guid, int, int>> getComponentIdsMarkedMoved();
 
 
 

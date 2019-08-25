@@ -1,35 +1,8 @@
-﻿  AboutPopup.cpp
-  BoxColliderDrawer.cpp
-  BuildWindow.cpp
-  CameraDrawer.cpp
-  CapsuleColliderDrawer.cpp
+﻿  AssetDirectory.cpp
   Editor.cpp
-  Filebrowser.cpp
   FileSystemUtil.cpp
-  Hierarchy.cpp
-  imgui_extensions.cpp
+  Filebrowser.cpp
   Inspector.cpp
-  InspectorDrawer.cpp
-  LightDrawer.cpp
-  LineRendererDrawer.cpp
-  Load.cpp
-  LoadInspectorDrawerInternal.cpp
   main.cpp
-  imgui.cpp
-  imgui_demo.cpp
-  imgui_draw.cpp
-  Generating Code...
-  Compiling...
-  imgui_impl_opengl3.cpp
-  imgui_impl_win32.cpp
-  imgui_widgets.cpp
-  MainMenuBar.cpp
-  MeshColliderDrawer.cpp
-  MeshRendererDrawer.cpp
-  Project.cpp
-  ProjectWindow.cpp
-  RigidbodyDrawer.cpp
-  SphereColliderDrawer.cpp
-  TransformDrawer.cpp
   Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

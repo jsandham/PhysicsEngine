@@ -52,12 +52,15 @@ void Editor::cleanUp()
 
 void Editor::render()
 {
+	assetDirectory.update(currentProjectPath);
+
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
 	ImGui::ShowDemoWindow();
+	ImGui::Text(currentProjectPath.c_str());
 
 	mainMenu.render();
 
@@ -88,10 +91,13 @@ void Editor::render()
 
 	if (projectWindow.isOpenClicked()) {
 		
+		currentProjectPath = projectWindow.getProjectPath();
 	}
 	else if (projectWindow.isCreateClicked()) {
 		std::string projectPath = projectWindow.getSelectedFolder() + "\\" + projectWindow.getProjectName();
 		createProject(projectPath);
+
+		currentProjectPath = projectWindow.getProjectPath();
 	}
 
 	aboutPopup.render(mainMenu.isAboutClicked());
@@ -103,7 +109,7 @@ void Editor::render()
 
 	Entity* selectedEntity = hierarchy.getSelectedEntity();
 
-	inspector.render(selectedEntity, inspectorOpenedThisFrame);
+	inspector.render(world, selectedEntity, inspectorOpenedThisFrame);
 
 	if (mainMenu.isQuitClicked()){
 		quitCalled = true;
@@ -126,11 +132,6 @@ void Editor::render()
 	//}
 
 
-	ImGui::Text(std::to_string(ComponentType<Transform>::type).c_str());
-	ImGui::Text(std::to_string(ComponentType<Rigidbody>::type).c_str());
-	ImGui::Text(std::to_string(ComponentType<Camera>::type).c_str());
-
-
 	// Rendering
 	ImGui::Render();
 	//wglMakeCurrent(deviceContext, renderContext);
@@ -149,6 +150,16 @@ bool Editor::isQuitCalled() const
 	return quitCalled;
 }
 
+std::string Editor::getCurrentProjectPath() const
+{
+	return currentProjectPath;
+}
+
+std::string Editor::getCurrentScenePath() const
+{
+	return currentScenePath;
+}
+
 void Editor::newScene(std::string path)
 {
 
@@ -158,9 +169,22 @@ void Editor::openScene(std::string path)
 {
 	for (int i = 0; i < 5; i++) {
 		Entity* entity = world.createEntity();
-
-
+		world.addComponent<Transform>(entity->entityId);
+		world.addComponent<Rigidbody>(entity->entityId);
+		world.addComponent<MeshRenderer>(entity->entityId);
 	}
+
+	/*for (int i = 0; i < 5; i++) {
+		Entity* entity = world.getEntityByIndex(i);
+
+		std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(&world);
+		for (size_t j = 0; j < componentsOnEntity.size(); j++) {
+			Guid componentId = componentsOnEntity[j].first;
+			int componentType = componentsOnEntity[j].second;
+			std::string text = componentId.toString() + " " + std::to_string(componentType);
+			ImGui::Text(text.c_str());
+		}
+	}*/
 
 	/*Scene scene;
 	scene.filepath = filebrowser.getOpenFile();

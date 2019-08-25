@@ -1,7 +1,7 @@
 #ifndef __INSPECTOR_DRAWER_H__
 #define __INSPECTOR_DRAWER_H__
 
-#include "components/Component.h"
+#include "core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -13,7 +13,7 @@ namespace PhysicsEditor
 			InspectorDrawer();
 			virtual ~InspectorDrawer() = 0;
 
-			virtual void render(Component* component) = 0;
+			virtual void render(World world, Guid entityId, Guid componentId) = 0;
 	};
 }
 
