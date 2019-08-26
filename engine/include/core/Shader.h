@@ -103,6 +103,9 @@ namespace PhysicsEngine
 			void setMat3(std::string name, ShaderVariant variant, glm::mat3 &mat);
 			void setMat4(std::string name, ShaderVariant variant, glm::mat4 &mat);
 	};
+
+	template <>
+	const int AssetType<Shader>::type = 0;
 }
 
 #endif

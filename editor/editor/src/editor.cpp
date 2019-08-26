@@ -90,14 +90,14 @@ void Editor::render()
 	projectWindow.render(mainMenu.isOpenProjectClicked() | mainMenu.isNewProjectClicked());
 
 	if (projectWindow.isOpenClicked()) {
-		
-		currentProjectPath = projectWindow.getProjectPath();
+		currentProjectPath = projectWindow.getSelectedFolderPath();
+
+		openProject(currentProjectPath);
 	}
 	else if (projectWindow.isCreateClicked()) {
-		std::string projectPath = projectWindow.getSelectedFolder() + "\\" + projectWindow.getProjectName();
-		createProject(projectPath);
+		currentProjectPath = projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName();
 
-		currentProjectPath = projectWindow.getProjectPath();
+		createProject(currentProjectPath);
 	}
 
 	aboutPopup.render(mainMenu.isAboutClicked());

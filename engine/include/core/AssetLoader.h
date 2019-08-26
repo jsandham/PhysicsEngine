@@ -8,6 +8,7 @@
 #include "Texture2D.h"
 #include "Mesh.h"
 #include "GMesh.h"
+#include "Material.h"
 #include "Font.h"
 
 namespace PhysicsEngine
@@ -19,6 +20,7 @@ namespace PhysicsEngine
 			// right now I load textures with stb_load which can take png etc. Should I instead only load ktx file format textures in the engine and have png converted to this format before passing to the engine???
 			static bool load(const std::string& filepath, Texture2D& texture); 
 			static bool load(const std::string& filepath, Mesh& mesh);
+			static bool load(const std::string& filepath, Material& material);
 			//static bool load2(const std::string& filepath, Mesh& mesh);
 
 			static bool load(const std::string& filepath, GMesh& gmesh);

@@ -54,6 +54,9 @@ namespace PhysicsEngine
 			void readPixels();
 			void apply();
 	};
+
+	template <>
+	const int AssetType<Texture2D>::type = 1;
 }
 
 #endif

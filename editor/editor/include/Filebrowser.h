@@ -50,8 +50,11 @@ namespace PhysicsEditor
 			void render(bool becomeVisibleThisFrame);
 			void setMode(FilebrowserMode mode);
 			std::string getOpenFile() const;
+			std::string getOpenFilePath() const;
 			std::string getSaveFile() const;
+			std::string getSaveFilePath() const;
 			std::string getSelectedFolder() const;
+			std::string getSelectedFolderPath() const;
 			std::string getCurrentDirectoryPath() const;
 			bool isOpenClicked() const;
 			bool isSaveClicked() const;

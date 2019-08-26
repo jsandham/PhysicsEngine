@@ -78,14 +78,9 @@ std::string ProjectWindow::getProjectName() const
 	return std::string(inputBuffer.begin(), inputBuffer.begin() + index);
 }
 
-std::string ProjectWindow::getProjectPath() const
+std::string ProjectWindow::getSelectedFolderPath() const
 {
-	return filebrowser.getSelectedFolder() + "\\" + getProjectName();
-}
-
-std::string ProjectWindow::getSelectedFolder() const
-{
-	return filebrowser.getSelectedFolder();
+	return filebrowser.getSelectedFolderPath();
 }
 
 void ProjectWindow::renderNewMode()
@@ -107,7 +102,7 @@ void ProjectWindow::renderNewMode()
 	}
 
 	ImGui::SameLine();
-	ImGui::Text(filebrowser.getSelectedFolder().c_str());
+	ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
 
 	filebrowser.render(openSelectFolderBrowser);
 
@@ -119,7 +114,20 @@ void ProjectWindow::renderNewMode()
 
 void ProjectWindow::renderOpenMode()
 {
+	bool openSelectFolderBrowser = false;
+	if (ImGui::Button("Select Folder")) {
+		openSelectFolderBrowser = true;
+	}
 
+	ImGui::SameLine();
+	ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
+
+	filebrowser.render(openSelectFolderBrowser);
+
+	if (ImGui::Button("Open Project")) {
+		openClicked = true;
+		ImGui::CloseCurrentPopup();
+	}
 }
 
 void ProjectWindow::setMode(ProjectWindowMode mode)

@@ -60,6 +60,9 @@ namespace PhysicsEngine
 			void readPixels();
 			void apply();
 	};
+
+	template <>
+	const int AssetType<Cubemap>::type = 3;
 }
 
 #endif

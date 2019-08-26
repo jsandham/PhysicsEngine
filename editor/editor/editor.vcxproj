@@ -161,6 +161,7 @@
     <ClCompile Include="src\BuildWindow.cpp" />
     <ClCompile Include="src\CameraDrawer.cpp" />
     <ClCompile Include="src\CapsuleColliderDrawer.cpp" />
+    <ClCompile Include="src\Console.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="include\BuildWindow.h" />
     <ClInclude Include="include\CameraDrawer.h" />
     <ClInclude Include="include\CapsuleColliderDrawer.h" />
+    <ClInclude Include="include\Console.h" />
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />

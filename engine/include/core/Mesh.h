@@ -42,6 +42,9 @@ namespace PhysicsEngine
 
 			Sphere getBoundingSphere() const;
 	};
+
+	template <>
+	const int AssetType<Mesh>::type = 5;
 }
 
 #endif

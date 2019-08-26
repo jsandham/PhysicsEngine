@@ -1,8 +1,2 @@
 ﻿  AssetDirectory.cpp
-  Editor.cpp
-  FileSystemUtil.cpp
-  Filebrowser.cpp
-  Inspector.cpp
-  main.cpp
-  Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

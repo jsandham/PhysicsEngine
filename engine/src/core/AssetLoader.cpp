@@ -6,8 +6,10 @@
 #include "../../include/stb_image/stb_image.h"
 
 #include "../../include/core/AssetLoader.h"
+#include "../../include/json/json.hpp"
 
 using namespace PhysicsEngine;
+using namespace json;
 
 bool AssetLoader::load(const std::string& filepath, Shader& shader)
 {
@@ -1067,6 +1069,38 @@ bool AssetLoader::load(const std::string& filepath, GMesh& gmesh)
 		index++;
 	}
 	myfile.close();
+
+	return true;
+}
+
+bool AssetLoader::load(const std::string& filepath, Material& material)
+{
+	std::ifstream file(filepath, std::ios::in);
+	std::ostringstream contents;
+	if (file.is_open()){
+		contents << file.rdbuf();
+		file.close();
+	}
+	else{
+		return false;
+	}
+
+	json::JSON jsonMaterial = JSON::Load(contents.str());
+
+	material.shininess = (float)jsonMaterial["shininess"].ToFloat();
+	material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+	material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+	material.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+	material.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+	material.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+	material.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+	material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+	material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+	material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+	material.shaderId = Guid(jsonMaterial["shader"].ToString());
+	material.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+	material.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+	material.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
 
 	return true;
 }

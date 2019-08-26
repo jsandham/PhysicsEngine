@@ -32,8 +32,7 @@ namespace PhysicsEditor
 			bool isCreateClicked() const;
 
 			std::string getProjectName() const;
-			std::string getProjectPath() const;
-			std::string getSelectedFolder() const;
+			std::string getSelectedFolderPath() const;
 
 		private:
 			void renderOpenMode();

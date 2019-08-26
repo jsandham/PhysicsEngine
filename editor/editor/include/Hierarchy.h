@@ -22,8 +22,6 @@ namespace PhysicsEditor
 
 			void render(World world, bool isOpenedThisFrame);
 
-			//bool begin
-
 			Entity* getSelectedEntity();
 	};
 }

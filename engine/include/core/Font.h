@@ -54,6 +54,9 @@ namespace PhysicsEngine
 
 			Character getCharacter(char c) const;
 	};
+
+	template <>
+	const int AssetType<Font>::type = 6;
 }
 
 #endif

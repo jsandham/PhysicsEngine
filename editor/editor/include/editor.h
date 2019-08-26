@@ -34,7 +34,7 @@ namespace PhysicsEditor
 			Project project;
 
 			Filebrowser filebrowser;
-			ProjectWindow projectWindow; //ProjectBrowser?
+			ProjectWindow projectWindow; //ProjectBrowser? ProjectPopup?
 			BuildWindow buildWindow;
 			AboutPopup aboutPopup;
 

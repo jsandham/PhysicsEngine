@@ -42,9 +42,7 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 {
 	openClicked = false;
 	saveClicked = false;
-
-	openFile = "";
-	saveFile = "";
+	selectFolderClicked = false;
 
 	if (isVisible != becomeVisibleThisFrame){
 		isVisible = becomeVisibleThisFrame;
@@ -62,6 +60,9 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 		float windowWidth = ImGui::GetWindowWidth();
 
 		ImGui::Text(currentDirectoryPath.c_str());
+		ImGui::Text(openFile.c_str());
+		ImGui::Text(saveFile.c_str());
+		ImGui::Text(selectedFolder.c_str());
 
 		std::vector<std::string> directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
 		std::vector<std::string> directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
@@ -78,6 +79,15 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 				currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
 				directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
 				directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+
+				if (mode == FilebrowserMode::SelectFolder) {
+					for (int j = 0; j < std::min(256, (int)directoryNamesInCurrentDirectoryPath[i].length()); j++) {
+						inputBuffer[j] = directoryNamesInCurrentDirectoryPath[i][j];
+					}
+					for (int j = std::min(256, (int)directoryNamesInCurrentDirectoryPath[i].length()); j < 256; j++) {
+						inputBuffer[j] = '\0';
+					}
+				}
 			}
 
 			std::vector<std::string> directories = PhysicsEditor::getDirectoriesInDirectory(directoryPath);
@@ -95,6 +105,15 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 						currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
 						directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
 						directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+
+						if (mode == FilebrowserMode::SelectFolder) {
+							for (int j = 0; j < std::min(256, (int)directories[s].length()); j++) {
+								inputBuffer[j] = directories[s][j];
+							}
+							for (int j = std::min(256, (int)directories[s].length()); j < 256; j++) {
+								inputBuffer[j] = '\0';
+							}
+						}
 					}
 
 					EndDropdown();
@@ -163,12 +182,13 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 						directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
 					}
 				}
-				else if (items[i].type == 1) {
+
+				if (items[i].type == 1 || mode == FilebrowserMode::SelectFolder) {
 					for (int j = 0; j < std::min(256, (int)items[selection].name.length()); j++) {
 						inputBuffer[j] = items[selection].name[j];
 					}
 					for (int j = std::min(256, (int)items[selection].name.length()); j < 256; j++) {
-						inputBuffer[j] = ' ';
+						inputBuffer[j] = '\0';
 					}
 				}
 			}
@@ -223,9 +243,17 @@ void Filebrowser::renderOpenMode()
 	ImGui::Combo("##Filter", &filterIndex, filterNames, IM_ARRAYSIZE(filterNames));
 	currentFilter = filters[filterIndex];
 
+	int index = 0;
+	for (size_t i = 0; i < inputBuffer.size(); i++) {
+		if (inputBuffer[i] == '\0') {
+			index = (int)i;
+			break;
+		}
+	}
+	openFile = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+
 	if (ImGui::Button("Open")){
 		openClicked = true;
-		openFile = std::string(inputBuffer.begin(), inputBuffer.end());
 		ImGui::CloseCurrentPopup();
 	}
 	ImGui::SameLine();
@@ -264,9 +292,17 @@ void Filebrowser::renderSaveMode()
 	ImGui::SetNextItemWidth(saveAsTypeDropDownWidth);
 	ImGui::Combo("##Filter", &saveAsTypeIndex, saveAsTypeNames, IM_ARRAYSIZE(saveAsTypeNames));
 
+	int index = 0;
+	for (size_t i = 0; i < inputBuffer.size(); i++) {
+		if (inputBuffer[i] == '\0') {
+			index = (int)i;
+			break;
+		}
+	}
+	saveFile = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+
 	if (ImGui::Button("Save")){
 		saveClicked = true;
-		saveFile = "";
 		ImGui::CloseCurrentPopup();
 	}
 	ImGui::SameLine();
@@ -288,19 +324,21 @@ void Filebrowser::renderSelectFolderMode()
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(inputTextWidth);
 	if (ImGui::InputText("##File Name", &inputBuffer[0], (int)inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue)) {
-
+		
 	}
+
+	int index = 0;
+	for (size_t i = 0; i < inputBuffer.size(); i++) {
+		if (inputBuffer[i] == '\0') {
+			index = (int)i;
+			break;
+		}
+	}
+	selectedFolder = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
 
 	if (ImGui::Button("Select Folder")) {
 		selectFolderClicked = true;
-		int index = 0;
-		for (size_t i = 0; i < inputBuffer.size(); i++) {
-			if (inputBuffer[i] == '\0') {
-				index = (int)i;
-				break;
-			}
-		}
-		selectedFolder = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+	
 		ImGui::CloseCurrentPopup();
 	}
 	ImGui::SameLine();
@@ -319,14 +357,33 @@ std::string Filebrowser::getOpenFile() const
 	return openFile;
 }
 
+std::string Filebrowser::getOpenFilePath() const
+{
+	return currentDirectoryPath + "\\" + openFile;
+}
+
 std::string Filebrowser::getSaveFile() const
 {
 	return saveFile;
 }
 
+std::string Filebrowser::getSaveFilePath() const
+{
+	return currentDirectoryPath + "\\" + saveFile;
+}
+
 std::string Filebrowser::getSelectedFolder() const
 {
 	return selectedFolder;
+}
+
+std::string Filebrowser::getSelectedFolderPath() const
+{
+	if (currentDirectoryPath.substr(currentDirectoryPath.find_last_of('/\\') + 1) == selectedFolder) {
+		return currentDirectoryPath;
+	}
+
+	return currentDirectoryPath + "\\" + selectedFolder;
 }
 
 std::string Filebrowser::getCurrentDirectoryPath() const
