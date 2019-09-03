@@ -1,0 +1,11 @@
+{
+	"shininess" : 1.0,
+	"ambient" : [0.5, 0.5, 0.5],
+	"diffuse" : [0.8, 0.8, 0.8],
+	"specular" : [1.0, 1.0, 1.0],
+	"color" : [1.0, 1.0, 1.0, 1.0],
+	"shader" : "2c8ecc08-7e5b-4d63-af97-15d9ccdba309",
+	"mainTexture" : "a0f0a167-7614-48f3-b7b0-197941224227",
+	"normalMap" : "00000000-0000-0000-0000-000000000000",
+	"specularMap" : "99560057-79ad-4f3d-bf70-7ed5b5ada3cc"
+}

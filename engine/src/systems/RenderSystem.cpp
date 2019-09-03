@@ -9,6 +9,7 @@
 
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
+#include "../../include/core/Log.h"
 
 using namespace PhysicsEngine;
 
@@ -54,6 +55,8 @@ void RenderSystem::init(World* world)
 
 void RenderSystem::update(Input input)
 {
+	Log::info("Render update called\n");
+
 	// if(getKeyDown(input, KeyCode::N)){
 	// 	std::cout << "N pressed " << world->getNumberOfEntities() << std::endl;
 	// 	Entity* entity = world->createEntity();

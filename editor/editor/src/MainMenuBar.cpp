@@ -20,6 +20,7 @@ MainMenuBar::MainMenuBar()
 	quitClicked = false;
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
+	openConsoleClicked = false;
 	aboutClicked = false;
 }
 
@@ -41,6 +42,7 @@ void MainMenuBar::render()
 	quitClicked = false;
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
+	openConsoleClicked = false;
 	aboutClicked = false;
 
 	if (ImGui::BeginMainMenuBar())
@@ -117,6 +119,11 @@ bool MainMenuBar::isOpenHierarchyCalled() const
 	return openHierarchyClicked;
 }
 
+bool MainMenuBar::isOpenConsoleCalled() const
+{
+	return openConsoleClicked;
+}
+
 bool MainMenuBar::isAboutClicked() const
 {
 	return aboutClicked;
@@ -180,6 +187,9 @@ void MainMenuBar::showMenuWindow()
 	}
 	if (ImGui::MenuItem("Inspector")){
 		openInspectorClicked = true;
+	}
+	if (ImGui::MenuItem("Console")){
+		openConsoleClicked = true;
 	}
 }
 

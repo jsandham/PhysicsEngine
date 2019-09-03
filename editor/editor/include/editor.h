@@ -12,6 +12,7 @@
 #include "Inspector.h"
 #include "Hierarchy.h"
 #include "Project.h"
+#include "Console.h"
 #include "Filebrowser.h"
 #include "ProjectWindow.h"
 #include "BuildWindow.h"
@@ -32,6 +33,7 @@ namespace PhysicsEditor
 			Inspector inspector;
 			Hierarchy hierarchy;
 			Project project;
+			Console console;
 
 			Filebrowser filebrowser;
 			ProjectWindow projectWindow; //ProjectBrowser? ProjectPopup?
@@ -39,11 +41,12 @@ namespace PhysicsEditor
 			AboutPopup aboutPopup;
 
 			bool quitCalled;
-			bool isInspectorVisible;
-			bool isHierarchyVisible;
-
+			
 			std::string currentProjectPath;
 			std::string currentScenePath;
+
+			Camera* camera;
+			std::vector<Guid> editorEntityIds;
 
 		public:
 			Editor();
@@ -58,8 +61,9 @@ namespace PhysicsEditor
 			std::string getCurrentScenePath() const;
 
 		private:
-			void newScene(std::string path);
+			void newScene();
 			void openScene(std::string path);
+			void saveScene(std::string path);
 			void createProject(std::string path);
 			void openProject(std::string path);
 	};

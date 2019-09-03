@@ -86,8 +86,6 @@ void Texture3D::deserialize(std::vector<char> data)
 	for(size_t i = 0; i < header->textureSize; i++){
 		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
-
-	std::cout << "Texture3D data size: " << data.size() << std::endl;
 }
 
 int Texture3D::getWidth() const

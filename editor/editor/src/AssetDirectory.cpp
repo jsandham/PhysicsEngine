@@ -45,14 +45,14 @@ void AssetDirectory::update(std::string projectPath)
 		directory.clear();
 	}
 
-	const std::string trackedExtensions[] = { "mesh", "material", "png", "shader" };
+	const std::string trackedExtensions[] = { "obj", "material", "png", "shader", "scene" };
 
 	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
 	for (size_t i = 0; i < filesInProject.size(); i++) {
 		std::string extension = filesInProject[i].substr(filesInProject[i].find_last_of(".") + 1);
 
 		bool isValid = false;
-		for (int j = 0; j < 4; j++) {
+		for (int j = 0; j < 5; j++) {
 			if (extension == trackedExtensions[j]) {
 				isValid = true;
 				break;
@@ -80,7 +80,9 @@ void AssetDirectory::update(std::string projectPath)
 			directory.insert(filesInProject[i]);
 
 			// create binary version of asset in library directory
-			createBinaryAssetInLibrary(filesInProject[i], extension);
+			if (extension != "scene"){
+				createBinaryAssetInLibrary(filesInProject[i], extension);
+			}
 		}
 	}
 }
@@ -123,7 +125,7 @@ void AssetDirectory::createBinaryAssetInLibrary(std::string filePath, std::strin
 			data = texture.serialize();
 		}
 	}
-	else if (extension == "mesh") {
+	else if (extension == "obj") {
 		assetType = AssetType<Mesh>::type;
 		Mesh mesh;
 
@@ -143,7 +145,8 @@ void AssetDirectory::createBinaryAssetInLibrary(std::string filePath, std::strin
 	}
 
 	// write data to binary version of asset in library 
-	std::string filename = filePath.substr(filePath.find_last_of("/\\") + 1);
+	std::string temp = filePath.substr(filePath.find_last_of("\\") + 1);
+	std::string filename = temp.substr(0, temp.find_last_of(".")) + ".data";
 	std::fstream file(currentProjectPath + "\\library\\" + filename, std::ios::out | std::ios::binary);
 
 	if (file.is_open()) {

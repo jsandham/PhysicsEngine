@@ -1,5 +1,13 @@
+#include <fstream>
+
 #include "../include/Editor.h"
 #include "../include/FileSystemUtil.h"
+#include "../include/EditorCameraSystem.h" // could just add this to the engine lib? Could include a couple different camera movement systems like editor, fps etc in engine as examples?
+
+#include "systems/RenderSystem.h"
+#include "systems/CleanUpSystem.h"
+
+#include <json/json.hpp>
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -7,12 +15,12 @@
 #include "../include/imgui/imgui_internal.h"
 
 using namespace PhysicsEditor;
+using namespace json;
 
 Editor::Editor()
 {
 	quitCalled = false;
-	isInspectorVisible = true;
-	isHierarchyVisible = true;
+	camera = NULL;
 }
 
 Editor::~Editor()
@@ -40,6 +48,23 @@ void Editor::init(HWND window, int width, int height)
 
 	// Setup style
 	ImGui::StyleColorsClassic();
+
+	// add editor camera to world
+	Entity* cameraEntity = world.createEntity();
+	camera = cameraEntity->addComponent<Camera>(&world);
+	camera->viewport.width = 1920;
+	camera->viewport.height = 1080;
+
+	// add physics, render, and cleanup system to world
+	world.addSystem<EditorCameraSystem>(0);
+	world.addSystem<RenderSystem>(1);
+	world.addSystem<CleanUpSystem>(2);
+
+	for (int i = 0; i < world.getNumberOfSystems(); i++) {
+		System* system = world.getSystemByIndex(i);
+
+		system->init(&world);
+	}
 }
 
 void Editor::cleanUp()
@@ -61,9 +86,15 @@ void Editor::render()
 
 	ImGui::ShowDemoWindow();
 	ImGui::Text(currentProjectPath.c_str());
+	ImGui::Text(currentScenePath.c_str());
 
 	mainMenu.render();
 
+	// new, open and save scene
+	if (mainMenu.isNewClicked()){
+		currentScenePath = "";
+		newScene();
+	}
 	if (mainMenu.isOpenClicked()) {
 		filebrowser.setMode(FilebrowserMode::Open);
 	}
@@ -74,12 +105,15 @@ void Editor::render()
 	filebrowser.render(mainMenu.isOpenClicked() | mainMenu.isSaveAsClicked());
 
 	if (filebrowser.isOpenClicked()) {
-		openScene(filebrowser.getOpenFile());
+		currentScenePath = filebrowser.getOpenFilePath();
+		openScene(currentScenePath);
 	}
 	else if (filebrowser.isSaveClicked()) {
-
+		currentScenePath = filebrowser.getSaveFilePath();
+		saveScene(currentScenePath);
 	}
 
+	// new, open, save project project
 	if (mainMenu.isOpenProjectClicked()) {
 		projectWindow.setMode(ProjectWindowMode::OpenProject);
 	}
@@ -100,46 +134,41 @@ void Editor::render()
 		createProject(currentProjectPath);
 	}
 
-	aboutPopup.render(mainMenu.isAboutClicked());
-
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
 	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
+	bool consoleOpenedThisFrame = mainMenu.isOpenConsoleCalled();
 
 	hierarchy.render(world, hierarchyOpenedThisFrame);
 
 	Entity* selectedEntity = hierarchy.getSelectedEntity();
 
 	inspector.render(world, selectedEntity, inspectorOpenedThisFrame);
+	console.render(consoleOpenedThisFrame);
 
-	if (mainMenu.isQuitClicked()){
+	aboutPopup.render(mainMenu.isAboutClicked());
+
+	if (mainMenu.isQuitClicked()) {
 		quitCalled = true;
 	}
-
-	//if (filebrowser.isOpenClicked()) {
-	//	Scene scene;
-	//	scene.filepath = filebrowser.getOpenFile();
-
-	//	AssetBundle bundle;
-
-	//	ImGui::Text(scene.filepath.c_str());
-
-	//	/*if (world.load(scene, bundle)) {
-
-	//	}*/
-	//}
-	//else if (filebrowser.isSaveClicked()) {
-	//	std::string fileToSave = filebrowser.getSaveFile();
-	//}
-
 
 	// Rendering
 	ImGui::Render();
 	//wglMakeCurrent(deviceContext, renderContext);
 	//glViewport(0, 0, g_display_w, g_display_h);                 //Display Size got from Resize Command
-	glViewport(0, 0, 200, 200);
+	glViewport(0, 0, 1920, 1080);
 	/*glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);*/
-	glClearColor(0.15f, 0.15f, 0.15f, 0.0f);
+	/*glClearColor(0.15f, 0.15f, 0.15f, 0.0f);*/
+	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	Input input = {};
+
+	for (int i = 0; i < world.getNumberOfSystems(); i++) {
+		System* system = world.getSystemByIndex(i);
+
+		system->update(input);
+	}
+
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	//wglMakeCurrent(deviceContext, renderContext);
 	//SwapBuffers(deviceContext);
@@ -160,19 +189,128 @@ std::string Editor::getCurrentScenePath() const
 	return currentScenePath;
 }
 
-void Editor::newScene(std::string path)
+void Editor::newScene()
 {
+	// mark any (non-editor) entities in currently opened scene to be latent destroyed
+	for (int i = 0; i < world.getNumberOfEntities(); i++) {
+		Entity* entity = world.getEntityByIndex(i);
 
+		bool doNotDestroy = false;
+		for (size_t j = 0; j < editorEntityIds.size(); j++) {
+			if (editorEntityIds[j] == entity->entityId){
+				doNotDestroy = true;
+				break;
+			}
+		}
+
+		if (!doNotDestroy){
+			world.latentDestroyEntity(entity->entityId);
+		}
+	}
+
+	// re-centre editor camera to default position
+	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 void Editor::openScene(std::string path)
 {
-	for (int i = 0; i < 5; i++) {
+	// open scene file for parsing
+	std::ifstream file;
+
+	file.open(path, std::ios::in);
+
+	if (file.is_open()){
+		std::ostringstream contents;
+		contents << file.rdbuf();
+
+		file.close();
+
+		std::string jsonContentString = contents.str();
+		json::JSON jsonScene = json::JSON::Load(jsonContentString);
+
+		if (jsonScene.IsNull()){
+			return;
+		}
+
+		// parse loaded json file
+		json::JSON::JSONWrapper<std::map<std::string, JSON>> objectsMap = jsonScene.ObjectRange();
+		std::map < std::string, JSON>::iterator it;
+		for (it = objectsMap.begin(); it != objectsMap.end(); it++) {
+			Guid id = Guid(it->first);
+			std::string type = it->second["type"].ToString();
+
+			// figure out how to do this without explicitly running though all types (we dont know what types a user might create!)
+			// Idea: Instead of having type be the class name could instead have the type be the type integer we use else where??
+			if (type == "Entity"){
+
+			}
+			else if (type == "Transform"){
+
+			}
+		}
+
+		/*for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
+			Entity entity;
+			entity.entityId = Guid(it->first);
+
+			std::vector<char> data = entity.serialize();
+
+			char classification = 'e';
+			int type = 0;
+			size_t size = data.size();
+
+			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&size, sizeof(size_t), 1, file);
+			fwrite(&data[0], data.size(), 1, file);
+		}*/
+
+		/*json::JSON::JSONWrapper<map<string, JSON>> transformObjects = transforms.ObjectRange();
+		for (it = transformObjects.begin(); it != transformObjects.end(); it++) {
+			Transform transform;
+
+			transform.componentId = Guid(it->first);
+			transform.parentId = Guid(it->second["parent"].ToString());
+			transform.entityId = Guid(it->second["entity"].ToString());
+
+			transform.position.x = (float)it->second["position"][0].ToFloat();
+			transform.position.y = (float)it->second["position"][1].ToFloat();
+			transform.position.z = (float)it->second["position"][2].ToFloat();
+
+			transform.rotation.x = (float)it->second["rotation"][0].ToFloat();
+			transform.rotation.y = (float)it->second["rotation"][1].ToFloat();
+			transform.rotation.z = (float)it->second["rotation"][2].ToFloat();
+			transform.rotation.w = (float)it->second["rotation"][3].ToFloat();
+
+			transform.scale.x = (float)it->second["scale"][0].ToFloat();
+			transform.scale.y = (float)it->second["scale"][1].ToFloat();
+			transform.scale.z = (float)it->second["scale"][2].ToFloat();
+
+			std::vector<char> data = transform.serialize();
+
+			char classification = 'c';
+			int type = 0;
+			size_t size = data.size();
+
+			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&size, sizeof(size_t), 1, file);
+			fwrite(&data[0], data.size(), 1, file);
+		}*/
+	}
+	else {
+		return;
+	}
+
+
+	/*for (int i = 0; i < 5; i++) {
 		Entity* entity = world.createEntity();
 		world.addComponent<Transform>(entity->entityId);
 		world.addComponent<Rigidbody>(entity->entityId);
 		world.addComponent<MeshRenderer>(entity->entityId);
-	}
+	}*/
 
 	/*for (int i = 0; i < 5; i++) {
 		Entity* entity = world.getEntityByIndex(i);
@@ -198,6 +336,13 @@ void Editor::openScene(std::string path)
 	}*/
 }
 
+void Editor::saveScene(std::string path)
+{
+	for (int i = 0; i < world.getNumberOfEntities(); i++) {
+
+	}
+}
+
 void Editor::createProject(std::string path)
 {
 	if (PhysicsEditor::createDirectory(path))
@@ -213,7 +358,7 @@ void Editor::createProject(std::string path)
 
 void Editor::openProject(std::string path)
 {
-
+	
 }
 
 
@@ -226,6 +371,21 @@ void Editor::openProject(std::string path)
 
 
 
+//if (filebrowser.isOpenClicked()) {
+//	Scene scene;
+//	scene.filepath = filebrowser.getOpenFile();
+
+//	AssetBundle bundle;
+
+//	ImGui::Text(scene.filepath.c_str());
+
+//	/*if (world.load(scene, bundle)) {
+
+//	}*/
+//}
+//else if (filebrowser.isSaveClicked()) {
+//	std::string fileToSave = filebrowser.getSaveFile();
+//}
 
 
 

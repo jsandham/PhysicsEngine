@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+// #include "../json/json.hpp"
+
 #include "common.h"
 
 #include "PoolAllocator.h"
@@ -97,6 +99,7 @@ namespace PhysicsEngine
 			World();
 			~World();
 
+			//bool load(JSON object);
 			bool load(Scene scene, AssetBundle assetBundle);
 
 			int getNumberOfEntities();
@@ -172,6 +175,24 @@ namespace PhysicsEngine
 				componentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
 
 				return component;
+			}
+
+			template<typename T>
+			T* addSystem(int order)
+			{
+				T* system = create<T>();
+
+				size_t locationToInsert = systems.size();
+				for(size_t i = 0; i < systems.size(); i++){
+					if(order < systems[i]->getOrder()){
+						locationToInsert = i;
+						break;
+					}
+				}
+
+				systems.insert(systems.begin() + locationToInsert, system);
+
+				return system;
 			}
 
 			template<typename T>

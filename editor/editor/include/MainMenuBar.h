@@ -20,6 +20,7 @@ namespace PhysicsEditor
 			bool quitClicked;
 			bool openInspectorClicked;
 			bool openHierarchyClicked;
+			bool openConsoleClicked;
 			bool aboutClicked;
 
 		public:
@@ -38,6 +39,7 @@ namespace PhysicsEditor
 			bool isOpenProjectClicked() const;
 			bool isOpenInspectorCalled() const;
 			bool isOpenHierarchyCalled() const;
+			bool isOpenConsoleCalled() const;
 			bool isAboutClicked() const;
 
 		private:

@@ -99,8 +99,6 @@ void Cubemap::deserialize(std::vector<char> data)
 	for(size_t i = 0; i < header->textureSize; i++){
 		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
-
-	std::cout << "Cubemap data size: " << data.size() << std::endl;
 }
 
 int Cubemap::getWidth() const
@@ -152,7 +150,7 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y)
 	int index =  (int)face*width*width*numChannels + numChannels * (x + width * y);
 
 	if (index + numChannels >= rawTextureData.size()){
-		Log::Error("Cubemap: pixel index out of range");
+		Log::error("Cubemap: pixel index out of range\n");
 	}
 
 	Color color;
@@ -182,7 +180,7 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y)
 void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
 {
 	if (6*width*width*numChannels != data.size()){
-		Log::Error("Cubemap: Raw texture data does not match size of cubemap");
+		Log::error("Cubemap: Raw texture data does not match size of cubemap\n");
 		return;
 	}
 
@@ -199,7 +197,7 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
 	int index = (int)face*width*width*numChannels + numChannels * (x + width * y);
 
 	if (index + numChannels >= rawTextureData.size()){
-		Log::Error("Cubemap: pixel index out of range");
+		Log::error("Cubemap: pixel index out of range\n");
 		return;
 	}
 

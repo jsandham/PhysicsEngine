@@ -35,6 +35,7 @@ void ForwardRenderer::init(World* world)
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
+		camera = NULL;
 		return;
 	}
 
@@ -582,6 +583,10 @@ void ForwardRenderer::createShaderPrograms()
 
 void ForwardRenderer::createMeshBuffers()
 {
+	if (world->getNumberOfAssets<Mesh>() == 0){
+		return;
+	}
+
 	size_t totalVerticesSize = 0;
 	size_t totalNormalsSize = 0;
 	size_t totalTexCoordsSize = 0;

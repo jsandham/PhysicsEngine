@@ -8,6 +8,8 @@ namespace PhysicsEditor
 		public:
 			Console();
 			~Console();
+
+			void render(bool isOpenedThisFrame);
 	};
 }
 

@@ -1,6 +1,5 @@
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\vc142.pdb
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\vc142.idb
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\main.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordrawerinternal.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
@@ -33,12 +32,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_impl_win32.
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_impl_opengl3.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_draw.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_demo.obj
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.command.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.read.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.write.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.command.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.read.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.write.1.tlog

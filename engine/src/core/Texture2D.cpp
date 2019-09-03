@@ -145,7 +145,7 @@ Color Texture2D::getPixel(int x, int y)
 	int index = numChannels * (x + width * y);
 
 	if (index + numChannels >= rawTextureData.size()){
-		Log::Error("Texture2D: pixel index out of range");
+		Log::error("Texture2D: pixel index out of range\n");
 	}
 
 	Color color;
@@ -193,7 +193,7 @@ void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, in
 			numChannels = 4;
 			break;
 		default:
-			std::cout << "Error: Unsupported texture format " << format << std::endl;
+			Log::error("Unsupported texture format %d\n", format);
 			return;
 	}
 
@@ -207,7 +207,7 @@ void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, in
 void Texture2D::setPixels(std::vector<Color> colors)
 {
 	if (colors.size() != width*height){
-		Log::Error("Texture2D: error when trying to set pixels. Number of colors must match dimensions of texture");
+		Log::error("Texture2D: error when trying to set pixels. Number of colors must match dimensions of texture\n");
 		return;
 	}
 
@@ -234,7 +234,7 @@ void Texture2D::setPixel(int x, int y, Color color)
 	int index = numChannels * (x + width * y);
 
 	if (index + numChannels >= rawTextureData.size()){
-		Log::Error("Texture2D: pixel index out of range");
+		Log::error("Texture2D: pixel index out of range\n");
 		return;
 	}
 

@@ -4,6 +4,69 @@
 
 using namespace PhysicsEngine;
 
+int Log::maxMessageCount = 100;
+std::queue<std::string> Log::messages;
+
+void Log::info(const char* format, ...)
+{
+	if(messages.size() >= maxMessageCount){
+		return;
+	}
+
+	va_list args;
+	va_start(args, format);
+
+	std::string message = convertToString(format, args);
+
+	va_end(args);
+
+	messages.push("[Info]: " + message);
+}
+
+void Log::warn(const char* format, ...)
+{
+	if(messages.size() >= maxMessageCount){
+		return;
+	}
+
+	va_list args;
+	va_start(args, format);
+
+	std::string message = convertToString(format, args);
+
+	va_end(args);
+
+	messages.push("[Warn]: " + message);
+}
+
+void Log::error(const char* format, ...)
+{
+	if(messages.size() >= maxMessageCount){
+		return;
+	}
+
+	va_list args;
+	va_start(args, format);
+
+	std::string message = convertToString(format, args);
+
+	va_end(args);
+
+	messages.push("[Error]: " + message);
+}
+
+void Log::clear()
+{
+	while(!messages.empty()){
+		messages.pop();
+	}
+}
+
+std::queue<std::string> Log::getMessages()
+{
+	return messages;
+}
+
 std::string Log::convertToString(const char* format, va_list args)
 {
 	std::string message = "";
@@ -51,43 +114,4 @@ std::string Log::convertToString(const char* format, va_list args)
 	}
 
 	return message;
-}
-
-void Log::Info(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	std::string message = convertToString(format, args);
-
-	va_end(args);
-
-	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Info]: " << message << std::endl;
-}
-
-void Log::Warn(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	std::string message = convertToString(format, args);
-
-	va_end(args);
-
-	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Warn]: " << message << std::endl;
-}
-
-void Log::Error(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	std::string message = convertToString(format, args);
-
-	va_end(args);
-
-	std::ofstream logFile("log.txt", std::ios_base::out | std::ios_base::app);
-	logFile << "[Error]: " << message << std::endl;
 }

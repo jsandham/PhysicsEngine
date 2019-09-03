@@ -28,6 +28,11 @@ World::~World()
 
 }
 
+// bool World::load(JSON object)
+// {
+// 	return false;
+// }
+
 bool World::load(Scene scene, AssetBundle assetBundle)
 {
 	std::cout << "Loading asset bundle: " << assetBundle.filepath << std::endl;

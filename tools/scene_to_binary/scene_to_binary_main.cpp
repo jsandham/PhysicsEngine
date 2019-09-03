@@ -132,11 +132,6 @@ int serializeScenes(std::string projectDirectory)
 
 		size_t sizeOfAllSystems = 0;
 		for(it = objects.begin(); it != objects.end(); it++){
-			if(it->first == "id"){
-				std::cout << "scene id found " << (it->second).ToInt() << std::endl;
-				continue;
-			}
-
 			std::string type = it->second["type"].ToString();
 
 			if(type == "Entity"){
@@ -1006,32 +1001,54 @@ int serializeAssets(std::string projectDirectory)
 
 		Material material;
 
-		material.assetId = Guid(jsonMaterial["id"].ToString());
-		material.shininess = (float)jsonMaterial["shininess"].ToFloat();
-		material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
-		material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
-		material.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
-		material.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
-		material.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
-		material.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
-		material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
-		material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
-		material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
-		material.shaderId  = Guid(jsonMaterial["shader"].ToString());
-		material.textureId = Guid(jsonMaterial["mainTexture"].ToString());
-		material.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
-		material.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+		std::string filePath = materialFilePaths[i].substr(0, materialFilePaths[i].find_last_of(".")) + ".material";
 
-		std::vector<char> data = material.serialize();
+		std::cout << "material: " << filePath << " id: " << jsonMaterial["id"].ToString() << std::endl;
 
-		char classification = 'a';
-		int type = 4;
-		size_t size = data.size();
+		if(AssetLoader::load(filePath, material)){
+			material.assetId = Guid(jsonMaterial["id"].ToString());
 
-		fwrite(&classification, sizeof(char), 1, file);
-		fwrite(&type, sizeof(int), 1, file);
-		fwrite(&size, sizeof(size_t), 1, file);
-		fwrite(&data[0], data.size(), 1, file);
+			std::vector<char> data = material.serialize();
+
+			char classification = 'a';
+			int type = 4;
+			size_t size = data.size();
+
+			fwrite(&classification, sizeof(char), 1, file);
+			fwrite(&type, sizeof(int), 1, file);
+			fwrite(&size, sizeof(size_t), 1, file);
+			fwrite(&data[0], data.size(), 1, file);
+		}
+		else{
+			std::cout << "Failed to open file " << filePath << " for parsing" << std::endl;
+			return 0;
+		}
+		// material.assetId = Guid(jsonMaterial["id"].ToString());
+		// material.shininess = (float)jsonMaterial["shininess"].ToFloat();
+		// material.ambient.x = (float)jsonMaterial["ambient"][0].ToFloat();
+		// material.ambient.y = (float)jsonMaterial["ambient"][1].ToFloat();
+		// material.ambient.z = (float)jsonMaterial["ambient"][2].ToFloat();
+		// material.diffuse.x = (float)jsonMaterial["diffuse"][0].ToFloat();
+		// material.diffuse.y = (float)jsonMaterial["diffuse"][1].ToFloat();
+		// material.diffuse.z = (float)jsonMaterial["diffuse"][2].ToFloat();
+		// material.specular.x = (float)jsonMaterial["specular"][0].ToFloat();
+		// material.specular.y = (float)jsonMaterial["specular"][1].ToFloat();
+		// material.specular.z = (float)jsonMaterial["specular"][2].ToFloat();
+		// material.shaderId  = Guid(jsonMaterial["shader"].ToString());
+		// material.textureId = Guid(jsonMaterial["mainTexture"].ToString());
+		// material.normalMapId = Guid(jsonMaterial["normalMap"].ToString());
+		// material.specularMapId = Guid(jsonMaterial["specularMap"].ToString());
+
+		// std::vector<char> data = material.serialize();
+
+		// char classification = 'a';
+		// int type = 4;
+		// size_t size = data.size();
+
+		// fwrite(&classification, sizeof(char), 1, file);
+		// fwrite(&type, sizeof(int), 1, file);
+		// fwrite(&size, sizeof(size_t), 1, file);
+		// fwrite(&data[0], data.size(), 1, file);
 	}
 
 	// write meshes out to bundle
@@ -1046,7 +1063,7 @@ int serializeAssets(std::string projectDirectory)
 
 		Mesh mesh;
 
-		std::string filePath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".txt";
+		std::string filePath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".obj";
 
 		std::cout << "mesh filepath: " << filePath << std::endl;
 
@@ -1061,7 +1078,7 @@ int serializeAssets(std::string projectDirectory)
 
 			std::cout << "vertices size: " << mesh.vertices.size() << " normals size: " << mesh.normals.size() << " texCoords size: " << mesh.texCoords.size() << " subMeshStartIndicies size: " << mesh.subMeshVertexStartIndices.size() << std::endl;
 
-			std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
+			//std::string outputPath = meshFilePaths[i].substr(0, meshFilePaths[i].find_last_of(".")) + ".mesh";
 
 			fwrite(&classification, sizeof(char), 1, file);
 			fwrite(&type, sizeof(int), 1, file);

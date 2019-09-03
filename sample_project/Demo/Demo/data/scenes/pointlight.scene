@@ -1,0 +1,126 @@
+{
+  "df79ddbd-94a5-4678-8c63-5cd5713d876e" : {
+    "type" : "Entity",
+    "components" : ["73545eb4-60eb-4bee-b82d-892332f3df61", "a980ecad-a702-4d2b-ba2d-85f608961c29", "737fcfec-9518-43eb-b3a9-6047758dc5f8", "58011868-b463-46ce-8a0e-241d19d15a3e"]
+  },
+  "73545eb4-60eb-4bee-b82d-892332f3df61" : {
+    "type" : "Transform",
+    "parent" : "00000000-0000-0000-0000-000000000000",
+    "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
+    "position" : [0.0, 0.0, 0.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  },
+  "a980ecad-a702-4d2b-ba2d-85f608961c29" : {
+    "type" : "Camera",
+    "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
+    "position" : [0.0, 2.0, 0.0],
+    "front" : [0.0, 0.0, -1.0],
+    "up" : [0.0, 1.0, 0.0],
+    "backgroundColor" : [0.15, 0.15, 0.15, 1.0],
+    "x" : 0,
+    "y" : 0,
+    "width" : 1024,
+    "height" : 1024,
+    "fov" : 45.0,
+    "near" : 0.1,
+    "far" : 250.0
+  },
+  "737fcfec-9518-43eb-b3a9-6047758dc5f8" : {
+    "type" : "MeshRenderer",
+    "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
+    "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
+  },
+  "58011868-b463-46ce-8a0e-241d19d15a3e" : {
+    "type" : "Light",
+    "entity" : "df79ddbd-94a5-4678-8c63-5cd5713d876e",
+    "direction" : [0.0, 0.0, 1.0],
+    "position" : [-5.0, 2.0, 0.6],
+    "ambient" : [0.2, 0.2, 0.2],
+    "diffuse" : [1.0, 1.0, 1.0],
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
+  },
+  "a0a845cf-b0e3-45df-99cf-47745cd99edc" : {
+    "type" : "Entity",
+    "components" : ["3cfc71fb-91aa-4efa-b2c9-6b8bf4f78115", "b7108a91-54c2-42c0-9c7d-723f18fe2486", "19804f45-c771-47d0-9be6-6efd38672c42"]
+  },
+  "3cfc71fb-91aa-4efa-b2c9-6b8bf4f78115" : {
+    "type" : "Transform",
+    "parent" : "73545eb4-60eb-4bee-b82d-892332f3df61",
+    "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
+    "position" : [5.2, 5.0, 5.0],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 1.0, 1.0]
+  },
+  "b7108a91-54c2-42c0-9c7d-723f18fe2486" : {
+    "type" : "Light",
+    "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
+    "position" : [1.0, 2.0, 0.5],
+    "direction" : [0.0, 0.0, 1.0],
+    "ambient" : [0.2, 0.2, 0.2],
+    "diffuse" : [1.0, 1.0, 1.0],
+    "specular" : [1.0, 1.0, 1.0],
+    "constant" : 1.0,
+    "linear" : 0.0,
+    "quadratic" : 0.0,
+    "cutOff" : 10.0,
+    "outerCutOff" : 25.0
+  },
+  "19804f45-c771-47d0-9be6-6efd38672c42" : {
+    "type" : "MeshRenderer",
+    "entity" : "a0a845cf-b0e3-45df-99cf-47745cd99edc",
+    "mesh" : "af41a30f-526a-4328-9495-af088a045a02",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
+  },
+  "db3efe0b-ab34-4be6-a8e5-1c76e638a994" : {
+    "type" : "Entity",
+    "components" : ["e0af7629-aff7-4b52-9306-aec11bd69fb5", "98cc0e3c-c9bc-4100-a9f0-6b8408edf114", "a89f1ead-a7c5-469e-867c-3b74ba2af33b"]
+  },
+  "e0af7629-aff7-4b52-9306-aec11bd69fb5" : {
+    "type" : "Transform",
+    "parent" : "73545eb4-60eb-4bee-b82d-892332f3df61",
+    "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
+    "position" : [3.2, 1.0, 0.4],
+    "rotation" : [0.0, 0.0, 0.0, 1.0],
+    "scale" : [1.0, 2.0, 3.0]
+  },
+  "98cc0e3c-c9bc-4100-a9f0-6b8408edf114" : {
+    "type" : "MeshRenderer",
+    "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
+    "mesh" : "9256e146-16af-4869-b315-a9bb21516c50",
+    "material" : "843489ae-b5ff-4df3-a655-695101482a60",
+    "isStatic" : false
+  },
+  "a89f1ead-a7c5-469e-867c-3b74ba2af33b" : {
+    "type" : "CapsuleCollider",
+    "entity" : "db3efe0b-ab34-4be6-a8e5-1c76e638a994",
+    "centre" : [0.0, 0.0, 0.0],
+    "radius" : 1.2,
+    "height" : 3.4
+  },
+  "837dd766-a52b-4077-910d-da838039a031" : {
+    "type" : "PhysicsSystem",
+    "order" : 0
+  },
+  "f3321303-88e6-449d-a957-82eef6ab81b3" : {
+    "type" : "RenderSystem",
+    "order" : 1
+  },
+  "81b9ed7a-bf21-4762-a0ab-2a15a2a1a57f" : {  
+    "type" : "PlayerSystem",
+    "order" : 2
+  },
+  "51272a14-1f1f-46bc-8209-a6cc64317a4a" : {
+    "type" : "LogicSystem",
+    "order" : 3,
+    "material" : "5cfa48d6-497e-4cce-b2bb-ddb619f1049b"
+  }
+}

@@ -417,8 +417,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Scene scene;
 	AssetBundle assetBundle;
 
-	/*scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\multiple_materials.scene";*/
-	scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\simple.scene";
+	scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\multiple_materials.scene";
+	//scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\simple.scene";
 	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\varying.scene";
 	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
 	assetBundle.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\bundle.assets";
