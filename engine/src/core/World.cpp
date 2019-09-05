@@ -28,10 +28,15 @@ World::~World()
 
 }
 
-// bool World::load(JSON object)
-// {
-// 	return false;
-// }
+bool World::loadAsset(std::string filePath)
+{
+	return false;
+}
+
+bool World::loadScene(std::string filePath)
+{
+	return false;
+}
 
 bool World::load(Scene scene, AssetBundle assetBundle)
 {

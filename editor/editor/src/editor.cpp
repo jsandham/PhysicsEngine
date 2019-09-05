@@ -77,7 +77,7 @@ void Editor::cleanUp()
 
 void Editor::render()
 {
-	assetDirectory.update(currentProjectPath);
+	libraryDirectory.update(currentProjectPath);
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -139,10 +139,7 @@ void Editor::render()
 	bool consoleOpenedThisFrame = mainMenu.isOpenConsoleCalled();
 
 	hierarchy.render(world, hierarchyOpenedThisFrame);
-
-	Entity* selectedEntity = hierarchy.getSelectedEntity();
-
-	inspector.render(world, selectedEntity, inspectorOpenedThisFrame);
+	inspector.render(world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
 
 	aboutPopup.render(mainMenu.isAboutClicked());
@@ -214,6 +211,12 @@ void Editor::newScene()
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
+
+// Ok the next thing to do here is:
+// 1) first scan the scene and collect all the asset ids found in that scene
+// 2) load the binary asset (found in the library directory) corresponding to that id into the world
+// 3) finally load the binary scene (found in the library directory) corresponding to the scenes id (found from its meta file)
+// We could replace 1) and 2) with just loading all assets found in the library directory?? This actually might be better?
 void Editor::openScene(std::string path)
 {
 	// open scene file for parsing
@@ -241,14 +244,54 @@ void Editor::openScene(std::string path)
 			Guid id = Guid(it->first);
 			std::string type = it->second["type"].ToString();
 
-			// figure out how to do this without explicitly running though all types (we dont know what types a user might create!)
-			// Idea: Instead of having type be the class name could instead have the type be the type integer we use else where??
-			if (type == "Entity"){
 
+			// Note: we dont know what types a user might create so we will have to do something different. See below commented code for idea.
+			// Note: Maybe instead we should just load the binary version of the scene (stored in the library directory) instead of using the json version of the scene??? 
+			// This would require us the create the binary version of the scene just like the other assets first. The nice part though is that we already can load a scene 
+			// from the binary data into the world....Actually yeah I think this is what unity does. It has an internal representation of the scene in the library directory 
+			// just like any other file in the assets directory. I might as well load the scene initially using this internal binary representation. Now I will still have to 
+			// think about how to convert from json scene format to the internal binary representation format but this will occur instead when the library directory is built 
+			// (and I suppose whenever the scene is saved?) and not here. When we add new entities and components in the hierarchy, we will then just use world.createEntity 
+			// etc method calls. This is nice as the world does not need to work with any json.
+			/*if (type == "Entity"){
+				Entity* entity = world.createEntity(id);
+				
+
+
+				Entity* entity = someMethod(it->second);
+
+				world.loadEntity();
 			}
 			else if (type == "Transform"){
-
+				Transform* transform = 
 			}
+			else if (type == "MeshRenderer"){
+
+			}*/
+
+
+
+			//// might need to do something like...
+			//std::string typeName = it->second["typeName"].ToString();   // i.e. "Transform"
+			//std::string classification = it->second["classification"].ToString();  // "c"
+			//int type = it->second["type"].ToInt();  // 0  
+
+			//// and then I can do something like....
+			//if (classification == "e"){
+			//	Entity* entity = loadEntityFromJsonInternal();
+
+			//	// or...
+			//	loadEntityFromJsonInternal(&world,/*...*/ );
+			//}
+			//else if (classification == "c") {
+			//	Component* component = NULL;
+			//	if (type < 20){
+			//		component = loadComponentFromJsonInternal();
+			//	}
+			//	else {
+			//		component = loadComponentFromJson();
+			//	}
+			//}
 		}
 
 		/*for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
@@ -339,6 +382,10 @@ void Editor::openScene(std::string path)
 void Editor::saveScene(std::string path)
 {
 	for (int i = 0; i < world.getNumberOfEntities(); i++) {
+
+	}
+
+	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 
 	}
 }

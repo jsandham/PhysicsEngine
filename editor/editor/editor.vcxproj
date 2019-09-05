@@ -156,7 +156,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\AboutPopup.cpp" />
-    <ClCompile Include="src\AssetDirectory.cpp" />
     <ClCompile Include="src\BoxColliderDrawer.cpp" />
     <ClCompile Include="src\BuildWindow.cpp" />
     <ClCompile Include="src\CameraDrawer.cpp" />
@@ -170,6 +169,7 @@
     <ClCompile Include="src\imgui_extensions.cpp" />
     <ClCompile Include="src\Inspector.cpp" />
     <ClCompile Include="src\InspectorDrawer.cpp" />
+    <ClCompile Include="src\LibraryDirectory.cpp" />
     <ClCompile Include="src\LightDrawer.cpp" />
     <ClCompile Include="src\LineRendererDrawer.cpp" />
     <ClCompile Include="src\Load.cpp" />
@@ -193,7 +193,6 @@
   <ItemGroup>
     <ClInclude Include="Header.h" />
     <ClInclude Include="include\AboutPopup.h" />
-    <ClInclude Include="include\AssetDirectory.h" />
     <ClInclude Include="include\BoxColliderDrawer.h" />
     <ClInclude Include="include\BuildWindow.h" />
     <ClInclude Include="include\CameraDrawer.h" />
@@ -215,6 +214,7 @@
     <ClInclude Include="include\imgui_extensions.h" />
     <ClInclude Include="include\Inspector.h" />
     <ClInclude Include="include\InspectorDrawer.h" />
+    <ClInclude Include="include\LibraryDirectory.h" />
     <ClInclude Include="include\LightDrawer.h" />
     <ClInclude Include="include\LineRendererDrawer.h" />
     <ClInclude Include="include\LoadInspectorDrawerInternal.h" />

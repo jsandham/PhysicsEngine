@@ -99,7 +99,10 @@ namespace PhysicsEngine
 			World();
 			~World();
 
-			//bool load(JSON object);
+
+			bool loadAsset(std::string filePath);
+			bool loadScene(std::string filePath);
+
 			bool load(Scene scene, AssetBundle assetBundle);
 
 			int getNumberOfEntities();

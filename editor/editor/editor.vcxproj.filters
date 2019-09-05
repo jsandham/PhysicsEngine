@@ -108,13 +108,13 @@
     <ClCompile Include="src\RigidbodyDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AssetDirectory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorCameraSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LibraryDirectory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,13 +215,13 @@
     <ClInclude Include="Header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\AssetDirectory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorCameraSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LibraryDirectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

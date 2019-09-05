@@ -1,5 +1,4 @@
 ﻿  AboutPopup.cpp
-  AssetDirectory.cpp
   BoxColliderDrawer.cpp
   BuildWindow.cpp
   CameraDrawer.cpp
@@ -18,6 +17,7 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5):
   imgui_extensions.cpp
   Inspector.cpp
   InspectorDrawer.cpp
+  LibraryDirectory.cpp
   LightDrawer.cpp
   LineRendererDrawer.cpp
   Load.cpp

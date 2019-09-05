@@ -6,7 +6,7 @@
 
 #include "core/World.h"
 
-#include "AssetDirectory.h"
+#include "LibraryDirectory.h"
 
 #include "MainMenuBar.h"
 #include "Inspector.h"
@@ -27,7 +27,7 @@ namespace PhysicsEditor
 		private:
 			World world;
 
-			AssetDirectory assetDirectory;
+			LibraryDirectory libraryDirectory;
 
 			MainMenuBar mainMenu;
 			Inspector inspector;

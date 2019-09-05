@@ -11,6 +11,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_extensions.
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\hierarchy.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filesystemutil.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filebrowser.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcamerasystem.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\capsulecolliderdrawer.obj
@@ -33,6 +34,12 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_impl_opengl
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_draw.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_demo.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui.obj
+c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
+c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
+c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.command.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.read.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.write.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.command.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.read.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.write.1.tlog
