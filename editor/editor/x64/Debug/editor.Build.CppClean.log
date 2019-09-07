@@ -5,6 +5,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordraw
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\linerendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\lightdrawer.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarydirectory.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspectordrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspector.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_extensions.obj
@@ -18,7 +19,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\capsulecolliderdr
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cameradrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\boxcolliderdrawer.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\assetdirectory.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\aboutpopup.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\transformdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\spherecolliderdrawer.obj

@@ -24,6 +24,7 @@ namespace PhysicsEditor
 			void createBinaryAssetInLibrary(std::string filePath, std::string extension);
 			void createBinarySceneInLibrary(std::string filePath);
 
+			std::unordered_set<std::string> getTrackedFilesInProject() const;
 			std::string getPathToBinarySceneOrAsset(PhysicsEngine::Guid id);
 	};
 }

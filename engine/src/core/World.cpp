@@ -4,6 +4,7 @@
 #include <map>
 #include <unordered_set>
 
+#include "../../include/core/Log.h"
 #include "../../include/core/Load.h"
 #include "../../include/core/LoadInternal.h"
 #include "../../include/core/World.h"
@@ -30,11 +31,15 @@ World::~World()
 
 bool World::loadAsset(std::string filePath)
 {
+	std::string errorMessage = "Attempting to load asset " + filePath + " into world\n";
+	Log::info(&errorMessage[0]);
 	return false;
 }
 
 bool World::loadScene(std::string filePath)
 {
+	std::string errorMessage = "Attempting to load scene " + filePath + " into world\n";
+	Log::info(&errorMessage[0]);
 	return false;
 }
 
@@ -80,10 +85,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = loadInternalAsset(data, type, &index);
+			asset = PhysicsEngine::loadInternalAsset(data, type, &index);
 		}
 		else{
-			asset = loadAsset(data, type, &index);
+			asset = PhysicsEngine::loadAsset(data, type, &index);
 		}
 
 		if(asset == NULL || index == -1){
@@ -143,7 +148,7 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		if(classification == 'e'){
 			Entity* entity = NULL;
 			if(type == 0){
-				entity = loadInternalEntity(data, &index);
+				entity = PhysicsEngine::loadInternalEntity(data, &index);
 			}
 			else{
 				std::cout << "Error: Entity must be of type 0" << std::endl;
@@ -166,10 +171,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		else if(classification == 'c'){
 			Component* component = NULL;
 			if(type < 20){
-				component = loadInternalComponent(data, type, &index);
+				component = PhysicsEngine::loadInternalComponent(data, type, &index);
 			}
 			else{
-				component = loadComponent(data, type, &index);
+				component = PhysicsEngine::loadComponent(data, type, &index);
 			}
 
 			if(component == NULL || index == -1){
@@ -191,10 +196,10 @@ bool World::load(Scene scene, AssetBundle assetBundle)
 		else if(classification == 's'){
 			System* system = NULL;
 			if(type < 20){
-				system = loadInternalSystem(data, type, &index);
+				system = PhysicsEngine::loadInternalSystem(data, type, &index);
 			}
 			else{
-				system = loadSystem(data, type, &index);
+				system = PhysicsEngine::loadSystem(data, type, &index);
 			}
 
 			if(system == NULL || index == -1){

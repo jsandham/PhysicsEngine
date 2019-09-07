@@ -55,8 +55,6 @@ void RenderSystem::init(World* world)
 
 void RenderSystem::update(Input input)
 {
-	Log::info("Render update called\n");
-
 	// if(getKeyDown(input, KeyCode::N)){
 	// 	std::cout << "N pressed " << world->getNumberOfEntities() << std::endl;
 	// 	Entity* entity = world->createEntity();

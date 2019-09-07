@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <string>
+#include <unordered_set>
 
 #include "core/World.h"
 
@@ -48,6 +49,8 @@ namespace PhysicsEditor
 			Camera* camera;
 			std::vector<Guid> editorEntityIds;
 
+			std::unordered_set<std::string> assetsAddedToWorld;
+
 		public:
 			Editor();
 			~Editor();
@@ -66,6 +69,7 @@ namespace PhysicsEditor
 			void saveScene(std::string path);
 			void createProject(std::string path);
 			void openProject(std::string path);
+			void updateAssetsLoadedInWorld();
 	};
 }
 

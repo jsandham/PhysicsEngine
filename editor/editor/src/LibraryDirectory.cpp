@@ -47,8 +47,6 @@ void LibraryDirectory::update(std::string projectPath)
 	const std::string trackedExtensions[] = { "obj", "material", "png", "shader", "scene" };
 
 	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
-	//std::vector<std::string> assetFilesInProjectToCreate;
-	//std::vector<std::string> sceneFilesInProjectToCreate;
 	for (size_t i = 0; i < filesInProject.size(); i++) {
 		std::string extension = filesInProject[i].substr(filesInProject[i].find_last_of(".") + 1);
 
@@ -75,31 +73,32 @@ void LibraryDirectory::update(std::string projectPath)
 				file.close();
 			}
 		}
-
-		// get guid from meta file
-		std::fstream metaFile;
-		metaFile.open(metaFilename, std::fstream::in);
-
-		if (metaFile.is_open()) {
-			std::ostringstream contents;
-			contents << metaFile.rdbuf();
-
-			metaFile.close();
-
-			std::string jsonContentString = contents.str();
-			json::JSON object = json::JSON::Load(contents.str());
-
-			Guid id = object["id"].ToString();
-
-			std::map<Guid, std::string>::iterator it1 = idToTrackedFilePath.find(id);
-			if (it1 != idToTrackedFilePath.end()){
-				idToTrackedFilePath[id] = filesInProject[i];
-			}
-		}
-
+		
+		// if file is not tracked, then add it to library
 		std::unordered_set<std::string>::iterator it = trackedFilesInProject.find(filesInProject[i]);
 		if (it == trackedFilesInProject.end()) {
 			trackedFilesInProject.insert(filesInProject[i]);
+
+			// get guid from meta file
+			std::fstream metaFile;
+			metaFile.open(metaFilename, std::fstream::in);
+
+			if (metaFile.is_open()) {
+				std::ostringstream contents;
+				contents << metaFile.rdbuf();
+
+				metaFile.close();
+
+				std::string jsonContentString = contents.str();
+				json::JSON object = json::JSON::Load(contents.str());
+
+				Guid id = object["id"].ToString();
+
+				std::map<Guid, std::string>::iterator it1 = idToTrackedFilePath.find(id);
+				if (it1 != idToTrackedFilePath.end()) {
+					idToTrackedFilePath[id] = filesInProject[i];
+				}
+			}
 
 			// create binary version of scene or asset in library directory
 			if (extension == "scene"){
@@ -108,12 +107,13 @@ void LibraryDirectory::update(std::string projectPath)
 			else {
 				createBinaryAssetInLibrary(filesInProject[i], extension);
 			}
-
-			/*if (extension != "scene"){
-				createBinaryAssetInLibrary(filesInProject[i], extension);
-			}*/
 		}
 	}
+}
+
+std::unordered_set<std::string> LibraryDirectory::getTrackedFilesInProject() const
+{
+	return trackedFilesInProject;
 }
 
 std::string LibraryDirectory::getPathToBinarySceneOrAsset(Guid id)
