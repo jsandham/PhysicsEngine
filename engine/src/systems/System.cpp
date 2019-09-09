@@ -4,18 +4,14 @@ using namespace PhysicsEngine;
 
 System::System()
 {
-
+	order = -1;
+	systemId = Guid::INVALID;
 }
 
 System::~System()
 {
 
 }
-
-// int System::getType() const
-// {
-// 	return type;
-// }
 
 int System::getOrder() const
 {

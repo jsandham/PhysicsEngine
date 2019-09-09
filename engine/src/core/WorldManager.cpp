@@ -1,38 +1,44 @@
 #include "../../include/core/WorldManager.h"
+#include "../../include/core/Log.h"
 
 using namespace PhysicsEngine;
 
-WorldManager::WorldManager(Scene scene, AssetBundle bundle)
+WorldManager::WorldManager()
 {
-	this->scene = scene;
-	this->bundle = bundle;
-
-	std::cout << "Scene: " << scene.filepath << " asset bundle: " << bundle.filepath << std::endl;
+	
 }
 
 WorldManager::~WorldManager()
 {
 }
 
+bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
+{
+	for(size_t i = 0; i < assetFilePaths.size(); i++){
+		if(!world.loadAsset(assetFilePaths[i])){
+			Log::error("Could not load asset file\n");
+			return false;
+		}
+	}
+
+	if(!world.loadScene(sceneFilePath)){
+		Log::error("Could not load scene file\n");
+		return false;
+	}
+
+	return true;
+}
 
 void WorldManager::init()
 {
-	if(!world.load(scene, bundle))
-	{
-		std::cout << "Error: World load failed!" << std::endl;
-		return;
-	}
-
 	for(int i = 0; i < world.getNumberOfSystems(); i++){
 		System* system = world.getSystemByIndex(i);
 
 		system->init(&world);
-
-		std::cout << "initializing system with order: " << system->getOrder() << std::endl;
 	}
 }
 
-bool WorldManager::update(Time time, Input input)
+void WorldManager::update(Time time, Input input)
 {
 	if(getKeyDown(input, KeyCode::D)){
 		world.debug = !world.debug;
@@ -58,6 +64,4 @@ bool WorldManager::update(Time time, Input input)
 
 		system->update(input);
 	}
-
-	return true;
 }

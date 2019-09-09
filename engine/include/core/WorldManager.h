@@ -12,17 +12,15 @@ namespace PhysicsEngine
 	class WorldManager
 	{
 		private:
-			Scene scene;
-			AssetBundle bundle;
-
 			World world;
 
 		public:
-			WorldManager(Scene scene, AssetBundle bundle);
+			WorldManager();
 			~WorldManager();
 
+			bool load(std::string sceneFilePath, std::vector<std::string> assetFilePaths);
 			void init();
-			bool update(Time time, Input input);
+			void update(Time time, Input input);
 	};
 }
 

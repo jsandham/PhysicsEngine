@@ -61,6 +61,30 @@ LARGE_INTEGER perfCounterFrequencyResult;
 unsigned long long lastCycleCount;
 long long perfCounterFrequency;
 
+std::vector<std::string> getFilesInDirectory(const std::string& path, std::string extension, bool returnFullPaths)
+{
+	std::vector<std::string> files;
+	std::string search_path = path + "/*.*";
+	WIN32_FIND_DATAA fd;
+	HANDLE hFind = ::FindFirstFileA(search_path.c_str(), &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			// read all (real) files in current folder
+			// , delete '!' read other 2 default folder . and ..
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+
+				std::string file = fd.cFileName;
+				if (file.substr(file.find_last_of(".") + 1) == extension) {
+					files.push_back(path + file);
+				}
+			}
+		} while (::FindNextFileA(hFind, &fd));
+		::FindClose(hFind);
+	}
+	return files;
+}
+
+
 KeyCode GetKeyCode(unsigned int vKCode)
 {
 	KeyCode keyCode;
@@ -414,16 +438,20 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 0;
 	}
 
-	Scene scene;
-	AssetBundle assetBundle;
-
-	scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\multiple_materials.scene";
+	/*std::string sceneFilePath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\scenes\\multiple_materials.data";*/
+	std::string sceneFilePath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\scenes\\empty.data";
+	std::vector<std::string> assetFilePaths = getFilesInDirectory("C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\assets\\", "data", true);
 	//scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\simple.scene";
 	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\varying.scene";
 	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
-	assetBundle.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\bundle.assets";
+	//assetBundle.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\bundle.assets";
 
-	WorldManager worldManager(scene, assetBundle);
+	//WorldManager worldManager(scene, assetBundle);
+
+	WorldManager worldManager;
+	if (!worldManager.load(sceneFilePath, assetFilePaths)) {
+		return 0;
+	}
 
 	worldManager.init();
 
@@ -500,7 +528,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	return 0;
 }
-
 
 
 

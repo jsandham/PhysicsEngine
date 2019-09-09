@@ -4,10 +4,17 @@
 #include <vector>
 
 #include "../core/Input.h"
+#include "../core/Guid.h"
 
 namespace PhysicsEngine
 {
 	class World;
+
+	template <typename T>
+	struct SystemType { static const int type; };
+
+	template <typename T>
+	const int SystemType<T>::type = -1;
 
 	class System
 	{
@@ -15,6 +22,9 @@ namespace PhysicsEngine
 			int order;
 
 			World* world;
+
+		public:
+			Guid systemId;
 
 		public:
 			System();

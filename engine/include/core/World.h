@@ -103,7 +103,10 @@ namespace PhysicsEngine
 			bool loadAsset(std::string filePath);
 			bool loadScene(std::string filePath);
 
-			bool load(Scene scene, AssetBundle assetBundle);
+			//void clear(); // clear world of entities, components, and systems but not assets
+			//void clearAll(); // clear world of entities, components, systems, and assets
+
+			//bool load(Scene scene, AssetBundle assetBundle);
 
 			int getNumberOfEntities();
 			int getNumberOfSystems();

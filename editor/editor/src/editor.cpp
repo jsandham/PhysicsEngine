@@ -58,6 +58,9 @@ void Editor::init(HWND window, int width, int height)
 	camera = cameraEntity->addComponent<Camera>(&world);
 	camera->viewport.width = 1920;
 	camera->viewport.height = 1080;
+	/*camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);*/
 
 	// add physics, render, and cleanup system to world
 	world.addSystem<EditorCameraSystem>(0);
@@ -224,7 +227,8 @@ void Editor::openScene(std::string path)
 
 	// get binary scene file from library directory
 	std::string filename = path.substr(path.find_last_of("\\") + 1);
-	std::string binarySceneFilePath = filename.substr(0, filename.find(".")) + ".data";
+	std::string binarySceneFilename = filename.substr(0, filename.find(".")) + ".data";
+	std::string binarySceneFilePath = currentProjectPath + "\\library\\" + binarySceneFilename;
 
 	// load binary version of scene into world
 	if (world.loadScene(binarySceneFilePath)){
@@ -288,11 +292,16 @@ void Editor::updateAssetsLoadedInWorld()
 		if (it2 == assetsAddedToWorld.end() ){
 			assetsAddedToWorld.insert(*it1);
 
-			if (world.loadAsset(*it1)){
+			// get file path of binary version of asset located in library directory
+			std::string temp = (*it1).substr((*it1).find_last_of("\\") + 1);
+			std::string libraryFilename = temp.substr(0, temp.find_last_of(".")) + ".data";
+			std::string libraryFilePath = currentProjectPath + "\\library\\" + libraryFilename;
+
+			if (world.loadAsset(libraryFilePath)){
 
 			}
 			else {
-				std::string errorMessage = "Could not load asset: " + *it1 + "\n";
+				std::string errorMessage = "Could not load asset: " + libraryFilePath + "\n";
 				Log::error(&errorMessage[0]);
 			}
 		}

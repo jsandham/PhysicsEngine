@@ -5,6 +5,7 @@
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/Camera.h"
 
+#include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
@@ -34,7 +35,7 @@ void ForwardRenderer::init(World* world)
 		camera = world->getComponentByIndex<Camera>(0);
 	}
 	else{
-		std::cout << "Warning: No camera found" << std::endl;
+		Log::warn("Warning: No camera found");
 		camera = NULL;
 		return;
 	}
@@ -186,7 +187,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	int meshStartIndex = meshBuffer.getStartIndex(meshRenderer->meshId);
 	Sphere boundingSphere = meshBuffer.getBoundingSphere(meshRenderer->meshId);
 
-	std::cout << "" << std::endl;
+	// std::cout << "" << std::endl;
 	for(int i = 0; i < 8; i++){
 		if(meshRenderer->materialIds[i] == Guid::INVALID){
 			break;
@@ -207,7 +208,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
 
-		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
+		// std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
 
 		for(int j = 0; j < 10; j++){
 			renderObject.shaders[j] = shader->programs[j].handle;
@@ -516,7 +517,7 @@ void ForwardRenderer::createTextures()
 				openglFormat = GL_RGBA;
 				break;
 			default:
-				std::cout << "Error: Invalid texture format" << std::endl;
+				Log::error("Invalid texture format");
 			}
 
 			glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
@@ -542,7 +543,8 @@ void ForwardRenderer::createShaderPrograms()
 			shader->compile();
 
 			if(!shader->isCompiled()){
-				std::cout << "Shader failed to compile " << i << " " << shader->assetId.toString() << std::endl;
+				std::string errorMessage = "Shader failed to compile " + shader->assetId.toString() + "\n";
+				Log::error(&errorMessage[0]);
 			}
 
 			std::string uniformBlocks[] = {"CameraBlock", 
@@ -577,8 +579,8 @@ void ForwardRenderer::createShaderPrograms()
 	quadShader.fragmentShader = Shader::windowFragmentShader;
 	quadShader.compile();
 
-	std::cout << "DEPTH VERTEX: " << depthShader.vertexShader << std::endl;
-	std::cout << "FRAGMENT VERTEX: " << depthShader.fragmentShader << std::endl;
+	//std::cout << "DEPTH VERTEX: " << depthShader.vertexShader << std::endl;
+	//std::cout << "FRAGMENT VERTEX: " << depthShader.fragmentShader << std::endl;
 }
 
 void ForwardRenderer::createMeshBuffers()
@@ -752,7 +754,7 @@ void ForwardRenderer::createShadowMapFBOs()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	std::cout << "Cascade shadow maps created" << std::endl;
+	Log::info("Cascade shadow maps created");
 
 	// create spotlight shadow map fbo
 	glGenFramebuffers(1, &shadowSpotlightFBO);
@@ -776,7 +778,7 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	std::cout << "Spotlight shadow maps created" << std::endl;
+	Log::info("Spotlight shadow maps created");
 
 	// create pointlight shadow cubemap fbo
 	glGenFramebuffers(1, &shadowCubemapFBO);
@@ -803,7 +805,7 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	std::cout << "Pointlight shadow maps created" << std::endl;
+	Log::info("Pointlight shadow maps created");
 }
 
 void ForwardRenderer::initRenderObjectsList()
@@ -815,7 +817,6 @@ void ForwardRenderer::initRenderObjectsList()
 		}
 	}
 
-	std::cout <<"Mesh buffer start indices" << std::endl;
 	for(size_t i = 0; i < meshBuffer.start.size(); i++){
 		std::cout << meshBuffer.start[i] << " ";
 	}

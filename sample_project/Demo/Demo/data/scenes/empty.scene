@@ -30,7 +30,7 @@
     "type" : "MeshRenderer",
     "entity" : "63e8fee2-c59a-41a4-b72f-790e735bf7c1",
     "mesh" : "e7226741-9f34-4b4e-98bd-28f8324b1c6b",
-    "materials" : ["5cfa48d6-497e-4cce-b2bb-ddb619f1049b"],
+    "materials" : ["843489ae-b5ff-4df3-a655-695101482a60"],
     "isStatic" : false
   },
   "4ade255a-bffa-4098-871d-2b68ea22ef2a" : {
