@@ -1,8 +1,6 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
-#include "../core/common.h"
-
 #include "../core/Guid.h"
 
 namespace PhysicsEngine

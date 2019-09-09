@@ -1,1 +1,6 @@
-﻿  Demo.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe
+﻿  Demo.cpp
+  Load.cpp
+  LogicSystem.cpp
+  PlayerSystem.cpp
+  Generating Code...
+  Demo.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\sample_project\Demo\x64\Debug\Demo.exe

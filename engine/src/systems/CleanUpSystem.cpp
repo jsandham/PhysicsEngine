@@ -33,14 +33,6 @@ std::vector<char> CleanUpSystem::serialize()
 void CleanUpSystem::deserialize(std::vector<char> data)
 {
 	order = *reinterpret_cast<int*>(&data[0]);
-	// size_t index = sizeof(char);
-	// type = *reinterpret_cast<int*>(&data[index]);
-	// index += sizeof(int);
-	// order = *reinterpret_cast<int*>(&data[index]);
-
-	// if(type != 0){
-	// 	std::cout << "Error: System type (" << type << ") found in data array is invalid" << std::endl;
-	// }
 }
 
 void CleanUpSystem::init(World* world)

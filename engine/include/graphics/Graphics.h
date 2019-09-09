@@ -11,7 +11,6 @@
 #include "../core/Font.h"
 #include "../core/Mesh.h"
 #include "../core/Material.h"
-#include "../core/Line.h"
 
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"

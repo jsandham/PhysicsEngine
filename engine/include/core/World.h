@@ -4,17 +4,12 @@
 #include <map>
 #include <string>
 
-// #include "../json/json.hpp"
-
-#include "common.h"
-
 #include "PoolAllocator.h"
 #include "Scene.h"
 #include "Asset.h"
 #include "Entity.h"
 #include "Mesh.h"
 #include "GMesh.h"
-#include "Line.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Texture2D.h"
@@ -35,8 +30,6 @@
 #include "../components/BoxCollider.h"
 #include "../components/MeshCollider.h"
 #include "../components/CapsuleCollider.h"
-#include "../components/Joint.h"
-#include "../components/SpringJoint.h"
 
 #include "../systems/System.h"
 

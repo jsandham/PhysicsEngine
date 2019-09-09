@@ -1,7 +1,6 @@
 #ifndef __SLAB_BUFFER_H__
 #define __SLAB_BUFFER_H__
 
-#include "Line.h"
 #include "Material.h"
 
 #include "../graphics/GraphicsHandle.h"

@@ -47,7 +47,6 @@ void RenderSystem::init(World* world)
 	this->world = world;
 
 	forwardRenderer.init(world);
-	//deferredRenderer.init(world);
 	debugRenderer.init(world);
 
 	testId = Guid::INVALID;

@@ -57,7 +57,6 @@ cl /c /I%GLEW% %CompilerFlags% ..\src\core\Sphere.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\Bounds.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\Triangle.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\Ray.cpp
-cl /c /I%GLEW% %CompilerFlags% ..\src\core\Line.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\Capsule.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\Geometry.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\core\GMesh.cpp
@@ -77,9 +76,6 @@ cl /c /I%GLEW% %CompilerFlags% ..\src\core\ParticleSampler.cpp
 
 :: compile engine components c++ source files to obj
 cl /c /I%GLEW% %CompilerFlags% ..\src\components\Component.cpp
-cl /c /I%GLEW% %CompilerFlags% ..\src\components\Joint.cpp
-cl /c /I%GLEW% %CompilerFlags% ..\src\components\HingeJoint.cpp
-cl /c /I%GLEW% %CompilerFlags% ..\src\components\SpringJoint.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\components\Camera.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\components\Collider.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\src\components\BoxCollider.cpp

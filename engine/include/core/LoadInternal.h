@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "common.h"
-
 #include "PoolAllocator.h"
 #include "Asset.h"
 #include "Entity.h"

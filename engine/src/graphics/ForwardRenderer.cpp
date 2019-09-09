@@ -9,7 +9,6 @@
 #include "../../include/core/Shader.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Cubemap.h"
-#include "../../include/core/Line.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
 #include "../../include/core/Util.h"

@@ -441,12 +441,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/*std::string sceneFilePath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\scenes\\multiple_materials.data";*/
 	std::string sceneFilePath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\scenes\\empty.data";
 	std::vector<std::string> assetFilePaths = getFilesInDirectory("C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\assets\\", "data", true);
-	//scene.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\simple.scene";
-	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\varying.scene";
-	//scene.filepath = "C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Release\\drawcall.scene";
-	//assetBundle.filepath = "C:\\Users\\jsand\\Documents\\PhysicsEngine\\sample_project\\Demo\\x64\\Debug\\bundle.assets";
-
-	//WorldManager worldManager(scene, assetBundle);
 
 	WorldManager worldManager;
 	if (!worldManager.load(sceneFilePath, assetFilePaths)) {
