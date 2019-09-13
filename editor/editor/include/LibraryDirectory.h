@@ -13,19 +13,21 @@ namespace PhysicsEditor
 	{
 		private:
 			std::string currentProjectPath;
-			std::unordered_set<std::string> trackedFilesInProject;
-			std::map<PhysicsEngine::Guid, std::string> idToTrackedFilePath;
+			std::map<std::string, PhysicsEngine::Guid> filePathToId;
 
 		public:
 			LibraryDirectory();
 			~LibraryDirectory();
 
 			void update(std::string projectPath);
-			bool createBinaryAssetInLibrary(std::string filePath, std::string extension);
-			bool createBinarySceneInLibrary(std::string filePath);
 
-			std::unordered_set<std::string> getTrackedFilesInProject() const;
-			std::string getPathToBinarySceneOrAsset(PhysicsEngine::Guid id);
+			std::map<std::string, PhysicsEngine::Guid> getTrackedFilesInProject() const;
+		
+		private:
+			bool load();
+			bool save();
+			bool createBinaryAssetInLibrary(std::string filePath, PhysicsEngine::Guid id, std::string extension);
+			bool createBinarySceneInLibrary(std::string filePath, PhysicsEngine::Guid id);
 	};
 }
 

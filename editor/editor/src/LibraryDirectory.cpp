@@ -43,19 +43,30 @@ void LibraryDirectory::update(std::string projectPath)
 	if (projectPath != currentProjectPath) {
 		currentProjectPath = projectPath;
 
-		// create library directory if it does not exist, or clear it if it does
-		if (doesDirectoryExist(currentProjectPath + "\\library")) {
-			deleteDirectory(currentProjectPath + "\\library");
+		// if library directory doesnt exist then create it
+		if (!doesDirectoryExist(currentProjectPath + "\\library")) {
+			Log::info("Trying to create library directory\n");
+			if (!createDirectory(currentProjectPath + "\\library")) {
+				Log::error("Could not create library directory\n");
+				return;
+			}
+
+			// create directory cache file
+			std::ofstream file{ currentProjectPath + "\\library\\directory_cache.txt" };
 		}
 
-		createDirectory(currentProjectPath + "\\library");
+		filePathToId.clear();
 
-		trackedFilesInProject.clear();
+		if (!load()) {
+			Log::error("Could not load library\n");
+		}
 	}
 
 	const std::string trackedExtensions[] = { "obj", "material", "png", "shader", "scene" };
 
 	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
+
+	int numberOfFilesAddedToLibrary = 0;
 	for (size_t i = 0; i < filesInProject.size(); i++) {
 		std::string extension = filesInProject[i].substr(filesInProject[i].find_last_of(".") + 1);
 
@@ -84,14 +95,14 @@ void LibraryDirectory::update(std::string projectPath)
 		}
 		
 		// if file is not tracked, then add it to library
-		std::unordered_set<std::string>::iterator it = trackedFilesInProject.find(filesInProject[i]);
-		if (it == trackedFilesInProject.end()) {
-			trackedFilesInProject.insert(filesInProject[i]);
+		std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.find(filesInProject[i]);
+		if (it == filePathToId.end()) {
 
 			// get guid from meta file
 			std::fstream metaFile;
 			metaFile.open(metaFilename, std::fstream::in);
 
+			Guid id;
 			if (metaFile.is_open()) {
 				std::ostringstream contents;
 				contents << metaFile.rdbuf();
@@ -101,24 +112,28 @@ void LibraryDirectory::update(std::string projectPath)
 				std::string jsonContentString = contents.str();
 				json::JSON object = json::JSON::Load(contents.str());
 
-				Guid id = object["id"].ToString();
-
-				std::map<Guid, std::string>::iterator it1 = idToTrackedFilePath.find(id);
-				if (it1 != idToTrackedFilePath.end()) {
-					idToTrackedFilePath[id] = filesInProject[i];
-				}
+				id = object["id"].ToString();
 			}
+			else {
+				std::string errorMessage = "An error occured when trying to open meta file: " + metaFilename + "\n";
+				Log::error(&errorMessage[0]);
+				return;
+			}
+
+			filePathToId[filesInProject[i]] = id;
+
+			numberOfFilesAddedToLibrary++;
 
 			// create binary version of scene or asset in library directory
 			if (extension == "scene"){
-				if (!createBinarySceneInLibrary(filesInProject[i])) {
+				if (!createBinarySceneInLibrary(filesInProject[i], id)) {
 					std::string errorMessage = "An error occured when trying to create binary library version of scene: " + filesInProject[i] + "\n";
 					Log::error(&errorMessage[0]);
 					return;
 				}
 			}
 			else {
-				if (!createBinaryAssetInLibrary(filesInProject[i], extension)){
+				if (!createBinaryAssetInLibrary(filesInProject[i], id, extension)){
 					std::string errorMessage = "An error occured when trying to create binary library version of asset: " + filesInProject[i] + "\n";
 					Log::error(&errorMessage[0]);
 					return;
@@ -126,44 +141,101 @@ void LibraryDirectory::update(std::string projectPath)
 			}
 		}
 	}
-}
 
-std::unordered_set<std::string> LibraryDirectory::getTrackedFilesInProject() const
-{
-	return trackedFilesInProject;
-}
-
-std::string LibraryDirectory::getPathToBinarySceneOrAsset(Guid id)
-{
-	std::map<Guid, std::string>::iterator it = idToTrackedFilePath.find(id);
-	if (it != idToTrackedFilePath.end()){
-		return it->second;
+	//call save here by first keeping track of how many files were added to the library this frame and only saving if non zero?
+	if (numberOfFilesAddedToLibrary > 0) {
+		if(!save()) {
+			Log::error("An error occured when trying to save library\n");
+		}
 	}
-
-	return std::string("");
 }
 
-bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::string extension)
+std::map<std::string, PhysicsEngine::Guid> LibraryDirectory::getTrackedFilesInProject() const
 {
-	std::string metaFilePath = filePath.substr(0, filePath.find(".")) + ".json";
+	return filePathToId;
+}
 
-	// get guid from asset meta file
-	std::ifstream metaFile(metaFilePath, std::ios::in);
+bool LibraryDirectory::load() 
+{
+	Log::warn("Loading directory cache\n");
 
-	Guid guid;
-	if (metaFile.is_open()) {
-		std::ostringstream contents;
-		contents << metaFile.rdbuf();
-		metaFile.close();
+	std::fstream file(currentProjectPath + "\\library\\directory_cache.txt", std::ios::in);
 
-		json::JSON jsonObject = JSON::Load(contents.str());
-		guid = Guid(jsonObject["id"].ToString());
+	bool error = false;
+	if (file.is_open()) {
+		std::vector<std::string> filePaths;
+		std::vector<std::string> ids;
+
+		std::string line;
+		while (getline(file, line))
+		{
+			std::string::size_type index = line.find(" ");
+			if (index == std::string::npos) {
+				Log::error("A problem was encountered when trying to load directory cache\n");
+				error = true;
+				break;
+			}
+
+			std::string filePath = line.substr(0, index);
+			std::string id = line.substr(index + 1);
+
+			std::string temp = filePath + " " + id + "\n";
+			Log::warn(&temp[0]);
+
+			std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.find(filePath);
+			if (it == filePathToId.end()) {
+				filePathToId[filePath] = PhysicsEngine::Guid(id);
+			}
+			else {
+				Log::error("A duplicate entry was encountered when loading directory cache\n");
+				error = true;
+				break;
+			}
+		}
+		if (!file.eof())
+		{
+			error = true;
+			Log::error("A problem was encountered when trying to load directory cache\n");
+		}
+
+		file.close();
 	}
 	else {
-		std::string errorMessage = "Could not open meta file " + metaFilePath + "\n";
-		Log::error(&errorMessage[0]);
+		Log::error("Could not open directory cache when attempting to load library\n");
 		return false;
 	}
+
+	if (error) {
+		return false;
+	}
+
+	return true;
+}
+
+bool LibraryDirectory::save()
+{
+	Log::info("Save called\n");
+	std::fstream file(currentProjectPath + "\\library\\directory_cache.txt", std::ios::out);
+
+	if (file.is_open()) {
+		std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.begin();
+		for (it = filePathToId.begin(); it != filePathToId.end(); it++) {
+			file << (it->first + " " + it->second.toString() + "\n");
+		}
+
+		file.close();
+	}
+	else {
+		Log::error("Could not save directory cache\n");
+		return false;
+	}
+
+	return true;
+}
+
+bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, PhysicsEngine::Guid id, std::string extension)
+{
+	Log::info("Creating binary asset\n");
 
 	// load data from asset
 	std::vector<char> data;
@@ -173,7 +245,7 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::str
 		Shader shader;
 
 		if (AssetLoader::load(filePath, shader)) {
-			shader.assetId = guid.toString();
+			shader.assetId = id.toString();
 			data = shader.serialize();
 		}
 	}
@@ -182,7 +254,7 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::str
 		Texture2D texture;
 
 		if (AssetLoader::load(filePath, texture)) {
-			texture.assetId = guid.toString();
+			texture.assetId = id.toString();
 			data = texture.serialize();
 		}
 	}
@@ -191,7 +263,7 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::str
 		Mesh mesh;
 
 		if (AssetLoader::load(filePath, mesh)) {
-			mesh.assetId = guid.toString();
+			mesh.assetId = id.toString();
 			data = mesh.serialize();
 		}
 	}
@@ -200,15 +272,13 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::str
 		Material material;
 
 		if (AssetLoader::load(filePath, material)) {
-			material.assetId = guid.toString();
+			material.assetId = id.toString();
 			data = material.serialize();
 		}
 	}
 
 	// write data to binary version of asset in library 
-	std::string temp = filePath.substr(filePath.find_last_of("\\") + 1);
-	std::string outFilename = temp.substr(0, temp.find_last_of(".")) + ".data";
-	std::string outFilePath = currentProjectPath + "\\library\\" + outFilename;
+	std::string outFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {
@@ -235,8 +305,10 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, std::str
 	return true;
 }
 
-bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath)
+bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath, PhysicsEngine::Guid id)
 {
+	Log::info("Creating binary scene\n");
+
 	std::fstream file;
 
 	file.open(filePath);
@@ -286,9 +358,7 @@ bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath)
 		}
 	}
 
-	std::string temp = filePath.substr(filePath.find_last_of("\\") + 1);
-	std::string outFilename = temp.substr(0, temp.find_last_of(".")) + ".data";
-	std::string outFilePath = currentProjectPath + "\\library\\" + outFilename;
+	std::string outFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {

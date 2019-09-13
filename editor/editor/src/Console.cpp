@@ -105,7 +105,7 @@ struct ExampleAppLog
 				{
 					bool pop_color = false;
 					if (strncmp(line_start, "[Info]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 1.0f, 0.4f, 1.0f)); pop_color = true; }
-					else if (strncmp(line_start, "[Warn]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 1.0f, 1.0f)); pop_color = true; }
+					else if (strncmp(line_start, "[Warn]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.4f, 1.0f)); pop_color = true; }
 					else if (strncmp(line_start, "[Error]", 7) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); pop_color = true; }
 					ImGui::TextUnformatted(line_start, line_end);
 					if (pop_color)
@@ -135,7 +135,7 @@ struct ExampleAppLog
 
 					bool pop_color = false;
 					if (strncmp(line_start, "[Info]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 1.0f, 0.4f, 1.0f)); pop_color = true; }
-					else if (strncmp(line_start, "[Warn]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 1.0f, 1.0f)); pop_color = true; }
+					else if (strncmp(line_start, "[Warn]", 6) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.4f, 1.0f)); pop_color = true; }
 					else if (strncmp(line_start, "[Error]", 7) == 0) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); pop_color = true; }
 					ImGui::TextUnformatted(line_start, line_end);
 

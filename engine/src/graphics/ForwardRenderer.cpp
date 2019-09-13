@@ -34,7 +34,7 @@ void ForwardRenderer::init(World* world)
 		camera = world->getComponentByIndex<Camera>(0);
 	}
 	else{
-		Log::warn("Warning: No camera found");
+		Log::warn("Warning: No camera found\n");
 		camera = NULL;
 		return;
 	}
@@ -516,7 +516,7 @@ void ForwardRenderer::createTextures()
 				openglFormat = GL_RGBA;
 				break;
 			default:
-				Log::error("Invalid texture format");
+				Log::error("Invalid texture format\n");
 			}
 
 			glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
@@ -753,7 +753,7 @@ void ForwardRenderer::createShadowMapFBOs()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	Log::info("Cascade shadow maps created");
+	Log::info("Cascade shadow maps created\n");
 
 	// create spotlight shadow map fbo
 	glGenFramebuffers(1, &shadowSpotlightFBO);
@@ -777,7 +777,7 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Log::info("Spotlight shadow maps created");
+	Log::info("Spotlight shadow maps created\n");
 
 	// create pointlight shadow cubemap fbo
 	glGenFramebuffers(1, &shadowCubemapFBO);
@@ -804,7 +804,7 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Log::info("Pointlight shadow maps created");
+	Log::info("Pointlight shadow maps created\n");
 }
 
 void ForwardRenderer::initRenderObjectsList()

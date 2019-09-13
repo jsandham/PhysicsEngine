@@ -25,7 +25,7 @@ bool PhysicsEditor::doesFileExist(std::string filePath)
 bool PhysicsEditor::doesDirectoryExist(const std::string directoryPath)
 {
 	DWORD ftyp = GetFileAttributesA(directoryPath.c_str());
-	if (ftyp == INVALID_FILE_ATTRIBUTES && GetLastError() == ERROR_PATH_NOT_FOUND)
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
 	{
 		return false;
 	}
