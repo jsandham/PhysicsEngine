@@ -49,7 +49,7 @@ namespace PhysicsEditor
 			Camera* camera;
 			std::vector<Guid> editorEntityIds;
 
-			std::unordered_set<std::string> assetsAddedToWorld;
+			std::unordered_set<PhysicsEngine::Guid> assetsAddedToWorld;
 
 		public:
 			Editor();

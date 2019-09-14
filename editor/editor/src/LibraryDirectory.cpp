@@ -45,9 +45,8 @@ void LibraryDirectory::update(std::string projectPath)
 
 		// if library directory doesnt exist then create it
 		if (!doesDirectoryExist(currentProjectPath + "\\library")) {
-			Log::info("Trying to create library directory\n");
 			if (!createDirectory(currentProjectPath + "\\library")) {
-				Log::error("Could not create library directory\n");
+				Log::error("Could not create library cache directory\n");
 				return;
 			}
 
@@ -55,18 +54,18 @@ void LibraryDirectory::update(std::string projectPath)
 			std::ofstream file{ currentProjectPath + "\\library\\directory_cache.txt" };
 		}
 
-		filePathToId.clear();
+		filePathToFileInfo.clear();
 
 		if (!load()) {
-			Log::error("Could not load library\n");
+			Log::error("An error occured when trying to load library. Please delete library directory so that it can be re-built\n");
 		}
 	}
 
 	const std::string trackedExtensions[] = { "obj", "material", "png", "shader", "scene" };
 
-	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
+	std::vector<FileInfo> filesToAddToLibrary;
 
-	int numberOfFilesAddedToLibrary = 0;
+	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
 	for (size_t i = 0; i < filesInProject.size(); i++) {
 		std::string extension = filesInProject[i].substr(filesInProject[i].find_last_of(".") + 1);
 
@@ -93,11 +92,30 @@ void LibraryDirectory::update(std::string projectPath)
 				file.close();
 			}
 		}
-		
-		// if file is not tracked, then add it to library
-		std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.find(filesInProject[i]);
-		if (it == filePathToId.end()) {
 
+		std::string createTime;
+		std::string accessTime;
+		std::string writeTime;
+
+		bool passed = PhysicsEditor::getFileTime(filesInProject[i], createTime, accessTime, writeTime);
+
+		if (!passed) {
+			continue; // file must be in use by another application. Trying reading later.
+		}
+
+		std::map<std::string, FileInfo>::iterator it = filePathToFileInfo.find(filesInProject[i]);
+		if (it != filePathToFileInfo.end()) {
+			FileInfo fileInfo = it->second;
+
+			if (fileInfo.createTime != createTime || fileInfo.writeTime != writeTime) {
+				fileInfo.createTime = createTime;
+				fileInfo.accessTime = accessTime;
+				fileInfo.writeTime = writeTime;
+
+				filesToAddToLibrary.push_back(fileInfo);
+			}
+		}
+		else {
 			// get guid from meta file
 			std::fstream metaFile;
 			metaFile.open(metaFilename, std::fstream::in);
@@ -120,44 +138,54 @@ void LibraryDirectory::update(std::string projectPath)
 				return;
 			}
 
-			filePathToId[filesInProject[i]] = id;
+			FileInfo fileInfo;
+			fileInfo.filePath = filesInProject[i];
+			fileInfo.fileExtension = extension;
+			fileInfo.id = id;
+			fileInfo.createTime = createTime;
+			fileInfo.accessTime = accessTime;
+			fileInfo.writeTime = writeTime;
 
-			numberOfFilesAddedToLibrary++;
+			filesToAddToLibrary.push_back(fileInfo);
+		}
+	}
 
-			// create binary version of scene or asset in library directory
-			if (extension == "scene"){
-				if (!createBinarySceneInLibrary(filesInProject[i], id)) {
-					std::string errorMessage = "An error occured when trying to create binary library version of scene: " + filesInProject[i] + "\n";
-					Log::error(&errorMessage[0]);
-					return;
-				}
+	for (size_t i = 0; i < filesToAddToLibrary.size(); i++) {
+
+		filePathToFileInfo[filesToAddToLibrary[i].filePath] = filesToAddToLibrary[i];
+
+		// create binary version of scene or asset in library directory
+		if (filesToAddToLibrary[i].fileExtension == "scene") {
+			if (!writeSceneToLibrary(filesToAddToLibrary[i])) {
+				std::string errorMessage = "An error occured when trying to create binary library version of scene: " + filesToAddToLibrary[i].filePath + "\n";
+				Log::error(&errorMessage[0]);
+				return;
 			}
-			else {
-				if (!createBinaryAssetInLibrary(filesInProject[i], id, extension)){
-					std::string errorMessage = "An error occured when trying to create binary library version of asset: " + filesInProject[i] + "\n";
-					Log::error(&errorMessage[0]);
-					return;
-				}
+		}
+		else {
+			if (!writeAssetToLibrary(filesToAddToLibrary[i])) {
+				std::string errorMessage = "An error occured when trying to create binary library version of asset: " + filesToAddToLibrary[i].filePath + "\n";
+				Log::error(&errorMessage[0]);
+				return;
 			}
 		}
 	}
 
-	//call save here by first keeping track of how many files were added to the library this frame and only saving if non zero?
-	if (numberOfFilesAddedToLibrary > 0) {
-		if(!save()) {
+	if (filesToAddToLibrary.size() > 0) {
+		if (!save()) {
 			Log::error("An error occured when trying to save library\n");
 		}
 	}
 }
 
-std::map<std::string, PhysicsEngine::Guid> LibraryDirectory::getTrackedFilesInProject() const
+std::map<std::string, FileInfo> LibraryDirectory::getTrackedFilesInProject() const
 {
-	return filePathToId;
+	return filePathToFileInfo;
 }
 
 bool LibraryDirectory::load() 
 {
-	Log::warn("Loading directory cache\n");
+	Log::info("Loading library\n");
 
 	std::fstream file(currentProjectPath + "\\library\\directory_cache.txt", std::ios::in);
 
@@ -169,25 +197,36 @@ bool LibraryDirectory::load()
 		std::string line;
 		while (getline(file, line))
 		{
-			std::string::size_type index = line.find(" ");
-			if (index == std::string::npos) {
-				Log::error("A problem was encountered when trying to load directory cache\n");
-				error = true;
-				break;
+			std::vector<std::string> splitLine = PhysicsEditor::split(line, ' ');
+			if (splitLine.size() != 4) {
+				Log::warn("Line in directory cache has incorrect format. Re-creating asset corresponding to this line in library instead of loading\n");
+				continue;
 			}
 
-			std::string filePath = line.substr(0, index);
-			std::string id = line.substr(index + 1);
+			std::string filePath = splitLine[0];
+			std::string fileExtension = filePath.substr(filePath.find_last_of(".") + 1);
+			std::string id = splitLine[1];
+			std::string createTime = splitLine[2];
+			std::string writeTime = splitLine[3];
 
-			std::string temp = filePath + " " + id + "\n";
-			Log::warn(&temp[0]);
+			std::string temp = filePath + " " + id + " " + createTime + " " + writeTime + "\n";
 
-			std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.find(filePath);
-			if (it == filePathToId.end()) {
-				filePathToId[filePath] = PhysicsEngine::Guid(id);
+			std::string infoMessage = "Loading: " + temp;
+			Log::info(&infoMessage[0]);
+
+			std::map<std::string, FileInfo>::iterator it = filePathToFileInfo.find(filePath);
+			if (it == filePathToFileInfo.end()) {
+				FileInfo fileInfo;
+				fileInfo.filePath = filePath;
+				fileInfo.fileExtension = fileExtension;
+				fileInfo.id = PhysicsEngine::Guid(id);
+				fileInfo.createTime = createTime;
+				fileInfo.writeTime = writeTime;
+
+				filePathToFileInfo[filePath] = fileInfo;
 			}
 			else {
-				Log::error("A duplicate entry was encountered when loading directory cache\n");
+				Log::error("A duplicate entry was encountered when loading directory cache. Please delete library directory so it can be rebuilt\n");
 				error = true;
 				break;
 			}
@@ -195,14 +234,14 @@ bool LibraryDirectory::load()
 		if (!file.eof())
 		{
 			error = true;
-			Log::error("A problem was encountered when trying to load directory cache\n");
+			Log::error("An end of file error was encountered when loading library from directory cache file. Please delete library directory so it can be rebuilt\n");
 		}
 
 		file.close();
 	}
 	else {
-		Log::error("Could not open directory cache when attempting to load library\n");
-		return false;
+		Log::warn("Could not open directory cache file when attempting to load library. Library will be re-built instead of loading from cache file\n");
+		return true;
 	}
 
 	if (error) {
@@ -214,71 +253,72 @@ bool LibraryDirectory::load()
 
 bool LibraryDirectory::save()
 {
-	Log::info("Save called\n");
+	Log::info("Saving library\n");
 	std::fstream file(currentProjectPath + "\\library\\directory_cache.txt", std::ios::out);
 
 	if (file.is_open()) {
-		std::map<std::string, PhysicsEngine::Guid>::iterator it = filePathToId.begin();
-		for (it = filePathToId.begin(); it != filePathToId.end(); it++) {
-			file << (it->first + " " + it->second.toString() + "\n");
+		std::map<std::string, FileInfo>::iterator it = filePathToFileInfo.begin();
+		for (it = filePathToFileInfo.begin(); it != filePathToFileInfo.end(); it++) {
+			file << (it->first + " " + it->second.id.toString() + " " + it->second.createTime + " " + it->second.writeTime + "\n");
 		}
 
 		file.close();
 	}
 	else {
-		Log::error("Could not save directory cache\n");
+		Log::error("Could not open directory cache file for saving of library.\n");
 		return false;
 	}
 
 	return true;
 }
 
-bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, PhysicsEngine::Guid id, std::string extension)
+bool LibraryDirectory::writeAssetToLibrary(FileInfo fileInfo)
 {
-	Log::info("Creating binary asset\n");
+	std::string infoMessage = "Writing binary version of asset " + fileInfo.filePath + " to library\n";
+	Log::info(&infoMessage[0]);
 
 	// load data from asset
 	std::vector<char> data;
 	int assetType = -1;
-	if (extension == "shader") {
+	if (fileInfo.fileExtension == "shader") {
 		assetType = AssetType<Shader>::type;
 		Shader shader;
 
-		if (AssetLoader::load(filePath, shader)) {
-			shader.assetId = id.toString();
+		if (AssetLoader::load(fileInfo.filePath, shader)) {
+			shader.assetId = fileInfo.id.toString();
 			data = shader.serialize();
 		}
 	}
-	else if (extension == "png") {
+	else if (fileInfo.fileExtension == "png") {
 		assetType = AssetType<Texture2D>::type;
 		Texture2D texture;
 
-		if (AssetLoader::load(filePath, texture)) {
-			texture.assetId = id.toString();
+		if (AssetLoader::load(fileInfo.filePath, texture)) {
+			texture.assetId = fileInfo.id.toString();
 			data = texture.serialize();
 		}
 	}
-	else if (extension == "obj") {
+	else if (fileInfo.fileExtension == "obj") {
 		assetType = AssetType<Mesh>::type;
 		Mesh mesh;
 
-		if (AssetLoader::load(filePath, mesh)) {
-			mesh.assetId = id.toString();
+		if (AssetLoader::load(fileInfo.filePath, mesh)) {
+			mesh.assetId = fileInfo.id.toString();
 			data = mesh.serialize();
 		}
 	}
-	else if (extension == "material") {
+	else if (fileInfo.fileExtension == "material") {
 		assetType = AssetType<Material>::type;
 		Material material;
 
-		if (AssetLoader::load(filePath, material)) {
-			material.assetId = id.toString();
+		if (AssetLoader::load(fileInfo.filePath, material)) {
+			material.assetId = fileInfo.id.toString();
 			data = material.serialize();
 		}
 	}
 
 	// write data to binary version of asset in library 
-	std::string outFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";
+	std::string outFilePath = currentProjectPath + "\\library\\" + fileInfo.id.toString() + ".data";
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {
@@ -305,13 +345,14 @@ bool LibraryDirectory::createBinaryAssetInLibrary(std::string filePath, PhysicsE
 	return true;
 }
 
-bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath, PhysicsEngine::Guid id)
+bool LibraryDirectory::writeSceneToLibrary(FileInfo fileInfo)
 {
-	Log::info("Creating binary scene\n");
+	std::string infoMessage = "Writing binary version of scene " + fileInfo.filePath + " to library\n";
+	Log::info(&infoMessage[0]);
 
 	std::fstream file;
 
-	file.open(filePath);
+	file.open(fileInfo.filePath);
 
 	std::ostringstream contents;
 	if (file.is_open())
@@ -320,7 +361,7 @@ bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath, PhysicsE
 		file.close();
 	}
 	else {
-		std::string errorMessage = "Could not open scene " + filePath + " for writing to library\n";
+		std::string errorMessage = "Could not open scene " + fileInfo.filePath + " for writing to library\n";
 		Log::error(&errorMessage[0]);
 		return false;
 	}
@@ -358,7 +399,7 @@ bool LibraryDirectory::createBinarySceneInLibrary(std::string filePath, PhysicsE
 		}
 	}
 
-	std::string outFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";
+	std::string outFilePath = currentProjectPath + "\\library\\" + fileInfo.id.toString() + ".data";
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {

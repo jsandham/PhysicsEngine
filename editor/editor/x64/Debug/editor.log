@@ -1,3 +1,45 @@
-﻿  LibraryDirectory.cpp
-  GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+﻿  AboutPopup.cpp
+  BoxColliderDrawer.cpp
+  BuildWindow.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  Console.cpp
+  Editor.cpp
+  EditorCameraSystem.cpp
+  Filebrowser.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:  'argument': truncation from 'int' to 'const _Elem'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         with
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         [
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:             _Elem=char
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         ]
+  FileSystemUtil.cpp
+  Hierarchy.cpp
+  imgui_extensions.cpp
+  Inspector.cpp
+  InspectorDrawer.cpp
+  LibraryDirectory.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  Load.cpp
+  LoadInspectorDrawerInternal.cpp
+  main.cpp
+  Generating Code...
+  Compiling...
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_impl_win32.cpp
+  imgui_widgets.cpp
+  MainMenuBar.cpp
+  MeshColliderDrawer.cpp
+  MeshRendererDrawer.cpp
+  Project.cpp
+  ProjectWindow.cpp
+  RigidbodyDrawer.cpp
+  SphereColliderDrawer.cpp
+  TransformDrawer.cpp
+  Generating Code...
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,68): warning C4309:  'argument': truncation of constant value
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,68): warning C4309: GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

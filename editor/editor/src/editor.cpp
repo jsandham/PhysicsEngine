@@ -52,26 +52,6 @@ void Editor::init(HWND window, int width, int height)
 
 	// Setup style
 	ImGui::StyleColorsClassic();
-
-	// add editor camera to world
-	Entity* cameraEntity = world.createEntity();
-	camera = cameraEntity->addComponent<Camera>(&world);
-	camera->viewport.width = 1920;
-	camera->viewport.height = 1080;
-	/*camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);*/
-
-	// add physics, render, and cleanup system to world
-	world.addSystem<EditorCameraSystem>(0);
-	world.addSystem<RenderSystem>(1);
-	world.addSystem<CleanUpSystem>(2);
-
-	for (int i = 0; i < world.getNumberOfSystems(); i++) {
-		System* system = world.getSystemByIndex(i);
-
-		system->init(&world);
-	}
 }
 
 void Editor::cleanUp()
@@ -287,6 +267,30 @@ void Editor::createProject(std::string path)
 	else {
 		Log::error("Could not create project root directory\n");
 	}
+
+	// when creating new project or switching between projects, clear entire world?
+	// when opening scenes within a project, only clear components and entities?
+
+
+	// add editor camera to world
+	//Entity* cameraEntity = world.createEntity();
+	//camera = cameraEntity->addComponent<Camera>(&world);
+	//camera->viewport.width = 1920;
+	//camera->viewport.height = 1080;
+	///*camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	//camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	//camera->up = glm::vec3(0.0f, 0.0f, 1.0f);*/
+
+	//// add physics, render, and cleanup system to world
+	//world.addSystem<EditorCameraSystem>(0);
+	//world.addSystem<RenderSystem>(1);
+	//world.addSystem<CleanUpSystem>(2);
+
+	//for (int i = 0; i < world.getNumberOfSystems(); i++) {
+	//	System* system = world.getSystemByIndex(i);
+
+	//	system->init(&world);
+	//}
 }
 
 void Editor::openProject(std::string path)
@@ -294,23 +298,25 @@ void Editor::openProject(std::string path)
 	currentProjectPath = path;
 
 	assetsAddedToWorld.clear();
+
+
 }
 
 void Editor::updateAssetsLoadedInWorld()
 {
-	std::map<std::string, PhysicsEngine::Guid> filePathsToId = libraryDirectory.getTrackedFilesInProject();
-	for (std::map<std::string, PhysicsEngine::Guid>::iterator it1 = filePathsToId.begin(); it1 != filePathsToId.end(); it1++) {
+	std::map<std::string, FileInfo> filePathToFileInfo = libraryDirectory.getTrackedFilesInProject();
+	for (std::map<std::string, FileInfo>::iterator it1 = filePathToFileInfo.begin(); it1 != filePathToFileInfo.end(); it1++) {
 		std::string filePath = it1->first;
-		PhysicsEngine::Guid id = it1->second;
-		std::string extension = filePath.substr(filePath.find_last_of(".") + 1); 
+		PhysicsEngine::Guid id = it1->second.id;
+		std::string extension = it1->second.fileExtension;
 
 		if (extension == "scene") {
 			continue;
 		}
 
-		std::unordered_set<std::string>::iterator it2 = assetsAddedToWorld.find(filePath);
+		std::unordered_set<PhysicsEngine::Guid>::iterator it2 = assetsAddedToWorld.find(id);
 		if (it2 == assetsAddedToWorld.end() ){
-			assetsAddedToWorld.insert(filePath);
+			assetsAddedToWorld.insert(id);
 
 			// get file path of binary version of asset located in library directory
 			std::string libraryFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";;

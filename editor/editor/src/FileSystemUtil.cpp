@@ -8,6 +8,9 @@
 #include <string>
 #include <fileapi.h>
 
+#include <tchar.h>
+#include <strsafe.h>
+
 #include "../include/FileSystemUtil.h"
 
 using namespace PhysicsEditor;
@@ -115,6 +118,84 @@ bool PhysicsEditor::deleteDirectory(std::string path)
 		return false;
 		//throw std::runtime_error("Could not remove directory");
 	}
+
+	return true;
+}
+
+bool PhysicsEditor::getFileTime(std::string path, std::string& createTime, std::string& accessTime, std::string& writeTime)
+{
+	HANDLE hFile;
+
+	hFile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		DWORD temp = GetLastError();
+		return false;
+	}
+
+	FILETIME ftCreate, ftAccess, ftWrite;
+	SYSTEMTIME stUTC, stCreateLocal, stAccessLocal, stWriteLocal;
+
+	// Retrieve the file times for the file.
+	bool passed = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
+
+	CloseHandle(hFile);
+
+	if (!passed) {
+		return false;
+	}
+
+	// Convert the last create, access and write time to local time.
+	FileTimeToSystemTime(&ftCreate, &stUTC);
+	SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
+	FileTimeToSystemTime(&ftAccess, &stUTC);
+	SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stAccessLocal);
+	FileTimeToSystemTime(&ftWrite, &stUTC);
+	SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
+
+	// Build a string showing the date and time.
+	int year = stCreateLocal.wYear;
+	int month = stCreateLocal.wMonth;
+	int day = stCreateLocal.wDay;
+	int hour = stCreateLocal.wHour;
+	int second = stCreateLocal.wSecond;
+	int millisecond = stCreateLocal.wMilliseconds;
+
+	createTime = std::to_string(year) + "-" + 
+				 std::to_string(month) + "-" + 
+				 std::to_string(day) + "-" + 
+				 std::to_string(hour) + "-" + 
+				 std::to_string(second) + "-" + 
+				 std::to_string(millisecond);
+
+	year = stAccessLocal.wYear;
+	month = stAccessLocal.wMonth;
+	day = stAccessLocal.wDay;
+	hour = stAccessLocal.wHour;
+	second = stAccessLocal.wSecond;
+	millisecond = stAccessLocal.wMilliseconds;
+
+	accessTime = std::to_string(year) + "-" +
+		std::to_string(month) + "-" +
+		std::to_string(day) + "-" +
+		std::to_string(hour) + "-" +
+		std::to_string(second) + "-" +
+		std::to_string(millisecond);
+
+	year = stWriteLocal.wYear;
+	month = stWriteLocal.wMonth;
+	day = stWriteLocal.wDay;
+	hour = stWriteLocal.wHour;
+	second = stWriteLocal.wSecond;
+	millisecond = stWriteLocal.wMilliseconds;
+
+	writeTime = std::to_string(year) + "-" +
+		std::to_string(month) + "-" +
+		std::to_string(day) + "-" +
+		std::to_string(hour) + "-" +
+		std::to_string(second) + "-" +
+		std::to_string(millisecond);
 
 	return true;
 }

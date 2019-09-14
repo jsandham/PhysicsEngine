@@ -9,11 +9,21 @@
 
 namespace PhysicsEditor
 {
+	typedef struct FileInfo
+	{
+		std::string filePath;
+		std::string fileExtension;
+		PhysicsEngine::Guid id;
+		std::string createTime;
+		std::string accessTime;
+		std::string writeTime;
+	}FileInfo;
+
 	class LibraryDirectory 
 	{
 		private:
 			std::string currentProjectPath;
-			std::map<std::string, PhysicsEngine::Guid> filePathToId;
+			std::map<std::string, FileInfo> filePathToFileInfo;
 
 		public:
 			LibraryDirectory();
@@ -21,13 +31,13 @@ namespace PhysicsEditor
 
 			void update(std::string projectPath);
 
-			std::map<std::string, PhysicsEngine::Guid> getTrackedFilesInProject() const;
+			std::map<std::string, FileInfo> getTrackedFilesInProject() const;
 		
 		private:
 			bool load();
 			bool save();
-			bool createBinaryAssetInLibrary(std::string filePath, PhysicsEngine::Guid id, std::string extension);
-			bool createBinarySceneInLibrary(std::string filePath, PhysicsEngine::Guid id);
+			bool writeAssetToLibrary(FileInfo fileInfo);
+			bool writeSceneToLibrary(FileInfo fileInfo);
 	};
 }
 

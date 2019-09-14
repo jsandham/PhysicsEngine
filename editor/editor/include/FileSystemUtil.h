@@ -10,6 +10,7 @@ namespace PhysicsEditor
 	bool doesDirectoryExist(std::string directoryPath);
 	bool createDirectory(std::string path);
 	bool deleteDirectory(std::string path);
+	bool getFileTime(std::string path, std::string& createTime, std::string& accessTime, std::string& writeTime);
 	std::vector<std::string> split(const std::string& s, char delim);
 	std::vector<std::string> getDirectoryPaths(const std::string path);
 	std::string currentWorkingDirectoryPath();
@@ -18,7 +19,6 @@ namespace PhysicsEditor
 	std::vector<std::string> getFilesInDirectory(const std::string& path, bool returnFullPaths = false);
 	std::vector<std::string> getFilesInDirectory(const std::string& path, std::string extension, bool returnFullPaths = false);
 	std::vector<std::string> getFilesInDirectoryRecursive(const std::string& path, bool returnFullPaths = false);
-	//std::vector<std::string> getFilesInDirectoryRecursive(const std::string& path, std::string extension, bool returnFullPaths = false);
 }
 
 #endif
