@@ -5,6 +5,7 @@
 #include "../include/EditorCameraSystem.h" // could just add this to the engine lib? Could include a couple different camera movement systems like editor, fps etc in engine as examples?
 
 #include "core/Log.h"
+#include "components/Light.h"
 #include "systems/RenderSystem.h"
 #include "systems/CleanUpSystem.h"
 
@@ -52,6 +53,19 @@ void Editor::init(HWND window, int width, int height)
 
 	// Setup style
 	ImGui::StyleColorsClassic();
+
+	// add physics, render, and cleanup system to world
+	world.addSystem<EditorCameraSystem>(0);
+	renderSystem = world.addSystem<RenderSystem>(1);
+	world.addSystem<CleanUpSystem>(2);
+
+	for (int i = 0; i < world.getNumberOfSystems(); i++) {
+		System* system = world.getSystemByIndex(i);
+
+		system->init(&world);
+	}
+	
+	input = {};
 }
 
 void Editor::cleanUp()
@@ -69,9 +83,10 @@ void Editor::render()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
-	ImGui::Text(currentProjectPath.c_str());
-	ImGui::Text(currentScenePath.c_str());
+	//ImGui::ShowDemoWindow();
+	ImGui::ShowMetricsWindow();
+	//ImGui::Text(currentProjectPath.c_str());
+	//ImGui::Text(currentScenePath.c_str());
 
 	libraryDirectory.update(currentProjectPath);
 
@@ -131,17 +146,11 @@ void Editor::render()
 		quitCalled = true;
 	}
 
-	// Rendering
-	ImGui::Render();
-	//wglMakeCurrent(deviceContext, renderContext);
-	//glViewport(0, 0, g_display_w, g_display_h);                 //Display Size got from Resize Command
 	glViewport(0, 0, 1920, 1080);
-	/*glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);*/
-	/*glClearColor(0.15f, 0.15f, 0.15f, 0.0f);*/
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 0.412f, 0.706f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	Input input = {};
+	updateInputPassedToSystems(&input);
 
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
@@ -149,9 +158,16 @@ void Editor::render()
 		system->update(input);
 	}
 
+	ImGui::Begin("Scene");
+	{
+		ImGui::Image((void*)(intptr_t)renderSystem->getColorTexture(), ImVec2(1024, 1024));
+	}
+	ImGui::End();
+
+	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	//wglMakeCurrent(deviceContext, renderContext);
-	//SwapBuffers(deviceContext);
+
+	ImGui::EndFrame();
 }
 
 bool Editor::isQuitCalled() const
@@ -228,8 +244,27 @@ void Editor::openScene(std::string path)
 	// get binary scene file from library directory
 	std::string binarySceneFilePath = currentProjectPath + "\\library\\" + guid.toString() + ".data";
 
+
+
+	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+
+	// add editor camera to world
+	/*Entity* cameraEntity = world.createEntity();
+	camera = cameraEntity->addComponent<Camera>(&world);
+	camera->viewport.width = 1024;
+	camera->viewport.height = 1024;
+	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->backgroundColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	camera->updateInternalCameraState();
+*/
+
+
+
+
 	// load binary version of scene into world
-	if (world.loadScene(binarySceneFilePath)){
+	if (world.loadSceneFromEditor(binarySceneFilePath)){
 		currentScenePath = path;
 	}
 	else {
@@ -258,15 +293,32 @@ void Editor::createProject(std::string path)
 		if (success){
 			currentProjectPath = path;
 			assetsAddedToWorld.clear();
-			Log::info("Project successfully createed\n");
+			Log::info("Project successfully created\n");
 		}
 		else {
 			Log::error("Could not create project sub directories\n");
+			return;
 		}
 	}
 	else {
 		Log::error("Could not create project root directory\n");
+		return;
 	}
+
+
+	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+
+	// add editor camera to world
+	/*Entity* cameraEntity = world.createEntity();
+	camera = cameraEntity->addComponent<Camera>(&world);
+	camera->viewport.width = 1024;
+	camera->viewport.height = 1024;
+	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->updateInternalCameraState();*/
+
+
 
 	// when creating new project or switching between projects, clear entire world?
 	// when opening scenes within a project, only clear components and entities?
@@ -299,7 +351,17 @@ void Editor::openProject(std::string path)
 
 	assetsAddedToWorld.clear();
 
+	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
+	// add editor camera to world
+	/*Entity* cameraEntity = world.createEntity();
+	camera = cameraEntity->addComponent<Camera>(&world);
+	camera->viewport.width = 1024;
+	camera->viewport.height = 1024;
+	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->updateInternalCameraState();*/
 }
 
 void Editor::updateAssetsLoadedInWorld()
@@ -327,4 +389,53 @@ void Editor::updateAssetsLoadedInWorld()
 			}
 		}
 	}
+}
+
+void Editor::updateInputPassedToSystems(Input* input)
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (!io.WantCaptureKeyboard) {
+		// capture input for main application
+	}
+
+
+	/*for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
+		ImGui::Text("i: %d %d\n", i, io.KeysDown[i]);
+	}
+*/
+	/*struct Input
+	{
+		bool keyIsDown[51];
+		bool keyWasDown[51];
+		bool mouseButtonIsDown[3];
+		bool mouseButtonWasDown[3];
+		bool xboxButtonIsDown[14];
+		bool xboxButtonWasDown[14];
+		int mousePosX;
+		int mousePosY;
+		int mouseDelta;
+		int leftStickX;
+		int leftStickY;
+		int rightStickX;
+		int rightStickY;
+	};*/
+
+	// keyboard keys
+	//io.KeyMap[ImGuiKey_Tab] = 200;
+
+	//for (int i = 0; i < IM_ARRAYSIZE(io.KeyMap); i++) {
+	//	ImGui::Text("i: %d %d\n", i, io.KeyMap[i]);
+	//}
+
+	//ImGui::Text("Keys down:");      for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (io.KeysDownDuration[i] >= 0.0f) { ImGui::SameLine(); ImGui::Text("%d (0x%X) (%.02f secs)", i, i, io.KeysDownDuration[i]); }
+	//ImGui::Text("Keys pressed:");   for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyPressed(i)) { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
+	//ImGui::Text("Keys release:");   for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyReleased(i)) { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
+	//ImGui::Text("Keys mods: %s%s%s%s", io.KeyCtrl ? "CTRL " : "", io.KeyShift ? "SHIFT " : "", io.KeyAlt ? "ALT " : "", io.KeySuper ? "SUPER " : "");
+	//ImGui::Text("Chars queue:");    for (int i = 0; i < io.InputQueueCharacters.Size; i++) { ImWchar c = io.InputQueueCharacters[i]; ImGui::SameLine();  ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c); } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
+
+	//ImGui::Text("NavInputs down:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputs[i] > 0.0f) { ImGui::SameLine(); ImGui::Text("[%d] %.2f", i, io.NavInputs[i]); }
+	//ImGui::Text("NavInputs pressed:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputsDownDuration[i] == 0.0f) { ImGui::SameLine(); ImGui::Text("[%d]", i); }
+	//ImGui::Text("NavInputs duration:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputsDownDuration[i] >= 0.0f) { ImGui::SameLine(); ImGui::Text("[%d] %.2f", i, io.NavInputsDownDuration[i]); }
+
 }

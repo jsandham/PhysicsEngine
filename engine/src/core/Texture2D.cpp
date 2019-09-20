@@ -16,6 +16,7 @@ Texture2D::Texture2D()
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
+	this->isCreated = false;
 }
 
 Texture2D::Texture2D(std::vector<char> data)
@@ -32,6 +33,7 @@ Texture2D::Texture2D(int width, int height)
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
+	this->isCreated = false;
 
 	rawTextureData.resize(width*height*numChannels);
 }
@@ -45,6 +47,7 @@ Texture2D::Texture2D(int width, int height, TextureFormat format)
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
+	this->isCreated = false;
 
 	rawTextureData.resize(width*height*numChannels);
 }
@@ -97,6 +100,8 @@ void Texture2D::deserialize(std::vector<char> data)
 	for(size_t i = 0; i < header->textureSize; i++){
 		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
+
+	this->isCreated = false;
 }
 
 int Texture2D::getWidth() const

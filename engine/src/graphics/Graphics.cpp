@@ -946,12 +946,12 @@ void Graphics::compile(Shader* shader)
 		}
 	}
 
-	shader->programCompiled = (success != 0);
+	shader->isCompiled = (success != 0);
 }
 
 void Graphics::use(Shader* shader, ShaderVariant variant)
 {
-	if(!shader->isCompiled()){
+	if(!shader->isCompiled){
 		std::cout << "Error: Must compile shader before using" << std::endl;
 		return;
 	}
@@ -1781,7 +1781,7 @@ void Graphics::render(World* world, Material* material, ShaderVariant variant, g
 		return;
 	}
 
-	if(!shader->isCompiled()){
+	if(!shader->isCompiled){
 		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
 		return;
 	}
@@ -1857,7 +1857,7 @@ void Graphics::render(World* world, Shader* shader, ShaderVariant variant, Textu
 		return;
 	}
 
-	if(!shader->isCompiled()){
+	if(!shader->isCompiled){
 		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
 		return;
 	}
@@ -1910,7 +1910,7 @@ void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::
 		return;
 	}
 
-	if(!shader->isCompiled()){
+	if(!shader->isCompiled){
 		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
 		return;
 	}
@@ -1959,7 +1959,7 @@ void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::
 
 void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
 {
-	if(!font->shader.isCompiled()){
+	if(!font->shader.isCompiled){
 		std::cout << "Shader " << font->shader.assetId.toString() << " has not been compiled." << std::endl;
 		return;
 	}
@@ -2396,7 +2396,9 @@ void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* qu
 	GLsizei numVertices = renderObject.size / 3;
 	GLint startIndex = renderObject.start / 3;
 
+	glBindVertexArray(renderObject.vao);
 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+	glBindVertexArray(0);
 
 	if(world->debug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);

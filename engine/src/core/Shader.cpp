@@ -367,7 +367,7 @@ std::string Shader::ssaoFragmentShader =
 
 Shader::Shader()
 {
-	programCompiled = false;
+	isCompiled = false;
 	assetId = Guid::INVALID;
 }
 
@@ -439,14 +439,9 @@ void Shader::deserialize(std::vector<char> data)
 
 	fragmentShader = std::string(start, end);
 
-	programCompiled = false;
+	isCompiled = false;
 
 	std::cout << vertexShader << std::endl;
-}
-
-bool Shader::isCompiled()
-{
-	return programCompiled;
 }
 
 void Shader::compile()

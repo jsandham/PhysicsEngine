@@ -19,6 +19,8 @@
 #include "BuildWindow.h"
 #include "AboutPopup.h"
 
+#include "systems/RenderSystem.h"
+
 using namespace PhysicsEngine;
 
 namespace PhysicsEditor
@@ -46,10 +48,13 @@ namespace PhysicsEditor
 			std::string currentProjectPath;
 			std::string currentScenePath;
 
+			Input input;
 			Camera* camera;
 			std::vector<Guid> editorEntityIds;
 
 			std::unordered_set<PhysicsEngine::Guid> assetsAddedToWorld;
+
+			RenderSystem* renderSystem;
 
 		public:
 			Editor();
@@ -70,6 +75,7 @@ namespace PhysicsEditor
 			void createProject(std::string path);
 			void openProject(std::string path);
 			void updateAssetsLoadedInWorld();
+			void updateInputPassedToSystems(Input* input);
 	};
 }
 

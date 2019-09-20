@@ -36,6 +36,9 @@ namespace PhysicsEngine
 
 			void init(World* world);
 			void update(Input input);
+
+			GLuint getColorTexture();
+			GLuint getDepthTexture();
 	};
 }
 

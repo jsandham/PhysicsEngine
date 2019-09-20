@@ -52,12 +52,15 @@ void EditorCameraSystem::deserialize(std::vector<char> data)
 void EditorCameraSystem::init(World* world)
 {
 	this->world = world;
-
-	camera = world->getComponentByIndex<Camera>(0);
 }
 
 void EditorCameraSystem::update(Input input)
 {
+	camera = world->getComponentByIndex<Camera>(0);
+	if (camera == NULL) {
+		return;
+	}
+
 	/*glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();
 	glm::vec3 up = camera->getUp();

@@ -7,6 +7,8 @@
 #include "Asset.h"
 #include "Sphere.h"
 
+#include "../graphics/GraphicsHandle.h"
+
 #include "../glm/glm.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
@@ -31,6 +33,11 @@ namespace PhysicsEngine
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 			std::vector<int> subMeshVertexStartIndices;
+
+			GraphicsHandle vao;
+			GraphicsHandle vbo[3];
+
+			bool isCreated;
 
 		public:
 			Mesh();

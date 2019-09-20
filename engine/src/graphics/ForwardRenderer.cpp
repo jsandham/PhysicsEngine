@@ -17,7 +17,7 @@ using namespace PhysicsEngine;
 
 ForwardRenderer::ForwardRenderer()
 {
-
+	camera = NULL;
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -29,26 +29,10 @@ void ForwardRenderer::init(World* world)
 {
 	this->world = world;
 
-	// grab camera
-	if(world->getNumberOfComponents<Camera>() > 0){
-		camera = world->getComponentByIndex<Camera>(0);
-	}
-	else{
-		Log::warn("Warning: No camera found\n");
-		camera = NULL;
-		return;
-	}
-
 	glGenQueries(1, &(query.queryId));
 
-	// generate all texture assets
-	createTextures();
-
-	// compile all shader assets and configure uniform blocks
-	createShaderPrograms();
-
-	// generate one large vertex buffer storing all unique mesh vertices, normals, and tex coordinates
-	createMeshBuffers();
+	// generate all internal shader programs
+	createInternalShaderPrograms();
 
 	// generate fbo
 	createMainFBO();
@@ -58,8 +42,6 @@ void ForwardRenderer::init(World* world)
 
     // generate shadow map fbos
     createShadowMapFBOs();
-
-    initRenderObjectsList();
 
 	initCameraUniformState();
 	initLightUniformState();
@@ -71,7 +53,15 @@ void ForwardRenderer::init(World* world)
 
 void ForwardRenderer::update(Input input)
 {
-	if(camera == NULL) { return; }
+	if(camera == NULL) {
+		// grab camera if we dont already have it
+		if(world->getNumberOfComponents<Camera>() > 0){
+			camera = world->getComponentByIndex<Camera>(0);
+		}
+		else{
+			return;
+		}
+	}
 
 	query.numBatchDrawCalls = 0;
 	query.numDrawCalls = 0;
@@ -80,6 +70,8 @@ void ForwardRenderer::update(Input input)
 	query.tris = 0;
 	query.lines = 0;
 	query.points = 0;
+
+	updateAssetsInRenderer();
 
 	updateRenderObjectsList();
 
@@ -92,81 +84,6 @@ void ForwardRenderer::update(Input input)
 	for(int i = 0; i < world->getNumberOfComponents<Light>(); i++){
 		lightPass(world->getComponentByIndex<Light>(i));
 	}
-
-	if (world->getNumberOfComponents<Light>() > 0){
-		Light* light = world->getComponentByIndex<Light>(0);
-
-		if(getKey(input, KeyCode::O)){
-			light->direction.x += 0.01f;
-		}
-		else if(getKey(input, KeyCode::P)){
-			light->direction.x -= 0.01f;
-		}
-		else if(getKey(input, KeyCode::U)){
-			light->position.z += 0.01f;
-		}
-		else if(getKey(input, KeyCode::I)){
-			light->position.z -= 0.01f;
-		}
-	}
-
-	if(getKeyDown(input, KeyCode::Z)){
-		std::cout << "recording depth texture data" << std::endl;
-		std::vector<unsigned char> data;
-		data.resize(1024*1024);
-		glGetTextureImage(shadowCascadeDepth[0], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("shadow_depth_data0.bmp", data, 1024, 1024, 1);
-		glGetTextureImage(shadowCascadeDepth[1], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("shadow_depth_data1.bmp", data, 1024, 1024, 1);
-		glGetTextureImage(shadowCascadeDepth[2], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("shadow_depth_data2.bmp", data, 1024, 1024, 1);
-		glGetTextureImage(shadowCascadeDepth[3], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("shadow_depth_data3.bmp", data, 1024, 1024, 1);
-		glGetTextureImage(shadowCascadeDepth[4], 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("shadow_depth_data4.bmp", data, 1024, 1024, 1);
-
-
-		glGetTextureImage(shadowSpotlightDepth, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 1024*1024*1, &data[0]);
-		Util::writeToBMP("spotlight_shadow_depth_data.bmp", data, 1024, 1024, 1);
-	}
-
-	if(getKeyDown(input, KeyCode::X)){
-		std::cout << "recording position and normal texture data" << std::endl;
-		std::vector<unsigned char> data;
-		data.resize(1024*1024*4);
-		glGetTextureImage(position, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
-		Util::writeToBMP("position.bmp", data, 1024, 1024, 4);
-		glGetTextureImage(normal, 0, GL_RGBA, GL_UNSIGNED_BYTE, 1024*1024*4, &data[0]);
-		Util::writeToBMP("normal.bmp", data, 1024, 1024, 4);
-	}
-
-	// if(getKeyDown(input, KeyCode::C)){
-	// 	std::cout << "recording cube depth texture data" << std::endl;
-	// 	std::vector<unsigned char> data;
-	// 	data.resize(1024*1024*1);
-
-	// 	for(size_t i = 0; i < data.size(); i++){
-	// 		if(i % 3 == 0){
-	// 			data[i] = 255;
-	// 		}
-	// 		data[i] = 0;
-	// 	}
-
-	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowCubemapDepth);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Positive_X.bmp", data, 1024, 1024, 1);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Negative_X.bmp", data, 1024, 1024, 1);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Positive_Y.bmp", data, 1024, 1024, 1);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Negative_Y.bmp", data, 1024, 1024, 1);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Positive_Z.bmp", data, 1024, 1024, 1);
-	// 	glGetTexImage(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &data[0]);
-	// 	Util::writeToBMP("cubemap_Negative_Z.bmp", data, 1024, 1024, 1);
-	// 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	// }
 
 	if(world->debug){
 		debugPass();
@@ -183,10 +100,9 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
 
 	int transformIndex = world->getIndexOf(transform->componentId); 
-	int meshStartIndex = meshBuffer.getStartIndex(meshRenderer->meshId);
-	Sphere boundingSphere = meshBuffer.getBoundingSphere(meshRenderer->meshId);
+	int meshStartIndex = 0;
+	Sphere boundingSphere = mesh->getBoundingSphere();
 
-	// std::cout << "" << std::endl;
 	for(int i = 0; i < 8; i++){
 		if(meshRenderer->materialIds[i] == Guid::INVALID){
 			break;
@@ -206,8 +122,9 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 		renderObject.size = subMeshVerticesCount;
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
+		renderObject.vao = mesh->vao.handle;
 
-		// std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
+		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
 
 		for(int j = 0; j < 10; j++){
 			renderObject.shaders[j] = shader->programs[j].handle;
@@ -256,30 +173,26 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	updateCameraUniformState(camera);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
-	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
-	glClearDepth(1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
+	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
 
-	// fill position, normal, and depth buffers
-	// glBindVertexArray(meshBuffer.vao);
-
-	// for(int i = 0; i < renderObjects.size(); i++){
-	// 	Graphics::render(world, &mainShader, ShaderVariant::None, renderObjects[i].model, renderObjects[i].start, renderObjects[i].size, &query);
-	// }
-
-	// glBindVertexArray(0);
+	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
+	glScissor(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
+	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void ForwardRenderer::endFrame(GLuint tex)
 {
+	glViewport(0, 0, 1024, 1024);
+	glScissor(0, 0, 1024, 1024);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -318,8 +231,6 @@ void ForwardRenderer::lightPass(Light* light)
 	ShadowType shadowType = light->shadowType;
 	ShaderVariant variant = ShaderVariant::None;
 
-	//std::cout << "id: " << light->componentId.toString() << " light type: " << (int)lightType << " shadow type: " << (int)shadowType << " variant: " << (int)variant << std::endl;
-
 	if(lightType == LightType::Directional){
 		if(shadowType == ShadowType::Hard){
 			variant = ShaderVariant::Directional_Hard;
@@ -333,7 +244,6 @@ void ForwardRenderer::lightPass(Light* light)
 
 		for(int i = 0; i < 5; i++){
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowCascadeFBO[i]);
-			glBindVertexArray(meshBuffer.vao);
 
 			glClearDepth(1.0f);
 			glClear(GL_DEPTH_BUFFER_BIT);
@@ -349,7 +259,6 @@ void ForwardRenderer::lightPass(Light* light)
 				Graphics::render(world, renderObjects[j], &query);
 			}
 
-			glBindVertexArray(0);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 	}
@@ -362,7 +271,6 @@ void ForwardRenderer::lightPass(Light* light)
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowSpotlightFBO);
-		glBindVertexArray(meshBuffer.vao);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -381,7 +289,6 @@ void ForwardRenderer::lightPass(Light* light)
 			Graphics::render(world, renderObjects[i], &query);
 		}
 
-		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	else if(lightType == LightType::Point){
@@ -395,7 +302,6 @@ void ForwardRenderer::lightPass(Light* light)
 		calcCubeViewMatrices(light->position, light->projection);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowCubemapFBO);
-		glBindVertexArray(meshBuffer.vao);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -414,14 +320,12 @@ void ForwardRenderer::lightPass(Light* light)
 			Graphics::render(world, renderObjects[i], &query);
 		}
 
-		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	updateLightUniformState(light);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glBindVertexArray(meshBuffer.vao);
 
 	for(int i = 0; i < renderObjects.size(); i++){
 		GLuint shaderProgram = renderObjects[i].shaders[(int)variant];
@@ -449,7 +353,6 @@ void ForwardRenderer::lightPass(Light* light)
 		Graphics::render(world, renderObjects[i], &query);
 	}
 
-	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	pass++;
@@ -464,12 +367,11 @@ void ForwardRenderer::debugPass()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[view].handle);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if(view == 0 || view == 1 || view == 2){
-		glBindVertexArray(meshBuffer.vao);
 
 		GLuint shaderProgram = debug.shaders[view].programs[(int)ShaderVariant::None].handle;
 
@@ -479,18 +381,28 @@ void ForwardRenderer::debugPass()
 			Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
 			Graphics::render(world, renderObjects[i], &query);
 		}
-
-		glBindVertexArray(0);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void ForwardRenderer::updateAssetsInRenderer()
+{
+	// create all texture assets not already created
+	createTextures();
+
+	// compile all shader assets and configure uniform blocks not already compiled
+	createShaderPrograms();
+
+	// create all mesh assets not already created
+	createMeshBuffers();
 }
 
 void ForwardRenderer::createTextures()
 {
 	for(int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++){
 		Texture2D* texture = world->getAssetByIndex<Texture2D>(i);
-		if(texture != NULL){
+		if(texture != NULL && !texture->isCreated){
 			int width = texture->getWidth();
 			int height = texture->getHeight();
 			int numChannels = texture->getNumChannels();
@@ -529,8 +441,12 @@ void ForwardRenderer::createTextures()
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
+
+			texture->isCreated = true;
 		}
 	}
+
+	Graphics::checkError();
 }
 
 void ForwardRenderer::createShaderPrograms()
@@ -538,10 +454,10 @@ void ForwardRenderer::createShaderPrograms()
 	for(int i = 0; i < world->getNumberOfAssets<Shader>(); i++){
 		Shader* shader = world->getAssetByIndex<Shader>(i);
 
-		if(shader != NULL){
+		if(shader != NULL && !shader->isCompiled){
 			shader->compile();
 
-			if(!shader->isCompiled()){
+			if(!shader->isCompiled){
 				std::string errorMessage = "Shader failed to compile " + shader->assetId.toString() + "\n";
 				Log::error(&errorMessage[0]);
 			}
@@ -552,95 +468,82 @@ void ForwardRenderer::createShaderPrograms()
 			for(int j = 0; j < 2; j++){
 				shader->setUniformBlock(uniformBlocks[j], j);
 			}
+
+			shader->isCompiled = true;
 		}
 	}
 
+	Graphics::checkError();
+}
+
+void ForwardRenderer::createInternalShaderPrograms()
+{
 	mainShader.vertexShader = Shader::mainVertexShader;
 	mainShader.fragmentShader = Shader::mainFragmentShader;
 	mainShader.compile();
+	mainShader.isCompiled = true;
 
 	mainShader.setUniformBlock("CameraBlock", 0);
 
 	ssaoShader.vertexShader = Shader::ssaoVertexShader;
 	ssaoShader.fragmentShader = Shader::ssaoFragmentShader;
 	ssaoShader.compile();
+	ssaoShader.isCompiled = true;
 
 	depthShader.vertexShader = Shader::shadowDepthMapVertexShader;
 	depthShader.fragmentShader = Shader::shadowDepthMapFragmentShader;
 	depthShader.compile();
+	depthShader.isCompiled = true;
 
 	depthCubemapShader.vertexShader = Shader::shadowDepthCubemapVertexShader;
 	//depthCubemapShader.geometryShader = Shader::shadowDepthCubemapGeometryShader;
 	depthCubemapShader.fragmentShader = Shader::shadowDepthCubemapFragmentShader;
 	depthCubemapShader.compile();
+	depthCubemapShader.isCompiled = true;
 
 	quadShader.vertexShader = Shader::windowVertexShader;
 	quadShader.fragmentShader = Shader::windowFragmentShader;
 	quadShader.compile();
+	quadShader.isCompiled = true;
 
-	//std::cout << "DEPTH VERTEX: " << depthShader.vertexShader << std::endl;
-	//std::cout << "FRAGMENT VERTEX: " << depthShader.fragmentShader << std::endl;
+	Graphics::checkError();
 }
 
 void ForwardRenderer::createMeshBuffers()
 {
-	if (world->getNumberOfAssets<Mesh>() == 0){
-		return;
-	}
-
-	size_t totalVerticesSize = 0;
-	size_t totalNormalsSize = 0;
-	size_t totalTexCoordsSize = 0;
 	for(int i = 0; i < world->getNumberOfAssets<Mesh>(); i++){
 		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
 
-		totalVerticesSize += mesh->vertices.size();
-		totalNormalsSize += mesh->normals.size();
-		totalTexCoordsSize += mesh->texCoords.size();
+		if(mesh != NULL && !mesh->isCreated){
+			glGenVertexArrays(1, &mesh->vao.handle);
+			glBindVertexArray(mesh->vao.handle);
+			glGenBuffers(1, &mesh->vbo[0].handle);
+			glGenBuffers(1, &mesh->vbo[1].handle);
+			glGenBuffers(1, &mesh->vbo[2].handle);
+
+			glBindVertexArray(mesh->vao.handle);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[0].handle);
+			glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size()*sizeof(float), &(mesh->vertices[0]), GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[1].handle);
+			glBufferData(GL_ARRAY_BUFFER, mesh->normals.size()*sizeof(float), &(mesh->normals[0]), GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[2].handle);
+			glBufferData(GL_ARRAY_BUFFER, mesh->texCoords.size()*sizeof(float), &(mesh->texCoords[0]), GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+			glBindVertexArray(0);
+
+			mesh->isCreated = true;
+		}
 	}
-
-	meshBuffer.vertices.reserve(totalVerticesSize);
-	meshBuffer.normals.reserve(totalNormalsSize);
-	meshBuffer.texCoords.reserve(totalTexCoordsSize);
-
-	int startIndex = 0;
-	for(int i = 0; i < world->getNumberOfAssets<Mesh>(); i++){
-		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
-
-		//std::cout << "adding mesh: " << mesh->assetId.toString() << " start index: " << startIndex << std::endl;
-
-		meshBuffer.meshIds.push_back(mesh->assetId);
-		meshBuffer.start.push_back(startIndex);
-		meshBuffer.count.push_back((int)mesh->vertices.size());
-		meshBuffer.vertices.insert(meshBuffer.vertices.end(), mesh->vertices.begin(), mesh->vertices.end());
-		meshBuffer.normals.insert(meshBuffer.normals.end(), mesh->normals.begin(), mesh->normals.end());
-		meshBuffer.texCoords.insert(meshBuffer.texCoords.end(), mesh->texCoords.begin(), mesh->texCoords.end());
-		meshBuffer.boundingSpheres.push_back(mesh->getBoundingSphere());
-
-		startIndex += (int)mesh->vertices.size();
-	}
-
-	glBindVertexArray(meshBuffer.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, meshBuffer.vertices.size()*sizeof(float), &meshBuffer.vertices[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, meshBuffer.normals.size()*sizeof(float), &meshBuffer.normals[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, meshBuffer.vbo[2]);
-	glBufferData(GL_ARRAY_BUFFER, meshBuffer.texCoords.size()*sizeof(float), &meshBuffer.texCoords[0], GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
-
-	glBindVertexArray(0);
 
 	Graphics::checkError();
-
-	//std::cout << "mesh buffer size: " << meshBuffer.vertices.size() << " " << meshBuffer.normals.size() << " " << meshBuffer.texCoords.size() << std::endl;
 }
 
 void ForwardRenderer::createMainFBO()
@@ -650,26 +553,30 @@ void ForwardRenderer::createMainFBO()
 
 	glGenTextures(1, &color);
 	glBindTexture(GL_TEXTURE_2D, color);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glGenTextures(1, &position);
 	glBindTexture(GL_TEXTURE_2D, position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glGenTextures(1, &normal);
 	glBindTexture(GL_TEXTURE_2D, normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glGenTextures(1, &depth);
 	glBindTexture(GL_TEXTURE_2D, depth);
 	// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -716,7 +623,8 @@ void ForwardRenderer::createSSAOFBO()
 
 	glGenTextures(1, &ssaoColor);
 	glBindTexture(GL_TEXTURE_2D, ssaoColor);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, camera->viewport.width, camera->viewport.height, 0, GL_RGB, GL_FLOAT, NULL);
+	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, camera->viewport.width, camera->viewport.height, 0, GL_RGB, GL_FLOAT, NULL);*/
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	  
@@ -725,6 +633,8 @@ void ForwardRenderer::createSSAOFBO()
 	Graphics::checkFrambufferError();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	Graphics::checkError();
 }
 
 void ForwardRenderer::createShadowMapFBOs()
@@ -753,8 +663,6 @@ void ForwardRenderer::createShadowMapFBOs()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	Log::info("Cascade shadow maps created\n");
-
 	// create spotlight shadow map fbo
 	glGenFramebuffers(1, &shadowSpotlightFBO);
 	glGenTextures(1, &shadowSpotlightDepth);
@@ -776,8 +684,6 @@ void ForwardRenderer::createShadowMapFBOs()
 	Graphics::checkFrambufferError();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	Log::info("Spotlight shadow maps created\n");
 
 	// create pointlight shadow cubemap fbo
 	glGenFramebuffers(1, &shadowCubemapFBO);
@@ -804,21 +710,7 @@ void ForwardRenderer::createShadowMapFBOs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Log::info("Pointlight shadow maps created\n");
-}
-
-void ForwardRenderer::initRenderObjectsList()
-{
-	for(int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++){
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
-		if(meshRenderer != NULL && !meshRenderer->isStatic){
-			addToRenderObjectsList(meshRenderer);
-		}
-	}
-
-	for(size_t i = 0; i < meshBuffer.start.size(); i++){
-		std::cout << meshBuffer.start[i] << " ";
-	}
+	Graphics::checkError();
 }
 
 void ForwardRenderer::updateRenderObjectsList()
@@ -972,35 +864,6 @@ void ForwardRenderer::calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction)
 
 		cascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
 	}
-
-
-	// glm::vec4 test(1.0f, 1.0f, 1.0f,1.0f);
-	// glm::vec4 test2(-1.0f, -1.0f, -1.0f, 1.0f);
-	// glm::mat4 testingMatrix = glm::inverse(camera->getProjMatrix() * camera->getViewMatrix());
-
-	// test = testingMatrix*test;
-	// test2 = testingMatrix*test2;
-
-	// test2.x /= test2.w;
-	// test2.y /= test2.w;
-	// test2.z /= test2.w;
-
-	// test.x /= test.w;
-	// test.y /= test.w;
-	// test.z /= test.w;
-
-	// std::cout << "test: " << test.x << " " << test.y << " " << test.z << " test2: " << test2.x << " " << test2.y << " " << test2.z << std::endl;
-
-	// test = camera->getViewMatrix() * test;
-	// test2 = camera->getViewMatrix() * test2;
-
-	// std::cout << "test: " << test.x << " " << test.y << " " << test.z << " test2: " << test2.x << " " << test2.y << " " << test2.z << std::endl;
-
-	// glm::mat4 test = cascadeOrthoProj[0] * cascadeLightView[0];
-	// std::cout << test[0][0] << " " << test[0][1] << " " << test[0][2] << " " << test[0][3] << std::endl;
-	// std::cout << test[1][0] << " " << test[1][1] << " " << test[1][2] << " " << test[1][3] << std::endl;
-	// std::cout << test[2][0] << " " << test[2][1] << " " << test[2][2] << " " << test[2][3] << std::endl;
-	// std::cout << test[3][0] << " " << test[3][1] << " " << test[3][2] << " " << test[3][3] << std::endl;
 }
 
 void ForwardRenderer::calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection)
@@ -1098,4 +961,15 @@ void ForwardRenderer::updateLightUniformState(Light* light)
 	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.cutOff));
 	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.outerCutOff));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+
+GLuint ForwardRenderer::getColorTexture()
+{
+	return color;
+}
+
+GLuint ForwardRenderer::getDepthTexture()
+{
+	return depth;
 }

@@ -65,8 +65,6 @@ namespace PhysicsEngine
 			GLuint quadVBO;
 			Shader quadShader;
 
-			BatchManager batchManager;
-			MeshBuffer meshBuffer;
 			std::vector<RenderObject> renderObjects;
 
 			// internal graphics state
@@ -97,13 +95,14 @@ namespace PhysicsEngine
 			void cullingPass();
 			void lightPass(Light* light);
 			void debugPass();
-			void initRenderObjectsList();
 			void updateRenderObjectsList();
 			void addToRenderObjectsList(MeshRenderer* meshRenderer);
 			void removeFromRenderObjectsList(MeshRenderer* meshRenderer); 
 
+			void updateAssetsInRenderer();
 			void createTextures();
 			void createShaderPrograms();
+			void createInternalShaderPrograms();
 			void createMeshBuffers();
 			void createMainFBO();
 			void createSSAOFBO();
@@ -116,6 +115,11 @@ namespace PhysicsEngine
 			void initLightUniformState();
 			void updateCameraUniformState(Camera* camera);
 			void updateLightUniformState(Light* light);
+
+
+		public:
+			GLuint getColorTexture();
+			GLuint getDepthTexture();
 	};
 }
 

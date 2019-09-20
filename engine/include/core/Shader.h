@@ -77,7 +77,7 @@ namespace PhysicsEngine
 			std::string fragmentShader;
 			std::string geometryShader;
 
-			bool programCompiled;
+			bool isCompiled;
 
 			GraphicsHandle programs[10]; // could call this variants??
 
@@ -89,7 +89,6 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 
-			bool isCompiled();
 			void compile();
 			void setUniformBlock(std::string blockName, int bindingPoint);
 

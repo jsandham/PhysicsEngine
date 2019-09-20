@@ -59,10 +59,10 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 	{
 		float windowWidth = ImGui::GetWindowWidth();
 
-		ImGui::Text(currentDirectoryPath.c_str());
-		ImGui::Text(openFile.c_str());
-		ImGui::Text(saveFile.c_str());
-		ImGui::Text(selectedFolder.c_str());
+		//ImGui::Text(currentDirectoryPath.c_str());
+		//ImGui::Text(openFile.c_str());
+		//ImGui::Text(saveFile.c_str());
+		//ImGui::Text(selectedFolder.c_str());
 
 		std::vector<std::string> directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
 		std::vector<std::string> directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);

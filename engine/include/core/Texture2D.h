@@ -28,6 +28,9 @@ namespace PhysicsEngine
 			int height;
 
 		public:
+			bool isCreated;
+
+		public:
 			Texture2D();
 			Texture2D(std::vector<char> data);
 			Texture2D(int width, int height);

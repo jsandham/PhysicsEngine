@@ -57,6 +57,9 @@ void PlayerSystem::init(World* world)
 void PlayerSystem::update(Input input)
 {
 	Camera* camera = world->getComponentByIndex<Camera>(0);
+	if (camera == NULL) {
+		return;
+	}
 
 	/*glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();

@@ -115,3 +115,13 @@ void RenderSystem::update(Input input)
 		debugRenderer.update(input, debug, query);
 	}
 }
+
+GLuint RenderSystem::getColorTexture()
+{
+	return forwardRenderer.getColorTexture();
+}
+
+GLuint RenderSystem::getDepthTexture()
+{
+	return forwardRenderer.getDepthTexture();
+}

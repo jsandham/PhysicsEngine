@@ -74,7 +74,7 @@ void DeferredRenderer::init(World* world)
 		if(shader != NULL){
 			shader->compile();
 
-			if(!shader->isCompiled()){
+			if(!shader->isCompiled){
 				std::cout << "Shader failed to compile " << i << " " << shader->assetId.toString() << std::endl;
 			}
 

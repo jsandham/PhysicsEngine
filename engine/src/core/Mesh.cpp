@@ -8,6 +8,7 @@ using namespace PhysicsEngine;
 Mesh::Mesh()
 {
 	assetId = Guid::INVALID;
+	this->isCreated = false;
 }
 
 Mesh::Mesh(std::vector<char> data)
@@ -84,6 +85,8 @@ void Mesh::deserialize(std::vector<char> data)
 	for(size_t i = 0; i < header->subMeshVertexStartIndiciesSize; i++){
 		subMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
 	}
+
+	this->isCreated = false;
 }
 
 Sphere Mesh::getBoundingSphere() const

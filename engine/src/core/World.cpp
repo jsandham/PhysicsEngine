@@ -101,7 +101,7 @@ bool World::loadAsset(std::string filePath)
 	return true;
 }
 
-bool World::loadScene(std::string filePath)
+bool World::loadScene(std::string filePath, bool ignoreSystems)
 {
 	Log::info("Attempting to load scene\n");
 
@@ -139,6 +139,10 @@ bool World::loadScene(std::string filePath)
 
 		file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
+
+		//std::vector<Guid> entityIdsMarkedCreated;
+		//std::vector<triple<Guid, Guid, int>> componentIdsMarkedCreated;
+
 		int index = -1;
 		if(classification == 'e'){
 			Entity* entity = NULL;
@@ -158,6 +162,8 @@ bool World::loadScene(std::string filePath)
 
 			if(idToGlobalIndex.find(entity->entityId) == idToGlobalIndex.end()){
 				idToGlobalIndex[entity->entityId] = index;
+
+				entityIdsMarkedCreated.push_back(entity->entityId);
 			}
 			else{
 				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in map\n";
@@ -182,6 +188,8 @@ bool World::loadScene(std::string filePath)
 
 			if(idToGlobalIndex.find(component->componentId) == idToGlobalIndex.end()){
 				idToGlobalIndex[component->componentId] = index;
+
+				componentIdsMarkedCreated.push_back(make_triple(component->entityId, component->componentId, type));
 			}
 			else{
 				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in map\n";
@@ -191,7 +199,7 @@ bool World::loadScene(std::string filePath)
 
 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
 		}
-		else if(classification == 's'){
+		else if(classification == 's' && !ignoreSystems){
 			System* system = NULL;
 			if(type < 20){
 				system = PhysicsEngine::loadInternalSystem(data, type, &index);
@@ -216,19 +224,21 @@ bool World::loadScene(std::string filePath)
 	}
 
 	// sort systems by order
-	for(size_t i = 0; i < systems.size(); i++){
-		int minOrder = systems[i]->getOrder();
-		int minOrderIndex = (int)i;
-		for(size_t j = i + 1; j < systems.size(); j++){
-			if(systems[j]->getOrder() < minOrder){
-				minOrder = systems[j]->getOrder();
-				minOrderIndex = (int)j;
+	if(!ignoreSystems){
+		for(size_t i = 0; i < systems.size(); i++){
+			int minOrder = systems[i]->getOrder();
+			int minOrderIndex = (int)i;
+			for(size_t j = i + 1; j < systems.size(); j++){
+				if(systems[j]->getOrder() < minOrder){
+					minOrder = systems[j]->getOrder();
+					minOrderIndex = (int)j;
+				}
 			}
-		}
 
-		System* temp = systems[i];
-		systems[i] = systems[minOrderIndex];
-		systems[minOrderIndex] = temp;
+			System* temp = systems[i];
+			systems[i] = systems[minOrderIndex];
+			systems[minOrderIndex] = temp;
+		}
 	}
 
 	file.close();
@@ -236,229 +246,35 @@ bool World::loadScene(std::string filePath)
 	return true;
 }
 
+bool World::loadSceneFromEditor(std::string filePath)
+{
+	return loadScene(filePath, true);
+}
 
-// void World::clear()
+
+void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntitiesInWorld?
+{
+	// latent destroy all entities (and thereby also all components)
+	for (int i = 0; i < getNumberOfEntities(); i++) {
+		Entity* entity = getEntityByIndex(i);
+
+		latentDestroyEntity(entity->entityId);
+	}
+}
+
+// void World::clearAll() // clearAll
 // {
-// 	while(getNumberOfEntities() > 0){
-// 		Entity* entity = getEntityByIndex(0);
-
-// 		immediateDestroyEntity(entity->entityId);
-// 	}
+// 	clear();
 
 // 	while(getNumberOfSystems() > 0){
 // 		System* system = getSystemByIndex(0);
 
 // 		immediateDestroySystem(system->systemId);
 // 	}
-// }
 
-// void World::clearAll()
-// {
+// 	while(getNumberOfAssets() > 0){
 
-// }
-
-
-
-
-
-
-
-
-
-
-
-// bool World::load(Scene scene, AssetBundle assetBundle)
-// {
-// 	std::cout << "Loading asset bundle: " << assetBundle.filepath << std::endl;
-
-// 	std::ifstream assetBundleFile;
-// 	assetBundleFile.open(assetBundle.filepath, std::ios::binary);
-
-// 	if(!assetBundleFile.is_open()){
-// 		std::cout << "Error: Failed to open asset bundle " << assetBundle.filepath << std::endl;
-// 		return false;
 // 	}
-	
-// 	AssetBundleHeader bundleHeader;
-// 	assetBundleFile.read(reinterpret_cast<char*>(&bundleHeader), sizeof(AssetBundleHeader));
-
-// 	while( assetBundleFile.peek() != EOF )
-// 	{
-// 		char classification;
-// 		assetBundleFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
-
-// 		int type;
-// 		assetBundleFile.read(reinterpret_cast<char*>(&type), sizeof(int));
-
-// 		size_t size;
-// 		assetBundleFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-
-// 		std::vector<char> data(size);
-// 		assetBundleFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));		
-
-// 		if(type <= -1){
-// 			std::cout << "Error: Type cannot be less than 0 when reading asset bundle file" << std::endl;
-// 			return false;
-// 		}
-
-// 		if(size <= 0){
-// 			std::cout << "Error: Size cannot be less than 1 when reading asset bundle file" << std::endl;
-// 			return false;
-// 		}
-
-// 		int index = -1;
-// 		Asset* asset = NULL;
-// 		if(type < 20){
-// 			asset = PhysicsEngine::loadInternalAsset(data, type, &index);
-// 		}
-// 		else{
-// 			asset = PhysicsEngine::loadAsset(data, type, &index);
-// 		}
-
-// 		if(asset == NULL || index == -1){
-// 			std::cout << "Error: Could not load asset" << std::endl;
-// 			return false;
-// 		}
-
-// 		if(assetIdToGlobalIndex.find(asset->assetId) == assetIdToGlobalIndex.end()){
-// 			assetIdToGlobalIndex[asset->assetId] = index;
-// 		}
-// 		else{
-// 			std::cout << "Error: Asset with id " << asset->assetId.toString() << " already exists in map" << std::endl;
-// 			return false;
-// 		}
-// 	}
-
-// 	assetBundleFile.close();
-
-// 	std::cout << "done loading assets" << std::endl;
-
-// 	std::ifstream sceneFile;
-// 	sceneFile.open(scene.filepath, std::ios::binary);
-
-// 	if(!sceneFile.is_open()){
-// 		std::cout << "Error: Failed to open scene file " << scene.filepath << std::endl;
-// 		return false;
-// 	}
-
-// 	SceneHeader sceneHeader;
-// 	sceneFile.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
-// 	while( sceneFile.peek() != EOF )
-// 	{
-// 		char classification;
-// 		sceneFile.read(reinterpret_cast<char*>(&classification), sizeof(char));
-
-// 		int type;
-// 		sceneFile.read(reinterpret_cast<char*>(&type), sizeof(int));
-
-// 	    size_t size;
-// 		sceneFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-
-// 		std::vector<char> data(size);
-
-// 		sceneFile.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
-
-// 		if(type <= -1){
-// 			std::cout << "Error: Type cannot be less than 0 when reading scene file" << std::endl;
-// 			return false;
-// 		}
-
-// 		if(size <= 0){
-// 			std::cout << "Error: Size cannot be less than 1 when reading scene file" << std::endl;
-// 			return false;
-// 		}
-
-// 		int index = -1;
-// 		if(classification == 'e'){
-// 			Entity* entity = NULL;
-// 			if(type == 0){
-// 				entity = PhysicsEngine::loadInternalEntity(data, &index);
-// 			}
-// 			else{
-// 				std::cout << "Error: Entity must be of type 0" << std::endl;
-// 				return false;
-// 			}
-
-// 			if(entity == NULL || index == -1){
-// 				std::cout << "Error: Could not load entity corresponding to type " << type << std::endl;
-// 				return false;
-// 			}
-
-// 			if(idToGlobalIndex.find(entity->entityId) == idToGlobalIndex.end()){
-// 				idToGlobalIndex[entity->entityId] = index;
-// 			}
-// 			else{
-// 				std::cout << "Error: Entity with id " << entity->entityId.toString() << " already exists in map" << std::endl;
-// 				return false;
-// 			}
-// 		}
-// 		else if(classification == 'c'){
-// 			Component* component = NULL;
-// 			if(type < 20){
-// 				component = PhysicsEngine::loadInternalComponent(data, type, &index);
-// 			}
-// 			else{
-// 				component = PhysicsEngine::loadComponent(data, type, &index);
-// 			}
-
-// 			if(component == NULL || index == -1){
-// 				std::cout << "Error: Could not load component corresponding to type " << type << std::endl;
-// 				return false;
-// 			}
-
-// 			if(idToGlobalIndex.find(component->componentId) == idToGlobalIndex.end()){
-// 				idToGlobalIndex[component->componentId] = index;
-// 			}
-// 			else{
-// 				std::cout << "Error: Component with id " << component->componentId.toString() << " already exists in map" << std::endl;
-// 				return false;
-// 			}
-
-// 			//std::cout << "entity id: " << component->entityId.toString() << std::endl;
-// 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
-// 		}
-// 		else if(classification == 's'){
-// 			System* system = NULL;
-// 			if(type < 20){
-// 				system = PhysicsEngine::loadInternalSystem(data, type, &index);
-// 			}
-// 			else{
-// 				system = PhysicsEngine::loadSystem(data, type, &index);
-// 			}
-
-// 			if(system == NULL || index == -1){
-// 				std::cout << "Error: Could not load system corresponding to type " << type << std::endl;
-// 				return false;
-// 			}
-
-// 			// maybe set system in vector??
-// 			systems.push_back(system);
-// 		}
-// 		else{
-// 			std::cout << "Error: Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)" << std::endl;
-// 			return false;
-// 		}
-// 	}
-
-// 	// sort systems by order
-// 	for(size_t i = 0; i < systems.size(); i++){
-// 		int minOrder = systems[i]->getOrder();
-// 		int minOrderIndex = (int)i;
-// 		for(size_t j = i + 1; j < systems.size(); j++){
-// 			if(systems[j]->getOrder() < minOrder){
-// 				minOrder = systems[j]->getOrder();
-// 				minOrderIndex = (int)j;
-// 			}
-// 		}
-
-// 		System* temp = systems[i];
-// 		systems[i] = systems[minOrderIndex];
-// 		systems[minOrderIndex] = temp;
-// 	}
-
-// 	sceneFile.close();
-
-// 	return true;
 // }
 
 int World::getNumberOfEntities()
@@ -649,6 +465,9 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	if(it2 != idToGlobalIndex.end()){
 		int index = it2->second;
 
+		std::string message = "index: " + std::to_string(index) + "\n";
+		Log::info(&message[0]);
+
 		Component* swappedComponent = NULL;
 		//swappedComponent = destroyInternalComponent(componentType, index);
 		if(componentType < 20){
@@ -661,6 +480,7 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		idToGlobalIndex.erase(it2);
 
 		if(swappedComponent != NULL){
+			Log::info("Non null swapp component found\n");
 			componentIdsMarkedMoved.push_back(make_triple(swappedComponent->componentId, componentType, idToGlobalIndex[swappedComponent->componentId]));
 
 			idToGlobalIndex[swappedComponent->componentId] = index;

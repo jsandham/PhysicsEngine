@@ -13,6 +13,8 @@ namespace PhysicsEngine
 		int transformIndex;
 		int materialIndex;
 
+		GLuint vao;
+
 		GLuint shaders[10];
 		GLint mainTexture;
 		GLint normalMap;
