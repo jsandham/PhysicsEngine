@@ -4,7 +4,13 @@
 #include <vector>
 #include <string>
 
-bool BeginDropdown(std::string name, std::vector<std::string> values, int* selection);
-void EndDropdown();
+namespace ImGui
+{
+
+	bool BeginDropdown(std::string name, std::vector<std::string> values, int* selection);
+	void EndDropdown();
+
+	void EnableDocking();
+}
 
 #endif

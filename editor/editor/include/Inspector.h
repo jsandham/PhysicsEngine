@@ -47,7 +47,7 @@ namespace PhysicsEditor
 
 
 
-
+			// move to imgui extensions?
 			bool BeginAddComponentDropdown(std::string filter, std::string& componentToAdd);
 			void EndAddComponentDropdown();
 	};

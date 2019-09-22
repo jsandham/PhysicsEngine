@@ -83,7 +83,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	wc.style = CS_OWNDC;
 	if (!RegisterClass(&wc))
 		return 1;
-	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, 1920, 1080, 0, 0, hInstance, 0);
+	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, 1080, 1080, 0, 0, hInstance, 0);
 
 	// Show the window
 	ShowWindow(g_hwnd, SW_SHOWDEFAULT);

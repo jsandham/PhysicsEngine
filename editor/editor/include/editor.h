@@ -12,8 +12,9 @@
 #include "MainMenuBar.h"
 #include "Inspector.h"
 #include "Hierarchy.h"
-#include "Project.h"
+#include "ProjectView.h"
 #include "Console.h"
+#include "SceneView.h"
 #include "Filebrowser.h"
 #include "ProjectWindow.h"
 #include "BuildWindow.h"
@@ -35,8 +36,9 @@ namespace PhysicsEditor
 			MainMenuBar mainMenu;
 			Inspector inspector;
 			Hierarchy hierarchy;
-			Project project;
+			ProjectView projectView;
 			Console console;
+			SceneView sceneView;
 
 			Filebrowser filebrowser;
 			ProjectWindow projectWindow; //ProjectBrowser? ProjectPopup?

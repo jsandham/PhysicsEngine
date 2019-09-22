@@ -21,6 +21,8 @@ MainMenuBar::MainMenuBar()
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
 	openConsoleClicked = false;
+	openSceneViewClicked = false;
+	openProjectViewClicked = false;
 	aboutClicked = false;
 }
 
@@ -43,6 +45,8 @@ void MainMenuBar::render()
 	openInspectorClicked = false;
 	openHierarchyClicked = false;
 	openConsoleClicked = false;
+	openSceneViewClicked = false;
+	openProjectViewClicked = false;
 	aboutClicked = false;
 
 	if (ImGui::BeginMainMenuBar())
@@ -124,6 +128,16 @@ bool MainMenuBar::isOpenConsoleCalled() const
 	return openConsoleClicked;
 }
 
+bool MainMenuBar::isOpenSceneViewCalled() const
+{
+	return openSceneViewClicked;
+}
+
+bool MainMenuBar::isOpenProjectViewCalled() const
+{
+	return openProjectViewClicked;
+}
+
 bool MainMenuBar::isAboutClicked() const
 {
 	return aboutClicked;
@@ -190,6 +204,12 @@ void MainMenuBar::showMenuWindow()
 	}
 	if (ImGui::MenuItem("Console")){
 		openConsoleClicked = true;
+	}
+	if (ImGui::MenuItem("Scene View")) {
+		openSceneViewClicked = true;
+	}
+	if (ImGui::MenuItem("Project View")) {
+		openProjectViewClicked = true;
 	}
 }
 

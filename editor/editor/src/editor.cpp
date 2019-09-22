@@ -16,6 +16,8 @@
 #include "../include/imgui/imgui_impl_opengl3.h"
 #include "../include/imgui/imgui_internal.h"
 
+#include "..//include/imgui_extensions.h"
+
 using namespace PhysicsEditor;
 using namespace json;
 
@@ -39,6 +41,10 @@ void Editor::init(HWND window, int width, int height)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	// enable docking
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	//Init Win32
 	ImGui_ImplWin32_Init(window);
@@ -83,8 +89,10 @@ void Editor::render()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	//ImGui::ShowDemoWindow();
-	ImGui::ShowMetricsWindow();
+	ImGui::EnableDocking();
+
+	ImGui::ShowDemoWindow();
+	//ImGui::ShowMetricsWindow();
 	//ImGui::Text(currentProjectPath.c_str());
 	//ImGui::Text(currentScenePath.c_str());
 
@@ -135,22 +143,20 @@ void Editor::render()
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
 	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
 	bool consoleOpenedThisFrame = mainMenu.isOpenConsoleCalled();
+	bool sceneViewOpenedThisFrame = mainMenu.isOpenSceneViewCalled();
+	bool projectViewOpenedThisFrame = mainMenu.isOpenProjectViewCalled();
 
 	hierarchy.render(world, hierarchyOpenedThisFrame);
 	inspector.render(world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
-
-	aboutPopup.render(mainMenu.isAboutClicked());
-
-	if (mainMenu.isQuitClicked()) {
-		quitCalled = true;
-	}
-
-	glViewport(0, 0, 1920, 1080);
-	glClearColor(1.0f, 0.412f, 0.706f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	projectView.render(projectViewOpenedThisFrame);
 
 	updateInputPassedToSystems(&input);
+
+	glViewport(0, 0, 1920, 1080);
+	glScissor(0, 0, 1920, 1080);
+	glClearColor(1.0f, 0.412f, 0.706f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
@@ -158,11 +164,16 @@ void Editor::render()
 		system->update(input);
 	}
 
-	ImGui::Begin("Scene");
-	{
-		ImGui::Image((void*)(intptr_t)renderSystem->getColorTexture(), ImVec2(1024, 1024));
+	glViewport(0, 0, 1920, 1080);
+	glScissor(0, 0, 1920, 1080);
+
+	sceneView.render(renderSystem->getColorTexture(), sceneViewOpenedThisFrame);
+
+	aboutPopup.render(mainMenu.isAboutClicked());
+
+	if (mainMenu.isQuitClicked()) {
+		quitCalled = true;
 	}
-	ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

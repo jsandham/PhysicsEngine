@@ -180,6 +180,9 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
 
+	std::string message = "viewport: " + std::to_string(camera->viewport.x) + " " + std::to_string(camera->viewport.y) + " " + std::to_string(camera->viewport.width) + " " + std::to_string(camera->viewport.height) + "\n";
+	Log::info(&message[0]);
+
 	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
 	glScissor(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
 	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
@@ -187,23 +190,26 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//glViewport(0, 0, 1920, 1080);
+	//glScissor(0, 0, 1920, 1080);
 }
 
 void ForwardRenderer::endFrame(GLuint tex)
 {
-	glViewport(0, 0, 1024, 1024);
-	glScissor(0, 0, 1024, 1024);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// glViewport(0, 0, 1024, 1024);
+	// glScissor(0, 0, 1024, 1024);
+	// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Graphics::use(&quadShader, ShaderVariant::None);
+	// Graphics::use(&quadShader, ShaderVariant::None);
 
-	glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex);
+	// glActiveTexture(GL_TEXTURE0);
+ //    glBindTexture(GL_TEXTURE_2D, tex);
 
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
+ //    glBindVertexArray(quadVAO);
+ //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+ //    glBindVertexArray(0);
 }
 
 void ForwardRenderer::cullingPass()
@@ -553,14 +559,14 @@ void ForwardRenderer::createMainFBO()
 
 	glGenTextures(1, &color);
 	glBindTexture(GL_TEXTURE_2D, color);
-	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);*/
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glGenTextures(1, &position);
 	glBindTexture(GL_TEXTURE_2D, position);
-	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);*/
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, camera->viewport.width, camera->viewport.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -574,8 +580,7 @@ void ForwardRenderer::createMainFBO()
 
 	glGenTextures(1, &depth);
 	glBindTexture(GL_TEXTURE_2D, depth);
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-	/*glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);*/
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, camera->viewport.width, camera->viewport.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

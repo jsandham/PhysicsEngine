@@ -66,9 +66,9 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 				ImGui::EndPopup();
 			}*/
 		}
-
-		ImGui::End();
 	}
+
+	ImGui::End();
 }
 
 Entity* Hierarchy::getSelectedEntity()

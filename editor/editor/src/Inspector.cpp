@@ -60,9 +60,9 @@ void Inspector::render(World world, Entity* entity, bool isOpenedThisFrame)
 				EndAddComponentDropdown();
 			}
 		}
-
-		ImGui::End();
 	}
+
+	ImGui::End();
 }
 
 bool Inspector::BeginAddComponentDropdown(std::string name, std::string& componentToAdd)

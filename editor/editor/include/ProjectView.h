@@ -3,13 +3,13 @@
 
 namespace PhysicsEditor
 {
-	class Project
+	class ProjectView
 	{
 		public:
-			Project();
-			~Project();
+			ProjectView();
+			~ProjectView();
 
-			void render();
+			void render(bool isOpenedThisFrame);
 	};
 }
 

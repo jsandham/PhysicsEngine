@@ -97,7 +97,7 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 				ImGui::SameLine(0, 0);
 				
 				int s = -1;
-				if (BeginDropdown(">##" + std::to_string(i), directories, &s)) {
+				if (ImGui::BeginDropdown(">##" + std::to_string(i), directories, &s)) {
 					if (s >= 0) {
 						currentDirectoryPath = directoryPaths[s];
 
@@ -116,7 +116,7 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 						}
 					}
 
-					EndDropdown();
+					ImGui::EndDropdown();
 				}
 			}
 

@@ -205,8 +205,8 @@ void Console::render(bool isOpenedThisFrame)
 
 		Log::clear(); // do I need this?
 
-		ImGui::End();
-
 		log.Draw("Console", &consoleActive);
 	}
+
+	ImGui::End();
 }
