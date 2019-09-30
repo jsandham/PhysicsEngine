@@ -51,7 +51,7 @@ void Editor::init(HWND window, int width, int height)
 
 	//Init OpenGL Imgui Implementation
 	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 130";
+	const char* glsl_version = "#version 330";
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	//Set Window bg color
@@ -100,7 +100,7 @@ void Editor::render()
 
 	updateAssetsLoadedInWorld();
 
-	mainMenu.render();
+	mainMenu.render(currentProjectPath);
 
 	// new, open and save scene
 	if (mainMenu.isNewClicked()){
@@ -149,7 +149,7 @@ void Editor::render()
 	hierarchy.render(world, hierarchyOpenedThisFrame);
 	inspector.render(world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
-	projectView.render(projectViewOpenedThisFrame);
+	projectView.render(currentProjectPath, projectViewOpenedThisFrame);
 
 	updateInputPassedToSystems(&input);
 
@@ -202,6 +202,7 @@ void Editor::newScene()
 	for (int i = 0; i < world.getNumberOfEntities(); i++) {
 		Entity* entity = world.getEntityByIndex(i);
 
+		// TODO: Instead implement the ability to set an entity to be "not destroyed on scene change" when first creating the editor camera?
 		bool doNotDestroy = false;
 		for (size_t j = 0; j < editorEntityIds.size(); j++) {
 			if (editorEntityIds[j] == entity->entityId){

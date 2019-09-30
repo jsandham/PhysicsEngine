@@ -1,11 +1,15 @@
 #ifndef __MAIN_MENU_BAR_H__
 #define __MAIN_MENU_BAR_H__
 
+#include <string>
+
 namespace PhysicsEditor
 {
 	class MainMenuBar
 	{
 		private:
+			bool projectSelected;
+
 			bool newClicked;
 			bool openClicked;
 			bool saveClicked;
@@ -29,7 +33,7 @@ namespace PhysicsEditor
 			MainMenuBar();
 			~MainMenuBar();
 
-			void render();
+			void render(std::string currentProjectPath);
 
 			bool isNewClicked() const;
 			bool isOpenClicked() const;

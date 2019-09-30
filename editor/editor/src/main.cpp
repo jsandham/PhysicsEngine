@@ -120,6 +120,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		editor.render();
 
+		if (editor.getCurrentProjectPath() != ""){
+			SetWindowTextA(g_hwnd, ("Physics Engine - " + editor.getCurrentProjectPath()).c_str());
+		}
+		else {
+			SetWindowTextA(g_hwnd, "Physics Engine");
+		}
+
 		SwapBuffers(g_HDCDeviceContext);
 
 		if (editor.isQuitCalled()){

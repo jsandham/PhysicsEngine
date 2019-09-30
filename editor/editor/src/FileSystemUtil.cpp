@@ -214,10 +214,10 @@ std::vector<std::string> PhysicsEditor::split(const std::string& s, char delim) 
 std::vector<std::string> PhysicsEditor::getDirectoryPaths(const std::string path)
 {
 	std::string temp = path;
-	std::vector<std::string> directories;
-	directories.reserve(10);
+	std::vector<std::string> directoryPaths;
+	directoryPaths.reserve(10);
 	while (temp.length() > 0) {
-		directories.push_back(temp);
+		directoryPaths.push_back(temp);
 
 		size_t index = 0;
 		for (size_t i = temp.length() - 1; i > 0; i--) {
@@ -230,7 +230,7 @@ std::vector<std::string> PhysicsEditor::getDirectoryPaths(const std::string path
 		temp = temp.substr(0, index);
 	}
 
-	return directories;
+	return directoryPaths;
 }
 
 std::string PhysicsEditor::currentWorkingDirectoryPath()

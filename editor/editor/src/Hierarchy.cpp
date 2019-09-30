@@ -49,8 +49,6 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 		}
 
 		if (ImGui::IsWindowHovered()) {
-			ImGui::Text("hierarchy hovered");
-
 			ImGuiIO& io = ImGui::GetIO();
 
 			if (ImGui::IsMouseClicked(1))

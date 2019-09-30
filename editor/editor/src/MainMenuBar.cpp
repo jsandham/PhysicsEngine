@@ -9,6 +9,8 @@ using namespace PhysicsEditor;
 
 MainMenuBar::MainMenuBar()
 {
+	projectSelected = false;
+
 	newClicked = false;
 	openClicked = false;
 	saveClicked = false;
@@ -31,8 +33,10 @@ MainMenuBar::~MainMenuBar()
 
 }
 
-void MainMenuBar::render()
+void MainMenuBar::render(std::string currentProjectPath)
 {
+	projectSelected = currentProjectPath != "";
+
 	newClicked = false;
 	openClicked = false;
 	saveClicked = false;
@@ -145,21 +149,20 @@ bool MainMenuBar::isAboutClicked() const
 
 void MainMenuBar::showMenuFile()
 {
-	ImGui::MenuItem("(dummy menu)", NULL, false, false);
-	if (ImGui::MenuItem("New")) {
+	if (ImGui::MenuItem("New Scene", NULL, false, projectSelected)) {
 		newClicked = true;
 	}
-	if (ImGui::MenuItem("Open", "Ctrl+O"))
+	if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, projectSelected))
 	{
 		openClicked = true;
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Save", "Ctrl+S")) {
+	if (ImGui::MenuItem("Save", "Ctrl+S", false, projectSelected)) {
 		saveClicked = true;
 	}
-	if (ImGui::MenuItem("Save As..")) {
+	if (ImGui::MenuItem("Save As..", NULL, false, projectSelected)) {
 		saveAsClicked = true;
 	}
 
@@ -172,10 +175,10 @@ void MainMenuBar::showMenuFile()
 	{
 		openProjectClicked = true;
 	}
-	if (ImGui::MenuItem("Save Project")) {
+	if (ImGui::MenuItem("Save Project", NULL, false, projectSelected)) {
 		saveProjectClicked = true;
 	}
-	if (ImGui::MenuItem("Build")) {
+	if (ImGui::MenuItem("Build", NULL, false, projectSelected)) {
 		buildClicked = true;
 	}
 

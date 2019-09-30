@@ -7,7 +7,7 @@
 
 using namespace ImGui;
 
-void ImGui::EnableDocking()
+void ImGui::EnableDocking() // really this is rendering the main background docking window. Prob just make this a non imgui extension ToolBarWindow class? MainWindow class?
 {
 	static bool p_open = true;
 	static bool opt_fullscreen_persistant = true;
@@ -23,6 +23,7 @@ void ImGui::EnableDocking()
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 		ImGui::SetNextWindowViewport(viewport->ID);
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
@@ -40,6 +41,16 @@ void ImGui::EnableDocking()
 	// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("DockSpace Demo", &p_open, window_flags);
+	ImGui::Text("This is a non-docking/non-moving toolbar that is part of the main background window");
+	ImGui::Separator();
+	ImGui::Columns(2, "test", true);
+	ImGui::Button("A");
+	ImGui::SameLine();
+	ImGui::Button("B");
+	ImGui::NextColumn();
+	ImGui::Button("C");
+	ImGui::Columns(1, "test2", true);
+
 	ImGui::PopStyleVar();
 
 	if (opt_fullscreen)
@@ -54,6 +65,37 @@ void ImGui::EnableDocking()
 	}
 
 	ImGui::End();
+
+
+
+
+	//ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+	//ImGuiID dockspaceID = ImGui::GetID(ID().c_str());
+	//if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+	//	ImGui::DockBuilderRemoveNode(dockspaceID);
+	//	ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
+
+	//	ImGuiID dock_main_id = dockspaceID;
+	//	ImGuiID dock_up_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.05f, nullptr, &dock_main_id);
+	//	ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
+	//	ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+	//	ImGuiID dock_down_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.2f, nullptr, &dock_main_id);
+	//	ImGuiID dock_down_right_id = ImGui::DockBuilderSplitNode(dock_down_id, ImGuiDir_Right, 0.6f, nullptr, &dock_down_id);
+
+	//	ImGui::DockBuilderDockWindow("Actions", dock_up_id);
+	//	ImGui::DockBuilderDockWindow("Hierarchy", dock_right_id);
+	//	ImGui::DockBuilderDockWindow("Inspector", dock_left_id);
+	//	ImGui::DockBuilderDockWindow("Console", dock_down_id);
+	//	ImGui::DockBuilderDockWindow("Project", dock_down_right_id);
+	//	ImGui::DockBuilderDockWindow("Scene", dock_main_id);
+
+	//	// Disable tab bar for custom toolbar
+	//	ImGuiDockNode* node = ImGui::DockBuilderGetNode(dock_up_id);
+	//	node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+
+	//	ImGui::DockBuilderFinish(dock_main_id);
+	//}
+	//ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
 }
 
 bool ImGui::BeginDropdown(std::string name, std::vector<std::string> values, int* selection)

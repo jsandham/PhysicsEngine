@@ -1,4 +1,5 @@
 #include "../include/ProjectWindow.h"
+#include "../include/FileSystemUtil.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -124,9 +125,24 @@ void ProjectWindow::renderOpenMode()
 
 	filebrowser.render(openSelectFolderBrowser);
 
+	// only allow the open button to be clicked if the selected folder path meets basic criteria for it being a legit project folder
+	bool meetsProjectCriteria = doesDirectoryExist(filebrowser.getSelectedFolderPath() + "\\data");
+
+	if (!meetsProjectCriteria)
+	{
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
 	if (ImGui::Button("Open Project")) {
 		openClicked = true;
 		ImGui::CloseCurrentPopup();
+	}
+
+	if (!meetsProjectCriteria)
+	{
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
 	}
 }
 
