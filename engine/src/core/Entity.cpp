@@ -9,6 +9,7 @@ using namespace PhysicsEngine;
 Entity::Entity()
 {
 	entityId = Guid::INVALID;
+	doNotDestroy = false;
 }
 
 Entity::Entity(std::vector<char> data)
@@ -25,6 +26,7 @@ std::vector<char> Entity::serialize()
 {
 	EntityHeader header;
 	header.entityId = entityId;
+	header.doNotDestroy = doNotDestroy;
 
 	int numberOfBytes = sizeof(EntityHeader);
 
@@ -40,6 +42,7 @@ void Entity::deserialize(std::vector<char> data)
 	EntityHeader* header = reinterpret_cast<EntityHeader*>(&data[0]);
 
 	entityId = header->entityId;
+	doNotDestroy = header->doNotDestroy;
 }
 
 void Entity::latentDestroy(World* world)

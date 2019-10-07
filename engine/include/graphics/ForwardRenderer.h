@@ -76,16 +76,17 @@ namespace PhysicsEngine
 			GraphicsDebug debug;
 
 			unsigned int pass;
+			bool renderToScreen;
 
 		public:
 			ForwardRenderer();
 			~ForwardRenderer();
 
-			void init(World* world);
+			void init(World* world, bool renderToScreen);
 			void update(Input input);
 
-			GraphicsQuery getGraphicsQuery();
-			GraphicsDebug getGraphicsDebug();
+			GraphicsQuery getGraphicsQuery() const;
+			GraphicsDebug getGraphicsDebug() const;
 
 		private:
 			void renderDebug(int view);
@@ -118,8 +119,9 @@ namespace PhysicsEngine
 
 
 		public:
-			GLuint getColorTexture();
-			GLuint getDepthTexture();
+			GLuint getColorTexture() const;
+			GLuint getDepthTexture() const;
+			GLuint getNormalTexture() const;
 	};
 }
 

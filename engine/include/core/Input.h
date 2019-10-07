@@ -5,6 +5,16 @@ namespace PhysicsEngine
 {
 	typedef enum KeyCode
 	{
+		Key0,
+		Key1,
+		Key2,
+		Key3,
+		Key4,
+		Key5,
+		Key6,
+		Key7,
+		Key8,
+		Key9,
 		A,
 		B,
 		C,
@@ -62,7 +72,9 @@ namespace PhysicsEngine
 	{
 		LButton,
 		MButton,
-		RButton
+		RButton,
+		Alt0Button,
+		Alt1Button
 	}MouseButton;
 
 	typedef enum XboxButton
@@ -85,10 +97,10 @@ namespace PhysicsEngine
 
 	struct Input
 	{
-		bool keyIsDown[51];
-		bool keyWasDown[51];
-		bool mouseButtonIsDown[3];
-		bool mouseButtonWasDown[3];
+		bool keyIsDown[61];
+		bool keyWasDown[61];
+		bool mouseButtonIsDown[5];
+		bool mouseButtonWasDown[5];
 		bool xboxButtonIsDown[14];
 		bool xboxButtonWasDown[14];
 		int mousePosX;

@@ -25,9 +25,10 @@ ForwardRenderer::~ForwardRenderer()
 
 }
 
-void ForwardRenderer::init(World* world)
+void ForwardRenderer::init(World* world, bool renderToScreen)
 {
 	this->world = world;
+	this->renderToScreen = renderToScreen;
 
 	glGenQueries(1, &(query.queryId));
 
@@ -87,6 +88,31 @@ void ForwardRenderer::update(Input input)
 
 	if(world->debug){
 		debugPass();
+	}
+
+	if (PhysicsEngine::getKeyDown(input, KeyCode::P)) {
+		Texture2D* texture = new Texture2D(1024, 1024, TextureFormat::RGBA);
+		texture->handle.handle = color;
+
+		int width = texture->getWidth();
+		int height = texture->getHeight();
+		int numChannels = texture->getNumChannels();
+		TextureFormat format = texture->getFormat();
+		std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
+
+		glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+
+		GLenum openglFormat = Graphics::getTextureFormat(format);
+
+		glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels, &rawTextureData[0]);
+
+		texture->setRawTextureData(rawTextureData, width, height, format);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		Util::writeToBMP("MainColorTexture.bmp", texture->getRawTextureData(), texture->getWidth(), texture->getHeight(), texture->getNumChannels());
+
+		delete texture;
 	}
 
 	endFrame(color);
@@ -150,7 +176,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 
 void ForwardRenderer::removeFromRenderObjectsList(MeshRenderer* meshRenderer)
 {
-	//mmm his is slow...need a faster way of removing render objects
+	//mmm this is slow...need a faster way of removing render objects
 	for(size_t i = 0; i < renderObjects.size(); i++){
 		if(meshRenderer->componentId == renderObjects[i].id){
 			renderObjects.erase(renderObjects.begin() + i);
@@ -158,12 +184,12 @@ void ForwardRenderer::removeFromRenderObjectsList(MeshRenderer* meshRenderer)
 	}
 }
 
-GraphicsQuery ForwardRenderer::getGraphicsQuery()
+GraphicsQuery ForwardRenderer::getGraphicsQuery() const
 {
 	return query;
 }
 
-GraphicsDebug ForwardRenderer::getGraphicsDebug()
+GraphicsDebug ForwardRenderer::getGraphicsDebug() const
 {
 	return debug;
 }
@@ -190,26 +216,25 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//glViewport(0, 0, 1920, 1080);
-	//glScissor(0, 0, 1920, 1080);
 }
 
 void ForwardRenderer::endFrame(GLuint tex)
 {
-	// glViewport(0, 0, 1024, 1024);
-	// glScissor(0, 0, 1024, 1024);
-	// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (renderToScreen) {
+		glViewport(0, 0, 1024, 1024);
+		glScissor(0, 0, 1024, 1024);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Graphics::use(&quadShader, ShaderVariant::None);
+		Graphics::use(&quadShader, ShaderVariant::None);
 
-	// glActiveTexture(GL_TEXTURE0);
- //    glBindTexture(GL_TEXTURE_2D, tex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex);
 
- //    glBindVertexArray(quadVAO);
- //    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
- //    glBindVertexArray(0);
+		glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindVertexArray(0);
+	}
 }
 
 void ForwardRenderer::cullingPass()
@@ -969,12 +994,17 @@ void ForwardRenderer::updateLightUniformState(Light* light)
 }
 
 
-GLuint ForwardRenderer::getColorTexture()
+GLuint ForwardRenderer::getColorTexture() const
 {
 	return color;
 }
 
-GLuint ForwardRenderer::getDepthTexture()
+GLuint ForwardRenderer::getDepthTexture() const
 {
 	return depth;
+}
+
+GLuint ForwardRenderer::getNormalTexture() const
+{
+	return normal;
 }

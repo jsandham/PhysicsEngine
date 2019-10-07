@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "core/World.h"
+#include "components/Camera.h"
 
 #include "LibraryDirectory.h"
 
@@ -52,11 +53,9 @@ namespace PhysicsEditor
 
 			Input input;
 			Camera* camera;
-			std::vector<Guid> editorEntityIds;
+			RenderSystem* renderSystem;
 
 			std::unordered_set<PhysicsEngine::Guid> assetsAddedToWorld;
-
-			RenderSystem* renderSystem;
 
 		public:
 			Editor();

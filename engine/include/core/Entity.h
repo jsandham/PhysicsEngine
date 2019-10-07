@@ -11,6 +11,7 @@ namespace PhysicsEngine
 	struct EntityHeader
 	{
 		Guid entityId;
+		bool doNotDestroy;
 	};
 #pragma pack(pop)
 	
@@ -20,6 +21,7 @@ namespace PhysicsEngine
 	{
 		public:
 			Guid entityId;
+			bool doNotDestroy;
 
 		public:
 			Entity();

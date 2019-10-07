@@ -10,8 +10,8 @@
 
 using namespace PhysicsEngine;
 
-const float EditorCameraSystem::PAN_SENSITIVITY = 0.01f;
-const float EditorCameraSystem::SCROLL_SENSITIVITY = 0.001f;
+const float EditorCameraSystem::PAN_SENSITIVITY = 0.001f;
+const float EditorCameraSystem::SCROLL_SENSITIVITY = 0.5f;
 const float EditorCameraSystem::TRANSLATE_SENSITIVITY = 0.05f;
 
 EditorCameraSystem::EditorCameraSystem()

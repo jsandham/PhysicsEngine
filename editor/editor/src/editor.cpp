@@ -44,6 +44,7 @@ void Editor::init(HWND window, int width, int height)
 
 	// enable docking
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	//Init Win32
@@ -65,12 +66,21 @@ void Editor::init(HWND window, int width, int height)
 	renderSystem = world.addSystem<RenderSystem>(1);
 	world.addSystem<CleanUpSystem>(2);
 
+	renderSystem->renderToScreen = false;
+
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
 
 		system->init(&world);
 	}
 	
+	// add editor camera
+	Entity* cameraEntity = world.createEntity();
+	cameraEntity->doNotDestroy = true;
+
+	Transform* transform = cameraEntity->addComponent<Transform>(&world);
+	camera = cameraEntity->addComponent<Camera>(&world);
+
 	input = {};
 }
 
@@ -99,6 +109,9 @@ void Editor::render()
 	libraryDirectory.update(currentProjectPath);
 
 	updateAssetsLoadedInWorld();
+
+	std::string message = std::to_string(world.getNumberOfEntities());
+	ImGui::Text(message.c_str());
 
 	mainMenu.render(currentProjectPath);
 
@@ -139,13 +152,13 @@ void Editor::render()
 	else if (projectWindow.isCreateClicked()) {
 		createProject(projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
 	}
-
+	
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
 	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
 	bool consoleOpenedThisFrame = mainMenu.isOpenConsoleCalled();
 	bool sceneViewOpenedThisFrame = mainMenu.isOpenSceneViewCalled();
 	bool projectViewOpenedThisFrame = mainMenu.isOpenProjectViewCalled();
-
+	
 	hierarchy.render(world, hierarchyOpenedThisFrame);
 	inspector.render(world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
@@ -153,28 +166,29 @@ void Editor::render()
 
 	updateInputPassedToSystems(&input);
 
-	glViewport(0, 0, 1920, 1080);
-	glScissor(0, 0, 1920, 1080);
-	glClearColor(1.0f, 0.412f, 0.706f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
 
 		system->update(input);
 	}
 
-	glViewport(0, 0, 1920, 1080);
-	glScissor(0, 0, 1920, 1080);
+	GLuint colorTex = renderSystem->getColorTexture();
+	GLuint depthTex = renderSystem->getDepthTexture();
+	GLuint normalTex = renderSystem->getNormalTexture();
 
-	sceneView.render(renderSystem->getColorTexture(), sceneViewOpenedThisFrame);
+	const char* textureNames[] = { "Color", "Depth", "Normals" };
+	const GLuint textures[] = {colorTex, depthTex, normalTex};
+	
+	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
+	sceneView.render(textureNames, textures, 3, query, sceneViewOpenedThisFrame);
+	
 	aboutPopup.render(mainMenu.isAboutClicked());
 
 	if (mainMenu.isQuitClicked()) {
 		quitCalled = true;
 	}
-
+	
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -199,35 +213,20 @@ std::string Editor::getCurrentScenePath() const
 void Editor::newScene()
 {
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
-	for (int i = 0; i < world.getNumberOfEntities(); i++) {
-		Entity* entity = world.getEntityByIndex(i);
-
-		// TODO: Instead implement the ability to set an entity to be "not destroyed on scene change" when first creating the editor camera?
-		bool doNotDestroy = false;
-		for (size_t j = 0; j < editorEntityIds.size(); j++) {
-			if (editorEntityIds[j] == entity->entityId){
-				doNotDestroy = true;
-				break;
-			}
-		}
-
-		if (!doNotDestroy){
-			world.latentDestroyEntity(entity->entityId);
-		}
-	}
+	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
 	// re-centre editor camera to default position
 	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+	camera->updateInternalCameraState();
 }
 
 void Editor::openScene(std::string path)
 {
-	// clear world here like we do in newScene?
-
 	// check to make sure the scene is part of the current project
-	if (path.find(currentProjectPath + "\\data\\") != 0){
+	if (path.find(currentProjectPath + "\\data\\") != 0) {
 		std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " + currentProjectPath + "\n";
 		Log::error(&errorMessage[0]);
 		return;
@@ -256,26 +255,17 @@ void Editor::openScene(std::string path)
 	// get binary scene file from library directory
 	std::string binarySceneFilePath = currentProjectPath + "\\library\\" + guid.toString() + ".data";
 
-
-
+	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
-	// add editor camera to world
-	/*Entity* cameraEntity = world.createEntity();
-	camera = cameraEntity->addComponent<Camera>(&world);
-	camera->viewport.width = 1024;
-	camera->viewport.height = 1024;
+	// reset editor camera
 	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 	camera->updateInternalCameraState();
-*/
 
-
-
-
-	// load binary version of scene into world
+	// load binary version of scene into world (ignoring systems and cameras)
 	if (world.loadSceneFromEditor(binarySceneFilePath)){
 		currentScenePath = path;
 	}
@@ -317,44 +307,15 @@ void Editor::createProject(std::string path)
 		return;
 	}
 
-
+	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
-	// add editor camera to world
-	/*Entity* cameraEntity = world.createEntity();
-	camera = cameraEntity->addComponent<Camera>(&world);
-	camera->viewport.width = 1024;
-	camera->viewport.height = 1024;
+	// reset editor camera
 	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->updateInternalCameraState();*/
-
-
-
-	// when creating new project or switching between projects, clear entire world?
-	// when opening scenes within a project, only clear components and entities?
-
-
-	// add editor camera to world
-	//Entity* cameraEntity = world.createEntity();
-	//camera = cameraEntity->addComponent<Camera>(&world);
-	//camera->viewport.width = 1920;
-	//camera->viewport.height = 1080;
-	///*camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	//camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	//camera->up = glm::vec3(0.0f, 0.0f, 1.0f);*/
-
-	//// add physics, render, and cleanup system to world
-	//world.addSystem<EditorCameraSystem>(0);
-	//world.addSystem<RenderSystem>(1);
-	//world.addSystem<CleanUpSystem>(2);
-
-	//for (int i = 0; i < world.getNumberOfSystems(); i++) {
-	//	System* system = world.getSystemByIndex(i);
-
-	//	system->init(&world);
-	//}
+	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+	camera->updateInternalCameraState();
 }
 
 void Editor::openProject(std::string path)
@@ -363,17 +324,15 @@ void Editor::openProject(std::string path)
 
 	assetsAddedToWorld.clear();
 
-	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+	// mark any (non-editor) entities in currently opened scene to be latent destroyed
+	world.latentDestroyEntitiesInWorld(); 
 
-	// add editor camera to world
-	/*Entity* cameraEntity = world.createEntity();
-	camera = cameraEntity->addComponent<Camera>(&world);
-	camera->viewport.width = 1024;
-	camera->viewport.height = 1024;
+	// reset editor camera
 	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->updateInternalCameraState();*/
+	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+	camera->updateInternalCameraState();
 }
 
 void Editor::updateAssetsLoadedInWorld()
@@ -403,51 +362,73 @@ void Editor::updateAssetsLoadedInWorld()
 	}
 }
 
+// TODO: This is platform specific. Should move into main?
 void Editor::updateInputPassedToSystems(Input* input)
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	if (!io.WantCaptureKeyboard) {
-		// capture input for main application
+	for (int i = 0; i < 61; i++) {
+		input->keyWasDown[i] = input->keyIsDown[i];
+		input->keyIsDown[i] = false;
 	}
 
-
-	/*for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
-		ImGui::Text("i: %d %d\n", i, io.KeysDown[i]);
+	for (int i = 0; i < 5; i++) {
+		input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
+		input->mouseButtonIsDown[i] = false;
 	}
-*/
-	/*struct Input
+
+	for (int i = 0; i < 14; i++) {
+		input->xboxButtonWasDown[i] = input->xboxButtonIsDown[i];
+		input->xboxButtonIsDown[i] = false;
+	}
+
+	if (sceneView.isFocused()) {
+			// 0 - 9
+		for (int i = 0; i < 10; i++) {
+			input->keyIsDown[0] = io.KeysDown[48 + i];
+		}
+
+		// A - Z
+		for (int i = 0; i < 26; i++) {
+			input->keyIsDown[10 + i] = io.KeysDown[65 + i];
+		}
+
+		input->keyIsDown[36] = io.KeysDown[13]; // Enter
+		input->keyIsDown[37] = io.KeysDown[38]; // Up
+		input->keyIsDown[38] = io.KeysDown[40]; // Down
+		input->keyIsDown[39] = io.KeysDown[37]; // Left
+		input->keyIsDown[40] = io.KeysDown[39]; // Right
+		input->keyIsDown[41] = io.KeysDown[32]; // Space
+		input->keyIsDown[42] = io.KeysDown[16]; // LShift
+		input->keyIsDown[43] = io.KeysDown[16]; // RShift
+		input->keyIsDown[44] = io.KeysDown[9];  // Tab
+		input->keyIsDown[45] = io.KeysDown[8];  // Backspace
+		input->keyIsDown[46] = io.KeysDown[20]; // CapsLock
+		input->keyIsDown[47] = io.KeysDown[17]; // LCtrl
+		input->keyIsDown[48] = io.KeysDown[17]; // RCtrl
+		input->keyIsDown[49] = io.KeysDown[27]; // Escape
+		input->keyIsDown[50] = io.KeysDown[45]; // NumPad0
+		input->keyIsDown[51] = io.KeysDown[35]; // NumPad1
+		input->keyIsDown[52] = io.KeysDown[40]; // NumPad2
+		input->keyIsDown[53] = io.KeysDown[34]; // NumPad3
+		input->keyIsDown[54] = io.KeysDown[37]; // NumPad4
+		input->keyIsDown[55] = io.KeysDown[12]; // NumPad5
+		input->keyIsDown[56] = io.KeysDown[39]; // NumPad6
+		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
+		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
+		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
+	}
+
+	if(sceneView.isFocused())
 	{
-		bool keyIsDown[51];
-		bool keyWasDown[51];
-		bool mouseButtonIsDown[3];
-		bool mouseButtonWasDown[3];
-		bool xboxButtonIsDown[14];
-		bool xboxButtonWasDown[14];
-		int mousePosX;
-		int mousePosY;
-		int mouseDelta;
-		int leftStickX;
-		int leftStickY;
-		int rightStickX;
-		int rightStickY;
-	};*/
+		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
+		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
+		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
+		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
+		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
 
-	// keyboard keys
-	//io.KeyMap[ImGuiKey_Tab] = 200;
-
-	//for (int i = 0; i < IM_ARRAYSIZE(io.KeyMap); i++) {
-	//	ImGui::Text("i: %d %d\n", i, io.KeyMap[i]);
-	//}
-
-	//ImGui::Text("Keys down:");      for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (io.KeysDownDuration[i] >= 0.0f) { ImGui::SameLine(); ImGui::Text("%d (0x%X) (%.02f secs)", i, i, io.KeysDownDuration[i]); }
-	//ImGui::Text("Keys pressed:");   for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyPressed(i)) { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
-	//ImGui::Text("Keys release:");   for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyReleased(i)) { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
-	//ImGui::Text("Keys mods: %s%s%s%s", io.KeyCtrl ? "CTRL " : "", io.KeyShift ? "SHIFT " : "", io.KeyAlt ? "ALT " : "", io.KeySuper ? "SUPER " : "");
-	//ImGui::Text("Chars queue:");    for (int i = 0; i < io.InputQueueCharacters.Size; i++) { ImWchar c = io.InputQueueCharacters[i]; ImGui::SameLine();  ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c); } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
-
-	//ImGui::Text("NavInputs down:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputs[i] > 0.0f) { ImGui::SameLine(); ImGui::Text("[%d] %.2f", i, io.NavInputs[i]); }
-	//ImGui::Text("NavInputs pressed:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputsDownDuration[i] == 0.0f) { ImGui::SameLine(); ImGui::Text("[%d]", i); }
-	//ImGui::Text("NavInputs duration:"); for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputsDownDuration[i] >= 0.0f) { ImGui::SameLine(); ImGui::Text("[%d] %.2f", i, io.NavInputsDownDuration[i]); }
-
+		input->mouseDelta = io.MouseWheel;
+		input->mousePosX = (int)io.MousePos.x;
+		input->mousePosY = (int)io.MousePos.y;
+	}
 }

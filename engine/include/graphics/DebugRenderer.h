@@ -28,10 +28,13 @@ namespace PhysicsEngine
 			LineBuffer colliderBuffer;
 
 		public:
+			bool renderToScreen;
+
+		public:
 			DebugRenderer();
 			~DebugRenderer();
 
-			void init(World* world);
+			void init(World* world, bool renderToScreen);
 			void update(Input input, GraphicsDebug debug, GraphicsQuery query);
 	};
 }

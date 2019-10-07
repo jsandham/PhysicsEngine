@@ -1,2 +1,5 @@
-﻿  imgui_extensions.cpp
+﻿  Editor.cpp
+  main.cpp
+  Generating Code...
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Editor.cpp(430,25): warning C4244:  '=': conversion from 'float' to 'int', possible loss of data
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

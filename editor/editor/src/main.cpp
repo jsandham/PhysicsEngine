@@ -51,8 +51,8 @@ HDC     g_HDCDeviceContext;
 HWND    g_hwnd;
 PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT;
-int     g_display_w = 800;
-int     g_display_h = 600;
+int     g_display_w = 1024;
+int     g_display_h = 1024;
 Input input;
 
 // =============================================================================
@@ -83,7 +83,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	wc.style = CS_OWNDC;
 	if (!RegisterClass(&wc))
 		return 1;
-	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, 1080, 1080, 0, 0, hInstance, 0);
+	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024, 0, 0, hInstance, 0);
 
 	// Show the window
 	ShowWindow(g_hwnd, SW_SHOWDEFAULT);
@@ -172,33 +172,54 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 }
 
 void CreateGlContext(){
-
-	PIXELFORMATDESCRIPTOR pfd =
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),
-		1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-		PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-		32,                   // Colordepth of the framebuffer.
-		0, 0, 0, 0, 0, 0,
-		0,
-		0,
-		0,
-		0, 0, 0, 0,
-		24,                   // Number of bits for the depthbuffer
-		8,                    // Number of bits for the stencilbuffer
-		0,                    // Number of Aux buffers in the framebuffer.
-		PFD_MAIN_PLANE,
-		0,
-		0, 0, 0
-	};
+	PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
+	desiredPixelFormat.nSize = sizeof(desiredPixelFormat);
+	desiredPixelFormat.nVersion = 1;
+	desiredPixelFormat.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
+	desiredPixelFormat.cColorBits = 32;
+	desiredPixelFormat.cAlphaBits = 8;
+	desiredPixelFormat.iLayerType = PFD_MAIN_PLANE;
 
 	g_HDCDeviceContext = GetDC(g_hwnd);
 
-	int pixelFormal = ChoosePixelFormat(g_HDCDeviceContext, &pfd);
-	SetPixelFormat(g_HDCDeviceContext, pixelFormal, &pfd);
+	int suggestedPixelFormatIndex = ChoosePixelFormat(g_HDCDeviceContext, &desiredPixelFormat);
+
+	PIXELFORMATDESCRIPTOR suggestedPixelFormat;
+	DescribePixelFormat(g_HDCDeviceContext, suggestedPixelFormatIndex, sizeof(suggestedPixelFormat), &suggestedPixelFormat);
+	SetPixelFormat(g_HDCDeviceContext, suggestedPixelFormatIndex, &suggestedPixelFormat);
+
 	g_GLRenderContext = wglCreateContext(g_HDCDeviceContext);
-	wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
+	if (!wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext))
+	{
+		return;
+	}
+
+	//PIXELFORMATDESCRIPTOR pfd =
+	//{
+	//	sizeof(PIXELFORMATDESCRIPTOR),
+	//	1,
+	//	PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
+	//	PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+	//	32,                   // Colordepth of the framebuffer.
+	//	0, 0, 0, 0, 0, 0,
+	//	0,
+	//	0,
+	//	0,
+	//	0, 0, 0, 0,
+	//	24,                   // Number of bits for the depthbuffer
+	//	8,                    // Number of bits for the stencilbuffer
+	//	0,                    // Number of Aux buffers in the framebuffer.
+	//	PFD_MAIN_PLANE,
+	//	0,
+	//	0, 0, 0
+	//};
+
+	//g_HDCDeviceContext = GetDC(g_hwnd);
+
+	//int pixelFormal = ChoosePixelFormat(g_HDCDeviceContext, &pfd);
+	//SetPixelFormat(g_HDCDeviceContext, pixelFormal, &pfd);
+	//g_GLRenderContext = wglCreateContext(g_HDCDeviceContext);
+	//wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 }
 
 bool SetSwapInterval(int interval){

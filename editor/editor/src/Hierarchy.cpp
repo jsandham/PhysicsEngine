@@ -39,7 +39,12 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Hierarchy", &hierarchyActive))
 	{
-		for (size_t i = 0; i < entities.size(); i++) {
+		if (entities.size() == 1) {
+			selectedEntity = NULL;
+		}
+
+		// skip editor camera entity
+		for (size_t i = 1; i < entities.size(); i++) {
 			std::string name = entities[i].entityId.toString();
 			
 			static bool selected = false;

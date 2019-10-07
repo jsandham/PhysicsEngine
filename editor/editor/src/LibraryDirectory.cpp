@@ -413,6 +413,7 @@ bool LibraryDirectory::writeSceneToLibrary(FileInfo fileInfo)
 			for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
 				Entity entity;
 				entity.entityId = Guid(it->first);
+				entity.doNotDestroy = false;
 
 				std::vector<char> data = entity.serialize();
 

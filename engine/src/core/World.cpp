@@ -101,7 +101,7 @@ bool World::loadAsset(std::string filePath)
 	return true;
 }
 
-bool World::loadScene(std::string filePath, bool ignoreSystems)
+bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 {
 	Log::info("Attempting to load scene\n");
 
@@ -172,6 +172,10 @@ bool World::loadScene(std::string filePath, bool ignoreSystems)
 			}
 		}
 		else if(classification == 'c'){
+			if (ignoreSystemsAndCamera && type == ComponentType<Camera>::type) {
+				continue;
+			}
+
 			Component* component = NULL;
 			if(type < 20){
 				component = PhysicsEngine::loadInternalComponent(data, type, &index);
@@ -199,7 +203,7 @@ bool World::loadScene(std::string filePath, bool ignoreSystems)
 
 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
 		}
-		else if(classification == 's' && !ignoreSystems){
+		else if(classification == 's' && !ignoreSystemsAndCamera){
 			System* system = NULL;
 			if(type < 20){
 				system = PhysicsEngine::loadInternalSystem(data, type, &index);
@@ -224,7 +228,7 @@ bool World::loadScene(std::string filePath, bool ignoreSystems)
 	}
 
 	// sort systems by order
-	if(!ignoreSystems){
+	if(!ignoreSystemsAndCamera){
 		for(size_t i = 0; i < systems.size(); i++){
 			int minOrder = systems[i]->getOrder();
 			int minOrderIndex = (int)i;
@@ -258,7 +262,9 @@ void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntities
 	for (int i = 0; i < getNumberOfEntities(); i++) {
 		Entity* entity = getEntityByIndex(i);
 
-		latentDestroyEntity(entity->entityId);
+		if (!entity->doNotDestroy) {
+			latentDestroyEntity(entity->entityId);
+		}
 	}
 }
 
@@ -341,6 +347,7 @@ Entity* World::createEntity()
 
 	Entity* entity = create<Entity>();
 	entity->entityId = entityId;
+	entity->doNotDestroy = false;
 
 	idToGlobalIndex[entityId] = globalIndex;
 	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();

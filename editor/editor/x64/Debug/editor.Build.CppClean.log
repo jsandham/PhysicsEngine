@@ -25,7 +25,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\spherecolliderdra
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\sceneview.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\rigidbodydrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectwindow.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\project.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectview.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshrendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshcolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\mainmenubar.obj
@@ -35,7 +35,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_impl_opengl
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_draw.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_demo.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectview.obj
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb

@@ -13,11 +13,12 @@ DebugRenderer::~DebugRenderer()
 {
 }
 
-void DebugRenderer::init(World* world)
+void DebugRenderer::init(World* world, bool renderToScreen)
 {
 	std::cout << "Debug renderer init called" << std::endl;
 
 	this->world = world;
+	this->renderToScreen;
 
 	font.load("C:\\Users\\James\\Documents\\PhysicsEngine\\sample_project\\Demo\\Demo\\data\\fonts\\arial.ttf");
 
