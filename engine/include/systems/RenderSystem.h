@@ -9,7 +9,8 @@
 #include "../core/World.h"
 
 #include "../graphics/ForwardRenderer.h"
-#include "../graphics/DebugRenderer.h"
+#include "../graphics/GraphicsTargets.h"
+#include "../graphics/GraphicsQuery.h"
 
 namespace PhysicsEngine
 {
@@ -19,7 +20,6 @@ namespace PhysicsEngine
 			unsigned int pass;
 
 			ForwardRenderer forwardRenderer;
-			DebugRenderer debugRenderer;
 
 		public:
 			bool renderToScreen;
@@ -35,9 +35,7 @@ namespace PhysicsEngine
 			void init(World* world);
 			void update(Input input);
 
-			GLuint getColorTexture() const;
-			GLuint getDepthTexture() const;
-			GLuint getNormalTexture() const;
+			GraphicsTargets getGraphicsTargets() const;
 			GraphicsQuery getGraphicsQuery() const;
 	};
 }

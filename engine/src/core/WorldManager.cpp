@@ -40,11 +40,11 @@ void WorldManager::init()
 
 void WorldManager::update(Time time, Input input)
 {
-	if(getKeyDown(input, KeyCode::D)){
+	/*if(getKeyDown(input, KeyCode::D)){
 		world.debug = !world.debug;
-	}
+	}*/
 
-	if(world.debug){
+	/*if(world.debug){
 		if(getKeyDown(input, KeyCode::NumPad0)){
 			world.debugView = 0;
 		}
@@ -57,7 +57,7 @@ void WorldManager::update(Time time, Input input)
 		else if(getKeyDown(input, KeyCode::NumPad3)){
 			world.debugView = 3;
 		}
-	}
+	}*/
 
 	for(int i = 0; i < world.getNumberOfSystems(); i++){
 		System* system = world.getSystemByIndex(i);

@@ -21,11 +21,11 @@ namespace PhysicsEngine
 
 			Texture2D* windowTexture;
 
-			PerformanceGraph graph;
+			//PerformanceGraph graph;
 			DebugWindow window;
-			Font font;
-			LineBuffer buffer;
-			LineBuffer colliderBuffer;
+			//Font font;
+			//LineBuffer buffer;
+			//LineBuffer colliderBuffer;
 
 		public:
 			bool renderToScreen;

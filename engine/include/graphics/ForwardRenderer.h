@@ -17,6 +17,7 @@
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"
 #include "GraphicsDebug.h"
+#include "GraphicsTargets.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -74,6 +75,7 @@ namespace PhysicsEngine
 			// timing and debug
 			GraphicsQuery query;  
 			GraphicsDebug debug;
+			GraphicsTargets targets;
 
 			unsigned int pass;
 			bool renderToScreen;
@@ -87,12 +89,11 @@ namespace PhysicsEngine
 
 			GraphicsQuery getGraphicsQuery() const;
 			GraphicsDebug getGraphicsDebug() const;
+			GraphicsTargets getGraphicsTargets() const;
 
 		private:
-			void renderDebug(int view);
-
 			void beginFrame(Camera* camera, GLuint fbo);
-			void endFrame(GLuint tex);
+			void endFrame();
 			void cullingPass();
 			void lightPass(Light* light);
 			void debugPass();
@@ -116,12 +117,6 @@ namespace PhysicsEngine
 			void initLightUniformState();
 			void updateCameraUniformState(Camera* camera);
 			void updateLightUniformState(Light* light);
-
-
-		public:
-			GLuint getColorTexture() const;
-			GLuint getDepthTexture() const;
-			GLuint getNormalTexture() const;
 	};
 }
 

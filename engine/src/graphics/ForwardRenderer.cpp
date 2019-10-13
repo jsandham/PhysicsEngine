@@ -47,7 +47,9 @@ void ForwardRenderer::init(World* world, bool renderToScreen)
 	initCameraUniformState();
 	initLightUniformState();
 
-	debug.init();
+	if (world->debug) {
+		debug.init();
+	}
 
 	Graphics::checkError();
 }
@@ -90,7 +92,7 @@ void ForwardRenderer::update(Input input)
 		debugPass();
 	}
 
-	if (PhysicsEngine::getKeyDown(input, KeyCode::P)) {
+	/*if (PhysicsEngine::getKeyDown(input, KeyCode::P)) {
 		Texture2D* texture = new Texture2D(1024, 1024, TextureFormat::RGBA);
 		texture->handle.handle = color;
 
@@ -113,9 +115,9 @@ void ForwardRenderer::update(Input input)
 		Util::writeToBMP("MainColorTexture.bmp", texture->getRawTextureData(), texture->getWidth(), texture->getHeight(), texture->getNumChannels());
 
 		delete texture;
-	}
+	}*/
 
-	endFrame(color);
+	endFrame();
 
     Graphics::checkError();
 }
@@ -194,6 +196,11 @@ GraphicsDebug ForwardRenderer::getGraphicsDebug() const
 	return debug;
 }
 
+GraphicsTargets ForwardRenderer::getGraphicsTargets() const
+{
+	return targets;
+}
+
 void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 {
 	updateCameraUniformState(camera);
@@ -206,9 +213,6 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
 
-	std::string message = "viewport: " + std::to_string(camera->viewport.x) + " " + std::to_string(camera->viewport.y) + " " + std::to_string(camera->viewport.width) + " " + std::to_string(camera->viewport.height) + "\n";
-	Log::info(&message[0]);
-
 	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
 	glScissor(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
 	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
@@ -218,8 +222,33 @@ void ForwardRenderer::beginFrame(Camera* camera, GLuint fbo)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ForwardRenderer::endFrame(GLuint tex)
+void ForwardRenderer::endFrame()
 {
+	// fill targets struct
+	targets.color = color;
+	targets.depth = depth;
+	targets.normals = -1;
+	targets.position = -1;
+	targets.overdraw = -1;
+	targets.ssao = -1;
+	if (world->debug) {
+		targets.depth = debug.fbo[0].depthBuffer.handle.handle;
+		targets.normals = debug.fbo[1].colorBuffer.handle.handle;
+		targets.overdraw = debug.fbo[2].colorBuffer.handle.handle;
+	}
+
+	// choose current target
+	GLuint drawTex = color;
+	if (world->debug) {
+		int view = world->debugView;
+		if (view == 0) {
+			drawTex = debug.fbo[view].depthBuffer.handle.handle;
+		}
+		else {
+			drawTex = debug.fbo[view].colorBuffer.handle.handle;
+		}
+	}
+
 	if (renderToScreen) {
 		glViewport(0, 0, 1024, 1024);
 		glScissor(0, 0, 1024, 1024);
@@ -229,7 +258,7 @@ void ForwardRenderer::endFrame(GLuint tex)
 		Graphics::use(&quadShader, ShaderVariant::None);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, tex);
+		glBindTexture(GL_TEXTURE_2D, drawTex);
 
 		glBindVertexArray(quadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -991,20 +1020,4 @@ void ForwardRenderer::updateLightUniformState(Light* light)
 	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.cutOff));
 	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.outerCutOff));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-
-GLuint ForwardRenderer::getColorTexture() const
-{
-	return color;
-}
-
-GLuint ForwardRenderer::getDepthTexture() const
-{
-	return depth;
-}
-
-GLuint ForwardRenderer::getNormalTexture() const
-{
-	return normal;
 }

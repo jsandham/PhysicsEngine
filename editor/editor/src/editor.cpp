@@ -61,6 +61,9 @@ void Editor::init(HWND window, int width, int height)
 	// Setup style
 	ImGui::StyleColorsClassic();
 
+	// set debug on for editor 
+	world.debug = true;
+
 	// add physics, render, and cleanup system to world
 	world.addSystem<EditorCameraSystem>(0);
 	renderSystem = world.addSystem<RenderSystem>(1);
@@ -172,16 +175,24 @@ void Editor::render()
 		system->update(input);
 	}
 
-	GLuint colorTex = renderSystem->getColorTexture();
-	GLuint depthTex = renderSystem->getDepthTexture();
-	GLuint normalTex = renderSystem->getNormalTexture();
+	GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
-	const char* textureNames[] = { "Color", "Depth", "Normals" };
-	const GLuint textures[] = {colorTex, depthTex, normalTex};
+	const char* textureNames[] = { "Color", 
+								   "Depth", 
+								   "Normals", 
+								   "Position", 
+								   "Overdraw", 
+								   "SSAO" }; 
+	const GLint textures[] = {targets.color, 
+							   targets.depth, 
+							   targets.normals,
+							   targets.position,
+							   targets.overdraw, 
+							   targets.ssao};
 	
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
-	sceneView.render(textureNames, textures, 3, query, sceneViewOpenedThisFrame);
+	sceneView.render(&world, textureNames, textures, 6, query, sceneViewOpenedThisFrame);
 	
 	aboutPopup.render(mainMenu.isAboutClicked());
 
@@ -277,7 +288,7 @@ void Editor::openScene(std::string path)
 
 void Editor::saveScene(std::string path)
 {
-	
+	Log::info("save called");
 }
 
 void Editor::createProject(std::string path)
@@ -427,7 +438,7 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
 		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
 
-		input->mouseDelta = io.MouseWheel;
+		input->mouseDelta = (int)io.MouseWheel;
 		input->mousePosX = (int)io.MousePos.x;
 		input->mousePosY = (int)io.MousePos.y;
 	}

@@ -5,7 +5,6 @@
 #include "../../include/systems/RenderSystem.h"
 
 #include "../../include/graphics/ForwardRenderer.h"
-#include "../../include/graphics/GraphicsQuery.h"
 
 #include "../../include/core/Input.h"
 #include "../../include/core/Time.h"
@@ -48,34 +47,16 @@ void RenderSystem::init(World* world)
 	this->world = world;
 
 	forwardRenderer.init(world, renderToScreen);
-	debugRenderer.init(world, renderToScreen);
 }
 
 void RenderSystem::update(Input input)
 {
 	forwardRenderer.update(input);
-
-	if(world->debug){
-		GraphicsQuery query = forwardRenderer.getGraphicsQuery();
-		GraphicsDebug debug = forwardRenderer.getGraphicsDebug();
-
-		debugRenderer.update(input, debug, query);
-	}
 }
 
-GLuint RenderSystem::getColorTexture() const
+GraphicsTargets RenderSystem::getGraphicsTargets() const
 {
-	return forwardRenderer.getColorTexture();
-}
-
-GLuint RenderSystem::getDepthTexture() const
-{
-	return forwardRenderer.getDepthTexture();
-}
-
-GLuint RenderSystem::getNormalTexture() const
-{
-	return forwardRenderer.getNormalTexture();
+	return forwardRenderer.getGraphicsTargets();
 }
 
 GraphicsQuery RenderSystem::getGraphicsQuery() const

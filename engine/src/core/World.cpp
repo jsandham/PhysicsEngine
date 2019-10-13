@@ -21,7 +21,7 @@ World::World()
 	//dtree.create(bounds, 2, 5);
 
 	debug = false;
-	debugView = 0;
+	debugView = -1;
 }
 
 World::~World()

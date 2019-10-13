@@ -2,6 +2,7 @@
 #define __INSPECTOR_DRAWER_H__
 
 #include "core/World.h"
+#include "core/Guid.h"
 
 using namespace PhysicsEngine;
 
