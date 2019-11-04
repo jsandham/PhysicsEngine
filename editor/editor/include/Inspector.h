@@ -42,7 +42,7 @@ namespace PhysicsEditor
 			Inspector();
 			~Inspector();
 
-			void render(World world, Entity* entity, bool isOpenedThisFrame);
+			void render(World* world, Entity* entity, bool isOpenedThisFrame);
 
 
 

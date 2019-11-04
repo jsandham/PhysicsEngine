@@ -10,8 +10,8 @@ namespace PhysicsEditor
 		private:
 			bool projectSelected;
 
-			bool newClicked;
-			bool openClicked;
+			bool newSceneClicked;
+			bool openSceneClicked;
 			bool saveClicked;
 			bool saveAsClicked;
 
@@ -35,8 +35,8 @@ namespace PhysicsEditor
 
 			void render(std::string currentProjectPath);
 
-			bool isNewClicked() const;
-			bool isOpenClicked() const;
+			bool isNewSceneClicked() const;
+			bool isOpenSceneClicked() const;
 			bool isSaveClicked() const;
 			bool isSaveAsClicked() const;
 			bool isBuildClicked() const;

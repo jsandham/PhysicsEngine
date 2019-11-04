@@ -2,6 +2,7 @@
 #define __HIERARCHY_H__
 
 #include <vector>
+#include <string>
 
 #include "core/Entity.h"
 #include "core/World.h"
@@ -20,7 +21,7 @@ namespace PhysicsEditor
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World world, bool isOpenedThisFrame);
+			void render(World* world, std::string currentScene, bool isOpenedThisFrame);
 
 			Entity* getSelectedEntity();
 	};

@@ -47,7 +47,7 @@ namespace PhysicsEditor
 			Filebrowser();
 			~Filebrowser();
 
-			void render(bool becomeVisibleThisFrame);
+			void render(std::string cwd, bool becomeVisibleThisFrame);
 			void setMode(FilebrowserMode mode);
 			std::string getOpenFile() const;
 			std::string getOpenFilePath() const;

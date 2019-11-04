@@ -38,7 +38,7 @@ Filebrowser::~Filebrowser()
 
 }
 
-void Filebrowser::render(bool becomeVisibleThisFrame)
+void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
 {
 	openClicked = false;
 	saveClicked = false;
@@ -47,6 +47,7 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 	if (isVisible != becomeVisibleThisFrame){
 		isVisible = becomeVisibleThisFrame;
 		if (becomeVisibleThisFrame){
+			currentDirectoryPath = cwd;
 			currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
 			currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
 
@@ -59,10 +60,10 @@ void Filebrowser::render(bool becomeVisibleThisFrame)
 	{
 		float windowWidth = ImGui::GetWindowWidth();
 
-		//ImGui::Text(currentDirectoryPath.c_str());
-		//ImGui::Text(openFile.c_str());
-		//ImGui::Text(saveFile.c_str());
-		//ImGui::Text(selectedFolder.c_str());
+		ImGui::Text(currentDirectoryPath.c_str());
+		ImGui::Text(openFile.c_str());
+		ImGui::Text(saveFile.c_str());
+		ImGui::Text(selectedFolder.c_str());
 
 		std::vector<std::string> directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
 		std::vector<std::string> directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
@@ -379,7 +380,7 @@ std::string Filebrowser::getSelectedFolder() const
 
 std::string Filebrowser::getSelectedFolderPath() const
 {
-	if (currentDirectoryPath.substr(currentDirectoryPath.find_last_of('/\\') + 1) == selectedFolder) {
+	if (currentDirectoryPath.substr(currentDirectoryPath.find_last_of("/\\") + 1) == selectedFolder) {
 		return currentDirectoryPath;
 	}
 

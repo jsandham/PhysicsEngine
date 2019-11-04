@@ -1,4 +1,6 @@
 #include "../include/RigidbodyDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/Rigidbody.h"
 
@@ -28,10 +30,26 @@ void RigidbodyDrawer::render(World world, Guid entityId, Guid componentId)
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
-		ImGui::Checkbox("Use Gravity", &rigidbody->useGravity);
-		ImGui::InputFloat("Mass", &rigidbody->mass);
-		ImGui::InputFloat("Drag", &rigidbody->drag);
-		ImGui::InputFloat("Angular Drag", &rigidbody->angularDrag);
+		bool useGravity = rigidbody->useGravity;
+		float mass = rigidbody->mass;
+		float drag = rigidbody->drag;
+		float angularDrag = rigidbody->angularDrag;
+
+		if (ImGui::Checkbox("Use Gravity", &useGravity)) {
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&rigidbody->useGravity, useGravity));
+		}
+
+		if (ImGui::InputFloat("Mass", &mass)) {
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mass, mass));
+		}
+
+		if (ImGui::InputFloat("Drag", &drag)) {
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->drag, drag));
+		}
+
+		if (ImGui::InputFloat("Angular Drag", &angularDrag)) {
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->angularDrag, angularDrag));
+		}
 
 		ImGui::TreePop();
 	}

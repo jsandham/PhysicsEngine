@@ -1,4 +1,6 @@
 #include "../include/Hierarchy.h"
+#include "../include/EditorCommands.h"
+#include "../include/CommandManager.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -17,7 +19,7 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World world, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, std::string currentScene, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 
@@ -27,10 +29,10 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 		entities.clear();
 	}
 
-	int numberOfEntities = world.getNumberOfEntities();
+	int numberOfEntities = world->getNumberOfEntities();
 	entities.resize(numberOfEntities);
 	for (int i = 0; i < numberOfEntities; i++) {
-		entities[i] = *world.getEntityByIndex(i);
+		entities[i] = *world->getEntityByIndex(i);
 	}
 
 	if (!hierarchyActive){
@@ -39,35 +41,66 @@ void Hierarchy::render(World world, bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Hierarchy", &hierarchyActive))
 	{
-		if (entities.size() == 1) {
-			selectedEntity = NULL;
-		}
+		if (currentScene.length() > 0) {
+			ImGui::Text(currentScene.c_str());
+			ImGui::Separator();
 
-		// skip editor camera entity
-		for (size_t i = 1; i < entities.size(); i++) {
-			std::string name = entities[i].entityId.toString();
-			
-			static bool selected = false;
-			if (ImGui::Selectable(name.c_str(), &selected)) {
-				selectedEntity = &entities[i];
-			}
-		}
-
-		if (ImGui::IsWindowHovered()) {
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (ImGui::IsMouseClicked(1))
-			{
-				ImGui::Text("Mouse clicked:");
-
-				ImGui::OpenPopup("HierarchyPopupWindow");
-				ImGui::SameLine(); ImGui::Text("b%d", 1);
+			if (entities.size() == 1) {
+				selectedEntity = NULL;
 			}
 
-			/*if (ImGui::BeginPopupModal("HierarchyPopupWindow")) {
+			// skip editor camera entity
+			for (size_t i = 1; i < entities.size(); i++) {
+				std::string name = entities[i].entityId.toString();
+
+				static bool selected = false;
+				if (ImGui::Selectable(name.c_str(), &selected)) {
+					selectedEntity = &entities[i];
+				}
+			}
+
+			if (ImGui::BeginPopupContextWindow("RightMouseClickPopup")) {
+				if (ImGui::MenuItem("Copy", NULL, false, selectedEntity != NULL)) {
+					
+				}
+				if (ImGui::MenuItem("Paste", NULL, false, selectedEntity != NULL))
+				{
+					
+				}
+				if (ImGui::MenuItem("Delete", NULL, false, selectedEntity != NULL) && selectedEntity != NULL)
+				{
+					world->latentDestroyEntity(selectedEntity->entityId);
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::BeginMenu("Create..."))
+				{
+					if (ImGui::MenuItem("Empty")) {
+						CommandManager::addCommand(new CreateEntityCommand(world));
+					}
+					if (ImGui::MenuItem("Camera")) {
+						CommandManager::addCommand(new CreateCameraCommand(world));
+					}
+					if (ImGui::MenuItem("Light")) {
+						CommandManager::addCommand(new CreateLightCommand(world));
+					}
+
+					if (ImGui::BeginMenu("3D")) {
+						if (ImGui::MenuItem("Cube")) {
+							CommandManager::addCommand(new CreateCubeCommand(world));
+						}
+						if (ImGui::MenuItem("Sphere")) {
+							CommandManager::addCommand(new CreateSphereCommand(world));
+						}
+						ImGui::EndMenu();
+					}
+					
+					ImGui::EndMenu();
+				}
 
 				ImGui::EndPopup();
-			}*/
+			}
 		}
 	}
 

@@ -118,7 +118,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 
-		editor.render();
+		editor.render(g_hwnd == GetActiveWindow());
 
 		if (editor.getCurrentProjectPath() != ""){
 			SetWindowTextA(g_hwnd, ("Physics Engine - " + editor.getCurrentProjectPath()).c_str());

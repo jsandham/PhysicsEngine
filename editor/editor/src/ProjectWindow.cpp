@@ -105,7 +105,7 @@ void ProjectWindow::renderNewMode()
 	ImGui::SameLine();
 	ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
 
-	filebrowser.render(openSelectFolderBrowser);
+	filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
 	if (ImGui::Button("Create Project")) {
 		createClicked = true;
@@ -123,7 +123,7 @@ void ProjectWindow::renderOpenMode()
 	ImGui::SameLine();
 	ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
 
-	filebrowser.render(openSelectFolderBrowser);
+	filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
 	// only allow the open button to be clicked if the selected folder path meets basic criteria for it being a legit project folder
 	bool meetsProjectCriteria = doesDirectoryExist(filebrowser.getSelectedFolderPath() + "\\data");

@@ -1,4 +1,6 @@
 #include "../include/LineRendererDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/LineRenderer.h"
 
@@ -27,26 +29,15 @@ void LineRendererDrawer::render(World world, Guid entityId, Guid componentId)
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
-		float start[3];
-		start[0] = lineRenderer->start.x;
-		start[1] = lineRenderer->start.y;
-		start[2] = lineRenderer->start.z;
+		glm::vec3 start = lineRenderer->start;
+		glm::vec3 end = lineRenderer->end;
 
-		float end[3];
-		end[0] = lineRenderer->end.x;
-		end[1] = lineRenderer->end.y;
-		end[2] = lineRenderer->end.z;
-
-		ImGui::InputFloat3("Start", &start[0]);
-		ImGui::InputFloat3("End", &end[0]);
-
-		lineRenderer->start.x = start[0];
-		lineRenderer->start.y = start[1];
-		lineRenderer->start.z = start[2];
-
-		lineRenderer->end.x = end[0];
-		lineRenderer->end.y = end[1];
-		lineRenderer->end.z = end[2];
+		if (ImGui::InputFloat3("Start", glm::value_ptr(start))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->start, start));
+		}
+		if (ImGui::InputFloat3("End", glm::value_ptr(end))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->end, end));
+		}
 
 		ImGui::TreePop();
 	}

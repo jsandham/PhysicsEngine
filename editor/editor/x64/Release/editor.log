@@ -1,0 +1,190 @@
+﻿  AboutPopup.cpp
+  BoxColliderDrawer.cpp
+  BuildWindow.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  Console.cpp
+  Editor.cpp
+  EditorCameraSystem.cpp
+  Filebrowser.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         with
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         [
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:             _Elem=char
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,5): warning C4305:         ]
+  FileSystemUtil.cpp
+  Hierarchy.cpp
+  imgui_extensions.cpp
+  Inspector.cpp
+  InspectorDrawer.cpp
+  LibraryDirectory.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  Load.cpp
+  LoadInspectorDrawerInternal.cpp
+  main.cpp
+  Compiling...
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_impl_win32.cpp
+  imgui_widgets.cpp
+  MainMenuBar.cpp
+  MeshColliderDrawer.cpp
+  MeshRendererDrawer.cpp
+  ProjectView.cpp
+  ProjectWindow.cpp
+  RigidbodyDrawer.cpp
+  SceneView.cpp
+  SphereColliderDrawer.cpp
+  TransformDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Filebrowser.cpp(382,68): warning C4309: 'argument': truncation of constant value
+engine.lib(Guid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Guid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(World.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(World.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Log.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Log.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Bounds.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Bounds.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Triangle.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Triangle.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(UniformGrid.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(UniformGrid.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(System.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(System.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Transform.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Transform.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Sphere.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Sphere.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Camera.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Camera.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(CleanUpSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(RenderSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Entity.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Entity.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(BoxCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(LineRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Light.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Light.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(SphereCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(MeshCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(MeshCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Rigidbody.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(MeshRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(CapsuleCollider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Shader.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Shader.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(AssetLoader.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(AssetLoader.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Material.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Material.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Texture2D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Mesh.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Mesh.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(LoadInternal.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(LoadInternal.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Ray.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Ray.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Geometry.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Geometry.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Component.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Component.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(ForwardRenderer.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(ForwardRenderer.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Collider.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Collider.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Capsule.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Capsule.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Asset.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Asset.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Graphics.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Graphics.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Texture.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Texture.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Texture3D.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Cubemap.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Cubemap.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(Font.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(Font.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(PhysicsSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '2' doesn't match value '0' in BoxColliderDrawer.obj
+engine.lib(DebugSystem.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MD_DynamicRelease' in BoxColliderDrawer.obj
+LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+engine.lib(Cubemap.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(PhysicsSystem.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(DebugSystem.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Texture.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Texture3D.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Texture2D.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Mesh.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(LoadInternal.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Geometry.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(CapsuleCollider.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Shader.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(AssetLoader.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Material.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(SphereCollider.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(MeshCollider.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Rigidbody.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(MeshRenderer.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Entity.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(BoxCollider.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(LineRenderer.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Light.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Transform.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Camera.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(CleanUpSystem.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(RenderSystem.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Guid.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(World.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Log.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(UniformGrid.obj) : error LNK2001: unresolved external symbol __imp__invalid_parameter
+engine.lib(Cubemap.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Font.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(PhysicsSystem.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(DebugSystem.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(ForwardRenderer.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Graphics.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Texture.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Texture3D.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Texture2D.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Mesh.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(LoadInternal.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Geometry.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(CapsuleCollider.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Shader.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(AssetLoader.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Material.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(SphereCollider.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(MeshCollider.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Rigidbody.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(MeshRenderer.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Entity.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(BoxCollider.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(LineRenderer.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Light.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Transform.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Camera.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(CleanUpSystem.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(RenderSystem.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Guid.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(World.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(Log.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+engine.lib(UniformGrid.obj) : error LNK2001: unresolved external symbol __imp__CrtDbgReport
+C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.exe : fatal error LNK1120: 2 unresolved externals

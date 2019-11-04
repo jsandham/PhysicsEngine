@@ -1,4 +1,6 @@
 #include "../include/CameraDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/Camera.h"
 
@@ -28,64 +30,62 @@ void CameraDrawer::render(World world, Guid entityId, Guid componentId)
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
-		float position[3];
-		position[0] = camera->position.x;
-		position[1] = camera->position.y;
-		position[2] = camera->position.z;
+		glm::vec3 position = camera->position;
+		glm::vec3 front = camera->front;
+		glm::vec3 up = camera->up;
+		glm::vec4 backgroundColor = camera->backgroundColor;
 
-		float front[3];
-		front[0] = camera->front.x;
-		front[1] = camera->front.y;
-		front[2] = camera->front.z;
-
-		float up[3];
-		up[0] = camera->up.x;
-		up[1] = camera->up.y;
-		up[2] = camera->up.z;
-
-		float backgroundColor[4];
-		backgroundColor[0] = camera->backgroundColor.x;
-		backgroundColor[1] = camera->backgroundColor.y;
-		backgroundColor[2] = camera->backgroundColor.z;
-		backgroundColor[3] = camera->backgroundColor.w;
-
-		ImGui::InputFloat3("Position", &position[0]);
-		ImGui::InputFloat3("Front", &front[0]);
-		ImGui::InputFloat3("Up", &up[0]);
-		ImGui::ColorEdit4("Background Color", &backgroundColor[0]);
-
-		camera->position.x = position[0];
-		camera->position.y = position[1];
-		camera->position.z = position[2];
-
-		camera->front.x = front[0];
-		camera->front.y = front[1];
-		camera->front.z = front[2];
-
-		camera->up.x = up[0];
-		camera->up.y = up[1];
-		camera->up.z = up[2];
-
-		camera->backgroundColor.x = backgroundColor[0];
-		camera->backgroundColor.y = backgroundColor[1];
-		camera->backgroundColor.z = backgroundColor[2];
-		camera->backgroundColor.w = backgroundColor[3];
+		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->position, position));
+		}
+		if (ImGui::InputFloat3("Front", glm::value_ptr(front))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->front, front));
+		}
+		if (ImGui::InputFloat3("Up", glm::value_ptr(up))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->up, up));
+		}
+		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->backgroundColor, backgroundColor));
+		}
 
 		if (ImGui::TreeNode("Viewport"))
 		{
-			ImGui::InputInt("x", &camera->viewport.x);
-			ImGui::InputInt("y", &camera->viewport.y);
-			ImGui::InputInt("Width", &camera->viewport.width);
-			ImGui::InputInt("Height", &camera->viewport.height);
+			int x = camera->viewport.x;
+			int y = camera->viewport.y;
+			int width = camera->viewport.width;
+			int height = camera->viewport.height;
+
+			if (ImGui::InputInt("x", &x)) {
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.x, x));
+			}
+			if (ImGui::InputInt("y", &y)) {
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.y, y));
+			}
+			if (ImGui::InputInt("Width", &width)) {
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.width, width));
+			}
+			if (ImGui::InputInt("Height", &height)) {
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.height, height));
+			}
 
 			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("Frustum"))
 		{
-			ImGui::InputFloat("Field of View", &camera->frustum.fov);
-			ImGui::InputFloat("Near Plane", &camera->frustum.nearPlane);
-			ImGui::InputFloat("Far Plane", &camera->frustum.farPlane);
+			float fov = camera->frustum.fov;
+			float nearPlane = camera->frustum.nearPlane;
+			float farPlane = camera->frustum.farPlane;
+
+			if (ImGui::InputFloat("Field of View", &fov)) {
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.fov, fov));
+			}
+			if (ImGui::InputFloat("Near Plane", &nearPlane)) {
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.nearPlane, nearPlane));
+			}
+			if (ImGui::InputFloat("Far Plane", &farPlane)) {
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.farPlane, farPlane));
+			}
 
 			ImGui::TreePop();
 		}

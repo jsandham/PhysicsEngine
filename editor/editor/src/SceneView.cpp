@@ -13,6 +13,8 @@ using namespace PhysicsEditor;
 SceneView::SceneView()
 {
 	focused = false;
+
+	perfQueue.setNumberOfSamples(100);
 }
 
 SceneView::~SceneView()
@@ -115,9 +117,11 @@ void SceneView::render(PhysicsEngine::World* world, const char* textureNames[], 
 				ImGui::Text("Draw calls: %d\n", query.numDrawCalls);
 				ImGui::Text("Elapsed time: %f", query.totalElapsedTime);
 
-				static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
-				ImGui::PlotLines("Curve", arr, IM_ARRAYSIZE(arr));
-				ImGui::PlotHistogram("Curve", arr, IM_ARRAYSIZE(arr));
+				perfQueue.addSample(query.totalElapsedTime);
+
+				std::vector<float> perfData = perfQueue.getData();
+				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
+				//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
 			}
 			ImGui::End();
 		}

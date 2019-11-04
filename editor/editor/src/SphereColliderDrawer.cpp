@@ -1,4 +1,6 @@
 #include "../include/SphereColliderDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/SphereCollider.h"
 
@@ -29,17 +31,15 @@ void SphereColliderDrawer::render(World world, Guid entityId, Guid componentId)
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		if (ImGui::TreeNode("Sphere")) {
-			float centre[3];
-			centre[0] = sphereCollider->sphere.centre.x;
-			centre[1] = sphereCollider->sphere.centre.y;
-			centre[2] = sphereCollider->sphere.centre.z;
+			glm::vec3 centre = sphereCollider->sphere.centre;
+			float radius = sphereCollider->sphere.radius;
 
-			ImGui::InputFloat3("Centre", &centre[0]);
-			ImGui::InputFloat("Radius", &sphereCollider->sphere.radius);
-
-			sphereCollider->sphere.centre.x = centre[0];
-			sphereCollider->sphere.centre.y = centre[1];
-			sphereCollider->sphere.centre.z = centre[2];
+			if (ImGui::InputFloat3("Centre", glm::value_ptr(centre))) {
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&sphereCollider->sphere.centre, centre));
+			}
+			if (ImGui::InputFloat("Radius", &radius)) {
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&sphereCollider->sphere.radius, radius));
+			}
 
 			ImGui::TreePop();
 		}

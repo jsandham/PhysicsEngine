@@ -1,4 +1,5 @@
 #include "../include/MainMenuBar.h"
+#include "../include/CommandManager.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -11,8 +12,8 @@ MainMenuBar::MainMenuBar()
 {
 	projectSelected = false;
 
-	newClicked = false;
-	openClicked = false;
+	newSceneClicked = false;
+	openSceneClicked = false;
 	saveClicked = false;
 	saveAsClicked = false;
 	newProjectClicked = false;
@@ -37,8 +38,8 @@ void MainMenuBar::render(std::string currentProjectPath)
 {
 	projectSelected = currentProjectPath != "";
 
-	newClicked = false;
-	openClicked = false;
+	newSceneClicked = false;
+	openSceneClicked = false;
 	saveClicked = false;
 	saveAsClicked = false;
 	newProjectClicked = false;
@@ -77,14 +78,14 @@ void MainMenuBar::render(std::string currentProjectPath)
 	}
 }
 
-bool MainMenuBar::isNewClicked() const
+bool MainMenuBar::isNewSceneClicked() const
 {
-	return newClicked;
+	return newSceneClicked;
 }
 
-bool MainMenuBar::isOpenClicked() const
+bool MainMenuBar::isOpenSceneClicked() const
 {
-	return openClicked;
+	return openSceneClicked;
 }
 
 bool MainMenuBar::isSaveClicked() const
@@ -150,11 +151,11 @@ bool MainMenuBar::isAboutClicked() const
 void MainMenuBar::showMenuFile()
 {
 	if (ImGui::MenuItem("New Scene", NULL, false, projectSelected)) {
-		newClicked = true;
+		newSceneClicked = true;
 	}
 	if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, projectSelected))
 	{
-		openClicked = true;
+		openSceneClicked = true;
 	}
 
 	ImGui::Separator();
@@ -189,8 +190,12 @@ void MainMenuBar::showMenuFile()
 
 void MainMenuBar::showMenuEdit()
 {
-	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+	if (ImGui::MenuItem("Undo", "CTRL+Z", false, CommandManager::canUndo())) {
+		CommandManager::undoCommand();
+	}
+	if (ImGui::MenuItem("Redo", "CTRL+Y", false, CommandManager::canRedo())) {
+		CommandManager::executeCommand();
+	}
 	ImGui::Separator();
 	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
 	if (ImGui::MenuItem("Copy", "CTRL+C")) {}

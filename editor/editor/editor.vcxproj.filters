@@ -120,6 +120,18 @@
     <ClCompile Include="src\ProjectView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PerformanceQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CommandManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Command.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h">
@@ -212,9 +224,6 @@
     <ClInclude Include="include\RigidbodyDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -228,6 +237,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ProjectView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PerformanceQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CommandManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

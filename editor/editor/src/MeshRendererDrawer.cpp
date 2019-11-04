@@ -1,4 +1,6 @@
 #include "../include/MeshRendererDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/MeshRenderer.h"
 
@@ -31,7 +33,11 @@ void MeshRendererDrawer::render(World world, Guid entityId, Guid componentId)
 		//Guid meshId;
 		//Guid materialIds[8];
 
-		ImGui::Checkbox("Is Static?", &meshRenderer->isStatic);
+		bool isStatic = meshRenderer->isStatic;
+
+		if (ImGui::Checkbox("Is Static?", &isStatic)) {
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->isStatic, isStatic));
+		}
 
 		ImGui::TreePop();
 	}

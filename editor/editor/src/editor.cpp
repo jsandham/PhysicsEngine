@@ -66,7 +66,9 @@ void Editor::init(HWND window, int width, int height)
 
 	// add physics, render, and cleanup system to world
 	world.addSystem<EditorCameraSystem>(0);
+	//add simple editor render pass system to render line floor and default skymap
 	renderSystem = world.addSystem<RenderSystem>(1);
+	// add simple editor render system to render gizmo's
 	world.addSystem<CleanUpSystem>(2);
 
 	renderSystem->renderToScreen = false;
@@ -95,7 +97,7 @@ void Editor::cleanUp()
 	ImGui_ImplWin32_Shutdown();
 }
 
-void Editor::render()
+void Editor::render(bool editorApplicationActive)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -113,30 +115,27 @@ void Editor::render()
 
 	updateAssetsLoadedInWorld();
 
-	std::string message = std::to_string(world.getNumberOfEntities());
-	ImGui::Text(message.c_str());
-
 	mainMenu.render(currentProjectPath);
 
 	// new, open and save scene
-	if (mainMenu.isNewClicked()){
+	if (mainMenu.isNewSceneClicked()){
 		currentScenePath = "";
 		newScene();
 	}
-	if (mainMenu.isOpenClicked()) {
+	if (mainMenu.isOpenSceneClicked()) {
 		filebrowser.setMode(FilebrowserMode::Open);
 	}
 	else if (mainMenu.isSaveAsClicked()) {
 		filebrowser.setMode(FilebrowserMode::Save);
 	}
 
-	filebrowser.render(mainMenu.isOpenClicked() | mainMenu.isSaveAsClicked());
+	filebrowser.render(currentProjectPath, mainMenu.isOpenSceneClicked() | mainMenu.isSaveAsClicked());
 
 	if (filebrowser.isOpenClicked()) {
-		openScene(filebrowser.getOpenFilePath());
+		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
 	}
 	else if (filebrowser.isSaveClicked()) {
-		saveScene(filebrowser.getSaveFilePath());
+		saveScene(filebrowser.getSaveFile(), filebrowser.getSaveFilePath());
 	}
 
 	// new, open, save project project
@@ -150,10 +149,10 @@ void Editor::render()
 	projectWindow.render(mainMenu.isOpenProjectClicked() | mainMenu.isNewProjectClicked());
 
 	if (projectWindow.isOpenClicked()) {
-		openProject(projectWindow.getSelectedFolderPath());
+		openProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath());
 	}
 	else if (projectWindow.isCreateClicked()) {
-		createProject(projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
+		createProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
 	}
 	
 	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
@@ -162,10 +161,10 @@ void Editor::render()
 	bool sceneViewOpenedThisFrame = mainMenu.isOpenSceneViewCalled();
 	bool projectViewOpenedThisFrame = mainMenu.isOpenProjectViewCalled();
 	
-	hierarchy.render(world, hierarchyOpenedThisFrame);
-	inspector.render(world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
+	hierarchy.render(&world, currentSceneName, hierarchyOpenedThisFrame);
+	inspector.render(&world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
-	projectView.render(currentProjectPath, projectViewOpenedThisFrame);
+	projectView.render(currentProjectPath, editorApplicationActive, projectViewOpenedThisFrame);
 
 	updateInputPassedToSystems(&input);
 
@@ -199,6 +198,8 @@ void Editor::render()
 	if (mainMenu.isQuitClicked()) {
 		quitCalled = true;
 	}
+
+	commandManager.update(input);
 	
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -234,7 +235,7 @@ void Editor::newScene()
 	camera->updateInternalCameraState();
 }
 
-void Editor::openScene(std::string path)
+void Editor::openScene(std::string name, std::string path)
 {
 	// check to make sure the scene is part of the current project
 	if (path.find(currentProjectPath + "\\data\\") != 0) {
@@ -278,6 +279,7 @@ void Editor::openScene(std::string path)
 
 	// load binary version of scene into world (ignoring systems and cameras)
 	if (world.loadSceneFromEditor(binarySceneFilePath)){
+		currentSceneName = name;
 		currentScenePath = path;
 	}
 	else {
@@ -286,12 +288,12 @@ void Editor::openScene(std::string path)
 	}
 }
 
-void Editor::saveScene(std::string path)
+void Editor::saveScene(std::string name, std::string path)
 {
 	Log::info("save called");
 }
 
-void Editor::createProject(std::string path)
+void Editor::createProject(std::string name, std::string path)
 {
 	if (PhysicsEditor::createDirectory(path))
 	{
@@ -304,6 +306,7 @@ void Editor::createProject(std::string path)
 		success &= createDirectory(path + "\\data\\shaders");
 
 		if (success){
+			currentProjectName = name;
 			currentProjectPath = path;
 			assetsAddedToWorld.clear();
 			Log::info("Project successfully created\n");
@@ -329,8 +332,9 @@ void Editor::createProject(std::string path)
 	camera->updateInternalCameraState();
 }
 
-void Editor::openProject(std::string path)
+void Editor::openProject(std::string name, std::string path)
 {
+	currentProjectName = name;
 	currentProjectPath = path;
 
 	assetsAddedToWorld.clear();

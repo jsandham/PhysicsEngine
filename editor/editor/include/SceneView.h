@@ -1,6 +1,10 @@
 #ifndef __SCENE_VIEW_H__
 #define __SCENE_VIEW_H__
 
+#include <queue>
+
+#include "PerformanceQueue.h"
+
 #include "core/World.h"
 
 #include "systems/RenderSystem.h"
@@ -12,6 +16,7 @@ namespace PhysicsEditor
 	{
 		private:
 			bool focused;
+			PerformanceQueue perfQueue;
 
 		public:
 			SceneView();

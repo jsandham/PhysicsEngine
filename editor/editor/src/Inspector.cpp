@@ -19,7 +19,7 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render(World world, Entity* entity, bool isOpenedThisFrame)
+void Inspector::render(World* world, Entity* entity, bool isOpenedThisFrame)
 {
 	static bool inspectorActive = true;
 
@@ -34,7 +34,7 @@ void Inspector::render(World world, Entity* entity, bool isOpenedThisFrame)
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
 		if (entity != NULL){
-			std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(&world);
+			std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
 			for (size_t i = 0; i < componentsOnEntity.size(); i++)
 			{
 				Guid componentId = componentsOnEntity[i].first;
@@ -48,7 +48,7 @@ void Inspector::render(World world, Entity* entity, bool isOpenedThisFrame)
 					//drawer = loadInspectorDrawer(componentType);
 				}
 
-				drawer->render(world, entity->entityId, componentId);
+				drawer->render(*world, entity->entityId, componentId);
 
 				delete drawer;
 			}

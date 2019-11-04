@@ -8,6 +8,7 @@ namespace PhysicsEditor
 {
 	struct ProjectNode
 	{
+		ProjectNode* parent;
 		std::vector<ProjectNode*> children;
 		std::string directoryName;
 		std::string directoryPath;
@@ -17,12 +18,18 @@ namespace PhysicsEditor
 
 	class ProjectView
 	{
+		private:
+			std::string selectedNodeDirectoryPath;
+			bool prevEditorApplicationActive;
+
 		public:
 			ProjectView();
 			~ProjectView();
 
-			void render(std::string currentProjectPath, bool isOpenedThisFrame);
+			void render(std::string currentProjectPath, bool editorApplicationActive, bool isOpenedThisFrame);
 
+
+			void rebuildProjectTree();
 			void drawProjectNodeRecursive(ProjectNode* node);
 	};
 }

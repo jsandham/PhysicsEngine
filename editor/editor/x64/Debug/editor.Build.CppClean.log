@@ -1,8 +1,5 @@
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\vc142.pdb
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\vc142.idb
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\main.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordrawerinternal.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\linerendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\lightdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarydirectory.obj
@@ -12,9 +9,12 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_extensions.
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\hierarchy.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filesystemutil.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filebrowser.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcommands.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcamerasystem.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\commandmanager.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\command.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\capsulecolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cameradrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
@@ -26,6 +26,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\sceneview.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\rigidbodydrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectview.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\performancequeue.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshrendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshcolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\mainmenubar.obj
@@ -35,6 +36,9 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_impl_opengl
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_draw.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_demo.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\main.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordrawerinternal.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb

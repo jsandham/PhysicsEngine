@@ -20,6 +20,7 @@
 #include "ProjectWindow.h"
 #include "BuildWindow.h"
 #include "AboutPopup.h"
+#include "CommandManager.h"
 
 #include "systems/RenderSystem.h"
 
@@ -46,9 +47,13 @@ namespace PhysicsEditor
 			BuildWindow buildWindow;
 			AboutPopup aboutPopup;
 
+			CommandManager commandManager;
+
 			bool quitCalled;
 			
+			std::string currentProjectName;
 			std::string currentProjectPath;
+			std::string currentSceneName;
 			std::string currentScenePath;
 
 			Input input;
@@ -63,7 +68,7 @@ namespace PhysicsEditor
 
 			void init(HWND window, int width, int height);
 			void cleanUp();
-			void render();
+			void render(bool editorApplicationActive);
 
 			bool isQuitCalled() const;
 			std::string getCurrentProjectPath() const;
@@ -71,10 +76,10 @@ namespace PhysicsEditor
 
 		private:
 			void newScene();
-			void openScene(std::string path);
-			void saveScene(std::string path);
-			void createProject(std::string path);
-			void openProject(std::string path);
+			void openScene(std::string name, std::string path);
+			void saveScene(std::string name, std::string path);
+			void createProject(std::string name, std::string path);
+			void openProject(std::string name, std::string path);
 			void updateAssetsLoadedInWorld();
 			void updateInputPassedToSystems(Input* input);
 	};

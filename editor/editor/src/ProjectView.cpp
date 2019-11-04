@@ -13,7 +13,7 @@ using namespace PhysicsEditor;
 
 ProjectView::ProjectView()
 {
-
+	selectedNodeDirectoryPath = "";
 }
 
 ProjectView::~ProjectView()
@@ -21,7 +21,7 @@ ProjectView::~ProjectView()
 
 }
 
-void ProjectView::render(std::string currentProjectPath, bool isOpenedThisFrame)
+void ProjectView::render(std::string currentProjectPath, bool editorApplicationActive, bool isOpenedThisFrame)
 {
 	static bool projectViewActive = true;
 
@@ -33,22 +33,37 @@ void ProjectView::render(std::string currentProjectPath, bool isOpenedThisFrame)
 		return;
 	}
 
+	if (!prevEditorApplicationActive && editorApplicationActive) {
+		rebuildProjectTree();
+	}
+
+	prevEditorApplicationActive = editorApplicationActive;
+
 	if (ImGui::Begin("Project View", &projectViewActive)) {
 
 		if (currentProjectPath != "") {
-			ImGui::Columns(2, "tree", true);
+			ImGui::Columns(2, "ProjectViews", true);
 
+			ProjectNode* rootNode = new ProjectNode();
+			rootNode->parent = NULL;
+			rootNode->directoryName = "data";
+			rootNode->directoryPath = currentProjectPath + "\\data";
+			rootNode->isExpanded = false;
 
-			ProjectNode* firstNode = new ProjectNode();
-			firstNode->directoryName = "data";
-			firstNode->directoryPath = currentProjectPath + "\\data";
-			firstNode->isExpanded = false;
+			drawProjectNodeRecursive(rootNode);
 
-			drawProjectNodeRecursive(firstNode);
+			ImGui::NextColumn();
+			if (selectedNodeDirectoryPath.length() > 0) {
+				//ImGui::Text(selectedNodeDirectoryPath.c_str());
+				std::vector<std::string> fileNames = PhysicsEditor::getFilesInDirectory(selectedNodeDirectoryPath, false);
+				for (int i = 0; i < fileNames.size(); i++) {
+					ImGui::Text(fileNames[i].c_str());
+				}
+			}
 
 			// delete nodes
 			std::stack<ProjectNode*> stack;
-			stack.push(firstNode);
+			stack.push(rootNode);
 			while (!stack.empty()) {
 				ProjectNode* current = stack.top();
 				stack.pop();
@@ -59,13 +74,6 @@ void ProjectView::render(std::string currentProjectPath, bool isOpenedThisFrame)
 
 				delete current;
 			}
-
-			ImGui::NextColumn();
-			ImGui::Text("Hello");
-			ImGui::Text("World");
-			ImGui::Text("Here");
-			ImGui::Text("I");
-			ImGui::Text("Am");
 
 
 			ImGui::Columns(1);
@@ -82,12 +90,44 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode* node)
 	std::vector<std::string> subDirectoryPaths = PhysicsEditor::getDirectoriesInDirectory(node->directoryPath, true);
 	std::vector<std::string> subDirectoryNames = PhysicsEditor::getDirectoriesInDirectory(node->directoryPath, false);
 
-	if (ImGui::TreeNodeEx(node->directoryName.c_str())) {
+	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_None;
+	if (subDirectoryNames.size() == 0) {
+		node_flags |= ImGuiTreeNodeFlags_Leaf;
+	}
+
+	bool treeNodeOpen = ImGui::TreeNodeEx(node->directoryName.c_str(), node_flags);
+
+	if (ImGui::IsItemClicked()) {
+		selectedNodeDirectoryPath = node->directoryPath;
+		//ImGui::Text(node->directoryName.c_str());
+		// Some processing...
+	}
+
+	if (ImGui::BeginDragDropSource()) {
+		ImGui::SetDragDropPayload("DND_DEMO_CELL", node, sizeof(ProjectNode*));
+		ImGui::Text(node->directoryName.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL")) {
+			IM_ASSERT(payload->DataSize == sizeof(ProjectNode*));
+			ProjectNode* payloadNode = (ProjectNode*)payload->Data;
+			//node->children.push_back(payloadNode);
+			//const char* tmp = names[n];
+			//names[n] = names[payload_n];
+			//names[payload_n] = tmp;
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	if (treeNodeOpen) {
 		node->isExpanded = true;
 
 		// recurse for each sub directory
 		for (size_t i = 0; i < subDirectoryPaths.size(); i++) {
 			ProjectNode* child = new ProjectNode();
+			child->parent = node;
 			child->directoryName = subDirectoryNames[i];
 			child->directoryPath = subDirectoryPaths[i];
 			child->isExpanded = false;
@@ -99,6 +139,37 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode* node)
 
 		ImGui::TreePop();
 	}
+
+
+
+
+
+
+	//if (ImGui::TreeNodeEx(node->directoryName.c_str(), node_flags)) {
+	//	node->isExpanded = true;
+
+	//	// recurse for each sub directory
+	//	for (size_t i = 0; i < subDirectoryPaths.size(); i++) {
+	//		ProjectNode* child = new ProjectNode();
+	//		child->directoryName = subDirectoryNames[i];
+	//		child->directoryPath = subDirectoryPaths[i];
+	//		child->isExpanded = false;
+
+	//		node->children.push_back(child);
+
+	//		drawProjectNodeRecursive(child);
+	//	}
+
+	//	ImGui::TreePop();
+	//}
+
+
+}
+
+
+void ProjectView::rebuildProjectTree()
+{
+
 }
 
 

@@ -41,6 +41,7 @@ void ImGui::EnableDocking() // really this is rendering the main background dock
 	// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	ImGui::Begin("DockSpace Demo", &p_open, window_flags);
+
 	ImGui::Text("This is a non-docking/non-moving toolbar that is part of the main background window");
 	ImGui::Separator();
 	ImGui::Columns(2, "test", true);

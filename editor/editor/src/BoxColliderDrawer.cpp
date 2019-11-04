@@ -1,4 +1,6 @@
 #include "../include/BoxColliderDrawer.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "components/BoxCollider.h"
 
@@ -28,26 +30,15 @@ void BoxColliderDrawer::render(World world, Guid entityId, Guid componentId)
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
 
 		if (ImGui::TreeNode("Bounds")) {
-			float centre[3];
-			centre[0] = boxCollider->bounds.centre.x;
-			centre[1] = boxCollider->bounds.centre.y;
-			centre[2] = boxCollider->bounds.centre.z;
+			glm::vec3 centre = boxCollider->bounds.centre;
+			glm::vec3 size = boxCollider->bounds.size;
 
-			float size[3];
-			size[0] = boxCollider->bounds.size.x;
-			size[1] = boxCollider->bounds.size.y;
-			size[2] = boxCollider->bounds.size.z;
-
-			ImGui::InputFloat3("Centre", &centre[0]);
-			ImGui::InputFloat3("Size", &size[0]);
-
-			boxCollider->bounds.centre.x = centre[0];
-			boxCollider->bounds.centre.y = centre[1];
-			boxCollider->bounds.centre.z = centre[2];
-
-			boxCollider->bounds.size.x = size[0];
-			boxCollider->bounds.size.y = size[1];
-			boxCollider->bounds.size.z = size[2];
+			if (ImGui::InputFloat3("Centre", glm::value_ptr(centre))) {
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.centre, centre));
+			}
+			if (ImGui::InputFloat3("Size", glm::value_ptr(size))) {
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.size, size));
+			}
 
 			ImGui::TreePop();
 		}
