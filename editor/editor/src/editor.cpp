@@ -16,6 +16,7 @@
 #include "../include/imgui/imgui_impl_opengl3.h"
 #include "../include/imgui/imgui_internal.h"
 
+#include "../include/imgui_styles.h"
 #include "..//include/imgui_extensions.h"
 
 using namespace PhysicsEditor;
@@ -55,11 +56,8 @@ void Editor::init(HWND window, int width, int height)
 	const char* glsl_version = "#version 330";
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-	//Set Window bg color
-	ImVec4 clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
-
 	// Setup style
-	ImGui::StyleColorsClassic();
+	ImGui::StyleColorsCorporate();
 
 	// set debug on for editor 
 	world.debug = true;
@@ -97,39 +95,36 @@ void Editor::cleanUp()
 	ImGui_ImplWin32_Shutdown();
 }
 
-void Editor::render(bool editorApplicationActive)
+void Editor::render(bool editorBecameActiveThisFrame)
 {
+	updateAssetsLoadedInWorld();
+
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::EnableDocking();
+	editorMenu.render(currentProjectPath);
+	editorToolbar.render();
 
 	ImGui::ShowDemoWindow();
 	//ImGui::ShowMetricsWindow();
 	//ImGui::Text(currentProjectPath.c_str());
 	//ImGui::Text(currentScenePath.c_str());
 
-	libraryDirectory.update(currentProjectPath);
-
-	updateAssetsLoadedInWorld();
-
-	mainMenu.render(currentProjectPath);
-
 	// new, open and save scene
-	if (mainMenu.isNewSceneClicked()){
+	if (editorMenu.isNewSceneClicked()){
 		currentScenePath = "";
 		newScene();
 	}
-	if (mainMenu.isOpenSceneClicked()) {
+	if (editorMenu.isOpenSceneClicked()) {
 		filebrowser.setMode(FilebrowserMode::Open);
 	}
-	else if (mainMenu.isSaveAsClicked()) {
+	else if (editorMenu.isSaveAsClicked()) {
 		filebrowser.setMode(FilebrowserMode::Save);
 	}
 
-	filebrowser.render(currentProjectPath, mainMenu.isOpenSceneClicked() | mainMenu.isSaveAsClicked());
+	filebrowser.render(currentProjectPath, editorMenu.isOpenSceneClicked() | editorMenu.isSaveAsClicked());
 
 	if (filebrowser.isOpenClicked()) {
 		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
@@ -139,14 +134,14 @@ void Editor::render(bool editorApplicationActive)
 	}
 
 	// new, open, save project project
-	if (mainMenu.isOpenProjectClicked()) {
+	if (editorMenu.isOpenProjectClicked()) {
 		projectWindow.setMode(ProjectWindowMode::OpenProject);
 	}
-	else if (mainMenu.isNewProjectClicked()) {
+	else if (editorMenu.isNewProjectClicked()) {
 		projectWindow.setMode(ProjectWindowMode::NewProject);
 	}
 
-	projectWindow.render(mainMenu.isOpenProjectClicked() | mainMenu.isNewProjectClicked());
+	projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
 
 	if (projectWindow.isOpenClicked()) {
 		openProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath());
@@ -154,17 +149,25 @@ void Editor::render(bool editorApplicationActive)
 	else if (projectWindow.isCreateClicked()) {
 		createProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
 	}
+
+	// preferences...
+	preferencesWindow.render(editorMenu.isPreferencesClicked());
 	
-	bool inspectorOpenedThisFrame = mainMenu.isOpenInspectorCalled();
-	bool hierarchyOpenedThisFrame = mainMenu.isOpenHierarchyCalled();
-	bool consoleOpenedThisFrame = mainMenu.isOpenConsoleCalled();
-	bool sceneViewOpenedThisFrame = mainMenu.isOpenSceneViewCalled();
-	bool projectViewOpenedThisFrame = mainMenu.isOpenProjectViewCalled();
+	bool inspectorOpenedThisFrame = editorMenu.isOpenInspectorCalled();
+	bool hierarchyOpenedThisFrame = editorMenu.isOpenHierarchyCalled();
+	bool consoleOpenedThisFrame = editorMenu.isOpenConsoleCalled();
+	bool sceneViewOpenedThisFrame = editorMenu.isOpenSceneViewCalled();
+	bool projectViewOpenedThisFrame = editorMenu.isOpenProjectViewCalled();
 	
 	hierarchy.render(&world, currentSceneName, hierarchyOpenedThisFrame);
 	inspector.render(&world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
 	console.render(consoleOpenedThisFrame);
-	projectView.render(currentProjectPath, editorApplicationActive, projectViewOpenedThisFrame);
+	projectView.render(currentProjectPath, editorBecameActiveThisFrame, projectViewOpenedThisFrame);
+	aboutPopup.render(editorMenu.isAboutClicked());
+
+	if (editorMenu.isQuitClicked()) {
+		quitCalled = true;
+	}
 
 	updateInputPassedToSystems(&input);
 
@@ -193,18 +196,12 @@ void Editor::render(bool editorApplicationActive)
 
 	sceneView.render(&world, textureNames, textures, 6, query, sceneViewOpenedThisFrame);
 	
-	aboutPopup.render(mainMenu.isAboutClicked());
-
-	if (mainMenu.isQuitClicked()) {
-		quitCalled = true;
-	}
-
-	commandManager.update(input);
-	
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	ImGui::EndFrame();
+
+	commandManager.update(input);
 }
 
 bool Editor::isQuitCalled() const
@@ -352,6 +349,8 @@ void Editor::openProject(std::string name, std::string path)
 
 void Editor::updateAssetsLoadedInWorld()
 {
+	libraryDirectory.update(currentProjectPath);
+
 	std::map<std::string, FileInfo> filePathToFileInfo = libraryDirectory.getTrackedFilesInProject();
 	for (std::map<std::string, FileInfo>::iterator it1 = filePathToFileInfo.begin(); it1 != filePathToFileInfo.end(); it1++) {
 		std::string filePath = it1->first;

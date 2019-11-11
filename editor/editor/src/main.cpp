@@ -36,6 +36,8 @@ typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
 
 #include "../include/Editor.h"
 
+#include "core/Log.h"
+
 using namespace PhysicsEditor;
 
 
@@ -94,6 +96,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	SetSwapInterval(1);
 	glewInit();
 
+	HWND prevActiveWindow = NULL;
+	HWND activeWindow = NULL;
+
 	Editor editor;
 
 	// initialize editor
@@ -104,6 +109,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	ZeroMemory(&msg, sizeof(msg));
 	while (msg.message != WM_QUIT)
 	{
+		prevActiveWindow = activeWindow;
+		activeWindow = GetActiveWindow();
+
 		// Poll and handle messages (inputs, window resize, etc.)
 		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -113,12 +121,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			continue;
 		}
+
+		/*if (activeWindow == g_hwnd && activeWindow != prevActiveWindow) {
+			LONG windowId = GetWindowLongA(activeWindow, GWL_ID);
+			std::string message = std::to_string(windowId) + "\n";
+			Log::info(message.c_str());
+		}*/
 
 		wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 
-		editor.render(g_hwnd == GetActiveWindow());
+		editor.render(activeWindow == g_hwnd && activeWindow != prevActiveWindow);
 
 		if (editor.getCurrentProjectPath() != ""){
 			SetWindowTextA(g_hwnd, ("Physics Engine - " + editor.getCurrentProjectPath()).c_str());

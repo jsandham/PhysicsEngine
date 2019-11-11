@@ -10,7 +10,8 @@
 
 #include "LibraryDirectory.h"
 
-#include "MainMenuBar.h"
+#include "EditorMenuBar.h"
+#include "EditorToolbar.h"
 #include "Inspector.h"
 #include "Hierarchy.h"
 #include "ProjectView.h"
@@ -19,6 +20,7 @@
 #include "Filebrowser.h"
 #include "ProjectWindow.h"
 #include "BuildWindow.h"
+#include "PreferencesWindow.h"
 #include "AboutPopup.h"
 #include "CommandManager.h"
 
@@ -35,7 +37,8 @@ namespace PhysicsEditor
 
 			LibraryDirectory libraryDirectory;
 
-			MainMenuBar mainMenu;
+			EditorMenuBar editorMenu;
+			EditorToolbar editorToolbar;
 			Inspector inspector;
 			Hierarchy hierarchy;
 			ProjectView projectView;
@@ -45,6 +48,7 @@ namespace PhysicsEditor
 			Filebrowser filebrowser;
 			ProjectWindow projectWindow; //ProjectBrowser? ProjectPopup?
 			BuildWindow buildWindow;
+			PreferencesWindow preferencesWindow;
 			AboutPopup aboutPopup;
 
 			CommandManager commandManager;
