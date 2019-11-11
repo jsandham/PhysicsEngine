@@ -269,5 +269,11 @@
     <ClInclude Include="include\imgui_styles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EditorProject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

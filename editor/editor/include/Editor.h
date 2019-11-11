@@ -10,6 +10,8 @@
 
 #include "LibraryDirectory.h"
 
+#include "EditorProject.h"
+#include "EditorScene.h"
 #include "EditorMenuBar.h"
 #include "EditorToolbar.h"
 #include "Inspector.h"
@@ -25,8 +27,6 @@
 #include "CommandManager.h"
 
 #include "systems/RenderSystem.h"
-
-using namespace PhysicsEngine;
 
 namespace PhysicsEditor
 {
@@ -53,13 +53,9 @@ namespace PhysicsEditor
 
 			CommandManager commandManager;
 
-			bool quitCalled;
+			EditorProject currentProject;
+			EditorScene currentScene;
 			
-			std::string currentProjectName;
-			std::string currentProjectPath;
-			std::string currentSceneName;
-			std::string currentScenePath;
-
 			Input input;
 			Camera* camera;
 			RenderSystem* renderSystem;
@@ -84,6 +80,7 @@ namespace PhysicsEditor
 			void saveScene(std::string name, std::string path);
 			void createProject(std::string name, std::string path);
 			void openProject(std::string name, std::string path);
+			void updateProjectAndSceneState();
 			void updateAssetsLoadedInWorld();
 			void updateInputPassedToSystems(Input* input);
 	};

@@ -3,12 +3,16 @@
 
 #include <string>
 
+#include "EditorProject.h"
+#include "EditorScene.h"
+
 namespace PhysicsEditor
 {
 	class EditorMenuBar
 	{
 		private:
 			bool projectSelected;
+			bool sceneSelected;
 
 			// File
 			bool newSceneClicked;
@@ -38,7 +42,7 @@ namespace PhysicsEditor
 			EditorMenuBar();
 			~EditorMenuBar();
 
-			void render(std::string currentProjectPath);
+			void render(const EditorProject project, const EditorScene scene);
 
 			bool isNewSceneClicked() const;
 			bool isOpenSceneClicked() const;

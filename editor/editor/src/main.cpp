@@ -123,12 +123,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			DispatchMessage(&msg);
 		}
 
-		/*if (activeWindow == g_hwnd && activeWindow != prevActiveWindow) {
-			LONG windowId = GetWindowLongA(activeWindow, GWL_ID);
-			std::string message = std::to_string(windowId) + "\n";
-			Log::info(message.c_str());
-		}*/
-
 		wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 
 		editor.render(activeWindow == g_hwnd && activeWindow != prevActiveWindow);

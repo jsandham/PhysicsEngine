@@ -43,6 +43,14 @@ void ProjectView::render(std::string currentProjectPath, bool editorBecameActive
 
 	if (ImGui::Begin("Project View", &projectViewActive)) {
 
+
+		/*ImVec2 size = ImVec2(5, 5);
+		ImVec2 cursorPos = ImGui::GetMousePos();
+		size.x += cursorPos.x;
+		size.y += cursorPos.y;
+		ImGui::GetForegroundDrawList()->AddRect(cursorPos, size, 0xFFFF0000);*/
+
+
 		if (currentProjectPath != "") {
 			ImGui::Columns(2, "ProjectViews", true);
 
@@ -149,11 +157,33 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode* node)
 		node_flags |= ImGuiTreeNodeFlags_Leaf;
 	}
 
+	if (ImGui::IsItemHovered()) {
+		node_flags |= ImGuiTreeNodeFlags_Selected;
+	}
+
 	bool open = ImGui::TreeNodeEx(node->directoryName.c_str(), node_flags);
 
-	if (ImGui::IsItemHovered()) {
+	//if (ImGui::IsItemHovered()) {
+	//	ImVec2 windowPos = ImGui::GetWindowPos();
+	//	ImVec2 contentsize = ImGui::GetItemRectSize();
+	//	ImVec2 contentMin = ImGui::GetItemRectMin();
+	//	ImVec2 contentMax = ImGui::GetItemRectMax();
+	//	//ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+	//	//ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
 
-	}
+	//	//ImVec2 cursorPos = ImGui::GetCursorPos();
+
+	//	/*contentMin.x += cursorPos.x;
+	//	contentMin.y += cursorPos.y;
+	//	contentMax.x += cursorPos.x;
+	//	contentMax.y += cursorPos.y;*/
+
+	//	//contentsize.x += cursorPos.x;
+	//	//contentsize.y += cursorPos.y;
+
+	//	ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
+	//	//ImGui::GetForegroundDrawList()->AddRect(cursorPos, contentsize, 0xFFFF0000);
+	//}
 
 	if (ImGui::IsItemClicked()) {
 		selected = node;

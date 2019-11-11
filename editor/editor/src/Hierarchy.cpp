@@ -19,7 +19,7 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World* world, std::string currentScene, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, const EditorScene scene, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 
@@ -41,8 +41,13 @@ void Hierarchy::render(World* world, std::string currentScene, bool isOpenedThis
 
 	if (ImGui::Begin("Hierarchy", &hierarchyActive))
 	{
-		if (currentScene.length() > 0) {
-			ImGui::Text(currentScene.c_str());
+		if (scene.name.length() > 0) {
+			if (scene.isDirty) {
+				ImGui::Text((scene.name+"*").c_str());
+			}
+			else {
+				ImGui::Text(scene.name.c_str());
+			}
 			ImGui::Separator();
 
 			if (entities.size() == 1) {

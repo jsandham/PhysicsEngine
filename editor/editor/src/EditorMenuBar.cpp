@@ -35,9 +35,10 @@ EditorMenuBar::~EditorMenuBar()
 
 }
 
-void EditorMenuBar::render(std::string currentProjectPath)
+void EditorMenuBar::render(const EditorProject project, const EditorScene scene)
 {
-	projectSelected = currentProjectPath != "";
+	projectSelected = project.path != "";
+	sceneSelected = scene.name != "";
 
 	newSceneClicked = false;
 	openSceneClicked = false;
@@ -167,10 +168,10 @@ void EditorMenuBar::showMenuFile()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Save", "Ctrl+S", false, projectSelected)) {
+	if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, projectSelected && sceneSelected)) {
 		saveClicked = true;
 	}
-	if (ImGui::MenuItem("Save As..", NULL, false, projectSelected)) {
+	if (ImGui::MenuItem("Save As..", NULL, false, projectSelected && sceneSelected)) {
 		saveAsClicked = true;
 	}
 

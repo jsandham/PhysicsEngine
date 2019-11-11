@@ -7,6 +7,8 @@
 #include "core/Entity.h"
 #include "core/World.h"
 
+#include "../include/EditorScene.h"
+
 using namespace PhysicsEngine;
 
 namespace PhysicsEditor
@@ -21,7 +23,7 @@ namespace PhysicsEditor
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World* world, std::string currentScene, bool isOpenedThisFrame);
+			void render(World* world, const EditorScene scene, bool isOpenedThisFrame);
 
 			Entity* getSelectedEntity();
 	};

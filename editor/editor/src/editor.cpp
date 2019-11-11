@@ -24,11 +24,12 @@ using namespace json;
 
 Editor::Editor()
 {
-	quitCalled = false;
 	camera = NULL;
+	renderSystem = NULL;
 
-	currentProjectPath = "";
-	currentScenePath = "";
+	currentProject = {};
+	currentScene = {};
+	input = {};
 }
 
 Editor::~Editor()
@@ -83,8 +84,6 @@ void Editor::init(HWND window, int width, int height)
 
 	Transform* transform = cameraEntity->addComponent<Transform>(&world);
 	camera = cameraEntity->addComponent<Camera>(&world);
-
-	input = {};
 }
 
 void Editor::cleanUp()
@@ -104,70 +103,20 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	editorMenu.render(currentProjectPath);
+	editorMenu.render(currentProject, currentScene);
 	editorToolbar.render();
 
 	ImGui::ShowDemoWindow();
 	//ImGui::ShowMetricsWindow();
-	//ImGui::Text(currentProjectPath.c_str());
-	//ImGui::Text(currentScenePath.c_str());
 
-	// new, open and save scene
-	if (editorMenu.isNewSceneClicked()){
-		currentScenePath = "";
-		newScene();
-	}
-	if (editorMenu.isOpenSceneClicked()) {
-		filebrowser.setMode(FilebrowserMode::Open);
-	}
-	else if (editorMenu.isSaveAsClicked()) {
-		filebrowser.setMode(FilebrowserMode::Save);
-	}
+	updateProjectAndSceneState();
 
-	filebrowser.render(currentProjectPath, editorMenu.isOpenSceneClicked() | editorMenu.isSaveAsClicked());
-
-	if (filebrowser.isOpenClicked()) {
-		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
-	}
-	else if (filebrowser.isSaveClicked()) {
-		saveScene(filebrowser.getSaveFile(), filebrowser.getSaveFilePath());
-	}
-
-	// new, open, save project project
-	if (editorMenu.isOpenProjectClicked()) {
-		projectWindow.setMode(ProjectWindowMode::OpenProject);
-	}
-	else if (editorMenu.isNewProjectClicked()) {
-		projectWindow.setMode(ProjectWindowMode::NewProject);
-	}
-
-	projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
-
-	if (projectWindow.isOpenClicked()) {
-		openProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath());
-	}
-	else if (projectWindow.isCreateClicked()) {
-		createProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
-	}
-
-	// preferences...
-	preferencesWindow.render(editorMenu.isPreferencesClicked());
-	
-	bool inspectorOpenedThisFrame = editorMenu.isOpenInspectorCalled();
-	bool hierarchyOpenedThisFrame = editorMenu.isOpenHierarchyCalled();
-	bool consoleOpenedThisFrame = editorMenu.isOpenConsoleCalled();
-	bool sceneViewOpenedThisFrame = editorMenu.isOpenSceneViewCalled();
-	bool projectViewOpenedThisFrame = editorMenu.isOpenProjectViewCalled();
-	
-	hierarchy.render(&world, currentSceneName, hierarchyOpenedThisFrame);
-	inspector.render(&world, hierarchy.getSelectedEntity(), inspectorOpenedThisFrame);
-	console.render(consoleOpenedThisFrame);
-	projectView.render(currentProjectPath, editorBecameActiveThisFrame, projectViewOpenedThisFrame);
+	hierarchy.render(&world, currentScene, editorMenu.isOpenHierarchyCalled());
+	inspector.render(&world, hierarchy.getSelectedEntity(), editorMenu.isOpenInspectorCalled());
+	console.render(editorMenu.isOpenConsoleCalled());
+	projectView.render(currentProject.path, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 	aboutPopup.render(editorMenu.isAboutClicked());
-
-	if (editorMenu.isQuitClicked()) {
-		quitCalled = true;
-	}
+	preferencesWindow.render(editorMenu.isPreferencesClicked());
 
 	updateInputPassedToSystems(&input);
 
@@ -179,26 +128,25 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
-	const char* textureNames[] = { "Color", 
-								   "Depth", 
-								   "Normals", 
-								   "Position", 
-								   "Overdraw", 
-								   "SSAO" }; 
-	const GLint textures[] = {targets.color, 
-							   targets.depth, 
-							   targets.normals,
-							   targets.position,
-							   targets.overdraw, 
-							   targets.ssao};
-	
+	const char* textureNames[] = { "Color",
+									"Depth",
+									"Normals",
+									"Position",
+									"Overdraw",
+									"SSAO" };
+	const GLint textures[] = { targets.color,
+								targets.depth,
+								targets.normals,
+								targets.position,
+								targets.overdraw,
+								targets.ssao };
+
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
-	sceneView.render(&world, textureNames, textures, 6, query, sceneViewOpenedThisFrame);
-	
+	sceneView.render(&world, textureNames, textures, 6, query, editorMenu.isOpenSceneViewCalled());
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 	ImGui::EndFrame();
 
 	commandManager.update(input);
@@ -206,17 +154,17 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 bool Editor::isQuitCalled() const
 {
-	return quitCalled;
+	return editorMenu.isQuitClicked();
 }
 
 std::string Editor::getCurrentProjectPath() const
 {
-	return currentProjectPath;
+	return currentProject.path;
 }
 
 std::string Editor::getCurrentScenePath() const
 {
-	return currentScenePath;
+	return currentScene.path;
 }
 
 void Editor::newScene()
@@ -230,44 +178,52 @@ void Editor::newScene()
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 	camera->updateInternalCameraState();
+
+	currentScene.name = "default.scene";
+	currentScene.path = "";
+	currentScene.metaPath = "";
+	currentScene.libraryPath = "";
+	currentScene.sceneId = Guid::newGuid();
+	currentScene.isDirty = true;
 }
 
 void Editor::openScene(std::string name, std::string path)
 {
 	// check to make sure the scene is part of the current project
-	if (path.find(currentProjectPath + "\\data\\") != 0) {
-		std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " + currentProjectPath + "\n";
+	if (path.find(currentProject.path + "\\data\\") != 0) {
+		std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " + currentProject.path + "\n";
 		Log::error(&errorMessage[0]);
 		return;
 	}
 
-	std::string metaFilePath = path.substr(0, path.find(".")) + ".json";
+	std::string sceneMetaFilePath = path.substr(0, path.find(".")) + ".json";
 
 	// get guid from scene meta file
-	std::ifstream metaFile(metaFilePath, std::ios::in);
+	std::ifstream sceneMetaFile(sceneMetaFilePath, std::ios::in);
 
 	Guid guid;
-	if (metaFile.is_open()) {
+	if (sceneMetaFile.is_open()) {
 		std::ostringstream contents;
-		contents << metaFile.rdbuf();
-		metaFile.close();
+		contents << sceneMetaFile.rdbuf();
+		sceneMetaFile.close();
 
 		json::JSON jsonObject = JSON::Load(contents.str());
 		guid = Guid(jsonObject["id"].ToString());
 	}
 	else {
-		std::string errorMessage = "Could not open meta file " + metaFilePath + "\n";
+		std::string errorMessage = "Could not open meta file " + sceneMetaFilePath + "\n";
 		Log::error(&errorMessage[0]);
 		return;
 	}
 
 	// get binary scene file from library directory
-	std::string binarySceneFilePath = currentProjectPath + "\\library\\" + guid.toString() + ".data";
+	std::string binarySceneFilePath = currentProject.path + "\\library\\" + guid.toString() + ".data";
 
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
-	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+	//TODO: Need todestroy assets too!
+	world.latentDestroyEntitiesInWorld();
 
-	// reset editor camera
+	// reset editor camera to default position
 	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
 	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
 	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -276,8 +232,12 @@ void Editor::openScene(std::string name, std::string path)
 
 	// load binary version of scene into world (ignoring systems and cameras)
 	if (world.loadSceneFromEditor(binarySceneFilePath)){
-		currentSceneName = name;
-		currentScenePath = path;
+		currentScene.name = name;
+		currentScene.path = path;
+		currentScene.metaPath = sceneMetaFilePath;
+		currentScene.libraryPath = binarySceneFilePath;
+		currentScene.sceneId = guid;
+		currentScene.isDirty = false;
 	}
 	else {
 		std::string errorMessage = "Failed to load scene " + binarySceneFilePath + " into world\n";
@@ -287,7 +247,42 @@ void Editor::openScene(std::string name, std::string path)
 
 void Editor::saveScene(std::string name, std::string path)
 {
-	Log::info("save called");
+	if (!currentScene.isDirty) {
+		return;
+	}
+
+	// idea
+	/*if (writeWorldToScene(world, path)) { //put function in editor utility file? Or maybe in engine World class?
+
+	}
+	else {
+		std::string message = "Could not open json scene file " + currentScene.path + " for saving\n";
+		Log::error(message.c_str());
+		return;
+	}*/
+
+
+
+	std::ofstream sceneFile(path, std::ios::out);
+
+	if (sceneFile.is_open()) {
+
+		// write world out to json scene file here..
+		// bool writeWorldToScene(world, currentScene);
+		
+		currentScene.name = name;
+		currentScene.path = path;
+		currentScene.isDirty = false;
+
+		sceneFile.close();
+
+		Log::info("save called");
+	}
+	else {
+		std::string message = "Could not open json scene file " + currentScene.path + " for saving\n";
+		Log::error(message.c_str());
+		return;
+	}
 }
 
 void Editor::createProject(std::string name, std::string path)
@@ -303,8 +298,16 @@ void Editor::createProject(std::string name, std::string path)
 		success &= createDirectory(path + "\\data\\shaders");
 
 		if (success){
-			currentProjectName = name;
-			currentProjectPath = path;
+			currentProject.name = name;
+			currentProject.path = path;
+
+			currentScene.name = "";
+			currentScene.path = "";
+			currentScene.metaPath = "";
+			currentScene.libraryPath = "";
+			currentScene.sceneId = Guid::INVALID;
+			currentScene.isDirty = false;
+	
 			assetsAddedToWorld.clear();
 			Log::info("Project successfully created\n");
 		}
@@ -331,8 +334,15 @@ void Editor::createProject(std::string name, std::string path)
 
 void Editor::openProject(std::string name, std::string path)
 {
-	currentProjectName = name;
-	currentProjectPath = path;
+	currentProject.name = name;
+	currentProject.path = path;
+
+	currentScene.name = "";
+	currentScene.path = "";
+	currentScene.metaPath = "";
+	currentScene.libraryPath = "";
+	currentScene.sceneId = Guid::INVALID;
+	currentScene.isDirty = false;
 
 	assetsAddedToWorld.clear();
 
@@ -349,7 +359,7 @@ void Editor::openProject(std::string name, std::string path)
 
 void Editor::updateAssetsLoadedInWorld()
 {
-	libraryDirectory.update(currentProjectPath);
+	libraryDirectory.update(currentProject.path);
 
 	std::map<std::string, FileInfo> filePathToFileInfo = libraryDirectory.getTrackedFilesInProject();
 	for (std::map<std::string, FileInfo>::iterator it1 = filePathToFileInfo.begin(); it1 != filePathToFileInfo.end(); it1++) {
@@ -366,13 +376,56 @@ void Editor::updateAssetsLoadedInWorld()
 			assetsAddedToWorld.insert(id);
 
 			// get file path of binary version of asset located in library directory
-			std::string libraryFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";;
+			std::string libraryFilePath = currentProject.path + "\\library\\" + id.toString() + ".data";;
 
 			if (!world.loadAsset(libraryFilePath)){
 				std::string errorMessage = "Could not load asset: " + libraryFilePath + "\n";
 				Log::error(&errorMessage[0]);
 			}
 		}
+	}
+}
+
+void Editor::updateProjectAndSceneState()
+{
+	// new, open and save scene
+	if (editorMenu.isNewSceneClicked()) {
+		newScene();
+	}
+	if (editorMenu.isOpenSceneClicked()) {
+		filebrowser.setMode(FilebrowserMode::Open);
+	}
+	else if (editorMenu.isSaveClicked() && currentScene.path != "") {
+		saveScene(currentScene.name, currentScene.path);
+	}
+	else if (editorMenu.isSaveAsClicked() || editorMenu.isSaveClicked() && currentScene.path == "") {
+		filebrowser.setMode(FilebrowserMode::Save);
+	}
+
+	filebrowser.render(currentProject.path, editorMenu.isOpenSceneClicked() | editorMenu.isSaveAsClicked() | editorMenu.isSaveClicked() && currentScene.path == "");
+
+	if (filebrowser.isOpenClicked()) {
+		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
+	}
+	else if (filebrowser.isSaveClicked()) {
+		saveScene(filebrowser.getSaveFile(), filebrowser.getSaveFilePath());
+	}
+
+	// new, open, save project project
+	if (editorMenu.isOpenProjectClicked()) {
+		projectWindow.setMode(ProjectWindowMode::OpenProject);
+	}
+	else if (editorMenu.isNewProjectClicked()) {
+		projectWindow.setMode(ProjectWindowMode::NewProject);
+	}
+
+	projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
+
+	if (projectWindow.isOpenClicked()) {
+		openProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath());
+	}
+	else if (projectWindow.isCreateClicked()) {
+		createProject(projectWindow.getProjectName(), projectWindow.getSelectedFolderPath() + "\\" + projectWindow.getProjectName());
 	}
 }
 
