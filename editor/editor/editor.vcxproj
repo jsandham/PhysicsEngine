@@ -166,6 +166,7 @@
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\EditorCameraSystem.cpp" />
     <ClCompile Include="src\EditorCommands.cpp" />
+    <ClCompile Include="src\EditorFileIO.cpp" />
     <ClCompile Include="src\EditorToolbar.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\imgui_styles.cpp" />
     <ClCompile Include="src\Inspector.cpp" />
     <ClCompile Include="src\InspectorDrawer.cpp" />
+    <ClCompile Include="src\LibraryCache.cpp" />
     <ClCompile Include="src\LibraryDirectory.cpp" />
     <ClCompile Include="src\LightDrawer.cpp" />
     <ClCompile Include="src\LineRendererDrawer.cpp" />
@@ -210,6 +212,7 @@
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\EditorCameraSystem.h" />
     <ClInclude Include="include\EditorCommands.h" />
+    <ClInclude Include="include\EditorFileIO.h" />
     <ClInclude Include="include\EditorProject.h" />
     <ClInclude Include="include\EditorScene.h" />
     <ClInclude Include="include\EditorToolbar.h" />
@@ -228,6 +231,7 @@
     <ClInclude Include="include\imgui_styles.h" />
     <ClInclude Include="include\Inspector.h" />
     <ClInclude Include="include\InspectorDrawer.h" />
+    <ClInclude Include="include\LibraryCache.h" />
     <ClInclude Include="include\LibraryDirectory.h" />
     <ClInclude Include="include\LightDrawer.h" />
     <ClInclude Include="include\LineRendererDrawer.h" />

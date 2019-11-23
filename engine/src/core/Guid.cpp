@@ -218,3 +218,9 @@ Guid Guid::newGuid()
 
 	return bytes;
 }
+
+std::ostream& operator<<(std::ostream& os, const Guid& id)
+{
+	os << id.toString();
+	return os;
+}

@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "../include/Editor.h"
+#include "../include/EditorFileIO.h"
 #include "../include/FileSystemUtil.h"
 #include "../include/EditorCameraSystem.h" // could just add this to the engine lib? Could include a couple different camera movement systems like editor, fps etc in engine as examples?
 
@@ -150,6 +151,10 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	ImGui::EndFrame();
 
 	commandManager.update(input);
+
+	/*int entityCount = world.getNumberOfEntities();
+	std::string test = std::to_string(entityCount) + "\n";
+	Log::info(test.c_str());*/
 }
 
 bool Editor::isQuitCalled() const
@@ -251,35 +256,18 @@ void Editor::saveScene(std::string name, std::string path)
 		return;
 	}
 
-	// idea
-	/*if (writeWorldToScene(world, path)) { //put function in editor utility file? Or maybe in engine World class?
+	Log::info(name.c_str());
+	Log::info(path.c_str());
 
-	}
-	else {
-		std::string message = "Could not open json scene file " + currentScene.path + " for saving\n";
-		Log::error(message.c_str());
-		return;
-	}*/
-
-
-
-	std::ofstream sceneFile(path, std::ios::out);
-
-	if (sceneFile.is_open()) {
-
-		// write world out to json scene file here..
-		// bool writeWorldToScene(world, currentScene);
-		
+	if (PhysicsEditor::writeWorldToJson(&world, path)) { 
 		currentScene.name = name;
 		currentScene.path = path;
 		currentScene.isDirty = false;
 
-		sceneFile.close();
-
 		Log::info("save called");
 	}
 	else {
-		std::string message = "Could not open json scene file " + currentScene.path + " for saving\n";
+		std::string message = "Could not save world to scene file " + path + "\n";
 		Log::error(message.c_str());
 		return;
 	}
@@ -321,6 +309,8 @@ void Editor::createProject(std::string name, std::string path)
 		return;
 	}
 
+	libraryDirectory.load(path);
+
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
@@ -334,6 +324,8 @@ void Editor::createProject(std::string name, std::string path)
 
 void Editor::openProject(std::string name, std::string path)
 {
+	libraryDirectory.load(path);
+
 	currentProject.name = name;
 	currentProject.path = path;
 
@@ -345,6 +337,13 @@ void Editor::openProject(std::string name, std::string path)
 	currentScene.isDirty = false;
 
 	assetsAddedToWorld.clear();
+
+	Log::info("entities before destroy call\n");
+	for (int i = 0; i < world.getNumberOfEntities(); i++) {
+		std::string entityStr = "Entity in world " + world.getEntityByIndex(i)->entityId.toString() + " \n";
+		Log::info(entityStr.c_str());
+	}
+
 
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); 
@@ -361,24 +360,23 @@ void Editor::updateAssetsLoadedInWorld()
 {
 	libraryDirectory.update(currentProject.path);
 
-	std::map<std::string, FileInfo> filePathToFileInfo = libraryDirectory.getTrackedFilesInProject();
-	for (std::map<std::string, FileInfo>::iterator it1 = filePathToFileInfo.begin(); it1 != filePathToFileInfo.end(); it1++) {
-		std::string filePath = it1->first;
-		PhysicsEngine::Guid id = it1->second.id;
-		std::string extension = it1->second.fileExtension;
+	LibraryCache libraryCache = libraryDirectory.getLibraryCache();
 
-		if (extension == "scene") {
+	for (LibraryCache::iterator it = libraryCache.begin(); it != libraryCache.end(); it++) {
+		if (it->second.fileExtension == "scene" || it->second.fileExtension == "json") {
 			continue;
 		}
 
-		std::unordered_set<PhysicsEngine::Guid>::iterator it2 = assetsAddedToWorld.find(id);
-		if (it2 == assetsAddedToWorld.end() ){
-			assetsAddedToWorld.insert(id);
+		std::unordered_set<std::string>::iterator it1 = assetsAddedToWorld.find(it->second.filePath);
+		if (it1 == assetsAddedToWorld.end()) {
+			assetsAddedToWorld.insert(it->second.filePath);
+
+			Guid id = LibraryDirectory::findGuidFromMetaFilePath(it->second.filePath.substr(0, it->second.filePath.find_last_of(".")) + ".json");
 
 			// get file path of binary version of asset located in library directory
-			std::string libraryFilePath = currentProject.path + "\\library\\" + id.toString() + ".data";;
+			std::string libraryFilePath = currentProject.path + "\\library\\" + id.toString() + ".data";
 
-			if (!world.loadAsset(libraryFilePath)){
+			if (!world.loadAsset(libraryFilePath)) {
 				std::string errorMessage = "Could not load asset: " + libraryFilePath + "\n";
 				Log::error(&errorMessage[0]);
 			}
@@ -402,7 +400,7 @@ void Editor::updateProjectAndSceneState()
 		filebrowser.setMode(FilebrowserMode::Save);
 	}
 
-	filebrowser.render(currentProject.path, editorMenu.isOpenSceneClicked() | editorMenu.isSaveAsClicked() | editorMenu.isSaveClicked() && currentScene.path == "");
+	filebrowser.render(currentProject.path, editorMenu.isOpenSceneClicked() || editorMenu.isSaveAsClicked() || editorMenu.isSaveClicked() && currentScene.path == "");
 
 	if (filebrowser.isOpenClicked()) {
 		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());

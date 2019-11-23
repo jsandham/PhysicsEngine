@@ -1,11 +1,35 @@
-﻿Build started 2019-11-11 3:22:58 PM.
+﻿Build started 2019-11-22 1:53:59 AM.
      1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
-         Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "x64\Debug\editor.tlog\unsuccessfulbuild".
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\Editor.cpp src\main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\BoxColliderDrawer.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\Hierarchy.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryCache.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\Load.cpp src\LoadInspectorDrawerInternal.cpp src\main.cpp src\MeshColliderDrawer.cpp src\MeshRendererDrawer.cpp src\ProjectWindow.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\SphereColliderDrawer.cpp src\TransformDrawer.cpp
+         BoxColliderDrawer.cpp
+         CameraDrawer.cpp
+         CapsuleColliderDrawer.cpp
          Editor.cpp
+         EditorCameraSystem.cpp
+         EditorCommands.cpp
+         EditorFileIO.cpp
+         Hierarchy.cpp
+         Inspector.cpp
+         InspectorDrawer.cpp
+         LibraryCache.cpp
+         LibraryDirectory.cpp
+         LightDrawer.cpp
+         LineRendererDrawer.cpp
+         Load.cpp
+         LoadInspectorDrawerInternal.cpp
          main.cpp
+         MeshColliderDrawer.cpp
+         MeshRendererDrawer.cpp
+         ProjectWindow.cpp
+         Generating Code...
+         Compiling...
+         RigidbodyDrawer.cpp
+         SceneView.cpp
+         SphereColliderDrawer.cpp
+         TransformDrawer.cpp
          Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\engine\lib engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
@@ -19,6 +43,7 @@
          x64\Debug\Editor.obj
          x64\Debug\EditorCameraSystem.obj
          x64\Debug\EditorCommands.obj
+         x64\Debug\EditorFileIO.obj
          x64\Debug\EditorToolbar.obj
          x64\Debug\Filebrowser.obj
          x64\Debug\FileSystemUtil.obj
@@ -27,6 +52,7 @@
          x64\Debug\imgui_styles.obj
          x64\Debug\Inspector.obj
          x64\Debug\InspectorDrawer.obj
+         x64\Debug\LibraryCache.obj
          x64\Debug\LibraryDirectory.obj
          x64\Debug\LightDrawer.obj
          x64\Debug\LineRendererDrawer.obj
@@ -60,4 +86,4 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:03.30
+Time Elapsed 00:00:17.23

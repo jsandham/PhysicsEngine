@@ -170,6 +170,11 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				Log::error(&errorMessage[0]);
 				return false;
 			}
+
+			std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entity->entityId);
+			if (it == entityIdToComponentIds.end()) {
+				entityIdToComponentIds[entity->entityId] = std::vector<std::pair<Guid, int>>();
+			}
 		}
 		else if(classification == 'c'){
 			if (ignoreSystemsAndCamera && type == ComponentType<Camera>::type) {
@@ -200,7 +205,8 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				Log::error(&errorMessage[0]);
 				return false;
 			}
-
+			
+			Log::warn((component->entityId.toString() + "\n").c_str());
 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
 		}
 		else if(classification == 's' && !ignoreSystemsAndCamera){
@@ -263,6 +269,7 @@ void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntities
 		Entity* entity = getEntityByIndex(i);
 
 		if (!entity->doNotDestroy) {
+			Log::warn(entity->entityId.toString().c_str());
 			latentDestroyEntity(entity->entityId);
 		}
 	}
@@ -406,7 +413,8 @@ void World::latentDestroyEntity(Guid entityId)
 		}
 	}
 	else{
-		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to add to latent destroy list" << std::endl;
+		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to add to latent destroy list\n";
+		Log::error(message.c_str());
 		return;
 	}
 }
@@ -427,7 +435,8 @@ void World::immediateDestroyEntity(Guid entityId)
 		entityIdToComponentIds.erase(it1);
 	}
 	else{
-		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to delete" << std::endl;
+		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete\n";
+		Log::error(message.c_str());
 		return;
 	}
 
@@ -446,7 +455,8 @@ void World::immediateDestroyEntity(Guid entityId)
 		}
 	}
 	else{
-		std::cout << "Error: Could not find entity with id " << entityId.toString() << " when trying to delete" << std::endl;
+		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete\n";
+		Log::error(message.c_str());
 		return;
 	}
 }
@@ -494,7 +504,8 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		}
 	}
 	else{
-		std::cout << "Error: component id " << componentId.toString() << " not found in map when trying to destroy" << std::endl;
+		std::string message = "Error: component id " + componentId.toString() + " not found in map when trying to destroy\n";
+		Log::error(message.c_str());
 	} 
 }
 

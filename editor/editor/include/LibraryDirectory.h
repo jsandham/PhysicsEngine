@@ -5,39 +5,30 @@
 #include <unordered_set>
 #include <map>
 
+#include "LibraryCache.h"
+
 #include "core/Guid.h"
 
 namespace PhysicsEditor
 {
-	typedef struct FileInfo
-	{
-		std::string filePath;
-		std::string fileExtension;
-		PhysicsEngine::Guid id;
-		std::string createTime;
-		std::string accessTime;
-		std::string writeTime;
-	}FileInfo;
-
 	class LibraryDirectory 
 	{
 		private:
+			LibraryCache libraryCache; // rename to trackedFileCache or just fileCache?
 			std::string currentProjectPath;
-			std::map<std::string, FileInfo> filePathToFileInfo;
 
 		public:
 			LibraryDirectory();
 			~LibraryDirectory();
 
+			void load(std::string projectPath);
 			void update(std::string projectPath);
 
-			std::map<std::string, FileInfo> getTrackedFilesInProject() const;
-		
-		private:
-			bool load();
-			bool save();
-			bool writeAssetToLibrary(FileInfo fileInfo);
-			bool writeSceneToLibrary(FileInfo fileInfo);
+			LibraryCache getLibraryCache() const;
+
+			static bool isFileExtensionTracked(std::string extension);
+			static bool createMetaFile(std::string metaFilePath);
+			static PhysicsEngine::Guid findGuidFromMetaFilePath(std::string metaFilePath);
 	};
 }
 

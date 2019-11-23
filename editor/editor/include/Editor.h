@@ -60,7 +60,7 @@ namespace PhysicsEditor
 			Camera* camera;
 			RenderSystem* renderSystem;
 
-			std::unordered_set<PhysicsEngine::Guid> assetsAddedToWorld;
+			std::unordered_set<std::string> assetsAddedToWorld;
 
 		public:
 			Editor();

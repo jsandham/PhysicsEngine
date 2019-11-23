@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
 namespace PhysicsEngine
 {
@@ -32,6 +33,8 @@ namespace PhysicsEngine
 
 			static const Guid INVALID;
 	};
+
+	std::ostream& operator<<(std::ostream& os, const Guid& id);
 }
 
 // allow use of Guid in unordered_set and unordered_map
