@@ -41,6 +41,12 @@ namespace PhysicsEngine
 			}
 
 			template<typename T>
+			T* addComponent(World* world, std::vector<char> data)
+			{
+				return world->addComponent<T>(data);
+			}
+
+			template<typename T>
 			T* getComponent(World* world)
 			{
 				return world->getComponent<T>(entityId);

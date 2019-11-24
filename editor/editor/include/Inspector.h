@@ -4,20 +4,10 @@
 #include <vector>
 
 #include "InspectorDrawer.h"
+#include "EditorScene.h"
 
 #include "core/World.h"
 #include "core/Entity.h"
-
-#include "components/Transform.h"
-#include "components/Light.h"
-#include "components/Camera.h"
-#include "components/Rigidbody.h"
-#include "components/MeshRenderer.h"
-#include "components/LineRenderer.h"
-#include "components/BoxCollider.h"
-#include "components/SphereCollider.h"
-#include "components/CapsuleCollider.h"
-#include "components/MeshCollider.h"
 
 using namespace PhysicsEngine;
 
@@ -27,22 +17,12 @@ namespace PhysicsEditor
 	{
 		private:
 			std::vector<InspectorDrawer> drawers;
-			Transform transform;
-			Camera camera;
-			Light light;
-			Rigidbody rigidbody;
-			MeshRenderer meshRenderer;
-			LineRenderer lineRenderer;
-			BoxCollider boxCollider;
-			SphereCollider sphereCollider;
-			CapsuleCollider capsuleCollider;
-			MeshCollider meshCollider;
 
 		public:
 			Inspector();
 			~Inspector();
 
-			void render(World* world, Entity* entity, bool isOpenedThisFrame);
+			void render(World* world, Entity* entity, EditorScene& scene, bool isOpenedThisFrame);
 
 
 

@@ -22,7 +22,7 @@ SceneView::~SceneView()
 
 }
 
-void SceneView::render(PhysicsEngine::World* world, const char* textureNames[], const GLint textures[], int count, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
+void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
 {
 	focused = false;
 	static bool sceneViewActive = true;
@@ -41,6 +41,20 @@ void SceneView::render(PhysicsEngine::World* world, const char* textureNames[], 
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
 		focused = ImGui::IsWindowFocused();
+
+		int count = 6;
+		const char* textureNames[] = { "Color",
+									"Depth",
+									"Normals",
+									"Position",
+									"Overdraw",
+									"SSAO" };
+		const GLint textures[] = { targets.color,
+									targets.depth,
+									targets.normals,
+									targets.position,
+									targets.overdraw,
+									targets.ssao };
 
 		// select draw texture 
 		static GLuint currentTexture = (GLuint)textures[0];

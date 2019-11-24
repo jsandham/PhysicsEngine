@@ -1,6 +1,8 @@
 #include "../include/Inspector.h"
 #include "../include/LoadInspectorDrawerInternal.h"
 #include "../include/FileSystemUtil.h"
+#include "../include/CommandManager.h"
+#include "../include/EditorCommands.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -19,7 +21,7 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render(World* world, Entity* entity, bool isOpenedThisFrame)
+void Inspector::render(World* world, Entity* entity, EditorScene& scene, bool isOpenedThisFrame)
 {
 	static bool inspectorActive = true;
 
@@ -56,7 +58,27 @@ void Inspector::render(World* world, Entity* entity, bool isOpenedThisFrame)
 			std::string componentToAdd = "";
 			if (BeginAddComponentDropdown("Add component", componentToAdd)){
 
-
+				if (componentToAdd == "Transform") {
+					scene.isDirty = true; // actually should I pass this through to be modified in the command?
+					CommandManager::addCommand(new AddComponentCommand<Transform>(world, entity->entityId));
+				}
+				else if (componentToAdd == "Rigidbody") {
+					scene.isDirty = true;
+					CommandManager::addCommand(new AddComponentCommand<Rigidbody>(world, entity->entityId));
+				}
+				else if (componentToAdd == "Camera") {
+					scene.isDirty = true;
+					CommandManager::addCommand(new AddComponentCommand<Camera>(world, entity->entityId));
+				}
+				else if (componentToAdd == "MeshRenderer") {
+					scene.isDirty = true;
+					CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(world, entity->entityId));
+				}
+				else if (componentToAdd == "Light") {
+					scene.isDirty = true;
+					CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->entityId));
+				}
+				
 				EndAddComponentDropdown();
 			}
 		}

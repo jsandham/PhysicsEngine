@@ -176,6 +176,23 @@ namespace PhysicsEngine
 			}
 
 			template<typename T>
+			T* addComponent(std::vector<char> data)
+			{
+				int componentGlobalIndex = (int)getAllocator<T>().getCount();
+				int componentType = ComponentType<T>::type;
+			
+				T* component = create<T>(data);
+
+				idToGlobalIndex[component->componentId] = componentGlobalIndex;
+
+				entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, componentType));
+
+				componentIdsMarkedCreated.push_back(make_triple(component->entityId, component->componentId, componentType));
+
+				return component;
+			}
+
+			template<typename T>
 			T* addSystem(int order)
 			{
 				T* system = create<T>();
@@ -259,6 +276,7 @@ namespace PhysicsEngine
 
 			Entity* createEntity();
 			Entity* createEntity(Guid entityId);
+			Entity* createEntity(std::vector<char> data);
 
 			void latentDestroyEntity(Guid entityId);
 			void immediateDestroyEntity(Guid entityId);

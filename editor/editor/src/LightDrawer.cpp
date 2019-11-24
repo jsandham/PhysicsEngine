@@ -76,13 +76,15 @@ void LightDrawer::render(World world, Guid entityId, Guid componentId)
 
 		const char* lightTypes[] = { "Directional", "Spot", "Point" };
 		int lightTypeIndex = static_cast<int>(light->lightType);
-		ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes));
-		light->lightType = static_cast<LightType>(lightTypeIndex);
-
+		if (ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes))) {
+			CommandManager::addCommand(new ChangePropertyCommand<LightType>(&light->lightType, static_cast<LightType>(lightTypeIndex)));
+		}
+		
 		const char* shadowTypes[] = { "Hard", "Soft" };
 		int shadowTypeIndex = static_cast<int>(light->shadowType);
-		ImGui::Combo("##ShadowType", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes));
-		light->shadowType = static_cast<ShadowType>(shadowTypeIndex);
+		if (ImGui::Combo("##ShadowType", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes))) {
+			CommandManager::addCommand(new ChangePropertyCommand<ShadowType>(&light->shadowType, static_cast<ShadowType>(shadowTypeIndex)));
+		}
 
 		ImGui::TreePop();
 	}

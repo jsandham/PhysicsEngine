@@ -19,7 +19,7 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World* world, const EditorScene scene, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, EditorScene& scene, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 
@@ -74,6 +74,7 @@ void Hierarchy::render(World* world, const EditorScene scene, bool isOpenedThisF
 				}
 				if (ImGui::MenuItem("Delete", NULL, false, selectedEntity != NULL) && selectedEntity != NULL)
 				{
+
 					world->latentDestroyEntity(selectedEntity->entityId);
 				}
 
@@ -82,20 +83,25 @@ void Hierarchy::render(World* world, const EditorScene scene, bool isOpenedThisF
 				if (ImGui::BeginMenu("Create..."))
 				{
 					if (ImGui::MenuItem("Empty")) {
+						scene.isDirty = true;
 						CommandManager::addCommand(new CreateEntityCommand(world));
 					}
 					if (ImGui::MenuItem("Camera")) {
+						scene.isDirty = true;
 						CommandManager::addCommand(new CreateCameraCommand(world));
 					}
 					if (ImGui::MenuItem("Light")) {
+						scene.isDirty = true;
 						CommandManager::addCommand(new CreateLightCommand(world));
 					}
 
 					if (ImGui::BeginMenu("3D")) {
 						if (ImGui::MenuItem("Cube")) {
+							scene.isDirty = true;
 							CommandManager::addCommand(new CreateCubeCommand(world));
 						}
 						if (ImGui::MenuItem("Sphere")) {
+							scene.isDirty = true;
 							CommandManager::addCommand(new CreateSphereCommand(world));
 						}
 						ImGui::EndMenu();

@@ -23,7 +23,7 @@ namespace PhysicsEditor
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World* world, const EditorScene scene, bool isOpenedThisFrame);
+			void render(World* world, EditorScene& scene, bool isOpenedThisFrame);
 
 			Entity* getSelectedEntity();
 	};

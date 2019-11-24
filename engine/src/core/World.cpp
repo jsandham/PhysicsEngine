@@ -397,6 +397,20 @@ Entity* World::createEntity(Guid entityId)
 	return NULL;
 }
 
+Entity* World::createEntity(std::vector<char> data)
+{
+	int globalIndex = (int)getAllocator<Entity>().getCount();
+
+	Entity* entity = create<Entity>(data);
+
+	idToGlobalIndex[entity->entityId] = globalIndex;
+	entityIdToComponentIds[entity->entityId] = std::vector<std::pair<Guid, int>>();
+
+	entityIdsMarkedCreated.push_back(entity->entityId);
+
+	return entity;
+}
+
 void World::latentDestroyEntity(Guid entityId)
 {
 	entityIdsMarkedLatentDestroy.push_back(entityId);

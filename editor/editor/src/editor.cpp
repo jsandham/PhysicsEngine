@@ -104,16 +104,16 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	editorMenu.render(currentProject, currentScene);
-	editorToolbar.render();
-
 	ImGui::ShowDemoWindow();
 	//ImGui::ShowMetricsWindow();
+
+	editorMenu.render(currentProject, currentScene);
+	editorToolbar.render();
 
 	updateProjectAndSceneState();
 
 	hierarchy.render(&world, currentScene, editorMenu.isOpenHierarchyCalled());
-	inspector.render(&world, hierarchy.getSelectedEntity(), editorMenu.isOpenInspectorCalled());
+	inspector.render(&world, hierarchy.getSelectedEntity(), currentScene, editorMenu.isOpenInspectorCalled());
 	console.render(editorMenu.isOpenConsoleCalled());
 	projectView.render(currentProject.path, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 	aboutPopup.render(editorMenu.isAboutClicked());
@@ -128,33 +128,15 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	}
 
 	GraphicsTargets targets = renderSystem->getGraphicsTargets();
-
-	const char* textureNames[] = { "Color",
-									"Depth",
-									"Normals",
-									"Position",
-									"Overdraw",
-									"SSAO" };
-	const GLint textures[] = { targets.color,
-								targets.depth,
-								targets.normals,
-								targets.position,
-								targets.overdraw,
-								targets.ssao };
-
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
-	sceneView.render(&world, textureNames, textures, 6, query, editorMenu.isOpenSceneViewCalled());
+	sceneView.render(&world, targets, query, editorMenu.isOpenSceneViewCalled());
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	ImGui::EndFrame();
 
 	commandManager.update(input);
-
-	/*int entityCount = world.getNumberOfEntities();
-	std::string test = std::to_string(entityCount) + "\n";
-	Log::info(test.c_str());*/
 }
 
 bool Editor::isQuitCalled() const

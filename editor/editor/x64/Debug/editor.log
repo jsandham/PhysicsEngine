@@ -1,19 +1,33 @@
-﻿Build started 2019-11-22 1:53:59 AM.
-     1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
-     1>InitializeBuildStatus:
-         Touching "x64\Debug\editor.tlog\unsuccessfulbuild".
+﻿Build started 2019-11-24 12:39:03 PM.
+     1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "x64\Debug\editor.tlog\editor.lastbuildstate".
+       InitializeBuildStatus:
+         Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\BoxColliderDrawer.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\Hierarchy.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryCache.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\Load.cpp src\LoadInspectorDrawerInternal.cpp src\main.cpp src\MeshColliderDrawer.cpp src\MeshRendererDrawer.cpp src\ProjectWindow.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\SphereColliderDrawer.cpp src\TransformDrawer.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\AboutPopup.cpp src\BoxColliderDrawer.cpp src\BuildWindow.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\Command.cpp src\CommandManager.cpp src\Console.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\EditorToolbar.cpp src\Filebrowser.cpp src\FileSystemUtil.cpp src\Hierarchy.cpp src\imgui_extensions.cpp src\imgui_styles.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryCache.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\Load.cpp src\LoadInspectorDrawerInternal.cpp src\main.cpp src\imgui\imgui.cpp src\imgui\imgui_demo.cpp src\imgui\imgui_draw.cpp src\imgui\imgui_impl_opengl3.cpp src\imgui\imgui_impl_win32.cpp src\imgui\imgui_widgets.cpp src\EditorMenuBar.cpp src\MeshColliderDrawer.cpp src\MeshRendererDrawer.cpp src\PerformanceQueue.cpp src\PreferencesWindow.cpp src\ProjectView.cpp src\ProjectWindow.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\SphereColliderDrawer.cpp src\TransformDrawer.cpp
+         AboutPopup.cpp
          BoxColliderDrawer.cpp
+         BuildWindow.cpp
          CameraDrawer.cpp
          CapsuleColliderDrawer.cpp
+         Command.cpp
+         CommandManager.cpp
+         Console.cpp
          Editor.cpp
          EditorCameraSystem.cpp
          EditorCommands.cpp
          EditorFileIO.cpp
+         EditorToolbar.cpp
+         Filebrowser.cpp
+         FileSystemUtil.cpp
          Hierarchy.cpp
+         imgui_extensions.cpp
+         imgui_styles.cpp
          Inspector.cpp
          InspectorDrawer.cpp
+         Generating Code...
+         Compiling...
          LibraryCache.cpp
          LibraryDirectory.cpp
          LightDrawer.cpp
@@ -21,8 +35,18 @@
          Load.cpp
          LoadInspectorDrawerInternal.cpp
          main.cpp
+         imgui.cpp
+         imgui_demo.cpp
+         imgui_draw.cpp
+         imgui_impl_opengl3.cpp
+         imgui_impl_win32.cpp
+         imgui_widgets.cpp
+         EditorMenuBar.cpp
          MeshColliderDrawer.cpp
          MeshRendererDrawer.cpp
+         PerformanceQueue.cpp
+         PreferencesWindow.cpp
+         ProjectView.cpp
          ProjectWindow.cpp
          Generating Code...
          Compiling...
@@ -80,10 +104,10 @@
        FinalizeBuildStatus:
          Deleting file "x64\Debug\editor.tlog\unsuccessfulbuild".
          Touching "x64\Debug\editor.tlog\editor.lastbuildstate".
-     1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:17.23
+Time Elapsed 00:00:23.11

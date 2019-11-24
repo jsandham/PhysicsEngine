@@ -115,6 +115,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	json::JSON cameras;
 	json::JSON meshRenderers;
 	json::JSON lights;
+	json::JSON boxColliders;
+	json::JSON sphereColliders;
 
 	json::JSON::JSONWrapper<map<string, JSON>> objects = jsonScene.ObjectRange();
 	map<string, JSON>::iterator it;
@@ -136,6 +138,12 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 		}
 		else if (type == "Light") {
 			lights[it->first] = it->second;
+		}
+		else if (type == "BoxCollider") {
+			boxColliders[it->first] = it->second;
+		}
+		else if(type == "SphereCollider") {
+			sphereColliders[it->first] = it->second;
 		}
 	}
 
@@ -352,6 +360,63 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				outFile.write(&data[0], data.size());
 			}
 		}
+		if (!boxColliders.IsNull()) {
+			json::JSON::JSONWrapper<map<string, JSON>> boxColliderObjects = boxColliders.ObjectRange();
+			for (it = boxColliderObjects.begin(); it != boxColliderObjects.end(); it++) {
+				BoxCollider collider;
+
+				collider.componentId = Guid(it->first);
+				collider.entityId = Guid(it->second["entity"].ToString());
+
+				collider.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
+				collider.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
+				collider.bounds.centre.z = (float)it->second["centre"][2].ToFloat();
+
+				collider.bounds.size.x = (float)it->second["size"][0].ToFloat();
+				collider.bounds.size.y = (float)it->second["size"][1].ToFloat();
+				collider.bounds.size.z = (float)it->second["size"][2].ToFloat();
+
+				std::vector<char> data = collider.serialize();
+
+				char classification = 'c';
+				int type = 8;
+				size_t size = data.size();
+
+				outFile.write(&classification, 1);
+				outFile.write((char*)&type, sizeof(int));
+				outFile.write((char*)&size, sizeof(size_t));
+				outFile.write(&data[0], data.size());
+			}
+
+		}
+		if (!sphereColliders.IsNull()) {
+			json::JSON::JSONWrapper<map<string, JSON>> sphereColliderObjects = sphereColliders.ObjectRange();
+			for (it = sphereColliderObjects.begin(); it != sphereColliderObjects.end(); it++) {
+				SphereCollider collider;
+
+				collider.componentId = Guid(it->first);
+				collider.entityId = Guid(it->second["entity"].ToString());
+
+				collider.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
+				collider.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
+				collider.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
+
+				collider.sphere.radius = (float)it->second["radius"].ToFloat();
+
+				std::vector<char> data = collider.serialize();
+
+				char classification = 'c';
+				int type = 9;
+				size_t size = data.size();
+
+				outFile.write(&classification, 1);
+				outFile.write((char*)&type, sizeof(int));
+				outFile.write((char*)&size, sizeof(size_t));
+				outFile.write(&data[0], data.size());
+
+			}
+
+		}
 
 		outFile.close();
 	}
@@ -476,10 +541,22 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 				obj[componentId.toString()]["shadowType"] = static_cast<int>(light->shadowType);
 			}
 			else if (componentType == 8) {
-				BoxCollider* boxCollider = world->getComponent<BoxCollider>(entityId);
+				BoxCollider* collider = world->getComponent<BoxCollider>(entityId);
+
+				obj[componentId.toString()]["type"] = "SphereCollider";
+				obj[componentId.toString()]["entity"] = entityId.toString();
+
+				obj[componentId.toString()]["centre"].append(collider->bounds.centre.x, collider->bounds.centre.y, collider->bounds.centre.z);
+				obj[componentId.toString()]["size"].append(collider->bounds.size.x, collider->bounds.size.y, collider->bounds.size.z);
 			}
 			else if (componentType == 9) {
-				SphereCollider* sphereCollider = world->getComponent<SphereCollider>(entityId);
+				SphereCollider* collider = world->getComponent<SphereCollider>(entityId);
+
+				obj[componentId.toString()]["type"] = "SphereCollider";
+				obj[componentId.toString()]["entity"] = entityId.toString();
+
+				obj[componentId.toString()]["centre"].append(collider->sphere.centre.x, collider->sphere.centre.y, collider->sphere.centre.z);
+				obj[componentId.toString()]["radius"] = collider->sphere.radius;
 			}
 			else if (componentType == 10) {
 				CapsuleCollider* capsuleCollider = world->getComponent<CapsuleCollider>(entityId);
