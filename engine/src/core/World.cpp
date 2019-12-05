@@ -269,26 +269,16 @@ void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntities
 		Entity* entity = getEntityByIndex(i);
 
 		if (!entity->doNotDestroy) {
-			Log::warn(entity->entityId.toString().c_str());
+			std::string message = "Adding entity: " + entity->entityId.toString() + " to latent destroy list\n";
+			Log::warn(message.c_str());
 			latentDestroyEntity(entity->entityId);
+		}
+		else {
+			std::string message = "Error: Skipping entity: " + entity->entityId.toString() + " as it is marked do not destroy\n";
+			Log::error(message.c_str());
 		}
 	}
 }
-
-// void World::clearAll() // clearAll
-// {
-// 	clear();
-
-// 	while(getNumberOfSystems() > 0){
-// 		System* system = getSystemByIndex(0);
-
-// 		immediateDestroySystem(system->systemId);
-// 	}
-
-// 	while(getNumberOfAssets() > 0){
-
-// 	}
-// }
 
 int World::getNumberOfEntities()
 {
@@ -307,7 +297,8 @@ Entity* World::getEntity(Guid id)
 		return getAllocator<Entity>().get(it->second);
 	}
 	else{
-		std::cout << "Error: No entity with id " << id.toString() << " was found" << std::endl;
+		std::string message = "Error: No entity with id " + id.toString() + " was found\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }
@@ -488,6 +479,7 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		for(size_t i = 0; i < it1->second.size(); i++){
 			if(it1->second[i].first == componentId){
 				it1->second.erase(it1->second.begin() + i);
+				break;
 			}
 		}
 	}
@@ -498,6 +490,10 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 
 		std::string message = "index: " + std::to_string(index) + "\n";
 		Log::info(&message[0]);
+
+		std::string test = entityId.toString();
+		std::string test1 = componentId.toString();
+		int test3 = getAllocator<Transform>().getCount();
 
 		Component* swappedComponent = NULL;
 		//swappedComponent = destroyInternalComponent(componentType, index);

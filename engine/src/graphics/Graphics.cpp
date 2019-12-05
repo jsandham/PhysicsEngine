@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <GL/glew.h>
 
+#include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/graphics/GraphicsState.h"
 
@@ -307,7 +308,8 @@ void Graphics::checkError()
 				break;
 		}
 
-		std::cout << errorStr << " (" << error << ")" << std::endl;
+		std::string errorMessage = errorStr + "(" + std::to_string(error) + ")\n";
+		Log::error(errorMessage.c_str());
 	}
 }
 
@@ -347,7 +349,8 @@ void Graphics::checkFrambufferError()
 				break;
 		}
 
-		std::cout << errorStr << " (" << framebufferStatus << ")" << std::endl;
+		std::string errorMessage = errorStr + "(" + std::to_string(framebufferStatus) + ")\n";
+		Log::error(errorMessage.c_str());
 	}
 }
 
@@ -370,7 +373,8 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
 		openglFormat = GL_RGBA;
 		break;
 	default:
-		std::cout << "OpengGL: Invalid texture format" << std::endl;
+		std::string errorMessage = "OpengGL: Invalid texture format\n";
+		Log::error(errorMessage.c_str());
 	}
 
 	return openglFormat;
@@ -2389,9 +2393,9 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 
 void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* query)
 {
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-	}
+	//if(world->debug && query != NULL){
+	//	glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	//}
 
 	GLsizei numVertices = renderObject.size / 3;
 	GLint startIndex = renderObject.start / 3;
@@ -2400,25 +2404,25 @@ void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* qu
 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
 	glBindVertexArray(0);
 
-	if(world->debug && query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
+	//if(world->debug && query != NULL){
+	//	glEndQuery(GL_TIME_ELAPSED);
 
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
+	//	GLint done = 0;
+	//    while (!done) {
+	//	    glGetQueryObjectiv(query->queryId, 
+	//	            GL_QUERY_RESULT_AVAILABLE, 
+	//	            &done);
+	//	}
 
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+	//	// get the query result
+	//	GLuint64 elapsedTime; // in nanoseconds
+	//	glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
-	}
+	//	query->totalElapsedTime += elapsedTime / 1000000.0f;
+	//	query->numDrawCalls++;
+	//	query->verts += numVertices;
+	//	query->tris += numVertices / 3;
+	//}
 
-	Graphics::checkError();
+	//Graphics::checkError();
 }

@@ -164,28 +164,55 @@ bool Guid::isEmpty() const
 
 std::string Guid::toString() const
 {
-	char one[10], two[6], three[6], four[6], five[14];
+	char buffer[42];
 
-	_snprintf(one, 10, "%02x%02x%02x%02x", bytes[0], bytes[1], bytes[2], bytes[3]);
+	const char* format = "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x";
 
-	_snprintf(two, 6, "%02x%02x", bytes[4], bytes[5]);
+	_snprintf(buffer, 
+			  42,
+			  format, 
+			  bytes[0], 
+			  bytes[1], 
+			  bytes[2], 
+			  bytes[3], 
+			  bytes[4], 
+			  bytes[5], 
+			  bytes[6], 
+			  bytes[7], 
+			  bytes[8], 
+			  bytes[9], 
+			  bytes[10], 
+			  bytes[11], 
+			  bytes[12], 
+			  bytes[13], 
+			  bytes[14], 
+			  bytes[15]);
 
-	_snprintf(three, 6, "%02x%02x", bytes[6], bytes[7]);
 
-	_snprintf(four, 6, "%02x%02x", bytes[8], bytes[9]);
+	//char one[10], two[6], three[6], four[6], five[14];
 
-	_snprintf(five, 14, "%02x%02x%02x%02x%02x%02x", bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]);
+	//_snprintf(one, 10, "%02x%02x%02x%02x", bytes[0], bytes[1], bytes[2], bytes[3]);
 
-	const std::string sep("-");
+	//_snprintf(two, 6, "%02x%02x", bytes[4], bytes[5]);
 
-	std::string out(one);
+	//_snprintf(three, 6, "%02x%02x", bytes[6], bytes[7]);
 
-	out += sep + two;
-	out += sep + three;
-	out += sep + four;
-	out += sep + five;
+	//_snprintf(four, 6, "%02x%02x", bytes[8], bytes[9]);
 
-	return out;
+	//_snprintf(five, 14, "%02x%02x%02x%02x%02x%02x", bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]);
+
+	//const std::string sep("-");
+
+	//std::string out(one);
+
+	//out += sep + two;
+	//out += sep + three;
+	//out += sep + four;
+	//out += sep + five;
+
+	//return out;
+
+	return std::string(buffer);
 }
 
 Guid Guid::newGuid()

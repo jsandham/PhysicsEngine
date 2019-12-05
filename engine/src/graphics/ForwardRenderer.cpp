@@ -125,11 +125,21 @@ void ForwardRenderer::update(Input input)
 void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 {
 	Transform* transform = meshRenderer->getComponent<Transform>(world);
+	if (transform == NULL) {
+		std::string message = "Error: Could not find transform for meshrenderer with id " + meshRenderer->componentId.toString() + "\n";
+		return;
+	}
+
 	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
+	if (mesh == NULL) {
+		std::string message = "Error: Could not find mesh with id " + meshRenderer->meshId.toString() + "\n";
+		return;
+	}
 
 	int transformIndex = world->getIndexOf(transform->componentId); 
 	int meshStartIndex = 0;
-	Sphere boundingSphere = mesh->getBoundingSphere();
+	Sphere test;
+	Sphere boundingSphere = test;// mesh->getBoundingSphere();
 
 	for(int i = 0; i < 8; i++){
 		if(meshRenderer->materialIds[i] == Guid::INVALID){
@@ -152,7 +162,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 		renderObject.materialIndex = materialIndex;
 		renderObject.vao = mesh->vao.handle;
 
-		std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
+		//std::cout << "mesh id: " << meshRenderer->meshId.toString() << " meshStartIndex: " << meshStartIndex << " subMeshVertexStartIndex: " << subMeshVertexStartIndex << " subMeshVertexEndIndex: " << subMeshVertexEndIndex << " subMeshVerticesCount: " << subMeshVerticesCount << std::endl;
 
 		for(int j = 0; j < 10; j++){
 			renderObject.shaders[j] = shader->programs[j].handle;
@@ -387,6 +397,12 @@ void ForwardRenderer::lightPass(Light* light)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
+	const std::string shaderShadowMapNames[] = { "shadowMap[0]",
+												 "shadowMap[1]",
+												 "shadowMap[2]",
+												 "shadowMap[3]",
+												 "shadowMap[4]" };
+
 	for(int i = 0; i < renderObjects.size(); i++){
 		GLuint shaderProgram = renderObjects[i].shaders[(int)variant];
 		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
@@ -397,14 +413,15 @@ void ForwardRenderer::lightPass(Light* light)
 
 		if(lightType == LightType::Directional){
 			for(int j = 0; j < 5; j++){
-				Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(j) + "]", 3 + j);
+				/*Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(j) + "]", 3 + j);*/
+				Graphics::setInt(shaderProgram, shaderShadowMapNames[j], 3 + j);
 
 				glActiveTexture(GL_TEXTURE0 + 3 + j);
 				glBindTexture(GL_TEXTURE_2D, shadowCascadeDepth[j]);
 			}
 		}
 		else if(lightType == LightType::Spot){
-			Graphics::setInt(shaderProgram, "shadowMap[0]", 3);
+			Graphics::setInt(shaderProgram, shaderShadowMapNames[0], 3);
 
 			glActiveTexture(GL_TEXTURE0 + 3);
 			glBindTexture(GL_TEXTURE_2D, shadowSpotlightDepth);

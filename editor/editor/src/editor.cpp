@@ -18,7 +18,10 @@
 #include "../include/imgui/imgui_internal.h"
 
 #include "../include/imgui_styles.h"
-#include "..//include/imgui_extensions.h"
+#include "../include/imgui_extensions.h"
+
+
+#include "UnitTests.h"
 
 using namespace PhysicsEditor;
 using namespace json;
@@ -85,6 +88,12 @@ void Editor::init(HWND window, int width, int height)
 
 	Transform* transform = cameraEntity->addComponent<Transform>(&world);
 	camera = cameraEntity->addComponent<Camera>(&world);
+
+
+
+
+	UnitTests::run();
+
 }
 
 void Editor::cleanUp()
@@ -123,6 +132,8 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
+
+		int test = system->getOrder();
 
 		system->update(input);
 	}

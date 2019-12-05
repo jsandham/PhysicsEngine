@@ -1,13 +1,39 @@
 #include <iostream>
 
-#include "glm/glm.hpp"
+#include "../include/UnitTests.h"
 
-#include "UnitTests.h"
+
+#include "../include/glm/glm.hpp"
+
+#include "../include/core/Log.h"
+#include "../include/core/PoolAllocator.h"
+#include "../include/core/Geometry.h"
+#include "../include/core/Physics.h"
+
+#include "../include/components/Transform.h"
 
 using namespace PhysicsEngine;
 
-void GeometryUnitTests::run()
+void UnitTests::print(const std::string testMessage, bool testPassed)
 {
+	if (testPassed) {
+		std::string message = "CORE UNIT TEST: " + testMessage + " PASSED\n";
+		Log::info(message.c_str());
+	}
+	else {
+		std::string message = "CORE UNIT TEST: " + testMessage + " FAILED\n";
+		Log::info(message.c_str());
+	}
+}
+
+void UnitTests::run()
+{
+	poolAllocatorTest0();
+	poolAllocatorTest1();
+	poolAllocatorTest2();
+	poolAllocatorTest3();
+	poolAllocatorTest4();
+
 	raySphereIntersectionTest0();
 	raySphereIntersectionTest1();
 	raySphereIntersectionTest2();
@@ -99,17 +125,81 @@ void GeometryUnitTests::run()
 	boundsBoundsIntersectionTest10();
 }
 
-void GeometryUnitTests::print(const std::string testMessage, bool testPassed)
+void UnitTests::poolAllocatorTest0()
 {
-	if (testPassed){
-		std::cout << "GEOMETRY UNIT TEST: " << testMessage << "PASSED" << std::endl;
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 50; i++) {
+		allocator.construct();
 	}
-	else{
-		std::cout << "GEOMETRY UNIT TEST: " << testMessage << "FAILED" << std::endl;
+
+	for (int i = 0; i < 50; i++) {
+		allocator.destruct(0);
 	}
+
+	print("Pool allocator test (0)", allocator.getCount() == 0);
 }
 
-void GeometryUnitTests::raySphereIntersectionTest0()
+void UnitTests::poolAllocatorTest1()
+{
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 50; i++) {
+		allocator.construct();
+	}
+
+	for (int i = 0; i < 50; i++) {
+		allocator.destruct(allocator.getCount() - 1);
+	}
+
+	print("Pool allocator test (1)", allocator.getCount() == 0);
+}
+
+void UnitTests::poolAllocatorTest2()
+{
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 500; i++) {
+		allocator.construct();
+	}
+
+	for (int i = 0; i < 500; i++) {
+		allocator.destruct(allocator.getCount() - 1);
+	}
+
+	print("Pool allocator test (2)", allocator.getCount() == 0);
+}
+
+void UnitTests::poolAllocatorTest3()
+{
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 2000; i++) {
+		allocator.construct();
+		allocator.destruct(0);
+	}
+
+	print("Pool allocator test (3)", allocator.getCount() == 0);
+}
+
+void UnitTests::poolAllocatorTest4()
+{
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 2000; i++) {
+		allocator.construct();
+	}
+
+	while (allocator.getCount() > 0) {
+		int indexToDelete = rand() % allocator.getCount();
+
+		allocator.destruct(indexToDelete);
+	}
+
+	print("Pool allocator test (4)", allocator.getCount() == 0);
+}
+
+void UnitTests::raySphereIntersectionTest0()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 1.0f);
@@ -119,7 +209,7 @@ void GeometryUnitTests::raySphereIntersectionTest0()
 	print("Intersection of ray and sphere (0) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest1()
+void UnitTests::raySphereIntersectionTest1()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Sphere sphere(glm::vec3(0.0f, 10.0f, 0.0f), 1.0f);
@@ -129,7 +219,7 @@ void GeometryUnitTests::raySphereIntersectionTest1()
 	print("Intersection of ray and sphere (1) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest2()
+void UnitTests::raySphereIntersectionTest2()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 10.0f), 1.0f);
@@ -139,7 +229,7 @@ void GeometryUnitTests::raySphereIntersectionTest2()
 	print("Intersection of ray and sphere (2) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest3()
+void UnitTests::raySphereIntersectionTest3()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(-10.0f, 0.0f, 0.0f), 1.0f);
@@ -149,7 +239,7 @@ void GeometryUnitTests::raySphereIntersectionTest3()
 	print("Intersection of ray and sphere (3) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest4()
+void UnitTests::raySphereIntersectionTest4()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 	Sphere sphere(glm::vec3(0.0f, -10.0f, 0.0f), 1.0f);
@@ -159,7 +249,7 @@ void GeometryUnitTests::raySphereIntersectionTest4()
 	print("Intersection of ray and sphere (4) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest5()
+void UnitTests::raySphereIntersectionTest5()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	Sphere sphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f);
@@ -169,7 +259,7 @@ void GeometryUnitTests::raySphereIntersectionTest5()
 	print("Intersection of ray and sphere (5) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest6()
+void UnitTests::raySphereIntersectionTest6()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Sphere sphere(glm::vec3(10.0f, 10.0f, 10.0f), 1.0f);
@@ -179,7 +269,7 @@ void GeometryUnitTests::raySphereIntersectionTest6()
 	print("Intersection of ray and sphere (6) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest7()
+void UnitTests::raySphereIntersectionTest7()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 	Sphere sphere(glm::vec3(-10.0f, -10.0f, -10.0f), 1.0f);
@@ -189,7 +279,7 @@ void GeometryUnitTests::raySphereIntersectionTest7()
 	print("Intersection of ray and sphere (7) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest8()
+void UnitTests::raySphereIntersectionTest8()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 0.5f, 0.5f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 1.0f);
@@ -199,7 +289,7 @@ void GeometryUnitTests::raySphereIntersectionTest8()
 	print("Intersection of ray and sphere (8) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest9()
+void UnitTests::raySphereIntersectionTest9()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 1.0f, 0.0f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 1.0f);
@@ -209,7 +299,7 @@ void GeometryUnitTests::raySphereIntersectionTest9()
 	print("Intersection of ray and sphere (9) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest10()
+void UnitTests::raySphereIntersectionTest10()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 2.0f);
@@ -219,7 +309,7 @@ void GeometryUnitTests::raySphereIntersectionTest10()
 	print("Intersection of ray and sphere (10) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest11()
+void UnitTests::raySphereIntersectionTest11()
 {
 	Ray ray(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 2.0f);
@@ -229,7 +319,7 @@ void GeometryUnitTests::raySphereIntersectionTest11()
 	print("Intersection of ray and sphere (11) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest12()
+void UnitTests::raySphereIntersectionTest12()
 {
 	Ray ray(glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(-1.0f, -2.0f, -3.0f));
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
@@ -239,7 +329,7 @@ void GeometryUnitTests::raySphereIntersectionTest12()
 	print("Intersection of ray and sphere (12) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest13()
+void UnitTests::raySphereIntersectionTest13()
 {
 	Ray ray(glm::vec3(-1.0f, -2.0f, -3.0f), glm::vec3(1.0f, 2.0f, 3.0f));
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
@@ -249,7 +339,7 @@ void GeometryUnitTests::raySphereIntersectionTest13()
 	print("Intersection of ray and sphere (13) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest14()
+void UnitTests::raySphereIntersectionTest14()
 {
 	Ray ray(glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(-1.0f, -2.0f, -3.0f));
 	Sphere sphere(glm::vec3(0.2f, 0.3f, 0.1f), 2.0f);
@@ -259,7 +349,7 @@ void GeometryUnitTests::raySphereIntersectionTest14()
 	print("Intersection of ray and sphere (14) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest15()
+void UnitTests::raySphereIntersectionTest15()
 {
 	Ray ray(glm::vec3(-1.0f, -2.0f, -3.0f), glm::vec3(1.0f, 2.0f, 3.0f));
 	Sphere sphere(glm::vec3(0.2f, 0.3f, 0.1f), 2.0f);
@@ -269,7 +359,7 @@ void GeometryUnitTests::raySphereIntersectionTest15()
 	print("Intersection of ray and sphere (15) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest16()
+void UnitTests::raySphereIntersectionTest16()
 {
 	Ray ray(glm::vec3(-1.0f, 2.0f, -3.0f), glm::vec3(4.0f, -2.0f, 3.0f));
 	Sphere sphere(glm::vec3(-1.0f, 2.0f, -3.0f), 0.5f);
@@ -279,7 +369,7 @@ void GeometryUnitTests::raySphereIntersectionTest16()
 	print("Intersection of ray and sphere (16) ", (answer == true));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest17()
+void UnitTests::raySphereIntersectionTest17()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(-10.0f, 0.0f, 0.0f), 1.0f);
@@ -289,7 +379,7 @@ void GeometryUnitTests::raySphereIntersectionTest17()
 	print("Intersection of ray and sphere (17) ", (answer == false));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest18()
+void UnitTests::raySphereIntersectionTest18()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Sphere sphere(glm::vec3(0.0f, -10.0f, 0.0f), 1.0f);
@@ -299,7 +389,7 @@ void GeometryUnitTests::raySphereIntersectionTest18()
 	print("Intersection of ray and sphere (18) ", (answer == false));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest19()
+void UnitTests::raySphereIntersectionTest19()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	Sphere sphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f);
@@ -309,7 +399,7 @@ void GeometryUnitTests::raySphereIntersectionTest19()
 	print("Intersection of ray and sphere (19) ", (answer == false));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest20()
+void UnitTests::raySphereIntersectionTest20()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Sphere sphere(glm::vec3(-10.0f, -10.0f, -10.0f), 1.0f);
@@ -319,7 +409,7 @@ void GeometryUnitTests::raySphereIntersectionTest20()
 	print("Intersection of ray and sphere (20) ", (answer == false));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest21()
+void UnitTests::raySphereIntersectionTest21()
 {
 	Ray ray(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(1.0f, 0.0f, 0.0f), 0.5f);
@@ -329,7 +419,7 @@ void GeometryUnitTests::raySphereIntersectionTest21()
 	print("Intersection of ray and sphere (21) ", (answer == false));
 }
 
-void GeometryUnitTests::raySphereIntersectionTest22()
+void UnitTests::raySphereIntersectionTest22()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Sphere sphere(glm::vec3(10.0f, 0.0f, 0.0f), 1.0f);
@@ -339,7 +429,7 @@ void GeometryUnitTests::raySphereIntersectionTest22()
 	print("Intersection of ray and sphere (22) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest0()
+void UnitTests::rayBoundsIntersectionTest0()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -349,7 +439,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest0()
 	print("Intersection of ray and bounds (0) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest1()
+void UnitTests::rayBoundsIntersectionTest1()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Bounds bounds(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -359,7 +449,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest1()
 	print("Intersection of ray and bounds (1) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest2()
+void UnitTests::rayBoundsIntersectionTest2()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	Bounds bounds(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -369,7 +459,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest2()
 	print("Intersection of ray and bounds (2) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest3()
+void UnitTests::rayBoundsIntersectionTest3()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -379,7 +469,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest3()
 	print("Intersection of ray and bounds (3) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest4()
+void UnitTests::rayBoundsIntersectionTest4()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 	Bounds bounds(glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -389,7 +479,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest4()
 	print("Intersection of ray and bounds (4) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest5()
+void UnitTests::rayBoundsIntersectionTest5()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	Bounds bounds(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -399,7 +489,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest5()
 	print("Intersection of ray and bounds (5) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest6()
+void UnitTests::rayBoundsIntersectionTest6()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.001f, 2.0001f, 2.001f));
@@ -409,7 +499,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest6()
 	print("Intersection of ray and bounds (6) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest7()
+void UnitTests::rayBoundsIntersectionTest7()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.00001f));
@@ -419,7 +509,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest7()
 	print("Intersection of ray and bounds (7) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest8()
+void UnitTests::rayBoundsIntersectionTest8()
 {
 	Ray ray(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 	Bounds bounds(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
@@ -429,7 +519,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest8()
 	print("Intersection of ray and bounds (8) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest9()
+void UnitTests::rayBoundsIntersectionTest9()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
@@ -439,7 +529,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest9()
 	print("Intersection of ray and bounds (9) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest10()
+void UnitTests::rayBoundsIntersectionTest10()
 {
 	Ray ray(glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
@@ -449,7 +539,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest10()
 	print("Intersection of ray and bounds (10) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest11()
+void UnitTests::rayBoundsIntersectionTest11()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -459,7 +549,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest11()
 	print("Intersection of ray and bounds (11) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest12()
+void UnitTests::rayBoundsIntersectionTest12()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Bounds bounds(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -469,7 +559,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest12()
 	print("Intersection of ray and bounds (12) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest13()
+void UnitTests::rayBoundsIntersectionTest13()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	Bounds bounds(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -479,7 +569,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest13()
 	print("Intersection of ray and bounds (13) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest14()
+void UnitTests::rayBoundsIntersectionTest14()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.4f, 1.3f));
 	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -489,7 +579,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest14()
 	print("Intersection of ray and bounds (14) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest15()
+void UnitTests::rayBoundsIntersectionTest15()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.5f, -0.4f, -1.3f));
 	Bounds bounds(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -499,7 +589,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest15()
 	print("Intersection of ray and bounds (15) ", (answer == false));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest16()
+void UnitTests::rayBoundsIntersectionTest16()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.0f, 2.0f, 2.0f));
@@ -509,7 +599,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest16()
 	print("Intersection of ray and bounds (16) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest17()
+void UnitTests::rayBoundsIntersectionTest17()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.0f));
@@ -519,7 +609,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest17()
 	print("Intersection of ray and bounds (17) ", (answer == true));
 }
 
-void GeometryUnitTests::rayBoundsIntersectionTest18()
+void UnitTests::rayBoundsIntersectionTest18()
 {
 	Ray ray(glm::vec3(-1.0f, 10.0f, 2.2f), glm::vec3(1.0f, 0.1f, -2.3f));
 	Bounds bounds(glm::vec3(-1.015f, 9.85f, 1.9f), glm::vec3(2.8f, 1.234f, 2.1f));
@@ -530,7 +620,7 @@ void GeometryUnitTests::rayBoundsIntersectionTest18()
 }
 
 
-void GeometryUnitTests::sphereBoundsIntersectionTest0()
+void UnitTests::sphereBoundsIntersectionTest0()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -540,7 +630,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest0()
 	print("Intersection of sphere and bounds (0) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest1()
+void UnitTests::sphereBoundsIntersectionTest1()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -550,7 +640,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest1()
 	print("Intersection of sphere and bounds (1) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest2()
+void UnitTests::sphereBoundsIntersectionTest2()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -560,7 +650,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest2()
 	print("Intersection of sphere and bounds (2) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest3()
+void UnitTests::sphereBoundsIntersectionTest3()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -570,7 +660,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest3()
 	print("Intersection of sphere and bounds (3) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest4()
+void UnitTests::sphereBoundsIntersectionTest4()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -580,7 +670,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest4()
 	print("Intersection of sphere and bounds (4) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest5()
+void UnitTests::sphereBoundsIntersectionTest5()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -590,7 +680,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest5()
 	print("Intersection of sphere and bounds (5) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest6()
+void UnitTests::sphereBoundsIntersectionTest6()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -600,7 +690,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest6()
 	print("Intersection of sphere and bounds (6) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest7()
+void UnitTests::sphereBoundsIntersectionTest7()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -610,7 +700,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest7()
 	print("Intersection of sphere and bounds (7) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest8()
+void UnitTests::sphereBoundsIntersectionTest8()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -620,7 +710,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest8()
 	print("Intersection of sphere and bounds (8) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest9()
+void UnitTests::sphereBoundsIntersectionTest9()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -630,7 +720,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest9()
 	print("Intersection of sphere and bounds (9) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest10()
+void UnitTests::sphereBoundsIntersectionTest10()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -640,7 +730,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest10()
 	print("Intersection of sphere and bounds (10) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest11()
+void UnitTests::sphereBoundsIntersectionTest11()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -650,7 +740,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest11()
 	print("Intersection of sphere and bounds (11) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest12()
+void UnitTests::sphereBoundsIntersectionTest12()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -660,7 +750,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest12()
 	print("Intersection of sphere and bounds (12) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest13()
+void UnitTests::sphereBoundsIntersectionTest13()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
@@ -670,7 +760,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest13()
 	print("Intersection of sphere and bounds (13) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest14()
+void UnitTests::sphereBoundsIntersectionTest14()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 0.1f);
 	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -680,7 +770,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest14()
 	print("Intersection of sphere and bounds (14) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest15()
+void UnitTests::sphereBoundsIntersectionTest15()
 {
 	Sphere sphere(glm::vec3(1.0, 1.0f, 1.0f), 0.5f);
 	Bounds bounds(glm::vec3(1.5f, 1.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -690,7 +780,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest15()
 	print("Intersection of sphere and bounds (15) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest16()
+void UnitTests::sphereBoundsIntersectionTest16()
 {
 	Sphere sphere(glm::vec3(-2.0f, 3.0f, 1.1f), 2.3f);
 	Bounds bounds(glm::vec3(5.0f, 10.0f, 4.0f), glm::vec3(1.2f, -2.2f, 4.2f));
@@ -700,7 +790,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest16()
 	print("Intersection of sphere and bounds (16) ", (answer == false));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest17()
+void UnitTests::sphereBoundsIntersectionTest17()
 {
 	Sphere sphere(glm::vec3(-2.0f, 0.0f, 0.0f), 0.4f);
 	Bounds bounds(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
@@ -710,7 +800,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest17()
 	print("Intersection of sphere and bounds (17) ", (answer == false));
 }
 
-void GeometryUnitTests::sphereBoundsIntersectionTest18()
+void UnitTests::sphereBoundsIntersectionTest18()
 {
 	Sphere sphere(glm::vec3(-1.0f, -1.0f, -1.0f), 0.4f);
 	Bounds bounds(glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(1.2f, 0.2f, 0.8f));
@@ -720,7 +810,7 @@ void GeometryUnitTests::sphereBoundsIntersectionTest18()
 	print("Intersection of sphere and bounds (18) ", (answer == false));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest0()
+void UnitTests::sphereSphereIntersectionTest0()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(1.0f, 0.0f, 0.0f), 0.75f);
@@ -730,7 +820,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest0()
 	print("Intersection of sphere and sphere (0) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest1()
+void UnitTests::sphereSphereIntersectionTest1()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(0.0f, 1.0f, 0.0f), 0.75f);
@@ -740,7 +830,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest1()
 	print("Intersection of sphere and sphere (1) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest2()
+void UnitTests::sphereSphereIntersectionTest2()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(0.0f, 0.0f, 1.0f), 0.75f);
@@ -750,7 +840,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest2()
 	print("Intersection of sphere and sphere (2) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest3()
+void UnitTests::sphereSphereIntersectionTest3()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(-1.0f, 0.0f, 0.0f), 0.75f);
@@ -760,7 +850,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest3()
 	print("Intersection of sphere and sphere (3) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest4()
+void UnitTests::sphereSphereIntersectionTest4()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(0.0f, -1.0f, 0.0f), 0.75f);
@@ -770,7 +860,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest4()
 	print("Intersection of sphere and sphere (4) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest5()
+void UnitTests::sphereSphereIntersectionTest5()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 0.75f);
 	Sphere sphere2(glm::vec3(0.0f, 0.0f, -1.0f), 0.75f);
@@ -780,7 +870,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest5()
 	print("Intersection of sphere and sphere (5) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest6()
+void UnitTests::sphereSphereIntersectionTest6()
 {
 	Sphere sphere1(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 	Sphere sphere2(glm::vec3(2.0f, 0.0f, 0.0f), 1.0f);
@@ -790,7 +880,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest6()
 	print("Intersection of sphere and sphere (6) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest7()
+void UnitTests::sphereSphereIntersectionTest7()
 {
 	Sphere sphere1(glm::vec3(1.0f, 1.0f, 1.0f), 0.25f);
 	Sphere sphere2(glm::vec3(-2.0f, 0.0f, 0.0f), 1.0f);
@@ -800,7 +890,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest7()
 	print("Intersection of sphere and sphere (7) ", (answer == false));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest8()
+void UnitTests::sphereSphereIntersectionTest8()
 {
 	Sphere sphere1(glm::vec3(1.0f, -2.0f, 3.0f), 0.25f);
 	Sphere sphere2(glm::vec3(-20.0f, 1.0f, 5.0f), 0.45f);
@@ -810,7 +900,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest8()
 	print("Intersection of sphere and sphere (8) ", (answer == false));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest9()
+void UnitTests::sphereSphereIntersectionTest9()
 {
 	Sphere sphere1(glm::vec3(1.0f, -2.0f, 3.0f), 0.5f);
 	Sphere sphere2(glm::vec3(1.0f, -2.0f, 3.0f), 0.5f);
@@ -820,7 +910,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest9()
 	print("Intersection of sphere and sphere (9) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest10()
+void UnitTests::sphereSphereIntersectionTest10()
 {
 	Sphere sphere1(glm::vec3(1.0f, -2.0f, 3.0f), 0.5f);
 	Sphere sphere2(glm::vec3(1.0f, -2.0f, 3.0f), 0.25f);
@@ -830,7 +920,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest10()
 	print("Intersection of sphere and sphere (10) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest11()
+void UnitTests::sphereSphereIntersectionTest11()
 {
 	Sphere sphere1(glm::vec3(1.0f, -2.0f, 3.0f), 0.25f);
 	Sphere sphere2(glm::vec3(1.0f, -2.0f, 3.0f), 0.5f);
@@ -840,7 +930,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest11()
 	print("Intersection of sphere and sphere (11) ", (answer == true));
 }
 
-void GeometryUnitTests::sphereSphereIntersectionTest12()
+void UnitTests::sphereSphereIntersectionTest12()
 {
 	Sphere sphere1(glm::vec3(1.0f, -2.0f, 3.0f), 2.5f);
 	Sphere sphere2(glm::vec3(1.1f, -1.8f, 3.2f), 0.25f);
@@ -850,7 +940,7 @@ void GeometryUnitTests::sphereSphereIntersectionTest12()
 	print("Intersection of sphere and sphere (12) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest0()
+void UnitTests::boundsBoundsIntersectionTest0()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -860,7 +950,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest0()
 	print("Intersection of bounds and bounds (0) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest1()
+void UnitTests::boundsBoundsIntersectionTest1()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -870,7 +960,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest1()
 	print("Intersection of bounds and bounds (1) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest2()
+void UnitTests::boundsBoundsIntersectionTest2()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -880,7 +970,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest2()
 	print("Intersection of bounds and bounds (2) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest3()
+void UnitTests::boundsBoundsIntersectionTest3()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -890,7 +980,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest3()
 	print("Intersection of bounds and bounds (3) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest4()
+void UnitTests::boundsBoundsIntersectionTest4()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -900,7 +990,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest4()
 	print("Intersection of bounds and bounds (4) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest5()
+void UnitTests::boundsBoundsIntersectionTest5()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
@@ -910,7 +1000,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest5()
 	print("Intersection of bounds and bounds (5) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest6()
+void UnitTests::boundsBoundsIntersectionTest6()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -920,7 +1010,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest6()
 	print("Intersection of bounds and bounds (6) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest7()
+void UnitTests::boundsBoundsIntersectionTest7()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
@@ -930,7 +1020,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest7()
 	print("Intersection of bounds and bounds (7) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest8()
+void UnitTests::boundsBoundsIntersectionTest8()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	Bounds bounds2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
@@ -940,7 +1030,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest8()
 	print("Intersection of bounds and bounds (8) ", (answer == true));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest9()
+void UnitTests::boundsBoundsIntersectionTest9()
 {
 	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, -1.0f));
 	Bounds bounds2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));
@@ -950,7 +1040,7 @@ void GeometryUnitTests::boundsBoundsIntersectionTest9()
 	print("Intersection of bounds and bounds (9) ", (answer == false));
 }
 
-void GeometryUnitTests::boundsBoundsIntersectionTest10()
+void UnitTests::boundsBoundsIntersectionTest10()
 {
 	Bounds bounds1(glm::vec3(-1.0, 0.5f, -0.7f), glm::vec3(2.0f, 1.0f, -1.0f));
 	Bounds bounds2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));

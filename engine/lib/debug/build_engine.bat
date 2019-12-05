@@ -74,6 +74,8 @@ cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Guid.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\SlabBuffer.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\ParticleSampler.cpp
 
+cl /c /I%GLEW% %CompilerFlags% ..\..\src\UnitTests.cpp
+
 :: compile engine components c++ source files to obj
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\components\Component.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\components\Camera.cpp

@@ -13,7 +13,8 @@ Component::Component()
 
 Component::~Component()
 {
-	
+	componentId = Guid::INVALID;
+	entityId = Guid::INVALID;
 }
 
 Entity* Component::getEntity(World* world)

@@ -88,7 +88,7 @@ namespace PhysicsEngine
 		}
 
 
-		T* destruct(size_t index) // this assumes I make the change above in allocate to use count == getCapacity()
+		T* destruct(size_t index) 
 		{
 			if (index < 0 || index >= getCount()) { return NULL; }
 
@@ -97,9 +97,8 @@ namespace PhysicsEngine
 			if (index < count - 1) {
 				current = get(index);
 
-				(*current).~T();
-
-				*current = *last;
+				*current = *last; // as long as assignment operator ("rule of three") is implemented this will work
+				(*last).~T();
 			}
 			else {
 				(*last).~T();

@@ -3,15 +3,22 @@
 
 #include <string>
 
-#include "core/Physics.h"
-#include "core/Geometry.h"
-
 namespace PhysicsEngine
 {
-	class GeometryUnitTests
+	class UnitTests
 	{
 		private:
-			static void print(const std::string testMessage, bool testPassed);
+			static void print(const std::string textMessage, bool testPassed);
+
+			// Core tests
+
+			static void poolAllocatorTest0();
+			static void poolAllocatorTest1();
+			static void poolAllocatorTest2();
+			static void poolAllocatorTest3();
+			static void poolAllocatorTest4();
+
+			// Geometry tests
 
 			static void raySphereIntersectionTest0();
 			static void raySphereIntersectionTest1();
@@ -105,12 +112,6 @@ namespace PhysicsEngine
 
 		public:
 			static void run();
-
-	};
-
-	class PhysicsUnitTests
-	{
-	
 	};
 }
 
