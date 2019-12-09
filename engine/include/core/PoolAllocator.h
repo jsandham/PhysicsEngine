@@ -9,7 +9,7 @@
 
 namespace PhysicsEngine
 {
-	template <class T, size_t T_per_page = 200>
+	template <class T, size_t T_per_page = 256>
 	class PoolAllocator
 	{
 	private:
@@ -76,7 +76,7 @@ namespace PhysicsEngine
 
 		T* get(size_t index) const
 		{
-			if (index < 0 || index >= getCount()) { return NULL; }
+			if (index < 0 || index >= count) { return NULL; }
 
 			size_t poolIndex = index / T_per_page;
 			return pools[poolIndex] + (index % T_per_page);
@@ -84,25 +84,23 @@ namespace PhysicsEngine
 
 		T* getLast() const
 		{
-			return get(getCount() - 1);
+			return get(count - 1);
 		}
 
 
 		T* destruct(size_t index) 
 		{
-			if (index < 0 || index >= getCount()) { return NULL; }
+			if (index < 0 || index >= count) { return NULL; }
 
 			T* current = NULL;
 			T* last = get(count - 1);
 			if (index < count - 1) {
 				current = get(index);
 
-				*current = *last; // as long as assignment operator ("rule of three") is implemented this will work
-				(*last).~T();
+				*current = std::move(*last); // as long as assignment operator ("rule of three") is implemented this will work
 			}
-			else {
-				(*last).~T();
-			}
+
+			(*last).~T();
 
 			count--;
 

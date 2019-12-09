@@ -36,6 +36,8 @@ namespace PhysicsEngine
 
 		void init(World* world);
 		void update(Input input);
+
+		void resetCamera();
 	};
 }
 

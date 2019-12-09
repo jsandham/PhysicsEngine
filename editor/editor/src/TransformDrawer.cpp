@@ -21,11 +21,11 @@ TransformDrawer::~TransformDrawer()
 
 }
 
-void TransformDrawer::render(World world, Guid entityId, Guid componentId)
+void TransformDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("Transform"))
+	if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Transform* transform = world.getComponentById<Transform>(componentId);
+		Transform* transform = world->getComponentById<Transform>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

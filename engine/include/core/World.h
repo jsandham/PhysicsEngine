@@ -5,6 +5,7 @@
 #include <string>
 
 #include "PoolAllocator.h"
+#include "Log.h"
 #include "Scene.h"
 #include "Asset.h"
 #include "Entity.h"
@@ -91,7 +92,8 @@ namespace PhysicsEngine
 		public:
 			World();
 			~World();
-
+			World(const World& other) = delete;
+			World& operator=(const World& other) = delete;
 
 			bool loadAsset(std::string filePath);
 			bool loadScene(std::string filePath, bool ignoreSystems = false);
@@ -127,7 +129,8 @@ namespace PhysicsEngine
 					componentsOnEntity = it1->second;
 				}
 				else{
-					std::cout << "Error: When calling get component on entity with id " << entityId.toString() << " the entity could not be found in the map" << std::endl;
+					std::string message = "Error: When calling get component on entity with id " + entityId.toString() + " the entity could not be found in the map\n";
+					Log::error(message.c_str());
 					return NULL;
 				}
 
@@ -140,7 +143,8 @@ namespace PhysicsEngine
 				}
 
 				if(componentId == Guid::INVALID){
-					std::cout << "Error: When calling get component on entity with id " << entityId.toString() << " the component found had an invalid guid id" << std::endl;
+					std::string message = "Error: When calling get component on entity with id " + entityId.toString() + " the component found had an invalid guid id\n";
+					Log::error(message.c_str());
 					return NULL;
 				}
 
@@ -210,6 +214,8 @@ namespace PhysicsEngine
 				return system;
 			}
 
+
+			// TODO: Major bug here (and in getComponentById) where the index we find may not correspond to an asset that is on type T. Need something like assetIdToType map?
 			template<typename T>
 			T* getAsset(Guid id)
 			{
@@ -218,7 +224,6 @@ namespace PhysicsEngine
 					return getAllocator<T>().get(it->second);
 				}
 				else{
-					//std::cout << "Error: No asset with id " << id.toString() << " was found" << std::endl;
 					return NULL;
 				}
 			}
@@ -263,7 +268,8 @@ namespace PhysicsEngine
 					assetIdToGlobalIndex[id] = index;
 				}
 				else{
-					std::cout << "Error: Newly created asset id (" << id.toString() << ") already exists in map?" << std::endl;
+					std::string message = "Error: Newly created asset id (" + id.toString() + ") already exists in map?\n";
+					Log::error(message.c_str());
 					return NULL;
 				}
 
@@ -277,6 +283,8 @@ namespace PhysicsEngine
 			Entity* createEntity();
 			Entity* createEntity(Guid entityId);
 			Entity* createEntity(std::vector<char> data);
+
+			Camera* createEditorCamera();
 
 			void latentDestroyEntity(Guid entityId);
 			void immediateDestroyEntity(Guid entityId);

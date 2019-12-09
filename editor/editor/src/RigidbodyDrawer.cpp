@@ -21,11 +21,11 @@ RigidbodyDrawer::~RigidbodyDrawer()
 
 }
 
-void RigidbodyDrawer::render(World world, Guid entityId, Guid componentId)
+void RigidbodyDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("Rigidbody"))
+	if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Rigidbody* rigidbody = world.getComponentById<Rigidbody>(componentId);
+		Rigidbody* rigidbody = world->getComponentById<Rigidbody>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "core/Guid.h"
+
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
 #include "../include/imgui/imgui_impl_opengl3.h"
@@ -13,6 +15,8 @@ namespace ImGui
 {
 	bool BeginDropdown(std::string name, std::vector<std::string> values, int* selection);
 	void EndDropdown();
+
+	bool Slot(const std::string slotLabel, const std::string slotText, bool slotFillable, bool* slotFilled);
 }
 
 #endif

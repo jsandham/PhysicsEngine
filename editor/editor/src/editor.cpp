@@ -28,11 +28,13 @@ using namespace json;
 
 Editor::Editor()
 {
-	camera = NULL;
+	cameraSystem = NULL;
 	renderSystem = NULL;
+	cleanupSystem = NULL;
 
 	currentProject = {};
 	currentScene = {};
+	ui = {};
 	input = {};
 }
 
@@ -67,12 +69,12 @@ void Editor::init(HWND window, int width, int height)
 	// set debug on for editor 
 	world.debug = true;
 
-	// add physics, render, and cleanup system to world
-	world.addSystem<EditorCameraSystem>(0);
+	// add camera, render, and cleanup system to world
+	cameraSystem = world.addSystem<EditorCameraSystem>(0);
 	//add simple editor render pass system to render line floor and default skymap
 	renderSystem = world.addSystem<RenderSystem>(1);
 	// add simple editor render system to render gizmo's
-	world.addSystem<CleanUpSystem>(2);
+	cleanupSystem = world.addSystem<CleanUpSystem>(2);
 
 	renderSystem->renderToScreen = false;
 
@@ -81,19 +83,6 @@ void Editor::init(HWND window, int width, int height)
 
 		system->init(&world);
 	}
-	
-	// add editor camera
-	Entity* cameraEntity = world.createEntity();
-	cameraEntity->doNotDestroy = true;
-
-	Transform* transform = cameraEntity->addComponent<Transform>(&world);
-	camera = cameraEntity->addComponent<Camera>(&world);
-
-
-
-
-	UnitTests::run();
-
 }
 
 void Editor::cleanUp()
@@ -117,14 +106,18 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	//ImGui::ShowMetricsWindow();
 
 	editorMenu.render(currentProject, currentScene);
-	editorToolbar.render();
+	editorToolbar.render(ui);
 
 	updateProjectAndSceneState();
 
+	if (editorMenu.isRunTestsClicked()) {
+		UnitTests::run();
+	}
+
 	hierarchy.render(&world, currentScene, editorMenu.isOpenHierarchyCalled());
-	inspector.render(&world, hierarchy.getSelectedEntity(), currentScene, editorMenu.isOpenInspectorCalled());
+	inspector.render(&world, hierarchy.getSelectedEntity(), currentScene, ui, editorMenu.isOpenInspectorCalled());
 	console.render(editorMenu.isOpenConsoleCalled());
-	projectView.render(currentProject.path, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
+	projectView.render(currentProject.path, libraryDirectory, ui, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 	aboutPopup.render(editorMenu.isAboutClicked());
 	preferencesWindow.render(editorMenu.isPreferencesClicked());
 
@@ -171,11 +164,7 @@ void Editor::newScene()
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
 	// re-centre editor camera to default position
-	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	camera->updateInternalCameraState();
+	cameraSystem->resetCamera();
 
 	currentScene.name = "default.scene";
 	currentScene.path = "";
@@ -222,11 +211,7 @@ void Editor::openScene(std::string name, std::string path)
 	world.latentDestroyEntitiesInWorld();
 
 	// reset editor camera to default position
-	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	camera->updateInternalCameraState();
+	cameraSystem->resetCamera();
 
 	// load binary version of scene into world (ignoring systems and cameras)
 	if (world.loadSceneFromEditor(binarySceneFilePath)){
@@ -308,11 +293,7 @@ void Editor::createProject(std::string name, std::string path)
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
 	// reset editor camera
-	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	camera->updateInternalCameraState();
+	cameraSystem->resetCamera();
 }
 
 void Editor::openProject(std::string name, std::string path)
@@ -342,11 +323,7 @@ void Editor::openProject(std::string name, std::string path)
 	world.latentDestroyEntitiesInWorld(); 
 
 	// reset editor camera
-	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	camera->updateInternalCameraState();
+	cameraSystem->resetCamera();
 }
 
 void Editor::updateAssetsLoadedInWorld()
@@ -364,10 +341,10 @@ void Editor::updateAssetsLoadedInWorld()
 		if (it1 == assetsAddedToWorld.end()) {
 			assetsAddedToWorld.insert(it->second.filePath);
 
-			Guid id = LibraryDirectory::findGuidFromMetaFilePath(it->second.filePath.substr(0, it->second.filePath.find_last_of(".")) + ".json");
+			Guid fileId = libraryDirectory.getFileId(it->second.filePath);
 
 			// get file path of binary version of asset located in library directory
-			std::string libraryFilePath = currentProject.path + "\\library\\" + id.toString() + ".data";
+			std::string libraryFilePath = currentProject.path + "\\library\\" + fileId.toString() + ".data";
 
 			if (!world.loadAsset(libraryFilePath)) {
 				std::string errorMessage = "Could not load asset: " + libraryFilePath + "\n";

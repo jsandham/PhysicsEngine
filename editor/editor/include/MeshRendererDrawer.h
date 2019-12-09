@@ -7,11 +7,11 @@ namespace PhysicsEditor
 {
 	class MeshRendererDrawer : public InspectorDrawer
 	{
-	public:
-		MeshRendererDrawer();
-		~MeshRendererDrawer();
+		public:
+			MeshRendererDrawer();
+			~MeshRendererDrawer();
 
-		void render(World world, Guid entityId, Guid componentId);
+			void render(World* world, EditorUI& ui, Guid entityId, Guid componentId);
 	};
 }
 

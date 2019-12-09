@@ -17,6 +17,7 @@ namespace PhysicsEngine
 			static void poolAllocatorTest2();
 			static void poolAllocatorTest3();
 			static void poolAllocatorTest4();
+			static void poolAllocatorTest5();
 
 			// Geometry tests
 

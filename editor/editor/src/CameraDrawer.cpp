@@ -21,11 +21,11 @@ CameraDrawer::~CameraDrawer()
 
 }
 
-void CameraDrawer::render(World world, Guid entityId, Guid componentId)
+void CameraDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("Camera"))
+	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Camera* camera = world.getComponentById<Camera>(componentId);
+		Camera* camera = world->getComponentById<Camera>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

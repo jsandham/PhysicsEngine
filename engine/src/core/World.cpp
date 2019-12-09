@@ -139,10 +139,6 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 
 		file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
 
-
-		//std::vector<Guid> entityIdsMarkedCreated;
-		//std::vector<triple<Guid, Guid, int>> componentIdsMarkedCreated;
-
 		int index = -1;
 		if(classification == 'e'){
 			Entity* entity = NULL;
@@ -274,8 +270,8 @@ void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntities
 			latentDestroyEntity(entity->entityId);
 		}
 		else {
-			std::string message = "Error: Skipping entity: " + entity->entityId.toString() + " as it is marked do not destroy\n";
-			Log::error(message.c_str());
+			std::string message = "Warn: Skipping entity: " + entity->entityId.toString() + " as it is marked do not destroy\n";
+			Log::warn(message.c_str());
 		}
 	}
 }
@@ -400,6 +396,46 @@ Entity* World::createEntity(std::vector<char> data)
 	entityIdsMarkedCreated.push_back(entity->entityId);
 
 	return entity;
+}
+
+Camera* World::createEditorCamera()
+{
+	// Editor entity
+	int globalIndex = (int)getAllocator<Entity>().getCount();
+	Guid entityId = Guid("11111111-1111-1111-1111-111111111111");
+	Entity* entity = create<Entity>();
+	entity->entityId = entityId;
+	entity->doNotDestroy = true;
+
+	idToGlobalIndex[entityId] = globalIndex;
+	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+	entityIdsMarkedCreated.push_back(entityId);
+
+	// editor only transform
+	int transformGlobalIndex = (int)getAllocator<Transform>().getCount();
+	int transformType = ComponentType<Transform>::type;
+	Guid transformId = Guid("22222222-2222-2222-2222-222222222222");
+	Transform* transform = create<Transform>();
+	transform->entityId = entityId;
+	transform->componentId = transformId;
+
+	idToGlobalIndex[transformId] = transformGlobalIndex;
+	entityIdToComponentIds[entityId].push_back(std::make_pair(transformId, transformType));
+	componentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
+
+	// editor only camera
+	int cameraGlobalIndex = (int)getAllocator<Camera>().getCount();
+	int cameraType = ComponentType<Camera>::type;
+	Guid cameraId = Guid("33333333-3333-3333-3333-333333333333");
+	Camera* camera = create<Camera>();
+	camera->entityId = entityId;
+	camera->componentId = cameraId;
+
+	idToGlobalIndex[cameraId] = cameraGlobalIndex;
+	entityIdToComponentIds[entityId].push_back(std::make_pair(cameraId, cameraType));
+	componentIdsMarkedCreated.push_back(make_triple(entityId, cameraId, cameraType));
+
+	return camera;
 }
 
 void World::latentDestroyEntity(Guid entityId)

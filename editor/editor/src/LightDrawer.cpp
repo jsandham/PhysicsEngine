@@ -21,11 +21,11 @@ LightDrawer::~LightDrawer()
 
 }
 
-void LightDrawer::render(World world, Guid entityId, Guid componentId)
+void LightDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if(ImGui::TreeNode("Light"))
+	if(ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Light* light = world.getComponentById<Light>(componentId);
+		Light* light = world->getComponentById<Light>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

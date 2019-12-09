@@ -199,6 +199,34 @@ void UnitTests::poolAllocatorTest4()
 	print("Pool allocator test (4)", allocator.getCount() == 0);
 }
 
+void UnitTests::poolAllocatorTest5()
+{
+	PoolAllocator<Transform> allocator;
+
+	for (int i = 0; i < 2000; i++) {
+		allocator.construct();
+	}
+
+	while (allocator.getCount() > 1000) {
+		int indexToDelete = rand() % allocator.getCount();
+
+		allocator.destruct(indexToDelete);
+	}
+
+	for (int i = 0; i < 1000; i++) {
+		allocator.construct();
+	}
+
+	while (allocator.getCount() > 0) {
+		int indexToDelete = rand() % allocator.getCount();
+
+		allocator.destruct(indexToDelete);
+	}
+
+
+	print("Pool allocator test (4)", allocator.getCount() == 0);
+}
+
 void UnitTests::raySphereIntersectionTest0()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));

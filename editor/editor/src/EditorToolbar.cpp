@@ -5,6 +5,8 @@
 #include "../include/imgui/imgui_impl_opengl3.h"
 #include "../include/imgui/imgui_internal.h"
 
+#include "core/Guid.h"
+
 using namespace PhysicsEditor;
 
 EditorToolbar::EditorToolbar()
@@ -17,7 +19,7 @@ EditorToolbar::~EditorToolbar()
 
 }
 
-void EditorToolbar::render()
+void EditorToolbar::render(EditorUI ui)
 {
 	static bool p_open = true;
 	static bool opt_fullscreen_persistant = true;
@@ -74,6 +76,18 @@ void EditorToolbar::render()
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 	}
+
+
+
+
+	if (ui.draggedId != PhysicsEngine::Guid::INVALID) {
+		ImVec2 size = ImVec2(5, 5);
+		ImVec2 cursorPos = ImGui::GetMousePos();
+		size.x += cursorPos.x;
+		size.y += cursorPos.y;
+		ImGui::GetForegroundDrawList()->AddRect(cursorPos, size, 0xFFFF0000);
+	}
+
 
 	ImGui::End();
 

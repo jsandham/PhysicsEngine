@@ -27,6 +27,7 @@ namespace PhysicsEditor
 
 			// Edit
 			bool preferencesClicked;
+			bool runTestsClicked;
 
 			// Windows
 			bool openInspectorClicked;
@@ -59,6 +60,7 @@ namespace PhysicsEditor
 			bool isOpenProjectViewCalled() const;
 			bool isAboutClicked() const;
 			bool isPreferencesClicked() const;
+			bool isRunTestsClicked() const;
 
 		private:
 			void showMenuFile();

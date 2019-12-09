@@ -216,6 +216,7 @@
     <ClInclude Include="include\EditorProject.h" />
     <ClInclude Include="include\EditorScene.h" />
     <ClInclude Include="include\EditorToolbar.h" />
+    <ClInclude Include="include\EditorUI.h" />
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />
     <ClInclude Include="include\Hierarchy.h" />

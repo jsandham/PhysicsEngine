@@ -5,6 +5,7 @@
 
 #include "InspectorDrawer.h"
 #include "EditorScene.h"
+#include "EditorUI.h"
 
 #include "core/World.h"
 #include "core/Entity.h"
@@ -22,7 +23,7 @@ namespace PhysicsEditor
 			Inspector();
 			~Inspector();
 
-			void render(World* world, Entity* entity, EditorScene& scene, bool isOpenedThisFrame);
+			void render(World* world, Entity* entity, EditorScene& scene, EditorUI& ui, bool isOpenedThisFrame);
 
 
 

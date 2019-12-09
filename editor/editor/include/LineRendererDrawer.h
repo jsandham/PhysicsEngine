@@ -11,7 +11,7 @@ namespace PhysicsEditor
 		LineRendererDrawer();
 		~LineRendererDrawer();
 
-		void render(World world, Guid entityId, Guid componentId);
+		void render(World* world, EditorUI& ui, Guid entityId, Guid componentId);
 	};
 }
 

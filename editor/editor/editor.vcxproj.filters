@@ -287,5 +287,8 @@
     <ClInclude Include="include\LibraryCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\EditorUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

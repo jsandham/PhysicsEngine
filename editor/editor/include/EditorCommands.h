@@ -17,6 +17,7 @@ namespace PhysicsEditor
 		private:
 			PhysicsEngine::World* world;
 			std::vector<char> entityData;
+			std::vector<char> transformData;
 
 		public:
 			CreateEntityCommand(PhysicsEngine::World* world);
@@ -30,6 +31,7 @@ namespace PhysicsEditor
 		private:
 			PhysicsEngine::World* world;
 			std::vector<char> entityData;
+			std::vector<char> transformData;
 			std::vector<char> cameraData;
 
 		public:
@@ -44,6 +46,7 @@ namespace PhysicsEditor
 		private:
 			PhysicsEngine::World* world;
 			std::vector<char> entityData;
+			std::vector<char> transformData;
 			std::vector<char> lightData;
 
 		public:
@@ -58,6 +61,7 @@ namespace PhysicsEditor
 		private:
 			PhysicsEngine::World* world;
 			std::vector<char> entityData;
+			std::vector<char> transformData;
 			std::vector<char> boxColliderData;
 			std::vector<char> meshRendererData;
 
@@ -73,6 +77,7 @@ namespace PhysicsEditor
 		private:
 			PhysicsEngine::World* world;
 			std::vector<char> entityData;
+			std::vector<char> transformData;
 			std::vector<char> sphereColliderData;
 			std::vector<char> meshRendererData;
 

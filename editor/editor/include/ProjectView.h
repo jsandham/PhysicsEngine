@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "EditorUI.h"
+#include "LibraryDirectory.h"
+
 namespace PhysicsEditor
 {
 	struct ProjectNode
@@ -31,7 +34,7 @@ namespace PhysicsEditor
 			ProjectView();
 			~ProjectView();
 
-			void render(std::string currentProjectPath, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+			void render(const std::string currentProjectPath, const LibraryDirectory& library, EditorUI& ui, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
 			void deleteProjectTree();
 			void buildProjectTree(std::string currentProjectPath);

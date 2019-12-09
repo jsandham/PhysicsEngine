@@ -448,6 +448,11 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 
 	for (int i = 0; i < world->getNumberOfEntities(); i++) {
 		Entity* entity = world->getEntityByIndex(i);
+
+		if (entity->entityId == Guid("11111111-1111-1111-1111-111111111111")) {
+			continue;
+		}
+
 		std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
 
 		Guid entityId = entity->entityId;

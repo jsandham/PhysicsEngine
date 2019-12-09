@@ -11,6 +11,8 @@ namespace PhysicsEditor
 	bool createDirectory(std::string path);
 	bool deleteDirectory(std::string path);
 	bool getFileTime(std::string path, std::string& createTime, std::string& accessTime, std::string& writeTime);
+	std::string getFileName(std::string path);
+	std::string getFileExtension(std::string path);
 	std::vector<std::string> split(const std::string& s, char delim);
 	std::vector<std::string> getDirectoryPaths(const std::string path);
 	std::string currentWorkingDirectoryPath();

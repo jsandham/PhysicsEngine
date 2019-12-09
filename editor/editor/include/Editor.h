@@ -12,6 +12,7 @@
 
 #include "EditorProject.h"
 #include "EditorScene.h"
+#include "EditorUI.h"
 #include "EditorMenuBar.h"
 #include "EditorToolbar.h"
 #include "Inspector.h"
@@ -26,7 +27,9 @@
 #include "AboutPopup.h"
 #include "CommandManager.h"
 
+#include "EditorCameraSystem.h"
 #include "systems/RenderSystem.h"
+#include "systems/CleanUpSystem.h"
 
 namespace PhysicsEditor
 {
@@ -36,6 +39,7 @@ namespace PhysicsEditor
 			World world;
 
 			LibraryDirectory libraryDirectory;
+			CommandManager commandManager;
 
 			EditorMenuBar editorMenu;
 			EditorToolbar editorToolbar;
@@ -44,21 +48,20 @@ namespace PhysicsEditor
 			ProjectView projectView;
 			Console console;
 			SceneView sceneView;
-
 			Filebrowser filebrowser;
 			ProjectWindow projectWindow; //ProjectBrowser? ProjectPopup?
 			BuildWindow buildWindow;
 			PreferencesWindow preferencesWindow;
 			AboutPopup aboutPopup;
 
-			CommandManager commandManager;
-
 			EditorProject currentProject;
 			EditorScene currentScene;
+			EditorUI ui;
 			
 			Input input;
-			Camera* camera;
+			EditorCameraSystem* cameraSystem;
 			RenderSystem* renderSystem;
+			CleanUpSystem* cleanupSystem;
 
 			std::unordered_set<std::string> assetsAddedToWorld;
 

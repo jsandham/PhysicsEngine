@@ -21,11 +21,11 @@ SphereColliderDrawer::~SphereColliderDrawer()
 
 }
 
-void SphereColliderDrawer::render(World world, Guid entityId, Guid componentId)
+void SphereColliderDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("SphereCollider")) 
+	if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		SphereCollider* sphereCollider = world.getComponentById<SphereCollider>(componentId);
+		SphereCollider* sphereCollider = world->getComponentById<SphereCollider>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

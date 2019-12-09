@@ -162,12 +162,9 @@ bool PhysicsEditor::getFileTime(std::string path, std::string& createTime, std::
 	int second = stCreateLocal.wSecond;
 	int millisecond = stCreateLocal.wMilliseconds;
 
-	createTime = std::to_string(year) + "-" + 
-				 std::to_string(month) + "-" + 
-				 std::to_string(day) + "-" + 
-				 std::to_string(hour) + "-" + 
-				 std::to_string(second) + "-" + 
-				 std::to_string(millisecond);
+	char buffer[30];
+	sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+	createTime = std::string(buffer);
 
 	year = stAccessLocal.wYear;
 	month = stAccessLocal.wMonth;
@@ -176,12 +173,8 @@ bool PhysicsEditor::getFileTime(std::string path, std::string& createTime, std::
 	second = stAccessLocal.wSecond;
 	millisecond = stAccessLocal.wMilliseconds;
 
-	accessTime = std::to_string(year) + "-" +
-		std::to_string(month) + "-" +
-		std::to_string(day) + "-" +
-		std::to_string(hour) + "-" +
-		std::to_string(second) + "-" +
-		std::to_string(millisecond);
+	sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+	accessTime = std::string(buffer);
 
 	year = stWriteLocal.wYear;
 	month = stWriteLocal.wMonth;
@@ -190,14 +183,20 @@ bool PhysicsEditor::getFileTime(std::string path, std::string& createTime, std::
 	second = stWriteLocal.wSecond;
 	millisecond = stWriteLocal.wMilliseconds;
 
-	writeTime = std::to_string(year) + "-" +
-		std::to_string(month) + "-" +
-		std::to_string(day) + "-" +
-		std::to_string(hour) + "-" +
-		std::to_string(second) + "-" +
-		std::to_string(millisecond);
+	sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+	writeTime = std::string(buffer);
 
 	return true;
+}
+
+std::string PhysicsEditor::getFileName(std::string path)
+{
+	return path.substr(path.find_last_of("\\") + 1);
+}
+
+std::string PhysicsEditor::getFileExtension(std::string path)
+{
+	return path.substr(path.find_last_of(".") + 1);
 }
 
 std::vector<std::string> PhysicsEditor::split(const std::string& s, char delim) {

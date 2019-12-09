@@ -15,6 +15,7 @@ namespace PhysicsEditor
 	{
 		private:
 			LibraryCache libraryCache; // rename to trackedFileCache or just fileCache?
+			std::map<std::string, PhysicsEngine::Guid> filePathToId;
 			std::string currentProjectPath;
 
 		public:
@@ -24,11 +25,12 @@ namespace PhysicsEditor
 			void load(std::string projectPath);
 			void update(std::string projectPath);
 
-			LibraryCache getLibraryCache() const;
+			const LibraryCache& getLibraryCache() const;
+			PhysicsEngine::Guid getFileId(std::string filePath) const;
 
-			static bool isFileExtensionTracked(std::string extension);
-			static bool createMetaFile(std::string metaFilePath);
-			static PhysicsEngine::Guid findGuidFromMetaFilePath(std::string metaFilePath);
+			bool isFileExtensionTracked(std::string extension) const;
+			bool createMetaFile(std::string metaFilePath) const;
+			PhysicsEngine::Guid findGuidFromMetaFilePath(std::string metaFilePath) const;
 	};
 }
 

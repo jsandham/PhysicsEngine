@@ -21,7 +21,7 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render(World* world, Entity* entity, EditorScene& scene, bool isOpenedThisFrame)
+void Inspector::render(World* world, Entity* entity, EditorScene& scene, EditorUI& ui, bool isOpenedThisFrame)
 {
 	static bool inspectorActive = true;
 
@@ -50,7 +50,8 @@ void Inspector::render(World* world, Entity* entity, EditorScene& scene, bool is
 					//drawer = loadInspectorDrawer(componentType);
 				}
 
-				drawer->render(*world, entity->entityId, componentId);
+				drawer->render(world, ui, entity->entityId, componentId);
+				ImGui::Separator();
 
 				delete drawer;
 			}

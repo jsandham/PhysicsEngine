@@ -53,8 +53,8 @@ HDC     g_HDCDeviceContext;
 HWND    g_hwnd;
 PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT;
-int     g_display_w = 1024;
-int     g_display_h = 1024;
+int     g_display_w = 1920;
+int     g_display_h = 1080;
 Input input;
 
 // =============================================================================
@@ -85,7 +85,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	wc.style = CS_OWNDC;
 	if (!RegisterClass(&wc))
 		return 1;
-	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024, 0, 0, hInstance, 0);
+	g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T("PhysicsEngine"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, g_display_w, g_display_h, 0, 0, hInstance, 0);
 
 	// Show the window
 	ShowWindow(g_hwnd, SW_SHOWDEFAULT);

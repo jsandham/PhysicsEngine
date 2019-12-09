@@ -10,8 +10,10 @@
 #include <stack>
 
 #include "core/Log.h"
+#include "core/Guid.h"
 
 using namespace PhysicsEditor;
+using namespace PhysicsEngine;
 
 ProjectView::ProjectView()
 {
@@ -25,7 +27,7 @@ ProjectView::~ProjectView()
 	deleteProjectTree();
 }
 
-void ProjectView::render(std::string currentProjectPath, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
+void ProjectView::render(const std::string currentProjectPath, const LibraryDirectory& library, EditorUI& ui, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
 {
 	if (isOpenedThisFrame) {
 		projectViewActive = isOpenedThisFrame;
@@ -42,15 +44,6 @@ void ProjectView::render(std::string currentProjectPath, bool editorBecameActive
 	}
 
 	if (ImGui::Begin("Project View", &projectViewActive)) {
-
-
-		/*ImVec2 size = ImVec2(5, 5);
-		ImVec2 cursorPos = ImGui::GetMousePos();
-		size.x += cursorPos.x;
-		size.y += cursorPos.y;
-		ImGui::GetForegroundDrawList()->AddRect(cursorPos, size, 0xFFFF0000);*/
-
-
 		if (currentProjectPath != "") {
 			ImGui::Columns(2, "ProjectViews", true);
 
@@ -59,11 +52,23 @@ void ProjectView::render(std::string currentProjectPath, bool editorBecameActive
 			ImGui::NextColumn();
 			ImGui::BeginChild("AAA");
 			if (selected != NULL) {
-				//ImGui::Text(selectedNodeDirectoryPath.c_str());
-				std::vector<std::string> fileNames = PhysicsEditor::getFilesInDirectory(selected->directoryPath, false);
-				for (int i = 0; i < fileNames.size(); i++) {
-					ImGui::Text(fileNames[i].c_str());
-					ImGui::Selectable(fileNames[i].c_str());
+				std::vector<std::string> filePaths = getFilesInDirectory(selected->directoryPath, true);
+				for (int i = 0; i < filePaths.size(); i++) {
+					std::string fileName = getFileName(filePaths[i]);
+					std::string extension = getFileExtension(filePaths[i]);
+					if (extension == "json") {
+						continue;
+					}
+
+					ImGui::Selectable(fileName.c_str());
+
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+						ui.draggedId = library.getFileId(filePaths[i]);
+					}
+
+					if (!ImGui::IsMouseDown(0)) {
+						ui.draggedId = Guid::INVALID;
+					}
 				}
 			}
 			ImGui::EndChild();
@@ -192,46 +197,46 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode* node)
 		// Some processing...
 	}
 
-	if (ImGui::BeginDragDropSource()) {
-		ImGui::SetDragDropPayload("DND_DEMO_CELL", &node, sizeof(ProjectNode*));
-		//ImGui::SetDragDropPayload("DND_DEMO_CELL", &node->id, sizeof(int));
-		std::string message = node->directoryName + " " + std::to_string(node->id) + "\n";
-		PhysicsEngine::Log::info(message.c_str());
-		ImGui::EndDragDropSource();
-	}
-	
-	if (ImGui::BeginDragDropTarget()) {
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL")) {
-			/*IM_ASSERT(payload->DataSize == sizeof(int));
-			int payloadId = *(int*)payload->Data;
-			std::string message = node->directoryName + " " + std::to_string(node->id) + "\n";
-			PhysicsEngine::Log::info(message.c_str());*/
-			
-			IM_ASSERT(payload->DataSize == sizeof(ProjectNode*));
-			ProjectNode* payloadNode = *(ProjectNode**)payload->Data;
-			std::string message1 = node->directoryName + " " + std::to_string(node->id) + "\n";
-			std::string message2 = payloadNode->directoryName + " " + std::to_string(payloadNode->id) + "\n";
-			PhysicsEngine::Log::info(message1.c_str());
-			PhysicsEngine::Log::info(message2.c_str());
+	//if (ImGui::BeginDragDropSource()) {
+	//	ImGui::SetDragDropPayload("DND_DEMO_CELL", &node, sizeof(ProjectNode*));
+	//	//ImGui::SetDragDropPayload("DND_DEMO_CELL", &node->id, sizeof(int));
+	//	std::string message = node->directoryName + " " + std::to_string(node->id) + "\n";
+	//	PhysicsEngine::Log::info(message.c_str());
+	//	ImGui::EndDragDropSource();
+	//}
+	//
+	//if (ImGui::BeginDragDropTarget()) {
+	//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL")) {
+	//		/*IM_ASSERT(payload->DataSize == sizeof(int));
+	//		int payloadId = *(int*)payload->Data;
+	//		std::string message = node->directoryName + " " + std::to_string(node->id) + "\n";
+	//		PhysicsEngine::Log::info(message.c_str());*/
+	//		
+	//		IM_ASSERT(payload->DataSize == sizeof(ProjectNode*));
+	//		ProjectNode* payloadNode = *(ProjectNode**)payload->Data;
+	//		std::string message1 = node->directoryName + " " + std::to_string(node->id) + "\n";
+	//		std::string message2 = payloadNode->directoryName + " " + std::to_string(payloadNode->id) + "\n";
+	//		PhysicsEngine::Log::info(message1.c_str());
+	//		PhysicsEngine::Log::info(message2.c_str());
 
-			// detach payload node from its parent
-			ProjectNode* payloadParent = payloadNode->parent;
-			if (payloadParent != NULL) {
-				for (size_t i = payloadParent->children.size() - 1; i >= 0; i--) {
-					if (payloadParent->children[i] == payloadNode) {
-						payloadParent->children.erase(payloadParent->children.begin() + i);
-						payloadNode->parent = NULL;
-						break;
-					}
-				}
-			}
+	//		// detach payload node from its parent
+	//		ProjectNode* payloadParent = payloadNode->parent;
+	//		if (payloadParent != NULL) {
+	//			for (size_t i = payloadParent->children.size() - 1; i >= 0; i--) {
+	//				if (payloadParent->children[i] == payloadNode) {
+	//					payloadParent->children.erase(payloadParent->children.begin() + i);
+	//					payloadNode->parent = NULL;
+	//					break;
+	//				}
+	//			}
+	//		}
 
-			// attach payload to new parent
-			node->children.push_back(payloadNode);
-			payloadNode->parent = node;
-		}
-		ImGui::EndDragDropTarget();
-	}
+	//		// attach payload to new parent
+	//		node->children.push_back(payloadNode);
+	//		payloadNode->parent = node;
+	//	}
+	//	ImGui::EndDragDropTarget();
+	//}
 
 	if (open) {
 		node->isExpanded = true;

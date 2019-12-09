@@ -28,6 +28,7 @@ EditorMenuBar::EditorMenuBar()
 	openProjectViewClicked = false;
 	aboutClicked = false;
 	preferencesClicked = false;
+	runTestsClicked = false;
 }
 
 EditorMenuBar::~EditorMenuBar()
@@ -56,6 +57,7 @@ void EditorMenuBar::render(const EditorProject project, const EditorScene scene)
 	openProjectViewClicked = false;
 	aboutClicked = false;
 	preferencesClicked = false;
+	runTestsClicked = false;
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -156,6 +158,11 @@ bool EditorMenuBar::isPreferencesClicked() const
 	return preferencesClicked;
 }
 
+bool EditorMenuBar::isRunTestsClicked() const
+{
+	return runTestsClicked;
+}
+
 void EditorMenuBar::showMenuFile()
 {
 	if (ImGui::MenuItem("New Scene", NULL, false, projectSelected)) {
@@ -211,6 +218,10 @@ void EditorMenuBar::showMenuEdit()
 	ImGui::Separator();
 	if (ImGui::MenuItem("Preferences...")) {
 		preferencesClicked = true;
+	}
+	ImGui::Separator();
+	if (ImGui::MenuItem("Run Tests")) {
+		runTestsClicked = true;
 	}
 }
 

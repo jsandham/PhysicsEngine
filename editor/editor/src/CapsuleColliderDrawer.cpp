@@ -19,10 +19,10 @@ CapsuleColliderDrawer::~CapsuleColliderDrawer()
 
 }
 
-void CapsuleColliderDrawer::render(World world, Guid entityId, Guid componentId)
+void CapsuleColliderDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("CapsuleCollider")) {
-		CapsuleCollider* capsuleCollider = world.getComponentById<CapsuleCollider>(componentId);
+	if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
+		CapsuleCollider* capsuleCollider = world->getComponentById<CapsuleCollider>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

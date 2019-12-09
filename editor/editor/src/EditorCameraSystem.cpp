@@ -52,14 +52,19 @@ void EditorCameraSystem::deserialize(std::vector<char> data)
 void EditorCameraSystem::init(World* world)
 {
 	this->world = world;
+
+	camera = world->createEditorCamera();
+
+	Log::warn(camera->entityId.toString().c_str());
+	Log::warn(camera->componentId.toString().c_str());
 }
 
 void EditorCameraSystem::update(Input input)
 {
-	camera = world->getComponentByIndex<Camera>(0);
+	/*camera = world->getComponentByIndex<Camera>(0);
 	if (camera == NULL) {
 		return;
-	}
+	}*/
 
 	/*glm::vec3 position = camera->getPosition();
 	glm::vec3 front = camera->getFront();
@@ -156,4 +161,13 @@ void EditorCameraSystem::update(Input input)
 	if (getKeyUp(input, KeyCode::C)) {
 		std::cout << "Key code C" << std::endl;
 	}
+}
+
+void EditorCameraSystem::resetCamera()
+{
+	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
+	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+	camera->updateInternalCameraState();
 }

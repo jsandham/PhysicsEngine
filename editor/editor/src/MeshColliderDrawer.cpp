@@ -19,10 +19,10 @@ MeshColliderDrawer::~MeshColliderDrawer()
 
 }
 
-void MeshColliderDrawer::render(World world, Guid entityId, Guid componentId)
+void MeshColliderDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("MeshCollider")) {
-		MeshCollider* meshCollider = world.getComponentById<MeshCollider>(componentId);
+	if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
+		MeshCollider* meshCollider = world->getComponentById<MeshCollider>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());

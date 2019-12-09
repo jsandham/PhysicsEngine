@@ -21,10 +21,10 @@ LineRendererDrawer::~LineRendererDrawer()
 
 }
 
-void LineRendererDrawer::render(World world, Guid entityId, Guid componentId)
+void LineRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
 {
-	if (ImGui::TreeNode("LineRenderer")) {
-		LineRenderer* lineRenderer = world.getComponentById<LineRenderer>(componentId);
+	if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
+		LineRenderer* lineRenderer = world->getComponentById<LineRenderer>(componentId);
 
 		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
