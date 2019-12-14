@@ -14,6 +14,7 @@ namespace PhysicsEngine
 		Guid entityId;
 		Guid meshId;
 		Guid materialIds[8];
+		int materialCount;
 		bool isStatic;
 	};
 #pragma pack(pop)
@@ -23,6 +24,7 @@ namespace PhysicsEngine
 		public:
 			Guid meshId;
 			Guid materialIds[8];
+			int materialCount;
 			bool isStatic;
 
 		public:

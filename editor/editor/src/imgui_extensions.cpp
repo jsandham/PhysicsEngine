@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../include/imgui_extensions.h"
 
 using namespace ImGui;
@@ -37,7 +39,10 @@ void ImGui::EndDropdown()
 
 bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool slotFillable, bool* slotFilled)
 {
-	ImGui::ButtonEx(slotText.c_str(), ImVec2(0, 0), ImGuiButtonFlags_Disabled);
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+
+	ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
 	ImVec2 size = ImGui::GetItemRectSize();
 	ImVec2 position = ImGui::GetItemRectMin();
 

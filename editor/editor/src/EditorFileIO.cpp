@@ -270,6 +270,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				meshRenderer.meshId = Guid(it->second["mesh"].ToString());
 
 				if (it->second.hasKey("material")) {
+					meshRenderer.materialCount = 1;
 					meshRenderer.materialIds[0] = Guid(it->second["material"].ToString());
 					for (int j = 1; j < 8; j++) {
 						meshRenderer.materialIds[j] = Guid::INVALID;
@@ -281,6 +282,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 						Log::error("Currently only support at most 8 materials");
 						return false;
 					}
+
+					meshRenderer.materialCount = materialCount;
 
 					for (int j = 0; j < materialCount; j++) {
 						meshRenderer.materialIds[j] = Guid(it->second["materials"][j].ToString());
@@ -506,12 +509,7 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 				obj[componentId.toString()]["type"] = "MeshRenderer";
 				obj[componentId.toString()]["entity"] = entityId.toString();
 
-				int materialCount = 0;
-				for (int m = 0; m < 8; m++) {
-					if (meshRenderer->materialIds[m] != Guid::INVALID) {
-						materialCount++;
-					}
-				}
+				int materialCount = meshRenderer->materialCount;
 
 				std::string label = "material";
 				if (materialCount > 1) {
@@ -519,7 +517,7 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 				}
 
 				for (int m = 0; m < materialCount; m++) {
-
+					//obj[componentId.toString()][label]
 				}
 
 				obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;

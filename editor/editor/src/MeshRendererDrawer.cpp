@@ -56,32 +56,24 @@ void MeshRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid 
 			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->isStatic, isStatic));
 		}
 
-
-
-
-
-
 		// Materials
-		static int materialCount = 1;
-		static int increment = 1;
+		int materialCount = meshRenderer->materialCount;
+		const int increment = 1;
 		ImGui::PushItemWidth(80);
-		ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d");
+		if (ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d")) {
+			materialCount = std::max(0, std::min(materialCount, 8));
+
+			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->materialCount, materialCount));
+		}
 		ImGui::PopItemWidth();
 
-		materialCount = std::max(0, std::min(materialCount, 8));
-
-		// TODO: We probably need to add an int variable to the material class to store how many active materials there are.
-
-
 		Guid materialIds[8];
-		//int activeMaterialsCount = 0;
 		for (int i = 0; i < materialCount; i++) {
 			materialIds[i] = meshRenderer->materialIds[i];
 
 			std::string materialName = "None (Material)";
 			if (materialIds[i] != PhysicsEngine::Guid::INVALID) {
 				materialName = materialIds[i].toString();
-				//activeMaterialsCount++;
 			}
 
 			bool materialSlotFillable = ui.draggedId != PhysicsEngine::Guid::INVALID && world->getAsset<Material>(ui.draggedId) != NULL;
@@ -92,6 +84,8 @@ void MeshRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid 
 				materialIds[i] = ui.draggedId;
 				ui.draggedId = PhysicsEngine::Guid::INVALID;
 			}
+
+			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i]));
 		}
 
 		ImGui::TreePop();

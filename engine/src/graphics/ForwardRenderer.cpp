@@ -141,11 +141,7 @@ void ForwardRenderer::addToRenderObjectsList(MeshRenderer* meshRenderer)
 	Sphere test;
 	Sphere boundingSphere = test;// mesh->getBoundingSphere();
 
-	for(int i = 0; i < 8; i++){
-		if(meshRenderer->materialIds[i] == Guid::INVALID){
-			break;
-		}
-
+	for(int i = 0; i < meshRenderer->materialCount; i++){
 		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[i]);
 		int subMeshVertexStartIndex = mesh->subMeshVertexStartIndices[i];
 		int subMeshVertexEndIndex = mesh->subMeshVertexStartIndices[i + 1];

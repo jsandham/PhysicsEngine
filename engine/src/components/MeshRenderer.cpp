@@ -12,6 +12,7 @@ MeshRenderer::MeshRenderer()
 		materialIds[i] = Guid::INVALID;
 	}
 
+	materialCount = 0;
 	isStatic = true;
 }
 
@@ -33,6 +34,7 @@ std::vector<char> MeshRenderer::serialize()
 	for(int i = 0; i < 8; i++){
 		header.materialIds[i] = materialIds[i];
 	}
+	header.materialCount = materialCount;
 	header.isStatic = isStatic;
 
 	int numberOfBytes = sizeof(MeshRendererHeader);
@@ -54,5 +56,6 @@ void MeshRenderer::deserialize(std::vector<char> data)
 	for(int i = 0; i < 8; i++){
 		materialIds[i] = header->materialIds[i];
 	}
+	materialCount = header->materialCount;
 	isStatic = header->isStatic;
 }
