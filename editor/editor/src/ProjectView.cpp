@@ -27,7 +27,7 @@ ProjectView::~ProjectView()
 	deleteProjectTree();
 }
 
-void ProjectView::render(const std::string currentProjectPath, const LibraryDirectory& library, EditorUI& ui, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
+void ProjectView::render(const std::string currentProjectPath, const LibraryDirectory& library, EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
 {
 	if (isOpenedThisFrame) {
 		projectViewActive = isOpenedThisFrame;
@@ -63,11 +63,11 @@ void ProjectView::render(const std::string currentProjectPath, const LibraryDire
 					ImGui::Selectable(fileName.c_str());
 
 					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
-						ui.draggedId = library.getFileId(filePaths[i]);
+						clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
 					}
 
 					if (!ImGui::IsMouseDown(0)) {
-						ui.draggedId = Guid::INVALID;
+						clipboard.clearDraggedItem();
 					}
 				}
 			}
@@ -391,3 +391,23 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode* node)
 //
 //	ImGui::TreePop();
 //}
+
+
+InteractionType ProjectView::getInteractionTypeFromFileExtension(const std::string extension)
+{
+	if (extension == "obj") {
+		return InteractionType::Mesh;
+	}
+	else if (extension == "material") {
+		return InteractionType::Material;
+	}
+	else if (extension == "png") {
+		return InteractionType::Texture2D;
+	}
+	else if (extension == "shader") {
+		return InteractionType::Shader;
+	}
+	else {
+		return InteractionType::Other;
+	}
+}

@@ -19,105 +19,182 @@
 #include "GraphicsDebug.h"
 #include "GraphicsTargets.h"
 #include "RenderObject.h"
+#include "ShadowMapData.h"
+#include "FramebufferData.h"
 
 namespace PhysicsEngine
 {
 	class ForwardRenderer
 	{
-		private:
-			World* world;
-			Camera* camera;
+	private:
+		World* world;
 
-			// main fbo
-			GLuint fbo;
-			GLuint color;
-			GLuint position;
-			GLuint normal;
-			GLuint depth;
-			Shader mainShader;  // whats a good name for this shader which fills depth, normals, and position? geometryShader? forwardGbufferShader?
+		std::vector<RenderObject> renderObjects;
 
-			// ssao fbo
-			GLuint ssaoFBO;
-			GLuint ssaoColor;
-			Shader ssaoShader;
+		FramebufferData fboData;
+		ShadowMapData shadowMapData;
 
-			// directional light cascade shadow map data
-			GLuint shadowCascadeFBO[5];
-			GLuint shadowCascadeDepth[5];
-			float cascadeEnds[6];
-			glm::mat4 cascadeOrthoProj[5];
-			glm::mat4 cascadeLightView[5];
-			Shader depthShader;
+		// internal graphics state
+		GraphicsCameraState cameraState;
+		GraphicsLightState lightState;
 
-			// spotlight shadow map data
-			GLuint shadowSpotlightFBO;
-			GLuint shadowSpotlightDepth;
-			glm::mat4 shadowViewMatrix;
-			glm::mat4 shadowProjMatrix;
+		// timing and debug
+		GraphicsQuery query;
+		GraphicsDebug debug;
+		GraphicsTargets targets;
 
-			// pointlight cubemap shadow map data
-			GLuint shadowCubemapFBO;
-			GLuint shadowCubemapDepth;
-			glm::mat4 cubeViewProjMatrices[6];
-			Shader depthCubemapShader;
+		bool renderToScreen;
 
-			// quad
-			GLuint quadVAO;
-			GLuint quadVBO;
-			Shader quadShader;
+	public:
+		ForwardRenderer();
+		~ForwardRenderer();
 
-			std::vector<RenderObject> renderObjects;
+		void init(World* world, bool renderToScreen);
+		void update(Input input);
 
-			// internal graphics state
-			GraphicsCameraState cameraState; 
-			GraphicsLightState lightState; 
-
-			// timing and debug
-			GraphicsQuery query;  
-			GraphicsDebug debug;
-			GraphicsTargets targets;
-
-			unsigned int pass;
-			bool renderToScreen;
-
-		public:
-			ForwardRenderer();
-			~ForwardRenderer();
-
-			void init(World* world, bool renderToScreen);
-			void update(Input input);
-
-			GraphicsQuery getGraphicsQuery() const;
-			GraphicsDebug getGraphicsDebug() const;
-			GraphicsTargets getGraphicsTargets() const;
-
-		private:
-			void beginFrame(Camera* camera, GLuint fbo);
-			void endFrame();
-			void cullingPass();
-			void lightPass(Light* light);
-			void debugPass();
-			void updateRenderObjectsList();
-			void addToRenderObjectsList(MeshRenderer* meshRenderer);
-			void removeFromRenderObjectsList(MeshRenderer* meshRenderer); 
-
-			void updateAssetsInRenderer();
-			void createTextures();
-			void createShaderPrograms();
-			void createInternalShaderPrograms();
-			void createMeshBuffers();
-			void createMainFBO();
-			void createSSAOFBO();
-			void createShadowMapFBOs();
-			void calcShadowmapCascades(float nearDist, float farDist);
-			void calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction);
-			void calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection);
-
-			void initCameraUniformState();
-			void initLightUniformState();
-			void updateCameraUniformState(Camera* camera);
-			void updateLightUniformState(Light* light);
+		GraphicsQuery getGraphicsQuery() const;
+		GraphicsDebug getGraphicsDebug() const;
+		GraphicsTargets getGraphicsTargets() const;
 	};
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#ifndef __FORWARDRENDERER_H__
+//#define __FORWARDRENDERER_H__
+//
+//#include <map>
+//#include <vector>
+//#include <GL/glew.h>
+//#include <gl/gl.h>
+//
+//#include "../core/World.h"
+//#include "../core/Guid.h"
+//#include "../core/Input.h"
+//
+//#include "../components/Light.h"
+//#include "../components/MeshRenderer.h"
+//
+//#include "BatchManager.h"
+//#include "GraphicsState.h"
+//#include "GraphicsQuery.h"
+//#include "GraphicsDebug.h"
+//#include "GraphicsTargets.h"
+//#include "RenderObject.h"
+//#include "ShadowMapData.h"
+//#include "FramebufferData.h"
+//
+//namespace PhysicsEngine
+//{
+//	class ForwardRenderer
+//	{
+//		private:
+//			World* world;
+//			Camera* camera;
+//
+//			FramebufferData fboData;
+//
+//			// shadow map data
+//			ShadowMapData shadowMapData;
+//
+//			std::vector<RenderObject> renderObjects;
+//
+//			// internal graphics state
+//			GraphicsCameraState cameraState; 
+//			GraphicsLightState lightState; 
+//
+//			// timing and debug
+//			GraphicsQuery query;  
+//			GraphicsDebug debug;
+//			GraphicsTargets targets;
+//
+//			unsigned int pass;
+//			bool renderToScreen;
+//
+//		public:
+//			ForwardRenderer();
+//			~ForwardRenderer();
+//
+//			void init(World* world, bool renderToScreen);
+//			void update(Input input);
+//
+//			GraphicsQuery getGraphicsQuery() const;
+//			GraphicsDebug getGraphicsDebug() const;
+//			GraphicsTargets getGraphicsTargets() const;
+//
+//		private:
+//			void beginFrame(Camera* camera, GLuint fbo);
+//			void endFrame();
+//			void cullingPass();
+//			void lightPass(Light* light);
+//			void debugPass();
+//			void updateRenderObjectsList();
+//			void addToRenderObjectsList(MeshRenderer* meshRenderer);
+//			void removeFromRenderObjectsList(MeshRenderer* meshRenderer); 
+//
+//			void updateAssetsInRenderer();
+//			void createTextures();
+//			void createShaderPrograms();
+//			void createInternalShaderPrograms();
+//			void createMeshBuffers();
+//			void createMainFBO();
+//			void createSSAOFBO();
+//			void createShadowMapFBOs();
+//			void calcShadowmapCascades(float nearDist, float farDist);
+//			void calcCascadeOrthoProj(glm::mat4 view, glm::vec3 direction);
+//			void calcCubeViewMatrices(glm::vec3 lightPosition, glm::mat4 lightProjection);
+//
+//			void initCameraUniformState();
+//			void initLightUniformState();
+//			void updateCameraUniformState(Camera* camera);
+//			void updateLightUniformState(Light* light);
+//	};
+//}
+//
+//#endif

@@ -8,6 +8,7 @@
 #include "core/World.h"
 
 #include "../include/EditorScene.h"
+#include "../include/EditorClipboard.h"
 
 using namespace PhysicsEngine;
 
@@ -16,16 +17,13 @@ namespace PhysicsEditor
 	class Hierarchy
 	{
 		private:
-			Entity* selectedEntity;
 			std::vector<Entity> entities;
 
 		public:
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World* world, EditorScene& scene, bool isOpenedThisFrame);
-
-			Entity* getSelectedEntity();
+			void render(World* world, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame);
 	};
 }
 

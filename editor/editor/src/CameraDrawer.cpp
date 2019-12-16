@@ -21,14 +21,14 @@ CameraDrawer::~CameraDrawer()
 
 }
 
-void CameraDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void CameraDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Camera* camera = world->getComponentById<Camera>(componentId);
+		Camera* camera = world->getComponentById<Camera>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + camera->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 position = camera->position;
 		glm::vec3 front = camera->front;

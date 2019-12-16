@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "EditorUI.h"
+#include "EditorClipboard.h"
 #include "LibraryDirectory.h"
 
 namespace PhysicsEditor
@@ -34,12 +34,14 @@ namespace PhysicsEditor
 			ProjectView();
 			~ProjectView();
 
-			void render(const std::string currentProjectPath, const LibraryDirectory& library, EditorUI& ui, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+			void render(const std::string currentProjectPath, const LibraryDirectory& library, EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
 			void deleteProjectTree();
 			void buildProjectTree(std::string currentProjectPath);
 			void drawProjectTree();
 			void drawProjectNodeRecursive(ProjectNode* node);
+
+			InteractionType getInteractionTypeFromFileExtension(const std::string extension);
 	};
 }
 

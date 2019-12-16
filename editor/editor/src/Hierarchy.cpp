@@ -11,7 +11,7 @@ using namespace PhysicsEditor;
 
 Hierarchy::Hierarchy()
 {
-	selectedEntity = NULL;
+
 }
 
 Hierarchy::~Hierarchy()
@@ -19,7 +19,7 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World* world, EditorScene& scene, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 
@@ -50,32 +50,27 @@ void Hierarchy::render(World* world, EditorScene& scene, bool isOpenedThisFrame)
 			}
 			ImGui::Separator();
 
-			if (entities.size() == 1) {
-				selectedEntity = NULL;
-			}
-
 			// skip editor camera entity
 			for (size_t i = 1; i < entities.size(); i++) {
 				std::string name = entities[i].entityId.toString();
 
 				static bool selected = false;
 				if (ImGui::Selectable(name.c_str(), &selected)) {
-					selectedEntity = &entities[i];
+					clipboard.setSelectedItem(InteractionType::Entity, entities[i].entityId);
 				}
 			}
 
 			if (ImGui::BeginPopupContextWindow("RightMouseClickPopup")) {
-				if (ImGui::MenuItem("Copy", NULL, false, selectedEntity != NULL)) {
+				if (ImGui::MenuItem("Copy", NULL, false, clipboard.getSelectedType() == InteractionType::Entity)) {
 					
 				}
-				if (ImGui::MenuItem("Paste", NULL, false, selectedEntity != NULL))
+				if (ImGui::MenuItem("Paste", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
 				{
 					
 				}
-				if (ImGui::MenuItem("Delete", NULL, false, selectedEntity != NULL) && selectedEntity != NULL)
+				if (ImGui::MenuItem("Delete", NULL, false, clipboard.getSelectedType() == InteractionType::Entity) && clipboard.getSelectedType() == InteractionType::Entity)
 				{
-
-					world->latentDestroyEntity(selectedEntity->entityId);
+					world->latentDestroyEntity(clipboard.getSelectedId());
 				}
 
 				ImGui::Separator();
@@ -116,9 +111,4 @@ void Hierarchy::render(World* world, EditorScene& scene, bool isOpenedThisFrame)
 	}
 
 	ImGui::End();
-}
-
-Entity* Hierarchy::getSelectedEntity()
-{
-	return selectedEntity;
 }

@@ -19,7 +19,7 @@ EditorToolbar::~EditorToolbar()
 
 }
 
-void EditorToolbar::render(EditorUI ui)
+void EditorToolbar::render(EditorClipboard& clipboard)
 {
 	static bool p_open = true;
 	static bool opt_fullscreen_persistant = true;
@@ -80,7 +80,7 @@ void EditorToolbar::render(EditorUI ui)
 
 
 
-	if (ui.draggedId != PhysicsEngine::Guid::INVALID) {
+	if (clipboard.getDraggedType() != InteractionType::None) {
 		ImVec2 size = ImVec2(5, 5);
 		ImVec2 cursorPos = ImGui::GetMousePos();
 		size.x += cursorPos.x;

@@ -17,6 +17,8 @@
 
 #include "Component.h"
 
+#include "../core/Guid.h"
+
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
@@ -24,6 +26,7 @@ namespace PhysicsEngine
 	{
 		Guid componentId;
 		Guid entityId;
+		Guid targetTextureId;
 		glm::vec3 position;
 		glm::vec3 front;
 		glm::vec3 up;
@@ -75,6 +78,7 @@ namespace PhysicsEngine
 		public:
 			Frustum frustum;
 			Viewport viewport;
+			Guid targetTextureId;
 
 			enum {
 				TOP = 0,

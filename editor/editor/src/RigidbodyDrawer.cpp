@@ -21,14 +21,14 @@ RigidbodyDrawer::~RigidbodyDrawer()
 
 }
 
-void RigidbodyDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void RigidbodyDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Rigidbody* rigidbody = world->getComponentById<Rigidbody>(componentId);
+		Rigidbody* rigidbody = world->getComponentById<Rigidbody>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + rigidbody->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		bool useGravity = rigidbody->useGravity;
 		float mass = rigidbody->mass;

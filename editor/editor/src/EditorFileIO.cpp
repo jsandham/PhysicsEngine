@@ -219,6 +219,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				camera.componentId = Guid(it->first);
 				camera.entityId = Guid(it->second["entity"].ToString());
+				camera.targetTextureId = Guid(it->second["targetTextureId"].ToString());
 
 				camera.position.x = (float)it->second["position"][0].ToFloat();
 				camera.position.y = (float)it->second["position"][1].ToFloat();
@@ -491,6 +492,7 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 
 				obj[componentId.toString()]["type"] = "Camera";
 				obj[componentId.toString()]["entity"] = entityId.toString();
+				obj[componentId.toString()]["targetTextureId"] = camera->targetTextureId.toString();
 				obj[componentId.toString()]["position"].append(camera->position.x, camera->position.y, camera->position.z);
 				obj[componentId.toString()]["front"].append(camera->front.x, camera->front.y, camera->front.z);
 				obj[componentId.toString()]["up"].append(camera->up.x, camera->up.y, camera->up.z);

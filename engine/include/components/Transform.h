@@ -41,8 +41,8 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 
-			glm::vec3 getEulerAngles();
-			glm::mat4 getModelMatrix();
+			glm::vec3 getEulerAngles() const;
+			glm::mat4 getModelMatrix() const;
 
 			void setEulerAngles(glm::vec3 eulerAngles);
 	};

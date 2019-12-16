@@ -163,13 +163,16 @@
     <ClCompile Include="src\Command.cpp" />
     <ClCompile Include="src\CommandManager.cpp" />
     <ClCompile Include="src\Console.cpp" />
+    <ClCompile Include="src\CubemapDrawer.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\EditorCameraSystem.cpp" />
+    <ClCompile Include="src\EditorClipboard.cpp" />
     <ClCompile Include="src\EditorCommands.cpp" />
     <ClCompile Include="src\EditorFileIO.cpp" />
     <ClCompile Include="src\EditorToolbar.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
+    <ClCompile Include="src\FontDrawer.cpp" />
     <ClCompile Include="src\Hierarchy.cpp" />
     <ClCompile Include="src\imgui_extensions.cpp" />
     <ClCompile Include="src\imgui_styles.cpp" />
@@ -189,7 +192,9 @@
     <ClCompile Include="src\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="src\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\EditorMenuBar.cpp" />
+    <ClCompile Include="src\MaterialDrawer.cpp" />
     <ClCompile Include="src\MeshColliderDrawer.cpp" />
+    <ClCompile Include="src\MeshDrawer.cpp" />
     <ClCompile Include="src\MeshRendererDrawer.cpp" />
     <ClCompile Include="src\PerformanceQueue.cpp" />
     <ClCompile Include="src\PreferencesWindow.cpp" />
@@ -197,7 +202,10 @@
     <ClCompile Include="src\ProjectWindow.cpp" />
     <ClCompile Include="src\RigidbodyDrawer.cpp" />
     <ClCompile Include="src\SceneView.cpp" />
+    <ClCompile Include="src\ShaderDrawer.cpp" />
     <ClCompile Include="src\SphereColliderDrawer.cpp" />
+    <ClCompile Include="src\Texture2DDrawer.cpp" />
+    <ClCompile Include="src\Texture3DDrawer.cpp" />
     <ClCompile Include="src\TransformDrawer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +217,7 @@
     <ClInclude Include="include\Command.h" />
     <ClInclude Include="include\CommandManager.h" />
     <ClInclude Include="include\Console.h" />
+    <ClInclude Include="include\CubemapDrawer.h" />
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\EditorCameraSystem.h" />
     <ClInclude Include="include\EditorCommands.h" />
@@ -216,9 +225,10 @@
     <ClInclude Include="include\EditorProject.h" />
     <ClInclude Include="include\EditorScene.h" />
     <ClInclude Include="include\EditorToolbar.h" />
-    <ClInclude Include="include\EditorUI.h" />
+    <ClInclude Include="include\EditorClipboard.h" />
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />
+    <ClInclude Include="include\FontDrawer.h" />
     <ClInclude Include="include\Hierarchy.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />
@@ -238,7 +248,9 @@
     <ClInclude Include="include\LineRendererDrawer.h" />
     <ClInclude Include="include\LoadInspectorDrawerInternal.h" />
     <ClInclude Include="include\EditorMenuBar.h" />
+    <ClInclude Include="include\MaterialDrawer.h" />
     <ClInclude Include="include\MeshColliderDrawer.h" />
+    <ClInclude Include="include\MeshDrawer.h" />
     <ClInclude Include="include\MeshRendererDrawer.h" />
     <ClInclude Include="include\PerformanceQueue.h" />
     <ClInclude Include="include\PreferencesWindow.h" />
@@ -246,7 +258,10 @@
     <ClInclude Include="include\ProjectWindow.h" />
     <ClInclude Include="include\RigidbodyDrawer.h" />
     <ClInclude Include="include\SceneView.h" />
+    <ClInclude Include="include\ShaderDrawer.h" />
     <ClInclude Include="include\SphereColliderDrawer.h" />
+    <ClInclude Include="include\Texture2DDrawer.h" />
+    <ClInclude Include="include\Texture3DDrawer.h" />
     <ClInclude Include="include\TransformDrawer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

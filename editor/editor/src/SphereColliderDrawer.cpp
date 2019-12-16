@@ -21,14 +21,14 @@ SphereColliderDrawer::~SphereColliderDrawer()
 
 }
 
-void SphereColliderDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void SphereColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		SphereCollider* sphereCollider = world->getComponentById<SphereCollider>(componentId);
+		SphereCollider* sphereCollider = world->getComponentById<SphereCollider>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + sphereCollider->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Sphere")) {
 			glm::vec3 centre = sphereCollider->sphere.centre;

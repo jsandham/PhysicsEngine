@@ -101,6 +101,7 @@ cl /c /I%GLEW% %CompilerFlags% ..\..\src\systems\DebugSystem.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\Graphics.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\BatchManager.cpp  
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\ForwardRenderer.cpp
+cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\ForwardRendererPasses.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\DeferredRenderer.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\graphics\DebugRenderer.cpp
 

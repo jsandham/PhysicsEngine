@@ -21,14 +21,14 @@ LightDrawer::~LightDrawer()
 
 }
 
-void LightDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void LightDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if(ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		Light* light = world->getComponentById<Light>(componentId);
+		Light* light = world->getComponentById<Light>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + light->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 position = light->position;
 		glm::vec3 direction = light->direction;

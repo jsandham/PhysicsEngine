@@ -21,13 +21,13 @@ BoxColliderDrawer::~BoxColliderDrawer()
 
 }
 
-void BoxColliderDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void BoxColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
-		BoxCollider* boxCollider = world->getComponentById<BoxCollider>(componentId);
+		BoxCollider* boxCollider = world->getComponentById<BoxCollider>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + boxCollider->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Bounds")) {
 			glm::vec3 centre = boxCollider->bounds.centre;

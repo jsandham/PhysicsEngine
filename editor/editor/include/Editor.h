@@ -12,7 +12,7 @@
 
 #include "EditorProject.h"
 #include "EditorScene.h"
-#include "EditorUI.h"
+#include "EditorClipboard.h"
 #include "EditorMenuBar.h"
 #include "EditorToolbar.h"
 #include "Inspector.h"
@@ -56,7 +56,7 @@ namespace PhysicsEditor
 
 			EditorProject currentProject;
 			EditorScene currentScene;
-			EditorUI ui;
+			EditorClipboard clipboard;
 			
 			Input input;
 			EditorCameraSystem* cameraSystem;

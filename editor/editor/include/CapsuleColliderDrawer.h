@@ -11,7 +11,7 @@ namespace PhysicsEditor
 			CapsuleColliderDrawer();
 			~CapsuleColliderDrawer();
 
-			void render(World* world, EditorUI& ui, Guid entityId, Guid componentId);
+			void render(World* world, EditorClipboard& clipboard, Guid id);
 	};
 }
 

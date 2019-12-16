@@ -21,7 +21,7 @@ Inspector::~Inspector()
 	
 }
 
-void Inspector::render(World* world, Entity* entity, EditorScene& scene, EditorUI& ui, bool isOpenedThisFrame)
+void Inspector::render(World* world, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame)
 {
 	static bool inspectorActive = true;
 
@@ -35,58 +35,95 @@ void Inspector::render(World* world, Entity* entity, EditorScene& scene, EditorU
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
-		if (entity != NULL){
-			std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
-			for (size_t i = 0; i < componentsOnEntity.size(); i++)
-			{
-				Guid componentId = componentsOnEntity[i].first;
-				int componentType = componentsOnEntity[i].second;
-
-				InspectorDrawer* drawer = NULL;
-				if (componentType < 20) {
-					drawer = loadInternalInspectorDrawer(componentType);
-				}
-				else {
-					//drawer = loadInspectorDrawer(componentType);
-				}
-
-				drawer->render(world, ui, entity->entityId, componentId);
-				ImGui::Separator();
-
-				delete drawer;
-			}
-
-			std::string componentToAdd = "";
-			if (BeginAddComponentDropdown("Add component", componentToAdd)){
-
-				if (componentToAdd == "Transform") {
-					scene.isDirty = true; // actually should I pass this through to be modified in the command?
-					CommandManager::addCommand(new AddComponentCommand<Transform>(world, entity->entityId));
-				}
-				else if (componentToAdd == "Rigidbody") {
-					scene.isDirty = true;
-					CommandManager::addCommand(new AddComponentCommand<Rigidbody>(world, entity->entityId));
-				}
-				else if (componentToAdd == "Camera") {
-					scene.isDirty = true;
-					CommandManager::addCommand(new AddComponentCommand<Camera>(world, entity->entityId));
-				}
-				else if (componentToAdd == "MeshRenderer") {
-					scene.isDirty = true;
-					CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(world, entity->entityId));
-				}
-				else if (componentToAdd == "Light") {
-					scene.isDirty = true;
-					CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->entityId));
-				}
-				
-				EndAddComponentDropdown();
-			}
+		if (clipboard.getSelectedType() == InteractionType::Entity) {
+			drawEntity(world, scene, clipboard);
 		}
+		else if (clipboard.getSelectedType() == InteractionType::Texture2D) {
+
+		}
+		/*else if () {
+
+		}*/
 	}
 
 	ImGui::End();
 }
+
+void Inspector::drawEntity(World* world, EditorScene& scene, EditorClipboard& clipboard)
+{
+	Entity* entity = world->getEntity(clipboard.getSelectedId());
+	std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
+	for (size_t i = 0; i < componentsOnEntity.size(); i++)
+	{
+		Guid componentId = componentsOnEntity[i].first;
+		int componentType = componentsOnEntity[i].second;
+
+		InspectorDrawer* drawer = NULL;
+		if (componentType < 20) {
+			drawer = loadInternalInspectorComponentDrawer(componentType);
+		}
+		else {
+			//drawer = loadInspectorDrawer(componentType);
+		}
+
+		drawer->render(world, clipboard, componentId);
+		ImGui::Separator();
+
+		delete drawer;
+	}
+
+	std::string componentToAdd = "";
+	if (BeginAddComponentDropdown("Add component", componentToAdd)) {
+
+		if (componentToAdd == "Transform") {
+			scene.isDirty = true; // actually should I pass this through to be modified in the command?
+			CommandManager::addCommand(new AddComponentCommand<Transform>(world, entity->entityId));
+		}
+		else if (componentToAdd == "Rigidbody") {
+			scene.isDirty = true;
+			CommandManager::addCommand(new AddComponentCommand<Rigidbody>(world, entity->entityId));
+		}
+		else if (componentToAdd == "Camera") {
+			scene.isDirty = true;
+			CommandManager::addCommand(new AddComponentCommand<Camera>(world, entity->entityId));
+		}
+		else if (componentToAdd == "MeshRenderer") {
+			scene.isDirty = true;
+			CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(world, entity->entityId));
+		}
+		else if (componentToAdd == "Light") {
+			scene.isDirty = true;
+			CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->entityId));
+		}
+
+		EndAddComponentDropdown();
+	}
+}
+
+void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard)
+{
+	Texture2D* texture = world->getAsset<Texture2D>(clipboard.getSelectedId());
+
+	InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<Texture2D>::type);
+
+	//drawer->render(world, clipboard, entity->entityId, componentId);
+	ImGui::Separator();
+
+	delete drawer;
+}
+
+void drawCodeFile(World* world, EditorScene& scene, EditorClipboard& clipboard)
+{
+
+}
+
+
+
+
+
+
+
+
 
 bool Inspector::BeginAddComponentDropdown(std::string name, std::string& componentToAdd)
 {

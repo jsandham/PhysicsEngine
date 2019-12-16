@@ -10,6 +10,7 @@
 #include "../../include/core/Material.h"
 #include "../../include/core/Mesh.h"
 #include "../../include/core/Font.h"
+#include "../../include/core/Log.h"
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/Rigidbody.h"
@@ -68,7 +69,8 @@ Asset* PhysicsEngine::loadInternalAsset(std::vector<char> data, int type, int* i
 		return create<Font>(data);
 	}
 	else{
-		std::cout << "Error: Invalid asset type (" << type << ") when trying to load internal asset" << std::endl;
+		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal asset\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }
@@ -138,7 +140,8 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int type
 	// 	return create<Solid>(data);
 	// }
 	else{
-		std::cout << "Error: Invalid component type (" << type << ") when trying to load internal component" << std::endl;
+		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }
@@ -178,7 +181,8 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int type, int*
 	// 	return create<SolidSystem>(data);
 	// }
 	else{
-		std::cout << "Error: Invalid system type (" << type << ") when trying to load internal system" << std::endl;
+		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }
@@ -233,7 +237,8 @@ Component* PhysicsEngine::destroyInternalComponent(int type, int index)
 	// 	return destroy<Solid>(index);
 	// }
 	else{
-		std::cout << "Error: Invalid component instance type (" << type << ") when trying to destroy internal component" << std::endl;
+		std::string message = "Error: Invalid component instance type (" + std::to_string(type) + ") when trying to destroy internal component\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }

@@ -34,7 +34,7 @@ Editor::Editor()
 
 	currentProject = {};
 	currentScene = {};
-	ui = {};
+	clipboard = {};
 	input = {};
 }
 
@@ -106,7 +106,7 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	//ImGui::ShowMetricsWindow();
 
 	editorMenu.render(currentProject, currentScene);
-	editorToolbar.render(ui);
+	editorToolbar.render(clipboard);
 
 	updateProjectAndSceneState();
 
@@ -114,10 +114,10 @@ void Editor::render(bool editorBecameActiveThisFrame)
 		UnitTests::run();
 	}
 
-	hierarchy.render(&world, currentScene, editorMenu.isOpenHierarchyCalled());
-	inspector.render(&world, hierarchy.getSelectedEntity(), currentScene, ui, editorMenu.isOpenInspectorCalled());
+	hierarchy.render(&world, currentScene, clipboard, editorMenu.isOpenHierarchyCalled());
+	inspector.render(&world, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
 	console.render(editorMenu.isOpenConsoleCalled());
-	projectView.render(currentProject.path, libraryDirectory, ui, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
+	projectView.render(currentProject.path, libraryDirectory, clipboard, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 	aboutPopup.render(editorMenu.isAboutClicked());
 	preferencesWindow.render(editorMenu.isPreferencesClicked());
 

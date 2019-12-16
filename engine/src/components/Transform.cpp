@@ -55,14 +55,21 @@ void Transform::deserialize(std::vector<char> data)
 	scale = header->scale;
 }
 
-glm::vec3 Transform::getEulerAngles()
+glm::vec3 Transform::getEulerAngles() const
 {
 	return glm::eulerAngles(rotation);
 }
 
-glm::mat4 Transform::getModelMatrix()
+glm::mat4 Transform::getModelMatrix() const
 {
-	return glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(), position);
+	modelMatrix *= glm::toMat4(rotation);
+	modelMatrix = glm::scale(modelMatrix, scale);
+
+	return modelMatrix;
+
+
+	//return glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 }
 
 void Transform::setEulerAngles(glm::vec3 eulerAngles)

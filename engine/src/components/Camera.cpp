@@ -58,6 +58,7 @@ Camera::Camera()
 {
 	componentId = Guid::INVALID;
 	entityId = Guid::INVALID;
+	targetTextureId = Guid::INVALID;
 
 	viewport.x = 0;
 	viewport.y = 0;
@@ -93,6 +94,7 @@ std::vector<char> Camera::serialize()
 	CameraHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
+	header.targetTextureId = targetTextureId;
 	header.position = position;
 	header.front = front;
 	header.up = up;
@@ -120,6 +122,7 @@ void Camera::deserialize(std::vector<char> data)
 
 	componentId = header->componentId;
 	entityId = header->entityId;
+	targetTextureId = header->targetTextureId;
 
 	viewport.x = header->x;
 	viewport.y = header->y;

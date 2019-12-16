@@ -1,7 +1,7 @@
 #ifndef __MAIN_TOOLBAR_H__
 #define __MAIN_TOOLBAR_H__
 
-#include "EditorUI.h"
+#include "EditorClipboard.h"
 
 namespace PhysicsEditor
 {
@@ -11,7 +11,7 @@ namespace PhysicsEditor
 			EditorToolbar();
 			~EditorToolbar();
 
-			void render(EditorUI ui);
+			void render(EditorClipboard& clipboard);
 	};
 }
 

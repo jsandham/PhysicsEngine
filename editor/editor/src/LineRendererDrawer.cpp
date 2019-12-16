@@ -21,13 +21,13 @@ LineRendererDrawer::~LineRendererDrawer()
 
 }
 
-void LineRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void LineRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
-		LineRenderer* lineRenderer = world->getComponentById<LineRenderer>(componentId);
+		LineRenderer* lineRenderer = world->getComponentById<LineRenderer>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + lineRenderer->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 start = lineRenderer->start;
 		glm::vec3 end = lineRenderer->end;

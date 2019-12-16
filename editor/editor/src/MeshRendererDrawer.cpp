@@ -23,14 +23,14 @@ MeshRendererDrawer::~MeshRendererDrawer()
 
 }
 
-void MeshRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid componentId)
+void MeshRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 {
 	if(ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(componentId);
+		MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(id);
 
-		ImGui::Text(("EntityId: " + entityId.toString()).c_str());
-		ImGui::Text(("ComponentId: " + componentId.toString()).c_str());
+		ImGui::Text(("EntityId: " + meshRenderer->entityId.toString()).c_str());
+		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		// Mesh
 		Guid meshId = meshRenderer->meshId;
@@ -39,14 +39,14 @@ void MeshRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid 
 			meshName = meshId.toString();
 		}
 
-		bool slotFillable = ui.draggedId != PhysicsEngine::Guid::INVALID && world->getAsset<Mesh>(ui.draggedId) != NULL;
+		bool slotFillable = clipboard.getDraggedType() == InteractionType::Mesh;
 		bool slotFilled = false;
 		bool isClicked = ImGui::Slot("Mesh", meshName, slotFillable, &slotFilled);
 
 		if (slotFilled) {
 			// TODO: Need some way of telling the renderer that the mesh has changed. 
-			meshId = ui.draggedId;
-			ui.draggedId = PhysicsEngine::Guid::INVALID;
+			meshId = clipboard.getDraggedId();
+			clipboard.clearDraggedItem();
 
 			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->meshId, meshId));
 		}
@@ -76,13 +76,13 @@ void MeshRendererDrawer::render(World* world, EditorUI& ui, Guid entityId, Guid 
 				materialName = materialIds[i].toString();
 			}
 
-			bool materialSlotFillable = ui.draggedId != PhysicsEngine::Guid::INVALID && world->getAsset<Material>(ui.draggedId) != NULL;
+			bool materialSlotFillable = clipboard.getDraggedType() == InteractionType::Material;
 			bool materialSlotFilled = false;
 			bool materialIsClicked = ImGui::Slot("Material", materialName, materialSlotFillable, &materialSlotFilled);
 
 			if (materialSlotFilled) {
-				materialIds[i] = ui.draggedId;
-				ui.draggedId = PhysicsEngine::Guid::INVALID;
+				materialIds[i] = clipboard.getDraggedId();
+				clipboard.clearDraggedItem();
 			}
 
 			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i]));

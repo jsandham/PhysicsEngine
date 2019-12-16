@@ -13,9 +13,20 @@
 #include "../include/CapsuleColliderDrawer.h"
 #include "../include/MeshColliderDrawer.h"
 
-using namespace PhysicsEditor;
+#include "../include/ShaderDrawer.h"
+#include "../include/Texture2DDrawer.h"
+#include "../include/Texture3DDrawer.h"
+#include "../include/CubemapDrawer.h"
+#include "../include/MaterialDrawer.h"
+#include "../include/MeshDrawer.h"
+#include "../include/FontDrawer.h"
 
-InspectorDrawer* PhysicsEditor::loadInternalInspectorDrawer(int type)
+#include "core/Log.h"
+
+using namespace PhysicsEditor;
+using namespace PhysicsEngine;
+
+InspectorDrawer* PhysicsEditor::loadInternalInspectorComponentDrawer(int type)
 {
 	if (type == 0){
 		return new TransformDrawer();
@@ -48,7 +59,38 @@ InspectorDrawer* PhysicsEditor::loadInternalInspectorDrawer(int type)
 		return new MeshColliderDrawer();
 	}
 	else{
-		std::cout << "Error: Invalid component type (" << type << ") when trying to load internal component inspector drawer" << std::endl;
+		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal inspector component drawer\n";
+		Log::error(message.c_str());
+		return NULL;
+	}
+}
+
+InspectorDrawer* PhysicsEditor::loadInternalInspectorAssetDrawer(int type)
+{
+	if (type == 0) {
+		return new ShaderDrawer();
+	}
+	else if (type == 1) {
+		return new Texture2DDrawer();
+	}
+	else if (type == 2) {
+		return new Texture3DDrawer();
+	}
+	else if (type == 3) {
+		return new CubemapDrawer();
+	}
+	else if (type == 4) {
+		return new MaterialDrawer();
+	}
+	else if (type == 5) {
+		return new MeshDrawer();
+	}
+	else if (type == 6) {
+		return new FontDrawer();
+	}
+	else {
+		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal inspector asset drawer\n";
+		Log::error(message.c_str());
 		return NULL;
 	}
 }
