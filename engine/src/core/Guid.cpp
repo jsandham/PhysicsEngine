@@ -6,19 +6,25 @@
 
 using namespace PhysicsEngine;
 
-const Guid Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
+const Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
 
 Guid::Guid()
 {
-	for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i += 4) {
 		this->bytes[i] = '\0';
+		this->bytes[i + 1] = '\0';
+		this->bytes[i + 2] = '\0';
+		this->bytes[i + 3] = '\0';
 	}
 }
 
 Guid::Guid(const Guid& guid)
 {
-	for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i += 4) {
 		this->bytes[i] = guid.bytes[i];
+		this->bytes[i + 1] = guid.bytes[i + 1];
+		this->bytes[i + 2] = guid.bytes[i + 2];
+		this->bytes[i + 3] = guid.bytes[i + 3];
 	}
 }
 
@@ -93,15 +99,21 @@ Guid::Guid(const std::string &str)
 
 Guid::Guid(const std::vector<unsigned char> &bytes)
 {
-	for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i += 4) {
 		this->bytes[i] = bytes[i];
+		this->bytes[i + 1] = bytes[i + 1];
+		this->bytes[i + 2] = bytes[i + 2];
+		this->bytes[i + 3] = bytes[i + 3];
 	}
 }
 
 Guid::Guid(const unsigned char* bytes)
 {
-	for(int i = 0; i < 16; i++){
+	for (int i = 0; i < 16; i += 4) {
 		this->bytes[i] = bytes[i];
+		this->bytes[i + 1] = bytes[i + 1];
+		this->bytes[i + 2] = bytes[i + 2];
+		this->bytes[i + 3] = bytes[i + 3];
 	}
 }
 
@@ -114,8 +126,11 @@ Guid& Guid::operator=(const Guid& guid)
 {
 	if(this != &guid)
 	{
-		for(int i = 0; i < 16; i++){
+		for (int i = 0; i < 16; i+=4) {
 			bytes[i] = guid.bytes[i];
+			bytes[i + 1] = guid.bytes[i + 1];
+			bytes[i + 2] = guid.bytes[i + 2];
+			bytes[i + 3] = guid.bytes[i + 3];
 		}
 	}
 
@@ -147,8 +162,6 @@ bool Guid::operator!=(const Guid& guid) const
 bool Guid::operator<(const Guid& guid) const
 {
 	return ( memcmp( this, &guid, sizeof(Guid) ) > 0 ? true : false );
-
-	//return (*this != guid);  // why doesnt this work??
 }
 
 bool Guid::isEmpty() const
@@ -188,30 +201,6 @@ std::string Guid::toString() const
 			  bytes[14], 
 			  bytes[15]);
 
-
-	//char one[10], two[6], three[6], four[6], five[14];
-
-	//_snprintf(one, 10, "%02x%02x%02x%02x", bytes[0], bytes[1], bytes[2], bytes[3]);
-
-	//_snprintf(two, 6, "%02x%02x", bytes[4], bytes[5]);
-
-	//_snprintf(three, 6, "%02x%02x", bytes[6], bytes[7]);
-
-	//_snprintf(four, 6, "%02x%02x", bytes[8], bytes[9]);
-
-	//_snprintf(five, 14, "%02x%02x%02x%02x%02x%02x", bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]);
-
-	//const std::string sep("-");
-
-	//std::string out(one);
-
-	//out += sep + two;
-	//out += sep + three;
-	//out += sep + four;
-	//out += sep + five;
-
-	//return out;
-
 	return std::string(buffer);
 }
 
@@ -221,7 +210,7 @@ Guid Guid::newGuid()
 
 	CoCreateGuid(&newId);
 
-	std::vector<unsigned char> bytes(16);
+	unsigned char bytes[16];
 
 	bytes[0] = (unsigned char)((newId.Data1 >> 24) & 0xFF);
 	bytes[1] = (unsigned char)((newId.Data1 >> 16) & 0xFF);
@@ -243,7 +232,7 @@ Guid Guid::newGuid()
 	bytes[14] = (unsigned char)newId.Data4[6];
 	bytes[15] = (unsigned char)newId.Data4[7];
 
-	return bytes;
+	return Guid(&bytes[0]);
 }
 
 std::ostream& operator<<(std::ostream& os, const Guid& id)
