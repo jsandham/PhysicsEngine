@@ -25,3 +25,11 @@ TODO:
 ------------ write material mtl parser for generating json material files from mtl files
 - COMPLETE - get minimal imgui editor project set up and working
 ------------ add ReadMe file
+------------ create editor inspector for each asset type (shader, material, mesh, texture2d, texture3d, cubemap)
+- COMPLETE - implement drag and drop for meshes in editor inspector
+- COMPLETE - implement drag and drop for materials in editor inspector
+------------ implement drag and drop for textures in editor inspector
+------------ create play mode in editor
+------------ add gizmo draw pass in renderer to be used for showing gizmos in editor
+------------ add pot processing render pass
+
