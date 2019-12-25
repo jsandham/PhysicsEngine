@@ -37,3 +37,4 @@ TODO:
 - COMPLETE - implement basic undo/redo in editor
 - COMPLETE - create engine build directory and bat file for debug and release builds
 ------------ fix scene view mouse movement as it is currently inverted and not working correctly
+------------ fix undo/redo bug so that you dont have to click on the scene view for input to work
