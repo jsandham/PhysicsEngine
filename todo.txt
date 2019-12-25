@@ -36,3 +36,4 @@ TODO:
 ------------ display entity name instead of guid in editor 
 - COMPLETE - implement basic undo/redo in editor
 - COMPLETE - create engine build directory and bat file for debug and release builds
+------------ fix scene view mouse movement as it is currently inverted and not working correctly
