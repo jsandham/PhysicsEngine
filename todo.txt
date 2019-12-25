@@ -34,4 +34,5 @@ TODO:
 ------------ add pot processing render pass
 ------------ implement drag and drop for editor hierarchy
 ------------ display entity name instead of guid in editor 
-
+- COMPLETE - implement basic undo/redo in editor
+- COMPLETE - create engine build directory and bat file for debug and release builds
