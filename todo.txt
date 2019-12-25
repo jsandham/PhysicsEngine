@@ -25,3 +25,6 @@ TODO:
 ------------ write material mtl parser for generating json material files from mtl files
 - COMPLETE - get minimal imgui editor project set up and working
 ------------ add ReadMe file
+------------ implement drag and drop for editor hierarchy
+------------ display entity name instead of guid in editor 
+
