@@ -50,7 +50,7 @@ void DebugSystem::init(World* world)
 {
 	this->world = world;
 
-	std::vector<float> lines;
+	/*std::vector<float> lines;
 	lines.resize(6, 0.0f);
 
 	buffer.size = lines.size();
@@ -71,7 +71,7 @@ void DebugSystem::init(World* world)
 	colorShader->compile();
 
 	colorMat = world->createAsset<Material>();
-	colorMat->shaderId = colorShader->assetId;
+	colorMat->shaderId = colorShader->assetId;*/
 }
 
 void DebugSystem::update(Input input)
@@ -88,7 +88,7 @@ void DebugSystem::update(Input input)
 	if(world->debug){
 		if (getKeyDown(input, KeyCode::I)){
 
-			glm::mat4 view = camera->getViewMatrix();
+			/*glm::mat4 view = camera->getViewMatrix();
 			glm::mat4 projection = camera->getProjMatrix();
 			glm::mat4 projViewInv = glm::inverse(projection * view);
 	
@@ -146,9 +146,9 @@ void DebugSystem::update(Input input)
 			else
 			{
 				std::cout << "Raycast missed!!!" << std::endl;
-			}
+			}*/
 		}
 	}
 
-	Graphics::render(world, &buffer.shader, ShaderVariant::None, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
+	//Graphics::render(world, &buffer.shader, ShaderVariant::None, glm::mat4(1.0f), buffer.VAO, GL_LINES, (GLsizei)buffer.size / 3, NULL);
 }

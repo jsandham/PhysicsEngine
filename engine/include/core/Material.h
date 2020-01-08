@@ -10,6 +10,8 @@
 
 #include "../glm/glm.hpp"
 
+#include "../../include/graphics/RenderObject.h"
+
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
@@ -62,6 +64,8 @@ namespace PhysicsEngine
 
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
+
+			void use(Shader* shader, RenderObject renderObject);
 	};
 
 	template <>

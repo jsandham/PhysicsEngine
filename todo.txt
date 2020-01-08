@@ -24,7 +24,7 @@ TODO:
 - COMPLETE - combine all light types into one Light class
 ------------ write material mtl parser for generating json material files from mtl files
 - COMPLETE - get minimal imgui editor project set up and working
------------- add ReadMe file
+- COMPLETE - add ReadMe file
 ------------ create editor inspector for each asset type (shader, material, mesh, texture2d, texture3d, cubemap)
 - COMPLETE - implement drag and drop for meshes in editor inspector
 - COMPLETE - implement drag and drop for materials in editor inspector
@@ -34,4 +34,6 @@ TODO:
 ------------ add pot processing render pass
 ------------ implement drag and drop for editor hierarchy
 ------------ display entity name instead of guid in editor 
+------------ fix logging so I dont need to construct a string first before calling log function
+------------
 

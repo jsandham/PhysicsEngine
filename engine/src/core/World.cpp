@@ -524,13 +524,6 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	if(it2 != idToGlobalIndex.end()){
 		int index = it2->second;
 
-		std::string message = "index: " + std::to_string(index) + "\n";
-		Log::info(&message[0]);
-
-		std::string test = entityId.toString();
-		std::string test1 = componentId.toString();
-		int test3 = getAllocator<Transform>().getCount();
-
 		Component* swappedComponent = NULL;
 		//swappedComponent = destroyInternalComponent(componentType, index);
 		if(componentType < 20){

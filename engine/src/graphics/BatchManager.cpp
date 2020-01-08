@@ -65,7 +65,7 @@ void BatchManager::add(Material* material, Mesh* mesh, glm::mat4 model)
 	}
 }
 
-void BatchManager::render(World* world, ShaderVariant variant, GraphicsQuery* query)
+void BatchManager::render(World* world, int variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
@@ -85,7 +85,7 @@ void BatchManager::render(World* world, ShaderVariant variant, GraphicsQuery* qu
 	}
 }
 
-void BatchManager::render(World* world, Material* material, ShaderVariant variant, GraphicsQuery* query)
+void BatchManager::render(World* world, Material* material, int variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){
@@ -101,7 +101,7 @@ void BatchManager::render(World* world, Material* material, ShaderVariant varian
 	}
 }
 
-void BatchManager::render(World* world, Shader* shader, ShaderVariant variant, GraphicsQuery* query)
+void BatchManager::render(World* world, Shader* shader, int variant, GraphicsQuery* query)
 {
 	std::map<Guid, std::vector<Batch>>::iterator it;
 	for(it = materialIdToBatchesMap.begin(); it != materialIdToBatchesMap.end(); it++){

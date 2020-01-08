@@ -1,7 +1,10 @@
 #ifndef __RENDEROBJECT_H__
 #define __RENDEROBJECT_H__
 
+#define GLM_FORCE_RADIANS
+
 #include "../glm/glm.hpp"
+#include "../core/Sphere.h"
 
 namespace PhysicsEngine
 {
@@ -12,10 +15,10 @@ namespace PhysicsEngine
 		int size;  // size of vbo
 		int transformIndex;
 		int materialIndex;
+		int shaderIndex;
 
 		GLuint vao;
 
-		GLuint shaders[10];
 		GLint mainTexture;
 		GLint normalMap;
 		GLint specularMap;

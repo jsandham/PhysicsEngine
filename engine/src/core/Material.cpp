@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
@@ -69,4 +72,33 @@ void Material::deserialize(std::vector<char> data)
 	diffuse = header->diffuse;
 	specular = header->specular;
 	color = header->color;
+}
+
+void Material::use(Shader* shader, RenderObject renderObject)
+{
+	shader->setFloat("material.shininess", shininess);
+	shader->setVec3("material.ambient", ambient);
+	shader->setVec3("material.diffuse", diffuse);
+	shader->setVec3("material.specular", specular);
+
+	if (renderObject.mainTexture != -1) {
+		shader->setInt("material.mainTexture", 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+	}
+
+	if (renderObject.normalMap != -1) {
+		shader->setInt("material.normalMap", 1);
+
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);
+	}
+
+	if (renderObject.specularMap != -1) {
+		shader->setInt("material.specularMap", 2);
+
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);
+	}
 }

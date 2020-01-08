@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-const Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
+const Guid Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
 
 Guid::Guid()
 {

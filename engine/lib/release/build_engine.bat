@@ -68,6 +68,7 @@ cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Texture2D.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Texture3D.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Cubemap.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Shader.cpp
+cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\InternalShaders.cpp
 cl /c /I%GLEW% /I%FREETYPE% %CompilerFlags% ..\..\src\core\Font.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Util.cpp
 cl /c /I%GLEW% %CompilerFlags% ..\..\src\core\Guid.cpp

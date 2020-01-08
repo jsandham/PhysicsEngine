@@ -2,6 +2,7 @@
 #define __GRAPHICS_DEBUG_H__	
 
 #include "../core/Shader.h"
+#include "../core/InternalShaders.h"
 #include "../core/Texture2D.h"
 
 #include "Graphics.h"
@@ -15,14 +16,14 @@ namespace PhysicsEngine
 
 		void init()
 		{
-			shaders[0].vertexShader = Shader::depthMapVertexShader;
-			shaders[0].fragmentShader = Shader::depthMapFragmentShader;
-			shaders[1].vertexShader	= Shader::normalMapVertexShader;
-			shaders[1].fragmentShader = Shader::normalMapFragmentShader;
-			shaders[2].vertexShader	= Shader::overdrawVertexShader;
-			shaders[2].fragmentShader = Shader::overdrawFragmentShader;
-			shaders[3].vertexShader	= Shader::lineVertexShader;
-			shaders[3].fragmentShader = Shader::lineFragmentShader;	
+			shaders[0].vertexShader = InternalShaders::depthMapVertexShader;
+			shaders[0].fragmentShader = InternalShaders::depthMapFragmentShader;
+			shaders[1].vertexShader	= InternalShaders::normalMapVertexShader;
+			shaders[1].fragmentShader = InternalShaders::normalMapFragmentShader;
+			shaders[2].vertexShader	= InternalShaders::overdrawVertexShader;
+			shaders[2].fragmentShader = InternalShaders::overdrawFragmentShader;
+			shaders[3].vertexShader	= InternalShaders::lineVertexShader;
+			shaders[3].fragmentShader = InternalShaders::lineFragmentShader;
 
 			shaders[0].compile();
 			shaders[1].compile();

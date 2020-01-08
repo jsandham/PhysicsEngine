@@ -30,6 +30,14 @@ void CameraDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		ImGui::Text(("EntityId: " + camera->entityId.toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
+		int mode = static_cast<int>(camera->mode);
+
+		const char* modeNames[] = { "Main", "Secondary"};
+
+		if(ImGui::Combo("Mode", &mode, modeNames, 2)) {
+			CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(&camera->mode, static_cast<CameraMode>(mode)));
+		}
+
 		glm::vec3 position = camera->position;
 		glm::vec3 front = camera->front;
 		glm::vec3 up = camera->up;
@@ -46,6 +54,12 @@ void CameraDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		}
 		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->backgroundColor, backgroundColor));
+		}
+
+		bool useSSAO = camera->useSSAO;
+
+		if(ImGui::Checkbox("SSAO", &useSSAO)){
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useSSAO, useSSAO));
 		}
 
 		if (ImGui::TreeNode("Viewport"))
@@ -89,6 +103,31 @@ void CameraDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 
 			ImGui::TreePop();
 		}
+
+		// if (ImGui::TreeNode("Targets")) {
+		// 	bool useColor = camera->useColorTarget;
+		// 	bool usePosition = camera->usePositionTarget;
+		// 	bool useNormal = camera->useNormalTarget;
+		// 	bool useDepth = camera->useDepthTarget;
+
+		// 	if (ImGui::Checkbox("Color", &useColor)) {
+		// 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useColorTarget, useColor));
+		// 	}
+
+		// 	if (ImGui::Checkbox("Position", &usePosition)) {
+		// 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->usePositionTarget, usePosition));
+		// 	}
+
+		// 	if (ImGui::Checkbox("Normal", &useNormal)) {
+		// 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useNormalTarget, useNormal));
+		// 	}
+
+		// 	if (ImGui::Checkbox("Depth", &useDepth)) {
+		// 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useDepthTarget, useDepth));
+		// 	}
+
+		// 	ImGui::TreePop();
+		// }
 
 		ImGui::TreePop();
 	}

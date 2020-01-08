@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../../include/core/Font.h"
+#include "../../include/core/InternalShaders.h"
 #include "../../include/graphics/Graphics.h"
 
 // #include "../../include/freetype/ft2build.h"
@@ -142,8 +143,8 @@ void Font::load(std::string filepath)
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    shader.vertexShader = Shader::fontVertexShader;
-    shader.fragmentShader = Shader::fontFragmentShader;
+    shader.vertexShader = InternalShaders::fontVertexShader;
+    shader.fragmentShader = InternalShaders::fontFragmentShader;
 
     shader.compile();
 

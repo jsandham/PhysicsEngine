@@ -14,23 +14,23 @@
 #include "GraphicsTargets.h"
 #include "RenderObject.h"
 #include "ShadowMapData.h"
-#include "FramebufferData.h"
+#include "ScreenData.h"
 
 namespace PhysicsEngine
 {
-	void initializeForwardRenderer(World* world, FramebufferData& fboData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsDebug& debug, GraphicsQuery& query);
+	void initializeRenderer(World* world, ScreenData& screenData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsDebug& debug, GraphicsQuery& query);
 	void registerRenderAssets(World* world);
 	void registerRenderObjects(World* world, std::vector<RenderObject>& renderObjects);
+	void registerCameras(World* world);
 	void cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects);
 	void updateTransforms(World* world, std::vector<RenderObject>& renderObjects);
-	void beginFrame(Camera* camera, FramebufferData& fboData, GraphicsCameraState& cameraState, GraphicsQuery& query);
+	void beginFrame(Camera* camera, GraphicsCameraState& cameraState, GraphicsQuery& query);
+	void computeSSAO(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsQuery& query);
 	void renderShadows(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, ShadowMapData& shadowMapData, GraphicsQuery& query);
-	void renderOpaques(World* world, Camera* camera, Light* light, FramebufferData& fboData, const ShadowMapData& shadowMapData, GraphicsLightState& lightState, const std::vector<RenderObject>& renderObjects, GraphicsQuery& query);
+	void renderOpaques(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, const ShadowMapData& shadowMapData, GraphicsLightState& lightState, GraphicsQuery& query);
 	void renderTransparents();
 	void postProcessing();
-	void endFrame(World* world, const std::vector<RenderObject>& renderObjects, FramebufferData& fboData, GraphicsTargets& targets, GraphicsDebug& debug, GraphicsQuery& query, bool renderToScreen);
-
-
+	void endFrame(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsTargets& targets, GraphicsDebug& debug, GraphicsQuery& query, bool renderToScreen);
 
 	void calcShadowmapCascades(Camera* camera, ShadowMapData& shadowMapData);
 	void calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMapData& shadowMapData);

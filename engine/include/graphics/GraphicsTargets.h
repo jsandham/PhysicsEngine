@@ -13,6 +13,7 @@ namespace PhysicsEngine
 		GLint position;
 		GLint overdraw;
 		GLint ssao;
+		GLint cascades;
 		
 		GraphicsTargets()
 		{
@@ -22,6 +23,7 @@ namespace PhysicsEngine
 			position = -1;
 			overdraw = -1;
 			ssao = -1;
+			cascades = -1;
 		}
 	}GraphicsTargets;
 }

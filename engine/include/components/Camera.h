@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #undef NEAR
 #undef FAR
 #undef near
@@ -21,12 +24,19 @@
 
 namespace PhysicsEngine
 {
+	enum class CameraMode
+	{
+		Main,
+		Secondary
+	};
+
 #pragma pack(push, 1)
 	struct CameraHeader
 	{
 		Guid componentId;
 		Guid entityId;
 		Guid targetTextureId;
+		CameraMode mode;
 		glm::vec3 position;
 		glm::vec3 front;
 		glm::vec3 up;
@@ -79,6 +89,21 @@ namespace PhysicsEngine
 			Frustum frustum;
 			Viewport viewport;
 			Guid targetTextureId;
+			
+			GLuint mainFBO;
+			GLuint colorTex;
+			GLuint depthTex;
+
+			GLuint geometryFBO;
+			GLuint positionTex;
+			GLuint normalTex;
+
+			GLuint ssaoFBO;
+			GLuint ssaoColorTex;
+		
+			GLuint ssaoNoiseTex;
+
+			std::vector<glm::vec3> ssaoSamples;
 
 			enum {
 				TOP = 0,
@@ -89,11 +114,16 @@ namespace PhysicsEngine
 				FAR
 			};
 
+			CameraMode mode;
+
 			glm::vec3 position;
 			glm::vec3 front;
 			glm::vec3 up;
 			glm::vec3 right;
 			glm::vec4 backgroundColor;
+
+			bool isCreated;
+			bool useSSAO;
 
 		public:
 			Camera();

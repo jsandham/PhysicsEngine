@@ -6,374 +6,24 @@
 
 using namespace PhysicsEngine;
 
-std::string Shader::lineVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::lineFragmentShader = 
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
-
-std::string Shader::colorVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"uniform mat4 model;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::colorFragmentShader = 
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
-
-
-
-
-
-std::string Shader::graphVertexShader = 
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::graphFragmentShader = 
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
-std::string Shader::windowVertexShader = 
-"in vec3 position;\n"
-"in vec2 texCoord;\n"
-"out vec2 TexCoord;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = vec4(position, 1.0);\n"
-"   TexCoord = texCoord;\n"
-"}";
-
-std::string Shader::windowFragmentShader = 
-"uniform sampler2D texture0;\n"
-"in vec2 TexCoord;\n"
-"out vec4 FragColor;\n" 
-"void main()\n"
-"{\n"
-"    FragColor = texture(texture0, TexCoord);\n"
-"}";
-
-std::string Shader::normalMapVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"uniform mat4 model;\n"
-"in vec3 position;\n"
-"in vec3 normal;\n"
-"out vec3 Normal;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-"   Normal = normal;\n"
-"}";
-
-std::string Shader::normalMapFragmentShader = 
-"in vec3 Normal;\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(Normal.xyz, 1.0f);\n"
-"}";
-
-std::string Shader::depthMapVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"uniform mat4 model;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::depthMapFragmentShader = 
-"void main()\n"
-"{\n"
-"}";
-
-std::string Shader::shadowDepthMapVertexShader = 
-"uniform mat4 projection;\n"
-"uniform mat4 view;\n"
-"uniform mat4 model;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = projection * view * model * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::shadowDepthMapFragmentShader = 
-"void main()\n"
-"{\n"
-"}";
-
-
-
-
-
-
-std::string Shader::shadowDepthCubemapVertexShader = 
-"in vec3 position;\n"
-"uniform mat4 model;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = model * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::shadowDepthCubemapGeometryShader =
-"layout (triangles) in;\n"
-"layout (triangle_strip, max_vertices=18) out;\n"
-"uniform mat4 cubeViewProjMatrices[6];\n"
-"out vec4 FragPos;\n"
-"void main()\n"
-"{\n"
-"	for(int i = 0; i < 6; i++){\n"
-"		gl_Layer = i;\n"
-"		for(int j = 0; j < 3; j++){\n"
-"			FragPos = gl_in[j].gl_Position;\n"
-"			gl_Position = cubeViewProjMatrices[i] * FragPos;\n"
-"			EmitVertex();\n"
-"		}\n"
-"		EndPrimitive();\n"
-"	}\n"
-"}";
-
-std::string Shader::shadowDepthCubemapFragmentShader = 
-"in vec4 FragPos;\n"
-"uniform vec3 lightPos;\n"
-"uniform float farPlane;\n"
-"void main()\n"
-"{\n"
-"	float lightDistance = length(FragPos.xyz - lightPos);\n"    
-"   lightDistance = lightDistance / farPlane;\n"
-"   gl_FragDepth = 1.0f;\n"
-"}";
-
-
-
-
-
-
-
-std::string Shader::overdrawVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"uniform mat4 model;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::overdrawFragmentShader = 
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0, 0.0, 0.0, 0.1);\n"
-"}";
-
-std::string Shader::fontVertexShader = 
-"layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n"
-"out vec2 TexCoords;\n"
-"uniform mat4 projection;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);\n"
-"    TexCoords = vertex.zw;\n"
-"}";
-
-std::string Shader::fontFragmentShader = 
-"in vec2 TexCoords;\n"
-"out vec4 color;\n"
-"uniform sampler2D text;\n"
-"uniform vec3 textColor;\n"
-"void main()\n"
-"{\n"    
-"    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
-"    color = vec4(textColor, 1.0) * sampled;\n"
-"}";
-
-std::string Shader::instanceVertexShader = 
-"out vec4 FragColor;\n" 
-"in vec3 fColor;\n"
-"void main()\n"
-"{\n"
-"    FragColor = vec4(fColor, 1.0);\n"
-"}";
-
-std::string Shader::instanceFragmentShader = 
-"layout (location = 0) in vec2 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"layout (location = 2) in vec2 aOffset;\n"
-"out vec3 fColor;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = vec4(aPos + aOffset, 0.0, 1.0);\n"
-"    fColor = aColor;\n"
-"}";
-
-
-
-
-
-std::string Shader::gbufferVertexShader = 
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aNormal;\n"
-"layout (location = 2) in vec2 aTexCoords;\n"
-
-"out vec3 FragPos;\n"
-"out vec2 TexCoords;\n"
-"out vec3 Normal;\n"
-
-"uniform mat4 model;\n"
-"uniform mat4 view;\n"
-"uniform mat4 projection;\n"
-
-"void main()\n"
-"{\n"
-"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
-"    FragPos = worldPos.xyz;\n" 
-"    TexCoords = aTexCoords;\n"
-    
-"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
-"    Normal = normalMatrix * aNormal;\n"
-
-"    gl_Position = projection * view * worldPos;\n"
-"}\n";
-
-std::string Shader::gbufferFragmentShader = 
-"layout (location = 0) out vec3 gPosition;\n"
-"layout (location = 1) out vec3 gNormal;\n"
-"layout (location = 2) out vec4 gAlbedoSpec;\n"
-
-"in vec2 TexCoords;\n"
-"in vec3 FragPos;\n"
-"in vec3 Normal;\n"
-
-"uniform sampler2D texture_diffuse1;\n"
-"uniform sampler2D texture_specular1;\n"
-
-"void main()\n"
-"{\n"    
-"    // store the fragment position vector in the first gbuffer texture\n"
-"    gPosition = FragPos;\n"
-"    // also store the per-fragment normals into the gbuffer\n"
-"    gNormal = normalize(Normal);\n"
-"    // and the diffuse per-fragment color\n"
-"    gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;\n"
-"    // store specular intensity in gAlbedoSpec's alpha component\n"
-"    gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;\n"
-"}\n";
-
-
-std::string Shader::mainVertexShader = 
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aNormal;\n"
-
-"out vec3 FragPos;\n"
-"out vec3 Normal;\n"
-
-"uniform mat4 model;\n"
-
-"void main()\n"
-"{\n"
-"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
-"    FragPos = worldPos.xyz;\n" 
-    
-"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
-"    Normal = normalMatrix * aNormal;\n"
-
-"    gl_Position = worldPos;\n"
-"}\n";
-
-std::string Shader::mainFragmentShader = 
-"layout (location = 1) out vec3 gPosition;\n"
-"layout (location = 2) out vec3 gNormal;\n"
-
-"in vec3 FragPos;\n"
-"in vec3 Normal;\n"
-
-"void main()\n"
-"{\n"    
-"    // store the fragment position vector in the first gbuffer texture\n"
-"    gPosition = FragPos;\n"
-"    // also store the per-fragment normals into the gbuffer\n"
-"    gNormal = normalize(Normal);\n"
-"}\n";
-
-
-std::string Shader::ssaoVertexShader = 
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
-"}";
-
-std::string Shader::ssaoFragmentShader = 
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
-
 Shader::Shader()
 {
-	isCompiled = false;
+	vertexShader = "";
+	fragmentShader = "";
+	geometryShader = "";
+
 	assetId = Guid::INVALID;
+
+	allCompiled = false;
+	activeProgramIndex = -1;
 }
 
 Shader::Shader(std::vector<char> data)
 {
 	deserialize(data);
+
+	allCompiled = false;
+	activeProgramIndex = -1;
 }
 
 Shader::~Shader()
@@ -418,6 +68,7 @@ void Shader::deserialize(std::vector<char> data)
 	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[start1]);
 
 	assetId = header->shaderId;
+
 	size_t vertexShaderSize = header->vertexShaderSize;
 	size_t geometryShaderSize = header->geometryShaderSize;
 	size_t fragmentShaderSize = header->fragmentShaderSize;
@@ -438,63 +89,566 @@ void Shader::deserialize(std::vector<char> data)
 	end += fragmentShaderSize;
 
 	fragmentShader = std::string(start, end);
+}
 
-	isCompiled = false;
+bool Shader::isCompiled() const
+{
+	return allCompiled;
+}
 
-	std::cout << vertexShader << std::endl;
+bool Shader::contains(int variant) const
+{
+	for (size_t i = 0; i < programs.size(); i++) {
+		if (programs[i].variant == variant) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Shader::add(int variant)
+{
+	bool variantFound = false;
+	for (size_t i = 0; i < programs.size(); i++) {
+		if (programs[i].variant == variant) {
+			variantFound = true;
+			break;
+		}
+	}
+
+	if (!variantFound) {
+		ShaderProgram program;
+		program.version = ShaderVersion::GL430;
+		program.compiled = false;
+		program.variant = variant;
+		program.handle = 0;
+
+		programs.push_back(program);
+
+		allCompiled = false;
+	}
+}
+
+void Shader::remove(int variant)
+{
+	int index = -1;
+	for (size_t i = 0; i < programs.size(); i++) {
+		if (programs[i].variant == variant) {
+			index = (int)i;
+			break;
+		}
+	}
+
+	if (index != -1) {
+		programs.erase(programs.begin() + index);
+	}
 }
 
 void Shader::compile()
 {
-	Graphics::compile(this);
+	// compile shader for given variant
+	GLint success = 0;
+	for (size_t i = 0; i < programs.size(); i++) {
+		if (programs[i].compiled) {
+			continue;
+		}
+
+		std::string version;
+		if(programs[i].version == ShaderVersion::GL330) { 
+			version = "#version 330 core\n"; 
+		}
+		else{ 
+			version = "#version 430 core\n";
+		}
+
+		std::string defines;
+		if (programs[i].variant & ShaderVariant::Directional) { defines += "#define DIRECTIONALLIGHT\n"; }
+		if (programs[i].variant & ShaderVariant::Spot) { defines += "#define SPOTLIGHT\n"; }
+		if (programs[i].variant & ShaderVariant::Point) { defines += "#define POINTLIGHT\n"; }
+		if (programs[i].variant & ShaderVariant::HardShadows) { defines += "#define HARDSHADOWS\n"; }
+		if (programs[i].variant & ShaderVariant::SoftShadows) { defines += "#define SOFTSHADOWS\n"; }
+		if (programs[i].variant & ShaderVariant::SSAO) { defines += "#define SSAO\n"; }
+		if (programs[i].variant & ShaderVariant::Cascade) { defines += "#define CASCADE\n"; }
+
+		std::string preProcessedVertexShader = version + defines + vertexShader;
+		std::string preProcessedGeometryShader = version + defines + geometryShader;
+		std::string preProcessedFragmentShader = version + defines + fragmentShader;
+
+		const GLchar* vertexShaderCharPtr = preProcessedVertexShader.c_str();
+		const GLchar* geometryShaderCharPtr = preProcessedGeometryShader.c_str();
+		const GLchar* fragmentShaderCharPtr = preProcessedFragmentShader.c_str();
+
+		GLuint vertexShaderObj = 0;
+		GLuint fragmentShaderObj = 0;
+		GLuint geometryShaderObj = 0;
+		GLchar infoLog[512];
+
+		// vertex shader
+		vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL);
+		glCompileShader(vertexShaderObj);
+		glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
+			std::string message = "Shader: Vertex shader compilation failed\n";
+			Log::error(message.c_str());
+
+			return;
+		}
+
+		// fragment shader
+		fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL);
+		glCompileShader(fragmentShaderObj);
+		glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
+			std::string message = "Shader: Fragment shader compilation failed\n";
+			Log::error(message.c_str());
+			return;
+		}
+
+		// geometry shader
+		if (!geometryShader.empty()) {
+			geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
+			glCompileShader(geometryShaderObj);
+			glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
+				std::string message = "Shader: Geometry shader compilation failed\n";
+				Log::error(message.c_str());
+				return;
+			}
+		}
+
+		// shader program
+		programs[i].handle = glCreateProgram();
+		glAttachShader(programs[i].handle, vertexShaderObj);
+		glAttachShader(programs[i].handle, fragmentShaderObj);
+		if (geometryShaderObj != 0) {
+			glAttachShader(programs[i].handle, geometryShaderObj);
+		}
+
+		glLinkProgram(programs[i].handle);
+		glGetProgramiv(programs[i].handle, GL_LINK_STATUS, &success);
+		if (!success) {
+			glGetProgramInfoLog(programs[i].handle, 512, NULL, infoLog);
+			std::string message = "Shader: Shader program linking failed\n";
+			Log::error(message.c_str());
+			return;
+		}
+		glDeleteShader(vertexShaderObj);
+		glDeleteShader(fragmentShaderObj);
+		if (!geometryShader.empty()) {
+			glDeleteShader(geometryShaderObj);
+		}
+
+		programs[i].compiled = true;
+	}
+
+	allCompiled = true;
 }
 
-void Shader::setUniformBlock(std::string blockName, int bindingPoint)
+void Shader::use(int variant)
 {
-	Graphics::setUniformBlock(this, blockName, bindingPoint);
+	for (size_t i = 0; i < programs.size(); i++) {
+		if (programs[i].variant == variant) {
+			activeProgramIndex = (int)i;
+			glUseProgram(programs[i].handle);
+			return;
+		}
+	}
+
+	std::string message = "Error: Could not find shader variant " + std::to_string(variant) + "\n";
+	Log::error(message.c_str());
 }
 
-void Shader::setBool(std::string name, ShaderVariant variant, bool value)
+void Shader::unuse()
 {
-	Graphics::setBool(this, variant, name, value);
+	activeProgramIndex = -1;
+	glUseProgram(0);
 }
 
-void Shader::setInt(std::string name, ShaderVariant variant, int value)
+void Shader::setUniformBlock(std::string blockName, int bindingPoint) const
 {
-	Graphics::setInt(this, variant, name, value);
+	//set uniform block on all shader program
+	for (size_t i = 0; i < programs.size(); i++) {
+		GLuint blockIndex = glGetUniformBlockIndex(programs[i].handle, blockName.c_str());
+		if (blockIndex != GL_INVALID_INDEX) {
+			glUniformBlockBinding(programs[i].handle, blockIndex, bindingPoint);
+		}
+	}
 }
 
-void Shader::setFloat(std::string name, ShaderVariant variant, float value)
+int Shader::findUniformLocation(std::string name) const
 {
-	Graphics::setFloat(this, variant, name, value);
+	if(activeProgramIndex != -1){
+		return glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+	}
+
+	return -1;
 }
 
-void Shader::setVec2(std::string name, ShaderVariant variant, glm::vec2 &vec)
+void Shader::setBool(std::string name, bool value) const
 {
-	Graphics::setVec2(this, variant, name, vec);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform1i(locationIndex, (int)value);
+		}
+	}
 }
 
-void Shader::setVec3(std::string name, ShaderVariant variant, glm::vec3 &vec) 
+void Shader::setInt(std::string name, int value) const
 {
-	Graphics::setVec3(this, variant, name, vec);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform1i(locationIndex, value);
+		}
+	}
 }
 
-void Shader::setVec4(std::string name, ShaderVariant variant, glm::vec4 &vec)
+void Shader::setFloat(std::string name, float value) const
 {
-	Graphics::setVec4(this, variant, name, vec);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform1f(locationIndex, value);
+		}
+	}
 }
 
-void Shader::setMat2(std::string name, ShaderVariant variant, glm::mat2 &mat)
+void Shader::setVec2(std::string name, const glm::vec2 &vec) const
 {
-	Graphics::setMat2(this, variant, name, mat);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform2fv(locationIndex, 1, &vec[0]);
+		}
+	}
 }
 
-void Shader::setMat3(std::string name, ShaderVariant variant, glm::mat3 &mat)
+void Shader::setVec3(std::string name, const glm::vec3 &vec) const
 {
-	Graphics::setMat3(this, variant, name, mat);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform3fv(locationIndex, 1, &vec[0]);
+		}
+	}
 }
 
-void Shader::setMat4(std::string name, ShaderVariant variant, glm::mat4 &mat)
+void Shader::setVec4(std::string name, const glm::vec4 &vec) const
 {
-	Graphics::setMat4(this, variant, name, mat);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniform4fv(locationIndex, 1, &vec[0]);
+		}
+	}
+}
+
+void Shader::setMat2(std::string name, const glm::mat2 &mat) const
+{
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniformMatrix2fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+		}
+	}
+}
+
+void Shader::setMat3(std::string name, const glm::mat3 &mat) const
+{
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniformMatrix3fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+		}
+	}
+}
+
+void Shader::setMat4(std::string name, const glm::mat4 &mat) const
+{
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
+		}
+	}
+}
+
+void Shader::setBool(int nameLocation, bool value) const
+{
+	if(activeProgramIndex != -1 && nameLocation != -1){
+		glUniform1i(nameLocation, (int)value);
+	}
+}
+void Shader::setInt(int nameLocation, int value) const
+{
+	if(activeProgramIndex != -1 && nameLocation != -1){
+		glUniform1i(nameLocation, value);
+	}
+}
+
+void Shader::setFloat(int nameLocation, float value) const
+{
+	if(activeProgramIndex != -1 && nameLocation != -1){
+		glUniform1f(nameLocation, value);
+	}
+}
+
+void Shader::setVec2(int nameLocation, const glm::vec2 &vec) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniform2fv(nameLocation, 1, &vec[0]);
+	}
+}
+
+void Shader::setVec3(int nameLocation, const glm::vec3 &vec) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniform3fv(nameLocation, 1, &vec[0]);
+	}
+}
+
+void Shader::setVec4(int nameLocation, const glm::vec4 &vec) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniform4fv(nameLocation, 1, &vec[0]);
+	}
+}
+
+void Shader::setMat2(int nameLocation, const glm::mat2 &mat) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+	}
+}
+
+void Shader::setMat3(int nameLocation, const glm::mat3 &mat) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+	}
+}
+
+void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
+{
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+	}
+}
+
+bool Shader::getBool(std::string name) const
+{
+	int value = 0;
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetUniformiv(programs[activeProgramIndex].handle, locationIndex, &value);
+		}
+	}
+
+	return (bool)value;
+}
+
+int Shader::getInt(std::string name) const
+{
+	int value = 0;
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetUniformiv(programs[activeProgramIndex].handle, locationIndex, &value);
+		}
+	}
+
+	return value;
+}
+
+float Shader::getFloat(std::string name) const
+{
+	float value = 0.0f;
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetUniformfv(programs[activeProgramIndex].handle, locationIndex, &value);
+		}
+	}
+
+	return value;
+}
+
+glm::vec2 Shader::getVec2(std::string name) const
+{
+	glm::vec2 value = glm::vec2(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::vec2), &value[0]);
+		}
+	}
+
+	return value;
+}
+
+glm::vec3 Shader::getVec3(std::string name) const
+{
+	glm::vec3 value = glm::vec3(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::vec3), &value[0]);
+		}
+	}
+
+	return value;
+}
+
+glm::vec4 Shader::getVec4(std::string name) const
+{
+	glm::vec4 value = glm::vec4(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::vec4), &value[0]);
+		}
+	}
+
+	return value;
+}
+
+glm::mat2 Shader::getMat2(std::string name) const
+{
+	glm::mat2 value = glm::mat2(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::mat2), &value[0][0]);
+		}
+	}
+
+	return value;
+}
+
+glm::mat3 Shader::getMat3(std::string name) const
+{
+	glm::mat3 value = glm::mat3(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::mat3), &value[0][0]);
+		}
+	}
+
+	return value;
+}
+
+glm::mat4 Shader::getMat4(std::string name) const
+{
+	glm::mat4 value = glm::mat4(0.0f);
+	if (activeProgramIndex != -1) {
+		GLint locationIndex = glGetUniformLocation(programs[activeProgramIndex].handle, name.c_str());
+		if (locationIndex != -1) {
+			glGetnUniformfv(programs[activeProgramIndex].handle, locationIndex, sizeof(glm::mat4), &value[0][0]);
+		}
+	}
+
+	return value;
+}
+
+bool Shader::getBool(int nameLocation) const
+{
+	int value = 0;
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetUniformiv(programs[activeProgramIndex].handle, nameLocation, &value);
+	}
+
+	return (bool)value;
+}
+
+int Shader::getInt(int nameLocation) const
+{
+	int value = 0;
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetUniformiv(programs[activeProgramIndex].handle, nameLocation, &value);
+	}
+
+	return value;
+}
+
+float Shader::getFloat(int nameLocation) const
+{
+	float value = 0.0f;
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetUniformfv(programs[activeProgramIndex].handle, nameLocation, &value);
+	}
+
+	return value;
+}
+
+glm::vec2 Shader::getVec2(int nameLocation) const
+{
+	glm::vec2 value = glm::vec2(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::vec2), &value[0]);
+	}
+
+	return value;
+}
+
+glm::vec3 Shader::getVec3(int nameLocation) const
+{
+	glm::vec3 value = glm::vec3(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::vec3), &value[0]);
+	}
+
+	return value;
+}
+
+glm::vec4 Shader::getVec4(int nameLocation) const
+{
+	glm::vec4 value = glm::vec4(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::vec4), &value[0]);
+	}
+
+	return value;
+}
+
+glm::mat2 Shader::getMat2(int nameLocation) const
+{
+	glm::mat2 value = glm::mat2(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::mat2), &value[0][0]);
+	}
+
+	return value;
+}
+
+glm::mat3 Shader::getMat3(int nameLocation) const
+{
+	glm::mat3 value = glm::mat3(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::mat3), &value[0][0]);
+	}
+
+	return value;
+}
+
+glm::mat4 Shader::getMat4(int nameLocation) const
+{
+	glm::mat4 value = glm::mat4(0.0f);
+	if (activeProgramIndex != -1 && nameLocation != -1) {
+		glGetnUniformfv(programs[activeProgramIndex].handle, nameLocation, sizeof(glm::mat4), &value[0][0]);
+	}
+
+	return value;
 }

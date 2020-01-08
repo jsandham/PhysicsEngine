@@ -51,14 +51,21 @@ int Frustum::checkAABB(glm::vec3 min, glm::vec3 max) const
 	return 1;
 }
 
-
-
-
 Camera::Camera()
 {
 	componentId = Guid::INVALID;
 	entityId = Guid::INVALID;
 	targetTextureId = Guid::INVALID;
+
+	mainFBO = 0;
+	colorTex = 0;
+	depthTex = 0;
+
+	geometryFBO = 0;
+	positionTex = 0;
+	normalTex = 0;
+
+	mode = CameraMode::Main;
 
 	viewport.x = 0;
 	viewport.y = 0;
@@ -73,6 +80,9 @@ Camera::Camera()
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 	backgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
+
+	isCreated = false;
+	useSSAO = false;
 
 	updateInternalCameraState();
 }
@@ -95,6 +105,7 @@ std::vector<char> Camera::serialize()
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.targetTextureId = targetTextureId;
+	header.mode = mode;
 	header.position = position;
 	header.front = front;
 	header.up = up;
@@ -123,6 +134,8 @@ void Camera::deserialize(std::vector<char> data)
 	componentId = header->componentId;
 	entityId = header->entityId;
 	targetTextureId = header->targetTextureId;
+
+	mode = header->mode;
 
 	viewport.x = header->x;
 	viewport.y = header->y;
