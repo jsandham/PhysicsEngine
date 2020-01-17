@@ -25,6 +25,7 @@ namespace PhysicsEngine
 		size_t vertexShaderSize;
 		size_t geometryShaderSize;
 		size_t fragmentShaderSize;
+		size_t numberOfShaderUniforms;
 	};
 #pragma pack(pop)
 
@@ -46,6 +47,24 @@ namespace PhysicsEngine
 		GL330,
 		GL430
 	};
+	
+
+	enum ShaderDataType
+	{
+		GLIntVec1,
+		GLIntVec2,
+		GLIntVec3,
+		GLIntVec4,
+		GLFloatVec1,
+		GLFloatVec2,
+		GLFloatVec3,
+		GLFloatVec4,
+		GLFloatMat2,
+		GLFloatMat3,
+		GLFloatMat4,
+		GLSampler2D,
+		GLSamplerCube
+	};
 
 	struct ShaderProgram
 	{
@@ -55,17 +74,27 @@ namespace PhysicsEngine
 		bool compiled;
 	};
 
+	struct ShaderUniform
+	{
+		char data[64];
+		char name[32]; // variable name in GLSL
+		size_t nameLength;
+		size_t size; // size of the uniform
+		ShaderDataType type; // type of the uniform (float, vec3 or mat4, etc)
+		int variant;
+	};
+
 	class Shader : public Asset
 	{
-		public:
+		private:
 			std::string vertexShader;
 			std::string fragmentShader;
 			std::string geometryShader;
 
-		private:
 			bool allCompiled;
 			int activeProgramIndex;
 			std::vector<ShaderProgram> programs;
+			std::vector<ShaderUniform> uniforms;
 
 		public:
 			Shader();
@@ -83,8 +112,14 @@ namespace PhysicsEngine
 			void compile();
 			void use(int variant);
 			void unuse();
+			void setVertexShader(const std::string vertexShader);
+			void setGeometryShader(const std::string geometryShader);
+			void setFragmentShader(const std::string fragmentShader);
 			void setUniformBlock(std::string blockName, int bindingPoint) const;
 			int findUniformLocation(std::string name) const;
+
+			std::vector<ShaderUniform> getUniforms() const;
+			//std::vector<std::string> getAttributeNames() const;
 
 			void setBool(std::string name, bool value) const;
 			void setInt(std::string name, int value) const;

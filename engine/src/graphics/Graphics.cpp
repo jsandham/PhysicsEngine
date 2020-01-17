@@ -12,9 +12,8 @@ using namespace PhysicsEngine;
 
 void DebugWindow::init()
 {
-	shader.vertexShader = InternalShaders::windowVertexShader;
-	shader.fragmentShader = InternalShaders::windowFragmentShader;
-	shader.add(ShaderVariant::None);
+	shader.setVertexShader(InternalShaders::windowVertexShader);
+	shader.setFragmentShader(InternalShaders::windowFragmentShader);
 	shader.compile();
 
 	x = fmin(fmax(x, 0.0f), 1.0f);
@@ -97,9 +96,8 @@ void DebugWindow::init()
 
 void PerformanceGraph::init()
 {
-	shader.vertexShader = InternalShaders::graphVertexShader;
-	shader.fragmentShader = InternalShaders::graphFragmentShader;
-	shader.add(ShaderVariant::None);
+	shader.setVertexShader(InternalShaders::graphVertexShader);
+	shader.setFragmentShader(InternalShaders::graphFragmentShader);
 	shader.compile();
 
 	x = fmin(fmax(x, 0.0f), 1.0f);

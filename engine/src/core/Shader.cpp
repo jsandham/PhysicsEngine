@@ -1,4 +1,6 @@
 #include <iostream>
+#include <set>
+#include <stack>
 
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Shader.h"
@@ -38,11 +40,13 @@ std::vector<char> Shader::serialize()
 	header.vertexShaderSize = vertexShader.length();
 	header.geometryShaderSize = geometryShader.length();
 	header.fragmentShaderSize = fragmentShader.length();
+	header.numberOfShaderUniforms = uniforms.size();
 
 	size_t numberOfBytes = sizeof(ShaderHeader) + 
 						sizeof(char) * vertexShader.length() +
 						sizeof(char) * fragmentShader.length() +
-						sizeof(char) * geometryShader.length();
+						sizeof(char) * geometryShader.length() +
+						sizeof(ShaderUniform) * uniforms.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -56,6 +60,12 @@ std::vector<char> Shader::serialize()
 	memcpy(&data[start2], vertexShader.c_str(), sizeof(char) * vertexShader.length());
 	memcpy(&data[start3], geometryShader.c_str(), sizeof(char) * geometryShader.length());
 	memcpy(&data[start4], fragmentShader.c_str(), sizeof(char) * fragmentShader.length());
+
+	size_t startIndex = start5;
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		memcpy(&data[startIndex], &uniforms[i], sizeof(ShaderUniform));
+		startIndex += sizeof(ShaderUniform);
+	}
 
 	return data;
 }
@@ -72,6 +82,7 @@ void Shader::deserialize(std::vector<char> data)
 	size_t vertexShaderSize = header->vertexShaderSize;
 	size_t geometryShaderSize = header->geometryShaderSize;
 	size_t fragmentShaderSize = header->fragmentShaderSize;
+	size_t numberOfShaderUniforms = header->numberOfShaderUniforms;
 
 	std::vector<char>::iterator start = data.begin();
 	std::vector<char>::iterator end = data.begin();
@@ -89,6 +100,16 @@ void Shader::deserialize(std::vector<char> data)
 	end += fragmentShaderSize;
 
 	fragmentShader = std::string(start, end);
+
+	size_t startIndex = sizeof(ShaderHeader) + vertexShaderSize + geometryShaderSize + fragmentShaderSize;
+	for (size_t i = 0; i < numberOfShaderUniforms; i++) {
+		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
+
+		uniforms.push_back(*uniform);
+
+		startIndex += sizeof(ShaderUniform);
+	}
+	
 }
 
 bool Shader::isCompiled() const
@@ -147,13 +168,73 @@ void Shader::remove(int variant)
 
 void Shader::compile()
 {
-	// compile shader for given variant
-	GLint success = 0;
-	for (size_t i = 0; i < programs.size(); i++) {
-		if (programs[i].compiled) {
-			continue;
+	// ensure that all shader programs have the default 'None' program variant
+	if (!contains(ShaderVariant::None)) {
+		add(static_cast<int>(ShaderVariant::None));
+	}
+
+	// determine which variants are possible based on keywords found in shader string
+	const std::vector<std::string> keywords{ "DIRECTIONALLIGHT", 
+											"SPOTLIGHT", 
+											"POINTLIGHT", 
+											"HARDSHADOWS", 
+											"SOFTSHADOWS", 
+											"SSAO", 
+											"CASCADE" };
+
+	const std::map<std::string, ShaderVariant> keywordToVariantMap{
+		{"DIRECTIONALLIGHT", ShaderVariant::Directional},
+		{"SPOTLIGHT", ShaderVariant::Spot},
+		{"POINTLIGHT", ShaderVariant::Point},
+		{"HARDSHADOWS", ShaderVariant::HardShadows},
+		{"SOFTSHADOWS", ShaderVariant::SoftShadows},
+		{"SSAO", ShaderVariant::SSAO},
+		{"CASCADE", ShaderVariant::Cascade}
+	};
+
+	std::vector<ShaderVariant> temp;
+	for (size_t i = 0; i < keywords.size(); i++) {
+		if (vertexShader.find(keywords[i]) != std::string::npos || 
+			geometryShader.find(keywords[i]) != std::string::npos || 
+			fragmentShader.find(keywords[i]) != std::string::npos) {
+			
+			std::map<std::string, ShaderVariant>::const_iterator it = keywordToVariantMap.find(keywords[i]);
+			if (it != keywordToVariantMap.end()) {
+				temp.push_back(it->second);
+			}
+		}
+	}
+
+	std::set<int> variantsToAdd;
+	std::stack<int> stack;
+	for (size_t i = 0; i < temp.size(); i++) {
+		stack.push(temp[i]);
+	}
+
+	while (!stack.empty()) {
+		int current = stack.top();
+		stack.pop();
+
+		std::set<int>::iterator it = variantsToAdd.find(current);
+		if (it == variantsToAdd.end()) {
+			variantsToAdd.insert(current);
 		}
 
+		for (size_t i = 0; i < temp.size(); i++) {
+			if (!(temp[i] & current)) {
+				stack.push(current | temp[i]);
+			}
+		}
+	}
+
+	// add variants from keywords found in shader string in addition to any variants manually added using 'add' method 
+	for (std::set<int>::iterator it = variantsToAdd.begin(); it != variantsToAdd.end(); it++) {
+		add(*it);
+	}
+
+	// compile all shader variants
+	GLint success = 0;
+	for (size_t i = 0; i < programs.size(); i++) {
 		std::string version;
 		if(programs[i].version == ShaderVersion::GL330) { 
 			version = "#version 330 core\n"; 
@@ -252,6 +333,88 @@ void Shader::compile()
 	}
 
 	allCompiled = true;
+
+	std::set<std::string> uniformNames;
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		uniformNames.insert(std::string(uniforms[i].name));
+	}
+
+	// find all uniforms in shader across all variants
+	for (size_t i = 0; i < programs.size(); i++) {
+		GLuint program = programs[i].handle;
+		GLint count;
+		const GLsizei bufSize = 32; // maximum name length
+
+		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
+
+		for (int j = 0; j < count; j++)
+		{
+			GLsizei nameLength;
+			GLint size;
+			GLenum type;
+			GLchar name[32];
+			glGetActiveUniform(program, (GLuint)j, bufSize, &nameLength, &size, &type, &name[0]);
+
+			ShaderUniform uniform;
+			uniform.nameLength = (size_t)nameLength;
+			uniform.size = (size_t)size;
+			for (int k = 0; k < 32; k++) {
+				uniform.name[k] = name[k];
+			}
+
+			if (type == GL_INT) {
+				uniform.type = ShaderDataType::GLIntVec1;
+			}
+			else if (type == GL_INT_VEC2) {
+				uniform.type = ShaderDataType::GLIntVec2;
+			}
+			else if (type == GL_INT_VEC3) {
+				uniform.type = ShaderDataType::GLIntVec3;
+			}
+			else if (type == GL_INT_VEC4) {
+				uniform.type = ShaderDataType::GLIntVec4;
+			}
+			else if (type == GL_FLOAT) { // float
+				uniform.type = ShaderDataType::GLFloatVec1;
+			}
+			else if (type == GL_FLOAT_VEC2) {
+				uniform.type = ShaderDataType::GLFloatVec2;
+			}
+			else if (type == GL_FLOAT_VEC3) { // vec3
+				uniform.type = ShaderDataType::GLFloatVec3;
+			}
+			else if (type == GL_FLOAT_VEC4) {
+				uniform.type = ShaderDataType::GLFloatVec4;
+			}
+			else if (type == GL_FLOAT_MAT2) { // mat2
+				uniform.type = ShaderDataType::GLFloatMat2;
+			}
+			else if (type == GL_FLOAT_MAT3) { // mat3
+				uniform.type = ShaderDataType::GLFloatMat3;
+			}
+			else if (type == GL_FLOAT_MAT4) { // mat4
+				uniform.type = ShaderDataType::GLFloatMat4;
+			}
+			else if (type == GL_SAMPLER_2D) {
+				uniform.type = ShaderDataType::GLSampler2D;
+			}
+			else if (type == GL_SAMPLER_CUBE) {
+				uniform.type = ShaderDataType::GLSamplerCube;
+			}
+			else {
+				std::string message = "Error: Shader uniform with name " + std::string(uniform.name) + " with type " + std::to_string(type) + "is unknown type\n";
+				Log::error(message.c_str());
+			}
+
+			uniform.variant = programs[i].variant;
+
+			std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.name));
+			if (it == uniformNames.end()) {
+				uniforms.push_back(uniform);
+				uniformNames.insert(std::string(uniform.name));
+			}
+		}
+	}
 }
 
 void Shader::use(int variant)
@@ -274,6 +437,24 @@ void Shader::unuse()
 	glUseProgram(0);
 }
 
+void Shader::setVertexShader(const std::string vertexShader)
+{
+	this->vertexShader = vertexShader;
+	allCompiled = false;
+}
+
+void Shader::setGeometryShader(const std::string geometryShader)
+{
+	this->geometryShader = geometryShader;
+	allCompiled = false;
+}
+
+void Shader::setFragmentShader(const std::string fragmentShader)
+{
+	this->fragmentShader = fragmentShader;
+	allCompiled = false;
+}
+
 void Shader::setUniformBlock(std::string blockName, int bindingPoint) const
 {
 	//set uniform block on all shader program
@@ -293,6 +474,16 @@ int Shader::findUniformLocation(std::string name) const
 
 	return -1;
 }
+
+std::vector<ShaderUniform> Shader::getUniforms() const
+{
+	return uniforms;
+}
+
+// std::vector<std::string> Shader::getAttributeNames() const
+// {
+
+// }
 
 void Shader::setBool(std::string name, bool value) const
 {

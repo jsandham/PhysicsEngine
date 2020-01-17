@@ -78,9 +78,9 @@ bool AssetLoader::load(const std::string& filepath, Shader& shader)
 		fragmentShader.erase(lastNotOfIndex + 1);
 	}
 
-	shader.vertexShader = vertexShader;
-	shader.geometryShader = geometryShader;
-	shader.fragmentShader = fragmentShader;
+	shader.setVertexShader(vertexShader);
+	shader.setGeometryShader(geometryShader);
+	shader.setFragmentShader(fragmentShader);
 
 	return true;
 }

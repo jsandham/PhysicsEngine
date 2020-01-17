@@ -20,29 +20,24 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	glGenQueries(1, &(query.queryId));
 
 	// generate all internal shader programs
-	screenData.positionAndNormalsShader.vertexShader = InternalShaders::positionAndNormalsVertexShader;
-	screenData.positionAndNormalsShader.fragmentShader = InternalShaders::positionAndNormalsFragmentShader;
-	screenData.positionAndNormalsShader.add(ShaderVariant::None);
+	screenData.positionAndNormalsShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
+	screenData.positionAndNormalsShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
 	screenData.positionAndNormalsShader.compile();
 
-	screenData.ssaoShader.vertexShader = InternalShaders::ssaoVertexShader;
-	screenData.ssaoShader.fragmentShader = InternalShaders::ssaoFragmentShader;
-	screenData.ssaoShader.add(ShaderVariant::None);
+	screenData.ssaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
+	screenData.ssaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
 	screenData.ssaoShader.compile();
 
-	shadowMapData.depthShader.vertexShader = InternalShaders::shadowDepthMapVertexShader;
-	shadowMapData.depthShader.fragmentShader = InternalShaders::shadowDepthMapFragmentShader;
-	shadowMapData.depthShader.add(ShaderVariant::None);
+	shadowMapData.depthShader.setVertexShader(InternalShaders::shadowDepthMapVertexShader);
+	shadowMapData.depthShader.setFragmentShader(InternalShaders::shadowDepthMapFragmentShader);
 	shadowMapData.depthShader.compile();
 
-	shadowMapData.depthCubemapShader.vertexShader = InternalShaders::shadowDepthCubemapVertexShader;
-	shadowMapData.depthCubemapShader.fragmentShader = InternalShaders::shadowDepthCubemapFragmentShader;
-	shadowMapData.depthCubemapShader.add(ShaderVariant::None);
+	shadowMapData.depthCubemapShader.setVertexShader(InternalShaders::shadowDepthCubemapVertexShader);
+	shadowMapData.depthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
 	shadowMapData.depthCubemapShader.compile();
 
-	screenData.quadShader.vertexShader = InternalShaders::windowVertexShader;
-	screenData.quadShader.fragmentShader = InternalShaders::windowFragmentShader;
-	screenData.quadShader.add(ShaderVariant::None);
+	screenData.quadShader.setVertexShader(InternalShaders::windowVertexShader);
+	screenData.quadShader.setFragmentShader(InternalShaders::windowFragmentShader);
 	screenData.quadShader.compile();
 
 	Graphics::checkError();
@@ -214,50 +209,9 @@ void PhysicsEngine::registerRenderAssets(World* world)
 
 	Graphics::checkError();
 
-	// find list of shader variant defines required for compiling necessary shader variants
-	std::vector<int> variants;
-	for (int i = 0; i < world->getNumberOfComponents<Light>(); i++) {
-		ShaderVariant lightVariant = ShaderVariant::None;
-		ShaderVariant shadowVariant = ShaderVariant::None;
-
-		Light* light = world->getComponentByIndex<Light>(i);
-		if (light->lightType == LightType::Directional) {
-			lightVariant = ShaderVariant::Directional;
-		}
-		else if (light->lightType == LightType::Spot) {
-			lightVariant = ShaderVariant::Spot;
-		}
-		else if (light->lightType == LightType::Point) {
-			lightVariant = ShaderVariant::Point;
-		}
-
-		if(light->shadowType == ShadowType::Hard){
-			shadowVariant = ShaderVariant::HardShadows;
-		}
-		else if(light->shadowType == ShadowType::Soft){
-			shadowVariant = ShaderVariant::SoftShadows;
-		}
-
-		variants.push_back(ShaderVariant::None);
-		variants.push_back(lightVariant);
-		variants.push_back(lightVariant | shadowVariant);
-		variants.push_back(lightVariant | ShaderVariant::SSAO);
-		variants.push_back(lightVariant | shadowVariant | ShaderVariant::SSAO);
-		if(lightVariant == ShaderVariant::Directional && world->debug){
-			variants.push_back(lightVariant | ShaderVariant::Cascade);
-			variants.push_back(lightVariant | shadowVariant | ShaderVariant::Cascade);
-			variants.push_back(lightVariant | ShaderVariant::SSAO | ShaderVariant::Cascade);
-			variants.push_back(lightVariant | shadowVariant | ShaderVariant::SSAO | ShaderVariant::Cascade);
-		}
-	}
-
 	// compile all shader assets and configure uniform blocks not already compiled
 	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
 		Shader* shader = world->getAssetByIndex<Shader>(i);
-
-		for(size_t j = 0; j < variants.size(); j++){
-			shader->add(variants[j]);
-		}
 
 		if (!shader->isCompiled()) {
 

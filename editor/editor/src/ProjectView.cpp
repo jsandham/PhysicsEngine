@@ -66,6 +66,10 @@ void ProjectView::render(const std::string currentProjectPath, const LibraryDire
 						clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
 					}
 
+					if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0)) {
+						clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
+					}
+
 					if (!ImGui::IsMouseDown(0)) {
 						clipboard.clearDraggedItem();
 					}

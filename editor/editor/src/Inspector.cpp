@@ -38,8 +38,14 @@ void Inspector::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 		if (clipboard.getSelectedType() == InteractionType::Entity) {
 			drawEntity(world, scene, clipboard);
 		}
+		else if(clipboard.getSelectedType() == InteractionType::Material){
+			drawAsset<Material>(world, scene, clipboard);
+		}
+		else if(clipboard.getSelectedType() == InteractionType::Shader){
+			drawAsset<Shader>(world, scene, clipboard);
+		}
 		else if (clipboard.getSelectedType() == InteractionType::Texture2D) {
-
+			drawAsset<Texture2D>(world, scene, clipboard);
 		}
 		/*else if () {
 
@@ -100,17 +106,17 @@ void Inspector::drawEntity(World* world, EditorScene& scene, EditorClipboard& cl
 	}
 }
 
-void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard)
-{
-	Texture2D* texture = world->getAsset<Texture2D>(clipboard.getSelectedId());
+// void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard)
+// {
+// 	Texture2D* texture = world->getAsset<Texture2D>(clipboard.getSelectedId());
 
-	InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<Texture2D>::type);
+// 	InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<Texture2D>::type);
 
-	//drawer->render(world, clipboard, entity->entityId, componentId);
-	ImGui::Separator();
+// 	//drawer->render(world, clipboard, entity->entityId, componentId);
+// 	ImGui::Separator();
 
-	delete drawer;
-}
+// 	delete drawer;
+// }
 
 void drawCodeFile(World* world, EditorScene& scene, EditorClipboard& clipboard)
 {

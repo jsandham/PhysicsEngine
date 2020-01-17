@@ -16,14 +16,14 @@ namespace PhysicsEngine
 
 		void init()
 		{
-			shaders[0].vertexShader = InternalShaders::depthMapVertexShader;
-			shaders[0].fragmentShader = InternalShaders::depthMapFragmentShader;
-			shaders[1].vertexShader	= InternalShaders::normalMapVertexShader;
-			shaders[1].fragmentShader = InternalShaders::normalMapFragmentShader;
-			shaders[2].vertexShader	= InternalShaders::overdrawVertexShader;
-			shaders[2].fragmentShader = InternalShaders::overdrawFragmentShader;
-			shaders[3].vertexShader	= InternalShaders::lineVertexShader;
-			shaders[3].fragmentShader = InternalShaders::lineFragmentShader;
+			shaders[0].setVertexShader(InternalShaders::depthMapVertexShader);
+			shaders[0].setFragmentShader(InternalShaders::depthMapFragmentShader);
+			shaders[1].setVertexShader(InternalShaders::normalMapVertexShader);
+			shaders[1].setFragmentShader(InternalShaders::normalMapFragmentShader);
+			shaders[2].setVertexShader(InternalShaders::overdrawVertexShader);
+			shaders[2].setFragmentShader(InternalShaders::overdrawFragmentShader);
+			shaders[3].setVertexShader(InternalShaders::lineVertexShader);
+			shaders[3].setFragmentShader(InternalShaders::lineFragmentShader);
 
 			shaders[0].compile();
 			shaders[1].compile();

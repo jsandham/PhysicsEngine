@@ -143,8 +143,8 @@ void Font::load(std::string filepath)
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    shader.vertexShader = InternalShaders::fontVertexShader;
-    shader.fragmentShader = InternalShaders::fontFragmentShader;
+    shader.setVertexShader(InternalShaders::fontVertexShader);
+    shader.setFragmentShader(InternalShaders::fontFragmentShader);
 
     shader.compile();
 

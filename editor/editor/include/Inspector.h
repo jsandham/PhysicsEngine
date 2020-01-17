@@ -24,7 +24,28 @@ namespace PhysicsEditor
 			
 		private:
 			void drawEntity(World* world, EditorScene& scene, EditorClipboard& clipboard);
-			void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard);
+
+			template<class T>
+			void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard)
+			{
+				T* asset = world->getAsset<T>(clipboard.getSelectedId());
+
+				InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<T>::type);
+
+				drawer->render(world, clipboard, asset->assetId);
+				ImGui::Separator();
+
+				delete drawer;
+			}
+
+
+
+
+
+
+
+
+
 			void drawCodeFile(World* world, EditorScene& scene, EditorClipboard& clipboard);
 
 			// move to imgui extensions?

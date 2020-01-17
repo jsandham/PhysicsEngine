@@ -13,3 +13,8 @@
 *.mtx
 *.shader
 *.json
+*.log
+*.tlog
+*.idb
+*.ilk
+*.pdb
