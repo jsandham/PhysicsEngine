@@ -84,6 +84,11 @@ namespace PhysicsEngine
 		int variant;
 	};
 
+	struct ShaderAttribute
+	{
+		char name[32];
+	};
+
 	class Shader : public Asset
 	{
 		private:
@@ -95,6 +100,7 @@ namespace PhysicsEngine
 			int activeProgramIndex;
 			std::vector<ShaderProgram> programs;
 			std::vector<ShaderUniform> uniforms;
+			std::vector<ShaderAttribute> attributes;
 
 		public:
 			Shader();
@@ -119,7 +125,7 @@ namespace PhysicsEngine
 			int findUniformLocation(std::string name) const;
 
 			std::vector<ShaderUniform> getUniforms() const;
-			//std::vector<std::string> getAttributeNames() const;
+			std::vector<ShaderAttribute> getAttributeNames() const;
 
 			void setBool(std::string name, bool value) const;
 			void setInt(std::string name, int value) const;

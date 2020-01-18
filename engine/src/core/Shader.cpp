@@ -338,16 +338,20 @@ void Shader::compile()
 	for (size_t i = 0; i < uniforms.size(); i++) {
 		uniformNames.insert(std::string(uniforms[i].name));
 	}
+	std::set<std::string> attributeNames;
+	for (size_t i = 0; i < attributes.size(); i++) {
+		attributeNames.insert(std::string(attributes[i].name));
+	}
 
-	// find all uniforms in shader across all variants
+	const GLsizei bufSize = 32; // maximum name length
+
+	// find all uniforms and attributes in shader across all variants
 	for (size_t i = 0; i < programs.size(); i++) {
 		GLuint program = programs[i].handle;
-		GLint count;
-		const GLsizei bufSize = 32; // maximum name length
 
-		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
-
-		for (int j = 0; j < count; j++)
+		GLint uniformCount;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
+		for (int j = 0; j < uniformCount; j++)
 		{
 			GLsizei nameLength;
 			GLint size;
@@ -412,6 +416,29 @@ void Shader::compile()
 			if (it == uniformNames.end()) {
 				uniforms.push_back(uniform);
 				uniformNames.insert(std::string(uniform.name));
+			}
+		}
+
+		GLint attributeCount;
+		glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount);
+		for (int j = 0; j < attributeCount; j++)
+		{
+			GLsizei nameLength;
+			GLint size;
+			GLenum type;
+			GLchar name[32];
+			glGetActiveAttrib(program, (GLuint)j, bufSize, &nameLength, &size, &type, &name[0]);
+
+
+			ShaderAttribute attribute;
+			for (int k = 0; k < 32; k++) {
+				attribute.name[k] = name[k];
+			}
+
+			std::set<std::string>::iterator it = attributeNames.find(std::string(attribute.name));
+			if (it == attributeNames.end()) {
+				attributes.push_back(attribute);
+				attributeNames.insert(std::string(attribute.name));
 			}
 		}
 	}
@@ -480,10 +507,10 @@ std::vector<ShaderUniform> Shader::getUniforms() const
 	return uniforms;
 }
 
-// std::vector<std::string> Shader::getAttributeNames() const
-// {
-
-// }
+ std::vector<ShaderAttribute> Shader::getAttributeNames() const
+ {
+	 return attributes;
+ }
 
 void Shader::setBool(std::string name, bool value) const
 {
