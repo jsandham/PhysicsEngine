@@ -18,6 +18,7 @@ namespace PhysicsEditor
 	{
 		private:
 			std::vector<Entity> entities;
+			std::vector<std::string> entityNames;
 
 		public:
 			Hierarchy();

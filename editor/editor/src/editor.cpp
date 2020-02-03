@@ -126,8 +126,6 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
 
-		int test = system->getOrder();
-
 		system->update(input);
 	}
 

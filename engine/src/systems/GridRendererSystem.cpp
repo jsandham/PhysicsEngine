@@ -14,7 +14,8 @@ GridRendererSystem::~GridRendererSystem()
 
 std::vector<char> GridRendererSystem::serialize()
 {
-
+	std::vector<char> temp;
+	return temp;
 }
 
 void GridRendererSystem::deserialize(std::vector<char> data)

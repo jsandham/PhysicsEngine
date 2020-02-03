@@ -30,10 +30,21 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 	}
 
 	int numberOfEntities = world->getNumberOfEntities();
+	if (entities.size() != numberOfEntities) {
+		entities.resize(numberOfEntities);
+		entityNames.resize(numberOfEntities);
+		for (int i = 0; i < numberOfEntities; i++) {
+			Entity* entity = world->getEntityByIndex(i);
+
+			entities[i] = *entity;
+			entityNames[i] = entity->entityId.toString();
+		}
+	}
+	/*int numberOfEntities = world->getNumberOfEntities();
 	entities.resize(numberOfEntities);
 	for (int i = 0; i < numberOfEntities; i++) {
 		entities[i] = *world->getEntityByIndex(i);
-	}
+	}*/
 
 	if (!hierarchyActive){
 		return;
@@ -52,10 +63,10 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 
 			// skip editor camera entity
 			for (size_t i = 1; i < entities.size(); i++) {
-				std::string name = entities[i].entityId.toString();
+				//std::string name = entities[i].entityId.toString();
 
 				static bool selected = false;
-				if (ImGui::Selectable(name.c_str(), &selected)) {
+				if (ImGui::Selectable(entityNames[i].c_str(), &selected)) {
 					clipboard.setSelectedItem(InteractionType::Entity, entities[i].entityId);
 				}
 			}

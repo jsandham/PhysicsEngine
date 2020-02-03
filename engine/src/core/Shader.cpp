@@ -173,7 +173,7 @@ void Shader::compile()
 		add(static_cast<int>(ShaderVariant::None));
 	}
 
-	// determine which variants are possible based on keywords found in shader string
+	// determine which variants are possible based on keywords found in shader strings
 	const std::vector<std::string> keywords{ "DIRECTIONALLIGHT", 
 											"SPOTLIGHT", 
 											"POINTLIGHT", 
@@ -227,7 +227,7 @@ void Shader::compile()
 		}
 	}
 
-	// add variants from keywords found in shader string in addition to any variants manually added using 'add' method 
+	// add variants from keywords found in shader strings in addition to any variants manually added using 'add' method 
 	for (std::set<int>::iterator it = variantsToAdd.begin(); it != variantsToAdd.end(); it++) {
 		add(*it);
 	}
@@ -334,6 +334,7 @@ void Shader::compile()
 
 	allCompiled = true;
 
+	// find all uniforms and attributes in shader across all variants
 	std::set<std::string> uniformNames;
 	for (size_t i = 0; i < uniforms.size(); i++) {
 		uniformNames.insert(std::string(uniforms[i].name));
@@ -345,7 +346,6 @@ void Shader::compile()
 
 	const GLsizei bufSize = 32; // maximum name length
 
-	// find all uniforms and attributes in shader across all variants
 	for (size_t i = 0; i < programs.size(); i++) {
 		GLuint program = programs[i].handle;
 

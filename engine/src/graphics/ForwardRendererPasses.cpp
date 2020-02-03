@@ -460,7 +460,12 @@ void PhysicsEngine::cullRenderObjects(Camera* camera, std::vector<RenderObject>&
 void PhysicsEngine::updateTransforms(World* world, std::vector<RenderObject>& renderObjects)
 {
 	// update model matrices
-	for (size_t i = 0; i < renderObjects.size(); i++) {
+	int n = (int)renderObjects.size();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+	for (int i = 0; i < n; i++) {
 		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
 
 		renderObjects[i].model = transform->getModelMatrix();
