@@ -57,9 +57,13 @@ for /r "%MODE%/obj" %%v in (*.obj) do (
 	echo %%v
 )
 
-:: create static lib library
-echo [92mCreate static engine library[0m
-lib -out:%MODE%/engine.lib %OBJ_FILES%
+:: create static engine library
+echo [92mCreating static engine library...[0m
+lib /out:%MODE%/engine.lib %OBJ_FILES%
+
+
+:: cant create engine dll as not all external symbols can be resolved - specifically the load functions in Load.h
+::link /DLL /out:%MODE%/engine.dll %OBJ_FILES% %MODE%/glew32.lib opengl32.lib %MODE%/freetype.lib
 
 goto :eof
 :concat_obj

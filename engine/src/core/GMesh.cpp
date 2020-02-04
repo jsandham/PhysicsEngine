@@ -18,14 +18,14 @@ GMesh::~GMesh()
 
 }
 
-std::vector<char> serialize()
+std::vector<char> GMesh::serialize()
 {
 	std::vector<char> data;
 
 	return data;
 }
 
-void deserialize(std::vector<char> data)
+void GMesh::deserialize(std::vector<char> data)
 {
 
 }
