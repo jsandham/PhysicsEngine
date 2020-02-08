@@ -10,12 +10,6 @@ namespace PhysicsEngine
 {
 	class World;
 
-	template <typename T>
-	struct SystemType { static const int type; };
-
-	template <typename T>
-	const int SystemType<T>::type = -1;
-
 	class System
 	{
 		protected:
@@ -38,6 +32,21 @@ namespace PhysicsEngine
 
 			int getOrder() const;
 	};
+
+	template <typename T>
+	struct SystemType { static const int type; };
+
+	template <typename T>
+	const int SystemType<T>::type = -1;
+
+	template< typename T>
+	struct IsSystem { static bool value; };
+
+	template<typename T>
+	bool IsSystem<T>::value = false;
+
+	template<>
+	bool IsSystem<System>::value = true;
 }
 
 #endif

@@ -38,6 +38,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<MeshCollider>::type = 15;
+
+	template <typename T>
+	struct IsMeshCollider { static bool value; };
+
+	template <typename T>
+	bool IsMeshCollider<T>::value = false;
+
+	template<>
+	bool IsMeshCollider<MeshCollider>::value = true;
+	template<>
+	bool IsComponent<MeshCollider>::value = true;
 }
 
 #endif

@@ -31,6 +31,17 @@ namespace PhysicsEngine
 			void init(World* world);
 			void update(Input input);
 	};
+
+	template< typename T>
+	struct IsDebugSystem { static bool value; };
+
+	template<typename T>
+	bool IsDebugSystem<T>::value = false;
+
+	template<>
+	bool IsDebugSystem<DebugSystem>::value = true;
+	template<>
+	bool IsSystem<DebugSystem>::value = true;
 }
 
 #endif

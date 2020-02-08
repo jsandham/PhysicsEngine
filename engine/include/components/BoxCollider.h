@@ -40,6 +40,19 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<BoxCollider>::type = 8;
+
+	template <typename T>
+	struct IsBoxCollider { static bool value; };
+
+	template <typename T>
+	bool IsBoxCollider<T>::value = false;
+
+	template<>
+	bool IsBoxCollider<BoxCollider>::value = true;
+	template<>
+	bool IsCollider<BoxCollider>::value = true;
+	template<>
+	bool IsComponent<BoxCollider>::value = true;
 }
 
 #endif

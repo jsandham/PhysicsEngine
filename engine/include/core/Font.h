@@ -57,6 +57,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Font>::type = 6;
+
+	template <typename T>
+	struct IsFont { static bool value; };
+
+	template <typename T>
+	bool IsFont<T>::value = false;
+
+	template<>
+	bool IsFont<Font>::value = true;
+	template<>
+	bool IsAsset<Font>::value = true;
 }
 
 #endif

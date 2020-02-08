@@ -49,6 +49,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<Transform>::type = 0;
+
+	template <typename T>
+	struct IsTransform { static bool value; };
+
+	template <typename T>
+	bool IsTransform<T>::value = false;
+
+	template<>
+	bool IsTransform<Transform>::value = true;
+	template<>
+	bool IsComponent<Transform>::value = true;
 }
 
 #endif

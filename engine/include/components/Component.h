@@ -8,12 +8,6 @@ namespace PhysicsEngine
 	class Entity;
 	class World;
 
-	template <typename T>
-	struct ComponentType { static const int type; };
-
-	template <typename T>
-	const int ComponentType<T>::type = -1;
-
 	class Component
 	{
 		public:
@@ -49,6 +43,21 @@ namespace PhysicsEngine
 				return entity->getComponent<T>(world);
 			}
 	};
+
+	template <typename T>
+	struct ComponentType { static const int type; };
+
+	template <typename T>
+	const int ComponentType<T>::type = -1;
+
+	template <typename T>
+	struct IsComponent { static bool value; };
+
+	template <typename T>
+	bool IsComponent<T>::value = false;
+
+	template<>
+	bool IsComponent<Component>::value = true;
 }
 
 #endif

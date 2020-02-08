@@ -22,6 +22,17 @@ namespace PhysicsEngine
 			void init(World* world);
 			void update(Input input);
 	};
+
+	template< typename T>
+	struct IsCleanUpSystem { static bool value; };
+
+	template<typename T>
+	bool IsCleanUpSystem<T>::value = false;
+
+	template<>
+	bool IsCleanUpSystem<CleanUpSystem>::value = true;
+	template<>
+	bool IsSystem<CleanUpSystem>::value = true;
 }
 
 #endif

@@ -60,6 +60,19 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Texture2D>::type = 1;
+
+	template <typename T>
+	struct IsTexture2D { static bool value; };
+
+	template <typename T>
+	bool IsTexture2D<T>::value = false;
+
+	template<>
+	bool IsTexture2D<Texture2D>::value = true;
+	template<>
+	bool IsTexture<Texture2D>::value = true;
+	template<>
+	bool IsAsset<Texture2D>::value = true;
 }
 
 #endif

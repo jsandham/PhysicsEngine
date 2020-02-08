@@ -39,6 +39,9 @@ namespace PhysicsEngine
 
 		void resetCamera();
 	};
+
+	template<>
+	bool IsSystem<EditorCameraSystem>::value = true;
 }
 
 #endif

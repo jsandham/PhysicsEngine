@@ -19,6 +19,17 @@ namespace PhysicsEngine
 			void init(World* world);
 			void update(Input input);
 	};
+
+	template< typename T>
+	struct IsGridRendererSystem { static bool value; };
+
+	template<typename T>
+	bool IsGridRendererSystem<T>::value = false;
+
+	template<>
+	bool IsGridRendererSystem<GridRendererSystem>::value = true;
+	template<>
+	bool IsSystem<GridRendererSystem>::value = true;
 }
 
 #endif

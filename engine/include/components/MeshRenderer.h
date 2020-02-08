@@ -38,6 +38,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<MeshRenderer>::type = 3;
+
+	template <typename T>
+	struct IsMeshRenderer { static bool value; };
+
+	template <typename T>
+	bool IsMeshRenderer<T>::value = false;
+
+	template<>
+	bool IsMeshRenderer<MeshRenderer>::value = true;
+	template<>
+	bool IsComponent<MeshRenderer>::value = true;
 }
 
 #endif

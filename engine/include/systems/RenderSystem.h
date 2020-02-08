@@ -38,6 +38,17 @@ namespace PhysicsEngine
 			GraphicsTargets getGraphicsTargets() const;
 			GraphicsQuery getGraphicsQuery() const;
 	};
+
+	template< typename T>
+	struct IsRenderSystem { static bool value; };
+
+	template<typename T>
+	bool IsRenderSystem<T>::value = false;
+
+	template<>
+	bool IsRenderSystem<RenderSystem>::value = true;
+	template<>
+	bool IsSystem<RenderSystem>::value = true;
 }
 
 #endif

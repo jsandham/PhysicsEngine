@@ -57,6 +57,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<Rigidbody>::type = 1;
+
+	template <typename T>
+	struct IsRigidbody { static bool value; };
+
+	template <typename T>
+	bool IsRigidbody<T>::value = false;
+
+	template<>
+	bool IsRigidbody<Rigidbody>::value = true;
+	template<>
+	bool IsComponent<Rigidbody>::value = true;
 }
 
 

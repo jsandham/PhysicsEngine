@@ -145,6 +145,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<Camera>::type = 2;
+
+	template <typename T>
+	struct IsCamera { static bool value; };
+
+	template <typename T>
+	bool IsCamera<T>::value = false;
+
+	template<>
+	bool IsCamera<Camera>::value = true;
+	template<>
+	bool IsComponent<Camera>::value = true;
 }
 
 #endif

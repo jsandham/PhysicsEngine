@@ -122,6 +122,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Material>::type = 4;
+
+	template <typename T>
+	struct IsMaterial { static bool value; };
+
+	template <typename T>
+	bool IsMaterial<T>::value = false;
+
+	template<>
+	bool IsMaterial<Material>::value = true;
+	template<>
+	bool IsAsset<Material>::value = true;
 }
 
 #endif

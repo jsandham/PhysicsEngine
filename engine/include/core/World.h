@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <assert.h>
 
 #include "PoolAllocator.h"
 #include "Log.h"
@@ -108,12 +109,16 @@ namespace PhysicsEngine
 			template<typename T>
 			int getNumberOfComponents()
 			{
+				assert(IsComponent<T>::value == true);
+
 				return (int)getAllocator<T>().getCount();
 			}
 
 			template<typename T>
 			int getNumberOfAssets()
 			{
+				assert(IsAsset<T>::value == true);
+
 				return (int)getAllocator<T>().getCount();
 			}
 
@@ -123,6 +128,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponent(Guid entityId)
 			{
+				assert(IsComponent<T>::value == true);
+
 				std::vector<std::pair<Guid, int>> componentsOnEntity;
 				std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
 				if(it1 != entityIdToComponentIds.end()){
@@ -161,6 +168,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addComponent(Guid entityId)
 			{
+				assert(IsComponent<T>::value == true);
+
 				int componentGlobalIndex = (int)getAllocator<T>().getCount();
 				int componentType = ComponentType<T>::type;
 				Guid componentId = Guid::newGuid();
@@ -182,6 +191,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addComponent(std::vector<char> data)
 			{
+				assert(IsComponent<T>::value == true);
+
 				int componentGlobalIndex = (int)getAllocator<T>().getCount();
 				int componentType = ComponentType<T>::type;
 			
@@ -199,6 +210,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addSystem(int order)
 			{
+				assert(IsSystem<T>::value == true);
+
 				T* system = create<T>();
 
 				size_t locationToInsert = systems.size();
@@ -219,6 +232,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getAsset(Guid id)
 			{
+				assert(IsAsset<T>::value == true);
+
 				std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(id);
 				if(it != assetIdToGlobalIndex.end()){
 					return getAllocator<T>().get(it->second);
@@ -234,12 +249,16 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponentByIndex(int index)
 			{
+				assert(IsComponent<T>::value == true);
+
 				return getAllocator<T>().get(index);
 			}
 
 			template<typename T>
 			T* getComponentById(Guid componentId)
 			{
+				assert(IsComponent<T>::value == true);
+
 				std::map<Guid, int>::iterator it = idToGlobalIndex.find(componentId);
 				if(it != idToGlobalIndex.end()){
 					return getComponentByIndex<T>(it->second);
@@ -251,6 +270,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getAssetByIndex(int index)
 			{
+				assert(IsAsset<T>::value == true);
+
 				return getAllocator<T>().get(index);
 			}
 
@@ -260,6 +281,8 @@ namespace PhysicsEngine
 			template<typename T>
 			T* createAsset()
 			{
+				assert(IsAsset<T>::value == true);
+
 				int index = (int)getAllocator<T>().getCount();
 				Guid id = Guid::newGuid();
 

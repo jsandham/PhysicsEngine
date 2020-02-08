@@ -46,6 +46,17 @@ namespace PhysicsEngine
 		protected:
 			int calcNumChannels(TextureFormat format);
 	};
+
+	template <typename T>
+	struct IsTexture { static bool value; };
+
+	template <typename T>
+	bool IsTexture<T>::value = false;
+
+	template<>
+	bool IsTexture<Texture>::value = true;
+	template<>
+	bool IsAsset<Texture>::value = true;
 }
 
 #endif

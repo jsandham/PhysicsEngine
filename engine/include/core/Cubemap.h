@@ -63,6 +63,19 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Cubemap>::type = 3;
+
+	template <typename T>
+	struct IsCubemap { static bool value; };
+
+	template <typename T>
+	bool IsCubemap<T>::value = false;
+
+	template<>
+	bool IsCubemap<Cubemap>::value = true;
+	template<>
+	bool IsTexture<Cubemap>::value = true;
+	template<>
+	bool IsAsset<Cubemap>::value = true;
 }
 
 #endif

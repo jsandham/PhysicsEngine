@@ -50,6 +50,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Mesh>::type = 5;
+
+	template <typename T>
+	struct IsMesh { static bool value; };
+
+	template <typename T>
+	bool IsMesh<T>::value = false;
+
+	template<>
+	bool IsMesh<Mesh>::value = true;
+	template<>
+	bool IsAsset<Mesh>::value = true;
 }
 
 #endif

@@ -170,6 +170,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int AssetType<Shader>::type = 0;
+
+	template <typename T>
+	struct IsShader { static bool value; };
+
+	template <typename T>
+	bool IsShader<T>::value = false;
+
+	template<>
+	bool IsShader<Shader>::value = true;
+	template<>
+	bool IsAsset<Shader>::value = true;
 }
 
 #endif

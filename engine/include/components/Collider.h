@@ -20,6 +20,17 @@ namespace PhysicsEngine
 
 			virtual bool intersect(Bounds bounds) = 0;
 	};
+
+	template <typename T>
+	struct IsCollider { static bool value; };
+
+	template <typename T>
+	bool IsCollider<T>::value = false;
+
+	template<>
+	bool IsCollider<Collider>::value = true;
+	template<>
+	bool IsComponent<Collider>::value = true;
 }
 
 #endif

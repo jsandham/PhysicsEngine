@@ -42,6 +42,19 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<SphereCollider>::type = 9;
+
+	template <typename T>
+	struct IsSphereCollider { static bool value; };
+
+	template <typename T>
+	bool IsSphereCollider<T>::value = false;
+
+	template<>
+	bool IsSphereCollider<SphereCollider>::value = true;
+	template<>
+	bool IsCollider<SphereCollider>::value = true;
+	template<>
+	bool IsComponent<SphereCollider>::value = true;
 }
 
 #endif

@@ -35,6 +35,15 @@ namespace PhysicsEngine
 			virtual std::vector<char> serialize() = 0;
 			virtual void deserialize(std::vector<char> data) = 0;
 	};
+
+	template <typename T>
+	struct IsAsset { static bool value; };
+
+	template <typename T>
+	bool IsAsset<T>::value = false;
+
+	template<>
+	bool IsAsset<Asset>::value = true;
 }
 
 #endif

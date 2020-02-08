@@ -42,6 +42,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<LineRenderer>::type = 4;
+
+	template <typename T>
+	struct IsLineRenderer { static bool value; };
+
+	template <typename T>
+	bool IsLineRenderer<T>::value = false;
+
+	template<>
+	bool IsLineRenderer<LineRenderer>::value = true;
+	template<>
+	bool IsComponent<LineRenderer>::value = true;
 }
 
 #endif

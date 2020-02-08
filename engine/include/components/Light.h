@@ -74,6 +74,17 @@ namespace PhysicsEngine
 
 	template <>
 	const int ComponentType<Light>::type = 5;
+
+	template <typename T>
+	struct IsLight { static bool value; };
+
+	template <typename T>
+	bool IsLight<T>::value = false;
+
+	template<>
+	bool IsLight<Light>::value = true;
+	template<>
+	bool IsComponent<Light>::value = true;
 }
 
 #endif
