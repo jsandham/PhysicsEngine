@@ -21,7 +21,7 @@ RigidbodyDrawer::~RigidbodyDrawer()
 
 }
 
-void RigidbodyDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void RigidbodyDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -36,19 +36,19 @@ void RigidbodyDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		float angularDrag = rigidbody->angularDrag;
 
 		if (ImGui::Checkbox("Use Gravity", &useGravity)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&rigidbody->useGravity, useGravity));
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&rigidbody->useGravity, useGravity, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Mass", &mass)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mass, mass));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mass, mass, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Drag", &drag)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->drag, drag));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->drag, drag, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Angular Drag", &angularDrag)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->angularDrag, angularDrag));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->angularDrag, angularDrag, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

@@ -19,8 +19,11 @@ namespace PhysicsEditor
 			std::vector<char> entityData;
 			std::vector<char> transformData;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			CreateEntityCommand(PhysicsEngine::World* world);
+			CreateEntityCommand(PhysicsEngine::World* world, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -34,8 +37,11 @@ namespace PhysicsEditor
 			std::vector<char> transformData;
 			std::vector<char> cameraData;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			CreateCameraCommand(PhysicsEngine::World* world);
+			CreateCameraCommand(PhysicsEngine::World* world, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -49,8 +55,11 @@ namespace PhysicsEditor
 			std::vector<char> transformData;
 			std::vector<char> lightData;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			CreateLightCommand(PhysicsEngine::World* world);
+			CreateLightCommand(PhysicsEngine::World* world, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -65,8 +74,11 @@ namespace PhysicsEditor
 			std::vector<char> boxColliderData;
 			std::vector<char> meshRendererData;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			CreateCubeCommand(PhysicsEngine::World* world);
+			CreateCubeCommand(PhysicsEngine::World* world, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -81,8 +93,11 @@ namespace PhysicsEditor
 			std::vector<char> sphereColliderData;
 			std::vector<char> meshRendererData;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			CreateSphereCommand(PhysicsEngine::World* world);
+			CreateSphereCommand(PhysicsEngine::World* world, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -95,8 +110,11 @@ namespace PhysicsEditor
 			std::vector<char> entityData;
 			std::vector<std::pair<int, std::vector<char>>> components;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			DestroyEntityCommand(PhysicsEngine::World* world, PhysicsEngine::Guid entityId);
+			DestroyEntityCommand(PhysicsEngine::World* world, PhysicsEngine::Guid entityId, bool* saveStatePtr);
 
 			void execute() override;
 			void undo() override;
@@ -112,22 +130,30 @@ namespace PhysicsEditor
 		T oldValue;
 		T newValue;
 
+		bool* saveStatePtr;
+		bool oldSaveState;
+
 	public:
-		ChangePropertyCommand(T* valuePtr, T newValue)
+		ChangePropertyCommand(T* valuePtr, T newValue, bool* saveStatePtr)
 		{
 			this->valuePtr = valuePtr;
 			this->oldValue = *valuePtr;
 			this->newValue = newValue;
+
+			this->saveStatePtr = saveStatePtr;
+			this->oldSaveState = *saveStatePtr;
 		}
 
 		void execute()
 		{
-			*valuePtr = newValue;
+			*valuePtr = newValue;	
+			*saveStatePtr = true;
 		}
 
 		void undo()
 		{
 			*valuePtr = oldValue;
+			*saveStatePtr = oldSaveState;
 		}
 	};
 
@@ -139,11 +165,17 @@ namespace PhysicsEditor
 			PhysicsEngine::Guid entityId;
 			PhysicsEngine::Guid componentId;
 
+			bool* saveStatePtr;
+			bool oldSaveState;
+
 		public:
-			AddComponentCommand(PhysicsEngine::World* world, PhysicsEngine::Guid entityId)
+			AddComponentCommand(PhysicsEngine::World* world, PhysicsEngine::Guid entityId, bool* saveStatePtr)
 			{
 				this->world = world;
 				this->entityId = entityId;
+
+				this->saveStatePtr = saveStatePtr;
+				this->oldSaveState = *saveStatePtr;
 			}
 
 			void execute()
@@ -151,11 +183,15 @@ namespace PhysicsEditor
 				Entity* entity = world->getEntity(entityId);
 				T* component = entity->addComponent<T>(world);
 				componentId = component->componentId;
+
+				*saveStatePtr = true;
 			}
 
 			void undo()
 			{
 				world->latentDestroyComponent(entityId, componentId, ComponentType<T>::type);
+
+				*saveStatePtr = oldSaveState;
 			}
 	};
 

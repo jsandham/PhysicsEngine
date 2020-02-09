@@ -19,7 +19,7 @@ MeshColliderDrawer::~MeshColliderDrawer()
 
 }
 
-void MeshColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void MeshColliderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		MeshCollider* meshCollider = world->getComponentById<MeshCollider>(id);

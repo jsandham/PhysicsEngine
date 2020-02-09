@@ -21,7 +21,7 @@ TransformDrawer::~TransformDrawer()
 
 }
 
-void TransformDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void TransformDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -35,13 +35,13 @@ void TransformDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		glm::vec3 scale = transform->scale;
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))){
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->position, position));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->position, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat4("Rotation", glm::value_ptr(rotation))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::quat>(&transform->rotation, rotation));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::quat>(&transform->rotation, rotation, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Scale", glm::value_ptr(scale))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->scale, scale));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->scale, scale, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

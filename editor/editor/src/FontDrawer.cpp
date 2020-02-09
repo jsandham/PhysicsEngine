@@ -21,7 +21,7 @@ FontDrawer::~FontDrawer()
 
 }
 
-void FontDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void FontDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 
 }

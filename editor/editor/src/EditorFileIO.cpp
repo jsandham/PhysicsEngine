@@ -510,6 +510,7 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 
 				obj[componentId.toString()]["type"] = "MeshRenderer";
 				obj[componentId.toString()]["entity"] = entityId.toString();
+				obj[componentId.toString()]["mesh"] = meshRenderer->meshId.toString();
 
 				int materialCount = meshRenderer->materialCount;
 
@@ -518,10 +519,25 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 					label = "materials";
 				}
 
-				for (int m = 0; m < materialCount; m++) {
-					//obj[componentId.toString()][label]
+				std::string value = "";
+				if (materialCount == 0) {
+					value = Guid::INVALID.toString();
 				}
-
+				else if (materialCount == 1) {
+					value = meshRenderer->materialIds[0].toString();
+				}
+				else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
+					value += "[";
+					for (int m = 0; m < materialCount; m++) {
+						value += meshRenderer->materialIds[i].toString();
+						if (m != materialCount - 1) {
+							value += ",";
+						}
+					}
+					value += "]";
+				}
+			
+				obj[componentId.toString()][label] = value;
 				obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;
 			}
 			else if (componentType == 4) {

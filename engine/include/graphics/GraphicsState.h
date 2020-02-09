@@ -27,7 +27,7 @@ namespace PhysicsEngine
 		glm::vec3 ambient;            // 672
 		glm::vec3 diffuse;            // 688
 		glm::vec3 specular;           // 704
-		float cascadeEnds[5];          // 720  736  752  768  784
+		float cascadeEnds[5];         // 720  736  752  768  784
 		float farPlane;               // 800
 		float constant;               // 804
 		float linear;                 // 808

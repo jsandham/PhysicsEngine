@@ -23,7 +23,7 @@ MeshRendererDrawer::~MeshRendererDrawer()
 
 }
 
-void MeshRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if(ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -48,12 +48,12 @@ void MeshRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid i
 			meshId = clipboard.getDraggedId();
 			clipboard.clearDraggedItem();
 
-			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->meshId, meshId));
+			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->meshId, meshId, &scene.isDirty));
 		}
 
 		bool isStatic = meshRenderer->isStatic;
 		if (ImGui::Checkbox("Is Static?", &isStatic)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->isStatic, isStatic));
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->isStatic, isStatic, &scene.isDirty));
 		}
 
 		// Materials
@@ -63,7 +63,7 @@ void MeshRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid i
 		if (ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d")) {
 			materialCount = std::max(0, std::min(materialCount, 8));
 
-			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->materialCount, materialCount));
+			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->materialCount, materialCount, &scene.isDirty));
 		}
 		ImGui::PopItemWidth();
 
@@ -85,7 +85,8 @@ void MeshRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid i
 				clipboard.clearDraggedItem();
 			}
 
-			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i]));
+			// this current is always getting called when you click on an entity in the hierarchy causing the scene to be dirtied
+			//CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i], &scene.isDirty));
 		}
 
 		ImGui::TreePop();

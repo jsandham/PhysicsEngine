@@ -7,6 +7,7 @@ namespace PhysicsEditor
 	{
 		std::string name;
 		std::string path;
+		bool isDirty;
 	};
 }
 

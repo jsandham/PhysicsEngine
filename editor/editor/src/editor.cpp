@@ -115,7 +115,7 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	}
 
 	hierarchy.render(&world, currentScene, clipboard, editorMenu.isOpenHierarchyCalled());
-	inspector.render(&world, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
+	inspector.render(&world, currentProject, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
 	console.render(editorMenu.isOpenConsoleCalled());
 	projectView.render(currentProject.path, libraryDirectory, clipboard, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 	aboutPopup.render(editorMenu.isAboutClicked());
@@ -264,6 +264,7 @@ void Editor::createProject(std::string name, std::string path)
 		if (success){
 			currentProject.name = name;
 			currentProject.path = path;
+			currentProject.isDirty = false;
 
 			currentScene.name = "";
 			currentScene.path = "";
@@ -300,6 +301,7 @@ void Editor::openProject(std::string name, std::string path)
 
 	currentProject.name = name;
 	currentProject.path = path;
+	currentProject.isDirty = false;
 
 	currentScene.name = "";
 	currentScene.path = "";
@@ -322,6 +324,15 @@ void Editor::openProject(std::string name, std::string path)
 
 	// reset editor camera
 	cameraSystem->resetCamera();
+}
+
+void Editor::saveProject()
+{
+	if (!currentProject.isDirty) {
+		return;
+	}
+
+
 }
 
 void Editor::updateAssetsLoadedInWorld()
@@ -384,6 +395,9 @@ void Editor::updateProjectAndSceneState()
 	else if (editorMenu.isNewProjectClicked()) {
 		projectWindow.setMode(ProjectWindowMode::NewProject);
 	}
+	else if (editorMenu.isSaveProjectClicked()) {
+		saveProject();
+	}
 
 	projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
 
@@ -415,8 +429,8 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->xboxButtonIsDown[i] = false;
 	}
 
-	if (sceneView.isFocused()) {
-			// 0 - 9
+	//if (sceneView.isFocused()) {
+		// 0 - 9
 		for (int i = 0; i < 10; i++) {
 			input->keyIsDown[0] = io.KeysDown[48 + i];
 		}
@@ -450,10 +464,10 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
 		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
 		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
-	}
+	//}
 
-	if(sceneView.isFocused())
-	{
+	//if(sceneView.isFocused())
+	//{
 		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
 		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
 		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
@@ -463,5 +477,5 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->mouseDelta = (int)io.MouseWheel;
 		input->mousePosX = (int)io.MousePos.x;
 		input->mousePosY = (int)io.MousePos.y;
-	}
+	//}
 }

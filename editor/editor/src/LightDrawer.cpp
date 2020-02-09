@@ -21,7 +21,7 @@ LightDrawer::~LightDrawer()
 
 }
 
-void LightDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void LightDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if(ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -37,19 +37,19 @@ void LightDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		glm::vec3 specular = light->specular;
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->position, position));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->position, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Direction", glm::value_ptr(direction))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->direction, direction));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->direction, direction, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Ambient", glm::value_ptr(ambient))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->ambient, ambient));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->ambient, ambient, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Diffuse", glm::value_ptr(diffuse))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->diffuse, diffuse));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->diffuse, diffuse, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Specular", glm::value_ptr(specular))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->specular, specular));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->specular, specular, &scene.isDirty));
 		}
 
 		float constant = light->constant;
@@ -59,31 +59,31 @@ void LightDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 		float outerCutOff = light->outerCutOff;
 
 		if (ImGui::InputFloat("Constant", &constant)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->constant, constant));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->constant, constant, &scene.isDirty));
 		}
 		if (ImGui::InputFloat("Linear", &linear)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->linear, linear));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->linear, linear, &scene.isDirty));
 		}
 		if (ImGui::InputFloat("Quadratic", &quadratic)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->quadratic, quadratic));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->quadratic, quadratic, &scene.isDirty));
 		}
 		if (ImGui::InputFloat("Cut-Off", &cutOff)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->cutOff, cutOff));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->cutOff, cutOff, &scene.isDirty));
 		}
 		if (ImGui::InputFloat("Outer Cut-Off", &outerCutOff)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->outerCutOff, outerCutOff));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&light->outerCutOff, outerCutOff, &scene.isDirty));
 		}
 
 		const char* lightTypes[] = { "Directional", "Spot", "Point" };
 		int lightTypeIndex = static_cast<int>(light->lightType);
 		if (ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes))) {
-			CommandManager::addCommand(new ChangePropertyCommand<LightType>(&light->lightType, static_cast<LightType>(lightTypeIndex)));
+			CommandManager::addCommand(new ChangePropertyCommand<LightType>(&light->lightType, static_cast<LightType>(lightTypeIndex), &scene.isDirty));
 		}
 		
 		const char* shadowTypes[] = { "Hard", "Soft" };
 		int shadowTypeIndex = static_cast<int>(light->shadowType);
 		if (ImGui::Combo("##ShadowType", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes))) {
-			CommandManager::addCommand(new ChangePropertyCommand<ShadowType>(&light->shadowType, static_cast<ShadowType>(shadowTypeIndex)));
+			CommandManager::addCommand(new ChangePropertyCommand<ShadowType>(&light->shadowType, static_cast<ShadowType>(shadowTypeIndex), &scene.isDirty));
 		}
 
 		ImGui::TreePop();

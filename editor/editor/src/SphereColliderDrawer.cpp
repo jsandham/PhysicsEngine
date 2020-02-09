@@ -21,7 +21,7 @@ SphereColliderDrawer::~SphereColliderDrawer()
 
 }
 
-void SphereColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void SphereColliderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -35,10 +35,10 @@ void SphereColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid
 			float radius = sphereCollider->sphere.radius;
 
 			if (ImGui::InputFloat3("Centre", glm::value_ptr(centre))) {
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&sphereCollider->sphere.centre, centre));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&sphereCollider->sphere.centre, centre, &scene.isDirty));
 			}
 			if (ImGui::InputFloat("Radius", &radius)) {
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&sphereCollider->sphere.radius, radius));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&sphereCollider->sphere.radius, radius, &scene.isDirty));
 			}
 
 			ImGui::TreePop();

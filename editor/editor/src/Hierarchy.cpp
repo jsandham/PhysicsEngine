@@ -89,26 +89,21 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 				if (ImGui::BeginMenu("Create..."))
 				{
 					if (ImGui::MenuItem("Empty")) {
-						scene.isDirty = true;
-						CommandManager::addCommand(new CreateEntityCommand(world));
+						CommandManager::addCommand(new CreateEntityCommand(world, &scene.isDirty));
 					}
 					if (ImGui::MenuItem("Camera")) {
-						scene.isDirty = true;
-						CommandManager::addCommand(new CreateCameraCommand(world));
+						CommandManager::addCommand(new CreateCameraCommand(world, &scene.isDirty));
 					}
 					if (ImGui::MenuItem("Light")) {
-						scene.isDirty = true;
-						CommandManager::addCommand(new CreateLightCommand(world));
+						CommandManager::addCommand(new CreateLightCommand(world, &scene.isDirty));
 					}
 
 					if (ImGui::BeginMenu("3D")) {
 						if (ImGui::MenuItem("Cube")) {
-							scene.isDirty = true;
-							CommandManager::addCommand(new CreateCubeCommand(world));
+							CommandManager::addCommand(new CreateCubeCommand(world, &scene.isDirty));
 						}
 						if (ImGui::MenuItem("Sphere")) {
-							scene.isDirty = true;
-							CommandManager::addCommand(new CreateSphereCommand(world));
+							CommandManager::addCommand(new CreateSphereCommand(world, &scene.isDirty));
 						}
 						ImGui::EndMenu();
 					}

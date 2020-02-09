@@ -21,7 +21,7 @@ MeshDrawer::~MeshDrawer()
 
 }
 
-void MeshDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void MeshDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 
 }

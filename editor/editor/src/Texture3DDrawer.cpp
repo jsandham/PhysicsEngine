@@ -21,7 +21,7 @@ Texture3DDrawer::~Texture3DDrawer()
 
 }
 
-void Texture3DDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void Texture3DDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 
 }

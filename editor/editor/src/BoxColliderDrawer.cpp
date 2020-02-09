@@ -21,7 +21,7 @@ BoxColliderDrawer::~BoxColliderDrawer()
 
 }
 
-void BoxColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void BoxColliderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		BoxCollider* boxCollider = world->getComponentById<BoxCollider>(id);
@@ -34,10 +34,10 @@ void BoxColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id
 			glm::vec3 size = boxCollider->bounds.size;
 
 			if (ImGui::InputFloat3("Centre", glm::value_ptr(centre))) {
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.centre, centre));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.centre, centre, &scene.isDirty));
 			}
 			if (ImGui::InputFloat3("Size", glm::value_ptr(size))) {
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.size, size));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&boxCollider->bounds.size, size, &scene.isDirty));
 			}
 
 			ImGui::TreePop();

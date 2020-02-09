@@ -47,24 +47,6 @@ namespace PhysicsEngine
 		GL330,
 		GL430
 	};
-	
-
-	enum ShaderDataType
-	{
-		GLIntVec1,
-		GLIntVec2,
-		GLIntVec3,
-		GLIntVec4,
-		GLFloatVec1,
-		GLFloatVec2,
-		GLFloatVec3,
-		GLFloatVec4,
-		GLFloatMat2,
-		GLFloatMat3,
-		GLFloatMat4,
-		GLSampler2D,
-		GLSamplerCube
-	};
 
 	struct ShaderProgram
 	{
@@ -77,11 +59,13 @@ namespace PhysicsEngine
 	struct ShaderUniform
 	{
 		char data[64];
-		char name[32]; // variable name in GLSL
+		std::string name; //variable name in GLSL
+		std::string shortName;
 		size_t nameLength;
 		size_t size; // size of the uniform
-		ShaderDataType type; // type of the uniform (float, vec3 or mat4, etc)
-		int variant;
+		GLenum type; // type of the uniform (float, vec3 or mat4, etc)
+		int variant; // variant this uniform occurs in
+		size_t index; // what index in array of uniforms we are at
 	};
 
 	struct ShaderAttribute
@@ -96,8 +80,8 @@ namespace PhysicsEngine
 			std::string fragmentShader;
 			std::string geometryShader;
 
-			bool allCompiled;
-			int activeProgramIndex;
+			bool allProgramsCompiled;
+			int activeProgram;
 			std::vector<ShaderProgram> programs;
 			std::vector<ShaderUniform> uniforms;
 			std::vector<ShaderAttribute> attributes;
@@ -116,26 +100,27 @@ namespace PhysicsEngine
 			void remove(int variant);
 
 			void compile();
-			void use(int variant);
+			void use(int program);
 			void unuse();
 			void setVertexShader(const std::string vertexShader);
 			void setGeometryShader(const std::string geometryShader);
 			void setFragmentShader(const std::string fragmentShader);
-			void setUniformBlock(std::string blockName, int bindingPoint) const;
-			int findUniformLocation(std::string name) const;
+			void setUniformBlock(const std::string& blockName, int bindingPoint) const;
+			int findUniformLocation(const std::string& name) const;
+			int getProgramFromVariant(int variant) const;
 
 			std::vector<ShaderUniform> getUniforms() const;
 			std::vector<ShaderAttribute> getAttributeNames() const;
 
-			void setBool(std::string name, bool value) const;
-			void setInt(std::string name, int value) const;
-			void setFloat(std::string name, float value) const;
-			void setVec2(std::string name, const glm::vec2 &vec) const;
-			void setVec3(std::string name, const glm::vec3 &vec) const;
-			void setVec4(std::string name, const glm::vec4 &vec) const;
-			void setMat2(std::string name, const glm::mat2 &mat) const;
-			void setMat3(std::string name, const glm::mat3 &mat) const;
-			void setMat4(std::string name, const glm::mat4 &mat) const;
+			void setBool(const std::string& name, bool value) const;
+			void setInt(const std::string& name, int value) const;
+			void setFloat(const std::string& name, float value) const;
+			void setVec2(const std::string& name, const glm::vec2 &vec) const;
+			void setVec3(const std::string& name, const glm::vec3 &vec) const;
+			void setVec4(const std::string& name, const glm::vec4 &vec) const;
+			void setMat2(const std::string& name, const glm::mat2 &mat) const;
+			void setMat3(const std::string& name, const glm::mat3 &mat) const;
+			void setMat4(const std::string& name, const glm::mat4 &mat) const;
 
 			void setBool(int nameLocation, bool value) const;
 			void setInt(int nameLocation, int value) const;
@@ -147,15 +132,15 @@ namespace PhysicsEngine
 			void setMat3(int nameLocation, const glm::mat3 &mat) const;
 			void setMat4(int nameLocation, const glm::mat4 &mat) const;
 
-			bool getBool(std::string name) const;
-			int getInt(std::string name) const;
-			float getFloat(std::string name) const;
-			glm::vec2 getVec2(std::string name) const;
-			glm::vec3 getVec3(std::string name) const;
-			glm::vec4 getVec4(std::string name) const;
-			glm::mat2 getMat2(std::string name) const;
-			glm::mat3 getMat3(std::string name) const;
-			glm::mat4 getMat4(std::string name) const;
+			bool getBool(const std::string& name) const;
+			int getInt(const std::string& name) const;
+			float getFloat(const std::string& name) const;
+			glm::vec2 getVec2(const std::string& name) const;
+			glm::vec3 getVec3(const std::string& name) const;
+			glm::vec4 getVec4(const std::string& name) const;
+			glm::mat2 getMat2(const std::string& name) const;
+			glm::mat3 getMat3(const std::string& name) const;
+			glm::mat4 getMat4(const std::string& name) const;
 
 			bool getBool(int nameLocation) const;
 			int getInt(int nameLocation) const;
@@ -166,6 +151,18 @@ namespace PhysicsEngine
 			glm::mat2 getMat2(int nameLocation) const;
 			glm::mat3 getMat3(int nameLocation) const;
 			glm::mat4 getMat4(int nameLocation) const;
+
+
+
+			// idea...
+			//Should we have setIntOnActive etc for setting on active shader variant (using internally by engine primarily)
+			//and then have setInt etc that sets on all variants used by editor and user runtime code? Maybe that too slow though for 
+			//setting on all variants...maybe the eitor/user passes which variant?? Or we could leave the setInt methods as they are and 
+			//add seIntOnAll methods for use by editor and user? Or setIntOnVariant?...Or maybe what we need to do is have set methods that 
+			//just write to the serialized uniforms array and then when we internally call use(variant) it will apply these serialized values to
+			//the now active shader?? Maybe this means we should only store user defined uniforms in uniforms array and skip things like the model 
+			//matrix and lighting uniforms as these are set internally by the engine...but hen how do I distinguish what uniforms are user ones and 
+			//which are internal ones??
 	};
 
 	template <>
@@ -181,6 +178,44 @@ namespace PhysicsEngine
 	bool IsShader<Shader>::value = true;
 	template<>
 	bool IsAsset<Shader>::value = true;
+
+
+
+
+	/*template<int T>
+	struct UniformDataType {
+		static ShaderDataType dataType;
+	};
+
+	template<int T>
+	ShaderDataType UniformDataType<T>::dataType = ShaderDataType::GLIntVec1;
+
+	template<>
+	ShaderDataType UniformDataType<GL_INT>::dataType = ShaderDataType::GLIntVec1;
+	template<>
+	ShaderDataType UniformDataType<GL_INT_VEC2>::dataType = ShaderDataType::GLIntVec2;
+	template<>
+	ShaderDataType UniformDataType<GL_INT_VEC3>::dataType = ShaderDataType::GLIntVec3;
+	template<>
+	ShaderDataType UniformDataType<GL_INT_VEC4>::dataType = ShaderDataType::GLIntVec4;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT>::dataType = ShaderDataType::GLFloatVec1;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_VEC2>::dataType = ShaderDataType::GLFloatVec2;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_VEC3>::dataType = ShaderDataType::GLFloatVec3;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_VEC4>::dataType = ShaderDataType::GLFloatVec4;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_MAT2>::dataType = ShaderDataType::GLFloatMat2;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_MAT3>::dataType = ShaderDataType::GLFloatMat3;
+	template<>
+	ShaderDataType UniformDataType<GL_FLOAT_MAT4>::dataType = ShaderDataType::GLFloatMat4;
+	template<>
+	ShaderDataType UniformDataType<GL_SAMPLER_2D>::dataType = ShaderDataType::GLSampler2D;
+	template<>
+	ShaderDataType UniformDataType<GL_SAMPLER_CUBE>::dataType = ShaderDataType::GLSamplerCube;*/
 }
 
 #endif

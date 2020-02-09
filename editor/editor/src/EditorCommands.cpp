@@ -7,9 +7,11 @@ using namespace PhysicsEngine;
 
 // Hierarchy commands
 
-CreateEntityCommand::CreateEntityCommand(World* world)
+CreateEntityCommand::CreateEntityCommand(World* world, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 }
 
 void CreateEntityCommand::execute()
@@ -24,6 +26,8 @@ void CreateEntityCommand::execute()
 		Entity* entity = world->createEntity(entityData);
 		Transform* transform = entity->addComponent<Transform>(world, transformData);
 	}
+
+	*saveStatePtr = true;
 }
 
 void CreateEntityCommand::undo()
@@ -31,12 +35,16 @@ void CreateEntityCommand::undo()
 	Entity temp(entityData);
 
 	world->latentDestroyEntity(temp.entityId);
+
+	*saveStatePtr = oldSaveState;
 }
 
 
-CreateCameraCommand::CreateCameraCommand(World* world)
+CreateCameraCommand::CreateCameraCommand(World* world, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 }
 
 void CreateCameraCommand::execute()
@@ -54,6 +62,8 @@ void CreateCameraCommand::execute()
 		Transform* transform = entity->addComponent<Transform>(world, transformData);
 		Camera* camera = entity->addComponent<Camera>(world, cameraData);
 	}
+
+	*saveStatePtr = true;
 }
 
 void CreateCameraCommand::undo()
@@ -61,11 +71,15 @@ void CreateCameraCommand::undo()
 	Entity temp(entityData);
 
 	world->latentDestroyEntity(temp.entityId);
+
+	*saveStatePtr = oldSaveState;
 }
 
-CreateLightCommand::CreateLightCommand(World* world)
+CreateLightCommand::CreateLightCommand(World* world, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 }
 
 void CreateLightCommand::execute()
@@ -83,6 +97,8 @@ void CreateLightCommand::execute()
 		Transform* transform = entity->addComponent<Transform>(world, transformData);
 		Camera* camera = entity->addComponent<Camera>(world, lightData);
 	}
+
+	*saveStatePtr = true;
 }
 
 void CreateLightCommand::undo()
@@ -90,11 +106,15 @@ void CreateLightCommand::undo()
 	Entity temp(entityData);
 
 	world->latentDestroyEntity(temp.entityId);
+
+	*saveStatePtr = oldSaveState;
 }
 
-CreateCubeCommand::CreateCubeCommand(World* world)
+CreateCubeCommand::CreateCubeCommand(World* world, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 }
 
 void CreateCubeCommand::execute()
@@ -115,6 +135,8 @@ void CreateCubeCommand::execute()
 		BoxCollider* collider = entity->addComponent<BoxCollider>(world, boxColliderData);
 		MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
 	}
+
+	*saveStatePtr = true;
 }
 
 void CreateCubeCommand::undo()
@@ -122,12 +144,16 @@ void CreateCubeCommand::undo()
 	Entity temp(entityData);
 
 	world->latentDestroyEntity(temp.entityId);
+
+	*saveStatePtr = oldSaveState;
 }
 
 
-CreateSphereCommand::CreateSphereCommand(World* world)
+CreateSphereCommand::CreateSphereCommand(World* world, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 }
 
 void CreateSphereCommand::execute()
@@ -148,6 +174,8 @@ void CreateSphereCommand::execute()
 		SphereCollider* collider = entity->addComponent<SphereCollider>(world, sphereColliderData);
 		MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
 	}
+
+	*saveStatePtr = true;
 }
 
 void CreateSphereCommand::undo()
@@ -155,12 +183,16 @@ void CreateSphereCommand::undo()
 	Entity temp(entityData);
 
 	world->latentDestroyEntity(temp.entityId);
+
+	*saveStatePtr = oldSaveState;
 }
 
 
-DestroyEntityCommand::DestroyEntityCommand(World* world, PhysicsEngine::Guid entityId)
+DestroyEntityCommand::DestroyEntityCommand(World* world, PhysicsEngine::Guid entityId, bool* saveStatePtr)
 {
 	this->world = world;
+	this->saveStatePtr = saveStatePtr;
+	this->oldSaveState = *saveStatePtr;
 
 	std::vector<std::pair<Guid, int>> componentsOnEntity = world->getComponentsOnEntity(entityId);
 	for (size_t i = 0; i < componentsOnEntity.size(); i++) {
@@ -185,10 +217,10 @@ DestroyEntityCommand::DestroyEntityCommand(World* world, PhysicsEngine::Guid ent
 
 void DestroyEntityCommand::execute()
 {
-
+	*saveStatePtr = true;
 }
 
 void DestroyEntityCommand::undo()
 {
-
+	*saveStatePtr = oldSaveState;
 }

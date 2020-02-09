@@ -22,7 +22,7 @@ MaterialDrawer::~MaterialDrawer()
 
 }
 
-void MaterialDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	Material* material = world->getAsset<Material>(id);
 
@@ -38,59 +38,88 @@ void MaterialDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
 	}
 
 	if (ImGui::Combo("Shader", &currentShaderIndex, shaderNames)) {
-		CommandManager::addCommand(new ChangePropertyCommand<Guid>(&material->shaderId, world->getAssetByIndex<Shader>(currentShaderIndex)->assetId));
+		CommandManager::addCommand(new ChangePropertyCommand<Guid>(&material->shaderId, world->getAssetByIndex<Shader>(currentShaderIndex)->assetId, &project.isDirty));
 	}
 
     Shader* shader = world->getAsset<Shader>(material->shaderId);
 
     std::vector<ShaderUniform> uniforms = shader->getUniforms();
     for(size_t i = 0; i < uniforms.size(); i++){
-		std::string name = std::string(uniforms[i].name);
-		size_t startIndex = name.find_last_of(".") + 1;
-		std::string labelName = name.substr(startIndex, name.length() - startIndex);
+		//std::string name = std::string(uniforms[i].name);
+		//size_t startIndex = name.find_last_of(".") + 1;
+		//std::string labelName = name.substr(startIndex, name.length() - startIndex);
 
-		if (uniforms[i].type == ShaderDataType::GLIntVec1) {
-			int temp = 0;
-			if (ImGui::InputInt(labelName.c_str(), &temp)){
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&temp, temp));
+		// Note: matrices not supported
+		/*switch (uniforms[i].type)
+		{
+			case GL_INT:
+				UniformDrawer<GL_INT>::draw();
+				break;
+			case GL_INT_VEC2:
+				UniformDrawer<GL_INT_VEC2>::draw();
+				break;
+			case GL_INT_VEC3:
+				UniformDrawer<GL_INT_VEC3>::draw();
+				break;
+			case GL_INT_VEC4:
+				UniformDrawer<GL_INT_VEC4>::draw();
+				break;
+			case GL_FLOAT:
+				UniformDrawer<GL_FLOAT>::draw();
+				break;
+			case GL_FLOAT_VEC2:
+				UniformDrawer<GL_FLOAT_VEC2>::draw();
+				break;
+			case GL_FLOAT_VEC3:
+				UniformDrawer<GL_FLOAT_VEC3>::draw();
+				break;
+			case GL_FLOAT_VEC4:
+				UniformDrawer<GL_FLOAT_VEC4>::draw();
+				break;
+			case GL_SAMPLER_2D:
+				UniformDrawer<GL_SAMPLER_2D>::draw();
+				break;
+			case GL_SAMPLER_CUBE:
+				UniformDrawer<GL_SAMPLER_CUBE>::draw();
+				break;
+			default:
+
+		}*/
+
+		if (uniforms[i].type == GL_INT) {
+			int temp = shader->getInt(uniforms[i].name);
+			if (ImGui::InputInt(uniforms[i].shortName.c_str(), &temp)){
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&temp, temp, &project.isDirty));
 			}
 		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatVec1) {
-			float temp = 0.0f;
-			if (ImGui::InputFloat(labelName.c_str(), &temp))
+		else if (uniforms[i].type == GL_FLOAT) {
+			float temp = shader->getFloat(uniforms[i].name);
+			//Log::info(std::to_string(temp).c_str());
+			if (ImGui::InputFloat(uniforms[i].shortName.c_str(), &temp))
 			{
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&temp, temp));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&temp, temp, &project.isDirty));
 			}
 		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatVec2) {
+		else if (uniforms[i].type == GL_FLOAT_VEC2) {
 			glm::vec2 temp = glm::vec2(0.0f);
-			if (ImGui::InputFloat2(labelName.c_str(), &temp[0])) 
+			if (ImGui::InputFloat2(uniforms[i].shortName.c_str(), &temp[0])) 
 			{
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec2>(&temp, temp));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec2>(&temp, temp, &project.isDirty));
 			}
 		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatVec3) {
+		else if (uniforms[i].type == GL_FLOAT_VEC3) {
 			glm::vec3 temp = glm::vec3(0.0f);
-			if (ImGui::InputFloat3(labelName.c_str(), &temp[0]))
+			if (ImGui::InputFloat3(uniforms[i].shortName.c_str(), &temp[0]))
 			{
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&temp, temp));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&temp, temp, &project.isDirty));
 			}
 		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatVec4) {
+		else if (uniforms[i].type == GL_FLOAT_VEC4) {
 			glm::vec4 temp = glm::vec4(0.0f);
-			if (ImGui::InputFloat4(labelName.c_str(), &temp[0]))
+			if (ImGui::InputFloat4(uniforms[i].shortName.c_str(), &temp[0]))
 			{
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&temp, temp));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&temp, temp, &project.isDirty));
 			}
-		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatMat2) {
-		
-		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatMat3) {
-
-		}
-		else if (uniforms[i].type == ShaderDataType::GLFloatMat4) {
-
 		}
     }
 

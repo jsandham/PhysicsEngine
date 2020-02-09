@@ -21,7 +21,7 @@ Texture2DDrawer::~Texture2DDrawer()
 
 }
 
-void Texture2DDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void Texture2DDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 
 }

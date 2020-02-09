@@ -19,7 +19,7 @@ CapsuleColliderDrawer::~CapsuleColliderDrawer()
 
 }
 
-void CapsuleColliderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void CapsuleColliderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		CapsuleCollider* capsuleCollider = world->getComponentById<CapsuleCollider>(id);

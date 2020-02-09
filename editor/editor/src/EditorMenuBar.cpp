@@ -123,6 +123,11 @@ bool EditorMenuBar::isOpenProjectClicked() const
 	return openProjectClicked;
 }
 
+bool EditorMenuBar::isSaveProjectClicked() const
+{
+	return saveProjectClicked;
+}
+
 bool EditorMenuBar::isOpenInspectorCalled() const
 {
 	return openInspectorClicked;

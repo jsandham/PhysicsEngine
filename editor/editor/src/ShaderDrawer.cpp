@@ -21,7 +21,7 @@ ShaderDrawer::~ShaderDrawer()
 
 }
 
-void ShaderDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void ShaderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	
 }

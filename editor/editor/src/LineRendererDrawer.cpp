@@ -21,7 +21,7 @@ LineRendererDrawer::~LineRendererDrawer()
 
 }
 
-void LineRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid id)
+void LineRendererDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
 		LineRenderer* lineRenderer = world->getComponentById<LineRenderer>(id);
@@ -33,10 +33,10 @@ void LineRendererDrawer::render(World* world, EditorClipboard& clipboard, Guid i
 		glm::vec3 end = lineRenderer->end;
 
 		if (ImGui::InputFloat3("Start", glm::value_ptr(start))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->start, start));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->start, start, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("End", glm::value_ptr(end))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->end, end));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->end, end, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

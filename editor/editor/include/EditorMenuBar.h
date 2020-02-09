@@ -53,6 +53,7 @@ namespace PhysicsEditor
 			bool isQuitClicked() const;
 			bool isNewProjectClicked() const;
 			bool isOpenProjectClicked() const;
+			bool isSaveProjectClicked() const;
 			bool isOpenInspectorCalled() const;
 			bool isOpenHierarchyCalled() const;
 			bool isOpenConsoleCalled() const;

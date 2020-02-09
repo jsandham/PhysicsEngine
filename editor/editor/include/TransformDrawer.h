@@ -11,7 +11,7 @@ namespace PhysicsEditor
 			TransformDrawer();
 			~TransformDrawer();
 
-			void render(World* world, EditorClipboard& clipboard, Guid id);
+			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
 	};
 }
 

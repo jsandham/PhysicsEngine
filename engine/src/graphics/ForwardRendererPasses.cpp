@@ -533,10 +533,11 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 {
 	// fill geometry framebuffer
 	int modelLoc = screenData.positionAndNormalsShader.findUniformLocation("model");
+	int shaderProgram = screenData.positionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->geometryFBO);
 	for (size_t i = 0; i < renderObjects.size(); i++) {
-		screenData.positionAndNormalsShader.use(ShaderVariant::None);
+		screenData.positionAndNormalsShader.use(shaderProgram);
 		screenData.positionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
 
 		Graphics::render(world, renderObjects[i], &query);
@@ -554,9 +555,10 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 	for (int i = 0; i < 64; i++) {
 		samplesLoc[i] = screenData.ssaoShader.findUniformLocation("samples[" + std::to_string(i) + "]");
 	}
+	shaderProgram = screenData.ssaoShader.getProgramFromVariant(ShaderVariant::None);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->ssaoFBO);
-	screenData.ssaoShader.use(ShaderVariant::None);
+	screenData.ssaoShader.use(shaderProgram);
 	screenData.ssaoShader.setMat4(projectionLoc, camera->getProjMatrix());
 	for (int i = 0; i < 64; i++) {
 		screenData.ssaoShader.setVec3(samplesLoc[i], camera->ssaoSamples[i]);
@@ -593,6 +595,7 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		int modelLoc = shadowMapData.depthShader.findUniformLocation("model");
 		int viewLoc = shadowMapData.depthShader.findUniformLocation("view");
 		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection");
+		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
 
 		for (int i = 0; i < 5; i++) {
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCascadeFBO[i]);
@@ -600,7 +603,7 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 			glClearDepth(1.0f);
 			glClear(GL_DEPTH_BUFFER_BIT);
 
-			shadowMapData.depthShader.use(ShaderVariant::None);
+			shadowMapData.depthShader.use(shaderProgram);
 			shadowMapData.depthShader.setMat4(viewLoc, shadowMapData.cascadeLightView[i]);
 			shadowMapData.depthShader.setMat4(projectionLoc, shadowMapData.cascadeOrthoProj[i]);
 
@@ -617,6 +620,7 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		int modelLoc = shadowMapData.depthShader.findUniformLocation("model");
 		int viewLoc = shadowMapData.depthShader.findUniformLocation("view");
 		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection");
+		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowSpotlightFBO);
 
@@ -626,7 +630,7 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		shadowMapData.shadowProjMatrix = light->projection;
 		shadowMapData.shadowViewMatrix = glm::lookAt(light->position, light->position + light->direction, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		shadowMapData.depthShader.use(ShaderVariant::None);
+		shadowMapData.depthShader.use(shaderProgram);
 		shadowMapData.depthShader.setMat4(projectionLoc, shadowMapData.shadowProjMatrix);
 		shadowMapData.depthShader.setMat4(viewLoc, shadowMapData.shadowViewMatrix);
 
@@ -655,13 +659,14 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		int cubeViewProjMatricesLoc3 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]");
 		int cubeViewProjMatricesLoc4 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]");
 		int cubeViewProjMatricesLoc5 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]");
+		int shaderProgram = shadowMapData.depthCubemapShader.getProgramFromVariant(ShaderVariant::None);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCubemapFBO);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.depthCubemapShader.use(ShaderVariant::None);
+		shadowMapData.depthCubemapShader.use(shaderProgram);
 		shadowMapData.depthCubemapShader.setVec3(lightPosLoc, light->position);
 		shadowMapData.depthCubemapShader.setFloat(farPlaneLoc, camera->frustum.farPlane);
 		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc0, shadowMapData.cubeViewProjMatrices[0]);
@@ -765,7 +770,9 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
 		Shader* shader = world->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
 
-		shader->use(variant);
+		int shaderProgram = shader->getProgramFromVariant(variant);
+
+		shader->use(shaderProgram);
 		shader->setMat4("model", renderObjects[i].model);
 		material->use(shader, renderObjects[i]);
 

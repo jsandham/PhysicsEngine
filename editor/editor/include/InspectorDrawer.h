@@ -4,6 +4,8 @@
 #include "core/World.h"
 #include "core/Guid.h"
 
+#include "EditorScene.h"
+#include "EditorProject.h"
 #include "EditorClipboard.h"
 
 using namespace PhysicsEngine;
@@ -16,7 +18,7 @@ namespace PhysicsEditor
 			InspectorDrawer();
 			virtual ~InspectorDrawer() = 0;
 
-			virtual void render(World* world, EditorClipboard& clipboard, Guid id) = 0;
+			virtual void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id) = 0;
 	};
 }
 
