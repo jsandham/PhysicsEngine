@@ -53,12 +53,55 @@ bool ImGui::Combo(const char* label, int* currIndex, std::vector<std::string>& v
 		static_cast<void*>(&values), values.size());
 }
 
+
+
 bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool slotFillable, bool* slotFilled)
 {
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
 	ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
+	//ImGui::ButtonEx(slotText.c_str(), windowSize, ImGuiButtonFlags_Disabled);
+	ImVec2 size = ImGui::GetItemRectSize();
+	ImVec2 position = ImGui::GetItemRectMin();
+
+	ImVec2 topLeft = position;
+	ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+	ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+	ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+	ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+	ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+	ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+	ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+	size.x += position.x;
+	size.y += position.y;
+
+	bool isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
+	bool isClicked = isHovered && ImGui::IsMouseClicked(0);
+
+	if (isClicked) {
+		ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
+	}
+
+	if (isHovered && slotFillable) {
+		ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+
+		if (ImGui::IsMouseReleased(0)) {
+			*slotFilled = true;
+		}
+	}
+
+	ImGui::SameLine(); ImGui::Text(slotLabel.c_str());
+
+	return isClicked;
+}
+
+bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool slotFillable, bool* slotFilled)
+{
+	ImGui::ImageButton((void*)(intptr_t)texture, ImVec2(80, 80), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 0.5));
+
 	ImVec2 size = ImGui::GetItemRectSize();
 	ImVec2 position = ImGui::GetItemRectMin();
 

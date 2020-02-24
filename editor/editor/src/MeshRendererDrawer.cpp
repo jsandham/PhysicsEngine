@@ -39,9 +39,8 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 			meshName = meshId.toString();
 		}
 
-		bool slotFillable = clipboard.getDraggedType() == InteractionType::Mesh;
 		bool slotFilled = false;
-		bool isClicked = ImGui::Slot("Mesh", meshName, slotFillable, &slotFilled);
+		bool isClicked = ImGui::Slot("Mesh", meshName, clipboard.getDraggedType() == InteractionType::Mesh, &slotFilled);
 
 		if (slotFilled) {
 			// TODO: Need some way of telling the renderer that the mesh has changed. 

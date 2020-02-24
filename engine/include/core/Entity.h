@@ -54,6 +54,24 @@ namespace PhysicsEngine
 
 			std::vector<std::pair<Guid, int>> getComponentsOnEntity(World* world);
 	};
+
+	template <typename T>
+	struct EntityType { static const int type; };
+
+	template <typename T>
+	const int EntityType<T>::type = -1;
+
+	template <>
+	const int EntityType<Entity>::type = 0;
+
+	template <typename T>
+	struct IsEntity { static bool value; };
+
+	template <typename T>
+	bool IsEntity<T>::value = false;
+
+	template<>
+	bool IsEntity<Entity>::value = true;
 }
 
 #endif

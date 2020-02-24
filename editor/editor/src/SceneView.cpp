@@ -13,6 +13,7 @@ using namespace PhysicsEditor;
 SceneView::SceneView()
 {
 	focused = false;
+	hovered = false;
 
 	perfQueue.setNumberOfSamples(100);
 }
@@ -25,6 +26,7 @@ SceneView::~SceneView()
 void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
 {
 	focused = false;
+	hovered = false;
 	static bool sceneViewActive = true;
 
 	if (isOpenedThisFrame) {
@@ -41,6 +43,7 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
 		focused = ImGui::IsWindowFocused();
+		hovered = ImGui::IsWindowHovered();
 
 		int count = 6;
 		const char* textureNames[] = { "Color",
@@ -146,4 +149,9 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 bool SceneView::isFocused() const
 {
 	return focused;
+}
+
+bool SceneView::isHovered() const
+{
+	return hovered;
 }

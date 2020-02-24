@@ -32,6 +32,9 @@ namespace PhysicsEngine
 			void update(Input input);
 	};
 
+	template <>
+	const int SystemType<DebugSystem>::type = 3;
+
 	template< typename T>
 	struct IsDebugSystem { static bool value; };
 

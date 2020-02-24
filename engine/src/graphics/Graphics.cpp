@@ -547,7 +547,8 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 
 	shader->use(variant);
 	shader->setMat4("model", model);
-	shader->setFloat("material.shininess", material->shininess);
+	material->apply(world);
+	/*shader->setFloat("material.shininess", material->shininess);
 	shader->setVec3("material.ambient", material->ambient);
 	shader->setVec3("material.ambient", material->diffuse);
 	shader->setVec3("material.ambient", material->specular);
@@ -574,7 +575,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 
 		glActiveTexture(GL_TEXTURE0 + 2);
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
-	}
+	}*/
 
 	if(world->debug && query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);

@@ -1,40 +1,9 @@
-﻿Build started 2020-02-09 3:51:25 PM.
+﻿Build started 2020-02-23 3:30:22 PM.
      1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\BoxColliderDrawer.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\CubemapDrawer.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\FontDrawer.cpp src\Hierarchy.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\LoadInspectorDrawerInternal.cpp src\MaterialDrawer.cpp src\MeshColliderDrawer.cpp src\MeshDrawer.cpp src\MeshRendererDrawer.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\ShaderDrawer.cpp src\SphereColliderDrawer.cpp src\Texture2DDrawer.cpp src\Texture3DDrawer.cpp src\TransformDrawer.cpp src\main.cpp
-         BoxColliderDrawer.cpp
-         CameraDrawer.cpp
-         CapsuleColliderDrawer.cpp
-         CubemapDrawer.cpp
-         Editor.cpp
-         EditorCameraSystem.cpp
-         EditorCommands.cpp
-         EditorFileIO.cpp
-         FontDrawer.cpp
-         Hierarchy.cpp
-         Inspector.cpp
-         InspectorDrawer.cpp
-         LibraryDirectory.cpp
-         LightDrawer.cpp
-         LineRendererDrawer.cpp
-         LoadInspectorDrawerInternal.cpp
-         MaterialDrawer.cpp
-         MeshColliderDrawer.cpp
-         MeshDrawer.cpp
-         MeshRendererDrawer.cpp
-         Generating Code...
-         Compiling...
-         RigidbodyDrawer.cpp
-         SceneView.cpp
-         ShaderDrawer.cpp
-         SphereColliderDrawer.cpp
-         Texture2DDrawer.cpp
-         Texture3DDrawer.cpp
-         TransformDrawer.cpp
-         main.cpp
-         Generating Code...
+         All outputs are up-to-date.
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\lib\debug engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
          x64\Debug\BoxColliderDrawer.obj
@@ -88,6 +57,7 @@
          x64\Debug\Texture2DDrawer.obj
          x64\Debug\Texture3DDrawer.obj
          x64\Debug\TransformDrawer.obj
+         x64\Debug\WriteToJson.obj
          editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
        FinalizeBuildStatus:
          Deleting file "x64\Debug\editor.tlog\unsuccessfulbuild".
@@ -98,4 +68,4 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:19.94
+Time Elapsed 00:00:01.41

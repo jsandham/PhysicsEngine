@@ -210,12 +210,15 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	Graphics::checkError();
 
 	// compile all shader assets and configure uniform blocks not already compiled
+	std::unordered_set<Guid> shadersCompiledThisFrame;
 	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
 		Shader* shader = world->getAssetByIndex<Shader>(i);
 
 		if (!shader->isCompiled()) {
 
 			shader->compile();
+
+			shadersCompiledThisFrame.insert(shader->assetId);
 
 			if (!shader->isCompiled()) {
 				std::string errorMessage = "Shader failed to compile " + shader->assetId.toString() + "\n";
@@ -228,6 +231,17 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	}
 
 	Graphics::checkError();
+
+	// update material on shader change
+	for (int i = 0; i < world->getNumberOfAssets<Material>(); i++) {
+		Material* material = world->getAssetByIndex<Material>(i);
+
+		std::unordered_set<Guid>::iterator it = shadersCompiledThisFrame.find(material->shaderId);
+
+		if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end()) {
+			material->onShaderChanged(world); // need to also do this if the shader code changed but the assigned shader on the material remained the same!
+		}
+	}
 
 	// create all mesh assets not already created
 	for (int i = 0; i < world->getNumberOfAssets<Mesh>(); i++) {
@@ -532,8 +546,8 @@ void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState,
 void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsQuery& query)
 {
 	// fill geometry framebuffer
-	int modelLoc = screenData.positionAndNormalsShader.findUniformLocation("model");
 	int shaderProgram = screenData.positionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
+	int modelLoc = screenData.positionAndNormalsShader.findUniformLocation("model", shaderProgram);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->geometryFBO);
 	for (size_t i = 0; i < renderObjects.size(); i++) {
@@ -547,15 +561,15 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 	Graphics::checkError();
 
 	// fill ssao color texture
-	int projectionLoc = screenData.ssaoShader.findUniformLocation("projection");
-	int positionTexLoc = screenData.ssaoShader.findUniformLocation("positionTex");
-	int normalTexLoc = screenData.ssaoShader.findUniformLocation("normalTex");
-	int noiseTexLoc = screenData.ssaoShader.findUniformLocation("noiseTex");
+	shaderProgram = screenData.ssaoShader.getProgramFromVariant(ShaderVariant::None);
+	int projectionLoc = screenData.ssaoShader.findUniformLocation("projection", shaderProgram);
+	int positionTexLoc = screenData.ssaoShader.findUniformLocation("positionTex", shaderProgram);
+	int normalTexLoc = screenData.ssaoShader.findUniformLocation("normalTex", shaderProgram);
+	int noiseTexLoc = screenData.ssaoShader.findUniformLocation("noiseTex", shaderProgram);
 	int samplesLoc[64];
 	for (int i = 0; i < 64; i++) {
-		samplesLoc[i] = screenData.ssaoShader.findUniformLocation("samples[" + std::to_string(i) + "]");
+		samplesLoc[i] = screenData.ssaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
 	}
-	shaderProgram = screenData.ssaoShader.getProgramFromVariant(ShaderVariant::None);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->ssaoFBO);
 	screenData.ssaoShader.use(shaderProgram);
@@ -592,10 +606,10 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		calcShadowmapCascades(camera, shadowMapData);
 		calcCascadeOrthoProj(camera, light, shadowMapData);
 
-		int modelLoc = shadowMapData.depthShader.findUniformLocation("model");
-		int viewLoc = shadowMapData.depthShader.findUniformLocation("view");
-		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection");
 		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
+		int modelLoc = shadowMapData.depthShader.findUniformLocation("model", shaderProgram);
+		int viewLoc = shadowMapData.depthShader.findUniformLocation("view", shaderProgram);
+		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection", shaderProgram);
 
 		for (int i = 0; i < 5; i++) {
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCascadeFBO[i]);
@@ -617,10 +631,10 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 	}
 	else if (lightType == LightType::Spot) {
 
-		int modelLoc = shadowMapData.depthShader.findUniformLocation("model");
-		int viewLoc = shadowMapData.depthShader.findUniformLocation("view");
-		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection");
 		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
+		int modelLoc = shadowMapData.depthShader.findUniformLocation("model", shaderProgram);
+		int viewLoc = shadowMapData.depthShader.findUniformLocation("view", shaderProgram);
+		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection", shaderProgram);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowSpotlightFBO);
 
@@ -650,16 +664,16 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		shadowMapData.cubeViewProjMatrices[4] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
 		shadowMapData.cubeViewProjMatrices[5] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-		int lightPosLoc = shadowMapData.depthCubemapShader.findUniformLocation("lightPos");
-		int farPlaneLoc = shadowMapData.depthCubemapShader.findUniformLocation("farPlane");
-		int modelLoc = shadowMapData.depthCubemapShader.findUniformLocation("model");
-		int cubeViewProjMatricesLoc0 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]");
-		int cubeViewProjMatricesLoc1 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]");
-		int cubeViewProjMatricesLoc2 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]");
-		int cubeViewProjMatricesLoc3 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]");
-		int cubeViewProjMatricesLoc4 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]");
-		int cubeViewProjMatricesLoc5 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]");
 		int shaderProgram = shadowMapData.depthCubemapShader.getProgramFromVariant(ShaderVariant::None);
+		int lightPosLoc = shadowMapData.depthCubemapShader.findUniformLocation("lightPos", shaderProgram);
+		int farPlaneLoc = shadowMapData.depthCubemapShader.findUniformLocation("farPlane", shaderProgram);
+		int modelLoc = shadowMapData.depthCubemapShader.findUniformLocation("model", shaderProgram);
+		int cubeViewProjMatricesLoc0 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]", shaderProgram);
+		int cubeViewProjMatricesLoc1 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]", shaderProgram);
+		int cubeViewProjMatricesLoc2 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]", shaderProgram);
+		int cubeViewProjMatricesLoc3 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]", shaderProgram);
+		int cubeViewProjMatricesLoc4 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]", shaderProgram);
+		int cubeViewProjMatricesLoc5 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]", shaderProgram);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCubemapFBO);
 
@@ -774,7 +788,9 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 
 		shader->use(shaderProgram);
 		shader->setMat4("model", renderObjects[i].model);
-		material->use(shader, renderObjects[i]);
+		
+		material->apply(world);
+		//material->use(shader, renderObjects[i]);
 
 		if (light->lightType == LightType::Directional) {
 			for (int j = 0; j < 5; j++) {
@@ -995,7 +1011,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 	Sphere boundingSphere = test;// mesh->getBoundingSphere();
 
 	for (int i = 0; i < meshRenderer->materialCount; i++) {
-		int materialIndex = world->getIndexOfAsset(meshRenderer->materialIds[i]);
+		int materialIndex = world->getIndexOf(meshRenderer->materialIds[i]);
 		int subMeshVertexStartIndex = mesh->subMeshVertexStartIndices[i];
 		int subMeshVertexEndIndex = mesh->subMeshVertexStartIndices[i + 1];
 		int subMeshVerticesCount = subMeshVertexEndIndex - subMeshVertexStartIndex;
@@ -1003,7 +1019,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		Material* material = world->getAssetByIndex<Material>(materialIndex);
 		Shader* shader = world->getAsset<Shader>(material->shaderId);
 
-		int shaderIndex = world->getIndexOfAsset(shader->assetId);
+		int shaderIndex = world->getIndexOf(shader->assetId);
 
 		RenderObject renderObject;
 		renderObject.id = meshRenderer->componentId;
@@ -1018,13 +1034,13 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		renderObject.normalMap = -1;
 		renderObject.specularMap = -1;
 
-		Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
+		/*Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
 		Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
 		Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
 
 		if (mainTexture != NULL) { renderObject.mainTexture = mainTexture->handle.handle; }
 		if (normalMap != NULL) { renderObject.normalMap = normalMap->handle.handle; }
-		if (specularMap != NULL) { renderObject.specularMap = specularMap->handle.handle; }
+		if (specularMap != NULL) { renderObject.specularMap = specularMap->handle.handle; }*/
 
 		renderObject.boundingSphere = boundingSphere;
 

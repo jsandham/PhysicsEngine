@@ -53,6 +53,7 @@ void LibraryDirectory::load(std::string projectPath)
 
 	libraryCache.clear();
 	filePathToId.clear();
+	idToFilePath.clear();
 
 	if (!libraryCache.load(currentProjectPath + "\\library\\directory_cache.txt")) {
 		Log::error("An error occured when trying to load library. Please delete library directory so that it can be re-built\n");
@@ -60,8 +61,15 @@ void LibraryDirectory::load(std::string projectPath)
 	}
 
 	for (LibraryCache::iterator it = libraryCache.begin(); it != libraryCache.end(); it++) {
-		Guid id = findGuidFromMetaFilePath(it->second.filePath.substr(0, it->second.filePath.find_last_of(".")) + ".json");
-		filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(it->second.filePath, id));
+		std::string test = it->second.filePath;
+		std::string extension = getFileExtension(it->second.filePath);
+
+		// only track non-meta file paths in file-path-to-id maps
+		if (extension != "json") {
+			Guid id = findGuidFromMetaFilePath(it->second.filePath.substr(0, it->second.filePath.find_last_of(".")) + ".json");
+			filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(it->second.filePath, id));
+			idToFilePath.insert(std::pair<PhysicsEngine::Guid, std::string>(id, it->second.filePath));
+		}
 	}
 }
 
@@ -145,7 +153,11 @@ void LibraryDirectory::update(std::string projectPath)
 			}
 		}
 
-		filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(filesToAddToLibrary[i].filePath, id));
+		// only track non-meta file paths in file-path-to-id maps
+		if (filesToAddToLibrary[i].fileExtension != "json"){
+			filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(filesToAddToLibrary[i].filePath, id));
+			idToFilePath.insert(std::pair<PhysicsEngine::Guid, std::string>(id, filesToAddToLibrary[i].filePath));
+		}
 	}
 
 	if (filesToAddToLibrary.size() > 0) {
@@ -168,6 +180,16 @@ PhysicsEngine::Guid LibraryDirectory::getFileId(std::string filePath) const
 	}
 
 	return Guid::INVALID;
+}
+
+std::string LibraryDirectory::getFilePath(PhysicsEngine::Guid id) const
+{
+	std::map<PhysicsEngine::Guid, std::string>::const_iterator it = idToFilePath.find(id);
+	if (it != idToFilePath.end()) {
+		return it->second;
+	}
+
+	return "";
 }
 
 bool LibraryDirectory::isFileExtensionTracked(std::string extension) const

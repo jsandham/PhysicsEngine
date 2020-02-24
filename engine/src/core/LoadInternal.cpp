@@ -22,19 +22,11 @@
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/MeshCollider.h"
-// #include "../../include/components/Cloth.h"
-// #include "../../include/components/Fluid.h"
-// #include "../../include/components/Solid.h"
-// #include "../../include/components/Boids.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
 #include "../../include/systems/CleanUpSystem.h"
 #include "../../include/systems/DebugSystem.h"
-// #include "../../include/systems/BoidsSystem.h"
-// #include "../../include/systems/ClothSystem.h"
-// #include "../../include/systems/FluidSystem.h"
-// #include "../../include/systems/SolidSystem.h"
 
 using namespace PhysicsEngine;
 
@@ -123,22 +115,6 @@ Component* PhysicsEngine::loadInternalComponent(std::vector<char> data, int type
 		*index = (int)getAllocator<CapsuleCollider>().getCount();
 		return create<CapsuleCollider>(data);
 	}
-	// else if(type == 11){
-	// 	*index = (int)getAllocator<Boids>().getCount();
-	// 	return create<Boids>(data);
-	// }
-	// else if(type == 12){
-	// 	*index = (int)getAllocator<Cloth>().getCount();
-	// 	return create<Cloth>(data);
-	// }
-	// else if(type == 13){
-	// 	*index = (int)getAllocator<Fluid>().getCount();
-	// 	return create<Fluid>(data);
-	// }
-	// else if(type == 14){
-	// 	*index = (int)getAllocator<Solid>().getCount();
-	// 	return create<Solid>(data);
-	// }
 	else{
 		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
 		Log::error(message.c_str());
@@ -164,22 +140,6 @@ System* PhysicsEngine::loadInternalSystem(std::vector<char> data, int type, int*
 		*index = (int)getAllocator<DebugSystem>().getCount();
 		return create<DebugSystem>(data);
 	}
-	// else if(type == 4){
-	// 	*index = (int)getAllocator<BoidsSystem>().getCount();
-	// 	return create<BoidsSystem>(data);
-	// }
-	// else if(type == 5){
-	// 	*index = (int)getAllocator<ClothSystem>().getCount();
-	// 	return create<ClothSystem>(data);
-	// }
-	// else if(type == 6){
-	// 	*index = (int)getAllocator<FluidSystem>().getCount();
-	// 	return create<FluidSystem>(data);
-	// }
-	// else if(type == 7){
-	// 	*index = (int)getAllocator<SolidSystem>().getCount();
-	// 	return create<SolidSystem>(data);
-	// }
 	else{
 		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
 		Log::error(message.c_str());
@@ -224,18 +184,6 @@ Component* PhysicsEngine::destroyInternalComponent(int type, int index)
 	else if(type == ComponentType<CapsuleCollider>::type){
 		return destroy<CapsuleCollider>(index);
 	}
-	// else if(type == ComponentType<Boids>::type){
-	// 	return destroy<Boids>(index);
-	// }
-	// else if(type == ComponentType<Cloth>::type){
-	// 	return destroy<Cloth>(index);
-	// }
-	// else if(type == ComponentType<Fluid>::type){
-	// 	return destroy<Fluid>(index);
-	// }
-	// else if(type == ComponentType<Solid>::type){
-	// 	return destroy<Solid>(index);
-	// }
 	else{
 		std::string message = "Error: Invalid component instance type (" + std::to_string(type) + ") when trying to destroy internal component\n";
 		Log::error(message.c_str());

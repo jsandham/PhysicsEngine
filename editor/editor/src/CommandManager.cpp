@@ -1,5 +1,7 @@
 #include "../include/CommandManager.h"
 
+#include "../include/imgui/imgui.h"
+
 #include "core/Log.h"
 
 using namespace PhysicsEditor;
@@ -28,7 +30,7 @@ CommandManager::~CommandManager()
 	}
 }
 
-void CommandManager::update(PhysicsEngine::Input input)
+void CommandManager::update()
 {
 	while (!commandQueue.empty()) {
 		Command* command = commandQueue.front();
@@ -40,16 +42,13 @@ void CommandManager::update(PhysicsEngine::Input input)
 		counter++;
 	}
 
-	//bool ctrlDown = PhysicsEngine::getKey(input, PhysicsEngine::KeyCode::LCtrl);
-	//bool ZDown = PhysicsEngine::getKeyDown(input, PhysicsEngine::KeyCode::Z);
-	//std::string message = "ctrl down: " + std::to_string(ctrlDown) + " z down: " + std::to_string(ZDown) + "\n";
-	//PhysicsEngine::Log::info(&message[0]);
+	ImGuiIO& io = ImGui::GetIO();
 
-	if (PhysicsEngine::getKey(input, PhysicsEngine::KeyCode::LCtrl) && PhysicsEngine::getKeyDown(input, PhysicsEngine::KeyCode::Z)) {
+	if (io.KeysDown[17] && ImGui::IsKeyPressed(90) /*LCtrl + Z*/) {
 		undoCommand();
 	}
 
-	if (PhysicsEngine::getKey(input, PhysicsEngine::KeyCode::LCtrl) && PhysicsEngine::getKeyDown(input, PhysicsEngine::KeyCode::Y)) {
+	if (io.KeysDown[17] && ImGui::IsKeyPressed(89) /*LCtrl + Y*/) {
 		executeCommand();
 	}
 }

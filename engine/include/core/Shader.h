@@ -59,13 +59,16 @@ namespace PhysicsEngine
 	struct ShaderUniform
 	{
 		char data[64];
-		std::string name; //variable name in GLSL
-		std::string shortName;
-		size_t nameLength;
+		char name[32]; //variable name in GLSL (including block name if applicable)
+		char shortName[32]; //variable name in GLSL (excluding block name if applicable)
+		char blockName[32]; //block name (empty string if not part of block)
+		size_t nameLength; 
 		size_t size; // size of the uniform
 		GLenum type; // type of the uniform (float, vec3 or mat4, etc)
 		int variant; // variant this uniform occurs in
+		int location; //uniform location in shader program
 		size_t index; // what index in array of uniforms we are at
+		bool isEditorExposed; //if uniform can be shown in editor inspector
 	};
 
 	struct ShaderAttribute
@@ -83,7 +86,7 @@ namespace PhysicsEngine
 			bool allProgramsCompiled;
 			int activeProgram;
 			std::vector<ShaderProgram> programs;
-			std::vector<ShaderUniform> uniforms;
+			std::vector<ShaderUniform> uniforms; //uniforms need to be serialized on the material not the shader as different materials using the same shader might have different values set
 			std::vector<ShaderAttribute> attributes;
 
 		public:
@@ -106,7 +109,7 @@ namespace PhysicsEngine
 			void setGeometryShader(const std::string geometryShader);
 			void setFragmentShader(const std::string fragmentShader);
 			void setUniformBlock(const std::string& blockName, int bindingPoint) const;
-			int findUniformLocation(const std::string& name) const;
+			int findUniformLocation(const std::string& name, int program) const;
 			int getProgramFromVariant(int variant) const;
 
 			std::vector<ShaderUniform> getUniforms() const;

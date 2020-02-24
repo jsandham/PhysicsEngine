@@ -20,6 +20,9 @@ namespace PhysicsEngine
 			void update(Input input);
 	};
 
+	template <>
+	const int SystemType<GridRendererSystem>::type = 4;
+
 	template< typename T>
 	struct IsGridRendererSystem { static bool value; };
 

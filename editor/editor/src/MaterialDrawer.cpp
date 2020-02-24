@@ -25,23 +25,29 @@ MaterialDrawer::~MaterialDrawer()
 void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
 	Material* material = world->getAsset<Material>(id);
+	Shader* shader = world->getAsset<Shader>(material->shaderId);
 
-	int currentShaderIndex = -1;
-	std::vector<std::string> shaderNames;
-	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
-		Shader* shader = world->getAssetByIndex<Shader>(i);
-		shaderNames.push_back(shader->assetId.toString());
+	std::string temp = shader->assetId.toString();
+	const char* current_item = temp.c_str();
 
-		if (material->shaderId	== shader->assetId) {
-			currentShaderIndex = i;
+	if (ImGui::BeginCombo("Shader", current_item, ImGuiComboFlags_None))
+	{
+		for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
+			Shader* s = world->getAssetByIndex<Shader>(i);
+			std::string id = s->assetId.toString();
+			bool is_selected = (current_item == id);
+			if (ImGui::Selectable(id.c_str(), is_selected)) {
+				current_item = id.c_str();
+				CommandManager::addCommand(new ChangePropertyCommand<Guid>(&material->shaderId, id, &project.isDirty));
+			}
+			if (is_selected) {
+				ImGui::SetItemDefaultFocus();
+			}
 		}
+		ImGui::EndCombo();
 	}
 
-	if (ImGui::Combo("Shader", &currentShaderIndex, shaderNames)) {
-		CommandManager::addCommand(new ChangePropertyCommand<Guid>(&material->shaderId, world->getAssetByIndex<Shader>(currentShaderIndex)->assetId, &project.isDirty));
-	}
-
-    Shader* shader = world->getAsset<Shader>(material->shaderId);
+    //Shader* shader = world->getAsset<Shader>(material->shaderId);
 
     std::vector<ShaderUniform> uniforms = shader->getUniforms();
     for(size_t i = 0; i < uniforms.size(); i++){
@@ -88,37 +94,61 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 
 		if (uniforms[i].type == GL_INT) {
 			int temp = shader->getInt(uniforms[i].name);
-			if (ImGui::InputInt(uniforms[i].shortName.c_str(), &temp)){
+			if (ImGui::InputInt(uniforms[i].shortName, &temp)){
 				CommandManager::addCommand(new ChangePropertyCommand<int>(&temp, temp, &project.isDirty));
 			}
 		}
 		else if (uniforms[i].type == GL_FLOAT) {
 			float temp = shader->getFloat(uniforms[i].name);
 			//Log::info(std::to_string(temp).c_str());
-			if (ImGui::InputFloat(uniforms[i].shortName.c_str(), &temp))
+			if (ImGui::InputFloat(uniforms[i].shortName, &temp))
 			{
 				CommandManager::addCommand(new ChangePropertyCommand<float>(&temp, temp, &project.isDirty));
 			}
 		}
 		else if (uniforms[i].type == GL_FLOAT_VEC2) {
 			glm::vec2 temp = glm::vec2(0.0f);
-			if (ImGui::InputFloat2(uniforms[i].shortName.c_str(), &temp[0])) 
+			if (ImGui::InputFloat2(uniforms[i].shortName, &temp[0])) 
 			{
 				CommandManager::addCommand(new ChangePropertyCommand<glm::vec2>(&temp, temp, &project.isDirty));
 			}
 		}
 		else if (uniforms[i].type == GL_FLOAT_VEC3) {
 			glm::vec3 temp = glm::vec3(0.0f);
-			if (ImGui::InputFloat3(uniforms[i].shortName.c_str(), &temp[0]))
+			if (ImGui::InputFloat3(uniforms[i].shortName, &temp[0]))
 			{
 				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&temp, temp, &project.isDirty));
 			}
 		}
 		else if (uniforms[i].type == GL_FLOAT_VEC4) {
 			glm::vec4 temp = glm::vec4(0.0f);
-			if (ImGui::InputFloat4(uniforms[i].shortName.c_str(), &temp[0]))
+			if (ImGui::InputFloat4(uniforms[i].shortName, &temp[0]))
 			{
 				CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&temp, temp, &project.isDirty));
+			}
+		}
+
+		if (uniforms[i].type == GL_SAMPLER_2D) {
+		
+			Guid textureId = material->getTexture(uniforms[i].name);
+			std::string test = textureId.toString();
+
+			Texture2D* texture = world->getAsset<Texture2D>(textureId);
+
+			std::string temp1 = textureId.toString();
+
+			bool slotFilled = false;
+			bool isClicked = ImGui::ImageSlot(uniforms[i].shortName, texture == NULL ? 0 : texture->handle.handle, clipboard.getDraggedType() == InteractionType::Texture2D, &slotFilled);
+			if (slotFilled) {
+				textureId = clipboard.getDraggedId();
+				clipboard.clearDraggedItem();
+
+				std::string temp2 = textureId.toString();
+
+				material->setTexture(uniforms[i].name, textureId);
+
+				project.isDirty = true;
+				//CommandManager::addCommand(new ChangePropertyCommand<int>(&temp, temp, &project.isDirty));
 			}
 		}
     }

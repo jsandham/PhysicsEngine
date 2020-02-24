@@ -75,10 +75,14 @@ namespace PhysicsEngine
 			//Octtree dtree; // octtree for dynamic colliders
 			UniformGrid sgrid; // uniform grid for static colliders
 
-			std::map<Guid, int> assetIdToGlobalIndex;
+			// world entity, components, system, and asset id state
 			std::map<Guid, int> idToGlobalIndex;
+			std::map<Guid, int> idToType;
+
+			// entity ids to component ids map
 			std::map<Guid, std::vector<std::pair<Guid, int>>> entityIdToComponentIds; 
 
+			// entity and component creation/deletion state
 			std::vector<Guid> entityIdsMarkedCreated;
 			std::vector<Guid> entityIdsMarkedLatentDestroy;
 			std::vector<std::pair<Guid, int>> entityIdsMarkedMoved;
@@ -123,7 +127,27 @@ namespace PhysicsEngine
 			}
 
 			Entity* getEntity(Guid id);
-			System* getSystem(Guid id);
+
+			template<typename T>
+			T* getSystem(Guid systemId)
+			{
+				assert(IsSystem<T>::value == true);
+
+				if (systemId == Guid::INVALID) {
+					std::string message = "Error: When calling get system with id " + systemId.toString() + " the system found has an invalid guid id\n";
+					Log::error(message.c_str());
+					return NULL;
+				}
+
+				std::map<Guid, int>::iterator it = idToGlobalIndex.find(systemId);
+				if (it != idToGlobalIndex.end()) {
+					int globalIndex = it->second;
+
+					return getAllocator<T>().get(globalIndex);
+				}
+
+				return NULL;
+			}
 
 			template<typename T>
 			T* getComponent(Guid entityId)
@@ -180,6 +204,7 @@ namespace PhysicsEngine
 				component->componentId = componentId;
 
 				idToGlobalIndex[componentId] = componentGlobalIndex;
+				idToType[componentId] = componentType;
 
 				entityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
 
@@ -199,6 +224,7 @@ namespace PhysicsEngine
 				T* component = create<T>(data);
 
 				idToGlobalIndex[component->componentId] = componentGlobalIndex;
+				idToType[component->componentId] = componentType;
 
 				entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, componentType));
 
@@ -212,7 +238,16 @@ namespace PhysicsEngine
 			{
 				assert(IsSystem<T>::value == true);
 
+				int systemGlobalIndex = (int)getAllocator<T>().getCount();
+				int systemType = SystemType<T>::type;
+				Guid systemId = Guid::newGuid();
+
 				T* system = create<T>();
+
+				system->systemId = systemId;
+
+				idToGlobalIndex[system->systemId] = systemGlobalIndex;
+				idToType[system->systemId] = systemType;
 
 				size_t locationToInsert = systems.size();
 				for(size_t i = 0; i < systems.size(); i++){
@@ -234,8 +269,8 @@ namespace PhysicsEngine
 			{
 				assert(IsAsset<T>::value == true);
 
-				std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(id);
-				if(it != assetIdToGlobalIndex.end()){
+				std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
+				if(it != idToGlobalIndex.end()){
 					return getAllocator<T>().get(it->second);
 				}
 				else{
@@ -276,7 +311,7 @@ namespace PhysicsEngine
 			}
 
 			int getIndexOf(Guid id);
-			int getIndexOfAsset(Guid id);
+			int getTypeOf(Guid id);
 
 			template<typename T>
 			T* createAsset()
@@ -284,17 +319,11 @@ namespace PhysicsEngine
 				assert(IsAsset<T>::value == true);
 
 				int index = (int)getAllocator<T>().getCount();
+				int type = AssetType<T>::type;
 				Guid id = Guid::newGuid();
 
-				std::map<Guid, int>::iterator it = assetIdToGlobalIndex.find(id);
-				if(it == assetIdToGlobalIndex.end()){
-					assetIdToGlobalIndex[id] = index;
-				}
-				else{
-					std::string message = "Error: Newly created asset id (" + id.toString() + ") already exists in map?\n";
-					Log::error(message.c_str());
-					return NULL;
-				}
+				idToGlobalIndex[id] = index;
+				idToType[id] = type;
 
 				T* asset = create<T>();
 

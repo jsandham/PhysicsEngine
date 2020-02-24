@@ -23,6 +23,9 @@ namespace PhysicsEngine
 			void update(Input input);
 	};
 
+	template <>
+	const int SystemType<CleanUpSystem>::type = 2;
+
 	template< typename T>
 	struct IsCleanUpSystem { static bool value; };
 

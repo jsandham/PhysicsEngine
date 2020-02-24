@@ -207,6 +207,7 @@
     <ClCompile Include="src\Texture2DDrawer.cpp" />
     <ClCompile Include="src\Texture3DDrawer.cpp" />
     <ClCompile Include="src\TransformDrawer.cpp" />
+    <ClCompile Include="src\WriteToJson.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AboutPopup.h" />

@@ -3,6 +3,8 @@
 
 #include "../include/EditorFileIO.h"
 
+#include "core/WriteInternalToJson.h"
+#include "core/WriteToJson.h"
 #include "core/AssetLoader.h"
 #include "core/Log.h"
 #include "core/Entity.h"
@@ -433,12 +435,32 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	return true;
 }
 
-bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string outFilePath)
+bool PhysicsEditor::writeAssetToJson(PhysicsEngine::World* world, std::string outFilePath, PhysicsEngine::Guid assetId, int type)
 {
 	std::ofstream file;
 
-	std::string test = "Writing world to file " + outFilePath + "\n";
-	PhysicsEngine::Log::info(test.c_str());
+	file.open(outFilePath, std::ios::out);
+
+	if (!file.is_open()) {
+		std::string message = "Could not write asset to file path " + outFilePath + "\n";
+		PhysicsEngine::Log::error(message.c_str());
+		return false;
+	}
+
+	json::JSON& assetObj = json::Object();
+
+	PhysicsEngine::writeInternalAssetToJson(assetObj, world, assetId, type);
+
+	file << assetObj;
+	file << "\n";
+	file.close();
+
+	return true;
+}
+
+bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string outFilePath)
+{
+	std::ofstream file;
 
 	file.open(outFilePath, std::ios::out);
 
@@ -448,7 +470,7 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 		return false;
 	}
 
-	json::JSON obj;
+	json::JSON& sceneObj = json::Object();
 
 	for (int i = 0; i < world->getNumberOfEntities(); i++) {
 		Entity* entity = world->getEntityByIndex(i);
@@ -457,135 +479,210 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 			continue;
 		}
 
+		PhysicsEngine::writeInternalEntityToJson(sceneObj, world, entity->entityId);
+
 		std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
-
-		Guid entityId = entity->entityId;
-
-		// write entity to json
-		obj[entityId.toString()] = json::Object();
-		obj[entityId.toString()]["type"] = "Entity";
-		for (size_t j = 0; j < componentsOnEntity.size(); j++) {
-			obj[entityId.toString()]["components"].append(componentsOnEntity[j].first.toString());
-		}
-
-		// write each component on entity to json
 		for (size_t j = 0; j < componentsOnEntity.size(); j++) {
 			Guid componentId = componentsOnEntity[j].first;
 			int componentType = componentsOnEntity[j].second;
 
-			//json::JSON componentObj = json::Object();
-			if (componentType == 0) {
-				Transform* transform = world->getComponent<Transform>(entityId);
-				
-				obj[componentId.toString()]["type"] = "Transform";
-				obj[componentId.toString()]["parent"] = transform->parentId.toString();
-				obj[componentId.toString()]["entity"] = entityId.toString();
-				obj[componentId.toString()]["position"].append(transform->position.x, transform->position.y, transform->position.z);
-				obj[componentId.toString()]["rotation"].append(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w);
-				obj[componentId.toString()]["scale"].append(transform->scale.x, transform->scale.y, transform->scale.z);
+			if (componentType < 20) {
+				PhysicsEngine::writeInternalComponentToJson(sceneObj, world, entity->entityId, componentId, componentType);
 			}
-			else if (componentType == 1) {
-				Rigidbody* rigidbody = world->getComponent<Rigidbody>(entityId);
-			}
-			else if (componentType == 2) {
-				Camera* camera = world->getComponent<Camera>(entityId);
-
-				obj[componentId.toString()]["type"] = "Camera";
-				obj[componentId.toString()]["entity"] = entityId.toString();
-				obj[componentId.toString()]["targetTextureId"] = camera->targetTextureId.toString();
-				obj[componentId.toString()]["position"].append(camera->position.x, camera->position.y, camera->position.z);
-				obj[componentId.toString()]["front"].append(camera->front.x, camera->front.y, camera->front.z);
-				obj[componentId.toString()]["up"].append(camera->up.x, camera->up.y, camera->up.z);
-				obj[componentId.toString()]["backgroundColor"].append(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
-				obj[componentId.toString()]["x"] = camera->viewport.x;
-				obj[componentId.toString()]["y"] = camera->viewport.y;
-				obj[componentId.toString()]["width"] = camera->viewport.width;
-				obj[componentId.toString()]["height"] = camera->viewport.height;
-				obj[componentId.toString()]["fov"] = camera->frustum.fov;
-				obj[componentId.toString()]["near"] = camera->frustum.nearPlane;
-				obj[componentId.toString()]["far"] = camera->frustum.farPlane;
-			}
-			else if (componentType == 3) {
-				MeshRenderer* meshRenderer = world->getComponent<MeshRenderer>(entityId);
-
-				obj[componentId.toString()]["type"] = "MeshRenderer";
-				obj[componentId.toString()]["entity"] = entityId.toString();
-				obj[componentId.toString()]["mesh"] = meshRenderer->meshId.toString();
-
-				int materialCount = meshRenderer->materialCount;
-
-				std::string label = "material";
-				if (materialCount > 1) {
-					label = "materials";
-				}
-
-				std::string value = "";
-				if (materialCount == 0) {
-					value = Guid::INVALID.toString();
-				}
-				else if (materialCount == 1) {
-					value = meshRenderer->materialIds[0].toString();
-				}
-				else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
-					value += "[";
-					for (int m = 0; m < materialCount; m++) {
-						value += meshRenderer->materialIds[i].toString();
-						if (m != materialCount - 1) {
-							value += ",";
-						}
-					}
-					value += "]";
-				}
-			
-				obj[componentId.toString()][label] = value;
-				obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;
-			}
-			else if (componentType == 4) {
-				LineRenderer* lineRenderer = world->getComponent<LineRenderer>(entityId);
-			}
-			else if (componentType == 5) {
-				Light* light = world->getComponent<Light>(entityId);
-
-				obj[componentId.toString()]["type"] = "Light";
-				obj[componentId.toString()]["entity"] = entityId.toString();
-				obj[componentId.toString()]["position"].append(light->position.x, light->position.y, light->position.z);
-				obj[componentId.toString()]["direction"].append(light->direction.x, light->direction.y, light->direction.z);
-				obj[componentId.toString()]["ambient"].append(light->ambient.x, light->ambient.y, light->ambient.z);
-				obj[componentId.toString()]["diffuse"].append(light->diffuse.x, light->diffuse.y, light->diffuse.z);
-				obj[componentId.toString()]["specular"].append(light->specular.x, light->specular.y, light->specular.z);
-				obj[componentId.toString()]["constant"] = light->constant;
-				obj[componentId.toString()]["linear"] = light->linear;
-				obj[componentId.toString()]["quadratic"] = light->quadratic;
-				obj[componentId.toString()]["cutOff"] = light->cutOff;
-				obj[componentId.toString()]["outerCutOff"] = light->outerCutOff;
-				obj[componentId.toString()]["lightType"] = static_cast<int>(light->lightType);
-				obj[componentId.toString()]["shadowType"] = static_cast<int>(light->shadowType);
-			}
-			else if (componentType == 8) {
-				BoxCollider* collider = world->getComponent<BoxCollider>(entityId);
-
-				obj[componentId.toString()]["type"] = "SphereCollider";
-				obj[componentId.toString()]["entity"] = entityId.toString();
-
-				obj[componentId.toString()]["centre"].append(collider->bounds.centre.x, collider->bounds.centre.y, collider->bounds.centre.z);
-				obj[componentId.toString()]["size"].append(collider->bounds.size.x, collider->bounds.size.y, collider->bounds.size.z);
-			}
-			else if (componentType == 9) {
-				SphereCollider* collider = world->getComponent<SphereCollider>(entityId);
-
-				obj[componentId.toString()]["type"] = "SphereCollider";
-				obj[componentId.toString()]["entity"] = entityId.toString();
-
-				obj[componentId.toString()]["centre"].append(collider->sphere.centre.x, collider->sphere.centre.y, collider->sphere.centre.z);
-				obj[componentId.toString()]["radius"] = collider->sphere.radius;
-			}
-			else if (componentType == 10) {
-				CapsuleCollider* capsuleCollider = world->getComponent<CapsuleCollider>(entityId);
-			}
-			else if (componentType == 15) {
-				MeshCollider* meshCollider = world->getComponent<MeshCollider>(entityId);
+			else {
+				PhysicsEngine::writeComponentToJson(sceneObj, world, entity->entityId, componentId, componentType);
 			}
 		}
+	}
+
+	for (int i = 0; i < world->getNumberOfSystems(); i++) {
+		System* system = world->getSystemByIndex(i);
+
+		Guid systemId = system->systemId;
+		int systemType = world->getTypeOf(system->systemId);
+		int systemOrder = system->getOrder();
+
+		if (systemType < 20) {
+			PhysicsEngine::writeInternalSystemToJson(sceneObj, world, systemId, systemType, systemOrder);
+		}
+		else {
+			PhysicsEngine::writeSystemToJson(sceneObj, world, systemId, systemType, systemOrder);
+		}
+	}
+
+	file << sceneObj;
+	file << "\n";
+	file.close();
+
+	return true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//std::ofstream file;
+
+	//std::string test = "Writing world to file " + outFilePath + "\n";
+	//PhysicsEngine::Log::info(test.c_str());
+
+	//file.open(outFilePath, std::ios::out);
+
+	//if (!file.is_open()) {
+	//	std::string message = "Could not write world to file path " + outFilePath + "\n";
+	//	PhysicsEngine::Log::error(message.c_str());
+	//	return false;
+	//}
+
+	//json::JSON obj;
+
+	//for (int i = 0; i < world->getNumberOfEntities(); i++) {
+	//	Entity* entity = world->getEntityByIndex(i);
+
+	//	if (entity->entityId == Guid("11111111-1111-1111-1111-111111111111")) {
+	//		continue;
+	//	}
+
+	//	std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
+
+	//	Guid entityId = entity->entityId;
+
+	//	// write entity to json
+	//	obj[entityId.toString()] = json::Object();
+	//	obj[entityId.toString()]["type"] = "Entity";
+	//	for (size_t j = 0; j < componentsOnEntity.size(); j++) {
+	//		obj[entityId.toString()]["components"].append(componentsOnEntity[j].first.toString());
+	//	}
+
+	//	// write each component on entity to json
+	//	for (size_t j = 0; j < componentsOnEntity.size(); j++) {
+	//		Guid componentId = componentsOnEntity[j].first;
+	//		int componentType = componentsOnEntity[j].second;
+
+	//		//json::JSON componentObj = json::Object();
+	//		if (componentType == 0) {
+	//			Transform* transform = world->getComponent<Transform>(entityId);
+	//			
+	//			obj[componentId.toString()]["type"] = "Transform";
+	//			obj[componentId.toString()]["parent"] = transform->parentId.toString();
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+	//			obj[componentId.toString()]["position"].append(transform->position.x, transform->position.y, transform->position.z);
+	//			obj[componentId.toString()]["rotation"].append(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w);
+	//			obj[componentId.toString()]["scale"].append(transform->scale.x, transform->scale.y, transform->scale.z);
+	//		}
+	//		else if (componentType == 1) {
+	//			Rigidbody* rigidbody = world->getComponent<Rigidbody>(entityId);
+	//		}
+	//		else if (componentType == 2) {
+	//			Camera* camera = world->getComponent<Camera>(entityId);
+
+	//			obj[componentId.toString()]["type"] = "Camera";
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+	//			obj[componentId.toString()]["targetTextureId"] = camera->targetTextureId.toString();
+	//			obj[componentId.toString()]["position"].append(camera->position.x, camera->position.y, camera->position.z);
+	//			obj[componentId.toString()]["front"].append(camera->front.x, camera->front.y, camera->front.z);
+	//			obj[componentId.toString()]["up"].append(camera->up.x, camera->up.y, camera->up.z);
+	//			obj[componentId.toString()]["backgroundColor"].append(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
+	//			obj[componentId.toString()]["x"] = camera->viewport.x;
+	//			obj[componentId.toString()]["y"] = camera->viewport.y;
+	//			obj[componentId.toString()]["width"] = camera->viewport.width;
+	//			obj[componentId.toString()]["height"] = camera->viewport.height;
+	//			obj[componentId.toString()]["fov"] = camera->frustum.fov;
+	//			obj[componentId.toString()]["near"] = camera->frustum.nearPlane;
+	//			obj[componentId.toString()]["far"] = camera->frustum.farPlane;
+	//		}
+	//		else if (componentType == 3) {
+	//			MeshRenderer* meshRenderer = world->getComponent<MeshRenderer>(entityId);
+
+	//			obj[componentId.toString()]["type"] = "MeshRenderer";
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+	//			obj[componentId.toString()]["mesh"] = meshRenderer->meshId.toString();
+
+	//			int materialCount = meshRenderer->materialCount;
+
+	//			std::string label = "material";
+	//			if (materialCount > 1) {
+	//				label = "materials";
+	//			}
+
+	//			std::string value = "";
+	//			if (materialCount == 0) {
+	//				value = Guid::INVALID.toString();
+	//			}
+	//			else if (materialCount == 1) {
+	//				value = meshRenderer->materialIds[0].toString();
+	//			}
+	//			else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
+	//				value += "[";
+	//				for (int m = 0; m < materialCount; m++) {
+	//					value += meshRenderer->materialIds[m].toString();
+	//					if (m != materialCount - 1) {
+	//						value += ",";
+	//					}
+	//				}
+	//				value += "]";
+	//			}
+	//		
+	//			obj[componentId.toString()][label] = value;
+	//			obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;
+	//		}
+	//		else if (componentType == 4) {
+	//			LineRenderer* lineRenderer = world->getComponent<LineRenderer>(entityId);
+	//		}
+	//		else if (componentType == 5) {
+	//			Light* light = world->getComponent<Light>(entityId);
+
+	//			obj[componentId.toString()]["type"] = "Light";
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+	//			obj[componentId.toString()]["position"].append(light->position.x, light->position.y, light->position.z);
+	//			obj[componentId.toString()]["direction"].append(light->direction.x, light->direction.y, light->direction.z);
+	//			obj[componentId.toString()]["ambient"].append(light->ambient.x, light->ambient.y, light->ambient.z);
+	//			obj[componentId.toString()]["diffuse"].append(light->diffuse.x, light->diffuse.y, light->diffuse.z);
+	//			obj[componentId.toString()]["specular"].append(light->specular.x, light->specular.y, light->specular.z);
+	//			obj[componentId.toString()]["constant"] = light->constant;
+	//			obj[componentId.toString()]["linear"] = light->linear;
+	//			obj[componentId.toString()]["quadratic"] = light->quadratic;
+	//			obj[componentId.toString()]["cutOff"] = light->cutOff;
+	//			obj[componentId.toString()]["outerCutOff"] = light->outerCutOff;
+	//			obj[componentId.toString()]["lightType"] = static_cast<int>(light->lightType);
+	//			obj[componentId.toString()]["shadowType"] = static_cast<int>(light->shadowType);
+	//		}
+	//		else if (componentType == 8) {
+	//			BoxCollider* collider = world->getComponent<BoxCollider>(entityId);
+
+	//			obj[componentId.toString()]["type"] = "SphereCollider";
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+
+	//			obj[componentId.toString()]["centre"].append(collider->bounds.centre.x, collider->bounds.centre.y, collider->bounds.centre.z);
+	//			obj[componentId.toString()]["size"].append(collider->bounds.size.x, collider->bounds.size.y, collider->bounds.size.z);
+	//		}
+	//		else if (componentType == 9) {
+	//			SphereCollider* collider = world->getComponent<SphereCollider>(entityId);
+
+	//			obj[componentId.toString()]["type"] = "SphereCollider";
+	//			obj[componentId.toString()]["entity"] = entityId.toString();
+
+	//			obj[componentId.toString()]["centre"].append(collider->sphere.centre.x, collider->sphere.centre.y, collider->sphere.centre.z);
+	//			obj[componentId.toString()]["radius"] = collider->sphere.radius;
+	//		}
+	//		else if (componentType == 10) {
+	//			CapsuleCollider* capsuleCollider = world->getComponent<CapsuleCollider>(entityId);
+	//		}
+	//		else if (componentType == 15) {
+	//			MeshCollider* meshCollider = world->getComponent<MeshCollider>(entityId);
+	//		}
+	//	}
 
 
 
@@ -602,12 +699,12 @@ bool PhysicsEditor::writeWorldToJson(PhysicsEngine::World* world, std::string ou
 
 		//// We can also parse a string into a JSON object:
 		//obj["parsed"] = JSON::Load("[ { \"Key\" : \"Value\" }, false ]");
-	}
+	//}
 
-	file << obj;
+	/*file << obj;
 	file << "\n";
 
 	file.close();
 
-	return true;
+	return true;*/
 }

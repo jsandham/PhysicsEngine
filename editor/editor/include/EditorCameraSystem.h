@@ -40,6 +40,17 @@ namespace PhysicsEngine
 		void resetCamera();
 	};
 
+	template <>
+	const int SystemType<EditorCameraSystem>::type = 21;
+
+	template< typename T>
+	struct IsEditorCameraSystem { static bool value; };
+
+	template<typename T>
+	bool IsEditorCameraSystem<T>::value = false;
+
+	template<>
+	bool IsEditorCameraSystem<EditorCameraSystem>::value = true;
 	template<>
 	bool IsSystem<EditorCameraSystem>::value = true;
 }

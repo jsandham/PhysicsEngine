@@ -86,11 +86,20 @@ bool World::loadAsset(std::string filePath)
 		std::string temp = asset->assetId.toString();
 		std::cout << "assetId: " << temp << std::endl;
 
-		if(assetIdToGlobalIndex.find(asset->assetId) == assetIdToGlobalIndex.end()){
-			assetIdToGlobalIndex[asset->assetId] = index;
+		if(idToGlobalIndex.find(asset->assetId) == idToGlobalIndex.end()){
+			idToGlobalIndex[asset->assetId] = index;
 		}
 		else{
-			std::string errorMessage = "Asset with id " + asset->assetId.toString() + " already exists in map\n";
+			std::string errorMessage = "Asset with id " + asset->assetId.toString() + " already exists in id to global index map\n";
+			Log::error(&errorMessage[0]);
+			return false;
+		}
+
+		if (idToType.find(asset->assetId) == idToType.end()){
+			idToType[asset->assetId] = type;
+		}
+		else {
+			std::string errorMessage = "Asset with id " + asset->assetId.toString() + " already exists in id to type map\n";
 			Log::error(&errorMessage[0]);
 			return false;
 		}
@@ -162,7 +171,16 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				entityIdsMarkedCreated.push_back(entity->entityId);
 			}
 			else{
-				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in map\n";
+				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in id to global index map\n";
+				Log::error(&errorMessage[0]);
+				return false;
+			}
+
+			if (idToType.find(entity->entityId) == idToType.end()) {
+				idToType[entity->entityId] = type;
+			}
+			else {
+				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in id to type map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
@@ -197,12 +215,20 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				componentIdsMarkedCreated.push_back(make_triple(component->entityId, component->componentId, type));
 			}
 			else{
-				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in map\n";
+				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in id to global index map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 			
-			Log::warn((component->entityId.toString() + "\n").c_str());
+			if (idToType.find(component->componentId) == idToType.end()) {
+				idToType[component->componentId] = type;
+			}
+			else {
+				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in id to type map\n";
+				Log::error(&errorMessage[0]);
+				return false;
+			}
+
 			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
 		}
 		else if(classification == 's' && !ignoreSystemsAndCamera){
@@ -216,6 +242,24 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 
 			if(system == NULL || index == -1){
 				std::string errorMessage = "Could not load system corresponding to type " + std::to_string(type) + "\n";
+				Log::error(&errorMessage[0]);
+				return false;
+			}
+
+			if (idToGlobalIndex.find(system->systemId) == idToGlobalIndex.end()) {
+				idToGlobalIndex[system->systemId] = index;
+			}
+			else {
+				std::string errorMessage = "System with id " + system->systemId.toString() + " already exists in id to global index map\n";
+				Log::error(&errorMessage[0]);
+				return false;
+			}
+
+			if (idToType.find(system->systemId) == idToType.end()) {
+				idToType[system->systemId] = type;
+			}
+			else {
+				std::string errorMessage = "System with id " + system->systemId.toString() + " already exists in id to type map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
@@ -299,11 +343,6 @@ Entity* World::getEntity(Guid id)
 	}
 }
 
-System* World::getSystem(Guid id)
-{
-	return NULL;
-}
-
 Entity* World::getEntityByIndex(int index)
 {
 	return getAllocator<Entity>().get(index);
@@ -316,27 +355,38 @@ System* World::getSystemByIndex(int index)
 
 int World::getIndexOf(Guid id)
 {
-	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(id);
-	if( it2 != idToGlobalIndex.end()){
-		return it2->second;
+	std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
+	if( it != idToGlobalIndex.end()){
+		return it->second;
 	}
 
 	return -1;
 }
 
-int World::getIndexOfAsset(Guid id)
+int World::getTypeOf(Guid id)
 {
-	std::map<Guid, int>::iterator it2 = assetIdToGlobalIndex.find(id);
-	if( it2 != assetIdToGlobalIndex.end()){
-		return it2->second;
+	std::map<Guid, int>::iterator it = idToType.find(id);
+	if (it != idToType.end()) {
+		return it->second;
 	}
 
 	return -1;
 }
+
+//int World::getIndexOfAsset(Guid id)
+//{
+//	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(id);
+//	if( it2 != idToGlobalIndex.end()){
+//		return it2->second;
+//	}
+//
+//	return -1;
+//}
 
 Entity* World::createEntity()
 {
 	int globalIndex = (int)getAllocator<Entity>().getCount();
+	int type = EntityType<Entity>::type;
 	Guid entityId = Guid::newGuid();
 
 	Entity* entity = create<Entity>();
@@ -344,6 +394,8 @@ Entity* World::createEntity()
 	entity->doNotDestroy = false;
 
 	idToGlobalIndex[entityId] = globalIndex;
+	idToType[entityId] = type;
+	
 	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 
 	entityIdsMarkedCreated.push_back(entityId);
@@ -387,10 +439,13 @@ Entity* World::createEntity(Guid entityId)
 Entity* World::createEntity(std::vector<char> data)
 {
 	int globalIndex = (int)getAllocator<Entity>().getCount();
+	int type = EntityType<Entity>::type;
 
 	Entity* entity = create<Entity>(data);
 
 	idToGlobalIndex[entity->entityId] = globalIndex;
+	idToType[entity->entityId] = type;
+
 	entityIdToComponentIds[entity->entityId] = std::vector<std::pair<Guid, int>>();
 
 	entityIdsMarkedCreated.push_back(entity->entityId);
@@ -402,12 +457,14 @@ Camera* World::createEditorCamera()
 {
 	// Editor entity
 	int globalIndex = (int)getAllocator<Entity>().getCount();
+	int type = EntityType<Entity>::type;
 	Guid entityId = Guid("11111111-1111-1111-1111-111111111111");
 	Entity* entity = create<Entity>();
 	entity->entityId = entityId;
 	entity->doNotDestroy = true;
 
 	idToGlobalIndex[entityId] = globalIndex;
+	idToType[entityId] = type;
 	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 	entityIdsMarkedCreated.push_back(entityId);
 
@@ -420,6 +477,7 @@ Camera* World::createEditorCamera()
 	transform->componentId = transformId;
 
 	idToGlobalIndex[transformId] = transformGlobalIndex;
+	idToType[transformId] = transformType;
 	entityIdToComponentIds[entityId].push_back(std::make_pair(transformId, transformType));
 	componentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
 
@@ -432,6 +490,7 @@ Camera* World::createEditorCamera()
 	camera->componentId = cameraId;
 
 	idToGlobalIndex[cameraId] = cameraGlobalIndex;
+	idToType[cameraId] = cameraType;
 	entityIdToComponentIds[entityId].push_back(std::make_pair(cameraId, cameraType));
 	componentIdsMarkedCreated.push_back(make_triple(entityId, cameraId, cameraType));
 
@@ -481,6 +540,7 @@ void World::immediateDestroyEntity(Guid entityId)
 		return;
 	}
 
+	// remove from id to global index map
 	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(entityId);
 	if(it2 != idToGlobalIndex.end()){
 		int index = it2->second;
@@ -496,7 +556,18 @@ void World::immediateDestroyEntity(Guid entityId)
 		}
 	}
 	else{
-		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete\n";
+		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete from id to global index map\n";
+		Log::error(message.c_str());
+		return;
+	}
+
+	//remove from id to type map
+	std::map<Guid, int>::iterator it3 = idToType.find(entityId);
+	if (it3 != idToType.end()) {
+		idToType.erase(it3);
+	}
+	else {
+		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete from id to type map\n";
 		Log::error(message.c_str());
 		return;
 	}
@@ -520,12 +591,12 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		}
 	}
 
+	// remove from id to global index map
 	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(componentId);
 	if(it2 != idToGlobalIndex.end()){
 		int index = it2->second;
 
 		Component* swappedComponent = NULL;
-		//swappedComponent = destroyInternalComponent(componentType, index);
 		if(componentType < 20){
 			swappedComponent = destroyInternalComponent(componentType, index);
 		}
@@ -546,6 +617,17 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		std::string message = "Error: component id " + componentId.toString() + " not found in map when trying to destroy\n";
 		Log::error(message.c_str());
 	} 
+
+	//remove from id to type map
+	std::map<Guid, int>::iterator it3 = idToType.find(componentId);
+	if (it3 != idToType.end()) {
+		idToType.erase(it3);
+	}
+	else {
+		std::string message = "Error: Could not find component with id " + componentId.toString() + " when trying to delete from id to type map\n";
+		Log::error(message.c_str());
+		return;
+	}
 }
 
 bool World::isMarkedForLatentDestroy(Guid id)

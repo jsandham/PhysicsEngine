@@ -6,8 +6,6 @@
 
 #include "Command.h"
 
-#include "core/Input.h"
-
 namespace PhysicsEditor
 {
 	class CommandManager
@@ -21,7 +19,7 @@ namespace PhysicsEditor
 			CommandManager();
 			~CommandManager();
 
-			void update(PhysicsEngine::Input input);
+			void update();
 
 			static void addCommand(Command* command);
 			static void executeCommand();

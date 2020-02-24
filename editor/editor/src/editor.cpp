@@ -23,6 +23,9 @@
 
 #include "UnitTests.h"
 
+
+#include "core/WriteInternalToJson.h"
+
 using namespace PhysicsEditor;
 using namespace json;
 
@@ -138,7 +141,7 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	ImGui::EndFrame();
 
-	commandManager.update(input);
+	commandManager.update();
 }
 
 bool Editor::isQuitCalled() const
@@ -235,12 +238,12 @@ void Editor::saveScene(std::string name, std::string path)
 	Log::info(name.c_str());
 	Log::info(path.c_str());
 
-	if (PhysicsEditor::writeWorldToJson(&world, path)) { 
+	if (PhysicsEditor::writeSceneToJson(&world, path)) { 
 		currentScene.name = name;
 		currentScene.path = path;
 		currentScene.isDirty = false;
 
-		Log::info("save called");
+		Log::info("save scene called");
 	}
 	else {
 		std::string message = "Could not save world to scene file " + path + "\n";
@@ -312,13 +315,6 @@ void Editor::openProject(std::string name, std::string path)
 
 	assetsAddedToWorld.clear();
 
-	Log::info("entities before destroy call\n");
-	for (int i = 0; i < world.getNumberOfEntities(); i++) {
-		std::string entityStr = "Entity in world " + world.getEntityByIndex(i)->entityId.toString() + " \n";
-		Log::info(entityStr.c_str());
-	}
-
-
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); 
 
@@ -326,13 +322,31 @@ void Editor::openProject(std::string name, std::string path)
 	cameraSystem->resetCamera();
 }
 
-void Editor::saveProject()
+void Editor::saveProject(std::string name, std::string path)
 {
 	if (!currentProject.isDirty) {
 		return;
 	}
 
+	Log::info((name+"\n").c_str());
+	Log::info((path+"\n").c_str());
 
+	for (int i = 0; i < world.getNumberOfAssets<Material>(); i++) {
+		Material* material = world.getAssetByIndex<Material>(i);
+		std::string assetPath = libraryDirectory.getFilePath(material->assetId); 
+		
+		if (!PhysicsEditor::writeAssetToJson(&world, assetPath, material->assetId, AssetType<Material>::type)) {
+			std::string message = "Could not save material in project " + assetPath + "\n";
+			Log::error(message.c_str());
+			return;
+		}
+	}
+
+	currentScene.name = name;
+	currentScene.path = path;
+	currentScene.isDirty = false;
+
+	Log::info("save project called");
 }
 
 void Editor::updateAssetsLoadedInWorld()
@@ -396,7 +410,7 @@ void Editor::updateProjectAndSceneState()
 		projectWindow.setMode(ProjectWindowMode::NewProject);
 	}
 	else if (editorMenu.isSaveProjectClicked()) {
-		saveProject();
+		saveProject(currentProject.name, currentProject.path);
 	}
 
 	projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
@@ -414,22 +428,23 @@ void Editor::updateInputPassedToSystems(Input* input)
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	for (int i = 0; i < 61; i++) {
-		input->keyWasDown[i] = input->keyIsDown[i];
-		input->keyIsDown[i] = false;
-	}
+	if(sceneView.isFocused() && sceneView.isHovered())
+	{
+		for (int i = 0; i < 61; i++) {
+			input->keyWasDown[i] = input->keyIsDown[i];
+			input->keyIsDown[i] = false;
+		}
 
-	for (int i = 0; i < 5; i++) {
-		input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
-		input->mouseButtonIsDown[i] = false;
-	}
+		for (int i = 0; i < 5; i++) {
+			input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
+			input->mouseButtonIsDown[i] = false;
+		}
 
-	for (int i = 0; i < 14; i++) {
-		input->xboxButtonWasDown[i] = input->xboxButtonIsDown[i];
-		input->xboxButtonIsDown[i] = false;
-	}
+		for (int i = 0; i < 14; i++) {
+			input->xboxButtonWasDown[i] = input->xboxButtonIsDown[i];
+			input->xboxButtonIsDown[i] = false;
+		}
 
-	//if (sceneView.isFocused()) {
 		// 0 - 9
 		for (int i = 0; i < 10; i++) {
 			input->keyIsDown[0] = io.KeysDown[48 + i];
@@ -464,10 +479,7 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
 		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
 		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
-	//}
-
-	//if(sceneView.isFocused())
-	//{
+	
 		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
 		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
 		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
@@ -477,5 +489,5 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->mouseDelta = (int)io.MouseWheel;
 		input->mousePosX = (int)io.MousePos.x;
 		input->mousePosY = (int)io.MousePos.y;
-	//}
+	}
 }

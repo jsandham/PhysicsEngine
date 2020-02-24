@@ -38,6 +38,9 @@ namespace PhysicsEngine
 			void update(Input input);
 	};
 
+	template <>
+	const int SystemType<PhysicsSystem>::type = 1;
+
 	template< typename T>
 	struct IsPhysicsSystem { static bool value; };
 

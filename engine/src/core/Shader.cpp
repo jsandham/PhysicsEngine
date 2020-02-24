@@ -61,11 +61,11 @@ std::vector<char> Shader::serialize()
 	memcpy(&data[start3], geometryShader.c_str(), sizeof(char) * geometryShader.length());
 	memcpy(&data[start4], fragmentShader.c_str(), sizeof(char) * fragmentShader.length());
 
-	size_t startIndex = start5;
+	/*size_t startIndex = start5;
 	for (size_t i = 0; i < uniforms.size(); i++) {
 		memcpy(&data[startIndex], &uniforms[i], sizeof(ShaderUniform));
 		startIndex += sizeof(ShaderUniform);
-	}
+	}*/
 
 	return data;
 }
@@ -101,16 +101,16 @@ void Shader::deserialize(std::vector<char> data)
 
 	fragmentShader = std::string(start, end);
 
-	size_t startIndex = sizeof(ShaderHeader) + vertexShaderSize + geometryShaderSize + fragmentShaderSize;
+	//size_t startIndex = sizeof(ShaderHeader) + vertexShaderSize + geometryShaderSize + fragmentShaderSize;
 	
-	uniforms.clear();
+	/*uniforms.clear();
 	for (size_t i = 0; i < numberOfShaderUniforms; i++) {
 		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
 
 		uniforms.push_back(*uniform);
 
 		startIndex += sizeof(ShaderUniform);
-	}
+	}*/
 }
 
 bool Shader::isCompiled() const
@@ -183,7 +183,7 @@ void Shader::compile()
 											"SSAO", 
 											"CASCADE" };
 
-	const std::map<std::string, ShaderVariant> keywordToVariantMap{
+	const std::map<const std::string, ShaderVariant> keywordToVariantMap{
 		{"DIRECTIONALLIGHT", ShaderVariant::Directional},
 		{"SPOTLIGHT", ShaderVariant::Spot},
 		{"POINTLIGHT", ShaderVariant::Point},
@@ -364,12 +364,31 @@ void Shader::compile()
 			ShaderUniform uniform;
 			uniform.nameLength = (size_t)nameLength;
 			uniform.size = (size_t)size;
-			uniform.name = std::string(name);
 
-			size_t startIndex = uniform.name.find_last_of(".") + 1;
-			uniform.shortName = uniform.name.substr(startIndex, uniform.name.length() - startIndex);
+			int indexOfBlockChar = -1;
+			for (int k = 0; k < 32; k++) {
+				uniform.name[k] = name[k];
+				uniform.shortName[k] = '\0';
+				uniform.blockName[k] = '\0';
+				if (name[k] == '.') {
+					indexOfBlockChar = k;
+				}
+			}
+
+			uniform.shortName[0] = '\0';
+			for (int k = indexOfBlockChar + 1; k < nameLength; k++) {
+				uniform.shortName[k - indexOfBlockChar - 1] = name[k];
+			}
+
+			uniform.blockName[0] = '\0';
+			for (int k = 0; k < indexOfBlockChar; k++) {
+				uniform.blockName[k] = name[k];
+			}
+
 			uniform.type = type;
 			uniform.variant = programs[i].variant;
+			uniform.isEditorExposed = true;
+			uniform.location = findUniformLocation(std::string(uniform.name), program);
 
 			// only add uniform if it wasnt already in array
 			std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.name));
@@ -415,7 +434,7 @@ void Shader::use(int program)
 	activeProgram = program;
 	glUseProgram(program);
 
-	// apply serialized uniforms here
+	// apply serialized uniforms here?? Or apply in material? Maybe when we call material set methods that sets the value in the serialized uniforms vector and then calls the shader set?
 }
 
 void Shader::unuse()
@@ -453,13 +472,9 @@ void Shader::setUniformBlock(const std::string& blockName, int bindingPoint) con
 	}
 }
 
-int Shader::findUniformLocation(const std::string& name) const
+int Shader::findUniformLocation(const std::string& name, int program) const
 {
-	if(activeProgram != -1){
-		return glGetUniformLocation(activeProgram, name.c_str());
-	}
-
-	return -1;
+	return glGetUniformLocation(program, name.c_str());
 }
 
 int Shader::getProgramFromVariant(int variant) const

@@ -12,7 +12,7 @@ using namespace PhysicsEngine;
 Material::Material()
 {
 	shaderId = Guid::INVALID;
-	textureId = Guid::INVALID;
+	/*textureId = Guid::INVALID;
 	normalMapId = Guid::INVALID;
 	specularMapId = Guid::INVALID;
 
@@ -20,7 +20,9 @@ Material::Material()
 	ambient = glm::vec3(0.25f, 0.25f, 0.25f);
 	diffuse = glm::vec3(0.75f, 0.75f, 0.75f);
 	specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);*/
+
+	shaderChanged = true;
 }
 
 Material::Material(std::vector<char> data)
@@ -38,7 +40,8 @@ std::vector<char> Material::serialize()
 	MaterialHeader header;
 	header.assetId = assetId;
 	header.shaderId = shaderId;
-	header.textureId = textureId;
+	header.uniformCount = uniforms.size();
+	/*header.textureId = textureId;
 	header.normalMapId = normalMapId;
 	header.specularMapId = specularMapId;
 
@@ -46,24 +49,36 @@ std::vector<char> Material::serialize()
 	header.ambient = ambient;
 	header.diffuse = diffuse;
 	header.specular = specular;
-	header.color = color;
+	header.color = color;*/
 
-	size_t numberOfBytes = sizeof(MaterialHeader);
+	size_t numberOfBytes = sizeof(MaterialHeader) + uniforms.size() * sizeof(ShaderUniform);
 
 	std::vector<char> data(numberOfBytes);
 
 	memcpy(&data[0], &header, sizeof(MaterialHeader));
+
+	size_t startIndex = sizeof(MaterialHeader);
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		memcpy(&data[startIndex], &uniforms[i], sizeof(ShaderUniform));
+		startIndex += sizeof(ShaderUniform);
+	}
 
 	return data;
 }
 
 void Material::deserialize(std::vector<char> data)
 {
+	uniforms.clear();
+
 	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[0]);
 
 	assetId = header->assetId;
 	shaderId = header->shaderId;
-	textureId = header->textureId;
+	uniforms.resize(header->uniformCount);
+
+	std::string test = shaderId.toString();
+	std::string aaaa = assetId.toString();
+	/*textureId = header->textureId;
 	normalMapId = header->normalMapId;
 	specularMapId = header->specularMapId;
 
@@ -71,337 +86,578 @@ void Material::deserialize(std::vector<char> data)
 	ambient = header->ambient;
 	diffuse = header->diffuse;
 	specular = header->specular;
-	color = header->color;
+	color = header->color;*/
+
+	//size_t startIndex = sizeof(MaterialHeader);
+
+	//uniforms.clear();
+	size_t startIndex = sizeof(MaterialHeader);
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
+
+		uniforms[i] = *uniform;
+
+		std::string test1 = uniforms[i].name;
+		if (test1 == "material.mainTexture") {
+			std::string test2 = (*reinterpret_cast<Guid*>(uniforms[i].data)).toString();
+		}
+
+		startIndex += sizeof(ShaderUniform);
+	}
+
+	shaderChanged = true;
 }
 
-void Material::use(Shader* shader, RenderObject renderObject)
+void Material::apply(World* world)
 {
-	shader->setFloat("material.shininess", shininess);
-	shader->setVec3("material.ambient", ambient);
-	shader->setVec3("material.diffuse", diffuse);
-	shader->setVec3("material.specular", specular);
+	Shader* shader = world->getAsset<Shader>(shaderId);
 
-	if (renderObject.mainTexture != -1) {
-		shader->setInt("material.mainTexture", 0);
+	int textureSlot = 0;
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		if (uniforms[i].type == GL_SAMPLER_2D) {
 
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
+			Texture2D* texture = world->getAsset<Texture2D>(*reinterpret_cast<Guid*>(uniforms[i].data));
+			if(texture != NULL) {
+				shader->setInt(uniforms[i].name, textureSlot);
+
+				glActiveTexture(GL_TEXTURE0 + textureSlot);
+				glBindTexture(GL_TEXTURE_2D, (GLuint)texture->handle.handle);
+
+				textureSlot++;
+			}
+		}
+		
+		/*if (uniforms[i].type == GL_INT ) {
+			shader->setInt(uniforms[i].name, *reinterpret_cast<int*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT) {
+			shader->setFloat(uniforms[i].name, *reinterpret_cast<float*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_VEC2) {
+			shader->setVec2(uniforms[i].name, *reinterpret_cast<glm::vec2*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_VEC3) {
+			shader->setVec3(uniforms[i].name, *reinterpret_cast<glm::vec3*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_VEC4) {
+			shader->setVec4(uniforms[i].name, *reinterpret_cast<glm::vec4*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_MAT2) {
+			shader->setMat2(uniforms[i].name, *reinterpret_cast<glm::mat2*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_MAT3) {
+			shader->setMat3(uniforms[i].name, *reinterpret_cast<glm::mat3*>(uniforms[i].data));
+		}
+		else if (uniforms[i].type == GL_FLOAT_MAT4) {
+			shader->setMat4(uniforms[i].name, *reinterpret_cast<glm::mat4*>(uniforms[i].data));
+		}*/
 	}
 
-	if (renderObject.normalMap != -1) {
-		shader->setInt("material.normalMap", 1);
 
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);
-	}
-
-	if (renderObject.specularMap != -1) {
-		shader->setInt("material.specularMap", 2);
-
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);
-	}
+	shader->setFloat("material.shininess", 1.0f);
+	shader->setVec3("material.ambient", glm::vec3(0.25f, 0.25f, 0.25f));
+	shader->setVec3("material.diffuse", glm::vec3(0.75f, 0.75f, 0.75f));
+	shader->setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void Material::onShaderChanged(World* world)
 {
-	shader = world->getAsset<Shader>(shaderId);
+	Shader* shader = world->getAsset<Shader>(shaderId);
+
+	if (shader == NULL) {
+		return;
+	}
+
+	if (!shader->isCompiled()) {
+		return;
+	}
+
+	std::string test = shaderId.toString();
+
+	// the uniform data serialized my not be in the same order as the uniforms returned from the 
+	// shader (the serialized uniforms are in alphabetical order by name while the uniforms reported 
+	// by the shader are in the order in which they are declared in the shader). Therefore need to 
+	// correct for this by updating shader reported uniforms with the serialized uniforms 
+	std::vector<ShaderUniform> shaderUniforms = shader->getUniforms();
+	for (size_t i = 0; i < shaderUniforms.size(); i++) {
+		for (size_t j = 0; j < uniforms.size(); j++) {
+			if (std::string(shaderUniforms[i].name) == std::string(uniforms[j].name)) {
+				for (size_t k = 0; k < 64; k++) {
+					shaderUniforms[i].data[k] = uniforms[j].data[k];
+				}
+
+				break;
+			}
+		}
+	}
+
+	uniforms = shaderUniforms;
+
+	shaderChanged = false;
 }
 
-
-
-
-
-
-
-
-
-
-
-void Material::setBool(std::string name, bool value) const
+bool Material::hasShaderChanged() const
 {
-	if(shader != NULL){
-		shader->setBool(name, value);
+	return shaderChanged;
+}
+
+std::vector<ShaderUniform> Material::getUniforms() const
+{
+	return uniforms;
+}
+
+void Material::setBool(std::string name, bool value)
+{
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(bool));
 	}
 }
 
-void Material::setInt(std::string name, int value) const
+void Material::setInt(std::string name, int value)
 {
-	if(shader != NULL){
-		shader->setInt(name, value);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(int));
 	}
 }
 
-void Material::setFloat(std::string name, float value) const
+void Material::setFloat(std::string name, float value)
 {
-	if(shader != NULL){
-		shader->setFloat(name, value);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(float));
 	}
 }
 
-void Material::setVec2(std::string name, const glm::vec2& vec) const
+void Material::setColor(std::string name, const Color& color)
 {
-	if(shader != NULL){
-		shader->setVec2(name, vec);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy((void*)uniforms[index].data, &color, sizeof(Color));
 	}
 }
 
-void Material::setVec3(std::string name, const glm::vec3& vec) const
+void Material::setVec2(std::string name, const glm::vec2& vec)
 {
-	if(shader != NULL){
-		shader->setVec3(name, vec);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC2) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec2));
 	}
 }
 
-void Material::setVec4(std::string name, const glm::vec4& vec) const
+void Material::setVec3(std::string name, const glm::vec3& vec)
 {
-	if(shader != NULL){
-		shader->setVec4(name, vec);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC3) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec3));
 	}
 }
 
-void Material::setMat2(std::string name, const glm::mat2& mat) const
+void Material::setVec4(std::string name, const glm::vec4& vec)
 {
-	if(shader != NULL){
-		shader->setMat2(name, mat);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec4));
 	}
 }
 
-void Material::setMat3(std::string name, const glm::mat3& mat) const
+void Material::setMat2(std::string name, const glm::mat2& mat)
 {
-	if(shader != NULL){
-		shader->setMat3(name, mat);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT2) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat2));
 	}
 }
 
-void Material::setMat4(std::string name, const glm::mat4& mat) const
+void Material::setMat3(std::string name, const glm::mat3& mat)
 {
-	if(shader != NULL){
-		shader->setMat4(name, mat);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT3) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat3));
 	}
 }
 
-void Material::setBool(int nameLocation, bool value) const
+void Material::setMat4(std::string name, const glm::mat4& mat)
 {
-	if(shader != NULL){
-		shader->setBool(nameLocation, value);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT4) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat4));
 	}
 }
 
-void Material::setInt(int nameLocation, int value) const
+void Material::setTexture(std::string name, const Guid& textureId)
 {
-	if(shader != NULL){
-		shader->setInt(nameLocation, value);
+	int index = findIndexOfUniform(name);
+	if (index != -1 && uniforms[index].type == GL_SAMPLER_2D) {
+		memcpy((void*)uniforms[index].data, &textureId, sizeof(Guid));
 	}
 }
 
-void Material::setFloat(int nameLocation, float value) const
+void Material::setBool(int nameLocation, bool value)
 {
-	if(shader != NULL){
-		shader->setFloat(nameLocation, value);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(bool));
 	}
 }
 
-void Material::setVec2(int nameLocation, const glm::vec2& vec) const
+void Material::setInt(int nameLocation, int value)
 {
-	if(shader != NULL){
-		shader->setVec2(nameLocation, vec);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(int));
 	}
 }
 
-void Material::setVec3(int nameLocation, const glm::vec3& vec) const
+void Material::setFloat(int nameLocation, float value)
 {
-	if(shader != NULL){
-		shader->setVec3(nameLocation, vec);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT) {
+		memcpy((void*)uniforms[index].data, &value, sizeof(float));
 	}
 }
 
-void Material::setVec4(int nameLocation, const glm::vec4& vec) const
+void Material::setColor(int nameLocation, const Color& color)
 {
-	if(shader != NULL){
-		shader->setVec4(nameLocation, vec);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy((void*)uniforms[index].data, &color, sizeof(Color));
 	}
 }
 
-void Material::setMat2(int nameLocation, const glm::mat2& mat) const
+void Material::setVec2(int nameLocation, const glm::vec2& vec)
 {
-	if(shader != NULL){
-		shader->setMat2(nameLocation, mat);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC2) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec2));
 	}
 }
 
-void Material::setMat3(int nameLocation, const glm::mat3& mat) const
+void Material::setVec3(int nameLocation, const glm::vec3& vec)
 {
-	if(shader != NULL){
-		shader->setMat3(nameLocation, mat);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC3) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec3));
 	}
 }
 
-void Material::setMat4(int nameLocation, const glm::mat4& mat) const
+void Material::setVec4(int nameLocation, const glm::vec4& vec)
 {
-	if(shader != NULL){
-		shader->setMat4(nameLocation, mat);
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy((void*)uniforms[index].data, &vec, sizeof(glm::vec4));
+	}
+}
+
+void Material::setMat2(int nameLocation, const glm::mat2& mat)
+{
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT2) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat2));
+	}
+}
+
+void Material::setMat3(int nameLocation, const glm::mat3& mat)
+{
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT3) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat3));
+	}
+}
+
+void Material::setMat4(int nameLocation, const glm::mat4& mat)
+{
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT4) {
+		memcpy((void*)uniforms[index].data, &mat, sizeof(glm::mat4));
+	}
+}
+
+void Material::setTexture(int nameLocation, const Guid& textureId)
+{
+	int index = findIndexOfUniform(nameLocation);
+	if (index != -1 && uniforms[index].type == GL_SAMPLER_2D) {
+		memcpy((void*)uniforms[index].data, &textureId, sizeof(textureId));
 	}
 }
 
 bool Material::getBool(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getBool(name);
+	int index = findIndexOfUniform(name);
+	bool value = false;
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy(&value, uniforms[index].data, sizeof(bool));
 	}
 
-	return false;
+	return value;
 }
 
 int Material::getInt(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getInt(name);
+	int index = findIndexOfUniform(name);
+	int value = false;
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy(&value, uniforms[index].data, sizeof(int));
 	}
 
-	return 0;
+	return value;
 }
 
 float Material::getFloat(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getFloat(name);
+	int index = findIndexOfUniform(name);
+	float value = false;
+	if (index != -1 && uniforms[index].type == GL_FLOAT) {
+		memcpy(&value, uniforms[index].data, sizeof(float));
 	}
 
-	return 0.0f;
+	return value;
+}
+
+Color Material::getColor(std::string name) const
+{
+	int index = findIndexOfUniform(name);
+	Color color = Color(0, 0, 0, 255);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy(&color, uniforms[index].data, sizeof(Color));
+	}
+
+	return color;
 }
 
 glm::vec2 Material::getVec2(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getVec2(name);
+	int index = findIndexOfUniform(name);
+	glm::vec2 vec = glm::vec2(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC2) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec2));
 	}
 
-	return glm::vec2(0.0f);
+	return vec;
 }
 
 glm::vec3 Material::getVec3(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getVec3(name);
+	int index = findIndexOfUniform(name);
+	glm::vec3 vec = glm::vec3(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC3) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec3));
 	}
 
-	return glm::vec3(0.0f);
+	return vec;
 }
 
 glm::vec4 Material::getVec4(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getVec4(name);
+	int index = findIndexOfUniform(name);
+	glm::vec4 vec = glm::vec4(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec4));
 	}
 
-	return glm::vec4(0.0f);
+	return vec;
 }
 
 glm::mat2 Material::getMat2(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getMat2(name);
+	int index = findIndexOfUniform(name);
+	glm::mat2 mat = glm::mat2(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT2) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat2));
 	}
 
-	return glm::mat2(0.0f);
+	return mat;
 }
 
 glm::mat3 Material::getMat3(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getMat3(name);
+	int index = findIndexOfUniform(name);
+	glm::mat3 mat = glm::mat3(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT3) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat3));
 	}
 
-	return glm::mat3(0.0f);
+	return mat;
 }
 
 glm::mat4 Material::getMat4(std::string name) const
 {
-	if(shader != NULL){
-		return shader->getMat4(name);
+	int index = findIndexOfUniform(name);
+	glm::mat4 mat = glm::mat4(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT4) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat4));
 	}
 
-	return glm::mat4(0.0f);
+	return mat;
+}
+
+Guid Material::getTexture(std::string name) const
+{
+	int index = findIndexOfUniform(name);
+	Guid textureId = Guid::INVALID;
+	if (index != -1 && uniforms[index].type == GL_SAMPLER_2D) {
+		memcpy(&textureId, uniforms[index].data, sizeof(Guid));
+	}
+
+	return textureId;
 }
 
 bool Material::getBool(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getBool(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	bool value = false;
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy(&value, uniforms[index].data, sizeof(bool));
 	}
 
-	return false;
+	return value;
 }
 
 int Material::getInt(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getInt(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	int value = 0;
+	if (index != -1 && uniforms[index].type == GL_INT) {
+		memcpy(&value, uniforms[index].data, sizeof(int));
 	}
 
-	return 0;
+	return value;
 }
 
 float Material::getFloat(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getFloat(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	float value = 0.0f;
+	if (index != -1 && uniforms[index].type == GL_FLOAT) {
+		memcpy(&value, uniforms[index].data, sizeof(float));
 	}
 
-	return 0.0f;
+	return value;
+}
+
+Color Material::getColor(int nameLocation) const
+{
+	int index = findIndexOfUniform(nameLocation);
+	Color color = Color(0, 0, 0, 255);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy(&color, uniforms[index].data, sizeof(Color));
+	}
+
+	return color;
 }
 
 glm::vec2 Material::getVec2(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getVec2(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::vec2 vec = glm::vec2(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC2) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec2));
 	}
 
-	return glm::vec2(0.0f);
+	return vec;
 }
 
 glm::vec3 Material::getVec3(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getVec3(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::vec3 vec = glm::vec3(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC3) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec3));
 	}
 
-	return glm::vec3(0.0f);
+	return vec;
 }
 
 glm::vec4 Material::getVec4(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getVec4(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::vec4 vec = glm::vec4(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_VEC4) {
+		memcpy(&vec, uniforms[index].data, sizeof(glm::vec4));
 	}
 
-	return glm::vec4(0.0f);
+	return vec;
 }
 
 glm::mat2 Material::getMat2(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getMat2(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::mat2 mat = glm::mat2(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT2) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat2));
 	}
 
-	return glm::mat2(0.0f);
+	return mat;
 }
 
 glm::mat3 Material::getMat3(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getMat3(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::mat3 mat = glm::mat3(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT3) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat3));
 	}
 
-	return glm::mat3(0.0f);
+	return mat;
 }
 
 glm::mat4 Material::getMat4(int nameLocation) const
 {
-	if(shader != NULL){
-		return shader->getMat4(nameLocation);
+	int index = findIndexOfUniform(nameLocation);
+	glm::mat4 mat = glm::mat4(0.0f);
+	if (index != -1 && uniforms[index].type == GL_FLOAT_MAT4) {
+		memcpy(&mat, uniforms[index].data, sizeof(glm::mat4));
 	}
 
-	return glm::mat4(0.0f);
+	return mat;
+}
+
+Guid Material::getTexture(int nameLocation) const
+{
+	int index = findIndexOfUniform(nameLocation);
+	Guid textureId = Guid::INVALID;
+	if (index != -1 && uniforms[index].type == GL_SAMPLER_2D) {
+		memcpy(&textureId, uniforms[index].data, sizeof(Guid));
+	}
+
+	return textureId;
+}
+
+int Material::findIndexOfUniform(std::string name) const
+{
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		if (name == uniforms[i].name) {
+			return (int)i;
+		}
+	}
+
+	return -1;
+}
+
+int Material::findIndexOfUniform(int nameLocation) const
+{
+	for (size_t i = 0; i < uniforms.size(); i++) {
+		if (nameLocation == uniforms[i].location) {
+			return (int)i;
+		}
+	}
+
+	return -1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void Material::setUniformsEditorOnly(std::vector<ShaderUniform> uniforms)
+{
+	this->uniforms = uniforms;
 }

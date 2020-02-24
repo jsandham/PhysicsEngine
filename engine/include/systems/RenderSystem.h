@@ -39,6 +39,9 @@ namespace PhysicsEngine
 			GraphicsQuery getGraphicsQuery() const;
 	};
 
+	template <>
+	const int SystemType<RenderSystem>::type = 0;
+
 	template< typename T>
 	struct IsRenderSystem { static bool value; };
 

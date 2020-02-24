@@ -83,7 +83,7 @@ namespace PhysicsEditor
 			void saveScene(std::string name, std::string path);
 			void createProject(std::string name, std::string path);
 			void openProject(std::string name, std::string path);
-			void saveProject();
+			void saveProject(std::string name, std::string path);
 			void updateProjectAndSceneState();
 			void updateAssetsLoadedInWorld();
 			void updateInputPassedToSystems(Input* input);

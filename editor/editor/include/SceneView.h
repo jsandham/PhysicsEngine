@@ -17,6 +17,7 @@ namespace PhysicsEditor
 	{
 		private:
 			bool focused;
+			bool hovered;
 			PerformanceQueue perfQueue;
 
 		public:
@@ -26,6 +27,7 @@ namespace PhysicsEditor
 			void render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame);
 
 			bool isFocused() const;
+			bool isHovered() const;
 	};
 }
 
