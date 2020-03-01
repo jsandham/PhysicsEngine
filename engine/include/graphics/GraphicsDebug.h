@@ -44,8 +44,8 @@ namespace PhysicsEngine
 				TextureFormat format = fbo[i].colorBuffer.getFormat();
 				std::vector<unsigned char> rawTextureData = fbo[i].colorBuffer.getRawTextureData();
 
-				glGenTextures(1, &(fbo[i].colorBuffer.handle.handle));
-				glBindTexture(GL_TEXTURE_2D, fbo[i].colorBuffer.handle.handle);
+				glGenTextures(1, &(fbo[i].colorBuffer.tex));
+				glBindTexture(GL_TEXTURE_2D, fbo[i].colorBuffer.tex);
 
 				GLenum openglFormat = Graphics::getTextureFormat(format);
 
@@ -58,7 +58,7 @@ namespace PhysicsEngine
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo[i].colorBuffer.handle.handle, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo[i].colorBuffer.tex, 0);
 
 				// depth
 				width = fbo[i].depthBuffer.getWidth();
@@ -67,8 +67,8 @@ namespace PhysicsEngine
 				format = fbo[i].depthBuffer.getFormat();
 				rawTextureData = fbo[i].depthBuffer.getRawTextureData();
 
-				glGenTextures(1, &(fbo[i].depthBuffer.handle.handle));
-				glBindTexture(GL_TEXTURE_2D, fbo[i].depthBuffer.handle.handle);
+				glGenTextures(1, &(fbo[i].depthBuffer.tex));
+				glBindTexture(GL_TEXTURE_2D, fbo[i].depthBuffer.tex);
 
 				openglFormat = Graphics::getTextureFormat(format);
 
@@ -81,9 +81,9 @@ namespace PhysicsEngine
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo[i].depthBuffer.handle.handle, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo[i].depthBuffer.tex, 0);
 
-				std::cout << "frame buffer handle: " << fbo[i].handle << " framebuffer buffer handle: " << fbo[i].colorBuffer.handle.handle << " framebuffer depth buffer handle: " << fbo[i].depthBuffer.handle.handle << std::endl;
+				std::cout << "frame buffer handle: " << fbo[i].handle << " framebuffer buffer handle: " << fbo[i].colorBuffer.tex << " framebuffer depth buffer handle: " << fbo[i].depthBuffer.tex << std::endl;
 
 				GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 				glDrawBuffers(1, DrawBuffers);

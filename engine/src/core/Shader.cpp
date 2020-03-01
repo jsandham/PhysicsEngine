@@ -1,8 +1,10 @@
+#include <stdlib.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <set>
 #include <stack>
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Shader.h"
 #include "../../include/graphics/Graphics.h"
 
@@ -61,12 +63,6 @@ std::vector<char> Shader::serialize()
 	memcpy(&data[start3], geometryShader.c_str(), sizeof(char) * geometryShader.length());
 	memcpy(&data[start4], fragmentShader.c_str(), sizeof(char) * fragmentShader.length());
 
-	/*size_t startIndex = start5;
-	for (size_t i = 0; i < uniforms.size(); i++) {
-		memcpy(&data[startIndex], &uniforms[i], sizeof(ShaderUniform));
-		startIndex += sizeof(ShaderUniform);
-	}*/
-
 	return data;
 }
 
@@ -100,17 +96,79 @@ void Shader::deserialize(std::vector<char> data)
 	end += fragmentShaderSize;
 
 	fragmentShader = std::string(start, end);
+}
 
-	//size_t startIndex = sizeof(ShaderHeader) + vertexShaderSize + geometryShaderSize + fragmentShaderSize;
-	
-	/*uniforms.clear();
-	for (size_t i = 0; i < numberOfShaderUniforms; i++) {
-		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
+void Shader::load(const std::string& filepath)
+{
+	std::ifstream in(filepath.c_str());
+	std::ostringstream contents; contents << in.rdbuf(); in.close();
 
-		uniforms.push_back(*uniform);
+	std::string shaderContent = contents.str();
 
-		startIndex += sizeof(ShaderUniform);
-	}*/
+	std::string vertexTag = "VERTEX:";
+	std::string geometryTag = "GEOMETRY:";
+	std::string fragmentTag = "FRAGMENT:";
+
+	size_t startOfVertexTag = shaderContent.find(vertexTag, 0);
+	size_t startOfGeometryTag = shaderContent.find(geometryTag, 0);
+	size_t startOfFragmentTag = shaderContent.find(fragmentTag, 0);
+
+	if (startOfVertexTag == std::string::npos || startOfFragmentTag == std::string::npos) {
+		std::string message = "Error: Shader must contain both a vertex shader and a fragment shader\n";
+		Log::error(message.c_str());
+		return;
+	}
+
+	std::string vertexShader, geometryShader, fragmentShader;
+
+	if (startOfGeometryTag == std::string::npos) {
+		vertexShader = shaderContent.substr(startOfVertexTag + vertexTag.length(), startOfFragmentTag - vertexTag.length());
+		geometryShader = "";
+		fragmentShader = shaderContent.substr(startOfFragmentTag + fragmentTag.length(), shaderContent.length());
+	}
+	else {
+		vertexShader = shaderContent.substr(startOfVertexTag + vertexTag.length(), startOfGeometryTag - vertexTag.length());
+		geometryShader = shaderContent.substr(startOfGeometryTag + geometryTag.length(), startOfFragmentTag - geometryTag.length());
+		fragmentShader = shaderContent.substr(startOfFragmentTag + fragmentTag.length(), shaderContent.length());
+	}
+
+	// trim left
+	size_t firstNotOfIndex;
+	firstNotOfIndex = vertexShader.find_first_not_of("\n");
+	if (firstNotOfIndex != std::string::npos) {
+		vertexShader = vertexShader.substr(firstNotOfIndex);
+	}
+
+	firstNotOfIndex = geometryShader.find_first_not_of("\n");
+	if (firstNotOfIndex != std::string::npos) {
+		geometryShader = geometryShader.substr(firstNotOfIndex);
+	}
+
+	firstNotOfIndex = fragmentShader.find_first_not_of("\n");
+	if (firstNotOfIndex != std::string::npos) {
+		fragmentShader = fragmentShader.substr(firstNotOfIndex);
+	}
+
+	// trim right
+	size_t lastNotOfIndex;
+	lastNotOfIndex = vertexShader.find_last_not_of("\n");
+	if (lastNotOfIndex != std::string::npos) {
+		vertexShader.erase(lastNotOfIndex + 1);
+	}
+
+	lastNotOfIndex = geometryShader.find_last_not_of("\n");
+	if (lastNotOfIndex != std::string::npos) {
+		geometryShader.erase(lastNotOfIndex + 1);
+	}
+
+	lastNotOfIndex = fragmentShader.find_last_not_of("\n");
+	if (lastNotOfIndex != std::string::npos) {
+		fragmentShader.erase(lastNotOfIndex + 1);
+	}
+
+	setVertexShader(vertexShader);
+	setGeometryShader(geometryShader);
+	setFragmentShader(fragmentShader);
 }
 
 bool Shader::isCompiled() const
@@ -359,17 +417,20 @@ void Shader::compile()
 			GLint size;
 			GLenum type;
 			GLchar name[32];
+
 			glGetActiveUniform(program, (GLuint)j, bufSize, &nameLength, &size, &type, &name[0]);
 
 			ShaderUniform uniform;
 			uniform.nameLength = (size_t)nameLength;
 			uniform.size = (size_t)size;
 
+			memset(uniform.name, '\0', 32);
+			memset(uniform.shortName, '\0', 32);
+			memset(uniform.blockName, '\0', 32);
+
 			int indexOfBlockChar = -1;
-			for (int k = 0; k < 32; k++) {
+			for (int k = 0; k < nameLength; k++) {
 				uniform.name[k] = name[k];
-				uniform.shortName[k] = '\0';
-				uniform.blockName[k] = '\0';
 				if (name[k] == '.') {
 					indexOfBlockChar = k;
 				}
@@ -387,7 +448,6 @@ void Shader::compile()
 
 			uniform.type = type;
 			uniform.variant = programs[i].variant;
-			uniform.isEditorExposed = true;
 			uniform.location = findUniformLocation(std::string(uniform.name), program);
 
 			// only add uniform if it wasnt already in array
@@ -433,8 +493,6 @@ void Shader::use(int program)
 
 	activeProgram = program;
 	glUseProgram(program);
-
-	// apply serialized uniforms here?? Or apply in material? Maybe when we call material set methods that sets the value in the serialized uniforms vector and then calls the shader set?
 }
 
 void Shader::unuse()
@@ -486,6 +544,11 @@ int Shader::getProgramFromVariant(int variant) const
 	}
 
 	return -1;
+}
+
+std::vector<ShaderProgram> Shader::getPrograms() const
+{
+	return programs;
 }
 
 std::vector<ShaderUniform> Shader::getUniforms() const

@@ -35,7 +35,7 @@ for %%x in (%*) do (
 )
 
 :: print build settings
-echo [92mOptimization level: %MODE%[0m
+echo [92mBuild mode: %MODE%[0m
 if defined OPENMP (
 	echo [92mOpenMP: on[0m	
 )else (
@@ -61,6 +61,12 @@ for /r "%MODE%/obj" %%v in (*.obj) do (
 echo [92mCreating static engine library...[0m
 lib /out:%MODE%/engine.lib %OBJ_FILES%
 
+:: delete .obj fles
+echo [92mDeleting objects...[0m
+set OBJ_FILES=
+for /r "%MODE%/obj" %%v in (*.obj) do (
+	del /s %%v
+)
 
 :: cant create engine dll as not all external symbols can be resolved - specifically the load functions in Load.h
 ::link /DLL /out:%MODE%/engine.dll %OBJ_FILES% %MODE%/glew32.lib opengl32.lib %MODE%/freetype.lib

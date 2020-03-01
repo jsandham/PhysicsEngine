@@ -359,11 +359,11 @@ void Graphics::readPixels(Texture2D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+	glBindTexture(GL_TEXTURE_2D, texture->tex);
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
-	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
+	glGetTextureImage(texture->tex, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
 	
 	texture->setRawTextureData(rawTextureData, width, height, format);
 
@@ -378,7 +378,7 @@ void Graphics::apply(Texture2D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+	glBindTexture(GL_TEXTURE_2D, texture->tex);
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
@@ -442,11 +442,11 @@ void Graphics::readPixels(Texture3D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_3D, texture->handle.handle);
+	glBindTexture(GL_TEXTURE_3D, texture->tex);
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
-	glGetTextureImage(texture->handle.handle, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
+	glGetTextureImage(texture->tex, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
 
 	//texture->setRawTextureData(rawTextureData, width, height, depth, format);
 	
@@ -462,7 +462,7 @@ void Graphics::apply(Texture3D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_3D, texture->handle.handle);
+	glBindTexture(GL_TEXTURE_3D, texture->tex);
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
@@ -533,7 +533,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 		return;
 	}
 
-	Shader* shader = world->getAsset<Shader>(material->shaderId);
+	Shader* shader = world->getAsset<Shader>(material->getShaderId());
 
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;
@@ -628,7 +628,7 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 
 
 		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+		glBindTexture(GL_TEXTURE_2D, texture->tex);
 	}
 
 	if(world->debug && query != NULL){

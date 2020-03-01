@@ -3,24 +3,15 @@
 #include <GL/glew.h>
 #include <gl/gl.h>
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
+#include "../../include/core/mat_load.h"
 
 using namespace PhysicsEngine;
 
 Material::Material()
 {
 	shaderId = Guid::INVALID;
-	/*textureId = Guid::INVALID;
-	normalMapId = Guid::INVALID;
-	specularMapId = Guid::INVALID;
-
-	shininess = 1.0f;
-	ambient = glm::vec3(0.25f, 0.25f, 0.25f);
-	diffuse = glm::vec3(0.75f, 0.75f, 0.75f);
-	specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);*/
 
 	shaderChanged = true;
 }
@@ -41,15 +32,6 @@ std::vector<char> Material::serialize()
 	header.assetId = assetId;
 	header.shaderId = shaderId;
 	header.uniformCount = uniforms.size();
-	/*header.textureId = textureId;
-	header.normalMapId = normalMapId;
-	header.specularMapId = specularMapId;
-
-	header.shininess = shininess;
-	header.ambient = ambient;
-	header.diffuse = diffuse;
-	header.specular = specular;
-	header.color = color;*/
 
 	size_t numberOfBytes = sizeof(MaterialHeader) + uniforms.size() * sizeof(ShaderUniform);
 
@@ -75,37 +57,34 @@ void Material::deserialize(std::vector<char> data)
 	assetId = header->assetId;
 	shaderId = header->shaderId;
 	uniforms.resize(header->uniformCount);
-
-	std::string test = shaderId.toString();
-	std::string aaaa = assetId.toString();
-	/*textureId = header->textureId;
-	normalMapId = header->normalMapId;
-	specularMapId = header->specularMapId;
-
-	shininess = header->shininess;
-	ambient = header->ambient;
-	diffuse = header->diffuse;
-	specular = header->specular;
-	color = header->color;*/
-
-	//size_t startIndex = sizeof(MaterialHeader);
-
-	//uniforms.clear();
+	
 	size_t startIndex = sizeof(MaterialHeader);
 	for (size_t i = 0; i < uniforms.size(); i++) {
 		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
 
 		uniforms[i] = *uniform;
 
-		std::string test1 = uniforms[i].name;
-		if (test1 == "material.mainTexture") {
-			std::string test2 = (*reinterpret_cast<Guid*>(uniforms[i].data)).toString();
-		}
-
 		startIndex += sizeof(ShaderUniform);
 	}
 
 	shaderChanged = true;
+}
+
+void Material::load(const std::string& filepath)
+{
+	material_data mat;
+
+	if (mat_load(filepath, mat))
+	{
+		uniforms = mat.uniforms;
+		shaderId = mat.shaderId;
+
+		shaderChanged = true;
+	}
+	else {
+		std::string message = "Error: Could not load material " + filepath + "\n";
+		Log::error(message.c_str());
+	}
 }
 
 void Material::apply(World* world)
@@ -114,6 +93,7 @@ void Material::apply(World* world)
 
 	int textureSlot = 0;
 	for (size_t i = 0; i < uniforms.size(); i++) {
+
 		if (uniforms[i].type == GL_SAMPLER_2D) {
 
 			Texture2D* texture = world->getAsset<Texture2D>(*reinterpret_cast<Guid*>(uniforms[i].data));
@@ -121,13 +101,13 @@ void Material::apply(World* world)
 				shader->setInt(uniforms[i].name, textureSlot);
 
 				glActiveTexture(GL_TEXTURE0 + textureSlot);
-				glBindTexture(GL_TEXTURE_2D, (GLuint)texture->handle.handle);
+				glBindTexture(GL_TEXTURE_2D, (GLuint)texture->tex);
 
 				textureSlot++;
 			}
 		}
 		
-		/*if (uniforms[i].type == GL_INT ) {
+		if (uniforms[i].type == GL_INT ) {
 			shader->setInt(uniforms[i].name, *reinterpret_cast<int*>(uniforms[i].data));
 		}
 		else if (uniforms[i].type == GL_FLOAT) {
@@ -142,22 +122,7 @@ void Material::apply(World* world)
 		else if (uniforms[i].type == GL_FLOAT_VEC4) {
 			shader->setVec4(uniforms[i].name, *reinterpret_cast<glm::vec4*>(uniforms[i].data));
 		}
-		else if (uniforms[i].type == GL_FLOAT_MAT2) {
-			shader->setMat2(uniforms[i].name, *reinterpret_cast<glm::mat2*>(uniforms[i].data));
-		}
-		else if (uniforms[i].type == GL_FLOAT_MAT3) {
-			shader->setMat3(uniforms[i].name, *reinterpret_cast<glm::mat3*>(uniforms[i].data));
-		}
-		else if (uniforms[i].type == GL_FLOAT_MAT4) {
-			shader->setMat4(uniforms[i].name, *reinterpret_cast<glm::mat4*>(uniforms[i].data));
-		}*/
 	}
-
-
-	shader->setFloat("material.shininess", 1.0f);
-	shader->setVec3("material.ambient", glm::vec3(0.25f, 0.25f, 0.25f));
-	shader->setVec3("material.diffuse", glm::vec3(0.75f, 0.75f, 0.75f));
-	shader->setVec3("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void Material::onShaderChanged(World* world)
@@ -172,19 +137,15 @@ void Material::onShaderChanged(World* world)
 		return;
 	}
 
-	std::string test = shaderId.toString();
-
-	// the uniform data serialized my not be in the same order as the uniforms returned from the 
+	// the uniform data serialized may not be in the same order as the uniforms returned from the 
 	// shader (the serialized uniforms are in alphabetical order by name while the uniforms reported 
 	// by the shader are in the order in which they are declared in the shader). Therefore need to 
 	// correct for this by updating shader reported uniforms with the serialized uniforms 
 	std::vector<ShaderUniform> shaderUniforms = shader->getUniforms();
 	for (size_t i = 0; i < shaderUniforms.size(); i++) {
 		for (size_t j = 0; j < uniforms.size(); j++) {
-			if (std::string(shaderUniforms[i].name) == std::string(uniforms[j].name)) {
-				for (size_t k = 0; k < 64; k++) {
-					shaderUniforms[i].data[k] = uniforms[j].data[k];
-				}
+			if (memcmp(shaderUniforms[i].name, uniforms[j].name, 32) == 0) {
+				memcpy(shaderUniforms[i].data, uniforms[j].data, 64);
 
 				break;
 			}
@@ -199,6 +160,17 @@ void Material::onShaderChanged(World* world)
 bool Material::hasShaderChanged() const
 {
 	return shaderChanged;
+}
+
+void Material::setShaderId(Guid shaderId)
+{
+	this->shaderId = shaderId;
+	shaderChanged = true;
+}
+
+Guid Material::getShaderId() const
+{
+	return shaderId;
 }
 
 std::vector<ShaderUniform> Material::getUniforms() const
@@ -644,20 +616,4 @@ int Material::findIndexOfUniform(int nameLocation) const
 	}
 
 	return -1;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-void Material::setUniformsEditorOnly(std::vector<ShaderUniform> uniforms)
-{
-	this->uniforms = uniforms;
 }

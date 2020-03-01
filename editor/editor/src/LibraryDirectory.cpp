@@ -4,7 +4,6 @@
 
 #include "core/Log.h"
 #include "core/Scene.h"
-#include "core/AssetLoader.h"
 #include "core/Texture2D.h"
 #include "core/Shader.h"
 #include "core/Mesh.h"

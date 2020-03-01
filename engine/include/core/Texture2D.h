@@ -40,6 +40,8 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 
+			void load(const std::string& filepath);
+
 			int getWidth() const;
 			int getHeight() const;
 

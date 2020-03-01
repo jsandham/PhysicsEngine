@@ -170,8 +170,8 @@ void PhysicsEngine::registerRenderAssets(World* world)
 			TextureFormat format = texture->getFormat();
 			std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-			glGenTextures(1, &(texture->handle.handle));
-			glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+			glGenTextures(1, &(texture->tex));
+			glBindTexture(GL_TEXTURE_2D, texture->tex);
 
 			GLenum openglFormat = GL_DEPTH_COMPONENT;
 			switch (format)
@@ -236,7 +236,7 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	for (int i = 0; i < world->getNumberOfAssets<Material>(); i++) {
 		Material* material = world->getAssetByIndex<Material>(i);
 
-		std::unordered_set<Guid>::iterator it = shadersCompiledThisFrame.find(material->shaderId);
+		std::unordered_set<Guid>::iterator it = shadersCompiledThisFrame.find(material->getShaderId());
 
 		if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end()) {
 			material->onShaderChanged(world); // need to also do this if the shader code changed but the assigned shader on the material remained the same!
@@ -248,25 +248,25 @@ void PhysicsEngine::registerRenderAssets(World* world)
 		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
 
 		if (mesh != NULL && !mesh->isCreated) {
-			glGenVertexArrays(1, &mesh->vao.handle);
-			glBindVertexArray(mesh->vao.handle);
-			glGenBuffers(1, &mesh->vbo[0].handle);
-			glGenBuffers(1, &mesh->vbo[1].handle);
-			glGenBuffers(1, &mesh->vbo[2].handle);
+			glGenVertexArrays(1, &mesh->vao);
+			glBindVertexArray(mesh->vao);
+			glGenBuffers(1, &mesh->vbo[0]);
+			glGenBuffers(1, &mesh->vbo[1]);
+			glGenBuffers(1, &mesh->vbo[2]);
 
-			glBindVertexArray(mesh->vao.handle);
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[0].handle);
-			glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(float), &(mesh->vertices[0]), GL_DYNAMIC_DRAW);
+			glBindVertexArray(mesh->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[0]);
+			glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() * sizeof(float), &(mesh->getVertices()[0]), GL_DYNAMIC_DRAW);
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[1].handle);
-			glBufferData(GL_ARRAY_BUFFER, mesh->normals.size() * sizeof(float), &(mesh->normals[0]), GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[1]);
+			glBufferData(GL_ARRAY_BUFFER, mesh->getNormals().size() * sizeof(float), &(mesh->getNormals()[0]), GL_DYNAMIC_DRAW);
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[2].handle);
-			glBufferData(GL_ARRAY_BUFFER, mesh->texCoords.size() * sizeof(float), &(mesh->texCoords[0]), GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[2]);
+			glBufferData(GL_ARRAY_BUFFER, mesh->getTexCoords().size() * sizeof(float), &(mesh->getTexCoords()[0]), GL_DYNAMIC_DRAW);
 			glEnableVertexAttribArray(2);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
@@ -1012,12 +1012,12 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 
 	for (int i = 0; i < meshRenderer->materialCount; i++) {
 		int materialIndex = world->getIndexOf(meshRenderer->materialIds[i]);
-		int subMeshVertexStartIndex = mesh->subMeshVertexStartIndices[i];
-		int subMeshVertexEndIndex = mesh->subMeshVertexStartIndices[i + 1];
+		int subMeshVertexStartIndex = mesh->getSubMeshStartIndices()[i];
+		int subMeshVertexEndIndex = mesh->getSubMeshStartIndices()[i + 1];
 		int subMeshVerticesCount = subMeshVertexEndIndex - subMeshVertexStartIndex;
 
 		Material* material = world->getAssetByIndex<Material>(materialIndex);
-		Shader* shader = world->getAsset<Shader>(material->shaderId);
+		Shader* shader = world->getAsset<Shader>(material->getShaderId());
 
 		int shaderIndex = world->getIndexOf(shader->assetId);
 
@@ -1028,7 +1028,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
 		renderObject.shaderIndex = shaderIndex;
-		renderObject.vao = mesh->vao.handle;
+		renderObject.vao = mesh->vao;
 
 		renderObject.mainTexture = -1;
 		renderObject.normalMap = -1;

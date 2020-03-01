@@ -10,8 +10,6 @@
 
 #include "../glm/glm.hpp"
 
-#include "../../include/graphics/RenderObject.h"
-
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
@@ -20,36 +18,13 @@ namespace PhysicsEngine
 		Guid assetId;
 		Guid shaderId;
 		size_t uniformCount;
-		/*Guid textureId;
-		Guid normalMapId;
-		Guid specularMapId;
-
-		float shininess;
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-		glm::vec4 color;*/
 	};
 #pragma pack(pop)
 
-	typedef enum TEXURESLOT
-	{
-		MAINTEXTURE,
-		NORMAL,
-		DIFFUSE,
-		SPECULAR,
-		ALBEDO,
-		GLOSS,
-		CUBEMAP,
-		COUNT
-	}TEXTURESLOT;
-
 	class Material : public Asset
 	{
-		public:
-			Guid shaderId;
-
 		private:
+			Guid shaderId;
 			bool shaderChanged;
 			std::vector<ShaderUniform> uniforms;
 
@@ -60,20 +35,15 @@ namespace PhysicsEngine
 
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
+
+			void load(const std::string& filepath);
 			void apply(World* world);
 			void onShaderChanged(World* world);
 			bool hasShaderChanged() const;
 
-			//Guid getShaderId() const;
-			//void setShaderId(World* world, Guid id); // have this call onShaderChanged(world)?
-
-			//void onShaderChanged(World* world); // sets shader pointer and fills uniform data?
-			//void load(World* world);
-			//void loadShaderFromWorld(World* world);
-			//void printUniforms(Shader* shader);
-
+			void setShaderId(Guid shaderId);
+			Guid getShaderId() const;
 			std::vector<ShaderUniform> getUniforms() const;
-
 
 			void setBool(std::string name, bool value);
 			void setInt(std::string name, int value);
@@ -122,11 +92,6 @@ namespace PhysicsEngine
 			glm::mat3 getMat3(int nameLocation) const;
 			glm::mat4 getMat4(int nameLocation) const;
 			Guid getTexture(int nameLocation) const;
-
-
-			//This only exists so that we can set the uniforms in a dummy Material for the purpose of then calling the serialize method 
-			//to get the serialized data when writing the material to binary. Used from AssetLoader. Think of a better way?
-			void setUniformsEditorOnly(std::vector<ShaderUniform> uniforms);
 
 		private:
 			int findIndexOfUniform(std::string name) const;

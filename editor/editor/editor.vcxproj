@@ -193,6 +193,7 @@
     <ClCompile Include="src\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\EditorMenuBar.cpp" />
     <ClCompile Include="src\MaterialDrawer.cpp" />
+    <ClCompile Include="src\MaterialRenderer.cpp" />
     <ClCompile Include="src\MeshColliderDrawer.cpp" />
     <ClCompile Include="src\MeshDrawer.cpp" />
     <ClCompile Include="src\MeshRendererDrawer.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="include\LoadInspectorDrawerInternal.h" />
     <ClInclude Include="include\EditorMenuBar.h" />
     <ClInclude Include="include\MaterialDrawer.h" />
+    <ClInclude Include="include\MaterialRenderer.h" />
     <ClInclude Include="include\MeshColliderDrawer.h" />
     <ClInclude Include="include\MeshDrawer.h" />
     <ClInclude Include="include\MeshRendererDrawer.h" />

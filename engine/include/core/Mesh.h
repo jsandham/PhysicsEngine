@@ -3,11 +3,12 @@
 
 #include<vector>
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #include "Guid.h"
 #include "Asset.h"
 #include "Sphere.h"
-
-#include "../graphics/GraphicsHandle.h"
 
 #include "../glm/glm.hpp"
 
@@ -26,14 +27,15 @@ namespace PhysicsEngine
 
 	class Mesh : public Asset
 	{
-		public:
+		private:
 			std::vector<float> vertices;
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 			std::vector<int> subMeshVertexStartIndices;
 
-			GraphicsHandle vao;
-			GraphicsHandle vbo[3];
+		public:
+			GLuint vao;
+			GLuint vbo[3];
 
 			bool isCreated;
 
@@ -45,6 +47,12 @@ namespace PhysicsEngine
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
 
+			void load(const std::string& filename);
+
+			const std::vector<float>& getVertices() const;
+			const std::vector<float>& getNormals() const;
+			const std::vector<float>& getTexCoords() const;
+			const std::vector<int>& getSubMeshStartIndices() const;
 			Sphere getBoundingSphere() const;
 	};
 

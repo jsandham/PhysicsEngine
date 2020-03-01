@@ -24,7 +24,7 @@ void BatchManager::add(Material* material, Mesh* mesh, glm::mat4 model)
 {
 	Guid materialId = material->assetId;
 
-	unsigned int numOfVerticesInMesh = (unsigned int)mesh->vertices.size() / 3;
+	unsigned int numOfVerticesInMesh = (unsigned int)mesh->getVertices().size() / 3;
 
 	std::map<Guid, std::vector<Batch>>::iterator it = materialIdToBatchesMap.find(materialId);
 	if(it != materialIdToBatchesMap.end()){

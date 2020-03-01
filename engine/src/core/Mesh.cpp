@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "../../include/core/PoolAllocator.h"
+#include "../../include/core/Log.h"
 #include "../../include/core/Mesh.h"
+#include "../../include/obj_load/obj_load.h"
 
 using namespace PhysicsEngine;
 
@@ -87,6 +88,43 @@ void Mesh::deserialize(std::vector<char> data)
 	}
 
 	this->isCreated = false;
+}
+
+void Mesh::load(const std::string& filepath)
+{
+	obj_mesh mesh;
+	
+	if (obj_load(filepath, mesh))
+	{
+		vertices = mesh.vertices;
+		normals = mesh.normals;
+		texCoords = mesh.texCoords;
+		subMeshVertexStartIndices = mesh.subMeshVertexStartIndices;
+	}
+	else {
+		std::string message = "Error: Could not load obj mesh " + filepath + "\n";
+		Log::error(message.c_str());
+	}
+}
+
+const std::vector<float>& Mesh::getVertices() const
+{
+	return vertices;
+}
+
+const std::vector<float>& Mesh::getNormals() const
+{
+	return normals;
+}
+
+const std::vector<float>& Mesh::getTexCoords() const
+{
+	return texCoords;
+}
+
+const std::vector<int>& Mesh::getSubMeshStartIndices() const
+{
+	return subMeshVertexStartIndices;
 }
 
 Sphere Mesh::getBoundingSphere() const

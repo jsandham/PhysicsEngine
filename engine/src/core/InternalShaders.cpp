@@ -412,3 +412,100 @@ std::string InternalShaders::ssaoFragmentShader =
 "	occlusion = 1.0 - (occlusion / kernelSize);\n"
 "	FragColor = occlusion;\n"
 "}\n";
+
+
+
+
+
+std::string InternalShaders::simpleLitVertexShader =
+"uniform mat4 model;\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+"uniform vec3 cameraPos;\n"
+
+"in vec3 position;\n"
+"in vec3 normal;\n"
+"in vec2 texCoord;\n"
+
+"out vec3 FragPos;\n"
+"out vec3 CameraPos;\n"
+"out vec3 Normal;\n"
+"out vec2 TexCoord;\n"
+
+"void main()\n"
+"{\n"
+"	CameraPos = cameraPos;\n"
+"	FragPos = vec3(model * vec4(position, 1.0));\n"
+"	Normal = mat3(transpose(inverse(model))) * normal;\n"
+"	TexCoord = texCoord;\n"
+
+"	gl_Position = projection * view * vec4(FragPos, 1.0);\n"
+"}\n";
+
+std::string InternalShaders::simpleLitFragmentShader =
+"in vec3 FragPos;\n"
+"in vec3 CameraPos;\n"
+"in vec3 Normal;\n"
+"in vec2 TexCoord;\n"
+
+"out vec4 FragColor;\n"
+
+"void main(void)\n"
+"{\n"
+"	FragColor = vec4(1.0, 0.5, 0.5, 1.0);\n"
+"}\n";
+
+//std::string InternalShaders::simpleLitFragmentShader =
+//"struct Material\n"
+//"{\n"
+//"	float shininess;\n"
+//"	vec3 ambient;\n"
+//"	vec3 diffuse;\n"
+//"	vec3 specular;\n"
+//
+//"	sampler2D mainTexture;\n"
+//"	sampler2D normalMap;\n"
+//"	sampler2D specularMap;\n"
+//"};\n"
+//
+//"uniform Material material;\n"
+//
+//"uniform vec3 direction;\n"
+//"uniform vec3 ambient;\n"
+//"uniform vec3 diffuse;\n"
+//"uniform vec3 specular;\n"
+//
+//"in vec3 FragPos;\n"
+//"in vec3 CameraPos;\n"
+//"in vec3 Normal;\n"
+//"in vec2 TexCoord;\n"
+//
+//"out vec4 FragColor;\n"
+//
+//"vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir);\n"
+//
+//"void main(void)\n"
+//"{\n"
+//"	vec3 viewDir = normalize(CameraPos - FragPos);\n"
+//
+//"	FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);\n"
+//"	//FragColor = vec4(0.5, 0.5, 0.5, 1.0);\n"
+//"}\n"
+//
+//"vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir)\n"
+//"{\n"
+//"	vec3 norm = normalize(normal);\n"
+//"	vec3 lightDir = normalize(direction);\n"
+//
+//"	vec3 reflectDir = reflect(-lightDir, norm);\n"
+//
+//"	float ambientStrength = 1.0f;\n"
+//"	float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
+//"	float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
+//
+//"	vec3 fambient = ambient * material.ambient * ambientStrength;\n"
+//"	vec3 fdiffuse = diffuse * material.diffuse * diffuseStrength;\n"
+//"	vec3 fspecular = specular * material.specular * vec3(texture(material.specularMap, TexCoord)) * specularStrength;\n"
+//
+//"	return (fambient + fdiffuse + fspecular);\n"
+//"}\n";

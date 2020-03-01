@@ -11,7 +11,6 @@
 #include "Asset.h"
 #include "Entity.h"
 #include "Mesh.h"
-#include "GMesh.h"
 #include "Material.h"
 #include "Shader.h"
 #include "Texture2D.h"

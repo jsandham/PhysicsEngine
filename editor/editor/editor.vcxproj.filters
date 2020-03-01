@@ -174,6 +174,9 @@
     <ClCompile Include="src\WriteToJson.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MaterialRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h">
@@ -336,6 +339,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Texture3DDrawer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MaterialRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

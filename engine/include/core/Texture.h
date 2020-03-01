@@ -1,10 +1,11 @@
 #ifndef __TEXTURE_H__
 #define __TEXTURE_H__
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #include "Guid.h"
 #include "Asset.h"
-
-#include "../graphics/GraphicsHandle.h"
 
 namespace PhysicsEngine
 {
@@ -33,7 +34,7 @@ namespace PhysicsEngine
 			std::vector<unsigned char> rawTextureData;
 
 		public:
-			GraphicsHandle handle;
+			GLuint tex;
 
 		public:
 			Texture();

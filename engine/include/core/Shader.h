@@ -62,13 +62,12 @@ namespace PhysicsEngine
 		char name[32]; //variable name in GLSL (including block name if applicable)
 		char shortName[32]; //variable name in GLSL (excluding block name if applicable)
 		char blockName[32]; //block name (empty string if not part of block)
-		size_t nameLength; 
+		size_t nameLength; // length of name
 		size_t size; // size of the uniform
 		GLenum type; // type of the uniform (float, vec3 or mat4, etc)
 		int variant; // variant this uniform occurs in
 		int location; //uniform location in shader program
 		size_t index; // what index in array of uniforms we are at
-		bool isEditorExposed; //if uniform can be shown in editor inspector
 	};
 
 	struct ShaderAttribute
@@ -86,7 +85,7 @@ namespace PhysicsEngine
 			bool allProgramsCompiled;
 			int activeProgram;
 			std::vector<ShaderProgram> programs;
-			std::vector<ShaderUniform> uniforms; //uniforms need to be serialized on the material not the shader as different materials using the same shader might have different values set
+			std::vector<ShaderUniform> uniforms; 
 			std::vector<ShaderAttribute> attributes;
 
 		public:
@@ -96,6 +95,8 @@ namespace PhysicsEngine
 
 			std::vector<char> serialize();
 			void deserialize(std::vector<char> data);
+
+			void load(const std::string& filepath);
 
 			bool isCompiled() const;
 			bool contains(int variant) const;
@@ -112,6 +113,7 @@ namespace PhysicsEngine
 			int findUniformLocation(const std::string& name, int program) const;
 			int getProgramFromVariant(int variant) const;
 
+			std::vector<ShaderProgram> getPrograms() const;
 			std::vector<ShaderUniform> getUniforms() const;
 			std::vector<ShaderAttribute> getAttributeNames() const;
 
@@ -154,18 +156,6 @@ namespace PhysicsEngine
 			glm::mat2 getMat2(int nameLocation) const;
 			glm::mat3 getMat3(int nameLocation) const;
 			glm::mat4 getMat4(int nameLocation) const;
-
-
-
-			// idea...
-			//Should we have setIntOnActive etc for setting on active shader variant (using internally by engine primarily)
-			//and then have setInt etc that sets on all variants used by editor and user runtime code? Maybe that too slow though for 
-			//setting on all variants...maybe the eitor/user passes which variant?? Or we could leave the setInt methods as they are and 
-			//add seIntOnAll methods for use by editor and user? Or setIntOnVariant?...Or maybe what we need to do is have set methods that 
-			//just write to the serialized uniforms array and then when we internally call use(variant) it will apply these serialized values to
-			//the now active shader?? Maybe this means we should only store user defined uniforms in uniforms array and skip things like the model 
-			//matrix and lighting uniforms as these are set internally by the engine...but hen how do I distinguish what uniforms are user ones and 
-			//which are internal ones??
 	};
 
 	template <>
@@ -181,44 +171,6 @@ namespace PhysicsEngine
 	bool IsShader<Shader>::value = true;
 	template<>
 	bool IsAsset<Shader>::value = true;
-
-
-
-
-	/*template<int T>
-	struct UniformDataType {
-		static ShaderDataType dataType;
-	};
-
-	template<int T>
-	ShaderDataType UniformDataType<T>::dataType = ShaderDataType::GLIntVec1;
-
-	template<>
-	ShaderDataType UniformDataType<GL_INT>::dataType = ShaderDataType::GLIntVec1;
-	template<>
-	ShaderDataType UniformDataType<GL_INT_VEC2>::dataType = ShaderDataType::GLIntVec2;
-	template<>
-	ShaderDataType UniformDataType<GL_INT_VEC3>::dataType = ShaderDataType::GLIntVec3;
-	template<>
-	ShaderDataType UniformDataType<GL_INT_VEC4>::dataType = ShaderDataType::GLIntVec4;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT>::dataType = ShaderDataType::GLFloatVec1;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_VEC2>::dataType = ShaderDataType::GLFloatVec2;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_VEC3>::dataType = ShaderDataType::GLFloatVec3;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_VEC4>::dataType = ShaderDataType::GLFloatVec4;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_MAT2>::dataType = ShaderDataType::GLFloatMat2;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_MAT3>::dataType = ShaderDataType::GLFloatMat3;
-	template<>
-	ShaderDataType UniformDataType<GL_FLOAT_MAT4>::dataType = ShaderDataType::GLFloatMat4;
-	template<>
-	ShaderDataType UniformDataType<GL_SAMPLER_2D>::dataType = ShaderDataType::GLSampler2D;
-	template<>
-	ShaderDataType UniformDataType<GL_SAMPLER_CUBE>::dataType = ShaderDataType::GLSamplerCube;*/
 }
 
 #endif

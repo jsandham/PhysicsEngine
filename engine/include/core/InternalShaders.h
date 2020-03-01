@@ -37,6 +37,8 @@ namespace PhysicsEngine
 			static std::string positionAndNormalsFragmentShader;
 			static std::string ssaoVertexShader;
 			static std::string ssaoFragmentShader;
+			static std::string simpleLitVertexShader;
+			static std::string simpleLitFragmentShader;
 	};
 }
 

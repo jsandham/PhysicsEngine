@@ -20,7 +20,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cameradrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\boxcolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\aboutpopup.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshcolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\materialdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editormenubar.obj
@@ -35,11 +34,11 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordraw
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\linerendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\lightdrawer.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarydirectory.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarycache.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspectordrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspector.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_styles.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\writetojson.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\transformdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\texture3ddrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\texture2ddrawer.obj
@@ -52,13 +51,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\projectview.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\preferenceswindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\performancequeue.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshrendererdrawer.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\writetojson.obj
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\meshdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.command.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.read.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.write.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.command.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.read.1.tlog
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.write.1.tlog

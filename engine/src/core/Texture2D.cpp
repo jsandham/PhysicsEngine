@@ -4,6 +4,7 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
+#include "../../include/stb_image/stb_image.h"
 
 using namespace PhysicsEngine;
 
@@ -102,6 +103,53 @@ void Texture2D::deserialize(std::vector<char> data)
 	}
 
 	this->isCreated = false;
+}
+
+void Texture2D::load(const std::string& filepath)
+{
+	stbi_set_flip_vertically_on_load(true);
+
+	int width, height, numChannels;
+	unsigned char* raw = stbi_load(filepath.c_str(), &width, &height, &numChannels, 0);
+
+	if (raw != NULL) {
+		int size = width * height * numChannels;
+
+		std::vector<unsigned char> data;
+		data.resize(size);
+
+		for (unsigned int j = 0; j < data.size(); j++) { data[j] = raw[j]; }
+
+		stbi_image_free(raw);
+
+		TextureFormat format;
+		switch (numChannels)
+		{
+		case 1:
+			format = TextureFormat::Depth;
+			break;
+		case 2:
+			format = TextureFormat::RG;
+			break;
+		case 3:
+			format = TextureFormat::RGB;
+			break;
+		case 4:
+			format = TextureFormat::RGBA;
+			break;
+		default:
+			std::string message = "Error: Unsupported number of channels (" + std::to_string(numChannels) + ") found when loading texture " + filepath + "\n";
+			Log::error(message.c_str());
+			return;
+		}
+
+		setRawTextureData(data, width, height, format);
+	}
+	else {
+		std::string message = "Error: stbi_load failed to load texture " + filepath + " with reported reason: " + stbi_failure_reason() + "\n";
+		Log::error(message.c_str());
+		return;
+	}
 }
 
 int Texture2D::getWidth() const

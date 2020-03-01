@@ -34,7 +34,7 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON& obj, World* world, Guid
 		//material
 		Material* material = world->getAsset<Material>(assetId);
 
-		obj["shader"] = material->shaderId.toString();
+		obj["shader"] = material->getShaderId().toString();
 
 		std::vector<ShaderUniform> uniforms = material->getUniforms();
 		for (size_t i = 0; i < uniforms.size(); i++) {
@@ -70,7 +70,6 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON& obj, World* world, Guid
 			obj[uniforms[i].name]["variant"] = uniforms[i].variant;
 			obj[uniforms[i].name]["location"] = uniforms[i].location;
 			obj[uniforms[i].name]["index"] = (int)uniforms[i].index;
-			obj[uniforms[i].name]["isEditorExposed"] = uniforms[i].isEditorExposed;
 		}
 	}
 }

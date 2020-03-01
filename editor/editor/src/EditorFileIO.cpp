@@ -5,7 +5,6 @@
 
 #include "core/WriteInternalToJson.h"
 #include "core/WriteToJson.h"
-#include "core/AssetLoader.h"
 #include "core/Log.h"
 #include "core/Entity.h"
 
@@ -26,38 +25,48 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 	if (fileExtension == "shader") {
 		assetType = AssetType<Shader>::type;
 		Shader shader;
+		shader.load(filePath);
+		shader.assetId = id.toString();
+		data = shader.serialize();
 
-		if (AssetLoader::load(filePath, shader)) {
+		/*if (AssetLoader::load(filePath, shader)) {
 			shader.assetId = id.toString();
 			data = shader.serialize();
-		}
+		}*/
 	}
 	else if (fileExtension == "png") {
 		assetType = AssetType<Texture2D>::type;
 		Texture2D texture;
+		texture.load(filePath);
+		texture.assetId = id.toString();
+		data = texture.serialize();
 
-		if (AssetLoader::load(filePath, texture)) {
+		/*if (AssetLoader::load(filePath, texture)) {
 			texture.assetId = id.toString();
 			data = texture.serialize();
-		}
+		}*/
 	}
 	else if (fileExtension == "obj") {
 		assetType = AssetType<Mesh>::type;
 		Mesh mesh;
 
-		if (AssetLoader::load(filePath, mesh)) {
+		mesh.load(filePath);
+		mesh.assetId = id.toString();
+		data = mesh.serialize();
+		/*if (AssetLoader::load(filePath, mesh)) {
 			mesh.assetId = id.toString();
 			data = mesh.serialize();
-		}
+		}*/
 	}
 	else if (fileExtension == "material") {
 		assetType = AssetType<Material>::type;
 		Material material;
+		material.load(filePath);
 
-		if (AssetLoader::load(filePath, material)) {
+		/*if (AssetLoader::load(filePath, material)) {
 			material.assetId = id.toString();
 			data = material.serialize();
-		}
+		}*/
 	}
 
 	// write data to binary version of asset in library 

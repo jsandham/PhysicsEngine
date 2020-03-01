@@ -54,16 +54,16 @@ namespace PhysicsEngine
 
 		void add(Mesh* mesh, glm::mat4 model)
 		{
-			if(mesh->vertices.size() != mesh->normals.size() || 2*mesh->vertices.size()/3 != mesh->texCoords.size()){
+			if(mesh->getVertices().size() != mesh->getNormals().size() || 2*mesh->getVertices().size()/3 != mesh->getTexCoords().size()){
 				std::cout << "Error: Cannot add mesh to batch" << std::endl;
 				return;
 			}
 
 			std::vector<float> worldSpaceVertices;
-			worldSpaceVertices.resize(mesh->vertices.size());
+			worldSpaceVertices.resize(mesh->getVertices().size());
 
-			for(size_t i = 0; i < mesh->vertices.size() / 3; i++){
-				glm::vec4 vertex = model * glm::vec4(mesh->vertices[3*i], mesh->vertices[3*i + 1], mesh->vertices[3*i + 2], 1.0f);
+			for(size_t i = 0; i < mesh->getVertices().size() / 3; i++){
+				glm::vec4 vertex = model * glm::vec4(mesh->getVertices()[3*i], mesh->getVertices()[3*i + 1], mesh->getVertices()[3*i + 2], 1.0f);
 				worldSpaceVertices[3*i] = vertex.x;
 				worldSpaceVertices[3*i + 1] = vertex.y;
 				worldSpaceVertices[3*i + 2] = vertex.z;
@@ -79,10 +79,10 @@ namespace PhysicsEngine
 			glBufferSubData( GL_ARRAY_BUFFER, verticesOffset * sizeof(float), worldSpaceVertices.size() * sizeof(float), &worldSpaceVertices[0] );
 
 			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glBufferSubData( GL_ARRAY_BUFFER, normalsOffset * sizeof(float), mesh->normals.size() * sizeof(float), &mesh->normals[0] );
+			glBufferSubData( GL_ARRAY_BUFFER, normalsOffset * sizeof(float), mesh->getNormals().size() * sizeof(float), &mesh->getNormals()[0] );
 
 			glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-			glBufferSubData( GL_ARRAY_BUFFER, texCoordsOffset * sizeof(float), mesh->texCoords.size() * sizeof(float), &mesh->texCoords[0] );
+			glBufferSubData( GL_ARRAY_BUFFER, texCoordsOffset * sizeof(float), mesh->getTexCoords().size() * sizeof(float), &mesh->getTexCoords()[0] );
 
 			glBindVertexArray(0);
 
