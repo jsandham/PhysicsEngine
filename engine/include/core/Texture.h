@@ -45,7 +45,7 @@ namespace PhysicsEngine
 			TextureFormat getFormat() const;
 
 		protected:
-			int calcNumChannels(TextureFormat format);
+			int calcNumChannels(TextureFormat format) const;
 	};
 
 	template <typename T>

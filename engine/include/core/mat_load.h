@@ -120,7 +120,6 @@ namespace PhysicsEngine
 		}
 
 		mat.uniforms = uniforms;
-		//material.setUniformsEditorOnly(uniforms);
 
 		return true;
 	}

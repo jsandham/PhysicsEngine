@@ -1,7 +1,9 @@
 #include "../include/MaterialRenderer.h"
 
 #include "core/InternalShaders.h"
+#include "core/InternalMeshes.h"
 #include "core/Log.h"
+#include "graphics/Graphics.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -46,11 +48,14 @@ void MaterialRenderer::init()
 	unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, mainAttachments);
 
-	//Graphics::checkFrambufferError();
+	PhysicsEngine::Graphics::checkFrambufferError();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//mesh.load();
+	mesh.load(PhysicsEngine::InternalMeshes::sphereVertices,
+			  PhysicsEngine::InternalMeshes::sphereNormals,
+			  PhysicsEngine::InternalMeshes::sphereTexCoords,
+			  PhysicsEngine::InternalMeshes::sphereSubMeshStartIndicies);
 
 	// create mesh vao and vbo
 	glGenVertexArrays(1, &mesh.vao);
@@ -77,6 +82,10 @@ void MaterialRenderer::init()
 
 	glBindVertexArray(0);
 
+	PhysicsEngine::Graphics::checkError();
+
+	/*Shader* shader
+
 	shader.setVertexShader(PhysicsEngine::InternalShaders::simpleLitVertexShader);
 	shader.setFragmentShader(PhysicsEngine::InternalShaders::simpleLitFragmentShader);
 	shader.compile();
@@ -85,6 +94,8 @@ void MaterialRenderer::init()
 		std::string errorMessage = "Shader failed to compile " + shader.assetId.toString() + "\n";
 		PhysicsEngine::Log::error(&errorMessage[0]);
 	}
+
+	PhysicsEngine::Graphics::checkError();*/
 
 	// define mesh orientation
 	glm::vec3 meshPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -95,28 +106,59 @@ void MaterialRenderer::init()
 	model *= glm::toMat4(meshRotation);
 	model = glm::scale(model, meshScale);
 
+	/*PhysicsEngine::Log::info("\n");
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			std::string message = std::to_string(model[i][j]) + " ";
+			PhysicsEngine::Log::info(message.c_str());
+		}
+		PhysicsEngine::Log::info("\n");
+	}
+	PhysicsEngine::Log::info("\n");*/
+
+
 	// define camera orientation
-	cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	cameraPos = glm::vec3(5.0f, 0.0f, 0.0f);
+	glm::vec3 front = glm::vec3(-5.0f, 0.0f, 0.0f);
+	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + front, up);
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 250.0f);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
-void MaterialRenderer::render(PhysicsEngine::Material* material)
+void MaterialRenderer::render(PhysicsEngine::World* world, PhysicsEngine::Material* material)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	shader.use(0);
-	shader.setMat4("model", model);
-	shader.setMat4("view", view);
-	shader.setMat4("projection", projection);
-	shader.setVec3("cameraPos", cameraPos);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	PhysicsEngine::Shader* shader = world->getAsset<PhysicsEngine::Shader>(material->getShaderId());
+
+	int shaderProgram = shader->getProgramFromVariant(PhysicsEngine::ShaderVariant::None);
+
+	shader->use(shaderProgram);
+	shader->setMat4("model", model);
+	shader->setMat4("view", view);
+	shader->setMat4("projection", projection);
+	shader->setVec3("cameraPos", cameraPos);
+
+	material->apply(world);
+
+	PhysicsEngine::Graphics::checkError();
 
 	glBindVertexArray(mesh.vao);
 	glDrawArrays(GL_TRIANGLES, 0, mesh.getVertices().size() / 3);
 	glBindVertexArray(0);
 
+	PhysicsEngine::Graphics::checkError();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+GLuint MaterialRenderer::getColorTarget() const
+{
+	return colorTex;
 }

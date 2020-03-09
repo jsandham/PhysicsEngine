@@ -27,7 +27,7 @@ void LightDrawer::render(World* world, EditorProject& project, EditorScene& scen
 	{
 		Light* light = world->getComponentById<Light>(id);
 
-		ImGui::Text(("EntityId: " + light->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + light->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 position = light->position;

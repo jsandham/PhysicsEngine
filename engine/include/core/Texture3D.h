@@ -35,7 +35,8 @@ namespace PhysicsEngine
 			Texture3D(int width, int height, int depth, int numChannels);
 			~Texture3D();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid assetId) const;
 			void deserialize(std::vector<char> data);
 
 			int getWidth() const;
@@ -44,9 +45,9 @@ namespace PhysicsEngine
 
 			void redefine(int width, int height, int depth, TextureFormat format);
 
-			std::vector<unsigned char> getRawTextureData();
-			Color getPixel(int x, int y, int z);
-			TextureFormat getFormat();
+			std::vector<unsigned char> getRawTextureData() const;
+			Color getPixel(int x, int y, int z) const;
+			TextureFormat getFormat() const;
 
 			void setRawTextureData(std::vector<unsigned char> data);
 			void setPixel(int x, int y, int z, Color color);

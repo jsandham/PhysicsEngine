@@ -1,6 +1,5 @@
 #include "../../include/components/MeshCollider.h"
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -20,16 +19,19 @@ MeshCollider::~MeshCollider()
 
 }
 
-std::vector<char> MeshCollider::serialize()
+std::vector<char> MeshCollider::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> MeshCollider::serialize(Guid componentId, Guid entityId) const
 {
 	MeshColliderHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.meshId = meshId;
 
-	int numberOfBytes = sizeof(MeshColliderHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(MeshColliderHeader));
 
 	memcpy(&data[0], &header, sizeof(MeshColliderHeader));
 
@@ -45,7 +47,7 @@ void MeshCollider::deserialize(std::vector<char> data)
 	meshId = header->meshId;
 }
 
-bool MeshCollider::intersect(Bounds bounds)
+bool MeshCollider::intersect(Bounds bounds) const
 {
 	return false;
 }

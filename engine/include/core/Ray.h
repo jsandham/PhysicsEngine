@@ -16,7 +16,7 @@ namespace PhysicsEngine
 			Ray(glm::vec3 origin, glm::vec3 direction);
 			~Ray();
 
-			glm::vec3 getPoint(float distance);
+			glm::vec3 getPoint(float distance) const;
 	};
 }
 

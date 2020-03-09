@@ -22,7 +22,12 @@ Mesh::~Mesh()
 
 }
 
-std::vector<char> Mesh::serialize()
+std::vector<char> Mesh::serialize() const
+{
+	return serialize(assetId);
+}
+
+std::vector<char> Mesh::serialize(Guid assetId) const
 {
 	MeshHeader header;
 	header.meshId = assetId;
@@ -32,10 +37,10 @@ std::vector<char> Mesh::serialize()
 	header.subMeshVertexStartIndiciesSize = subMeshVertexStartIndices.size();
 
 	size_t numberOfBytes = sizeof(MeshHeader) +
-	 					vertices.size() * sizeof(float) + 
-	 					normals.size() * sizeof(float) + 
-	 					texCoords.size() * sizeof(float) + 
-	 					subMeshVertexStartIndices.size() * sizeof(int);
+		vertices.size() * sizeof(float) +
+		normals.size() * sizeof(float) +
+		texCoords.size() * sizeof(float) +
+		subMeshVertexStartIndices.size() * sizeof(int);
 
 	std::vector<char> data(numberOfBytes);
 
@@ -105,6 +110,14 @@ void Mesh::load(const std::string& filepath)
 		std::string message = "Error: Could not load obj mesh " + filepath + "\n";
 		Log::error(message.c_str());
 	}
+}
+
+void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords, std::vector<int> subMeshStartIndices)
+{
+	this->vertices = vertices;
+	this->normals = normals;
+	this->texCoords = texCoords;
+	this->subMeshVertexStartIndices = subMeshStartIndices;
 }
 
 const std::vector<float>& Mesh::getVertices() const

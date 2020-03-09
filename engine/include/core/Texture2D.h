@@ -37,7 +37,8 @@ namespace PhysicsEngine
 			Texture2D(int width, int height, TextureFormat format);
 			~Texture2D();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid assetId) const;
 			void deserialize(std::vector<char> data);
 
 			void load(const std::string& filepath);
@@ -47,10 +48,10 @@ namespace PhysicsEngine
 
 			void redefine(int width, int height, TextureFormat format);
 
-			std::vector<unsigned char> getRawTextureData();
-			std::vector<Color> getPixels();
-			Color getPixel(int x, int y);
-			TextureFormat getFormat();
+			std::vector<unsigned char> getRawTextureData() const;
+			std::vector<Color> getPixels() const;
+			Color getPixel(int x, int y) const;
+			TextureFormat getFormat() const;
 
 			void setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format);
 			void setPixels(std::vector<Color> colors);

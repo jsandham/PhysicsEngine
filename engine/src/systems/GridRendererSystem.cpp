@@ -12,7 +12,12 @@ GridRendererSystem::~GridRendererSystem()
 
 }
 
-std::vector<char> GridRendererSystem::serialize()
+std::vector<char> GridRendererSystem::serialize() const
+{
+	return serialize(systemId);
+}
+
+std::vector<char> GridRendererSystem::serialize(Guid systemId) const
 {
 	std::vector<char> temp;
 	return temp;

@@ -26,7 +26,7 @@ void BoxColliderDrawer::render(World* world, EditorProject& project, EditorScene
 	if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		BoxCollider* boxCollider = world->getComponentById<BoxCollider>(id);
 
-		ImGui::Text(("EntityId: " + boxCollider->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + boxCollider->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Bounds")) {

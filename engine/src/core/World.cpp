@@ -14,6 +14,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
+	//worldId = Guid::newGuid();
 	bounds.centre = glm::vec3(0.0f, 0.0f, 40.0f);
 	bounds.size = 2.0f * glm::vec3(200.0f, 200.0f, 200.0f);
 

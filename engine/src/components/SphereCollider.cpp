@@ -2,7 +2,6 @@
 
 #include "../../include/components/SphereCollider.h"
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -22,16 +21,19 @@ SphereCollider::~SphereCollider()
 
 }
 
-std::vector<char> SphereCollider::serialize()
+std::vector<char> SphereCollider::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> SphereCollider::serialize(Guid componentId, Guid entityId) const
 {
 	SphereColliderHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.sphere = sphere;
 
-	int numberOfBytes = sizeof(SphereColliderHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(SphereColliderHeader));
 
 	memcpy(&data[0], &header, sizeof(SphereColliderHeader));
 
@@ -47,7 +49,7 @@ void SphereCollider::deserialize(std::vector<char> data)
 	sphere = header->sphere;
 }
 
-bool SphereCollider::intersect(Bounds bounds)
+bool SphereCollider::intersect(Bounds bounds) const
 {
 	return Geometry::intersect(this->sphere, bounds);
 }

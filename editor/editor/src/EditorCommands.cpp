@@ -34,7 +34,7 @@ void CreateEntityCommand::undo()
 {
 	Entity temp(entityData);
 
-	world->latentDestroyEntity(temp.entityId);
+	world->latentDestroyEntity(temp.getId());
 
 	*saveStatePtr = oldSaveState;
 }
@@ -70,7 +70,7 @@ void CreateCameraCommand::undo()
 {
 	Entity temp(entityData);
 
-	world->latentDestroyEntity(temp.entityId);
+	world->latentDestroyEntity(temp.getId());
 
 	*saveStatePtr = oldSaveState;
 }
@@ -105,7 +105,7 @@ void CreateLightCommand::undo()
 {
 	Entity temp(entityData);
 
-	world->latentDestroyEntity(temp.entityId);
+	world->latentDestroyEntity(temp.getId());
 
 	*saveStatePtr = oldSaveState;
 }
@@ -143,7 +143,7 @@ void CreateCubeCommand::undo()
 {
 	Entity temp(entityData);
 
-	world->latentDestroyEntity(temp.entityId);
+	world->latentDestroyEntity(temp.getId());
 
 	*saveStatePtr = oldSaveState;
 }
@@ -182,7 +182,7 @@ void CreateSphereCommand::undo()
 {
 	Entity temp(entityData);
 
-	world->latentDestroyEntity(temp.entityId);
+	world->latentDestroyEntity(temp.getId());
 
 	*saveStatePtr = oldSaveState;
 }

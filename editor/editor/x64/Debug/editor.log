@@ -1,72 +1,10 @@
-﻿Build started 2020-03-01 5:15:45 PM.
-     1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file "x64\Debug\editor.tlog\editor.lastbuildstate".
-       InitializeBuildStatus:
-         Touching "x64\Debug\editor.tlog\unsuccessfulbuild".
+﻿Build started 2020-03-08 5:25:12 PM.
+     1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\AboutPopup.cpp src\BoxColliderDrawer.cpp src\BuildWindow.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\Command.cpp src\CommandManager.cpp src\Console.cpp src\CubemapDrawer.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorClipboard.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\EditorToolbar.cpp src\Filebrowser.cpp src\FileSystemUtil.cpp src\FontDrawer.cpp src\Hierarchy.cpp src\imgui_extensions.cpp src\imgui_styles.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryCache.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\Load.cpp src\LoadInspectorDrawerInternal.cpp src\main.cpp src\imgui\imgui.cpp src\imgui\imgui_demo.cpp src\imgui\imgui_draw.cpp src\imgui\imgui_impl_opengl3.cpp src\imgui\imgui_impl_win32.cpp src\imgui\imgui_widgets.cpp src\EditorMenuBar.cpp src\MaterialDrawer.cpp src\MaterialRenderer.cpp src\MeshColliderDrawer.cpp src\MeshDrawer.cpp src\MeshRendererDrawer.cpp src\PerformanceQueue.cpp src\PreferencesWindow.cpp src\ProjectView.cpp src\ProjectWindow.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\ShaderDrawer.cpp src\SphereColliderDrawer.cpp src\Texture2DDrawer.cpp src\Texture3DDrawer.cpp src\TransformDrawer.cpp src\WriteToJson.cpp
-         AboutPopup.cpp
-         BoxColliderDrawer.cpp
-         BuildWindow.cpp
-         CameraDrawer.cpp
-         CapsuleColliderDrawer.cpp
-         Command.cpp
-         CommandManager.cpp
-         Console.cpp
-         CubemapDrawer.cpp
-         Editor.cpp
-         EditorCameraSystem.cpp
-         EditorClipboard.cpp
-         EditorCommands.cpp
-         EditorFileIO.cpp
-         EditorToolbar.cpp
-         Filebrowser.cpp
-         FileSystemUtil.cpp
-         FontDrawer.cpp
-         Hierarchy.cpp
-         imgui_extensions.cpp
-         Generating Code...
-         Compiling...
-         imgui_styles.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\Inspector.cpp
          Inspector.cpp
-         InspectorDrawer.cpp
-         LibraryCache.cpp
-         LibraryDirectory.cpp
-         LightDrawer.cpp
-         LineRendererDrawer.cpp
-         Load.cpp
-         LoadInspectorDrawerInternal.cpp
-         main.cpp
-         imgui.cpp
-         imgui_demo.cpp
-         imgui_draw.cpp
-         imgui_impl_opengl3.cpp
-         imgui_impl_win32.cpp
-         imgui_widgets.cpp
-         EditorMenuBar.cpp
-         MaterialDrawer.cpp
-         MaterialRenderer.cpp
-     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\imgui_extensions.cpp(53,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-         MeshColliderDrawer.cpp
-         Generating Code...
-         Compiling...
-         MeshDrawer.cpp
-         MeshRendererDrawer.cpp
-         PerformanceQueue.cpp
-         PreferencesWindow.cpp
-         ProjectView.cpp
-         ProjectWindow.cpp
-         RigidbodyDrawer.cpp
-         SceneView.cpp
-         ShaderDrawer.cpp
-         SphereColliderDrawer.cpp
-         Texture2DDrawer.cpp
-         Texture3DDrawer.cpp
-         TransformDrawer.cpp
-         WriteToJson.cpp
-         Generating Code...
-     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialRenderer.cpp(118,61): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\lib\debug engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
          x64\Debug\BoxColliderDrawer.obj
@@ -126,16 +64,10 @@
        FinalizeBuildStatus:
          Deleting file "x64\Debug\editor.tlog\unsuccessfulbuild".
          Touching "x64\Debug\editor.tlog\editor.lastbuildstate".
-     1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)).
+     1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Build target(s)).
 
 Build succeeded.
-
-       "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target) (1) ->
-       (ClCompile target) -> 
-         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\imgui_extensions.cpp(53,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialRenderer.cpp(118,61): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-
-    2 Warning(s)
+    0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:28.40
+Time Elapsed 00:00:03.89

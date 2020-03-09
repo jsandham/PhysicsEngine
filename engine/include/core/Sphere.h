@@ -5,7 +5,7 @@
 
 namespace PhysicsEngine
 {
-	class Sphere // just make all primitives a struct??
+	class Sphere
 	{
 		public:
 			float radius;

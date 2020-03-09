@@ -25,15 +25,21 @@ namespace PhysicsEngine
 
 	class Asset
 	{
-		public:
+		protected:
 			Guid assetId;
 
 		public:
 			Asset();
 			virtual ~Asset() = 0;
 
-			virtual std::vector<char> serialize() = 0;
+			virtual std::vector<char> serialize() const = 0;
+			virtual std::vector<char> serialize(Guid assetId) const = 0;
 			virtual void deserialize(std::vector<char> data) = 0;
+
+			Guid getId() const;
+
+		private:
+			friend class World;
 	};
 
 	template <typename T>

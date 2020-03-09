@@ -22,7 +22,7 @@ BatchManager::~BatchManager()
 
 void BatchManager::add(Material* material, Mesh* mesh, glm::mat4 model)
 {
-	Guid materialId = material->assetId;
+	Guid materialId = material->getId();
 
 	unsigned int numOfVerticesInMesh = (unsigned int)mesh->getVertices().size() / 3;
 

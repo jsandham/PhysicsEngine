@@ -24,7 +24,7 @@ void MeshColliderDrawer::render(World* world, EditorProject& project, EditorScen
 	if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		MeshCollider* meshCollider = world->getComponentById<MeshCollider>(id);
 
-		ImGui::Text(("EntityId: " + meshCollider->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + meshCollider->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		ImGui::TreePop();

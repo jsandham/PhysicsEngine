@@ -22,15 +22,18 @@ Entity::~Entity()
 
 }
 
-std::vector<char> Entity::serialize()
+std::vector<char> Entity::serialize() const
+{
+	return serialize(entityId);
+}
+
+std::vector<char> Entity::serialize(Guid entityId) const
 {
 	EntityHeader header;
 	header.entityId = entityId;
 	header.doNotDestroy = doNotDestroy;
 
-	int numberOfBytes = sizeof(EntityHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(EntityHeader));
 
 	memcpy(&data[0], &header, sizeof(EntityHeader));
 
@@ -58,4 +61,9 @@ void Entity::immediateDestroy(World* world)
 std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity(World* world)
 {
 	return world->getComponentsOnEntity(entityId);
+}
+
+Guid Entity::getId() const
+{
+	return entityId;
 }

@@ -44,14 +44,15 @@ namespace PhysicsEngine
 			Cubemap(int width, int height, TextureFormat format);
 			~Cubemap();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid assetId) const;
 			void deserialize(std::vector<char> data);
 
 			int getWidth() const;
 
-			std::vector<unsigned char> getRawCubemapData();
-			std::vector<Color> getPixels(CubemapFace face);
-			Color getPixel(CubemapFace face, int x, int y);
+			std::vector<unsigned char> getRawCubemapData() const;
+			std::vector<Color> getPixels(CubemapFace face) const;
+			Color getPixel(CubemapFace face, int x, int y) const;
 			
 			void setRawCubemapData(std::vector<unsigned char> data);
 			void setPixels(CubemapFace face, int x, int y, Color color);

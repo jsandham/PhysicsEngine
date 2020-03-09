@@ -1,7 +1,6 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-#include <iostream>
 #include <vector>
 
 #include <GL/glew.h>
@@ -19,8 +18,6 @@
 #include "../glm/gtc/type_ptr.hpp"
 
 #include "Component.h"
-
-#include "../core/Guid.h"
 
 namespace PhysicsEngine
 {
@@ -130,7 +127,8 @@ namespace PhysicsEngine
 			Camera(std::vector<char> data);
 			~Camera();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
 			void updateInternalCameraState();

@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Texture3D.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -41,7 +40,12 @@ Texture3D::~Texture3D()
 
 }
 
-std::vector<char> Texture3D::serialize()
+std::vector<char> Texture3D::serialize() const
+{
+	return serialize(assetId);
+}
+
+std::vector<char> Texture3D::serialize(Guid assetId) const
 {
 	Texture3DHeader header;
 	header.textureId = assetId;
@@ -53,8 +57,8 @@ std::vector<char> Texture3D::serialize()
 	header.format = format;
 	header.textureSize = rawTextureData.size();
 
-	size_t numberOfBytes = sizeof(Texture3DHeader) + 
-						sizeof(unsigned char) * rawTextureData.size();
+	size_t numberOfBytes = sizeof(Texture3DHeader) +
+		sizeof(unsigned char) * rawTextureData.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -113,17 +117,17 @@ void Texture3D::redefine(int width, int height, int depth, TextureFormat format)
 	this->numChannels = calcNumChannels(format);
 }
 
-std::vector<unsigned char> Texture3D::getRawTextureData()
+std::vector<unsigned char> Texture3D::getRawTextureData() const
 {
 	return rawTextureData;
 }
 
-Color Texture3D::getPixel(int x, int y, int z)
+Color Texture3D::getPixel(int x, int y, int z) const
 {
 	return Color::white;
 }
 
-TextureFormat Texture3D::getFormat()
+TextureFormat Texture3D::getFormat() const
 {
 	return format;
 }

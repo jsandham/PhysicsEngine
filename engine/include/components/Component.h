@@ -10,7 +10,7 @@ namespace PhysicsEngine
 
 	class Component
 	{
-		public:
+		protected:
 			Guid componentId;
 			Guid entityId;
 
@@ -18,10 +18,11 @@ namespace PhysicsEngine
 			Component();
 			virtual ~Component() = 0;
 
-			virtual std::vector<char> serialize() = 0;
+			virtual std::vector<char> serialize() const = 0;
+			virtual std::vector<char> serialize(Guid componentId, Guid entityId) const = 0;
 			virtual void deserialize(std::vector<char> data) = 0;
 
-			Entity* getEntity(World* world);
+			Entity* getEntity(World* world) const;
 
 			template<typename T>
 			void latentDestroy(World* world)
@@ -42,6 +43,12 @@ namespace PhysicsEngine
 
 				return entity->getComponent<T>(world);
 			}
+
+			Guid getId() const;
+			Guid getEntityId() const;
+
+		private:
+			friend class World;
 	};
 
 	template <typename T>

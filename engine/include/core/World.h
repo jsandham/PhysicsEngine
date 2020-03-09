@@ -67,6 +67,7 @@ namespace PhysicsEngine
 	class World
 	{
 		private:
+			//Guid worldId;
 			std::vector<System*> systems;
 
 			Bounds bounds;
@@ -126,6 +127,12 @@ namespace PhysicsEngine
 			}
 
 			Entity* getEntity(Guid id);
+
+			template<typename T>
+			T* getFirstSystem()
+			{
+				return getAllocator<T>().get(0);
+			}
 
 			template<typename T>
 			T* getSystem(Guid systemId)

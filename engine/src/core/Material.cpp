@@ -26,7 +26,12 @@ Material::~Material()
 
 }
 
-std::vector<char> Material::serialize()
+std::vector<char> Material::serialize() const
+{
+	return serialize(assetId);
+}
+
+std::vector<char> Material::serialize(Guid assetId) const
 {
 	MaterialHeader header;
 	header.assetId = assetId;

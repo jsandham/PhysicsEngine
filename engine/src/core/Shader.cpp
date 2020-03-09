@@ -35,7 +35,12 @@ Shader::~Shader()
 
 }
 
-std::vector<char> Shader::serialize()
+std::vector<char> Shader::serialize() const
+{
+	return serialize(assetId);
+}
+
+std::vector<char> Shader::serialize(Guid assetId) const
 {
 	ShaderHeader header;
 	header.shaderId = assetId;
@@ -44,11 +49,11 @@ std::vector<char> Shader::serialize()
 	header.fragmentShaderSize = fragmentShader.length();
 	header.numberOfShaderUniforms = uniforms.size();
 
-	size_t numberOfBytes = sizeof(ShaderHeader) + 
-						sizeof(char) * vertexShader.length() +
-						sizeof(char) * fragmentShader.length() +
-						sizeof(char) * geometryShader.length() +
-						sizeof(ShaderUniform) * uniforms.size();
+	size_t numberOfBytes = sizeof(ShaderHeader) +
+		sizeof(char) * vertexShader.length() +
+		sizeof(char) * fragmentShader.length() +
+		sizeof(char) * geometryShader.length() +
+		sizeof(ShaderUniform) * uniforms.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -166,6 +171,13 @@ void Shader::load(const std::string& filepath)
 		fragmentShader.erase(lastNotOfIndex + 1);
 	}
 
+	setVertexShader(vertexShader);
+	setGeometryShader(geometryShader);
+	setFragmentShader(fragmentShader);
+}
+
+void Shader::load(const std::string vertexShader, const std::string fragmentShader, const std::string geometryShader)
+{
 	setVertexShader(vertexShader);
 	setGeometryShader(geometryShader);
 	setFragmentShader(fragmentShader);
@@ -559,6 +571,21 @@ std::vector<ShaderUniform> Shader::getUniforms() const
  std::vector<ShaderAttribute> Shader::getAttributeNames() const
  {
 	 return attributes;
+ }
+
+ std::string Shader::getVertexShader() const
+ {
+	 return vertexShader;
+ }
+
+ std::string Shader::getGeometryShader() const
+ {
+	 return geometryShader;
+ }
+
+ std::string Shader::getFragmentShader() const
+ {
+	 return fragmentShader;
  }
 
 void Shader::setBool(const std::string& name, bool value) const

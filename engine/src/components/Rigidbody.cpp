@@ -1,15 +1,9 @@
-#include <iostream>
 #include "../../include/components/Rigidbody.h"
-
-#include "../../include/core/PoolAllocator.h"
 
 using namespace PhysicsEngine;
 
-
 Rigidbody::Rigidbody()
 {
-	std::cout << "Rigidbody default constructor called" << std::endl;
-
 	useGravity = true;
 	mass = 1.0f;
 	drag = 0.0f;
@@ -33,7 +27,12 @@ Rigidbody::~Rigidbody()
 
 }
 
-std::vector<char> Rigidbody::serialize()
+std::vector<char> Rigidbody::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> Rigidbody::serialize(Guid componentId, Guid entityId) const
 {
 	RigidbodyHeader header;
 	header.componentId = componentId;
@@ -47,12 +46,10 @@ std::vector<char> Rigidbody::serialize()
 	header.angularVelocity = angularVelocity;
 	header.centreOfMass = centreOfMass;
 	header.inertiaTensor = inertiaTensor;
-	
+
 	header.halfVelocity = halfVelocity;
 
-	int numberOfBytes = sizeof(RigidbodyHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(RigidbodyHeader));
 
 	memcpy(&data[0], &header, sizeof(RigidbodyHeader));
 

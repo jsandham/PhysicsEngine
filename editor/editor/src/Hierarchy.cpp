@@ -37,7 +37,7 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 			Entity* entity = world->getEntityByIndex(i);
 
 			entities[i] = *entity;
-			entityNames[i] = entity->entityId.toString();
+			entityNames[i] = entity->getId().toString();
 		}
 	}
 	/*int numberOfEntities = world->getNumberOfEntities();
@@ -67,7 +67,7 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 
 				static bool selected = false;
 				if (ImGui::Selectable(entityNames[i].c_str(), &selected)) {
-					clipboard.setSelectedItem(InteractionType::Entity, entities[i].entityId);
+					clipboard.setSelectedItem(InteractionType::Entity, entities[i].getId());
 				}
 			}
 

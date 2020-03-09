@@ -30,10 +30,11 @@ namespace PhysicsEngine
 			BoxCollider(std::vector<char> data);
 			~BoxCollider();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
-			bool intersect(Bounds bounds);
+			bool intersect(Bounds bounds) const;
 
 			std::vector<float> getLines() const;
 	};

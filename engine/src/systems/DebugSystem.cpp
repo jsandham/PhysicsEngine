@@ -31,7 +31,12 @@ DebugSystem::~DebugSystem()
 	
 }
 
-std::vector<char> DebugSystem::serialize()
+std::vector<char> DebugSystem::serialize() const
+{
+	return serialize(systemId);
+}
+
+std::vector<char> DebugSystem::serialize(Guid systemId) const
 {
 	size_t numberOfBytes = sizeof(int);
 	std::vector<char> data(numberOfBytes);

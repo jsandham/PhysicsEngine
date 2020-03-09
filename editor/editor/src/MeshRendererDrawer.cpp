@@ -29,7 +29,7 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 	{
 		MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(id);
 
-		ImGui::Text(("EntityId: " + meshRenderer->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + meshRenderer->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		// Mesh

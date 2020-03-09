@@ -51,7 +51,8 @@ namespace PhysicsEngine
 			Rigidbody(std::vector<char> data);
 			~Rigidbody();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 	};
 

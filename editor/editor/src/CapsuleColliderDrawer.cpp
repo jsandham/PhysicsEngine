@@ -24,7 +24,7 @@ void CapsuleColliderDrawer::render(World* world, EditorProject& project, EditorS
 	if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen)) {
 		CapsuleCollider* capsuleCollider = world->getComponentById<CapsuleCollider>(id);
 
-		ImGui::Text(("EntityId: " + capsuleCollider->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + capsuleCollider->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Capsule")) {

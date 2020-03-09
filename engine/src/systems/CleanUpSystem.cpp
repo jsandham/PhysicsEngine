@@ -21,10 +21,14 @@ CleanUpSystem::~CleanUpSystem()
 
 }
 
-std::vector<char> CleanUpSystem::serialize()
+std::vector<char> CleanUpSystem::serialize() const
 {
-	size_t numberOfBytes = sizeof(int);
-	std::vector<char> data(numberOfBytes);
+	return serialize(systemId);
+}
+
+std::vector<char> CleanUpSystem::serialize(Guid systemId) const
+{
+	std::vector<char> data(sizeof(int));
 
 	memcpy(&data[0], &order, sizeof(int));
 

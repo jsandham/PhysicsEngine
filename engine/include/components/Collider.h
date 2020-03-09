@@ -18,7 +18,7 @@ namespace PhysicsEngine
 			Collider();
 			virtual ~Collider() = 0;
 
-			virtual bool intersect(Bounds bounds) = 0;
+			virtual bool intersect(Bounds bounds) const = 0;
 	};
 
 	template <typename T>

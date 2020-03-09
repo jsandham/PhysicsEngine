@@ -26,8 +26,7 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 		assetType = AssetType<Shader>::type;
 		Shader shader;
 		shader.load(filePath);
-		shader.assetId = id.toString();
-		data = shader.serialize();
+		data = shader.serialize(id);
 
 		/*if (AssetLoader::load(filePath, shader)) {
 			shader.assetId = id.toString();
@@ -38,8 +37,7 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 		assetType = AssetType<Texture2D>::type;
 		Texture2D texture;
 		texture.load(filePath);
-		texture.assetId = id.toString();
-		data = texture.serialize();
+		data = texture.serialize(id);
 
 		/*if (AssetLoader::load(filePath, texture)) {
 			texture.assetId = id.toString();
@@ -51,8 +49,7 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 		Mesh mesh;
 
 		mesh.load(filePath);
-		mesh.assetId = id.toString();
-		data = mesh.serialize();
+		data = mesh.serialize(id);
 		/*if (AssetLoader::load(filePath, mesh)) {
 			mesh.assetId = id.toString();
 			data = mesh.serialize();
@@ -62,6 +59,7 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 		assetType = AssetType<Material>::type;
 		Material material;
 		material.load(filePath);
+		data = material.serialize(id);
 
 		/*if (AssetLoader::load(filePath, material)) {
 			material.assetId = id.toString();
@@ -170,10 +168,10 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			json::JSON::JSONWrapper<map<string, JSON>> entityObjects = entities.ObjectRange();
 			for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
 				Entity entity;
-				entity.entityId = Guid(it->first);
+				//entity.entityId = Guid(it->first);
 				entity.doNotDestroy = false;
 
-				std::vector<char> data = entity.serialize();
+				std::vector<char> data = entity.serialize(Guid(it->first));
 
 				char classification = 'e';
 				int type = 0;
@@ -192,9 +190,9 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = transformObjects.begin(); it != transformObjects.end(); it++) {
 				Transform transform;
 
-				transform.componentId = Guid(it->first);
+				//transform.componentId = Guid(it->first);
 				transform.parentId = Guid(it->second["parent"].ToString());
-				transform.entityId = Guid(it->second["entity"].ToString());
+				//transform.entityId = Guid(it->second["entity"].ToString());
 
 				transform.position.x = (float)it->second["position"][0].ToFloat();
 				transform.position.y = (float)it->second["position"][1].ToFloat();
@@ -209,7 +207,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				transform.scale.y = (float)it->second["scale"][1].ToFloat();
 				transform.scale.z = (float)it->second["scale"][2].ToFloat();
 
-				std::vector<char> data = transform.serialize();
+				std::vector<char> data = transform.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 0;
@@ -228,8 +226,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = cameraObjects.begin(); it != cameraObjects.end(); it++) {
 				Camera camera;
 
-				camera.componentId = Guid(it->first);
-				camera.entityId = Guid(it->second["entity"].ToString());
+				//camera.componentId = Guid(it->first);
+				//camera.entityId = Guid(it->second["entity"].ToString());
 				camera.targetTextureId = Guid(it->second["targetTextureId"].ToString());
 
 				camera.position.x = (float)it->second["position"][0].ToFloat();
@@ -258,7 +256,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				camera.frustum.nearPlane = (float)it->second["near"].ToFloat();
 				camera.frustum.farPlane = (float)it->second["far"].ToFloat();
 
-				std::vector<char> data = camera.serialize();
+				std::vector<char> data = camera.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 2;
@@ -277,8 +275,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = meshRendererObjects.begin(); it != meshRendererObjects.end(); it++) {
 				MeshRenderer meshRenderer;
 
-				meshRenderer.componentId = Guid(it->first);
-				meshRenderer.entityId = Guid(it->second["entity"].ToString());
+				//meshRenderer.componentId = Guid(it->first);
+				//meshRenderer.entityId = Guid(it->second["entity"].ToString());
 				meshRenderer.meshId = Guid(it->second["mesh"].ToString());
 
 				if (it->second.hasKey("material")) {
@@ -308,7 +306,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				meshRenderer.isStatic = it->second["isStatic"].ToBool();
 
-				std::vector<char> data = meshRenderer.serialize();
+				std::vector<char> data = meshRenderer.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 3;
@@ -327,8 +325,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
 				Light light;
 
-				light.componentId = Guid(it->first);
-				light.entityId = Guid(it->second["entity"].ToString());
+				//light.componentId = Guid(it->first);
+				//light.entityId = Guid(it->second["entity"].ToString());
 
 				light.position.x = (float)it->second["position"][0].ToFloat();
 				light.position.y = (float)it->second["position"][1].ToFloat();
@@ -361,9 +359,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				std::cout << "Light type: " << (int)light.lightType << " shadow type: " << (int)light.shadowType << std::endl;
 
-				light.projection = glm::perspective(2.0f * glm::radians(light.outerCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
-
-				std::vector<char> data = light.serialize();
+				std::vector<char> data = light.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 5;
@@ -380,8 +376,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = boxColliderObjects.begin(); it != boxColliderObjects.end(); it++) {
 				BoxCollider collider;
 
-				collider.componentId = Guid(it->first);
-				collider.entityId = Guid(it->second["entity"].ToString());
+				/*collider.componentId = Guid(it->first);
+				collider.entityId = Guid(it->second["entity"].ToString());*/
 
 				collider.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
 				collider.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
@@ -391,7 +387,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				collider.bounds.size.y = (float)it->second["size"][1].ToFloat();
 				collider.bounds.size.z = (float)it->second["size"][2].ToFloat();
 
-				std::vector<char> data = collider.serialize();
+				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 8;
@@ -409,8 +405,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = sphereColliderObjects.begin(); it != sphereColliderObjects.end(); it++) {
 				SphereCollider collider;
 
-				collider.componentId = Guid(it->first);
-				collider.entityId = Guid(it->second["entity"].ToString());
+				//collider.componentId = Guid(it->first);
+				//collider.entityId = Guid(it->second["entity"].ToString());
 
 				collider.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
 				collider.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
@@ -418,7 +414,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				collider.sphere.radius = (float)it->second["radius"].ToFloat();
 
-				std::vector<char> data = collider.serialize();
+				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
 				char classification = 'c';
 				int type = 9;
@@ -484,11 +480,11 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 	for (int i = 0; i < world->getNumberOfEntities(); i++) {
 		Entity* entity = world->getEntityByIndex(i);
 
-		if (entity->entityId == Guid("11111111-1111-1111-1111-111111111111")) {
+		if (entity->getId() == Guid("11111111-1111-1111-1111-111111111111")) {
 			continue;
 		}
 
-		PhysicsEngine::writeInternalEntityToJson(sceneObj, world, entity->entityId);
+		PhysicsEngine::writeInternalEntityToJson(sceneObj, world, entity->getId());
 
 		std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
 		for (size_t j = 0; j < componentsOnEntity.size(); j++) {
@@ -496,10 +492,10 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 			int componentType = componentsOnEntity[j].second;
 
 			if (componentType < 20) {
-				PhysicsEngine::writeInternalComponentToJson(sceneObj, world, entity->entityId, componentId, componentType);
+				PhysicsEngine::writeInternalComponentToJson(sceneObj, world, entity->getId(), componentId, componentType);
 			}
 			else {
-				PhysicsEngine::writeComponentToJson(sceneObj, world, entity->entityId, componentId, componentType);
+				PhysicsEngine::writeComponentToJson(sceneObj, world, entity->getId(), componentId, componentType);
 			}
 		}
 	}
@@ -507,8 +503,8 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 	for (int i = 0; i < world->getNumberOfSystems(); i++) {
 		System* system = world->getSystemByIndex(i);
 
-		Guid systemId = system->systemId;
-		int systemType = world->getTypeOf(system->systemId);
+		Guid systemId = system->getId();
+		int systemType = world->getTypeOf(system->getId());
 		int systemOrder = system->getOrder();
 
 		if (systemType < 20) {

@@ -26,7 +26,7 @@ void LineRendererDrawer::render(World* world, EditorProject& project, EditorScen
 	if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
 		LineRenderer* lineRenderer = world->getComponentById<LineRenderer>(id);
 
-		ImGui::Text(("EntityId: " + lineRenderer->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + lineRenderer->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 start = lineRenderer->start;

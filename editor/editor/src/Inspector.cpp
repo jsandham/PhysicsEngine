@@ -13,12 +13,16 @@ using namespace PhysicsEditor;
 
 Inspector::Inspector()
 {
-	
+	materialDrawer = new MaterialDrawer();
+	shaderDrawer = new ShaderDrawer();
+	texture2DDrawer = new Texture2DDrawer();
 }
 
 Inspector::~Inspector()
 {
-	
+	delete materialDrawer;
+	delete shaderDrawer;
+	delete texture2DDrawer;
 }
 
 void Inspector::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame)
@@ -35,21 +39,23 @@ void Inspector::render(World* world, EditorProject& project, EditorScene& scene,
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
+		// draw entity
 		if (clipboard.getSelectedType() == InteractionType::Entity) {
 			drawEntity(world, project, scene, clipboard);
 		}
-		else if(clipboard.getSelectedType() == InteractionType::Material){
-			drawAsset<Material>(world, project, scene, clipboard);
+		
+		// draw asset
+		if(clipboard.getSelectedType() == InteractionType::Material){
+			materialDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
 		else if(clipboard.getSelectedType() == InteractionType::Shader){
-			drawAsset<Shader>(world, project, scene, clipboard);
+			shaderDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
 		else if (clipboard.getSelectedType() == InteractionType::Texture2D) {
-			drawAsset<Texture2D>(world, project, scene, clipboard);
+			texture2DDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
-		/*else if () {
 
-		}*/
+		ImGui::Separator();
 	}
 
 	ImGui::End();
@@ -82,19 +88,19 @@ void Inspector::drawEntity(World* world, EditorProject& project, EditorScene& sc
 	if (BeginAddComponentDropdown("Add component", componentToAdd)) {
 
 		if (componentToAdd == "Transform") {
-			CommandManager::addCommand(new AddComponentCommand<Transform>(world, entity->entityId, &scene.isDirty));
+			CommandManager::addCommand(new AddComponentCommand<Transform>(world, entity->getId(), &scene.isDirty));
 		}
 		else if (componentToAdd == "Rigidbody") {
-			CommandManager::addCommand(new AddComponentCommand<Rigidbody>(world, entity->entityId, &scene.isDirty));
+			CommandManager::addCommand(new AddComponentCommand<Rigidbody>(world, entity->getId(), &scene.isDirty));
 		}
 		else if (componentToAdd == "Camera") {
-			CommandManager::addCommand(new AddComponentCommand<Camera>(world, entity->entityId, &scene.isDirty));
+			CommandManager::addCommand(new AddComponentCommand<Camera>(world, entity->getId(), &scene.isDirty));
 		}
 		else if (componentToAdd == "MeshRenderer") {
-			CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(world, entity->entityId, &scene.isDirty));
+			CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(world, entity->getId(), &scene.isDirty));
 		}
 		else if (componentToAdd == "Light") {
-			CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->entityId, &scene.isDirty));
+			CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->getId(), &scene.isDirty));
 		}
 
 		EndAddComponentDropdown();

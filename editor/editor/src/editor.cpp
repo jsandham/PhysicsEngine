@@ -115,6 +115,46 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	if (editorMenu.isRunTestsClicked()) {
 		UnitTests::run();
+		/*Mesh mesh;
+		mesh.load("C:\\Users\\jsand\\Documents\\simple_sphere.obj");
+
+		std::ofstream file;
+		file.open("myspheredata.txt");
+		if (file.is_open())
+		{
+			std::vector<float> v = mesh.getVertices();
+			std::vector<float> n = mesh.getNormals();
+			std::vector<float> tc = mesh.getTexCoords();
+			std::vector<int> sm = mesh.getSubMeshStartIndices();
+
+			for (size_t i = 0; i < v.size() / 3; i++)
+			{
+				file << v[3*i] << ", " << v[3*i+1] << ", " << v[3*i+2] << ", \n";
+			}
+
+			file << "\n";
+
+			for (size_t i = 0; i < n.size() / 3; i++)
+			{
+				file << n[3 * i] << ", " << n[3 * i + 1] << ", " << n[3 * i + 2] << ", \n";
+			}
+
+			file << "\n";
+
+			for (size_t i = 0; i < tc.size() / 2; i++)
+			{
+				file << tc[2 * i] << ", " << tc[2 * i + 1] << ", \n";
+			}
+
+			file << "\n";
+
+			for (size_t i = 0; i < sm.size() / 1; i++)
+			{
+				file << tc[i] << ", \n";
+			}
+
+			file.close();
+		}*/
 	}
 
 	hierarchy.render(&world, currentScene, clipboard, editorMenu.isOpenHierarchyCalled());
@@ -333,9 +373,9 @@ void Editor::saveProject(std::string name, std::string path)
 
 	for (int i = 0; i < world.getNumberOfAssets<Material>(); i++) {
 		Material* material = world.getAssetByIndex<Material>(i);
-		std::string assetPath = libraryDirectory.getFilePath(material->assetId); 
+		std::string assetPath = libraryDirectory.getFilePath(material->getId()); 
 		
-		if (!PhysicsEditor::writeAssetToJson(&world, assetPath, material->assetId, AssetType<Material>::type)) {
+		if (!PhysicsEditor::writeAssetToJson(&world, assetPath, material->getId(), AssetType<Material>::type)) {
 			std::string message = "Could not save material in project " + assetPath + "\n";
 			Log::error(message.c_str());
 			return;

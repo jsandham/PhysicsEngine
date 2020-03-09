@@ -1,6 +1,5 @@
 #include "../../include/components/CapsuleCollider.h"
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -20,16 +19,19 @@ CapsuleCollider::~CapsuleCollider()
 
 }
 
-std::vector<char> CapsuleCollider::serialize()
+std::vector<char> CapsuleCollider::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> CapsuleCollider::serialize(Guid componentId, Guid entityId) const
 {
 	CapsuleColliderHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.capsule = capsule;
 
-	int numberOfBytes = sizeof(CapsuleColliderHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(CapsuleColliderHeader));
 
 	memcpy(&data[0], &header, sizeof(CapsuleColliderHeader));
 
@@ -45,7 +47,7 @@ void CapsuleCollider::deserialize(std::vector<char> data)
 	capsule = header->capsule;
 }
 
-bool CapsuleCollider::intersect(Bounds bounds)
+bool CapsuleCollider::intersect(Bounds bounds) const
 {
 	return Geometry::intersect(bounds, this->capsule);
 }

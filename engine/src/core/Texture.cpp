@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../../include/core/Texture.h"
+#include "../../include/core/Log.h"
 
 using namespace PhysicsEngine;
 
@@ -19,7 +20,7 @@ TextureDimension Texture::getDimension() const
 	return dimension;
 }
 
-int Texture::calcNumChannels(TextureFormat format)
+int Texture::calcNumChannels(TextureFormat format) const
 {
 	int nChannels = 0;
 
@@ -38,7 +39,7 @@ int Texture::calcNumChannels(TextureFormat format)
 		nChannels = 4;
 		break;
 	default:
-		std::cout <<"Error: Texture: Invalid texture format" << std::endl;
+		Log::error("Error: Texture: Invalid texture format\n");
 	}
 
 	return nChannels;

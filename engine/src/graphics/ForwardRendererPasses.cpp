@@ -218,10 +218,10 @@ void PhysicsEngine::registerRenderAssets(World* world)
 
 			shader->compile();
 
-			shadersCompiledThisFrame.insert(shader->assetId);
+			shadersCompiledThisFrame.insert(shader->getId());
 
 			if (!shader->isCompiled()) {
-				std::string errorMessage = "Shader failed to compile " + shader->assetId.toString() + "\n";
+				std::string errorMessage = "Shader failed to compile " + shader->getId().toString() + "\n";
 				Log::error(&errorMessage[0]);
 			}
 
@@ -641,7 +641,7 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.shadowProjMatrix = light->projection;
+		shadowMapData.shadowProjMatrix = light->getProjMatrix();
 		shadowMapData.shadowViewMatrix = glm::lookAt(light->position, light->position + light->direction, glm::vec3(0.0f, 1.0f, 0.0f));
 
 		shadowMapData.depthShader.use(shaderProgram);
@@ -657,12 +657,12 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 	}
 	else if (lightType == LightType::Point) {
 
-		shadowMapData.cubeViewProjMatrices[0] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[1] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[2] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-		shadowMapData.cubeViewProjMatrices[3] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-		shadowMapData.cubeViewProjMatrices[4] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[5] = (light->projection * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.cubeViewProjMatrices[0] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.cubeViewProjMatrices[1] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.cubeViewProjMatrices[2] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+		shadowMapData.cubeViewProjMatrices[3] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+		shadowMapData.cubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.cubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
 		int shaderProgram = shadowMapData.depthCubemapShader.getProgramFromVariant(ShaderVariant::None);
 		int lightPosLoc = shadowMapData.depthCubemapShader.findUniformLocation("lightPos", shaderProgram);
@@ -995,7 +995,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 {
 	Transform* transform = meshRenderer->getComponent<Transform>(world);
 	if (transform == NULL) {
-		std::string message = "Error: Could not find transform for meshrenderer with id " + meshRenderer->componentId.toString() + "\n";
+		std::string message = "Error: Could not find transform for meshrenderer with id " + meshRenderer->getId().toString() + "\n";
 		return;
 	}
 
@@ -1005,7 +1005,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		return;
 	}
 
-	int transformIndex = world->getIndexOf(transform->componentId);
+	int transformIndex = world->getIndexOf(transform->getId());
 	int meshStartIndex = 0;
 	Sphere test;
 	Sphere boundingSphere = test;// mesh->getBoundingSphere();
@@ -1019,10 +1019,10 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		Material* material = world->getAssetByIndex<Material>(materialIndex);
 		Shader* shader = world->getAsset<Shader>(material->getShaderId());
 
-		int shaderIndex = world->getIndexOf(shader->assetId);
+		int shaderIndex = world->getIndexOf(shader->getId());
 
 		RenderObject renderObject;
-		renderObject.id = meshRenderer->componentId;
+		renderObject.id = meshRenderer->getId();
 		renderObject.start = meshStartIndex + subMeshVertexStartIndex;
 		renderObject.size = subMeshVerticesCount;
 		renderObject.transformIndex = transformIndex;
@@ -1052,7 +1052,7 @@ void PhysicsEngine::removeFromRenderObjectsList(MeshRenderer* meshRenderer, std:
 {
 	//mmm this is slow...need a faster way of removing render objects
 	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (meshRenderer->componentId == renderObjects[i].id) {
+		if (meshRenderer->getId() == renderObjects[i].id) {
 			renderObjects.erase(renderObjects.begin() + i);
 		}
 	}

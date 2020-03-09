@@ -34,10 +34,14 @@ EditorCameraSystem::~EditorCameraSystem()
 
 }
 
-std::vector<char> EditorCameraSystem::serialize()
+std::vector<char> EditorCameraSystem::serialize() const
 {
-	size_t numberOfBytes = sizeof(int);
-	std::vector<char> data(numberOfBytes);
+	return serialize(systemId);
+}
+
+std::vector<char> EditorCameraSystem::serialize(Guid systemId) const
+{
+	std::vector<char> data(sizeof(int));
 
 	memcpy(&data[0], &order, sizeof(int));
 
@@ -55,8 +59,8 @@ void EditorCameraSystem::init(World* world)
 
 	camera = world->createEditorCamera();
 
-	Log::warn(camera->entityId.toString().c_str());
-	Log::warn(camera->componentId.toString().c_str());
+	Log::warn(camera->getEntityId().toString().c_str());
+	Log::warn(camera->getId().toString().c_str());
 }
 
 void EditorCameraSystem::update(Input input)

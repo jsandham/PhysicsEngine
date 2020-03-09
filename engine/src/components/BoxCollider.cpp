@@ -1,6 +1,5 @@
 #include "../../include/components/BoxCollider.h"
 
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Geometry.h"
 
 using namespace PhysicsEngine;
@@ -20,16 +19,19 @@ BoxCollider::~BoxCollider()
 
 }
 
-std::vector<char> BoxCollider::serialize()
+std::vector<char> BoxCollider::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> BoxCollider::serialize(Guid componentId, Guid entityId) const
 {
 	BoxColliderHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.bounds = bounds;
 
-	int numberOfBytes = sizeof(BoxColliderHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(BoxColliderHeader));
 
 	memcpy(&data[0], &header, sizeof(BoxColliderHeader));
 
@@ -45,7 +47,7 @@ void BoxCollider::deserialize(std::vector<char> data)
 	bounds = header->bounds;
 }
 
-bool BoxCollider::intersect(Bounds bounds)
+bool BoxCollider::intersect(Bounds bounds) const
 {
 	return Geometry::intersect(this->bounds, bounds);
 }

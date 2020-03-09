@@ -47,7 +47,8 @@ namespace PhysicsEngine
 			Font(std::vector<char> data);
 			~Font();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid assetId) const;
 			void deserialize(std::vector<char> data);
 
 			void load(std::string filepath);

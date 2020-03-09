@@ -1,7 +1,5 @@
 #include "../../include/components/MeshRenderer.h"
 
-#include "../../include/core/PoolAllocator.h"
-
 using namespace PhysicsEngine;
 
 MeshRenderer::MeshRenderer()
@@ -25,21 +23,24 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-std::vector<char> MeshRenderer::serialize()
+std::vector<char> MeshRenderer::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
 {
 	MeshRendererHeader header;
 	header.componentId = componentId;
 	header.entityId = entityId;
 	header.meshId = meshId;
-	for(int i = 0; i < 8; i++){
+	for (int i = 0; i < 8; i++) {
 		header.materialIds[i] = materialIds[i];
 	}
 	header.materialCount = materialCount;
 	header.isStatic = isStatic;
 
-	int numberOfBytes = sizeof(MeshRendererHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(MeshRendererHeader));
 
 	memcpy(&data[0], &header, sizeof(MeshRendererHeader));
 

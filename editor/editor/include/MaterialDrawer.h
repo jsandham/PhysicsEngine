@@ -4,9 +4,12 @@
 #include "InspectorDrawer.h"
 #include "EditorClipboard.h"
 #include "EditorProject.h"
+//s#include "MaterialRenderer.h"
 
 #include "core/World.h"
 #include "core/Material.h"
+
+#include "graphics/ForwardRenderer.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -18,11 +21,18 @@ namespace PhysicsEditor
 {
 	class MaterialDrawer : public InspectorDrawer
 	{
+		private:
+			bool materialViewWorldPopulated;
+			World materialViewWorld;
+
 		public:
 			MaterialDrawer();
 			~MaterialDrawer();
 
 			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
+
+		private:
+			void populateMaterialViewWorld(Material* material, Shader* shader);
 	};
 
 

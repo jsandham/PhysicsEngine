@@ -27,7 +27,7 @@ void RigidbodyDrawer::render(World* world, EditorProject& project, EditorScene& 
 	{
 		Rigidbody* rigidbody = world->getComponentById<Rigidbody>(id);
 
-		ImGui::Text(("EntityId: " + rigidbody->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + rigidbody->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		bool useGravity = rigidbody->useGravity;

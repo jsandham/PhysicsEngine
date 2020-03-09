@@ -1,6 +1,3 @@
-#include <iostream>
-
-#include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -58,7 +55,12 @@ Cubemap::~Cubemap()
 	
 }
 
-std::vector<char> Cubemap::serialize()
+std::vector<char> Cubemap::serialize() const
+{
+	return serialize(assetId);
+}
+
+std::vector<char> Cubemap::serialize(Guid assetId) const
 {
 	CubemapHeader header;
 	header.textureId = assetId;
@@ -68,8 +70,8 @@ std::vector<char> Cubemap::serialize()
 	header.format = format;
 	header.textureSize = rawTextureData.size();
 
-	size_t numberOfBytes = sizeof(CubemapHeader) + 
-						sizeof(unsigned char) * rawTextureData.size();
+	size_t numberOfBytes = sizeof(CubemapHeader) +
+		sizeof(unsigned char) * rawTextureData.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -106,12 +108,12 @@ int Cubemap::getWidth() const
 	return width;
 }
 
-std::vector<unsigned char> Cubemap::getRawCubemapData()
+std::vector<unsigned char> Cubemap::getRawCubemapData() const
 {
 	return rawTextureData;
 }
 
-std::vector<Color> Cubemap::getPixels(CubemapFace face)
+std::vector<Color> Cubemap::getPixels(CubemapFace face) const
 {
 	/*std::vector<Color> colors(width*width*numChannels);*/
 	std::vector<Color> colors;
@@ -145,7 +147,7 @@ std::vector<Color> Cubemap::getPixels(CubemapFace face)
 	return colors;
 }
 
-Color Cubemap::getPixel(CubemapFace face, int x, int y)
+Color Cubemap::getPixel(CubemapFace face, int x, int y) const
 {
 	int index =  (int)face*width*width*numChannels + numChannels * (x + width * y);
 

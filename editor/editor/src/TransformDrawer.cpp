@@ -27,7 +27,7 @@ void TransformDrawer::render(World* world, EditorProject& project, EditorScene& 
 	{
 		Transform* transform = world->getComponentById<Transform>(id);
 
-		ImGui::Text(("EntityId: " + transform->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + transform->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		glm::vec3 position = transform->position;

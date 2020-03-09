@@ -13,6 +13,11 @@ System::~System()
 
 }
 
+Guid System::getId() const
+{
+	return systemId;
+}
+
 int System::getOrder() const
 {
 	return order;

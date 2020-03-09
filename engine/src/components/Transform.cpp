@@ -1,8 +1,4 @@
-#include <iostream>
-
 #include "../../include/components/Transform.h"
-
-#include "../../include/core/PoolAllocator.h"
 
 using namespace PhysicsEngine;
 
@@ -24,7 +20,12 @@ Transform::~Transform()
 
 }
 
-std::vector<char> Transform::serialize()
+std::vector<char> Transform::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> Transform::serialize(Guid componentId, Guid entityId) const
 {
 	TransformHeader header;
 	header.componentId = componentId;
@@ -34,9 +35,7 @@ std::vector<char> Transform::serialize()
 	header.rotation = rotation;
 	header.scale = scale;
 
-	int numberOfBytes = sizeof(TransformHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(TransformHeader));
 
 	memcpy(&data[0], &header, sizeof(TransformHeader));
 
@@ -67,8 +66,6 @@ glm::mat4 Transform::getModelMatrix() const
 	modelMatrix = glm::scale(modelMatrix, scale);
 
 	return modelMatrix;
-
-
 	//return glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 }
 

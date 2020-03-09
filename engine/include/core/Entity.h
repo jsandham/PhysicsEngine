@@ -19,8 +19,10 @@ namespace PhysicsEngine
 
 	class Entity
 	{
-		public:
+		private:
 			Guid entityId;
+		
+		public:
 			bool doNotDestroy;
 
 		public:
@@ -28,7 +30,8 @@ namespace PhysicsEngine
 			Entity(std::vector<char> data);
 			~Entity();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
 			void latentDestroy(World* world);
@@ -53,6 +56,11 @@ namespace PhysicsEngine
 			}
 
 			std::vector<std::pair<Guid, int>> getComponentsOnEntity(World* world);
+
+			Guid getId() const;
+
+		private:
+			friend class World;
 	};
 
 	template <typename T>

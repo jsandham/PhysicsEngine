@@ -1,7 +1,5 @@
 #include "../../include/components/LineRenderer.h"
 
-#include "../../include/core/PoolAllocator.h"
-
 using namespace PhysicsEngine;
 
 LineRenderer::LineRenderer()
@@ -22,7 +20,12 @@ LineRenderer::~LineRenderer()
 
 }
 
-std::vector<char> LineRenderer::serialize()
+std::vector<char> LineRenderer::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> LineRenderer::serialize(Guid componentId, Guid entityId) const
 {
 	LineRendererHeader header;
 	header.componentId = componentId;
@@ -31,9 +34,7 @@ std::vector<char> LineRenderer::serialize()
 	header.end = end;
 	header.materialId = materialId;
 
-	int numberOfBytes = sizeof(LineRendererHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(LineRendererHeader));
 
 	memcpy(&data[0], &header, sizeof(LineRendererHeader));
 

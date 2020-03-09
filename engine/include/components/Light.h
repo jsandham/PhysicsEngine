@@ -15,7 +15,6 @@ namespace PhysicsEngine
 	{
 		Guid componentId;
 		Guid entityId;
-		glm::mat4 projection;
 		glm::vec3 position;
 		glm::vec3 direction;
 		glm::vec3 ambient;
@@ -49,7 +48,6 @@ namespace PhysicsEngine
 	class Light : public Component
 	{
 		public:
-			glm::mat4 projection;
 			glm::vec3 position;
 			glm::vec3 direction;
 			glm::vec3 ambient;
@@ -68,8 +66,11 @@ namespace PhysicsEngine
 			Light(std::vector<char> data);
 			~Light();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
+
+			glm::mat4 getProjMatrix() const;
 	};
 
 	template <>

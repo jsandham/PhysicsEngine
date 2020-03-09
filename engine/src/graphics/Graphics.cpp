@@ -541,7 +541,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 	}
 
 	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
 		return;
 	}
 
@@ -616,7 +616,7 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 	}
 
 	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
 		return;
 	}
 
@@ -670,7 +670,7 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 	}
 
 	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
+		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
 		return;
 	}
 
@@ -719,7 +719,7 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
 {
 	if(!font->shader.isCompiled()){
-		std::cout << "Shader " << font->shader.assetId.toString() << " has not been compiled." << std::endl;
+		std::cout << "Shader " << font->shader.getId().toString() << " has not been compiled." << std::endl;
 		return;
 	}
 

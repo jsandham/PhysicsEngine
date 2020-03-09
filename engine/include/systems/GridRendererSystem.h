@@ -13,7 +13,8 @@ namespace PhysicsEngine
 			GridRendererSystem();
 			~GridRendererSystem();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid systemId) const;
 			void deserialize(std::vector<char> data);
 
 			void init(World* world);

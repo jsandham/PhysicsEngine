@@ -14,8 +14,6 @@
 #include "Guid.h"
 #include "Asset.h"
 
-#include "../graphics/GraphicsHandle.h"
-
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
@@ -93,10 +91,12 @@ namespace PhysicsEngine
 			Shader(std::vector<char> data);
 			~Shader();
 
-			std::vector<char> serialize();
+			std::vector<char> serialize() const;
+			std::vector<char> serialize(Guid assetId) const;
 			void deserialize(std::vector<char> data);
 
 			void load(const std::string& filepath);
+			void load(const std::string vertexShader, const std::string fragmentShader, const std::string geometryShader);
 
 			bool isCompiled() const;
 			bool contains(int variant) const;
@@ -116,6 +116,9 @@ namespace PhysicsEngine
 			std::vector<ShaderProgram> getPrograms() const;
 			std::vector<ShaderUniform> getUniforms() const;
 			std::vector<ShaderAttribute> getAttributeNames() const;
+			std::string getVertexShader() const;
+			std::string getGeometryShader() const;
+			std::string getFragmentShader() const;
 
 			void setBool(const std::string& name, bool value) const;
 			void setInt(const std::string& name, int value) const;

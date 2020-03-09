@@ -51,7 +51,7 @@ void SlabBuffer::add(std::vector<float> data, Shader* shader)
 
 		if(*current != NULL){
 			size_t count = (*current)->count;
-			if(shader->assetId == (*current)->shader->assetId && count < blockSize){
+			if(shader->getId() == (*current)->shader->getId() && count < blockSize){
 
 				if((count + endIndex - startIndex) > blockSize){
 					endIndex = startIndex + blockSize - count;

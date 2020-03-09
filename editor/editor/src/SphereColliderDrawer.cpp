@@ -27,7 +27,7 @@ void SphereColliderDrawer::render(World* world, EditorProject& project, EditorSc
 	{
 		SphereCollider* sphereCollider = world->getComponentById<SphereCollider>(id);
 
-		ImGui::Text(("EntityId: " + sphereCollider->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + sphereCollider->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Sphere")) {

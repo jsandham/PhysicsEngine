@@ -13,11 +13,20 @@ Component::Component()
 
 Component::~Component()
 {
-	componentId = Guid::INVALID;
-	entityId = Guid::INVALID;
+
 }
 
-Entity* Component::getEntity(World* world)
+Entity* Component::getEntity(World* world) const
 {
 	return world->getEntity(entityId);
+}
+
+Guid Component::getId() const
+{
+	return componentId;
+}
+
+Guid Component::getEntityId() const
+{
+	return entityId;
 }

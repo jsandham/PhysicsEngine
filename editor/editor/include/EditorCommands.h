@@ -182,7 +182,7 @@ namespace PhysicsEditor
 			{
 				Entity* entity = world->getEntity(entityId);
 				T* component = entity->addComponent<T>(world);
-				componentId = component->componentId;
+				componentId = component->getId();
 
 				*saveStatePtr = true;
 			}

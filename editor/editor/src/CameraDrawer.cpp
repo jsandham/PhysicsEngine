@@ -27,7 +27,7 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 	{
 		Camera* camera = world->getComponentById<Camera>(id);
 
-		ImGui::Text(("EntityId: " + camera->entityId.toString()).c_str());
+		ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		int mode = static_cast<int>(camera->mode);

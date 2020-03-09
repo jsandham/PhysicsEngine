@@ -27,10 +27,14 @@ RenderSystem::~RenderSystem()
 {
 }
 
-std::vector<char> RenderSystem::serialize()
+std::vector<char> RenderSystem::serialize() const
 {
-	size_t numberOfBytes = sizeof(int);
-	std::vector<char> data(numberOfBytes);
+	return serialize(systemId);
+}
+
+std::vector<char> RenderSystem::serialize(Guid systemId) const
+{
+	std::vector<char> data(sizeof(int));
 
 	memcpy(&data[0], &order, sizeof(int));
 

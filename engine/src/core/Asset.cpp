@@ -12,3 +12,8 @@ Asset::~Asset()
 {
 
 }
+
+Guid Asset::getId() const
+{
+	return assetId;
+}

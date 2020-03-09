@@ -31,24 +31,29 @@ Font::~Font()
 
 }
 
-std::vector<char> Font::serialize()
+std::vector<char> Font::serialize() const
 {
-    FontHeader header;
-    header.fontId = assetId;
-    header.filepathSize = filepath.length();
-        
-    size_t numberOfBytes = sizeof(FontHeader) + 
-                        sizeof(char) * filepath.length();
+	return serialize(assetId);
+}
 
-    std::vector<char> data(numberOfBytes);
+std::vector<char> Font::serialize(Guid assetId) const
+{
+	FontHeader header;
+	header.fontId = assetId;
+	header.filepathSize = filepath.length();
 
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(FontHeader);
+	size_t numberOfBytes = sizeof(FontHeader) +
+		sizeof(char) * filepath.length();
 
-    memcpy(&data[start1], &header, sizeof(FontHeader));
-    memcpy(&data[start2], filepath.c_str(), sizeof(char) * filepath.length());
+	std::vector<char> data(numberOfBytes);
 
-    return data;
+	size_t start1 = 0;
+	size_t start2 = start1 + sizeof(FontHeader);
+
+	memcpy(&data[start1], &header, sizeof(FontHeader));
+	memcpy(&data[start2], filepath.c_str(), sizeof(char) * filepath.length());
+
+	return data;
 }
 
 void Font::deserialize(std::vector<char> data)

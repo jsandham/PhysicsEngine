@@ -24,7 +24,7 @@ namespace PhysicsEditor
 			GLuint depthTex;
 
 			PhysicsEngine::Mesh mesh;
-			PhysicsEngine::Shader shader;
+			//PhysicsEngine::Shader shader;
 
 			glm::mat4 model;
 			glm::mat4 view;
@@ -36,7 +36,9 @@ namespace PhysicsEditor
 			~MaterialRenderer();
 
 			void init();
-			void render(PhysicsEngine::Material* material);
+			void render(PhysicsEngine::World* world, PhysicsEngine::Material* material);
+
+			GLuint getColorTarget() const;
 	};
 }
 

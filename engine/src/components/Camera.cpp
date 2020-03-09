@@ -1,7 +1,5 @@
 #include "../../include/components/Camera.h"
 
-#include "../../include/core/PoolAllocator.h"
-
 using namespace PhysicsEngine;
 
 float Plane::distance(glm::vec3 point) const
@@ -99,7 +97,12 @@ Camera::~Camera()
 
 }
 
-std::vector<char> Camera::serialize()
+std::vector<char> Camera::serialize() const
+{
+	return serialize(componentId, entityId);
+}
+
+std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 {
 	CameraHeader header;
 	header.componentId = componentId;
@@ -118,9 +121,7 @@ std::vector<char> Camera::serialize()
 	header.nearPlane = frustum.nearPlane;
 	header.farPlane = frustum.farPlane;
 
-	int numberOfBytes = sizeof(CameraHeader);
-
-	std::vector<char> data(numberOfBytes);
+	std::vector<char> data(sizeof(CameraHeader));
 
 	memcpy(&data[0], &header, sizeof(CameraHeader));
 

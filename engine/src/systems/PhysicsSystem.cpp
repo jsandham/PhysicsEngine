@@ -33,10 +33,14 @@ PhysicsSystem::~PhysicsSystem()
 	
 }
 
-std::vector<char> PhysicsSystem::serialize()
+std::vector<char> PhysicsSystem::serialize() const
 {
-	size_t numberOfBytes = sizeof(int);
-	std::vector<char> data(numberOfBytes);
+	return serialize(systemId);
+}
+
+std::vector<char> PhysicsSystem::serialize(Guid systemId) const
+{
+	std::vector<char> data(sizeof(int));
 
 	memcpy(&data[0], &order, sizeof(int));
 
@@ -62,13 +66,13 @@ void PhysicsSystem::init(World* world)
 	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
 		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
 
-		std::cout << "component id: " << collider->componentId.toString() << std::endl;
+		std::cout << "component id: " << collider->getId().toString() << std::endl;
 
 		spheres.push_back(collider->sphere);
 
 		BoundingSphere boundingSphere;
 		boundingSphere.sphere = collider->sphere;
-		boundingSphere.id = collider->componentId;
+		boundingSphere.id = collider->getId();
 		boundingSphere.primitiveType = 0;
 		boundingSphere.index = i;
 
@@ -78,7 +82,7 @@ void PhysicsSystem::init(World* world)
 	for(int i = 0; i < world->getNumberOfComponents<BoxCollider>(); i++){
 		BoxCollider* collider = world->getComponentByIndex<BoxCollider>(i);
 
-		std::cout << "component id: " << collider->componentId.toString() << std::endl;
+		std::cout << "component id: " << collider->getId().toString() << std::endl;
 
 		glm::vec3 min = collider->bounds.getMin();
 		glm::vec3 max = collider->bounds.getMax();
@@ -86,7 +90,7 @@ void PhysicsSystem::init(World* world)
 		bounds.push_back(collider->bounds);
 
 		BoundingSphere boundingSphere;
-		boundingSphere.id = collider->componentId;
+		boundingSphere.id = collider->getId();
 		boundingSphere.sphere.centre = 0.5f * (min + max);
 		boundingSphere.sphere.radius = glm::length(0.5f*(min - max));
 		boundingSphere.primitiveType = 1;

@@ -13,24 +13,27 @@ namespace PhysicsEngine
 	class System
 	{
 		protected:
+			Guid systemId;
 			int order;
 
 			World* world;
 
 		public:
-			Guid systemId;
-
-		public:
 			System();
 			virtual ~System() = 0;
 
-			virtual std::vector<char> serialize() = 0;
+			virtual std::vector<char> serialize() const = 0;
+			virtual std::vector<char> serialize(Guid systemId) const = 0;
 			virtual void deserialize(std::vector<char> data) = 0;
 
 			virtual void init(World* world) = 0;
 			virtual void update(Input input) = 0;
 
+			Guid getId() const;
 			int getOrder() const;
+
+		private:
+			friend class World;
 	};
 
 	template <typename T>
