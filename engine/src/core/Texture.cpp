@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../../include/core/Texture.h"
 #include "../../include/core/Log.h"
 
@@ -23,6 +21,11 @@ int Texture::getNumChannels() const
 TextureDimension Texture::getDimension() const
 {
 	return dimension;
+}
+
+TextureFormat Texture::getFormat() const
+{
+	return format;
 }
 
 GLuint Texture::getNativeGraphics() const

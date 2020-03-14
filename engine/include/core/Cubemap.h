@@ -2,7 +2,6 @@
 #define __CUBEMAP_H__
 
 #include <vector>
-#include <string>
 
 #include "Texture.h"
 #include "Color.h"

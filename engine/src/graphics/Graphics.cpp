@@ -494,21 +494,72 @@ void Graphics::apply(Texture3D* texture)
 
 void Graphics::create(Cubemap* cubemap, GLuint* tex, bool* created)
 {
-	
+	int width = cubemap->getWidth();
+	int numChannels = cubemap->getNumChannels();
+	TextureFormat format = cubemap->getFormat();
+	std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
+
+ 	glGenTextures(1, tex);
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
+
+ 	GLenum openglFormat = Graphics::getTextureFormat(format);
+
+ 	for (unsigned int i = 0; i < 6; i++){
+ 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat, GL_UNSIGNED_BYTE, &rawCubemapData[0]);
+ 	}
+
+ 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+ 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+ 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	*created = true;
 }
 
 void Graphics::destroy(Cubemap* cubemap, GLuint* tex, bool* created)
 {
+	glDeleteTextures(1, tex);
+
+	*created = false;
 }
 
 void Graphics::readPixels(Cubemap* cubemap)
 {
+	int width = cubemap->getWidth();
+	int numChannels = cubemap->getNumChannels();
+	TextureFormat format = cubemap->getFormat();
+	std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
 
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->getNativeGraphics());
+
+ 	GLenum openglFormat = Graphics::getTextureFormat(format);
+
+ 	for (unsigned int i = 0; i < 6; i++){
+ 		glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE, &rawCubemapData[i*width*width*numChannels]);
+ 	}
+
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void Graphics::apply(Cubemap* cubemap)
 {
+	int width = cubemap->getWidth();
+	int numChannels = cubemap->getNumChannels();
+	TextureFormat format = cubemap->getFormat();
+	std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
 
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->getNativeGraphics());
+
+ 	GLenum openglFormat = Graphics::getTextureFormat(format);
+
+ 	for (unsigned int i = 0; i < 6; i++){
+ 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat, GL_UNSIGNED_BYTE, &rawCubemapData[0]);
+ 	}
+
+ 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void Graphics::create(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
@@ -540,7 +591,7 @@ void Graphics::create(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuin
 	*created = true;
 }
 
-void Graphics::destroy(Mesh* cubemap, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
+void Graphics::destroy(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
 {
 
 }

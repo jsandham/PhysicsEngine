@@ -130,11 +130,6 @@ Color Texture3D::getPixel(int x, int y, int z) const
 	return Color::white;
 }
 
-TextureFormat Texture3D::getFormat() const
-{
-	return format;
-}
-
 void Texture3D::setRawTextureData(std::vector<unsigned char> data, int width, int height, int depth, TextureFormat format)
 {
 	switch (format)

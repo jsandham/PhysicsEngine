@@ -48,7 +48,6 @@ namespace PhysicsEngine
 			std::vector<unsigned char> getRawTextureData() const;
 			std::vector<Color> getPixels() const;
 			Color getPixel(int x, int y) const;
-			TextureFormat getFormat() const;
 
 			void setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format);
 			void setPixels(std::vector<Color> colors);

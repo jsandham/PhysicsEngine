@@ -1,10 +1,7 @@
-#include <iostream>
-
 #include "../../include/core/Log.h"
 #include "../../include/core/Mesh.h"
-#include "../../include/obj_load/obj_load.h"
-
 #include "../../include/graphics/Graphics.h"
+#include "../../include/obj_load/obj_load.h"
 
 using namespace PhysicsEngine;
 

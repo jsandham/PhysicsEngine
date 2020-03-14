@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -226,11 +224,6 @@ Color Texture2D::getPixel(int x, int y) const
 	}
 
 	return color;
-}
-
-TextureFormat Texture2D::getFormat() const
-{
-	return format;
 }
 
 void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format)
