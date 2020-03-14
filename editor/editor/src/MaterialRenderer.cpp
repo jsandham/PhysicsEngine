@@ -58,7 +58,8 @@ void MaterialRenderer::init()
 			  PhysicsEngine::InternalMeshes::sphereSubMeshStartIndicies);
 
 	// create mesh vao and vbo
-	glGenVertexArrays(1, &mesh.vao);
+	mesh.create();
+	/*glGenVertexArrays(1, &mesh.vao);
 	glBindVertexArray(mesh.vao);
 	glGenBuffers(1, &mesh.vbo[0]);
 	glGenBuffers(1, &mesh.vbo[1]);
@@ -80,7 +81,7 @@ void MaterialRenderer::init()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
-	glBindVertexArray(0);
+	glBindVertexArray(0);*/
 
 	PhysicsEngine::Graphics::checkError();
 
@@ -149,7 +150,7 @@ void MaterialRenderer::render(PhysicsEngine::World* world, PhysicsEngine::Materi
 
 	PhysicsEngine::Graphics::checkError();
 
-	glBindVertexArray(mesh.vao);
+	glBindVertexArray(mesh.getNativeGraphicsVAO());
 	glDrawArrays(GL_TRIANGLES, 0, mesh.getVertices().size() / 3);
 	glBindVertexArray(0);
 

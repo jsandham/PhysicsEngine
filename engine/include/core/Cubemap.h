@@ -58,6 +58,8 @@ namespace PhysicsEngine
 			void setPixels(CubemapFace face, int x, int y, Color color);
 			void setPixel(CubemapFace face, int x, int y, Color color);
 
+			void create();
+			void destroy();
 			void readPixels();
 			void apply();
 	};

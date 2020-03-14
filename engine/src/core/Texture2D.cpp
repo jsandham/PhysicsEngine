@@ -16,7 +16,7 @@ Texture2D::Texture2D()
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
-	this->isCreated = false;
+	this->created = false;
 }
 
 Texture2D::Texture2D(std::vector<char> data)
@@ -33,7 +33,7 @@ Texture2D::Texture2D(int width, int height)
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
-	this->isCreated = false;
+	this->created = false;
 
 	rawTextureData.resize(width*height*numChannels);
 }
@@ -47,7 +47,7 @@ Texture2D::Texture2D(int width, int height, TextureFormat format)
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
-	this->isCreated = false;
+	this->created = false;
 
 	rawTextureData.resize(width*height*numChannels);
 }
@@ -106,7 +106,7 @@ void Texture2D::deserialize(std::vector<char> data)
 		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 
-	this->isCreated = false;
+	this->created = false;
 }
 
 void Texture2D::load(const std::string& filepath)
@@ -268,7 +268,7 @@ void Texture2D::setPixels(std::vector<Color> colors)
 		return;
 	}
 
-	for (unsigned int i = 0; i < colors.size(); i++){
+	for (size_t i = 0; i < colors.size(); i++){
 		if (numChannels == 1){
 			rawTextureData[i] = colors[i].r;
 		}
@@ -309,6 +309,23 @@ void Texture2D::setPixel(int x, int y, Color color)
 		rawTextureData[index + 2] = color.b;
 		rawTextureData[index + 3] = color.a;
 	}
+}
+
+void Texture2D::create()
+{
+	if (created) {
+		return;
+	}
+	Graphics::create(this, &tex, &created);
+}
+
+void Texture2D::destroy()
+{
+	if (!created) {
+		return;
+	}
+
+	Graphics::destroy(this, &tex, &created);
 }
 
 void Texture2D::readPixels()

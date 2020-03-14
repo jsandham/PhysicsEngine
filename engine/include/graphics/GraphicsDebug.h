@@ -38,52 +38,16 @@ namespace PhysicsEngine
 				glBindFramebuffer(GL_FRAMEBUFFER, fbo[i].handle);
 
 				// color
-				int width = fbo[i].colorBuffer.getWidth();
-				int height = fbo[i].colorBuffer.getHeight();
-				int numChannels = fbo[i].colorBuffer.getNumChannels();
-				TextureFormat format = fbo[i].colorBuffer.getFormat();
-				std::vector<unsigned char> rawTextureData = fbo[i].colorBuffer.getRawTextureData();
+				fbo[i].colorBuffer.create();
 
-				glGenTextures(1, &(fbo[i].colorBuffer.tex));
-				glBindTexture(GL_TEXTURE_2D, fbo[i].colorBuffer.tex);
-
-				GLenum openglFormat = Graphics::getTextureFormat(format);
-
-				glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-				glBindTexture(GL_TEXTURE_2D, 0);
-
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo[i].colorBuffer.tex, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo[i].colorBuffer.getNativeGraphics(), 0);
 
 				// depth
-				width = fbo[i].depthBuffer.getWidth();
-				height = fbo[i].depthBuffer.getHeight();
-				numChannels = fbo[i].depthBuffer.getNumChannels();
-				format = fbo[i].depthBuffer.getFormat();
-				rawTextureData = fbo[i].depthBuffer.getRawTextureData();
+				fbo[i].depthBuffer.create();
 
-				glGenTextures(1, &(fbo[i].depthBuffer.tex));
-				glBindTexture(GL_TEXTURE_2D, fbo[i].depthBuffer.tex);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo[i].depthBuffer.getNativeGraphics(), 0);
 
-				openglFormat = Graphics::getTextureFormat(format);
-
-				glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-				glBindTexture(GL_TEXTURE_2D, 0);
-
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbo[i].depthBuffer.tex, 0);
-
-				std::cout << "frame buffer handle: " << fbo[i].handle << " framebuffer buffer handle: " << fbo[i].colorBuffer.tex << " framebuffer depth buffer handle: " << fbo[i].depthBuffer.tex << std::endl;
+				std::cout << "frame buffer handle: " << fbo[i].handle << " framebuffer buffer handle: " << fbo[i].colorBuffer.getNativeGraphics() << " framebuffer depth buffer handle: " << fbo[i].depthBuffer.getNativeGraphics() << std::endl;
 
 				GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 				glDrawBuffers(1, DrawBuffers);

@@ -10,6 +10,11 @@ Texture::Texture()
 	assetId = Guid::INVALID;
 }
 
+bool Texture::isCreated() const
+{
+	return created;
+}
+
 int Texture::getNumChannels() const
 {
 	return numChannels;
@@ -18,6 +23,11 @@ int Texture::getNumChannels() const
 TextureDimension Texture::getDimension() const
 {
 	return dimension;
+}
+
+GLuint Texture::getNativeGraphics() const
+{
+	return tex;
 }
 
 int Texture::calcNumChannels(TextureFormat format) const

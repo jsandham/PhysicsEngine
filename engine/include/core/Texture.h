@@ -27,22 +27,22 @@ namespace PhysicsEngine
 	class Texture : public Asset
 	{
 		protected:
+			std::vector<unsigned char> rawTextureData;
 			int numChannels;
 			TextureDimension dimension;
 			TextureFormat format;
-
-			std::vector<unsigned char> rawTextureData;
-
-		public:
 			GLuint tex;
+			bool created;
 
 		public:
 			Texture();
 			virtual ~Texture() {};
 
+			bool isCreated() const;
 			int getNumChannels() const;
 			TextureDimension getDimension() const;
 			TextureFormat getFormat() const;
+			GLuint getNativeGraphics() const;
 
 		protected:
 			int calcNumChannels(TextureFormat format) const;

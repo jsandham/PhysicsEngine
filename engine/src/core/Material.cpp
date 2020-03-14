@@ -106,7 +106,7 @@ void Material::apply(World* world)
 				shader->setInt(uniforms[i].name, textureSlot);
 
 				glActiveTexture(GL_TEXTURE0 + textureSlot);
-				glBindTexture(GL_TEXTURE_2D, (GLuint)texture->tex);
+				glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 
 				textureSlot++;
 			}

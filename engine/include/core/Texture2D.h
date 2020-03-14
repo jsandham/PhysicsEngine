@@ -28,9 +28,6 @@ namespace PhysicsEngine
 			int height;
 
 		public:
-			bool isCreated;
-
-		public:
 			Texture2D();
 			Texture2D(std::vector<char> data);
 			Texture2D(int width, int height);
@@ -57,6 +54,8 @@ namespace PhysicsEngine
 			void setPixels(std::vector<Color> colors);
 			void setPixel(int x, int y, Color color);
 
+			void create();
+			void destroy();
 			void readPixels();
 			void apply();
 	};

@@ -116,7 +116,7 @@ namespace PhysicsEditor
 		Texture2D* texture = world->getAsset<Texture2D>(textureId);
 
 		bool slotFilled = false;
-		bool isClicked = ImGui::ImageSlot(uniform->shortName, texture == NULL ? 0 : texture->tex, clipboard.getDraggedType() == InteractionType::Texture2D, &slotFilled);
+		bool isClicked = ImGui::ImageSlot(uniform->shortName, texture == NULL ? 0 : texture->getNativeGraphics(), clipboard.getDraggedType() == InteractionType::Texture2D, &slotFilled);
 		if (slotFilled) 
 		{
 			textureId = clipboard.getDraggedId();

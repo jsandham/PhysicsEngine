@@ -54,7 +54,7 @@ void Texture2DDrawer::render(World* world, EditorProject& project, EditorScene& 
 		ImGui::Button("B");
 		ImGui::PopStyleColor();
 
-		ImGui::Image((void*)(intptr_t)texture->tex, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
+		ImGui::Image((void*)(intptr_t)texture->getNativeGraphics(), ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
 
 		ImGui::EndChild();
 	}

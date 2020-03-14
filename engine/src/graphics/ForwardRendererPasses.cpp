@@ -163,47 +163,13 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	// create all texture assets not already created
 	for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++) {
 		Texture2D* texture = world->getAssetByIndex<Texture2D>(i);
-		if (texture != NULL && !texture->isCreated) {
-			int width = texture->getWidth();
-			int height = texture->getHeight();
-			int numChannels = texture->getNumChannels();
-			TextureFormat format = texture->getFormat();
-			std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
+		if (texture != NULL && !texture->isCreated()) {
+			texture->create();
 
-			glGenTextures(1, &(texture->tex));
-			glBindTexture(GL_TEXTURE_2D, texture->tex);
-
-			GLenum openglFormat = GL_DEPTH_COMPONENT;
-			switch (format)
-			{
-			case Depth:
-				openglFormat = GL_DEPTH_COMPONENT;
-				break;
-			case RG:
-				openglFormat = GL_RG;
-				break;
-			case RGB:
-				openglFormat = GL_RGB;
-				break;
-			case RGBA:
-				openglFormat = GL_RGBA;
-				break;
-			default:
-				Log::error("Invalid texture format\n");
+			if (!texture->isCreated()) {
+				std::string errorMessage = "Error: Failed to create texture " + texture->getId().toString() + "\n";
+				Log::error(errorMessage.c_str());
 			}
-
-			glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
-
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			texture->isCreated = true;
 		}
 	}
 
@@ -247,8 +213,14 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	for (int i = 0; i < world->getNumberOfAssets<Mesh>(); i++) {
 		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
 
-		if (mesh != NULL && !mesh->isCreated) {
-			glGenVertexArrays(1, &mesh->vao);
+		if (mesh != NULL && !mesh->isCreated()) {
+			mesh->create();
+
+			if (!mesh->isCreated()) {
+				std::string errorMessage = "Error: Failed to create mesh " + mesh->getId().toString() + "\n";
+				Log::error(errorMessage.c_str());
+			}
+			/*glGenVertexArrays(1, &mesh->vao);
 			glBindVertexArray(mesh->vao);
 			glGenBuffers(1, &mesh->vbo[0]);
 			glGenBuffers(1, &mesh->vbo[1]);
@@ -272,7 +244,7 @@ void PhysicsEngine::registerRenderAssets(World* world)
 
 			glBindVertexArray(0);
 
-			mesh->isCreated = true;
+			mesh->isCreated = true;*/
 		}
 	}
 
@@ -1028,7 +1000,7 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		renderObject.transformIndex = transformIndex;
 		renderObject.materialIndex = materialIndex;
 		renderObject.shaderIndex = shaderIndex;
-		renderObject.vao = mesh->vao;
+		renderObject.vao = mesh->getNativeGraphicsVAO();
 
 		renderObject.mainTexture = -1;
 		renderObject.normalMap = -1;

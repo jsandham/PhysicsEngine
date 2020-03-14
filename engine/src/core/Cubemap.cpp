@@ -7,6 +7,12 @@ using namespace PhysicsEngine;
 Cubemap::Cubemap()
 {
 	this->dimension = TextureDimension::Cube;
+
+	this->width = 0;
+	this->format = TextureFormat::RGB;
+
+	this->numChannels = calcNumChannels(format);
+	this->created = false;
 }
 
 Cubemap::Cubemap(std::vector<char> data)
@@ -22,6 +28,7 @@ Cubemap::Cubemap(int width)
 	this->format = TextureFormat::RGB;
 
 	this->numChannels = calcNumChannels(format);
+	this->created = false;
 
 	rawTextureData.resize(6 * width*width*numChannels);
 }
@@ -34,6 +41,7 @@ Cubemap::Cubemap(int width, TextureFormat format)
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
+	this->created = false;
 
 	rawTextureData.resize(6 * width*width*numChannels);
 }
@@ -46,6 +54,7 @@ Cubemap::Cubemap(int width, int height, TextureFormat format)
 	this->format = format;
 
 	this->numChannels = calcNumChannels(format);
+	this->created = false;
 
 	rawTextureData.resize(6 * width*width*numChannels);
 }
@@ -217,6 +226,23 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
 		rawTextureData[index + 2] = color.b;
 		rawTextureData[index + 3] = color.a;
 	}
+}
+
+void Cubemap::create()
+{
+	if (created) {
+		return;
+	}
+	Graphics::create(this, &tex, &created);
+}
+
+void Cubemap::destroy()
+{
+	if (!created) {
+		return;
+	}
+
+	Graphics::destroy(this, &tex, &created);
 }
 
 void Cubemap::readPixels()

@@ -4,12 +4,14 @@
 #include "../../include/core/Mesh.h"
 #include "../../include/obj_load/obj_load.h"
 
+#include "../../include/graphics/Graphics.h"
+
 using namespace PhysicsEngine;
 
 Mesh::Mesh()
 {
 	assetId = Guid::INVALID;
-	this->isCreated = false;
+	this->created = false;
 }
 
 Mesh::Mesh(std::vector<char> data)
@@ -92,7 +94,7 @@ void Mesh::deserialize(std::vector<char> data)
 		subMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
 	}
 
-	this->isCreated = false;
+	this->created = false;
 }
 
 void Mesh::load(const std::string& filepath)
@@ -118,6 +120,11 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
 	this->normals = normals;
 	this->texCoords = texCoords;
 	this->subMeshVertexStartIndices = subMeshStartIndices;
+}
+
+bool Mesh::isCreated() const
+{
+	return created;
 }
 
 const std::vector<float>& Mesh::getVertices() const
@@ -182,7 +189,33 @@ Sphere Mesh::getBoundingSphere() const
 		}
 	}
 
-	std::cout << "centre: " << sphere.centre.x << " " << sphere.centre.y << " " << sphere.centre.z << " radius: " << sphere.radius << std::endl;
-
 	return sphere;
+}
+
+GLuint Mesh::getNativeGraphicsVAO() const
+{
+	return vao;
+}
+
+void Mesh::create()
+{
+	if (created) {
+		return;
+	}
+
+	Graphics::create(this, &vao, &vbo[0], &vbo[1], &vbo[2], &created);
+}
+
+void Mesh::destroy()
+{
+	if (!created) {
+		return;
+	}
+
+	Graphics::destroy(this, &vao, &vbo[0], &vbo[1], &vbo[2], &created);
+}
+
+void Mesh::apply()
+{
+	Graphics::apply(this);
 }

@@ -344,11 +344,44 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
 		openglFormat = GL_RGBA;
 		break;
 	default:
-		std::string errorMessage = "OpengGL: Invalid texture format\n";
-		Log::error(errorMessage.c_str());
+		Log::error("OpengGL: Invalid texture format\n");
 	}
 
 	return openglFormat;
+}
+
+void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)
+{
+	int width = texture->getWidth();
+	int height = texture->getHeight();
+	int numChannels = texture->getNumChannels();
+	TextureFormat format = texture->getFormat();
+	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
+
+	glGenTextures(1, tex);
+	glBindTexture(GL_TEXTURE_2D, *tex);
+
+	GLenum openglFormat = Graphics::getTextureFormat(format);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	*created = true;
+}
+
+void Graphics::destroy(Texture2D* texture, GLuint* tex, bool* created)
+{
+	glDeleteTextures(1, tex);
+
+	*created = false;
 }
 
 void Graphics::readPixels(Texture2D* texture)
@@ -359,11 +392,11 @@ void Graphics::readPixels(Texture2D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_2D, texture->tex);
+	glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
-	glGetTextureImage(texture->tex, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
+	glGetTextureImage(texture->getNativeGraphics(), 0, openglFormat, GL_UNSIGNED_BYTE, width*height*numChannels, &rawTextureData[0]);
 	
 	texture->setRawTextureData(rawTextureData, width, height, format);
 
@@ -378,7 +411,7 @@ void Graphics::apply(Texture2D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_2D, texture->tex);
+	glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
@@ -387,51 +420,39 @@ void Graphics::apply(Texture2D* texture)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-// void Graphics::generate(Texture2D* texture)
-// {
-// 	int width = texture->getWidth();
-// 	int height = texture->getHeight();
-// 	int numChannels = texture->getNumChannels();
-// 	TextureFormat format = texture->getFormat();
-// 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
+ void Graphics::create(Texture3D* texture, GLuint* tex, bool* created)
+ {
+ 	int width = texture->getWidth();
+ 	int height = texture->getHeight();
+ 	int depth = texture->getDepth();
+ 	int numChannels = texture->getNumChannels();
+ 	TextureFormat format = texture->getFormat();
+ 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-// 	glGenTextures(1, &(texture->handle.handle));
-// 	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
+ 	glGenTextures(1, tex);
+ 	glBindTexture(GL_TEXTURE_3D, *tex);
 
-// 	GLenum openglFormat = OpenGL::getTextureFormat(format);
+ 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
-// 	glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+ 	glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
-// 	glGenerateMipmap(GL_TEXTURE_2D);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-// 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ 	glBindTexture(GL_TEXTURE_3D, 0);
 
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-// }
+	*created = true;
+ }
 
-// void Graphics::destroy(Texture2D* texture)
-// {	
-// 	glDeleteTextures(1, &(texture->handle.handle));
-// }
+ void Graphics::destroy(Texture3D* texture, GLuint* tex, bool* created)
+ {
+ 	glDeleteTextures(1, tex);
 
-// void Graphics::bind(Texture2D* texture)
-// {
-// 	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
-// }
-
-// void Graphics::unbind(Texture2D* texture)
-// {
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-// }
-
-// void Graphics::active(Texture2D* texture, unsigned int slot)
-// {
-// 	glActiveTexture(GL_TEXTURE0 + slot);
-// }
+	*created = false;
+ }
 
 void Graphics::readPixels(Texture3D* texture)
 {
@@ -442,13 +463,13 @@ void Graphics::readPixels(Texture3D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_3D, texture->tex);
+	glBindTexture(GL_TEXTURE_3D, texture->getNativeGraphics());
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
-	glGetTextureImage(texture->tex, 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
+	glGetTextureImage(texture->getNativeGraphics(), 0, openglFormat, GL_UNSIGNED_BYTE, width*height*depth*numChannels, &rawTextureData[0]);
 
-	//texture->setRawTextureData(rawTextureData, width, height, depth, format);
+	texture->setRawTextureData(rawTextureData, width, height, depth, format);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
@@ -462,7 +483,7 @@ void Graphics::apply(Texture3D* texture)
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
-	glBindTexture(GL_TEXTURE_3D, texture->tex);
+	glBindTexture(GL_TEXTURE_3D, texture->getNativeGraphics());
 
 	GLenum openglFormat = Graphics::getTextureFormat(format);
 
@@ -471,50 +492,14 @@ void Graphics::apply(Texture3D* texture)
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
-// void Graphics::generate(Texture3D* texture)
-// {
-// 	int width = texture->getWidth();
-// 	int height = texture->getHeight();
-// 	int depth = texture->getDepth();
-// 	int numChannels = texture->getNumChannels();
-// 	TextureFormat format = texture->getFormat();
-// 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
+void Graphics::create(Cubemap* cubemap, GLuint* tex, bool* created)
+{
+	
+}
 
-// 	glGenTextures(1, &(texture->handle.handle));
-// 	glBindTexture(GL_TEXTURE_3D, texture->handle.handle);
-
-// 	GLenum openglFormat = OpenGL::getTextureFormat(format);
-
-// 	glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
-
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-// 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-
-// 	glBindTexture(GL_TEXTURE_3D, 0);
-// }
-
-// void Graphics::destroy(Texture3D* texture)
-// {
-// 	glDeleteTextures(1, &(texture->handle.handle));
-// }
-
-// void Graphics::bind(Texture3D* texture)
-// {
-// 	glBindTexture(GL_TEXTURE_2D, texture->handle.handle);
-// }
-
-// void Graphics::unbind(Texture3D* texture)
-// {
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-// }
-
-// void Graphics::active(Texture3D* texture, unsigned int slot)
-// {
-// 	//glActiveTexture(GL_TEXTURE0 + slot);
-// }
+void Graphics::destroy(Cubemap* cubemap, GLuint* tex, bool* created)
+{
+}
 
 void Graphics::readPixels(Cubemap* cubemap)
 {
@@ -522,6 +507,45 @@ void Graphics::readPixels(Cubemap* cubemap)
 }
 
 void Graphics::apply(Cubemap* cubemap)
+{
+
+}
+
+void Graphics::create(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
+{
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(*vao);
+	glGenBuffers(1, vbo0);
+	glGenBuffers(1, vbo1);
+	glGenBuffers(1, vbo2);
+
+	glBindVertexArray(*vao);
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+	glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() * sizeof(float), &(mesh->getVertices()[0]), GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+	glBufferData(GL_ARRAY_BUFFER, mesh->getNormals().size() * sizeof(float), &(mesh->getNormals()[0]), GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
+	glBufferData(GL_ARRAY_BUFFER, mesh->getTexCoords().size() * sizeof(float), &(mesh->getTexCoords()[0]), GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+	glBindVertexArray(0);
+
+	*created = true;
+}
+
+void Graphics::destroy(Mesh* cubemap, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
+{
+
+}
+
+void Graphics::apply(Mesh* mesh)
 {
 
 }
@@ -628,7 +652,7 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 
 
 		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, texture->tex);
+		glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 	}
 
 	if(world->debug && query != NULL){

@@ -32,12 +32,9 @@ namespace PhysicsEngine
 			std::vector<float> normals;
 			std::vector<float> texCoords;
 			std::vector<int> subMeshVertexStartIndices;
-
-		public:
 			GLuint vao;
 			GLuint vbo[3];
-
-			bool isCreated;
+			bool created;
 
 		public:
 			Mesh();
@@ -51,11 +48,17 @@ namespace PhysicsEngine
 			void load(const std::string& filename);
 			void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords, std::vector<int> subMeshStartIndices);
 
+			bool isCreated() const;
 			const std::vector<float>& getVertices() const;
 			const std::vector<float>& getNormals() const;
 			const std::vector<float>& getTexCoords() const;
 			const std::vector<int>& getSubMeshStartIndices() const;
 			Sphere getBoundingSphere() const;
+			GLuint getNativeGraphicsVAO() const;
+
+			void create();
+			void destroy();
+			void apply();
 	};
 
 	template <>

@@ -177,12 +177,12 @@ bool Guid::isEmpty() const
 
 std::string Guid::toString() const
 {
-	char buffer[42];
+	char buffer[37];
 
 	const char* format = "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x";
 
 	_snprintf(buffer, 
-			  42,
+			  37,
 			  format, 
 			  bytes[0], 
 			  bytes[1], 
