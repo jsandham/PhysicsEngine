@@ -7,10 +7,12 @@
 #include <vector>
 #include <algorithm>
 
+#include "Allocator.h"
+
 namespace PhysicsEngine
 {
 	template <class T, size_t T_per_page = 256>
-	class PoolAllocator
+	class PoolAllocator : public Allocator
 	{
 	private:
 		const size_t pool_size = T_per_page * sizeof(T);
@@ -124,13 +126,13 @@ namespace PhysicsEngine
 		}
 	};
 
-	template<class T>
+	/*template<class T>
 	PoolAllocator<T>& getAllocator()
 	{
 		static PoolAllocator<T> allocator;
 
 		return allocator;
-	}
+	}*/
 
 }
 

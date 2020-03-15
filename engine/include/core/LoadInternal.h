@@ -2,7 +2,9 @@
 #define __LOADINTERNAL_H__
 
 #include <vector>
+#include <map>
 
+#include "Allocator.h"
 #include "PoolAllocator.h"
 #include "Asset.h"
 #include "Entity.h"
@@ -11,31 +13,13 @@
 
 namespace PhysicsEngine
 {
-	template<typename T>
-	static T* create()
-	{
-		return getAllocator<T>().construct();
-	}
+	Entity* loadInternalEntity(Allocator* allocator, std::vector<char> data, int* index);
+	Component* loadInternalComponent(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
+	System* loadInternalSystem(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
+	Asset* loadInternalAsset(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
 
-	template<typename T>
-	static T* create(std::vector<char> data)
-	{
-		return getAllocator<T>().construct(data);
-	}
-
-	template<typename T>
-	static T* destroy(int index)
-	{	
-		return getAllocator<T>().destruct(index);
-	}
-
-	Asset* loadInternalAsset(std::vector<char> data, int type, int* index);
-	Entity* loadInternalEntity(std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::vector<char> data, int type, int* index);
-	System* loadInternalSystem(std::vector<char> data, int type, int* index);
-
-	Entity* destroyInternalEntity(int index);
-	Component* destroyInternalComponent(int type, int index);
+	Entity* destroyInternalEntity(Allocator* allocator, int index);
+	Component* destroyInternalComponent(std::map<int, Allocator*>* allocatorMap, int type, int index);
 }
 
 #endif

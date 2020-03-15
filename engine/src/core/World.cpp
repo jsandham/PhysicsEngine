@@ -14,7 +14,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	//worldId = Guid::newGuid();
+	entityAllocator = NULL;
 	bounds.centre = glm::vec3(0.0f, 0.0f, 40.0f);
 	bounds.size = 2.0f * glm::vec3(200.0f, 200.0f, 200.0f);
 
@@ -27,7 +27,24 @@ World::World()
 
 World::~World()
 {
+	if (entityAllocator != NULL) {
+		delete entityAllocator;
+	}
 
+	std::map<int, Allocator*>::iterator it1 = componentAllocatorMap.begin();
+	for (it1 == componentAllocatorMap.begin(); it1 != componentAllocatorMap.end(); it1++) {
+		delete it1->second;
+	}
+
+	std::map<int, Allocator*>::iterator it2 = systemAllocatorMap.begin();
+	for (it2 == systemAllocatorMap.begin(); it2 != systemAllocatorMap.end(); it2++) {
+		delete it2->second;
+	}
+
+	std::map<int, Allocator*>::iterator it3 = assetAllocatorMap.begin();
+	for (it3 == assetAllocatorMap.begin(); it3 != assetAllocatorMap.end(); it3++) {
+		delete it3->second;
+	}
 }
 
 bool World::loadAsset(std::string filePath)
@@ -73,19 +90,16 @@ bool World::loadAsset(std::string filePath)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = PhysicsEngine::loadInternalAsset(data, type, &index);
+			asset = PhysicsEngine::loadInternalAsset(&assetAllocatorMap, data, type, &index);
 		}
 		else{
-			asset = PhysicsEngine::loadAsset(data, type, &index);
+			asset = PhysicsEngine::loadAsset(&assetAllocatorMap, data, type, &index);
 		}
 
 		if(asset == NULL || index == -1){
 			Log::error("Error: Could not load asset");
 			return false;
 		}
-
-		std::string temp = asset->assetId.toString();
-		std::cout << "assetId: " << temp << std::endl;
 
 		if(idToGlobalIndex.find(asset->assetId) == idToGlobalIndex.end()){
 			idToGlobalIndex[asset->assetId] = index;
@@ -153,7 +167,7 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 		if(classification == 'e'){
 			Entity* entity = NULL;
 			if(type == 0){
-				entity = PhysicsEngine::loadInternalEntity(data, &index);
+				entity = PhysicsEngine::loadInternalEntity(entityAllocator, data, &index);
 			}
 			else{
 				Log::error("Entity must be of type 0\n");
@@ -198,10 +212,10 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 
 			Component* component = NULL;
 			if(type < 20){
-				component = PhysicsEngine::loadInternalComponent(data, type, &index);
+				component = PhysicsEngine::loadInternalComponent(&componentAllocatorMap, data, type, &index);
 			}
 			else{
-				component = PhysicsEngine::loadComponent(data, type, &index);
+				component = PhysicsEngine::loadComponent(&componentAllocatorMap, data, type, &index);
 			}
 
 			if(component == NULL || index == -1){
@@ -235,10 +249,10 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 		else if(classification == 's' && !ignoreSystemsAndCamera){
 			System* system = NULL;
 			if(type < 20){
-				system = PhysicsEngine::loadInternalSystem(data, type, &index);
+				system = PhysicsEngine::loadInternalSystem(&systemAllocatorMap, data, type, &index);
 			}
 			else{
-				system = PhysicsEngine::loadSystem(data, type, &index);
+				system = PhysicsEngine::loadSystem(&systemAllocatorMap, data, type, &index);
 			}
 
 			if(system == NULL || index == -1){
@@ -323,7 +337,12 @@ void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntities
 
 int World::getNumberOfEntities()
 {
-	return (int)getAllocator<Entity>().getCount();
+	PoolAllocator<Entity>* allocator = getEntityAllocator();
+	if (allocator == NULL) {
+		return 0;
+	}
+
+	return (int)allocator->getCount();
 }
 
 int World::getNumberOfSystems()
@@ -331,14 +350,21 @@ int World::getNumberOfSystems()
 	return (int)systems.size();
 }
 
-Entity* World::getEntity(Guid id)
+Entity* World::getEntity(Guid entityId)
 {
-	std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
+	assert(entityId != Guid::INVALID);
+
+	PoolAllocator<Entity>* allocator = getEntityAllocator();
+	if (allocator == NULL) {
+		return NULL;
+	}
+
+	std::map<Guid, int>::iterator it = idToGlobalIndex.find(entityId);
 	if(it != idToGlobalIndex.end()){
-		return getAllocator<Entity>().get(it->second);
+		return allocator->get(it->second);
 	}
 	else{
-		std::string message = "Error: No entity with id " + id.toString() + " was found\n";
+		std::string message = "Error: No entity with id " + entityId.toString() + " was found\n";
 		Log::error(message.c_str());
 		return NULL;
 	}
@@ -346,7 +372,12 @@ Entity* World::getEntity(Guid id)
 
 Entity* World::getEntityByIndex(int index)
 {
-	return getAllocator<Entity>().get(index);
+	PoolAllocator<Entity>* allocator = getEntityAllocator();
+	if (allocator == NULL) {
+		return NULL;
+	}
+
+	return allocator->get(index);
 }
 
 System* World::getSystemByIndex(int index)
@@ -386,11 +417,13 @@ int World::getTypeOf(Guid id)
 
 Entity* World::createEntity()
 {
-	int globalIndex = (int)getAllocator<Entity>().getCount();
+	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
+
+	int globalIndex = (int)allocator->getCount();
 	int type = EntityType<Entity>::type;
 	Guid entityId = Guid::newGuid();
 
-	Entity* entity = create<Entity>();
+	Entity* entity = allocator->construct();
 	entity->entityId = entityId;
 	entity->doNotDestroy = false;
 
@@ -424,7 +457,12 @@ Entity* World::createEntity(Guid entityId)
 		return NULL;
 	}
 
-	Entity* newEntity = createEntity();
+	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
+	if (allocator == NULL) {
+		return NULL;
+	}
+
+	Entity* newEntity = allocator->construct();
 
 	// add components to new entity
 	for(size_t i = 0; i < oldComponents.size(); i++){
@@ -439,10 +477,12 @@ Entity* World::createEntity(Guid entityId)
 
 Entity* World::createEntity(std::vector<char> data)
 {
-	int globalIndex = (int)getAllocator<Entity>().getCount();
+	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
+
+	int globalIndex = (int)allocator->getCount();
 	int type = EntityType<Entity>::type;
 
-	Entity* entity = create<Entity>(data);
+	Entity* entity = allocator->construct(data);
 
 	idToGlobalIndex[entity->entityId] = globalIndex;
 	idToType[entity->entityId] = type;
@@ -456,11 +496,15 @@ Entity* World::createEntity(std::vector<char> data)
 
 Camera* World::createEditorCamera()
 {
+	PoolAllocator<Entity>* allocator1 = getEntityOrAddAllocator();
+	PoolAllocator<Transform>* allocator2 = getComponentOrAddAllocator<Transform>();
+	PoolAllocator<Camera>* allocator3 = getComponentOrAddAllocator<Camera>();
+
 	// Editor entity
-	int globalIndex = (int)getAllocator<Entity>().getCount();
+	int globalIndex = (int)allocator1->getCount();
 	int type = EntityType<Entity>::type;
 	Guid entityId = Guid("11111111-1111-1111-1111-111111111111");
-	Entity* entity = create<Entity>();
+	Entity* entity = allocator1->construct();
 	entity->entityId = entityId;
 	entity->doNotDestroy = true;
 
@@ -470,10 +514,10 @@ Camera* World::createEditorCamera()
 	entityIdsMarkedCreated.push_back(entityId);
 
 	// editor only transform
-	int transformGlobalIndex = (int)getAllocator<Transform>().getCount();
+	int transformGlobalIndex = (int)allocator2->getCount();
 	int transformType = ComponentType<Transform>::type;
 	Guid transformId = Guid("22222222-2222-2222-2222-222222222222");
-	Transform* transform = create<Transform>();
+	Transform* transform = allocator2->construct();
 	transform->entityId = entityId;
 	transform->componentId = transformId;
 
@@ -483,10 +527,10 @@ Camera* World::createEditorCamera()
 	componentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
 
 	// editor only camera
-	int cameraGlobalIndex = (int)getAllocator<Camera>().getCount();
+	int cameraGlobalIndex = (int)allocator3->getCount();
 	int cameraType = ComponentType<Camera>::type;
 	Guid cameraId = Guid("33333333-3333-3333-3333-333333333333");
-	Camera* camera = create<Camera>();
+	Camera* camera = allocator3->construct();
 	camera->entityId = entityId;
 	camera->componentId = cameraId;
 
@@ -546,7 +590,7 @@ void World::immediateDestroyEntity(Guid entityId)
 	if(it2 != idToGlobalIndex.end()){
 		int index = it2->second;
 
-		Entity* swappedEntity = destroyInternalEntity(index);
+		Entity* swappedEntity = destroyInternalEntity(entityAllocator, index);
 
 		idToGlobalIndex.erase(it2);
 
@@ -576,7 +620,8 @@ void World::immediateDestroyEntity(Guid entityId)
 
 void World::latentDestroyComponent(Guid entityId, Guid componentId, int componentType)
 {
-	std::cout << "latent destroy component: " << entityId.toString() << " " << componentId.toString() << " " << componentType << std::endl;
+	std::string message = "latent destroy component: " + entityId.toString() + " " + componentId.toString() + " " + std::to_string(componentType) + "\n";
+	Log::error(message.c_str());
 	componentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
 }
 
@@ -599,10 +644,10 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 
 		Component* swappedComponent = NULL;
 		if(componentType < 20){
-			swappedComponent = destroyInternalComponent(componentType, index);
+			swappedComponent = destroyInternalComponent(&componentAllocatorMap, componentType, index);
 		}
 		else{
-			swappedComponent = destroyComponent(componentType, index);
+			swappedComponent = destroyComponent(&componentAllocatorMap, componentType, index);
 		}
 
 		idToGlobalIndex.erase(it2);
