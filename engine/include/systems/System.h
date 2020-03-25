@@ -13,10 +13,10 @@ namespace PhysicsEngine
 	class System
 	{
 		protected:
-			Guid systemId;
-			int order;
+			Guid mSystemId;
+			int mOrder;
 
-			World* world;
+			World* mWorld;
 
 		public:
 			System();
@@ -43,13 +43,13 @@ namespace PhysicsEngine
 	const int SystemType<T>::type = -1;
 
 	template< typename T>
-	struct IsSystem { static bool value; };
+	struct IsSystem { static const bool value; };
 
 	template<typename T>
-	bool IsSystem<T>::value = false;
+	const bool IsSystem<T>::value = false;
 
 	template<>
-	bool IsSystem<System>::value = true;
+	const bool IsSystem<System>::value = true;
 }
 
 #endif

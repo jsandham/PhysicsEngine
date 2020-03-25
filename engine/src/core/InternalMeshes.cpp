@@ -554,4 +554,4 @@ std::vector<float> InternalMeshes::sphereTexCoords =
 	1.0f,   1.0f
 };
 
-std::vector<int> InternalMeshes::sphereSubMeshStartIndicies = { 0, 0 };
+std::vector<int> InternalMeshes::sphereSubMeshStartIndicies = { 0, 540 };

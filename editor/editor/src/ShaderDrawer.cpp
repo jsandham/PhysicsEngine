@@ -58,9 +58,9 @@ void ShaderDrawer::render(World* world, EditorProject& project, EditorScene& sce
 
 	for (size_t i = 0; i < uniforms.size(); i++)
 	{
-		if (std::strcmp(uniforms[i].blockName, "material") == 0)
+		if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
 		{
-			ImGui::Text(uniforms[i].shortName);
+			ImGui::Text(uniforms[i].mShortName);
 		}
 	}
 
@@ -68,9 +68,9 @@ void ShaderDrawer::render(World* world, EditorProject& project, EditorScene& sce
 
 	for (size_t i = 0; i < uniforms.size(); i++)
 	{
-		if (std::strcmp(uniforms[i].blockName, "material") == 0)
+		if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
 		{
-			ImGui::Text(std::to_string(uniforms[i].type).c_str());
+			ImGui::Text(std::to_string(uniforms[i].mType).c_str());
 		}
 	}
 

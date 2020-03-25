@@ -33,7 +33,7 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		// Mesh
-		Guid meshId = meshRenderer->meshId;
+		Guid meshId = meshRenderer->mMeshId;
 		std::string meshName = "None (Mesh)";
 		if (meshId != Guid::INVALID) {
 			meshName = meshId.toString();
@@ -47,28 +47,28 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 			meshId = clipboard.getDraggedId();
 			clipboard.clearDraggedItem();
 
-			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->meshId, meshId, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->mMeshId, meshId, &scene.isDirty));
 		}
 
-		bool isStatic = meshRenderer->isStatic;
+		bool isStatic = meshRenderer->mIsStatic;
 		if (ImGui::Checkbox("Is Static?", &isStatic)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->isStatic, isStatic, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->mIsStatic, isStatic, &scene.isDirty));
 		}
 
 		// Materials
-		int materialCount = meshRenderer->materialCount;
+		int materialCount = meshRenderer->mMaterialCount;
 		const int increment = 1;
 		ImGui::PushItemWidth(80);
 		if (ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d")) {
 			materialCount = std::max(0, std::min(materialCount, 8));
 
-			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->materialCount, materialCount, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->mMaterialCount, materialCount, &scene.isDirty));
 		}
 		ImGui::PopItemWidth();
 
 		Guid materialIds[8];
 		for (int i = 0; i < materialCount; i++) {
-			materialIds[i] = meshRenderer->materialIds[i];
+			materialIds[i] = meshRenderer->mMaterialIds[i];
 
 			std::string materialName = "None (Material)";
 			if (materialIds[i] != PhysicsEngine::Guid::INVALID) {

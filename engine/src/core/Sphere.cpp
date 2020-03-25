@@ -4,14 +4,14 @@ using namespace PhysicsEngine;
 
 Sphere::Sphere()
 {
-	this->centre = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->radius = 1.0f;
+	mCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+	mRadius = 1.0f;
 }
 
 Sphere::Sphere(glm::vec3 centre, float radius)
 {
-	this->centre = centre;
-	this->radius = radius;
+	mCentre = centre;
+	mRadius = radius;
 }
 
 Sphere::~Sphere()

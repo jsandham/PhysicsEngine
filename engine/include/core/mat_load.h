@@ -15,8 +15,8 @@ namespace PhysicsEngine
 {
 	typedef struct material_data
 	{
-		Guid shaderId;
-		std::vector<ShaderUniform> uniforms;
+		Guid mShaderId;
+		std::vector<ShaderUniform> mUniforms;
 	}material_data;
 
 	bool mat_load(const std::string& filepath, material_data& mat)
@@ -41,7 +41,7 @@ namespace PhysicsEngine
 		for (it = objects.begin(); it != objects.end(); it++) {
 
 			if (it->first == "shader") {
-				mat.shaderId = Guid(it->second.ToString());
+				mat.mShaderId = Guid(it->second.ToString());
 
 				continue;
 			}
@@ -50,24 +50,24 @@ namespace PhysicsEngine
 
 			if (it->second["type"].ToInt() == (int)GL_INT) {
 				int value = it->second["data"].ToInt();
-				memcpy((void*)uniform.data, &value, sizeof(int));
+				memcpy((void*)uniform.mData, &value, sizeof(int));
 			}
 			else if (it->second["type"].ToInt() == (int)GL_FLOAT) {
 				float value = (float)it->second["data"].ToFloat();
-				memcpy((void*)uniform.data, &value, sizeof(float));
+				memcpy((void*)uniform.mData, &value, sizeof(float));
 			}
 			else if (it->second["type"].ToInt() == (int)GL_FLOAT_VEC2) {
 				glm::vec2 vec = glm::vec2(0.0f);
 				vec.x = (float)it->second["data"][0].ToFloat();
 				vec.y = (float)it->second["data"][1].ToFloat();
-				memcpy((void*)uniform.data, &vec, sizeof(glm::vec2));
+				memcpy((void*)uniform.mData, &vec, sizeof(glm::vec2));
 			}
 			else if (it->second["type"].ToInt() == (int)GL_FLOAT_VEC3) {
 				glm::vec3 vec = glm::vec3(0.0f);
 				vec.x = (float)it->second["data"][0].ToFloat();
 				vec.y = (float)it->second["data"][1].ToFloat();
 				vec.z = (float)it->second["data"][2].ToFloat();
-				memcpy((void*)uniform.data, &vec, sizeof(glm::vec3));
+				memcpy((void*)uniform.mData, &vec, sizeof(glm::vec3));
 			}
 			else if (it->second["type"].ToInt() == (int)GL_FLOAT_VEC4) {
 				glm::vec4 vec = glm::vec4(0.0f);
@@ -75,13 +75,13 @@ namespace PhysicsEngine
 				vec.y = (float)it->second["data"][1].ToFloat();
 				vec.z = (float)it->second["data"][2].ToFloat();
 				vec.w = (float)it->second["data"][3].ToFloat();
-				memcpy((void*)uniform.data, &vec, sizeof(glm::vec4));
+				memcpy((void*)uniform.mData, &vec, sizeof(glm::vec4));
 			}
 
 			if (it->second["type"].ToInt() == (int)GL_SAMPLER_2D) {
 				Guid textureId = Guid(it->second["data"].ToString());
 				std::string test = textureId.toString();
-				memcpy((void*)uniform.data, &textureId, sizeof(Guid));
+				memcpy((void*)uniform.mData, &textureId, sizeof(Guid));
 			}
 
 			std::string name = it->first;
@@ -89,37 +89,37 @@ namespace PhysicsEngine
 			std::string blockName = it->second["blockName"].ToString();
 
 			for (size_t i = 0; i < name.length(); i++) {
-				uniform.name[i] = name[i];
+				uniform.mName[i] = name[i];
 			}
 			for (size_t i = name.length(); i < 32; i++) {
-				uniform.name[i] = '\0';
+				uniform.mName[i] = '\0';
 			}
 
 			for (size_t i = 0; i < shortName.length(); i++) {
-				uniform.shortName[i] = shortName[i];
+				uniform.mShortName[i] = shortName[i];
 			}
 			for (size_t i = shortName.length(); i < 32; i++) {
-				uniform.shortName[i] = '\0';
+				uniform.mShortName[i] = '\0';
 			}
 
 			for (size_t i = 0; i < blockName.length(); i++) {
-				uniform.blockName[i] = blockName[i];
+				uniform.mBlockName[i] = blockName[i];
 			}
 			for (size_t i = blockName.length(); i < 32; i++) {
-				uniform.blockName[i] = '\0';
+				uniform.mBlockName[i] = '\0';
 			}
 
-			uniform.nameLength = it->second["nameLength"].ToInt();
-			uniform.size = it->second["size"].ToInt();
-			uniform.type = it->second["type"].ToInt();
-			uniform.variant = it->second["variant"].ToInt();
-			uniform.location = it->second["location"].ToInt();
-			uniform.index = it->second["index"].ToInt();
+			uniform.mNameLength = it->second["nameLength"].ToInt();
+			uniform.mSize = it->second["size"].ToInt();
+			uniform.mType = it->second["type"].ToInt();
+			uniform.mVariant = it->second["variant"].ToInt();
+			uniform.mLocation = it->second["location"].ToInt();
+			uniform.mIndex = it->second["index"].ToInt();
 
 			uniforms.push_back(uniform);
 		}
 
-		mat.uniforms = uniforms;
+		mat.mUniforms = uniforms;
 
 		return true;
 	}

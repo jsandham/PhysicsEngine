@@ -12,20 +12,20 @@ using namespace PhysicsEngine;
 
 void DebugWindow::init()
 {
-	shader.setVertexShader(InternalShaders::windowVertexShader);
-	shader.setFragmentShader(InternalShaders::windowFragmentShader);
-	shader.compile();
+	mShader.setVertexShader(InternalShaders::windowVertexShader);
+	mShader.setFragmentShader(InternalShaders::windowFragmentShader);
+	mShader.compile();
 
-	x = fmin(fmax(x, 0.0f), 1.0f);
-	y = fmin(fmax(y, 0.0f), 1.0f);
-	width = fmin(fmax(width, 0.0f), 1.0f);
-	height = fmin(fmax(height, 0.0f), 1.0f);
+	mX = fmin(fmax(mX, 0.0f), 1.0f);
+	mY = fmin(fmax(mY, 0.0f), 1.0f);
+	mWidth = fmin(fmax(mWidth, 0.0f), 1.0f);
+	mHeight = fmin(fmax(mHeight, 0.0f), 1.0f);
 
-	float x_ndc = 2.0f * x - 1.0f; 
-	float y_ndc = 1.0f - 2.0f * y; 
+	float x_ndc = 2.0f * mX - 1.0f; 
+	float y_ndc = 1.0f - 2.0f * mY; 
 
-	float width_ndc = 2.0f * width;
-	float height_ndc = 2.0f * height;
+	float width_ndc = 2.0f * mWidth;
+	float height_ndc = 2.0f * mHeight;
 
 	float vertices[18];
 	float texCoords[12];
@@ -76,17 +76,17 @@ void DebugWindow::init()
 	// 	std::cout << vertices[i] << " ";
 	// }
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &mVAO);
+	glBindVertexArray(mVAO);
 
-	glGenBuffers(1, &vertexVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+	glGenBuffers(1, &mVertexVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO);
 	glBufferData(GL_ARRAY_BUFFER, 18*sizeof(float), &(vertices[0]), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
-	glGenBuffers(1, &texCoordVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+	glGenBuffers(1, &mTexCoordVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mTexCoordVBO);
 	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), &(texCoords[0]), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
@@ -96,27 +96,27 @@ void DebugWindow::init()
 
 void PerformanceGraph::init()
 {
-	shader.setVertexShader(InternalShaders::graphVertexShader);
-	shader.setFragmentShader(InternalShaders::graphFragmentShader);
-	shader.compile();
+	mShader.setVertexShader(InternalShaders::graphVertexShader);
+	mShader.setFragmentShader(InternalShaders::graphFragmentShader);
+	mShader.compile();
 
-	x = fmin(fmax(x, 0.0f), 1.0f);
-	y = fmin(fmax(y, 0.0f), 1.0f);
-	width = fmin(fmax(width, 0.0f), 1.0f);
-	height = fmin(fmax(height, 0.0f), 1.0f);
-	rangeMin = fmin(rangeMin, rangeMax);
-	rangeMax = fmax(rangeMin, rangeMax);
-	currentSample = 0.0f;
-	numberOfSamples = std::max(2, numberOfSamples);
+	mX = fmin(fmax(mX, 0.0f), 1.0f);
+	mY = fmin(fmax(mY, 0.0f), 1.0f);
+	mWidth = fmin(fmax(mWidth, 0.0f), 1.0f);
+	mHeight = fmin(fmax(mHeight, 0.0f), 1.0f);
+	mRangeMin = fmin(mRangeMin, mRangeMax);
+	mRangeMax = fmax(mRangeMin, mRangeMax);
+	mCurrentSample = 0.0f;
+	mNumberOfSamples = std::max(2, mNumberOfSamples);
 
-	samples.resize(18*numberOfSamples - 18);
+	mSamples.resize(18*mNumberOfSamples - 18);
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	glGenVertexArrays(1, &mVAO);
+	glBindVertexArray(mVAO);
 
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, samples.size()*sizeof(float), &(samples[0]), GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &mVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	glBufferData(GL_ARRAY_BUFFER, mSamples.size()*sizeof(float), &(mSamples[0]), GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
@@ -125,109 +125,109 @@ void PerformanceGraph::init()
 
 void PerformanceGraph::add(float sample)
 {
-	float oldSample = currentSample;
-	currentSample = fmin(fmax(sample, rangeMin), rangeMax);
+	float oldSample = mCurrentSample;
+	mCurrentSample = fmin(fmax(sample, mRangeMin), mRangeMax);
 
-	float dx = width / (numberOfSamples - 1);
-	for(int i = 0; i < numberOfSamples - 2; i++){
-		samples[18*i] = samples[18*(i+1)] - dx;
-		samples[18*i + 1] = samples[18*(i+1) + 1];
-		samples[18*i + 2] = samples[18*(i+1) + 2];
+	float dx = mWidth / (mNumberOfSamples - 1);
+	for(int i = 0; i < mNumberOfSamples - 2; i++){
+		mSamples[18*i] = mSamples[18*(i+1)] - dx;
+		mSamples[18*i + 1] = mSamples[18*(i+1) + 1];
+		mSamples[18*i + 2] = mSamples[18*(i+1) + 2];
 
-		samples[18*i + 3] = samples[18*(i+1) + 3] - dx;
-		samples[18*i + 4] = samples[18*(i+1) + 4];
-		samples[18*i + 5] = samples[18*(i+1) + 5];
+		mSamples[18*i + 3] = mSamples[18*(i+1) + 3] - dx;
+		mSamples[18*i + 4] = mSamples[18*(i+1) + 4];
+		mSamples[18*i + 5] = mSamples[18*(i+1) + 5];
 
-		samples[18*i + 6] = samples[18*(i+1) + 6] - dx;
-		samples[18*i + 7] = samples[18*(i+1) + 7];
-		samples[18*i + 8] = samples[18*(i+1) + 8];
+		mSamples[18*i + 6] = mSamples[18*(i+1) + 6] - dx;
+		mSamples[18*i + 7] = mSamples[18*(i+1) + 7];
+		mSamples[18*i + 8] = mSamples[18*(i+1) + 8];
 
-		samples[18*i + 9] = samples[18*(i+1) + 9] - dx;
-		samples[18*i + 10] = samples[18*(i+1) + 10];
-		samples[18*i + 11] = samples[18*(i+1) + 11];
+		mSamples[18*i + 9] = mSamples[18*(i+1) + 9] - dx;
+		mSamples[18*i + 10] = mSamples[18*(i+1) + 10];
+		mSamples[18*i + 11] = mSamples[18*(i+1) + 11];
 
-		samples[18*i + 12] = samples[18*(i+1) + 12] - dx;
-		samples[18*i + 13] = samples[18*(i+1) + 13];
-		samples[18*i + 14] = samples[18*(i+1) + 14];
+		mSamples[18*i + 12] = mSamples[18*(i+1) + 12] - dx;
+		mSamples[18*i + 13] = mSamples[18*(i+1) + 13];
+		mSamples[18*i + 14] = mSamples[18*(i+1) + 14];
 
-		samples[18*i + 15] = samples[18*(i+1) + 15] - dx;
-		samples[18*i + 16] = samples[18*(i+1) + 16];
-		samples[18*i + 17] = samples[18*(i+1) + 17];
+		mSamples[18*i + 15] = mSamples[18*(i+1) + 15] - dx;
+		mSamples[18*i + 16] = mSamples[18*(i+1) + 16];
+		mSamples[18*i + 17] = mSamples[18*(i+1) + 17];
 	}
 
-	float dz1 = 1.0f - (currentSample - rangeMin) / (rangeMax - rangeMin);
-	float dz2 = 1.0f - (oldSample - rangeMin) / (rangeMax - rangeMin);
+	float dz1 = 1.0f - (mCurrentSample - mRangeMin) / (mRangeMax - mRangeMin);
+	float dz2 = 1.0f - (oldSample - mRangeMin) / (mRangeMax - mRangeMin);
 
-	float x_ndc = 2.0f * x - 1.0f;
-	float y0_ndc = 1.0f - 2.0f * (y + height);
-	float y1_ndc = 1.0f - 2.0f * (y + height * dz1);
-	float y2_ndc = 1.0f - 2.0f * (y + height * dz2);
+	float x_ndc = 2.0f * mX - 1.0f;
+	float y0_ndc = 1.0f - 2.0f * (mY + mHeight);
+	float y1_ndc = 1.0f - 2.0f * (mY + mHeight * dz1);
+	float y2_ndc = 1.0f - 2.0f * (mY + mHeight * dz2);
 
-	samples[18*(numberOfSamples - 2)] = x_ndc + dx * (numberOfSamples - 2);
-	samples[18*(numberOfSamples - 2) + 1] = y2_ndc;
-	samples[18*(numberOfSamples - 2) + 2] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2)] = x_ndc + dx * (mNumberOfSamples - 2);
+	mSamples[18*(mNumberOfSamples - 2) + 1] = y2_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 2] = 0.0f;
 
-	samples[18*(numberOfSamples - 2) + 3] = x_ndc + dx * (numberOfSamples - 2);
-	samples[18*(numberOfSamples - 2) + 4] = y0_ndc;
-	samples[18*(numberOfSamples - 2) + 5] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2) + 3] = x_ndc + dx * (mNumberOfSamples - 2);
+	mSamples[18*(mNumberOfSamples - 2) + 4] = y0_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 5] = 0.0f;
 
-	samples[18*(numberOfSamples - 2) + 6] = x_ndc + dx * (numberOfSamples - 1);
-	samples[18*(numberOfSamples - 2) + 7] = y0_ndc;
-	samples[18*(numberOfSamples - 2) + 8] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2) + 6] = x_ndc + dx * (mNumberOfSamples - 1);
+	mSamples[18*(mNumberOfSamples - 2) + 7] = y0_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 8] = 0.0f;
 
-	samples[18*(numberOfSamples - 2) + 9] = x_ndc + dx * (numberOfSamples - 2); 
-	samples[18*(numberOfSamples - 2) + 10] = y2_ndc;
-	samples[18*(numberOfSamples - 2) + 11] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2) + 9] = x_ndc + dx * (mNumberOfSamples - 2);
+	mSamples[18*(mNumberOfSamples - 2) + 10] = y2_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 11] = 0.0f;
 
-	samples[18*(numberOfSamples - 2) + 12] = x_ndc + dx * (numberOfSamples - 1);
-	samples[18*(numberOfSamples - 2) + 13] = y0_ndc;
-	samples[18*(numberOfSamples - 2) + 14] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2) + 12] = x_ndc + dx * (mNumberOfSamples - 1);
+	mSamples[18*(mNumberOfSamples - 2) + 13] = y0_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 14] = 0.0f;
 
-	samples[18*(numberOfSamples - 2) + 15] = x_ndc + dx * (numberOfSamples - 1);
-	samples[18*(numberOfSamples - 2) + 16] = y1_ndc;
-	samples[18*(numberOfSamples - 2) + 17] = 0.0f;
+	mSamples[18*(mNumberOfSamples - 2) + 15] = x_ndc + dx * (mNumberOfSamples - 1);
+	mSamples[18*(mNumberOfSamples - 2) + 16] = y1_ndc;
+	mSamples[18*(mNumberOfSamples - 2) + 17] = 0.0f;
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(mVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 
-	glBufferSubData(GL_ARRAY_BUFFER, 0, samples.size()*sizeof(float), &(samples[0]));
+	glBufferSubData(GL_ARRAY_BUFFER, 0, mSamples.size()*sizeof(float), &(mSamples[0]));
 
 	glBindVertexArray(0);
 }
 
 LineBuffer::LineBuffer()
 {
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &mVAO);
+	glBindVertexArray(mVAO);
+	glGenBuffers(1, &mVBO);
 	glBindVertexArray(0);
 }
 
 LineBuffer::~LineBuffer()
 {
-	glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &mVAO);
+    glDeleteBuffers(1, &mVBO);
 }
 
 MeshBuffer::MeshBuffer()
 {
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(3, &vbo[0]);
+	glGenVertexArrays(1, &mVAO);
+	glBindVertexArray(mVAO);
+	glGenBuffers(3, &mVBO[0]);
 	glBindVertexArray(0);
 }
 
 MeshBuffer::~MeshBuffer()
 {
-	glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(3, &vbo[0]);
+	glDeleteVertexArrays(1, &mVAO);
+    glDeleteBuffers(3, &mVBO[0]);
 }
 
 int MeshBuffer::getStartIndex(Guid meshId)
 {
-	for(int i = 0; i < meshIds.size(); i++){
-		if(meshIds[i] == meshId){
-			return start[i];
+	for(int i = 0; i < mMeshIds.size(); i++){
+		if(mMeshIds[i] == meshId){
+			return mStart[i];
 		}
 	}
 
@@ -236,9 +236,9 @@ int MeshBuffer::getStartIndex(Guid meshId)
 
 Sphere MeshBuffer::getBoundingSphere(Guid meshId)
 {
-	for(int i = 0; i < meshIds.size(); i++){
-		if(meshIds[i] == meshId){
-			return boundingSpheres[i];
+	for(int i = 0; i < mMeshIds.size(); i++){
+		if(mMeshIds[i] == meshId){
+			return mBoundingSpheres[i];
 		}
 	}
 
@@ -354,7 +354,6 @@ void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)
 {
 	int width = texture->getWidth();
 	int height = texture->getHeight();
-	int numChannels = texture->getNumChannels();
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
@@ -407,7 +406,6 @@ void Graphics::apply(Texture2D* texture)
 {
 	int width = texture->getWidth();
 	int height = texture->getHeight();
-	int numChannels = texture->getNumChannels();
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
@@ -425,7 +423,6 @@ void Graphics::apply(Texture2D* texture)
  	int width = texture->getWidth();
  	int height = texture->getHeight();
  	int depth = texture->getDepth();
- 	int numChannels = texture->getNumChannels();
  	TextureFormat format = texture->getFormat();
  	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
@@ -479,7 +476,6 @@ void Graphics::apply(Texture3D* texture)
 	int width = texture->getWidth();
 	int height = texture->getHeight();
 	int depth = texture->getDepth();
-	int numChannels = texture->getNumChannels();
 	TextureFormat format = texture->getFormat();
 	std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
 
@@ -495,7 +491,6 @@ void Graphics::apply(Texture3D* texture)
 void Graphics::create(Cubemap* cubemap, GLuint* tex, bool* created)
 {
 	int width = cubemap->getWidth();
-	int numChannels = cubemap->getNumChannels();
 	TextureFormat format = cubemap->getFormat();
 	std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
 
@@ -547,7 +542,6 @@ void Graphics::readPixels(Cubemap* cubemap)
 void Graphics::apply(Cubemap* cubemap)
 {
 	int width = cubemap->getWidth();
-	int numChannels = cubemap->getNumChannels();
 	TextureFormat format = cubemap->getFormat();
 	std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
 
@@ -652,32 +646,32 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
 	}*/
 
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	if(world->mDebug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->debug && query != NULL){
+	if(world->mDebug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
 	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
+		    glGetQueryObjectiv(query->mQueryId, 
 		            GL_QUERY_RESULT_AVAILABLE, 
 		            &done);
 		}
 
 		// get the query result
 		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
+		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+		query->mNumDrawCalls++;
+		query->mVerts += numVertices;
+		query->mTris += numVertices / 3;
 	}
 
 	Graphics::checkError();
@@ -706,32 +700,32 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 		glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 	}
 
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	if(world->mDebug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->debug && query != NULL){
+	if(world->mDebug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
 	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
+		    glGetQueryObjectiv(query->mQueryId, 
 		            GL_QUERY_RESULT_AVAILABLE, 
 		            &done);
 		}
 
 		// get the query result
 		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
-		query->tris += numVertices / 3;
+		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+		query->mNumDrawCalls++;
+		query->mVerts += numVertices;
+		query->mTris += numVertices / 3;
 	}
 
 	Graphics::checkError();
@@ -752,39 +746,39 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 	shader->use(variant);
 	shader->setMat4("model", model);
 
-	if(world->debug && query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
+	if(world->mDebug && query != NULL){
+		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
 	glBindVertexArray(vao);
 	glDrawArrays(mode, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->debug && query != NULL){
+	if(world->mDebug && query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
 	    while (!done) {
-		    glGetQueryObjectiv(query->queryId, 
+		    glGetQueryObjectiv(query->mQueryId,
 		            GL_QUERY_RESULT_AVAILABLE, 
 		            &done);
 		}
 
 		// get the query result
 		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
+		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->totalElapsedTime += elapsedTime / 1000000.0f;
-		query->numDrawCalls++;
-		query->verts += numVertices;
+		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+		query->mNumDrawCalls++;
+		query->mVerts += numVertices;
 		if(mode == GL_TRIANGLES){
-			query->tris += numVertices / 3;
+			query->mTris += numVertices / 3;
 		}
 		else if(mode == GL_LINES){
-			query->lines += numVertices / 2;
+			query->mLines += numVertices / 2;
 		}
 		else if(mode == GL_POINTS){
-			query->points += numVertices;
+			query->mPoints += numVertices;
 		}
 	}
 
@@ -793,19 +787,19 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 
 void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
 {
-	if(!font->shader.isCompiled()){
-		std::cout << "Shader " << font->shader.getId().toString() << " has not been compiled." << std::endl;
+	if(!font->mShader.isCompiled()){
+		std::cout << "Shader " << font->mShader.getId().toString() << " has not been compiled." << std::endl;
 		return;
 	}
 
-	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->viewport.width, 0.0f, (float)camera->viewport.height);
+	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->mViewport.mWidth, 0.0f, (float)camera->mViewport.mHeight);
 
-	font->shader.use(ShaderVariant::None);
-	font->shader.setMat4("projection", ortho);
-	font->shader.setVec3("textColor", color);
+	font->mShader.use(ShaderVariant::None);
+	font->mShader.setMat4("projection", ortho);
+	font->mShader.setVec3("textColor", color);
 
 	glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(font->vao.handle);
+    glBindVertexArray(font->mVao.handle);
 
     // Iterate through all characters
     std::string::const_iterator it;
@@ -813,11 +807,11 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
     {
         Character ch = font->getCharacter(*it);//Characters[*it];
 
-        GLfloat xpos = x + ch.bearing.x * scale;
-        GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
+        GLfloat xpos = x + ch.mBearing.x * scale;
+        GLfloat ypos = y - (ch.mSize.y - ch.mBearing.y) * scale;
 
-        GLfloat w = ch.size.x * scale;
-        GLfloat h = ch.size.y * scale;
+        GLfloat w = ch.mSize.x * scale;
+        GLfloat h = ch.mSize.y * scale;
         // Update VBO for each character
         GLfloat vertices[6][4] = {
             { xpos,     ypos + h,   0.0, 0.0 },            
@@ -829,17 +823,17 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
             { xpos + w, ypos + h,   1.0, 0.0 }           
         };
         // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.glyphId.handle);
+        glBindTexture(GL_TEXTURE_2D, ch.mGlyphId.handle);
 
         // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, font->vbo.handle);
+        glBindBuffer(GL_ARRAY_BUFFER, font->mVbo.handle);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // Render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        x += (ch.mAdvance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         glBindTexture(GL_TEXTURE_2D, 0);
     }
     glBindVertexArray(0);

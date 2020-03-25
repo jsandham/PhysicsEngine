@@ -15,18 +15,18 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct MaterialHeader
 	{
-		Guid assetId;
-		Guid shaderId;
-		size_t uniformCount;
+		Guid mAssetId;
+		Guid mShaderId;
+		size_t mUniformCount;
 	};
 #pragma pack(pop)
 
 	class Material : public Asset
 	{
 		private:
-			Guid shaderId;
-			bool shaderChanged;
-			std::vector<ShaderUniform> uniforms;
+			Guid mShaderId;
+			bool mShaderChanged;
+			std::vector<ShaderUniform> mUniforms;
 
 		public:
 			Material();
@@ -103,15 +103,15 @@ namespace PhysicsEngine
 	const int AssetType<Material>::type = 4;
 
 	template <typename T>
-	struct IsMaterial { static bool value; };
+	struct IsMaterial { static const bool value; };
 
 	template <typename T>
-	bool IsMaterial<T>::value = false;
+	const bool IsMaterial<T>::value = false;
 
 	template<>
-	bool IsMaterial<Material>::value = true;
+	const bool IsMaterial<Material>::value = true;
 	template<>
-	bool IsAsset<Material>::value = true;
+	const bool IsAsset<Material>::value = true;
 }
 
 #endif

@@ -16,29 +16,29 @@
 using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsDebug& debug, GraphicsQuery& query)
-{
-	glGenQueries(1, &(query.queryId));
+{	
+	glGenQueries(1, &(query.mQueryId));
 
 	// generate all internal shader programs
-	screenData.positionAndNormalsShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
-	screenData.positionAndNormalsShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
-	screenData.positionAndNormalsShader.compile();
+	screenData.mPositionAndNormalsShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
+	screenData.mPositionAndNormalsShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
+	screenData.mPositionAndNormalsShader.compile();
 
-	screenData.ssaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
-	screenData.ssaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
-	screenData.ssaoShader.compile();
+	screenData.mSsaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
+	screenData.mSsaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
+	screenData.mSsaoShader.compile();
 
-	shadowMapData.depthShader.setVertexShader(InternalShaders::shadowDepthMapVertexShader);
-	shadowMapData.depthShader.setFragmentShader(InternalShaders::shadowDepthMapFragmentShader);
-	shadowMapData.depthShader.compile();
+	shadowMapData.mDepthShader.setVertexShader(InternalShaders::shadowDepthMapVertexShader);
+	shadowMapData.mDepthShader.setFragmentShader(InternalShaders::shadowDepthMapFragmentShader);
+	shadowMapData.mDepthShader.compile();
 
-	shadowMapData.depthCubemapShader.setVertexShader(InternalShaders::shadowDepthCubemapVertexShader);
-	shadowMapData.depthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
-	shadowMapData.depthCubemapShader.compile();
+	shadowMapData.mDepthCubemapShader.setVertexShader(InternalShaders::shadowDepthCubemapVertexShader);
+	shadowMapData.mDepthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
+	shadowMapData.mDepthCubemapShader.compile();
 
-	screenData.quadShader.setVertexShader(InternalShaders::windowVertexShader);
-	screenData.quadShader.setFragmentShader(InternalShaders::windowFragmentShader);
-	screenData.quadShader.compile();
+	screenData.mQuadShader.setVertexShader(InternalShaders::windowVertexShader);
+	screenData.mQuadShader.setFragmentShader(InternalShaders::windowFragmentShader);
+	screenData.mQuadShader.compile();
 
 	Graphics::checkError();
 
@@ -51,11 +51,11 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
 
-	glGenVertexArrays(1, &screenData.quadVAO);
-	glBindVertexArray(screenData.quadVAO);
+	glGenVertexArrays(1, &screenData.mQuadVAO);
+	glBindVertexArray(screenData.mQuadVAO);
 
-	glGenBuffers(1, &screenData.quadVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, screenData.quadVBO);
+	glGenBuffers(1, &screenData.mQuadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenData.mQuadVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -68,12 +68,12 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 
 	// generate shadow map fbos
 	// create directional light cascade shadow map fbo
-	glGenFramebuffers(5, &shadowMapData.shadowCascadeFBO[0]);
-	glGenTextures(5, &shadowMapData.shadowCascadeDepth[0]);
+	glGenFramebuffers(5, &shadowMapData.mShadowCascadeFBO[0]);
+	glGenTextures(5, &shadowMapData.mShadowCascadeDepth[0]);
 
 	for (int i = 0; i < 5; i++) {
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCascadeFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, shadowMapData.shadowCascadeDepth[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCascadeFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[i]);
 		// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -84,7 +84,7 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.shadowCascadeDepth[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[i], 0);
 
 		Graphics::checkFrambufferError();
 
@@ -92,11 +92,11 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	}
 
 	// create spotlight shadow map fbo
-	glGenFramebuffers(1, &shadowMapData.shadowSpotlightFBO);
-	glGenTextures(1, &shadowMapData.shadowSpotlightDepth);
+	glGenFramebuffers(1, &shadowMapData.mShadowSpotlightFBO);
+	glGenTextures(1, &shadowMapData.mShadowSpotlightDepth);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowSpotlightFBO);
-	glBindTexture(GL_TEXTURE_2D, shadowMapData.shadowSpotlightDepth);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowSpotlightFBO);
+	glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -106,18 +106,18 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.shadowSpotlightDepth, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth, 0);
 
 	Graphics::checkFrambufferError();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// create pointlight shadow cubemap fbo
-	glGenFramebuffers(1, &shadowMapData.shadowCubemapFBO);
-	glGenTextures(1, &shadowMapData.shadowCubemapDepth);
+	glGenFramebuffers(1, &shadowMapData.mShadowCubemapFBO);
+	glGenTextures(1, &shadowMapData.mShadowCubemapDepth);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCubemapFBO);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMapData.shadowCubemapDepth);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCubemapFBO);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMapData.mShadowCubemapDepth);
 	for (unsigned int i = 0; i < 6; i++) {
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	}
@@ -131,7 +131,7 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapData.shadowCubemapDepth, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapData.mShadowCubemapDepth, 0);
 
 	Graphics::checkFrambufferError();
 
@@ -139,19 +139,17 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 
 	Graphics::checkError();
 
-	glGenBuffers(1, &(cameraState.handle));
-	glBindBuffer(GL_UNIFORM_BUFFER, cameraState.handle);
+	glGenBuffers(1, &(cameraState.mHandle));
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraState.mHandle);
 	glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, cameraState.handle, 0, 144);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glGenBuffers(1, &(lightState.handle));
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
+	glGenBuffers(1, &(lightState.mHandle));
+	glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);
 	glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, 1, lightState.handle, 0, 824);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	if (world->debug) {
+	if (world->mDebug) {
 		debug.init();
 	}
 
@@ -179,6 +177,8 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	std::unordered_set<Guid> shadersCompiledThisFrame;
 	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
 		Shader* shader = world->getAssetByIndex<Shader>(i);
+
+		std::string test = shader->getId().toString();
 
 		if (!shader->isCompiled()) {
 
@@ -220,31 +220,6 @@ void PhysicsEngine::registerRenderAssets(World* world)
 				std::string errorMessage = "Error: Failed to create mesh " + mesh->getId().toString() + "\n";
 				Log::error(errorMessage.c_str());
 			}
-			/*glGenVertexArrays(1, &mesh->vao);
-			glBindVertexArray(mesh->vao);
-			glGenBuffers(1, &mesh->vbo[0]);
-			glGenBuffers(1, &mesh->vbo[1]);
-			glGenBuffers(1, &mesh->vbo[2]);
-
-			glBindVertexArray(mesh->vao);
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[0]);
-			glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() * sizeof(float), &(mesh->getVertices()[0]), GL_DYNAMIC_DRAW);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[1]);
-			glBufferData(GL_ARRAY_BUFFER, mesh->getNormals().size() * sizeof(float), &(mesh->getNormals()[0]), GL_DYNAMIC_DRAW);
-			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo[2]);
-			glBufferData(GL_ARRAY_BUFFER, mesh->getTexCoords().size() * sizeof(float), &(mesh->getTexCoords()[0]), GL_DYNAMIC_DRAW);
-			glEnableVertexAttribArray(2);
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
-
-			glBindVertexArray(0);
-
-			mesh->isCreated = true;*/
 		}
 	}
 
@@ -270,7 +245,7 @@ void PhysicsEngine::registerRenderObjects(World* world, std::vector<RenderObject
 		int globalIndex = world->getIndexOf(meshRendererIdsAdded[i]);
 
 		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-		if (meshRenderer != NULL && !meshRenderer->isStatic) {
+		if (meshRenderer != NULL && !meshRenderer->mIsStatic) {
 			addToRenderObjectsList(world, meshRenderer, renderObjects);
 		}
 	}
@@ -289,7 +264,7 @@ void PhysicsEngine::registerRenderObjects(World* world, std::vector<RenderObject
 		int globalIndex = world->getIndexOf(meshRendererIdsDestroyed[i]);
 
 		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-		if (meshRenderer != NULL && !meshRenderer->isStatic) {
+		if (meshRenderer != NULL && !meshRenderer->mIsStatic) {
 			removeFromRenderObjectsList(meshRenderer, renderObjects);
 		}
 	}
@@ -321,25 +296,25 @@ void PhysicsEngine::registerCameras(World* world)
 	for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++) {
 		Camera* camera = world->getComponentByIndex<Camera>(i);
 
-		if (!camera->isCreated) {
+		if (!camera->mIsCreated) {
 			// generate main camera fbo (color + depth)
-			glGenFramebuffers(1, &camera->mainFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->mainFBO);
+			glGenFramebuffers(1, &camera->mMainFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
 
-			glGenTextures(1, &camera->colorTex);
-			glBindTexture(GL_TEXTURE_2D, camera->colorTex);
+			glGenTextures(1, &camera->mColorTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mColorTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glGenTextures(1, &camera->depthTex);
-			glBindTexture(GL_TEXTURE_2D, camera->depthTex);
+			glGenTextures(1, &camera->mDepthTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mDepthTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->colorTex, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, camera->depthTex, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mColorTex, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, camera->mDepthTex, 0);
 
 			// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 			unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
@@ -350,23 +325,23 @@ void PhysicsEngine::registerCameras(World* world)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 			// generate geometry fbo
-			glGenFramebuffers(1, &camera->geometryFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->geometryFBO);
+			glGenFramebuffers(1, &camera->mGeometryFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
 
-			glGenTextures(1, &camera->positionTex);
-			glBindTexture(GL_TEXTURE_2D, camera->positionTex);
+			glGenTextures(1, &camera->mPositionTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mPositionTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glGenTextures(1, &camera->normalTex);
-			glBindTexture(GL_TEXTURE_2D, camera->normalTex);
+			glGenTextures(1, &camera->mNormalTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mNormalTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->positionTex, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, camera->normalTex, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mPositionTex, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, camera->mNormalTex, 0);
 
 			unsigned int geometryAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 			glDrawBuffers(2, geometryAttachments);
@@ -376,16 +351,16 @@ void PhysicsEngine::registerCameras(World* world)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 			// generate ssao fbo
-			glGenFramebuffers(1, &camera->ssaoFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->ssaoFBO);
+			glGenFramebuffers(1, &camera->mSsaoFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
 
-			glGenTextures(1, &camera->ssaoColorTex);
-			glBindTexture(GL_TEXTURE_2D, camera->ssaoColorTex);
+			glGenTextures(1, &camera->mSsaoColorTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mSsaoColorTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->ssaoColorTex, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mSsaoColorTex, 0);
 			
 			unsigned int ssaoAttachments[1] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers(1, ssaoAttachments);
@@ -413,7 +388,7 @@ void PhysicsEngine::registerCameras(World* world)
 				// scale samples s.t. they're more aligned to center of kernel
 				scale = lerp(0.1f, 1.0f, scale * scale);
 				sample *= scale;
-				camera->ssaoSamples.push_back(sample);
+				camera->mSsaoSamples.push_back(sample);
 			}
 
 			std::vector<glm::vec3> ssaoNoise;
@@ -423,8 +398,8 @@ void PhysicsEngine::registerCameras(World* world)
 				ssaoNoise.push_back(noise);
 			}
 
-			glGenTextures(1, &camera->ssaoNoiseTex);
-			glBindTexture(GL_TEXTURE_2D, camera->ssaoNoiseTex);
+			glGenTextures(1, &camera->mSsaoNoiseTex);
+			glBindTexture(GL_TEXTURE_2D, camera->mSsaoNoiseTex);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -433,7 +408,7 @@ void PhysicsEngine::registerCameras(World* world)
 
 			Graphics::checkError();
 
-			camera->isCreated = true;
+			camera->mIsCreated = true;
 		}
 	}
 }
@@ -466,24 +441,31 @@ void PhysicsEngine::updateTransforms(World* world, std::vector<RenderObject>& re
 	}
 }
 
-void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState, GraphicsQuery& query)
+void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsQuery& query)
 {
-	query.numBatchDrawCalls = 0;
-	query.numDrawCalls = 0;
-	query.totalElapsedTime = 0.0f;
-	query.verts = 0;
-	query.tris = 0;
-	query.lines = 0;
-	query.points = 0;
+	query.mNumBatchDrawCalls = 0;
+	query.mNumDrawCalls = 0;
+	query.mTotalElapsedTime = 0.0f;
+	query.mVerts = 0;
+	query.mTris = 0;
+	query.mLines = 0;
+	query.mPoints = 0;
 
-	cameraState.projection = camera->getProjMatrix();
-	cameraState.view = camera->getViewMatrix();
-	cameraState.cameraPos = camera->position;
+	cameraState.mProjection = camera->getProjMatrix();
+	cameraState.mView = camera->getViewMatrix();
+	cameraState.mCameraPos = camera->mPosition;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, cameraState.handle);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(cameraState.projection));
-	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(cameraState.view));
-	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(cameraState.cameraPos));
+	// set camera state binding point and update camera state data
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraState.mHandle);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, cameraState.mHandle, 0, 144);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(cameraState.mProjection));
+	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(cameraState.mView));
+	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(cameraState.mCameraPos));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	// set light state binding point
+	glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, lightState.mHandle, 0, 824);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	glEnable(GL_SCISSOR_TEST);
@@ -493,23 +475,23 @@ void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState,
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
 
-	glViewport(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
-	glScissor(camera->viewport.x, camera->viewport.y, camera->viewport.width, camera->viewport.height);
+	glViewport(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
+	glScissor(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
 
-	glClearColor(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
+	glClearColor(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
 	glClearDepth(1.0f);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->geometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -518,13 +500,13 @@ void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState,
 void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsQuery& query)
 {
 	// fill geometry framebuffer
-	int shaderProgram = screenData.positionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
-	int modelLoc = screenData.positionAndNormalsShader.findUniformLocation("model", shaderProgram);
+	int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
+	int modelLoc = screenData.mPositionAndNormalsShader.findUniformLocation("model", shaderProgram);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->geometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
 	for (size_t i = 0; i < renderObjects.size(); i++) {
-		screenData.positionAndNormalsShader.use(shaderProgram);
-		screenData.positionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
+		screenData.mPositionAndNormalsShader.use(shaderProgram);
+		screenData.mPositionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
 
 		Graphics::render(world, renderObjects[i], &query);
 	}
@@ -533,34 +515,34 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 	Graphics::checkError();
 
 	// fill ssao color texture
-	shaderProgram = screenData.ssaoShader.getProgramFromVariant(ShaderVariant::None);
-	int projectionLoc = screenData.ssaoShader.findUniformLocation("projection", shaderProgram);
-	int positionTexLoc = screenData.ssaoShader.findUniformLocation("positionTex", shaderProgram);
-	int normalTexLoc = screenData.ssaoShader.findUniformLocation("normalTex", shaderProgram);
-	int noiseTexLoc = screenData.ssaoShader.findUniformLocation("noiseTex", shaderProgram);
+	shaderProgram = screenData.mSsaoShader.getProgramFromVariant(ShaderVariant::None);
+	int projectionLoc = screenData.mSsaoShader.findUniformLocation("projection", shaderProgram);
+	int positionTexLoc = screenData.mSsaoShader.findUniformLocation("positionTex", shaderProgram);
+	int normalTexLoc = screenData.mSsaoShader.findUniformLocation("normalTex", shaderProgram);
+	int noiseTexLoc = screenData.mSsaoShader.findUniformLocation("noiseTex", shaderProgram);
 	int samplesLoc[64];
 	for (int i = 0; i < 64; i++) {
-		samplesLoc[i] = screenData.ssaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
+		samplesLoc[i] = screenData.mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->ssaoFBO);
-	screenData.ssaoShader.use(shaderProgram);
-	screenData.ssaoShader.setMat4(projectionLoc, camera->getProjMatrix());
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
+	screenData.mSsaoShader.use(shaderProgram);
+	screenData.mSsaoShader.setMat4(projectionLoc, camera->getProjMatrix());
 	for (int i = 0; i < 64; i++) {
-		screenData.ssaoShader.setVec3(samplesLoc[i], camera->ssaoSamples[i]);
+		screenData.mSsaoShader.setVec3(samplesLoc[i], camera->mSsaoSamples[i]);
 	}
-	screenData.ssaoShader.setInt(positionTexLoc, 0);
-	screenData.ssaoShader.setInt(normalTexLoc, 1);
-	screenData.ssaoShader.setInt(noiseTexLoc, 2);
+	screenData.mSsaoShader.setInt(positionTexLoc, 0);
+	screenData.mSsaoShader.setInt(normalTexLoc, 1);
+	screenData.mSsaoShader.setInt(noiseTexLoc, 2);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, camera->positionTex);
+	glBindTexture(GL_TEXTURE_2D, camera->mPositionTex);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, camera->normalTex);
+	glBindTexture(GL_TEXTURE_2D, camera->mNormalTex);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, camera->ssaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, camera->mSsaoNoiseTex);
 
-	glBindVertexArray(screenData.quadVAO);
+	glBindVertexArray(screenData.mQuadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 
@@ -571,30 +553,30 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 
 void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, ShadowMapData& shadowMapData, GraphicsQuery& query)
 {
-	LightType lightType = light->lightType;
+	LightType lightType = light->mLightType;
 
 	if (lightType == LightType::Directional) {
 
 		calcShadowmapCascades(camera, shadowMapData);
 		calcCascadeOrthoProj(camera, light, shadowMapData);
 
-		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
-		int modelLoc = shadowMapData.depthShader.findUniformLocation("model", shaderProgram);
-		int viewLoc = shadowMapData.depthShader.findUniformLocation("view", shaderProgram);
-		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection", shaderProgram);
+		int shaderProgram = shadowMapData.mDepthShader.getProgramFromVariant(ShaderVariant::None);
+		int modelLoc = shadowMapData.mDepthShader.findUniformLocation("model", shaderProgram);
+		int viewLoc = shadowMapData.mDepthShader.findUniformLocation("view", shaderProgram);
+		int projectionLoc = shadowMapData.mDepthShader.findUniformLocation("projection", shaderProgram);
 
 		for (int i = 0; i < 5; i++) {
-			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCascadeFBO[i]);
+			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCascadeFBO[i]);
 
 			glClearDepth(1.0f);
 			glClear(GL_DEPTH_BUFFER_BIT);
 
-			shadowMapData.depthShader.use(shaderProgram);
-			shadowMapData.depthShader.setMat4(viewLoc, shadowMapData.cascadeLightView[i]);
-			shadowMapData.depthShader.setMat4(projectionLoc, shadowMapData.cascadeOrthoProj[i]);
+			shadowMapData.mDepthShader.use(shaderProgram);
+			shadowMapData.mDepthShader.setMat4(viewLoc, shadowMapData.mCascadeLightView[i]);
+			shadowMapData.mDepthShader.setMat4(projectionLoc, shadowMapData.mCascadeOrthoProj[i]);
 
 			for (int j = 0; j < renderObjects.size(); j++) {
-				shadowMapData.depthShader.setMat4(modelLoc, renderObjects[j].model);
+				shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[j].model);
 				Graphics::render(world, renderObjects[j], &query);
 			}
 
@@ -603,25 +585,25 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 	}
 	else if (lightType == LightType::Spot) {
 
-		int shaderProgram = shadowMapData.depthShader.getProgramFromVariant(ShaderVariant::None);
-		int modelLoc = shadowMapData.depthShader.findUniformLocation("model", shaderProgram);
-		int viewLoc = shadowMapData.depthShader.findUniformLocation("view", shaderProgram);
-		int projectionLoc = shadowMapData.depthShader.findUniformLocation("projection", shaderProgram);
+		int shaderProgram = shadowMapData.mDepthShader.getProgramFromVariant(ShaderVariant::None);
+		int modelLoc = shadowMapData.mDepthShader.findUniformLocation("model", shaderProgram);
+		int viewLoc = shadowMapData.mDepthShader.findUniformLocation("view", shaderProgram);
+		int projectionLoc = shadowMapData.mDepthShader.findUniformLocation("projection", shaderProgram);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowSpotlightFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowSpotlightFBO);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.shadowProjMatrix = light->getProjMatrix();
-		shadowMapData.shadowViewMatrix = glm::lookAt(light->position, light->position + light->direction, glm::vec3(0.0f, 1.0f, 0.0f));
+		shadowMapData.mShadowProjMatrix = light->getProjMatrix();
+		shadowMapData.mShadowViewMatrix = glm::lookAt(light->mPosition, light->mPosition + light->mDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		shadowMapData.depthShader.use(shaderProgram);
-		shadowMapData.depthShader.setMat4(projectionLoc, shadowMapData.shadowProjMatrix);
-		shadowMapData.depthShader.setMat4(viewLoc, shadowMapData.shadowViewMatrix);
+		shadowMapData.mDepthShader.use(shaderProgram);
+		shadowMapData.mDepthShader.setMat4(projectionLoc, shadowMapData.mShadowProjMatrix);
+		shadowMapData.mDepthShader.setMat4(viewLoc, shadowMapData.mShadowViewMatrix);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
-			shadowMapData.depthShader.setMat4(modelLoc, renderObjects[i].model);
+			shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[i].model);
 			Graphics::render(world, renderObjects[i], &query);
 		}
 
@@ -629,41 +611,41 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 	}
 	else if (lightType == LightType::Point) {
 
-		shadowMapData.cubeViewProjMatrices[0] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[1] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[2] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-		shadowMapData.cubeViewProjMatrices[3] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-		shadowMapData.cubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.cubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(light->position, light->position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.mCubeViewProjMatrices[0] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.mCubeViewProjMatrices[1] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.mCubeViewProjMatrices[2] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+		shadowMapData.mCubeViewProjMatrices[3] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+		shadowMapData.mCubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowMapData.mCubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(light->mPosition, light->mPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-		int shaderProgram = shadowMapData.depthCubemapShader.getProgramFromVariant(ShaderVariant::None);
-		int lightPosLoc = shadowMapData.depthCubemapShader.findUniformLocation("lightPos", shaderProgram);
-		int farPlaneLoc = shadowMapData.depthCubemapShader.findUniformLocation("farPlane", shaderProgram);
-		int modelLoc = shadowMapData.depthCubemapShader.findUniformLocation("model", shaderProgram);
-		int cubeViewProjMatricesLoc0 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]", shaderProgram);
-		int cubeViewProjMatricesLoc1 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]", shaderProgram);
-		int cubeViewProjMatricesLoc2 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]", shaderProgram);
-		int cubeViewProjMatricesLoc3 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]", shaderProgram);
-		int cubeViewProjMatricesLoc4 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]", shaderProgram);
-		int cubeViewProjMatricesLoc5 = shadowMapData.depthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]", shaderProgram);
+		int shaderProgram = shadowMapData.mDepthCubemapShader.getProgramFromVariant(ShaderVariant::None);
+		int lightPosLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("lightPos", shaderProgram);
+		int farPlaneLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("farPlane", shaderProgram);
+		int modelLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("model", shaderProgram);
+		int cubeViewProjMatricesLoc0 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]", shaderProgram);
+		int cubeViewProjMatricesLoc1 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]", shaderProgram);
+		int cubeViewProjMatricesLoc2 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]", shaderProgram);
+		int cubeViewProjMatricesLoc3 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]", shaderProgram);
+		int cubeViewProjMatricesLoc4 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]", shaderProgram);
+		int cubeViewProjMatricesLoc5 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]", shaderProgram);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.shadowCubemapFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCubemapFBO);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.depthCubemapShader.use(shaderProgram);
-		shadowMapData.depthCubemapShader.setVec3(lightPosLoc, light->position);
-		shadowMapData.depthCubemapShader.setFloat(farPlaneLoc, camera->frustum.farPlane);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc0, shadowMapData.cubeViewProjMatrices[0]);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc1, shadowMapData.cubeViewProjMatrices[1]);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc2, shadowMapData.cubeViewProjMatrices[2]);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc3, shadowMapData.cubeViewProjMatrices[3]);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc4, shadowMapData.cubeViewProjMatrices[4]);
-		shadowMapData.depthCubemapShader.setMat4(cubeViewProjMatricesLoc5, shadowMapData.cubeViewProjMatrices[5]);
+		shadowMapData.mDepthCubemapShader.use(shaderProgram);
+		shadowMapData.mDepthCubemapShader.setVec3(lightPosLoc, light->mPosition);
+		shadowMapData.mDepthCubemapShader.setFloat(farPlaneLoc, camera->mFrustum.mFarPlane);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc0, shadowMapData.mCubeViewProjMatrices[0]);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc1, shadowMapData.mCubeViewProjMatrices[1]);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc2, shadowMapData.mCubeViewProjMatrices[2]);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc3, shadowMapData.mCubeViewProjMatrices[3]);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc4, shadowMapData.mCubeViewProjMatrices[4]);
+		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc5, shadowMapData.mCubeViewProjMatrices[5]);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
-			shadowMapData.depthCubemapShader.setMat4(modelLoc, renderObjects[i].model);
+			shadowMapData.mDepthCubemapShader.setMat4(modelLoc, renderObjects[i].model);
 			Graphics::render(world, renderObjects[i], &query);
 		}
 
@@ -673,74 +655,74 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 
 void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, const ShadowMapData& shadowMapData, GraphicsLightState& lightState, GraphicsQuery& query)
 {
-	lightState.position = light->position;
-	lightState.direction = light->direction;
-	lightState.ambient = light->ambient;
-	lightState.diffuse = light->diffuse;
-	lightState.specular = light->specular;
+	lightState.mPosition = light->mPosition;
+	lightState.mDirection = light->mDirection;
+	lightState.mAmbient = light->mAmbient;
+	lightState.mDiffuse = light->mDiffuse;
+	lightState.mSpecular = light->mSpecular;
 
-	lightState.constant = light->constant;
-	lightState.linear = light->linear;
-	lightState.quadratic = light->quadratic;
-	lightState.cutOff = light->cutOff;
-	lightState.outerCutOff = light->outerCutOff;
+	lightState.mConstant = light->mConstant;
+	lightState.mLinear = light->mLinear;
+	lightState.mQuadratic = light->mQuadratic;
+	lightState.mCutOff = light->mCutOff;
+	lightState.mOuterCutOff = light->mOuterCutOff;
 
-	if (light->lightType == LightType::Directional) {
+	if (light->mLightType == LightType::Directional) {
 		for (int i = 0; i < 5; i++) {
-			lightState.lightProjection[i] = shadowMapData.cascadeOrthoProj[i];
+			lightState.mLightProjection[i] = shadowMapData.mCascadeOrthoProj[i];
 
-			glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, shadowMapData.cascadeEnds[i + 1], 1.0f);
+			glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, shadowMapData.mCascadeEnds[i + 1], 1.0f);
 			glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-			lightState.cascadeEnds[i] = clipSpaceCascadeEnd.z;
+			lightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
 
-			lightState.lightView[i] = shadowMapData.cascadeLightView[i];
+			lightState.mLightView[i] = shadowMapData.mCascadeLightView[i];
 		}
 	}
-	else if (light->lightType == LightType::Spot) {
+	else if (light->mLightType == LightType::Spot) {
 		for (int i = 0; i < 5; i++) {
-			lightState.lightProjection[i] = shadowMapData.shadowProjMatrix;
-			lightState.lightView[i] = shadowMapData.shadowViewMatrix;
+			lightState.mLightProjection[i] = shadowMapData.mShadowProjMatrix;
+			lightState.mLightView[i] = shadowMapData.mShadowViewMatrix;
 		}
 	}
 
-	lightState.farPlane = camera->frustum.farPlane;
+	lightState.mFarPlane = camera->mFrustum.mFarPlane;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.handle);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.lightProjection[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.lightView[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.position));
-	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.direction));
-	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.ambient));
-	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.diffuse));
-	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(lightState.specular));
-	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &lightState.cascadeEnds[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &lightState.cascadeEnds[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &lightState.cascadeEnds[2]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &lightState.cascadeEnds[3]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &lightState.cascadeEnds[4]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &lightState.farPlane);
-	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(lightState.constant));
-	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(lightState.linear));
-	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(lightState.quadratic));
-	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.cutOff));
-	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.outerCutOff));
+	glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.mLightProjection[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.mLightView[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.mPosition));
+	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.mDirection));
+	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.mAmbient));
+	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.mDiffuse));
+	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(lightState.mSpecular));
+	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &lightState.mCascadeEnds[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &lightState.mCascadeEnds[1]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &lightState.mCascadeEnds[2]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &lightState.mCascadeEnds[3]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &lightState.mCascadeEnds[4]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &lightState.mFarPlane);
+	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(lightState.mConstant));
+	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(lightState.mLinear));
+	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(lightState.mQuadratic));
+	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.mCutOff));
+	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.mOuterCutOff));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	int variant = ShaderVariant::None;
-	if (light->lightType == LightType::Directional) {
+	if (light->mLightType == LightType::Directional) {
 		variant = ShaderVariant::Directional;
 	}
-	else if (light->lightType == LightType::Spot) {
+	else if (light->mLightType == LightType::Spot) {
 		variant = ShaderVariant::Spot;
 	}
-	else if(light->lightType == LightType::Point) {
+	else if(light->mLightType == LightType::Point) {
 		variant = ShaderVariant::Point;
 	}
 
-	if (light->shadowType == ShadowType::Hard) {
+	if (light->mShadowType == ShadowType::Hard) {
 		variant |= ShaderVariant::HardShadows;
 	}
-	else if (light->shadowType == ShadowType::Soft) {
+	else if (light->mShadowType == ShadowType::Soft) {
 		variant |= ShaderVariant::SoftShadows;
 	}
 
@@ -750,7 +732,7 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 												 "shadowMap[3]",
 												 "shadowMap[4]" };
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
 
 	for (int i = 0; i < renderObjects.size(); i++) {
 		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
@@ -764,19 +746,19 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 		material->apply(world);
 		//material->use(shader, renderObjects[i]);
 
-		if (light->lightType == LightType::Directional) {
+		if (light->mLightType == LightType::Directional) {
 			for (int j = 0; j < 5; j++) {
 				shader->setInt(shaderShadowMapNames[j], 3 + j);
 
 				glActiveTexture(GL_TEXTURE0 + 3 + j);
-				glBindTexture(GL_TEXTURE_2D, shadowMapData.shadowCascadeDepth[j]);
+				glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[j]);
 			}
 		}
-		else if (light->lightType == LightType::Spot) {
+		else if (light->mLightType == LightType::Spot) {
 			shader->setInt(shaderShadowMapNames[0], 3);
 
 			glActiveTexture(GL_TEXTURE0 + 3);
-			glBindTexture(GL_TEXTURE_2D, shadowMapData.shadowSpotlightDepth);
+			glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth);
 		}
 
 		Graphics::render(world, renderObjects[i], &query);
@@ -826,12 +808,12 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<Ren
 	}*/
 
 	// fill targets struct
-	targets.color = camera->colorTex;
-	targets.depth = camera->depthTex;
-	targets.position = camera->positionTex;
-	targets.normals = camera->normalTex;
-	targets.overdraw = -1;
-	targets.ssao = camera->ssaoColorTex;
+	targets.mColor = camera->mColorTex;
+	targets.mDepth = camera->mDepthTex;
+	targets.mPosition = camera->mPositionTex;
+	targets.mNormals = camera->mNormalTex;
+	targets.mOverdraw = -1;
+	targets.mSsao = camera->mSsaoColorTex;
 	/*if (world->debug) {
 		targets.depth = debug.fbo[0].depthBuffer.handle.handle;
 		targets.normals = debug.fbo[1].colorBuffer.handle.handle;
@@ -858,12 +840,12 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<Ren
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		screenData.quadShader.use(ShaderVariant::None);
+		screenData.mQuadShader.use(ShaderVariant::None);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, camera->colorTex);
+		glBindTexture(GL_TEXTURE_2D, camera->mColorTex);
 
-		glBindVertexArray(screenData.quadVAO);
+		glBindVertexArray(screenData.mQuadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
 	}
@@ -871,8 +853,8 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<Ren
 
 void PhysicsEngine::calcShadowmapCascades(Camera* camera, ShadowMapData& shadowMapData)
 {
-	float nearDist = camera->frustum.nearPlane;
-	float farDist = camera->frustum.farPlane;
+	float nearDist = camera->mFrustum.mNearPlane;
+	float farDist = camera->mFrustum.mFarPlane;
 
 	const float splitWeight = 0.95f;
 	const float ratio = farDist / nearDist;
@@ -880,36 +862,36 @@ void PhysicsEngine::calcShadowmapCascades(Camera* camera, ShadowMapData& shadowM
 	for (int i = 0; i < 6; i++) {
 		const float si = i / 5.0f;
 
-		shadowMapData.cascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
+		shadowMapData.mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
 	}
 }
 
 void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMapData& shadowMapData)
 {
 	glm::mat4 viewInv = glm::inverse(camera->getViewMatrix());
-	float fov = camera->frustum.fov;
-	float aspect = camera->viewport.getAspectRatio();
+	float fov = camera->mFrustum.mFov;
+	float aspect = camera->mViewport.getAspectRatio();
 	float tanHalfHFOV = glm::tan(glm::radians(0.5f * fov));
 	float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
 
-	glm::vec3 direction = light->direction;
+	glm::vec3 direction = light->mDirection;
 
 	for (unsigned int i = 0; i < 5; i++) {
-		float xn = -1.0f * shadowMapData.cascadeEnds[i] * tanHalfHFOV;
-		float xf = -1.0f * shadowMapData.cascadeEnds[i + 1] * tanHalfHFOV;
-		float yn = -1.0f * shadowMapData.cascadeEnds[i] * tanHalfVFOV;
-		float yf = -1.0f * shadowMapData.cascadeEnds[i + 1] * tanHalfVFOV;
+		float xn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfHFOV;
+		float xf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfHFOV;
+		float yn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfVFOV;
+		float yf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfVFOV;
 
 		glm::vec4 frustumCorners[8];
-		frustumCorners[0] = glm::vec4(xn, yn, shadowMapData.cascadeEnds[i], 1.0f);
-		frustumCorners[1] = glm::vec4(-xn, yn, shadowMapData.cascadeEnds[i], 1.0f);
-		frustumCorners[2] = glm::vec4(xn, -yn, shadowMapData.cascadeEnds[i], 1.0f);
-		frustumCorners[3] = glm::vec4(-xn, -yn, shadowMapData.cascadeEnds[i], 1.0f);
+		frustumCorners[0] = glm::vec4(xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
+		frustumCorners[1] = glm::vec4(-xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
+		frustumCorners[2] = glm::vec4(xn, -yn, shadowMapData.mCascadeEnds[i], 1.0f);
+		frustumCorners[3] = glm::vec4(-xn, -yn, shadowMapData.mCascadeEnds[i], 1.0f);
 
-		frustumCorners[4] = glm::vec4(xf, yf, shadowMapData.cascadeEnds[i + 1], 1.0f);
-		frustumCorners[5] = glm::vec4(-xf, yf, shadowMapData.cascadeEnds[i + 1], 1.0f);
-		frustumCorners[6] = glm::vec4(xf, -yf, shadowMapData.cascadeEnds[i + 1], 1.0f);
-		frustumCorners[7] = glm::vec4(-xf, -yf, shadowMapData.cascadeEnds[i + 1], 1.0f);
+		frustumCorners[4] = glm::vec4(xf, yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[5] = glm::vec4(-xf, yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[6] = glm::vec4(xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[7] = glm::vec4(-xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
 
 		glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -929,7 +911,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 
 		glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * direction.x, frustrumCentreWorldSpace.y + d * direction.y, frustrumCentreWorldSpace.z + d * direction.z);
 
-		shadowMapData.cascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace.x, frustrumCentreWorldSpace.y, frustrumCentreWorldSpace.z), glm::vec3(1.0f, 0.0f, 0.0f));
+		shadowMapData.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace.x, frustrumCentreWorldSpace.y, frustrumCentreWorldSpace.z), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		float minX = std::numeric_limits<float>::max();
 		float maxX = std::numeric_limits<float>::lowest();
@@ -944,7 +926,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 			//std::cout << "j: " << j << " " << vW.x << " " << vW.y << " " << vW.z << " " << vW.w << std::endl;
 
 			// Transform the frustum coordinate from world to light space
-			glm::vec4 vL = shadowMapData.cascadeLightView[i] * vW;
+			glm::vec4 vL = shadowMapData.mCascadeLightView[i] * vW;
 
 			//std::cout << "j: " << j << " " << vL.x << " " << vL.y << " " << vL.z << " " << vL.w << std::endl;
 
@@ -958,7 +940,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 
 		// std::cout << "i: " << i << " " << minX << " " << maxX << " " << minY << " " << maxY << " " << minZ << " " << maxZ << "      " << p.x << " " << p.y << " " << p.z << "      " << frustrumCentreWorldSpace.x << " " << frustrumCentreWorldSpace.y << " " << frustrumCentreWorldSpace.z << std::endl;
 
-		shadowMapData.cascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
+		shadowMapData.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
 	}
 }
 
@@ -971,9 +953,9 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 		return;
 	}
 
-	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->meshId);
+	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->mMeshId);
 	if (mesh == NULL) {
-		std::string message = "Error: Could not find mesh with id " + meshRenderer->meshId.toString() + "\n";
+		std::string message = "Error: Could not find mesh with id " + meshRenderer->mMeshId.toString() + "\n";
 		return;
 	}
 
@@ -982,8 +964,8 @@ void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRende
 	Sphere test;
 	Sphere boundingSphere = test;// mesh->getBoundingSphere();
 
-	for (int i = 0; i < meshRenderer->materialCount; i++) {
-		int materialIndex = world->getIndexOf(meshRenderer->materialIds[i]);
+	for (int i = 0; i < meshRenderer->mMaterialCount; i++) {
+		int materialIndex = world->getIndexOf(meshRenderer->mMaterialIds[i]);
 		int subMeshVertexStartIndex = mesh->getSubMeshStartIndices()[i];
 		int subMeshVertexEndIndex = mesh->getSubMeshStartIndices()[i + 1];
 		int subMeshVerticesCount = subMeshVertexEndIndex - subMeshVertexStartIndex;

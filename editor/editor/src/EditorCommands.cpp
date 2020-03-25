@@ -1,6 +1,10 @@
 #include "../include/EditorCommands.h"
 
 #include "core/Entity.h"
+#include "components/Light.h"
+#include "components/MeshRenderer.h"
+#include "components/BoxCollider.h"
+#include "components/SphereCollider.h"
 
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;

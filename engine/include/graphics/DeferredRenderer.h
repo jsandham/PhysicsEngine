@@ -7,6 +7,7 @@
 
 #include "../core/World.h"
 #include "../core/Input.h"
+#include "../components/MeshRenderer.h"
 
 #include "Graphics.h"
 #include "GraphicsQuery.h"
@@ -17,16 +18,16 @@ namespace PhysicsEngine
 	class DeferredRenderer
 	{
 		private:
-			World* world;
+			World* mWorld;
 
-			MeshBuffer meshBuffer;
-			std::vector<RenderObject> renderObjects;
+			MeshBuffer mMeshBuffer;
+			std::vector<RenderObject> mRenderObjects;
 
-			GBuffer gbuffer;
+			GBuffer mGbuffer;
 
-			GraphicsQuery query;
+			GraphicsQuery mQuery;
 
-			std::vector<unsigned char> data;
+			std::vector<unsigned char> mData;
 
 		public:
 			DeferredRenderer();

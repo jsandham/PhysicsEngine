@@ -8,6 +8,8 @@
 #include "../core/World.h"
 #include "../components/Camera.h"
 #include "../components/Light.h"
+#include "../components/MeshRenderer.h"
+
 #include "GraphicsQuery.h"
 #include "GraphicsDebug.h"
 #include "GraphicsState.h"
@@ -24,7 +26,7 @@ namespace PhysicsEngine
 	void registerCameras(World* world);
 	void cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects);
 	void updateTransforms(World* world, std::vector<RenderObject>& renderObjects);
-	void beginFrame(Camera* camera, GraphicsCameraState& cameraState, GraphicsQuery& query);
+	void beginFrame(Camera* camera, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsQuery& query);
 	void computeSSAO(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsQuery& query);
 	void renderShadows(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, ShadowMapData& shadowMapData, GraphicsQuery& query);
 	void renderOpaques(World* world, Camera* camera, Light* light, const std::vector<RenderObject>& renderObjects, const ShadowMapData& shadowMapData, GraphicsLightState& lightState, GraphicsQuery& query);

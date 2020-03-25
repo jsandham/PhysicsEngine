@@ -19,12 +19,12 @@ namespace PhysicsEngine
 		static const float TRANSLATE_SENSITIVITY;
 
 	private:
-		Camera* camera;
+		Camera* mCamera;
 
-		int lastPosX;
-		int lastPosY;
-		int currentPosX;
-		int currentPosY;
+		int mLastPosX;
+		int mLastPosY;
+		int mCurrentPosX;
+		int mCurrentPosY;
 
 	public:
 		EditorCameraSystem();
@@ -45,15 +45,15 @@ namespace PhysicsEngine
 	const int SystemType<EditorCameraSystem>::type = 21;
 
 	template< typename T>
-	struct IsEditorCameraSystem { static bool value; };
+	struct IsEditorCameraSystem { static const bool value; };
 
 	template<typename T>
-	bool IsEditorCameraSystem<T>::value = false;
+	const bool IsEditorCameraSystem<T>::value = false;
 
 	template<>
-	bool IsEditorCameraSystem<EditorCameraSystem>::value = true;
+	const bool IsEditorCameraSystem<EditorCameraSystem>::value = true;
 	template<>
-	bool IsSystem<EditorCameraSystem>::value = true;
+	const bool IsSystem<EditorCameraSystem>::value = true;
 }
 
 #endif

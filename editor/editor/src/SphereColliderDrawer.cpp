@@ -31,14 +31,14 @@ void SphereColliderDrawer::render(World* world, EditorProject& project, EditorSc
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		if (ImGui::TreeNode("Sphere")) {
-			glm::vec3 centre = sphereCollider->sphere.centre;
-			float radius = sphereCollider->sphere.radius;
+			glm::vec3 centre = sphereCollider->mSphere.mCentre;
+			float radius = sphereCollider->mSphere.mRadius;
 
 			if (ImGui::InputFloat3("Centre", glm::value_ptr(centre))) {
-				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&sphereCollider->sphere.centre, centre, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&sphereCollider->mSphere.mCentre, centre, &scene.isDirty));
 			}
 			if (ImGui::InputFloat("Radius", &radius)) {
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&sphereCollider->sphere.radius, radius, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&sphereCollider->mSphere.mRadius, radius, &scene.isDirty));
 			}
 
 			ImGui::TreePop();

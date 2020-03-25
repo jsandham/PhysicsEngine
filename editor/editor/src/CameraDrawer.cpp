@@ -30,56 +30,56 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 		ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		int mode = static_cast<int>(camera->mode);
+		int mode = static_cast<int>(camera->mMode);
 
 		const char* modeNames[] = { "Main", "Secondary"};
 
 		if(ImGui::Combo("Mode", &mode, modeNames, 2)) {
-			CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(&camera->mode, static_cast<CameraMode>(mode), &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(&camera->mMode, static_cast<CameraMode>(mode), &scene.isDirty));
 		}
 
-		glm::vec3 position = camera->position;
-		glm::vec3 front = camera->front;
-		glm::vec3 up = camera->up;
-		glm::vec4 backgroundColor = camera->backgroundColor;
+		glm::vec3 position = camera->mPosition;
+		glm::vec3 front = camera->mFront;
+		glm::vec3 up = camera->mUp;
+		glm::vec4 backgroundColor = camera->mBackgroundColor;
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->position, position, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mPosition, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Front", glm::value_ptr(front))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->front, front, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mFront, front, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Up", glm::value_ptr(up))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->up, up, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mUp, up, &scene.isDirty));
 		}
 		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->backgroundColor, backgroundColor, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->mBackgroundColor, backgroundColor, &scene.isDirty));
 		}
 
-		bool useSSAO = camera->useSSAO;
+		bool useSSAO = camera->mUseSSAO;
 
 		if(ImGui::Checkbox("SSAO", &useSSAO)){
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useSSAO, useSSAO, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->mUseSSAO, useSSAO, &scene.isDirty));
 		}
 
 		if (ImGui::TreeNode("Viewport"))
 		{
-			int x = camera->viewport.x;
-			int y = camera->viewport.y;
-			int width = camera->viewport.width;
-			int height = camera->viewport.height;
+			int x = camera->mViewport.mX;
+			int y = camera->mViewport.mY;
+			int width = camera->mViewport.mWidth;
+			int height = camera->mViewport.mHeight;
 
 			if (ImGui::InputInt("x", &x)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.x, x, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mX, x, &scene.isDirty));
 			}
 			if (ImGui::InputInt("y", &y)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.y, y, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mY, y, &scene.isDirty));
 			}
 			if (ImGui::InputInt("Width", &width)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.width, width, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mWidth, width, &scene.isDirty));
 			}
 			if (ImGui::InputInt("Height", &height)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->viewport.height, height, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mHeight, height, &scene.isDirty));
 			}
 
 			ImGui::TreePop();
@@ -87,18 +87,18 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 
 		if (ImGui::TreeNode("Frustum"))
 		{
-			float fov = camera->frustum.fov;
-			float nearPlane = camera->frustum.nearPlane;
-			float farPlane = camera->frustum.farPlane;
+			float fov = camera->mFrustum.mFov;
+			float nearPlane = camera->mFrustum.mNearPlane;
+			float farPlane = camera->mFrustum.mFarPlane;
 
 			if (ImGui::InputFloat("Field of View", &fov)) {
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.fov, fov, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->mFrustum.mFov, fov, &scene.isDirty));
 			}
 			if (ImGui::InputFloat("Near Plane", &nearPlane)) {
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.nearPlane, nearPlane, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->mFrustum.mNearPlane, nearPlane, &scene.isDirty));
 			}
 			if (ImGui::InputFloat("Far Plane", &farPlane)) {
-				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->frustum.farPlane, farPlane, &scene.isDirty));
+				CommandManager::addCommand(new ChangePropertyCommand<float>(&camera->mFrustum.mFarPlane, farPlane, &scene.isDirty));
 			}
 
 			ImGui::TreePop();

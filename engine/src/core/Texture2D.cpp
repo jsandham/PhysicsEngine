@@ -7,14 +7,14 @@ using namespace PhysicsEngine;
 
 Texture2D::Texture2D()
 {
-	this->dimension = TextureDimension::Tex2D;
+	mDimension = TextureDimension::Tex2D;
 
-	this->width = 0;
-	this->height = 0;
-	this->format = TextureFormat::RGB;
+	mWidth = 0;
+	mHeight = 0;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 }
 
 Texture2D::Texture2D(std::vector<char> data)
@@ -24,30 +24,30 @@ Texture2D::Texture2D(std::vector<char> data)
 
 Texture2D::Texture2D(int width, int height)
 {
-	this->dimension = TextureDimension::Tex2D;
+	mDimension = TextureDimension::Tex2D;
 
-	this->width = width;
-	this->height = height;
-	this->format = TextureFormat::RGB;
+	mWidth = width;
+	mHeight = height;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 
-	rawTextureData.resize(width*height*numChannels);
+	mRawTextureData.resize(width*height*mNumChannels);
 }
 
 Texture2D::Texture2D(int width, int height, TextureFormat format)
 {
-	this->dimension = TextureDimension::Tex2D;
+	mDimension = TextureDimension::Tex2D;
 
-	this->width = width;
-	this->height = height;
-	this->format = format;
+	mWidth = width;
+	mHeight = height;
+	mFormat = format;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(format);
+	mCreated = false;
 
-	rawTextureData.resize(width*height*numChannels);
+	mRawTextureData.resize(width*height*mNumChannels);
 }
 
 Texture2D::~Texture2D()
@@ -57,22 +57,22 @@ Texture2D::~Texture2D()
 
 std::vector<char> Texture2D::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Texture2D::serialize(Guid assetId) const
 {
 	Texture2DHeader header;
-	header.textureId = assetId;
-	header.width = width;
-	header.height = height;
-	header.numChannels = numChannels;
-	header.dimension = dimension;
-	header.format = format;
-	header.textureSize = rawTextureData.size();
+	header.mTextureId = assetId;
+	header.mWidth = mWidth;
+	header.mHeight = mHeight;
+	header.mNumChannels = mNumChannels;
+	header.mDimension = mDimension;
+	header.mFormat = mFormat;
+	header.mTextureSize = mRawTextureData.size();
 
 	size_t numberOfBytes = sizeof(Texture2DHeader) +
-		sizeof(unsigned char) * rawTextureData.size();
+		sizeof(unsigned char) * mRawTextureData.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -80,7 +80,7 @@ std::vector<char> Texture2D::serialize(Guid assetId) const
 	size_t start2 = start1 + sizeof(Texture2DHeader);
 
 	memcpy(&data[start1], &header, sizeof(Texture2DHeader));
-	memcpy(&data[start2], &rawTextureData[0], sizeof(unsigned char) * rawTextureData.size());
+	memcpy(&data[start2], &mRawTextureData[0], sizeof(unsigned char) * mRawTextureData.size());
 
 	return data;
 }
@@ -92,19 +92,19 @@ void Texture2D::deserialize(std::vector<char> data)
 
 	Texture2DHeader* header = reinterpret_cast<Texture2DHeader*>(&data[start1]);
 
-	assetId = header->textureId;
-	width = header->width;
-	height = header->height;
-	numChannels = header->numChannels;
-	dimension = static_cast<TextureDimension>(header->dimension);
-	format = static_cast<TextureFormat>(header->format);
+	mAssetId = header->mTextureId;
+	mWidth = header->mWidth;
+	mHeight = header->mHeight;
+	mNumChannels = header->mNumChannels;
+	mDimension = static_cast<TextureDimension>(header->mDimension);
+	mFormat = static_cast<TextureFormat>(header->mFormat);
 
-	rawTextureData.resize(header->textureSize);
-	for(size_t i = 0; i < header->textureSize; i++){
-		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+	mRawTextureData.resize(header->mTextureSize);
+	for(size_t i = 0; i < header->mTextureSize; i++){
+		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 
-	this->created = false;
+	mCreated = false;
 }
 
 void Texture2D::load(const std::string& filepath)
@@ -154,40 +154,40 @@ void Texture2D::load(const std::string& filepath)
 
 int Texture2D::getWidth() const
 {
-	return width;
+	return mWidth;
 }
 
 int Texture2D::getHeight() const
 {
-	return height;
+	return mHeight;
 }
 
 void Texture2D::redefine(int width, int height, TextureFormat format)
 {
-	this->width = width;
-	this->height = height;
-	this->format = format;
+	mWidth = width;
+	mHeight = height;
+	mFormat = format;
 
-	this->numChannels = calcNumChannels(format);
+	mNumChannels = calcNumChannels(format);
 
-	rawTextureData.resize(width*height*numChannels);
+	mRawTextureData.resize(width*height*mNumChannels);
 }
 
 std::vector<unsigned char> Texture2D::getRawTextureData() const
 {
-	return rawTextureData;
+	return mRawTextureData;
 }
 
 std::vector<Color> Texture2D::getPixels() const
 {
 	std::vector<Color> colors;
 
-	colors.resize(width*height);
+	colors.resize(mWidth*mHeight);
 
 	for (unsigned int i = 0; i < colors.size(); i++){
-		colors[i].r = rawTextureData[numChannels * i];
-		colors[i].g = rawTextureData[numChannels * i + 1];
-		colors[i].b = rawTextureData[numChannels * i + 2];
+		colors[i].r = mRawTextureData[mNumChannels * i];
+		colors[i].g = mRawTextureData[mNumChannels * i + 1];
+		colors[i].b = mRawTextureData[mNumChannels * i + 2];
 	}
 
 	return colors;
@@ -195,32 +195,32 @@ std::vector<Color> Texture2D::getPixels() const
 
 Color Texture2D::getPixel(int x, int y) const
 {
-	int index = numChannels * (x + width * y);
+	int index = mNumChannels * (x + mWidth * y);
 
 	Color color;
 
-	if (index + numChannels >= rawTextureData.size()){
+	if (index + mNumChannels >= mRawTextureData.size()){
 		Log::error("Texture2D: pixel index out of range\n");
 		return color;
 	}
 
-	if (numChannels == 1){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index];
-		color.b = rawTextureData[index];
+	if (mNumChannels == 1){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index];
+		color.b = mRawTextureData[index];
 		color.a = 0;
 	}
-	else if (numChannels == 3){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index + 1];
-		color.b = rawTextureData[index + 2];
+	else if (mNumChannels == 3){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index + 1];
+		color.b = mRawTextureData[index + 2];
 		color.a = 0;
 	}
-	else if (numChannels == 4){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index + 1];
-		color.b = rawTextureData[index + 2];
-		color.a = rawTextureData[index + 3];
+	else if (mNumChannels == 4){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index + 1];
+		color.b = mRawTextureData[index + 2];
+		color.a = mRawTextureData[index + 3];
 	}
 
 	return color;
@@ -231,94 +231,94 @@ void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, in
 	switch(format)
 	{
 		case TextureFormat::Depth:
-			numChannels = 1;
+			mNumChannels = 1;
 			break;
 		case TextureFormat::RG:
-			numChannels = 2;
+			mNumChannels = 2;
 			break;
 		case TextureFormat::RGB:
-			numChannels = 3;
+			mNumChannels = 3;
 			break;
 		case TextureFormat::RGBA:
-			numChannels = 4;
+			mNumChannels = 4;
 			break;
 		default:
 			Log::error("Unsupported texture format %d\n", format);
 			return;
 	}
 
-	this->width = width;
-	this->height = height;
-	this->format = format;
+	mWidth = width;
+	mHeight = height;
+	mFormat = format;
 
-	rawTextureData = data;
+	mRawTextureData = data;
 }
 
 void Texture2D::setPixels(std::vector<Color> colors)
 {
-	if (colors.size() != width*height){
+	if (colors.size() != mWidth*mHeight){
 		Log::error("Texture2D: error when trying to set pixels. Number of colors must match dimensions of texture\n");
 		return;
 	}
 
 	for (size_t i = 0; i < colors.size(); i++){
-		if (numChannels == 1){
-			rawTextureData[i] = colors[i].r;
+		if (mNumChannels == 1){
+			mRawTextureData[i] = colors[i].r;
 		}
-		else if (numChannels == 3){
-			rawTextureData[i] = colors[i].r;
-			rawTextureData[i + 1] = colors[i].g;
-			rawTextureData[i + 2] = colors[i].b;
+		else if (mNumChannels == 3){
+			mRawTextureData[i] = colors[i].r;
+			mRawTextureData[i + 1] = colors[i].g;
+			mRawTextureData[i + 2] = colors[i].b;
 		}
-		else if (numChannels == 4){
-			rawTextureData[i] = colors[i].r;
-			rawTextureData[i + 1] = colors[i].g;
-			rawTextureData[i + 2] = colors[i].b;
-			rawTextureData[i + 3] = colors[i].a;
+		else if (mNumChannels == 4){
+			mRawTextureData[i] = colors[i].r;
+			mRawTextureData[i + 1] = colors[i].g;
+			mRawTextureData[i + 2] = colors[i].b;
+			mRawTextureData[i + 3] = colors[i].a;
 		}
 	}
 }
 
 void Texture2D::setPixel(int x, int y, Color color)
 {
-	int index = numChannels * (x + width * y);
+	int index = mNumChannels * (x + mWidth * y);
 
-	if (index + numChannels >= rawTextureData.size()){
+	if (index + mNumChannels >= mRawTextureData.size()){
 		Log::error("Texture2D: pixel index out of range\n");
 		return;
 	}
 
-	if (numChannels == 1){
-		rawTextureData[index] = color.r;
+	if (mNumChannels == 1){
+		mRawTextureData[index] = color.r;
 	}
-	else if (numChannels == 3){
-		rawTextureData[index] = color.r;
-		rawTextureData[index + 1] = color.g;
-		rawTextureData[index + 2] = color.b;
+	else if (mNumChannels == 3){
+		mRawTextureData[index] = color.r;
+		mRawTextureData[index + 1] = color.g;
+		mRawTextureData[index + 2] = color.b;
 	}
-	else if (numChannels == 4){
-		rawTextureData[index] = color.r;
-		rawTextureData[index + 1] = color.g;
-		rawTextureData[index + 2] = color.b;
-		rawTextureData[index + 3] = color.a;
+	else if (mNumChannels == 4){
+		mRawTextureData[index] = color.r;
+		mRawTextureData[index + 1] = color.g;
+		mRawTextureData[index + 2] = color.b;
+		mRawTextureData[index + 3] = color.a;
 	}
 }
 
 void Texture2D::create()
 {
-	if (created) {
+	if (mCreated) {
 		return;
 	}
-	Graphics::create(this, &tex, &created);
+	Graphics::create(this, &mTex, &mCreated);
 }
 
 void Texture2D::destroy()
 {
-	if (!created) {
+	if (!mCreated) {
 		return;
 	}
 
-	Graphics::destroy(this, &tex, &created);
+	Graphics::destroy(this, &mTex, &mCreated);
 }
 
 void Texture2D::readPixels()

@@ -12,22 +12,22 @@ using namespace PhysicsEngine;
 
 Shader::Shader()
 {
-	vertexShader = "";
-	fragmentShader = "";
-	geometryShader = "";
+	mVertexShader = "";
+	mFragmentShader = "";
+	mGeometryShader = "";
 
-	assetId = Guid::INVALID;
+	mAssetId = Guid::INVALID;
 
-	allProgramsCompiled = false;
-	activeProgram = -1;
+	mAllProgramsCompiled = false;
+	mActiveProgram = -1;
 }
 
 Shader::Shader(std::vector<char> data)
 {
 	deserialize(data);
 
-	allProgramsCompiled = false;
-	activeProgram = -1;
+	mAllProgramsCompiled = false;
+	mActiveProgram = -1;
 }
 
 Shader::~Shader()
@@ -37,36 +37,35 @@ Shader::~Shader()
 
 std::vector<char> Shader::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Shader::serialize(Guid assetId) const
 {
 	ShaderHeader header;
-	header.shaderId = assetId;
-	header.vertexShaderSize = vertexShader.length();
-	header.geometryShaderSize = geometryShader.length();
-	header.fragmentShaderSize = fragmentShader.length();
-	header.numberOfShaderUniforms = uniforms.size();
+	header.mShaderId = assetId;
+	header.mVertexShaderSize = mVertexShader.length();
+	header.mGeometryShaderSize = mGeometryShader.length();
+	header.mFragmentShaderSize = mFragmentShader.length();
+	header.mNumberOfShaderUniforms = mUniforms.size();
 
 	size_t numberOfBytes = sizeof(ShaderHeader) +
-		sizeof(char) * vertexShader.length() +
-		sizeof(char) * fragmentShader.length() +
-		sizeof(char) * geometryShader.length() +
-		sizeof(ShaderUniform) * uniforms.size();
+		sizeof(char) * mVertexShader.length() +
+		sizeof(char) * mFragmentShader.length() +
+		sizeof(char) * mGeometryShader.length() +
+		sizeof(ShaderUniform) * mUniforms.size();
 
 	std::vector<char> data(numberOfBytes);
 
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(ShaderHeader);
-	size_t start3 = start2 + sizeof(char) * vertexShader.length();
-	size_t start4 = start3 + sizeof(char) * geometryShader.length();
-	size_t start5 = start4 + sizeof(char) * fragmentShader.length();
+	size_t start3 = start2 + sizeof(char) * mVertexShader.length();
+	size_t start4 = start3 + sizeof(char) * mGeometryShader.length();
 
 	memcpy(&data[start1], &header, sizeof(ShaderHeader));
-	memcpy(&data[start2], vertexShader.c_str(), sizeof(char) * vertexShader.length());
-	memcpy(&data[start3], geometryShader.c_str(), sizeof(char) * geometryShader.length());
-	memcpy(&data[start4], fragmentShader.c_str(), sizeof(char) * fragmentShader.length());
+	memcpy(&data[start2], mVertexShader.c_str(), sizeof(char) * mVertexShader.length());
+	memcpy(&data[start3], mGeometryShader.c_str(), sizeof(char) * mGeometryShader.length());
+	memcpy(&data[start4], mFragmentShader.c_str(), sizeof(char) * mFragmentShader.length());
 
 	return data;
 }
@@ -78,29 +77,28 @@ void Shader::deserialize(std::vector<char> data)
 
 	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[start1]);
 
-	assetId = header->shaderId;
+	mAssetId = header->mShaderId;
 
-	size_t vertexShaderSize = header->vertexShaderSize;
-	size_t geometryShaderSize = header->geometryShaderSize;
-	size_t fragmentShaderSize = header->fragmentShaderSize;
-	size_t numberOfShaderUniforms = header->numberOfShaderUniforms;
+	size_t vertexShaderSize = header->mVertexShaderSize;
+	size_t geometryShaderSize = header->mGeometryShaderSize;
+	size_t fragmentShaderSize = header->mFragmentShaderSize;
 
 	std::vector<char>::iterator start = data.begin();
 	std::vector<char>::iterator end = data.begin();
 	start += start2;
 	end += start2 + vertexShaderSize;
 
-	vertexShader = std::string(start, end);
+	mVertexShader = std::string(start, end);
 
 	start +=vertexShaderSize;
 	end += geometryShaderSize;
 
-	geometryShader = std::string(start, end);
+	mGeometryShader = std::string(start, end);
 
 	start += geometryShaderSize;
 	end += fragmentShaderSize;
 
-	fragmentShader = std::string(start, end);
+	mFragmentShader = std::string(start, end);
 }
 
 void Shader::load(const std::string& filepath)
@@ -185,13 +183,13 @@ void Shader::load(const std::string vertexShader, const std::string fragmentShad
 
 bool Shader::isCompiled() const
 {
-	return allProgramsCompiled;
+	return mAllProgramsCompiled;
 }
 
 bool Shader::contains(int variant) const
 {
-	for (size_t i = 0; i < programs.size(); i++) {
-		if (programs[i].variant == variant) {
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		if (mPrograms[i].mVariant == variant) {
 			return true;
 		}
 	}
@@ -202,8 +200,8 @@ bool Shader::contains(int variant) const
 void Shader::add(int variant)
 {
 	bool variantFound = false;
-	for (size_t i = 0; i < programs.size(); i++) {
-		if (programs[i].variant == variant) {
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		if (mPrograms[i].mVariant == variant) {
 			variantFound = true;
 			break;
 		}
@@ -211,29 +209,29 @@ void Shader::add(int variant)
 
 	if (!variantFound) {
 		ShaderProgram program;
-		program.version = ShaderVersion::GL430;
-		program.compiled = false;
-		program.variant = variant;
-		program.handle = 0;
+		program.mVersion = ShaderVersion::GL430;
+		program.mCompiled = false;
+		program.mVariant = variant;
+		program.mHandle = 0;
 
-		programs.push_back(program);
+		mPrograms.push_back(program);
 
-		allProgramsCompiled = false;
+		mAllProgramsCompiled = false;
 	}
 }
 
 void Shader::remove(int variant)
 {
 	int index = -1;
-	for (size_t i = 0; i < programs.size(); i++) {
-		if (programs[i].variant == variant) {
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		if (mPrograms[i].mVariant == variant) {
 			index = (int)i;
 			break;
 		}
 	}
 
 	if (index != -1) {
-		programs.erase(programs.begin() + index);
+		mPrograms.erase(mPrograms.begin() + index);
 	}
 }
 
@@ -265,9 +263,9 @@ void Shader::compile()
 
 	std::vector<ShaderVariant> temp;
 	for (size_t i = 0; i < keywords.size(); i++) {
-		if (vertexShader.find(keywords[i]) != std::string::npos || 
-			geometryShader.find(keywords[i]) != std::string::npos || 
-			fragmentShader.find(keywords[i]) != std::string::npos) {
+		if (mVertexShader.find(keywords[i]) != std::string::npos || 
+			mGeometryShader.find(keywords[i]) != std::string::npos || 
+			mFragmentShader.find(keywords[i]) != std::string::npos) {
 			
 			std::map<std::string, ShaderVariant>::const_iterator it = keywordToVariantMap.find(keywords[i]);
 			if (it != keywordToVariantMap.end()) {
@@ -305,9 +303,9 @@ void Shader::compile()
 
 	// compile all shader variants
 	GLint success = 0;
-	for (size_t i = 0; i < programs.size(); i++) {
+	for (size_t i = 0; i < mPrograms.size(); i++) {
 		std::string version;
-		if(programs[i].version == ShaderVersion::GL330) { 
+		if(mPrograms[i].mVersion == ShaderVersion::GL330) { 
 			version = "#version 330 core\n"; 
 		}
 		else{ 
@@ -315,17 +313,17 @@ void Shader::compile()
 		}
 
 		std::string defines;
-		if (programs[i].variant & ShaderVariant::Directional) { defines += "#define DIRECTIONALLIGHT\n"; }
-		if (programs[i].variant & ShaderVariant::Spot) { defines += "#define SPOTLIGHT\n"; }
-		if (programs[i].variant & ShaderVariant::Point) { defines += "#define POINTLIGHT\n"; }
-		if (programs[i].variant & ShaderVariant::HardShadows) { defines += "#define HARDSHADOWS\n"; }
-		if (programs[i].variant & ShaderVariant::SoftShadows) { defines += "#define SOFTSHADOWS\n"; }
-		if (programs[i].variant & ShaderVariant::SSAO) { defines += "#define SSAO\n"; }
-		if (programs[i].variant & ShaderVariant::Cascade) { defines += "#define CASCADE\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::Directional) { defines += "#define DIRECTIONALLIGHT\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::Spot) { defines += "#define SPOTLIGHT\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::Point) { defines += "#define POINTLIGHT\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::HardShadows) { defines += "#define HARDSHADOWS\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::SoftShadows) { defines += "#define SOFTSHADOWS\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::SSAO) { defines += "#define SSAO\n"; }
+		if (mPrograms[i].mVariant & ShaderVariant::Cascade) { defines += "#define CASCADE\n"; }
 
-		std::string preProcessedVertexShader = version + defines + vertexShader;
-		std::string preProcessedGeometryShader = version + defines + geometryShader;
-		std::string preProcessedFragmentShader = version + defines + fragmentShader;
+		std::string preProcessedVertexShader = version + defines + mVertexShader;
+		std::string preProcessedGeometryShader = version + defines + mGeometryShader;
+		std::string preProcessedFragmentShader = version + defines + mFragmentShader;
 
 		const GLchar* vertexShaderCharPtr = preProcessedVertexShader.c_str();
 		const GLchar* geometryShaderCharPtr = preProcessedGeometryShader.c_str();
@@ -364,7 +362,7 @@ void Shader::compile()
 		}
 
 		// geometry shader
-		if (!geometryShader.empty()) {
+		if (!mGeometryShader.empty()) {
 			geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
 			glCompileShader(geometryShaderObj);
@@ -379,47 +377,47 @@ void Shader::compile()
 		}
 
 		// shader program
-		programs[i].handle = glCreateProgram();
-		glAttachShader(programs[i].handle, vertexShaderObj);
-		glAttachShader(programs[i].handle, fragmentShaderObj);
+		mPrograms[i].mHandle = glCreateProgram();
+		glAttachShader(mPrograms[i].mHandle, vertexShaderObj);
+		glAttachShader(mPrograms[i].mHandle, fragmentShaderObj);
 		if (geometryShaderObj != 0) {
-			glAttachShader(programs[i].handle, geometryShaderObj);
+			glAttachShader(mPrograms[i].mHandle, geometryShaderObj);
 		}
 
-		glLinkProgram(programs[i].handle);
-		glGetProgramiv(programs[i].handle, GL_LINK_STATUS, &success);
+		glLinkProgram(mPrograms[i].mHandle);
+		glGetProgramiv(mPrograms[i].mHandle, GL_LINK_STATUS, &success);
 		if (!success) {
-			glGetProgramInfoLog(programs[i].handle, 512, NULL, infoLog);
+			glGetProgramInfoLog(mPrograms[i].mHandle, 512, NULL, infoLog);
 			std::string message = "Shader: Shader program linking failed\n";
 			Log::error(message.c_str());
 			return;
 		}
 		glDeleteShader(vertexShaderObj);
 		glDeleteShader(fragmentShaderObj);
-		if (!geometryShader.empty()) {
+		if (!mGeometryShader.empty()) {
 			glDeleteShader(geometryShaderObj);
 		}
 
-		programs[i].compiled = true;
+		mPrograms[i].mCompiled = true;
 	}
 
-	allProgramsCompiled = true;
+	mAllProgramsCompiled = true;
 
 	// find all uniforms and attributes in shader across all variants
 	std::set<std::string> uniformNames;
-	for (size_t i = 0; i < uniforms.size(); i++) {
-		uniformNames.insert(std::string(uniforms[i].name));
+	for (size_t i = 0; i < mUniforms.size(); i++) {
+		uniformNames.insert(std::string(mUniforms[i].mName));
 	}
 	std::set<std::string> attributeNames;
-	for (size_t i = 0; i < attributes.size(); i++) {
-		attributeNames.insert(std::string(attributes[i].name));
+	for (size_t i = 0; i < mAttributes.size(); i++) {
+		attributeNames.insert(std::string(mAttributes[i].mName));
 	}
 
 	const GLsizei bufSize = 32; // maximum name length
 
 	// run through all variants and find all uniforms/attributes (and add to sets of known uniforms/attributes if new)
-	for (size_t i = 0; i < programs.size(); i++) {
-		GLuint program = programs[i].handle;
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		GLuint program = mPrograms[i].mHandle;
 
 		GLint uniformCount;
 		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
@@ -433,42 +431,42 @@ void Shader::compile()
 			glGetActiveUniform(program, (GLuint)j, bufSize, &nameLength, &size, &type, &name[0]);
 
 			ShaderUniform uniform;
-			uniform.nameLength = (size_t)nameLength;
-			uniform.size = (size_t)size;
+			uniform.mNameLength = (size_t)nameLength;
+			uniform.mSize = (size_t)size;
 
-			memset(uniform.name, '\0', 32);
-			memset(uniform.shortName, '\0', 32);
-			memset(uniform.blockName, '\0', 32);
+			memset(uniform.mName, '\0', 32);
+			memset(uniform.mShortName, '\0', 32);
+			memset(uniform.mBlockName, '\0', 32);
 
 			int indexOfBlockChar = -1;
 			for (int k = 0; k < nameLength; k++) {
-				uniform.name[k] = name[k];
+				uniform.mName[k] = name[k];
 				if (name[k] == '.') {
 					indexOfBlockChar = k;
 				}
 			}
 
-			uniform.shortName[0] = '\0';
+			uniform.mShortName[0] = '\0';
 			for (int k = indexOfBlockChar + 1; k < nameLength; k++) {
-				uniform.shortName[k - indexOfBlockChar - 1] = name[k];
+				uniform.mShortName[k - indexOfBlockChar - 1] = name[k];
 			}
 
-			uniform.blockName[0] = '\0';
+			uniform.mBlockName[0] = '\0';
 			for (int k = 0; k < indexOfBlockChar; k++) {
-				uniform.blockName[k] = name[k];
+				uniform.mBlockName[k] = name[k];
 			}
 
-			uniform.type = type;
-			uniform.variant = programs[i].variant;
-			uniform.location = findUniformLocation(std::string(uniform.name), program);
+			uniform.mType = type;
+			uniform.mVariant = mPrograms[i].mVariant;
+			uniform.mLocation = findUniformLocation(std::string(uniform.mName), program);
 
 			// only add uniform if it wasnt already in array
-			std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.name));
+			std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.mName));
 			if (it == uniformNames.end()) {
-				uniform.index = uniforms.size();
+				uniform.mIndex = mUniforms.size();
 
-				uniforms.push_back(uniform);
-				uniformNames.insert(std::string(uniform.name));
+				mUniforms.push_back(uniform);
+				uniformNames.insert(std::string(uniform.mName));
 			}
 		}
 
@@ -485,13 +483,13 @@ void Shader::compile()
 
 			ShaderAttribute attribute;
 			for (int k = 0; k < 32; k++) {
-				attribute.name[k] = name[k];
+				attribute.mName[k] = name[k];
 			}
 
-			std::set<std::string>::iterator it = attributeNames.find(std::string(attribute.name));
+			std::set<std::string>::iterator it = attributeNames.find(std::string(attribute.mName));
 			if (it == attributeNames.end()) {
-				attributes.push_back(attribute);
-				attributeNames.insert(std::string(attribute.name));
+				mAttributes.push_back(attribute);
+				attributeNames.insert(std::string(attribute.mName));
 			}
 		}
 	}
@@ -503,41 +501,41 @@ void Shader::use(int program)
 		return;
 	}	
 
-	activeProgram = program;
+	mActiveProgram = program;
 	glUseProgram(program);
 }
 
 void Shader::unuse()
 {
-	activeProgram = -1;
+	mActiveProgram = -1;
 	glUseProgram(0);
 }
 
 void Shader::setVertexShader(const std::string vertexShader)
 {
-	this->vertexShader = vertexShader;
-	allProgramsCompiled = false;
+	mVertexShader = vertexShader;
+	mAllProgramsCompiled = false;
 }
 
 void Shader::setGeometryShader(const std::string geometryShader)
 {
-	this->geometryShader = geometryShader;
-	allProgramsCompiled = false;
+	mGeometryShader = geometryShader;
+	mAllProgramsCompiled = false;
 }
 
 void Shader::setFragmentShader(const std::string fragmentShader)
 {
-	this->fragmentShader = fragmentShader;
-	allProgramsCompiled = false;
+	mFragmentShader = fragmentShader;
+	mAllProgramsCompiled = false;
 }
 
 void Shader::setUniformBlock(const std::string& blockName, int bindingPoint) const
 {
 	//set uniform block on all shader program
-	for (size_t i = 0; i < programs.size(); i++) {
-		GLuint blockIndex = glGetUniformBlockIndex(programs[i].handle, blockName.c_str());
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		GLuint blockIndex = glGetUniformBlockIndex(mPrograms[i].mHandle, blockName.c_str());
 		if (blockIndex != GL_INVALID_INDEX) {
-			glUniformBlockBinding(programs[i].handle, blockIndex, bindingPoint);
+			glUniformBlockBinding(mPrograms[i].mHandle, blockIndex, bindingPoint);
 		}
 	}
 }
@@ -549,9 +547,9 @@ int Shader::findUniformLocation(const std::string& name, int program) const
 
 int Shader::getProgramFromVariant(int variant) const
 {
-	for (size_t i = 0; i < programs.size(); i++) {
-		if (programs[i].variant == variant) {
-			return programs[i].handle;
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		if (mPrograms[i].mVariant == variant) {
+			return mPrograms[i].mHandle;
 		}
 	}
 
@@ -560,38 +558,38 @@ int Shader::getProgramFromVariant(int variant) const
 
 std::vector<ShaderProgram> Shader::getPrograms() const
 {
-	return programs;
+	return mPrograms;
 }
 
 std::vector<ShaderUniform> Shader::getUniforms() const
 {
-	return uniforms;
+	return mUniforms;
 }
 
  std::vector<ShaderAttribute> Shader::getAttributeNames() const
  {
-	 return attributes;
+	 return mAttributes;
  }
 
  std::string Shader::getVertexShader() const
  {
-	 return vertexShader;
+	 return mVertexShader;
  }
 
  std::string Shader::getGeometryShader() const
  {
-	 return geometryShader;
+	 return mGeometryShader;
  }
 
  std::string Shader::getFragmentShader() const
  {
-	 return fragmentShader;
+	 return mFragmentShader;
  }
 
 void Shader::setBool(const std::string& name, bool value) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform1i(locationIndex, (int)value);
 		}
@@ -600,8 +598,8 @@ void Shader::setBool(const std::string& name, bool value) const
 
 void Shader::setInt(const std::string& name, int value) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform1i(locationIndex, value);
 		}
@@ -610,8 +608,8 @@ void Shader::setInt(const std::string& name, int value) const
 
 void Shader::setFloat(const std::string& name, float value) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform1f(locationIndex, value);
 		}
@@ -620,8 +618,8 @@ void Shader::setFloat(const std::string& name, float value) const
 
 void Shader::setVec2(const std::string& name, const glm::vec2 &vec) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform2fv(locationIndex, 1, &vec[0]);
 		}
@@ -630,8 +628,8 @@ void Shader::setVec2(const std::string& name, const glm::vec2 &vec) const
 
 void Shader::setVec3(const std::string& name, const glm::vec3 &vec) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform3fv(locationIndex, 1, &vec[0]);
 		}
@@ -640,8 +638,8 @@ void Shader::setVec3(const std::string& name, const glm::vec3 &vec) const
 
 void Shader::setVec4(const std::string& name, const glm::vec4 &vec) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniform4fv(locationIndex, 1, &vec[0]);
 		}
@@ -650,8 +648,8 @@ void Shader::setVec4(const std::string& name, const glm::vec4 &vec) const
 
 void Shader::setMat2(const std::string& name, const glm::mat2 &mat) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniformMatrix2fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 		}
@@ -660,8 +658,8 @@ void Shader::setMat2(const std::string& name, const glm::mat2 &mat) const
 
 void Shader::setMat3(const std::string& name, const glm::mat3 &mat) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniformMatrix3fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 		}
@@ -670,8 +668,8 @@ void Shader::setMat3(const std::string& name, const glm::mat3 &mat) const
 
 void Shader::setMat4(const std::string& name, const glm::mat4 &mat) const
 {
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
 			glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
 		}
@@ -680,62 +678,62 @@ void Shader::setMat4(const std::string& name, const glm::mat4 &mat) const
 
 void Shader::setBool(int nameLocation, bool value) const
 {
-	if(activeProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1 && nameLocation != -1){
 		glUniform1i(nameLocation, (int)value);
 	}
 }
 void Shader::setInt(int nameLocation, int value) const
 {
-	if(activeProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1 && nameLocation != -1){
 		glUniform1i(nameLocation, value);
 	}
 }
 
 void Shader::setFloat(int nameLocation, float value) const
 {
-	if(activeProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1 && nameLocation != -1){
 		glUniform1f(nameLocation, value);
 	}
 }
 
 void Shader::setVec2(int nameLocation, const glm::vec2 &vec) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniform2fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setVec3(int nameLocation, const glm::vec3 &vec) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniform3fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setVec4(int nameLocation, const glm::vec4 &vec) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniform4fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setMat2(int nameLocation, const glm::mat2 &mat) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat3(int nameLocation, const glm::mat3 &mat) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
 {
-	if (activeProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1 && nameLocation != -1) {
 		glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
@@ -743,10 +741,10 @@ void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
 bool Shader::getBool(const std::string& name) const
 {
 	int value = 0;
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetUniformiv(activeProgram, locationIndex, &value);
+			glGetUniformiv(mActiveProgram, locationIndex, &value);
 		}
 	}
 
@@ -756,10 +754,10 @@ bool Shader::getBool(const std::string& name) const
 int Shader::getInt(const std::string& name) const
 {
 	int value = 0;
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetUniformiv(activeProgram, locationIndex, &value);
+			glGetUniformiv(mActiveProgram, locationIndex, &value);
 		}
 	}
 
@@ -769,10 +767,10 @@ int Shader::getInt(const std::string& name) const
 float Shader::getFloat(const std::string& name) const
 {
 	float value = 0.0f;
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetUniformfv(activeProgram, locationIndex, &value);
+			glGetUniformfv(mActiveProgram, locationIndex, &value);
 		}
 	}
 
@@ -782,10 +780,10 @@ float Shader::getFloat(const std::string& name) const
 glm::vec2 Shader::getVec2(const std::string& name) const
 {
 	glm::vec2 value = glm::vec2(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::vec2), &value[0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec2), &value[0]);
 		}
 	}
 
@@ -795,10 +793,10 @@ glm::vec2 Shader::getVec2(const std::string& name) const
 glm::vec3 Shader::getVec3(const std::string& name) const
 {
 	glm::vec3 value = glm::vec3(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::vec3), &value[0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec3), &value[0]);
 		}
 	}
 
@@ -808,10 +806,10 @@ glm::vec3 Shader::getVec3(const std::string& name) const
 glm::vec4 Shader::getVec4(const std::string& name) const
 {
 	glm::vec4 value = glm::vec4(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::vec4), &value[0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec4), &value[0]);
 		}
 	}
 
@@ -821,10 +819,10 @@ glm::vec4 Shader::getVec4(const std::string& name) const
 glm::mat2 Shader::getMat2(const std::string& name) const
 {
 	glm::mat2 value = glm::mat2(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::mat2), &value[0][0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat2), &value[0][0]);
 		}
 	}
 
@@ -834,10 +832,10 @@ glm::mat2 Shader::getMat2(const std::string& name) const
 glm::mat3 Shader::getMat3(const std::string& name) const
 {
 	glm::mat3 value = glm::mat3(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::mat3), &value[0][0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat3), &value[0][0]);
 		}
 	}
 
@@ -847,10 +845,10 @@ glm::mat3 Shader::getMat3(const std::string& name) const
 glm::mat4 Shader::getMat4(const std::string& name) const
 {
 	glm::mat4 value = glm::mat4(0.0f);
-	if (activeProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(activeProgram, name.c_str());
+	if (mActiveProgram != -1) {
+		GLint locationIndex = glGetUniformLocation(mActiveProgram, name.c_str());
 		if (locationIndex != -1) {
-			glGetnUniformfv(activeProgram, locationIndex, sizeof(glm::mat4), &value[0][0]);
+			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat4), &value[0][0]);
 		}
 	}
 
@@ -860,8 +858,8 @@ glm::mat4 Shader::getMat4(const std::string& name) const
 bool Shader::getBool(int nameLocation) const
 {
 	int value = 0;
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetUniformiv(activeProgram, nameLocation, &value);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetUniformiv(mActiveProgram, nameLocation, &value);
 	}
 
 	return (bool)value;
@@ -870,8 +868,8 @@ bool Shader::getBool(int nameLocation) const
 int Shader::getInt(int nameLocation) const
 {
 	int value = 0;
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetUniformiv(activeProgram, nameLocation, &value);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetUniformiv(mActiveProgram, nameLocation, &value);
 	}
 
 	return value;
@@ -880,8 +878,8 @@ int Shader::getInt(int nameLocation) const
 float Shader::getFloat(int nameLocation) const
 {
 	float value = 0.0f;
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetUniformfv(activeProgram, nameLocation, &value);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetUniformfv(mActiveProgram, nameLocation, &value);
 	}
 
 	return value;
@@ -890,8 +888,8 @@ float Shader::getFloat(int nameLocation) const
 glm::vec2 Shader::getVec2(int nameLocation) const
 {
 	glm::vec2 value = glm::vec2(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::vec2), &value[0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec2), &value[0]);
 	}
 
 	return value;
@@ -900,8 +898,8 @@ glm::vec2 Shader::getVec2(int nameLocation) const
 glm::vec3 Shader::getVec3(int nameLocation) const
 {
 	glm::vec3 value = glm::vec3(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::vec3), &value[0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec3), &value[0]);
 	}
 
 	return value;
@@ -910,8 +908,8 @@ glm::vec3 Shader::getVec3(int nameLocation) const
 glm::vec4 Shader::getVec4(int nameLocation) const
 {
 	glm::vec4 value = glm::vec4(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::vec4), &value[0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec4), &value[0]);
 	}
 
 	return value;
@@ -920,8 +918,8 @@ glm::vec4 Shader::getVec4(int nameLocation) const
 glm::mat2 Shader::getMat2(int nameLocation) const
 {
 	glm::mat2 value = glm::mat2(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::mat2), &value[0][0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat2), &value[0][0]);
 	}
 
 	return value;
@@ -930,8 +928,8 @@ glm::mat2 Shader::getMat2(int nameLocation) const
 glm::mat3 Shader::getMat3(int nameLocation) const
 {
 	glm::mat3 value = glm::mat3(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::mat3), &value[0][0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat3), &value[0][0]);
 	}
 
 	return value;
@@ -940,8 +938,8 @@ glm::mat3 Shader::getMat3(int nameLocation) const
 glm::mat4 Shader::getMat4(int nameLocation) const
 {
 	glm::mat4 value = glm::mat4(0.0f);
-	if (activeProgram != -1 && nameLocation != -1) {
-		glGetnUniformfv(activeProgram, nameLocation, sizeof(glm::mat4), &value[0][0]);
+	if (mActiveProgram != -1 && nameLocation != -1) {
+		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat4), &value[0][0]);
 	}
 
 	return value;

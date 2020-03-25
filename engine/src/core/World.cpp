@@ -14,44 +14,36 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	entityAllocator = NULL;
-	bounds.centre = glm::vec3(0.0f, 0.0f, 40.0f);
-	bounds.size = 2.0f * glm::vec3(200.0f, 200.0f, 200.0f);
+	mEntityAllocator = NULL;
 
-	//stree.create(bounds, 2, 5);
-	//dtree.create(bounds, 2, 5);
-
-	debug = false;
-	debugView = -1;
+	mDebug = false;
+	mDebugView = -1;
 }
 
 World::~World()
 {
-	if (entityAllocator != NULL) {
-		delete entityAllocator;
+	if (mEntityAllocator != NULL) {
+		delete mEntityAllocator;
 	}
 
-	std::map<int, Allocator*>::iterator it1 = componentAllocatorMap.begin();
-	for (it1 == componentAllocatorMap.begin(); it1 != componentAllocatorMap.end(); it1++) {
+	std::map<int, Allocator*>::iterator it1 = mComponentAllocatorMap.begin();
+	for (it1 == mComponentAllocatorMap.begin(); it1 != mComponentAllocatorMap.end(); it1++) {
 		delete it1->second;
 	}
 
-	std::map<int, Allocator*>::iterator it2 = systemAllocatorMap.begin();
-	for (it2 == systemAllocatorMap.begin(); it2 != systemAllocatorMap.end(); it2++) {
+	std::map<int, Allocator*>::iterator it2 = mSystemAllocatorMap.begin();
+	for (it2 == mSystemAllocatorMap.begin(); it2 != mSystemAllocatorMap.end(); it2++) {
 		delete it2->second;
 	}
 
-	std::map<int, Allocator*>::iterator it3 = assetAllocatorMap.begin();
-	for (it3 == assetAllocatorMap.begin(); it3 != assetAllocatorMap.end(); it3++) {
+	std::map<int, Allocator*>::iterator it3 = mAssetAllocatorMap.begin();
+	for (it3 == mAssetAllocatorMap.begin(); it3 != mAssetAllocatorMap.end(); it3++) {
 		delete it3->second;
 	}
 }
 
 bool World::loadAsset(std::string filePath)
 {
-	std::string message = "Attempting to load asset " + filePath + " into world\n";
-	Log::info(&message[0]);
-
 	std::ifstream file;
 	file.open(filePath, std::ios::binary);
 
@@ -90,10 +82,10 @@ bool World::loadAsset(std::string filePath)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = PhysicsEngine::loadInternalAsset(&assetAllocatorMap, data, type, &index);
+			asset = PhysicsEngine::loadInternalAsset(&mAssetAllocatorMap, data, type, &index);
 		}
 		else{
-			asset = PhysicsEngine::loadAsset(&assetAllocatorMap, data, type, &index);
+			asset = PhysicsEngine::loadAsset(&mAssetAllocatorMap, data, type, &index);
 		}
 
 		if(asset == NULL || index == -1){
@@ -101,20 +93,20 @@ bool World::loadAsset(std::string filePath)
 			return false;
 		}
 
-		if(idToGlobalIndex.find(asset->assetId) == idToGlobalIndex.end()){
-			idToGlobalIndex[asset->assetId] = index;
+		if(mIdToGlobalIndex.find(asset->mAssetId) == mIdToGlobalIndex.end()){
+			mIdToGlobalIndex[asset->mAssetId] = index;
 		}
 		else{
-			std::string errorMessage = "Asset with id " + asset->assetId.toString() + " already exists in id to global index map\n";
+			std::string errorMessage = "Asset with id " + asset->mAssetId.toString() + " already exists in id to global index map\n";
 			Log::error(&errorMessage[0]);
 			return false;
 		}
 
-		if (idToType.find(asset->assetId) == idToType.end()){
-			idToType[asset->assetId] = type;
+		if (mIdToType.find(asset->mAssetId) == mIdToType.end()){
+			mIdToType[asset->mAssetId] = type;
 		}
 		else {
-			std::string errorMessage = "Asset with id " + asset->assetId.toString() + " already exists in id to type map\n";
+			std::string errorMessage = "Asset with id " + asset->mAssetId.toString() + " already exists in id to type map\n";
 			Log::error(&errorMessage[0]);
 			return false;
 		}
@@ -167,7 +159,7 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 		if(classification == 'e'){
 			Entity* entity = NULL;
 			if(type == 0){
-				entity = PhysicsEngine::loadInternalEntity(entityAllocator, data, &index);
+				entity = PhysicsEngine::loadInternalEntity(mEntityAllocator, data, &index);
 			}
 			else{
 				Log::error("Entity must be of type 0\n");
@@ -180,29 +172,29 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				return false;
 			}
 
-			if(idToGlobalIndex.find(entity->entityId) == idToGlobalIndex.end()){
-				idToGlobalIndex[entity->entityId] = index;
+			if(mIdToGlobalIndex.find(entity->mEntityId) == mIdToGlobalIndex.end()){
+				mIdToGlobalIndex[entity->mEntityId] = index;
 
-				entityIdsMarkedCreated.push_back(entity->entityId);
+				mEntityIdsMarkedCreated.push_back(entity->mEntityId);
 			}
 			else{
-				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in id to global index map\n";
+				std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to global index map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 
-			if (idToType.find(entity->entityId) == idToType.end()) {
-				idToType[entity->entityId] = type;
+			if (mIdToType.find(entity->mEntityId) == mIdToType.end()) {
+				mIdToType[entity->mEntityId] = type;
 			}
 			else {
-				std::string errorMessage = "Entity with id " + entity->entityId.toString() + " already exists in id to type map\n";
+				std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to type map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 
-			std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entity->entityId);
-			if (it == entityIdToComponentIds.end()) {
-				entityIdToComponentIds[entity->entityId] = std::vector<std::pair<Guid, int>>();
+			std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
+			if (it == mEntityIdToComponentIds.end()) {
+				mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
 			}
 		}
 		else if(classification == 'c'){
@@ -212,10 +204,10 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 
 			Component* component = NULL;
 			if(type < 20){
-				component = PhysicsEngine::loadInternalComponent(&componentAllocatorMap, data, type, &index);
+				component = PhysicsEngine::loadInternalComponent(&mComponentAllocatorMap, data, type, &index);
 			}
 			else{
-				component = PhysicsEngine::loadComponent(&componentAllocatorMap, data, type, &index);
+				component = PhysicsEngine::loadComponent(&mComponentAllocatorMap, data, type, &index);
 			}
 
 			if(component == NULL || index == -1){
@@ -224,35 +216,35 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				return false;
 			}
 
-			if(idToGlobalIndex.find(component->componentId) == idToGlobalIndex.end()){
-				idToGlobalIndex[component->componentId] = index;
+			if(mIdToGlobalIndex.find(component->mComponentId) == mIdToGlobalIndex.end()){
+				mIdToGlobalIndex[component->mComponentId] = index;
 
-				componentIdsMarkedCreated.push_back(make_triple(component->entityId, component->componentId, type));
+				mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, type));
 			}
 			else{
-				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in id to global index map\n";
+				std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to global index map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 			
-			if (idToType.find(component->componentId) == idToType.end()) {
-				idToType[component->componentId] = type;
+			if (mIdToType.find(component->mComponentId) == mIdToType.end()) {
+				mIdToType[component->mComponentId] = type;
 			}
 			else {
-				std::string errorMessage = "Component with id " + component->componentId.toString() + " already exists in id to type map\n";
+				std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to type map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 
-			entityIdToComponentIds[component->entityId].push_back(std::make_pair(component->componentId, type));
+			mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, type));
 		}
 		else if(classification == 's' && !ignoreSystemsAndCamera){
 			System* system = NULL;
 			if(type < 20){
-				system = PhysicsEngine::loadInternalSystem(&systemAllocatorMap, data, type, &index);
+				system = PhysicsEngine::loadInternalSystem(&mSystemAllocatorMap, data, type, &index);
 			}
 			else{
-				system = PhysicsEngine::loadSystem(&systemAllocatorMap, data, type, &index);
+				system = PhysicsEngine::loadSystem(&mSystemAllocatorMap, data, type, &index);
 			}
 
 			if(system == NULL || index == -1){
@@ -261,26 +253,26 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 				return false;
 			}
 
-			if (idToGlobalIndex.find(system->systemId) == idToGlobalIndex.end()) {
-				idToGlobalIndex[system->systemId] = index;
+			if (mIdToGlobalIndex.find(system->mSystemId) == mIdToGlobalIndex.end()) {
+				mIdToGlobalIndex[system->mSystemId] = index;
 			}
 			else {
-				std::string errorMessage = "System with id " + system->systemId.toString() + " already exists in id to global index map\n";
+				std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to global index map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 
-			if (idToType.find(system->systemId) == idToType.end()) {
-				idToType[system->systemId] = type;
+			if (mIdToType.find(system->mSystemId) == mIdToType.end()) {
+				mIdToType[system->mSystemId] = type;
 			}
 			else {
-				std::string errorMessage = "System with id " + system->systemId.toString() + " already exists in id to type map\n";
+				std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to type map\n";
 				Log::error(&errorMessage[0]);
 				return false;
 			}
 
 			// maybe set system in vector??
-			systems.push_back(system);
+			mSystems.push_back(system);
 		}
 		else{
 			Log::error("Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)");
@@ -290,19 +282,19 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 
 	// sort systems by order
 	if(!ignoreSystemsAndCamera){
-		for(size_t i = 0; i < systems.size(); i++){
-			int minOrder = systems[i]->getOrder();
+		for(size_t i = 0; i < mSystems.size(); i++){
+			int minOrder = mSystems[i]->getOrder();
 			int minOrderIndex = (int)i;
-			for(size_t j = i + 1; j < systems.size(); j++){
-				if(systems[j]->getOrder() < minOrder){
-					minOrder = systems[j]->getOrder();
+			for(size_t j = i + 1; j < mSystems.size(); j++){
+				if(mSystems[j]->getOrder() < minOrder){
+					minOrder = mSystems[j]->getOrder();
 					minOrderIndex = (int)j;
 				}
 			}
 
-			System* temp = systems[i];
-			systems[i] = systems[minOrderIndex];
-			systems[minOrderIndex] = temp;
+			System* temp = mSystems[i];
+			mSystems[i] = mSystems[minOrderIndex];
+			mSystems[minOrderIndex] = temp;
 		}
 	}
 
@@ -316,28 +308,32 @@ bool World::loadSceneFromEditor(std::string filePath)
 	return loadScene(filePath, true);
 }
 
-
-void World::latentDestroyEntitiesInWorld() // clearLatent? latentDestroyEntitiesInWorld?
+void World::latentDestroyEntitiesInWorld() 
 {
 	// latent destroy all entities (and thereby also all components)
 	for (int i = 0; i < getNumberOfEntities(); i++) {
 		Entity* entity = getEntityByIndex(i);
 
-		if (!entity->doNotDestroy) {
-			std::string message = "Adding entity: " + entity->entityId.toString() + " to latent destroy list\n";
+		if (!entity->mDoNotDestroy) {
+			std::string message = "Adding entity: " + entity->mEntityId.toString() + " to latent destroy list\n";
 			Log::warn(message.c_str());
-			latentDestroyEntity(entity->entityId);
+			latentDestroyEntity(entity->mEntityId);
 		}
 		else {
-			std::string message = "Warn: Skipping entity: " + entity->entityId.toString() + " as it is marked do not destroy\n";
+			std::string message = "Warn: Skipping entity: " + entity->mEntityId.toString() + " as it is marked do not destroy\n";
 			Log::warn(message.c_str());
 		}
 	}
 }
 
-int World::getNumberOfEntities()
+const PoolAllocator<Entity>* World::getEntityAllocator_Const() const
 {
-	PoolAllocator<Entity>* allocator = getEntityAllocator();
+	return static_cast<PoolAllocator<Entity>*>(mEntityAllocator);
+}
+
+int World::getNumberOfEntities() const
+{
+	const PoolAllocator<Entity>* allocator = getEntityAllocator_Const();
 	if (allocator == NULL) {
 		return 0;
 	}
@@ -345,22 +341,24 @@ int World::getNumberOfEntities()
 	return (int)allocator->getCount();
 }
 
-int World::getNumberOfSystems()
+int World::getNumberOfSystems() const
 {
-	return (int)systems.size();
+	return (int)mSystems.size();
 }
 
 Entity* World::getEntity(Guid entityId)
 {
-	assert(entityId != Guid::INVALID);
+	if (entityId == Guid::INVALID) {
+		return NULL;
+	}
 
 	PoolAllocator<Entity>* allocator = getEntityAllocator();
 	if (allocator == NULL) {
 		return NULL;
 	}
 
-	std::map<Guid, int>::iterator it = idToGlobalIndex.find(entityId);
-	if(it != idToGlobalIndex.end()){
+	std::map<Guid, int>::iterator it = mIdToGlobalIndex.find(entityId);
+	if(it != mIdToGlobalIndex.end()){
 		return allocator->get(it->second);
 	}
 	else{
@@ -382,38 +380,28 @@ Entity* World::getEntityByIndex(int index)
 
 System* World::getSystemByIndex(int index)
 {
-	return systems[index];
+	return mSystems[index];
 }
 
-int World::getIndexOf(Guid id)
+int World::getIndexOf(Guid id) const
 {
-	std::map<Guid, int>::iterator it = idToGlobalIndex.find(id);
-	if( it != idToGlobalIndex.end()){
+	std::map<Guid, int>::const_iterator it = mIdToGlobalIndex.find(id);
+	if( it != mIdToGlobalIndex.end()){
 		return it->second;
 	}
 
 	return -1;
 }
 
-int World::getTypeOf(Guid id)
+int World::getTypeOf(Guid id) const
 {
-	std::map<Guid, int>::iterator it = idToType.find(id);
-	if (it != idToType.end()) {
+	std::map<Guid, int>::const_iterator it = mIdToType.find(id);
+	if (it != mIdToType.end()) {
 		return it->second;
 	}
 
 	return -1;
 }
-
-//int World::getIndexOfAsset(Guid id)
-//{
-//	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(id);
-//	if( it2 != idToGlobalIndex.end()){
-//		return it2->second;
-//	}
-//
-//	return -1;
-//}
 
 Entity* World::createEntity()
 {
@@ -424,55 +412,17 @@ Entity* World::createEntity()
 	Guid entityId = Guid::newGuid();
 
 	Entity* entity = allocator->construct();
-	entity->entityId = entityId;
-	entity->doNotDestroy = false;
+	entity->mEntityId = entityId;
+	entity->mDoNotDestroy = false;
 
-	idToGlobalIndex[entityId] = globalIndex;
-	idToType[entityId] = type;
+	mIdToGlobalIndex[entityId] = globalIndex;
+	mIdToType[entityId] = type;
 	
-	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+	mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 
-	entityIdsMarkedCreated.push_back(entityId);
+	mEntityIdsMarkedCreated.push_back(entityId);
 
 	return entity;
-}
-
-Entity* World::createEntity(Guid entityId)
-{
-	Entity* oldEntity = getEntity(entityId);
-
-	if(oldEntity == NULL){ 
-		std::cout << "Error: Could not find entity (" << entityId.toString() << ") when trying to create entity" << std::endl;
-		return NULL;
-	}
-
-	std::vector<std::pair<Guid, int>> oldComponents;
-
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
-	if(it != entityIdToComponentIds.end()){
-		oldComponents = it->second;
-	}
-	else{
-		std::cout << "Error: " << std::endl;
-		return NULL;
-	}
-
-	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
-	if (allocator == NULL) {
-		return NULL;
-	}
-
-	Entity* newEntity = allocator->construct();
-
-	// add components to new entity
-	for(size_t i = 0; i < oldComponents.size(); i++){
-		Guid oldComponentId = oldComponents[i].first;
-		int oldComponentType = oldComponents[i].second;
-
-		// TODO: How do I add the new component using the instance type and old component Id???
-	}
-
-	return NULL;
 }
 
 Entity* World::createEntity(std::vector<char> data)
@@ -484,12 +434,12 @@ Entity* World::createEntity(std::vector<char> data)
 
 	Entity* entity = allocator->construct(data);
 
-	idToGlobalIndex[entity->entityId] = globalIndex;
-	idToType[entity->entityId] = type;
+	mIdToGlobalIndex[entity->mEntityId] = globalIndex;
+	mIdToType[entity->mEntityId] = type;
 
-	entityIdToComponentIds[entity->entityId] = std::vector<std::pair<Guid, int>>();
+	mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
 
-	entityIdsMarkedCreated.push_back(entity->entityId);
+	mEntityIdsMarkedCreated.push_back(entity->mEntityId);
 
 	return entity;
 }
@@ -505,50 +455,50 @@ Camera* World::createEditorCamera()
 	int type = EntityType<Entity>::type;
 	Guid entityId = Guid("11111111-1111-1111-1111-111111111111");
 	Entity* entity = allocator1->construct();
-	entity->entityId = entityId;
-	entity->doNotDestroy = true;
+	entity->mEntityId = entityId;
+	entity->mDoNotDestroy = true;
 
-	idToGlobalIndex[entityId] = globalIndex;
-	idToType[entityId] = type;
-	entityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
-	entityIdsMarkedCreated.push_back(entityId);
+	mIdToGlobalIndex[entityId] = globalIndex;
+	mIdToType[entityId] = type;
+	mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+	mEntityIdsMarkedCreated.push_back(entityId);
 
 	// editor only transform
 	int transformGlobalIndex = (int)allocator2->getCount();
 	int transformType = ComponentType<Transform>::type;
 	Guid transformId = Guid("22222222-2222-2222-2222-222222222222");
 	Transform* transform = allocator2->construct();
-	transform->entityId = entityId;
-	transform->componentId = transformId;
+	transform->mEntityId = entityId;
+	transform->mComponentId = transformId;
 
-	idToGlobalIndex[transformId] = transformGlobalIndex;
-	idToType[transformId] = transformType;
-	entityIdToComponentIds[entityId].push_back(std::make_pair(transformId, transformType));
-	componentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
+	mIdToGlobalIndex[transformId] = transformGlobalIndex;
+	mIdToType[transformId] = transformType;
+	mEntityIdToComponentIds[entityId].push_back(std::make_pair(transformId, transformType));
+	mComponentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
 
 	// editor only camera
 	int cameraGlobalIndex = (int)allocator3->getCount();
 	int cameraType = ComponentType<Camera>::type;
 	Guid cameraId = Guid("33333333-3333-3333-3333-333333333333");
 	Camera* camera = allocator3->construct();
-	camera->entityId = entityId;
-	camera->componentId = cameraId;
+	camera->mEntityId = entityId;
+	camera->mComponentId = cameraId;
 
-	idToGlobalIndex[cameraId] = cameraGlobalIndex;
-	idToType[cameraId] = cameraType;
-	entityIdToComponentIds[entityId].push_back(std::make_pair(cameraId, cameraType));
-	componentIdsMarkedCreated.push_back(make_triple(entityId, cameraId, cameraType));
+	mIdToGlobalIndex[cameraId] = cameraGlobalIndex;
+	mIdToType[cameraId] = cameraType;
+	mEntityIdToComponentIds[entityId].push_back(std::make_pair(cameraId, cameraType));
+	mComponentIdsMarkedCreated.push_back(make_triple(entityId, cameraId, cameraType));
 
 	return camera;
 }
 
 void World::latentDestroyEntity(Guid entityId)
 {
-	entityIdsMarkedLatentDestroy.push_back(entityId);
+	mEntityIdsMarkedLatentDestroy.push_back(entityId);
 
 	// add any components found on the entity to the latent destroy component list
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
-	if(it != entityIdToComponentIds.end()){
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	if(it != mEntityIdToComponentIds.end()){
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
 		for(size_t i = 0; i < componentsOnEntity.size(); i++){
 			Guid componentId = componentsOnEntity[i].first;
@@ -566,8 +516,8 @@ void World::latentDestroyEntity(Guid entityId)
 
 void World::immediateDestroyEntity(Guid entityId)
 {
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
-	if(it1 != entityIdToComponentIds.end()){
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
+	if(it1 != mEntityIdToComponentIds.end()){
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it1->second;
 
 		for(size_t i = 0; i < componentsOnEntity.size(); i++){
@@ -577,7 +527,7 @@ void World::immediateDestroyEntity(Guid entityId)
 			immediateDestroyComponent(entityId, componentId, componentType);
 		}
 
-		entityIdToComponentIds.erase(it1);
+		mEntityIdToComponentIds.erase(it1);
 	}
 	else{
 		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete\n";
@@ -586,18 +536,18 @@ void World::immediateDestroyEntity(Guid entityId)
 	}
 
 	// remove from id to global index map
-	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(entityId);
-	if(it2 != idToGlobalIndex.end()){
+	std::map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(entityId);
+	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
-		Entity* swappedEntity = destroyInternalEntity(entityAllocator, index);
+		Entity* swappedEntity = destroyInternalEntity(mEntityAllocator, index);
 
-		idToGlobalIndex.erase(it2);
+		mIdToGlobalIndex.erase(it2);
 
 		if(swappedEntity != NULL){
-			entityIdsMarkedMoved.push_back(std::make_pair(swappedEntity->entityId, idToGlobalIndex[swappedEntity->entityId]));
+			mEntityIdsMarkedMoved.push_back(std::make_pair(swappedEntity->mEntityId, mIdToGlobalIndex[swappedEntity->mEntityId]));
 
-			idToGlobalIndex[swappedEntity->entityId] = index;
+			mIdToGlobalIndex[swappedEntity->mEntityId] = index;
 		}
 	}
 	else{
@@ -607,9 +557,9 @@ void World::immediateDestroyEntity(Guid entityId)
 	}
 
 	//remove from id to type map
-	std::map<Guid, int>::iterator it3 = idToType.find(entityId);
-	if (it3 != idToType.end()) {
-		idToType.erase(it3);
+	std::map<Guid, int>::iterator it3 = mIdToType.find(entityId);
+	if (it3 != mIdToType.end()) {
+		mIdToType.erase(it3);
 	}
 	else {
 		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete from id to type map\n";
@@ -622,13 +572,13 @@ void World::latentDestroyComponent(Guid entityId, Guid componentId, int componen
 {
 	std::string message = "latent destroy component: " + entityId.toString() + " " + componentId.toString() + " " + std::to_string(componentType) + "\n";
 	Log::error(message.c_str());
-	componentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
+	mComponentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
 }
 
 void World::immediateDestroyComponent(Guid entityId, Guid componentId, int componentType)
 {
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = entityIdToComponentIds.find(entityId);
-	if(it1 != entityIdToComponentIds.end()){
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
+	if(it1 != mEntityIdToComponentIds.end()){
 		for(size_t i = 0; i < it1->second.size(); i++){
 			if(it1->second[i].first == componentId){
 				it1->second.erase(it1->second.begin() + i);
@@ -638,25 +588,25 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	}
 
 	// remove from id to global index map
-	std::map<Guid, int>::iterator it2 = idToGlobalIndex.find(componentId);
-	if(it2 != idToGlobalIndex.end()){
+	std::map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(componentId);
+	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
 		Component* swappedComponent = NULL;
 		if(componentType < 20){
-			swappedComponent = destroyInternalComponent(&componentAllocatorMap, componentType, index);
+			swappedComponent = destroyInternalComponent(&mComponentAllocatorMap, componentType, index);
 		}
 		else{
-			swappedComponent = destroyComponent(&componentAllocatorMap, componentType, index);
+			swappedComponent = destroyComponent(&mComponentAllocatorMap, componentType, index);
 		}
 
-		idToGlobalIndex.erase(it2);
+		mIdToGlobalIndex.erase(it2);
 
 		if(swappedComponent != NULL){
 			Log::info("Non null swapp component found\n");
-			componentIdsMarkedMoved.push_back(make_triple(swappedComponent->componentId, componentType, idToGlobalIndex[swappedComponent->componentId]));
+			mComponentIdsMarkedMoved.push_back(make_triple(swappedComponent->mComponentId, componentType, mIdToGlobalIndex[swappedComponent->mComponentId]));
 
-			idToGlobalIndex[swappedComponent->componentId] = index;
+			mIdToGlobalIndex[swappedComponent->mComponentId] = index;
 		}
 	}
 	else{
@@ -665,9 +615,9 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	} 
 
 	//remove from id to type map
-	std::map<Guid, int>::iterator it3 = idToType.find(componentId);
-	if (it3 != idToType.end()) {
-		idToType.erase(it3);
+	std::map<Guid, int>::iterator it3 = mIdToType.find(componentId);
+	if (it3 != mIdToType.end()) {
+		mIdToType.erase(it3);
 	}
 	else {
 		std::string message = "Error: Could not find component with id " + componentId.toString() + " when trying to delete from id to type map\n";
@@ -678,14 +628,14 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 
 bool World::isMarkedForLatentDestroy(Guid id)
 {
-	for(size_t i = 0; i < entityIdsMarkedLatentDestroy.size(); i++){
-		if(entityIdsMarkedLatentDestroy[i] == id){
+	for(size_t i = 0; i < mEntityIdsMarkedLatentDestroy.size(); i++){
+		if(mEntityIdsMarkedLatentDestroy[i] == id){
 			return true;
 		}
 	}
 
-	for(size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
-		if(componentIdsMarkedLatentDestroy[i].second == id){
+	for(size_t i = 0; i < mComponentIdsMarkedLatentDestroy.size(); i++){
+		if(mComponentIdsMarkedLatentDestroy[i].second == id){
 			return true;
 		}
 	}
@@ -695,124 +645,104 @@ bool World::isMarkedForLatentDestroy(Guid id)
 
 void World::clearIdsMarkedCreatedOrDestroyed()
 {
-	entityIdsMarkedCreated.clear();
-	entityIdsMarkedLatentDestroy.clear();
-	componentIdsMarkedCreated.clear();
-	componentIdsMarkedLatentDestroy.clear();
+	mEntityIdsMarkedCreated.clear();
+	mEntityIdsMarkedLatentDestroy.clear();
+	mComponentIdsMarkedCreated.clear();
+	mComponentIdsMarkedLatentDestroy.clear();
 }
 
 void World::clearIdsMarkedMoved()
 {
-	entityIdsMarkedMoved.clear();
-	componentIdsMarkedMoved.clear();
+	mEntityIdsMarkedMoved.clear();
+	mComponentIdsMarkedMoved.clear();
 }
 
 std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(Guid entityId)
 {
 	std::vector<std::pair<Guid, int>> componentsOnEntity;
 
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = entityIdToComponentIds.find(entityId);
-	if(it != entityIdToComponentIds.end()){
+	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	if(it != mEntityIdToComponentIds.end()){
 		componentsOnEntity = it->second;
 	}
 
 	return componentsOnEntity;
 }
 
-std::vector<Guid> World::getEntityIdsMarkedCreated()
+std::vector<Guid> World::getEntityIdsMarkedCreated() const
 {
-	return entityIdsMarkedCreated;
+	return mEntityIdsMarkedCreated;
 }
 
-std::vector<Guid> World::getEntityIdsMarkedLatentDestroy()
+std::vector<Guid> World::getEntityIdsMarkedLatentDestroy() const
 {
-	return entityIdsMarkedLatentDestroy;
+	return mEntityIdsMarkedLatentDestroy;
 }
 
-std::vector<std::pair<Guid, int>> World::getEntityIdsMarkedMoved()
+std::vector<std::pair<Guid, int>> World::getEntityIdsMarkedMoved() const
 {
-	return entityIdsMarkedMoved;
+	return mEntityIdsMarkedMoved;
 }
 			
-std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedCreated()
+std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedCreated() const
 {
-	return componentIdsMarkedCreated;
+	return mComponentIdsMarkedCreated;
 }
 
-std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestroy()
+std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestroy() const
 {
-	return componentIdsMarkedLatentDestroy;
+	return mComponentIdsMarkedLatentDestroy;
 }
 
-std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved()
+std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved() const
 {
-	return componentIdsMarkedMoved;
+	return mComponentIdsMarkedMoved;
 }
 
-Bounds* World::getWorldBounds()
-{
-	return &bounds;
-}
-
-// Octtree* World::getStaticPhysicsTree()
-// {
-// 	return &stree;
-// }
-
-// Octtree* World::getDynamicPhysicsTree()
-// {
-// 	return &dtree;
-// }
-
-UniformGrid* World::getStaticPhysicsGrid()
-{
-	return &sgrid;
-}
-
-bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
-{
-	Ray ray;
-
-	ray.origin = origin;
-	ray.direction = direction;
-
-	return sgrid.intersect(ray) != NULL;// || dtree.intersect(ray) != NULL;
-	// return stree.intersect(ray) != NULL || dtree.intersect(ray) != NULL;
-}
-
-// begin by only implementing for spheres first and later I will add for bounds, capsules etc
-bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider)
-{
-	Ray ray;
-
-	ray.origin = origin;
-	ray.direction = direction;
-
-	// Object* object = stree.intersect(ray);
-	BoundingSphere* boundingSphere = sgrid.intersect(ray);
-
-	if(boundingSphere != NULL){
-		//std::cout << "AAAAAA id: " << boundingSphere->id.toString() << std::endl;
-		std::map<Guid, int>::iterator it = idToGlobalIndex.find(boundingSphere->id);
-		if(it != idToGlobalIndex.end()){
-			int colliderIndex = it->second;
-
-			if(boundingSphere->primitiveType == 0){
-				*collider = getComponentByIndex<SphereCollider>(colliderIndex);
-			}
-			else if(boundingSphere->primitiveType == 1){
-				*collider = getComponentByIndex<BoxCollider>(colliderIndex);
-			}
-			else{
-				*collider = getComponentByIndex<MeshCollider>(colliderIndex);
-			}
-			return true;
-		}
-		else{
-			std::cout << "Error: component id does not correspond to a global index" << std::endl;
-			return false;
-		}
-	}
-
-	return false;
-}
+//bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
+//{
+//	Ray ray;
+//
+//	ray.origin = origin;
+//	ray.direction = direction;
+//
+//	return sgrid.intersect(ray) != NULL;// || dtree.intersect(ray) != NULL;
+//	// return stree.intersect(ray) != NULL || dtree.intersect(ray) != NULL;
+//}
+//
+//// begin by only implementing for spheres first and later I will add for bounds, capsules etc
+//bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider)
+//{
+//	Ray ray;
+//
+//	ray.origin = origin;
+//	ray.direction = direction;
+//
+//	// Object* object = stree.intersect(ray);
+//	BoundingSphere* boundingSphere = sgrid.intersect(ray);
+//
+//	if(boundingSphere != NULL){
+//		//std::cout << "AAAAAA id: " << boundingSphere->id.toString() << std::endl;
+//		std::map<Guid, int>::iterator it = idToGlobalIndex.find(boundingSphere->id);
+//		if(it != idToGlobalIndex.end()){
+//			int colliderIndex = it->second;
+//
+//			if(boundingSphere->primitiveType == 0){
+//				*collider = getComponentByIndex<SphereCollider>(colliderIndex);
+//			}
+//			else if(boundingSphere->primitiveType == 1){
+//				*collider = getComponentByIndex<BoxCollider>(colliderIndex);
+//			}
+//			else{
+//				*collider = getComponentByIndex<MeshCollider>(colliderIndex);
+//			}
+//			return true;
+//		}
+//		else{
+//			std::cout << "Error: component id does not correspond to a global index" << std::endl;
+//			return false;
+//		}
+//	}
+//
+//	return false;
+//}

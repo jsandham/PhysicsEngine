@@ -4,8 +4,8 @@ using namespace PhysicsEngine;
 
 System::System()
 {
-	order = -1;
-	systemId = Guid::INVALID;
+	mOrder = -1;
+	mSystemId = Guid::INVALID;
 }
 
 System::~System()
@@ -15,10 +15,10 @@ System::~System()
 
 Guid System::getId() const
 {
-	return systemId;
+	return mSystemId;
 }
 
 int System::getOrder() const
 {
-	return order;
+	return mOrder;
 }

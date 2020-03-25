@@ -19,11 +19,11 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct ShaderHeader
 	{
-		Guid shaderId;
-		size_t vertexShaderSize;
-		size_t geometryShaderSize;
-		size_t fragmentShaderSize;
-		size_t numberOfShaderUniforms;
+		Guid mShaderId;
+		size_t mVertexShaderSize;
+		size_t mGeometryShaderSize;
+		size_t mFragmentShaderSize;
+		size_t mNumberOfShaderUniforms;
 	};
 #pragma pack(pop)
 
@@ -48,43 +48,43 @@ namespace PhysicsEngine
 
 	struct ShaderProgram
 	{
-		ShaderVersion version;
-		int variant;
-		GLuint handle;
-		bool compiled;
+		ShaderVersion mVersion;
+		int mVariant;
+		GLuint mHandle;
+		bool mCompiled;
 	};
 
 	struct ShaderUniform
 	{
-		char data[64];
-		char name[32]; //variable name in GLSL (including block name if applicable)
-		char shortName[32]; //variable name in GLSL (excluding block name if applicable)
-		char blockName[32]; //block name (empty string if not part of block)
-		size_t nameLength; // length of name
-		size_t size; // size of the uniform
-		GLenum type; // type of the uniform (float, vec3 or mat4, etc)
-		int variant; // variant this uniform occurs in
-		int location; //uniform location in shader program
-		size_t index; // what index in array of uniforms we are at
+		char mData[64];
+		char mName[32]; //variable name in GLSL (including block name if applicable)
+		char mShortName[32]; //variable name in GLSL (excluding block name if applicable)
+		char mBlockName[32]; //block name (empty string if not part of block)
+		size_t mNameLength; // length of name
+		size_t mSize; // size of the uniform
+		GLenum mType; // type of the uniform (float, vec3 or mat4, etc)
+		int mVariant; // variant this uniform occurs in
+		int mLocation; //uniform location in shader program
+		size_t mIndex; // what index in array of uniforms we are at
 	};
 
 	struct ShaderAttribute
 	{
-		char name[32];
+		char mName[32];
 	};
 
 	class Shader : public Asset
 	{
 		private:
-			std::string vertexShader;
-			std::string fragmentShader;
-			std::string geometryShader;
+			std::string mVertexShader;
+			std::string mFragmentShader;
+			std::string mGeometryShader;
 
-			bool allProgramsCompiled;
-			int activeProgram;
-			std::vector<ShaderProgram> programs;
-			std::vector<ShaderUniform> uniforms; 
-			std::vector<ShaderAttribute> attributes;
+			bool mAllProgramsCompiled;
+			int mActiveProgram;
+			std::vector<ShaderProgram> mPrograms;
+			std::vector<ShaderUniform> mUniforms; 
+			std::vector<ShaderAttribute> mAttributes;
 
 		public:
 			Shader();
@@ -165,15 +165,15 @@ namespace PhysicsEngine
 	const int AssetType<Shader>::type = 0;
 
 	template <typename T>
-	struct IsShader { static bool value; };
+	struct IsShader { static const bool value; };
 
 	template <typename T>
-	bool IsShader<T>::value = false;
+	const bool IsShader<T>::value = false;
 
 	template<>
-	bool IsShader<Shader>::value = true;
+	const bool IsShader<Shader>::value = true;
 	template<>
-	bool IsAsset<Shader>::value = true;
+	const bool IsAsset<Shader>::value = true;
 }
 
 #endif

@@ -18,13 +18,13 @@ namespace PhysicsEngine
 	class PhysicsSystem : public System
 	{
 		private:
-			std::vector<Collider*> colliders;
-			std::vector<Rigidbody*> rigidbodies;
+			std::vector<Collider*> mColliders;
+			std::vector<Rigidbody*> mRigidbodies;
 
-			float timestep;
-			float gravity;
+			float mTimestep;
+			float mGravity;
 
-			bool start = false;
+			bool mStart = false;
 
 		public:
 			PhysicsSystem();
@@ -43,15 +43,15 @@ namespace PhysicsEngine
 	const int SystemType<PhysicsSystem>::type = 1;
 
 	template< typename T>
-	struct IsPhysicsSystem { static bool value; };
+	struct IsPhysicsSystem { static const bool value; };
 
 	template<typename T>
-	bool IsPhysicsSystem<T>::value = false;
+	const bool IsPhysicsSystem<T>::value = false;
 
 	template<>
-	bool IsPhysicsSystem<PhysicsSystem>::value = true;
+	const bool IsPhysicsSystem<PhysicsSystem>::value = true;
 	template<>
-	bool IsSystem<PhysicsSystem>::value = true;
+	const bool IsSystem<PhysicsSystem>::value = true;
 }
 
 #endif

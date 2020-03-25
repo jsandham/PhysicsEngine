@@ -11,21 +11,21 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct Texture2DHeader
 	{
-		Guid textureId;
-		int width;
-		int height;
-		int numChannels;
-		int dimension;
-		int format;
-		size_t textureSize;
+		Guid mTextureId;
+		int mWidth;
+		int mHeight;
+		int mNumChannels;
+		int mDimension;
+		int mFormat;
+		size_t mTextureSize;
 	};
 #pragma pack(pop)
 
 	class Texture2D : public Texture
 	{
 		private:
-			int width;
-			int height;
+			int mWidth;
+			int mHeight;
 
 		public:
 			Texture2D();
@@ -63,17 +63,17 @@ namespace PhysicsEngine
 	const int AssetType<Texture2D>::type = 1;
 
 	template <typename T>
-	struct IsTexture2D { static bool value; };
+	struct IsTexture2D { static const bool value; };
 
 	template <typename T>
-	bool IsTexture2D<T>::value = false;
+	const bool IsTexture2D<T>::value = false;
 
 	template<>
-	bool IsTexture2D<Texture2D>::value = true;
+	const bool IsTexture2D<Texture2D>::value = true;
 	template<>
-	bool IsTexture<Texture2D>::value = true;
+	const bool IsTexture<Texture2D>::value = true;
 	template<>
-	bool IsAsset<Texture2D>::value = true;
+	const bool IsAsset<Texture2D>::value = true;
 }
 
 #endif

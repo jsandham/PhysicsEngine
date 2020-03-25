@@ -5,7 +5,7 @@ using namespace PhysicsEngine;
 
 Asset::Asset()
 {
-	assetId = Guid::INVALID;
+	mAssetId = Guid::INVALID;
 }
 
 Asset::~Asset()
@@ -15,5 +15,5 @@ Asset::~Asset()
 
 Guid Asset::getId() const
 {
-	return assetId;
+	return mAssetId;
 }

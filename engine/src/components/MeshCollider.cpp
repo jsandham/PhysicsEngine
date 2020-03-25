@@ -6,7 +6,7 @@ using namespace PhysicsEngine;
 
 MeshCollider::MeshCollider()
 {
-
+	mMeshId = Guid::INVALID;
 }
 
 MeshCollider::MeshCollider(std::vector<char> data)
@@ -21,15 +21,15 @@ MeshCollider::~MeshCollider()
 
 std::vector<char> MeshCollider::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> MeshCollider::serialize(Guid componentId, Guid entityId) const
 {
 	MeshColliderHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.meshId = meshId;
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mMeshId = mMeshId;
 
 	std::vector<char> data(sizeof(MeshColliderHeader));
 
@@ -42,9 +42,9 @@ void MeshCollider::deserialize(std::vector<char> data)
 {
 	MeshColliderHeader* header = reinterpret_cast<MeshColliderHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
-	meshId = header->meshId;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
+	mMeshId = header->mMeshId;
 }
 
 bool MeshCollider::intersect(Bounds bounds) const

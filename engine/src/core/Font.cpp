@@ -12,13 +12,13 @@ using namespace PhysicsEngine;
 
 Font::Font()
 {
-	assetId = Guid::INVALID;
+	mAssetId = Guid::INVALID;
 }
 
 Font::Font(std::string filepath)
 {
-	assetId = Guid::INVALID;
-	this->filepath = filepath;
+	mAssetId = Guid::INVALID;
+	mFilepath = filepath;
 }
 
 Font::Font(std::vector<char> data)
@@ -33,17 +33,17 @@ Font::~Font()
 
 std::vector<char> Font::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Font::serialize(Guid assetId) const
 {
 	FontHeader header;
-	header.fontId = assetId;
-	header.filepathSize = filepath.length();
+	header.mFontId = assetId;
+	header.mFilepathSize = mFilepath.length();
 
 	size_t numberOfBytes = sizeof(FontHeader) +
-		sizeof(char) * filepath.length();
+		sizeof(char) * mFilepath.length();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -51,7 +51,7 @@ std::vector<char> Font::serialize(Guid assetId) const
 	size_t start2 = start1 + sizeof(FontHeader);
 
 	memcpy(&data[start1], &header, sizeof(FontHeader));
-	memcpy(&data[start2], filepath.c_str(), sizeof(char) * filepath.length());
+	memcpy(&data[start2], mFilepath.c_str(), sizeof(char) * mFilepath.length());
 
 	return data;
 }
@@ -61,24 +61,24 @@ void Font::deserialize(std::vector<char> data)
     int index = sizeof(int);
     FontHeader* header = reinterpret_cast<FontHeader*>(&data[index]);
     
-    assetId = header->fontId;
+    mAssetId = header->mFontId;
 
     index += sizeof(FontHeader);
 
-    if(header->filepathSize > 0 && header->filepathSize < 256){
-        filepath = std::string(&data[index], header->filepathSize);
+    if(header->mFilepathSize > 0 && header->mFilepathSize < 256){
+        mFilepath = std::string(&data[index], header->mFilepathSize);
 
-        std::cout << "font filepath loaded: " << filepath << std::endl;
+        std::cout << "font filepath loaded: " << mFilepath << std::endl;
     }
     else{
-        std::cout << "Error: Font filepath size (" << header->filepathSize << ") is invalid" << std::endl;
+        std::cout << "Error: Font filepath size (" << header->mFilepathSize << ") is invalid" << std::endl;
         return; 
     }
 }
 
 void Font::load(std::string filepath)
 {
-    this->filepath = filepath;
+    mFilepath = filepath;
 
 	FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
@@ -142,21 +142,21 @@ void Font::load(std::string filepath)
             (unsigned int)face->glyph->advance.x
         };
 
-        characters.insert(std::pair<GLchar, Character>(c, character));
+        mCharacters.insert(std::pair<GLchar, Character>(c, character));
     }
 
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    shader.setVertexShader(InternalShaders::fontVertexShader);
-    shader.setFragmentShader(InternalShaders::fontFragmentShader);
+    mShader.setVertexShader(InternalShaders::fontVertexShader);
+    mShader.setFragmentShader(InternalShaders::fontFragmentShader);
 
-    shader.compile();
+    mShader.compile();
 
-    glGenVertexArrays(1, &vao.handle);
-    glGenBuffers(1, &vbo.handle);
-    glBindVertexArray(vao.handle);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.handle);
+    glGenVertexArrays(1, &mVao.handle);
+    glGenBuffers(1, &mVbo.handle);
+    glBindVertexArray(mVao.handle);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo.handle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
@@ -166,8 +166,8 @@ void Font::load(std::string filepath)
 
 Character Font::getCharacter(char c) const
 {
-	std::map<char, Character>::const_iterator it = characters.find(c);
-	if(it != characters.end()){
+	std::map<char, Character>::const_iterator it = mCharacters.find(c);
+	if(it != mCharacters.end()){
 		return it->second;
 	}
 	else{

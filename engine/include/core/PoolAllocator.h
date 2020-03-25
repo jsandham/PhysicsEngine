@@ -125,15 +125,6 @@ namespace PhysicsEngine
 			}
 		}
 	};
-
-	/*template<class T>
-	PoolAllocator<T>& getAllocator()
-	{
-		static PoolAllocator<T> allocator;
-
-		return allocator;
-	}*/
-
 }
 
 #endif

@@ -14,8 +14,8 @@ Bounds::Bounds()
 
 Bounds::Bounds(glm::vec3 centre, glm::vec3 size)
 {
-	this->centre = centre;
-	this->size = size;
+	mCentre = centre;
+	mSize = size;
 }
 
 Bounds::~Bounds()
@@ -25,15 +25,15 @@ Bounds::~Bounds()
 
 glm::vec3 Bounds::getExtents() const
 {
-	return 0.5f * size;
+	return 0.5f * mSize;
 }
 
 glm::vec3 Bounds::getMin() const
 {
-	return centre - 0.5f * size;
+	return mCentre - 0.5f * mSize;
 }
 
 glm::vec3 Bounds::getMax() const
 {
-	return centre + 0.5f * size;
+	return mCentre + 0.5f * mSize;
 }

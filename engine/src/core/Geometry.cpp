@@ -11,17 +11,17 @@ using namespace PhysicsEngine;
 //see "3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics" by David H Eberly
 bool Geometry::intersect(Ray ray, Sphere sphere)
 {
-	ray.direction = glm::normalize(ray.direction);
+	ray.mDirection = glm::normalize(ray.mDirection);
 
 	// quadratic of form 0 = t^2 + 2*a1*t + a0
-	glm::vec3 q = ray.origin - sphere.centre;
-	float a0 = glm::dot(q, q) - sphere.radius*sphere.radius;
+	glm::vec3 q = ray.mOrigin - sphere.mCentre;
+	float a0 = glm::dot(q, q) - sphere.mRadius * sphere.mRadius;
 	if (a0 <= 0){
 		// ray origin stats inside the sphere
 		return true;
 	}
 
-	float a1 = glm::dot(ray.direction, q);
+	float a1 = glm::dot(ray.mDirection, q);
 	if (a1 >= 0){
 		return false;
 	}
@@ -38,23 +38,23 @@ bool Geometry::intersect(Ray ray, Bounds bounds)
 	float tmin = -1 * std::numeric_limits<float>::infinity();
 	float tmax = std::numeric_limits<float>::infinity();
 
-	glm::vec3 min = bounds.centre - 0.5f*bounds.size;
-	glm::vec3 max = bounds.centre + 0.5f*bounds.size;
+	glm::vec3 min = bounds.mCentre - 0.5f*bounds.mSize;
+	glm::vec3 max = bounds.mCentre + 0.5f*bounds.mSize;
 
-	float tx0 = (min.x - ray.origin.x) / ray.direction.x;
-	float tx1 = (max.x - ray.origin.x) / ray.direction.x;
+	float tx0 = (min.x - ray.mOrigin.x) / ray.mDirection.x;
+	float tx1 = (max.x - ray.mOrigin.x) / ray.mDirection.x;
 
 	tmin = std::max(tmin, std::min(tx0, tx1));
 	tmax = std::min(tmax, std::max(tx0, tx1));
 
-	float ty0 = (min.y - ray.origin.y) / ray.direction.y;
-	float ty1 = (max.y - ray.origin.y) / ray.direction.y;
+	float ty0 = (min.y - ray.mOrigin.y) / ray.mDirection.y;
+	float ty1 = (max.y - ray.mOrigin.y) / ray.mDirection.y;
 
 	tmin = std::max(tmin, std::min(ty0, ty1));
 	tmax = std::min(tmax, std::max(ty0, ty1));
 
-	float tz0 = (min.z - ray.origin.z) / ray.direction.z;
-	float tz1 = (max.z - ray.origin.z) / ray.direction.z;
+	float tz0 = (min.z - ray.mOrigin.z) / ray.mDirection.z;
+	float tz1 = (max.z - ray.mOrigin.z) / ray.mDirection.z;
 
 	tmin = std::max(tmin, std::min(tz0, tz1));
 	tmax = std::min(tmax, std::max(tz0, tz1));
@@ -72,14 +72,14 @@ bool Geometry::intersect(Sphere sphere, Bounds bounds)
 	glm::vec3 min = bounds.getMin();
 	glm::vec3 max = bounds.getMax();
 
-	float radiusSqr = sphere.radius * sphere.radius;
+	float radiusSqr = sphere.mRadius * sphere.mRadius;
 	float distSqr = 0.0f;
 	for (int i = 0; i < 3; i++){
-		if (sphere.centre[i] < min[i]){
-			distSqr += (sphere.centre[i] - min[i]) * (sphere.centre[i] - min[i]);
+		if (sphere.mCentre[i] < min[i]){
+			distSqr += (sphere.mCentre[i] - min[i]) * (sphere.mCentre[i] - min[i]);
 		}
-		else if (sphere.centre[i] > max[i]){
-			distSqr += (sphere.centre[i] - max[i]) * (sphere.centre[i] - max[i]);
+		else if (sphere.mCentre[i] > max[i]){
+			distSqr += (sphere.mCentre[i] - max[i]) * (sphere.mCentre[i] - max[i]);
 		}
 	}
 	
@@ -99,9 +99,9 @@ bool Geometry::intersect(Sphere sphere, Bounds bounds)
 
 bool Geometry::intersect(Sphere sphere1, Sphere sphere2)
 {
-	float distance = glm::length(sphere1.centre - sphere2.centre);
+	float distance = glm::length(sphere1.mCentre - sphere2.mCentre);
 
-	return distance <= (sphere1.radius + sphere2.radius);
+	return distance <= (sphere1.mRadius + sphere2.mRadius);
 }
 
 bool Geometry::intersect(Sphere sphere, Capsule capsule)
@@ -111,9 +111,9 @@ bool Geometry::intersect(Sphere sphere, Capsule capsule)
 
 bool Geometry::intersect(Bounds bounds1, Bounds bounds2)
 {
-	bool overlap_x = std::abs(bounds1.centre.x - bounds2.centre.x) <= 0.5f * (bounds1.size.x + bounds2.size.x);
-	bool overlap_y = std::abs(bounds1.centre.y - bounds2.centre.y) <= 0.5f * (bounds1.size.y + bounds2.size.y);
-	bool overlap_z = std::abs(bounds1.centre.z - bounds2.centre.z) <= 0.5f * (bounds1.size.z + bounds2.size.z);
+	bool overlap_x = std::abs(bounds1.mCentre.x - bounds2.mCentre.x) <= 0.5f * (bounds1.mSize.x + bounds2.mSize.x);
+	bool overlap_y = std::abs(bounds1.mCentre.y - bounds2.mCentre.y) <= 0.5f * (bounds1.mSize.y + bounds2.mSize.y);
+	bool overlap_z = std::abs(bounds1.mCentre.z - bounds2.mCentre.z) <= 0.5f * (bounds1.mSize.z + bounds2.mSize.z);
 
 	return overlap_x && overlap_y && overlap_z;
 

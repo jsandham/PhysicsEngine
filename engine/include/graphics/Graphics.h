@@ -20,35 +20,35 @@ namespace PhysicsEngine
 {
 	typedef struct GBuffer
 	{
-		GLenum gBufferStatus;
-		GLuint handle;
-		GLuint color0; // position
-		GLuint color1; // normal
-		GLuint color2; // color + spec
-		GLuint depth;
-		Shader shader;
+		GLenum mGBufferStatus;
+		GLuint mHandle;
+		GLuint mColor0; // position
+		GLuint mColor1; // normal
+		GLuint mColor2; // color + spec
+		GLuint mDepth;
+		Shader mShader;
 	}GBuffer;
 
 	typedef struct Framebuffer 
 	{
-		GLenum framebufferStatus;
-		GLuint handle;
-		Texture2D colorBuffer;
-		Texture2D depthBuffer;
+		GLenum mFramebufferStatus;
+		GLuint mHandle;
+		Texture2D mColorBuffer;
+		Texture2D mDepthBuffer;
 	}Framebuffer;
 
 	typedef struct DebugWindow
 	{
-		float x;
-		float y;
-		float width;
-		float height;
+		float mX;
+		float mY;
+		float mWidth;
+		float mHeight;
 
-		GLuint VAO;
-		GLuint vertexVBO;
-		GLuint texCoordVBO;
+		GLuint mVAO;
+		GLuint mVertexVBO;
+		GLuint mTexCoordVBO;
 
-		Shader shader;
+		Shader mShader;
 
 		void init();
 	}DebugWindow;
@@ -56,21 +56,21 @@ namespace PhysicsEngine
 
 	typedef struct PerformanceGraph
 	{
-		float x;
-		float y;
-		float width;
-		float height;
-		float rangeMin;
-		float rangeMax;
-		float currentSample;
-		int numberOfSamples;
+		float mX;
+		float mY;
+		float mWidth;
+		float mHeight;
+		float mRangeMin;
+		float mRangeMax;
+		float mCurrentSample;
+		int mNumberOfSamples;
 
-		std::vector<float> samples;
+		std::vector<float> mSamples;
 
-		GLuint VAO;
-		GLuint VBO;
+		GLuint mVAO;
+		GLuint mVBO;
 
-		Shader shader;
+		Shader mShader;
 
 		void init();
 		void add(float sample);
@@ -78,10 +78,10 @@ namespace PhysicsEngine
 
 	typedef struct LineBuffer 
 	{
-		size_t size;
-		Shader shader;
-		GLuint VAO;
-		GLuint VBO;
+		size_t mSize;
+		Shader mShader;
+		GLuint mVAO;
+		GLuint mVBO;
 
 		LineBuffer();
 		~LineBuffer();
@@ -89,17 +89,17 @@ namespace PhysicsEngine
 
 	typedef struct MeshBuffer
 	{
-		std::vector<Guid> meshIds;
-		std::vector<int> start;  
-		std::vector<int> count;
-		std::vector<float> vertices; //could instead hold the mesh global index instead of duplicating vertices, normals, texcoords?? Or not hold them at all as they are just needed for filling out the mesh buffer vbo's??
-		std::vector<float> normals;
-		std::vector<float> texCoords;
+		std::vector<Guid> mMeshIds;
+		std::vector<int> mStart;  
+		std::vector<int> mCount;
+		std::vector<float> mVertices; //could instead hold the mesh global index instead of duplicating vertices, normals, texcoords?? Or not hold them at all as they are just needed for filling out the mesh buffer vbo's??
+		std::vector<float> mNormals;
+		std::vector<float> mTexCoords;
 
-		std::vector<Sphere> boundingSpheres;
+		std::vector<Sphere> mBoundingSpheres;
 
-		GLuint vao;
-		GLuint vbo[3];
+		GLuint mVAO;
+		GLuint mVBO[3];
 
     	MeshBuffer();
     	~MeshBuffer();

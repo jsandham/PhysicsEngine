@@ -17,24 +17,24 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct MeshHeader
 	{
-		Guid meshId;
-		size_t verticesSize;
-		size_t normalsSize;
-		size_t texCoordsSize;
-		size_t subMeshVertexStartIndiciesSize;
+		Guid mMeshId;
+		size_t mVerticesSize;
+		size_t mNormalsSize;
+		size_t mTexCoordsSize;
+		size_t mSubMeshVertexStartIndiciesSize;
 	};
 #pragma pack(pop)
 
 	class Mesh : public Asset
 	{
 		private:
-			std::vector<float> vertices;
-			std::vector<float> normals;
-			std::vector<float> texCoords;
-			std::vector<int> subMeshVertexStartIndices;
-			GLuint vao;
-			GLuint vbo[3];
-			bool created;
+			std::vector<float> mVertices;
+			std::vector<float> mNormals;
+			std::vector<float> mTexCoords;
+			std::vector<int> mSubMeshVertexStartIndices;
+			GLuint mVao;
+			GLuint mVbo[3];
+			bool mCreated;
 
 		public:
 			Mesh();
@@ -65,15 +65,15 @@ namespace PhysicsEngine
 	const int AssetType<Mesh>::type = 5;
 
 	template <typename T>
-	struct IsMesh { static bool value; };
+	struct IsMesh { static const bool value; };
 
 	template <typename T>
-	bool IsMesh<T>::value = false;
+	const bool IsMesh<T>::value = false;
 
 	template<>
-	bool IsMesh<Mesh>::value = true;
+	const bool IsMesh<Mesh>::value = true;
 	template<>
-	bool IsAsset<Mesh>::value = true;
+	const bool IsAsset<Mesh>::value = true;
 }
 
 #endif

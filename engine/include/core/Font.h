@@ -17,29 +17,29 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct FontHeader
 	{
-		Guid fontId;
-		size_t filepathSize;
+		Guid mFontId;
+		size_t mFilepathSize;
 	};
 #pragma pack(pop)
 
 	struct Character
 	{
-		GraphicsHandle glyphId;    // ID handle of the glyph texture
-	    glm::ivec2 size;     // Size of glyph
-	    glm::ivec2 bearing;  // Offset from baseline to left/top of glyph
-	    unsigned int advance;   
+		GraphicsHandle mGlyphId;    // ID handle of the glyph texture
+	    glm::ivec2 mSize;     // Size of glyph
+	    glm::ivec2 mBearing;  // Offset from baseline to left/top of glyph
+	    unsigned int mAdvance;   
 	};
 
 	class Font : public Asset
 	{
 		private:
-			std::string filepath;
-			std::map<char, Character> characters;
+			std::string mFilepath;
+			std::map<char, Character> mCharacters;
 
 		public:
-			Shader shader;
-			GraphicsHandle vao;
-			GraphicsHandle vbo;
+			Shader mShader;
+			GraphicsHandle mVao;
+			GraphicsHandle mVbo;
 
 		public:
 			Font();
@@ -60,15 +60,15 @@ namespace PhysicsEngine
 	const int AssetType<Font>::type = 6;
 
 	template <typename T>
-	struct IsFont { static bool value; };
+	struct IsFont { static const bool value; };
 
 	template <typename T>
-	bool IsFont<T>::value = false;
+	const bool IsFont<T>::value = false;
 
 	template<>
-	bool IsFont<Font>::value = true;
+	const bool IsFont<Font>::value = true;
 	template<>
-	bool IsAsset<Font>::value = true;
+	const bool IsAsset<Font>::value = true;
 }
 
 #endif

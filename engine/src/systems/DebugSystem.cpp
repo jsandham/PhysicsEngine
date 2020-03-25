@@ -33,7 +33,7 @@ DebugSystem::~DebugSystem()
 
 std::vector<char> DebugSystem::serialize() const
 {
-	return serialize(systemId);
+	return serialize(mSystemId);
 }
 
 std::vector<char> DebugSystem::serialize(Guid systemId) const
@@ -41,19 +41,19 @@ std::vector<char> DebugSystem::serialize(Guid systemId) const
 	size_t numberOfBytes = sizeof(int);
 	std::vector<char> data(numberOfBytes);
 
-	memcpy(&data[0], &order, sizeof(int));
+	memcpy(&data[0], &mOrder, sizeof(int));
 
 	return data;
 }
 
 void DebugSystem::deserialize(std::vector<char> data)
 {
-	order = *reinterpret_cast<int*>(&data[0]);
+	mOrder = *reinterpret_cast<int*>(&data[0]);
 }
 
 void DebugSystem::init(World* world)
 {
-	this->world = world;
+	mWorld = world;
 
 	/*std::vector<float> lines;
 	lines.resize(6, 0.0f);
@@ -82,15 +82,15 @@ void DebugSystem::init(World* world)
 void DebugSystem::update(Input input)
 {
 	Camera* camera;
-	if(world->getNumberOfComponents<Camera>() > 0){
-		camera = world->getComponentByIndex<Camera>(0);
+	if(mWorld->getNumberOfComponents<Camera>() > 0){
+		camera = mWorld->getComponentByIndex<Camera>(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
 		return;
 	}
 
-	if(world->debug){
+	if(mWorld->mDebug){
 		if (getKeyDown(input, KeyCode::I)){
 
 			/*glm::mat4 view = camera->getViewMatrix();

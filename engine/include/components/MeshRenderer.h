@@ -10,22 +10,22 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct MeshRendererHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		Guid meshId;
-		Guid materialIds[8];
-		int materialCount;
-		bool isStatic;
+		Guid mComponentId;
+		Guid mEntityId;
+		Guid mMeshId;
+		Guid mMaterialIds[8];
+		int mMaterialCount;
+		bool mIsStatic;
 	};
 #pragma pack(pop)
 
 	class MeshRenderer : public Component
 	{
 		public:
-			Guid meshId;
-			Guid materialIds[8];
-			int materialCount;
-			bool isStatic;
+			Guid mMeshId;
+			Guid mMaterialIds[8];
+			int mMaterialCount;
+			bool mIsStatic;
 
 		public:
 			MeshRenderer();
@@ -41,15 +41,15 @@ namespace PhysicsEngine
 	const int ComponentType<MeshRenderer>::type = 3;
 
 	template <typename T>
-	struct IsMeshRenderer { static bool value; };
+	struct IsMeshRenderer { static const bool value; };
 
 	template <typename T>
-	bool IsMeshRenderer<T>::value = false;
+	const bool IsMeshRenderer<T>::value = false;
 
 	template<>
-	bool IsMeshRenderer<MeshRenderer>::value = true;
+	const bool IsMeshRenderer<MeshRenderer>::value = true;
 	template<>
-	bool IsComponent<MeshRenderer>::value = true;
+	const bool IsComponent<MeshRenderer>::value = true;
 }
 
 #endif

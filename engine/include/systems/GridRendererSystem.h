@@ -25,15 +25,15 @@ namespace PhysicsEngine
 	const int SystemType<GridRendererSystem>::type = 4;
 
 	template< typename T>
-	struct IsGridRendererSystem { static bool value; };
+	struct IsGridRendererSystem { static const bool value; };
 
 	template<typename T>
-	bool IsGridRendererSystem<T>::value = false;
+	const bool IsGridRendererSystem<T>::value = false;
 
 	template<>
-	bool IsGridRendererSystem<GridRendererSystem>::value = true;
+	const bool IsGridRendererSystem<GridRendererSystem>::value = true;
 	template<>
-	bool IsSystem<GridRendererSystem>::value = true;
+	const bool IsSystem<GridRendererSystem>::value = true;
 }
 
 #endif

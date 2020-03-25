@@ -28,15 +28,15 @@ namespace PhysicsEngine
 	const int SystemType<CleanUpSystem>::type = 2;
 
 	template< typename T>
-	struct IsCleanUpSystem { static bool value; };
+	struct IsCleanUpSystem { static const bool value; };
 
 	template<typename T>
-	bool IsCleanUpSystem<T>::value = false;
+	const bool IsCleanUpSystem<T>::value = false;
 
 	template<>
-	bool IsCleanUpSystem<CleanUpSystem>::value = true;
+	const bool IsCleanUpSystem<CleanUpSystem>::value = true;
 	template<>
-	bool IsSystem<CleanUpSystem>::value = true;
+	const bool IsSystem<CleanUpSystem>::value = true;
 }
 
 #endif

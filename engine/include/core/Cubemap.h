@@ -11,12 +11,12 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct CubemapHeader
 	{
-		Guid textureId;
-		int width;
-		int numChannels;
-		int dimension;
-		int format;
-		size_t textureSize;
+		Guid mTextureId;
+		int mWidth;
+		int mNumChannels;
+		int mDimension;
+		int mFormat;
+		size_t mTextureSize;
 	};
 #pragma pack(pop)
 
@@ -33,7 +33,7 @@ namespace PhysicsEngine
 	class Cubemap : public Texture
 	{
 		private:
-			int width;
+			int mWidth;
 
 		public:
 			Cubemap();
@@ -67,17 +67,17 @@ namespace PhysicsEngine
 	const int AssetType<Cubemap>::type = 3;
 
 	template <typename T>
-	struct IsCubemap { static bool value; };
+	struct IsCubemap { static const bool value; };
 
 	template <typename T>
-	bool IsCubemap<T>::value = false;
+	const bool IsCubemap<T>::value = false;
 
 	template<>
-	bool IsCubemap<Cubemap>::value = true;
+	const bool IsCubemap<Cubemap>::value = true;
 	template<>
-	bool IsTexture<Cubemap>::value = true;
+	const bool IsTexture<Cubemap>::value = true;
 	template<>
-	bool IsAsset<Cubemap>::value = true;
+	const bool IsAsset<Cubemap>::value = true;
 }
 
 #endif

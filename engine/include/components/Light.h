@@ -13,20 +13,20 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct LightHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		glm::vec3 position;
-		glm::vec3 direction;
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-		float constant;
-		float linear;
-		float quadratic;
-		float cutOff;
-		float outerCutOff;
-		int lightType;
-		int shadowType;
+		Guid mComponentId;
+		Guid mEntityId;
+		glm::vec3 mPosition;
+		glm::vec3 mDirection;
+		glm::vec3 mAmbient;
+		glm::vec3 mDiffuse;
+		glm::vec3 mSpecular;
+		float mConstant;
+		float mLinear;
+		float mQuadratic;
+		float mCutOff;
+		float mOuterCutOff;
+		int mLightType;
+		int mShadowType;
 	};
 #pragma pack(pop)
 	
@@ -48,18 +48,18 @@ namespace PhysicsEngine
 	class Light : public Component
 	{
 		public:
-			glm::vec3 position;
-			glm::vec3 direction;
-			glm::vec3 ambient;
-			glm::vec3 diffuse;
-			glm::vec3 specular;
-			float constant;
-			float linear;
-			float quadratic;
-			float cutOff;
-			float outerCutOff;
-			LightType lightType;
-			ShadowType shadowType;
+			glm::vec3 mPosition;
+			glm::vec3 mDirection;
+			glm::vec3 mAmbient;
+			glm::vec3 mDiffuse;
+			glm::vec3 mSpecular;
+			float mConstant;
+			float mLinear;
+			float mQuadratic;
+			float mCutOff;
+			float mOuterCutOff;
+			LightType mLightType;
+			ShadowType mShadowType;
 
 		public:
 			Light();
@@ -77,15 +77,15 @@ namespace PhysicsEngine
 	const int ComponentType<Light>::type = 5;
 
 	template <typename T>
-	struct IsLight { static bool value; };
+	struct IsLight { static const bool value; };
 
 	template <typename T>
-	bool IsLight<T>::value = false;
+	const bool IsLight<T>::value = false;
 
 	template<>
-	bool IsLight<Light>::value = true;
+	const bool IsLight<Light>::value = true;
 	template<>
-	bool IsComponent<Light>::value = true;
+	const bool IsComponent<Light>::value = true;
 }
 
 #endif

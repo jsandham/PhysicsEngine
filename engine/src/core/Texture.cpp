@@ -5,32 +5,32 @@ using namespace PhysicsEngine;
 
 Texture::Texture()
 {
-	assetId = Guid::INVALID;
+	mAssetId = Guid::INVALID;
 }
 
 bool Texture::isCreated() const
 {
-	return created;
+	return mCreated;
 }
 
 int Texture::getNumChannels() const
 {
-	return numChannels;
+	return mNumChannels;
 }
 
 TextureDimension Texture::getDimension() const
 {
-	return dimension;
+	return mDimension;
 }
 
 TextureFormat Texture::getFormat() const
 {
-	return format;
+	return mFormat;
 }
 
 GLuint Texture::getNativeGraphics() const
 {
-	return tex;
+	return mTex;
 }
 
 int Texture::calcNumChannels(TextureFormat format) const

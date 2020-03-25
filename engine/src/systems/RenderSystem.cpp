@@ -14,8 +14,7 @@ using namespace PhysicsEngine;
 
 RenderSystem::RenderSystem()
 {
-	pass = 0;
-	renderToScreen = true;
+	mRenderToScreen = true;
 }
 
 RenderSystem::RenderSystem(std::vector<char> data)
@@ -29,41 +28,41 @@ RenderSystem::~RenderSystem()
 
 std::vector<char> RenderSystem::serialize() const
 {
-	return serialize(systemId);
+	return serialize(mSystemId);
 }
 
 std::vector<char> RenderSystem::serialize(Guid systemId) const
 {
 	std::vector<char> data(sizeof(int));
 
-	memcpy(&data[0], &order, sizeof(int));
+	memcpy(&data[0], &mOrder, sizeof(int));
 
 	return data;
 }
 
 void RenderSystem::deserialize(std::vector<char> data)
 {
-	order = *reinterpret_cast<int*>(&data[0]);
+	mOrder = *reinterpret_cast<int*>(&data[0]);
 }
 
 void RenderSystem::init(World* world)
 {
-	this->world = world;
+	mWorld = world;
 
-	forwardRenderer.init(world, renderToScreen);
+	mForwardRenderer.init(world, mRenderToScreen);
 }
 
 void RenderSystem::update(Input input)
 {
-	forwardRenderer.update(input);
+	mForwardRenderer.update(input);
 }
 
 GraphicsTargets RenderSystem::getGraphicsTargets() const
 {
-	return forwardRenderer.getGraphicsTargets();
+	return mForwardRenderer.getGraphicsTargets();
 }
 
 GraphicsQuery RenderSystem::getGraphicsQuery() const
 {
-	return forwardRenderer.getGraphicsQuery();
+	return mForwardRenderer.getGraphicsQuery();
 }

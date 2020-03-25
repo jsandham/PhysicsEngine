@@ -14,22 +14,22 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct LineRendererHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		glm::vec3 start;
-		glm::vec3 end;
+		Guid mComponentId;
+		Guid mEntityId;
+		glm::vec3 mStart;
+		glm::vec3 mEnd;
 
-		Guid materialId;
+		Guid mMaterialId;
 	};
 #pragma pack(pop)
 
 	class LineRenderer : public Component
 	{
 		public:
-			glm::vec3 start;
-			glm::vec3 end;
+			glm::vec3 mStart;
+			glm::vec3 mEnd;
 
-			Guid materialId;
+			Guid mMaterialId;
 
 		public:
 			LineRenderer();
@@ -45,15 +45,15 @@ namespace PhysicsEngine
 	const int ComponentType<LineRenderer>::type = 4;
 
 	template <typename T>
-	struct IsLineRenderer { static bool value; };
+	struct IsLineRenderer { static const bool value; };
 
 	template <typename T>
-	bool IsLineRenderer<T>::value = false;
+	const bool IsLineRenderer<T>::value = false;
 
 	template<>
-	bool IsLineRenderer<LineRenderer>::value = true;
+	const bool IsLineRenderer<LineRenderer>::value = true;
 	template<>
-	bool IsComponent<LineRenderer>::value = true;
+	const bool IsComponent<LineRenderer>::value = true;
 }
 
 #endif

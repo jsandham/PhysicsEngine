@@ -17,12 +17,10 @@ namespace PhysicsEngine
 	class RenderSystem : public System
 	{
 		private:
-			unsigned int pass;
-
-			ForwardRenderer forwardRenderer;
+			ForwardRenderer mForwardRenderer;
 
 		public:
-			bool renderToScreen;
+			bool mRenderToScreen;
 
 		public:
 			RenderSystem();
@@ -44,15 +42,15 @@ namespace PhysicsEngine
 	const int SystemType<RenderSystem>::type = 0;
 
 	template< typename T>
-	struct IsRenderSystem { static bool value; };
+	struct IsRenderSystem { static const bool value; };
 
 	template<typename T>
-	bool IsRenderSystem<T>::value = false;
+	const bool IsRenderSystem<T>::value = false;
 
 	template<>
-	bool IsRenderSystem<RenderSystem>::value = true;
+	const bool IsRenderSystem<RenderSystem>::value = true;
 	template<>
-	bool IsSystem<RenderSystem>::value = true;
+	const bool IsSystem<RenderSystem>::value = true;
 }
 
 #endif

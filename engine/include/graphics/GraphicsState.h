@@ -11,31 +11,31 @@ namespace PhysicsEngine
 {
 	struct GraphicsCameraState
 	{
-		glm::mat4 projection;         // 0
-		glm::mat4 view;               // 64
-		glm::vec3 cameraPos;          // 128
+		glm::mat4 mProjection;         // 0
+		glm::mat4 mView;               // 64
+		glm::vec3 mCameraPos;          // 128
 
-		GLuint handle;
+		GLuint mHandle;
 	};
 
 	struct GraphicsLightState
 	{
-		glm::mat4 lightProjection[5]; // 0    64   128  192  256
-		glm::mat4 lightView[5];       // 320  384  448  512  576 
-		glm::vec3 position;           // 640
-		glm::vec3 direction;          // 656
-		glm::vec3 ambient;            // 672
-		glm::vec3 diffuse;            // 688
-		glm::vec3 specular;           // 704
-		float cascadeEnds[5];         // 720  736  752  768  784
-		float farPlane;               // 800
-		float constant;               // 804
-		float linear;                 // 808
-		float quadratic;              // 812
-		float cutOff;                 // 816
-		float outerCutOff;            // 820
+		glm::mat4 mLightProjection[5]; // 0    64   128  192  256
+		glm::mat4 mLightView[5];       // 320  384  448  512  576 
+		glm::vec3 mPosition;           // 640
+		glm::vec3 mDirection;          // 656
+		glm::vec3 mAmbient;            // 672
+		glm::vec3 mDiffuse;            // 688
+		glm::vec3 mSpecular;           // 704
+		float mCascadeEnds[5];         // 720  736  752  768  784
+		float mFarPlane;               // 800
+		float mConstant;               // 804
+		float mLinear;                 // 808
+		float mQuadratic;              // 812
+		float mCutOff;                 // 816
+		float mOuterCutOff;            // 820
 
-		GLuint handle;
+		GLuint mHandle;
 	};
 
 	

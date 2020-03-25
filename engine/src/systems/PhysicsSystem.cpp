@@ -9,7 +9,6 @@
 #include "../../include/core/Triangle.h"
 #include "../../include/core/Physics.h"
 #include "../../include/core/World.h"
-#include "../../include/core/UniformGrid.h"
 
 #include "../../include/components/Transform.h"
 #include "../../include/components/SphereCollider.h"
@@ -35,129 +34,129 @@ PhysicsSystem::~PhysicsSystem()
 
 std::vector<char> PhysicsSystem::serialize() const
 {
-	return serialize(systemId);
+	return serialize(mSystemId);
 }
 
 std::vector<char> PhysicsSystem::serialize(Guid systemId) const
 {
 	std::vector<char> data(sizeof(int));
 
-	memcpy(&data[0], &order, sizeof(int));
+	memcpy(&data[0], &mOrder, sizeof(int));
 
 	return data;
 }
 
 void PhysicsSystem::deserialize(std::vector<char> data)
 {
-	order = *reinterpret_cast<int*>(&data[0]);
+	mOrder = *reinterpret_cast<int*>(&data[0]);
 }
 
 void PhysicsSystem::init(World* world)
 {
-	this->world = world;
+	mWorld = world;
 
-	UniformGrid* grid = world->getStaticPhysicsGrid();
+	//UniformGrid* grid = world->getStaticPhysicsGrid();
 
-	std::vector<BoundingSphere> boundingSpheres;
-	std::vector<Sphere> spheres;
-	std::vector<Bounds> bounds;
-	std::vector<Triangle> triangles;
+	//std::vector<BoundingSphere> boundingSpheres;
+	//std::vector<Sphere> spheres;
+	//std::vector<Bounds> bounds;
+	//std::vector<Triangle> triangles;
 
-	for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
-		SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
+	//for(int i = 0; i < world->getNumberOfComponents<SphereCollider>(); i++){
+	//	SphereCollider* collider = world->getComponentByIndex<SphereCollider>(i);
 
-		std::cout << "component id: " << collider->getId().toString() << std::endl;
+	//	std::cout << "component id: " << collider->getId().toString() << std::endl;
 
-		spheres.push_back(collider->sphere);
+	//	spheres.push_back(collider->sphere);
 
-		BoundingSphere boundingSphere;
-		boundingSphere.sphere = collider->sphere;
-		boundingSphere.id = collider->getId();
-		boundingSphere.primitiveType = 0;
-		boundingSphere.index = i;
+	//	BoundingSphere boundingSphere;
+	//	boundingSphere.sphere = collider->sphere;
+	//	boundingSphere.id = collider->getId();
+	//	boundingSphere.primitiveType = 0;
+	//	boundingSphere.index = i;
 
-		boundingSpheres.push_back(boundingSphere);
-	}
+	//	boundingSpheres.push_back(boundingSphere);
+	//}
 
-	for(int i = 0; i < world->getNumberOfComponents<BoxCollider>(); i++){
-		BoxCollider* collider = world->getComponentByIndex<BoxCollider>(i);
+	//for(int i = 0; i < world->getNumberOfComponents<BoxCollider>(); i++){
+	//	BoxCollider* collider = world->getComponentByIndex<BoxCollider>(i);
 
-		std::cout << "component id: " << collider->getId().toString() << std::endl;
+	//	std::cout << "component id: " << collider->getId().toString() << std::endl;
 
-		glm::vec3 min = collider->bounds.getMin();
-		glm::vec3 max = collider->bounds.getMax();
+	//	glm::vec3 min = collider->bounds.getMin();
+	//	glm::vec3 max = collider->bounds.getMax();
 
-		bounds.push_back(collider->bounds);
+	//	bounds.push_back(collider->bounds);
 
-		BoundingSphere boundingSphere;
-		boundingSphere.id = collider->getId();
-		boundingSphere.sphere.centre = 0.5f * (min + max);
-		boundingSphere.sphere.radius = glm::length(0.5f*(min - max));
-		boundingSphere.primitiveType = 1;
-		boundingSphere.index = i;
+	//	BoundingSphere boundingSphere;
+	//	boundingSphere.id = collider->getId();
+	//	boundingSphere.sphere.centre = 0.5f * (min + max);
+	//	boundingSphere.sphere.radius = glm::length(0.5f*(min - max));
+	//	boundingSphere.primitiveType = 1;
+	//	boundingSphere.index = i;
 
-		boundingSpheres.push_back(boundingSphere);
-	}
+	//	boundingSpheres.push_back(boundingSphere);
+	//}
 
-	// int index = 0;
-	// for(int i = 0; i < world->getNumberOfComponents<MeshCollider>(); i++){
-	// 	MeshCollider* collider = world->getComponentByIndex<MeshCollider>(i);
-	// 	Transform* transform = world->getComponent<Transform>(collider->entityId);
+	//// int index = 0;
+	//// for(int i = 0; i < world->getNumberOfComponents<MeshCollider>(); i++){
+	//// 	MeshCollider* collider = world->getComponentByIndex<MeshCollider>(i);
+	//// 	Transform* transform = world->getComponent<Transform>(collider->entityId);
 
-	// 	glm::mat4 model = transform->getModelMatrix();
+	//// 	glm::mat4 model = transform->getModelMatrix();
 
-	// 	Mesh* mesh = world->getAsset<Mesh>(collider->meshId);
+	//// 	Mesh* mesh = world->getAsset<Mesh>(collider->meshId);
 
-	// 	std::vector<float> vertices = mesh->vertices;
-	// 	for(size_t j = 0; j < vertices.size() / 9; j++){
-	// 		glm::vec4 v1 = model * glm::vec4(mesh->vertices[9*i], mesh->vertices[9*i + 1], mesh->vertices[9*i + 2], 1.0f);
-	// 		glm::vec4 v2 = model * glm::vec4(mesh->vertices[9*i + 3], mesh->vertices[9*i + 4], mesh->vertices[9*i + 5], 1.0f);
-	// 		glm::vec4 v3 = model * glm::vec4(mesh->vertices[9*i + 6], mesh->vertices[9*i + 7], mesh->vertices[9*i + 8], 1.0f);
+	//// 	std::vector<float> vertices = mesh->vertices;
+	//// 	for(size_t j = 0; j < vertices.size() / 9; j++){
+	//// 		glm::vec4 v1 = model * glm::vec4(mesh->vertices[9*i], mesh->vertices[9*i + 1], mesh->vertices[9*i + 2], 1.0f);
+	//// 		glm::vec4 v2 = model * glm::vec4(mesh->vertices[9*i + 3], mesh->vertices[9*i + 4], mesh->vertices[9*i + 5], 1.0f);
+	//// 		glm::vec4 v3 = model * glm::vec4(mesh->vertices[9*i + 6], mesh->vertices[9*i + 7], mesh->vertices[9*i + 8], 1.0f);
 
-	// 		Triangle triangle;
-	// 		triangle.v1 = glm::vec3(v1.x, v1.y, v1.z);
-	// 		triangle.v2 = glm::vec3(v2.x, v2.y, v2.z);
-	// 		triangle.v3 = glm::vec3(v3.x, v3.y, v3.z);
-			
-	// 		triangles.push_back(triangle);
+	//// 		Triangle triangle;
+	//// 		triangle.v1 = glm::vec3(v1.x, v1.y, v1.z);
+	//// 		triangle.v2 = glm::vec3(v2.x, v2.y, v2.z);
+	//// 		triangle.v3 = glm::vec3(v3.x, v3.y, v3.z);
+	//		
+	//// 		triangles.push_back(triangle);
 
-	// 		// compute bounding sphere
-	// 		BoundingSphere boundingSphere;
-	// 		boundingSphere.id = collider->componentId;
-	// 		boundingSphere.sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
-	// 		boundingSphere.sphere.radius = 1.0f;
-	// 		boundingSphere.primitiveType = 2;
-	// 		boundingSphere.index = index;
+	//// 		// compute bounding sphere
+	//// 		BoundingSphere boundingSphere;
+	//// 		boundingSphere.id = collider->componentId;
+	//// 		boundingSphere.sphere.centre = glm::vec3(0.0f, 0.0f, 0.0f);
+	//// 		boundingSphere.sphere.radius = 1.0f;
+	//// 		boundingSphere.primitiveType = 2;
+	//// 		boundingSphere.index = index;
 
-	// 		index++;
-	// 	}
-	// }
+	//// 		index++;
+	//// 	}
+	//// }
 
-	float minDiameter = 0.1f;
+	//float minDiameter = 0.1f;
 
-	for(size_t i = 0; i < boundingSpheres.size(); i++){
-		if(2.0f * boundingSpheres[i].sphere.radius > minDiameter){
-			minDiameter = 2.0f * boundingSpheres[i].sphere.radius;
-		}
-	}
+	//for(size_t i = 0; i < boundingSpheres.size(); i++){
+	//	if(2.0f * boundingSpheres[i].sphere.radius > minDiameter){
+	//		minDiameter = 2.0f * boundingSpheres[i].sphere.radius;
+	//	}
+	//}
 
-	std::cout << "number of bounding spheres: " << boundingSpheres.size() << " number of spheres: " << spheres.size() << " number of bounds: " << bounds.size() << " number of triangles: " << triangles.size() << std::endl;
+	//std::cout << "number of bounding spheres: " << boundingSpheres.size() << " number of spheres: " << spheres.size() << " number of bounds: " << bounds.size() << " number of triangles: " << triangles.size() << std::endl;
 
-	Bounds worldBounds = *world->getWorldBounds();
+	//Bounds worldBounds = *world->getWorldBounds();
 
-	glm::ivec3 gridDim = glm::ivec3(worldBounds.size.x / minDiameter, worldBounds.size.y / minDiameter, worldBounds.size.z / minDiameter);
+	//glm::ivec3 gridDim = glm::ivec3(worldBounds.size.x / minDiameter, worldBounds.size.y / minDiameter, worldBounds.size.z / minDiameter);
 
-	gridDim.x = std::min(50, gridDim.x);
-	gridDim.y = std::min(50, gridDim.y);
-	gridDim.z = std::min(50, gridDim.z);
+	//gridDim.x = std::min(50, gridDim.x);
+	//gridDim.y = std::min(50, gridDim.y);
+	//gridDim.z = std::min(50, gridDim.z);
 
-	std::cout << " min diameter: " << minDiameter << " gridDim.x: " << gridDim.x << " gridDim.y: " << gridDim.y << " gridDim.z: " << gridDim.z << std::endl;
+	//std::cout << " min diameter: " << minDiameter << " gridDim.x: " << gridDim.x << " gridDim.y: " << gridDim.y << " gridDim.z: " << gridDim.z << std::endl;
 
-	for(size_t i = 0; i < boundingSpheres.size(); i++){
-		Sphere sphere = boundingSpheres[i].sphere;
+	//for(size_t i = 0; i < boundingSpheres.size(); i++){
+	//	Sphere sphere = boundingSpheres[i].sphere;
 
-		std::cout << "centre: " << sphere.centre.x << " " << sphere.centre.y << " " << sphere.centre.z << " " << sphere.radius << " id: " << boundingSpheres[i].id.toString() << std::endl;
-	}
+	//	std::cout << "centre: " << sphere.centre.x << " " << sphere.centre.y << " " << sphere.centre.z << " " << sphere.radius << " id: " << boundingSpheres[i].id.toString() << std::endl;
+	//}
 
 	//grid->create(worldBounds, gridDim, boundingSpheres, spheres, bounds, triangles);
 }

@@ -29,14 +29,14 @@ void LineRendererDrawer::render(World* world, EditorProject& project, EditorScen
 		ImGui::Text(("EntityId: " + lineRenderer->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		glm::vec3 start = lineRenderer->start;
-		glm::vec3 end = lineRenderer->end;
+		glm::vec3 start = lineRenderer->mStart;
+		glm::vec3 end = lineRenderer->mEnd;
 
 		if (ImGui::InputFloat3("Start", glm::value_ptr(start))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->start, start, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->mStart, start, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("End", glm::value_ptr(end))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->end, end, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->mEnd, end, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

@@ -38,38 +38,38 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON& obj, World* world, Guid
 
 		std::vector<ShaderUniform> uniforms = material->getUniforms();
 		for (size_t i = 0; i < uniforms.size(); i++) {
-			if (uniforms[i].type == GL_INT) {
-				obj[uniforms[i].name]["data"] = *reinterpret_cast<int*>(uniforms[i].data);
+			if (uniforms[i].mType == GL_INT) {
+				obj[uniforms[i].mName]["data"] = *reinterpret_cast<int*>(uniforms[i].mData);
 			}
-			else if (uniforms[i].type == GL_FLOAT) {
-				obj[uniforms[i].name]["data"] = *reinterpret_cast<float*>(uniforms[i].data);
+			else if (uniforms[i].mType == GL_FLOAT) {
+				obj[uniforms[i].mName]["data"] = *reinterpret_cast<float*>(uniforms[i].mData);
 			}
-			else if (uniforms[i].type == GL_FLOAT_VEC2) {
-				glm::vec2 data = *reinterpret_cast<glm::vec2*>(uniforms[i].data);
-				obj[uniforms[i].name]["data"].append(data.x, data.y);
+			else if (uniforms[i].mType == GL_FLOAT_VEC2) {
+				glm::vec2 data = *reinterpret_cast<glm::vec2*>(uniforms[i].mData);
+				obj[uniforms[i].mName]["data"].append(data.x, data.y);
 			}
-			else if (uniforms[i].type == GL_FLOAT_VEC3) {
-				glm::vec3 data = *reinterpret_cast<glm::vec3*>(uniforms[i].data);
-				obj[uniforms[i].name]["data"].append(data.x, data.y, data.z);
+			else if (uniforms[i].mType == GL_FLOAT_VEC3) {
+				glm::vec3 data = *reinterpret_cast<glm::vec3*>(uniforms[i].mData);
+				obj[uniforms[i].mName]["data"].append(data.x, data.y, data.z);
 			}
-			else if (uniforms[i].type == GL_FLOAT_VEC4) {
-				glm::vec4 data = *reinterpret_cast<glm::vec4*>(uniforms[i].data);
-				obj[uniforms[i].name]["data"].append(data.x, data.y, data.z, data.w);
-			}
-
-			if (uniforms[i].type == GL_SAMPLER_2D) {
-				Guid textureId = *reinterpret_cast<Guid*>(uniforms[i].data);
-				obj[uniforms[i].name]["data"] = textureId.toString();
+			else if (uniforms[i].mType == GL_FLOAT_VEC4) {
+				glm::vec4 data = *reinterpret_cast<glm::vec4*>(uniforms[i].mData);
+				obj[uniforms[i].mName]["data"].append(data.x, data.y, data.z, data.w);
 			}
 
-			obj[uniforms[i].name]["shortName"] = uniforms[i].shortName;
-			obj[uniforms[i].name]["blockName"] = uniforms[i].blockName;
-			obj[uniforms[i].name]["nameLength"] = (int)uniforms[i].nameLength;
-			obj[uniforms[i].name]["size"] = (int)uniforms[i].size;
-			obj[uniforms[i].name]["type"] = (int)uniforms[i].type;
-			obj[uniforms[i].name]["variant"] = uniforms[i].variant;
-			obj[uniforms[i].name]["location"] = uniforms[i].location;
-			obj[uniforms[i].name]["index"] = (int)uniforms[i].index;
+			if (uniforms[i].mType == GL_SAMPLER_2D) {
+				Guid textureId = *reinterpret_cast<Guid*>(uniforms[i].mData);
+				obj[uniforms[i].mName]["data"] = textureId.toString();
+			}
+
+			obj[uniforms[i].mName]["shortName"] = uniforms[i].mShortName;
+			obj[uniforms[i].mName]["blockName"] = uniforms[i].mBlockName;
+			obj[uniforms[i].mName]["nameLength"] = (int)uniforms[i].mNameLength;
+			obj[uniforms[i].mName]["size"] = (int)uniforms[i].mSize;
+			obj[uniforms[i].mName]["type"] = (int)uniforms[i].mType;
+			obj[uniforms[i].mName]["variant"] = uniforms[i].mVariant;
+			obj[uniforms[i].mName]["location"] = uniforms[i].mLocation;
+			obj[uniforms[i].mName]["index"] = (int)uniforms[i].mIndex;
 		}
 	}
 }
@@ -101,11 +101,11 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		Transform* transform = world->getComponent<Transform>(entityId);
 
 		obj[componentId.toString()]["type"] = "Transform";
-		obj[componentId.toString()]["parent"] = transform->parentId.toString();
+		obj[componentId.toString()]["parent"] = transform->mParentId.toString();
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["position"].append(transform->position.x, transform->position.y, transform->position.z);
-		obj[componentId.toString()]["rotation"].append(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w);
-		obj[componentId.toString()]["scale"].append(transform->scale.x, transform->scale.y, transform->scale.z);
+		obj[componentId.toString()]["position"].append(transform->mPosition.x, transform->mPosition.y, transform->mPosition.z);
+		obj[componentId.toString()]["rotation"].append(transform->mRotation.x, transform->mRotation.y, transform->mRotation.z, transform->mRotation.w);
+		obj[componentId.toString()]["scale"].append(transform->mScale.x, transform->mScale.y, transform->mScale.z);
 	}
 	else if (type == 1) {
 		//rigidbody
@@ -113,10 +113,10 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "Rigidbody";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["useGravity"] = rigidbody->useGravity;
-		obj[componentId.toString()]["mass"] = rigidbody->mass;
-		obj[componentId.toString()]["drag"] = rigidbody->drag;
-		obj[componentId.toString()]["angularDrag"] = rigidbody->angularDrag;
+		obj[componentId.toString()]["useGravity"] = rigidbody->mUseGravity;
+		obj[componentId.toString()]["mass"] = rigidbody->mMass;
+		obj[componentId.toString()]["drag"] = rigidbody->mDrag;
+		obj[componentId.toString()]["angularDrag"] = rigidbody->mAngularDrag;
 	}
 	else if (type == 2) {
 		//camera
@@ -124,18 +124,18 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "Camera";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["targetTextureId"] = camera->targetTextureId.toString();
-		obj[componentId.toString()]["position"].append(camera->position.x, camera->position.y, camera->position.z);
-		obj[componentId.toString()]["front"].append(camera->front.x, camera->front.y, camera->front.z);
-		obj[componentId.toString()]["up"].append(camera->up.x, camera->up.y, camera->up.z);
-		obj[componentId.toString()]["backgroundColor"].append(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
-		obj[componentId.toString()]["x"] = camera->viewport.x;
-		obj[componentId.toString()]["y"] = camera->viewport.y;
-		obj[componentId.toString()]["width"] = camera->viewport.width;
-		obj[componentId.toString()]["height"] = camera->viewport.height;
-		obj[componentId.toString()]["fov"] = camera->frustum.fov;
-		obj[componentId.toString()]["near"] = camera->frustum.nearPlane;
-		obj[componentId.toString()]["far"] = camera->frustum.farPlane;
+		obj[componentId.toString()]["targetTextureId"] = camera->mTargetTextureId.toString();
+		obj[componentId.toString()]["position"].append(camera->mPosition.x, camera->mPosition.y, camera->mPosition.z);
+		obj[componentId.toString()]["front"].append(camera->mFront.x, camera->mFront.y, camera->mFront.z);
+		obj[componentId.toString()]["up"].append(camera->mUp.x, camera->mUp.y, camera->mUp.z);
+		obj[componentId.toString()]["backgroundColor"].append(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
+		obj[componentId.toString()]["x"] = camera->mViewport.mX;
+		obj[componentId.toString()]["y"] = camera->mViewport.mY;
+		obj[componentId.toString()]["width"] = camera->mViewport.mWidth;
+		obj[componentId.toString()]["height"] = camera->mViewport.mHeight;
+		obj[componentId.toString()]["fov"] = camera->mFrustum.mFov;
+		obj[componentId.toString()]["near"] = camera->mFrustum.mNearPlane;
+		obj[componentId.toString()]["far"] = camera->mFrustum.mFarPlane;
 	}
 	else if (type == 3) {
 		//meshrenderer
@@ -143,9 +143,9 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "MeshRenderer";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["mesh"] = meshRenderer->meshId.toString();
+		obj[componentId.toString()]["mesh"] = meshRenderer->mMeshId.toString();
 
-		int materialCount = meshRenderer->materialCount;
+		int materialCount = meshRenderer->mMaterialCount;
 
 		std::string label = "material";
 		if (materialCount > 1) {
@@ -157,12 +157,12 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 			value = Guid::INVALID.toString();
 		}
 		else if (materialCount == 1) {
-			value = meshRenderer->materialIds[0].toString();
+			value = meshRenderer->mMaterialIds[0].toString();
 		}
 		else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
 			value += "[";
 			for (int m = 0; m < materialCount; m++) {
-				value += meshRenderer->materialIds[m].toString();
+				value += meshRenderer->mMaterialIds[m].toString();
 				if (m != materialCount - 1) {
 					value += ",";
 				}
@@ -171,11 +171,11 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		}
 
 		obj[componentId.toString()][label] = value;
-		obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;
+		obj[componentId.toString()]["isStatic"] = meshRenderer->mIsStatic;
 	}
 	else if (type == 4) {
 		//linerenderer
-		LineRenderer* lineRenderer = world->getComponent<LineRenderer>(entityId);
+		//LineRenderer* lineRenderer = world->getComponent<LineRenderer>(entityId);
 	}
 	else if (type == 5) {
 		//light
@@ -183,18 +183,18 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "Light";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["position"].append(light->position.x, light->position.y, light->position.z);
-		obj[componentId.toString()]["direction"].append(light->direction.x, light->direction.y, light->direction.z);
-		obj[componentId.toString()]["ambient"].append(light->ambient.x, light->ambient.y, light->ambient.z);
-		obj[componentId.toString()]["diffuse"].append(light->diffuse.x, light->diffuse.y, light->diffuse.z);
-		obj[componentId.toString()]["specular"].append(light->specular.x, light->specular.y, light->specular.z);
-		obj[componentId.toString()]["constant"] = light->constant;
-		obj[componentId.toString()]["linear"] = light->linear;
-		obj[componentId.toString()]["quadratic"] = light->quadratic;
-		obj[componentId.toString()]["cutOff"] = light->cutOff;
-		obj[componentId.toString()]["outerCutOff"] = light->outerCutOff;
-		obj[componentId.toString()]["lightType"] = static_cast<int>(light->lightType);
-		obj[componentId.toString()]["shadowType"] = static_cast<int>(light->shadowType);
+		obj[componentId.toString()]["position"].append(light->mPosition.x, light->mPosition.y, light->mPosition.z);
+		obj[componentId.toString()]["direction"].append(light->mDirection.x, light->mDirection.y, light->mDirection.z);
+		obj[componentId.toString()]["ambient"].append(light->mAmbient.x, light->mAmbient.y, light->mAmbient.z);
+		obj[componentId.toString()]["diffuse"].append(light->mDiffuse.x, light->mDiffuse.y, light->mDiffuse.z);
+		obj[componentId.toString()]["specular"].append(light->mSpecular.x, light->mSpecular.y, light->mSpecular.z);
+		obj[componentId.toString()]["constant"] = light->mConstant;
+		obj[componentId.toString()]["linear"] = light->mLinear;
+		obj[componentId.toString()]["quadratic"] = light->mQuadratic;
+		obj[componentId.toString()]["cutOff"] = light->mCutOff;
+		obj[componentId.toString()]["outerCutOff"] = light->mOuterCutOff;
+		obj[componentId.toString()]["lightType"] = static_cast<int>(light->mLightType);
+		obj[componentId.toString()]["shadowType"] = static_cast<int>(light->mShadowType);
 	}
 	else if (type == 8) {
 		//boxcollider
@@ -203,8 +203,8 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		obj[componentId.toString()]["type"] = "SphereCollider";
 		obj[componentId.toString()]["entity"] = entityId.toString();
 
-		obj[componentId.toString()]["centre"].append(collider->bounds.centre.x, collider->bounds.centre.y, collider->bounds.centre.z);
-		obj[componentId.toString()]["size"].append(collider->bounds.size.x, collider->bounds.size.y, collider->bounds.size.z);
+		obj[componentId.toString()]["centre"].append(collider->mBounds.mCentre.x, collider->mBounds.mCentre.y, collider->mBounds.mCentre.z);
+		obj[componentId.toString()]["size"].append(collider->mBounds.mSize.x, collider->mBounds.mSize.y, collider->mBounds.mSize.z);
 	}
 	else if (type == 9) {
 		//spherecollider
@@ -213,12 +213,12 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		obj[componentId.toString()]["type"] = "SphereCollider";
 		obj[componentId.toString()]["entity"] = entityId.toString();
 
-		obj[componentId.toString()]["centre"].append(collider->sphere.centre.x, collider->sphere.centre.y, collider->sphere.centre.z);
-		obj[componentId.toString()]["radius"] = collider->sphere.radius;
+		obj[componentId.toString()]["centre"].append(collider->mSphere.mCentre.x, collider->mSphere.mCentre.y, collider->mSphere.mCentre.z);
+		obj[componentId.toString()]["radius"] = collider->mSphere.mRadius;
 	}
 	else if (type == 15) {
 		//meshcollider
-		MeshCollider* collider = world->getComponent<MeshCollider>(entityId);
+		//MeshCollider* collider = world->getComponent<MeshCollider>(entityId);
 	}
 	else if (type == 10) {
 		//capsulecolldier
@@ -227,9 +227,9 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		obj[componentId.toString()]["type"] = "CapsuleCollider";
 		obj[componentId.toString()]["entity"] = entityId.toString();
 
-		obj[componentId.toString()]["centre"].append(collider->capsule.centre.x, collider->capsule.centre.y, collider->capsule.centre.z);
-		obj[componentId.toString()]["radius"] = collider->capsule.radius;
-		obj[componentId.toString()]["height"] = collider->capsule.height;
+		obj[componentId.toString()]["centre"].append(collider->mCapsule.mCentre.x, collider->mCapsule.mCentre.y, collider->mCapsule.mCentre.z);
+		obj[componentId.toString()]["radius"] = collider->mCapsule.mRadius;
+		obj[componentId.toString()]["height"] = collider->mCapsule.mHeight;
 	}
 	else {
 		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to write internal component to json\n";

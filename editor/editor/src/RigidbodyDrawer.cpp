@@ -30,25 +30,25 @@ void RigidbodyDrawer::render(World* world, EditorProject& project, EditorScene& 
 		ImGui::Text(("EntityId: " + rigidbody->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		bool useGravity = rigidbody->useGravity;
-		float mass = rigidbody->mass;
-		float drag = rigidbody->drag;
-		float angularDrag = rigidbody->angularDrag;
+		bool useGravity = rigidbody->mUseGravity;
+		float mass = rigidbody->mMass;
+		float drag = rigidbody->mDrag;
+		float angularDrag = rigidbody->mAngularDrag;
 
 		if (ImGui::Checkbox("Use Gravity", &useGravity)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&rigidbody->useGravity, useGravity, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&rigidbody->mUseGravity, useGravity, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Mass", &mass)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mass, mass, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mMass, mass, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Drag", &drag)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->drag, drag, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mDrag, drag, &scene.isDirty));
 		}
 
 		if (ImGui::InputFloat("Angular Drag", &angularDrag)) {
-			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->angularDrag, angularDrag, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mAngularDrag, angularDrag, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

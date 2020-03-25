@@ -8,8 +8,8 @@ namespace PhysicsEngine
 	class Ray
 	{
 		public:
-			glm::vec3 origin;
-			glm::vec3 direction;
+			glm::vec3 mOrigin;
+			glm::vec3 mDirection;
 
 		public:
 			Ray();

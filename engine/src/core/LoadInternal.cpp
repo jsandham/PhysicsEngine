@@ -20,8 +20,8 @@
 #include "../../include/components/Light.h"
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/SphereCollider.h"
-#include "../../include/components/SphereCollider.h"
 #include "../../include/components/MeshCollider.h"
+#include "../../include/components/CapsuleCollider.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"

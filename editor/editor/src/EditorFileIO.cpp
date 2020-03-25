@@ -8,6 +8,11 @@
 #include "core/Log.h"
 #include "core/Entity.h"
 
+#include "components/MeshRenderer.h"
+#include "components/Light.h"
+#include "components/BoxCollider.h"
+#include "components/SphereCollider.h"
+
 #include "json/json.hpp"
 
 using namespace PhysicsEditor;
@@ -169,7 +174,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
 				Entity entity;
 				//entity.entityId = Guid(it->first);
-				entity.doNotDestroy = false;
+				entity.mDoNotDestroy = false;
 
 				std::vector<char> data = entity.serialize(Guid(it->first));
 
@@ -191,21 +196,21 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				Transform transform;
 
 				//transform.componentId = Guid(it->first);
-				transform.parentId = Guid(it->second["parent"].ToString());
+				transform.mParentId = Guid(it->second["parent"].ToString());
 				//transform.entityId = Guid(it->second["entity"].ToString());
 
-				transform.position.x = (float)it->second["position"][0].ToFloat();
-				transform.position.y = (float)it->second["position"][1].ToFloat();
-				transform.position.z = (float)it->second["position"][2].ToFloat();
+				transform.mPosition.x = (float)it->second["position"][0].ToFloat();
+				transform.mPosition.y = (float)it->second["position"][1].ToFloat();
+				transform.mPosition.z = (float)it->second["position"][2].ToFloat();
 
-				transform.rotation.x = (float)it->second["rotation"][0].ToFloat();
-				transform.rotation.y = (float)it->second["rotation"][1].ToFloat();
-				transform.rotation.z = (float)it->second["rotation"][2].ToFloat();
-				transform.rotation.w = (float)it->second["rotation"][3].ToFloat();
+				transform.mRotation.x = (float)it->second["rotation"][0].ToFloat();
+				transform.mRotation.y = (float)it->second["rotation"][1].ToFloat();
+				transform.mRotation.z = (float)it->second["rotation"][2].ToFloat();
+				transform.mRotation.w = (float)it->second["rotation"][3].ToFloat();
 
-				transform.scale.x = (float)it->second["scale"][0].ToFloat();
-				transform.scale.y = (float)it->second["scale"][1].ToFloat();
-				transform.scale.z = (float)it->second["scale"][2].ToFloat();
+				transform.mScale.x = (float)it->second["scale"][0].ToFloat();
+				transform.mScale.y = (float)it->second["scale"][1].ToFloat();
+				transform.mScale.z = (float)it->second["scale"][2].ToFloat();
 
 				std::vector<char> data = transform.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
@@ -228,33 +233,33 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				//camera.componentId = Guid(it->first);
 				//camera.entityId = Guid(it->second["entity"].ToString());
-				camera.targetTextureId = Guid(it->second["targetTextureId"].ToString());
+				camera.mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
 
-				camera.position.x = (float)it->second["position"][0].ToFloat();
-				camera.position.y = (float)it->second["position"][1].ToFloat();
-				camera.position.z = (float)it->second["position"][2].ToFloat();
+				camera.mPosition.x = (float)it->second["position"][0].ToFloat();
+				camera.mPosition.y = (float)it->second["position"][1].ToFloat();
+				camera.mPosition.z = (float)it->second["position"][2].ToFloat();
 
-				camera.front.x = (float)it->second["front"][0].ToFloat();
-				camera.front.y = (float)it->second["front"][1].ToFloat();
-				camera.front.z = (float)it->second["front"][2].ToFloat();
+				camera.mFront.x = (float)it->second["front"][0].ToFloat();
+				camera.mFront.y = (float)it->second["front"][1].ToFloat();
+				camera.mFront.z = (float)it->second["front"][2].ToFloat();
 
-				camera.up.x = (float)it->second["up"][0].ToFloat();
-				camera.up.y = (float)it->second["up"][1].ToFloat();
-				camera.up.z = (float)it->second["up"][2].ToFloat();
+				camera.mUp.x = (float)it->second["up"][0].ToFloat();
+				camera.mUp.y = (float)it->second["up"][1].ToFloat();
+				camera.mUp.z = (float)it->second["up"][2].ToFloat();
 
-				camera.backgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
-				camera.backgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
-				camera.backgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
-				camera.backgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
+				camera.mBackgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
+				camera.mBackgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
+				camera.mBackgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
+				camera.mBackgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
 
-				camera.viewport.x = (int)it->second["x"].ToInt();
-				camera.viewport.y = (int)it->second["y"].ToInt();
-				camera.viewport.width = (int)it->second["width"].ToInt();
-				camera.viewport.height = (int)it->second["height"].ToInt();
+				camera.mViewport.mX = (int)it->second["x"].ToInt();
+				camera.mViewport.mY = (int)it->second["y"].ToInt();
+				camera.mViewport.mWidth = (int)it->second["width"].ToInt();
+				camera.mViewport.mHeight = (int)it->second["height"].ToInt();
 
-				camera.frustum.fov = (float)it->second["fov"].ToFloat();
-				camera.frustum.nearPlane = (float)it->second["near"].ToFloat();
-				camera.frustum.farPlane = (float)it->second["far"].ToFloat();
+				camera.mFrustum.mFov = (float)it->second["fov"].ToFloat();
+				camera.mFrustum.mNearPlane = (float)it->second["near"].ToFloat();
+				camera.mFrustum.mFarPlane = (float)it->second["far"].ToFloat();
 
 				std::vector<char> data = camera.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
@@ -277,13 +282,13 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				//meshRenderer.componentId = Guid(it->first);
 				//meshRenderer.entityId = Guid(it->second["entity"].ToString());
-				meshRenderer.meshId = Guid(it->second["mesh"].ToString());
+				meshRenderer.mMeshId = Guid(it->second["mesh"].ToString());
 
 				if (it->second.hasKey("material")) {
-					meshRenderer.materialCount = 1;
-					meshRenderer.materialIds[0] = Guid(it->second["material"].ToString());
+					meshRenderer.mMaterialCount = 1;
+					meshRenderer.mMaterialIds[0] = Guid(it->second["material"].ToString());
 					for (int j = 1; j < 8; j++) {
-						meshRenderer.materialIds[j] = Guid::INVALID;
+						meshRenderer.mMaterialIds[j] = Guid::INVALID;
 					}
 				}
 				else if (it->second.hasKey("materials")) {
@@ -293,18 +298,18 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 						return false;
 					}
 
-					meshRenderer.materialCount = materialCount;
+					meshRenderer.mMaterialCount = materialCount;
 
 					for (int j = 0; j < materialCount; j++) {
-						meshRenderer.materialIds[j] = Guid(it->second["materials"][j].ToString());
+						meshRenderer.mMaterialIds[j] = Guid(it->second["materials"][j].ToString());
 					}
 
 					for (int j = materialCount; j < 8; j++) {
-						meshRenderer.materialIds[j] = Guid::INVALID;
+						meshRenderer.mMaterialIds[j] = Guid::INVALID;
 					}
 				}
 
-				meshRenderer.isStatic = it->second["isStatic"].ToBool();
+				meshRenderer.mIsStatic = it->second["isStatic"].ToBool();
 
 				std::vector<char> data = meshRenderer.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
@@ -328,36 +333,36 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				//light.componentId = Guid(it->first);
 				//light.entityId = Guid(it->second["entity"].ToString());
 
-				light.position.x = (float)it->second["position"][0].ToFloat();
-				light.position.y = (float)it->second["position"][1].ToFloat();
-				light.position.z = (float)it->second["position"][2].ToFloat();
+				light.mPosition.x = (float)it->second["position"][0].ToFloat();
+				light.mPosition.y = (float)it->second["position"][1].ToFloat();
+				light.mPosition.z = (float)it->second["position"][2].ToFloat();
 
-				light.direction.x = (float)it->second["direction"][0].ToFloat();
-				light.direction.y = (float)it->second["direction"][1].ToFloat();
-				light.direction.z = (float)it->second["direction"][2].ToFloat();
+				light.mDirection.x = (float)it->second["direction"][0].ToFloat();
+				light.mDirection.y = (float)it->second["direction"][1].ToFloat();
+				light.mDirection.z = (float)it->second["direction"][2].ToFloat();
 
-				light.ambient.x = (float)it->second["ambient"][0].ToFloat();
-				light.ambient.y = (float)it->second["ambient"][1].ToFloat();
-				light.ambient.z = (float)it->second["ambient"][2].ToFloat();
+				light.mAmbient.x = (float)it->second["ambient"][0].ToFloat();
+				light.mAmbient.y = (float)it->second["ambient"][1].ToFloat();
+				light.mAmbient.z = (float)it->second["ambient"][2].ToFloat();
 
-				light.diffuse.x = (float)it->second["diffuse"][0].ToFloat();
-				light.diffuse.y = (float)it->second["diffuse"][1].ToFloat();
-				light.diffuse.z = (float)it->second["diffuse"][2].ToFloat();
+				light.mDiffuse.x = (float)it->second["diffuse"][0].ToFloat();
+				light.mDiffuse.y = (float)it->second["diffuse"][1].ToFloat();
+				light.mDiffuse.z = (float)it->second["diffuse"][2].ToFloat();
 
-				light.specular.x = (float)it->second["specular"][0].ToFloat();
-				light.specular.y = (float)it->second["specular"][1].ToFloat();
-				light.specular.z = (float)it->second["specular"][2].ToFloat();
+				light.mSpecular.x = (float)it->second["specular"][0].ToFloat();
+				light.mSpecular.y = (float)it->second["specular"][1].ToFloat();
+				light.mSpecular.z = (float)it->second["specular"][2].ToFloat();
 
-				light.constant = (float)it->second["constant"].ToFloat();
-				light.linear = (float)it->second["linear"].ToFloat();
-				light.quadratic = (float)it->second["quadratic"].ToFloat();
-				light.cutOff = (float)it->second["cutOff"].ToFloat();
-				light.outerCutOff = (float)it->second["outerCutOff"].ToFloat();
+				light.mConstant = (float)it->second["constant"].ToFloat();
+				light.mLinear = (float)it->second["linear"].ToFloat();
+				light.mQuadratic = (float)it->second["quadratic"].ToFloat();
+				light.mCutOff = (float)it->second["cutOff"].ToFloat();
+				light.mOuterCutOff = (float)it->second["outerCutOff"].ToFloat();
 
-				light.lightType = static_cast<LightType>((int)it->second["lightType"].ToInt());
-				light.shadowType = static_cast<ShadowType>((int)it->second["shadowType"].ToInt());
+				light.mLightType = static_cast<LightType>((int)it->second["lightType"].ToInt());
+				light.mShadowType = static_cast<ShadowType>((int)it->second["shadowType"].ToInt());
 
-				std::cout << "Light type: " << (int)light.lightType << " shadow type: " << (int)light.shadowType << std::endl;
+				std::cout << "Light type: " << (int)light.mLightType << " shadow type: " << (int)light.mShadowType << std::endl;
 
 				std::vector<char> data = light.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
@@ -379,13 +384,13 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				/*collider.componentId = Guid(it->first);
 				collider.entityId = Guid(it->second["entity"].ToString());*/
 
-				collider.bounds.centre.x = (float)it->second["centre"][0].ToFloat();
-				collider.bounds.centre.y = (float)it->second["centre"][1].ToFloat();
-				collider.bounds.centre.z = (float)it->second["centre"][2].ToFloat();
+				collider.mBounds.mCentre.x = (float)it->second["centre"][0].ToFloat();
+				collider.mBounds.mCentre.y = (float)it->second["centre"][1].ToFloat();
+				collider.mBounds.mCentre.z = (float)it->second["centre"][2].ToFloat();
 
-				collider.bounds.size.x = (float)it->second["size"][0].ToFloat();
-				collider.bounds.size.y = (float)it->second["size"][1].ToFloat();
-				collider.bounds.size.z = (float)it->second["size"][2].ToFloat();
+				collider.mBounds.mSize.x = (float)it->second["size"][0].ToFloat();
+				collider.mBounds.mSize.y = (float)it->second["size"][1].ToFloat();
+				collider.mBounds.mSize.z = (float)it->second["size"][2].ToFloat();
 
 				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
@@ -408,11 +413,11 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				//collider.componentId = Guid(it->first);
 				//collider.entityId = Guid(it->second["entity"].ToString());
 
-				collider.sphere.centre.x = (float)it->second["centre"][0].ToFloat();
-				collider.sphere.centre.y = (float)it->second["centre"][1].ToFloat();
-				collider.sphere.centre.z = (float)it->second["centre"][2].ToFloat();
+				collider.mSphere.mCentre.x = (float)it->second["centre"][0].ToFloat();
+				collider.mSphere.mCentre.y = (float)it->second["centre"][1].ToFloat();
+				collider.mSphere.mCentre.z = (float)it->second["centre"][2].ToFloat();
 
-				collider.sphere.radius = (float)it->second["radius"].ToFloat();
+				collider.mSphere.mRadius = (float)it->second["radius"].ToFloat();
 
 				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 

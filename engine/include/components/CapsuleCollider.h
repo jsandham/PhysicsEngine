@@ -16,16 +16,16 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct CapsuleColliderHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		Capsule capsule;
+		Guid mComponentId;
+		Guid mEntityId;
+		Capsule mCapsule;
 	};
 #pragma pack(pop)
 
 	class CapsuleCollider : public Collider
 	{
 		public:
-			Capsule capsule;
+			Capsule mCapsule;
 
 		public:
 			CapsuleCollider();
@@ -43,17 +43,17 @@ namespace PhysicsEngine
 	const int ComponentType<CapsuleCollider>::type = 10;
 
 	template <typename T>
-	struct IsCapsuleCollider { static bool value; };
+	struct IsCapsuleCollider { static const bool value; };
 
 	template <typename T>
-	bool IsCapsuleCollider<T>::value = false;
+	const bool IsCapsuleCollider<T>::value = false;
 
 	template<>
-	bool IsCapsuleCollider<CapsuleCollider>::value = true;
+	const bool IsCapsuleCollider<CapsuleCollider>::value = true;
 	template<>
-	bool IsCollider<CapsuleCollider>::value = true;
+	const bool IsCollider<CapsuleCollider>::value = true;
 	template<>
-	bool IsComponent<CapsuleCollider>::value = true;
+	const bool IsComponent<CapsuleCollider>::value = true;
 }
 
 #endif

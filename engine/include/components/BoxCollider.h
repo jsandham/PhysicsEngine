@@ -14,16 +14,16 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct BoxColliderHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		Bounds bounds;
+		Guid mComponentId;
+		Guid mEntityId;
+		Bounds mBounds;
 	};
 #pragma pack(pop)
 
 	class BoxCollider : public Collider
 	{
 		public:
-			Bounds bounds;
+			Bounds mBounds;
 
 		public:
 			BoxCollider();
@@ -43,17 +43,17 @@ namespace PhysicsEngine
 	const int ComponentType<BoxCollider>::type = 8;
 
 	template <typename T>
-	struct IsBoxCollider { static bool value; };
+	struct IsBoxCollider { static const bool value; };
 
 	template <typename T>
-	bool IsBoxCollider<T>::value = false;
+	const bool IsBoxCollider<T>::value = false;
 
 	template<>
-	bool IsBoxCollider<BoxCollider>::value = true;
+	const bool IsBoxCollider<BoxCollider>::value = true;
 	template<>
-	bool IsCollider<BoxCollider>::value = true;
+	const bool IsCollider<BoxCollider>::value = true;
 	template<>
-	bool IsComponent<BoxCollider>::value = true;
+	const bool IsComponent<BoxCollider>::value = true;
 }
 
 #endif

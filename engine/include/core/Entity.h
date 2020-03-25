@@ -10,8 +10,8 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct EntityHeader
 	{
-		Guid entityId;
-		bool doNotDestroy;
+		Guid mEntityId;
+		bool mDoNotDestroy;
 	};
 #pragma pack(pop)
 	
@@ -20,10 +20,10 @@ namespace PhysicsEngine
 	class Entity
 	{
 		private:
-			Guid entityId;
+			Guid mEntityId;
 		
 		public:
-			bool doNotDestroy;
+			bool mDoNotDestroy;
 
 		public:
 			Entity();
@@ -40,7 +40,7 @@ namespace PhysicsEngine
 			template<typename T>
 			T* addComponent(World* world)
 			{
-				return world->addComponent<T>(entityId);
+				return world->addComponent<T>(mEntityId);
 			}
 
 			template<typename T>
@@ -52,7 +52,7 @@ namespace PhysicsEngine
 			template<typename T>
 			T* getComponent(World* world)
 			{
-				return world->getComponent<T>(entityId);
+				return world->getComponent<T>(mEntityId);
 			}
 
 			std::vector<std::pair<Guid, int>> getComponentsOnEntity(World* world);

@@ -7,15 +7,15 @@ namespace PhysicsEngine
 {
 	struct GraphicsQuery
 	{
-		unsigned int numBatchDrawCalls;
-		unsigned int numDrawCalls;
-		unsigned int verts;
-		unsigned int tris;
-		unsigned int lines;
-		unsigned int points;
+		unsigned int mNumBatchDrawCalls;
+		unsigned int mNumDrawCalls;
+		unsigned int mVerts;
+		unsigned int mTris;
+		unsigned int mLines;
+		unsigned int mPoints;
 
-		GLuint queryId;
-		float totalElapsedTime;
+		GLuint mQueryId;
+		float mTotalElapsedTime;
 	};
 }
 

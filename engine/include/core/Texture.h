@@ -27,12 +27,12 @@ namespace PhysicsEngine
 	class Texture : public Asset
 	{
 		protected:
-			std::vector<unsigned char> rawTextureData;
-			int numChannels;
-			TextureDimension dimension;
-			TextureFormat format;
-			GLuint tex;
-			bool created;
+			std::vector<unsigned char> mRawTextureData;
+			int mNumChannels;
+			TextureDimension mDimension;
+			TextureFormat mFormat;
+			GLuint mTex;
+			bool mCreated;
 
 		public:
 			Texture();
@@ -49,15 +49,15 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
-	struct IsTexture { static bool value; };
+	struct IsTexture { static const bool value; };
 
 	template <typename T>
-	bool IsTexture<T>::value = false;
+	const bool IsTexture<T>::value = false;
 
 	template<>
-	bool IsTexture<Texture>::value = true;
+	const bool IsTexture<Texture>::value = true;
 	template<>
-	bool IsAsset<Texture>::value = true;
+	const bool IsAsset<Texture>::value = true;
 }
 
 #endif

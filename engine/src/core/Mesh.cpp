@@ -7,8 +7,8 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh()
 {
-	assetId = Guid::INVALID;
-	this->created = false;
+	mAssetId = Guid::INVALID;
+	mCreated = false;
 }
 
 Mesh::Mesh(std::vector<char> data)
@@ -23,37 +23,37 @@ Mesh::~Mesh()
 
 std::vector<char> Mesh::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Mesh::serialize(Guid assetId) const
 {
 	MeshHeader header;
-	header.meshId = assetId;
-	header.verticesSize = vertices.size();
-	header.normalsSize = normals.size();
-	header.texCoordsSize = texCoords.size();
-	header.subMeshVertexStartIndiciesSize = subMeshVertexStartIndices.size();
+	header.mMeshId = assetId;
+	header.mVerticesSize = mVertices.size();
+	header.mNormalsSize = mNormals.size();
+	header.mTexCoordsSize = mTexCoords.size();
+	header.mSubMeshVertexStartIndiciesSize = mSubMeshVertexStartIndices.size();
 
 	size_t numberOfBytes = sizeof(MeshHeader) +
-		vertices.size() * sizeof(float) +
-		normals.size() * sizeof(float) +
-		texCoords.size() * sizeof(float) +
-		subMeshVertexStartIndices.size() * sizeof(int);
+		mVertices.size() * sizeof(float) +
+		mNormals.size() * sizeof(float) +
+		mTexCoords.size() * sizeof(float) +
+		mSubMeshVertexStartIndices.size() * sizeof(int);
 
 	std::vector<char> data(numberOfBytes);
 
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(MeshHeader);
-	size_t start3 = start2 + sizeof(float) * vertices.size();
-	size_t start4 = start3 + sizeof(float) * normals.size();
-	size_t start5 = start4 + sizeof(float) * texCoords.size();
+	size_t start3 = start2 + sizeof(float) * mVertices.size();
+	size_t start4 = start3 + sizeof(float) * mNormals.size();
+	size_t start5 = start4 + sizeof(float) * mTexCoords.size();
 
 	memcpy(&data[start1], &header, sizeof(MeshHeader));
-	memcpy(&data[start2], &vertices[0], sizeof(float) * vertices.size());
-	memcpy(&data[start3], &normals[0], sizeof(float) * normals.size());
-	memcpy(&data[start4], &texCoords[0], sizeof(float) * texCoords.size());
-	memcpy(&data[start5], &subMeshVertexStartIndices[0], sizeof(int) * subMeshVertexStartIndices.size());
+	memcpy(&data[start2], &mVertices[0], sizeof(float) * mVertices.size());
+	memcpy(&data[start3], &mNormals[0], sizeof(float) * mNormals.size());
+	memcpy(&data[start4], &mTexCoords[0], sizeof(float) * mTexCoords.size());
+	memcpy(&data[start5], &mSubMeshVertexStartIndices[0], sizeof(int) * mSubMeshVertexStartIndices.size());
 
 	return data;
 }
@@ -65,33 +65,33 @@ void Mesh::deserialize(std::vector<char> data)
 
 	MeshHeader* header = reinterpret_cast<MeshHeader*>(&data[start1]);
 
-	assetId = header->meshId;
-	vertices.resize(header->verticesSize);
-	normals.resize(header->normalsSize);
-	texCoords.resize(header->texCoordsSize);
-	subMeshVertexStartIndices.resize(header->subMeshVertexStartIndiciesSize);
+	mAssetId = header->mMeshId;
+	mVertices.resize(header->mVerticesSize);
+	mNormals.resize(header->mNormalsSize);
+	mTexCoords.resize(header->mTexCoordsSize);
+	mSubMeshVertexStartIndices.resize(header->mSubMeshVertexStartIndiciesSize);
 
-	size_t start3 = start2 + sizeof(float) * vertices.size();
-	size_t start4 = start3 + sizeof(float) * normals.size();
-	size_t start5 = start4 + sizeof(float) * texCoords.size();
+	size_t start3 = start2 + sizeof(float) * mVertices.size();
+	size_t start4 = start3 + sizeof(float) * mNormals.size();
+	size_t start5 = start4 + sizeof(float) * mTexCoords.size();
 
-	for(size_t i = 0; i < header->verticesSize; i++){
-		vertices[i] = *reinterpret_cast<float*>(&data[start2 + sizeof(float) * i]);
+	for(size_t i = 0; i < header->mVerticesSize; i++){
+		mVertices[i] = *reinterpret_cast<float*>(&data[start2 + sizeof(float) * i]);
 	}
 
-	for(size_t i = 0; i < header->normalsSize; i++){
-		normals[i] = *reinterpret_cast<float*>(&data[start3 + sizeof(float) * i]);
+	for(size_t i = 0; i < header->mNormalsSize; i++){
+		mNormals[i] = *reinterpret_cast<float*>(&data[start3 + sizeof(float) * i]);
 	}
 
-	for(size_t i = 0; i < header->texCoordsSize; i++){
-		texCoords[i] = *reinterpret_cast<float*>(&data[start4 + sizeof(float) * i]);
+	for(size_t i = 0; i < header->mTexCoordsSize; i++){
+		mTexCoords[i] = *reinterpret_cast<float*>(&data[start4 + sizeof(float) * i]);
 	}
 
-	for(size_t i = 0; i < header->subMeshVertexStartIndiciesSize; i++){
-		subMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
+	for(size_t i = 0; i < header->mSubMeshVertexStartIndiciesSize; i++){
+		mSubMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
 	}
 
-	this->created = false;
+	mCreated = false;
 }
 
 void Mesh::load(const std::string& filepath)
@@ -100,10 +100,12 @@ void Mesh::load(const std::string& filepath)
 	
 	if (obj_load(filepath, mesh))
 	{
-		vertices = mesh.vertices;
-		normals = mesh.normals;
-		texCoords = mesh.texCoords;
-		subMeshVertexStartIndices = mesh.subMeshVertexStartIndices;
+		mVertices = mesh.mVertices;
+		mNormals = mesh.mNormals;
+		mTexCoords = mesh.mTexCoords;
+		mSubMeshVertexStartIndices = mesh.mSubMeshVertexStartIndices;
+
+		mCreated = false;
 	}
 	else {
 		std::string message = "Error: Could not load obj mesh " + filepath + "\n";
@@ -113,47 +115,49 @@ void Mesh::load(const std::string& filepath)
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords, std::vector<int> subMeshStartIndices)
 {
-	this->vertices = vertices;
-	this->normals = normals;
-	this->texCoords = texCoords;
-	this->subMeshVertexStartIndices = subMeshStartIndices;
+	mVertices = vertices;
+	mNormals = normals;
+	mTexCoords = texCoords;
+	mSubMeshVertexStartIndices = subMeshStartIndices;
+
+	mCreated = false;
 }
 
 bool Mesh::isCreated() const
 {
-	return created;
+	return mCreated;
 }
 
 const std::vector<float>& Mesh::getVertices() const
 {
-	return vertices;
+	return mVertices;
 }
 
 const std::vector<float>& Mesh::getNormals() const
 {
-	return normals;
+	return mNormals;
 }
 
 const std::vector<float>& Mesh::getTexCoords() const
 {
-	return texCoords;
+	return mTexCoords;
 }
 
 const std::vector<int>& Mesh::getSubMeshStartIndices() const
 {
-	return subMeshVertexStartIndices;
+	return mSubMeshVertexStartIndices;
 }
 
 Sphere Mesh::getBoundingSphere() const
 {
 	// Ritter algorithm for bounding sphere
 	// find furthest point from first vertex
-	glm::vec3 x = glm::vec3(vertices[0], vertices[1], vertices[2]);
+	glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
 	glm::vec3 y = x;
 	float maxDistance = 0.0f;
-	for(size_t i = 1; i < vertices.size() / 3; i++){
+	for(size_t i = 1; i < mVertices.size() / 3; i++){
 		
-		glm::vec3 temp = glm::vec3(vertices[3*i], vertices[3*i + 1], vertices[3*i + 2]);
+		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
 		float distance = glm::distance(x, temp);
 		if(distance > maxDistance){
 			y = temp;
@@ -164,9 +168,9 @@ Sphere Mesh::getBoundingSphere() const
 	// now find furthest point from y
 	glm::vec3 z = y;
 	maxDistance = 0.0f;
-	for(size_t i = 0; i < vertices.size() / 3; i++){
+	for(size_t i = 0; i < mVertices.size() / 3; i++){
 
-		glm::vec3 temp = glm::vec3(vertices[3*i], vertices[3*i + 1], vertices[3*i + 2]);
+		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
 		float distance = glm::distance(y, temp);
 		if(distance > maxDistance){
 			z = temp;
@@ -175,14 +179,14 @@ Sphere Mesh::getBoundingSphere() const
 	}
 
 	Sphere sphere;
-	sphere.radius = glm::distance(y, z);
-	sphere.centre = 0.5f * (y + z);
+	sphere.mRadius = glm::distance(y, z);
+	sphere.mCentre = 0.5f * (y + z);
 
-	for(size_t i = 0; i < vertices.size() / 3; i++){
-		glm::vec3 temp = glm::vec3(vertices[3*i], vertices[3*i + 1], vertices[3*i + 2]);
-		float distance = glm::distance(temp, sphere.centre);
-		if(distance > sphere.radius){
-			sphere.radius += distance;
+	for(size_t i = 0; i < mVertices.size() / 3; i++){
+		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
+		float distance = glm::distance(temp, sphere.mCentre);
+		if(distance > sphere.mRadius){
+			sphere.mRadius += distance;
 		}
 	}
 
@@ -191,25 +195,25 @@ Sphere Mesh::getBoundingSphere() const
 
 GLuint Mesh::getNativeGraphicsVAO() const
 {
-	return vao;
+	return mVao;
 }
 
 void Mesh::create()
 {
-	if (created) {
+	if (mCreated) {
 		return;
 	}
 
-	Graphics::create(this, &vao, &vbo[0], &vbo[1], &vbo[2], &created);
+	Graphics::create(this, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mCreated);
 }
 
 void Mesh::destroy()
 {
-	if (!created) {
+	if (!mCreated) {
 		return;
 	}
 
-	Graphics::destroy(this, &vao, &vbo[0], &vbo[1], &vbo[2], &created);
+	Graphics::destroy(this, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mCreated);
 }
 
 void Mesh::apply()

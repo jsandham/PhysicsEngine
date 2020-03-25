@@ -16,36 +16,36 @@ namespace PhysicsEngine
 {
 	typedef struct Object
 	{
-		Guid id;
-		Sphere sphere;  //Primitive which sphere, bounds, capsule, triangle derive from?
+		Guid mId;
+		Sphere mSphere;  //Primitive which sphere, bounds, capsule, triangle derive from?
 	}Object;
 
 	typedef struct Node 
 	{
-		glm::vec3 centre;
-		glm::vec3 extent;
-		std::vector<Object> objects;
+		glm::vec3 mCentre;
+		glm::vec3 mExtent;
+		std::vector<Object> mObjects;
 	}Node;
 
 	typedef struct Cell
 	{
-		float tx0;
-		float ty0;
-		float tz0;
-		float tx1;
-		float ty1;
-		float tz1;
-		int nodeIndex;
+		float mTx0;
+		float mTy0;
+		float mTz0;
+		float mTx1;
+		float mTy1;
+		float mTz1;
+		int mNodeIndex;
 	}Cell;
 
 	class Octtree
 	{
 		private:
-			int maxNumOfObjectsPerNode;
-			int depth;
-			Bounds bounds;
-			std::vector<Node> nodes;
-			std::vector<float> lines; 
+			int mMaxNumOfObjectsPerNode;
+			int mDepth;
+			Bounds mBounds;
+			std::vector<Node> mNodes;
+			std::vector<float> mLines; 
 
 		public:
 			Octtree();

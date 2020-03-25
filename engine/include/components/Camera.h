@@ -30,50 +30,50 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct CameraHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		Guid targetTextureId;
-		CameraMode mode;
-		glm::vec3 position;
-		glm::vec3 front;
-		glm::vec3 up;
-		glm::vec4 backgroundColor;
-		int x;
-		int y;
-		int width;
-		int height;
-		float fov;
-		float nearPlane;
-		float farPlane;
+		Guid mComponentId;
+		Guid mEntityId;
+		Guid mTargetTextureId;
+		CameraMode mMode;
+		glm::vec3 mPosition;
+		glm::vec3 mFront;
+		glm::vec3 mUp;
+		glm::vec4 mBackgroundColor;
+		int mX;
+		int mY;
+		int mWidth;
+		int mHeight;
+		float mFov;
+		float mNearPlane;
+		float mFarPlane;
 	};
 #pragma pack(pop)
 
 	// plane defined by n.x*x + n.y*y + n.z*z + d = 0, where d = -dot(n, x0)
 	struct Plane
 	{
-		glm::vec3 n;
-		glm::vec3 x0;
+		glm::vec3 mN;
+		glm::vec3 mX0;
 
 		float distance(glm::vec3 point) const;
 	};
 
 	struct Viewport
 	{
-		int x;
-		int y;
-		int width;
-		int height;
+		int mX;
+		int mY;
+		int mWidth;
+		int mHeight;
 
 		float getAspectRatio() const;
 	};
 
 	struct Frustum
 	{
-		Plane planes[6];
+		Plane mPlanes[6];
 
-		float fov;
-		float nearPlane;
-		float farPlane;
+		float mFov;
+		float mNearPlane;
+		float mFarPlane;
 
 		int checkPoint(glm::vec3 point) const;
 		int checkSphere(glm::vec3 centre, float radius) const;
@@ -83,24 +83,24 @@ namespace PhysicsEngine
 	class Camera : public Component
 	{
 		public:
-			Frustum frustum;
-			Viewport viewport;
-			Guid targetTextureId;
+			Frustum mFrustum;
+			Viewport mViewport;
+			Guid mTargetTextureId;
 			
-			GLuint mainFBO;
-			GLuint colorTex;
-			GLuint depthTex;
+			GLuint mMainFBO;
+			GLuint mColorTex;
+			GLuint mDepthTex;
 
-			GLuint geometryFBO;
-			GLuint positionTex;
-			GLuint normalTex;
+			GLuint mGeometryFBO;
+			GLuint mPositionTex;
+			GLuint mNormalTex;
 
-			GLuint ssaoFBO;
-			GLuint ssaoColorTex;
+			GLuint mSsaoFBO;
+			GLuint mSsaoColorTex;
 		
-			GLuint ssaoNoiseTex;
+			GLuint mSsaoNoiseTex;
 
-			std::vector<glm::vec3> ssaoSamples;
+			std::vector<glm::vec3> mSsaoSamples;
 
 			enum {
 				TOP = 0,
@@ -111,16 +111,16 @@ namespace PhysicsEngine
 				FAR
 			};
 
-			CameraMode mode;
+			CameraMode mMode;
 
-			glm::vec3 position;
-			glm::vec3 front;
-			glm::vec3 up;
-			glm::vec3 right;
-			glm::vec4 backgroundColor;
+			glm::vec3 mPosition;
+			glm::vec3 mFront;
+			glm::vec3 mUp;
+			glm::vec3 mRight;
+			glm::vec4 mBackgroundColor;
 
-			bool isCreated;
-			bool useSSAO;
+			bool mIsCreated;
+			bool mUseSSAO;
 
 		public:
 			Camera();
@@ -145,15 +145,15 @@ namespace PhysicsEngine
 	const int ComponentType<Camera>::type = 2;
 
 	template <typename T>
-	struct IsCamera { static bool value; };
+	struct IsCamera { static const bool value; };
 
 	template <typename T>
-	bool IsCamera<T>::value = false;
+	const bool IsCamera<T>::value = false;
 
 	template<>
-	bool IsCamera<Camera>::value = true;
+	const bool IsCamera<Camera>::value = true;
 	template<>
-	bool IsComponent<Camera>::value = true;
+	const bool IsComponent<Camera>::value = true;
 }
 
 #endif

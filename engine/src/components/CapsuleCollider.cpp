@@ -21,15 +21,15 @@ CapsuleCollider::~CapsuleCollider()
 
 std::vector<char> CapsuleCollider::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> CapsuleCollider::serialize(Guid componentId, Guid entityId) const
 {
 	CapsuleColliderHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.capsule = capsule;
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mCapsule = mCapsule;
 
 	std::vector<char> data(sizeof(CapsuleColliderHeader));
 
@@ -42,12 +42,12 @@ void CapsuleCollider::deserialize(std::vector<char> data)
 {
 	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
-	capsule = header->capsule;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
+	mCapsule = header->mCapsule;
 }
 
 bool CapsuleCollider::intersect(Bounds bounds) const
 {
-	return Geometry::intersect(bounds, this->capsule);
+	return Geometry::intersect(bounds, mCapsule);
 }

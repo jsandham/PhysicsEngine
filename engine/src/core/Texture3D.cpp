@@ -6,15 +6,15 @@ using namespace PhysicsEngine;
 
 Texture3D::Texture3D()
 {
-	this->dimension = TextureDimension::Tex2D;
+	mDimension = TextureDimension::Tex2D;
 
-	this->width = 0;
-	this->height = 0;
-	this->depth = 0;
-	this->format = TextureFormat::RGB;
+	mWidth = 0;
+	mHeight = 0;
+	mDepth = 0;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 }
 
 Texture3D::Texture3D(std::vector<char> data)
@@ -24,17 +24,17 @@ Texture3D::Texture3D(std::vector<char> data)
 
 Texture3D::Texture3D(int width, int height, int depth, int numChannels)
 {
-	this->dimension = TextureDimension::Tex2D;
+	mDimension = TextureDimension::Tex2D;
 
-	this->width = width;
-	this->height = height;
-	this->depth = depth;
-	this->format = TextureFormat::RGB;
+	mWidth = width;
+	mHeight = height;
+	mDepth = depth;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 
-	rawTextureData.resize(width * height * depth * numChannels);
+	mRawTextureData.resize(width * height * depth * numChannels);
 }
 
 Texture3D::~Texture3D()
@@ -44,23 +44,23 @@ Texture3D::~Texture3D()
 
 std::vector<char> Texture3D::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Texture3D::serialize(Guid assetId) const
 {
 	Texture3DHeader header;
-	header.textureId = assetId;
-	header.width = width;
-	header.height = height;
-	header.depth = depth;
-	header.numChannels = numChannels;
-	header.dimension = dimension;
-	header.format = format;
-	header.textureSize = rawTextureData.size();
+	header.mTextureId = assetId;
+	header.mWidth = mWidth;
+	header.mHeight = mHeight;
+	header.mDepth = mDepth;
+	header.mNumChannels = mNumChannels;
+	header.mDimension = mDimension;
+	header.mFormat = mFormat;
+	header.mTextureSize = mRawTextureData.size();
 
 	size_t numberOfBytes = sizeof(Texture3DHeader) +
-		sizeof(unsigned char) * rawTextureData.size();
+		sizeof(unsigned char) * mRawTextureData.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -68,7 +68,7 @@ std::vector<char> Texture3D::serialize(Guid assetId) const
 	size_t start2 = start1 + sizeof(Texture3DHeader);
 
 	memcpy(&data[start1], &header, sizeof(Texture3DHeader));
-	memcpy(&data[start2], &rawTextureData[0], sizeof(unsigned char) * rawTextureData.size());
+	memcpy(&data[start2], &mRawTextureData[0], sizeof(unsigned char) * mRawTextureData.size());
 
 	return data;
 }
@@ -80,49 +80,49 @@ void Texture3D::deserialize(std::vector<char> data)
 
 	Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[start1]);
 
-	assetId = header->textureId;
-	width = header->width;
-	height = header->height;
-	depth = header->depth;
-	numChannels = header->numChannels;
-	dimension = static_cast<TextureDimension>(header->dimension);
-	format = static_cast<TextureFormat>(header->format);
+	mAssetId = header->mTextureId;
+	mWidth = header->mWidth;
+	mHeight = header->mHeight;
+	mDepth = header->mDepth;
+	mNumChannels = header->mNumChannels;
+	mDimension = static_cast<TextureDimension>(header->mDimension);
+	mFormat = static_cast<TextureFormat>(header->mFormat);
 
-	rawTextureData.resize(header->textureSize);
-	for(size_t i = 0; i < header->textureSize; i++){
-		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+	mRawTextureData.resize(header->mTextureSize);
+	for(size_t i = 0; i < header->mTextureSize; i++){
+		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
-	this->created = false;
+	this->mCreated = false;
 }
 
 int Texture3D::getWidth() const
 {
-	return width;
+	return mWidth;
 }
 
 int Texture3D::getHeight() const
 {
-	return height;
+	return mHeight;
 }
 
 int Texture3D::getDepth() const
 {
-	return depth;
+	return mDepth;
 }
 
 void Texture3D::redefine(int width, int height, int depth, TextureFormat format)
 {
-	this->width = width;
-	this->height = height;
-	this->depth = depth;
-	this->format = TextureFormat::RGB;
+	mWidth = width;
+	mHeight = height;
+	mDepth = depth;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
+	mNumChannels = calcNumChannels(format);
 }
 
 std::vector<unsigned char> Texture3D::getRawTextureData() const
 {
-	return rawTextureData;
+	return mRawTextureData;
 }
 
 Color Texture3D::getPixel(int x, int y, int z) const
@@ -135,28 +135,28 @@ void Texture3D::setRawTextureData(std::vector<unsigned char> data, int width, in
 	switch (format)
 	{
 	case TextureFormat::Depth:
-		numChannels = 1;
+		mNumChannels = 1;
 		break;
 	case TextureFormat::RG:
-		numChannels = 2;
+		mNumChannels = 2;
 		break;
 	case TextureFormat::RGB:
-		numChannels = 3;
+		mNumChannels = 3;
 		break;
 	case TextureFormat::RGBA:
-		numChannels = 4;
+		mNumChannels = 4;
 		break;
 	default:
 		Log::error("Unsupported texture format %d\n", format);
 		return;
 	}
 
-	this->width = width;
-	this->height = height;
-	this->depth = depth;
-	this->format = format;
+	mWidth = width;
+	mHeight = height;
+	mDepth = depth;
+	mFormat = format;
 
-	rawTextureData = data;
+	mRawTextureData = data;
 }
 
 void Texture3D::setPixel(int x, int y, int z, Color color)
@@ -166,19 +166,19 @@ void Texture3D::setPixel(int x, int y, int z, Color color)
 
 void Texture3D::create()
 {
-	if (created) {
+	if (mCreated) {
 		return;
 	}
-	Graphics::create(this, &tex, &created);
+	Graphics::create(this, &mTex, &mCreated);
 }
 
 void Texture3D::destroy()
 {
-	if (!created) {
+	if (!mCreated) {
 		return;
 	}
 
-	Graphics::destroy(this, &tex, &created);
+	Graphics::destroy(this, &mTex, &mCreated);
 }
 
 void Texture3D::readPixels()

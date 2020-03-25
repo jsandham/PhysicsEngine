@@ -30,18 +30,18 @@ void TransformDrawer::render(World* world, EditorProject& project, EditorScene& 
 		ImGui::Text(("EntityId: " + transform->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		glm::vec3 position = transform->position;
-		glm::quat rotation = transform->rotation;
-		glm::vec3 scale = transform->scale;
+		glm::vec3 position = transform->mPosition;
+		glm::quat rotation = transform->mRotation;
+		glm::vec3 scale = transform->mScale;
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))){
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->position, position, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->mPosition, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat4("Rotation", glm::value_ptr(rotation))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::quat>(&transform->rotation, rotation, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::quat>(&transform->mRotation, rotation, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Scale", glm::value_ptr(scale))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->scale, scale, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->mScale, scale, &scene.isDirty));
 		}
 
 		ImGui::TreePop();

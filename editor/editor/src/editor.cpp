@@ -70,7 +70,7 @@ void Editor::init(HWND window, int width, int height)
 	ImGui::StyleColorsCorporate();
 
 	// set debug on for editor 
-	world.debug = true;
+	world.mDebug = true;
 
 	// add camera, render, and cleanup system to world
 	cameraSystem = world.addSystem<EditorCameraSystem>(0);
@@ -79,7 +79,7 @@ void Editor::init(HWND window, int width, int height)
 	// add simple editor render system to render gizmo's
 	cleanupSystem = world.addSystem<CleanUpSystem>(2);
 
-	renderSystem->renderToScreen = false;
+	renderSystem->mRenderToScreen = false;
 
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);

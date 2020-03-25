@@ -6,6 +6,7 @@
 #include "core/InternalMeshes.h"
 
 #include "systems/RenderSystem.h"
+#include "systems/CleanUpSystem.h"
 
 using namespace PhysicsEditor;
 
@@ -51,13 +52,13 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
     for(size_t i = 0; i < uniforms.size(); i++)
 	{
 		// only expose uniforms exist in a Material uniform struct in the shader
-		if (std::strcmp(uniforms[i].blockName, "material") != 0)
+		if (std::strcmp(uniforms[i].mBlockName, "material") != 0)
 		{
 			continue;
 		}
 
 		// Note: matrices not supported
-		switch (uniforms[i].type)
+		switch (uniforms[i].mType)
 		{
 			case GL_INT:
 				UniformDrawer<GL_INT>::draw(world, material, &uniforms[i], clipboard, project);
@@ -93,6 +94,8 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 		if (!materialViewWorldPopulated) {
 			populateMaterialViewWorld(material, shader);
 
+			int t = materialViewWorld.getNumberOfSystems();
+
 			for (int i = 0; i < materialViewWorld.getNumberOfSystems(); i++) {
 				System* system = materialViewWorld.getSystemByIndex(i);
 
@@ -109,30 +112,25 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 		}
 
 		Log::info("\n");
+		Log::info(("material view world system count: " + std::to_string(materialViewWorld.getNumberOfSystems()) + "\n").c_str());
 		Log::info(("material view world entity count: " + std::to_string(materialViewWorld.getNumberOfEntities()) + "\n").c_str());
 		Log::info(("material view world material count: " + std::to_string(materialViewWorld.getNumberOfAssets<Material>()) + "\n").c_str());
 		Log::info(("material view world mesh count: " + std::to_string(materialViewWorld.getNumberOfAssets<Mesh>()) + "\n").c_str());
 		Log::info(("material view world shader count: " + std::to_string(materialViewWorld.getNumberOfAssets<Shader>()) + "\n").c_str());
 		Log::info(("material view world texture count: " + std::to_string(materialViewWorld.getNumberOfAssets<Texture2D>()) + "\n").c_str());
 
+		RenderSystem* worldRS = world->getFirstSystem<RenderSystem>();
 		RenderSystem* renderSystem = materialViewWorld.getFirstSystem<RenderSystem>();
+
+		std::string test1 = worldRS->getId().toString();
+		std::string test2 = renderSystem->getId().toString();
 
 		GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;// ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0);
 		ImGui::BeginChild("MaterialPreviewWindow", ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true, window_flags);
 
-		//materialRenderer.render(world, material);
-
-		ImGui::Image((void*)(intptr_t)targets.color, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
-		// Call simple material renderer here to display material on a sphere
-
-		// steps:
-		// create frame buffer with color and depth attachment in initialization
-		// bind framebuffer 
-		// draw sphere with material and simple light from a fixed camera looking at sphere.
-		// unbind frame buffer
-		// take color texture from framebuffer and use it with ImGui::Image()
+		ImGui::Image((void*)(intptr_t)targets.mColor, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
 
 		ImGui::EndChild();
 	}
@@ -143,6 +141,8 @@ void MaterialDrawer::populateMaterialViewWorld(Material* material, Shader* shade
 	// create shader
 	Shader* sphereShader = materialViewWorld.createAsset<Shader>();
 	sphereShader->load(shader->getVertexShader(), shader->getFragmentShader(), shader->getGeometryShader());
+
+	std::string test = sphereShader->getId().toString();
 
 	// create material
 	Material* sphereMaterial = materialViewWorld.createAsset<Material>();
@@ -160,40 +160,43 @@ void MaterialDrawer::populateMaterialViewWorld(Material* material, Shader* shade
 	Entity* sphereEntity = materialViewWorld.createEntity();
 
 	Transform* transform = sphereEntity->addComponent<Transform>(&materialViewWorld);
-	transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
-	transform->rotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-	transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	transform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	transform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+	transform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	MeshRenderer* meshRenderer = sphereEntity->addComponent<MeshRenderer>(&materialViewWorld);
-	meshRenderer->meshId = sphereMesh->getId();
-	meshRenderer->materialIds[0] = sphereMaterial->getId();
-	meshRenderer->materialCount = 1;
+	meshRenderer->mMeshId = sphereMesh->getId();
+	meshRenderer->mMaterialIds[0] = sphereMaterial->getId();
+	meshRenderer->mMaterialCount = 1;
+	meshRenderer->mIsStatic = false;
 
 	// create light entity in world
 	Entity* lightEntity = materialViewWorld.createEntity();
 
 	transform = lightEntity->addComponent<Transform>(&materialViewWorld);
-	transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
-	transform->rotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-	transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	transform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	transform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+	transform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	Light* light = lightEntity->addComponent<Light>(&materialViewWorld);
-	//light->ambient = 
-	//light->lightType = LightType::Directional;
 
 	// create camera entity in world
 	Entity* cameraEntity = materialViewWorld.createEntity();
 
 	transform = cameraEntity->addComponent<Transform>(&materialViewWorld);
-	transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
-	transform->rotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-	transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	transform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	transform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+	transform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	Camera* camera = cameraEntity->addComponent<Camera>(&materialViewWorld);
-	camera->position = glm::vec3(5.0f, 0.0f, 0.0f);
-	camera->front = glm::vec3(-5.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->mPosition = glm::vec3(5.0f, 0.0f, 0.0f);
+	camera->mFront = glm::vec3(-5.0f, 0.0f, 0.0f);
+	camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	// add render system to material view world
 	RenderSystem* renderSystem = materialViewWorld.addSystem<RenderSystem>(0);
+	renderSystem->mRenderToScreen = false;
+
+	// add required clean-up system to material view world
+	CleanUpSystem* cleanUpSystem = materialViewWorld.addSystem<CleanUpSystem>(1);
 }

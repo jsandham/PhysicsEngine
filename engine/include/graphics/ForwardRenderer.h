@@ -13,7 +13,6 @@
 #include "../components/Light.h"
 #include "../components/MeshRenderer.h"
 
-#include "BatchManager.h"
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"
 #include "GraphicsDebug.h"
@@ -27,23 +26,23 @@ namespace PhysicsEngine
 	class ForwardRenderer
 	{
 	private:
-		World* world;
+		World* mWorld;
 
-		std::vector<RenderObject> renderObjects;
+		std::vector<RenderObject> mRenderObjects;
 
-		ScreenData screenData;
-		ShadowMapData shadowMapData;
+		ScreenData mScreenData;
+		ShadowMapData mShadowMapData;
 
 		// internal graphics state
-		GraphicsCameraState cameraState;
-		GraphicsLightState lightState;
+		GraphicsCameraState mCameraState;
+		GraphicsLightState mLightState;
 
 		// timing and debug
-		GraphicsQuery query;
-		GraphicsDebug debug;
-		GraphicsTargets targets;
+		GraphicsQuery mQuery;
+		GraphicsDebug mDebug;
+		GraphicsTargets mTargets;
 
-		bool renderToScreen;
+		bool mRenderToScreen;
 
 	public:
 		ForwardRenderer();

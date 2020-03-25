@@ -8,8 +8,8 @@ namespace PhysicsEngine
 	class Sphere
 	{
 		public:
-			float radius;
-			glm::vec3 centre;
+			float mRadius;
+			glm::vec3 mCentre;
 
 		public:
 			Sphere();

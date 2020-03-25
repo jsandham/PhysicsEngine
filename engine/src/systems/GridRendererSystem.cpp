@@ -14,7 +14,7 @@ GridRendererSystem::~GridRendererSystem()
 
 std::vector<char> GridRendererSystem::serialize() const
 {
-	return serialize(systemId);
+	return serialize(mSystemId);
 }
 
 std::vector<char> GridRendererSystem::serialize(Guid systemId) const

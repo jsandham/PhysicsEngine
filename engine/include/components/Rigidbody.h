@@ -14,37 +14,37 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct RigidbodyHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		bool useGravity;
-		float mass;
-		float drag;
-		float angularDrag;
+		Guid mComponentId;
+		Guid mEntityId;
+		bool mUseGravity;
+		float mMass;
+		float mDrag;
+		float mAngularDrag;
 
-		glm::vec3 velocity;
-		glm::vec3 angularVelocity;
-		glm::vec3 centreOfMass;
-		glm::mat3 inertiaTensor;
+		glm::vec3 mVelocity;
+		glm::vec3 mAngularVelocity;
+		glm::vec3 mCentreOfMass;
+		glm::mat3 mInertiaTensor;
 		
-		glm::vec3 halfVelocity;
+		glm::vec3 mHalfVelocity;
 	};
 #pragma pack(pop)
 
 	class Rigidbody : public Component
 	{
 		public:
-			bool useGravity;
-			float mass;
-			float drag;
-			float angularDrag;
+			bool mUseGravity;
+			float mMass;
+			float mDrag;
+			float mAngularDrag;
 
-			glm::vec3 velocity;
-			glm::vec3 angularVelocity;
-			glm::vec3 centreOfMass;
-			glm::mat3 inertiaTensor;
+			glm::vec3 mVelocity;
+			glm::vec3 mAngularVelocity;
+			glm::vec3 mCentreOfMass;
+			glm::mat3 mInertiaTensor;
 
 			// leap-frog
-			glm::vec3 halfVelocity;
+			glm::vec3 mHalfVelocity;
 
 		public:
 			Rigidbody();
@@ -60,15 +60,15 @@ namespace PhysicsEngine
 	const int ComponentType<Rigidbody>::type = 1;
 
 	template <typename T>
-	struct IsRigidbody { static bool value; };
+	struct IsRigidbody { static const bool value; };
 
 	template <typename T>
-	bool IsRigidbody<T>::value = false;
+	const bool IsRigidbody<T>::value = false;
 
 	template<>
-	bool IsRigidbody<Rigidbody>::value = true;
+	const bool IsRigidbody<Rigidbody>::value = true;
 	template<>
-	bool IsComponent<Rigidbody>::value = true;
+	const bool IsComponent<Rigidbody>::value = true;
 }
 
 

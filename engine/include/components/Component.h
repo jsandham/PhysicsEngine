@@ -11,8 +11,8 @@ namespace PhysicsEngine
 	class Component
 	{
 		protected:
-			Guid componentId;
-			Guid entityId;
+			Guid mComponentId;
+			Guid mEntityId;
 
 		public:
 			Component();
@@ -58,13 +58,13 @@ namespace PhysicsEngine
 	const int ComponentType<T>::type = -1;
 
 	template <typename T>
-	struct IsComponent { static bool value; };
+	struct IsComponent { static const bool value; };
 
 	template <typename T>
-	bool IsComponent<T>::value = false;
+	const bool IsComponent<T>::value = false;
 
 	template<>
-	bool IsComponent<Component>::value = true;
+	const bool IsComponent<Component>::value = true;
 }
 
 #endif

@@ -4,17 +4,17 @@ using namespace PhysicsEngine;
 
 Rigidbody::Rigidbody()
 {
-	useGravity = true;
-	mass = 1.0f;
-	drag = 0.0f;
-	angularDrag = 0.05f;
+	mUseGravity = true;
+	mMass = 1.0f;
+	mDrag = 0.0f;
+	mAngularDrag = 0.05f;
 
-	velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	centreOfMass = glm::vec3(0.0f, 0.0f, 0.0f);
-	angularVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	inertiaTensor = glm::mat3(1.0f);
+	mVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	mCentreOfMass = glm::vec3(0.0f, 0.0f, 0.0f);
+	mAngularVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	mInertiaTensor = glm::mat3(1.0f);
 
-	halfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 Rigidbody::Rigidbody(std::vector<char> data)
@@ -29,25 +29,25 @@ Rigidbody::~Rigidbody()
 
 std::vector<char> Rigidbody::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> Rigidbody::serialize(Guid componentId, Guid entityId) const
 {
 	RigidbodyHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.useGravity = useGravity;
-	header.mass = mass;
-	header.drag = drag;
-	header.angularDrag = angularDrag;
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mUseGravity = mUseGravity;
+	header.mMass = mMass;
+	header.mDrag = mDrag;
+	header.mAngularDrag = mAngularDrag;
 
-	header.velocity = velocity;
-	header.angularVelocity = angularVelocity;
-	header.centreOfMass = centreOfMass;
-	header.inertiaTensor = inertiaTensor;
+	header.mVelocity = mVelocity;
+	header.mAngularVelocity = mAngularVelocity;
+	header.mCentreOfMass = mCentreOfMass;
+	header.mInertiaTensor = mInertiaTensor;
 
-	header.halfVelocity = halfVelocity;
+	header.mHalfVelocity = mHalfVelocity;
 
 	std::vector<char> data(sizeof(RigidbodyHeader));
 
@@ -60,16 +60,16 @@ void Rigidbody::deserialize(std::vector<char> data)
 {
 	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
-	useGravity = header->useGravity;
-	mass = header->mass;
-	drag = header->drag;
-	angularDrag = header->angularDrag;
-	velocity = header->velocity;
-	angularVelocity = header->angularVelocity;
-	centreOfMass = header->centreOfMass;
-	inertiaTensor = header->inertiaTensor;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
+	mUseGravity = header->mUseGravity;
+	mMass = header->mMass;
+	mDrag = header->mDrag;
+	mAngularDrag = header->mAngularDrag;
+	mVelocity = header->mVelocity;
+	mAngularVelocity = header->mAngularVelocity;
+	mCentreOfMass = header->mCentreOfMass;
+	mInertiaTensor = header->mInertiaTensor;
 
-	halfVelocity = header->halfVelocity;
+	mHalfVelocity = header->mHalfVelocity;
 }

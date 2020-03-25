@@ -6,12 +6,12 @@ if not defined DevEnvDir (
 
 set GLEW="../include/glew-2.1.0"
 set FREETYPE="../include/freetype"
-set WARN=-W4 -wd4201 -wd4189 -wd4100 -wd4530 -wd4996 -wd4127 -wd4211 -wd4512 -wd4458 
+set WARN=-W4 -wd4100 -wd4996 -wd4211 
 set OPENMP=
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
 set MODE=debug
-set FLAGS=-nologo
+set FLAGS=-nologo /EHsc
 
 :: run through batch file parameter inputs
 for %%x in (%*) do (

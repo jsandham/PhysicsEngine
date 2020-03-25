@@ -12,10 +12,10 @@
 
 typedef struct obj_mesh
 {
-	std::vector<float> vertices;
-	std::vector<float> normals;
-	std::vector<float> texCoords;
-	std::vector<int> subMeshVertexStartIndices;
+	std::vector<float> mVertices;
+	std::vector<float> mNormals;
+	std::vector<float> mTexCoords;
+	std::vector<int> mSubMeshVertexStartIndices;
 }obj_mesh;
 
 void obj_split(const std::string& s, char delim, std::vector<std::string>& elems) {
@@ -445,10 +445,10 @@ bool obj_load(const std::string& filepath, obj_mesh& mesh)
 
 	subMeshVertexStartIndices.push_back((int)vertices.size());
 
-	mesh.vertices = vertices;
-	mesh.normals = normals;
-	mesh.texCoords = texCoords;
-	mesh.subMeshVertexStartIndices = subMeshVertexStartIndices;
+	mesh.mVertices = vertices;
+	mesh.mNormals = normals;
+	mesh.mTexCoords = texCoords;
+	mesh.mSubMeshVertexStartIndices = subMeshVertexStartIndices;
 
 	if (error) {
 		std::cout << "Error: " << errorString << std::endl;

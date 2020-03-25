@@ -10,8 +10,8 @@ namespace PhysicsEngine
 	class Bounds
 	{
 		public:
-			glm::vec3 centre;
-			glm::vec3 size;
+			glm::vec3 mCentre;
+			glm::vec3 mSize;
 
 		public:
 			Bounds();

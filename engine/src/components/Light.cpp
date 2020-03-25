@@ -4,21 +4,21 @@ using namespace PhysicsEngine;
 
 Light::Light()
 {
-	componentId = Guid::INVALID;
-	entityId = Guid::INVALID;
+	mComponentId = Guid::INVALID;
+	mEntityId = Guid::INVALID;
 
-	position = glm::vec3(0.0f, 1.0f, 0.0f);
-	direction = glm::vec3(1.0f, 2.0f, 0.0f);
-	ambient = glm::vec3(0.4f, 0.4f, 0.4f);
-	diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	constant = 1.0f;
-	linear = 0.1f;
-	quadratic = 0.032f;
-	cutOff = glm::cos(glm::radians(12.5f));
-	outerCutOff = glm::cos(glm::radians(15.0f));
-	lightType = LightType::Directional;
-	shadowType = ShadowType::Hard;
+	mPosition = glm::vec3(0.0f, 1.0f, 0.0f);
+	mDirection = glm::vec3(1.0f, 2.0f, 0.0f);
+	mAmbient = glm::vec3(0.4f, 0.4f, 0.4f);
+	mDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+	mConstant = 1.0f;
+	mLinear = 0.1f;
+	mQuadratic = 0.032f;
+	mCutOff = glm::cos(glm::radians(12.5f));
+	mOuterCutOff = glm::cos(glm::radians(15.0f));
+	mLightType = LightType::Directional;
+	mShadowType = ShadowType::Hard;
 }
 
 Light::Light(std::vector<char> data)
@@ -33,26 +33,26 @@ Light::~Light()
 
 std::vector<char> Light::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> Light::serialize(Guid componentId, Guid entityId) const
 {
 	LightHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.position = position;
-	header.direction = direction;
-	header.ambient = ambient;
-	header.diffuse = diffuse;
-	header.specular = specular;
-	header.constant = constant;
-	header.linear = linear;
-	header.quadratic = quadratic;
-	header.cutOff = cutOff;
-	header.outerCutOff = outerCutOff;
-	header.lightType = static_cast<int>(lightType);
-	header.shadowType = static_cast<int>(shadowType);
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mPosition = mPosition;
+	header.mDirection = mDirection;
+	header.mAmbient = mAmbient;
+	header.mDiffuse = mDiffuse;
+	header.mSpecular = mSpecular;
+	header.mConstant = mConstant;
+	header.mLinear = mLinear;
+	header.mQuadratic = mQuadratic;
+	header.mCutOff = mCutOff;
+	header.mOuterCutOff = mOuterCutOff;
+	header.mLightType = static_cast<int>(mLightType);
+	header.mShadowType = static_cast<int>(mShadowType);
 
 	std::vector<char> data(sizeof(LightHeader));
 
@@ -65,26 +65,26 @@ void Light::deserialize(std::vector<char> data)
 {
 	LightHeader* header = reinterpret_cast<LightHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
 
-	position = header->position;
-	direction = header->direction;
-	ambient = header->ambient;
-	diffuse = header->diffuse;
-	specular = header->specular;
+	mPosition = header->mPosition;
+	mDirection = header->mDirection;
+	mAmbient = header->mAmbient;
+	mDiffuse = header->mDiffuse;
+	mSpecular = header->mSpecular;
 
-	constant = header->constant;
-	linear = header->linear;
-	quadratic = header->quadratic;
-	cutOff = glm::cos(glm::radians(header->cutOff));
-	outerCutOff = glm::cos(glm::radians(header->outerCutOff));
+	mConstant = header->mConstant;
+	mLinear = header->mLinear;
+	mQuadratic = header->mQuadratic;
+	mCutOff = glm::cos(glm::radians(header->mCutOff));
+	mOuterCutOff = glm::cos(glm::radians(header->mOuterCutOff));
 
-	lightType = static_cast<LightType>(header->lightType);
-	shadowType = static_cast<ShadowType>(header->shadowType);
+	mLightType = static_cast<LightType>(header->mLightType);
+	mShadowType = static_cast<ShadowType>(header->mShadowType);
 }
 
 glm::mat4 Light::getProjMatrix() const
 {
-	return glm::perspective(2.0f * glm::radians(outerCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
+	return glm::perspective(2.0f * glm::radians(mOuterCutOff), 1.0f * 1024 / 1024, 0.1f, 12.0f);
 }

@@ -4,14 +4,14 @@ using namespace PhysicsEngine;
 
 MeshRenderer::MeshRenderer()
 {
-	meshId = Guid::INVALID;
+	mMeshId = Guid::INVALID;
 
 	for(int i = 0; i < 8; i++){
-		materialIds[i] = Guid::INVALID;
+		mMaterialIds[i] = Guid::INVALID;
 	}
 
-	materialCount = 0;
-	isStatic = true;
+	mMaterialCount = 0;
+	mIsStatic = true;
 }
 
 MeshRenderer::MeshRenderer(std::vector<char> data)
@@ -25,20 +25,20 @@ MeshRenderer::~MeshRenderer()
 
 std::vector<char> MeshRenderer::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
 {
 	MeshRendererHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.meshId = meshId;
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mMeshId = mMeshId;
 	for (int i = 0; i < 8; i++) {
-		header.materialIds[i] = materialIds[i];
+		header.mMaterialIds[i] = mMaterialIds[i];
 	}
-	header.materialCount = materialCount;
-	header.isStatic = isStatic;
+	header.mMaterialCount = mMaterialCount;
+	header.mIsStatic = mIsStatic;
 
 	std::vector<char> data(sizeof(MeshRendererHeader));
 
@@ -51,12 +51,12 @@ void MeshRenderer::deserialize(std::vector<char> data)
 {
 	MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
-	meshId = header->meshId;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
+	mMeshId = header->mMeshId;
 	for(int i = 0; i < 8; i++){
-		materialIds[i] = header->materialIds[i];
+		mMaterialIds[i] = header->mMaterialIds[i];
 	}
-	materialCount = header->materialCount;
-	isStatic = header->isStatic;
+	mMaterialCount = header->mMaterialCount;
+	mIsStatic = header->mIsStatic;
 }

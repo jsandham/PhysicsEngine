@@ -16,22 +16,22 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct TransformHeader
 	{
-		Guid componentId;
-		Guid parentId;
-		Guid entityId;
-		glm::vec3 position;
-		glm::quat rotation;
-		glm::vec3 scale;
+		Guid mComponentId;
+		Guid mParentId;
+		Guid mEntityId;
+		glm::vec3 mPosition;
+		glm::quat mRotation;
+		glm::vec3 mScale;
 	};
 #pragma pack(pop)
 
 	class Transform : public Component
 	{
 		public:
-			Guid parentId;
-			glm::vec3 position;
-			glm::quat rotation;
-			glm::vec3 scale;
+			Guid mParentId;
+			glm::vec3 mPosition;
+			glm::quat mRotation;
+			glm::vec3 mScale;
 
 		public:
 			Transform();
@@ -52,15 +52,15 @@ namespace PhysicsEngine
 	const int ComponentType<Transform>::type = 0;
 
 	template <typename T>
-	struct IsTransform { static bool value; };
+	struct IsTransform { static const bool value; };
 
 	template <typename T>
-	bool IsTransform<T>::value = false;
+	const bool IsTransform<T>::value = false;
 
 	template<>
-	bool IsTransform<Transform>::value = true;
+	const bool IsTransform<Transform>::value = true;
 	template<>
-	bool IsComponent<Transform>::value = true;
+	const bool IsComponent<Transform>::value = true;
 }
 
 #endif

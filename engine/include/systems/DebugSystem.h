@@ -15,10 +15,10 @@ namespace PhysicsEngine
 	class DebugSystem : public System
 	{
 		private:
-			LineBuffer buffer;
+			LineBuffer mBuffer;
 
-			Material* colorMat;
-			Shader* colorShader;
+			Material* mColorMat;
+			Shader* mColorShader;
 
 		public:
 			DebugSystem();
@@ -37,15 +37,15 @@ namespace PhysicsEngine
 	const int SystemType<DebugSystem>::type = 3;
 
 	template< typename T>
-	struct IsDebugSystem { static bool value; };
+	struct IsDebugSystem { static const bool value; };
 
 	template<typename T>
-	bool IsDebugSystem<T>::value = false;
+	const bool IsDebugSystem<T>::value = false;
 
 	template<>
-	bool IsDebugSystem<DebugSystem>::value = true;
+	const bool IsDebugSystem<DebugSystem>::value = true;
 	template<>
-	bool IsSystem<DebugSystem>::value = true;
+	const bool IsSystem<DebugSystem>::value = true;
 }
 
 #endif

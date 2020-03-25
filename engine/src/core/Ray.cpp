@@ -9,8 +9,8 @@ Ray::Ray()
 
 Ray::Ray(glm::vec3 origin, glm::vec3 direction)
 {
-	this->origin = origin;
-	this->direction = direction;
+	mOrigin = origin;
+	mDirection = direction;
 }
 
 Ray::~Ray()
@@ -20,5 +20,5 @@ Ray::~Ray()
 
 glm::vec3 Ray::getPoint(float distance) const
 {
-	return origin + distance * direction;
+	return mOrigin + distance *mDirection;
 }

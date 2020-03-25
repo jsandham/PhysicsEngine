@@ -28,53 +28,53 @@ ForwardRenderer::~ForwardRenderer()
 
 void ForwardRenderer::init(World* world, bool renderToScreen)
 {
-	this->world = world;
-	this->renderToScreen = renderToScreen;
+	mWorld = world;
+	mRenderToScreen = renderToScreen;
 
-	initializeRenderer(world, screenData, shadowMapData, cameraState, lightState, debug, query);
+	initializeRenderer(world, mScreenData, mShadowMapData, mCameraState, mLightState, mDebug, mQuery);
 }
 
 void ForwardRenderer::update(Input input)
 {
-	registerRenderAssets(world);
-	registerRenderObjects(world, renderObjects);
-	registerCameras(world);
+	registerRenderAssets(mWorld);
+	registerRenderObjects(mWorld, mRenderObjects);
+	registerCameras(mWorld);
 
-	updateTransforms(world, renderObjects);
+	updateTransforms(mWorld, mRenderObjects);
 
-	for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++) {
-		Camera* camera = world->getComponentByIndex<Camera>(i);
+	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++) {
+		Camera* camera = mWorld->getComponentByIndex<Camera>(i);
 
-		cullRenderObjects(camera, renderObjects);
+		cullRenderObjects(camera, mRenderObjects);
 
-		beginFrame(camera, cameraState, query);
+		beginFrame(camera, mCameraState, mLightState, mQuery);
 
-		computeSSAO(world, camera, renderObjects, screenData, query);
+		computeSSAO(mWorld, camera, mRenderObjects, mScreenData, mQuery);
 
-		for (int j = 0; j < world->getNumberOfComponents<Light>(); j++) {
-			Light* light = world->getComponentByIndex<Light>(j);
+		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++) {
+			Light* light = mWorld->getComponentByIndex<Light>(j);
 
-			renderShadows(world, camera, light, renderObjects, shadowMapData, query);
-			renderOpaques(world, camera, light, renderObjects, shadowMapData, lightState, query);
+			renderShadows(mWorld, camera, light, mRenderObjects, mShadowMapData, mQuery);
+			renderOpaques(mWorld, camera, light, mRenderObjects, mShadowMapData, mLightState, mQuery);
 			renderTransparents();
 		}
 
 		postProcessing();
-		endFrame(world, camera, renderObjects, screenData, targets, debug, query, renderToScreen);
+		endFrame(mWorld, camera, mRenderObjects, mScreenData, mTargets, mDebug, mQuery, mRenderToScreen);
 	}
 }
 
 GraphicsQuery ForwardRenderer::getGraphicsQuery() const
 {
-	return query;
+	return mQuery;
 }
 
 GraphicsDebug ForwardRenderer::getGraphicsDebug() const
 {
-	return debug;
+	return mDebug;
 }
 
 GraphicsTargets ForwardRenderer::getGraphicsTargets() const
 {
-	return targets;
+	return mTargets;
 }

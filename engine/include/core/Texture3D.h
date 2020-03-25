@@ -11,23 +11,23 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct Texture3DHeader
 	{
-		Guid textureId;
-		int width;
-		int height;
-		int depth;
-		int numChannels;
-		int dimension;
-		int format;
-		size_t textureSize;
+		Guid mTextureId;
+		int mWidth;
+		int mHeight;
+		int mDepth;
+		int mNumChannels;
+		int mDimension;
+		int mFormat;
+		size_t mTextureSize;
 	};
 #pragma pack(pop)
 
 	class Texture3D : public Texture
 	{
 		private:
-			int width;
-			int height;
-			int depth;
+			int mWidth;
+			int mHeight;
+			int mDepth;
 
 		public:
 			Texture3D();
@@ -61,17 +61,17 @@ namespace PhysicsEngine
 	const int AssetType<Texture3D>::type = 2;
 
 	template <typename T>
-	struct IsTexture3D { static bool value; };
+	struct IsTexture3D { static const bool value; };
 
 	template <typename T>
-	bool IsTexture3D<T>::value = false;
+	const bool IsTexture3D<T>::value = false;
 
 	template<>
-	bool IsTexture3D<Texture3D>::value = true;
+	const bool IsTexture3D<Texture3D>::value = true;
 	template<>
-	bool IsTexture<Texture3D>::value = true;
+	const bool IsTexture<Texture3D>::value = true;
 	template<>
-	bool IsAsset<Texture3D>::value = true;
+	const bool IsAsset<Texture3D>::value = true;
 }
 
 #endif

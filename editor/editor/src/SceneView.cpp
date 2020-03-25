@@ -52,12 +52,12 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 									"Position",
 									"Overdraw",
 									"SSAO" };
-		const GLint textures[] = { targets.color,
-									targets.depth,
-									targets.normals,
-									targets.position,
-									targets.overdraw,
-									targets.ssao };
+		const GLint textures[] = { targets.mColor,
+									targets.mDepth,
+									targets.mNormals,
+									targets.mPosition,
+									targets.mOverdraw,
+									targets.mSsao };
 
 		// select draw texture 
 		static GLuint currentTexture = (GLuint)textures[0];
@@ -76,7 +76,7 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 				if (ImGui::Selectable(textureNames[n], is_selected)) {
 					currentTextureName = textureNames[n];
 					currentTexture = (GLuint)textures[n];
-					world->debugView = n - 1;
+					world->mDebugView = n - 1;
 					if (is_selected) {
 						ImGui::SetItemDefaultFocus();
 					}
@@ -129,12 +129,12 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 			ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
 			if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 			{
-				ImGui::Text("Tris: %d\n", query.tris);
-				ImGui::Text("Verts: %d\n", query.verts);
-				ImGui::Text("Draw calls: %d\n", query.numDrawCalls);
-				ImGui::Text("Elapsed time: %f", query.totalElapsedTime);
+				ImGui::Text("Tris: %d\n", query.mTris);
+				ImGui::Text("Verts: %d\n", query.mVerts);
+				ImGui::Text("Draw calls: %d\n", query.mNumDrawCalls);
+				ImGui::Text("Elapsed time: %f", query.mTotalElapsedTime);
 
-				perfQueue.addSample(query.totalElapsedTime);
+				perfQueue.addSample(query.mTotalElapsedTime);
 
 				std::vector<float> perfData = perfQueue.getData();
 				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());

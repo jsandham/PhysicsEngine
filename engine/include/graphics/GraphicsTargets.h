@@ -7,23 +7,23 @@ namespace PhysicsEngine
 {
 	typedef struct GraphicsTargets
 	{
-		GLint color;
-		GLint depth;
-		GLint normals;
-		GLint position;
-		GLint overdraw;
-		GLint ssao;
-		GLint cascades;
+		GLint mColor;
+		GLint mDepth;
+		GLint mNormals;
+		GLint mPosition;
+		GLint mOverdraw;
+		GLint mSsao;
+		GLint mCascades;
 		
 		GraphicsTargets()
 		{
-			color = -1;
-			depth = -1;
-			normals = -1;
-			position = -1;
-			overdraw = -1;
-			ssao = -1;
-			cascades = -1;
+			mColor = -1;
+			mDepth = -1;
+			mNormals = -1;
+			mPosition = -1;
+			mOverdraw = -1;
+			mSsao = -1;
+			mCascades = -1;
 		}
 	}GraphicsTargets;
 }

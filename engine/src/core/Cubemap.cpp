@@ -6,13 +6,13 @@ using namespace PhysicsEngine;
 
 Cubemap::Cubemap()
 {
-	this->dimension = TextureDimension::Cube;
+	mDimension = TextureDimension::Cube;
 
-	this->width = 0;
-	this->format = TextureFormat::RGB;
+	mWidth = 0;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 }
 
 Cubemap::Cubemap(std::vector<char> data)
@@ -22,41 +22,41 @@ Cubemap::Cubemap(std::vector<char> data)
 
 Cubemap::Cubemap(int width)
 {
-	this->dimension = TextureDimension::Cube;
+	mDimension = TextureDimension::Cube;
 
-	this->width = width;
-	this->format = TextureFormat::RGB;
+	mWidth = width;
+	mFormat = TextureFormat::RGB;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(mFormat);
+	mCreated = false;
 
-	rawTextureData.resize(6 * width*width*numChannels);
+	mRawTextureData.resize(6 * width*width*mNumChannels);
 }
 
 Cubemap::Cubemap(int width, TextureFormat format)
 {
-	this->dimension = TextureDimension::Cube;
+	mDimension = TextureDimension::Cube;
 
-	this->width = width;
-	this->format = format;
+	mWidth = width;
+	mFormat = format;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(format);
+	mCreated = false;
 
-	rawTextureData.resize(6 * width*width*numChannels);
+	mRawTextureData.resize(6 * width*width*mNumChannels);
 }
 
 Cubemap::Cubemap(int width, int height, TextureFormat format)
 {
-	this->dimension = TextureDimension::Cube;
+	mDimension = TextureDimension::Cube;
 
-	this->width = width;
-	this->format = format;
+	mWidth = width;
+	mFormat = format;
 
-	this->numChannels = calcNumChannels(format);
-	this->created = false;
+	mNumChannels = calcNumChannels(format);
+	mCreated = false;
 
-	rawTextureData.resize(6 * width*width*numChannels);
+	mRawTextureData.resize(6 * width*width*mNumChannels);
 }
 
 Cubemap::~Cubemap()
@@ -66,21 +66,21 @@ Cubemap::~Cubemap()
 
 std::vector<char> Cubemap::serialize() const
 {
-	return serialize(assetId);
+	return serialize(mAssetId);
 }
 
 std::vector<char> Cubemap::serialize(Guid assetId) const
 {
 	CubemapHeader header;
-	header.textureId = assetId;
-	header.width = width;
-	header.numChannels = numChannels;
-	header.dimension = dimension;
-	header.format = format;
-	header.textureSize = rawTextureData.size();
+	header.mTextureId = assetId;
+	header.mWidth = mWidth;
+	header.mNumChannels = mNumChannels;
+	header.mDimension = mDimension;
+	header.mFormat = mFormat;
+	header.mTextureSize = mRawTextureData.size();
 
 	size_t numberOfBytes = sizeof(CubemapHeader) +
-		sizeof(unsigned char) * rawTextureData.size();
+		sizeof(unsigned char) * mRawTextureData.size();
 
 	std::vector<char> data(numberOfBytes);
 
@@ -88,7 +88,7 @@ std::vector<char> Cubemap::serialize(Guid assetId) const
 	size_t start2 = start1 + sizeof(CubemapHeader);
 
 	memcpy(&data[start1], &header, sizeof(CubemapHeader));
-	memcpy(&data[start2], &rawTextureData[0], sizeof(unsigned char) * rawTextureData.size());
+	memcpy(&data[start2], &mRawTextureData[0], sizeof(unsigned char) * mRawTextureData.size());
 
 	return data;
 }
@@ -100,26 +100,26 @@ void Cubemap::deserialize(std::vector<char> data)
 
 	CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[start1]);
 
-	assetId = header->textureId;
-	width = header->width;
-	numChannels = header->numChannels;
-	dimension = static_cast<TextureDimension>(header->dimension);
-	format = static_cast<TextureFormat>(header->format);
+	mAssetId = header->mTextureId;
+	mWidth = header->mWidth;
+	mNumChannels = header->mNumChannels;
+	mDimension = static_cast<TextureDimension>(header->mDimension);
+	mFormat = static_cast<TextureFormat>(header->mFormat);
 
-	rawTextureData.resize(header->textureSize);
-	for(size_t i = 0; i < header->textureSize; i++){
-		rawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+	mRawTextureData.resize(header->mTextureSize);
+	for(size_t i = 0; i < header->mTextureSize; i++){
+		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 }
 
 int Cubemap::getWidth() const
 {
-	return width;
+	return mWidth;
 }
 
 std::vector<unsigned char> Cubemap::getRawCubemapData() const
 {
-	return rawTextureData;
+	return mRawTextureData;
 }
 
 std::vector<Color> Cubemap::getPixels(CubemapFace face) const
@@ -127,27 +127,27 @@ std::vector<Color> Cubemap::getPixels(CubemapFace face) const
 	/*std::vector<Color> colors(width*width*numChannels);*/
 	std::vector<Color> colors;
 
-	int start = (int)face*width*width*numChannels;
-	int end = start + width*width*numChannels;
-	for (int i = start; i < end; i += numChannels){
+	int start = (int)face*mWidth * mWidth * mNumChannels;
+	int end = start + mWidth * mWidth * mNumChannels;
+	for (int i = start; i < end; i += mNumChannels){
 		Color color;
-		if (numChannels == 1){
-			color.r = rawTextureData[i];
-			color.g = rawTextureData[i];
-			color.b = rawTextureData[i];
+		if (mNumChannels == 1){
+			color.r = mRawTextureData[i];
+			color.g = mRawTextureData[i];
+			color.b = mRawTextureData[i];
 			color.a = 0;
 		}
-		else if (numChannels == 3){
-			color.r = rawTextureData[i];
-			color.g = rawTextureData[i + 1];
-			color.b = rawTextureData[i + 2];
+		else if (mNumChannels == 3){
+			color.r = mRawTextureData[i];
+			color.g = mRawTextureData[i + 1];
+			color.b = mRawTextureData[i + 2];
 			color.a = 0;
 		}
-		else if (numChannels == 4){
-			color.r = rawTextureData[i];
-			color.g = rawTextureData[i + 1];
-			color.b = rawTextureData[i + 2];
-			color.a = rawTextureData[i + 3];
+		else if (mNumChannels == 4){
+			color.r = mRawTextureData[i];
+			color.g = mRawTextureData[i + 1];
+			color.b = mRawTextureData[i + 2];
+			color.a = mRawTextureData[i + 3];
 		}
 
 		colors.push_back(color);
@@ -158,30 +158,30 @@ std::vector<Color> Cubemap::getPixels(CubemapFace face) const
 
 Color Cubemap::getPixel(CubemapFace face, int x, int y) const
 {
-	int index =  (int)face*width*width*numChannels + numChannels * (x + width * y);
+	int index =  (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
 
-	if (index + numChannels >= rawTextureData.size()){
+	if (index + mNumChannels >= mRawTextureData.size()){
 		Log::error("Cubemap: pixel index out of range\n");
 	}
 
 	Color color;
-	if (numChannels == 1){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index];
-		color.b = rawTextureData[index];
+	if (mNumChannels == 1){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index];
+		color.b = mRawTextureData[index];
 		color.a = 0;
 	}
-	else if (numChannels == 3){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index + 1];
-		color.b = rawTextureData[index + 2];
+	else if (mNumChannels == 3){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index + 1];
+		color.b = mRawTextureData[index + 2];
 		color.a = 0;
 	}
-	else if (numChannels == 4){
-		color.r = rawTextureData[index];
-		color.g = rawTextureData[index + 1];
-		color.b = rawTextureData[index + 2];
-		color.a = rawTextureData[index + 3];
+	else if (mNumChannels == 4){
+		color.r = mRawTextureData[index];
+		color.g = mRawTextureData[index + 1];
+		color.b = mRawTextureData[index + 2];
+		color.a = mRawTextureData[index + 3];
 	}
 
 	return color;
@@ -190,12 +190,12 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y) const
 
 void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
 {
-	if (6*width*width*numChannels != data.size()){
+	if (6 * mWidth * mWidth * mNumChannels != data.size()){
 		Log::error("Cubemap: Raw texture data does not match size of cubemap\n");
 		return;
 	}
 
-	rawTextureData = data;
+	mRawTextureData = data;
 }
 
 void Cubemap::setPixels(CubemapFace face, int x, int y, Color color)
@@ -205,44 +205,44 @@ void Cubemap::setPixels(CubemapFace face, int x, int y, Color color)
 
 void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
 {
-	int index = (int)face*width*width*numChannels + numChannels * (x + width * y);
+	int index = (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
 
-	if (index + numChannels >= rawTextureData.size()){
+	if (index + mNumChannels >= mRawTextureData.size()){
 		Log::error("Cubemap: pixel index out of range\n");
 		return;
 	}
 
-	if (numChannels == 1){
-		rawTextureData[index] = color.r;
+	if (mNumChannels == 1){
+		mRawTextureData[index] = color.r;
 	}
-	else if (numChannels == 3){
-		rawTextureData[index] = color.r;
-		rawTextureData[index + 1] = color.g;
-		rawTextureData[index + 2] = color.b;
+	else if (mNumChannels == 3){
+		mRawTextureData[index] = color.r;
+		mRawTextureData[index + 1] = color.g;
+		mRawTextureData[index + 2] = color.b;
 	}
-	else if (numChannels == 4){
-		rawTextureData[index] = color.r;
-		rawTextureData[index + 1] = color.g;
-		rawTextureData[index + 2] = color.b;
-		rawTextureData[index + 3] = color.a;
+	else if (mNumChannels == 4){
+		mRawTextureData[index] = color.r;
+		mRawTextureData[index + 1] = color.g;
+		mRawTextureData[index + 2] = color.b;
+		mRawTextureData[index + 3] = color.a;
 	}
 }
 
 void Cubemap::create()
 {
-	if (created) {
+	if (mCreated) {
 		return;
 	}
-	Graphics::create(this, &tex, &created);
+	Graphics::create(this, &mTex, &mCreated);
 }
 
 void Cubemap::destroy()
 {
-	if (!created) {
+	if (!mCreated) {
 		return;
 	}
 
-	Graphics::destroy(this, &tex, &created);
+	Graphics::destroy(this, &mTex, &mCreated);
 }
 
 void Cubemap::readPixels()

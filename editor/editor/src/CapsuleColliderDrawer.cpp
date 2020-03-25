@@ -29,17 +29,17 @@ void CapsuleColliderDrawer::render(World* world, EditorProject& project, EditorS
 
 		if (ImGui::TreeNode("Capsule")) {
 			float centre[3];
-			centre[0] = capsuleCollider->capsule.centre.x;
-			centre[1] = capsuleCollider->capsule.centre.y;
-			centre[2] = capsuleCollider->capsule.centre.z;
+			centre[0] = capsuleCollider->mCapsule.mCentre.x;
+			centre[1] = capsuleCollider->mCapsule.mCentre.y;
+			centre[2] = capsuleCollider->mCapsule.mCentre.z;
 
 			ImGui::InputFloat3("Centre", &centre[0]);
-			ImGui::InputFloat("Radius", &capsuleCollider->capsule.radius);
-			ImGui::InputFloat("Height", &capsuleCollider->capsule.height);
+			ImGui::InputFloat("Radius", &capsuleCollider->mCapsule.mRadius);
+			ImGui::InputFloat("Height", &capsuleCollider->mCapsule.mHeight);
 
-			capsuleCollider->capsule.centre.x = centre[0];
-			capsuleCollider->capsule.centre.y = centre[1];
-			capsuleCollider->capsule.centre.z = centre[2];
+			capsuleCollider->mCapsule.mCentre.x = centre[0];
+			capsuleCollider->mCapsule.mCentre.y = centre[1];
+			capsuleCollider->mCapsule.mCentre.z = centre[2];
 
 			ImGui::TreePop();
 		}

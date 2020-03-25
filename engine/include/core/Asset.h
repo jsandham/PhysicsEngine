@@ -10,8 +10,8 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct AssetHeader
 	{
-		unsigned short fileType;
-		unsigned int fileSize;
+		unsigned short mFileType;
+		unsigned int mFileSize;
 	};
 #pragma pack(pop)
 	
@@ -26,7 +26,7 @@ namespace PhysicsEngine
 	class Asset
 	{
 		protected:
-			Guid assetId;
+			Guid mAssetId;
 
 		public:
 			Asset();
@@ -43,13 +43,13 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
-	struct IsAsset { static bool value; };
+	struct IsAsset { static const bool value; };
 
 	template <typename T>
-	bool IsAsset<T>::value = false;
+	const bool IsAsset<T>::value = false;
 
 	template<>
-	bool IsAsset<Asset>::value = true;
+	const bool IsAsset<Asset>::value = true;
 }
 
 #endif

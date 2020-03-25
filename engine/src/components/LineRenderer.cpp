@@ -4,10 +4,10 @@ using namespace PhysicsEngine;
 
 LineRenderer::LineRenderer()
 {
-	start = glm::vec3(0.0f, 0.0f, 0.0f);
-	end = glm::vec3(1.0f, 0.0f, 0.0f);
+	mStart = glm::vec3(0.0f, 0.0f, 0.0f);
+	mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
 
-	materialId = Guid::INVALID;
+	mMaterialId = Guid::INVALID;
 }
 
 LineRenderer::LineRenderer(std::vector<char> data)
@@ -22,17 +22,17 @@ LineRenderer::~LineRenderer()
 
 std::vector<char> LineRenderer::serialize() const
 {
-	return serialize(componentId, entityId);
+	return serialize(mComponentId, mEntityId);
 }
 
 std::vector<char> LineRenderer::serialize(Guid componentId, Guid entityId) const
 {
 	LineRendererHeader header;
-	header.componentId = componentId;
-	header.entityId = entityId;
-	header.start = start;
-	header.end = end;
-	header.materialId = materialId;
+	header.mComponentId = componentId;
+	header.mEntityId = entityId;
+	header.mStart = mStart;
+	header.mEnd = mEnd;
+	header.mMaterialId = mMaterialId;
 
 	std::vector<char> data(sizeof(LineRendererHeader));
 
@@ -45,9 +45,9 @@ void LineRenderer::deserialize(std::vector<char> data)
 {
 	LineRendererHeader* header = reinterpret_cast<LineRendererHeader*>(&data[0]);
 
-	componentId = header->componentId;
-	entityId = header->entityId;
-	start = header->start;
-	end = header->end;
-	materialId = header->materialId;
+	mComponentId = header->mComponentId;
+	mEntityId = header->mEntityId;
+	mStart = header->mStart;
+	mEnd = header->mEnd;
+	mMaterialId = header->mMaterialId;
 }

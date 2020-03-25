@@ -7,8 +7,8 @@ using namespace PhysicsEngine;
 
 Component::Component()
 {
-	componentId = Guid::INVALID;
-	entityId = Guid::INVALID;
+	mComponentId = Guid::INVALID;
+	mEntityId = Guid::INVALID;
 }
 
 Component::~Component()
@@ -18,15 +18,15 @@ Component::~Component()
 
 Entity* Component::getEntity(World* world) const
 {
-	return world->getEntity(entityId);
+	return world->getEntity(mEntityId);
 }
 
 Guid Component::getId() const
 {
-	return componentId;
+	return mComponentId;
 }
 
 Guid Component::getEntityId() const
 {
-	return entityId;
+	return mEntityId;
 }

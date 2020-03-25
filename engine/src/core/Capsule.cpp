@@ -9,9 +9,9 @@ Capsule::Capsule()
 
 Capsule::Capsule(glm::vec3 centre, float radius, float height)
 {
-	this->centre = centre;
-	this->radius = radius;
-	this->height = height;
+	mCentre = centre;
+	mRadius = radius;
+	mHeight = height;
 }
 
 Capsule::~Capsule()

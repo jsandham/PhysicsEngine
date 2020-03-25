@@ -23,10 +23,10 @@ EditorCameraSystem::EditorCameraSystem(std::vector<char> data)
 {
 	deserialize(data);
 
-	lastPosX = 0;
-	lastPosY = 0;
-	currentPosX = 0;
-	currentPosY = 0;
+	mLastPosX = 0;
+	mLastPosY = 0;
+	mCurrentPosX = 0;
+	mCurrentPosY = 0;
 }
 
 EditorCameraSystem::~EditorCameraSystem()
@@ -36,31 +36,31 @@ EditorCameraSystem::~EditorCameraSystem()
 
 std::vector<char> EditorCameraSystem::serialize() const
 {
-	return serialize(systemId);
+	return serialize(mSystemId);
 }
 
 std::vector<char> EditorCameraSystem::serialize(Guid systemId) const
 {
 	std::vector<char> data(sizeof(int));
 
-	memcpy(&data[0], &order, sizeof(int));
+	memcpy(&data[0], &mOrder, sizeof(int));
 
 	return data;
 }
 
 void EditorCameraSystem::deserialize(std::vector<char> data)
 {
-	order = *reinterpret_cast<int*>(&data[0]);
+	mOrder = *reinterpret_cast<int*>(&data[0]);
 }
 
 void EditorCameraSystem::init(World* world)
 {
-	this->world = world;
+	mWorld = world;
 
-	camera = world->createEditorCamera();
+	mCamera = world->createEditorCamera();
 
-	Log::warn(camera->getEntityId().toString().c_str());
-	Log::warn(camera->getId().toString().c_str());
+	Log::warn(mCamera->getEntityId().toString().c_str());
+	Log::warn(mCamera->getId().toString().c_str());
 }
 
 void EditorCameraSystem::update(Input input)
@@ -80,10 +80,10 @@ void EditorCameraSystem::update(Input input)
 
 	int currentPosX = camera->currentPosX;
 	int currentPosY = camera->currentPosY;*/
-	glm::vec3 position = camera->position;
-	glm::vec3 front = camera->front;
-	glm::vec3 up = camera->up;
-	glm::vec3 right = camera->right;
+	glm::vec3 position = mCamera->mPosition;
+	glm::vec3 front = mCamera->mFront;
+	glm::vec3 up = mCamera->mUp;
+	glm::vec3 right = mCamera->mRight;
 
 	if (getKey(input, KeyCode::Up)) {
 		position += up * EditorCameraSystem::TRANSLATE_SENSITIVITY;
@@ -103,21 +103,21 @@ void EditorCameraSystem::update(Input input)
 	position += EditorCameraSystem::SCROLL_SENSITIVITY * input.mouseDelta * front;
 
 	if (getMouseButtonDown(input, LButton)) {
-		currentPosX = input.mousePosX;
-		currentPosY = input.mousePosY;
+		mCurrentPosX = input.mousePosX;
+		mCurrentPosY = input.mousePosY;
 	}
 	else if (getMouseButton(input, LButton)) {
-		currentPosX = input.mousePosX;
-		currentPosY = input.mousePosY;
-		mouseDelta.x = EditorCameraSystem::PAN_SENSITIVITY * (currentPosX - lastPosX);
-		mouseDelta.y = EditorCameraSystem::PAN_SENSITIVITY * (currentPosY - lastPosY);
+		mCurrentPosX = input.mousePosX;
+		mCurrentPosY = input.mousePosY;
+		mouseDelta.x = EditorCameraSystem::PAN_SENSITIVITY * (mCurrentPosX - mLastPosX);
+		mouseDelta.y = EditorCameraSystem::PAN_SENSITIVITY * (mCurrentPosY - mLastPosY);
 	}
 	else if (getMouseButtonUp(input, LButton)) {
 		mouseDelta = glm::vec2(0.0f, 0.0f);
 	}
 
-	lastPosX = currentPosX;
-	lastPosY = currentPosY;
+	mLastPosX = mCurrentPosX;
+	mLastPosY = mCurrentPosY;
 
 	// rotation around the camera up vector
 	front = glm::mat3(glm::rotate(glm::mat4(), -mouseDelta.x, up)) * front;
@@ -141,9 +141,9 @@ void EditorCameraSystem::update(Input input)
 	camera->lastPosY = lastPosY;
 	camera->currentPosX = currentPosX;
 	camera->currentPosY = currentPosY;*/
-	camera->position = position;
-	camera->front = front;
-	camera->up = up;
+	mCamera->mPosition = position;
+	mCamera->mFront = front;
+	mCamera->mUp = up;
 
 
 	//camera->lastPosX = lastPosX;
@@ -151,7 +151,7 @@ void EditorCameraSystem::update(Input input)
 	//camera->currentPosX = currentPosX;
 	//camera->currentPosY = currentPosY;
 
-	camera->updateInternalCameraState();
+	mCamera->updateInternalCameraState();
 
 
 
@@ -169,9 +169,9 @@ void EditorCameraSystem::update(Input input)
 
 void EditorCameraSystem::resetCamera()
 {
-	camera->position = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->front = glm::vec3(1.0f, 0.0f, 0.0f);
-	camera->up = glm::vec3(0.0f, 0.0f, 1.0f);
-	camera->backgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	camera->updateInternalCameraState();
+	mCamera->mPosition = glm::vec3(0.0f, 0.0f, 1.0f);
+	mCamera->mFront = glm::vec3(1.0f, 0.0f, 0.0f);
+	mCamera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);
+	mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+	mCamera->updateInternalCameraState();
 }

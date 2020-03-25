@@ -16,16 +16,16 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct SphereColliderHeader
 	{
-		Guid componentId;
-		Guid entityId;
-		Sphere sphere;
+		Guid mComponentId;
+		Guid mEntityId;
+		Sphere mSphere;
 	};
 #pragma pack(pop)
 
 	class SphereCollider : public Collider
 	{
 		public:
-			Sphere sphere;
+			Sphere mSphere;
 
 		public:
 			SphereCollider();
@@ -45,17 +45,17 @@ namespace PhysicsEngine
 	const int ComponentType<SphereCollider>::type = 9;
 
 	template <typename T>
-	struct IsSphereCollider { static bool value; };
+	struct IsSphereCollider { static const bool value; };
 
 	template <typename T>
-	bool IsSphereCollider<T>::value = false;
+	const bool IsSphereCollider<T>::value = false;
 
 	template<>
-	bool IsSphereCollider<SphereCollider>::value = true;
+	const bool IsSphereCollider<SphereCollider>::value = true;
 	template<>
-	bool IsCollider<SphereCollider>::value = true;
+	const bool IsCollider<SphereCollider>::value = true;
 	template<>
-	bool IsComponent<SphereCollider>::value = true;
+	const bool IsComponent<SphereCollider>::value = true;
 }
 
 #endif
