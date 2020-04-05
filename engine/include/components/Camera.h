@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <GL/glew.h>
+//#include "../glew-2.1.0/GL/glew.h"
 #include <gl/gl.h>
 
 #undef NEAR

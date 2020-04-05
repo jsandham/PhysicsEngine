@@ -15,9 +15,6 @@ using namespace PhysicsEngine;
 World::World()
 {
 	mEntityAllocator = NULL;
-
-	mDebug = false;
-	mDebugView = -1;
 }
 
 World::~World()
@@ -42,8 +39,10 @@ World::~World()
 	}
 }
 
-bool World::loadAsset(std::string filePath)
+bool World::loadAsset(const std::string filePath)
 {
+	Log::info(("file path: " + filePath + "\n").c_str());
+
 	std::ifstream file;
 	file.open(filePath, std::ios::binary);
 
@@ -89,9 +88,11 @@ bool World::loadAsset(std::string filePath)
 		}
 
 		if(asset == NULL || index == -1){
-			Log::error("Error: Could not load asset");
+			Log::error("Error: Could not load asset\n");
 			return false;
 		}
+
+		assetIdToFilepath[asset->mAssetId] = filePath;
 
 		if(mIdToGlobalIndex.find(asset->mAssetId) == mIdToGlobalIndex.end()){
 			mIdToGlobalIndex[asset->mAssetId] = index;
@@ -117,10 +118,8 @@ bool World::loadAsset(std::string filePath)
 	return true;
 }
 
-bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
+bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
 {
-	Log::info("Attempting to load scene\n");
-
 	std::ifstream file;
 	file.open(filePath, std::ios::binary);
 
@@ -303,7 +302,7 @@ bool World::loadScene(std::string filePath, bool ignoreSystemsAndCamera)
 	return true;
 }
 
-bool World::loadSceneFromEditor(std::string filePath)
+bool World::loadSceneFromEditor(const std::string filePath)
 {
 	return loadScene(filePath, true);
 }
@@ -352,24 +351,26 @@ Entity* World::getEntity(Guid entityId)
 		return NULL;
 	}
 
-	PoolAllocator<Entity>* allocator = getEntityAllocator();
-	if (allocator == NULL) {
-		return NULL;
-	}
-
 	std::map<Guid, int>::iterator it = mIdToGlobalIndex.find(entityId);
 	if(it != mIdToGlobalIndex.end()){
+
+		PoolAllocator<Entity>* allocator = getEntityAllocator();
+		if (allocator == NULL) {
+			return NULL;
+		}
+
 		return allocator->get(it->second);
 	}
-	else{
-		std::string message = "Error: No entity with id " + entityId.toString() + " was found\n";
-		Log::error(message.c_str());
-		return NULL;
-	}
+
+	return NULL;
 }
 
 Entity* World::getEntityByIndex(int index)
 {
+	if (index < 0) {
+		return NULL;
+	}
+
 	PoolAllocator<Entity>* allocator = getEntityAllocator();
 	if (allocator == NULL) {
 		return NULL;
@@ -380,6 +381,10 @@ Entity* World::getEntityByIndex(int index)
 
 System* World::getSystemByIndex(int index)
 {
+	if (index < 0 || index >= mSystems.size()) {
+		return NULL;
+	}
+
 	return mSystems[index];
 }
 
@@ -571,7 +576,7 @@ void World::immediateDestroyEntity(Guid entityId)
 void World::latentDestroyComponent(Guid entityId, Guid componentId, int componentType)
 {
 	std::string message = "latent destroy component: " + entityId.toString() + " " + componentId.toString() + " " + std::to_string(componentType) + "\n";
-	Log::error(message.c_str());
+	Log::warn(message.c_str());
 	mComponentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
 }
 
@@ -697,6 +702,16 @@ std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestroy()
 std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved() const
 {
 	return mComponentIdsMarkedMoved;
+}
+
+std::string World::getAssetFilepath(Guid assetId) const
+{
+	std::map<Guid, std::string>::const_iterator it = assetIdToFilepath.find(assetId);
+	if (it != assetIdToFilepath.end()) {
+		return it->second;
+	}
+
+	return "";
 }
 
 //bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

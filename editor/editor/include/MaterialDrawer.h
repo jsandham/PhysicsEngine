@@ -4,12 +4,10 @@
 #include "InspectorDrawer.h"
 #include "EditorClipboard.h"
 #include "EditorProject.h"
-//s#include "MaterialRenderer.h"
 
 #include "core/World.h"
 #include "core/Material.h"
-
-#include "graphics/ForwardRenderer.h"
+#include "components/MeshRenderer.h"
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
@@ -22,8 +20,10 @@ namespace PhysicsEditor
 	class MaterialDrawer : public InspectorDrawer
 	{
 		private:
-			bool materialViewWorldPopulated;
-			World materialViewWorld;
+			World previewWorld; 
+			MeshRenderer* sphereMeshRenderer;
+			//Shader* previewShader;
+			//Material* previewMaterial;
 
 		public:
 			MaterialDrawer();
@@ -32,7 +32,14 @@ namespace PhysicsEditor
 			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
 
 		private:
-			void populateMaterialViewWorld(Material* material, Shader* shader);
+			void populatePreviewWorld(World* world);
+
+
+
+			//void initViewWorld();
+			//void updateViewWorld();
+			//void drawUniforms();
+			//void drawPreview();
 	};
 
 
@@ -40,17 +47,29 @@ namespace PhysicsEditor
 	template <GLenum T>
 	struct UniformDrawer
 	{
-		static void draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project);
+		static void draw(World* world, 
+						 Material* material,
+						 ShaderUniform* uniform, 
+						 EditorClipboard& clipboard, 
+						 EditorProject& project);
 	};
 
 	template<GLenum T>
-	inline void UniformDrawer<T>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project) 
+	inline void UniformDrawer<T>::draw(World* world, 
+									   Material* material, 
+									   ShaderUniform* uniform, 
+									   EditorClipboard& clipboard, 
+									   EditorProject& project)
 	{
 
 	}
 
 	template<>
-	inline void UniformDrawer<GL_INT>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_INT>::draw(World* world, 
+										    Material* material, 
+											ShaderUniform* uniform, 
+											EditorClipboard& clipboard, 
+											EditorProject& project)
 	{
 		int temp = material->getInt(uniform->mName);
 
@@ -61,7 +80,11 @@ namespace PhysicsEditor
 	}
 
 	template<>
-	inline void UniformDrawer<GL_FLOAT>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_FLOAT>::draw(World* world, 
+											  Material* material,
+											  ShaderUniform* uniform, 
+											  EditorClipboard& clipboard, 
+											  EditorProject& project)
 	{
 		float temp = material->getFloat(uniform->mName);
 
@@ -73,7 +96,11 @@ namespace PhysicsEditor
 	}
 
 	template<>
-	inline void UniformDrawer<GL_FLOAT_VEC2>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_FLOAT_VEC2>::draw(World* world, 
+												   Material* material,
+												   ShaderUniform* uniform, 
+												   EditorClipboard& clipboard, 
+												   EditorProject& project)
 	{
 		glm::vec2 temp = material->getVec2(uniform->mName);
 
@@ -85,7 +112,11 @@ namespace PhysicsEditor
 	}
 
 	template<>
-	inline void UniformDrawer<GL_FLOAT_VEC3>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_FLOAT_VEC3>::draw(World* world, 
+												   Material* material,
+												   ShaderUniform* uniform, 
+												   EditorClipboard& clipboard, 
+												   EditorProject& project)
 	{
 		glm::vec3 temp = material->getVec3(uniform->mName);
 
@@ -97,7 +128,11 @@ namespace PhysicsEditor
 	}
 
 	template<>
-	inline void UniformDrawer<GL_FLOAT_VEC4>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_FLOAT_VEC4>::draw(World* world, 
+												   Material* material, 
+												   ShaderUniform* uniform, 
+												   EditorClipboard& clipboard, 
+												   EditorProject& project)
 	{
 		glm::vec4 temp = material->getVec4(uniform->mName);
 
@@ -109,7 +144,11 @@ namespace PhysicsEditor
 	}
 
 	template<>
-	inline void UniformDrawer<GL_SAMPLER_2D>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
+	inline void UniformDrawer<GL_SAMPLER_2D>::draw(World* world, 
+												   Material* material,
+												   ShaderUniform* uniform, 
+												   EditorClipboard& clipboard, 
+												   EditorProject& project)
 	{
 		Guid textureId = material->getTexture(uniform->mName);
 
@@ -127,12 +166,6 @@ namespace PhysicsEditor
 			project.isDirty = true;
 		}
 	}
-
-	/*template<>
-	void UniformDrawer<GL_SAMPLER_CUBE>::draw(World* world, Material* material, ShaderUniform* uniform, EditorClipboard& clipboard, EditorProject& project)
-	{
-
-	}*/
 }
 
 #endif

@@ -237,6 +237,12 @@ void Shader::remove(int variant)
 
 void Shader::compile()
 {
+	// Delete existing shader programs
+	for (size_t i = 0; i < mPrograms.size(); i++) {
+		unuse();
+		glDeleteProgram(mPrograms[i].mHandle);
+	}
+
 	// ensure that all shader programs have the default 'None' program variant
 	if (!contains(ShaderVariant::None)) {
 		add(static_cast<int>(ShaderVariant::None));
@@ -244,12 +250,12 @@ void Shader::compile()
 
 	// determine which variants are possible based on keywords found in shader
 	const std::vector<std::string> keywords{ "DIRECTIONALLIGHT", 
-											"SPOTLIGHT", 
-											"POINTLIGHT", 
-											"HARDSHADOWS", 
-											"SOFTSHADOWS", 
-											"SSAO", 
-											"CASCADE" };
+											 "SPOTLIGHT", 
+											 "POINTLIGHT", 
+											 "HARDSHADOWS", 
+											 "SOFTSHADOWS", 
+											 "SSAO", 
+											 "CASCADE" };
 
 	const std::map<const std::string, ShaderVariant> keywordToVariantMap{
 		{"DIRECTIONALLIGHT", ShaderVariant::Directional},
@@ -301,8 +307,7 @@ void Shader::compile()
 		add(*it);
 	}
 
-	// compile all shader variants
-	GLint success = 0;
+	// Compile all shader variants
 	for (size_t i = 0; i < mPrograms.size(); i++) {
 		std::string version;
 		if(mPrograms[i].mVersion == ShaderVersion::GL330) { 
@@ -321,9 +326,9 @@ void Shader::compile()
 		if (mPrograms[i].mVariant & ShaderVariant::SSAO) { defines += "#define SSAO\n"; }
 		if (mPrograms[i].mVariant & ShaderVariant::Cascade) { defines += "#define CASCADE\n"; }
 
-		std::string preProcessedVertexShader = version + defines + mVertexShader;
-		std::string preProcessedGeometryShader = version + defines + mGeometryShader;
-		std::string preProcessedFragmentShader = version + defines + mFragmentShader;
+		const std::string preProcessedVertexShader = version + defines + mVertexShader;
+		const std::string preProcessedGeometryShader = version + defines + mGeometryShader;
+		const std::string preProcessedFragmentShader = version + defines + mFragmentShader;
 
 		const GLchar* vertexShaderCharPtr = preProcessedVertexShader.c_str();
 		const GLchar* geometryShaderCharPtr = preProcessedGeometryShader.c_str();
@@ -332,9 +337,10 @@ void Shader::compile()
 		GLuint vertexShaderObj = 0;
 		GLuint fragmentShaderObj = 0;
 		GLuint geometryShaderObj = 0;
+		GLint success = 0;
 		GLchar infoLog[512];
 
-		// vertex shader
+		// Compile vertex shader
 		vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL);
 		glCompileShader(vertexShaderObj);
@@ -344,11 +350,9 @@ void Shader::compile()
 			glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
 			std::string message = "Shader: Vertex shader compilation failed\n";
 			Log::error(message.c_str());
-
-			return;
 		}
 
-		// fragment shader
+		// Compile fragment shader
 		fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL);
 		glCompileShader(fragmentShaderObj);
@@ -358,10 +362,9 @@ void Shader::compile()
 			glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
 			std::string message = "Shader: Fragment shader compilation failed\n";
 			Log::error(message.c_str());
-			return;
 		}
 
-		// geometry shader
+		// Compile geometry shader
 		if (!mGeometryShader.empty()) {
 			geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
@@ -372,35 +375,47 @@ void Shader::compile()
 				glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
 				std::string message = "Shader: Geometry shader compilation failed\n";
 				Log::error(message.c_str());
-				return;
 			}
 		}
 
-		// shader program
+		// Create shader program
 		mPrograms[i].mHandle = glCreateProgram();
+
+		// Attach shader objects to shader program
 		glAttachShader(mPrograms[i].mHandle, vertexShaderObj);
 		glAttachShader(mPrograms[i].mHandle, fragmentShaderObj);
 		if (geometryShaderObj != 0) {
 			glAttachShader(mPrograms[i].mHandle, geometryShaderObj);
 		}
 
+		// Link shader program
 		glLinkProgram(mPrograms[i].mHandle);
 		glGetProgramiv(mPrograms[i].mHandle, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(mPrograms[i].mHandle, 512, NULL, infoLog);
 			std::string message = "Shader: Shader program linking failed\n";
 			Log::error(message.c_str());
-			return;
 		}
+
+		// Detach shader objects from shader program
+		glDetachShader(mPrograms[i].mHandle, vertexShaderObj);
+		glDetachShader(mPrograms[i].mHandle, fragmentShaderObj);
+		if (geometryShaderObj != 0) {
+			glDetachShader(mPrograms[i].mHandle, geometryShaderObj);
+		}
+
+		// Delete shader objects
 		glDeleteShader(vertexShaderObj);
 		glDeleteShader(fragmentShaderObj);
 		if (!mGeometryShader.empty()) {
 			glDeleteShader(geometryShaderObj);
 		}
 
+		// Mark shader program compilation successful
 		mPrograms[i].mCompiled = true;
 	}
 
+	// Mark all shader programs compiled successful
 	mAllProgramsCompiled = true;
 
 	// find all uniforms and attributes in shader across all variants
@@ -434,6 +449,7 @@ void Shader::compile()
 			uniform.mNameLength = (size_t)nameLength;
 			uniform.mSize = (size_t)size;
 
+			memset(uniform.mData, '\0', 64);
 			memset(uniform.mName, '\0', 32);
 			memset(uniform.mShortName, '\0', 32);
 			memset(uniform.mBlockName, '\0', 32);
@@ -493,6 +509,10 @@ void Shader::compile()
 			}
 		}
 	}
+
+	// Finally set camera and light uniform block binding points
+	setUniformBlock("CamerBlock", 0);
+	setUniformBlock("LightBlock", 1);
 }
 
 void Shader::use(int program)

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <GL/glew.h>
 #include <gl/gl.h>
@@ -107,9 +108,13 @@ void Material::apply(World* world)
 
 				glActiveTexture(GL_TEXTURE0 + textureSlot);
 				glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
-
-				textureSlot++;
 			}
+			else {
+				glActiveTexture(GL_TEXTURE0 + textureSlot);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			textureSlot++;
 		}
 		
 		if (mUniforms[i].mType == GL_INT ) {
@@ -139,6 +144,8 @@ void Material::onShaderChanged(World* world)
 	}
 
 	if (!shader->isCompiled()) {
+		std::string message = "Error: Must compile shader before calling onShaderChanged\n";
+		Log::error(message.c_str());
 		return;
 	}
 
@@ -599,6 +606,21 @@ Guid Material::getTexture(int nameLocation) const
 	}
 
 	return textureId;
+}
+
+std::vector<Guid> Material::getTextures() const
+{
+	std::vector<Guid> textures;
+	for (size_t i = 0; i < mUniforms.size(); i++) {
+		if (mUniforms[i].mType == GL_SAMPLER_2D) {
+			Guid textureId = Guid::INVALID;
+			memcpy(&textureId, mUniforms[i].mData, sizeof(Guid));
+
+			textures.push_back(textureId);
+		}
+	}
+
+	return textures;
 }
 
 int Material::findIndexOfUniform(std::string name) const

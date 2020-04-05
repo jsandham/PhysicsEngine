@@ -143,27 +143,27 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "MeshRenderer";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["mesh"] = meshRenderer->mMeshId.toString();
+		obj[componentId.toString()]["mesh"] = meshRenderer->getMesh().toString();
 
-		int materialCount = meshRenderer->mMaterialCount;
+		std::vector<Guid> materials = meshRenderer->getMaterials();
 
 		std::string label = "material";
-		if (materialCount > 1) {
+		if (materials.size() > 1) {
 			label = "materials";
 		}
 
 		std::string value = "";
-		if (materialCount == 0) {
+		if (materials.size() == 0) {
 			value = Guid::INVALID.toString();
 		}
-		else if (materialCount == 1) {
-			value = meshRenderer->mMaterialIds[0].toString();
+		else if (materials.size() == 1) {
+			value = materials[0].toString();
 		}
 		else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
 			value += "[";
-			for (int m = 0; m < materialCount; m++) {
-				value += meshRenderer->mMaterialIds[m].toString();
-				if (m != materialCount - 1) {
+			for (int m = 0; m < materials.size(); m++) {
+				value += materials[m].toString();
+				if (m != materials.size() - 1) {
 					value += ",";
 				}
 			}

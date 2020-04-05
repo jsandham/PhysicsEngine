@@ -33,7 +33,8 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
 		// Mesh
-		Guid meshId = meshRenderer->mMeshId;
+		Guid meshId = meshRenderer->getMesh();
+		
 		std::string meshName = "None (Mesh)";
 		if (meshId != Guid::INVALID) {
 			meshName = meshId.toString();
@@ -43,11 +44,11 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 		bool isClicked = ImGui::Slot("Mesh", meshName, clipboard.getDraggedType() == InteractionType::Mesh, &slotFilled);
 
 		if (slotFilled) {
-			// TODO: Need some way of telling the renderer that the mesh has changed. 
 			meshId = clipboard.getDraggedId();
 			clipboard.clearDraggedItem();
 
-			CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->mMeshId, meshId, &scene.isDirty));
+			/*CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->mMeshId, meshId, &scene.isDirty));*/
+			meshRenderer->setMesh(meshId);
 		}
 
 		bool isStatic = meshRenderer->mIsStatic;
@@ -68,7 +69,7 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 
 		Guid materialIds[8];
 		for (int i = 0; i < materialCount; i++) {
-			materialIds[i] = meshRenderer->mMaterialIds[i];
+			materialIds[i] = meshRenderer->getMaterial(i);
 
 			std::string materialName = "None (Material)";
 			if (materialIds[i] != PhysicsEngine::Guid::INVALID) {
@@ -82,6 +83,8 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 			if (materialSlotFilled) {
 				materialIds[i] = clipboard.getDraggedId();
 				clipboard.clearDraggedItem();
+
+				meshRenderer->setMaterial(materialIds[i], i);
 			}
 
 			// this current is always getting called when you click on an entity in the hierarchy causing the scene to be dirtied

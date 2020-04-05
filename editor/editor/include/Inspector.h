@@ -22,9 +22,9 @@ namespace PhysicsEditor
 	class Inspector
 	{
 		private:
-			MaterialDrawer* materialDrawer;
-			ShaderDrawer* shaderDrawer;
-			Texture2DDrawer* texture2DDrawer;
+			MaterialDrawer materialDrawer;
+			ShaderDrawer shaderDrawer;
+			Texture2DDrawer texture2DDrawer;
 
 
 		public:

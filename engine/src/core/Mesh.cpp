@@ -148,6 +148,29 @@ const std::vector<int>& Mesh::getSubMeshStartIndices() const
 	return mSubMeshVertexStartIndices;
 }
 
+int Mesh::getSubMeshStartIndex(int subMeshIndex) const
+{
+	if (subMeshIndex >= mSubMeshVertexStartIndices.size() - 1) {
+		return -1;
+	}
+
+	return mSubMeshVertexStartIndices[subMeshIndex];
+}
+
+int Mesh::getSubMeshEndIndex(int subMeshIndex) const
+{
+	if (subMeshIndex >= mSubMeshVertexStartIndices.size() - 1) {
+		return -1;
+	}
+
+	return mSubMeshVertexStartIndices[subMeshIndex + 1];
+}
+
+int Mesh::getSubMeshCount() const
+{
+	return (int)mSubMeshVertexStartIndices.size() - 1;
+}
+
 Sphere Mesh::getBoundingSphere() const
 {
 	// Ritter algorithm for bounding sphere

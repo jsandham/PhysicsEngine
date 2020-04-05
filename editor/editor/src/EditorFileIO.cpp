@@ -282,13 +282,15 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				//meshRenderer.componentId = Guid(it->first);
 				//meshRenderer.entityId = Guid(it->second["entity"].ToString());
-				meshRenderer.mMeshId = Guid(it->second["mesh"].ToString());
+				meshRenderer.setMesh(Guid(it->second["mesh"].ToString()));
 
 				if (it->second.hasKey("material")) {
 					meshRenderer.mMaterialCount = 1;
-					meshRenderer.mMaterialIds[0] = Guid(it->second["material"].ToString());
+					meshRenderer.setMaterial(Guid(it->second["material"].ToString()), 0);
+					//meshRenderer.mMaterialIds[0] = Guid(it->second["material"].ToString());
 					for (int j = 1; j < 8; j++) {
-						meshRenderer.mMaterialIds[j] = Guid::INVALID;
+						meshRenderer.setMaterial(Guid::INVALID, j);
+						//meshRenderer.mMaterialIds[j] = Guid::INVALID;
 					}
 				}
 				else if (it->second.hasKey("materials")) {
@@ -301,11 +303,13 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 					meshRenderer.mMaterialCount = materialCount;
 
 					for (int j = 0; j < materialCount; j++) {
-						meshRenderer.mMaterialIds[j] = Guid(it->second["materials"][j].ToString());
+						meshRenderer.setMaterial(Guid(it->second["materials"][j].ToString()), j);
+						//meshRenderer.mMaterialIds[j] = Guid(it->second["materials"][j].ToString());
 					}
 
 					for (int j = materialCount; j < 8; j++) {
-						meshRenderer.mMaterialIds[j] = Guid::INVALID;
+						meshRenderer.setMaterial(Guid::INVALID, j);
+						//meshRenderer.mMaterialIds[j] = Guid::INVALID;
 					}
 				}
 

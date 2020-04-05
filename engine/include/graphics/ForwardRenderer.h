@@ -15,7 +15,6 @@
 
 #include "GraphicsState.h"
 #include "GraphicsQuery.h"
-#include "GraphicsDebug.h"
 #include "GraphicsTargets.h"
 #include "RenderObject.h"
 #include "ShadowMapData.h"
@@ -37,9 +36,8 @@ namespace PhysicsEngine
 		GraphicsCameraState mCameraState;
 		GraphicsLightState mLightState;
 
-		// timing and debug
+		// timing and targets
 		GraphicsQuery mQuery;
-		GraphicsDebug mDebug;
 		GraphicsTargets mTargets;
 
 		bool mRenderToScreen;
@@ -52,7 +50,6 @@ namespace PhysicsEngine
 		void update(Input input);
 
 		GraphicsQuery getGraphicsQuery() const;
-		GraphicsDebug getGraphicsDebug() const;
 		GraphicsTargets getGraphicsTargets() const;
 	};
 }

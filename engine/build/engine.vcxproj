@@ -1,0 +1,614 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{852ADFE8-FA97-3E20-B7A3-63B752E86F70}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>engine</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">engine.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">engine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">engine.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">engine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">engine.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">engine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">engine.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">engine</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4100;4996;4211</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;MY_DEBUG_DEFINE=0;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;MY_DEBUG_DEFINE=0;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4100;4996;4211</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4100;4996;4211</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4100;4996;4211</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MY_DEBUG_DEFINE=0;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0;C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jsand\Documents\PhysicsEngine\engine\CMakelists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/jsand/Documents/PhysicsEngine/engine/CMakelists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jsand/Documents/PhysicsEngine/engine -BC:/Users/jsand/Documents/PhysicsEngine/engine/build --check-stamp-file C:/Users/jsand/Documents/PhysicsEngine/engine/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCXXCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeRCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/jsand/Documents/PhysicsEngine/engine/CMakelists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jsand/Documents/PhysicsEngine/engine -BC:/Users/jsand/Documents/PhysicsEngine/engine/build --check-stamp-file C:/Users/jsand/Documents/PhysicsEngine/engine/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCXXCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeRCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/jsand/Documents/PhysicsEngine/engine/CMakelists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jsand/Documents/PhysicsEngine/engine -BC:/Users/jsand/Documents/PhysicsEngine/engine/build --check-stamp-file C:/Users/jsand/Documents/PhysicsEngine/engine/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCXXCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeRCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/jsand/Documents/PhysicsEngine/engine/CMakelists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jsand/Documents/PhysicsEngine/engine -BC:/Users/jsand/Documents/PhysicsEngine/engine/build --check-stamp-file C:/Users/jsand/Documents/PhysicsEngine/engine/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeCXXCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeRCCompiler.cmake;C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\3.17.0\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\jsand\Documents\PhysicsEngine\engine\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\UnitTests.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\BoxCollider.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Camera.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\CapsuleCollider.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Collider.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Component.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Light.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\LineRenderer.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\MeshCollider.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\MeshRenderer.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Rigidbody.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\SphereCollider.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Allocator.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Asset.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Bounds.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Capsule.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Color.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Cubemap.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Font.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Geometry.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Guid.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Input.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\InternalMeshes.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\InternalShaders.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Load.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\LoadInternal.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Log.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Material.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\MaterialUtil.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Mesh.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\OctTree.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Physics.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\PoolAllocator.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Primitive.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Ray.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Scene.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Shader.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Sphere.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Texture.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Texture2D.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Texture3D.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Time.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Triangle.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Util.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\WorldManager.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\WriteInternalToJson.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\WriteToJson.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\mat_load.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\config\ftconfig.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\config\ftheader.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\config\ftmodule.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\config\ftoption.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\config\ftstdlib.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\freetype.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftadvanc.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftbbox.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftbdf.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftbitmap.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftbzip2.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftcache.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftchapters.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftcid.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftdriver.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\fterrdef.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\fterrors.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftfntfmt.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftgasp.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftglyph.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftgxval.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftgzip.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftimage.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftincrem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftlcdfil.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftlist.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftlzw.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftmac.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftmm.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftmodapi.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftmoderr.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftotval.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftoutln.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftparams.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftpfr.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftrender.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftsizes.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftsnames.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftstroke.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftsynth.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftsystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\fttrigon.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\fttypes.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ftwinfnt.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\t1tables.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\ttnameid.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\tttables.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\freetype\tttags.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\freetype\ft2build.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0\GL\eglew.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0\GL\glew.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0\GL\glxew.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glew-2.1.0\GL\wglew.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\common.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_features.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_fixes.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_literals.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_noise.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_swizzle.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_swizzle_func.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\_vectorize.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_common.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_exponential.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_geometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_integer.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_matrix.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_noise.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_packing.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_trigonometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\func_vector_relational.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\hint.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_common.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_exponential.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_geometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_integer.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_matrix.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_trigonometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\intrinsic_vector_relational.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\precision.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\setup.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_float.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_gentype.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_half.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_int.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat2x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat2x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat2x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat3x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat3x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat3x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat4x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat4x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_mat4x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_vec.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_vec1.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_vec2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_vec3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\detail\type_vec4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\exponential.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\ext.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\fwd.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\geometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\glm.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\constants.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\epsilon.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\matrix_access.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\matrix_integer.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\matrix_inverse.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\matrix_transform.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\noise.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\packing.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\quaternion.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\random.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\reciprocal.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\type_precision.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\type_ptr.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtc\ulp.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\associated_min_max.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\bit.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\closest_point.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\color_space.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\color_space_YCoCg.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\compatibility.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\component_wise.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\constants.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\dual_quaternion.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\epsilon.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\euler_angles.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\extend.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\extented_min_max.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\fast_exponential.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\fast_square_root.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\fast_trigonometry.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\gradient_paint.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\handed_coordinate_space.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\inertia.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\int_10_10_10_2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\integer.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\intersect.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\io.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\log_base.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_cross_product.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_interpolation.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_major_storage.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_operation.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_query.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\matrix_transform_2d.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\mixed_product.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\multiple.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\noise.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\norm.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\normal.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\normalize_dot.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\number_precision.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\optimum_pow.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\orthonormalize.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\perpendicular.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\polar_coordinates.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\projection.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\quaternion.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\random.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\raw_data.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\reciprocal.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\rotate_normalized_axis.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\rotate_vector.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\scalar_relational.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\simd_mat4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\simd_quat.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\simd_vec4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\spline.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\std_based_type.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\string_cast.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\transform.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\transform2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\ulp.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\unsigned_int.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\vec1.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\vector_angle.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\vector_query.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\gtx\wrap.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\integer.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat2x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat2x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat2x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat3x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat3x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat3x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat4x2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat4x3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\mat4x4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\matrix.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\packing.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\trigonometric.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\vec2.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\vec3.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\vec4.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\glm\vector_relational.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\DeferredRenderer.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\ForwardRenderer.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\ForwardRendererPasses.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\Graphics.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\GraphicsDebug.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\GraphicsHandle.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\GraphicsQuery.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\GraphicsState.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\GraphicsTargets.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\RenderObject.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\ScreenData.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\graphics\ShadowMapData.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\json\json.hpp" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\obj_load\obj_load.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\stb_image\stb_image.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\CleanUpSystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\DebugSystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\GridRendererSystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\PhysicsSystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\RenderSystem.h" />
+    <ClInclude Include="C:\Users\jsand\Documents\PhysicsEngine\engine\include\systems\System.h" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\UnitTests.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\BoxCollider.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Camera.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\CapsuleCollider.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Collider.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Component.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Light.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\LineRenderer.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\MeshCollider.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\MeshRenderer.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Rigidbody.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\SphereCollider.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\components\Transform.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Allocator.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Asset.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Bounds.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Capsule.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Color.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Cubemap.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Entity.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Font.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Geometry.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Guid.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Input.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\InternalMeshes.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\InternalShaders.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\LoadInternal.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Log.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Material.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\MaterialUtil.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Mesh.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\OctTree.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Physics.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Ray.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Scene.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Shader.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Sphere.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Texture.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Texture2D.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Texture3D.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Time.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Triangle.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\Util.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\World.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\WorldManager.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\core\WriteInternalToJson.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\graphics\DeferredRenderer.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\graphics\ForwardRenderer.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\graphics\ForwardRendererPasses.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\graphics\Graphics.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\stb_image\stb_image_implementation.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\CleanUpSystem.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\DebugSystem.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\GridRendererSystem.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\PhysicsSystem.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\RenderSystem.cpp" />
+    <ClCompile Include="C:\Users\jsand\Documents\PhysicsEngine\engine\src\systems\System.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\jsand\Documents\PhysicsEngine\engine\build\ZERO_CHECK.vcxproj">
+      <Project>{2093125E-BB99-357C-9E1C-7FB4E60F5D66}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

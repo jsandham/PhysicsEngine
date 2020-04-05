@@ -70,7 +70,7 @@ void Editor::init(HWND window, int width, int height)
 	ImGui::StyleColorsCorporate();
 
 	// set debug on for editor 
-	world.mDebug = true;
+	//world.mDebug = true;
 
 	// add camera, render, and cleanup system to world
 	cameraSystem = world.addSystem<EditorCameraSystem>(0);

@@ -55,9 +55,8 @@ namespace PhysicsEngine
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
 			std::vector<triple<Guid, int, int>> mComponentIdsMarkedMoved;
 
-		public:
-			bool mDebug;
-			int mDebugView;
+			// asset id to filepath
+			std::map<Guid, std::string> assetIdToFilepath;
 
 		public:
 			World();
@@ -65,9 +64,9 @@ namespace PhysicsEngine
 			World(const World& other) = delete;
 			World& operator=(const World& other) = delete;
 
-			bool loadAsset(std::string filePath);
-			bool loadScene(std::string filePath, bool ignoreSystems = false);
-			bool loadSceneFromEditor(std::string filePath);
+			bool loadAsset(const std::string filePath);
+			bool loadScene(const std::string filePath, bool ignoreSystems = false);
+			bool loadSceneFromEditor(const std::string filePath);
 
 			void latentDestroyEntitiesInWorld();
 
@@ -144,35 +143,13 @@ namespace PhysicsEngine
 			Entity* getEntity(Guid entityId);
 
 			template<typename T>
-			T* getFirstSystem()
+			T* getSystem()
 			{
 				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
 
 				PoolAllocator<T>* allocator = getSystemAllocator<T>();
 				if (allocator != NULL) {
 					return allocator->get(0);
-				}
-
-				return NULL;
-			}
-
-			template<typename T>
-			T* getSystem(Guid systemId)
-			{
-				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
-
-				if (systemId == Guid::INVALID) {
-					return NULL;
-				}
-
-				PoolAllocator<T>* allocator = getSystemAllocator<T>();
-				if (allocator == NULL) {
-					return NULL;
-				}
-
-				std::map<Guid, int>::iterator it = mIdToGlobalIndex.find(systemId);
-				if (it != mIdToGlobalIndex.end()) {
-					return allocator->get(it->second);
 				}
 
 				return NULL;
@@ -306,7 +283,6 @@ namespace PhysicsEngine
 				return system;
 			}
 
-			// TODO: Major bug here (and in getComponentById) where the index we find may not correspond to an asset that is of type T. Need something like assetIdToType map?
 			template<typename T>
 			T* getAsset(Guid assetId)
 			{
@@ -338,6 +314,10 @@ namespace PhysicsEngine
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
+				if (index < 0) {
+					return NULL;
+				}
+
 				PoolAllocator<T>* allocator = getComponentAllocator<T>();
 				if (allocator == NULL) {
 					return NULL;
@@ -350,7 +330,10 @@ namespace PhysicsEngine
 			T* getComponentById(Guid componentId)
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-				assert(componentId != Guid::INVALID);
+
+				if (componentId == Guid::INVALID || ComponentType<T>::type != getTypeOf(componentId)) {
+					return NULL;
+				}
 
 				std::map<Guid, int>::iterator it = mIdToGlobalIndex.find(componentId);
 				if(it != mIdToGlobalIndex.end()){
@@ -364,6 +347,10 @@ namespace PhysicsEngine
 			T* getAssetByIndex(int index)
 			{
 				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				if (index < 0) {
+					return NULL;
+				}
 
 				PoolAllocator<T>* allocator = getAssetAllocator<T>();
 				if (allocator == NULL) {
@@ -397,6 +384,25 @@ namespace PhysicsEngine
 				return asset;
 			}
 
+			template<typename T>
+			T* createAsset(std::vector<char> data)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				PoolAllocator<T>* allocator = getAssetOrAddAllocator<T>();
+
+				int index = (int)allocator->getCount();
+				int type = AssetType<T>::type;
+				Guid id = Guid::newGuid();
+
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+
+				T* asset = allocator->construct(data);
+
+				asset->mAssetId = id;
+			}
+
 			Entity* createEntity();
 			Entity* createEntity(std::vector<char> data);
 
@@ -418,6 +424,8 @@ namespace PhysicsEngine
 			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedCreated() const;
 			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedLatentDestroy() const;
 			std::vector<triple<Guid, int, int>> getComponentIdsMarkedMoved() const;
+
+			std::string getAssetFilepath(Guid assetId) const;
 
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);

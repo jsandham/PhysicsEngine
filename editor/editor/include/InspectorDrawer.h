@@ -18,6 +18,7 @@ namespace PhysicsEditor
 			InspectorDrawer();
 			virtual ~InspectorDrawer() = 0;
 
+			//virtual void init(World* world);
 			virtual void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id) = 0;
 	};
 }

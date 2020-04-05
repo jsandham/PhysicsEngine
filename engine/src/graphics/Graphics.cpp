@@ -646,7 +646,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
 	}*/
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
@@ -654,7 +654,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
@@ -700,7 +700,7 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 		glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 	}
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
@@ -708,7 +708,7 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;
@@ -746,7 +746,7 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 	shader->use(variant);
 	shader->setMat4("model", model);
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
 	}
 
@@ -754,7 +754,7 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 	glDrawArrays(mode, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(world->mDebug && query != NULL){
+	if(query != NULL){
 		glEndQuery(GL_TIME_ELAPSED);
 
 		GLint done = 0;

@@ -9,20 +9,19 @@
 #include "../include/imgui/imgui_impl_opengl3.h"
 #include "../include/imgui/imgui_internal.h"
 
+#include "../include/components/MeshRenderer.h"
+#include "../include/components/Light.h"
+
 using namespace PhysicsEditor;
 
 Inspector::Inspector()
 {
-	materialDrawer = new MaterialDrawer();
-	shaderDrawer = new ShaderDrawer();
-	texture2DDrawer = new Texture2DDrawer();
+
 }
 
 Inspector::~Inspector()
 {
-	delete materialDrawer;
-	delete shaderDrawer;
-	delete texture2DDrawer;
+
 }
 
 void Inspector::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame)
@@ -46,13 +45,13 @@ void Inspector::render(World* world, EditorProject& project, EditorScene& scene,
 		
 		// draw asset
 		if(clipboard.getSelectedType() == InteractionType::Material){
-			materialDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
+			materialDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
 		else if(clipboard.getSelectedType() == InteractionType::Shader){
-			shaderDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
+			shaderDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
 		else if (clipboard.getSelectedType() == InteractionType::Texture2D) {
-			texture2DDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
+			texture2DDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
 		}
 
 		ImGui::Separator();
@@ -64,6 +63,12 @@ void Inspector::render(World* world, EditorProject& project, EditorScene& scene,
 void Inspector::drawEntity(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard)
 {
 	Entity* entity = world->getEntity(clipboard.getSelectedId());
+
+	// entity may have been recently deleted
+	if (entity == NULL) {
+		return;
+	}
+
 	std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
 	for (size_t i = 0; i < componentsOnEntity.size(); i++)
 	{

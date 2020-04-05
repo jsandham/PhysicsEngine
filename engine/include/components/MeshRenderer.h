@@ -21,10 +21,14 @@ namespace PhysicsEngine
 
 	class MeshRenderer : public Component
 	{
-		public:
+		private:
 			Guid mMeshId;
 			Guid mMaterialIds[8];
+
+		public:
 			int mMaterialCount;
+			bool mMeshChanged;
+			bool mMaterialChanged;
 			bool mIsStatic;
 
 		public:
@@ -35,6 +39,15 @@ namespace PhysicsEngine
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
+
+			void setMesh(Guid meshId);
+			void setMaterial(Guid materialId);
+			void setMaterial(Guid materialId, int index);
+
+			Guid getMesh() const;
+			Guid getMaterial() const;
+			Guid getMaterial(int index) const;
+			std::vector<Guid> getMaterials() const;
 	};
 
 	template <>

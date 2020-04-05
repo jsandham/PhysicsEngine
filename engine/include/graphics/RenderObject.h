@@ -10,20 +10,22 @@ namespace PhysicsEngine
 {
 	typedef struct RenderObject
 	{
-		Guid id;
-		int start; // start index in vbo
-		int size;  // size of vbo
+		Guid meshRendererId;
+		Guid transformId;
+		Guid meshId;
+		Guid materialId;
+		Guid shaderId;
+		int meshRendererIndex;
 		int transformIndex;
+		int meshIndex;
 		int materialIndex;
 		int shaderIndex;
+		int subMeshIndex;
 
-		GLuint vao;
+		int start; // start index in vbo
+		int size;  // size of vbo
 
-		GLint mainTexture;
-		GLint normalMap;
-		GLint specularMap;
-
-		Sphere boundingSphere;
+		int vao;
 
 		glm::mat4 model;
 

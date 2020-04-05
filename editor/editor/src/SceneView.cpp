@@ -76,7 +76,7 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 				if (ImGui::Selectable(textureNames[n], is_selected)) {
 					currentTextureName = textureNames[n];
 					currentTexture = (GLuint)textures[n];
-					world->mDebugView = n - 1;
+					
 					if (is_selected) {
 						ImGui::SetItemDefaultFocus();
 					}

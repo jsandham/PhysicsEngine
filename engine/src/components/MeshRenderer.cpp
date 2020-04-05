@@ -11,6 +11,8 @@ MeshRenderer::MeshRenderer()
 	}
 
 	mMaterialCount = 0;
+	mMeshChanged = true;
+	mMaterialChanged = true;
 	mIsStatic = true;
 }
 
@@ -59,4 +61,57 @@ void MeshRenderer::deserialize(std::vector<char> data)
 	}
 	mMaterialCount = header->mMaterialCount;
 	mIsStatic = header->mIsStatic;
+	mMeshChanged = true;
+	mMaterialChanged = true;
+}
+
+void MeshRenderer::setMesh(Guid meshId)
+{
+	mMeshId = meshId;
+	mMeshChanged = true;
+}
+
+void MeshRenderer::setMaterial(Guid materialId)
+{
+	mMaterialIds[0] = materialId;
+	mMaterialChanged = true;
+}
+
+void MeshRenderer::setMaterial(Guid materialId, int index)
+{
+	if (index >= 0 && index < 8) {
+		mMaterialIds[index] = materialId;
+		mMaterialChanged = true;
+	}
+}
+
+Guid MeshRenderer::getMesh() const
+{
+	return mMeshId;
+}
+
+Guid MeshRenderer::getMaterial() const
+{
+	return mMaterialIds[0];
+}
+
+Guid MeshRenderer::getMaterial(int index) const
+{
+	if (index >= 0 && index < 8) {
+		return mMaterialIds[index];
+	}
+
+	return Guid::INVALID;
+}
+
+std::vector<Guid> MeshRenderer::getMaterials() const
+{
+	std::vector<Guid> materials;
+	for (int i = 0; i < 8; i++) {
+		if (mMaterialIds[i] != Guid::INVALID) {
+			materials.push_back(mMaterialIds[i]);
+		}
+	}
+
+	return materials;
 }

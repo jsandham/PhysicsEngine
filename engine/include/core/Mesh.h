@@ -53,6 +53,9 @@ namespace PhysicsEngine
 			const std::vector<float>& getNormals() const;
 			const std::vector<float>& getTexCoords() const;
 			const std::vector<int>& getSubMeshStartIndices() const;
+			int getSubMeshStartIndex(int subMeshIndex) const;
+			int getSubMeshEndIndex(int subMeshIndex) const;
+			int getSubMeshCount() const;
 			Sphere getBoundingSphere() const;
 			GLuint getNativeGraphicsVAO() const;
 

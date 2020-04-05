@@ -15,7 +15,7 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsDebug& debug, GraphicsQuery& query)
+void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsQuery& query)
 {	
 	glGenQueries(1, &(query.mQueryId));
 
@@ -149,10 +149,6 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	if (world->mDebug) {
-		debug.init();
-	}
-
 	Graphics::checkError();
 }
 
@@ -178,21 +174,16 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
 		Shader* shader = world->getAssetByIndex<Shader>(i);
 
-		std::string test = shader->getId().toString();
-
 		if (!shader->isCompiled()) {
 
 			shader->compile();
-
-			shadersCompiledThisFrame.insert(shader->getId());
 
 			if (!shader->isCompiled()) {
 				std::string errorMessage = "Shader failed to compile " + shader->getId().toString() + "\n";
 				Log::error(&errorMessage[0]);
 			}
 
-			shader->setUniformBlock("CamerBlock", 0);
-			shader->setUniformBlock("LightBlock", 1);
+			shadersCompiledThisFrame.insert(shader->getId());
 		}
 	}
 
@@ -224,71 +215,6 @@ void PhysicsEngine::registerRenderAssets(World* world)
 	}
 
 	Graphics::checkError();
-}
-
-void PhysicsEngine::registerRenderObjects(World* world, std::vector<RenderObject>& renderObjects)
-{
-	const int meshRendererType = ComponentType<MeshRenderer>::type;
-	const int transformType = ComponentType<Transform>::type;
-
-	// add created mesh renderers to render object list
-	std::vector<Guid> meshRendererIdsAdded;
-
-	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
-	for (size_t i = 0; i < componentIdsAdded.size(); i++) {
-		if (componentIdsAdded[i].third == meshRendererType) {
-			meshRendererIdsAdded.push_back(componentIdsAdded[i].second);
-		}
-	}
-
-	for (size_t i = 0; i < meshRendererIdsAdded.size(); i++) {
-		int globalIndex = world->getIndexOf(meshRendererIdsAdded[i]);
-
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-		if (meshRenderer != NULL && !meshRenderer->mIsStatic) {
-			addToRenderObjectsList(world, meshRenderer, renderObjects);
-		}
-	}
-
-	// remove destroyed mesh renderers from render objects list
-	std::vector<Guid> meshRendererIdsDestroyed;
-
-	std::vector<triple<Guid, Guid, int>> componentIdsDestroyed = world->getComponentIdsMarkedLatentDestroy();
-	for (size_t i = 0; i < componentIdsDestroyed.size(); i++) {
-		if (componentIdsDestroyed[i].third == meshRendererType) {
-			meshRendererIdsDestroyed.push_back(componentIdsDestroyed[i].second);
-		}
-	}
-
-	for (size_t i = 0; i < meshRendererIdsDestroyed.size(); i++) {
-		int globalIndex = world->getIndexOf(meshRendererIdsDestroyed[i]);
-
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(globalIndex);
-		if (meshRenderer != NULL && !meshRenderer->mIsStatic) {
-			removeFromRenderObjectsList(meshRenderer, renderObjects);
-		}
-	}
-
-	// update mesh renderers that have been moved in their global arrays
-	std::vector<std::pair<int, int>> transformIndicesMoved;
-
-	std::vector<triple<Guid, int, int>> componentIdsMoved = world->getComponentIdsMarkedMoved();
-	for (size_t i = 0; i < componentIdsMoved.size(); i++) {
-		if (componentIdsMoved[i].second == transformType) {
-			int oldIndex = componentIdsMoved[i].third;
-			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
-
-			transformIndicesMoved.push_back(std::make_pair(oldIndex, newIndex));
-		}
-	}
-
-	for (size_t i = 0; i < transformIndicesMoved.size(); i++) {
-		for (size_t j = 0; j < renderObjects.size(); j++) {
-			if (transformIndicesMoved[i].first == renderObjects[j].transformIndex) {
-				renderObjects[j].transformIndex = transformIndicesMoved[i].second;
-			}
-		}
-	}
 }
 
 void PhysicsEngine::registerCameras(World* world)
@@ -413,12 +339,151 @@ void PhysicsEngine::registerCameras(World* world)
 	}
 }
 
+void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects)
+{
+	// add created mesh renderers to render object list
+	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
+	for (size_t i = 0; i < componentIdsAdded.size(); i++) {
+
+		if (componentIdsAdded[i].third == ComponentType<MeshRenderer>::type) {
+			int meshRendererIndex = world->getIndexOf(componentIdsAdded[i].second);
+
+			MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererIndex);
+			Transform* transform = meshRenderer->getComponent<Transform>(world);
+			Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
+
+			int transformIndex = world->getIndexOf(transform->getId());
+			int meshIndex = mesh != NULL ? world->getIndexOf(mesh->getId()) : -1;
+
+			for (int j = 0; j < 8; j++) {
+				int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
+				Material* material = world->getAssetByIndex<Material>(materialIndex);
+
+				int shaderIndex = material != NULL ? world->getIndexOf(material->getShaderId()) : -1;
+				Shader* shader = material != NULL ? world->getAssetByIndex<Shader>(shaderIndex) : NULL;
+
+				RenderObject renderObject;
+				renderObject.meshRendererId = meshRenderer->getId();
+				renderObject.transformId = transform->getId();
+				renderObject.meshId = mesh != NULL ? mesh->getId() : Guid::INVALID;
+				renderObject.materialId = material != NULL ? material->getId() : Guid::INVALID;
+				renderObject.shaderId = shader != NULL ? shader->getId() : Guid::INVALID;
+
+				renderObject.meshRendererIndex = meshRendererIndex;
+				renderObject.transformIndex = transformIndex;
+				renderObject.meshIndex = meshIndex;
+				renderObject.materialIndex = materialIndex;
+				renderObject.shaderIndex = shaderIndex;
+				renderObject.subMeshIndex = j;
+
+				int subMeshVertexStartIndex = mesh != NULL ? mesh->getSubMeshStartIndex(j) : -1;
+				int subMeshVertexEndIndex = mesh != NULL ? mesh->getSubMeshEndIndex(j) : -1;
+
+				renderObject.start = subMeshVertexStartIndex;
+				renderObject.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
+				renderObject.vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
+
+				renderObjects.push_back(renderObject);
+			}
+
+			meshRenderer->mMeshChanged = false;
+			meshRenderer->mMaterialChanged = false;
+		}
+	}
+
+	// remove destroyed mesh renderers from render object list
+	std::vector<triple<Guid, Guid, int>> componentIdsDestroyed = world->getComponentIdsMarkedLatentDestroy();
+	for (size_t i = 0; i < componentIdsDestroyed.size(); i++) {
+		if (componentIdsDestroyed[i].third == ComponentType<MeshRenderer>::type) {
+			int meshRendererIndex = world->getIndexOf(componentIdsDestroyed[i].second);
+
+			//mmm this is slow...need a faster way of removing render objects
+			for (int j = (int)renderObjects.size() - 1; j >= 0; j--) {
+				if (meshRendererIndex == renderObjects[j].meshRendererIndex) {
+					renderObjects.erase(renderObjects.begin() + j);
+				}
+			}
+		}
+	}
+
+	// update render object list for transforms and/or mesh renderers that have been moved in their global arrays
+	std::vector<triple<Guid, int, int>> componentIdsMoved = world->getComponentIdsMarkedMoved();
+	for (size_t i = 0; i < componentIdsMoved.size(); i++) {
+		if (componentIdsMoved[i].second == ComponentType<Transform>::type) {
+			int oldIndex = componentIdsMoved[i].third;
+			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
+
+			//mmm this is slow...
+			for (size_t j = 0; j < renderObjects.size(); j++) {
+				if (oldIndex == renderObjects[j].transformIndex) {
+					renderObjects[j].transformIndex = newIndex;
+				}
+			}
+		}
+		else if (componentIdsMoved[i].second == ComponentType<MeshRenderer>::type)
+		{
+			int oldIndex = componentIdsMoved[i].third;
+			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
+
+			//mmm this is slow...
+			for (size_t j = 0; j < renderObjects.size(); j++) {
+				if (oldIndex == renderObjects[j].meshRendererIndex) {
+					renderObjects[j].meshRendererIndex = newIndex;
+				}
+			}
+		}
+	}
+
+	// update render objects list for changes in mesh and material
+	for (size_t i = 0; i < renderObjects.size(); i++) {
+
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(renderObjects[i].meshRendererIndex);
+
+		// update render objects list for mesh renderers whose mesh has changed
+		if (meshRenderer->mMeshChanged) {
+	
+			int meshIndex = world->getIndexOf(meshRenderer->getMesh());
+
+			Mesh* mesh = world->getAssetByIndex<Mesh>(meshIndex);
+
+			renderObjects[i].meshId = meshRenderer->getMesh();
+			renderObjects[i].meshIndex = meshIndex;
+
+			int subMeshIndex = renderObjects[i].subMeshIndex;
+			int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMeshIndex);
+			int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMeshIndex);
+
+			renderObjects[i].start = subMeshVertexStartIndex;
+			renderObjects[i].size = subMeshVertexEndIndex - subMeshVertexStartIndex;
+			renderObjects[i].vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
+
+			meshRenderer->mMeshChanged = false;
+		}
+
+		// update render objects list for mesh renderers whose material has changed
+		if (meshRenderer->mMaterialChanged) {
+
+			int materialIndex = world->getIndexOf(meshRenderer->getMaterial(renderObjects[i].subMeshIndex));
+			Material* material = world->getAssetByIndex<Material>(materialIndex);
+
+			int shaderIndex = material != NULL ? world->getIndexOf(material->getShaderId()) : -1;
+
+			renderObjects[i].materialId = material != NULL ? material->getId() : Guid::INVALID;
+			renderObjects[i].shaderId = material != NULL ? material->getShaderId() : Guid::INVALID;
+			renderObjects[i].materialIndex = materialIndex;
+			renderObjects[i].shaderIndex = shaderIndex;
+
+			meshRenderer->mMaterialChanged = false;
+		}
+	}
+}
+
 void PhysicsEngine::cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects)
 {
 
 }
 
-void PhysicsEngine::updateTransforms(World* world, std::vector<RenderObject>& renderObjects)
+void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects)
 {
 	// update model matrices
 	int n = (int)renderObjects.size();
@@ -427,17 +492,14 @@ void PhysicsEngine::updateTransforms(World* world, std::vector<RenderObject>& re
 #pragma omp parallel for
 #endif
 	for (int i = 0; i < n; i++) {
+		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
+
 		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
 
 		renderObjects[i].model = transform->getModelMatrix();
-
-		/*glm::vec4 temp = renderObjects[i].model * glm::vec4(renderObjects[i].boundingSphere.centre, 1.0f);
-		glm::vec3 centre = glm::vec3(temp.x, temp.y, temp.z);
-		float radius = renderObjects[i].boundingSphere.radius;*/
-
-		//if(camera->checkSphereInFrustum(centre, radius)){
-		//	std::cout << "Render object inside camera frustrum " << centre.x << " " << centre.y << " " << centre.z << " " << radius << std::endl;
-		//}
 	}
 }
 
@@ -505,6 +567,11 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
 	for (size_t i = 0; i < renderObjects.size(); i++) {
+		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
+
 		screenData.mPositionAndNormalsShader.use(shaderProgram);
 		screenData.mPositionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
 
@@ -576,6 +643,11 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 			shadowMapData.mDepthShader.setMat4(projectionLoc, shadowMapData.mCascadeOrthoProj[i]);
 
 			for (int j = 0; j < renderObjects.size(); j++) {
+				if (renderObjects[j].materialIndex == -1 || renderObjects[j].shaderIndex == -1 || renderObjects[j].meshIndex == -1)
+				{
+					continue;
+				}
+
 				shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[j].model);
 				Graphics::render(world, renderObjects[j], &query);
 			}
@@ -603,6 +675,11 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		shadowMapData.mDepthShader.setMat4(viewLoc, shadowMapData.mShadowViewMatrix);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
+			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+			{
+				continue;
+			}
+
 			shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[i].model);
 			Graphics::render(world, renderObjects[i], &query);
 		}
@@ -645,6 +722,11 @@ void PhysicsEngine::renderShadows(World* world, Camera* camera, Light* light, co
 		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc5, shadowMapData.mCubeViewProjMatrices[5]);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
+			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+			{
+				continue;
+			}
+
 			shadowMapData.mDepthCubemapShader.setMat4(modelLoc, renderObjects[i].model);
 			Graphics::render(world, renderObjects[i], &query);
 		}
@@ -735,6 +817,11 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
 
 	for (int i = 0; i < renderObjects.size(); i++) {
+		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
+
 		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
 		Shader* shader = world->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
 
@@ -742,10 +829,9 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 
 		shader->use(shaderProgram);
 		shader->setMat4("model", renderObjects[i].model);
-		
-		material->apply(world);
-		//material->use(shader, renderObjects[i]);
 
+		material->apply(world);
+		
 		if (light->mLightType == LightType::Directional) {
 			for (int j = 0; j < 5; j++) {
 				shader->setInt(shaderShadowMapNames[j], 3 + j);
@@ -779,7 +865,7 @@ void PhysicsEngine::postProcessing()
 
 }
 
-void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsTargets& targets, GraphicsDebug& debug, GraphicsQuery& query, bool renderToScreen)
+void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsTargets& targets, GraphicsQuery& query, bool renderToScreen)
 {
 
 	/*if (world->debug) {
@@ -941,73 +1027,5 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 		// std::cout << "i: " << i << " " << minX << " " << maxX << " " << minY << " " << maxY << " " << minZ << " " << maxZ << "      " << p.x << " " << p.y << " " << p.z << "      " << frustrumCentreWorldSpace.x << " " << frustrumCentreWorldSpace.y << " " << frustrumCentreWorldSpace.z << std::endl;
 
 		shadowMapData.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
-	}
-}
-
-
-void PhysicsEngine::addToRenderObjectsList(World* world, MeshRenderer* meshRenderer, std::vector<RenderObject>& renderObjects)
-{
-	Transform* transform = meshRenderer->getComponent<Transform>(world);
-	if (transform == NULL) {
-		std::string message = "Error: Could not find transform for meshrenderer with id " + meshRenderer->getId().toString() + "\n";
-		return;
-	}
-
-	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->mMeshId);
-	if (mesh == NULL) {
-		std::string message = "Error: Could not find mesh with id " + meshRenderer->mMeshId.toString() + "\n";
-		return;
-	}
-
-	int transformIndex = world->getIndexOf(transform->getId());
-	int meshStartIndex = 0;
-	Sphere test;
-	Sphere boundingSphere = test;// mesh->getBoundingSphere();
-
-	for (int i = 0; i < meshRenderer->mMaterialCount; i++) {
-		int materialIndex = world->getIndexOf(meshRenderer->mMaterialIds[i]);
-		int subMeshVertexStartIndex = mesh->getSubMeshStartIndices()[i];
-		int subMeshVertexEndIndex = mesh->getSubMeshStartIndices()[i + 1];
-		int subMeshVerticesCount = subMeshVertexEndIndex - subMeshVertexStartIndex;
-
-		Material* material = world->getAssetByIndex<Material>(materialIndex);
-		Shader* shader = world->getAsset<Shader>(material->getShaderId());
-
-		int shaderIndex = world->getIndexOf(shader->getId());
-
-		RenderObject renderObject;
-		renderObject.id = meshRenderer->getId();
-		renderObject.start = meshStartIndex + subMeshVertexStartIndex;
-		renderObject.size = subMeshVerticesCount;
-		renderObject.transformIndex = transformIndex;
-		renderObject.materialIndex = materialIndex;
-		renderObject.shaderIndex = shaderIndex;
-		renderObject.vao = mesh->getNativeGraphicsVAO();
-
-		renderObject.mainTexture = -1;
-		renderObject.normalMap = -1;
-		renderObject.specularMap = -1;
-
-		/*Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-		Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-		Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
-
-		if (mainTexture != NULL) { renderObject.mainTexture = mainTexture->handle.handle; }
-		if (normalMap != NULL) { renderObject.normalMap = normalMap->handle.handle; }
-		if (specularMap != NULL) { renderObject.specularMap = specularMap->handle.handle; }*/
-
-		renderObject.boundingSphere = boundingSphere;
-
-		renderObjects.push_back(renderObject);
-	}
-}
-
-void PhysicsEngine::removeFromRenderObjectsList(MeshRenderer* meshRenderer, std::vector<RenderObject>& renderObjects)
-{
-	//mmm this is slow...need a faster way of removing render objects
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (meshRenderer->getId() == renderObjects[i].id) {
-			renderObjects.erase(renderObjects.begin() + i);
-		}
 	}
 }

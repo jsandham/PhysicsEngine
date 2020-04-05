@@ -31,16 +31,16 @@ void ForwardRenderer::init(World* world, bool renderToScreen)
 	mWorld = world;
 	mRenderToScreen = renderToScreen;
 
-	initializeRenderer(world, mScreenData, mShadowMapData, mCameraState, mLightState, mDebug, mQuery);
+	initializeRenderer(world, mScreenData, mShadowMapData, mCameraState, mLightState, mQuery);
 }
 
 void ForwardRenderer::update(Input input)
 {
 	registerRenderAssets(mWorld);
-	registerRenderObjects(mWorld, mRenderObjects);
 	registerCameras(mWorld);
 
-	updateTransforms(mWorld, mRenderObjects);
+	updateRenderObjects(mWorld, mRenderObjects);
+	updateModelMatrices(mWorld, mRenderObjects);
 
 	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++) {
 		Camera* camera = mWorld->getComponentByIndex<Camera>(i);
@@ -60,18 +60,13 @@ void ForwardRenderer::update(Input input)
 		}
 
 		postProcessing();
-		endFrame(mWorld, camera, mRenderObjects, mScreenData, mTargets, mDebug, mQuery, mRenderToScreen);
+		endFrame(mWorld, camera, mRenderObjects, mScreenData, mTargets, mQuery, mRenderToScreen);
 	}
 }
 
 GraphicsQuery ForwardRenderer::getGraphicsQuery() const
 {
 	return mQuery;
-}
-
-GraphicsDebug ForwardRenderer::getGraphicsDebug() const
-{
-	return mDebug;
 }
 
 GraphicsTargets ForwardRenderer::getGraphicsTargets() const

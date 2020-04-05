@@ -26,7 +26,7 @@ namespace PhysicsEngine
 		private:
 			Guid mShaderId;
 			bool mShaderChanged;
-			std::vector<ShaderUniform> mUniforms;
+			std::vector<ShaderUniform> mUniforms; // current storing all uniforms but maybe we should just hold the material uniforms herre?
 
 		public:
 			Material();
@@ -93,6 +93,8 @@ namespace PhysicsEngine
 			glm::mat3 getMat3(int nameLocation) const;
 			glm::mat4 getMat4(int nameLocation) const;
 			Guid getTexture(int nameLocation) const;
+
+			std::vector<Guid> getTextures() const;
 
 		private:
 			int findIndexOfUniform(std::string name) const;
