@@ -222,121 +222,12 @@ void PhysicsEngine::registerCameras(World* world)
 	for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++) {
 		Camera* camera = world->getComponentByIndex<Camera>(i);
 
-		if (!camera->mIsCreated) {
-			// generate main camera fbo (color + depth)
-			glGenFramebuffers(1, &camera->mMainFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
-
-			glGenTextures(1, &camera->mColorTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mColorTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glGenTextures(1, &camera->mDepthTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mDepthTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mColorTex, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, camera->mDepthTex, 0);
-
-			// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-			unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
-			glDrawBuffers(1, mainAttachments);
-
-			Graphics::checkFrambufferError();
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-			// generate geometry fbo
-			glGenFramebuffers(1, &camera->mGeometryFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
-
-			glGenTextures(1, &camera->mPositionTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mPositionTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glGenTextures(1, &camera->mNormalTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mNormalTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mPositionTex, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, camera->mNormalTex, 0);
-
-			unsigned int geometryAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-			glDrawBuffers(2, geometryAttachments);
-
-			Graphics::checkFrambufferError();
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-			// generate ssao fbo
-			glGenFramebuffers(1, &camera->mSsaoFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
-
-			glGenTextures(1, &camera->mSsaoColorTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mSsaoColorTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camera->mSsaoColorTex, 0);
-			
-			unsigned int ssaoAttachments[1] = { GL_COLOR_ATTACHMENT0 };
-			glDrawBuffers(1, ssaoAttachments);
-
-			Graphics::checkFrambufferError();
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-			auto lerp = [](float a, float b, float t) { return a + t * (b - a); };
-
-			//generate noise texture for use in ssao
-			std::uniform_real_distribution<GLfloat> distribution(0.0, 1.0);
-			std::default_random_engine generator;
-			for (unsigned int j = 0; j < 64; ++j)
-			{
-				float x = distribution(generator) * 2.0f - 1.0f;
-				float y = distribution(generator) * 2.0f - 1.0f;
-				float z = distribution(generator);
-				float radius = distribution(generator);
-
-				glm::vec3 sample(x, y, z);
-				sample = radius * glm::normalize(sample);
-				float scale = float(j) / 64.0f;
-
-				// scale samples s.t. they're more aligned to center of kernel
-				scale = lerp(0.1f, 1.0f, scale * scale);
-				sample *= scale;
-				camera->mSsaoSamples.push_back(sample);
-			}
-
-			std::vector<glm::vec3> ssaoNoise;
-			for (int j = 0; j < 16; j++) {
-				// rotate around z-axis (in tangent space)
-				glm::vec3 noise(distribution(generator) * 2.0f - 1.0f, distribution(generator) * 2.0f - 1.0f, 0.0f);
-				ssaoNoise.push_back(noise);
-			}
-
-			glGenTextures(1, &camera->mSsaoNoiseTex);
-			glBindTexture(GL_TEXTURE_2D, camera->mSsaoNoiseTex);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			Graphics::checkError();
-
-			camera->mIsCreated = true;
+		if (!camera->isCreated()) {
+			camera->create();
 		}
 	}
+
+	Graphics::checkError();
 }
 
 void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects)
@@ -543,17 +434,17 @@ void PhysicsEngine::beginFrame(Camera* camera, GraphicsCameraState& cameraState,
 	glClearColor(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
 	glClearDepth(1.0f);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -565,7 +456,7 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 	int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
 	int modelLoc = screenData.mPositionAndNormalsShader.findUniformLocation("model", shaderProgram);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mGeometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
 	for (size_t i = 0; i < renderObjects.size(); i++) {
 		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
 		{
@@ -592,22 +483,22 @@ void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<
 		samplesLoc[i] = screenData.mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mSsaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
 	screenData.mSsaoShader.use(shaderProgram);
 	screenData.mSsaoShader.setMat4(projectionLoc, camera->getProjMatrix());
 	for (int i = 0; i < 64; i++) {
-		screenData.mSsaoShader.setVec3(samplesLoc[i], camera->mSsaoSamples[i]);
+		screenData.mSsaoShader.setVec3(samplesLoc[i], camera->getSSAOSample(i));
 	}
 	screenData.mSsaoShader.setInt(positionTexLoc, 0);
 	screenData.mSsaoShader.setInt(normalTexLoc, 1);
 	screenData.mSsaoShader.setInt(noiseTexLoc, 2);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, camera->mPositionTex);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, camera->mNormalTex);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, camera->mSsaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
 
 	glBindVertexArray(screenData.mQuadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -814,7 +705,7 @@ void PhysicsEngine::renderOpaques(World* world, Camera* camera, Light* light, co
 												 "shadowMap[3]",
 												 "shadowMap[4]" };
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->mMainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
 
 	for (int i = 0; i < renderObjects.size(); i++) {
 		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
@@ -894,12 +785,12 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<Ren
 	}*/
 
 	// fill targets struct
-	targets.mColor = camera->mColorTex;
-	targets.mDepth = camera->mDepthTex;
-	targets.mPosition = camera->mPositionTex;
-	targets.mNormals = camera->mNormalTex;
+	targets.mColor = camera->getNativeGraphicsColorTex();
+	targets.mDepth = camera->getNativeGraphicsDepthTex();
+	targets.mPosition = camera->getNativeGraphicsPositionTex();
+	targets.mNormals = camera->getNativeGraphicsNormalTex();
 	targets.mOverdraw = -1;
-	targets.mSsao = camera->mSsaoColorTex;
+	targets.mSsao = camera->getNativeGraphicsSSAOColorTex();
 	/*if (world->debug) {
 		targets.depth = debug.fbo[0].depthBuffer.handle.handle;
 		targets.normals = debug.fbo[1].colorBuffer.handle.handle;
@@ -929,7 +820,7 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, const std::vector<Ren
 		screenData.mQuadShader.use(ShaderVariant::None);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, camera->mColorTex);
+		glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorTex());
 
 		glBindVertexArray(screenData.mQuadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1009,12 +900,8 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 			// Transform the frustum coordinate from view to world space
 			glm::vec4 vW = viewInv * frustumCorners[j];
 
-			//std::cout << "j: " << j << " " << vW.x << " " << vW.y << " " << vW.z << " " << vW.w << std::endl;
-
 			// Transform the frustum coordinate from world to light space
 			glm::vec4 vL = shadowMapData.mCascadeLightView[i] * vW;
-
-			//std::cout << "j: " << j << " " << vL.x << " " << vL.y << " " << vL.z << " " << vL.w << std::endl;
 
 			minX = glm::min(minX, vL.x);
 			maxX = glm::max(maxX, vL.x);
@@ -1023,8 +910,6 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, Light* light, ShadowMap
 			minZ = glm::min(minZ, vL.z);
 			maxZ = glm::max(maxZ, vL.z);
 		}
-
-		// std::cout << "i: " << i << " " << minX << " " << maxX << " " << minY << " " << maxY << " " << minZ << " " << maxZ << "      " << p.x << " " << p.y << " " << p.z << "      " << frustrumCentreWorldSpace.x << " " << frustrumCentreWorldSpace.y << " " << frustrumCentreWorldSpace.z << std::endl;
 
 		shadowMapData.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
 	}

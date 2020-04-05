@@ -11,7 +11,6 @@
 #include "../components/MeshRenderer.h"
 
 #include "GraphicsQuery.h"
-#include "GraphicsDebug.h"
 #include "GraphicsState.h"
 #include "GraphicsTargets.h"
 #include "RenderObject.h"

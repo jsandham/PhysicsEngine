@@ -18,104 +18,37 @@
 
 namespace PhysicsEngine
 {
-	typedef struct GBuffer
-	{
-		GLenum mGBufferStatus;
-		GLuint mHandle;
-		GLuint mColor0; // position
-		GLuint mColor1; // normal
-		GLuint mColor2; // color + spec
-		GLuint mDepth;
-		Shader mShader;
-	}GBuffer;
-
-	typedef struct Framebuffer 
-	{
-		GLenum mFramebufferStatus;
-		GLuint mHandle;
-		Texture2D mColorBuffer;
-		Texture2D mDepthBuffer;
-	}Framebuffer;
-
-	typedef struct DebugWindow
-	{
-		float mX;
-		float mY;
-		float mWidth;
-		float mHeight;
-
-		GLuint mVAO;
-		GLuint mVertexVBO;
-		GLuint mTexCoordVBO;
-
-		Shader mShader;
-
-		void init();
-	}DebugWindow;
-
-
-	typedef struct PerformanceGraph
-	{
-		float mX;
-		float mY;
-		float mWidth;
-		float mHeight;
-		float mRangeMin;
-		float mRangeMax;
-		float mCurrentSample;
-		int mNumberOfSamples;
-
-		std::vector<float> mSamples;
-
-		GLuint mVAO;
-		GLuint mVBO;
-
-		Shader mShader;
-
-		void init();
-		void add(float sample);
-	}PerformanceGraph;
-
-	typedef struct LineBuffer 
-	{
-		size_t mSize;
-		Shader mShader;
-		GLuint mVAO;
-		GLuint mVBO;
-
-		LineBuffer();
-		~LineBuffer();
-	}LineBuffer;
-
-	typedef struct MeshBuffer
-	{
-		std::vector<Guid> mMeshIds;
-		std::vector<int> mStart;  
-		std::vector<int> mCount;
-		std::vector<float> mVertices; //could instead hold the mesh global index instead of duplicating vertices, normals, texcoords?? Or not hold them at all as they are just needed for filling out the mesh buffer vbo's??
-		std::vector<float> mNormals;
-		std::vector<float> mTexCoords;
-
-		std::vector<Sphere> mBoundingSpheres;
-
-		GLuint mVAO;
-		GLuint mVBO[3];
-
-    	MeshBuffer();
-    	~MeshBuffer();
-
-    	// int getIndex(Guid meshId);
-    	int getStartIndex(Guid meshId);
-    	Sphere getBoundingSphere(Guid meshId);
-	}MeshBuffer;
-
-
 	class Graphics
 	{
 		public:
 			static void checkError();
 			static void checkFrambufferError();
 			static GLenum getTextureFormat(TextureFormat format);
+
+			static void create(Camera* camera, 
+							   GLuint* mainFBO, 
+							   GLuint* colorTex, 
+							   GLuint* depthTex, 
+							   GLuint* geometryFBO, 
+							   GLuint* positionTex, 
+							   GLuint* normalTex, 
+							   GLuint* ssaoFBO, 
+							   GLuint* ssaoColorTex, 
+							   GLuint* ssaoNoiseTex,
+							   glm::vec3* ssaoSamples,
+							   bool* created);
+
+			static void destroy(Camera* camera,
+								GLuint* mainFBO,
+								GLuint* colorTex,
+								GLuint* depthTex,
+								GLuint* geometryFBO,
+								GLuint* positionTex,
+								GLuint* normalTex,
+								GLuint* ssaoFBO,
+								GLuint* ssaoColorTex,
+								GLuint* ssaoNoiseTex,
+								bool* created);
 
 			static void create(Texture2D* texture, GLuint* tex, bool* created);
 			static void destroy(Texture2D* texture, GLuint* tex, bool* created);

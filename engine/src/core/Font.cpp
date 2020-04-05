@@ -153,10 +153,10 @@ void Font::load(std::string filepath)
 
     mShader.compile();
 
-    glGenVertexArrays(1, &mVao.handle);
-    glGenBuffers(1, &mVbo.handle);
-    glBindVertexArray(mVao.handle);
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo.handle);
+    glGenVertexArrays(1, &mVao);
+    glGenBuffers(1, &mVbo);
+    glBindVertexArray(mVao);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);

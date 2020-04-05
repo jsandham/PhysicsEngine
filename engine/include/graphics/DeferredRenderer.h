@@ -20,14 +20,14 @@ namespace PhysicsEngine
 		private:
 			World* mWorld;
 
-			MeshBuffer mMeshBuffer;
+			/*MeshBuffer mMeshBuffer;
 			std::vector<RenderObject> mRenderObjects;
 
 			GBuffer mGbuffer;
 
 			GraphicsQuery mQuery;
 
-			std::vector<unsigned char> mData;
+			std::vector<unsigned char> mData;*/
 
 		public:
 			DeferredRenderer();

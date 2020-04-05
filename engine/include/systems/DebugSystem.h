@@ -15,7 +15,7 @@ namespace PhysicsEngine
 	class DebugSystem : public System
 	{
 		private:
-			LineBuffer mBuffer;
+			//LineBuffer mBuffer;
 
 			Material* mColorMat;
 			Shader* mColorShader;

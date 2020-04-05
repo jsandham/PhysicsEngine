@@ -87,21 +87,6 @@ namespace PhysicsEngine
 			Frustum mFrustum;
 			Viewport mViewport;
 			Guid mTargetTextureId;
-			
-			GLuint mMainFBO;
-			GLuint mColorTex;
-			GLuint mDepthTex;
-
-			GLuint mGeometryFBO;
-			GLuint mPositionTex;
-			GLuint mNormalTex;
-
-			GLuint mSsaoFBO;
-			GLuint mSsaoColorTex;
-		
-			GLuint mSsaoNoiseTex;
-
-			std::vector<glm::vec3> mSsaoSamples;
 
 			enum {
 				TOP = 0,
@@ -120,8 +105,24 @@ namespace PhysicsEngine
 			glm::vec3 mRight;
 			glm::vec4 mBackgroundColor;
 
-			bool mIsCreated;
 			bool mUseSSAO;
+
+		private:
+			GLuint mMainFBO;
+			GLuint mColorTex;
+			GLuint mDepthTex;
+
+			GLuint mGeometryFBO;
+			GLuint mPositionTex;
+			GLuint mNormalTex;
+
+			GLuint mSsaoFBO;
+			GLuint mSsaoColorTex;
+			GLuint mSsaoNoiseTex;
+
+			glm::vec3 mSsaoSamples[64];
+
+			bool mIsCreated;
 
 		public:
 			Camera();
@@ -132,10 +133,24 @@ namespace PhysicsEngine
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
+			void create();
+			void destroy();
 			void updateInternalCameraState();
 
+			bool isCreated() const;
 			glm::mat4 getViewMatrix() const;
 			glm::mat4 getProjMatrix() const;
+			glm::vec3 getSSAOSample(int sample) const;
+
+			GLuint getNativeGraphicsMainFBO() const;
+			GLuint getNativeGraphicsGeometryFBO() const;
+			GLuint getNativeGraphicsSSAOFBO() const;
+			GLuint getNativeGraphicsColorTex() const;
+			GLuint getNativeGraphicsDepthTex() const;
+			GLuint getNativeGraphicsPositionTex() const;
+			GLuint getNativeGraphicsNormalTex() const;
+			GLuint getNativeGraphicsSSAOColorTex() const;
+			GLuint getNativeGraphicsSSAONoiseTex() const;
 
 			int checkPointInFrustum(glm::vec3 point) const;
 			int checkSphereInFrustum(glm::vec3 centre, float radius) const;

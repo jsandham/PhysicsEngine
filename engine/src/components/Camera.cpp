@@ -1,4 +1,5 @@
 #include "../../include/components/Camera.h"
+#include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
 
@@ -196,6 +197,42 @@ void Camera::updateInternalCameraState()
 	mFrustum.mPlanes[RIGHT].mX0 = nc + nearPlaneWidth*mRight;
 }
 
+bool Camera::isCreated() const
+{
+	return mIsCreated;
+}
+
+void Camera::create()
+{
+	Graphics::create(this, 
+					 &mMainFBO, 
+					 &mColorTex, 
+					 &mDepthTex, 
+					 &mGeometryFBO, 
+					 &mPositionTex, 
+					 &mNormalTex, 
+					 &mSsaoFBO, 
+					 &mSsaoColorTex, 
+					 &mSsaoNoiseTex, 
+					 &mSsaoSamples[0],
+					 &mIsCreated);
+}
+
+void Camera::destroy()
+{
+	Graphics::destroy(this,
+					  &mMainFBO,
+					  &mColorTex,
+					  &mDepthTex,
+					  &mGeometryFBO,
+				  	  &mPositionTex,
+					  &mNormalTex,
+					  &mSsaoFBO,
+					  &mSsaoColorTex,
+					  &mSsaoNoiseTex,
+					  &mIsCreated);
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
 	return glm::lookAt(mPosition, mPosition + mFront, mUp);
@@ -204,6 +241,56 @@ glm::mat4 Camera::getViewMatrix() const
 glm::mat4 Camera::getProjMatrix() const
 {
 	return glm::perspective(glm::radians(mFrustum.mFov), mViewport.getAspectRatio(), mFrustum.mNearPlane, mFrustum.mFarPlane);
+}
+
+glm::vec3 Camera::getSSAOSample(int sample) const
+{
+	return mSsaoSamples[sample];
+}
+
+GLuint Camera::getNativeGraphicsMainFBO() const
+{
+	return mMainFBO;
+}
+
+GLuint Camera::getNativeGraphicsGeometryFBO() const
+{
+	return mGeometryFBO;
+}
+
+GLuint Camera::getNativeGraphicsSSAOFBO() const
+{
+	return mSsaoFBO;
+}
+
+GLuint Camera::getNativeGraphicsColorTex() const
+{
+	return mColorTex;
+}
+
+GLuint Camera::getNativeGraphicsDepthTex() const
+{
+	return mDepthTex;
+}
+
+GLuint Camera::getNativeGraphicsPositionTex() const
+{
+	return mPositionTex;
+}
+
+GLuint Camera::getNativeGraphicsNormalTex() const
+{
+	return mNormalTex;
+}
+
+GLuint Camera::getNativeGraphicsSSAOColorTex() const
+{
+	return mSsaoColorTex;
+}
+
+GLuint Camera::getNativeGraphicsSSAONoiseTex() const
+{
+	return mSsaoNoiseTex;
 }
 
 int Camera::checkPointInFrustum(glm::vec3 point) const

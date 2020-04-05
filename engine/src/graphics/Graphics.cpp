@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <random>
 #include <GL/glew.h>
 
 #include "../../include/core/Log.h"
@@ -8,244 +9,6 @@
 #include "../../include/graphics/GraphicsState.h"
 
 using namespace PhysicsEngine;
-
-
-void DebugWindow::init()
-{
-	mShader.setVertexShader(InternalShaders::windowVertexShader);
-	mShader.setFragmentShader(InternalShaders::windowFragmentShader);
-	mShader.compile();
-
-	mX = fmin(fmax(mX, 0.0f), 1.0f);
-	mY = fmin(fmax(mY, 0.0f), 1.0f);
-	mWidth = fmin(fmax(mWidth, 0.0f), 1.0f);
-	mHeight = fmin(fmax(mHeight, 0.0f), 1.0f);
-
-	float x_ndc = 2.0f * mX - 1.0f; 
-	float y_ndc = 1.0f - 2.0f * mY; 
-
-	float width_ndc = 2.0f * mWidth;
-	float height_ndc = 2.0f * mHeight;
-
-	float vertices[18];
-	float texCoords[12];
-
-	vertices[0] = x_ndc; 
-	vertices[1] = y_ndc;
-	vertices[2] = 0.0f;
-
-	vertices[3] = x_ndc; 
-	vertices[4] = y_ndc - height_ndc; 
-	vertices[5] = 0.0f; 
-
-	vertices[6] = x_ndc + width_ndc; 
-	vertices[7] = y_ndc;
-	vertices[8] = 0.0f;  
-
-	vertices[9] = x_ndc + width_ndc; 
-	vertices[10] = y_ndc;  
-	vertices[11] = 0.0f; 
-
-	vertices[12] = x_ndc; 
-	vertices[13] = y_ndc - height_ndc; 
-	vertices[14] = 0.0f;  
-
-	vertices[15] = x_ndc + width_ndc; 
-	vertices[16] = y_ndc - height_ndc; 
-	vertices[17] = 0.0f; 
-
-	texCoords[0] = 0.0f;
-	texCoords[1] = 1.0f;
-
-	texCoords[2] = 0.0f;
-	texCoords[3] = 0.0f;
-
-	texCoords[4] = 1.0f;
-	texCoords[5] = 1.0f;
-
-	texCoords[6] = 1.0f;
-	texCoords[7] = 1.0f;
-
-	texCoords[8] = 0.0f;
-	texCoords[9] = 0.0f;
-
-	texCoords[10] = 1.0f;
-	texCoords[11] = 0.0f;
-
-	// for(int i = 0; i < 18; i++){
-	// 	std::cout << vertices[i] << " ";
-	// }
-
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
-
-	glGenBuffers(1, &mVertexVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVertexVBO);
-	glBufferData(GL_ARRAY_BUFFER, 18*sizeof(float), &(vertices[0]), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glGenBuffers(1, &mTexCoordVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mTexCoordVBO);
-	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), &(texCoords[0]), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
-
-	glBindVertexArray(0);
-}
-
-void PerformanceGraph::init()
-{
-	mShader.setVertexShader(InternalShaders::graphVertexShader);
-	mShader.setFragmentShader(InternalShaders::graphFragmentShader);
-	mShader.compile();
-
-	mX = fmin(fmax(mX, 0.0f), 1.0f);
-	mY = fmin(fmax(mY, 0.0f), 1.0f);
-	mWidth = fmin(fmax(mWidth, 0.0f), 1.0f);
-	mHeight = fmin(fmax(mHeight, 0.0f), 1.0f);
-	mRangeMin = fmin(mRangeMin, mRangeMax);
-	mRangeMax = fmax(mRangeMin, mRangeMax);
-	mCurrentSample = 0.0f;
-	mNumberOfSamples = std::max(2, mNumberOfSamples);
-
-	mSamples.resize(18*mNumberOfSamples - 18);
-
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
-
-	glGenBuffers(1, &mVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(GL_ARRAY_BUFFER, mSamples.size()*sizeof(float), &(mSamples[0]), GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-	glBindVertexArray(0);
-}
-
-void PerformanceGraph::add(float sample)
-{
-	float oldSample = mCurrentSample;
-	mCurrentSample = fmin(fmax(sample, mRangeMin), mRangeMax);
-
-	float dx = mWidth / (mNumberOfSamples - 1);
-	for(int i = 0; i < mNumberOfSamples - 2; i++){
-		mSamples[18*i] = mSamples[18*(i+1)] - dx;
-		mSamples[18*i + 1] = mSamples[18*(i+1) + 1];
-		mSamples[18*i + 2] = mSamples[18*(i+1) + 2];
-
-		mSamples[18*i + 3] = mSamples[18*(i+1) + 3] - dx;
-		mSamples[18*i + 4] = mSamples[18*(i+1) + 4];
-		mSamples[18*i + 5] = mSamples[18*(i+1) + 5];
-
-		mSamples[18*i + 6] = mSamples[18*(i+1) + 6] - dx;
-		mSamples[18*i + 7] = mSamples[18*(i+1) + 7];
-		mSamples[18*i + 8] = mSamples[18*(i+1) + 8];
-
-		mSamples[18*i + 9] = mSamples[18*(i+1) + 9] - dx;
-		mSamples[18*i + 10] = mSamples[18*(i+1) + 10];
-		mSamples[18*i + 11] = mSamples[18*(i+1) + 11];
-
-		mSamples[18*i + 12] = mSamples[18*(i+1) + 12] - dx;
-		mSamples[18*i + 13] = mSamples[18*(i+1) + 13];
-		mSamples[18*i + 14] = mSamples[18*(i+1) + 14];
-
-		mSamples[18*i + 15] = mSamples[18*(i+1) + 15] - dx;
-		mSamples[18*i + 16] = mSamples[18*(i+1) + 16];
-		mSamples[18*i + 17] = mSamples[18*(i+1) + 17];
-	}
-
-	float dz1 = 1.0f - (mCurrentSample - mRangeMin) / (mRangeMax - mRangeMin);
-	float dz2 = 1.0f - (oldSample - mRangeMin) / (mRangeMax - mRangeMin);
-
-	float x_ndc = 2.0f * mX - 1.0f;
-	float y0_ndc = 1.0f - 2.0f * (mY + mHeight);
-	float y1_ndc = 1.0f - 2.0f * (mY + mHeight * dz1);
-	float y2_ndc = 1.0f - 2.0f * (mY + mHeight * dz2);
-
-	mSamples[18*(mNumberOfSamples - 2)] = x_ndc + dx * (mNumberOfSamples - 2);
-	mSamples[18*(mNumberOfSamples - 2) + 1] = y2_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 2] = 0.0f;
-
-	mSamples[18*(mNumberOfSamples - 2) + 3] = x_ndc + dx * (mNumberOfSamples - 2);
-	mSamples[18*(mNumberOfSamples - 2) + 4] = y0_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 5] = 0.0f;
-
-	mSamples[18*(mNumberOfSamples - 2) + 6] = x_ndc + dx * (mNumberOfSamples - 1);
-	mSamples[18*(mNumberOfSamples - 2) + 7] = y0_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 8] = 0.0f;
-
-	mSamples[18*(mNumberOfSamples - 2) + 9] = x_ndc + dx * (mNumberOfSamples - 2);
-	mSamples[18*(mNumberOfSamples - 2) + 10] = y2_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 11] = 0.0f;
-
-	mSamples[18*(mNumberOfSamples - 2) + 12] = x_ndc + dx * (mNumberOfSamples - 1);
-	mSamples[18*(mNumberOfSamples - 2) + 13] = y0_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 14] = 0.0f;
-
-	mSamples[18*(mNumberOfSamples - 2) + 15] = x_ndc + dx * (mNumberOfSamples - 1);
-	mSamples[18*(mNumberOfSamples - 2) + 16] = y1_ndc;
-	mSamples[18*(mNumberOfSamples - 2) + 17] = 0.0f;
-
-	glBindVertexArray(mVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-
-	glBufferSubData(GL_ARRAY_BUFFER, 0, mSamples.size()*sizeof(float), &(mSamples[0]));
-
-	glBindVertexArray(0);
-}
-
-LineBuffer::LineBuffer()
-{
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
-	glGenBuffers(1, &mVBO);
-	glBindVertexArray(0);
-}
-
-LineBuffer::~LineBuffer()
-{
-	glDeleteVertexArrays(1, &mVAO);
-    glDeleteBuffers(1, &mVBO);
-}
-
-MeshBuffer::MeshBuffer()
-{
-	glGenVertexArrays(1, &mVAO);
-	glBindVertexArray(mVAO);
-	glGenBuffers(3, &mVBO[0]);
-	glBindVertexArray(0);
-}
-
-MeshBuffer::~MeshBuffer()
-{
-	glDeleteVertexArrays(1, &mVAO);
-    glDeleteBuffers(3, &mVBO[0]);
-}
-
-int MeshBuffer::getStartIndex(Guid meshId)
-{
-	for(int i = 0; i < mMeshIds.size(); i++){
-		if(mMeshIds[i] == meshId){
-			return mStart[i];
-		}
-	}
-
-	return -1;
-}
-
-Sphere MeshBuffer::getBoundingSphere(Guid meshId)
-{
-	for(int i = 0; i < mMeshIds.size(); i++){
-		if(mMeshIds[i] == meshId){
-			return mBoundingSpheres[i];
-		}
-	}
-
-	Sphere sphere;
-
-	return sphere;
-}
 
 void Graphics::checkError()
 {
@@ -348,6 +111,178 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
 	}
 
 	return openglFormat;
+}
+
+void Graphics::create(Camera* camera,
+					  GLuint* mainFBO,
+					  GLuint* colorTex,
+					  GLuint* depthTex,
+					  GLuint* geometryFBO,
+					  GLuint* positionTex,
+					  GLuint* normalTex,
+					  GLuint* ssaoFBO,
+					  GLuint* ssaoColorTex,
+					  GLuint* ssaoNoiseTex,
+					  glm::vec3* ssaoSamples,
+				      bool* created)
+{
+	// generate main camera fbo (color + depth)
+	glGenFramebuffers(1, mainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
+
+	glGenTextures(1, colorTex);
+	glBindTexture(GL_TEXTURE_2D, *colorTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glGenTextures(1, depthTex);
+	glBindTexture(GL_TEXTURE_2D, *depthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *colorTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depthTex, 0);
+
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, mainAttachments);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// generate geometry fbo
+	glGenFramebuffers(1, geometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, *geometryFBO);
+
+	glGenTextures(1, positionTex);
+	glBindTexture(GL_TEXTURE_2D, *positionTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glGenTextures(1, normalTex);
+	glBindTexture(GL_TEXTURE_2D, *normalTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *positionTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *normalTex, 0);
+
+	unsigned int geometryAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, geometryAttachments);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// generate ssao fbo
+	glGenFramebuffers(1, ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, *ssaoFBO);
+
+	glGenTextures(1, ssaoColorTex);
+	glBindTexture(GL_TEXTURE_2D, *ssaoColorTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *ssaoColorTex, 0);
+
+	unsigned int ssaoAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, ssaoAttachments);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	auto lerp = [](float a, float b, float t) { return a + t * (b - a); };
+
+	//generate noise texture for use in ssao
+	std::uniform_real_distribution<GLfloat> distribution(0.0, 1.0);
+	std::default_random_engine generator;
+	for (unsigned int j = 0; j < 64; ++j)
+	{
+		float x = distribution(generator) * 2.0f - 1.0f;
+		float y = distribution(generator) * 2.0f - 1.0f;
+		float z = distribution(generator);
+		float radius = distribution(generator);
+
+		glm::vec3 sample(x, y, z);
+		sample = radius * glm::normalize(sample);
+		float scale = float(j) / 64.0f;
+
+		// scale samples s.t. they're more aligned to center of kernel
+		scale = lerp(0.1f, 1.0f, scale * scale);
+		sample *= scale;
+
+		ssaoSamples[j] = sample;
+	}
+
+	glm::vec3 ssaoNoise[16];
+	for (int j = 0; j < 16; j++) {
+		// rotate around z-axis (in tangent space)
+		glm::vec3 noise(distribution(generator) * 2.0f - 1.0f, distribution(generator) * 2.0f - 1.0f, 0.0f);
+		ssaoNoise[j] = noise;
+	}
+
+	glGenTextures(1, ssaoNoiseTex);
+	glBindTexture(GL_TEXTURE_2D, *ssaoNoiseTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	Graphics::checkError();
+
+	*created = true;
+}
+
+void Graphics::destroy(Camera* camera,
+					   GLuint* mainFBO,
+					   GLuint* colorTex,
+					   GLuint* depthTex,
+					   GLuint* geometryFBO,
+					   GLuint* positionTex,
+					   GLuint* normalTex,
+					   GLuint* ssaoFBO,
+					   GLuint* ssaoColorTex,
+					   GLuint* ssaoNoiseTex,
+					   bool* created)
+{
+	// detach textures from their framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, *geometryFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, *ssaoFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// delete frambuffers
+	glDeleteFramebuffers(1, mainFBO);
+	glDeleteFramebuffers(1, geometryFBO);
+	glDeleteFramebuffers(1, ssaoFBO);
+
+	// delete textures
+	glDeleteTextures(1, colorTex);
+	glDeleteTextures(1, depthTex);
+	glDeleteTextures(1, positionTex);
+	glDeleteTextures(1, normalTex);
+	glDeleteTextures(1, ssaoColorTex);
+	glDeleteTextures(1, ssaoNoiseTex);
+
+	*created = false;
 }
 
 void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)
@@ -799,7 +734,7 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
 	font->mShader.setVec3("textColor", color);
 
 	glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(font->mVao.handle);
+    glBindVertexArray(font->mVao);
 
     // Iterate through all characters
     std::string::const_iterator it;
@@ -823,10 +758,10 @@ void Graphics::renderText(World* world, Camera* camera, Font* font, std::string 
             { xpos + w, ypos + h,   1.0, 0.0 }           
         };
         // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.mGlyphId.handle);
+        glBindTexture(GL_TEXTURE_2D, ch.mGlyphId);
 
         // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, font->mVbo.handle);
+        glBindBuffer(GL_ARRAY_BUFFER, font->mVbo);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
