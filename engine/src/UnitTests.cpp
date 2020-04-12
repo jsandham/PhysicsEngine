@@ -22,7 +22,7 @@ void UnitTests::print(const std::string testMessage, bool testPassed)
 	}
 	else {
 		std::string message = "CORE UNIT TEST: " + testMessage + " FAILED\n";
-		Log::info(message.c_str());
+		Log::error(message.c_str());
 	}
 }
 
@@ -33,6 +33,17 @@ void UnitTests::run()
 	poolAllocatorTest2();
 	poolAllocatorTest3();
 	poolAllocatorTest4();
+
+	rayPlaneIntersectionTest0();
+	rayPlaneIntersectionTest1();
+	rayPlaneIntersectionTest2();
+	rayPlaneIntersectionTest3();
+	rayPlaneIntersectionTest4();
+	rayPlaneIntersectionTest5();
+	rayPlaneIntersectionTest6();
+	rayPlaneIntersectionTest7();
+	rayPlaneIntersectionTest8();
+	rayPlaneIntersectionTest9();
 
 	raySphereIntersectionTest0();
 	raySphereIntersectionTest1();
@@ -58,47 +69,47 @@ void UnitTests::run()
 	raySphereIntersectionTest21();
 	raySphereIntersectionTest22();
 
-	rayBoundsIntersectionTest0();
-	rayBoundsIntersectionTest1();
-	rayBoundsIntersectionTest2();
-	rayBoundsIntersectionTest3();
-	rayBoundsIntersectionTest4();
-	rayBoundsIntersectionTest5();
-	rayBoundsIntersectionTest6();
-	rayBoundsIntersectionTest7();
-	rayBoundsIntersectionTest8();
-	rayBoundsIntersectionTest9();
-	rayBoundsIntersectionTest10();
-	rayBoundsIntersectionTest11();
-	rayBoundsIntersectionTest12();
-	rayBoundsIntersectionTest13();
-	rayBoundsIntersectionTest14();
-	rayBoundsIntersectionTest15();
-	rayBoundsIntersectionTest16();
-	rayBoundsIntersectionTest17();
-	rayBoundsIntersectionTest18();
+	rayAABBIntersectionTest0();
+	rayAABBIntersectionTest1();
+	rayAABBIntersectionTest2();
+	rayAABBIntersectionTest3();
+	rayAABBIntersectionTest4();
+	rayAABBIntersectionTest5();
+	rayAABBIntersectionTest6();
+	rayAABBIntersectionTest7();
+	rayAABBIntersectionTest8();
+	rayAABBIntersectionTest9();
+	rayAABBIntersectionTest10();
+	rayAABBIntersectionTest11();
+	rayAABBIntersectionTest12();
+	rayAABBIntersectionTest13();
+	rayAABBIntersectionTest14();
+	rayAABBIntersectionTest15();
+	rayAABBIntersectionTest16();
+	rayAABBIntersectionTest17();
+	rayAABBIntersectionTest18();
 
-	sphereBoundsIntersectionTest0();
-	sphereBoundsIntersectionTest1();
-	sphereBoundsIntersectionTest2();
-	sphereBoundsIntersectionTest3();
-	sphereBoundsIntersectionTest4();
-	sphereBoundsIntersectionTest5();
-	sphereBoundsIntersectionTest6();
-	sphereBoundsIntersectionTest7();
-	sphereBoundsIntersectionTest8();
-	sphereBoundsIntersectionTest9();
-	sphereBoundsIntersectionTest10();
-	sphereBoundsIntersectionTest11();
-	sphereBoundsIntersectionTest12();
-	sphereBoundsIntersectionTest13();
-	sphereBoundsIntersectionTest14();
-	sphereBoundsIntersectionTest15();
-	sphereBoundsIntersectionTest16();
-	sphereBoundsIntersectionTest17();
-	sphereBoundsIntersectionTest18();
+	sphereAABBIntersectionTest0();
+	sphereAABBIntersectionTest1();
+	sphereAABBIntersectionTest2();
+	sphereAABBIntersectionTest3();
+	sphereAABBIntersectionTest4();
+	sphereAABBIntersectionTest5();
+	sphereAABBIntersectionTest6();
+	sphereAABBIntersectionTest7();
+	sphereAABBIntersectionTest8();
+	sphereAABBIntersectionTest9();
+	sphereAABBIntersectionTest10();
+	sphereAABBIntersectionTest11();
+	sphereAABBIntersectionTest12();
+	sphereAABBIntersectionTest13();
+	sphereAABBIntersectionTest14();
+	sphereAABBIntersectionTest15();
+	sphereAABBIntersectionTest16();
+	sphereAABBIntersectionTest17();
+	sphereAABBIntersectionTest18();
 
-	sphereSphereIntersectionTest0();
+	/*sphereSphereIntersectionTest0();
 	sphereSphereIntersectionTest1();
 	sphereSphereIntersectionTest2();
 	sphereSphereIntersectionTest3();
@@ -110,19 +121,34 @@ void UnitTests::run()
 	sphereSphereIntersectionTest9();
 	sphereSphereIntersectionTest10();
 	sphereSphereIntersectionTest11();
-	sphereSphereIntersectionTest12();
+	sphereSphereIntersectionTest12();*/
 
-	boundsBoundsIntersectionTest0();
-	boundsBoundsIntersectionTest1();
-	boundsBoundsIntersectionTest2();
-	boundsBoundsIntersectionTest3();
-	boundsBoundsIntersectionTest4();
-	boundsBoundsIntersectionTest5();
-	boundsBoundsIntersectionTest6();
-	boundsBoundsIntersectionTest7();
-	boundsBoundsIntersectionTest8();
-	boundsBoundsIntersectionTest9();
-	boundsBoundsIntersectionTest10();
+	sphereFrustumIntersectionTest0();
+	sphereFrustumIntersectionTest1();
+	sphereFrustumIntersectionTest2();
+	sphereFrustumIntersectionTest3();
+	sphereFrustumIntersectionTest4();
+	sphereFrustumIntersectionTest5();
+	sphereFrustumIntersectionTest6();
+	sphereFrustumIntersectionTest7();
+	sphereFrustumIntersectionTest8();
+	sphereFrustumIntersectionTest9();
+	sphereFrustumIntersectionTest10();
+	sphereFrustumIntersectionTest11();
+	sphereFrustumIntersectionTest12();
+	sphereFrustumIntersectionTest13();
+
+	aabbAABBIntersectionTest0();
+	aabbAABBIntersectionTest1();
+	aabbAABBIntersectionTest2();
+	aabbAABBIntersectionTest3();
+	aabbAABBIntersectionTest4();
+	aabbAABBIntersectionTest5();
+	aabbAABBIntersectionTest6();
+	aabbAABBIntersectionTest7();
+	aabbAABBIntersectionTest8();
+	aabbAABBIntersectionTest9();
+	aabbAABBIntersectionTest10();
 }
 
 void UnitTests::poolAllocatorTest0()
@@ -225,6 +251,156 @@ void UnitTests::poolAllocatorTest5()
 
 
 	print("Pool allocator test (4)", allocator.getCount() == 0);
+}
+
+void UnitTests::rayPlaneIntersectionTest0()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(-1, 0, 0);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(1, 0, 0);
+	plane.mX0 = glm::vec3(2, 0, 0);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (0) ", (answer == false));
+}
+
+void UnitTests::rayPlaneIntersectionTest1()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(4, 0, 0);
+	ray.mDirection = glm::vec3(-1, 0, 0);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(1, 0, 0);
+	plane.mX0 = glm::vec3(2, 0, 0);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (1) ", (answer == true));
+}
+
+void UnitTests::rayPlaneIntersectionTest2()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(-1, -1, -1);
+	plane.mX0 = glm::vec3(-0.1, -0.1, -0.1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (2) ", (answer == false));
+}
+
+void UnitTests::rayPlaneIntersectionTest3()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(-1, -1, -1);
+	plane.mX0 = glm::vec3(1.1, 1.1, 1.1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (3) ", (answer == true));
+}
+
+void UnitTests::rayPlaneIntersectionTest4()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(1, 1, 1);
+	ray.mDirection = glm::vec3(1, 0, 0);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(0, 0, 1);
+	plane.mX0 = glm::vec3(0, 0, 1.1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (4) ", (answer == false));
+}
+
+void UnitTests::rayPlaneIntersectionTest5()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(0.2, 0.7, 1.3);
+	plane.mX0 = glm::vec3(1, 1, 1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (5) ", (answer == true));
+}
+
+void UnitTests::rayPlaneIntersectionTest6()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(-0.4, -0.7, 0.9);
+	plane.mX0 = glm::vec3(1, 1, 1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (6) ", (answer == true));
+}
+
+void UnitTests::rayPlaneIntersectionTest7()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(0.7, -0.6, -0.3);
+	plane.mX0 = glm::vec3(1, 1, 1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (7) ", (answer == true));
+}
+
+void UnitTests::rayPlaneIntersectionTest8()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(0.7, 0.6, 0.3);
+	plane.mX0 = glm::vec3(-1, -1, -1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (8) ", (answer == false));
+}
+
+void UnitTests::rayPlaneIntersectionTest9()
+{
+	Ray ray;
+	ray.mOrigin = glm::vec3(0, 0, 0);
+	ray.mDirection = glm::vec3(1, 1, 1);
+
+	Plane plane;
+	plane.mNormal = glm::vec3(0.5, 0.9, 0.1);
+	plane.mX0 = glm::vec3(-1, -1, -1);
+
+	bool answer = Geometry::intersect(ray, plane);
+
+	print("Intersection of ray and plane (9) ", (answer == false));
 }
 
 void UnitTests::raySphereIntersectionTest0()
@@ -457,385 +633,385 @@ void UnitTests::raySphereIntersectionTest22()
 	print("Intersection of ray and sphere (22) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest0()
+void UnitTests::rayAABBIntersectionTest0()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (0) ", (answer == true));
+	print("Intersection of ray and AABB (0) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest1()
+void UnitTests::rayAABBIntersectionTest1()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	Bounds bounds(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (1) ", (answer == true));
+	print("Intersection of ray and AABB (1) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest2()
+void UnitTests::rayAABBIntersectionTest2()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	Bounds bounds(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (2) ", (answer == true));
+	print("Intersection of ray and AABB (2) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest3()
+void UnitTests::rayAABBIntersectionTest3()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-10.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (3) ", (answer == true));
+	print("Intersection of ray and AABB (3) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest4()
+void UnitTests::rayAABBIntersectionTest4()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-	Bounds bounds(glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, -10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (4) ", (answer == true));
+	print("Intersection of ray and AABB (4) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest5()
+void UnitTests::rayAABBIntersectionTest5()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	Bounds bounds(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (5) ", (answer == true));
+	print("Intersection of ray and AABB (5) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest6()
+void UnitTests::rayAABBIntersectionTest6()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.001f, 2.0001f, 2.001f));
+	AABB aabb(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.001f, 2.0001f, 2.001f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (6) ", (answer == true));
+	print("Intersection of ray and AABB (6) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest7()
+void UnitTests::rayAABBIntersectionTest7()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.00001f));
+	AABB aabb(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.00001f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (7) ", (answer == true));
+	print("Intersection of ray and AABB (7) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest8()
+void UnitTests::rayAABBIntersectionTest8()
 {
 	Ray ray(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
-	Bounds bounds(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
+	AABB aabb(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (8) ", (answer == true));
+	print("Intersection of ray and AABB (8) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest9()
+void UnitTests::rayAABBIntersectionTest9()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
+	AABB aabb(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (9) ", (answer == true));
+	print("Intersection of ray and AABB (9) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest10()
+void UnitTests::rayAABBIntersectionTest10()
 {
 	Ray ray(glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
+	AABB aabb(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(4.0f, 4.0f, 4.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (10) ", (answer == true));
+	print("Intersection of ray and AABB (10) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest11()
+void UnitTests::rayAABBIntersectionTest11()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (11) ", (answer == false));
+	print("Intersection of ray and AABB (11) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest12()
+void UnitTests::rayAABBIntersectionTest12()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	Bounds bounds(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (12) ", (answer == false));
+	print("Intersection of ray and AABB (12) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest13()
+void UnitTests::rayAABBIntersectionTest13()
 {
 	Ray ray(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	Bounds bounds(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (13) ", (answer == false));
+	print("Intersection of ray and AABB (13) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest14()
+void UnitTests::rayAABBIntersectionTest14()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.4f, 1.3f));
-	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (14) ", (answer == false));
+	print("Intersection of ray and AABB (14) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest15()
+void UnitTests::rayAABBIntersectionTest15()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.5f, -0.4f, -1.3f));
-	Bounds bounds(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (15) ", (answer == false));
+	print("Intersection of ray and AABB (15) ", (answer == false));
 }
 
-void UnitTests::rayBoundsIntersectionTest16()
+void UnitTests::rayAABBIntersectionTest16()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+	AABB aabb(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(2.00001f, 2.00001f, 2.00001f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (16) ", (answer == true));
+	print("Intersection of ray and AABB (16) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest17()
+void UnitTests::rayAABBIntersectionTest17()
 {
 	Ray ray(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	Bounds bounds(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.0f));
+	AABB aabb(glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, 2.00001f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (17) ", (answer == true));
+	print("Intersection of ray and AABB (17) ", (answer == true));
 }
 
-void UnitTests::rayBoundsIntersectionTest18()
+void UnitTests::rayAABBIntersectionTest18()
 {
 	Ray ray(glm::vec3(-1.0f, 10.0f, 2.2f), glm::vec3(1.0f, 0.1f, -2.3f));
-	Bounds bounds(glm::vec3(-1.015f, 9.85f, 1.9f), glm::vec3(2.8f, 1.234f, 2.1f));
+	AABB aabb(glm::vec3(-1.015f, 9.85f, 1.9f), glm::vec3(2.8f, 1.234f, 2.1f));
 
-	bool answer = Geometry::intersect(ray, bounds);
+	bool answer = Geometry::intersect(ray, aabb);
 
-	print("Intersection of ray and bounds (18) ", (answer == true));
+	print("Intersection of ray and AABB (18) ", (answer == true));
 }
 
 
-void UnitTests::sphereBoundsIntersectionTest0()
+void UnitTests::sphereAABBIntersectionTest0()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (0) ", (answer == true));
+	print("Intersection of sphere and AABB (0) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest1()
+void UnitTests::sphereAABBIntersectionTest1()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (1) ", (answer == true));
+	print("Intersection of sphere and AABB (1) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest2()
+void UnitTests::sphereAABBIntersectionTest2()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (2) ", (answer == true));
+	print("Intersection of sphere and AABB (2) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest3()
+void UnitTests::sphereAABBIntersectionTest3()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (3) ", (answer == true));
+	print("Intersection of sphere and AABB (3) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest4()
+void UnitTests::sphereAABBIntersectionTest4()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (4) ", (answer == true));
+	print("Intersection of sphere and AABB (4) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest5()
+void UnitTests::sphereAABBIntersectionTest5()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (5) ", (answer == true));
+	print("Intersection of sphere and AABB (5) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest6()
+void UnitTests::sphereAABBIntersectionTest6()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (6) ", (answer == true));
+	print("Intersection of sphere and AABB (6) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest7()
+void UnitTests::sphereAABBIntersectionTest7()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (7) ", (answer == true));
+	print("Intersection of sphere and AABB (7) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest8()
+void UnitTests::sphereAABBIntersectionTest8()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (8) ", (answer == true));
+	print("Intersection of sphere and AABB (8) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest9()
+void UnitTests::sphereAABBIntersectionTest9()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (9) ", (answer == true));
+	print("Intersection of sphere and AABB (9) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest10()
+void UnitTests::sphereAABBIntersectionTest10()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (10) ", (answer == true));
+	print("Intersection of sphere and AABB (10) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest11()
+void UnitTests::sphereAABBIntersectionTest11()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (11) ", (answer == true));
+	print("Intersection of sphere and AABB (11) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest12()
+void UnitTests::sphereAABBIntersectionTest12()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (12) ", (answer == true));
+	print("Intersection of sphere and AABB (12) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest13()
+void UnitTests::sphereAABBIntersectionTest13()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (13) ", (answer == true));
+	print("Intersection of sphere and AABB (13) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest14()
+void UnitTests::sphereAABBIntersectionTest14()
 {
 	Sphere sphere(glm::vec3(0.0f, 0.0f, 0.0f), 0.1f);
-	Bounds bounds(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (14) ", (answer == true));
+	print("Intersection of sphere and AABB (14) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest15()
+void UnitTests::sphereAABBIntersectionTest15()
 {
 	Sphere sphere(glm::vec3(1.0, 1.0f, 1.0f), 0.5f);
-	Bounds bounds(glm::vec3(1.5f, 1.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb(glm::vec3(1.5f, 1.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (15) ", (answer == true));
+	print("Intersection of sphere and AABB (15) ", (answer == true));
 }
 
-void UnitTests::sphereBoundsIntersectionTest16()
+void UnitTests::sphereAABBIntersectionTest16()
 {
 	Sphere sphere(glm::vec3(-2.0f, 3.0f, 1.1f), 2.3f);
-	Bounds bounds(glm::vec3(5.0f, 10.0f, 4.0f), glm::vec3(1.2f, -2.2f, 4.2f));
+	AABB aabb(glm::vec3(5.0f, 10.0f, 4.0f), glm::vec3(1.2f, -2.2f, 4.2f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (16) ", (answer == false));
+	print("Intersection of sphere and AABB (16) ", (answer == false));
 }
 
-void UnitTests::sphereBoundsIntersectionTest17()
+void UnitTests::sphereAABBIntersectionTest17()
 {
 	Sphere sphere(glm::vec3(-2.0f, 0.0f, 0.0f), 0.4f);
-	Bounds bounds(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
+	AABB aabb(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (17) ", (answer == false));
+	print("Intersection of sphere and AABB (17) ", (answer == false));
 }
 
-void UnitTests::sphereBoundsIntersectionTest18()
+void UnitTests::sphereAABBIntersectionTest18()
 {
 	Sphere sphere(glm::vec3(-1.0f, -1.0f, -1.0f), 0.4f);
-	Bounds bounds(glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(1.2f, 0.2f, 0.8f));
+	AABB aabb(glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(1.2f, 0.2f, 0.8f));
 
-	bool answer = Geometry::intersect(sphere, bounds);
+	bool answer = Geometry::intersect(sphere, aabb);
 
-	print("Intersection of sphere and bounds (18) ", (answer == false));
+	print("Intersection of sphere and AABB (18) ", (answer == false));
 }
 
 void UnitTests::sphereSphereIntersectionTest0()
@@ -968,112 +1144,478 @@ void UnitTests::sphereSphereIntersectionTest12()
 	print("Intersection of sphere and sphere (12) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest0()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void UnitTests::sphereFrustumIntersectionTest0()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (0) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+	
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-0.04142, 2.0414, -9.8999);
+	sphere.mRadius = 0.01f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (0) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest1()
+void UnitTests::sphereFrustumIntersectionTest1()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (1) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(0.04142, 2.0414, -9.8999);
+	sphere.mRadius = 0.01f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (1) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest2()
+void UnitTests::sphereFrustumIntersectionTest2()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (2) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-0.04142, 1.9585, -9.8999);
+	sphere.mRadius = 0.01f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (2) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest3()
+void UnitTests::sphereFrustumIntersectionTest3()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (3) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(0.04142, 1.9585, -9.8999);
+	sphere.mRadius = 0.01f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (3) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest4()
+void UnitTests::sphereFrustumIntersectionTest4()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (4) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-103, 105, 240);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (4) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest5()
+void UnitTests::sphereFrustumIntersectionTest5()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (5) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(103, 105, 240);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (5) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest6()
+void UnitTests::sphereFrustumIntersectionTest6()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (6) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-103, -101, 240);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (6) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest7()
+void UnitTests::sphereFrustumIntersectionTest7()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (7) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(103, -101, 240);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (7) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest8()
+void UnitTests::sphereFrustumIntersectionTest8()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-	Bounds bounds2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (8) ", (answer == true));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(0, 2, 0);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (8) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest9()
+void UnitTests::sphereFrustumIntersectionTest9()
 {
-	Bounds bounds1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, -1.0f));
-	Bounds bounds2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (9) ", (answer == false));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(0, 2, 0);
+	sphere.mRadius = 1000.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (9) ", (answer == true));
 }
 
-void UnitTests::boundsBoundsIntersectionTest10()
+void UnitTests::sphereFrustumIntersectionTest10()
 {
-	Bounds bounds1(glm::vec3(-1.0, 0.5f, -0.7f), glm::vec3(2.0f, 1.0f, -1.0f));
-	Bounds bounds2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
 
-	bool answer = Geometry::intersect(bounds1, bounds2);
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
 
-	print("Intersection of bounds and bounds (10) ", (answer == false));
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-0.06, 2.0414, -10);
+	sphere.mRadius = 0.01f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (10) ", (answer == false));
+}
+
+void UnitTests::sphereFrustumIntersectionTest11()
+{
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
+
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
+
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-105, 106, 240);
+	sphere.mRadius = 1.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (11) ", (answer == false));
+}
+
+void UnitTests::sphereFrustumIntersectionTest12()
+{
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
+
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
+
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(-104, 106, 250);
+	sphere.mRadius = 2.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (12) ", (answer == false));
+}
+
+void UnitTests::sphereFrustumIntersectionTest13()
+{
+	Frustum frustum;
+	frustum.mFov = 45.0f;
+	frustum.mAspectRatio = 1.0f;
+	frustum.mNearPlane = 0.1f;
+	frustum.mFarPlane = 250.0f;
+
+	glm::vec3 position = glm::vec3(0, 2, -10);
+	glm::vec3 front = glm::vec3(0, 0, 1);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::vec3(1, 0, 0);
+
+	frustum.computePlanes(position, front, up, right);
+
+	Sphere sphere;
+	sphere.mCentre = glm::vec3(0, 2, -14);
+	sphere.mRadius = 2.0f;
+
+	bool answer = Geometry::intersect(sphere, frustum);
+
+	print("Intersection of sphere and frustum (13) ", (answer == false));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void UnitTests::aabbAABBIntersectionTest0()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (0) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest1()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (1) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest2()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (2) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest3()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (3) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest4()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (4) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest5()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.5f, 1.5f, 1.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (5) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest6()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (6) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest7()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (7) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest8()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AABB aabb2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (8) ", (answer == true));
+}
+
+void UnitTests::aabbAABBIntersectionTest9()
+{
+	AABB aabb1(glm::vec3(0.0, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, -1.0f));
+	AABB aabb2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (9) ", (answer == false));
+}
+
+void UnitTests::aabbAABBIntersectionTest10()
+{
+	AABB aabb1(glm::vec3(-1.0, 0.5f, -0.7f), glm::vec3(2.0f, 1.0f, -1.0f));
+	AABB aabb2(glm::vec3(3.0f, 4.0f, 5.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+
+	bool answer = Geometry::intersect(aabb1, aabb2);
+
+	print("Intersection of AABB and AABB (10) ", (answer == false));
 }

@@ -25,7 +25,7 @@ void Octtree::clear()
 	}
 }
 
-void Octtree::create(Bounds bounds, int depth, int maxNumOfObjectsPerNode)
+void Octtree::create(AABB bounds, int depth, int maxNumOfObjectsPerNode)
 {
 	mBounds = bounds;
 	mDepth = depth;
@@ -247,7 +247,7 @@ int Octtree::getDepth() const
 	return mDepth;
 }
 
-Bounds Octtree::getBounds() const
+AABB Octtree::getBounds() const
 {
 	return mBounds;
 }

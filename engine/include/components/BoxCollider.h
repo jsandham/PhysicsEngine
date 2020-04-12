@@ -16,14 +16,14 @@ namespace PhysicsEngine
 	{
 		Guid mComponentId;
 		Guid mEntityId;
-		Bounds mBounds;
+		AABB mAABB;
 	};
 #pragma pack(pop)
 
 	class BoxCollider : public Collider
 	{
 		public:
-			Bounds mBounds;
+			AABB mAABB;
 
 		public:
 			BoxCollider();
@@ -34,7 +34,7 @@ namespace PhysicsEngine
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
-			bool intersect(Bounds bounds) const;
+			bool intersect(AABB aabb) const;
 
 			std::vector<float> getLines() const;
 	};

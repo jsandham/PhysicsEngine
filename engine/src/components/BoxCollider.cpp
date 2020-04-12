@@ -29,7 +29,7 @@ std::vector<char> BoxCollider::serialize(Guid componentId, Guid entityId) const
 	BoxColliderHeader header;
 	header.mComponentId = componentId;
 	header.mEntityId = entityId;
-	header.mBounds = mBounds;
+	header.mAABB = mAABB;
 
 	std::vector<char> data(sizeof(BoxColliderHeader));
 
@@ -44,19 +44,19 @@ void BoxCollider::deserialize(std::vector<char> data)
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;
-	mBounds = header->mBounds;
+	mAABB = header->mAABB;
 }
 
-bool BoxCollider::intersect(Bounds bounds) const
+bool BoxCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(mBounds, bounds);
+	return Geometry::intersect(mAABB, aabb);
 }
 
 std::vector<float> BoxCollider::getLines() const  //might not want to store lines in class so if I end up doing that, instead move this to a utility method??
 {
 	std::vector<float> lines;
-	glm::vec3 centre = mBounds.mCentre;
-	glm::vec3 extents = mBounds.getExtents();
+	glm::vec3 centre = mAABB.mCentre;
+	glm::vec3 extents = mAABB.getExtents();
 
 	float xf[] = {-1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f};
 	float yf[] = {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f};

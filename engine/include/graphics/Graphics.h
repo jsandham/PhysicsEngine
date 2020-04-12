@@ -16,6 +16,58 @@
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
 
+#define LOG 0
+
+//#if LOG 
+//	#define GLLOG(func) (printf("%s\n", #func)); func  
+//#else
+//	#define GLLOG(func) func
+//#endif
+
+constexpr std::uint32_t stringLength(const char* cstr)
+{
+	return (*cstr != '\0') ? (stringLength(cstr + 1) + 1) : 0;
+}
+
+constexpr std::uint32_t sumSHL(std::uint32_t h, std::uint32_t shift) { return h + (h << shift); }
+constexpr std::uint32_t sumSHR(std::uint32_t h, std::uint32_t shift) { return h + (h >> shift); }
+constexpr std::uint32_t xorSHR(std::uint32_t h, std::uint32_t shift) { return h ^ (h >> shift); }
+
+constexpr std::uint32_t hashFinishImpl(std::uint32_t h)
+{
+	// h += (h <<  3)
+	// h ^= (h >> 11)
+	// h += (h << 15)
+	return sumSHL(xorSHR(sumSHL(h, 3), 11), 15);
+}
+
+constexpr std::uint32_t hashStepImpl(std::uint32_t h, std::uint32_t c)
+{
+	// h += c
+	// h += (h << 10)
+	// h ^= (h >>  6)
+	return xorSHR(sumSHL(h + c, 10), 6);
+}
+
+constexpr std::uint32_t hashImpl(const char* cstr, std::uint32_t length, std::uint32_t h)
+{
+	return (length != 0) ? hashImpl(cstr + 1, length - 1, hashStepImpl(h, *cstr)) : hashFinishImpl(h);
+}
+
+constexpr std::uint32_t hashCString(const char* cstr)
+{
+	return hashImpl(cstr, stringLength(cstr), 0);
+}
+
+#if LOG 
+	#define LOG_OGL(func)	                     \
+        /*Log::warn((std::to_string(hashCString(#func)) + "\n").c_str());*/ \
+		Log::warn(#func); \
+        func                                                         
+#else
+	#define LOG_OGL(func) func
+#endif
+
 namespace PhysicsEngine
 {
 	class Graphics

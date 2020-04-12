@@ -5,6 +5,7 @@
 
 #include <systems/System.h>
 
+#include <components/Transform.h>
 #include <components/Camera.h>
 
 #include <core/Input.h>
@@ -19,6 +20,7 @@ namespace PhysicsEngine
 		static const float TRANSLATE_SENSITIVITY;
 
 	private:
+		Transform* mTransform;
 		Camera* mCamera;
 
 		int mLastPosX;
@@ -39,6 +41,11 @@ namespace PhysicsEngine
 		void update(Input input);
 
 		void resetCamera();
+		void setViewport(Viewport viewport);
+		void setFrustum(Frustum frustum);
+
+		Viewport getViewport() const;
+		Frustum getFrustum() const;
 	};
 
 	template <>

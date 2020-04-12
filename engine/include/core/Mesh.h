@@ -48,6 +48,8 @@ namespace PhysicsEngine
 			void load(const std::string& filename);
 			void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords, std::vector<int> subMeshStartIndices);
 
+			Sphere computeBoundingSphere() const;
+
 			bool isCreated() const;
 			const std::vector<float>& getVertices() const;
 			const std::vector<float>& getNormals() const;
@@ -56,7 +58,6 @@ namespace PhysicsEngine
 			int getSubMeshStartIndex(int subMeshIndex) const;
 			int getSubMeshEndIndex(int subMeshIndex) const;
 			int getSubMeshCount() const;
-			Sphere getBoundingSphere() const;
 			GLuint getNativeGraphicsVAO() const;
 
 			void create();

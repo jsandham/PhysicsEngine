@@ -123,6 +123,63 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
 	mCreated = false;
 }
 
+Sphere Mesh::computeBoundingSphere() const
+{
+	Sphere sphere;
+	sphere.mRadius = 1.0f;
+	sphere.mCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	size_t numVertices = mVertices.size() / 3;
+
+	if (numVertices == 0) {
+		std::string message = "Error: No vertices assigned in mesh when trying to compute bounding sphere\n";
+		Log::error(message.c_str());
+		return sphere;
+	}
+
+	// Ritter algorithm for bounding sphere
+	// find furthest point from first vertex
+	glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
+
+	glm::vec3 y = x;
+	float maxDistance = 0.0f;
+	for (size_t i = 1; i < numVertices; i++) {
+
+		glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+		float distance = glm::distance(x, temp);
+		if (distance > maxDistance) {
+			y = temp;
+			maxDistance = distance;
+		}
+	}
+
+	// now find furthest point from y
+	glm::vec3 z = y;
+	maxDistance = 0.0f;
+	for (size_t i = 0; i < numVertices; i++) {
+
+		glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+		float distance = glm::distance(y, temp);
+		if (distance > maxDistance) {
+			z = temp;
+			maxDistance = distance;
+		}
+	}
+
+	sphere.mRadius = 0.5f * glm::distance(y, z);
+	sphere.mCentre = 0.5f * (y + z);
+
+	for (size_t i = 0; i < numVertices; i++) {
+		glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+		float radius = glm::distance(temp, sphere.mCentre);
+		if (radius > sphere.mRadius) {
+			sphere.mRadius = radius;
+		}
+	}
+
+	return sphere;
+}
+
 bool Mesh::isCreated() const
 {
 	return mCreated;
@@ -169,51 +226,6 @@ int Mesh::getSubMeshEndIndex(int subMeshIndex) const
 int Mesh::getSubMeshCount() const
 {
 	return (int)mSubMeshVertexStartIndices.size() - 1;
-}
-
-Sphere Mesh::getBoundingSphere() const
-{
-	// Ritter algorithm for bounding sphere
-	// find furthest point from first vertex
-	glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
-	glm::vec3 y = x;
-	float maxDistance = 0.0f;
-	for(size_t i = 1; i < mVertices.size() / 3; i++){
-		
-		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
-		float distance = glm::distance(x, temp);
-		if(distance > maxDistance){
-			y = temp;
-			distance = maxDistance;
-		}
-	}
-
-	// now find furthest point from y
-	glm::vec3 z = y;
-	maxDistance = 0.0f;
-	for(size_t i = 0; i < mVertices.size() / 3; i++){
-
-		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
-		float distance = glm::distance(y, temp);
-		if(distance > maxDistance){
-			z = temp;
-			distance = maxDistance;
-		}
-	}
-
-	Sphere sphere;
-	sphere.mRadius = glm::distance(y, z);
-	sphere.mCentre = 0.5f * (y + z);
-
-	for(size_t i = 0; i < mVertices.size() / 3; i++){
-		glm::vec3 temp = glm::vec3(mVertices[3*i], mVertices[3*i + 1], mVertices[3*i + 2]);
-		float distance = glm::distance(temp, sphere.mCentre);
-		if(distance > sphere.mRadius){
-			sphere.mRadius += distance;
-		}
-	}
-
-	return sphere;
 }
 
 GLuint Mesh::getNativeGraphicsVAO() const

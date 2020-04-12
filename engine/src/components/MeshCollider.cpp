@@ -47,7 +47,7 @@ void MeshCollider::deserialize(std::vector<char> data)
 	mMeshId = header->mMeshId;
 }
 
-bool MeshCollider::intersect(Bounds bounds) const
+bool MeshCollider::intersect(AABB aabb) const
 {
 	return false;
 }

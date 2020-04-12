@@ -182,7 +182,7 @@ void CreateGlContext(){
 	PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
 	desiredPixelFormat.nSize = sizeof(desiredPixelFormat);
 	desiredPixelFormat.nVersion = 1;
-	desiredPixelFormat.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
+	desiredPixelFormat.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER; //PFD_DRAW_TO_BITMAP
 	desiredPixelFormat.cColorBits = 32;
 	desiredPixelFormat.cAlphaBits = 8;
 	desiredPixelFormat.iLayerType = PFD_MAIN_PLANE;

@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "../include/TransformDrawer.h"
 #include "../include/CommandManager.h"
 #include "../include/EditorCommands.h"
@@ -34,10 +36,17 @@ void TransformDrawer::render(World* world, EditorProject& project, EditorScene& 
 		glm::quat rotation = transform->mRotation;
 		glm::vec3 scale = transform->mScale;
 
+		//glm::vec3 eulerRotDeg = glm::degrees(glm::eulerAngles(rotation));
+
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))){
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->mPosition, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat4("Rotation", glm::value_ptr(rotation))) {
+
+			//eulerRotDeg = glm::vec3(fmod(eulerRotDeg.x, 360.0f), fmod(eulerRotDeg.y, 360.0f), fmod(eulerRotDeg.z, 360.0f));
+
+			//rotation = glm::quat(glm::radians(eulerRotDeg));
+
 			CommandManager::addCommand(new ChangePropertyCommand<glm::quat>(&transform->mRotation, rotation, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Scale", glm::value_ptr(scale))) {

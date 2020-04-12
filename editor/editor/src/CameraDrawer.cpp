@@ -26,6 +26,7 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 	if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		Camera* camera = world->getComponentById<Camera>(id);
+		Transform* transform = camera->getComponent<Transform>(world);
 
 		ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
@@ -38,28 +39,31 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 			CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(&camera->mMode, static_cast<CameraMode>(mode), &scene.isDirty));
 		}
 
-		glm::vec3 position = camera->mPosition;
-		glm::vec3 front = camera->mFront;
-		glm::vec3 up = camera->mUp;
+		glm::vec3 position = transform->mPosition;// camera->mPosition;
+		glm::vec3 front = transform->getForward();// camera->mFront;
+		glm::vec3 up = transform->getUp();// camera->mUp;
 		glm::vec4 backgroundColor = camera->mBackgroundColor;
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mPosition, position, &scene.isDirty));
+			transform->mPosition = position;
+			//CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mPosition, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Front", glm::value_ptr(front))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mFront, front, &scene.isDirty));
+			//CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mFront, front, &scene.isDirty));
 		}
 		if (ImGui::InputFloat3("Up", glm::value_ptr(up))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mUp, up, &scene.isDirty));
+			//CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mUp, up, &scene.isDirty));
 		}
 		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->mBackgroundColor, backgroundColor, &scene.isDirty));
 		}
 
-		bool useSSAO = camera->mUseSSAO;
+		int ssao = static_cast<int>(camera->mSSAO);
 
-		if(ImGui::Checkbox("SSAO", &useSSAO)){
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->mUseSSAO, useSSAO, &scene.isDirty));
+		const char* ssaoNames[] = { "On", "Off" };
+
+		if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
+			CommandManager::addCommand(new ChangePropertyCommand<CameraSSAO>(&camera->mSSAO, static_cast<CameraSSAO>(ssao), &scene.isDirty));
 		}
 
 		if (ImGui::TreeNode("Viewport"))

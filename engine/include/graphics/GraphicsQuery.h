@@ -14,7 +14,9 @@ namespace PhysicsEngine
 		unsigned int mLines;
 		unsigned int mPoints;
 
-		GLuint mQueryId;
+		unsigned int mQueryBack;
+		unsigned int mQueryFront;
+		GLuint mQueryId[2];
 		float mTotalElapsedTime;
 	};
 }

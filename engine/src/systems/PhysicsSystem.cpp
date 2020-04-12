@@ -4,7 +4,7 @@
 
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Input.h"
-#include "../../include/core/Bounds.h"
+#include "../../include/core/AABB.h"
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Triangle.h"
 #include "../../include/core/Physics.h"

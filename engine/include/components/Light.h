@@ -15,8 +15,6 @@ namespace PhysicsEngine
 	{
 		Guid mComponentId;
 		Guid mEntityId;
-		glm::vec3 mPosition;
-		glm::vec3 mDirection;
 		glm::vec3 mAmbient;
 		glm::vec3 mDiffuse;
 		glm::vec3 mSpecular;
@@ -48,8 +46,6 @@ namespace PhysicsEngine
 	class Light : public Component
 	{
 		public:
-			glm::vec3 mPosition;
-			glm::vec3 mDirection;
 			glm::vec3 mAmbient;
 			glm::vec3 mDiffuse;
 			glm::vec3 mSpecular;

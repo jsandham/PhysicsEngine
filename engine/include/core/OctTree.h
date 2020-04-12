@@ -5,7 +5,7 @@
 
 #include "Guid.h"
 #include "Sphere.h"
-#include "Bounds.h"
+#include "AABB.h"
 #include "Capsule.h"
 #include "Ray.h"
 
@@ -43,7 +43,7 @@ namespace PhysicsEngine
 		private:
 			int mMaxNumOfObjectsPerNode;
 			int mDepth;
-			Bounds mBounds;
+			AABB mBounds;
 			std::vector<Node> mNodes;
 			std::vector<float> mLines; 
 
@@ -52,12 +52,12 @@ namespace PhysicsEngine
 			~Octtree();
 
 			void clear();
-			void create(Bounds bounds, int depth, int maxNumOfObjectsPerNode);
+			void create(AABB bounds, int depth, int maxNumOfObjectsPerNode);
 			void insert(Sphere sphere, Guid id);
 			Object* intersect(Ray ray);
 
 			int getDepth() const;
-			Bounds getBounds() const;
+			AABB getBounds() const;
 			std::vector<float> getLines() const;
 
 		private:

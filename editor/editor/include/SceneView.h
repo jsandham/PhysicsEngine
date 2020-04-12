@@ -11,6 +11,8 @@
 #include "graphics/GraphicsQuery.h"
 #include "graphics/GraphicsTargets.h"
 
+#include "EditorCameraSystem.h"
+
 namespace PhysicsEditor
 {
 	class SceneView
@@ -24,7 +26,7 @@ namespace PhysicsEditor
 			SceneView();
 			~SceneView();
 
-			void render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame);
+			void render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame);
 
 			bool isFocused() const;
 			bool isHovered() const;

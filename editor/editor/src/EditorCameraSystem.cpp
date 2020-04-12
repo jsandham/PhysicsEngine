@@ -58,9 +58,12 @@ void EditorCameraSystem::init(World* world)
 	mWorld = world;
 
 	mCamera = world->createEditorCamera();
+	mTransform = mCamera->getComponent<Transform>(world);
 
-	Log::warn(mCamera->getEntityId().toString().c_str());
-	Log::warn(mCamera->getId().toString().c_str());
+	mTransform->mPosition = glm::vec3(0, 2, -10);
+
+	//Log::warn(mCamera->getEntityId().toString().c_str());
+	//Log::warn(mCamera->getId().toString().c_str());
 }
 
 void EditorCameraSystem::update(Input input)
@@ -80,10 +83,12 @@ void EditorCameraSystem::update(Input input)
 
 	int currentPosX = camera->currentPosX;
 	int currentPosY = camera->currentPosY;*/
-	glm::vec3 position = mCamera->mPosition;
-	glm::vec3 front = mCamera->mFront;
-	glm::vec3 up = mCamera->mUp;
-	glm::vec3 right = mCamera->mRight;
+	glm::vec3 position = mTransform->mPosition;
+	glm::vec3 front = mTransform->getForward();// mCamera->mFront;
+	glm::vec3 up = mTransform->getUp();// mCamera->mUp;
+	glm::vec3 right = mTransform->getRight(); //mCamera->mRight;
+
+	//Log::info(("position: " + std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z) + "\n").c_str());
 
 	if (getKey(input, KeyCode::Up)) {
 		position += up * EditorCameraSystem::TRANSLATE_SENSITIVITY;
@@ -120,40 +125,25 @@ void EditorCameraSystem::update(Input input)
 	mLastPosY = mCurrentPosY;
 
 	// rotation around the camera up vector
-	front = glm::mat3(glm::rotate(glm::mat4(), -mouseDelta.x, up)) * front;
-	front = glm::normalize(front);
+	mTransform->mRotation *= glm::angleAxis(-mouseDelta.x, glm::vec3(0, 1, 0));
+	//front = glm::mat3(glm::rotate(glm::mat4(), -mouseDelta.x, up)) * front;
 
 	// rotation around the camera right vector
-	front = glm::mat3(glm::rotate(glm::mat4(), -mouseDelta.y, right)) * front;
-	front = glm::normalize(front);
+	mTransform->mRotation *= glm::angleAxis(-mouseDelta.y, glm::vec3(1, 0, 0));
+	//front = glm::mat3(glm::rotate(glm::mat4(), -mouseDelta.y, right)) * front;
 
-	right = glm::normalize(glm::cross(front, up));
-	//right = glm::normalize(glm::cross(front, worldUp));
+	//right = glm::normalize(glm::cross(front, up));
 
-	up = glm::normalize(glm::cross(right, front));
-
-	/*camera->setPosition(position);
-	camera->setFront(front);
-	camera->setUp(up);
-	camera->setRight(right);
-
-	camera->lastPosX = lastPosX;
-	camera->lastPosY = lastPosY;
-	camera->currentPosX = currentPosX;
-	camera->currentPosY = currentPosY;*/
-	mCamera->mPosition = position;
-	mCamera->mFront = front;
-	mCamera->mUp = up;
+	//up = glm::normalize(glm::cross(right, front));
 
 
-	//camera->lastPosX = lastPosX;
-	//camera->lastPosY = lastPosY;
-	//camera->currentPosX = currentPosX;
-	//camera->currentPosY = currentPosY;
+	mCamera->mFrustum.computePlanes(position, front, up, right);
+	mCamera->computeViewMatrix(position, front, up);
+	//mCamera->updateInternalCameraState();
 
-	mCamera->updateInternalCameraState();
-
-
+	mTransform->mPosition = position;
+	//mCamera->mFront = front;
+	//mCamera->mUp = up;
 
 
 	if (getKeyDown(input, KeyCode::A)) {
@@ -169,9 +159,30 @@ void EditorCameraSystem::update(Input input)
 
 void EditorCameraSystem::resetCamera()
 {
-	mCamera->mPosition = glm::vec3(0.0f, 0.0f, 1.0f);
-	mCamera->mFront = glm::vec3(1.0f, 0.0f, 0.0f);
-	mCamera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);
+	mTransform->mPosition = glm::vec3(0, 2, -10);
+	//mCamera->mFront = glm::vec3(1.0f, 0.0f, 0.0f);
+	//mCamera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);
 	mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
-	mCamera->updateInternalCameraState();
+	//mCamera->mFrustum.computePlanes(mTransform->mPosition, mCamera->mFront, mCamera->mUp);
+	//mCamera->updateInternalCameraState();
+}
+
+void EditorCameraSystem::setViewport(Viewport viewport)
+{
+	mCamera->mViewport = viewport;
+}
+
+void EditorCameraSystem::setFrustum(Frustum frustum)
+{
+	mCamera->mFrustum = frustum;
+}
+
+Viewport EditorCameraSystem::getViewport() const
+{
+	return mCamera->mViewport;
+}
+
+Frustum EditorCameraSystem::getFrustum() const
+{
+	return mCamera->mFrustum;
 }

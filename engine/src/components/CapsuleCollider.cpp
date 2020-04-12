@@ -47,7 +47,7 @@ void CapsuleCollider::deserialize(std::vector<char> data)
 	mCapsule = header->mCapsule;
 }
 
-bool CapsuleCollider::intersect(Bounds bounds) const
+bool CapsuleCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(bounds, mCapsule);
+	return Geometry::intersect(aabb, mCapsule);
 }

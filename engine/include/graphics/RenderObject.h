@@ -29,6 +29,7 @@ namespace PhysicsEngine
 
 		glm::mat4 model;
 
+		Sphere boundingSphere;
 		bool culled;
 	}RenderObject;
 }

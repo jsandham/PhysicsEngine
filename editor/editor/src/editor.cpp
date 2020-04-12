@@ -175,7 +175,7 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	GraphicsTargets targets = renderSystem->getGraphicsTargets();
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
-	sceneView.render(&world, targets, query, editorMenu.isOpenSceneViewCalled());
+	sceneView.render(&world, cameraSystem, targets, query, editorMenu.isOpenSceneViewCalled());
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

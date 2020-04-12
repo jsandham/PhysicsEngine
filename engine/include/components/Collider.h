@@ -4,7 +4,7 @@
 #include "Component.h"
 
 #include "../core/Ray.h"
-#include "../core/Bounds.h"
+#include "../core/AABB.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -18,7 +18,7 @@ namespace PhysicsEngine
 			Collider();
 			virtual ~Collider() = 0;
 
-			virtual bool intersect(Bounds bounds) const = 0;
+			virtual bool intersect(AABB aabb) const = 0;
 	};
 
 	template <typename T>

@@ -23,7 +23,7 @@ SceneView::~SceneView()
 
 }
 
-void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
+void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
 {
 	focused = false;
 	hovered = false;
@@ -39,6 +39,7 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 
 	static bool gizmosChecked = false;
 	static bool overlayChecked = false;
+	static bool cameraSettingsClicked = false;
 
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
@@ -101,6 +102,13 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 		if (ImGui::Checkbox("Perf", &overlayChecked)) {
 
 		}
+		ImGui::SameLine();
+
+		// editor camera settings
+		if (ImGui::Button("Camera Settings"))
+		{
+			cameraSettingsClicked = true;
+		}
 
 		// draw selected texture
 		ImVec2 windowPos = ImGui::GetWindowPos();
@@ -141,6 +149,48 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::GraphicsTarge
 				//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
 			}
 			ImGui::End();
+		}
+
+		if (cameraSettingsClicked) {
+			static bool cameraSettingsWindowOpen = false;
+
+			ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
+			if (ImGui::Begin("Editor Camera Settings", &cameraSettingsClicked))
+			{
+				Viewport viewport = cameraSystem->getViewport();
+				Frustum frustum = cameraSystem->getFrustum();
+	
+				// Viewport settings
+				if (ImGui::InputInt("X", &viewport.mX)) {
+					cameraSystem->setViewport(viewport);
+				}
+				if (ImGui::InputInt("Y", &viewport.mY)) {
+					cameraSystem->setViewport(viewport);
+				}
+				if (ImGui::InputInt("Width", &viewport.mWidth)) {
+					cameraSystem->setViewport(viewport);
+				}
+				if (ImGui::InputInt("Height", &viewport.mHeight)) {
+					cameraSystem->setViewport(viewport);
+				}
+
+				// Frustum settings
+				if (ImGui::InputFloat("FOV", &frustum.mFov)) {
+					cameraSystem->setFrustum(frustum);
+				}
+				if (ImGui::InputFloat("Aspect Ratio", &frustum.mAspectRatio)) {
+					cameraSystem->setFrustum(frustum);
+				}
+				if (ImGui::InputFloat("Near Plane", &frustum.mNearPlane)) {
+					cameraSystem->setFrustum(frustum);
+				}
+				if (ImGui::InputFloat("Far Plane", &frustum.mFarPlane)) {
+					cameraSystem->setFrustum(frustum);
+				}
+			}
+
+			ImGui::End();
+
 		}
 	}
 	ImGui::End();

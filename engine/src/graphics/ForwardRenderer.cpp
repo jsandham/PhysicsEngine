@@ -47,15 +47,16 @@ void ForwardRenderer::update(Input input)
 
 		cullRenderObjects(camera, mRenderObjects);
 
-		beginFrame(camera, mCameraState, mLightState, mQuery);
+		beginFrame(mWorld, camera, mCameraState, mLightState, mQuery);
 
 		computeSSAO(mWorld, camera, mRenderObjects, mScreenData, mQuery);
 
 		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++) {
 			Light* light = mWorld->getComponentByIndex<Light>(j);
+			Transform* lightTransform = light->getComponent<Transform>(mWorld);
 
-			renderShadows(mWorld, camera, light, mRenderObjects, mShadowMapData, mQuery);
-			renderOpaques(mWorld, camera, light, mRenderObjects, mShadowMapData, mLightState, mQuery);
+			renderShadows(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mQuery);
+			renderOpaques(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mLightState, mQuery);
 			renderTransparents();
 		}
 

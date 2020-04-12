@@ -3,53 +3,6 @@
 
 using namespace PhysicsEngine;
 
-float Plane::distance(glm::vec3 point) const
-{
-	float d = -glm::dot(mN,mX0);
-
-	return (glm::dot(mN,point) + d) / sqrt(glm::dot(mN,mN));
-}
-
-float Viewport::getAspectRatio() const
-{
-	return (float)mHeight / (float)mWidth;
-}
-
-int Frustum::checkPoint(glm::vec3 point) const
-{
-	// loop over all 6 planes
-	for(int i = 0; i < 6; i++){
-		if(mPlanes[i].distance(point) < 0){
-			return -1; // outside
-		}
-	}
-
-	return 1; // inside
-}
-
-int Frustum::checkSphere(glm::vec3 centre, float radius) const
-{
-	bool answer = 1;
-
-	// loop over all 6 planes
-	for(int i = 0; i < 6; i++){
-		float distance = mPlanes[i].distance(centre);
-		if(distance < -radius){
-			return -1; // outside
-		}
-		else if(distance < radius){
-			answer = 0; // intersect
-		}
-	}
-
-	return answer; // inside
-}
-
-int Frustum::checkAABB(glm::vec3 min, glm::vec3 max) const
-{
-	return 1;
-}
-
 Camera::Camera()
 {
 	mComponentId = Guid::INVALID;
@@ -65,32 +18,26 @@ Camera::Camera()
 	mNormalTex = 0;
 
 	mMode = CameraMode::Main;
+	mSSAO = CameraSSAO::SSAO_Off;
 
 	mViewport.mX = 0;
 	mViewport.mY = 0;
 	mViewport.mWidth = 1024;
 	mViewport.mHeight = 1024;
 
+	mBackgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
+
 	mFrustum.mFov = 45.0f;
+	mFrustum.mAspectRatio = 1.0f;
 	mFrustum.mNearPlane = 0.1f;
 	mFrustum.mFarPlane = 250.0f;
 
-	mPosition = glm::vec3(0.0f, 2.0f, 0.0f);
-	mFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	mUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	mBackgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
-
 	mIsCreated = false;
-	mUseSSAO = false;
-
-	updateInternalCameraState();
 }
 
 Camera::Camera(std::vector<char> data)
 {
 	deserialize(data);
-
-	updateInternalCameraState();
 }
 
 Camera::~Camera()
@@ -110,15 +57,14 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 	header.mEntityId = entityId;
 	header.mTargetTextureId = mTargetTextureId;
 	header.mMode = mMode;
-	header.mPosition = mPosition;
-	header.mFront = mFront;
-	header.mUp = mUp;
+	header.mSSAO = mSSAO;
 	header.mBackgroundColor = mBackgroundColor;
 	header.mX = mViewport.mX;
 	header.mY = mViewport.mY;
 	header.mWidth = mViewport.mWidth;
 	header.mHeight = mViewport.mHeight;
 	header.mFov = mFrustum.mFov;
+	header.mAspectRatio = mFrustum.mAspectRatio;
 	header.mNearPlane = mFrustum.mNearPlane;
 	header.mFarPlane = mFrustum.mFarPlane;
 
@@ -138,6 +84,7 @@ void Camera::deserialize(std::vector<char> data)
 	mTargetTextureId = header->mTargetTextureId;
 
 	mMode = header->mMode;
+	mSSAO = header->mSSAO;
 
 	mViewport.mX = header->mX;
 	mViewport.mY = header->mY;
@@ -145,56 +92,11 @@ void Camera::deserialize(std::vector<char> data)
 	mViewport.mHeight = header->mHeight;
 
 	mFrustum.mFov = header->mFov;
+	mFrustum.mAspectRatio = header->mAspectRatio;
 	mFrustum.mNearPlane = header->mNearPlane;
 	mFrustum.mFarPlane = header->mFarPlane;
 
-	mPosition = header->mPosition;
-	mFront = header->mFront;
-	mUp = header->mUp;
 	mBackgroundColor = header->mBackgroundColor;
-}
-
-void Camera::updateInternalCameraState()
-{
-	mFront = glm::normalize(mFront);
-	mUp = glm::normalize(mUp);
-	mRight = glm::normalize(glm::cross(mFront, mUp));
-
-	float tan = (float)glm::tan(glm::radians(0.5f * mFrustum.mFov));
-	float nearPlaneHeight = mFrustum.mNearPlane * tan;
-	float nearPlaneWidth = mViewport.getAspectRatio() * nearPlaneHeight;
-
-	// far and near plane intersection along front line
-	glm::vec3 fc = mPosition + mFrustum.mFarPlane * mFront;
-	glm::vec3 nc = mPosition + mFrustum.mNearPlane * mFront;
-
-	mFrustum.mPlanes[NEAR].mN = mFront;
-	mFrustum.mPlanes[NEAR].mX0 = nc;
-
-	mFrustum.mPlanes[FAR].mN = -mFront;
-	mFrustum.mPlanes[FAR].mX0 = fc;
-
-	glm::vec3 temp;
-
-	temp = (nc + nearPlaneHeight*mUp) - mPosition;
-	temp = glm::normalize(temp);
-	mFrustum.mPlanes[TOP].mN = glm::cross(temp, mRight);
-	mFrustum.mPlanes[TOP].mX0 = nc + nearPlaneHeight*mUp;
-
-	temp = (nc - nearPlaneHeight*mUp) - mPosition;
-	temp = glm::normalize(temp);
-	mFrustum.mPlanes[BOTTOM].mN = -glm::cross(temp, mRight);
-	mFrustum.mPlanes[BOTTOM].mX0 = nc - nearPlaneHeight*mUp;
-
-	temp = (nc - nearPlaneWidth*mRight) - mPosition;
-	temp = glm::normalize(temp);
-	mFrustum.mPlanes[LEFT].mN = glm::cross(temp, mUp);
-	mFrustum.mPlanes[LEFT].mX0 = nc - nearPlaneWidth*mRight;
-
-	temp = (nc + nearPlaneWidth*mRight) - mPosition;
-	temp = glm::normalize(temp);
-	mFrustum.mPlanes[RIGHT].mN = -glm::cross(temp, mUp);
-	mFrustum.mPlanes[RIGHT].mX0 = nc + nearPlaneWidth*mRight;
 }
 
 bool Camera::isCreated() const
@@ -233,14 +135,19 @@ void Camera::destroy()
 					  &mIsCreated);
 }
 
+void Camera::computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up)
+{
+	viewMatrix = glm::lookAt(position, position + forward, up);
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
-	return glm::lookAt(mPosition, mPosition + mFront, mUp);
+	return viewMatrix;
 }
 
 glm::mat4 Camera::getProjMatrix() const
 {
-	return glm::perspective(glm::radians(mFrustum.mFov), mViewport.getAspectRatio(), mFrustum.mNearPlane, mFrustum.mFarPlane);
+	return glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 }
 
 glm::vec3 Camera::getSSAOSample(int sample) const
@@ -291,19 +198,4 @@ GLuint Camera::getNativeGraphicsSSAOColorTex() const
 GLuint Camera::getNativeGraphicsSSAONoiseTex() const
 {
 	return mSsaoNoiseTex;
-}
-
-int Camera::checkPointInFrustum(glm::vec3 point) const
-{
-	return mFrustum.checkPoint(point);
-}
-
-int Camera::checkSphereInFrustum(glm::vec3 centre, float radius) const
-{
-	return mFrustum.checkSphere(centre, radius);
-}
-
-int Camera::checkAABBInFrustum(glm::vec3 min, glm::vec3 max) const
-{
-	return mFrustum.checkAABB(min, max);
 }

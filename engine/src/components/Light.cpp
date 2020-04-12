@@ -7,8 +7,6 @@ Light::Light()
 	mComponentId = Guid::INVALID;
 	mEntityId = Guid::INVALID;
 
-	mPosition = glm::vec3(0.0f, 1.0f, 0.0f);
-	mDirection = glm::vec3(1.0f, 2.0f, 0.0f);
 	mAmbient = glm::vec3(0.4f, 0.4f, 0.4f);
 	mDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 	mSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -41,8 +39,6 @@ std::vector<char> Light::serialize(Guid componentId, Guid entityId) const
 	LightHeader header;
 	header.mComponentId = componentId;
 	header.mEntityId = entityId;
-	header.mPosition = mPosition;
-	header.mDirection = mDirection;
 	header.mAmbient = mAmbient;
 	header.mDiffuse = mDiffuse;
 	header.mSpecular = mSpecular;
@@ -68,8 +64,6 @@ void Light::deserialize(std::vector<char> data)
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;
 
-	mPosition = header->mPosition;
-	mDirection = header->mDirection;
 	mAmbient = header->mAmbient;
 	mDiffuse = header->mDiffuse;
 	mSpecular = header->mSpecular;

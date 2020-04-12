@@ -125,15 +125,16 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		obj[componentId.toString()]["type"] = "Camera";
 		obj[componentId.toString()]["entity"] = entityId.toString();
 		obj[componentId.toString()]["targetTextureId"] = camera->mTargetTextureId.toString();
-		obj[componentId.toString()]["position"].append(camera->mPosition.x, camera->mPosition.y, camera->mPosition.z);
-		obj[componentId.toString()]["front"].append(camera->mFront.x, camera->mFront.y, camera->mFront.z);
-		obj[componentId.toString()]["up"].append(camera->mUp.x, camera->mUp.y, camera->mUp.z);
+		//obj[componentId.toString()]["position"].append(camera->mPosition.x, camera->mPosition.y, camera->mPosition.z);
+		//obj[componentId.toString()]["front"].append(camera->mFront.x, camera->mFront.y, camera->mFront.z);
+		//obj[componentId.toString()]["up"].append(camera->mUp.x, camera->mUp.y, camera->mUp.z);
 		obj[componentId.toString()]["backgroundColor"].append(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
 		obj[componentId.toString()]["x"] = camera->mViewport.mX;
 		obj[componentId.toString()]["y"] = camera->mViewport.mY;
 		obj[componentId.toString()]["width"] = camera->mViewport.mWidth;
 		obj[componentId.toString()]["height"] = camera->mViewport.mHeight;
 		obj[componentId.toString()]["fov"] = camera->mFrustum.mFov;
+		obj[componentId.toString()]["aspectRatio"] = camera->mFrustum.mAspectRatio;
 		obj[componentId.toString()]["near"] = camera->mFrustum.mNearPlane;
 		obj[componentId.toString()]["far"] = camera->mFrustum.mFarPlane;
 	}
@@ -183,8 +184,8 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "Light";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		obj[componentId.toString()]["position"].append(light->mPosition.x, light->mPosition.y, light->mPosition.z);
-		obj[componentId.toString()]["direction"].append(light->mDirection.x, light->mDirection.y, light->mDirection.z);
+		//obj[componentId.toString()]["position"].append(light->mPosition.x, light->mPosition.y, light->mPosition.z);
+		//obj[componentId.toString()]["direction"].append(light->mDirection.x, light->mDirection.y, light->mDirection.z);
 		obj[componentId.toString()]["ambient"].append(light->mAmbient.x, light->mAmbient.y, light->mAmbient.z);
 		obj[componentId.toString()]["diffuse"].append(light->mDiffuse.x, light->mDiffuse.y, light->mDiffuse.z);
 		obj[componentId.toString()]["specular"].append(light->mSpecular.x, light->mSpecular.y, light->mSpecular.z);
@@ -203,8 +204,8 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		obj[componentId.toString()]["type"] = "SphereCollider";
 		obj[componentId.toString()]["entity"] = entityId.toString();
 
-		obj[componentId.toString()]["centre"].append(collider->mBounds.mCentre.x, collider->mBounds.mCentre.y, collider->mBounds.mCentre.z);
-		obj[componentId.toString()]["size"].append(collider->mBounds.mSize.x, collider->mBounds.mSize.y, collider->mBounds.mSize.z);
+		obj[componentId.toString()]["centre"].append(collider->mAABB.mCentre.x, collider->mAABB.mCentre.y, collider->mAABB.mCentre.z);
+		obj[componentId.toString()]["size"].append(collider->mAABB.mSize.x, collider->mAABB.mSize.y, collider->mAABB.mSize.z);
 	}
 	else if (type == 9) {
 		//spherecollider

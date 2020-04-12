@@ -8,13 +8,13 @@ namespace PhysicsEngine
 	class Triangle
 	{
 		public:
+			glm::vec3 v0;
 			glm::vec3 v1;
 			glm::vec3 v2;
-			glm::vec3 v3;
 
 		public:
 			Triangle();
-			Triangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
+			Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);
 			~Triangle();
 	};
 }

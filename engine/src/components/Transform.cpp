@@ -54,11 +54,6 @@ void Transform::deserialize(std::vector<char> data)
 	mScale = header->mScale;
 }
 
-glm::vec3 Transform::getEulerAngles() const
-{
-	return glm::eulerAngles(mRotation);
-}
-
 glm::mat4 Transform::getModelMatrix() const
 {
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(), mPosition);
@@ -66,10 +61,22 @@ glm::mat4 Transform::getModelMatrix() const
 	modelMatrix = glm::scale(modelMatrix, mScale);
 
 	return modelMatrix;
-	//return glm::translate(glm::mat4(1.0f), position) * glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 }
 
-void Transform::setEulerAngles(glm::vec3 eulerAngles)
+glm::vec3 Transform::getForward() const
 {
-	mRotation = glm::quat(eulerAngles);
+	// a transform with zero rotation has its blue axis pointing in the z direction
+	return glm::vec3(glm::rotate(mRotation, glm::vec4(0, 0, 1, 0))); 
+}
+
+glm::vec3 Transform::getUp() const
+{
+	// a transform with zero rotation has its green axis pointing in the y direction
+	return glm::vec3(glm::rotate(mRotation, glm::vec4(0, 1, 0, 0)));
+}
+
+glm::vec3 Transform::getRight() const
+{
+	// a transform with zero rotation has its red axis pointing in the x direction
+	return glm::vec3(glm::rotate(mRotation, glm::vec4(1, 0, 0, 0)));
 }

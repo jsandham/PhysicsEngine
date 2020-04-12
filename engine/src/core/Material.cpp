@@ -116,8 +116,7 @@ void Material::apply(World* world)
 
 			textureSlot++;
 		}
-		
-		if (mUniforms[i].mType == GL_INT ) {
+		else if (mUniforms[i].mType == GL_INT ) {
 			shader->setInt(mUniforms[i].mName, *reinterpret_cast<int*>(mUniforms[i].mData));
 		}
 		else if (mUniforms[i].mType == GL_FLOAT) {

@@ -30,18 +30,10 @@ void LightDrawer::render(World* world, EditorProject& project, EditorScene& scen
 		ImGui::Text(("EntityId: " + light->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		glm::vec3 position = light->mPosition;
-		glm::vec3 direction = light->mDirection;
 		glm::vec3 ambient = light->mAmbient;
 		glm::vec3 diffuse = light->mDiffuse;
 		glm::vec3 specular = light->mSpecular;
 
-		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->mPosition, position, &scene.isDirty));
-		}
-		if (ImGui::InputFloat3("Direction", glm::value_ptr(direction))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->mDirection, direction, &scene.isDirty));
-		}
 		if (ImGui::InputFloat3("Ambient", glm::value_ptr(ambient))) {
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&light->mAmbient, ambient, &scene.isDirty));
 		}

@@ -42,10 +42,10 @@ namespace PhysicsEngine
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
-			glm::vec3 getEulerAngles() const;
 			glm::mat4 getModelMatrix() const;
-
-			void setEulerAngles(glm::vec3 eulerAngles);
+			glm::vec3 getForward() const;
+			glm::vec3 getUp() const;
+			glm::vec3 getRight() const;
 	};
 
 	template <>

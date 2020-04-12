@@ -120,15 +120,15 @@ namespace PhysicsEngine
 			std::string getGeometryShader() const;
 			std::string getFragmentShader() const;
 
-			void setBool(const std::string& name, bool value) const;
-			void setInt(const std::string& name, int value) const;
-			void setFloat(const std::string& name, float value) const;
-			void setVec2(const std::string& name, const glm::vec2 &vec) const;
-			void setVec3(const std::string& name, const glm::vec3 &vec) const;
-			void setVec4(const std::string& name, const glm::vec4 &vec) const;
-			void setMat2(const std::string& name, const glm::mat2 &mat) const;
-			void setMat3(const std::string& name, const glm::mat3 &mat) const;
-			void setMat4(const std::string& name, const glm::mat4 &mat) const;
+			void setBool(const char* name, bool value) const;
+			void setInt(const char* name, int value) const;
+			void setFloat(const char* name, float value) const;
+			void setVec2(const char* name, const glm::vec2& vec) const;
+			void setVec3(const char* name, const glm::vec3& vec) const;
+			void setVec4(const char* name, const glm::vec4& vec) const;
+			void setMat2(const char* name, const glm::mat2& mat) const;
+			void setMat3(const char* name, const glm::mat3& mat) const;
+			void setMat4(const char* name, const glm::mat4& mat) const;
 
 			void setBool(int nameLocation, bool value) const;
 			void setInt(int nameLocation, int value) const;
@@ -140,15 +140,15 @@ namespace PhysicsEngine
 			void setMat3(int nameLocation, const glm::mat3 &mat) const;
 			void setMat4(int nameLocation, const glm::mat4 &mat) const;
 
-			bool getBool(const std::string& name) const;
-			int getInt(const std::string& name) const;
-			float getFloat(const std::string& name) const;
-			glm::vec2 getVec2(const std::string& name) const;
-			glm::vec3 getVec3(const std::string& name) const;
-			glm::vec4 getVec4(const std::string& name) const;
-			glm::mat2 getMat2(const std::string& name) const;
-			glm::mat3 getMat3(const std::string& name) const;
-			glm::mat4 getMat4(const std::string& name) const;
+			bool getBool(const char* name) const;
+			int getInt(const char* name) const;
+			float getFloat(const char* name) const;
+			glm::vec2 getVec2(const char* name) const;
+			glm::vec3 getVec3(const char* name) const;
+			glm::vec4 getVec4(const char* name) const;
+			glm::mat2 getMat2(const char* name) const;
+			glm::mat3 getMat3(const char* name) const;
+			glm::mat4 getMat4(const char* name) const;
 
 			bool getBool(int nameLocation) const;
 			int getInt(int nameLocation) const;

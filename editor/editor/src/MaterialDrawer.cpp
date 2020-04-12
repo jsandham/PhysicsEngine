@@ -208,14 +208,14 @@ void MaterialDrawer::populatePreviewWorld(World* world)
 	Entity* cameraEntity = previewWorld.createEntity();
 
 	Transform* cameraTransform = cameraEntity->addComponent<Transform>(&previewWorld);
-	cameraTransform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	cameraTransform->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
 	cameraTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
 	cameraTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	Camera* camera = cameraEntity->addComponent<Camera>(&previewWorld);
-	camera->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
+	/*camera->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
 	camera->mFront = glm::vec3(-3.0f, 0.0f, 0.0f);
-	camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);
+	camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);*/
 
 	// add render system to material view world
 	RenderSystem* renderSystem = previewWorld.addSystem<RenderSystem>(0);

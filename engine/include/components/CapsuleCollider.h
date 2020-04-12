@@ -36,7 +36,7 @@ namespace PhysicsEngine
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(std::vector<char> data);
 
-			bool intersect(Bounds bounds) const;
+			bool intersect(AABB aabb) const;
 	};
 
 	template <>

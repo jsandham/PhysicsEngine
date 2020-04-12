@@ -49,9 +49,9 @@ void SphereCollider::deserialize(std::vector<char> data)
 	mSphere = header->mSphere;
 }
 
-bool SphereCollider::intersect(Bounds bounds) const
+bool SphereCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(mSphere, bounds);
+	return Geometry::intersect(mSphere, aabb);
 }
 
 std::vector<float> SphereCollider::getLines() const

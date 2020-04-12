@@ -21,6 +21,17 @@ namespace PhysicsEngine
 
 			// Geometry tests
 
+			static void rayPlaneIntersectionTest0();
+			static void rayPlaneIntersectionTest1();
+			static void rayPlaneIntersectionTest2();
+			static void rayPlaneIntersectionTest3();
+			static void rayPlaneIntersectionTest4();
+			static void rayPlaneIntersectionTest5();
+			static void rayPlaneIntersectionTest6();
+			static void rayPlaneIntersectionTest7();
+			static void rayPlaneIntersectionTest8();
+			static void rayPlaneIntersectionTest9();
+
 			static void raySphereIntersectionTest0();
 			static void raySphereIntersectionTest1();
 			static void raySphereIntersectionTest2();
@@ -45,45 +56,45 @@ namespace PhysicsEngine
 			static void raySphereIntersectionTest21();
 			static void raySphereIntersectionTest22();
 
-			static void rayBoundsIntersectionTest0();
-			static void rayBoundsIntersectionTest1();
-			static void rayBoundsIntersectionTest2();
-			static void rayBoundsIntersectionTest3();
-			static void rayBoundsIntersectionTest4();
-			static void rayBoundsIntersectionTest5();
-			static void rayBoundsIntersectionTest6();
-			static void rayBoundsIntersectionTest7();
-			static void rayBoundsIntersectionTest8();
-			static void rayBoundsIntersectionTest9();
-			static void rayBoundsIntersectionTest10();
-			static void rayBoundsIntersectionTest11();
-			static void rayBoundsIntersectionTest12();
-			static void rayBoundsIntersectionTest13();
-			static void rayBoundsIntersectionTest14();
-			static void rayBoundsIntersectionTest15();
-			static void rayBoundsIntersectionTest16();
-			static void rayBoundsIntersectionTest17();
-			static void rayBoundsIntersectionTest18();
+			static void rayAABBIntersectionTest0();
+			static void rayAABBIntersectionTest1();
+			static void rayAABBIntersectionTest2();
+			static void rayAABBIntersectionTest3();
+			static void rayAABBIntersectionTest4();
+			static void rayAABBIntersectionTest5();
+			static void rayAABBIntersectionTest6();
+			static void rayAABBIntersectionTest7();
+			static void rayAABBIntersectionTest8();
+			static void rayAABBIntersectionTest9();
+			static void rayAABBIntersectionTest10();
+			static void rayAABBIntersectionTest11();
+			static void rayAABBIntersectionTest12();
+			static void rayAABBIntersectionTest13();
+			static void rayAABBIntersectionTest14();
+			static void rayAABBIntersectionTest15();
+			static void rayAABBIntersectionTest16();
+			static void rayAABBIntersectionTest17();
+			static void rayAABBIntersectionTest18();
 
-			static void sphereBoundsIntersectionTest0();
-			static void sphereBoundsIntersectionTest1();
-			static void sphereBoundsIntersectionTest2();
-			static void sphereBoundsIntersectionTest3();
-			static void sphereBoundsIntersectionTest4();
-			static void sphereBoundsIntersectionTest5();
-			static void sphereBoundsIntersectionTest6();
-			static void sphereBoundsIntersectionTest7();
-			static void sphereBoundsIntersectionTest8();
-			static void sphereBoundsIntersectionTest9();
-			static void sphereBoundsIntersectionTest10();
-			static void sphereBoundsIntersectionTest11();
-			static void sphereBoundsIntersectionTest12();
-			static void sphereBoundsIntersectionTest13();
-			static void sphereBoundsIntersectionTest14();
-			static void sphereBoundsIntersectionTest15();
-			static void sphereBoundsIntersectionTest16();
-			static void sphereBoundsIntersectionTest17();
-			static void sphereBoundsIntersectionTest18();
+			static void sphereAABBIntersectionTest0();
+			static void sphereAABBIntersectionTest1();
+			static void sphereAABBIntersectionTest2();
+			static void sphereAABBIntersectionTest3();
+			static void sphereAABBIntersectionTest4();
+			static void sphereAABBIntersectionTest5();
+			static void sphereAABBIntersectionTest6();
+			static void sphereAABBIntersectionTest7();
+			static void sphereAABBIntersectionTest8();
+			static void sphereAABBIntersectionTest9();
+			static void sphereAABBIntersectionTest10();
+			static void sphereAABBIntersectionTest11();
+			static void sphereAABBIntersectionTest12();
+			static void sphereAABBIntersectionTest13();
+			static void sphereAABBIntersectionTest14();
+			static void sphereAABBIntersectionTest15();
+			static void sphereAABBIntersectionTest16();
+			static void sphereAABBIntersectionTest17();
+			static void sphereAABBIntersectionTest18();
 
 			static void sphereSphereIntersectionTest0();
 			static void sphereSphereIntersectionTest1();
@@ -99,17 +110,32 @@ namespace PhysicsEngine
 			static void sphereSphereIntersectionTest11();
 			static void sphereSphereIntersectionTest12();
 
-			static void boundsBoundsIntersectionTest0();
-			static void boundsBoundsIntersectionTest1();
-			static void boundsBoundsIntersectionTest2();
-			static void boundsBoundsIntersectionTest3();
-			static void boundsBoundsIntersectionTest4();
-			static void boundsBoundsIntersectionTest5();
-			static void boundsBoundsIntersectionTest6();
-			static void boundsBoundsIntersectionTest7();
-			static void boundsBoundsIntersectionTest8();
-			static void boundsBoundsIntersectionTest9();
-			static void boundsBoundsIntersectionTest10();
+			static void sphereFrustumIntersectionTest0();
+			static void sphereFrustumIntersectionTest1();
+			static void sphereFrustumIntersectionTest2();
+			static void sphereFrustumIntersectionTest3();
+			static void sphereFrustumIntersectionTest4();
+			static void sphereFrustumIntersectionTest5();
+			static void sphereFrustumIntersectionTest6();
+			static void sphereFrustumIntersectionTest7();
+			static void sphereFrustumIntersectionTest8();
+			static void sphereFrustumIntersectionTest9();
+			static void sphereFrustumIntersectionTest10();
+			static void sphereFrustumIntersectionTest11();
+			static void sphereFrustumIntersectionTest12();
+			static void sphereFrustumIntersectionTest13();
+
+			static void aabbAABBIntersectionTest0();
+			static void aabbAABBIntersectionTest1();
+			static void aabbAABBIntersectionTest2();
+			static void aabbAABBIntersectionTest3();
+			static void aabbAABBIntersectionTest4();
+			static void aabbAABBIntersectionTest5();
+			static void aabbAABBIntersectionTest6();
+			static void aabbAABBIntersectionTest7();
+			static void aabbAABBIntersectionTest8();
+			static void aabbAABBIntersectionTest9();
+			static void aabbAABBIntersectionTest10();
 
 		public:
 			static void run();

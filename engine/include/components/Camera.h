@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <GL/glew.h>
-//#include "../glew-2.1.0/GL/glew.h"
 #include <gl/gl.h>
 
 #undef NEAR
@@ -20,12 +19,20 @@
 
 #include "Component.h"
 
+#include "../core/Frustum.h"
+
 namespace PhysicsEngine
 {
 	enum class CameraMode
 	{
 		Main,
 		Secondary
+	};
+
+	enum class CameraSSAO
+	{
+		SSAO_On,
+		SSAO_Off,
 	};
 
 #pragma pack(push, 1)
@@ -35,28 +42,18 @@ namespace PhysicsEngine
 		Guid mEntityId;
 		Guid mTargetTextureId;
 		CameraMode mMode;
-		glm::vec3 mPosition;
-		glm::vec3 mFront;
-		glm::vec3 mUp;
+		CameraSSAO mSSAO;
 		glm::vec4 mBackgroundColor;
 		int mX;
 		int mY;
 		int mWidth;
 		int mHeight;
 		float mFov;
+		float mAspectRatio;
 		float mNearPlane;
 		float mFarPlane;
 	};
 #pragma pack(pop)
-
-	// plane defined by n.x*x + n.y*y + n.z*z + d = 0, where d = -dot(n, x0)
-	struct Plane
-	{
-		glm::vec3 mN;
-		glm::vec3 mX0;
-
-		float distance(glm::vec3 point) const;
-	};
 
 	struct Viewport
 	{
@@ -64,21 +61,6 @@ namespace PhysicsEngine
 		int mY;
 		int mWidth;
 		int mHeight;
-
-		float getAspectRatio() const;
-	};
-
-	struct Frustum
-	{
-		Plane mPlanes[6];
-
-		float mFov;
-		float mNearPlane;
-		float mFarPlane;
-
-		int checkPoint(glm::vec3 point) const;
-		int checkSphere(glm::vec3 centre, float radius) const;
-		int checkAABB(glm::vec3 min, glm::vec3 max) const;
 	};
 
 	class Camera : public Component
@@ -88,24 +70,10 @@ namespace PhysicsEngine
 			Viewport mViewport;
 			Guid mTargetTextureId;
 
-			enum {
-				TOP = 0,
-				BOTTOM,
-				LEFT,
-				RIGHT,
-				NEAR,
-				FAR
-			};
-
 			CameraMode mMode;
+			CameraSSAO mSSAO;
 
-			glm::vec3 mPosition;
-			glm::vec3 mFront;
-			glm::vec3 mUp;
-			glm::vec3 mRight;
 			glm::vec4 mBackgroundColor;
-
-			bool mUseSSAO;
 
 		private:
 			GLuint mMainFBO;
@@ -121,6 +89,7 @@ namespace PhysicsEngine
 			GLuint mSsaoNoiseTex;
 
 			glm::vec3 mSsaoSamples[64];
+			glm::mat4 viewMatrix;
 
 			bool mIsCreated;
 
@@ -135,7 +104,7 @@ namespace PhysicsEngine
 
 			void create();
 			void destroy();
-			void updateInternalCameraState();
+			void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
 
 			bool isCreated() const;
 			glm::mat4 getViewMatrix() const;
@@ -151,10 +120,6 @@ namespace PhysicsEngine
 			GLuint getNativeGraphicsNormalTex() const;
 			GLuint getNativeGraphicsSSAOColorTex() const;
 			GLuint getNativeGraphicsSSAONoiseTex() const;
-
-			int checkPointInFrustum(glm::vec3 point) const;
-			int checkSphereInFrustum(glm::vec3 centre, float radius) const;
-			int checkAABBInFrustum(glm::vec3 min, glm::vec3 max) const;
 	};
 
 	template <>

@@ -581,33 +581,33 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
 	}*/
 
-	if(query != NULL){
+	/*if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}
+	}*/
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
+	//if(query != NULL){
+	//	glEndQuery(GL_TIME_ELAPSED);
 
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->mQueryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
+	//	GLint done = 0;
+	//    while (!done) {
+	//	    glGetQueryObjectiv(query->mQueryId, 
+	//	            GL_QUERY_RESULT_AVAILABLE, 
+	//	            &done);
+	//	}
 
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
+	//	// get the query result
+	//	GLuint64 elapsedTime; // in nanoseconds
+	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-		query->mNumDrawCalls++;
-		query->mVerts += numVertices;
-		query->mTris += numVertices / 3;
-	}
+	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+	//	query->mNumDrawCalls++;
+	//	query->mVerts += numVertices;
+	//	query->mTris += numVertices / 3;
+	//}
 
 	Graphics::checkError();
 }
@@ -635,33 +635,33 @@ void Graphics::render(World* world, Shader* shader, int variant, Texture2D* text
 		glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
 	}
 
-	if(query != NULL){
+	/*if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}
+	}*/
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
+	//if(query != NULL){
+	//	glEndQuery(GL_TIME_ELAPSED);
 
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->mQueryId, 
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
+	//	GLint done = 0;
+	//    while (!done) {
+	//	    glGetQueryObjectiv(query->mQueryId, 
+	//	            GL_QUERY_RESULT_AVAILABLE, 
+	//	            &done);
+	//	}
 
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
+	//	// get the query result
+	//	GLuint64 elapsedTime; // in nanoseconds
+	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-		query->mNumDrawCalls++;
-		query->mVerts += numVertices;
-		query->mTris += numVertices / 3;
-	}
+	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+	//	query->mNumDrawCalls++;
+	//	query->mVerts += numVertices;
+	//	query->mTris += numVertices / 3;
+	//}
 
 	Graphics::checkError();
 }
@@ -681,41 +681,41 @@ void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model
 	shader->use(variant);
 	shader->setMat4("model", model);
 
-	if(query != NULL){
+	/*if(query != NULL){
 		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}
+	}*/
 
 	glBindVertexArray(vao);
 	glDrawArrays(mode, 0, numVertices);
 	glBindVertexArray(0);
 
-	if(query != NULL){
-		glEndQuery(GL_TIME_ELAPSED);
+	//if(query != NULL){
+	//	glEndQuery(GL_TIME_ELAPSED);
 
-		GLint done = 0;
-	    while (!done) {
-		    glGetQueryObjectiv(query->mQueryId,
-		            GL_QUERY_RESULT_AVAILABLE, 
-		            &done);
-		}
+	//	GLint done = 0;
+	//    while (!done) {
+	//	    glGetQueryObjectiv(query->mQueryId,
+	//	            GL_QUERY_RESULT_AVAILABLE, 
+	//	            &done);
+	//	}
 
-		// get the query result
-		GLuint64 elapsedTime; // in nanoseconds
-		glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
+	//	// get the query result
+	//	GLuint64 elapsedTime; // in nanoseconds
+	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
 
-		query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-		query->mNumDrawCalls++;
-		query->mVerts += numVertices;
-		if(mode == GL_TRIANGLES){
-			query->mTris += numVertices / 3;
-		}
-		else if(mode == GL_LINES){
-			query->mLines += numVertices / 2;
-		}
-		else if(mode == GL_POINTS){
-			query->mPoints += numVertices;
-		}
-	}
+	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
+	//	query->mNumDrawCalls++;
+	//	query->mVerts += numVertices;
+	//	if(mode == GL_TRIANGLES){
+	//		query->mTris += numVertices / 3;
+	//	}
+	//	else if(mode == GL_LINES){
+	//		query->mLines += numVertices / 2;
+	//	}
+	//	else if(mode == GL_POINTS){
+	//		query->mPoints += numVertices;
+	//	}
+	//}
 
 	Graphics::checkError();
 }
@@ -1162,6 +1162,10 @@ void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* qu
 	glBindVertexArray(renderObject.vao);
 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
 	glBindVertexArray(0);
+
+	query->mNumDrawCalls++;
+	query->mVerts += numVertices;
+	query->mTris += numVertices / 3;
 
 	//if(world->debug && query != NULL){
 	//	glEndQuery(GL_TIME_ELAPSED);

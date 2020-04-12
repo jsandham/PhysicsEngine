@@ -235,7 +235,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				//camera.entityId = Guid(it->second["entity"].ToString());
 				camera.mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
 
-				camera.mPosition.x = (float)it->second["position"][0].ToFloat();
+				/*camera.mPosition.x = (float)it->second["position"][0].ToFloat();
 				camera.mPosition.y = (float)it->second["position"][1].ToFloat();
 				camera.mPosition.z = (float)it->second["position"][2].ToFloat();
 
@@ -245,7 +245,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 				camera.mUp.x = (float)it->second["up"][0].ToFloat();
 				camera.mUp.y = (float)it->second["up"][1].ToFloat();
-				camera.mUp.z = (float)it->second["up"][2].ToFloat();
+				camera.mUp.z = (float)it->second["up"][2].ToFloat();*/
 
 				camera.mBackgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
 				camera.mBackgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
@@ -334,17 +334,6 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
 				Light light;
 
-				//light.componentId = Guid(it->first);
-				//light.entityId = Guid(it->second["entity"].ToString());
-
-				light.mPosition.x = (float)it->second["position"][0].ToFloat();
-				light.mPosition.y = (float)it->second["position"][1].ToFloat();
-				light.mPosition.z = (float)it->second["position"][2].ToFloat();
-
-				light.mDirection.x = (float)it->second["direction"][0].ToFloat();
-				light.mDirection.y = (float)it->second["direction"][1].ToFloat();
-				light.mDirection.z = (float)it->second["direction"][2].ToFloat();
-
 				light.mAmbient.x = (float)it->second["ambient"][0].ToFloat();
 				light.mAmbient.y = (float)it->second["ambient"][1].ToFloat();
 				light.mAmbient.z = (float)it->second["ambient"][2].ToFloat();
@@ -388,13 +377,13 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				/*collider.componentId = Guid(it->first);
 				collider.entityId = Guid(it->second["entity"].ToString());*/
 
-				collider.mBounds.mCentre.x = (float)it->second["centre"][0].ToFloat();
-				collider.mBounds.mCentre.y = (float)it->second["centre"][1].ToFloat();
-				collider.mBounds.mCentre.z = (float)it->second["centre"][2].ToFloat();
+				collider.mAABB.mCentre.x = (float)it->second["centre"][0].ToFloat();
+				collider.mAABB.mCentre.y = (float)it->second["centre"][1].ToFloat();
+				collider.mAABB.mCentre.z = (float)it->second["centre"][2].ToFloat();
 
-				collider.mBounds.mSize.x = (float)it->second["size"][0].ToFloat();
-				collider.mBounds.mSize.y = (float)it->second["size"][1].ToFloat();
-				collider.mBounds.mSize.z = (float)it->second["size"][2].ToFloat();
+				collider.mAABB.mSize.x = (float)it->second["size"][0].ToFloat();
+				collider.mAABB.mSize.y = (float)it->second["size"][1].ToFloat();
+				collider.mAABB.mSize.z = (float)it->second["size"][2].ToFloat();
 
 				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 
