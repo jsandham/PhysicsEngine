@@ -6,7 +6,7 @@ Transform::Transform()
 {
 	mParentId = Guid::INVALID;
 	mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	mRotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+	mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 

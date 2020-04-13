@@ -14,19 +14,19 @@ namespace PhysicsEngine
 {
 	class EditorCameraSystem : public System
 	{
-	public:
-		static const float PAN_SENSITIVITY;
-		static const float SCROLL_SENSITIVITY;
+	private:
+		static const float YAW_PAN_SENSITIVITY;
+		static const float PITCH_PAN_SENSITIVITY;
+		static const float ZOOM_SENSITIVITY;
 		static const float TRANSLATE_SENSITIVITY;
 
 	private:
 		Transform* mTransform;
 		Camera* mCamera;
 
-		int mLastPosX;
-		int mLastPosY;
 		int mCurrentPosX;
 		int mCurrentPosY;
+		glm::quat rotationOnClick;
 
 	public:
 		EditorCameraSystem();
