@@ -371,7 +371,7 @@ Entity* World::getEntityByIndex(int index)
 		return NULL;
 	}
 
-	PoolAllocator<Entity>* allocator = getEntityAllocator();
+	const PoolAllocator<Entity>* allocator = getEntityAllocator_Const();
 	if (allocator == NULL) {
 		return NULL;
 	}

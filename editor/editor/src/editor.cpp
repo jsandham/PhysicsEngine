@@ -1,4 +1,5 @@
 #include <fstream>
+#include <chrono>
 
 #include "../include/Editor.h"
 #include "../include/EditorFileIO.h"
@@ -39,6 +40,7 @@ Editor::Editor()
 	currentScene = {};
 	clipboard = {};
 	input = {};
+	time = {};
 }
 
 Editor::~Editor()
@@ -166,11 +168,19 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	updateInputPassedToSystems(&input);
 
+	auto start = std::chrono::steady_clock::now();
+
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
 
-		system->update(input);
+		system->update(input, time);
 	}
+
+	auto end = std::chrono::steady_clock::now();
+
+	std::chrono::duration<double> elapsed_seconds = end - start;
+	time.deltaTime = elapsed_seconds.count();
+	time.frameCount++;
 
 	GraphicsTargets targets = renderSystem->getGraphicsTargets();
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
@@ -468,21 +478,42 @@ void Editor::updateInputPassedToSystems(Input* input)
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	if(sceneView.isFocused() && sceneView.isHovered())
+	// Mouse
+	if (sceneView.isFocused() && sceneView.isHovered())
 	{
-		for (int i = 0; i < 61; i++) {
-			input->keyWasDown[i] = input->keyIsDown[i];
-			input->keyIsDown[i] = false;
-		}
-
 		for (int i = 0; i < 5; i++) {
 			input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
 			input->mouseButtonIsDown[i] = false;
 		}
 
-		for (int i = 0; i < 14; i++) {
-			input->xboxButtonWasDown[i] = input->xboxButtonIsDown[i];
-			input->xboxButtonIsDown[i] = false;
+
+		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
+		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
+		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
+		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
+		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
+
+		input->mouseDelta = (int)io.MouseWheel;
+
+		// clamp mouse position to be within the scene view content region
+		ImVec2 sceneViewContentMin = sceneView.getSceneContentMin();
+		ImVec2 sceneViewContentMax = sceneView.getSceneContentMax();
+
+		int sceneViewContentWidth = sceneViewContentMax.x - sceneViewContentMin.x;
+		int sceneViewContentHeight = sceneViewContentMax.y - sceneViewContentMin.y;
+
+		//input->mousePosX = (int)io.MousePos.x;
+		//input->mousePosY = (int)io.MousePos.y;
+		input->mousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
+		input->mousePosY = sceneViewContentHeight - std::min(std::max((int)io.MousePos.y - (int)sceneViewContentMin.y, 0), sceneViewContentHeight);
+	}
+
+	// Keyboard
+	if (sceneView.isFocused() && sceneView.isHovered())
+	{
+		for (int i = 0; i < 61; i++) {
+			input->keyWasDown[i] = input->keyIsDown[i];
+			input->keyIsDown[i] = false;
 		}
 
 		// 0 - 9
@@ -519,15 +550,74 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
 		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
 		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
-	
-		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
-		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
-		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
-		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
-		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
-
-		input->mouseDelta = (int)io.MouseWheel;
-		input->mousePosX = (int)io.MousePos.x;
-		input->mousePosY = (int)io.MousePos.y;
 	}
+
+
+	//// Mouse
+	//if (io.WantCaptureMouse) {
+	//	if (sceneView.isFocused() && sceneView.isHovered())
+	//	{
+	//		for (int i = 0; i < 5; i++) {
+	//			input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
+	//			input->mouseButtonIsDown[i] = false;
+	//		}
+
+
+	//		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
+	//		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
+	//		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
+	//		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
+	//		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
+
+	//		input->mouseDelta = (int)io.MouseWheel;
+	//		input->mousePosX = (int)io.MousePos.x;
+	//		input->mousePosY = (int)io.MousePos.y;
+	//	}
+	//}
+
+	//// Keyboard
+	//if (io.WantCaptureKeyboard) {
+	//	if (sceneView.isFocused() && sceneView.isHovered())
+	//	{
+	//		for (int i = 0; i < 61; i++) {
+	//			input->keyWasDown[i] = input->keyIsDown[i];
+	//			input->keyIsDown[i] = false;
+	//		}
+
+	//		// 0 - 9
+	//		for (int i = 0; i < 10; i++) {
+	//			input->keyIsDown[0] = io.KeysDown[48 + i];
+	//		}
+
+	//		// A - Z
+	//		for (int i = 0; i < 26; i++) {
+	//			input->keyIsDown[10 + i] = io.KeysDown[65 + i];
+	//		}
+
+	//		input->keyIsDown[36] = io.KeysDown[13]; // Enter
+	//		input->keyIsDown[37] = io.KeysDown[38]; // Up
+	//		input->keyIsDown[38] = io.KeysDown[40]; // Down
+	//		input->keyIsDown[39] = io.KeysDown[37]; // Left
+	//		input->keyIsDown[40] = io.KeysDown[39]; // Right
+	//		input->keyIsDown[41] = io.KeysDown[32]; // Space
+	//		input->keyIsDown[42] = io.KeysDown[16]; // LShift
+	//		input->keyIsDown[43] = io.KeysDown[16]; // RShift
+	//		input->keyIsDown[44] = io.KeysDown[9];  // Tab
+	//		input->keyIsDown[45] = io.KeysDown[8];  // Backspace
+	//		input->keyIsDown[46] = io.KeysDown[20]; // CapsLock
+	//		input->keyIsDown[47] = io.KeysDown[17]; // LCtrl
+	//		input->keyIsDown[48] = io.KeysDown[17]; // RCtrl
+	//		input->keyIsDown[49] = io.KeysDown[27]; // Escape
+	//		input->keyIsDown[50] = io.KeysDown[45]; // NumPad0
+	//		input->keyIsDown[51] = io.KeysDown[35]; // NumPad1
+	//		input->keyIsDown[52] = io.KeysDown[40]; // NumPad2
+	//		input->keyIsDown[53] = io.KeysDown[34]; // NumPad3
+	//		input->keyIsDown[54] = io.KeysDown[37]; // NumPad4
+	//		input->keyIsDown[55] = io.KeysDown[12]; // NumPad5
+	//		input->keyIsDown[56] = io.KeysDown[39]; // NumPad6
+	//		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
+	//		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
+	//		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
+	//	}
+	//}
 }

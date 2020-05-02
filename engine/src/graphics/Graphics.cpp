@@ -117,6 +117,9 @@ void Graphics::create(Camera* camera,
 					  GLuint* mainFBO,
 					  GLuint* colorTex,
 					  GLuint* depthTex,
+					  GLuint* colorPickingFBO,
+					  GLuint* colorPickingTex,
+					  GLuint* colorPickingDepthTex,
 					  GLuint* geometryFBO,
 					  GLuint* positionTex,
 					  GLuint* normalTex,
@@ -148,6 +151,33 @@ void Graphics::create(Camera* camera,
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, mainAttachments);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// generate color picking fbo (color + depth)
+	glGenFramebuffers(1, colorPickingFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, *colorPickingFBO);
+
+	glGenTextures(1, colorPickingTex);
+	glBindTexture(GL_TEXTURE_2D, *colorPickingTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glGenTextures(1, colorPickingDepthTex);
+	glBindTexture(GL_TEXTURE_2D, *colorPickingDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *colorPickingTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *colorPickingDepthTex, 0);
+
+	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int colorPickingAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, colorPickingAttachments);
 
 	Graphics::checkFrambufferError();
 
@@ -246,6 +276,9 @@ void Graphics::destroy(Camera* camera,
 					   GLuint* mainFBO,
 					   GLuint* colorTex,
 					   GLuint* depthTex,
+					   GLuint* colorPickingFBO,
+					   GLuint* colorPickingTex,
+					   GLuint* colorPickingDepthTex,
 					   GLuint* geometryFBO,
 					   GLuint* positionTex,
 					   GLuint* normalTex,
@@ -256,6 +289,11 @@ void Graphics::destroy(Camera* camera,
 {
 	// detach textures from their framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, *colorPickingFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -271,18 +309,34 @@ void Graphics::destroy(Camera* camera,
 
 	// delete frambuffers
 	glDeleteFramebuffers(1, mainFBO);
+	glDeleteFramebuffers(1, colorPickingFBO);
 	glDeleteFramebuffers(1, geometryFBO);
 	glDeleteFramebuffers(1, ssaoFBO);
 
 	// delete textures
 	glDeleteTextures(1, colorTex);
 	glDeleteTextures(1, depthTex);
+	glDeleteTextures(1, colorPickingTex);
+	glDeleteTextures(1, colorPickingDepthTex);
 	glDeleteTextures(1, positionTex);
 	glDeleteTextures(1, normalTex);
 	glDeleteTextures(1, ssaoColorTex);
 	glDeleteTextures(1, ssaoNoiseTex);
 
 	*created = false;
+}
+
+void Graphics::readColorPickingPixel(const Camera* camera, int x, int y, Color* color)
+{
+	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorPickingTex());
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+	Graphics::checkError();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)

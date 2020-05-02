@@ -40,28 +40,9 @@ void WorldManager::init()
 
 void WorldManager::update(Time time, Input input)
 {
-	/*if(getKeyDown(input, KeyCode::D)){
-		world.debug = !world.debug;
-	}*/
-
-	/*if(world.debug){
-		if(getKeyDown(input, KeyCode::NumPad0)){
-			world.debugView = 0;
-		}
-		else if(getKeyDown(input, KeyCode::NumPad1)){
-			world.debugView = 1;
-		}
-		else if(getKeyDown(input, KeyCode::NumPad2)){
-			world.debugView = 2;
-		}
-		else if(getKeyDown(input, KeyCode::NumPad3)){
-			world.debugView = 3;
-		}
-	}*/
-
 	for(int i = 0; i < world.getNumberOfSystems(); i++){
 		System* system = world.getSystemByIndex(i);
 
-		system->update(input);
+		system->update(input, time);
 	}
 }

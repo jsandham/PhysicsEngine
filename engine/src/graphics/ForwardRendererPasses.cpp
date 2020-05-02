@@ -16,7 +16,12 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, ShadowMapData& shadowMapData, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsQuery& query)
+void PhysicsEngine::initializeRenderer(World* world, 
+									   ScreenData& screenData, 
+									   ShadowMapData& shadowMapData, 
+									   GraphicsCameraState& cameraState, 
+									   GraphicsLightState& lightState, 
+									   GraphicsQuery& query)
 {	
 	query.mQueryBack = 0;
 	query.mQueryFront = 1;
@@ -31,6 +36,10 @@ void PhysicsEngine::initializeRenderer(World* world, ScreenData& screenData, Sha
 	screenData.mPositionAndNormalsShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
 	screenData.mPositionAndNormalsShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
 	screenData.mPositionAndNormalsShader.compile();
+
+	screenData.mColorShader.setVertexShader(InternalShaders::colorVertexShader);
+	screenData.mColorShader.setFragmentShader(InternalShaders::colorFragmentShader);
+	screenData.mColorShader.compile();
 
 	screenData.mSsaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
 	screenData.mSsaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
@@ -227,8 +236,10 @@ void PhysicsEngine::registerRenderAssets(World* world)
 
 void PhysicsEngine::registerCameras(World* world)
 {
+	const PoolAllocator<Camera>* cameraAllocator = world->getComponentAllocator_Const<Camera>();
+
 	for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++) {
-		Camera* camera = world->getComponentByIndex<Camera>(i);
+		Camera* camera = world->getComponentByIndex<Camera>(cameraAllocator, i);
 
 		if (!camera->isCreated()) {
 			camera->create();
@@ -240,6 +251,8 @@ void PhysicsEngine::registerCameras(World* world)
 
 void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects)
 {
+	const PoolAllocator<MeshRenderer>* meshRendererAllocator = world->getComponentAllocator_Const<MeshRenderer>();
+
 	// add created mesh renderers to render object list
 	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
 	for (size_t i = 0; i < componentIdsAdded.size(); i++) {
@@ -247,14 +260,24 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 		if (componentIdsAdded[i].third == ComponentType<MeshRenderer>::type) {
 			int meshRendererIndex = world->getIndexOf(componentIdsAdded[i].second);
 
-			MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererIndex);
+			MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererAllocator, meshRendererIndex);
 			Transform* transform = meshRenderer->getComponent<Transform>(world);
 			Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
 
 			int transformIndex = world->getIndexOf(transform->getId());
 			int meshIndex = mesh != NULL ? world->getIndexOf(mesh->getId()) : -1;
 
-			Sphere boundingSphere = mesh->computeBoundingSphere();
+			Sphere boundingSphere = mesh != NULL ? mesh->computeBoundingSphere() : Sphere();
+
+			/*int count = renderObjects.size() / 8;
+
+			int b = count % (256 * 256);
+			count = count - b * 256 * 256;
+			int g = count % 256;
+			count = count - g * 256;
+			int r = count;
+
+			Color pickingColor = Color(r, g, b, 255);*/
 
 			for (int j = 0; j < 8; j++) {
 				int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
@@ -285,6 +308,8 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 				renderObject.start = subMeshVertexStartIndex;
 				renderObject.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
 				renderObject.vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
+
+				//renderObject.color = pickingColor;
 
 				renderObjects.push_back(renderObject);
 			}
@@ -340,7 +365,7 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 	// update render objects list for changes in mesh and material
 	for (size_t i = 0; i < renderObjects.size(); i++) {
 
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(renderObjects[i].meshRendererIndex);
+		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererAllocator, renderObjects[i].meshRendererIndex);
 
 		// update render objects list for mesh renderers whose mesh has changed
 		if (meshRenderer->mMeshChanged) {
@@ -416,6 +441,8 @@ void PhysicsEngine::cullRenderObjects(Camera* camera, std::vector<RenderObject>&
 
 void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects)
 {
+	const PoolAllocator<Transform>* transformAllocator = world->getComponentAllocator_Const<Transform>();
+
 	// update model matrices
 	int n = (int)renderObjects.size();
 
@@ -428,13 +455,17 @@ void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>&
 			continue;
 		}
 
-		Transform* transform = world->getComponentByIndex<Transform>(renderObjects[i].transformIndex);
+		Transform* transform = world->getComponentByIndex<Transform>(transformAllocator, renderObjects[i].transformIndex);
 
 		renderObjects[i].model = transform->getModelMatrix();
 	}
 }
 
-void PhysicsEngine::beginFrame(World* world, Camera* camera, GraphicsCameraState& cameraState, GraphicsLightState& lightState, GraphicsQuery& query)
+void PhysicsEngine::beginFrame(World* world, 
+							   Camera* camera, 
+							   GraphicsCameraState& cameraState, 
+							   GraphicsLightState& lightState, 
+							   GraphicsQuery& query)
 {
 	query.mNumBatchDrawCalls = 0;
 	query.mNumDrawCalls = 0;
@@ -482,6 +513,14 @@ void PhysicsEngine::beginFrame(World* world, Camera* camera, GraphicsCameraState
 
 	LOG_OGL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f);)
 
+	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());)
+	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);)
+	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+
+	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());)
+	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);)
+	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+
 	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());)
 	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT);)
 	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
@@ -492,7 +531,11 @@ void PhysicsEngine::beginFrame(World* world, Camera* camera, GraphicsCameraState
 
 }
 
-void PhysicsEngine::computeSSAO(World* world, Camera* camera, const std::vector<RenderObject>& renderObjects, ScreenData& screenData, GraphicsQuery& query)
+void PhysicsEngine::computeSSAO(World* world, 
+								Camera* camera, 
+								const std::vector<RenderObject>& renderObjects, 
+								ScreenData& screenData, 
+								GraphicsQuery& query)
 {
 	// fill geometry framebuffer
 	int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
@@ -801,6 +844,62 @@ void PhysicsEngine::renderOpaques(World* world,
 	Graphics::checkError();
 }
 
+void PhysicsEngine::renderColorPicking(World* world,
+									   Camera* camera,
+									   const std::vector<RenderObject>& renderObjects,
+									   ScreenData& screenData,
+									   GraphicsQuery& query)
+{
+	camera->clearColoring();
+
+	// assign colors to render objects
+	for (size_t i = 0; i < renderObjects.size(); i++) {
+		if (renderObjects[i].materialIndex == -1 ||
+			renderObjects[i].shaderIndex == -1 ||
+			renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
+
+		camera->assignColoring(i, renderObjects[i].meshRendererId);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+
+	int shaderProgram = screenData.mColorShader.getProgramFromVariant(ShaderVariant::None);
+	int modelLoc = screenData.mColorShader.findUniformLocation("model", shaderProgram);
+	int colorLoc = screenData.mColorShader.findUniformLocation("color", shaderProgram);
+
+	screenData.mColorShader.use(shaderProgram);
+
+	for (size_t i = 0; i < renderObjects.size(); i++) {
+		if (renderObjects[i].materialIndex == -1 || 
+			renderObjects[i].shaderIndex == -1 || 
+			renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
+
+		size_t color = i;
+
+		size_t b = color / (256 * 256);
+		color = color % (256 * 256);
+		size_t g = color / 256;
+		color = color % 256;
+		size_t r = color;
+
+		screenData.mColorShader.setMat4(modelLoc, renderObjects[i].model);
+		//screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
+		screenData.mColorShader.setVec4(colorLoc, glm::vec4(100 / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
+
+		Graphics::render(world, renderObjects[i], &query);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	Graphics::checkError();
+}
+
 void PhysicsEngine::renderTransparents()
 {
 
@@ -864,6 +963,7 @@ void PhysicsEngine::endFrame(World* world,
 	// fill targets struct
 	targets.mColor = camera->getNativeGraphicsColorTex();
 	targets.mDepth = camera->getNativeGraphicsDepthTex();
+	targets.mColorPicking = camera->getNativeGraphicsColorPickingTex();
 	targets.mPosition = camera->getNativeGraphicsPositionTex();
 	targets.mNormals = camera->getNativeGraphicsNormalTex();
 	targets.mOverdraw = -1;
@@ -920,7 +1020,9 @@ void PhysicsEngine::calcShadowmapCascades(Camera* camera, ShadowMapData& shadowM
 	}
 }
 
-void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, glm::vec3 lightDirection, ShadowMapData& shadowMapData)
+void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, 
+										 glm::vec3 lightDirection, 
+										 ShadowMapData& shadowMapData)
 {
 	glm::mat4 viewInv = glm::inverse(camera->getViewMatrix());
 	float fov = camera->mFrustum.mFov;

@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "../core/Time.h"
 #include "../core/Input.h"
 #include "../core/Guid.h"
 
@@ -27,7 +28,7 @@ namespace PhysicsEngine
 			virtual void deserialize(std::vector<char> data) = 0;
 
 			virtual void init(World* world) = 0;
-			virtual void update(Input input) = 0;
+			virtual void update(Input input, Time time) = 0;
 
 			Guid getId() const;
 			int getOrder() const;

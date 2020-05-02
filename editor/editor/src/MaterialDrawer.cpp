@@ -114,7 +114,7 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 	for (int i = 0; i < previewWorld.getNumberOfSystems(); i++) {
 		System* system = previewWorld.getSystemByIndex(i);
 
-		system->update({});
+		system->update({}, {});
 	}
 
 	//Log::info("\n");

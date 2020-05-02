@@ -2,6 +2,7 @@
 #define __CAMERA_H__
 
 #include <vector>
+#include <map>
 
 #include <GL/glew.h>
 #include <gl/gl.h>
@@ -80,6 +81,10 @@ namespace PhysicsEngine
 			GLuint mColorTex;
 			GLuint mDepthTex;
 
+			GLuint mColorPickingFBO;
+			GLuint mColorPickingTex;
+			GLuint mColorPickingDepthTex;
+
 			GLuint mGeometryFBO;
 			GLuint mPositionTex;
 			GLuint mNormalTex;
@@ -93,6 +98,8 @@ namespace PhysicsEngine
 
 			bool mIsCreated;
 
+			std::map<int, Guid> mColoringMap;
+
 		public:
 			Camera();
 			Camera(std::vector<char> data);
@@ -105,17 +112,23 @@ namespace PhysicsEngine
 			void create();
 			void destroy();
 			void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
+			void assignColoring(int color, Guid meshRendererId);
+			void clearColoring();
 
 			bool isCreated() const;
 			glm::mat4 getViewMatrix() const;
 			glm::mat4 getProjMatrix() const;
 			glm::vec3 getSSAOSample(int sample) const;
+			Guid getMeshRendererIdAtScreenPos(int x, int y) const;
+			//Guid getMeshRendererFromColor(int color) const;
 
 			GLuint getNativeGraphicsMainFBO() const;
+			GLuint getNativeGraphicsColorPickingFBO() const;
 			GLuint getNativeGraphicsGeometryFBO() const;
 			GLuint getNativeGraphicsSSAOFBO() const;
 			GLuint getNativeGraphicsColorTex() const;
 			GLuint getNativeGraphicsDepthTex() const;
+			GLuint getNativeGraphicsColorPickingTex() const;
 			GLuint getNativeGraphicsPositionTex() const;
 			GLuint getNativeGraphicsNormalTex() const;
 			GLuint getNativeGraphicsSSAOColorTex() const;

@@ -70,56 +70,34 @@ namespace PhysicsEngine
 
 			void latentDestroyEntitiesInWorld();
 
-			const PoolAllocator<Entity>* getEntityAllocator_Const() const;
+			int getNumberOfEntities() const;
+			int getNumberOfSystems() const;
 
 			template<typename T>
-			const PoolAllocator<T>* getComponentAllocator_Const() const
+			int getNumberOfComponents(const PoolAllocator<T>* allocator) const
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-				std::map<int, Allocator*>::const_iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
-				if (it != mComponentAllocatorMap.end()) {
-					return static_cast<PoolAllocator<T>*>(it->second);
+				if (allocator != NULL) {
+					return (int)allocator->getCount();
 				}
 
-				return NULL;
+				return 0;
 			}
-
-			template<typename T>
-			const PoolAllocator<T>* getSystemAllocator_Const() const
-			{
-				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
-
-				std::map<int, Allocator*>::const_iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
-				if (it != mSystemAllocatorMap.end()) {
-					return static_cast<PoolAllocator<T>*>(it->second);
-				}
-
-				return NULL;
-			}
-
-			template<typename T>
-			const PoolAllocator<T>* getAssetAllocator_Const() const
-			{
-				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
-
-				std::map<int, Allocator*>::const_iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
-				if (it != mAssetAllocatorMap.end()) {
-					return static_cast<PoolAllocator<T>*>(it->second);
-				}
-
-				return NULL;
-			}
-
-			int getNumberOfEntities() const;
-			int getNumberOfSystems() const;
 
 			template<typename T>
 			int getNumberOfComponents() const
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-				
-				const PoolAllocator<T>* allocator = getComponentAllocator_Const<T>();
+
+				return getNumberOfComponents<T>(getComponentAllocator_Const<T>());
+			}
+
+			template<typename T>
+			int getNumberOfAssets(const PoolAllocator<T>* allocator) const
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
 				if (allocator != NULL) {
 					return (int)allocator->getCount();
 				}
@@ -132,12 +110,7 @@ namespace PhysicsEngine
 			{
 				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
-				const PoolAllocator<T>* allocator = getAssetAllocator_Const<T>();
-				if (allocator != NULL) {
-					return (int)allocator->getCount();
-				}
-
-				return 0;
+				return getNumberOfAssets(getAssetAllocator_Const<T>());
 			}
 
 			Entity* getEntity(Guid entityId);
@@ -310,20 +283,23 @@ namespace PhysicsEngine
 			System* getSystemByIndex(int index);
 
 			template<typename T>
-			T* getComponentByIndex(int index)
+			T* getComponentByIndex(const PoolAllocator<T>* allocator, int index)
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-				if (index < 0) {
-					return NULL;
-				}
-
-				PoolAllocator<T>* allocator = getComponentAllocator<T>();
-				if (allocator == NULL) {
+				if (allocator == NULL || index < 0) {
 					return NULL;
 				}
 
 				return allocator->get(index);
+			}
+
+			template<typename T>
+			T* getComponentByIndex(int index)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+				return getComponentByIndex(getComponentAllocator_Const<T>(), index);
 			}
 
 			template<typename T>
@@ -344,20 +320,23 @@ namespace PhysicsEngine
 			}
 
 			template<typename T>
-			T* getAssetByIndex(int index)
+			T* getAssetByIndex(const PoolAllocator<T>* allocator, int index)
 			{
 				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
-				if (index < 0) {
-					return NULL;
-				}
-
-				PoolAllocator<T>* allocator = getAssetAllocator<T>();
-				if (allocator == NULL) {
+				if (allocator == NULL || index < 0) {
 					return NULL;
 				}
 
 				return allocator->get(index);
+			}
+
+			template<typename T>
+			T* getAssetByIndex(int index)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				return getAssetByIndex(getAssetAllocator_Const<T>(), index);
 			}
 
 			int getIndexOf(Guid id) const;
@@ -429,6 +408,47 @@ namespace PhysicsEngine
 
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);
+
+			const PoolAllocator<Entity>* getEntityAllocator_Const() const;
+
+			template<typename T>
+			const PoolAllocator<T>* getComponentAllocator_Const() const
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+				std::map<int, Allocator*>::const_iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
+				if (it != mComponentAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
+			const PoolAllocator<T>* getSystemAllocator_Const() const
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				std::map<int, Allocator*>::const_iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
+				if (it != mSystemAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
+			const PoolAllocator<T>* getAssetAllocator_Const() const
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				std::map<int, Allocator*>::const_iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
+				if (it != mAssetAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
 
 			private:
 				PoolAllocator<Entity>* getEntityAllocator()

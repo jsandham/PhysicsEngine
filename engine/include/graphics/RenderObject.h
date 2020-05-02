@@ -5,6 +5,7 @@
 
 #include "../glm/glm.hpp"
 #include "../core/Sphere.h"
+#include "../core/Color.h"
 
 namespace PhysicsEngine
 {
@@ -30,6 +31,7 @@ namespace PhysicsEngine
 		glm::mat4 model;
 
 		Sphere boundingSphere;
+		Color color;
 		bool culled;
 	}RenderObject;
 }

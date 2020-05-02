@@ -18,7 +18,7 @@ namespace PhysicsEngine
 			void deserialize(std::vector<char> data);
 
 			void init(World* world);
-			void update(Input input);
+			void update(Input input, Time time);
 	};
 
 	template <>

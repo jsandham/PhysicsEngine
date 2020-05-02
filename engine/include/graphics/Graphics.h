@@ -79,8 +79,11 @@ namespace PhysicsEngine
 
 			static void create(Camera* camera, 
 							   GLuint* mainFBO, 
-							   GLuint* colorTex, 
-							   GLuint* depthTex, 
+							   GLuint* colorTex,
+							   GLuint* depthTex,
+							   GLuint* colorPickingFBO,
+							   GLuint* colorPickingTex,
+							   GLuint* colorPickingDepthTex,
 							   GLuint* geometryFBO, 
 							   GLuint* positionTex, 
 							   GLuint* normalTex, 
@@ -94,6 +97,9 @@ namespace PhysicsEngine
 								GLuint* mainFBO,
 								GLuint* colorTex,
 								GLuint* depthTex,
+								GLuint* colorPickingFBO,
+								GLuint* colorPickingTex,
+								GLuint* colorPickingDepthTex,
 								GLuint* geometryFBO,
 								GLuint* positionTex,
 								GLuint* normalTex,
@@ -101,6 +107,8 @@ namespace PhysicsEngine
 								GLuint* ssaoColorTex,
 								GLuint* ssaoNoiseTex,
 								bool* created);
+
+			static void readColorPickingPixel(const Camera* camera, int x, int y, Color* color);
 
 			static void create(Texture2D* texture, GLuint* tex, bool* created);
 			static void destroy(Texture2D* texture, GLuint* tex, bool* created);

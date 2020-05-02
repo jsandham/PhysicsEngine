@@ -64,6 +64,12 @@ namespace PhysicsEngine
 					   const ShadowMapData& shadowMapData, 
 					   GraphicsLightState& lightState, 
 					   GraphicsQuery& query);
+
+	void renderColorPicking(World* world,
+							Camera* camera,
+							const std::vector<RenderObject>& renderObjects,
+							ScreenData& screenData,
+							GraphicsQuery& query);
 	
 	void renderTransparents();
 	

@@ -161,7 +161,7 @@ void PhysicsSystem::init(World* world)
 	//grid->create(worldBounds, gridDim, boundingSpheres, spheres, bounds, triangles);
 }
 
-void PhysicsSystem::update(Input input)
+void PhysicsSystem::update(Input input, Time time)
 {
 	// Octtree* stree = world->getStaticPhysicsTree();
 

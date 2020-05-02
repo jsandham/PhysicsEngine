@@ -8,14 +8,12 @@
 
 namespace PhysicsEngine
 {
-	struct ScreenData // ScreenQuadData? RendererData? GraphicsScreenData? GraphicsRenderData?
+	struct ScreenData // ScreenQuadData? RendererData? GraphicsScreenData? GraphicsRenderData? InternalData?
 	{
 		Shader mPositionAndNormalsShader;  // whats a good name for this shader which fills depth, normals, and position? geometryShader? forwardGbufferShader?
-		Shader mTestShader;
+		Shader mColorShader;
 
-		// ssao fbo
-		GLuint mSsaoFBO;
-		GLuint mSsaoColor;
+		// ssao
 		Shader mSsaoShader;
 
 		// quad

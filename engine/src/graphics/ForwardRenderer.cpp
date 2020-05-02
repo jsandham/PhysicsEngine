@@ -42,8 +42,11 @@ void ForwardRenderer::update(Input input)
 	updateRenderObjects(mWorld, mRenderObjects);
 	updateModelMatrices(mWorld, mRenderObjects);
 
-	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++) {
-		Camera* camera = mWorld->getComponentByIndex<Camera>(i);
+	const PoolAllocator<Camera>* cameraAllocator = mWorld->getComponentAllocator_Const<Camera>();
+	const PoolAllocator<Light>* lightAllocator = mWorld->getComponentAllocator_Const<Light>();
+
+	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(cameraAllocator); i++) {
+		Camera* camera = mWorld->getComponentByIndex<Camera>(cameraAllocator, i);
 
 		cullRenderObjects(camera, mRenderObjects);
 
@@ -51,14 +54,16 @@ void ForwardRenderer::update(Input input)
 
 		computeSSAO(mWorld, camera, mRenderObjects, mScreenData, mQuery);
 
-		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++) {
-			Light* light = mWorld->getComponentByIndex<Light>(j);
+		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(lightAllocator); j++) {
+			Light* light = mWorld->getComponentByIndex<Light>(lightAllocator, j);
 			Transform* lightTransform = light->getComponent<Transform>(mWorld);
 
 			renderShadows(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mQuery);
 			renderOpaques(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mLightState, mQuery);
 			renderTransparents();
 		}
+
+		renderColorPicking(mWorld, camera, mRenderObjects, mScreenData, mQuery);
 
 		postProcessing();
 		endFrame(mWorld, camera, mRenderObjects, mScreenData, mTargets, mQuery, mRenderToScreen);

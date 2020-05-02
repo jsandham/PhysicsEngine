@@ -52,7 +52,7 @@ void RenderSystem::init(World* world)
 	mForwardRenderer.init(world, mRenderToScreen);
 }
 
-void RenderSystem::update(Input input)
+void RenderSystem::update(Input input, Time time)
 {
 	mForwardRenderer.update(input);
 }

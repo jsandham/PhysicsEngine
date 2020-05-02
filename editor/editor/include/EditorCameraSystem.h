@@ -24,8 +24,10 @@ namespace PhysicsEngine
 		Transform* mTransform;
 		Camera* mCamera;
 
-		int mCurrentPosX;
-		int mCurrentPosY;
+		int mMousePosX;
+		int mMousePosY;
+		int mMousePosXOnRightClick;
+		int mMousePosYOnRightClick;
 		glm::quat rotationOnClick;
 
 	public:
@@ -38,7 +40,7 @@ namespace PhysicsEngine
 		void deserialize(std::vector<char> data);
 
 		void init(World* world);
-		void update(Input input);
+		void update(Input input, Time time);
 
 		void resetCamera();
 		void setViewport(Viewport viewport);
@@ -46,6 +48,10 @@ namespace PhysicsEngine
 
 		Viewport getViewport() const;
 		Frustum getFrustum() const;
+
+		Guid getMeshRendererUnderMouse(float nx, float ny) const;
+		int getMousePosX() const;
+		int getMousePosY() const;
 	};
 
 	template <>

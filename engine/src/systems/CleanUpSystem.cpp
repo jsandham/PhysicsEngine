@@ -45,7 +45,7 @@ void CleanUpSystem::init(World* world)
 	mWorld = world;
 }
 
-void CleanUpSystem::update(Input input)
+void CleanUpSystem::update(Input input, Time time)
 {
 	mWorld->clearIdsMarkedMoved();
 

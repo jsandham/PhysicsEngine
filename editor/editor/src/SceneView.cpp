@@ -2,7 +2,6 @@
 
 #include "core/Log.h"
 
-#include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui_impl_win32.h"
 #include "../include/imgui/imgui_impl_opengl3.h"
 #include "../include/imgui/imgui_internal.h"
@@ -16,6 +15,10 @@ SceneView::SceneView()
 	hovered = false;
 
 	perfQueue.setNumberOfSamples(100);
+
+	windowPos = ImVec2(0, 0);
+	sceneContentMin = ImVec2(0, 0);
+	sceneContentMax = ImVec2(0, 0);
 }
 
 SceneView::~SceneView()
@@ -46,21 +49,39 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraS
 		focused = ImGui::IsWindowFocused();
 		hovered = ImGui::IsWindowHovered();
 
+		windowPos = ImGui::GetWindowPos();
+		
+		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+
+		contentMin.x += windowPos.x;
+		contentMin.y += windowPos.y;
+		contentMax.x += windowPos.x;
+		contentMax.y += windowPos.y;
+
+		sceneContentMin = contentMin;
+		sceneContentMax = contentMax;
+
+		// account for the fact that Image will draw below buttons
+		sceneContentMin.y += 23;
+
 		int count = 6;
 		const char* textureNames[] = { "Color",
-									"Depth",
-									"Normals",
-									"Position",
-									"Overdraw",
-									"SSAO" };
+									   "Color Picking",
+									   "Depth",
+									   "Normals",
+									   "Position",
+									   "Overdraw",
+									   "SSAO" };
 		const GLint textures[] = { targets.mColor,
-									targets.mDepth,
-									targets.mNormals,
-									targets.mPosition,
-									targets.mOverdraw,
-									targets.mSsao };
+								   targets.mColorPicking,
+								   targets.mDepth,
+								   targets.mNormals,
+								   targets.mPosition,
+								   targets.mOverdraw,
+								   targets.mSsao };
 
-		// select draw texture 
+		// select draw texture dropdown
 		static GLuint currentTexture = (GLuint)textures[0];
 		static const char* currentTextureName = textureNames[0];
 
@@ -110,47 +131,6 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraS
 			cameraSettingsClicked = true;
 		}
 
-		// draw selected texture
-		ImVec2 windowPos = ImGui::GetWindowPos();
-		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-		ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
-
-		contentMin.x += windowPos.x;
-		contentMin.y += windowPos.y;
-		contentMax.x += windowPos.x;
-		contentMax.y += windowPos.y;
-
-		// ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
-
-		ImVec2 size = contentMax;
-		size.x -= contentMin.x;
-		size.y -= contentMin.y + 25; // account for the fact that Image will draw below buttons
-
-		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(1, 1), ImVec2(0, 0));
-
-		if (overlayChecked) {
-			static bool overlayOpened = false;
-
-			ImVec2 overlayPos = ImVec2(contentMax.x, contentMin.y + 25);
-
-			ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always, ImVec2(1.0f, 0.0f));
-			ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-			if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
-			{
-				ImGui::Text("Tris: %d\n", query.mTris);
-				ImGui::Text("Verts: %d\n", query.mVerts);
-				ImGui::Text("Draw calls: %d\n", query.mNumDrawCalls);
-				ImGui::Text("Elapsed time: %f", query.mTotalElapsedTime);
-
-				perfQueue.addSample(query.mTotalElapsedTime);
-
-				std::vector<float> perfData = perfQueue.getData();
-				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
-				//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
-			}
-			ImGui::End();
-		}
-
 		if (cameraSettingsClicked) {
 			static bool cameraSettingsWindowOpen = false;
 
@@ -159,7 +139,7 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraS
 			{
 				Viewport viewport = cameraSystem->getViewport();
 				Frustum frustum = cameraSystem->getFrustum();
-	
+
 				// Viewport settings
 				if (ImGui::InputInt("X", &viewport.mX)) {
 					cameraSystem->setViewport(viewport);
@@ -192,6 +172,62 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraS
 			ImGui::End();
 
 		}
+
+		// performance overlay
+		if (overlayChecked) {
+			static bool overlayOpened = false;
+			static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip |
+												   ImGuiWindowFlags_ChildWindow |
+												   ImGuiWindowFlags_NoTitleBar |
+												   ImGuiWindowFlags_AlwaysAutoResize |
+												   ImGuiWindowFlags_NoSavedSettings |
+												   ImGuiWindowFlags_NoResize |
+												   ImGuiWindowFlags_NoDocking |
+												   ImGuiWindowFlags_NoNav |
+												   ImGuiWindowFlags_NoMove;
+
+			ImVec2 overlayPos = ImVec2(sceneContentMax.x, sceneContentMin.y);
+
+			ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+			ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+			if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, overlayFlags))
+			{
+				ImGui::Text("Tris: %d\n", query.mTris);
+				ImGui::Text("Verts: %d\n", query.mVerts);
+				ImGui::Text("Draw calls: %d\n", query.mNumDrawCalls);
+				ImGui::Text("Elapsed time: %f", query.mTotalElapsedTime);
+				ImGui::Text("Window position: %f %f\n", windowPos.x, windowPos.y);
+				ImGui::Text("Content min: %f %f\n", contentMin.x, contentMin.y);
+				ImGui::Text("Content max: %f %f\n", contentMax.x, contentMax.y);
+				ImGui::Text("Scene content min: %f %f\n", sceneContentMin.x, sceneContentMin.y);
+				ImGui::Text("Scene content max: %f %f\n", sceneContentMax.x, sceneContentMax.y);
+				ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
+				ImGui::Text("Normalized Mouse Position: %f %f\n", cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x), cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y));
+
+				ImGui::GetForegroundDrawList()->AddRect(sceneContentMin, sceneContentMax, 0xFFFF0000);
+
+				perfQueue.addSample(query.mTotalElapsedTime);
+
+				std::vector<float> perfData = perfQueue.getData();
+				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
+				//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
+			}
+			ImGui::End();
+		}
+
+		// draw selected texture
+		ImVec2 size = sceneContentMax;
+		size.x -= sceneContentMin.x;
+		size.y -= sceneContentMin.y;
+
+		/*ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(1, 1), ImVec2(0, 0));*/
+		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
+
+		float nx = cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x);
+		float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
+		Guid id = cameraSystem->getMeshRendererUnderMouse(nx, ny);
+
+		//Log::warn((id.toString() + "\n").c_str());
 	}
 	ImGui::End();
 }
@@ -204,4 +240,19 @@ bool SceneView::isFocused() const
 bool SceneView::isHovered() const
 {
 	return hovered;
+}
+
+ImVec2 SceneView::getSceneContentMin() const
+{
+	return sceneContentMin;
+}
+
+ImVec2 SceneView::getSceneContentMax() const
+{
+	return sceneContentMax;
+}
+
+ImVec2 SceneView::getWindowPos() const
+{
+	return windowPos;
 }

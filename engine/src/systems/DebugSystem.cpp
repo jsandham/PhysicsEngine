@@ -79,16 +79,16 @@ void DebugSystem::init(World* world)
 	colorMat->shaderId = colorShader->assetId;*/
 }
 
-void DebugSystem::update(Input input)
+void DebugSystem::update(Input input, Time time)
 {
-	Camera* camera;
+	/*Camera* camera;
 	if(mWorld->getNumberOfComponents<Camera>() > 0){
 		camera = mWorld->getComponentByIndex<Camera>(0);
 	}
 	else{
 		std::cout << "Warning: No camera found" << std::endl;
 		return;
-	}
+	}*/
 
 	//if(mWorld->mDebug){
 	//	if (getKeyDown(input, KeyCode::I)){

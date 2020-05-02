@@ -13,6 +13,8 @@
 
 #include "EditorCameraSystem.h"
 
+#include "imgui/imgui.h"
+
 namespace PhysicsEditor
 {
 	class SceneView
@@ -22,6 +24,10 @@ namespace PhysicsEditor
 			bool hovered;
 			PerformanceQueue perfQueue;
 
+			ImVec2 windowPos;
+			ImVec2 sceneContentMin;
+			ImVec2 sceneContentMax;
+
 		public:
 			SceneView();
 			~SceneView();
@@ -30,6 +36,11 @@ namespace PhysicsEditor
 
 			bool isFocused() const;
 			bool isHovered() const;
+
+			ImVec2 getSceneContentMin() const;
+			ImVec2 getSceneContentMax() const;
+			ImVec2 getWindowPos() const;
+
 	};
 }
 

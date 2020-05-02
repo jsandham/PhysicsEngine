@@ -117,7 +117,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0)
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);

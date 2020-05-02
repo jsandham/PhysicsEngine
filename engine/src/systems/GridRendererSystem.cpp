@@ -33,7 +33,7 @@ void GridRendererSystem::init(World* world)
 
 }
 
-void GridRendererSystem::update(Input input)
+void GridRendererSystem::update(Input input, Time time)
 {
 
 }

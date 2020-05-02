@@ -5,6 +5,8 @@
 #include <string>
 #include <unordered_set>
 
+#include "core/Time.h"
+#include "core/Input.h"
 #include "core/World.h"
 #include "components/Camera.h"
 
@@ -58,6 +60,7 @@ namespace PhysicsEditor
 			EditorScene currentScene;
 			EditorClipboard clipboard;
 			
+			Time time;
 			Input input;
 			EditorCameraSystem* cameraSystem;
 			RenderSystem* renderSystem;
