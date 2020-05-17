@@ -12,8 +12,9 @@
 #include "graphics/GraphicsTargets.h"
 
 #include "EditorCameraSystem.h"
+#include "EditorClipboard.h"
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 
 namespace PhysicsEditor
 {
@@ -32,7 +33,12 @@ namespace PhysicsEditor
 			SceneView();
 			~SceneView();
 
-			void render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame);
+			void render(PhysicsEngine::World* world, 
+						PhysicsEngine::EditorCameraSystem* cameraSystem, 
+						PhysicsEngine::GraphicsTargets targets, 
+						PhysicsEngine::GraphicsQuery query, 
+						EditorClipboard& clipboard, 
+						bool isOpenedThisFrame);
 
 			bool isFocused() const;
 			bool isHovered() const;

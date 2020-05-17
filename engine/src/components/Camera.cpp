@@ -189,8 +189,8 @@ Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 	int temp = color.r + color.g * 256 + color.b * 256 * 256;
 
 	/*std::string message = "x: " + std::to_string(x) + " y: " + std::to_string(y) + " color: " + color.r + " " + color.g + " " + color.b + "\n";*/
-	std::string message = "x: " + std::to_string(x) + " y: " + std::to_string(y) + " color: " + std::to_string(temp) + " r: " + std::to_string((int)color.r) + " b: " + std::to_string((int)color.g) + " b: " + std::to_string((int)color.b) + "\n";
-	Log::warn(message.c_str());
+	//std::string message = "x: " + std::to_string(x) + " y: " + std::to_string(y) + " color: " + std::to_string(temp) + " r: " + std::to_string((int)color.r) + " b: " + std::to_string((int)color.g) + " b: " + std::to_string((int)color.b) + "\n";
+	//Log::warn(message.c_str());
 
 	std::map<int, Guid>::const_iterator it = mColoringMap.find(temp);
 	if (it != mColoringMap.end()) {

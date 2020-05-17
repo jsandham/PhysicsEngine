@@ -1,10 +1,10 @@
 #include "../include/ProjectWindow.h"
 #include "../include/FileSystemUtil.h"
 
-#include "../include/imgui/imgui.h"
-#include "../include/imgui/imgui_impl_win32.h"
-#include "../include/imgui/imgui_impl_opengl3.h"
-#include "../include/imgui/imgui_internal.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 using namespace PhysicsEditor;
 

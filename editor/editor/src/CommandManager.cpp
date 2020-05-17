@@ -1,6 +1,6 @@
 #include "../include/CommandManager.h"
 
-#include "../include/imgui/imgui.h"
+#include "imgui.h"
 
 #include "core/Log.h"
 

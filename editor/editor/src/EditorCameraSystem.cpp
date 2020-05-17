@@ -22,6 +22,8 @@ EditorCameraSystem::EditorCameraSystem()
 
 	mMousePosX = 0;
 	mMousePosY = 0;
+	mIsLeftMouseClicked = false;
+	mIsRightMouseClicked = false;
 	rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
@@ -31,6 +33,8 @@ EditorCameraSystem::EditorCameraSystem(std::vector<char> data)
 
 	mMousePosX = 0;
 	mMousePosY = 0;
+	mIsLeftMouseClicked = false;
+	mIsRightMouseClicked = false;
 }
 
 EditorCameraSystem::~EditorCameraSystem()
@@ -127,6 +131,16 @@ void EditorCameraSystem::update(Input input, Time time)
 		mTransform->mRotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
 	}
 
+	mIsLeftMouseClicked = false;
+	mIsRightMouseClicked = false;
+	if (getMouseButtonDown(input, LButton)){
+		mIsLeftMouseClicked = true;
+	}
+	if (getMouseButtonDown(input, RButton)) {
+		mIsRightMouseClicked = true;
+	}
+
+
 	mCamera->mFrustum.computePlanes(position, front, up, right);
 	mCamera->computeViewMatrix(position, front, up);
 
@@ -167,6 +181,16 @@ int EditorCameraSystem::getMousePosX() const
 int EditorCameraSystem::getMousePosY() const
 {
 	return mMousePosY;
+}
+
+bool EditorCameraSystem::isLeftMouseClicked() const
+{
+	return mIsLeftMouseClicked;
+}
+
+bool EditorCameraSystem::isRightMouseClicked() const
+{
+	return mIsRightMouseClicked;
 }
 
 Guid EditorCameraSystem::getMeshRendererUnderMouse(float nx, float ny) const

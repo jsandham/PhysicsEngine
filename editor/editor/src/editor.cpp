@@ -1,5 +1,6 @@
 #include <fstream>
 #include <chrono>
+#include <thread>
 
 #include "../include/Editor.h"
 #include "../include/EditorFileIO.h"
@@ -13,10 +14,10 @@
 
 #include <json/json.hpp>
 
-#include "../include/imgui/imgui.h"
-#include "../include/imgui/imgui_impl_win32.h"
-#include "../include/imgui/imgui_impl_opengl3.h"
-#include "../include/imgui/imgui_internal.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 #include "../include/imgui_styles.h"
 #include "../include/imgui_extensions.h"
@@ -115,49 +116,9 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	updateProjectAndSceneState();
 
-	if (editorMenu.isRunTestsClicked()) {
+	/*if (editorMenu.isRunTestsClicked()) {
 		UnitTests::run();
-		/*Mesh mesh;
-		mesh.load("C:\\Users\\jsand\\Documents\\simple_sphere.obj");
-
-		std::ofstream file;
-		file.open("myspheredata.txt");
-		if (file.is_open())
-		{
-			std::vector<float> v = mesh.getVertices();
-			std::vector<float> n = mesh.getNormals();
-			std::vector<float> tc = mesh.getTexCoords();
-			std::vector<int> sm = mesh.getSubMeshStartIndices();
-
-			for (size_t i = 0; i < v.size() / 3; i++)
-			{
-				file << v[3*i] << ", " << v[3*i+1] << ", " << v[3*i+2] << ", \n";
-			}
-
-			file << "\n";
-
-			for (size_t i = 0; i < n.size() / 3; i++)
-			{
-				file << n[3 * i] << ", " << n[3 * i + 1] << ", " << n[3 * i + 2] << ", \n";
-			}
-
-			file << "\n";
-
-			for (size_t i = 0; i < tc.size() / 2; i++)
-			{
-				file << tc[2 * i] << ", " << tc[2 * i + 1] << ", \n";
-			}
-
-			file << "\n";
-
-			for (size_t i = 0; i < sm.size() / 1; i++)
-			{
-				file << tc[i] << ", \n";
-			}
-
-			file.close();
-		}*/
-	}
+	}*/
 
 	hierarchy.render(&world, currentScene, clipboard, editorMenu.isOpenHierarchyCalled());
 	inspector.render(&world, currentProject, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
@@ -185,7 +146,7 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	GraphicsTargets targets = renderSystem->getGraphicsTargets();
 	GraphicsQuery query = renderSystem->getGraphicsQuery();
 
-	sceneView.render(&world, cameraSystem, targets, query, editorMenu.isOpenSceneViewCalled());
+	sceneView.render(&world, cameraSystem, targets, query, clipboard, editorMenu.isOpenSceneViewCalled());
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -401,7 +362,7 @@ void Editor::saveProject(std::string name, std::string path)
 
 void Editor::updateAssetsLoadedInWorld()
 {
-	libraryDirectory.update(currentProject.path);
+	//libraryDirectory.update(currentProject.path);
 
 	LibraryCache libraryCache = libraryDirectory.getLibraryCache();
 

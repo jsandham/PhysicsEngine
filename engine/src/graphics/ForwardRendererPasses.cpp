@@ -852,7 +852,8 @@ void PhysicsEngine::renderColorPicking(World* world,
 {
 	camera->clearColoring();
 
-	// assign colors to render objects
+	// assign colors to render objects.
+	size_t color = 1;
 	for (size_t i = 0; i < renderObjects.size(); i++) {
 		if (renderObjects[i].materialIndex == -1 ||
 			renderObjects[i].shaderIndex == -1 ||
@@ -861,7 +862,9 @@ void PhysicsEngine::renderColorPicking(World* world,
 			continue;
 		}
 
-		camera->assignColoring(i, renderObjects[i].meshRendererId);
+		camera->assignColoring(color, renderObjects[i].meshRendererId);
+
+		color++;
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
@@ -872,6 +875,7 @@ void PhysicsEngine::renderColorPicking(World* world,
 
 	screenData.mColorShader.use(shaderProgram);
 
+	color = 1;
 	for (size_t i = 0; i < renderObjects.size(); i++) {
 		if (renderObjects[i].materialIndex == -1 || 
 			renderObjects[i].shaderIndex == -1 || 
@@ -880,17 +884,16 @@ void PhysicsEngine::renderColorPicking(World* world,
 			continue;
 		}
 
-		size_t color = i;
-
 		size_t b = color / (256 * 256);
 		color = color % (256 * 256);
 		size_t g = color / 256;
 		color = color % 256;
 		size_t r = color;
 
+		color++; 
+
 		screenData.mColorShader.setMat4(modelLoc, renderObjects[i].model);
-		//screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
-		screenData.mColorShader.setVec4(colorLoc, glm::vec4(100 / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
+		screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
 
 		Graphics::render(world, renderObjects[i], &query);
 	}

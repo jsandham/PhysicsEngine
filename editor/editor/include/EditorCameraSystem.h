@@ -28,6 +28,8 @@ namespace PhysicsEngine
 		int mMousePosY;
 		int mMousePosXOnRightClick;
 		int mMousePosYOnRightClick;
+		bool mIsLeftMouseClicked;
+		bool mIsRightMouseClicked;
 		glm::quat rotationOnClick;
 
 	public:
@@ -52,6 +54,8 @@ namespace PhysicsEngine
 		Guid getMeshRendererUnderMouse(float nx, float ny) const;
 		int getMousePosX() const;
 		int getMousePosY() const;
+		bool isLeftMouseClicked() const;
+		bool isRightMouseClicked() const;
 	};
 
 	template <>

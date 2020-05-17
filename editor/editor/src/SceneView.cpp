@@ -2,9 +2,9 @@
 
 #include "core/Log.h"
 
-#include "../include/imgui/imgui_impl_win32.h"
-#include "../include/imgui/imgui_impl_opengl3.h"
-#include "../include/imgui/imgui_internal.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 using namespace PhysicsEngine;
 using namespace PhysicsEditor;
@@ -26,7 +26,12 @@ SceneView::~SceneView()
 
 }
 
-void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::GraphicsTargets targets, PhysicsEngine::GraphicsQuery query, bool isOpenedThisFrame)
+void SceneView::render(PhysicsEngine::World* world, 
+					   PhysicsEngine::EditorCameraSystem* cameraSystem, 
+					   PhysicsEngine::GraphicsTargets targets, 
+					   PhysicsEngine::GraphicsQuery query, 
+					   EditorClipboard& clipboard, 
+					   bool isOpenedThisFrame)
 {
 	focused = false;
 	hovered = false;
@@ -220,14 +225,19 @@ void SceneView::render(PhysicsEngine::World* world, PhysicsEngine::EditorCameraS
 		size.x -= sceneContentMin.x;
 		size.y -= sceneContentMin.y;
 
-		/*ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(1, 1), ImVec2(0, 0));*/
 		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
 
-		float nx = cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x);
-		float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
-		Guid id = cameraSystem->getMeshRendererUnderMouse(nx, ny);
+		// Check if entity is selected
+		if (cameraSystem->isLeftMouseClicked()) {
+			float nx = cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x);
+			float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
+			Guid meshRendererId = cameraSystem->getMeshRendererUnderMouse(nx, ny);
 
-		//Log::warn((id.toString() + "\n").c_str());
+			if (meshRendererId != Guid::INVALID) {
+				clipboard.setSelectedItem(InteractionType::Entity, meshRendererId);
+				Log::warn((meshRendererId.toString() + "\n").c_str());
+			}
+		}
 	}
 	ImGui::End();
 }

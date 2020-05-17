@@ -3,6 +3,7 @@
 
 #include <stdlib.h>  
 #include <crtdbg.h> 
+#include <cstdlib>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -15,6 +16,31 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+
+#include <thread>
+
+#include "FileWatcher.h"
+
+#include "../include/Editor.h"
+
+#include "core/Log.h"
+
+/// Processes a file action
+class UpdateListener : public FW::FileWatchListener
+{
+public:
+	UpdateListener() {}
+	void handleFileAction(FW::WatchID watchid, const FW::String& dir, const FW::String& filename,
+		FW::Action action)
+	{
+		Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event " + std::to_string(action) + "\n").c_str());
+	}
+};
+
+
+
+
+
 
 #ifndef WGL_EXT_extensions_string
 #define WGL_EXT_extensions_string 1
@@ -33,10 +59,6 @@ extern int WINAPI wglGetSwapIntervalEXT(void);
 typedef BOOL(WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int interval);
 typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
 #endif
-
-#include "../include/Editor.h"
-
-#include "core/Log.h"
 
 using namespace PhysicsEditor;
 
@@ -65,6 +87,10 @@ void SetCurrentContext();
 bool SetSwapInterval(int interval); //0 - No Interval, 1 - Sync whit VSYNC, n - n times Sync with VSYNC
 bool WGLExtensionSupported(const char *extension_name);
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+void RefreshDirectory(LPTSTR);
+void RefreshTree(LPTSTR);
+void WatchDirectory(LPTSTR);
 
 // =============================================================================
 //                            CORE MAIN FUNCTIONS
@@ -104,6 +130,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	// initialize editor
 	editor.init(g_hwnd, g_display_w, g_display_h);
 
+	UpdateListener listener;
+
+	// create the file watcher object
+	FW::FileWatcher fileWatcher;
+
 	// Main loop
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -129,6 +160,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		if (editor.getCurrentProjectPath() != ""){
 			SetWindowTextA(g_hwnd, ("Physics Engine - " + editor.getCurrentProjectPath()).c_str());
+
+			// add a watch to the system
+			// the file watcher doesn't manage the pointer to the listener - so make sure you don't just
+			// allocate a listener here and expect the file watcher to manage it - there will be a leak!
+			FW::WatchID watchID = fileWatcher.addWatch(editor.getCurrentProjectPath(), &listener, true);
+
+			fileWatcher.update();
 		}
 		else {
 			SetWindowTextA(g_hwnd, "Physics Engine");
@@ -263,64 +301,3 @@ bool WGLExtensionSupported(const char *extension_name){
 	// extension is supported
 	return true;
 }
-//KeyCode GetKeyCode(unsigned int vKCode)
-//{
-//	KeyCode keyCode;
-//	switch (vKCode)
-//	{
-//	case 'A':{ keyCode = KeyCode::A; break; }
-//	case 'B':{ keyCode = KeyCode::B; break; }
-//	case 'C':{ keyCode = KeyCode::C; break; }
-//	case 'D':{ keyCode = KeyCode::D; break; }
-//	case 'E':{ keyCode = KeyCode::E; break; }
-//	case 'F':{ keyCode = KeyCode::F; break; }
-//	case 'G':{ keyCode = KeyCode::G; break; }
-//	case 'H':{ keyCode = KeyCode::H; break; }
-//	case 'I':{ keyCode = KeyCode::I; break; }
-//	case 'J':{ keyCode = KeyCode::J; break; }
-//	case 'K':{ keyCode = KeyCode::K; break; }
-//	case 'L':{ keyCode = KeyCode::L; break; }
-//	case 'M':{ keyCode = KeyCode::M; break; }
-//	case 'N':{ keyCode = KeyCode::N; break; }
-//	case 'O':{ keyCode = KeyCode::O; break; }
-//	case 'P':{ keyCode = KeyCode::P; break; }
-//	case 'Q':{ keyCode = KeyCode::Q; break; }
-//	case 'R':{ keyCode = KeyCode::R; break; }
-//	case 'S':{ keyCode = KeyCode::S; break; }
-//	case 'T':{ keyCode = KeyCode::T; break; }
-//	case 'U':{ keyCode = KeyCode::U; break; }
-//	case 'V':{ keyCode = KeyCode::V; break; }
-//	case 'W':{ keyCode = KeyCode::W; break; }
-//	case 'X':{ keyCode = KeyCode::X; break; }
-//	case 'Y':{ keyCode = KeyCode::Y; break; }
-//	case 'Z':{ keyCode = KeyCode::Z; break; }
-//	case VK_RETURN:{ keyCode = KeyCode::Enter; break; }
-//	case VK_UP:{ keyCode = KeyCode::Up; break; }
-//	case VK_DOWN:{ keyCode = KeyCode::Down; break; }
-//	case VK_LEFT:{ keyCode = KeyCode::Left; break; }
-//	case VK_RIGHT:{ keyCode = KeyCode::Right; break; }
-//	case VK_SPACE:{ keyCode = KeyCode::Space; break; }
-//	case VK_LSHIFT:{ keyCode = KeyCode::LShift; break; }
-//	case VK_RSHIFT:{ keyCode = KeyCode::RShift; break; }
-//	case VK_TAB:{ keyCode = KeyCode::Tab; break; }
-//	case VK_BACK:{ keyCode = KeyCode::Backspace; break; }
-//	case VK_CAPITAL:{ keyCode = KeyCode::CapsLock; break; }
-//	case VK_LCONTROL:{ keyCode = KeyCode::LCtrl; break; }
-//	case VK_RCONTROL:{ keyCode = KeyCode::RCtrl; break; }
-//	case VK_ESCAPE:{ keyCode = KeyCode::Backspace; break; }
-//	case VK_NUMPAD0:{ keyCode = KeyCode::NumPad0; break; }
-//	case VK_NUMPAD1:{ keyCode = KeyCode::NumPad1; break; }
-//	case VK_NUMPAD2:{ keyCode = KeyCode::NumPad2; break; }
-//	case VK_NUMPAD3:{ keyCode = KeyCode::NumPad3; break; }
-//	case VK_NUMPAD4:{ keyCode = KeyCode::NumPad4; break; }
-//	case VK_NUMPAD5:{ keyCode = KeyCode::NumPad5; break; }
-//	case VK_NUMPAD6:{ keyCode = KeyCode::NumPad6; break; }
-//	case VK_NUMPAD7:{ keyCode = KeyCode::NumPad7; break; }
-//	case VK_NUMPAD8:{ keyCode = KeyCode::NumPad8; break; }
-//	case VK_NUMPAD9:{ keyCode = KeyCode::NumPad9; break; }
-//	default:{ keyCode = KeyCode::Invalid; break; }
-//	}
-//
-//	return keyCode;
-//}
-
