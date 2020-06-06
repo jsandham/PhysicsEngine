@@ -19,32 +19,42 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipboard, std::set<Guid> editorOnlyEntityIds, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 
 	if (isOpenedThisFrame){
 		hierarchyActive = true;
 
-		entities.clear();
+		entityIds.clear();
+		entityNames.clear();
 	}
 
-	int numberOfEntities = world->getNumberOfEntities();
-	if (entities.size() != numberOfEntities) {
-		entities.resize(numberOfEntities);
+	int numberOfEntities = world->getNumberOfEntities() - (int)editorOnlyEntityIds.size();
+
+	if (numberOfEntities < 0) {
+		Log::error("Error: Number of non editor only entities is negative\n");
+		return;
+	}
+
+	if (entityIds.size() != numberOfEntities) {
+		entityIds.resize(numberOfEntities);
 		entityNames.resize(numberOfEntities);
-		for (int i = 0; i < numberOfEntities; i++) {
+
+		int index = 0;
+		for (int i = 0; i < world->getNumberOfEntities(); i++) {
 			Entity* entity = world->getEntityByIndex(i);
 
-			entities[i] = *entity;
-			entityNames[i] = entity->getId().toString();
+			std::string test = entity->getId().toString();
+
+			std::set<Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
+			if (it == editorOnlyEntityIds.end()) {
+				entityIds[index] = entity->getId();
+				entityNames[index] = entity->getId().toString();
+				index++;
+			}
 		}
 	}
-	/*int numberOfEntities = world->getNumberOfEntities();
-	entities.resize(numberOfEntities);
-	for (int i = 0; i < numberOfEntities; i++) {
-		entities[i] = *world->getEntityByIndex(i);
-	}*/
 
 	if (!hierarchyActive){
 		return;
@@ -61,13 +71,12 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 			}
 			ImGui::Separator();
 
-			// skip editor camera entity
-			for (size_t i = 1; i < entities.size(); i++) {
+			for (size_t i = 0; i < entityIds.size(); i++) {
 				//std::string name = entities[i].entityId.toString();
 
 				static bool selected = false;
 				if (ImGui::Selectable(entityNames[i].c_str(), &selected)) {
-					clipboard.setSelectedItem(InteractionType::Entity, entities[i].getId());
+					clipboard.setSelectedItem(InteractionType::Entity, entityIds[i]);
 				}
 			}
 

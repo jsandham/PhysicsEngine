@@ -1,4 +1,5 @@
 #include "../include/EditorCameraSystem.h"
+#include "../include/EditorOnlyEntityCreation.h"
 
 #include <components/Camera.h>
 
@@ -65,7 +66,7 @@ void EditorCameraSystem::init(World* world)
 {
 	mWorld = world;
 
-	mCamera = world->createEditorCamera();
+	mCamera = world->getComponentByIndex<Camera>(0);
 	mTransform = mCamera->getComponent<Transform>(world);
 
 	mTransform->mPosition = glm::vec3(0, 2, -10);
@@ -139,7 +140,6 @@ void EditorCameraSystem::update(Input input, Time time)
 	if (getMouseButtonDown(input, RButton)) {
 		mIsRightMouseClicked = true;
 	}
-
 
 	mCamera->mFrustum.computePlanes(position, front, up, right);
 	mCamera->computeViewMatrix(position, front, up);

@@ -531,67 +531,68 @@ void PhysicsEngine::beginFrame(World* world,
 
 }
 
+// This is currently really expensive so I have it commented out right now
 void PhysicsEngine::computeSSAO(World* world, 
 								Camera* camera, 
 								const std::vector<RenderObject>& renderObjects, 
 								ScreenData& screenData, 
 								GraphicsQuery& query)
 {
-	// fill geometry framebuffer
-	int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
-	int modelLoc = screenData.mPositionAndNormalsShader.findUniformLocation("model", shaderProgram);
+	//// fill geometry framebuffer
+	//int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
+	//int modelLoc = screenData.mPositionAndNormalsShader.findUniformLocation("model", shaderProgram);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
+	//glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
+	//for (size_t i = 0; i < renderObjects.size(); i++) {
+	//	if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+	//	{
+	//		continue;
+	//	}
 
-		screenData.mPositionAndNormalsShader.use(shaderProgram);
-		screenData.mPositionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
+	//	screenData.mPositionAndNormalsShader.use(shaderProgram);
+	//	screenData.mPositionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
 
-		Graphics::render(world, renderObjects[i], &query);
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//	Graphics::render(world, renderObjects[i], &query);
+	//}
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Graphics::checkError();
+	//Graphics::checkError();
 
-	// fill ssao color texture
-	shaderProgram = screenData.mSsaoShader.getProgramFromVariant(ShaderVariant::None);
-	int projectionLoc = screenData.mSsaoShader.findUniformLocation("projection", shaderProgram);
-	int positionTexLoc = screenData.mSsaoShader.findUniformLocation("positionTex", shaderProgram);
-	int normalTexLoc = screenData.mSsaoShader.findUniformLocation("normalTex", shaderProgram);
-	int noiseTexLoc = screenData.mSsaoShader.findUniformLocation("noiseTex", shaderProgram);
-	int samplesLoc[64];
-	for (int i = 0; i < 64; i++) {
-		samplesLoc[i] = screenData.mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
-	}
+	//// fill ssao color texture
+	//shaderProgram = screenData.mSsaoShader.getProgramFromVariant(ShaderVariant::None);
+	//int projectionLoc = screenData.mSsaoShader.findUniformLocation("projection", shaderProgram);
+	//int positionTexLoc = screenData.mSsaoShader.findUniformLocation("positionTex", shaderProgram);
+	//int normalTexLoc = screenData.mSsaoShader.findUniformLocation("normalTex", shaderProgram);
+	//int noiseTexLoc = screenData.mSsaoShader.findUniformLocation("noiseTex", shaderProgram);
+	//int samplesLoc[64];
+	//for (int i = 0; i < 64; i++) {
+	//	samplesLoc[i] = screenData.mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
+	//}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
-	screenData.mSsaoShader.use(shaderProgram);
-	screenData.mSsaoShader.setMat4(projectionLoc, camera->getProjMatrix());
-	for (int i = 0; i < 64; i++) {
-		screenData.mSsaoShader.setVec3(samplesLoc[i], camera->getSSAOSample(i));
-	}
-	screenData.mSsaoShader.setInt(positionTexLoc, 0);
-	screenData.mSsaoShader.setInt(normalTexLoc, 1);
-	screenData.mSsaoShader.setInt(noiseTexLoc, 2);
+	//glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
+	//screenData.mSsaoShader.use(shaderProgram);
+	//screenData.mSsaoShader.setMat4(projectionLoc, camera->getProjMatrix());
+	//for (int i = 0; i < 64; i++) {
+	//	screenData.mSsaoShader.setVec3(samplesLoc[i], camera->getSSAOSample(i));
+	//}
+	//screenData.mSsaoShader.setInt(positionTexLoc, 0);
+	//screenData.mSsaoShader.setInt(normalTexLoc, 1);
+	//screenData.mSsaoShader.setInt(noiseTexLoc, 2);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
+	//glActiveTexture(GL_TEXTURE2);
+	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
 
-	glBindVertexArray(screenData.mQuadVAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glBindVertexArray(0);
+	//glBindVertexArray(screenData.mQuadVAO);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glBindVertexArray(0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Graphics::checkError();
+	//Graphics::checkError();
 }
 
 void PhysicsEngine::renderShadows(World* world, 
@@ -853,7 +854,7 @@ void PhysicsEngine::renderColorPicking(World* world,
 	camera->clearColoring();
 
 	// assign colors to render objects.
-	size_t color = 1;
+	int color = 1;
 	for (size_t i = 0; i < renderObjects.size(); i++) {
 		if (renderObjects[i].materialIndex == -1 ||
 			renderObjects[i].shaderIndex == -1 ||
@@ -884,16 +885,14 @@ void PhysicsEngine::renderColorPicking(World* world,
 			continue;
 		}
 
-		size_t b = color / (256 * 256);
-		color = color % (256 * 256);
-		size_t g = color / 256;
-		color = color % 256;
-		size_t r = color;
+		int r = (color & 0x000000FF) >> 0;
+		int g = (color & 0x0000FF00) >> 8;
+		int b = (color & 0x00FF0000) >> 16;
 
 		color++; 
 
 		screenData.mColorShader.setMat4(modelLoc, renderObjects[i].model);
-		screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 256.0f, g / 256.0f, b / 256.0f, 1.0f));
+		screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
 		Graphics::render(world, renderObjects[i], &query);
 	}
@@ -1033,12 +1032,13 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 	float tanHalfHFOV = glm::tan(glm::radians(0.5f * fov));
 	float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
 
-	for (unsigned int i = 0; i < 5; i++) {
+	for (int i = 0; i < 5; i++) {
 		float xn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfHFOV;
 		float xf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfHFOV;
 		float yn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfVFOV;
 		float yf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfVFOV;
 
+		// Find cascade frustum corners
 		glm::vec4 frustumCorners[8];
 		frustumCorners[0] = glm::vec4(xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
 		frustumCorners[1] = glm::vec4(-xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
@@ -1050,17 +1050,20 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 		frustumCorners[6] = glm::vec4(xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
 		frustumCorners[7] = glm::vec4(-xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
 
-		glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		// find frustum centre by averaging corners
+		glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-		for (int j = 0; j < 8; j++) {
-			frustumCentre.x += frustumCorners[j].x;
-			frustumCentre.y += frustumCorners[j].y;
-			frustumCentre.z += frustumCorners[j].z;
-		}
+		frustumCentre += frustumCorners[0];
+		frustumCentre += frustumCorners[1];
+		frustumCentre += frustumCorners[2];
+		frustumCentre += frustumCorners[3];
+		frustumCentre += frustumCorners[4];
+		frustumCentre += frustumCorners[5];
+		frustumCentre += frustumCorners[6];
+		frustumCentre += frustumCorners[7];
 
-		frustumCentre.x = frustumCentre.x / 8;
-		frustumCentre.y = frustumCentre.y / 8;
-		frustumCentre.z = frustumCentre.z / 8;
+		frustumCentre *= 0.125f;
+		frustumCentre.w = 1.0f;
 
 		// Transform the frustum centre from view to world space
 		glm::vec4 frustrumCentreWorldSpace = viewInv * frustumCentre;
@@ -1070,7 +1073,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 								frustrumCentreWorldSpace.y + d * lightDirection.y, 
 								frustrumCentreWorldSpace.z + d * lightDirection.z);
 
-		shadowMapData.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace.x, frustrumCentreWorldSpace.y, frustrumCentreWorldSpace.z), glm::vec3(1.0f, 0.0f, 0.0f));
+		shadowMapData.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		float minX = std::numeric_limits<float>::max();
 		float maxX = std::numeric_limits<float>::lowest();
@@ -1078,20 +1081,74 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 		float maxY = std::numeric_limits<float>::lowest();
 		float minZ = std::numeric_limits<float>::max();
 		float maxZ = std::numeric_limits<float>::lowest();
-		for (unsigned int j = 0; j < 8; j++) {
-			// Transform the frustum coordinate from view to world space
-			glm::vec4 vW = viewInv * frustumCorners[j];
 
-			// Transform the frustum coordinate from world to light space
-			glm::vec4 vL = shadowMapData.mCascadeLightView[i] * vW;
+		glm::mat4 cascadeLightView = shadowMapData.mCascadeLightView[i];
 
-			minX = glm::min(minX, vL.x);
-			maxX = glm::max(maxX, vL.x);
-			minY = glm::min(minY, vL.y);
-			maxY = glm::max(maxY, vL.y);
-			minZ = glm::min(minZ, vL.z);
-			maxZ = glm::max(maxZ, vL.z);
-		}
+		// Transform the frustum coordinates from view to world space and then world to light space
+		glm::vec4 vL0 = cascadeLightView * (viewInv * frustumCorners[0]);
+		glm::vec4 vL1 = cascadeLightView * (viewInv * frustumCorners[1]);
+		glm::vec4 vL2 = cascadeLightView * (viewInv * frustumCorners[2]);
+		glm::vec4 vL3 = cascadeLightView * (viewInv * frustumCorners[3]);
+		glm::vec4 vL4 = cascadeLightView * (viewInv * frustumCorners[4]);
+		glm::vec4 vL5 = cascadeLightView * (viewInv * frustumCorners[5]);
+		glm::vec4 vL6 = cascadeLightView * (viewInv * frustumCorners[6]);
+		glm::vec4 vL7 = cascadeLightView * (viewInv * frustumCorners[7]);
+
+		minX = glm::min(minX, vL0.x);
+		maxX = glm::max(maxX, vL0.x);
+		minY = glm::min(minY, vL0.y);
+		maxY = glm::max(maxY, vL0.y);
+		minZ = glm::min(minZ, vL0.z);
+		maxZ = glm::max(maxZ, vL0.z);
+
+		minX = glm::min(minX, vL1.x);
+		maxX = glm::max(maxX, vL1.x);
+		minY = glm::min(minY, vL1.y);
+		maxY = glm::max(maxY, vL1.y);
+		minZ = glm::min(minZ, vL1.z);
+		maxZ = glm::max(maxZ, vL1.z);
+
+		minX = glm::min(minX, vL2.x);
+		maxX = glm::max(maxX, vL2.x);
+		minY = glm::min(minY, vL2.y);
+		maxY = glm::max(maxY, vL2.y);
+		minZ = glm::min(minZ, vL2.z);
+		maxZ = glm::max(maxZ, vL2.z);
+
+		minX = glm::min(minX, vL3.x);
+		maxX = glm::max(maxX, vL3.x);
+		minY = glm::min(minY, vL3.y);
+		maxY = glm::max(maxY, vL3.y);
+		minZ = glm::min(minZ, vL3.z);
+		maxZ = glm::max(maxZ, vL3.z);
+
+		minX = glm::min(minX, vL4.x);
+		maxX = glm::max(maxX, vL4.x);
+		minY = glm::min(minY, vL4.y);
+		maxY = glm::max(maxY, vL4.y);
+		minZ = glm::min(minZ, vL4.z);
+		maxZ = glm::max(maxZ, vL4.z);
+
+		minX = glm::min(minX, vL5.x);
+		maxX = glm::max(maxX, vL5.x);
+		minY = glm::min(minY, vL5.y);
+		maxY = glm::max(maxY, vL5.y);
+		minZ = glm::min(minZ, vL5.z);
+		maxZ = glm::max(maxZ, vL5.z);
+
+		minX = glm::min(minX, vL6.x);
+		maxX = glm::max(maxX, vL6.x);
+		minY = glm::min(minY, vL6.y);
+		maxY = glm::max(maxY, vL6.y);
+		minZ = glm::min(minZ, vL6.z);
+		maxZ = glm::max(maxZ, vL6.z);
+
+		minX = glm::min(minX, vL7.x);
+		maxX = glm::max(maxX, vL7.x);
+		minY = glm::min(minY, vL7.y);
+		maxY = glm::max(maxY, vL7.y);
+		minZ = glm::min(minZ, vL7.z);
+		maxZ = glm::max(maxZ, vL7.z);
 
 		shadowMapData.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
 	}

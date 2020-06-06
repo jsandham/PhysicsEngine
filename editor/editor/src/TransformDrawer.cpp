@@ -31,6 +31,7 @@ void TransformDrawer::render(World* world, EditorProject& project, EditorScene& 
 
 		ImGui::Text(("EntityId: " + transform->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
+		ImGui::Text(("ComponentId: " + transform->getId().toString()).c_str());
 
 		glm::vec3 position = transform->mPosition;
 		glm::quat rotation = transform->mRotation;
@@ -39,6 +40,7 @@ void TransformDrawer::render(World* world, EditorProject& project, EditorScene& 
 		//glm::vec3 eulerRotDeg = glm::degrees(glm::eulerAngles(rotation));
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))){
+			//transform->mPosition = position;
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->mPosition, position, &scene.isDirty));
 		}
 		if (ImGui::InputFloat4("Rotation", glm::value_ptr(rotation))) {

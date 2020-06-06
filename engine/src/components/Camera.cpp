@@ -171,15 +171,6 @@ glm::vec3 Camera::getSSAOSample(int sample) const
 	return mSsaoSamples[sample];
 }
 
-//Guid Camera::getMeshRendererFromColor(int color) const
-//{
-//	std::map<int, Guid>::const_iterator it = mColoringMap.find(color);
-//	if (it != mColoringMap.end()) {
-//		return it->second;
-//	}
-//
-//	return Guid::INVALID;
-//}
 Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 {
 	// Note: OpenGL assumes that the window origin is the bottom left corner
@@ -187,10 +178,6 @@ Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 	Graphics::readColorPickingPixel(this, x, y, &color);
 
 	int temp = color.r + color.g * 256 + color.b * 256 * 256;
-
-	/*std::string message = "x: " + std::to_string(x) + " y: " + std::to_string(y) + " color: " + color.r + " " + color.g + " " + color.b + "\n";*/
-	//std::string message = "x: " + std::to_string(x) + " y: " + std::to_string(y) + " color: " + std::to_string(temp) + " r: " + std::to_string((int)color.r) + " b: " + std::to_string((int)color.g) + " b: " + std::to_string((int)color.b) + "\n";
-	//Log::warn(message.c_str());
 
 	std::map<int, Guid>::const_iterator it = mColoringMap.find(temp);
 	if (it != mColoringMap.end()) {

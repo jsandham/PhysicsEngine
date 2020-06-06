@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 #include "core/Entity.h"
 #include "core/World.h"
@@ -17,14 +18,14 @@ namespace PhysicsEditor
 	class Hierarchy
 	{
 		private:
-			std::vector<Entity> entities;
+			std::vector<Guid> entityIds;
 			std::vector<std::string> entityNames;
 
 		public:
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World* world, EditorScene& scene, EditorClipboard& clipboard, bool isOpenedThisFrame);
+			void render(World* world, EditorScene& scene, EditorClipboard& clipboard, std::set<Guid> editorOnlyEntityIds, bool isOpenedThisFrame);
 	};
 }
 

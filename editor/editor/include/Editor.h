@@ -66,7 +66,7 @@ namespace PhysicsEditor
 			RenderSystem* renderSystem;
 			CleanUpSystem* cleanupSystem;
 
-			std::unordered_set<std::string> assetsAddedToWorld;
+			std::set<PhysicsEngine::Guid> editorOnlyEntityIds;
 
 		public:
 			Editor();
@@ -88,7 +88,6 @@ namespace PhysicsEditor
 			void openProject(std::string name, std::string path);
 			void saveProject(std::string name, std::string path);
 			void updateProjectAndSceneState();
-			void updateAssetsLoadedInWorld();
 			void updateInputPassedToSystems(Input* input);
 	};
 }

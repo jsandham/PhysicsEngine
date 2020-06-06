@@ -461,7 +461,7 @@ bool PhysicsEditor::writeAssetToJson(PhysicsEngine::World* world, std::string ou
 	return true;
 }
 
-bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string outFilePath)
+bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string outFilePath, std::set<PhysicsEngine::Guid> editorOnlyEntityIds)
 {
 	std::ofstream file;
 
@@ -478,7 +478,9 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 	for (int i = 0; i < world->getNumberOfEntities(); i++) {
 		Entity* entity = world->getEntityByIndex(i);
 
-		if (entity->getId() == Guid("11111111-1111-1111-1111-111111111111")) {
+		// skip editor only entities
+		std::set<PhysicsEngine::Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
+		if (it != editorOnlyEntityIds.end()) {
 			continue;
 		}
 
@@ -710,4 +712,46 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 	file.close();
 
 	return true;*/
+}
+
+bool PhysicsEditor::createMetaFile(std::string metaFilePath)
+{
+	std::fstream metaFile;
+
+	metaFile.open(metaFilePath, std::fstream::out);
+
+	if (metaFile.is_open()) {
+		metaFile << "{\n";
+		metaFile << "\t\"id\" : \"" + PhysicsEngine::Guid::newGuid().toString() + "\"\n";
+		metaFile << "}\n";
+		metaFile.close();
+
+		return true;
+	}
+
+	return false;
+}
+
+PhysicsEngine::Guid PhysicsEditor::findGuidFromMetaFilePath(std::string metaFilePath)
+{
+	// get guid from meta file
+	std::fstream metaFile;
+	metaFile.open(metaFilePath, std::fstream::in);
+
+	if (metaFile.is_open()) {
+		std::ostringstream contents;
+		contents << metaFile.rdbuf();
+
+		metaFile.close();
+
+		std::string jsonContentString = contents.str();
+		json::JSON object = json::JSON::Load(contents.str());
+
+		return object["id"].ToString();
+	}
+	else {
+		std::string errorMessage = "An error occured when trying to open meta file: " + metaFilePath + "\n";
+		PhysicsEngine::Log::error(&errorMessage[0]);
+		return PhysicsEngine::Guid::INVALID;
+	}
 }

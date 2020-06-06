@@ -233,11 +233,25 @@ void SceneView::render(PhysicsEngine::World* world,
 			float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
 			Guid meshRendererId = cameraSystem->getMeshRendererUnderMouse(nx, ny);
 
-			if (meshRendererId != Guid::INVALID) {
-				clipboard.setSelectedItem(InteractionType::Entity, meshRendererId);
-				Log::warn((meshRendererId.toString() + "\n").c_str());
+			MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(meshRendererId);
+
+			if (meshRenderer != NULL) {
+				clipboard.setSelectedItem(InteractionType::Entity, meshRenderer->getEntityId());
+
+				Transform* transform = world->getComponent<Transform>(meshRenderer->getEntityId());
+				Log::warn(("entity id: " + meshRenderer->getEntityId().toString() + " transform id: " + transform->getId().toString() + " mesh renderer id: " + meshRendererId.toString() + "\n").c_str());
+			}
+			else {
+				clipboard.setSelectedItem(InteractionType::Entity, Guid::INVALID);
 			}
 		}
+
+		/*if (clipboard.getSelectedType() == InteractionType::Entity) {
+			Guid selectedEntityId = clipboard.getSelectedId();
+			if (selectedEntityId != Guid::INVALID) {
+				drawTransformGizmo(selectedEntityId, targets.mColor, targets.mColorPicking);
+			}
+		}*/
 	}
 	ImGui::End();
 }

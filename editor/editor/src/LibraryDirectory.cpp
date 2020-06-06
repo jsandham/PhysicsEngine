@@ -2,7 +2,6 @@
 #include "../include/FileSystemUtil.h"
 #include "../include/EditorFileIO.h"
 
-#include "core/Log.h"
 #include "core/Scene.h"
 #include "core/Texture2D.h"
 #include "core/Shader.h"
@@ -25,9 +24,30 @@ using namespace PhysicsEditor;
 using namespace PhysicsEngine;
 using namespace json;
 
+LibraryDirectoryListener::LibraryDirectoryListener()
+{
+	directory = NULL;
+}
+
+void LibraryDirectoryListener::registerDirectory(LibraryDirectory* directory)
+{
+	this->directory = directory;
+}
+
+void LibraryDirectoryListener::handleFileAction(FW::WatchID watchid, const FW::String& dir, const FW::String& filename, FW::Action action)
+{
+	PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event " + std::to_string(action) + "\n").c_str());
+
+	if (FW::Action::Add || FW::Action::Modified) {
+		directory->generateBinaryLibraryFile(dir + "\\" + filename);
+	}
+}
+
 LibraryDirectory::LibraryDirectory()
 {
-
+	mDataPath = "";
+	mLibraryPath = "";
+	mWatchID = 0;
 }
 
 LibraryDirectory::~LibraryDirectory()
@@ -35,212 +55,97 @@ LibraryDirectory::~LibraryDirectory()
 
 }
 
-void LibraryDirectory::load(std::string projectPath)
+void LibraryDirectory::watch(std::string projectPath)
 {
-	currentProjectPath = projectPath;
+	mBuffer.clear();
+
+	mDataPath = projectPath + "\\data";
+	mLibraryPath = projectPath + "\\library";
+
+	// register listener with library directory
+	mListener.registerDirectory(this);
 
 	// if library directory doesnt exist then create it
-	if (!doesDirectoryExist(currentProjectPath + "\\library")) {
-		if (!createDirectory(currentProjectPath + "\\library")) {
+	if (!doesDirectoryExist(mLibraryPath)) {
+		if (!createDirectory(mLibraryPath)) {
 			Log::error("Could not create library cache directory\n");
 			return;
 		}
-
-		// create directory cache file
-		std::ofstream file{ currentProjectPath + "\\library\\directory_cache.txt" };
 	}
 
-	libraryCache.clear();
-	filePathToId.clear();
-	idToFilePath.clear();
+	// get all data files in project
+	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(mDataPath, true);
 
-	if (!libraryCache.load(currentProjectPath + "\\library\\directory_cache.txt")) {
-		Log::error("An error occured when trying to load library. Please delete library directory so that it can be re-built\n");
-		return;
+	// generate binary library file from project data file
+	for (size_t i = 0; i < filesInProject.size(); i++) {
+		generateBinaryLibraryFile(filesInProject[i]);
 	}
 
-	for (LibraryCache::iterator it = libraryCache.begin(); it != libraryCache.end(); it++) {
-		std::string test = it->second.filePath;
-		std::string extension = getFileExtension(it->second.filePath);
+	// remove old watch
+	mFileWatcher.removeWatch(mWatchID);
 
-		// only track non-meta file paths in file-path-to-id maps
-		if (extension != "json") {
-			Guid id = findGuidFromMetaFilePath(it->second.filePath.substr(0, it->second.filePath.find_last_of(".")) + ".json");
-			filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(it->second.filePath, id));
-			idToFilePath.insert(std::pair<PhysicsEngine::Guid, std::string>(id, it->second.filePath));
-		}
-	}
+	// add watch for project data path to detect file changes
+	mWatchID = mFileWatcher.addWatch(mDataPath, &mListener, true);
 }
 
-void LibraryDirectory::update(std::string projectPath)
+void LibraryDirectory::update()
 {
-	if (projectPath.empty() || projectPath != currentProjectPath) {
-		return;
-	}
+	mFileWatcher.update();
+}
 
-	std::vector<FileInfo> filesToAddToLibrary;
-	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(currentProjectPath + "\\data", true);
+void LibraryDirectory::generateBinaryLibraryFile(std::string filePath)
+{
+	std::string extension = getFileExtension(filePath);
 
-	for (size_t i = 0; i < filesInProject.size(); i++) {
-		std::string extension = getFileExtension(filesInProject[i]);
+	if (extension != "json") {
+		std::string metaFilePath = filePath.substr(0, filePath.find_last_of(".")) + ".json";
 
-		if (!isFileExtensionTracked(extension)) {
-			continue;
-		}
-
-		if (extension != "json") {
-			std::string metaFilePath = filesInProject[i].substr(0, filesInProject[i].find_last_of(".")) + ".json";
-			if (!doesFileExist(metaFilePath)) {
-				createMetaFile(metaFilePath);
-
-				filesInProject.push_back(metaFilePath);
+		if (!doesFileExist(metaFilePath)) {
+			if (!createMetaFile(metaFilePath)){
+				std::string errorMessage = "Could not create meta file " + metaFilePath + "\n";
+				PhysicsEngine::Log::error(errorMessage.c_str());
+				return;
 			}
 		}
 
-		std::string createTime;
-		std::string accessTime;
-		std::string writeTime;
-
-		if (!getFileTime(filesInProject[i], createTime, accessTime, writeTime)) {
-			continue; // file must be in use by another application. Trying reading later.
-		}
-
-		FileInfo fileInfo;
-		fileInfo.filePath = filesInProject[i];
-		fileInfo.fileExtension = extension;
-		fileInfo.createTime = createTime;
-		fileInfo.accessTime = accessTime;
-		fileInfo.writeTime = writeTime;
-
-		if (libraryCache.contains(filesInProject[i])) {
-
-			if (libraryCache.isOutOfDate(filesInProject[i], createTime, writeTime)) {
-				libraryCache.remove(filesInProject[i]);
-				libraryCache.add(filesInProject[i], fileInfo);
-
-				if (extension != "json") {
-					filesToAddToLibrary.push_back(fileInfo);
-				}
-			}
-		}
-		else {
-			libraryCache.add(filesInProject[i], fileInfo);
-
-			if (extension != "json") {
-				filesToAddToLibrary.push_back(fileInfo);
-			}
-		}
-	}
-
-	for (size_t i = 0; i < filesToAddToLibrary.size(); i++) {
-		PhysicsEngine::Guid id = findGuidFromMetaFilePath(filesToAddToLibrary[i].filePath.substr(0, filesToAddToLibrary[i].filePath.find_last_of(".")) + ".json");
+		PhysicsEngine::Guid id = findGuidFromMetaFilePath(metaFilePath);
 
 		// create binary version of scene or asset in library directory
-		std::string outFilePath = currentProjectPath + "\\library\\" + id.toString() + ".data";
-		if (filesToAddToLibrary[i].fileExtension == "scene") {
-			if (!PhysicsEditor::writeSceneToBinary(filesToAddToLibrary[i].filePath, id, outFilePath)) {
-				std::string errorMessage = "An error occured when trying to create binary library version of scene: " + filesToAddToLibrary[i].filePath + "\n";
-				Log::error(&errorMessage[0]);
-				return;
+		std::string binaryFilePath = mLibraryPath + "\\" + id.toString();
+
+		bool success = false;
+
+		if (extension == "scene") {
+			binaryFilePath += ".sdata";
+			success = PhysicsEditor::writeSceneToBinary(filePath, id, binaryFilePath);
+		}
+		else if(extension == "material" || extension == "obj" || extension == "shader" || extension == "png"){
+			binaryFilePath += ".data";
+			success = PhysicsEditor::writeAssetToBinary(filePath, extension, id, binaryFilePath);
+		}
+
+		if (!success) {
+			std::string errorMessage = "An error occured when trying to create binary library version of data: " + filePath + "\n";
+			PhysicsEngine::Log::error(errorMessage.c_str());
+			return;
+		}
+
+		mBuffer.push_back(binaryFilePath);
+	}
+}
+
+void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World* world)
+{
+	// load any assets queued up in buffer into world
+	for (size_t i = 0; i < mBuffer.size(); i++) {
+		if (getFileExtension(mBuffer[i]) == "data") {
+			if (!world->loadAsset(mBuffer[i])) {
+				std::string errorMessage = "Could not load asset: " + mBuffer[i] + "\n";
+				Log::error(errorMessage.c_str());
 			}
 		}
-		else {
-			if (!PhysicsEditor::writeAssetToBinary(filesToAddToLibrary[i].filePath, filesToAddToLibrary[i].fileExtension, id, outFilePath)) {
-				std::string errorMessage = "An error occured when trying to create binary library version of asset: " + filesToAddToLibrary[i].filePath + "\n";
-				Log::error(&errorMessage[0]);
-				return;
-			}
-		}
-
-		// only track non-meta file paths in file-path-to-id maps
-		if (filesToAddToLibrary[i].fileExtension != "json"){
-			filePathToId.insert(std::pair<std::string, PhysicsEngine::Guid>(filesToAddToLibrary[i].filePath, id));
-			idToFilePath.insert(std::pair<PhysicsEngine::Guid, std::string>(id, filesToAddToLibrary[i].filePath));
-		}
 	}
 
-	if (filesToAddToLibrary.size() > 0) {
-		if (!libraryCache.save(currentProjectPath + "\\library\\directory_cache.txt")) {
-			Log::error("An error occured when trying to save library\n");
-		}
-	}
-}
-
-const LibraryCache& LibraryDirectory::getLibraryCache() const
-{
-	return libraryCache;
-}
-
-PhysicsEngine::Guid LibraryDirectory::getFileId(std::string filePath) const
-{
-	std::map<std::string, PhysicsEngine::Guid>::const_iterator it = filePathToId.find(filePath);
-	if (it != filePathToId.end()) {
-		return it->second;
-	}
-
-	return Guid::INVALID;
-}
-
-std::string LibraryDirectory::getFilePath(PhysicsEngine::Guid id) const
-{
-	std::map<PhysicsEngine::Guid, std::string>::const_iterator it = idToFilePath.find(id);
-	if (it != idToFilePath.end()) {
-		return it->second;
-	}
-
-	return "";
-}
-
-bool LibraryDirectory::isFileExtensionTracked(std::string extension) const
-{
-	const auto trackedExtensions = { "json", "obj", "material", "png", "shader", "scene" }; 
-	for (auto ext: trackedExtensions) {
-		if (extension == ext) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool LibraryDirectory::createMetaFile(std::string metaFilePath) const
-{
-	std::fstream metaFile;
-
-	metaFile.open(metaFilePath, std::fstream::out);
-
-	if (metaFile.is_open()) {
-		metaFile << "{\n";
-		metaFile << "\t\"id\" : \"" + Guid::newGuid().toString() + "\"\n";
-		metaFile << "}\n";
-		metaFile.close();
-
-		return true;
-	}
-	
-	return false;
-}
-
-Guid LibraryDirectory::findGuidFromMetaFilePath(std::string metaFilePath) const
-{
-	// get guid from meta file
-	std::fstream metaFile;
-	metaFile.open(metaFilePath, std::fstream::in);
-
-	if (metaFile.is_open()) {
-		std::ostringstream contents;
-		contents << metaFile.rdbuf();
-
-		metaFile.close();
-
-		std::string jsonContentString = contents.str();
-		json::JSON object = json::JSON::Load(contents.str());
-
-		return object["id"].ToString();
-	}
-	else {
-		std::string errorMessage = "An error occured when trying to open meta file: " + metaFilePath + "\n";
-		Log::error(&errorMessage[0]);
-		return Guid::INVALID;
-	}
+	// clear buffer
+	mBuffer.clear();
 }

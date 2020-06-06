@@ -19,28 +19,9 @@
 
 #include <thread>
 
-#include "FileWatcher.h"
-
 #include "../include/Editor.h"
 
 #include "core/Log.h"
-
-/// Processes a file action
-class UpdateListener : public FW::FileWatchListener
-{
-public:
-	UpdateListener() {}
-	void handleFileAction(FW::WatchID watchid, const FW::String& dir, const FW::String& filename,
-		FW::Action action)
-	{
-		Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event " + std::to_string(action) + "\n").c_str());
-	}
-};
-
-
-
-
-
 
 #ifndef WGL_EXT_extensions_string
 #define WGL_EXT_extensions_string 1
@@ -61,6 +42,8 @@ typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
 #endif
 
 using namespace PhysicsEditor;
+
+static bool application_quit = false;
 
 
 // =============================================================================
@@ -130,11 +113,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	// initialize editor
 	editor.init(g_hwnd, g_display_w, g_display_h);
 
-	UpdateListener listener;
-
-	// create the file watcher object
-	FW::FileWatcher fileWatcher;
-
 	// Main loop
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -154,19 +132,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			DispatchMessage(&msg);
 		}
 
+		if (application_quit) {
+			break;
+		}
+
 		wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 
 		editor.render(activeWindow == g_hwnd && activeWindow != prevActiveWindow);
 
 		if (editor.getCurrentProjectPath() != ""){
 			SetWindowTextA(g_hwnd, ("Physics Engine - " + editor.getCurrentProjectPath()).c_str());
-
-			// add a watch to the system
-			// the file watcher doesn't manage the pointer to the listener - so make sure you don't just
-			// allocate a listener here and expect the file watcher to manage it - there will be a leak!
-			FW::WatchID watchID = fileWatcher.addWatch(editor.getCurrentProjectPath(), &listener, true);
-
-			fileWatcher.update();
 		}
 		else {
 			SetWindowTextA(g_hwnd, "Physics Engine");
@@ -209,6 +184,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			return 0;
 		break;
 	case WM_DESTROY:
+		application_quit = true;
 		PostQuitMessage(0);
 		return 0;
 	}

@@ -345,6 +345,7 @@ int World::getNumberOfSystems() const
 	return (int)mSystems.size();
 }
 
+// error here if entityId does not correspond to an entity but instead an asset or component
 Entity* World::getEntity(Guid entityId)
 {
 	if (entityId == Guid::INVALID) {
@@ -447,54 +448,6 @@ Entity* World::createEntity(std::vector<char> data)
 	mEntityIdsMarkedCreated.push_back(entity->mEntityId);
 
 	return entity;
-}
-
-Camera* World::createEditorCamera()
-{
-	PoolAllocator<Entity>* allocator1 = getEntityOrAddAllocator();
-	PoolAllocator<Transform>* allocator2 = getComponentOrAddAllocator<Transform>();
-	PoolAllocator<Camera>* allocator3 = getComponentOrAddAllocator<Camera>();
-
-	// Editor entity
-	int globalIndex = (int)allocator1->getCount();
-	int type = EntityType<Entity>::type;
-	Guid entityId = Guid("11111111-1111-1111-1111-111111111111");
-	Entity* entity = allocator1->construct();
-	entity->mEntityId = entityId;
-	entity->mDoNotDestroy = true;
-
-	mIdToGlobalIndex[entityId] = globalIndex;
-	mIdToType[entityId] = type;
-	mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
-	mEntityIdsMarkedCreated.push_back(entityId);
-
-	// editor only transform
-	int transformGlobalIndex = (int)allocator2->getCount();
-	int transformType = ComponentType<Transform>::type;
-	Guid transformId = Guid("22222222-2222-2222-2222-222222222222");
-	Transform* transform = allocator2->construct();
-	transform->mEntityId = entityId;
-	transform->mComponentId = transformId;
-
-	mIdToGlobalIndex[transformId] = transformGlobalIndex;
-	mIdToType[transformId] = transformType;
-	mEntityIdToComponentIds[entityId].push_back(std::make_pair(transformId, transformType));
-	mComponentIdsMarkedCreated.push_back(make_triple(entityId, transformId, transformType));
-
-	// editor only camera
-	int cameraGlobalIndex = (int)allocator3->getCount();
-	int cameraType = ComponentType<Camera>::type;
-	Guid cameraId = Guid("33333333-3333-3333-3333-333333333333");
-	Camera* camera = allocator3->construct();
-	camera->mEntityId = entityId;
-	camera->mComponentId = cameraId;
-
-	mIdToGlobalIndex[cameraId] = cameraGlobalIndex;
-	mIdToType[cameraId] = cameraType;
-	mEntityIdToComponentIds[entityId].push_back(std::make_pair(cameraId, cameraType));
-	mComponentIdsMarkedCreated.push_back(make_triple(entityId, cameraId, cameraType));
-
-	return camera;
 }
 
 void World::latentDestroyEntity(Guid entityId)

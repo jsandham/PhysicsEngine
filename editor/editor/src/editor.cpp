@@ -6,6 +6,7 @@
 #include "../include/EditorFileIO.h"
 #include "../include/FileSystemUtil.h"
 #include "../include/EditorCameraSystem.h" // could just add this to the engine lib? Could include a couple different camera movement systems like editor, fps etc in engine as examples?
+#include "../include/EditorOnlyEntityCreation.h"
 
 #include "core/Log.h"
 #include "components/Light.h"
@@ -21,10 +22,6 @@
 
 #include "../include/imgui_styles.h"
 #include "../include/imgui_extensions.h"
-
-
-#include "UnitTests.h"
-
 
 #include "core/WriteInternalToJson.h"
 
@@ -72,8 +69,10 @@ void Editor::init(HWND window, int width, int height)
 	// Setup style
 	ImGui::StyleColorsCorporate();
 
-	// set debug on for editor 
-	//world.mDebug = true;
+	// add editor camera to world
+	PhysicsEditor::createEditorCamera(&world, editorOnlyEntityIds);
+	// add editor transform gizmo to world
+	PhysicsEditor::createEditorTransformGizmo(&world, editorOnlyEntityIds);
 
 	// add camera, render, and cleanup system to world
 	cameraSystem = world.addSystem<EditorCameraSystem>(0);
@@ -101,53 +100,76 @@ void Editor::cleanUp()
 
 void Editor::render(bool editorBecameActiveThisFrame)
 {
-	updateAssetsLoadedInWorld();
+	libraryDirectory.update();
+
+	libraryDirectory.loadQueuedAssetsIntoWorld(&world);
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 	//ImGui::ShowMetricsWindow();
 
 	editorMenu.render(currentProject, currentScene);
 	editorToolbar.render(clipboard);
 
+	// TODO: Should this be moved into editorMenu.render?
 	updateProjectAndSceneState();
 
-	/*if (editorMenu.isRunTestsClicked()) {
-		UnitTests::run();
-	}*/
+	// draw hierarchy window
+	hierarchy.render(&world, 
+					 currentScene, 
+					 clipboard, 
+					 editorOnlyEntityIds,
+					 editorMenu.isOpenHierarchyCalled());
 
-	hierarchy.render(&world, currentScene, clipboard, editorMenu.isOpenHierarchyCalled());
-	inspector.render(&world, currentProject, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
+	// draw inspector window
+	inspector.render(&world, 
+					 currentProject, 
+					 currentScene, 
+					 clipboard, 
+					 editorMenu.isOpenInspectorCalled());
+
+	// draw console window
 	console.render(editorMenu.isOpenConsoleCalled());
-	projectView.render(currentProject.path, libraryDirectory, clipboard, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
+
+	//draw project view window
+	projectView.render(currentProject.path, 
+					   libraryDirectory, 
+					   clipboard, 
+					   editorBecameActiveThisFrame, 
+					   editorMenu.isOpenProjectViewCalled());
+
+
 	aboutPopup.render(editorMenu.isAboutClicked());
 	preferencesWindow.render(editorMenu.isPreferencesClicked());
 
 	updateInputPassedToSystems(&input);
 
+	// call update on all systems in world
 	auto start = std::chrono::steady_clock::now();
-
 	for (int i = 0; i < world.getNumberOfSystems(); i++) {
 		System* system = world.getSystemByIndex(i);
 
 		system->update(input, time);
 	}
-
 	auto end = std::chrono::steady_clock::now();
 
 	std::chrono::duration<double> elapsed_seconds = end - start;
 	time.deltaTime = elapsed_seconds.count();
 	time.frameCount++;
 
-	GraphicsTargets targets = renderSystem->getGraphicsTargets();
-	GraphicsQuery query = renderSystem->getGraphicsQuery();
+	// draw scene view window
+	sceneView.render(&world, 
+					 cameraSystem, 
+					 renderSystem->getGraphicsTargets(),
+					 renderSystem->getGraphicsQuery(),
+					 clipboard, 
+					 editorMenu.isOpenSceneViewCalled());
 
-	sceneView.render(&world, cameraSystem, targets, query, clipboard, editorMenu.isOpenSceneViewCalled());
-
+	// imgui render calls
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	ImGui::EndFrame();
@@ -195,28 +217,14 @@ void Editor::openScene(std::string name, std::string path)
 		return;
 	}
 
+	// meta scene file path
 	std::string sceneMetaFilePath = path.substr(0, path.find(".")) + ".json";
 
 	// get guid from scene meta file
-	std::ifstream sceneMetaFile(sceneMetaFilePath, std::ios::in);
+	Guid sceneId = PhysicsEditor::findGuidFromMetaFilePath(sceneMetaFilePath);
 
-	Guid guid;
-	if (sceneMetaFile.is_open()) {
-		std::ostringstream contents;
-		contents << sceneMetaFile.rdbuf();
-		sceneMetaFile.close();
-
-		json::JSON jsonObject = JSON::Load(contents.str());
-		guid = Guid(jsonObject["id"].ToString());
-	}
-	else {
-		std::string errorMessage = "Could not open meta file " + sceneMetaFilePath + "\n";
-		Log::error(&errorMessage[0]);
-		return;
-	}
-
-	// get binary scene file from library directory
-	std::string binarySceneFilePath = currentProject.path + "\\library\\" + guid.toString() + ".data";
+	// binary scene file path
+	std::string binarySceneFilePath = currentProject.path + "\\library\\" + sceneId.toString() + ".sdata";
 
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	//TODO: Need todestroy assets too!
@@ -231,7 +239,7 @@ void Editor::openScene(std::string name, std::string path)
 		currentScene.path = path;
 		currentScene.metaPath = sceneMetaFilePath;
 		currentScene.libraryPath = binarySceneFilePath;
-		currentScene.sceneId = guid;
+		currentScene.sceneId = sceneId;
 		currentScene.isDirty = false;
 	}
 	else {
@@ -246,10 +254,7 @@ void Editor::saveScene(std::string name, std::string path)
 		return;
 	}
 
-	Log::info(name.c_str());
-	Log::info(path.c_str());
-
-	if (PhysicsEditor::writeSceneToJson(&world, path)) { 
+	if (PhysicsEditor::writeSceneToJson(&world, path, editorOnlyEntityIds)) { 
 		currentScene.name = name;
 		currentScene.path = path;
 		currentScene.isDirty = false;
@@ -287,7 +292,6 @@ void Editor::createProject(std::string name, std::string path)
 			currentScene.sceneId = Guid::INVALID;
 			currentScene.isDirty = false;
 	
-			assetsAddedToWorld.clear();
 			Log::info("Project successfully created\n");
 		}
 		else {
@@ -300,10 +304,11 @@ void Editor::createProject(std::string name, std::string path)
 		return;
 	}
 
-	libraryDirectory.load(path);
-
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+
+	// tell library directory which project to watch
+	libraryDirectory.watch(path);
 
 	// reset editor camera
 	cameraSystem->resetCamera();
@@ -311,8 +316,6 @@ void Editor::createProject(std::string name, std::string path)
 
 void Editor::openProject(std::string name, std::string path)
 {
-	libraryDirectory.load(path);
-
 	currentProject.name = name;
 	currentProject.path = path;
 	currentProject.isDirty = false;
@@ -324,10 +327,11 @@ void Editor::openProject(std::string name, std::string path)
 	currentScene.sceneId = Guid::INVALID;
 	currentScene.isDirty = false;
 
-	assetsAddedToWorld.clear();
-
 	// mark any (non-editor) entities in currently opened scene to be latent destroyed
 	world.latentDestroyEntitiesInWorld(); 
+
+	// tell library directory which project to watch
+	libraryDirectory.watch(path);
 
 	// reset editor camera
 	cameraSystem->resetCamera();
@@ -339,18 +343,15 @@ void Editor::saveProject(std::string name, std::string path)
 		return;
 	}
 
-	Log::info((name+"\n").c_str());
-	Log::info((path+"\n").c_str());
-
 	for (int i = 0; i < world.getNumberOfAssets<Material>(); i++) {
 		Material* material = world.getAssetByIndex<Material>(i);
-		std::string assetPath = libraryDirectory.getFilePath(material->getId()); 
+		/*std::string assetPath = libraryDirectory.getFilePath(material->getId()); 
 		
 		if (!PhysicsEditor::writeAssetToJson(&world, assetPath, material->getId(), AssetType<Material>::type)) {
 			std::string message = "Could not save material in project " + assetPath + "\n";
 			Log::error(message.c_str());
 			return;
-		}
+		}*/
 	}
 
 	currentScene.name = name;
@@ -358,34 +359,6 @@ void Editor::saveProject(std::string name, std::string path)
 	currentScene.isDirty = false;
 
 	Log::info("save project called");
-}
-
-void Editor::updateAssetsLoadedInWorld()
-{
-	//libraryDirectory.update(currentProject.path);
-
-	LibraryCache libraryCache = libraryDirectory.getLibraryCache();
-
-	for (LibraryCache::iterator it = libraryCache.begin(); it != libraryCache.end(); it++) {
-		if (it->second.fileExtension == "scene" || it->second.fileExtension == "json") {
-			continue;
-		}
-
-		std::unordered_set<std::string>::iterator it1 = assetsAddedToWorld.find(it->second.filePath);
-		if (it1 == assetsAddedToWorld.end()) {
-			assetsAddedToWorld.insert(it->second.filePath);
-
-			Guid fileId = libraryDirectory.getFileId(it->second.filePath);
-
-			// get file path of binary version of asset located in library directory
-			std::string libraryFilePath = currentProject.path + "\\library\\" + fileId.toString() + ".data";
-
-			if (!world.loadAsset(libraryFilePath)) {
-				std::string errorMessage = "Could not load asset: " + libraryFilePath + "\n";
-				Log::error(&errorMessage[0]);
-			}
-		}
-	}
 }
 
 void Editor::updateProjectAndSceneState()
@@ -512,73 +485,4 @@ void Editor::updateInputPassedToSystems(Input* input)
 		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
 		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
 	}
-
-
-	//// Mouse
-	//if (io.WantCaptureMouse) {
-	//	if (sceneView.isFocused() && sceneView.isHovered())
-	//	{
-	//		for (int i = 0; i < 5; i++) {
-	//			input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
-	//			input->mouseButtonIsDown[i] = false;
-	//		}
-
-
-	//		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
-	//		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
-	//		input->mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
-	//		input->mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
-	//		input->mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
-
-	//		input->mouseDelta = (int)io.MouseWheel;
-	//		input->mousePosX = (int)io.MousePos.x;
-	//		input->mousePosY = (int)io.MousePos.y;
-	//	}
-	//}
-
-	//// Keyboard
-	//if (io.WantCaptureKeyboard) {
-	//	if (sceneView.isFocused() && sceneView.isHovered())
-	//	{
-	//		for (int i = 0; i < 61; i++) {
-	//			input->keyWasDown[i] = input->keyIsDown[i];
-	//			input->keyIsDown[i] = false;
-	//		}
-
-	//		// 0 - 9
-	//		for (int i = 0; i < 10; i++) {
-	//			input->keyIsDown[0] = io.KeysDown[48 + i];
-	//		}
-
-	//		// A - Z
-	//		for (int i = 0; i < 26; i++) {
-	//			input->keyIsDown[10 + i] = io.KeysDown[65 + i];
-	//		}
-
-	//		input->keyIsDown[36] = io.KeysDown[13]; // Enter
-	//		input->keyIsDown[37] = io.KeysDown[38]; // Up
-	//		input->keyIsDown[38] = io.KeysDown[40]; // Down
-	//		input->keyIsDown[39] = io.KeysDown[37]; // Left
-	//		input->keyIsDown[40] = io.KeysDown[39]; // Right
-	//		input->keyIsDown[41] = io.KeysDown[32]; // Space
-	//		input->keyIsDown[42] = io.KeysDown[16]; // LShift
-	//		input->keyIsDown[43] = io.KeysDown[16]; // RShift
-	//		input->keyIsDown[44] = io.KeysDown[9];  // Tab
-	//		input->keyIsDown[45] = io.KeysDown[8];  // Backspace
-	//		input->keyIsDown[46] = io.KeysDown[20]; // CapsLock
-	//		input->keyIsDown[47] = io.KeysDown[17]; // LCtrl
-	//		input->keyIsDown[48] = io.KeysDown[17]; // RCtrl
-	//		input->keyIsDown[49] = io.KeysDown[27]; // Escape
-	//		input->keyIsDown[50] = io.KeysDown[45]; // NumPad0
-	//		input->keyIsDown[51] = io.KeysDown[35]; // NumPad1
-	//		input->keyIsDown[52] = io.KeysDown[40]; // NumPad2
-	//		input->keyIsDown[53] = io.KeysDown[34]; // NumPad3
-	//		input->keyIsDown[54] = io.KeysDown[37]; // NumPad4
-	//		input->keyIsDown[55] = io.KeysDown[12]; // NumPad5
-	//		input->keyIsDown[56] = io.KeysDown[39]; // NumPad6
-	//		input->keyIsDown[57] = io.KeysDown[36]; // NumPad7
-	//		input->keyIsDown[58] = io.KeysDown[8];  // NumPad8
-	//		input->keyIsDown[59] = io.KeysDown[33]; // NumPad9
-	//	}
-	//}
 }

@@ -126,9 +126,6 @@
     <ClCompile Include="src\EditorFileIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\LibraryCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EditorClipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -157,6 +154,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MaterialRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorOnlyEntityCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -272,9 +272,6 @@
     <ClInclude Include="include\EditorFileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\LibraryCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\EditorClipboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -300,6 +297,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MaterialRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorOnlyEntityCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

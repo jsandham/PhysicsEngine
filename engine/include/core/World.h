@@ -22,6 +22,7 @@
 #include "Util.h"
 
 #include "../components/Transform.h"
+#include "../components/MeshRenderer.h"
 #include "../components/Camera.h"
 
 #include "../systems/System.h"
@@ -384,8 +385,6 @@ namespace PhysicsEngine
 
 			Entity* createEntity();
 			Entity* createEntity(std::vector<char> data);
-
-			Camera* createEditorCamera();
 
 			void latentDestroyEntity(Guid entityId);
 			void immediateDestroyEntity(Guid entityId);
