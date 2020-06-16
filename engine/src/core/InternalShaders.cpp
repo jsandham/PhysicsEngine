@@ -24,6 +24,9 @@ std::string InternalShaders::lineFragmentShader =
 
 
 std::string InternalShaders::colorVertexShader =
+"#define DIRECTIONALLIGHT\n"
+"#define HARDSHADOWS\n"
+"#define SOFTSHADOWS\n"
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"

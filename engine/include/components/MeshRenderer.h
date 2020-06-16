@@ -16,6 +16,7 @@ namespace PhysicsEngine
 		Guid mMaterialIds[8];
 		int mMaterialCount;
 		bool mIsStatic;
+		bool mEnabled;
 	};
 #pragma pack(pop)
 
@@ -30,6 +31,7 @@ namespace PhysicsEngine
 			bool mMeshChanged;
 			bool mMaterialChanged;
 			bool mIsStatic;
+			bool mEnabled;
 
 		public:
 			MeshRenderer();

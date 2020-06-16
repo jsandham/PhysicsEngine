@@ -42,16 +42,18 @@ namespace PhysicsEngine
 			std::vector<System*> mSystems;
 
 			// world entity, components, system, and asset id state
-			std::map<Guid, int> mIdToGlobalIndex;
+			std::map<Guid, int> mIdToGlobalIndex;  // could instead map Guid -> std::pair(index, type)?
 			std::map<Guid, int> mIdToType;
 
 			// entity ids to component ids
 			std::map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds; 
 
-			// entity and component creation/deletion state
+			// entity creation/deletion state
 			std::vector<Guid> mEntityIdsMarkedCreated;
 			std::vector<Guid> mEntityIdsMarkedLatentDestroy;
 			std::vector<std::pair<Guid, int>> mEntityIdsMarkedMoved;
+
+			// component create/deletion state
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedCreated;
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
 			std::vector<triple<Guid, int, int>> mComponentIdsMarkedMoved;
@@ -79,11 +81,7 @@ namespace PhysicsEngine
 			{
 				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-				if (allocator != NULL) {
-					return (int)allocator->getCount();
-				}
-
-				return 0;
+				return allocator != NULL ? (int)allocator->getCount() : 0;
 			}
 
 			template<typename T>
@@ -99,11 +97,7 @@ namespace PhysicsEngine
 			{
 				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
-				if (allocator != NULL) {
-					return (int)allocator->getCount();
-				}
-
-				return 0;
+				return allocator != NULL ? (int)allocator->getCount() : 0;
 			}
 
 			template<typename T>

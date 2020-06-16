@@ -51,6 +51,14 @@ void SceneView::render(PhysicsEngine::World* world,
 
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
+		// draw transform gizmo if entity is selected
+		if (clipboard.getSelectedType() == InteractionType::Entity) {
+			Guid selectedEntityId = clipboard.getSelectedId();
+			if (selectedEntityId != Guid::INVALID) {
+				//Graphics::draw(world, MeshRenderer * meshRenderer, );
+			}
+		}
+
 		focused = ImGui::IsWindowFocused();
 		hovered = ImGui::IsWindowHovered();
 
@@ -245,13 +253,6 @@ void SceneView::render(PhysicsEngine::World* world,
 				clipboard.setSelectedItem(InteractionType::Entity, Guid::INVALID);
 			}
 		}
-
-		/*if (clipboard.getSelectedType() == InteractionType::Entity) {
-			Guid selectedEntityId = clipboard.getSelectedId();
-			if (selectedEntityId != Guid::INVALID) {
-				drawTransformGizmo(selectedEntityId, targets.mColor, targets.mColorPicking);
-			}
-		}*/
 	}
 	ImGui::End();
 }

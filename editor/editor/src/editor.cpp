@@ -48,6 +48,8 @@ Editor::~Editor()
 
 void Editor::init(HWND window, int width, int height)
 {
+	this->window = window;
+
 	// Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -63,8 +65,7 @@ void Editor::init(HWND window, int width, int height)
 
 	//Init OpenGL Imgui Implementation
 	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Setup style
 	ImGui::StyleColorsCorporate();
@@ -73,6 +74,8 @@ void Editor::init(HWND window, int width, int height)
 	PhysicsEditor::createEditorCamera(&world, editorOnlyEntityIds);
 	// add editor transform gizmo to world
 	PhysicsEditor::createEditorTransformGizmo(&world, editorOnlyEntityIds);
+	// add editor light gizmo to world
+	PhysicsEditor::createEditorLightGizmo(&world, editorOnlyEntityIds);
 
 	// add camera, render, and cleanup system to world
 	cameraSystem = world.addSystem<EditorCameraSystem>(0);
@@ -100,18 +103,19 @@ void Editor::cleanUp()
 
 void Editor::render(bool editorBecameActiveThisFrame)
 {
+	//ImGui::ShowDemoWindow();
+	//ImGui::ShowMetricsWindow();
+
 	libraryDirectory.update();
 
 	libraryDirectory.loadQueuedAssetsIntoWorld(&world);
 
-	// Start the Dear ImGui frame
+	// start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	//ImGui::ShowDemoWindow();
-	//ImGui::ShowMetricsWindow();
-
+	// draw menu and toolbar
 	editorMenu.render(currentProject, currentScene);
 	editorToolbar.render(clipboard);
 
@@ -135,13 +139,12 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	// draw console window
 	console.render(editorMenu.isOpenConsoleCalled());
 
-	//draw project view window
+	// draw project view window
 	projectView.render(currentProject.path, 
 					   libraryDirectory, 
 					   clipboard, 
 					   editorBecameActiveThisFrame, 
 					   editorMenu.isOpenProjectViewCalled());
-
 
 	aboutPopup.render(editorMenu.isAboutClicked());
 	preferencesWindow.render(editorMenu.isPreferencesClicked());
@@ -258,8 +261,6 @@ void Editor::saveScene(std::string name, std::string path)
 		currentScene.name = name;
 		currentScene.path = path;
 		currentScene.isDirty = false;
-
-		Log::info("save scene called");
 	}
 	else {
 		std::string message = "Could not save world to scene file " + path + "\n";
@@ -291,8 +292,8 @@ void Editor::createProject(std::string name, std::string path)
 			currentScene.libraryPath = "";
 			currentScene.sceneId = Guid::INVALID;
 			currentScene.isDirty = false;
-	
-			Log::info("Project successfully created\n");
+
+			SetWindowTextA(window, ("Physics Engine - " + currentProject.path).c_str());
 		}
 		else {
 			Log::error("Could not create project sub directories\n");
@@ -335,6 +336,8 @@ void Editor::openProject(std::string name, std::string path)
 
 	// reset editor camera
 	cameraSystem->resetCamera();
+
+	SetWindowTextA(window, ("Physics Engine - " + currentProject.path).c_str());
 }
 
 void Editor::saveProject(std::string name, std::string path)
@@ -357,8 +360,6 @@ void Editor::saveProject(std::string name, std::string path)
 	currentScene.name = name;
 	currentScene.path = path;
 	currentScene.isDirty = false;
-
-	Log::info("save project called");
 }
 
 void Editor::updateProjectAndSceneState()
@@ -377,7 +378,11 @@ void Editor::updateProjectAndSceneState()
 		filebrowser.setMode(FilebrowserMode::Save);
 	}
 
-	filebrowser.render(currentProject.path, editorMenu.isOpenSceneClicked() || editorMenu.isSaveAsClicked() || editorMenu.isSaveClicked() && currentScene.path == "");
+	filebrowser.render(currentProject.path, 
+					   editorMenu.isOpenSceneClicked() || 
+					   editorMenu.isSaveAsClicked() || 
+					   editorMenu.isSaveClicked() && 
+					   currentScene.path == "");
 
 	if (filebrowser.isOpenClicked()) {
 		openScene(filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
@@ -419,7 +424,6 @@ void Editor::updateInputPassedToSystems(Input* input)
 			input->mouseButtonWasDown[i] = input->mouseButtonIsDown[i];
 			input->mouseButtonIsDown[i] = false;
 		}
-
 
 		input->mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
 		input->mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button

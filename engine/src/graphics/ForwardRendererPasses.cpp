@@ -16,51 +16,77 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeRenderer(World* world, 
-									   ScreenData& screenData, 
-									   ShadowMapData& shadowMapData, 
-									   GraphicsCameraState& cameraState, 
-									   GraphicsLightState& lightState, 
-									   GraphicsQuery& query)
-{	
-	query.mQueryBack = 0;
-	query.mQueryFront = 1;
+void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state)
+{
+	state->mQuery.mQueryBack = 0;
+	state->mQuery.mQueryFront = 1;
 
-	glGenQueries(1, &(query.mQueryId[0]));
-	glGenQueries(1, &(query.mQueryId[1]));
-
-	// dummy query to prevent OpenGL errors from popping out
-	//glQueryCounter(queryID[queryFrontBuffer][0], GL_TIMESTAMP);
+	glGenQueries(1, &(state->mQuery.mQueryId[0]));
+	glGenQueries(1, &(state->mQuery.mQueryId[1]));
 
 	// generate all internal shader programs
-	screenData.mPositionAndNormalsShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
-	screenData.mPositionAndNormalsShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
-	screenData.mPositionAndNormalsShader.compile();
+	state->mGeometryShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
+	state->mGeometryShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
+	state->mGeometryShader.compile();
 
-	screenData.mColorShader.setVertexShader(InternalShaders::colorVertexShader);
-	screenData.mColorShader.setFragmentShader(InternalShaders::colorFragmentShader);
-	screenData.mColorShader.compile();
+	state->mColorShader.setVertexShader(InternalShaders::colorVertexShader);
+	state->mColorShader.setFragmentShader(InternalShaders::colorFragmentShader);
+	state->mColorShader.compile();
 
-	screenData.mSsaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
-	screenData.mSsaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
-	screenData.mSsaoShader.compile();
+	state->mSsaoShader.setVertexShader(InternalShaders::ssaoVertexShader);
+	state->mSsaoShader.setFragmentShader(InternalShaders::ssaoFragmentShader);
+	state->mSsaoShader.compile();
 
-	shadowMapData.mDepthShader.setVertexShader(InternalShaders::shadowDepthMapVertexShader);
-	shadowMapData.mDepthShader.setFragmentShader(InternalShaders::shadowDepthMapFragmentShader);
-	shadowMapData.mDepthShader.compile();
+	state->mDepthShader.setVertexShader(InternalShaders::shadowDepthMapVertexShader);
+	state->mDepthShader.setFragmentShader(InternalShaders::shadowDepthMapFragmentShader);
+	state->mDepthShader.compile();
 
-	shadowMapData.mDepthCubemapShader.setVertexShader(InternalShaders::shadowDepthCubemapVertexShader);
-	shadowMapData.mDepthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
-	shadowMapData.mDepthCubemapShader.compile();
+	state->mDepthCubemapShader.setVertexShader(InternalShaders::shadowDepthCubemapVertexShader);
+	state->mDepthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
+	state->mDepthCubemapShader.compile();
 
-	screenData.mQuadShader.setVertexShader(InternalShaders::windowVertexShader);
-	screenData.mQuadShader.setFragmentShader(InternalShaders::windowFragmentShader);
-	screenData.mQuadShader.compile();
+	state->mQuadShader.setVertexShader(InternalShaders::windowVertexShader);
+	state->mQuadShader.setFragmentShader(InternalShaders::windowFragmentShader);
+	state->mQuadShader.compile();
+
+	// cache internal shader uniforms
+	state->mGeometryShaderProgram = state->mGeometryShader.getProgramFromVariant(ShaderVariant::None);
+	state->mGeometryShaderModelLoc = state->mGeometryShader.findUniformLocation("model", state->mGeometryShaderProgram);
+
+	state->mSsaoShaderProgram = state->mSsaoShader.getProgramFromVariant(ShaderVariant::None);
+	state->mSsaoShaderProjectionLoc = state->mSsaoShader.findUniformLocation("projection", state->mSsaoShaderProgram);
+	state->mSsaoShaderPositionTexLoc = state->mSsaoShader.findUniformLocation("positionTex", state->mSsaoShaderProgram);
+	state->mSsaoShaderNormalTexLoc = state->mSsaoShader.findUniformLocation("normalTex", state->mSsaoShaderProgram);
+	state->mSsaoShaderNoiseTexLoc = state->mSsaoShader.findUniformLocation("noiseTex", state->mSsaoShaderProgram);
+
+	for (int i = 0; i < 64; i++) {
+		state->mSsaoShaderSamplesLoc[i] = state->mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", state->mSsaoShaderProgram);
+	}
+
+	state->mDepthShaderProgram = state->mDepthShader.getProgramFromVariant(ShaderVariant::None);
+	state->mDepthShaderModelLoc = state->mDepthShader.findUniformLocation("model", state->mDepthShaderProgram);
+	state->mDepthShaderViewLoc = state->mDepthShader.findUniformLocation("view", state->mDepthShaderProgram);
+	state->mDepthShaderProjectionLoc = state->mDepthShader.findUniformLocation("projection", state->mDepthShaderProgram);
+
+	state->mDepthCubemapShaderProgram = state->mDepthCubemapShader.getProgramFromVariant(ShaderVariant::None);
+	state->mDepthCubemapShaderLightPosLoc = state->mDepthCubemapShader.findUniformLocation("lightPos", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderFarPlaneLoc = state->mDepthCubemapShader.findUniformLocation("farPlane", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderModelLoc = state->mDepthCubemapShader.findUniformLocation("model", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc0 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc1 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc2 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc3 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc4 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]", state->mDepthCubemapShaderProgram);
+	state->mDepthCubemapShaderCubeViewProjMatricesLoc5 = state->mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]", state->mDepthCubemapShaderProgram);
+
+	state->mColorShaderProgram = state->mColorShader.getProgramFromVariant(ShaderVariant::None);
+	state->mColorShaderModelLoc = state->mColorShader.findUniformLocation("model", state->mColorShaderProgram);
+	state->mColorShaderColorLoc = state->mColorShader.findUniformLocation("color", state->mColorShaderProgram);
 
 	Graphics::checkError();
 
 	//generate screen quad for final rendering
-	float quadVertices[] = {
+	constexpr float quadVertices[] = {
 		// positions        // texture Coords
 		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
@@ -68,11 +94,11 @@ void PhysicsEngine::initializeRenderer(World* world,
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
 
-	glGenVertexArrays(1, &screenData.mQuadVAO);
-	glBindVertexArray(screenData.mQuadVAO);
+	glGenVertexArrays(1, &state->mQuadVAO);
+	glBindVertexArray(state->mQuadVAO);
 
-	glGenBuffers(1, &screenData.mQuadVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, screenData.mQuadVBO);
+	glGenBuffers(1, &state->mQuadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, state->mQuadVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -85,12 +111,12 @@ void PhysicsEngine::initializeRenderer(World* world,
 
 	// generate shadow map fbos
 	// create directional light cascade shadow map fbo
-	glGenFramebuffers(5, &shadowMapData.mShadowCascadeFBO[0]);
-	glGenTextures(5, &shadowMapData.mShadowCascadeDepth[0]);
+	glGenFramebuffers(5, &state->mShadowCascadeFBO[0]);
+	glGenTextures(5, &state->mShadowCascadeDepth[0]);
 
 	for (int i = 0; i < 5; i++) {
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCascadeFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCascadeFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, state->mShadowCascadeDepth[i]);
 		// glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -101,7 +127,7 @@ void PhysicsEngine::initializeRenderer(World* world,
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, state->mShadowCascadeDepth[i], 0);
 
 		Graphics::checkFrambufferError();
 
@@ -109,11 +135,11 @@ void PhysicsEngine::initializeRenderer(World* world,
 	}
 
 	// create spotlight shadow map fbo
-	glGenFramebuffers(1, &shadowMapData.mShadowSpotlightFBO);
-	glGenTextures(1, &shadowMapData.mShadowSpotlightDepth);
+	glGenFramebuffers(1, &state->mShadowSpotlightFBO);
+	glGenTextures(1, &state->mShadowSpotlightDepth);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowSpotlightFBO);
-	glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth);
+	glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowSpotlightFBO);
+	glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -123,21 +149,25 @@ void PhysicsEngine::initializeRenderer(World* world,
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, state->mShadowSpotlightDepth, 0);
 
 	Graphics::checkFrambufferError();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// create pointlight shadow cubemap fbo
-	glGenFramebuffers(1, &shadowMapData.mShadowCubemapFBO);
-	glGenTextures(1, &shadowMapData.mShadowCubemapDepth);
+	glGenFramebuffers(1, &state->mShadowCubemapFBO);
+	glGenTextures(1, &state->mShadowCubemapDepth);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCubemapFBO);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMapData.mShadowCubemapDepth);
-	for (unsigned int i = 0; i < 6; i++) {
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCubemapFBO);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, state->mShadowCubemapDepth);
+
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -148,7 +178,7 @@ void PhysicsEngine::initializeRenderer(World* world,
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapData.mShadowCubemapDepth, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, state->mShadowCubemapDepth, 0);
 
 	Graphics::checkFrambufferError();
 
@@ -156,13 +186,13 @@ void PhysicsEngine::initializeRenderer(World* world,
 
 	Graphics::checkError();
 
-	glGenBuffers(1, &(cameraState.mHandle));
-	glBindBuffer(GL_UNIFORM_BUFFER, cameraState.mHandle);
+	glGenBuffers(1, &(state->mCameraState.mHandle));
+	glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
 	glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glGenBuffers(1, &(lightState.mHandle));
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);
+	glGenBuffers(1, &(state->mLightState.mHandle));
+	glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
 	glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -269,16 +299,6 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 
 			Sphere boundingSphere = mesh != NULL ? mesh->computeBoundingSphere() : Sphere();
 
-			/*int count = renderObjects.size() / 8;
-
-			int b = count % (256 * 256);
-			count = count - b * 256 * 256;
-			int g = count % 256;
-			count = count - g * 256;
-			int r = count;
-
-			Color pickingColor = Color(r, g, b, 255);*/
-
 			for (int j = 0; j < 8; j++) {
 				int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
 				Material* material = world->getAssetByIndex<Material>(materialIndex);
@@ -308,8 +328,6 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 				renderObject.start = subMeshVertexStartIndex;
 				renderObject.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
 				renderObject.vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
-
-				//renderObject.color = pickingColor;
 
 				renderObjects.push_back(renderObject);
 			}
@@ -369,7 +387,7 @@ void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>&
 
 		// update render objects list for mesh renderers whose mesh has changed
 		if (meshRenderer->mMeshChanged) {
-	
+
 			int meshIndex = world->getIndexOf(meshRenderer->getMesh());
 
 			Mesh* mesh = world->getAssetByIndex<Mesh>(meshIndex);
@@ -420,23 +438,16 @@ void PhysicsEngine::cullRenderObjects(Camera* camera, std::vector<RenderObject>&
 		glm::vec3 centre = renderObjects[i].boundingSphere.mCentre;
 		float radius = renderObjects[i].boundingSphere.mRadius;
 
-		//Log::info(("centre before: " + std::to_string(centre.x) + " " + std::to_string(centre.y) + " " + std::to_string(centre.z) + " " + std::to_string(radius) + "\n").c_str());
-
-		//glm::vec4 test = camera->getViewMatrix() * renderObjects[i].model * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-		glm::vec4 test = renderObjects[i].model * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-
-		//Log::info(("centre after: " + std::to_string(test.x) + " " + std::to_string(test.y) + " " + std::to_string(test.z) + "\n").c_str());
+		glm::vec4 temp = renderObjects[i].model * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
 
 		Sphere cullingSphere;
-		cullingSphere.mCentre = glm::vec3(test.x, test.y, test.z);
+		cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
 		cullingSphere.mRadius = radius;
 
 		if (Geometry::intersect(cullingSphere, camera->mFrustum)) {
 			count++;
 		}
 	}
-
-	//Log::info(("count: " + std::to_string(count) + "\n").c_str());
 }
 
 void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects)
@@ -446,9 +457,6 @@ void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>&
 	// update model matrices
 	int n = (int)renderObjects.size();
 
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
 	for (int i = 0; i < n; i++) {
 		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
 		{
@@ -461,169 +469,142 @@ void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>&
 	}
 }
 
-void PhysicsEngine::beginFrame(World* world, 
-							   Camera* camera, 
-							   GraphicsCameraState& cameraState, 
-							   GraphicsLightState& lightState, 
-							   GraphicsQuery& query)
+void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererState* state)
 {
-	query.mNumBatchDrawCalls = 0;
-	query.mNumDrawCalls = 0;
-	query.mTotalElapsedTime = 0.0f;
-	query.mVerts = 0;
-	query.mTris = 0;
-	query.mLines = 0;
-	query.mPoints = 0;
+	state->mQuery.mNumBatchDrawCalls = 0;
+	state->mQuery.mNumDrawCalls = 0;
+	state->mQuery.mTotalElapsedTime = 0.0f;
+	state->mQuery.mVerts = 0;
+	state->mQuery.mTris = 0;
+	state->mQuery.mLines = 0;
+	state->mQuery.mPoints = 0;
 
-	LOG_OGL(glBeginQuery(GL_TIME_ELAPSED, query.mQueryId[query.mQueryBack]);)
+	glBeginQuery(GL_TIME_ELAPSED, state->mQuery.mQueryId[state->mQuery.mQueryBack]);
 
-	cameraState.mProjection = camera->getProjMatrix();
-	cameraState.mView = camera->getViewMatrix();
-	cameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
+	state->mCameraState.mProjection = camera->getProjMatrix();
+	state->mCameraState.mView = camera->getViewMatrix();
+	state->mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
 
 	// set camera state binding point and update camera state data
-	LOG_OGL(glBindBuffer(GL_UNIFORM_BUFFER, cameraState.mHandle);)
-	LOG_OGL(glBindBufferRange(GL_UNIFORM_BUFFER, 0, cameraState.mHandle, 0, 144);)
-	LOG_OGL(glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(cameraState.mProjection));)
-	LOG_OGL(glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(cameraState.mView));)
-	LOG_OGL(glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(cameraState.mCameraPos));)
-	LOG_OGL(glBindBuffer(GL_UNIFORM_BUFFER, 0);)
+	glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->mCameraState.mHandle, 0, 144);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(state->mCameraState.mProjection));
+	glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(state->mCameraState.mView));
+	glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(state->mCameraState.mCameraPos));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// set light state binding point
-	LOG_OGL(glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);)
-	LOG_OGL(glBindBufferRange(GL_UNIFORM_BUFFER, 1, lightState.mHandle, 0, 824);)
-	LOG_OGL(glBindBuffer(GL_UNIFORM_BUFFER, 0);)
+	glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->mLightState.mHandle, 0, 824);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	LOG_OGL(glEnable(GL_SCISSOR_TEST);)
-	LOG_OGL(glEnable(GL_DEPTH_TEST);)
-	LOG_OGL(glEnable(GL_BLEND);)
-	LOG_OGL(glDepthFunc(GL_LEQUAL);)
-	LOG_OGL(glBlendFunc(GL_ONE, GL_ZERO);)
-	LOG_OGL(glBlendEquation(GL_FUNC_ADD);)
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glDepthFunc(GL_LEQUAL);
+	glBlendFunc(GL_ONE, GL_ZERO);
+	glBlendEquation(GL_FUNC_ADD);
 
-	LOG_OGL(glViewport(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);)
-	LOG_OGL(glScissor(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);)
+	glViewport(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
+	glScissor(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
 
-	LOG_OGL(glClearColor(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);)
-	LOG_OGL(glClearDepth(1.0f);)
+	glClearColor(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
+	glClearDepth(1.0f);
 
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());)
-	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);)
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	LOG_OGL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f);)
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());)
-	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);)
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());)
-	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);)
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());)
-	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT);)
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());)
-	LOG_OGL(glClear(GL_COLOR_BUFFER_BIT);)
-	LOG_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0);)
-
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
+	glClear(GL_COLOR_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // This is currently really expensive so I have it commented out right now
-void PhysicsEngine::computeSSAO(World* world, 
-								Camera* camera, 
-								const std::vector<RenderObject>& renderObjects, 
-								ScreenData& screenData, 
-								GraphicsQuery& query)
+void PhysicsEngine::computeSSAO(World* world,
+	Camera* camera,
+	ForwardRendererState* state,
+	const std::vector<RenderObject>& renderObjects)
 {
-	//// fill geometry framebuffer
-	//int shaderProgram = screenData.mPositionAndNormalsShader.getProgramFromVariant(ShaderVariant::None);
-	//int modelLoc = screenData.mPositionAndNormalsShader.findUniformLocation("model", shaderProgram);
+	// fill geometry framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
+	for (size_t i = 0; i < renderObjects.size(); i++) {
+		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+		{
+			continue;
+		}
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-	//for (size_t i = 0; i < renderObjects.size(); i++) {
-	//	if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-	//	{
-	//		continue;
-	//	}
+		state->mGeometryShader.use(state->mGeometryShaderProgram);
+		state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
 
-	//	screenData.mPositionAndNormalsShader.use(shaderProgram);
-	//	screenData.mPositionAndNormalsShader.setMat4(modelLoc, renderObjects[i].model);
+		Graphics::render(world, renderObjects[i], &state->mQuery);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//	Graphics::render(world, renderObjects[i], &query);
-	//}
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Graphics::checkError();
 
-	//Graphics::checkError();
+	// fill ssao color texture
+	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
+	state->mSsaoShader.use(state->mSsaoShaderProgram);
+	state->mSsaoShader.setMat4(state->mSsaoShaderProjectionLoc, camera->getProjMatrix());
+	for (int i = 0; i < 64; i++) {
+		state->mSsaoShader.setVec3(state->mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
+	}
+	state->mSsaoShader.setInt(state->mSsaoShaderPositionTexLoc, 0);
+	state->mSsaoShader.setInt(state->mSsaoShaderNormalTexLoc, 1);
+	state->mSsaoShader.setInt(state->mSsaoShaderNoiseTexLoc, 2);
 
-	//// fill ssao color texture
-	//shaderProgram = screenData.mSsaoShader.getProgramFromVariant(ShaderVariant::None);
-	//int projectionLoc = screenData.mSsaoShader.findUniformLocation("projection", shaderProgram);
-	//int positionTexLoc = screenData.mSsaoShader.findUniformLocation("positionTex", shaderProgram);
-	//int normalTexLoc = screenData.mSsaoShader.findUniformLocation("normalTex", shaderProgram);
-	//int noiseTexLoc = screenData.mSsaoShader.findUniformLocation("noiseTex", shaderProgram);
-	//int samplesLoc[64];
-	//for (int i = 0; i < 64; i++) {
-	//	samplesLoc[i] = screenData.mSsaoShader.findUniformLocation("samples[" + std::to_string(i) + "]", shaderProgram);
-	//}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
-	//screenData.mSsaoShader.use(shaderProgram);
-	//screenData.mSsaoShader.setMat4(projectionLoc, camera->getProjMatrix());
-	//for (int i = 0; i < 64; i++) {
-	//	screenData.mSsaoShader.setVec3(samplesLoc[i], camera->getSSAOSample(i));
-	//}
-	//screenData.mSsaoShader.setInt(positionTexLoc, 0);
-	//screenData.mSsaoShader.setInt(normalTexLoc, 1);
-	//screenData.mSsaoShader.setInt(noiseTexLoc, 2);
+	glBindVertexArray(state->mQuadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
-	//glActiveTexture(GL_TEXTURE2);
-	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//glBindVertexArray(screenData.mQuadVAO);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	//glBindVertexArray(0);
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//Graphics::checkError();
+	Graphics::checkError();
 }
 
-void PhysicsEngine::renderShadows(World* world, 
-								  Camera* camera, 
-								  Light* light, 
-								  Transform* lightTransform,
-								  const std::vector<RenderObject>& renderObjects, 
-								  ShadowMapData& shadowMapData, 
-								  GraphicsQuery& query)
+void PhysicsEngine::renderShadows(World* world,
+	Camera* camera,
+	Light* light,
+	Transform* lightTransform,
+	ForwardRendererState* state,
+	const std::vector<RenderObject>& renderObjects)
 {
-	LightType lightType = light->mLightType;
+	if (light->mLightType == LightType::Directional) {
 
-	if (lightType == LightType::Directional) {
-
-		calcShadowmapCascades(camera, shadowMapData);
-		calcCascadeOrthoProj(camera, lightTransform->getForward(), shadowMapData);
-
-		int shaderProgram = shadowMapData.mDepthShader.getProgramFromVariant(ShaderVariant::None);
-		int modelLoc = shadowMapData.mDepthShader.findUniformLocation("model", shaderProgram);
-		int viewLoc = shadowMapData.mDepthShader.findUniformLocation("view", shaderProgram);
-		int projectionLoc = shadowMapData.mDepthShader.findUniformLocation("projection", shaderProgram);
+		calcShadowmapCascades(camera, state);
+		calcCascadeOrthoProj(camera, lightTransform->getForward(), state);
 
 		for (int i = 0; i < 5; i++) {
-			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCascadeFBO[i]);
+			glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCascadeFBO[i]);
 
 			glClearDepth(1.0f);
 			glClear(GL_DEPTH_BUFFER_BIT);
 
-			shadowMapData.mDepthShader.use(shaderProgram);
-			shadowMapData.mDepthShader.setMat4(viewLoc, shadowMapData.mCascadeLightView[i]);
-			shadowMapData.mDepthShader.setMat4(projectionLoc, shadowMapData.mCascadeOrthoProj[i]);
+			state->mDepthShader.use(state->mDepthShaderProgram);
+			state->mDepthShader.setMat4(state->mDepthShaderViewLoc, state->mCascadeLightView[i]);
+			state->mDepthShader.setMat4(state->mDepthShaderProjectionLoc, state->mCascadeOrthoProj[i]);
 
 			for (int j = 0; j < renderObjects.size(); j++) {
 				if (renderObjects[j].materialIndex == -1 || renderObjects[j].shaderIndex == -1 || renderObjects[j].meshIndex == -1)
@@ -631,31 +612,27 @@ void PhysicsEngine::renderShadows(World* world,
 					continue;
 				}
 
-				shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[j].model);
-				Graphics::render(world, renderObjects[j], &query);
+				state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[j].model);
+				Graphics::render(world, renderObjects[j], &state->mQuery);
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 	}
-	else if (lightType == LightType::Spot) {
-
-		int shaderProgram = shadowMapData.mDepthShader.getProgramFromVariant(ShaderVariant::None);
-		int modelLoc = shadowMapData.mDepthShader.findUniformLocation("model", shaderProgram);
-		int viewLoc = shadowMapData.mDepthShader.findUniformLocation("view", shaderProgram);
-		int projectionLoc = shadowMapData.mDepthShader.findUniformLocation("projection", shaderProgram);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowSpotlightFBO);
+	else if (light->mLightType == LightType::Spot) {
+		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowSpotlightFBO);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.mShadowProjMatrix = light->getProjMatrix();
-		shadowMapData.mShadowViewMatrix = glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + lightTransform->getForward(), glm::vec3(0.0f, 1.0f, 0.0f));
+		state->mShadowProjMatrix = light->getProjMatrix();
+		state->mShadowViewMatrix = glm::lookAt(lightTransform->mPosition, 
+											   lightTransform->mPosition + lightTransform->getForward(), 
+											   glm::vec3(0.0f, 1.0f, 0.0f));
 
-		shadowMapData.mDepthShader.use(shaderProgram);
-		shadowMapData.mDepthShader.setMat4(projectionLoc, shadowMapData.mShadowProjMatrix);
-		shadowMapData.mDepthShader.setMat4(viewLoc, shadowMapData.mShadowViewMatrix);
+		state->mDepthShader.use(state->mDepthShaderProgram);
+		state->mDepthShader.setMat4(state->mDepthShaderProjectionLoc, state->mShadowProjMatrix);
+		state->mDepthShader.setMat4(state->mDepthShaderViewLoc, state->mShadowViewMatrix);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
 			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
@@ -663,46 +640,35 @@ void PhysicsEngine::renderShadows(World* world,
 				continue;
 			}
 
-			shadowMapData.mDepthShader.setMat4(modelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &query);
+			state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[i].model);
+			Graphics::render(world, renderObjects[i], &state->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	else if (lightType == LightType::Point) {
+	else if (light->mLightType == LightType::Point) {
 
-		shadowMapData.mCubeViewProjMatrices[0] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.mCubeViewProjMatrices[1] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.mCubeViewProjMatrices[2] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-		shadowMapData.mCubeViewProjMatrices[3] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-		shadowMapData.mCubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowMapData.mCubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+		state->mCubeViewProjMatrices[0] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		state->mCubeViewProjMatrices[1] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		state->mCubeViewProjMatrices[2] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+		state->mCubeViewProjMatrices[3] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+		state->mCubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+		state->mCubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-		int shaderProgram = shadowMapData.mDepthCubemapShader.getProgramFromVariant(ShaderVariant::None);
-		int lightPosLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("lightPos", shaderProgram);
-		int farPlaneLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("farPlane", shaderProgram);
-		int modelLoc = shadowMapData.mDepthCubemapShader.findUniformLocation("model", shaderProgram);
-		int cubeViewProjMatricesLoc0 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[0]", shaderProgram);
-		int cubeViewProjMatricesLoc1 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[1]", shaderProgram);
-		int cubeViewProjMatricesLoc2 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[2]", shaderProgram);
-		int cubeViewProjMatricesLoc3 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[3]", shaderProgram);
-		int cubeViewProjMatricesLoc4 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[4]", shaderProgram);
-		int cubeViewProjMatricesLoc5 = shadowMapData.mDepthCubemapShader.findUniformLocation("cubeViewProjMatrices[5]", shaderProgram);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapData.mShadowCubemapFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCubemapFBO);
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		shadowMapData.mDepthCubemapShader.use(shaderProgram);
-		shadowMapData.mDepthCubemapShader.setVec3(lightPosLoc, lightTransform->mPosition);
-		shadowMapData.mDepthCubemapShader.setFloat(farPlaneLoc, camera->mFrustum.mFarPlane);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc0, shadowMapData.mCubeViewProjMatrices[0]);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc1, shadowMapData.mCubeViewProjMatrices[1]);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc2, shadowMapData.mCubeViewProjMatrices[2]);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc3, shadowMapData.mCubeViewProjMatrices[3]);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc4, shadowMapData.mCubeViewProjMatrices[4]);
-		shadowMapData.mDepthCubemapShader.setMat4(cubeViewProjMatricesLoc5, shadowMapData.mCubeViewProjMatrices[5]);
+		state->mDepthCubemapShader.use(state->mDepthCubemapShaderProgram);
+		state->mDepthCubemapShader.setVec3(state->mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
+		state->mDepthCubemapShader.setFloat(state->mDepthCubemapShaderFarPlaneLoc, camera->mFrustum.mFarPlane);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc0, state->mCubeViewProjMatrices[0]);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc1, state->mCubeViewProjMatrices[1]);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc2, state->mCubeViewProjMatrices[2]);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc3, state->mCubeViewProjMatrices[3]);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc4, state->mCubeViewProjMatrices[4]);
+		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc5, state->mCubeViewProjMatrices[5]);
 
 		for (int i = 0; i < renderObjects.size(); i++) {
 			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
@@ -710,74 +676,72 @@ void PhysicsEngine::renderShadows(World* world,
 				continue;
 			}
 
-			shadowMapData.mDepthCubemapShader.setMat4(modelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &query);
+			state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderModelLoc, renderObjects[i].model);
+			Graphics::render(world, renderObjects[i], &state->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
-void PhysicsEngine::renderOpaques(World* world, 
-								  Camera* camera, 
-								  Light* light, 
-								  Transform* lightTransform, 
-								  const std::vector<RenderObject>& renderObjects, 
-								  const ShadowMapData& shadowMapData, 
-								  GraphicsLightState& lightState, 
-								  GraphicsQuery& query)
+void PhysicsEngine::renderOpaques(World* world,
+	Camera* camera,
+	Light* light,
+	Transform* lightTransform,
+	ForwardRendererState* state,
+	const std::vector<RenderObject>& renderObjects)
 {
-	lightState.mPosition = lightTransform->mPosition;
-	lightState.mDirection = lightTransform->getForward();
-	lightState.mAmbient = light->mAmbient;
-	lightState.mDiffuse = light->mDiffuse;
-	lightState.mSpecular = light->mSpecular;
+	state->mLightState.mPosition = lightTransform->mPosition;
+	state->mLightState.mDirection = lightTransform->getForward();
+	state->mLightState.mAmbient = light->mAmbient;
+	state->mLightState.mDiffuse = light->mDiffuse;
+	state->mLightState.mSpecular = light->mSpecular;
 
-	lightState.mConstant = light->mConstant;
-	lightState.mLinear = light->mLinear;
-	lightState.mQuadratic = light->mQuadratic;
-	lightState.mCutOff = light->mCutOff;
-	lightState.mOuterCutOff = light->mOuterCutOff;
+	state->mLightState.mConstant = light->mConstant;
+	state->mLightState.mLinear = light->mLinear;
+	state->mLightState.mQuadratic = light->mQuadratic;
+	state->mLightState.mCutOff = light->mCutOff;
+	state->mLightState.mOuterCutOff = light->mOuterCutOff;
 
 	if (light->mLightType == LightType::Directional) {
 		for (int i = 0; i < 5; i++) {
-			lightState.mLightProjection[i] = shadowMapData.mCascadeOrthoProj[i];
+			state->mLightState.mLightProjection[i] = state->mCascadeOrthoProj[i];
 
-			glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, shadowMapData.mCascadeEnds[i + 1], 1.0f);
+			glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, state->mCascadeEnds[i + 1], 1.0f);
 			glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-			lightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
+			state->mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
 
-			lightState.mLightView[i] = shadowMapData.mCascadeLightView[i];
+			state->mLightState.mLightView[i] = state->mCascadeLightView[i];
 		}
 	}
 	else if (light->mLightType == LightType::Spot) {
 		for (int i = 0; i < 5; i++) {
-			lightState.mLightProjection[i] = shadowMapData.mShadowProjMatrix;
-			lightState.mLightView[i] = shadowMapData.mShadowViewMatrix;
+			state->mLightState.mLightProjection[i] = state->mShadowProjMatrix;
+			state->mLightState.mLightView[i] = state->mShadowViewMatrix;
 		}
 	}
 
-	lightState.mFarPlane = camera->mFrustum.mFarPlane;
+	state->mLightState.mFarPlane = camera->mFrustum.mFarPlane;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, lightState.mHandle);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &lightState.mLightProjection[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &lightState.mLightView[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(lightState.mPosition));
-	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(lightState.mDirection));
-	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(lightState.mAmbient));
-	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(lightState.mDiffuse));
-	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(lightState.mSpecular));
-	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &lightState.mCascadeEnds[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &lightState.mCascadeEnds[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &lightState.mCascadeEnds[2]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &lightState.mCascadeEnds[3]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &lightState.mCascadeEnds[4]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &lightState.mFarPlane);
-	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(lightState.mConstant));
-	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(lightState.mLinear));
-	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(lightState.mQuadratic));
-	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(lightState.mCutOff));
-	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(lightState.mOuterCutOff));
+	glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &state->mLightState.mLightProjection[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &state->mLightState.mLightView[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(state->mLightState.mPosition));
+	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(state->mLightState.mDirection));
+	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(state->mLightState.mAmbient));
+	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(state->mLightState.mDiffuse));
+	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(state->mLightState.mSpecular));
+	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &state->mLightState.mCascadeEnds[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &state->mLightState.mCascadeEnds[1]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &state->mLightState.mCascadeEnds[2]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &state->mLightState.mCascadeEnds[3]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &state->mLightState.mCascadeEnds[4]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &state->mLightState.mFarPlane);
+	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(state->mLightState.mConstant));
+	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(state->mLightState.mLinear));
+	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(state->mLightState.mQuadratic));
+	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(state->mLightState.mCutOff));
+	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(state->mLightState.mOuterCutOff));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	int variant = ShaderVariant::None;
@@ -787,7 +751,7 @@ void PhysicsEngine::renderOpaques(World* world,
 	else if (light->mLightType == LightType::Spot) {
 		variant = ShaderVariant::Spot;
 	}
-	else if(light->mLightType == LightType::Point) {
+	else if (light->mLightType == LightType::Point) {
 		variant = ShaderVariant::Point;
 	}
 
@@ -821,23 +785,23 @@ void PhysicsEngine::renderOpaques(World* world,
 		shader->setMat4("model", renderObjects[i].model);
 
 		material->apply(world);
-		
+
 		if (light->mLightType == LightType::Directional) {
 			for (int j = 0; j < 5; j++) {
 				shader->setInt(shaderShadowMapNames[j], 3 + j);
 
 				glActiveTexture(GL_TEXTURE0 + 3 + j);
-				glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowCascadeDepth[j]);
+				glBindTexture(GL_TEXTURE_2D, state->mShadowCascadeDepth[j]);
 			}
 		}
 		else if (light->mLightType == LightType::Spot) {
 			shader->setInt(shaderShadowMapNames[0], 3);
 
 			glActiveTexture(GL_TEXTURE0 + 3);
-			glBindTexture(GL_TEXTURE_2D, shadowMapData.mShadowSpotlightDepth);
+			glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
 		}
 
-		Graphics::render(world, renderObjects[i], &query);
+		Graphics::render(world, renderObjects[i], &state->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -846,10 +810,9 @@ void PhysicsEngine::renderOpaques(World* world,
 }
 
 void PhysicsEngine::renderColorPicking(World* world,
-									   Camera* camera,
-									   const std::vector<RenderObject>& renderObjects,
-									   ScreenData& screenData,
-									   GraphicsQuery& query)
+	Camera* camera,
+	ForwardRendererState* state,
+	const std::vector<RenderObject>& renderObjects)
 {
 	camera->clearColoring();
 
@@ -870,16 +833,12 @@ void PhysicsEngine::renderColorPicking(World* world,
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
 
-	int shaderProgram = screenData.mColorShader.getProgramFromVariant(ShaderVariant::None);
-	int modelLoc = screenData.mColorShader.findUniformLocation("model", shaderProgram);
-	int colorLoc = screenData.mColorShader.findUniformLocation("color", shaderProgram);
-
-	screenData.mColorShader.use(shaderProgram);
+	state->mColorShader.use(state->mColorShaderProgram);
 
 	color = 1;
 	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 || 
-			renderObjects[i].shaderIndex == -1 || 
+		if (renderObjects[i].materialIndex == -1 ||
+			renderObjects[i].shaderIndex == -1 ||
 			renderObjects[i].meshIndex == -1)
 		{
 			continue;
@@ -889,12 +848,12 @@ void PhysicsEngine::renderColorPicking(World* world,
 		int g = (color & 0x0000FF00) >> 8;
 		int b = (color & 0x00FF0000) >> 16;
 
-		color++; 
+		color++;
 
-		screenData.mColorShader.setMat4(modelLoc, renderObjects[i].model);
-		screenData.mColorShader.setVec4(colorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
+		state->mColorShader.setMat4(state->mColorShaderModelLoc, renderObjects[i].model);
+		state->mColorShader.setVec4(state->mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
-		Graphics::render(world, renderObjects[i], &query);
+		Graphics::render(world, renderObjects[i], &state->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -912,102 +871,55 @@ void PhysicsEngine::postProcessing()
 
 }
 
-void PhysicsEngine::endFrame(World* world, 
-							 Camera* camera, 
-							 const std::vector<RenderObject>& renderObjects, 
-							 ScreenData& screenData, 
-							 GraphicsTargets& targets, 
-							 GraphicsQuery& query, 
-							 bool renderToScreen)
+void PhysicsEngine::endFrame(World* world,
+	Camera* camera,
+	ForwardRendererState* state,
+	const std::vector<RenderObject>& renderObjects)
 {
 	glEndQuery(GL_TIME_ELAPSED);
 
 	GLuint64 elapsedTime; // in nanoseconds
-	glGetQueryObjectui64v(query.mQueryId[query.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
+	glGetQueryObjectui64v(state->mQuery.mQueryId[state->mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
 
-	query.mTotalElapsedTime += elapsedTime / 1000000.0f;
+	state->mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
 	// swap which query is active
-	if (query.mQueryBack) {
-		query.mQueryBack = 0;
-		query.mQueryFront = 1;
+	if (state->mQuery.mQueryBack) {
+		state->mQuery.mQueryBack = 0;
+		state->mQuery.mQueryFront = 1;
 	}
 	else {
-		query.mQueryBack = 1;
-		query.mQueryFront = 0;
+		state->mQuery.mQueryBack = 1;
+		state->mQuery.mQueryFront = 0;
 	}
 
-	/*if (world->debug) {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		int view = world->debugView;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, debug.fbo[view].handle);
-
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClearDepth(1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		if(view == 0 || view == 1 || view == 2){ 
-
-			GLuint shaderProgram = debug.shaders[view].programs[(int)ShaderVariant::None].handle;
-
-			Graphics::use(shaderProgram);
-
-			for(int i = 0; i < renderObjects.size(); i++){
-				Graphics::setMat4(shaderProgram, "model", renderObjects[i].model);
-				Graphics::render(world, renderObjects[i], &query);
-			}
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}*/
-
 	// fill targets struct
-	targets.mColor = camera->getNativeGraphicsColorTex();
-	targets.mDepth = camera->getNativeGraphicsDepthTex();
-	targets.mColorPicking = camera->getNativeGraphicsColorPickingTex();
-	targets.mPosition = camera->getNativeGraphicsPositionTex();
-	targets.mNormals = camera->getNativeGraphicsNormalTex();
-	targets.mOverdraw = -1;
-	targets.mSsao = camera->getNativeGraphicsSSAOColorTex();
-	/*if (world->debug) {
-		targets.depth = debug.fbo[0].depthBuffer.handle.handle;
-		targets.normals = debug.fbo[1].colorBuffer.handle.handle;
-		targets.overdraw = debug.fbo[2].colorBuffer.handle.handle;
-	}*/
+	state->mTargets.mColor = camera->getNativeGraphicsColorTex();
+	state->mTargets.mDepth = camera->getNativeGraphicsDepthTex();
+	state->mTargets.mColorPicking = camera->getNativeGraphicsColorPickingTex();
+	state->mTargets.mPosition = camera->getNativeGraphicsPositionTex();
+	state->mTargets.mNormals = camera->getNativeGraphicsNormalTex();
+	state->mTargets.mOverdraw = -1;
+	state->mTargets.mSsao = camera->getNativeGraphicsSSAOColorTex();
 
-	// choose current target
-	//GLuint drawTex = camera->colorTex;
-	//if (world->debug) {
-	//	int view = world->debugView;
-	//	if (view == 0) {
-	//		drawTex = camera->depthTex;
-	//		//drawTex = debug.fbo[view].depthBuffer.handle.handle;
-	//	}
-	//	else {
-	//		drawTex = camera->normalTex;
-	//		//drawTex = debug.fbo[view].colorBuffer.handle.handle;
-	//	}
-	//}
-
-	if (renderToScreen) {
+	if (state->mRenderToScreen) {
 		glViewport(0, 0, 1024, 1024);
 		glScissor(0, 0, 1024, 1024);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		screenData.mQuadShader.use(ShaderVariant::None);
+		state->mQuadShader.use(ShaderVariant::None);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorTex());
 
-		glBindVertexArray(screenData.mQuadVAO);
+		glBindVertexArray(state->mQuadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
 	}
 }
 
-void PhysicsEngine::calcShadowmapCascades(Camera* camera, ShadowMapData& shadowMapData)
+void PhysicsEngine::calcShadowmapCascades(Camera* camera, ForwardRendererState* state)
 {
 	float nearDist = camera->mFrustum.mNearPlane;
 	float farDist = camera->mFrustum.mFarPlane;
@@ -1018,13 +930,13 @@ void PhysicsEngine::calcShadowmapCascades(Camera* camera, ShadowMapData& shadowM
 	for (int i = 0; i < 6; i++) {
 		const float si = i / 5.0f;
 
-		shadowMapData.mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
+		state->mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) + (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
 	}
 }
 
-void PhysicsEngine::calcCascadeOrthoProj(Camera* camera, 
-										 glm::vec3 lightDirection, 
-										 ShadowMapData& shadowMapData)
+void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
+	glm::vec3 lightDirection,
+	ForwardRendererState* state)
 {
 	glm::mat4 viewInv = glm::inverse(camera->getViewMatrix());
 	float fov = camera->mFrustum.mFov;
@@ -1033,22 +945,22 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 	float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
 
 	for (int i = 0; i < 5; i++) {
-		float xn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfHFOV;
-		float xf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfHFOV;
-		float yn = -1.0f * shadowMapData.mCascadeEnds[i] * tanHalfVFOV;
-		float yf = -1.0f * shadowMapData.mCascadeEnds[i + 1] * tanHalfVFOV;
+		float xn = -1.0f * state->mCascadeEnds[i] * tanHalfHFOV;
+		float xf = -1.0f * state->mCascadeEnds[i + 1] * tanHalfHFOV;
+		float yn = -1.0f * state->mCascadeEnds[i] * tanHalfVFOV;
+		float yf = -1.0f * state->mCascadeEnds[i + 1] * tanHalfVFOV;
 
 		// Find cascade frustum corners
 		glm::vec4 frustumCorners[8];
-		frustumCorners[0] = glm::vec4(xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
-		frustumCorners[1] = glm::vec4(-xn, yn, shadowMapData.mCascadeEnds[i], 1.0f);
-		frustumCorners[2] = glm::vec4(xn, -yn, shadowMapData.mCascadeEnds[i], 1.0f);
-		frustumCorners[3] = glm::vec4(-xn, -yn, shadowMapData.mCascadeEnds[i], 1.0f);
+		frustumCorners[0] = glm::vec4(xn, yn, state->mCascadeEnds[i], 1.0f);
+		frustumCorners[1] = glm::vec4(-xn, yn, state->mCascadeEnds[i], 1.0f);
+		frustumCorners[2] = glm::vec4(xn, -yn, state->mCascadeEnds[i], 1.0f);
+		frustumCorners[3] = glm::vec4(-xn, -yn, state->mCascadeEnds[i], 1.0f);
 
-		frustumCorners[4] = glm::vec4(xf, yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
-		frustumCorners[5] = glm::vec4(-xf, yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
-		frustumCorners[6] = glm::vec4(xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
-		frustumCorners[7] = glm::vec4(-xf, -yf, shadowMapData.mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[4] = glm::vec4(xf, yf, state->mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[5] = glm::vec4(-xf, yf, state->mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[6] = glm::vec4(xf, -yf, state->mCascadeEnds[i + 1], 1.0f);
+		frustumCorners[7] = glm::vec4(-xf, -yf, state->mCascadeEnds[i + 1], 1.0f);
 
 		// find frustum centre by averaging corners
 		glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -1069,11 +981,11 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 		glm::vec4 frustrumCentreWorldSpace = viewInv * frustumCentre;
 		float d = 40.0f;//cascadeEnds[i + 1] - cascadeEnds[i];
 
-		glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * lightDirection.x, 
-								frustrumCentreWorldSpace.y + d * lightDirection.y, 
-								frustrumCentreWorldSpace.z + d * lightDirection.z);
+		glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * lightDirection.x,
+			frustrumCentreWorldSpace.y + d * lightDirection.y,
+			frustrumCentreWorldSpace.z + d * lightDirection.z);
 
-		shadowMapData.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
+		state->mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		float minX = std::numeric_limits<float>::max();
 		float maxX = std::numeric_limits<float>::lowest();
@@ -1082,7 +994,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 		float minZ = std::numeric_limits<float>::max();
 		float maxZ = std::numeric_limits<float>::lowest();
 
-		glm::mat4 cascadeLightView = shadowMapData.mCascadeLightView[i];
+		glm::mat4 cascadeLightView = state->mCascadeLightView[i];
 
 		// Transform the frustum coordinates from view to world space and then world to light space
 		glm::vec4 vL0 = cascadeLightView * (viewInv * frustumCorners[0]);
@@ -1150,6 +1062,6 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera* camera,
 		minZ = glm::min(minZ, vL7.z);
 		maxZ = glm::max(maxZ, vL7.z);
 
-		shadowMapData.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
+		state->mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
 	}
 }

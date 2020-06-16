@@ -29,9 +29,9 @@ ForwardRenderer::~ForwardRenderer()
 void ForwardRenderer::init(World* world, bool renderToScreen)
 {
 	mWorld = world;
-	mRenderToScreen = renderToScreen;
-
-	initializeRenderer(world, mScreenData, mShadowMapData, mCameraState, mLightState, mQuery);
+	mState.mRenderToScreen = renderToScreen;
+	
+	initializeRenderer(mWorld, &mState);
 }
 
 void ForwardRenderer::update(Input input)
@@ -50,32 +50,34 @@ void ForwardRenderer::update(Input input)
 
 		cullRenderObjects(camera, mRenderObjects);
 
-		beginFrame(mWorld, camera, mCameraState, mLightState, mQuery);
+		beginFrame(mWorld, camera, &mState);
 
-		computeSSAO(mWorld, camera, mRenderObjects, mScreenData, mQuery);
+		if (camera->mSSAO == CameraSSAO::SSAO_On) {
+			computeSSAO(mWorld, camera, &mState, mRenderObjects);
+		}
 
 		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(lightAllocator); j++) {
 			Light* light = mWorld->getComponentByIndex<Light>(lightAllocator, j);
 			Transform* lightTransform = light->getComponent<Transform>(mWorld);
 
-			renderShadows(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mQuery);
-			renderOpaques(mWorld, camera, light, lightTransform, mRenderObjects, mShadowMapData, mLightState, mQuery);
+			renderShadows(mWorld, camera, light, lightTransform, &mState, mRenderObjects);
+			renderOpaques(mWorld, camera, light, lightTransform, &mState, mRenderObjects);
 			renderTransparents();
 		}
 
-		renderColorPicking(mWorld, camera, mRenderObjects, mScreenData, mQuery);
+		renderColorPicking(mWorld, camera, &mState, mRenderObjects);
 
 		postProcessing();
-		endFrame(mWorld, camera, mRenderObjects, mScreenData, mTargets, mQuery, mRenderToScreen);
+		endFrame(mWorld, camera, &mState, mRenderObjects);
 	}
 }
 
 GraphicsQuery ForwardRenderer::getGraphicsQuery() const
 {
-	return mQuery;
+	return mState.mQuery;
 }
 
 GraphicsTargets ForwardRenderer::getGraphicsTargets() const
 {
-	return mTargets;
+	return mState.mTargets;
 }

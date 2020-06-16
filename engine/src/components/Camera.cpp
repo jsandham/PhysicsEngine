@@ -174,7 +174,7 @@ glm::vec3 Camera::getSSAOSample(int sample) const
 Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 {
 	// Note: OpenGL assumes that the window origin is the bottom left corner
-	Color color;
+	Color32 color;
 	Graphics::readColorPickingPixel(this, x, y, &color);
 
 	int temp = color.r + color.g * 256 + color.b * 256 * 256;

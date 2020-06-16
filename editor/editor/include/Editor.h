@@ -38,6 +38,8 @@ namespace PhysicsEditor
 	class Editor
 	{
 		private:
+			HWND window;
+
 			World world;
 
 			LibraryDirectory libraryDirectory;

@@ -314,6 +314,7 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				}
 
 				meshRenderer.mIsStatic = it->second["isStatic"].ToBool();
+				meshRenderer.mEnabled = it->second["enabled"].ToBool();
 
 				std::vector<char> data = meshRenderer.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
 

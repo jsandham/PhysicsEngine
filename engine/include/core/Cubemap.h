@@ -50,12 +50,12 @@ namespace PhysicsEngine
 			int getWidth() const;
 
 			std::vector<unsigned char> getRawCubemapData() const;
-			std::vector<Color> getPixels(CubemapFace face) const;
-			Color getPixel(CubemapFace face, int x, int y) const;
+			std::vector<Color32> getPixels(CubemapFace face) const;
+			Color32 getPixel(CubemapFace face, int x, int y) const;
 			
 			void setRawCubemapData(std::vector<unsigned char> data);
-			void setPixels(CubemapFace face, int x, int y, Color color);
-			void setPixel(CubemapFace face, int x, int y, Color color);
+			void setPixels(CubemapFace face, int x, int y, Color32 color);
+			void setPixel(CubemapFace face, int x, int y, Color32 color);
 
 			void create();
 			void destroy();

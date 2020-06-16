@@ -14,6 +14,7 @@ MeshRenderer::MeshRenderer()
 	mMeshChanged = true;
 	mMaterialChanged = true;
 	mIsStatic = true;
+	mEnabled = true;
 }
 
 MeshRenderer::MeshRenderer(std::vector<char> data)
@@ -41,6 +42,7 @@ std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
 	}
 	header.mMaterialCount = mMaterialCount;
 	header.mIsStatic = mIsStatic;
+	header.mEnabled = mEnabled;
 
 	std::vector<char> data(sizeof(MeshRendererHeader));
 
@@ -61,6 +63,7 @@ void MeshRenderer::deserialize(std::vector<char> data)
 	}
 	mMaterialCount = header->mMaterialCount;
 	mIsStatic = header->mIsStatic;
+	mEnabled = header->mEnabled;
 	mMeshChanged = true;
 	mMaterialChanged = true;
 }

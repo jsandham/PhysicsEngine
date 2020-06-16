@@ -210,27 +210,28 @@ Guid Guid::newGuid()
 
 	CoCreateGuid(&newId);
 
-	unsigned char bytes[16];
+	const unsigned char bytes[16] =
+	{
+		(unsigned char)((newId.Data1 >> 24) & 0xFF),
+		(unsigned char)((newId.Data1 >> 16) & 0xFF),
+		(unsigned char)((newId.Data1 >> 8) & 0xFF),
+		(unsigned char)((newId.Data1) & 0xff),
 
-	bytes[0] = (unsigned char)((newId.Data1 >> 24) & 0xFF);
-	bytes[1] = (unsigned char)((newId.Data1 >> 16) & 0xFF);
-	bytes[2] = (unsigned char)((newId.Data1 >> 8) & 0xFF);
-	bytes[3] = (unsigned char)((newId.Data1) & 0xff);
+		(unsigned char)((newId.Data2 >> 8) & 0xFF),
+		(unsigned char)((newId.Data2) & 0xff),
 
-	bytes[4] = (unsigned char)((newId.Data2 >> 8) & 0xFF);
-	bytes[5] = (unsigned char)((newId.Data2) & 0xff);
+		(unsigned char)((newId.Data3 >> 8) & 0xFF),
+		(unsigned char)((newId.Data3) & 0xFF),
 
-	bytes[6] = (unsigned char)((newId.Data3 >> 8) & 0xFF);
-	bytes[7] = (unsigned char)((newId.Data3) & 0xFF);
-
-	bytes[8] = (unsigned char)newId.Data4[0];
-	bytes[9] = (unsigned char)newId.Data4[1];
-	bytes[10] = (unsigned char)newId.Data4[2];
-	bytes[11] = (unsigned char)newId.Data4[3];
-	bytes[12] = (unsigned char)newId.Data4[4];
-	bytes[13] = (unsigned char)newId.Data4[5];
-	bytes[14] = (unsigned char)newId.Data4[6];
-	bytes[15] = (unsigned char)newId.Data4[7];
+		(unsigned char)newId.Data4[0],
+		(unsigned char)newId.Data4[1],
+		(unsigned char)newId.Data4[2],
+		(unsigned char)newId.Data4[3],
+		(unsigned char)newId.Data4[4],
+		(unsigned char)newId.Data4[5],
+		(unsigned char)newId.Data4[6],
+		(unsigned char)newId.Data4[7]
+	};
 
 	return Guid(&bytes[0]);
 }

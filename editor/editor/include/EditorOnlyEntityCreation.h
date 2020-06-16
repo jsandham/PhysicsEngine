@@ -14,6 +14,7 @@ namespace PhysicsEditor
 {
 	PhysicsEngine::Camera* createEditorCamera(PhysicsEngine::World* world, std::set<PhysicsEngine::Guid>& editorOnlyIds);
 	PhysicsEngine::Transform* createEditorTransformGizmo(PhysicsEngine::World* world, std::set<PhysicsEngine::Guid>& editorOnlyIds);
+	PhysicsEngine::Transform* createEditorLightGizmo(PhysicsEngine::World* world, std::set<PhysicsEngine::Guid>& editorOnlyIds);
 }
 
 #endif

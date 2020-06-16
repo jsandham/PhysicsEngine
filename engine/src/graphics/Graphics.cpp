@@ -326,7 +326,7 @@ void Graphics::destroy(Camera* camera,
 	*created = false;
 }
 
-void Graphics::readColorPickingPixel(const Camera* camera, int x, int y, Color* color)
+void Graphics::readColorPickingPixel(const Camera* camera, int x, int y, Color32* color)
 {
 	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorPickingTex());
 
@@ -1241,5 +1241,69 @@ void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* qu
 	//	query->tris += numVertices / 3;
 	//}
 
-	//Graphics::checkError();
+	Graphics::checkError();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Graphics::draw(World* world, MeshRenderer* meshRenderer, GLuint fbo)
+{
+	/*if (world == NULL || meshRenderer == NULL) {
+		return;
+	}
+
+	Transform* transform = meshRenderer->getComponent<Transform>();
+	Material* material = world->getAsset<Material>(meshRenderer->getMaterial());
+	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
+
+	if (transform == NULL || material == NULL || mesh == NULL) {
+		return;
+	}
+
+	Shader* shader = world->getAsset<Shader>(material->getShaderId());
+
+	if (shader == NULL) {
+		return;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	int shaderProgram = shader->getProgramFromVariant(0);
+
+	shader->use(shaderProgram);
+	shader->setMat4("model", transform->getModelMatrix());
+
+	material->apply(world);
+
+	int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(0);
+	int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(0);
+
+	GLsizei numVertices = (subMeshVertexEndIndex - subMeshVertexStartIndex) / 3;
+
+	glBindVertexArray(mesh->getNativeGraphicsVAO());
+	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	glBindVertexArray(0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 }

@@ -1,10 +1,9 @@
-﻿Build started 2020-06-06 2:37:34 PM.
+﻿Build started 2020-06-15 10:02:13 PM.
      1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\imgui\include /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\simplefilewatcher\include /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\Hierarchy.cpp
-         Hierarchy.cpp
+         All outputs are up-to-date.
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\lib\debug /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\imgui\lib\debug /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\simplefilewatcher\lib\debug engine.lib imgui.lib simplefilewatcher.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
          x64\Debug\BoxColliderDrawer.obj
@@ -64,4 +63,4 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:03.00
+Time Elapsed 00:00:02.29

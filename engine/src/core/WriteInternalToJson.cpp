@@ -173,6 +173,7 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()][label] = value;
 		obj[componentId.toString()]["isStatic"] = meshRenderer->mIsStatic;
+		obj[componentId.toString()]["enabled"] = meshRenderer->mEnabled;
 	}
 	else if (type == 4) {
 		//linerenderer

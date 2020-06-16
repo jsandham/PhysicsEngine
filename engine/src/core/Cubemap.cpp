@@ -122,15 +122,15 @@ std::vector<unsigned char> Cubemap::getRawCubemapData() const
 	return mRawTextureData;
 }
 
-std::vector<Color> Cubemap::getPixels(CubemapFace face) const
+std::vector<Color32> Cubemap::getPixels(CubemapFace face) const
 {
 	/*std::vector<Color> colors(width*width*numChannels);*/
-	std::vector<Color> colors;
+	std::vector<Color32> colors;
 
 	int start = (int)face*mWidth * mWidth * mNumChannels;
 	int end = start + mWidth * mWidth * mNumChannels;
 	for (int i = start; i < end; i += mNumChannels){
-		Color color;
+		Color32 color;
 		if (mNumChannels == 1){
 			color.r = mRawTextureData[i];
 			color.g = mRawTextureData[i];
@@ -156,7 +156,7 @@ std::vector<Color> Cubemap::getPixels(CubemapFace face) const
 	return colors;
 }
 
-Color Cubemap::getPixel(CubemapFace face, int x, int y) const
+Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
 {
 	int index =  (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
 
@@ -164,7 +164,7 @@ Color Cubemap::getPixel(CubemapFace face, int x, int y) const
 		Log::error("Cubemap: pixel index out of range\n");
 	}
 
-	Color color;
+	Color32 color;
 	if (mNumChannels == 1){
 		color.r = mRawTextureData[index];
 		color.g = mRawTextureData[index];
@@ -198,12 +198,12 @@ void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
 	mRawTextureData = data;
 }
 
-void Cubemap::setPixels(CubemapFace face, int x, int y, Color color)
+void Cubemap::setPixels(CubemapFace face, int x, int y, Color32 color)
 {
 
 }
 
-void Cubemap::setPixel(CubemapFace face, int x, int y, Color color)
+void Cubemap::setPixel(CubemapFace face, int x, int y, Color32 color)
 {
 	int index = (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
 

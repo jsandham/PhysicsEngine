@@ -93,6 +93,13 @@ void Material::load(const std::string& filepath)
 	}
 }
 
+void Material::load(Guid shaderId)
+{
+	mShaderId = shaderId;
+
+	mShaderChanged = true;
+}
+
 void Material::apply(World* world)
 {
 	Shader* shader = world->getAsset<Shader>(mShaderId);

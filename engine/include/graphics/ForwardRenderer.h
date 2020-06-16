@@ -13,12 +13,8 @@
 #include "../components/Light.h"
 #include "../components/MeshRenderer.h"
 
-#include "GraphicsState.h"
-#include "GraphicsQuery.h"
-#include "GraphicsTargets.h"
+#include "ForwardRendererState.h"
 #include "RenderObject.h"
-#include "ShadowMapData.h"
-#include "ScreenData.h"
 
 namespace PhysicsEngine
 {
@@ -27,20 +23,11 @@ namespace PhysicsEngine
 	private:
 		World* mWorld;
 
+		// render objects 
 		std::vector<RenderObject> mRenderObjects;
 
-		ScreenData mScreenData;
-		ShadowMapData mShadowMapData;
-
-		// internal graphics state
-		GraphicsCameraState mCameraState;
-		GraphicsLightState mLightState;
-
-		// timing and targets
-		GraphicsQuery mQuery;
-		GraphicsTargets mTargets;
-
-		bool mRenderToScreen;
+		// forward renderer state
+		ForwardRendererState mState;
 
 	public:
 		ForwardRenderer();

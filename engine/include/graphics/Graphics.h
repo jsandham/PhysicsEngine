@@ -108,7 +108,7 @@ namespace PhysicsEngine
 								GLuint* ssaoNoiseTex,
 								bool* created);
 
-			static void readColorPickingPixel(const Camera* camera, int x, int y, Color* color);
+			static void readColorPickingPixel(const Camera* camera, int x, int y, Color32* color);
 
 			static void create(Texture2D* texture, GLuint* tex, bool* created);
 			static void destroy(Texture2D* texture, GLuint* tex, bool* created);
@@ -134,6 +134,11 @@ namespace PhysicsEngine
 			static void render(World* world, Shader* shader, int variant, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
 			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
 			static void render(World* world, RenderObject renderObject, GraphicsQuery* query);
+
+
+
+			// draw? blit? render? Move to drawing utility class?
+			static void draw(World* world, MeshRenderer* meshRenderer, GLuint fbo);
 	};
 }
 

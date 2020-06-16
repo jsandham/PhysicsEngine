@@ -38,6 +38,7 @@ namespace PhysicsEngine
 			void deserialize(std::vector<char> data);
 
 			void load(const std::string& filepath);
+			void load(Guid shaderId);
 			void apply(World* world);
 			void onShaderChanged(World* world);
 			bool hasShaderChanged() const;

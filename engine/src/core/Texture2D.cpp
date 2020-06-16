@@ -178,9 +178,9 @@ std::vector<unsigned char> Texture2D::getRawTextureData() const
 	return mRawTextureData;
 }
 
-std::vector<Color> Texture2D::getPixels() const
+std::vector<Color32> Texture2D::getPixels() const
 {
-	std::vector<Color> colors;
+	std::vector<Color32> colors;
 
 	colors.resize(mWidth*mHeight);
 
@@ -193,11 +193,11 @@ std::vector<Color> Texture2D::getPixels() const
 	return colors;
 }
 
-Color Texture2D::getPixel(int x, int y) const
+Color32 Texture2D::getPixel(int x, int y) const
 {
 	int index = mNumChannels * (x + mWidth * y);
 
-	Color color;
+	Color32 color;
 
 	if (index + mNumChannels >= mRawTextureData.size()){
 		Log::error("Texture2D: pixel index out of range\n");
@@ -254,7 +254,7 @@ void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, in
 	mRawTextureData = data;
 }
 
-void Texture2D::setPixels(std::vector<Color> colors)
+void Texture2D::setPixels(std::vector<Color32> colors)
 {
 	if (colors.size() != mWidth*mHeight){
 		Log::error("Texture2D: error when trying to set pixels. Number of colors must match dimensions of texture\n");
@@ -279,7 +279,7 @@ void Texture2D::setPixels(std::vector<Color> colors)
 	}
 }
 
-void Texture2D::setPixel(int x, int y, Color color)
+void Texture2D::setPixel(int x, int y, Color32 color)
 {
 	int index = mNumChannels * (x + mWidth * y);
 

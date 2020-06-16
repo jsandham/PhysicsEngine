@@ -10,7 +10,7 @@ namespace PhysicsEngine
 	// see https://github.com/graeme-hill/crossguid
 	class Guid
 	{
-		public:
+		private:
 			unsigned char bytes[16];
 
 		public:

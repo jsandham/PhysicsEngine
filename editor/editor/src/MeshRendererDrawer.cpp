@@ -56,6 +56,11 @@ void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScen
 			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->mIsStatic, isStatic, &scene.isDirty));
 		}
 
+		bool enabled = meshRenderer->mEnabled;
+		if (ImGui::Checkbox("Enabled?", &enabled)) {
+			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->mEnabled, enabled, &scene.isDirty));
+		}
+
 		// Materials
 		int materialCount = meshRenderer->mMaterialCount;
 		const int increment = 1;

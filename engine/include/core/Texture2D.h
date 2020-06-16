@@ -46,12 +46,12 @@ namespace PhysicsEngine
 			void redefine(int width, int height, TextureFormat format);
 
 			std::vector<unsigned char> getRawTextureData() const;
-			std::vector<Color> getPixels() const;
-			Color getPixel(int x, int y) const;
+			std::vector<Color32> getPixels() const;
+			Color32 getPixel(int x, int y) const;
 
 			void setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format);
-			void setPixels(std::vector<Color> colors);
-			void setPixel(int x, int y, Color color);
+			void setPixels(std::vector<Color32> colors);
+			void setPixel(int x, int y, Color32 color);
 
 			void create();
 			void destroy();
