@@ -9,7 +9,7 @@
 
 #include "systems/RenderSystem.h"
 #include "graphics/GraphicsQuery.h"
-#include "graphics/GraphicsTargets.h"
+//#include "graphics/GraphicsTargets.h"
 
 #include "EditorCameraSystem.h"
 #include "EditorClipboard.h"
@@ -35,8 +35,6 @@ namespace PhysicsEditor
 
 			void render(PhysicsEngine::World* world, 
 						PhysicsEngine::EditorCameraSystem* cameraSystem, 
-						PhysicsEngine::GraphicsTargets targets, 
-						PhysicsEngine::GraphicsQuery query, 
 						EditorClipboard& clipboard, 
 						bool isOpenedThisFrame);
 

@@ -7,8 +7,6 @@
 #include "../core/Shader.h"
 
 #include "GraphicsState.h"
-#include "GraphicsQuery.h"
-#include "GraphicsTargets.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -23,12 +21,6 @@ namespace PhysicsEngine
 
 		// internal graphics light state
 		GraphicsLightState mLightState;
-
-		// timing state
-		GraphicsQuery mQuery;
-
-		// render target state
-		GraphicsTargets mTargets;
 
 		bool mRenderToScreen;
 

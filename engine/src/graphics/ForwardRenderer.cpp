@@ -34,50 +34,27 @@ void ForwardRenderer::init(World* world, bool renderToScreen)
 	initializeRenderer(mWorld, &mState);
 }
 
-void ForwardRenderer::update(Input input)
+void ForwardRenderer::update(Input input, Camera* camera, std::vector<RenderObject>& renderObjects)
 {
-	registerRenderAssets(mWorld);
-	registerCameras(mWorld);
-
-	updateRenderObjects(mWorld, mRenderObjects);
-	updateModelMatrices(mWorld, mRenderObjects);
-
-	const PoolAllocator<Camera>* cameraAllocator = mWorld->getComponentAllocator_Const<Camera>();
 	const PoolAllocator<Light>* lightAllocator = mWorld->getComponentAllocator_Const<Light>();
 
-	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(cameraAllocator); i++) {
-		Camera* camera = mWorld->getComponentByIndex<Camera>(cameraAllocator, i);
+	beginFrame(mWorld, camera, &mState);
 
-		cullRenderObjects(camera, mRenderObjects);
-
-		beginFrame(mWorld, camera, &mState);
-
-		if (camera->mSSAO == CameraSSAO::SSAO_On) {
-			computeSSAO(mWorld, camera, &mState, mRenderObjects);
-		}
-
-		for (int j = 0; j < mWorld->getNumberOfComponents<Light>(lightAllocator); j++) {
-			Light* light = mWorld->getComponentByIndex<Light>(lightAllocator, j);
-			Transform* lightTransform = light->getComponent<Transform>(mWorld);
-
-			renderShadows(mWorld, camera, light, lightTransform, &mState, mRenderObjects);
-			renderOpaques(mWorld, camera, light, lightTransform, &mState, mRenderObjects);
-			renderTransparents();
-		}
-
-		renderColorPicking(mWorld, camera, &mState, mRenderObjects);
-
-		postProcessing();
-		endFrame(mWorld, camera, &mState, mRenderObjects);
+	if (camera->mSSAO == CameraSSAO::SSAO_On) {
+		computeSSAO(mWorld, camera, &mState, renderObjects);
 	}
-}
 
-GraphicsQuery ForwardRenderer::getGraphicsQuery() const
-{
-	return mState.mQuery;
-}
+	for (int j = 0; j < mWorld->getNumberOfComponents<Light>(lightAllocator); j++) {
+		Light* light = mWorld->getComponentByIndex<Light>(lightAllocator, j);
+		Transform* lightTransform = light->getComponent<Transform>(mWorld);
 
-GraphicsTargets ForwardRenderer::getGraphicsTargets() const
-{
-	return mState.mTargets;
+		renderShadows(mWorld, camera, light, lightTransform, &mState, renderObjects);
+		renderOpaques(mWorld, camera, light, lightTransform, &mState, renderObjects);
+		renderTransparents();
+	}
+
+	renderColorPicking(mWorld, camera, &mState, renderObjects);
+
+	postProcessing();
+	endFrame(mWorld, camera, &mState);
 }

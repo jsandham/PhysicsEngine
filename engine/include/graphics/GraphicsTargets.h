@@ -1,31 +1,48 @@
 #ifndef __GRAPHICS_TARGETS_H__
 #define __GRAPHICS_TARGETS_H__	
 
-#include "Graphics.h"
+#include <GL/glew.h>
+#include <gl/gl.h>
 
 namespace PhysicsEngine
 {
 	typedef struct GraphicsTargets
 	{
-		GLint mColor;
-		GLint mColorPicking;
-		GLint mDepth;
-		GLint mNormals;
-		GLint mPosition;
-		GLint mOverdraw;
-		GLint mSsao;
-		GLint mCascades;
+		GLuint mMainFBO;
+		GLuint mColorTex;
+		GLuint mDepthTex;
+
+		GLuint mColorPickingFBO;
+		GLuint mColorPickingTex;
+		GLuint mColorPickingDepthTex;
+
+		GLuint mGeometryFBO;
+		GLuint mPositionTex;
+		GLuint mNormalTex;
+		GLuint mAlbedoSpecTex;
+
+		GLuint mSsaoFBO;
+		GLuint mSsaoColorTex;
+		GLuint mSsaoNoiseTex;
 		
 		GraphicsTargets()
 		{
-			mColor = -1;
-			mColorPicking = -1;
-			mDepth = -1;
-			mNormals = -1;
-			mPosition = -1;
-			mOverdraw = -1;
-			mSsao = -1;
-			mCascades = -1;
+			mMainFBO = 0;
+			mColorTex = 0;
+			mDepthTex = 0;
+
+			mColorPickingFBO = 0;
+			mColorPickingTex = 0;
+			mColorPickingDepthTex = 0;
+
+			mGeometryFBO = 0;
+			mPositionTex = 0;
+			mNormalTex = 0;
+			mAlbedoSpecTex = 0;
+
+			mSsaoFBO = 0;
+			mSsaoColorTex = 0;
+			mSsaoNoiseTex = 0;
 		}
 	}GraphicsTargets;
 }

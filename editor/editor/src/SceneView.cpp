@@ -28,8 +28,6 @@ SceneView::~SceneView()
 
 void SceneView::render(PhysicsEngine::World* world, 
 					   PhysicsEngine::EditorCameraSystem* cameraSystem, 
-					   PhysicsEngine::GraphicsTargets targets, 
-					   PhysicsEngine::GraphicsQuery query, 
 					   EditorClipboard& clipboard, 
 					   bool isOpenedThisFrame)
 {
@@ -84,15 +82,16 @@ void SceneView::render(PhysicsEngine::World* world,
 									   "Depth",
 									   "Normals",
 									   "Position",
-									   "Overdraw",
-									   "SSAO" };
-		const GLint textures[] = { targets.mColor,
-								   targets.mColorPicking,
-								   targets.mDepth,
-								   targets.mNormals,
-								   targets.mPosition,
-								   targets.mOverdraw,
-								   targets.mSsao };
+									   "SSAO",
+									   "SSAO Noise" };
+
+		const GLint textures[] = { cameraSystem->getNativeGraphicsColorTex(),
+								   cameraSystem->getNativeGraphicsColorPickingTex(),
+								   cameraSystem->getNativeGraphicsDepthTex(),
+								   cameraSystem->getNativeGraphicsNormalTex(),
+								   cameraSystem->getNativeGraphicsPositionTex(),
+								   cameraSystem->getNativeGraphicsSSAOColorTex(),
+								   cameraSystem->getNativeGraphicsSSAONoiseTex()};
 
 		// select draw texture dropdown
 		static GLuint currentTexture = (GLuint)textures[0];
@@ -180,6 +179,21 @@ void SceneView::render(PhysicsEngine::World* world,
 				if (ImGui::InputFloat("Far Plane", &frustum.mFarPlane)) {
 					cameraSystem->setFrustum(frustum);
 				}
+
+				// SSAO and render path
+				int renderPath = static_cast<int>(cameraSystem->getRenderPath());
+				int ssao = static_cast<int>(cameraSystem->getSSAO());
+
+				const char* renderPathNames[] = { "Forward", "Deferred" };
+				const char* ssaoNames[] = { "On", "Off" };
+
+				if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2)) {
+					cameraSystem->setRenderPath(static_cast<RenderPath>(renderPath));
+				}
+
+				if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
+					cameraSystem->setSSAO(static_cast<CameraSSAO>(ssao));
+				}
 			}
 
 			ImGui::End();
@@ -205,10 +219,10 @@ void SceneView::render(PhysicsEngine::World* world,
 			ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
 			if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, overlayFlags))
 			{
-				ImGui::Text("Tris: %d\n", query.mTris);
-				ImGui::Text("Verts: %d\n", query.mVerts);
-				ImGui::Text("Draw calls: %d\n", query.mNumDrawCalls);
-				ImGui::Text("Elapsed time: %f", query.mTotalElapsedTime);
+				ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
+				ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
+				ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
+				ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
 				ImGui::Text("Window position: %f %f\n", windowPos.x, windowPos.y);
 				ImGui::Text("Content min: %f %f\n", contentMin.x, contentMin.y);
 				ImGui::Text("Content max: %f %f\n", contentMax.x, contentMax.y);
@@ -219,7 +233,7 @@ void SceneView::render(PhysicsEngine::World* world,
 
 				ImGui::GetForegroundDrawList()->AddRect(sceneContentMin, sceneContentMax, 0xFFFF0000);
 
-				perfQueue.addSample(query.mTotalElapsedTime);
+				perfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
 
 				std::vector<float> perfData = perfQueue.getData();
 				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());

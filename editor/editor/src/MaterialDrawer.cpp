@@ -2,12 +2,20 @@
 #include "../include/CommandManager.h"
 #include "../include/EditorCommands.h"
 
+#include "components/Transform.h"
+#include "components/Light.h"
+#include "components/Camera.h"
+
 #include "core/Mesh.h"
+#include "core/Shader.h"
+#include "core/Texture2D.h"
 #include "core/InternalMeshes.h"
 #include "core/MaterialUtil.h"
 
 #include "systems/RenderSystem.h"
 #include "systems/CleanUpSystem.h"
+
+#include "../include/EditorCameraSystem.h"
 
 using namespace PhysicsEditor;
 
@@ -126,12 +134,13 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 	//Log::info(("material view world texture count: " + std::to_string(previewWorld.getNumberOfAssets<Texture2D>()) + "\n").c_str());
 
 	RenderSystem* renderSystem = previewWorld.getSystem<RenderSystem>();
+	EditorCameraSystem* cameraSystem = previewWorld.getSystem<EditorCameraSystem>();
 
-	GraphicsTargets targets = renderSystem->getGraphicsTargets();
+	//GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;// ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0);
 	ImGui::BeginChild("MaterialPreviewWindow", ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true, window_flags);
-	ImGui::Image((void*)(intptr_t)targets.mColor, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
+	ImGui::Image((void*)(intptr_t)cameraSystem->getNativeGraphicsColorTex(), ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
 	ImGui::EndChild();
 }
 

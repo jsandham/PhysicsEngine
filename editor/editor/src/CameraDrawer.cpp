@@ -31,12 +31,24 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 		ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
 		ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
+		int renderPath = static_cast<int>(camera->mRenderPath);
 		int mode = static_cast<int>(camera->mMode);
+		int ssao = static_cast<int>(camera->mSSAO);
 
-		const char* modeNames[] = { "Main", "Secondary"};
+		const char* renderPathNames[] = { "Forward", "Deferred" };
+		const char* modeNames[] = { "Main", "Secondary" };
+		const char* ssaoNames[] = { "On", "Off" };
+
+		if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2)) {
+			CommandManager::addCommand(new ChangePropertyCommand<RenderPath>(&camera->mRenderPath, static_cast<RenderPath>(renderPath), &scene.isDirty));
+		}
 
 		if(ImGui::Combo("Mode", &mode, modeNames, 2)) {
 			CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(&camera->mMode, static_cast<CameraMode>(mode), &scene.isDirty));
+		}
+
+		if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
+			CommandManager::addCommand(new ChangePropertyCommand<CameraSSAO>(&camera->mSSAO, static_cast<CameraSSAO>(ssao), &scene.isDirty));
 		}
 
 		glm::vec3 position = transform->mPosition;// camera->mPosition;
@@ -56,14 +68,6 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 		}
 		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
 			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->mBackgroundColor, backgroundColor, &scene.isDirty));
-		}
-
-		int ssao = static_cast<int>(camera->mSSAO);
-
-		const char* ssaoNames[] = { "On", "Off" };
-
-		if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
-			CommandManager::addCommand(new ChangePropertyCommand<CameraSSAO>(&camera->mSSAO, static_cast<CameraSSAO>(ssao), &scene.isDirty));
 		}
 
 		if (ImGui::TreeNode("Viewport"))

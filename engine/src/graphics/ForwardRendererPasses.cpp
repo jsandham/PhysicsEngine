@@ -18,12 +18,6 @@ using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state)
 {
-	state->mQuery.mQueryBack = 0;
-	state->mQuery.mQueryFront = 1;
-
-	glGenQueries(1, &(state->mQuery.mQueryId[0]));
-	glGenQueries(1, &(state->mQuery.mQueryId[1]));
-
 	// generate all internal shader programs
 	state->mGeometryShader.setVertexShader(InternalShaders::positionAndNormalsVertexShader);
 	state->mGeometryShader.setFragmentShader(InternalShaders::positionAndNormalsFragmentShader);
@@ -199,287 +193,17 @@ void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state
 	Graphics::checkError();
 }
 
-void PhysicsEngine::registerRenderAssets(World* world)
-{
-	// create all texture assets not already created
-	for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++) {
-		Texture2D* texture = world->getAssetByIndex<Texture2D>(i);
-		if (texture != NULL && !texture->isCreated()) {
-			texture->create();
-
-			if (!texture->isCreated()) {
-				std::string errorMessage = "Error: Failed to create texture " + texture->getId().toString() + "\n";
-				Log::error(errorMessage.c_str());
-			}
-		}
-	}
-
-	Graphics::checkError();
-
-	// compile all shader assets and configure uniform blocks not already compiled
-	std::unordered_set<Guid> shadersCompiledThisFrame;
-	for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++) {
-		Shader* shader = world->getAssetByIndex<Shader>(i);
-
-		if (!shader->isCompiled()) {
-
-			shader->compile();
-
-			if (!shader->isCompiled()) {
-				std::string errorMessage = "Shader failed to compile " + shader->getId().toString() + "\n";
-				Log::error(&errorMessage[0]);
-			}
-
-			shadersCompiledThisFrame.insert(shader->getId());
-		}
-	}
-
-	Graphics::checkError();
-
-	// update material on shader change
-	for (int i = 0; i < world->getNumberOfAssets<Material>(); i++) {
-		Material* material = world->getAssetByIndex<Material>(i);
-
-		std::unordered_set<Guid>::iterator it = shadersCompiledThisFrame.find(material->getShaderId());
-
-		if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end()) {
-			material->onShaderChanged(world); // need to also do this if the shader code changed but the assigned shader on the material remained the same!
-		}
-	}
-
-	// create all mesh assets not already created
-	for (int i = 0; i < world->getNumberOfAssets<Mesh>(); i++) {
-		Mesh* mesh = world->getAssetByIndex<Mesh>(i);
-
-		if (mesh != NULL && !mesh->isCreated()) {
-			mesh->create();
-
-			if (!mesh->isCreated()) {
-				std::string errorMessage = "Error: Failed to create mesh " + mesh->getId().toString() + "\n";
-				Log::error(errorMessage.c_str());
-			}
-		}
-	}
-
-	Graphics::checkError();
-}
-
-void PhysicsEngine::registerCameras(World* world)
-{
-	const PoolAllocator<Camera>* cameraAllocator = world->getComponentAllocator_Const<Camera>();
-
-	for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++) {
-		Camera* camera = world->getComponentByIndex<Camera>(cameraAllocator, i);
-
-		if (!camera->isCreated()) {
-			camera->create();
-		}
-	}
-
-	Graphics::checkError();
-}
-
-void PhysicsEngine::updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects)
-{
-	const PoolAllocator<MeshRenderer>* meshRendererAllocator = world->getComponentAllocator_Const<MeshRenderer>();
-
-	// add created mesh renderers to render object list
-	std::vector<triple<Guid, Guid, int>> componentIdsAdded = world->getComponentIdsMarkedCreated();
-	for (size_t i = 0; i < componentIdsAdded.size(); i++) {
-
-		if (componentIdsAdded[i].third == ComponentType<MeshRenderer>::type) {
-			int meshRendererIndex = world->getIndexOf(componentIdsAdded[i].second);
-
-			MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererAllocator, meshRendererIndex);
-			Transform* transform = meshRenderer->getComponent<Transform>(world);
-			Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
-
-			int transformIndex = world->getIndexOf(transform->getId());
-			int meshIndex = mesh != NULL ? world->getIndexOf(mesh->getId()) : -1;
-
-			Sphere boundingSphere = mesh != NULL ? mesh->computeBoundingSphere() : Sphere();
-
-			for (int j = 0; j < 8; j++) {
-				int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
-				Material* material = world->getAssetByIndex<Material>(materialIndex);
-
-				int shaderIndex = material != NULL ? world->getIndexOf(material->getShaderId()) : -1;
-				Shader* shader = material != NULL ? world->getAssetByIndex<Shader>(shaderIndex) : NULL;
-
-				RenderObject renderObject;
-				renderObject.meshRendererId = meshRenderer->getId();
-				renderObject.transformId = transform->getId();
-				renderObject.meshId = mesh != NULL ? mesh->getId() : Guid::INVALID;
-				renderObject.materialId = material != NULL ? material->getId() : Guid::INVALID;
-				renderObject.shaderId = shader != NULL ? shader->getId() : Guid::INVALID;
-
-				renderObject.meshRendererIndex = meshRendererIndex;
-				renderObject.transformIndex = transformIndex;
-				renderObject.meshIndex = meshIndex;
-				renderObject.materialIndex = materialIndex;
-				renderObject.shaderIndex = shaderIndex;
-				renderObject.subMeshIndex = j;
-
-				renderObject.boundingSphere = boundingSphere;
-
-				int subMeshVertexStartIndex = mesh != NULL ? mesh->getSubMeshStartIndex(j) : -1;
-				int subMeshVertexEndIndex = mesh != NULL ? mesh->getSubMeshEndIndex(j) : -1;
-
-				renderObject.start = subMeshVertexStartIndex;
-				renderObject.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-				renderObject.vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
-
-				renderObjects.push_back(renderObject);
-			}
-
-			meshRenderer->mMeshChanged = false;
-			meshRenderer->mMaterialChanged = false;
-		}
-	}
-
-	// remove destroyed mesh renderers from render object list
-	std::vector<triple<Guid, Guid, int>> componentIdsDestroyed = world->getComponentIdsMarkedLatentDestroy();
-	for (size_t i = 0; i < componentIdsDestroyed.size(); i++) {
-		if (componentIdsDestroyed[i].third == ComponentType<MeshRenderer>::type) {
-			int meshRendererIndex = world->getIndexOf(componentIdsDestroyed[i].second);
-
-			//mmm this is slow...need a faster way of removing render objects
-			for (int j = (int)renderObjects.size() - 1; j >= 0; j--) {
-				if (meshRendererIndex == renderObjects[j].meshRendererIndex) {
-					renderObjects.erase(renderObjects.begin() + j);
-				}
-			}
-		}
-	}
-
-	// update render object list for transforms and/or mesh renderers that have been moved in their global arrays
-	std::vector<triple<Guid, int, int>> componentIdsMoved = world->getComponentIdsMarkedMoved();
-	for (size_t i = 0; i < componentIdsMoved.size(); i++) {
-		if (componentIdsMoved[i].second == ComponentType<Transform>::type) {
-			int oldIndex = componentIdsMoved[i].third;
-			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
-
-			//mmm this is slow...
-			for (size_t j = 0; j < renderObjects.size(); j++) {
-				if (oldIndex == renderObjects[j].transformIndex) {
-					renderObjects[j].transformIndex = newIndex;
-				}
-			}
-		}
-		else if (componentIdsMoved[i].second == ComponentType<MeshRenderer>::type)
-		{
-			int oldIndex = componentIdsMoved[i].third;
-			int newIndex = world->getIndexOf(componentIdsMoved[i].first);
-
-			//mmm this is slow...
-			for (size_t j = 0; j < renderObjects.size(); j++) {
-				if (oldIndex == renderObjects[j].meshRendererIndex) {
-					renderObjects[j].meshRendererIndex = newIndex;
-				}
-			}
-		}
-	}
-
-	// update render objects list for changes in mesh and material
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-
-		MeshRenderer* meshRenderer = world->getComponentByIndex<MeshRenderer>(meshRendererAllocator, renderObjects[i].meshRendererIndex);
-
-		// update render objects list for mesh renderers whose mesh has changed
-		if (meshRenderer->mMeshChanged) {
-
-			int meshIndex = world->getIndexOf(meshRenderer->getMesh());
-
-			Mesh* mesh = world->getAssetByIndex<Mesh>(meshIndex);
-
-			renderObjects[i].meshId = meshRenderer->getMesh();
-			renderObjects[i].meshIndex = meshIndex;
-
-			int subMeshIndex = renderObjects[i].subMeshIndex;
-			int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMeshIndex);
-			int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMeshIndex);
-
-			renderObjects[i].start = subMeshVertexStartIndex;
-			renderObjects[i].size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-			renderObjects[i].vao = mesh != NULL ? mesh->getNativeGraphicsVAO() : -1;
-
-			renderObjects[i].boundingSphere = mesh->computeBoundingSphere();
-
-			meshRenderer->mMeshChanged = false;
-		}
-
-		// update render objects list for mesh renderers whose material has changed
-		if (meshRenderer->mMaterialChanged) {
-
-			int materialIndex = world->getIndexOf(meshRenderer->getMaterial(renderObjects[i].subMeshIndex));
-			Material* material = world->getAssetByIndex<Material>(materialIndex);
-
-			int shaderIndex = material != NULL ? world->getIndexOf(material->getShaderId()) : -1;
-
-			renderObjects[i].materialId = material != NULL ? material->getId() : Guid::INVALID;
-			renderObjects[i].shaderId = material != NULL ? material->getShaderId() : Guid::INVALID;
-			renderObjects[i].materialIndex = materialIndex;
-			renderObjects[i].shaderIndex = shaderIndex;
-
-			meshRenderer->mMaterialChanged = false;
-		}
-	}
-}
-
-void PhysicsEngine::cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects)
-{
-	int count = 0;
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
-
-		glm::vec3 centre = renderObjects[i].boundingSphere.mCentre;
-		float radius = renderObjects[i].boundingSphere.mRadius;
-
-		glm::vec4 temp = renderObjects[i].model * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-
-		Sphere cullingSphere;
-		cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
-		cullingSphere.mRadius = radius;
-
-		if (Geometry::intersect(cullingSphere, camera->mFrustum)) {
-			count++;
-		}
-	}
-}
-
-void PhysicsEngine::updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects)
-{
-	const PoolAllocator<Transform>* transformAllocator = world->getComponentAllocator_Const<Transform>();
-
-	// update model matrices
-	int n = (int)renderObjects.size();
-
-	for (int i = 0; i < n; i++) {
-		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
-
-		Transform* transform = world->getComponentByIndex<Transform>(transformAllocator, renderObjects[i].transformIndex);
-
-		renderObjects[i].model = transform->getModelMatrix();
-	}
-}
-
 void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererState* state)
 {
-	state->mQuery.mNumBatchDrawCalls = 0;
-	state->mQuery.mNumDrawCalls = 0;
-	state->mQuery.mTotalElapsedTime = 0.0f;
-	state->mQuery.mVerts = 0;
-	state->mQuery.mTris = 0;
-	state->mQuery.mLines = 0;
-	state->mQuery.mPoints = 0;
+	camera->mQuery.mNumBatchDrawCalls = 0;
+	camera->mQuery.mNumDrawCalls = 0;
+	camera->mQuery.mTotalElapsedTime = 0.0f;
+	camera->mQuery.mVerts = 0;
+	camera->mQuery.mTris = 0;
+	camera->mQuery.mLines = 0;
+	camera->mQuery.mPoints = 0;
 
-	glBeginQuery(GL_TIME_ELAPSED, state->mQuery.mQueryId[state->mQuery.mQueryBack]);
+	glBeginQuery(GL_TIME_ELAPSED, camera->mQuery.mQueryId[camera->mQuery.mQueryBack]);
 
 	state->mCameraState.mProjection = camera->getProjMatrix();
 	state->mCameraState.mView = camera->getViewMatrix();
@@ -551,7 +275,7 @@ void PhysicsEngine::computeSSAO(World* world,
 		state->mGeometryShader.use(state->mGeometryShaderProgram);
 		state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
 
-		Graphics::render(world, renderObjects[i], &state->mQuery);
+		Graphics::render(world, renderObjects[i], &camera->mQuery);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -613,7 +337,7 @@ void PhysicsEngine::renderShadows(World* world,
 				}
 
 				state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[j].model);
-				Graphics::render(world, renderObjects[j], &state->mQuery);
+				Graphics::render(world, renderObjects[j], &camera->mQuery);
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -641,7 +365,7 @@ void PhysicsEngine::renderShadows(World* world,
 			}
 
 			state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &state->mQuery);
+			Graphics::render(world, renderObjects[i], &camera->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -677,7 +401,7 @@ void PhysicsEngine::renderShadows(World* world,
 			}
 
 			state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderModelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &state->mQuery);
+			Graphics::render(world, renderObjects[i], &camera->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -801,7 +525,7 @@ void PhysicsEngine::renderOpaques(World* world,
 			glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
 		}
 
-		Graphics::render(world, renderObjects[i], &state->mQuery);
+		Graphics::render(world, renderObjects[i], &camera->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -853,7 +577,7 @@ void PhysicsEngine::renderColorPicking(World* world,
 		state->mColorShader.setMat4(state->mColorShaderModelLoc, renderObjects[i].model);
 		state->mColorShader.setVec4(state->mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
-		Graphics::render(world, renderObjects[i], &state->mQuery);
+		Graphics::render(world, renderObjects[i], &camera->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -871,36 +595,24 @@ void PhysicsEngine::postProcessing()
 
 }
 
-void PhysicsEngine::endFrame(World* world,
-	Camera* camera,
-	ForwardRendererState* state,
-	const std::vector<RenderObject>& renderObjects)
+void PhysicsEngine::endFrame(World* world, Camera* camera, ForwardRendererState* state)
 {
 	glEndQuery(GL_TIME_ELAPSED);
 
 	GLuint64 elapsedTime; // in nanoseconds
-	glGetQueryObjectui64v(state->mQuery.mQueryId[state->mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
+	glGetQueryObjectui64v(camera->mQuery.mQueryId[camera->mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
 
-	state->mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
+	camera->mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
 	// swap which query is active
-	if (state->mQuery.mQueryBack) {
-		state->mQuery.mQueryBack = 0;
-		state->mQuery.mQueryFront = 1;
+	if (camera->mQuery.mQueryBack) {
+		camera->mQuery.mQueryBack = 0;
+		camera->mQuery.mQueryFront = 1;
 	}
 	else {
-		state->mQuery.mQueryBack = 1;
-		state->mQuery.mQueryFront = 0;
+		camera->mQuery.mQueryBack = 1;
+		camera->mQuery.mQueryFront = 0;
 	}
-
-	// fill targets struct
-	state->mTargets.mColor = camera->getNativeGraphicsColorTex();
-	state->mTargets.mDepth = camera->getNativeGraphicsDepthTex();
-	state->mTargets.mColorPicking = camera->getNativeGraphicsColorPickingTex();
-	state->mTargets.mPosition = camera->getNativeGraphicsPositionTex();
-	state->mTargets.mNormals = camera->getNativeGraphicsNormalTex();
-	state->mTargets.mOverdraw = -1;
-	state->mTargets.mSsao = camera->getNativeGraphicsSSAOColorTex();
 
 	if (state->mRenderToScreen) {
 		glViewport(0, 0, 1024, 1024);

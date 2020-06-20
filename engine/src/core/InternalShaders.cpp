@@ -263,13 +263,18 @@ std::string InternalShaders::gbufferVertexShader =
 "layout (location = 1) in vec3 aNormal;\n"
 "layout (location = 2) in vec2 aTexCoords;\n"
 
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+
 "out vec3 FragPos;\n"
 "out vec2 TexCoords;\n"
 "out vec3 Normal;\n"
 
 "uniform mat4 model;\n"
-"uniform mat4 view;\n"
-"uniform mat4 projection;\n"
 
 "void main()\n"
 "{\n"
@@ -280,7 +285,7 @@ std::string InternalShaders::gbufferVertexShader =
 "    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
 "    Normal = normalMatrix * aNormal;\n"
 
-"    gl_Position = projection * view * worldPos;\n"
+"    gl_Position = Camera.projection * Camera.view * worldPos;\n"
 "}\n";
 
 std::string InternalShaders::gbufferFragmentShader =

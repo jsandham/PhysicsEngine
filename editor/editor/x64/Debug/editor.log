@@ -1,9 +1,22 @@
-﻿Build started 2020-06-15 10:02:13 PM.
+﻿Build started 2020-06-20 6:46:50 PM.
      1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
-         Creating "x64\Debug\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "x64\Debug\editor.tlog\unsuccessfulbuild".
        ClCompile:
-         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\imgui\include /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\simplefilewatcher\include /ZI /JMC /nologo /W3 /WX- /diagnostics:column /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"x64\Debug\\" /Fd"x64\Debug\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\BoxColliderDrawer.cpp src\main.cpp src\MeshColliderDrawer.cpp src\SceneView.cpp src\ShaderDrawer.cpp
+         BoxColliderDrawer.cpp
+         main.cpp
+         MeshColliderDrawer.cpp
+         SceneView.cpp
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(88,69): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(89,58): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(90,51): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(91,52): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(92,54): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(93,55): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         ShaderDrawer.cpp
+         Generating Code...
+     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(94,55): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\lib\debug /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\imgui\lib\debug /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\simplefilewatcher\lib\debug engine.lib imgui.lib simplefilewatcher.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.lib" /MACHINE:X64 x64\Debug\AboutPopup.obj
          x64\Debug\BoxColliderDrawer.obj
@@ -60,7 +73,18 @@
      1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Build target(s)).
 
 Build succeeded.
-    0 Warning(s)
+
+       "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Build target) (1) ->
+       (ClCompile target) -> 
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(88,69): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(89,58): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(90,51): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(91,52): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(92,54): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(93,55): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(94,55): warning C4838: conversion from 'GLuint' to 'const GLint' requires a narrowing conversion
+
+    7 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:02.29
+Time Elapsed 00:00:04.61

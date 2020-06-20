@@ -123,12 +123,19 @@ void Graphics::create(Camera* camera,
 					  GLuint* geometryFBO,
 					  GLuint* positionTex,
 					  GLuint* normalTex,
+					  GLuint* albedoSpecTex,
 					  GLuint* ssaoFBO,
 					  GLuint* ssaoColorTex,
 					  GLuint* ssaoNoiseTex,
 					  glm::vec3* ssaoSamples,
+					  GLuint* queryId0,
+					  GLuint* queryId1,
 				      bool* created)
 {
+	// generate timing queries
+	glGenQueries(1, queryId0);
+	glGenQueries(1, queryId1);
+
 	// generate main camera fbo (color + depth)
 	glGenFramebuffers(1, mainFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
@@ -199,11 +206,18 @@ void Graphics::create(Camera* camera,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+	glGenTextures(1, albedoSpecTex);
+	glBindTexture(GL_TEXTURE_2D, *albedoSpecTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *positionTex, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *normalTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *albedoSpecTex, 0);
 
-	unsigned int geometryAttachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers(2, geometryAttachments);
+	unsigned int geometryAttachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, geometryAttachments);
 
 	Graphics::checkFrambufferError();
 
@@ -282,9 +296,12 @@ void Graphics::destroy(Camera* camera,
 					   GLuint* geometryFBO,
 					   GLuint* positionTex,
 					   GLuint* normalTex,
+					   GLuint* albedoSpecTex,
 					   GLuint* ssaoFBO,
 					   GLuint* ssaoColorTex,
 					   GLuint* ssaoNoiseTex,
+					   GLuint* queryId0,
+					   GLuint* queryId1,
 					   bool* created)
 {
 	// detach textures from their framebuffer
@@ -320,8 +337,13 @@ void Graphics::destroy(Camera* camera,
 	glDeleteTextures(1, colorPickingDepthTex);
 	glDeleteTextures(1, positionTex);
 	glDeleteTextures(1, normalTex);
+	glDeleteTextures(1, albedoSpecTex);
 	glDeleteTextures(1, ssaoColorTex);
 	glDeleteTextures(1, ssaoNoiseTex);
+
+	// delete timing query
+	glDeleteQueries(1, queryId0);
+	glDeleteQueries(1, queryId1);
 
 	*created = false;
 }
@@ -363,6 +385,8 @@ void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	*created = true;
+
+	Graphics::checkError();
 }
 
 void Graphics::destroy(Texture2D* texture, GLuint* tex, bool* created)
@@ -389,6 +413,8 @@ void Graphics::readPixels(Texture2D* texture)
 	texture->setRawTextureData(rawTextureData, width, height, format);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	Graphics::checkError();
 }
 
 void Graphics::apply(Texture2D* texture)
@@ -405,6 +431,8 @@ void Graphics::apply(Texture2D* texture)
 	glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	Graphics::checkError();
 }
 
  void Graphics::create(Texture3D* texture, GLuint* tex, bool* created)
@@ -431,6 +459,8 @@ void Graphics::apply(Texture2D* texture)
  	glBindTexture(GL_TEXTURE_3D, 0);
 
 	*created = true;
+
+	Graphics::checkError();
  }
 
  void Graphics::destroy(Texture3D* texture, GLuint* tex, bool* created)
@@ -458,6 +488,8 @@ void Graphics::readPixels(Texture3D* texture)
 	texture->setRawTextureData(rawTextureData, width, height, depth, format);
 	
 	glBindTexture(GL_TEXTURE_3D, 0);
+
+	Graphics::checkError();
 }
 
 void Graphics::apply(Texture3D* texture)
@@ -475,6 +507,8 @@ void Graphics::apply(Texture3D* texture)
 	glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
 
 	glBindTexture(GL_TEXTURE_3D, 0);
+
+	Graphics::checkError();
 }
 
 void Graphics::create(Cubemap* cubemap, GLuint* tex, bool* created)
@@ -501,6 +535,8 @@ void Graphics::create(Cubemap* cubemap, GLuint* tex, bool* created)
  	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	*created = true;
+
+	Graphics::checkError();
 }
 
 void Graphics::destroy(Cubemap* cubemap, GLuint* tex, bool* created)
@@ -526,6 +562,8 @@ void Graphics::readPixels(Cubemap* cubemap)
  	}
 
  	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	Graphics::checkError();
 }
 
 void Graphics::apply(Cubemap* cubemap)
@@ -543,6 +581,8 @@ void Graphics::apply(Cubemap* cubemap)
  	}
 
  	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	Graphics::checkError();
 }
 
 void Graphics::create(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)
@@ -572,6 +612,8 @@ void Graphics::create(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuin
 	glBindVertexArray(0);
 
 	*created = true;
+
+	Graphics::checkError();
 }
 
 void Graphics::destroy(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created)

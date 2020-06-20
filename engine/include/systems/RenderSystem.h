@@ -9,8 +9,8 @@
 #include "../core/World.h"
 
 #include "../graphics/ForwardRenderer.h"
-#include "../graphics/GraphicsTargets.h"
-#include "../graphics/GraphicsQuery.h"
+#include "../graphics/DeferredRenderer.h"
+#include "../graphics/RenderObject.h"
 
 namespace PhysicsEngine
 {
@@ -18,6 +18,9 @@ namespace PhysicsEngine
 	{
 		private:
 			ForwardRenderer mForwardRenderer;
+			DeferredRenderer mDeferredRenderer;
+
+			std::vector<RenderObject> mRenderObjects;
 
 		public:
 			bool mRenderToScreen;
@@ -34,8 +37,12 @@ namespace PhysicsEngine
 			void init(World* world);
 			void update(Input input, Time time);
 
-			GraphicsTargets getGraphicsTargets() const;
-			GraphicsQuery getGraphicsQuery() const;
+		private:
+			void registerRenderAssets(World* world);
+			void registerCameras(World* world);
+			void updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects);
+			void updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects);
+			void cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects);
 	};
 
 	template <>

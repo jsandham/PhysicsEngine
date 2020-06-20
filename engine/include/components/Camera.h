@@ -22,6 +22,9 @@
 
 #include "../core/Frustum.h"
 
+#include "../graphics/GraphicsTargets.h"
+#include "../graphics/GraphicsQuery.h"
+
 namespace PhysicsEngine
 {
 	enum class CameraMode
@@ -36,12 +39,19 @@ namespace PhysicsEngine
 		SSAO_Off,
 	};
 
+	enum class RenderPath
+	{
+		Forward,
+		Deferred
+	};
+
 #pragma pack(push, 1)
 	struct CameraHeader
 	{
 		Guid mComponentId;
 		Guid mEntityId;
 		Guid mTargetTextureId;
+		RenderPath mRenderPath;
 		CameraMode mMode;
 		CameraSSAO mSSAO;
 		glm::vec4 mBackgroundColor;
@@ -71,27 +81,16 @@ namespace PhysicsEngine
 			Viewport mViewport;
 			Guid mTargetTextureId;
 
+			RenderPath mRenderPath;
 			CameraMode mMode;
 			CameraSSAO mSSAO;
 
 			glm::vec4 mBackgroundColor;
 
+			GraphicsQuery mQuery;
+
 		private:
-			GLuint mMainFBO;
-			GLuint mColorTex;
-			GLuint mDepthTex;
-
-			GLuint mColorPickingFBO;
-			GLuint mColorPickingTex;
-			GLuint mColorPickingDepthTex;
-
-			GLuint mGeometryFBO;
-			GLuint mPositionTex;
-			GLuint mNormalTex;
-
-			GLuint mSsaoFBO;
-			GLuint mSsaoColorTex;
-			GLuint mSsaoNoiseTex;
+			GraphicsTargets mTargets;
 
 			glm::vec3 mSsaoSamples[64];
 			glm::mat4 viewMatrix;
@@ -120,17 +119,18 @@ namespace PhysicsEngine
 			glm::mat4 getProjMatrix() const;
 			glm::vec3 getSSAOSample(int sample) const;
 			Guid getMeshRendererIdAtScreenPos(int x, int y) const;
-			//Guid getMeshRendererFromColor(int color) const;
 
 			GLuint getNativeGraphicsMainFBO() const;
 			GLuint getNativeGraphicsColorPickingFBO() const;
 			GLuint getNativeGraphicsGeometryFBO() const;
 			GLuint getNativeGraphicsSSAOFBO() const;
+
 			GLuint getNativeGraphicsColorTex() const;
 			GLuint getNativeGraphicsDepthTex() const;
 			GLuint getNativeGraphicsColorPickingTex() const;
 			GLuint getNativeGraphicsPositionTex() const;
 			GLuint getNativeGraphicsNormalTex() const;
+			GLuint getNativeGraphicsAlbedoSpecTex() const;
 			GLuint getNativeGraphicsSSAOColorTex() const;
 			GLuint getNativeGraphicsSSAONoiseTex() const;
 	};

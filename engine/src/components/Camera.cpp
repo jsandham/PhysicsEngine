@@ -9,14 +9,27 @@ Camera::Camera()
 	mEntityId = Guid::INVALID;
 	mTargetTextureId = Guid::INVALID;
 
-	mMainFBO = 0;
-	mColorTex = 0;
-	mDepthTex = 0;
+	mQuery.mQueryBack = 0;
+	mQuery.mQueryFront = 1;
 
-	mGeometryFBO = 0;
-	mPositionTex = 0;
-	mNormalTex = 0;
+	mTargets.mMainFBO = 0;
+	mTargets.mColorTex = 0;
+	mTargets.mDepthTex = 0;
 
+	mTargets.mColorPickingFBO = 0;
+	mTargets.mColorPickingTex = 0;
+	mTargets.mColorPickingDepthTex = 0;
+
+	mTargets.mGeometryFBO = 0;
+	mTargets.mPositionTex = 0;
+	mTargets.mNormalTex = 0;
+	mTargets.mAlbedoSpecTex = 0;
+
+	mTargets.mSsaoFBO = 0;
+	mTargets.mSsaoColorTex = 0;
+	mTargets.mSsaoNoiseTex = 0;
+
+	mRenderPath = RenderPath::Forward;
 	mMode = CameraMode::Main;
 	mSSAO = CameraSSAO::SSAO_Off;
 
@@ -56,6 +69,7 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 	header.mComponentId = componentId;
 	header.mEntityId = entityId;
 	header.mTargetTextureId = mTargetTextureId;
+	header.mRenderPath = mRenderPath;
 	header.mMode = mMode;
 	header.mSSAO = mSSAO;
 	header.mBackgroundColor = mBackgroundColor;
@@ -83,6 +97,7 @@ void Camera::deserialize(std::vector<char> data)
 	mEntityId = header->mEntityId;
 	mTargetTextureId = header->mTargetTextureId;
 
+	mRenderPath = header->mRenderPath;
 	mMode = header->mMode;
 	mSSAO = header->mSSAO;
 
@@ -107,37 +122,43 @@ bool Camera::isCreated() const
 void Camera::create()
 {
 	Graphics::create(this, 
-					 &mMainFBO, 
-					 &mColorTex, 
-					 &mDepthTex, 
-					 &mColorPickingFBO,
-					 &mColorPickingTex,
-					 &mColorPickingDepthTex,
-					 &mGeometryFBO, 
-					 &mPositionTex, 
-					 &mNormalTex, 
-					 &mSsaoFBO, 
-					 &mSsaoColorTex, 
-					 &mSsaoNoiseTex, 
+					 &mTargets.mMainFBO, 
+					 &mTargets.mColorTex,
+					 &mTargets.mDepthTex,
+					 &mTargets.mColorPickingFBO,
+					 &mTargets.mColorPickingTex,
+					 &mTargets.mColorPickingDepthTex,
+					 &mTargets.mGeometryFBO,
+					 &mTargets.mPositionTex,
+					 &mTargets.mNormalTex,
+					 &mTargets.mAlbedoSpecTex,
+					 &mTargets.mSsaoFBO,
+					 &mTargets.mSsaoColorTex,
+					 &mTargets.mSsaoNoiseTex,
 					 &mSsaoSamples[0],
+					 &mQuery.mQueryId[0],
+					 &mQuery.mQueryId[1],
 					 &mIsCreated);
 }
 
 void Camera::destroy()
 {
 	Graphics::destroy(this,
-					  &mMainFBO,
-					  &mColorTex,
-					  &mDepthTex,
-					  &mColorPickingFBO,
-					  &mColorPickingTex,
-					  &mColorPickingDepthTex,
-					  &mGeometryFBO,
-				  	  &mPositionTex,
-					  &mNormalTex,
-					  &mSsaoFBO,
-					  &mSsaoColorTex,
-					  &mSsaoNoiseTex,
+					  &mTargets.mMainFBO,
+					  &mTargets.mColorTex,
+					  &mTargets.mDepthTex,
+					  &mTargets.mColorPickingFBO,
+					  &mTargets.mColorPickingTex,
+					  &mTargets.mColorPickingDepthTex,
+					  &mTargets.mGeometryFBO,
+				  	  &mTargets.mPositionTex,
+					  &mTargets.mNormalTex,
+					  &mTargets.mAlbedoSpecTex,
+					  &mTargets.mSsaoFBO,
+					  &mTargets.mSsaoColorTex,
+					  &mTargets.mSsaoNoiseTex,
+					  &mQuery.mQueryId[0],
+					  &mQuery.mQueryId[1],
 					  &mIsCreated);
 }
 
@@ -189,55 +210,60 @@ Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 
 GLuint Camera::getNativeGraphicsMainFBO() const
 {
-	return mMainFBO;
+	return mTargets.mMainFBO;
 }
 
 GLuint Camera::getNativeGraphicsColorPickingFBO() const
 {
-	return mColorPickingFBO;
+	return mTargets.mColorPickingFBO;
 }
 
 GLuint Camera::getNativeGraphicsGeometryFBO() const
 {
-	return mGeometryFBO;
+	return mTargets.mGeometryFBO;
 }
 
 GLuint Camera::getNativeGraphicsSSAOFBO() const
 {
-	return mSsaoFBO;
+	return mTargets.mSsaoFBO;
 }
 
 GLuint Camera::getNativeGraphicsColorTex() const
 {
-	return mColorTex;
+	return mTargets.mColorTex;
 }
 
 GLuint Camera::getNativeGraphicsDepthTex() const
 {
-	return mDepthTex;
+	return mTargets.mDepthTex;
 }
 
 GLuint Camera::getNativeGraphicsColorPickingTex() const
 {
-	return mColorPickingTex;
+	return mTargets.mColorPickingTex;
 }
 
 GLuint Camera::getNativeGraphicsPositionTex() const
 {
-	return mPositionTex;
+	return mTargets.mPositionTex;
 }
 
 GLuint Camera::getNativeGraphicsNormalTex() const
 {
-	return mNormalTex;
+	return mTargets.mNormalTex;
+}
+
+GLuint Camera::getNativeGraphicsAlbedoSpecTex() const
+{
+	return mTargets.mAlbedoSpecTex;
 }
 
 GLuint Camera::getNativeGraphicsSSAOColorTex() const
 {
-	return mSsaoColorTex;
+	return mTargets.mSsaoColorTex;
 }
 
 GLuint Camera::getNativeGraphicsSSAONoiseTex() const
 {
-	return mSsaoNoiseTex;
+	return mTargets.mSsaoNoiseTex;
 }

@@ -47,15 +47,30 @@ namespace PhysicsEngine
 		void resetCamera();
 		void setViewport(Viewport viewport);
 		void setFrustum(Frustum frustum);
+		void setRenderPath(RenderPath path);
+		void setSSAO(CameraSSAO ssao);
 
 		Viewport getViewport() const;
 		Frustum getFrustum() const;
+		RenderPath getRenderPath() const;
+		CameraSSAO getSSAO() const;
 
 		Guid getMeshRendererUnderMouse(float nx, float ny) const;
 		int getMousePosX() const;
 		int getMousePosY() const;
 		bool isLeftMouseClicked() const;
 		bool isRightMouseClicked() const;
+
+		GLuint getNativeGraphicsColorTex() const;
+		GLuint getNativeGraphicsDepthTex() const;
+		GLuint getNativeGraphicsColorPickingTex() const;
+		GLuint getNativeGraphicsPositionTex() const;
+		GLuint getNativeGraphicsNormalTex() const;
+		GLuint getNativeGraphicsAlbedoSpecTex() const;
+		GLuint getNativeGraphicsSSAOColorTex() const;
+		GLuint getNativeGraphicsSSAONoiseTex() const;
+
+		GraphicsQuery getQuery() const;
 	};
 
 	template <>

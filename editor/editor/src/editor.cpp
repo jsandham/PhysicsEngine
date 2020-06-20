@@ -167,8 +167,6 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	// draw scene view window
 	sceneView.render(&world, 
 					 cameraSystem, 
-					 renderSystem->getGraphicsTargets(),
-					 renderSystem->getGraphicsQuery(),
 					 clipboard, 
 					 editorMenu.isOpenSceneViewCalled());
 

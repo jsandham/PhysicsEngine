@@ -7,10 +7,8 @@
 
 #include "../core/World.h"
 #include "../core/Input.h"
-#include "../components/MeshRenderer.h"
 
-#include "Graphics.h"
-#include "GraphicsQuery.h"
+#include "DeferredRendererState.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -20,24 +18,14 @@ namespace PhysicsEngine
 		private:
 			World* mWorld;
 
-			/*MeshBuffer mMeshBuffer;
-			std::vector<RenderObject> mRenderObjects;
-
-			GBuffer mGbuffer;
-
-			GraphicsQuery mQuery;
-
-			std::vector<unsigned char> mData;*/
+			DeferredRendererState mState;
 
 		public:
 			DeferredRenderer();
 			~DeferredRenderer();
 
-			void init(World* world);
-			void update(Input input);
-			void sort();
-			void add(MeshRenderer* meshRenderer);
-			void remove(MeshRenderer* meshRenderer);
+			void init(World* world, bool renderToScreen);
+			void update(Input input, Camera* camera, std::vector<RenderObject>& renderObjects);
 	};
 }
 

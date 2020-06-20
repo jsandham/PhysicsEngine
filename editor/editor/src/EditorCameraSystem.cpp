@@ -163,6 +163,16 @@ void EditorCameraSystem::setFrustum(Frustum frustum)
 	mCamera->mFrustum = frustum;
 }
 
+void EditorCameraSystem::setRenderPath(RenderPath path)
+{
+	mCamera->mRenderPath = path;
+}
+
+void EditorCameraSystem::setSSAO(CameraSSAO ssao)
+{
+	mCamera->mSSAO = ssao;
+}
+
 Viewport EditorCameraSystem::getViewport() const
 {
 	return mCamera->mViewport;
@@ -171,6 +181,16 @@ Viewport EditorCameraSystem::getViewport() const
 Frustum EditorCameraSystem::getFrustum() const
 {
 	return mCamera->mFrustum;
+}
+
+RenderPath EditorCameraSystem::getRenderPath() const
+{
+	return mCamera->mRenderPath;
+}
+
+CameraSSAO EditorCameraSystem::getSSAO() const
+{
+	return mCamera->mSSAO;
 }
 
 int EditorCameraSystem::getMousePosX() const
@@ -200,4 +220,49 @@ Guid EditorCameraSystem::getMeshRendererUnderMouse(float nx, float ny) const
 
 	return mCamera->getMeshRendererIdAtScreenPos(x, y);
 	/*return mCamera->getMeshRendererIdAtScreenPos(mMousePosX, mMousePosY);*/
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsColorTex() const
+{
+	return mCamera->getNativeGraphicsColorTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsDepthTex() const
+{
+	return mCamera->getNativeGraphicsDepthTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsColorPickingTex() const
+{
+	return mCamera->getNativeGraphicsColorPickingTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsPositionTex() const
+{
+	return mCamera->getNativeGraphicsPositionTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsNormalTex() const
+{
+	return mCamera->getNativeGraphicsNormalTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsAlbedoSpecTex() const
+{
+	return mCamera->getNativeGraphicsAlbedoSpecTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsSSAOColorTex() const
+{
+	return mCamera->getNativeGraphicsSSAOColorTex();
+}
+
+GLuint EditorCameraSystem::getNativeGraphicsSSAONoiseTex() const
+{
+	return mCamera->getNativeGraphicsSSAONoiseTex();
+}
+
+GraphicsQuery EditorCameraSystem::getQuery() const
+{
+	return mCamera->mQuery;
 }

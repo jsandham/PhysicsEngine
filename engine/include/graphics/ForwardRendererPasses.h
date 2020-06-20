@@ -17,16 +17,6 @@ namespace PhysicsEngine
 {
 	void initializeRenderer(World* world, ForwardRendererState* state);
 
-	void registerRenderAssets(World* world);
-
-	void registerCameras(World* world);
-
-	void updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects);
-
-	void cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects);
-
-	void updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects);
-
 	void beginFrame(World* world, Camera* camera, ForwardRendererState* state);
 
 	void computeSSAO(World* world, 
@@ -57,10 +47,7 @@ namespace PhysicsEngine
 
 	void postProcessing();
 
-	void endFrame(World* world,
-		Camera* camera,
-		ForwardRendererState* state,
-		const std::vector<RenderObject>& renderObjects);
+	void endFrame(World* world, Camera* camera, ForwardRendererState* state);
 
 	void calcShadowmapCascades(Camera* camera, ForwardRendererState* state);
 

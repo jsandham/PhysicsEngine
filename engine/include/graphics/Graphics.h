@@ -87,10 +87,13 @@ namespace PhysicsEngine
 							   GLuint* geometryFBO, 
 							   GLuint* positionTex, 
 							   GLuint* normalTex, 
+							   GLuint* albedoSpecTex,
 							   GLuint* ssaoFBO, 
 							   GLuint* ssaoColorTex, 
 							   GLuint* ssaoNoiseTex,
 							   glm::vec3* ssaoSamples,
+							   GLuint* queryId0,
+							   GLuint* queryId1,
 							   bool* created);
 
 			static void destroy(Camera* camera,
@@ -103,9 +106,12 @@ namespace PhysicsEngine
 								GLuint* geometryFBO,
 								GLuint* positionTex,
 								GLuint* normalTex,
+								GLuint* albedoSpecTex,
 								GLuint* ssaoFBO,
 								GLuint* ssaoColorTex,
 								GLuint* ssaoNoiseTex,
+								GLuint* queryId0,
+								GLuint* queryId1,
 								bool* created);
 
 			static void readColorPickingPixel(const Camera* camera, int x, int y, Color32* color);
