@@ -108,9 +108,9 @@ void Shader::load(const std::string& filepath)
 
 	std::string shaderContent = contents.str();
 
-	std::string vertexTag = "VERTEX:";
-	std::string geometryTag = "GEOMETRY:";
-	std::string fragmentTag = "FRAGMENT:";
+	const std::string vertexTag = "VERTEX:";
+	const std::string geometryTag = "GEOMETRY:";
+	const std::string fragmentTag = "FRAGMENT:";
 
 	size_t startOfVertexTag = shaderContent.find(vertexTag, 0);
 	size_t startOfGeometryTag = shaderContent.find(geometryTag, 0);
@@ -609,151 +609,124 @@ std::vector<ShaderUniform> Shader::getUniforms() const
 void Shader::setBool(const char* name, bool value) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform1i(locationIndex, (int)value);
-		}
+		glUniform1i(glGetUniformLocation(mActiveProgram, name), (int)value);
 	}
 }
 
 void Shader::setInt(const char* name, int value) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform1i(locationIndex, value);
-		}
+		glUniform1i(glGetUniformLocation(mActiveProgram, name), value);
 	}
 }
 
 void Shader::setFloat(const char* name, float value) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform1f(locationIndex, value);
-		}
+		glUniform1f(glGetUniformLocation(mActiveProgram, name), value);
 	}
 }
 
 void Shader::setVec2(const char* name, const glm::vec2& vec) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform2fv(locationIndex, 1, &vec[0]);
-		}
+		glUniform2fv(glGetUniformLocation(mActiveProgram, name), 1, &vec[0]);
 	}
 }
 
 void Shader::setVec3(const char* name, const glm::vec3& vec) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform3fv(locationIndex, 1, &vec[0]);
-		}
+		glUniform3fv(glGetUniformLocation(mActiveProgram, name), 1, &vec[0]);
 	}
 }
 
 void Shader::setVec4(const char* name, const glm::vec4& vec) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniform4fv(locationIndex, 1, &vec[0]);
-		}
+		glUniform4fv(glGetUniformLocation(mActiveProgram, name), 1, &vec[0]);
 	}
 }
 
 void Shader::setMat2(const char* name, const glm::mat2& mat) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniformMatrix2fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
-		}
+		glUniformMatrix2fv(glGetUniformLocation(mActiveProgram, name), 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat3(const char* name, const glm::mat3& mat) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniformMatrix3fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
-		}
+		glUniformMatrix3fv(glGetUniformLocation(mActiveProgram, name), 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat4(const char* name, const glm::mat4& mat) const
 {
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glUniformMatrix4fv(locationIndex, 1, GL_FALSE, &mat[0][0]);
-		}
+		glUniformMatrix4fv(glGetUniformLocation(mActiveProgram, name), 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setBool(int nameLocation, bool value) const
 {
-	if(mActiveProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1){
 		glUniform1i(nameLocation, (int)value);
 	}
 }
 void Shader::setInt(int nameLocation, int value) const
 {
-	if(mActiveProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1){
 		glUniform1i(nameLocation, value);
 	}
 }
 
 void Shader::setFloat(int nameLocation, float value) const
 {
-	if(mActiveProgram != -1 && nameLocation != -1){
+	if(mActiveProgram != -1){
 		glUniform1f(nameLocation, value);
 	}
 }
 
 void Shader::setVec2(int nameLocation, const glm::vec2 &vec) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniform2fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setVec3(int nameLocation, const glm::vec3 &vec) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniform3fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setVec4(int nameLocation, const glm::vec4 &vec) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniform4fv(nameLocation, 1, &vec[0]);
 	}
 }
 
 void Shader::setMat2(int nameLocation, const glm::mat2 &mat) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat3(int nameLocation, const glm::mat3 &mat) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
 
 void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
 {
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 	}
 }
@@ -762,10 +735,7 @@ bool Shader::getBool(const char* name) const
 {
 	int value = 0;
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetUniformiv(mActiveProgram, locationIndex, &value);
-		}
+		glGetUniformiv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), &value);
 	}
 
 	return (bool)value;
@@ -775,10 +745,7 @@ int Shader::getInt(const char* name) const
 {
 	int value = 0;
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetUniformiv(mActiveProgram, locationIndex, &value);
-		}
+		glGetUniformiv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), &value);
 	}
 
 	return value;
@@ -788,10 +755,7 @@ float Shader::getFloat(const char* name) const
 {
 	float value = 0.0f;
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetUniformfv(mActiveProgram, locationIndex, &value);
-		}
+		glGetUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), &value);
 	}
 
 	return value;
@@ -801,10 +765,7 @@ glm::vec2 Shader::getVec2(const char* name) const
 {
 	glm::vec2 value = glm::vec2(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec2), &value[0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::vec2), &value[0]);
 	}
 
 	return value;
@@ -814,10 +775,7 @@ glm::vec3 Shader::getVec3(const char* name) const
 {
 	glm::vec3 value = glm::vec3(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec3), &value[0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::vec3), &value[0]);
 	}
 
 	return value;
@@ -827,10 +785,7 @@ glm::vec4 Shader::getVec4(const char* name) const
 {
 	glm::vec4 value = glm::vec4(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::vec4), &value[0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::vec4), &value[0]);
 	}
 
 	return value;
@@ -840,10 +795,7 @@ glm::mat2 Shader::getMat2(const char* name) const
 {
 	glm::mat2 value = glm::mat2(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat2), &value[0][0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::mat2), &value[0][0]);
 	}
 
 	return value;
@@ -853,10 +805,7 @@ glm::mat3 Shader::getMat3(const char* name) const
 {
 	glm::mat3 value = glm::mat3(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat3), &value[0][0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::mat3), &value[0][0]);
 	}
 
 	return value;
@@ -866,10 +815,7 @@ glm::mat4 Shader::getMat4(const char* name) const
 {
 	glm::mat4 value = glm::mat4(0.0f);
 	if (mActiveProgram != -1) {
-		GLint locationIndex = glGetUniformLocation(mActiveProgram, name);
-		if (locationIndex != -1) {
-			glGetnUniformfv(mActiveProgram, locationIndex, sizeof(glm::mat4), &value[0][0]);
-		}
+		glGetnUniformfv(mActiveProgram, glGetUniformLocation(mActiveProgram, name), sizeof(glm::mat4), &value[0][0]);
 	}
 
 	return value;
@@ -878,7 +824,7 @@ glm::mat4 Shader::getMat4(const char* name) const
 bool Shader::getBool(int nameLocation) const
 {
 	int value = 0;
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetUniformiv(mActiveProgram, nameLocation, &value);
 	}
 
@@ -888,7 +834,7 @@ bool Shader::getBool(int nameLocation) const
 int Shader::getInt(int nameLocation) const
 {
 	int value = 0;
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetUniformiv(mActiveProgram, nameLocation, &value);
 	}
 
@@ -898,7 +844,7 @@ int Shader::getInt(int nameLocation) const
 float Shader::getFloat(int nameLocation) const
 {
 	float value = 0.0f;
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetUniformfv(mActiveProgram, nameLocation, &value);
 	}
 
@@ -908,7 +854,7 @@ float Shader::getFloat(int nameLocation) const
 glm::vec2 Shader::getVec2(int nameLocation) const
 {
 	glm::vec2 value = glm::vec2(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec2), &value[0]);
 	}
 
@@ -918,7 +864,7 @@ glm::vec2 Shader::getVec2(int nameLocation) const
 glm::vec3 Shader::getVec3(int nameLocation) const
 {
 	glm::vec3 value = glm::vec3(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec3), &value[0]);
 	}
 
@@ -928,7 +874,7 @@ glm::vec3 Shader::getVec3(int nameLocation) const
 glm::vec4 Shader::getVec4(int nameLocation) const
 {
 	glm::vec4 value = glm::vec4(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::vec4), &value[0]);
 	}
 
@@ -938,7 +884,7 @@ glm::vec4 Shader::getVec4(int nameLocation) const
 glm::mat2 Shader::getMat2(int nameLocation) const
 {
 	glm::mat2 value = glm::mat2(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat2), &value[0][0]);
 	}
 
@@ -948,7 +894,7 @@ glm::mat2 Shader::getMat2(int nameLocation) const
 glm::mat3 Shader::getMat3(int nameLocation) const
 {
 	glm::mat3 value = glm::mat3(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat3), &value[0][0]);
 	}
 
@@ -958,7 +904,7 @@ glm::mat3 Shader::getMat3(int nameLocation) const
 glm::mat4 Shader::getMat4(int nameLocation) const
 {
 	glm::mat4 value = glm::mat4(0.0f);
-	if (mActiveProgram != -1 && nameLocation != -1) {
+	if (mActiveProgram != -1) {
 		glGetnUniformfv(mActiveProgram, nameLocation, sizeof(glm::mat4), &value[0][0]);
 	}
 

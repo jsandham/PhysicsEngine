@@ -8,11 +8,10 @@ namespace PhysicsEngine
 	class InternalMeshes
 	{
 	public:
-		static std::vector<float> sphereVertices;
-		static std::vector<float> sphereNormals;
-		static std::vector<float> sphereTexCoords;
-		static std::vector<int> sphereSubMeshStartIndicies;
-		
+		static const std::vector<float> sphereVertices;
+		static const std::vector<float> sphereNormals;
+		static const std::vector<float> sphereTexCoords;
+		static const std::vector<int> sphereSubMeshStartIndicies;
 	};
 }
 

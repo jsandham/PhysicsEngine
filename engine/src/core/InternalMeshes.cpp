@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-std::vector<float> InternalMeshes::sphereVertices = 
+const std::vector<float> InternalMeshes::sphereVertices = 
 {
 	0.0f,   0.5f,  -0.0f,  
 	0.125f,  0.433f,  0.2165f, 
@@ -186,7 +186,7 @@ std::vector<float> InternalMeshes::sphereVertices =
 	0.0f,   -0.5f,  0.0f
 };
 
-std::vector<float> InternalMeshes::sphereNormals =
+const std::vector<float> InternalMeshes::sphereNormals =
 {
 	0.256f,  0.9553f,  0.1478f, 
 	0.256f,  0.9553f,  0.1478f, 
@@ -370,7 +370,7 @@ std::vector<float> InternalMeshes::sphereNormals =
 	0.256f,  -0.9553f,  -0.1478f
 };
 
-std::vector<float> InternalMeshes::sphereTexCoords = 
+const std::vector<float> InternalMeshes::sphereTexCoords = 
 {
 	0.0f,   0.0f,  
 	0.166667f,  0.166667f, 
@@ -554,4 +554,4 @@ std::vector<float> InternalMeshes::sphereTexCoords =
 	1.0f,   1.0f
 };
 
-std::vector<int> InternalMeshes::sphereSubMeshStartIndicies = { 0, 540 };
+const std::vector<int> InternalMeshes::sphereSubMeshStartIndicies = { 0, 540 };

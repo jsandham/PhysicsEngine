@@ -86,7 +86,6 @@ Guid::Guid(const std::string &str)
 
 			bytes[byteIndex++] = 16 * b1 + b2;
 		}
-
 	}
 
 	// check if guid is valid

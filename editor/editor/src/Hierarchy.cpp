@@ -19,7 +19,7 @@ Hierarchy::~Hierarchy()
 
 }
 
-void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipboard, std::set<Guid> editorOnlyEntityIds, bool isOpenedThisFrame)
+void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipboard, const std::set<Guid>& editorOnlyEntityIds, bool isOpenedThisFrame)
 {
 	static bool hierarchyActive = true;
 

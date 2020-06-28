@@ -82,6 +82,7 @@ void SceneView::render(PhysicsEngine::World* world,
 									   "Depth",
 									   "Normals",
 									   "Position",
+									   "Albedo/Specular",
 									   "SSAO",
 									   "SSAO Noise" };
 
@@ -90,6 +91,7 @@ void SceneView::render(PhysicsEngine::World* world,
 								   cameraSystem->getNativeGraphicsDepthTex(),
 								   cameraSystem->getNativeGraphicsNormalTex(),
 								   cameraSystem->getNativeGraphicsPositionTex(),
+								   cameraSystem->getNativeGraphicsAlbedoSpecTex(),
 								   cameraSystem->getNativeGraphicsSSAOColorTex(),
 								   cameraSystem->getNativeGraphicsSSAONoiseTex()};
 

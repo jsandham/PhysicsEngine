@@ -113,6 +113,17 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
 	return openglFormat;
 }
 
+void Graphics::beginQuery(GLuint queryId)
+{
+	glBeginQuery(GL_TIME_ELAPSED, queryId);
+}
+
+void Graphics::endQuery(GLuint queryId, GLuint64* elapsedTime)
+{
+	glEndQuery(GL_TIME_ELAPSED);
+	glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime);
+}
+
 void Graphics::create(Camera* camera,
 					  GLuint* mainFBO,
 					  GLuint* colorTex,

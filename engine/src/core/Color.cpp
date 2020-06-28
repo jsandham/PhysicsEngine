@@ -2,12 +2,12 @@
 
 using namespace PhysicsEngine;
 
-Color Color::white(1.0f, 1.0f, 1.0f, 1.0f);
-Color Color::black(0, 0, 0, 1.0f);
-Color Color::red(1.0f, 0, 0, 1.0f);
-Color Color::green(0, 1.0f, 0, 1.0f);
-Color Color::blue(0, 0, 1.0f, 1.0f);
-Color Color::yellow(1.0f, 0.91764705f, 0.01568627f, 1.0f);
+const Color Color::white(1.0f, 1.0f, 1.0f, 1.0f);
+const Color Color::black(0, 0, 0, 1.0f);
+const Color Color::red(1.0f, 0, 0, 1.0f);
+const Color Color::green(0, 1.0f, 0, 1.0f);
+const Color Color::blue(0, 0, 1.0f, 1.0f);
+const Color Color::yellow(1.0f, 0.91764705f, 0.01568627f, 1.0f);
 
 Color::Color()
 {
@@ -25,18 +25,25 @@ Color::Color(float r, float g, float b, float a)
 	this->a = a;
 }
 
+Color::Color(glm::vec4 rgba)
+{
+	this->r = rgba.x;
+	this->g = rgba.y;
+	this->b = rgba.z;
+	this->a = rgba.w;
+}
 
 Color::~Color()
 {
 
 }
 
-Color32 Color32::white(255, 255, 255, 255);
-Color32 Color32::black(0, 0, 0, 255);
-Color32 Color32::red(255, 0, 0, 255);
-Color32 Color32::green(0, 255, 0, 255);
-Color32 Color32::blue(0, 0, 255, 255);
-Color32 Color32::yellow(255, 234, 4, 255);
+const Color32 Color32::white(255, 255, 255, 255);
+const Color32 Color32::black(0, 0, 0, 255);
+const Color32 Color32::red(255, 0, 0, 255);
+const Color32 Color32::green(0, 255, 0, 255);
+const Color32 Color32::blue(0, 0, 255, 255);
+const Color32 Color32::yellow(255, 234, 4, 255);
 
 Color32::Color32()
 {

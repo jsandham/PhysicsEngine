@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-std::string InternalShaders::lineVertexShader =
+const std::string InternalShaders::lineVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"
@@ -15,7 +15,7 @@ std::string InternalShaders::lineVertexShader =
 "	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::lineFragmentShader =
+const std::string InternalShaders::lineFragmentShader =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
@@ -23,7 +23,7 @@ std::string InternalShaders::lineFragmentShader =
 "}";
 
 
-std::string InternalShaders::colorVertexShader =
+const std::string InternalShaders::colorVertexShader =
 "#define DIRECTIONALLIGHT\n"
 "#define HARDSHADOWS\n"
 "#define SOFTSHADOWS\n"
@@ -40,7 +40,7 @@ std::string InternalShaders::colorVertexShader =
 "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::colorFragmentShader =
+const std::string InternalShaders::colorFragmentShader =
 "uniform vec4 color;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
@@ -53,21 +53,21 @@ std::string InternalShaders::colorFragmentShader =
 
 
 
-std::string InternalShaders::graphVertexShader =
+const std::string InternalShaders::graphVertexShader =
 "in vec3 position;\n"
 "void main()\n"
 "{\n"
 "	gl_Position = vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::graphFragmentShader =
+const std::string InternalShaders::graphFragmentShader =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
 "	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 "}";
 
-std::string InternalShaders::windowVertexShader =
+const std::string InternalShaders::windowVertexShader =
 "in vec3 position;\n"
 "in vec2 texCoord;\n"
 "out vec2 TexCoord;\n"
@@ -77,7 +77,7 @@ std::string InternalShaders::windowVertexShader =
 "   TexCoord = texCoord;\n"
 "}";
 
-std::string InternalShaders::windowFragmentShader =
+const std::string InternalShaders::windowFragmentShader =
 "uniform sampler2D texture0;\n"
 "in vec2 TexCoord;\n"
 "out vec4 FragColor;\n"
@@ -86,7 +86,7 @@ std::string InternalShaders::windowFragmentShader =
 "    FragColor = texture(texture0, TexCoord);\n"
 "}";
 
-std::string InternalShaders::normalMapVertexShader =
+const std::string InternalShaders::normalMapVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"
@@ -103,7 +103,7 @@ std::string InternalShaders::normalMapVertexShader =
 "   Normal = normal;\n"
 "}";
 
-std::string InternalShaders::normalMapFragmentShader =
+const std::string InternalShaders::normalMapFragmentShader =
 "in vec3 Normal;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
@@ -111,7 +111,7 @@ std::string InternalShaders::normalMapFragmentShader =
 "	FragColor = vec4(Normal.xyz, 1.0f);\n"
 "}";
 
-std::string InternalShaders::depthMapVertexShader =
+const std::string InternalShaders::depthMapVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"
@@ -125,12 +125,12 @@ std::string InternalShaders::depthMapVertexShader =
 "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::depthMapFragmentShader =
+const std::string InternalShaders::depthMapFragmentShader =
 "void main()\n"
 "{\n"
 "}";
 
-std::string InternalShaders::shadowDepthMapVertexShader =
+const std::string InternalShaders::shadowDepthMapVertexShader =
 "uniform mat4 projection;\n"
 "uniform mat4 view;\n"
 "uniform mat4 model;\n"
@@ -140,7 +140,7 @@ std::string InternalShaders::shadowDepthMapVertexShader =
 "	gl_Position = projection * view * model * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::shadowDepthMapFragmentShader =
+const std::string InternalShaders::shadowDepthMapFragmentShader =
 "void main()\n"
 "{\n"
 "}";
@@ -150,7 +150,7 @@ std::string InternalShaders::shadowDepthMapFragmentShader =
 
 
 
-std::string InternalShaders::shadowDepthCubemapVertexShader =
+const std::string InternalShaders::shadowDepthCubemapVertexShader =
 "in vec3 position;\n"
 "uniform mat4 model;\n"
 "void main()\n"
@@ -158,7 +158,7 @@ std::string InternalShaders::shadowDepthCubemapVertexShader =
 "	gl_Position = model * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::shadowDepthCubemapGeometryShader =
+const std::string InternalShaders::shadowDepthCubemapGeometryShader =
 "layout (triangles) in;\n"
 "layout (triangle_strip, max_vertices=18) out;\n"
 "uniform mat4 cubeViewProjMatrices[6];\n"
@@ -176,7 +176,7 @@ std::string InternalShaders::shadowDepthCubemapGeometryShader =
 "	}\n"
 "}";
 
-std::string InternalShaders::shadowDepthCubemapFragmentShader =
+const std::string InternalShaders::shadowDepthCubemapFragmentShader =
 "in vec4 FragPos;\n"
 "uniform vec3 lightPos;\n"
 "uniform float farPlane;\n"
@@ -193,7 +193,7 @@ std::string InternalShaders::shadowDepthCubemapFragmentShader =
 
 
 
-std::string InternalShaders::overdrawVertexShader =
+const std::string InternalShaders::overdrawVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"
@@ -207,14 +207,14 @@ std::string InternalShaders::overdrawVertexShader =
 "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
 "}";
 
-std::string InternalShaders::overdrawFragmentShader =
+const std::string InternalShaders::overdrawFragmentShader =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
 "	FragColor = vec4(1.0, 0.0, 0.0, 0.1);\n"
 "}";
 
-std::string InternalShaders::fontVertexShader =
+const std::string InternalShaders::fontVertexShader =
 "layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>\n"
 "out vec2 TexCoords;\n"
 "uniform mat4 projection;\n"
@@ -224,7 +224,7 @@ std::string InternalShaders::fontVertexShader =
 "    TexCoords = vertex.zw;\n"
 "}";
 
-std::string InternalShaders::fontFragmentShader =
+const std::string InternalShaders::fontFragmentShader =
 "in vec2 TexCoords;\n"
 "out vec4 color;\n"
 "uniform sampler2D text;\n"
@@ -235,7 +235,7 @@ std::string InternalShaders::fontFragmentShader =
 "    color = vec4(textColor, 1.0) * sampled;\n"
 "}";
 
-std::string InternalShaders::instanceVertexShader =
+const std::string InternalShaders::instanceVertexShader =
 "out vec4 FragColor;\n"
 "in vec3 fColor;\n"
 "void main()\n"
@@ -243,7 +243,7 @@ std::string InternalShaders::instanceVertexShader =
 "    FragColor = vec4(fColor, 1.0);\n"
 "}";
 
-std::string InternalShaders::instanceFragmentShader =
+const std::string InternalShaders::instanceFragmentShader =
 "layout (location = 0) in vec2 aPos;\n"
 "layout (location = 1) in vec3 aColor;\n"
 "layout (location = 2) in vec2 aOffset;\n"
@@ -258,7 +258,7 @@ std::string InternalShaders::instanceFragmentShader =
 
 
 
-std::string InternalShaders::gbufferVertexShader =
+const std::string InternalShaders::gbufferVertexShader =
 "layout (location = 0) in vec3 aPos;\n"
 "layout (location = 1) in vec3 aNormal;\n"
 "layout (location = 2) in vec2 aTexCoords;\n"
@@ -288,7 +288,7 @@ std::string InternalShaders::gbufferVertexShader =
 "    gl_Position = Camera.projection * Camera.view * worldPos;\n"
 "}\n";
 
-std::string InternalShaders::gbufferFragmentShader =
+const std::string InternalShaders::gbufferFragmentShader =
 "layout (location = 0) out vec3 gPosition;\n"
 "layout (location = 1) out vec3 gNormal;\n"
 "layout (location = 2) out vec4 gAlbedoSpec;\n"
@@ -313,7 +313,7 @@ std::string InternalShaders::gbufferFragmentShader =
 "}\n";
 
 
-std::string InternalShaders::positionAndNormalsVertexShader =
+const std::string InternalShaders::positionAndNormalsVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
 "	mat4 projection;\n"
@@ -341,7 +341,7 @@ std::string InternalShaders::positionAndNormalsVertexShader =
 "    gl_Position = Camera.projection * viewPos;\n"
 "}\n";
 
-std::string InternalShaders::positionAndNormalsFragmentShader =
+const std::string InternalShaders::positionAndNormalsFragmentShader =
 "layout (location = 0) out vec3 positionTex;\n"
 "layout (location = 1) out vec3 normalTex;\n"
 
@@ -357,7 +357,7 @@ std::string InternalShaders::positionAndNormalsFragmentShader =
 "}\n";
 
 
-std::string InternalShaders::ssaoVertexShader =
+const std::string InternalShaders::ssaoVertexShader =
 "in vec3 position;\n"
 "in vec2 texCoord;\n"
 
@@ -369,7 +369,7 @@ std::string InternalShaders::ssaoVertexShader =
 "   TexCoord = texCoord;\n"
 "}\n";
 
-std::string InternalShaders::ssaoFragmentShader =
+const std::string InternalShaders::ssaoFragmentShader =
 "out float FragColor;\n"
 
 "in vec2 TexCoord;\n"
@@ -426,7 +426,7 @@ std::string InternalShaders::ssaoFragmentShader =
 
 
 
-std::string InternalShaders::simpleLitVertexShader =
+const std::string InternalShaders::simpleLitVertexShader =
 "uniform mat4 model;\n"
 "uniform mat4 view;\n"
 "uniform mat4 projection;\n"
@@ -451,7 +451,7 @@ std::string InternalShaders::simpleLitVertexShader =
 "	gl_Position = projection * view * vec4(FragPos, 1.0);\n"
 "}\n";
 
-std::string InternalShaders::simpleLitFragmentShader =
+const std::string InternalShaders::simpleLitFragmentShader =
 "in vec3 FragPos;\n"
 "in vec3 CameraPos;\n"
 "in vec3 Normal;\n"
@@ -518,3 +518,55 @@ std::string InternalShaders::simpleLitFragmentShader =
 //
 //"	return (fambient + fdiffuse + fspecular);\n"
 //"}\n";
+
+
+const std::string InternalShaders::simpleLitDeferredVertexShader =
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 1) in vec2 aTexCoords;\n"
+
+"out vec2 TexCoords;\n"
+
+"void main()\n"
+"{\n"
+"	TexCoords = aTexCoords;\n"
+"	gl_Position = vec4(aPos, 1.0);\n"
+"}\n";
+
+const std::string InternalShaders::simpleLitDeferredFragmentShader =
+"out vec4 FragColor;\n"
+
+"in vec2 TexCoords;\n"
+
+"uniform sampler2D gPosition;\n"
+"uniform sampler2D gNormal;\n"
+"uniform sampler2D gAlbedoSpec;\n"
+
+"struct Light {\n"
+"	vec3 Position;\n"
+"	vec3 Color;\n"
+"};\n"
+"const int NR_LIGHTS = 32;\n"
+"uniform Light lights[NR_LIGHTS];\n"
+"uniform vec3 viewPos;\n"
+
+"void main()\n"
+"{\n"
+"	// retrieve data from G-buffer\n"
+"	vec3 FragPos = texture(gPosition, TexCoords).rgb;\n"
+"	vec3 Normal = texture(gNormal, TexCoords).rgb;\n"
+"	vec3 Albedo = texture(gAlbedoSpec, TexCoords).rgb;\n"
+"	float Specular = texture(gAlbedoSpec, TexCoords).a;\n"
+
+"	// then calculate lighting as usual\n"
+"	vec3 lighting = Albedo * 0.1; // hard-coded ambient component\n"
+"	vec3 viewDir = normalize(viewPos - FragPos);\n"
+"	for (int i = 0; i < NR_LIGHTS; ++i)\n"
+"	{\n"
+"		// diffuse\n"
+"		vec3 lightDir = normalize(lights[i].Position - FragPos);\n"
+"		vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].Color;\n"
+"		lighting += diffuse;\n"
+"	}\n"
+
+"	FragColor = vec4(lighting, 1.0);\n"
+"}\n";

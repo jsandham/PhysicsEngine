@@ -1,27 +1,6 @@
 #include <iostream>
 
 #include "../../include/core/LoadInternal.h"
-#include "../../include/core/PoolAllocator.h"
-#include "../../include/core/Entity.h"
-#include "../../include/core/Shader.h"
-#include "../../include/core/Texture2D.h"
-#include "../../include/core/Texture3D.h"
-#include "../../include/core/Cubemap.h"
-#include "../../include/core/Material.h"
-#include "../../include/core/Mesh.h"
-#include "../../include/core/Font.h"
-#include "../../include/core/Log.h"
-
-#include "../../include/components/Transform.h"
-#include "../../include/components/Rigidbody.h"
-#include "../../include/components/Camera.h"
-#include "../../include/components/MeshRenderer.h"
-#include "../../include/components/LineRenderer.h"
-#include "../../include/components/Light.h"
-#include "../../include/components/BoxCollider.h"
-#include "../../include/components/SphereCollider.h"
-#include "../../include/components/MeshCollider.h"
-#include "../../include/components/CapsuleCollider.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
@@ -30,140 +9,65 @@
 
 using namespace PhysicsEngine;
 
-Entity* PhysicsEngine::loadInternalEntity(Allocator* allocator, std::vector<char> data, int* index)
+Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator, std::vector<char> data, int* index)
 {
-	if (allocator == NULL) {
-		allocator = new PoolAllocator<Entity>();
-	}
-
-	PoolAllocator<Entity>* poolAllocator = static_cast<PoolAllocator<Entity>*>(allocator);
-
-	*index = (int)poolAllocator->getCount();
-	return poolAllocator->construct(data);
+	*index = (int)entityAllocator->getCount();
+	return entityAllocator->construct(data);
 }
 
-Component* PhysicsEngine::loadInternalComponent(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index)
+Component* PhysicsEngine::loadInternalComponent(PoolAllocator<Transform>* transformAllocator,
+								PoolAllocator<MeshRenderer>* meshRendererAllocator,
+								PoolAllocator<LineRenderer>* lineRendererAllocator,
+								PoolAllocator<Rigidbody>* rigidbodyAllocator,
+								PoolAllocator<Camera>* cameraAllocator,
+								PoolAllocator<Light>* lightAllocator,
+								PoolAllocator<SphereCollider>* sphereColliderAllocator,
+								PoolAllocator<BoxCollider>* boxColliderAllocator,
+								PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
+								PoolAllocator<MeshCollider>* meshColliderAllocator,
+								std::vector<char> data,
+								int type,
+								int* index)
 {
-	if (allocatorMap == NULL) {
-		return NULL;
-	}
-
-	Allocator* allocator = NULL;
-
-	std::map<int, Allocator*>::iterator it = allocatorMap->find(type);
-	if (it != allocatorMap->end()) {
-		allocator = it->second;
-	}
-
 	if (type == 0) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Transform>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Transform>* poolAllocator = static_cast<PoolAllocator<Transform>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)transformAllocator->getCount();
+		return transformAllocator->construct(data);
 	}
 	else if (type == 1) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Rigidbody>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Rigidbody>* poolAllocator = static_cast<PoolAllocator<Rigidbody>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)rigidbodyAllocator->getCount();
+		return rigidbodyAllocator->construct(data);
 	}
 	else if (type == 2) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Camera>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Camera>* poolAllocator = static_cast<PoolAllocator<Camera>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)cameraAllocator->getCount();
+		return cameraAllocator->construct(data);
 	}
 	else if (type == 3) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<MeshRenderer>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<MeshRenderer>* poolAllocator = static_cast<PoolAllocator<MeshRenderer>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)meshRendererAllocator->getCount();
+		return meshRendererAllocator->construct(data);
 	}
 	else if (type == 4) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<LineRenderer>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<LineRenderer>* poolAllocator = static_cast<PoolAllocator<LineRenderer>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)lineRendererAllocator->getCount();
+		return lineRendererAllocator->construct(data);
 	}
 	else if (type == 5) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Light>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Light>* poolAllocator = static_cast<PoolAllocator<Light>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)lightAllocator->getCount();
+		return lightAllocator->construct(data);
 	}
 	else if (type == 8) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<BoxCollider>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<BoxCollider>* poolAllocator = static_cast<PoolAllocator<BoxCollider>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)boxColliderAllocator->getCount();
+		return boxColliderAllocator->construct(data);
 	}
 	else if (type == 9) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<SphereCollider>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<SphereCollider>* poolAllocator = static_cast<PoolAllocator<SphereCollider>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)sphereColliderAllocator->getCount();
+		return sphereColliderAllocator->construct(data);
 	}
 	else if (type == 10) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<MeshCollider>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<MeshCollider>* poolAllocator = static_cast<PoolAllocator<MeshCollider>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)meshColliderAllocator->getCount();
+		return meshColliderAllocator->construct(data);
 	}
 	else if (type == 15) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<CapsuleCollider>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<CapsuleCollider>* poolAllocator = static_cast<PoolAllocator<CapsuleCollider>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)capsuleColliderAllocator->getCount();
+		return capsuleColliderAllocator->construct(data);
 	}
 	else {
 		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
@@ -172,7 +76,7 @@ Component* PhysicsEngine::loadInternalComponent(std::map<int, Allocator*>* alloc
 	}
 }
 
-System* PhysicsEngine::loadInternalSystem(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index)
+System* PhysicsEngine::loadInternalSystem(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index)
 {
 	if (allocatorMap == NULL) {
 		return NULL;
@@ -180,7 +84,7 @@ System* PhysicsEngine::loadInternalSystem(std::map<int, Allocator*>* allocatorMa
 
 	Allocator* allocator = NULL;
 
-	std::map<int, Allocator*>::iterator it = allocatorMap->find(type);
+	std::unordered_map<int, Allocator*>::iterator it = allocatorMap->find(type);
 	if (it != allocatorMap->end()) {
 		allocator = it->second;
 	}
@@ -236,95 +140,44 @@ System* PhysicsEngine::loadInternalSystem(std::map<int, Allocator*>* allocatorMa
 	}
 }
 
-Asset* PhysicsEngine::loadInternalAsset(std::map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index)
+Asset* PhysicsEngine::loadInternalAsset(PoolAllocator<Mesh>* meshAllocator,
+						PoolAllocator<Material>* materialAllocator,
+						PoolAllocator<Shader>* shaderAllocator,
+						PoolAllocator<Texture2D>* texture2DAllocator,
+						PoolAllocator<Texture3D>* texture3DAllocator,
+						PoolAllocator<Cubemap>* cubemapAllocator,
+						PoolAllocator<Font>* fontAllocator,
+						std::vector<char> data,
+						int type,
+						int* index)
 {
-	if (allocatorMap == NULL) {
-		return NULL;
-	}
-
-	Allocator* allocator = NULL;
-
-	std::map<int, Allocator*>::iterator it = allocatorMap->find(type);
-	if (it != allocatorMap->end()) {
-		allocator = it->second;
-	}
-
 	if (type == 0) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Shader>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Shader>* poolAllocator = static_cast<PoolAllocator<Shader>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)shaderAllocator->getCount();
+		return shaderAllocator->construct(data);
 	}
 	else if (type == 1) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Texture2D>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Texture2D>* poolAllocator = static_cast<PoolAllocator<Texture2D>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)texture2DAllocator->getCount();
+		return texture2DAllocator->construct(data);
 	}
 	else if (type == 2) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Texture3D>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Texture3D>* poolAllocator = static_cast<PoolAllocator<Texture3D>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)texture3DAllocator->getCount();
+		return texture3DAllocator->construct(data);
 	}
 	else if (type == 3) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Cubemap>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Cubemap>* poolAllocator = static_cast<PoolAllocator<Cubemap>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)cubemapAllocator->getCount();
+		return cubemapAllocator->construct(data);
 	}
 	else if (type == 4) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Material>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Material>* poolAllocator = static_cast<PoolAllocator<Material>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)materialAllocator->getCount();
+		return materialAllocator->construct(data);
 	}
 	else if (type == 5) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Mesh>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Mesh>* poolAllocator = static_cast<PoolAllocator<Mesh>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)meshAllocator->getCount();
+		return meshAllocator->construct(data);
 	}
 	else if (type == 6) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<Font>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<Font>* poolAllocator = static_cast<PoolAllocator<Font>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+		*index = (int)fontAllocator->getCount();
+		return fontAllocator->construct(data);
 	}
 	else {
 		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal asset\n";
@@ -333,83 +186,51 @@ Asset* PhysicsEngine::loadInternalAsset(std::map<int, Allocator*>* allocatorMap,
 	}
 }
 
-Entity* PhysicsEngine::destroyInternalEntity(Allocator* allocator, int index)
+Entity* PhysicsEngine::destroyInternalEntity(PoolAllocator<Entity>* entityAllocator, int index)
 {
-	if (allocator == NULL) {
-		return NULL;
-	}
-
-	PoolAllocator<Entity>* poolAllocator = static_cast<PoolAllocator<Entity>*>(allocator);
-
-	return poolAllocator->destruct(index);
+	return entityAllocator->destruct(index);
 }
 
-Component* PhysicsEngine::destroyInternalComponent(std::map<int, Allocator*>* allocatorMap, int type, int index)
+Component* PhysicsEngine::destroyInternalComponent(PoolAllocator<Transform>* transformAllocator,
+									PoolAllocator<MeshRenderer>* meshRendererAllocator,
+									PoolAllocator<LineRenderer>* lineRendererAllocator,
+									PoolAllocator<Rigidbody>* rigidbodyAllocator,
+									PoolAllocator<Camera>* cameraAllocator,
+									PoolAllocator<Light>* lightAllocator,
+									PoolAllocator<SphereCollider>* sphereColliderAllocator,
+									PoolAllocator<BoxCollider>* boxColliderAllocator,
+									PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
+									PoolAllocator<MeshCollider>* meshColliderAllocator, int type, int index)
 {
-	if (allocatorMap == NULL) {
-		return NULL;
-	}
-
-	Allocator* allocator = NULL;
-
-	std::map<int, Allocator*>::iterator it = allocatorMap->find(type);
-	if (it != allocatorMap->end()) {
-		allocator = it->second;
-	}
-
-	if (allocator == NULL) {
-		return NULL;
-	}
-
 	if (type == ComponentType<Transform>::type) {
-		PoolAllocator<Transform>* poolAllocator = static_cast<PoolAllocator<Transform>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return transformAllocator->destruct(index);
 	}
 	else if (type == ComponentType<Rigidbody>::type) {
-		PoolAllocator<Rigidbody>* poolAllocator = static_cast<PoolAllocator<Rigidbody>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return rigidbodyAllocator->destruct(index);
 	}
 	else if (type == ComponentType<Camera>::type) {
-		PoolAllocator<Camera>* poolAllocator = static_cast<PoolAllocator<Camera>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return cameraAllocator->destruct(index);
 	}
 	else if (type == ComponentType<MeshRenderer>::type) {
-		PoolAllocator<MeshRenderer>* poolAllocator = static_cast<PoolAllocator<MeshRenderer>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return meshRendererAllocator->destruct(index);
 	}
 	else if (type == ComponentType<LineRenderer>::type) {
-		PoolAllocator<LineRenderer>* poolAllocator = static_cast<PoolAllocator<LineRenderer>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return lineRendererAllocator->destruct(index);
 	}
 	else if (type == ComponentType<Light>::type) {
-		PoolAllocator<Light>* poolAllocator = static_cast<PoolAllocator<Light>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return lightAllocator->destruct(index);
 	}
 	else if (type == ComponentType<BoxCollider>::type) {
-		PoolAllocator<BoxCollider>* poolAllocator = static_cast<PoolAllocator<BoxCollider>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return boxColliderAllocator->destruct(index);
 	}
 	else if (type == ComponentType<SphereCollider>::type) {
-		PoolAllocator<SphereCollider>* poolAllocator = static_cast<PoolAllocator<SphereCollider>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return sphereColliderAllocator->destruct(index);
 	}
 	else if (type == ComponentType<MeshCollider>::type) {
-		PoolAllocator<MeshCollider>* poolAllocator = static_cast<PoolAllocator<MeshCollider>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return meshColliderAllocator->destruct(index);
 	}
 	else if (type == ComponentType<CapsuleCollider>::type) {
-		PoolAllocator<CapsuleCollider>* poolAllocator = static_cast<PoolAllocator<CapsuleCollider>*>(allocator);
-
-		return poolAllocator->destruct(index);
+		return capsuleColliderAllocator->destruct(index);
 	}
 	else {
 		std::string message = "Error: Invalid component instance type (" + std::to_string(type) + ") when trying to destroy internal component\n";

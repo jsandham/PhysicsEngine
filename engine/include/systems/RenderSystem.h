@@ -6,7 +6,7 @@
 #include "System.h"
 
 #include "../core/Input.h"
-#include "../core/World.h"
+//#include "../core/World.h"
 
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/DeferredRenderer.h"
@@ -21,6 +21,7 @@ namespace PhysicsEngine
 			DeferredRenderer mDeferredRenderer;
 
 			std::vector<RenderObject> mRenderObjects;
+			std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
 		public:
 			bool mRenderToScreen;
@@ -40,9 +41,12 @@ namespace PhysicsEngine
 		private:
 			void registerRenderAssets(World* world);
 			void registerCameras(World* world);
-			void updateRenderObjects(World* world, std::vector<RenderObject>& renderObjects);
-			void updateModelMatrices(World* world, std::vector<RenderObject>& renderObjects);
-			void cullRenderObjects(Camera* camera, std::vector<RenderObject>& renderObjects);
+			void buildRenderObjectsList(World* world);
+			void cullRenderObjects(Camera* camera);
+			void buildRenderQueue();
+			void sortRenderQueue();
+
+			void updateRenderObjects(World* world);
 	};
 
 	template <>

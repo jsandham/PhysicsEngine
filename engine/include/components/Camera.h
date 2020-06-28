@@ -21,6 +21,7 @@
 #include "Component.h"
 
 #include "../core/Frustum.h"
+#include "../core/Color.h"
 
 #include "../graphics/GraphicsTargets.h"
 #include "../graphics/GraphicsQuery.h"
@@ -85,7 +86,7 @@ namespace PhysicsEngine
 			CameraMode mMode;
 			CameraSSAO mSSAO;
 
-			glm::vec4 mBackgroundColor;
+			Color mBackgroundColor;
 
 			GraphicsQuery mQuery;
 
@@ -113,6 +114,9 @@ namespace PhysicsEngine
 			void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
 			void assignColoring(int color, Guid meshRendererId);
 			void clearColoring();
+
+			void beginQuery();
+			void endQuery();
 
 			bool isCreated() const;
 			glm::mat4 getViewMatrix() const;

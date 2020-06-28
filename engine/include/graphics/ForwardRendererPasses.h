@@ -22,6 +22,7 @@ namespace PhysicsEngine
 	void computeSSAO(World* world, 
 		Camera* camera, 
 		ForwardRendererState* state, 
+		const std::vector<std::pair<uint64_t, int>>& renderQueue,
 		const std::vector<RenderObject>& renderObjects);
 
 	void renderShadows(World* world,
@@ -29,6 +30,7 @@ namespace PhysicsEngine
 		Light* light,
 		Transform* lightTransform,
 		ForwardRendererState* state,
+		const std::vector<std::pair<uint64_t, int>>& renderQueue,
 		const std::vector<RenderObject>& renderObjects);
 
 	void renderOpaques(World* world,
@@ -36,11 +38,13 @@ namespace PhysicsEngine
 		Light* light,
 		Transform* lightTransform,
 		ForwardRendererState* state,
+		const std::vector<std::pair<uint64_t, int>>& renderQueue,
 		const std::vector<RenderObject>& renderObjects);
 
 	void renderColorPicking(World* world,
 		Camera* camera,
 		ForwardRendererState* state,
+		const std::vector<std::pair<uint64_t, int>>& renderQueue,
 		const std::vector<RenderObject>& renderObjects);
 
 	void renderTransparents();

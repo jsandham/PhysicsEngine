@@ -71,17 +71,17 @@ namespace PhysicsEngine
 			void setMat4(int nameLocation, const glm::mat4& mat);
 			void setTexture(int nameLocation, const Guid& textureId);
 
-			bool getBool(std::string name) const;
-			int getInt(std::string name) const;
-			float getFloat(std::string name) const;
-			Color getColor(std::string name) const;
-			glm::vec2 getVec2(std::string name) const;
-			glm::vec3 getVec3(std::string name) const;
-			glm::vec4 getVec4(std::string name) const;
-			glm::mat2 getMat2(std::string name) const;
-			glm::mat3 getMat3(std::string name) const;
-			glm::mat4 getMat4(std::string name) const;
-			Guid getTexture(std::string name) const;
+			bool getBool(const std::string& name) const;
+			int getInt(const std::string& name) const;
+			float getFloat(const std::string& name) const;
+			Color getColor(const std::string& name) const;
+			glm::vec2 getVec2(const std::string& name) const;
+			glm::vec3 getVec3(const std::string& name) const;
+			glm::vec4 getVec4(const std::string& name) const;
+			glm::mat2 getMat2(const std::string& name) const;
+			glm::mat3 getMat3(const std::string& name) const;
+			glm::mat4 getMat4(const std::string& name) const;
+			Guid getTexture(const std::string& name) const;
 
 			bool getBool(int nameLocation) const;
 			int getInt(int nameLocation) const;
@@ -98,7 +98,7 @@ namespace PhysicsEngine
 			std::vector<Guid> getTextures() const;
 
 		private:
-			int findIndexOfUniform(std::string name) const;
+			int findIndexOfUniform(const std::string& name) const;
 			int findIndexOfUniform(int nameLocation) const;
 	};
 

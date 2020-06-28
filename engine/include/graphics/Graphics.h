@@ -77,6 +77,9 @@ namespace PhysicsEngine
 			static void checkFrambufferError();
 			static GLenum getTextureFormat(TextureFormat format);
 
+			static void beginQuery(GLuint queryId);
+			static void endQuery(GLuint queryId, GLuint64* elapsedTime);
+
 			static void create(Camera* camera, 
 							   GLuint* mainFBO, 
 							   GLuint* colorTex,

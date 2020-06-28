@@ -128,7 +128,7 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		//obj[componentId.toString()]["position"].append(camera->mPosition.x, camera->mPosition.y, camera->mPosition.z);
 		//obj[componentId.toString()]["front"].append(camera->mFront.x, camera->mFront.y, camera->mFront.z);
 		//obj[componentId.toString()]["up"].append(camera->mUp.x, camera->mUp.y, camera->mUp.z);
-		obj[componentId.toString()]["backgroundColor"].append(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
+		obj[componentId.toString()]["backgroundColor"].append(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b, camera->mBackgroundColor.a);
 		obj[componentId.toString()]["x"] = camera->mViewport.mX;
 		obj[componentId.toString()]["y"] = camera->mViewport.mY;
 		obj[componentId.toString()]["width"] = camera->mViewport.mWidth;

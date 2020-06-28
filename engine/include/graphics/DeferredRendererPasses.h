@@ -15,9 +15,15 @@ namespace PhysicsEngine
 
 	void beginDeferredFrame(World* world, Camera* camera, DeferredRendererState* state);
 
-	void geometryPass(DeferredRendererState* state, const std::vector<RenderObject>& renderObjects);
+	void geometryPass(World* world, 
+					  Camera* camera, 
+					  DeferredRendererState* state, 
+					  const std::vector<RenderObject>& renderObjects);
 
-	void lightingPass(DeferredRendererState* state, const std::vector<RenderObject>& renderObjects);
+	void lightingPass(World* world, 
+					  Camera* camera, 
+					  DeferredRendererState* state, 
+					  const std::vector<RenderObject>& renderObjects);
 
 	void endDeferredFrame(World* world, Camera* camera, DeferredRendererState* state);
 }

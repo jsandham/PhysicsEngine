@@ -10,6 +10,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorfileio.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcommands.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorclipboard.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcamerasystem.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cubemapdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\commandmanager.obj
@@ -47,13 +48,16 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\spherecolliderdra
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\shaderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\sceneview.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\rigidbodydrawer.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.obj
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
-c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.command.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.read.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\cl.write.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396-cvtres.read.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396-cvtres.write.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396-rc.read.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396-rc.write.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396.read.1.tlog
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.25396.write.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.command.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.read.1.tlog
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.tlog\link.write.1.tlog

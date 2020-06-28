@@ -25,7 +25,10 @@ namespace PhysicsEngine
 			~ForwardRenderer();
 
 			void init(World* world, bool renderToScreen);
-			void update(Input input, Camera* camera, std::vector<RenderObject>& renderObjects);
+			void update(Input input, 
+						Camera* camera, 
+						const std::vector<std::pair<uint64_t, int>>& renderQueue, 
+						const std::vector<RenderObject>& renderObjects);
 	};
 }
 

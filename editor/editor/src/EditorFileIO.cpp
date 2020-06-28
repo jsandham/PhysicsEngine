@@ -247,10 +247,10 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 				camera.mUp.y = (float)it->second["up"][1].ToFloat();
 				camera.mUp.z = (float)it->second["up"][2].ToFloat();*/
 
-				camera.mBackgroundColor.x = (float)it->second["backgroundColor"][0].ToFloat();
-				camera.mBackgroundColor.y = (float)it->second["backgroundColor"][1].ToFloat();
-				camera.mBackgroundColor.z = (float)it->second["backgroundColor"][2].ToFloat();
-				camera.mBackgroundColor.w = (float)it->second["backgroundColor"][3].ToFloat();
+				camera.mBackgroundColor.r = (float)it->second["backgroundColor"][0].ToFloat();
+				camera.mBackgroundColor.g = (float)it->second["backgroundColor"][1].ToFloat();
+				camera.mBackgroundColor.b = (float)it->second["backgroundColor"][2].ToFloat();
+				camera.mBackgroundColor.a = (float)it->second["backgroundColor"][3].ToFloat();
 
 				camera.mViewport.mX = (int)it->second["x"].ToInt();
 				camera.mViewport.mY = (int)it->second["y"].ToInt();

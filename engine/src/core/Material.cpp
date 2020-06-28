@@ -372,7 +372,7 @@ void Material::setTexture(int nameLocation, const Guid& textureId)
 	}
 }
 
-bool Material::getBool(std::string name) const
+bool Material::getBool(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	bool value = false;
@@ -383,7 +383,7 @@ bool Material::getBool(std::string name) const
 	return value;
 }
 
-int Material::getInt(std::string name) const
+int Material::getInt(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	int value = false;
@@ -394,7 +394,7 @@ int Material::getInt(std::string name) const
 	return value;
 }
 
-float Material::getFloat(std::string name) const
+float Material::getFloat(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	float value = false;
@@ -405,7 +405,7 @@ float Material::getFloat(std::string name) const
 	return value;
 }
 
-Color Material::getColor(std::string name) const
+Color Material::getColor(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	Color color = Color(0, 0, 0, 255);
@@ -416,7 +416,7 @@ Color Material::getColor(std::string name) const
 	return color;
 }
 
-glm::vec2 Material::getVec2(std::string name) const
+glm::vec2 Material::getVec2(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::vec2 vec = glm::vec2(0.0f);
@@ -427,7 +427,7 @@ glm::vec2 Material::getVec2(std::string name) const
 	return vec;
 }
 
-glm::vec3 Material::getVec3(std::string name) const
+glm::vec3 Material::getVec3(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::vec3 vec = glm::vec3(0.0f);
@@ -438,7 +438,7 @@ glm::vec3 Material::getVec3(std::string name) const
 	return vec;
 }
 
-glm::vec4 Material::getVec4(std::string name) const
+glm::vec4 Material::getVec4(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::vec4 vec = glm::vec4(0.0f);
@@ -449,7 +449,7 @@ glm::vec4 Material::getVec4(std::string name) const
 	return vec;
 }
 
-glm::mat2 Material::getMat2(std::string name) const
+glm::mat2 Material::getMat2(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::mat2 mat = glm::mat2(0.0f);
@@ -460,7 +460,7 @@ glm::mat2 Material::getMat2(std::string name) const
 	return mat;
 }
 
-glm::mat3 Material::getMat3(std::string name) const
+glm::mat3 Material::getMat3(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::mat3 mat = glm::mat3(0.0f);
@@ -471,7 +471,7 @@ glm::mat3 Material::getMat3(std::string name) const
 	return mat;
 }
 
-glm::mat4 Material::getMat4(std::string name) const
+glm::mat4 Material::getMat4(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	glm::mat4 mat = glm::mat4(0.0f);
@@ -482,7 +482,7 @@ glm::mat4 Material::getMat4(std::string name) const
 	return mat;
 }
 
-Guid Material::getTexture(std::string name) const
+Guid Material::getTexture(const std::string& name) const
 {
 	int index = findIndexOfUniform(name);
 	Guid textureId = Guid::INVALID;
@@ -629,7 +629,7 @@ std::vector<Guid> Material::getTextures() const
 	return textures;
 }
 
-int Material::findIndexOfUniform(std::string name) const
+int Material::findIndexOfUniform(const std::string& name) const
 {
 	for (size_t i = 0; i < mUniforms.size(); i++) {
 		if (name == mUniforms[i].mName) {

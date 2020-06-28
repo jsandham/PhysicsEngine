@@ -25,7 +25,7 @@ namespace PhysicsEditor
 			Hierarchy();
 			~Hierarchy();
 
-			void render(World* world, EditorScene& scene, EditorClipboard& clipboard, std::set<Guid> editorOnlyEntityIds, bool isOpenedThisFrame);
+			void render(World* world, EditorScene& scene, EditorClipboard& clipboard, const std::set<Guid>& editorOnlyEntityIds, bool isOpenedThisFrame);
 	};
 }
 

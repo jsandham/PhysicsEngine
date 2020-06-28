@@ -72,7 +72,10 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 	header.mRenderPath = mRenderPath;
 	header.mMode = mMode;
 	header.mSSAO = mSSAO;
-	header.mBackgroundColor = mBackgroundColor;
+	header.mBackgroundColor = glm::vec4(mBackgroundColor.r,
+										mBackgroundColor.g,
+										mBackgroundColor.b, 
+										mBackgroundColor.a);
 	header.mX = mViewport.mX;
 	header.mY = mViewport.mY;
 	header.mWidth = mViewport.mWidth;
@@ -111,7 +114,7 @@ void Camera::deserialize(std::vector<char> data)
 	mFrustum.mNearPlane = header->mNearPlane;
 	mFrustum.mFarPlane = header->mFarPlane;
 
-	mBackgroundColor = header->mBackgroundColor;
+	mBackgroundColor = Color(header->mBackgroundColor);
 }
 
 bool Camera::isCreated() const
@@ -175,6 +178,44 @@ void Camera::assignColoring(int color, Guid meshRendererId)
 void Camera::clearColoring()
 {
 	mColoringMap.clear();
+}
+
+void Camera::beginQuery()
+{
+	mQuery.mNumBatchDrawCalls = 0;
+	mQuery.mNumDrawCalls = 0;
+	mQuery.mTotalElapsedTime = 0.0f;
+	mQuery.mVerts = 0;
+	mQuery.mTris = 0;
+	mQuery.mLines = 0;
+	mQuery.mPoints = 0;
+
+	Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+
+	//glBeginQuery(GL_TIME_ELAPSED, mQuery.mQueryId[mQuery.mQueryBack]);
+}
+
+void Camera::endQuery()
+{
+	//glEndQuery(GL_TIME_ELAPSED);
+
+	//GLuint64 elapsedTime; // in nanoseconds
+	//glGetQueryObjectui64v(mQuery.mQueryId[mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
+
+	GLuint64 elapsedTime; // in nanoseconds
+	Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+
+	mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
+
+	// swap which query is active
+	if (mQuery.mQueryBack) {
+		mQuery.mQueryBack = 0;
+		mQuery.mQueryFront = 1;
+	}
+	else {
+		mQuery.mQueryBack = 1;
+		mQuery.mQueryFront = 0;
+	}
 }
 
 glm::mat4 Camera::getViewMatrix() const

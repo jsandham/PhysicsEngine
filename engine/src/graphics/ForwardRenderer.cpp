@@ -34,26 +34,27 @@ void ForwardRenderer::init(World* world, bool renderToScreen)
 	initializeRenderer(mWorld, &mState);
 }
 
-void ForwardRenderer::update(Input input, Camera* camera, std::vector<RenderObject>& renderObjects)
+void ForwardRenderer::update(Input input, 
+							 Camera* camera, 
+							 const std::vector<std::pair<uint64_t, int>>& renderQueue, 
+							 const std::vector<RenderObject>& renderObjects)
 {
-	const PoolAllocator<Light>* lightAllocator = mWorld->getComponentAllocator_Const<Light>();
-
 	beginFrame(mWorld, camera, &mState);
 
 	if (camera->mSSAO == CameraSSAO::SSAO_On) {
-		computeSSAO(mWorld, camera, &mState, renderObjects);
+		computeSSAO(mWorld, camera, &mState, renderQueue, renderObjects);
 	}
 
-	for (int j = 0; j < mWorld->getNumberOfComponents<Light>(lightAllocator); j++) {
-		Light* light = mWorld->getComponentByIndex<Light>(lightAllocator, j);
+	for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++) {
+		Light* light = mWorld->getComponentByIndex<Light>(j);
 		Transform* lightTransform = light->getComponent<Transform>(mWorld);
 
-		renderShadows(mWorld, camera, light, lightTransform, &mState, renderObjects);
-		renderOpaques(mWorld, camera, light, lightTransform, &mState, renderObjects);
+		renderShadows(mWorld, camera, light, lightTransform, &mState, renderQueue, renderObjects);
+		renderOpaques(mWorld, camera, light, lightTransform, &mState, renderQueue, renderObjects);
 		renderTransparents();
 	}
 
-	renderColorPicking(mWorld, camera, &mState, renderObjects);
+	renderColorPicking(mWorld, camera, &mState, renderQueue, renderObjects);
 
 	postProcessing();
 	endFrame(mWorld, camera, &mState);

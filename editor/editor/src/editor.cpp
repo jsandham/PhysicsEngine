@@ -25,6 +25,8 @@
 
 #include "core/WriteInternalToJson.h"
 
+#include "core/InternalShaders.h"
+
 using namespace PhysicsEditor;
 using namespace json;
 

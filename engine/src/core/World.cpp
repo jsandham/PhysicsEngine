@@ -14,32 +14,27 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-	mEntityAllocator = NULL;
 }
 
 World::~World()
 {
-	if (mEntityAllocator != NULL) {
-		delete mEntityAllocator;
-	}
-
-	std::map<int, Allocator*>::iterator it1 = mComponentAllocatorMap.begin();
+	std::unordered_map<int, Allocator*>::iterator it1 = mComponentAllocatorMap.begin();
 	for (it1 == mComponentAllocatorMap.begin(); it1 != mComponentAllocatorMap.end(); it1++) {
 		delete it1->second;
 	}
 
-	std::map<int, Allocator*>::iterator it2 = mSystemAllocatorMap.begin();
+	std::unordered_map<int, Allocator*>::iterator it2 = mSystemAllocatorMap.begin();
 	for (it2 == mSystemAllocatorMap.begin(); it2 != mSystemAllocatorMap.end(); it2++) {
 		delete it2->second;
 	}
 
-	std::map<int, Allocator*>::iterator it3 = mAssetAllocatorMap.begin();
+	std::unordered_map<int, Allocator*>::iterator it3 = mAssetAllocatorMap.begin();
 	for (it3 == mAssetAllocatorMap.begin(); it3 != mAssetAllocatorMap.end(); it3++) {
 		delete it3->second;
 	}
 }
 
-bool World::loadAsset(const std::string filePath)
+bool World::loadAsset(const std::string& filePath)
 {
 	Log::info(("file path: " + filePath + "\n").c_str());
 
@@ -81,7 +76,16 @@ bool World::loadAsset(const std::string filePath)
 		int index = -1;
 		Asset* asset = NULL;
 		if(type < 20){
-			asset = PhysicsEngine::loadInternalAsset(&mAssetAllocatorMap, data, type, &index);
+			asset = PhysicsEngine::loadInternalAsset(&mMeshAllocator,
+													 &mMaterialAllocator,
+													 &mShaderAllocator,
+													 &mTexture2DAllocator,
+													 &mTexture3DAllocator,
+													 &mCubemapAllocator,
+													 &mFontAllocator, 
+													 data, 
+													 type, 
+													 &index);
 		}
 		else{
 			asset = PhysicsEngine::loadAsset(&mAssetAllocatorMap, data, type, &index);
@@ -118,7 +122,7 @@ bool World::loadAsset(const std::string filePath)
 	return true;
 }
 
-bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
+bool World::loadScene(const std::string& filePath, bool ignoreSystemsAndCamera)
 {
 	std::ifstream file;
 	file.open(filePath, std::ios::binary);
@@ -158,7 +162,7 @@ bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
 		if(classification == 'e'){
 			Entity* entity = NULL;
 			if(type == 0){
-				entity = PhysicsEngine::loadInternalEntity(mEntityAllocator, data, &index);
+				entity = PhysicsEngine::loadInternalEntity(&mEntityAllocator, data, &index);
 			}
 			else{
 				Log::error("Entity must be of type 0\n");
@@ -191,7 +195,7 @@ bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
 				return false;
 			}
 
-			std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
+			std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
 			if (it == mEntityIdToComponentIds.end()) {
 				mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
 			}
@@ -203,7 +207,19 @@ bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
 
 			Component* component = NULL;
 			if(type < 20){
-				component = PhysicsEngine::loadInternalComponent(&mComponentAllocatorMap, data, type, &index);
+				component = PhysicsEngine::loadInternalComponent(&mTransformAllocator,
+																 &mMeshRendererAllocator,
+																 &mLineRendererAllocator,
+																 &mRigidbodyAllocator,
+																 &mCameraAllocator,
+																 &mLightAllocator,
+																 &mSphereColliderAllocator,
+																 &mBoxColliderAllocator,
+																 &mCapsuleColliderAllocator,
+																 &mMeshColliderAllocator, 
+																 data, 
+																 type, 
+																 &index);
 			}
 			else{
 				component = PhysicsEngine::loadComponent(&mComponentAllocatorMap, data, type, &index);
@@ -302,7 +318,7 @@ bool World::loadScene(const std::string filePath, bool ignoreSystemsAndCamera)
 	return true;
 }
 
-bool World::loadSceneFromEditor(const std::string filePath)
+bool World::loadSceneFromEditor(const std::string& filePath)
 {
 	return loadScene(filePath, true);
 }
@@ -325,19 +341,9 @@ void World::latentDestroyEntitiesInWorld()
 	}
 }
 
-const PoolAllocator<Entity>* World::getEntityAllocator_Const() const
-{
-	return static_cast<PoolAllocator<Entity>*>(mEntityAllocator);
-}
-
 int World::getNumberOfEntities() const
 {
-	const PoolAllocator<Entity>* allocator = getEntityAllocator_Const();
-	if (allocator == NULL) {
-		return 0;
-	}
-
-	return (int)allocator->getCount();
+	return (int)mEntityAllocator.getCount();
 }
 
 int World::getNumberOfSystems() const
@@ -346,21 +352,15 @@ int World::getNumberOfSystems() const
 }
 
 // error here if entityId does not correspond to an entity but instead an asset or component
-Entity* World::getEntity(Guid entityId)
+Entity* World::getEntity(const Guid& entityId)
 {
 	if (entityId == Guid::INVALID) {
 		return NULL;
 	}
 
-	std::map<Guid, int>::iterator it = mIdToGlobalIndex.find(entityId);
+	std::unordered_map<Guid, int>::iterator it = mIdToGlobalIndex.find(entityId);
 	if(it != mIdToGlobalIndex.end()){
-
-		PoolAllocator<Entity>* allocator = getEntityAllocator();
-		if (allocator == NULL) {
-			return NULL;
-		}
-
-		return allocator->get(it->second);
+		return mEntityAllocator.get(it->second);
 	}
 
 	return NULL;
@@ -368,16 +368,7 @@ Entity* World::getEntity(Guid entityId)
 
 Entity* World::getEntityByIndex(int index)
 {
-	if (index < 0) {
-		return NULL;
-	}
-
-	const PoolAllocator<Entity>* allocator = getEntityAllocator_Const();
-	if (allocator == NULL) {
-		return NULL;
-	}
-
-	return allocator->get(index);
+	return mEntityAllocator.get(index);
 }
 
 System* World::getSystemByIndex(int index)
@@ -389,9 +380,9 @@ System* World::getSystemByIndex(int index)
 	return mSystems[index];
 }
 
-int World::getIndexOf(Guid id) const
+int World::getIndexOf(const Guid& id) const
 {
-	std::map<Guid, int>::const_iterator it = mIdToGlobalIndex.find(id);
+	std::unordered_map<Guid, int>::const_iterator it = mIdToGlobalIndex.find(id);
 	if( it != mIdToGlobalIndex.end()){
 		return it->second;
 	}
@@ -399,9 +390,9 @@ int World::getIndexOf(Guid id) const
 	return -1;
 }
 
-int World::getTypeOf(Guid id) const
+int World::getTypeOf(const Guid& id) const
 {
-	std::map<Guid, int>::const_iterator it = mIdToType.find(id);
+	std::unordered_map<Guid, int>::const_iterator it = mIdToType.find(id);
 	if (it != mIdToType.end()) {
 		return it->second;
 	}
@@ -411,13 +402,11 @@ int World::getTypeOf(Guid id) const
 
 Entity* World::createEntity()
 {
-	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
-
-	int globalIndex = (int)allocator->getCount();
+	int globalIndex = (int)mEntityAllocator.getCount();
 	int type = EntityType<Entity>::type;
 	Guid entityId = Guid::newGuid();
 
-	Entity* entity = allocator->construct();
+	Entity* entity = mEntityAllocator.construct();
 	entity->mEntityId = entityId;
 	entity->mDoNotDestroy = false;
 
@@ -431,14 +420,12 @@ Entity* World::createEntity()
 	return entity;
 }
 
-Entity* World::createEntity(std::vector<char> data)
+Entity* World::createEntity(const std::vector<char>& data)
 {
-	PoolAllocator<Entity>* allocator = getEntityOrAddAllocator();
-
-	int globalIndex = (int)allocator->getCount();
+	int globalIndex = (int)mEntityAllocator.getCount();
 	int type = EntityType<Entity>::type;
 
-	Entity* entity = allocator->construct(data);
+	Entity* entity = mEntityAllocator.construct(data);
 
 	mIdToGlobalIndex[entity->mEntityId] = globalIndex;
 	mIdToType[entity->mEntityId] = type;
@@ -455,7 +442,7 @@ void World::latentDestroyEntity(Guid entityId)
 	mEntityIdsMarkedLatentDestroy.push_back(entityId);
 
 	// add any components found on the entity to the latent destroy component list
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
 	if(it != mEntityIdToComponentIds.end()){
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
 		for(size_t i = 0; i < componentsOnEntity.size(); i++){
@@ -474,7 +461,7 @@ void World::latentDestroyEntity(Guid entityId)
 
 void World::immediateDestroyEntity(Guid entityId)
 {
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
 	if(it1 != mEntityIdToComponentIds.end()){
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it1->second;
 
@@ -494,11 +481,11 @@ void World::immediateDestroyEntity(Guid entityId)
 	}
 
 	// remove from id to global index map
-	std::map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(entityId);
+	std::unordered_map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(entityId);
 	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
-		Entity* swappedEntity = destroyInternalEntity(mEntityAllocator, index);
+		Entity* swappedEntity = destroyInternalEntity(&mEntityAllocator, index);
 
 		mIdToGlobalIndex.erase(it2);
 
@@ -515,7 +502,7 @@ void World::immediateDestroyEntity(Guid entityId)
 	}
 
 	//remove from id to type map
-	std::map<Guid, int>::iterator it3 = mIdToType.find(entityId);
+	std::unordered_map<Guid, int>::iterator it3 = mIdToType.find(entityId);
 	if (it3 != mIdToType.end()) {
 		mIdToType.erase(it3);
 	}
@@ -535,7 +522,7 @@ void World::latentDestroyComponent(Guid entityId, Guid componentId, int componen
 
 void World::immediateDestroyComponent(Guid entityId, Guid componentId, int componentType)
 {
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
 	if(it1 != mEntityIdToComponentIds.end()){
 		for(size_t i = 0; i < it1->second.size(); i++){
 			if(it1->second[i].first == componentId){
@@ -546,13 +533,24 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	}
 
 	// remove from id to global index map
-	std::map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(componentId);
+	std::unordered_map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(componentId);
 	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
 		Component* swappedComponent = NULL;
 		if(componentType < 20){
-			swappedComponent = destroyInternalComponent(&mComponentAllocatorMap, componentType, index);
+			swappedComponent = destroyInternalComponent(&mTransformAllocator,
+														&mMeshRendererAllocator,
+														&mLineRendererAllocator,
+														&mRigidbodyAllocator,
+														&mCameraAllocator,
+														&mLightAllocator,
+														&mSphereColliderAllocator,
+														&mBoxColliderAllocator,
+														&mCapsuleColliderAllocator,
+														&mMeshColliderAllocator, 
+														componentType, 
+														index);
 		}
 		else{
 			swappedComponent = destroyComponent(&mComponentAllocatorMap, componentType, index);
@@ -573,7 +571,7 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	} 
 
 	//remove from id to type map
-	std::map<Guid, int>::iterator it3 = mIdToType.find(componentId);
+	std::unordered_map<Guid, int>::iterator it3 = mIdToType.find(componentId);
 	if (it3 != mIdToType.end()) {
 		mIdToType.erase(it3);
 	}
@@ -619,7 +617,7 @@ std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(Guid entityId)
 {
 	std::vector<std::pair<Guid, int>> componentsOnEntity;
 
-	std::map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
 	if(it != mEntityIdToComponentIds.end()){
 		componentsOnEntity = it->second;
 	}
@@ -657,9 +655,9 @@ std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved() const
 	return mComponentIdsMarkedMoved;
 }
 
-std::string World::getAssetFilepath(Guid assetId) const
+std::string World::getAssetFilepath(const Guid& assetId) const
 {
-	std::map<Guid, std::string>::const_iterator it = assetIdToFilepath.find(assetId);
+	std::unordered_map<Guid, std::string>::const_iterator it = assetIdToFilepath.find(assetId);
 	if (it != assetIdToFilepath.end()) {
 		return it->second;
 	}

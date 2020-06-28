@@ -54,7 +54,10 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 		glm::vec3 position = transform->mPosition;// camera->mPosition;
 		glm::vec3 front = transform->getForward();// camera->mFront;
 		glm::vec3 up = transform->getUp();// camera->mUp;
-		glm::vec4 backgroundColor = camera->mBackgroundColor;
+		glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.r,
+											  camera->mBackgroundColor.g,
+											  camera->mBackgroundColor.b,
+											  camera->mBackgroundColor.a);
 
 		if (ImGui::InputFloat3("Position", glm::value_ptr(position))) {
 			transform->mPosition = position;
@@ -67,7 +70,7 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 			//CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mUp, up, &scene.isDirty));
 		}
 		if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor))) {
-			CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&camera->mBackgroundColor, backgroundColor, &scene.isDirty));
+			CommandManager::addCommand(new ChangePropertyCommand<Color>(&camera->mBackgroundColor, Color(backgroundColor), &scene.isDirty));
 		}
 
 		if (ImGui::TreeNode("Viewport"))

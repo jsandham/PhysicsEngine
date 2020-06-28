@@ -195,15 +195,7 @@ void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state
 
 void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererState* state)
 {
-	camera->mQuery.mNumBatchDrawCalls = 0;
-	camera->mQuery.mNumDrawCalls = 0;
-	camera->mQuery.mTotalElapsedTime = 0.0f;
-	camera->mQuery.mVerts = 0;
-	camera->mQuery.mTris = 0;
-	camera->mQuery.mLines = 0;
-	camera->mQuery.mPoints = 0;
-
-	glBeginQuery(GL_TIME_ELAPSED, camera->mQuery.mQueryId[camera->mQuery.mQueryBack]);
+	camera->beginQuery();
 
 	state->mCameraState.mProjection = camera->getProjMatrix();
 	state->mCameraState.mView = camera->getViewMatrix();
@@ -232,7 +224,7 @@ void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererStat
 	glViewport(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
 	glScissor(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
 
-	glClearColor(camera->mBackgroundColor.x, camera->mBackgroundColor.y, camera->mBackgroundColor.z, camera->mBackgroundColor.w);
+	glClearColor(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b, camera->mBackgroundColor.a);
 	glClearDepth(1.0f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
@@ -258,24 +250,21 @@ void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererStat
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-// This is currently really expensive so I have it commented out right now
 void PhysicsEngine::computeSSAO(World* world,
 	Camera* camera,
 	ForwardRendererState* state,
+	const std::vector<std::pair<uint64_t, int>>& renderQueue,
 	const std::vector<RenderObject>& renderObjects)
 {
 	// fill geometry framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
 
-		state->mGeometryShader.use(state->mGeometryShaderProgram);
-		state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
+	state->mGeometryShader.use(state->mGeometryShaderProgram);
 
-		Graphics::render(world, renderObjects[i], &camera->mQuery);
+	for (size_t i = 0; i < renderQueue.size(); i++) {
+		state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[renderQueue[i].second].model);
+
+		Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -313,6 +302,7 @@ void PhysicsEngine::renderShadows(World* world,
 	Light* light,
 	Transform* lightTransform,
 	ForwardRendererState* state,
+	const std::vector<std::pair<uint64_t, int>>& renderQueue,
 	const std::vector<RenderObject>& renderObjects)
 {
 	if (light->mLightType == LightType::Directional) {
@@ -330,14 +320,9 @@ void PhysicsEngine::renderShadows(World* world,
 			state->mDepthShader.setMat4(state->mDepthShaderViewLoc, state->mCascadeLightView[i]);
 			state->mDepthShader.setMat4(state->mDepthShaderProjectionLoc, state->mCascadeOrthoProj[i]);
 
-			for (int j = 0; j < renderObjects.size(); j++) {
-				if (renderObjects[j].materialIndex == -1 || renderObjects[j].shaderIndex == -1 || renderObjects[j].meshIndex == -1)
-				{
-					continue;
-				}
-
-				state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[j].model);
-				Graphics::render(world, renderObjects[j], &camera->mQuery);
+			for (int j = 0; j < renderQueue.size(); j++) {
+				state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
+				Graphics::render(world, renderObjects[renderQueue[j].second], &camera->mQuery);
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -358,14 +343,9 @@ void PhysicsEngine::renderShadows(World* world,
 		state->mDepthShader.setMat4(state->mDepthShaderProjectionLoc, state->mShadowProjMatrix);
 		state->mDepthShader.setMat4(state->mDepthShaderViewLoc, state->mShadowViewMatrix);
 
-		for (int i = 0; i < renderObjects.size(); i++) {
-			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-			{
-				continue;
-			}
-
-			state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &camera->mQuery);
+		for (int i = 0; i < renderQueue.size(); i++) {
+			state->mDepthShader.setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
+			Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -394,14 +374,9 @@ void PhysicsEngine::renderShadows(World* world,
 		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc4, state->mCubeViewProjMatrices[4]);
 		state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc5, state->mCubeViewProjMatrices[5]);
 
-		for (int i = 0; i < renderObjects.size(); i++) {
-			if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-			{
-				continue;
-			}
-
-			state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderModelLoc, renderObjects[i].model);
-			Graphics::render(world, renderObjects[i], &camera->mQuery);
+		for (int i = 0; i < renderQueue.size(); i++) {
+			state->mDepthCubemapShader.setMat4(state->mDepthCubemapShaderModelLoc, renderObjects[renderQueue[i].second].model);
+			Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -413,6 +388,7 @@ void PhysicsEngine::renderOpaques(World* world,
 	Light* light,
 	Transform* lightTransform,
 	ForwardRendererState* state,
+	const std::vector<std::pair<uint64_t, int>>& renderQueue,
 	const std::vector<RenderObject>& renderObjects)
 {
 	state->mLightState.mPosition = lightTransform->mPosition;
@@ -494,21 +470,30 @@ void PhysicsEngine::renderOpaques(World* world,
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
 
-	for (int i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
+	int currentMaterialIndex = -1;
+	int currentShaderIndex = -1;
+
+	Shader* shader = NULL;
+	Material* material = NULL;
+
+	for (int i = 0; i < renderQueue.size(); i++) {
+		if (currentShaderIndex != renderObjects[renderQueue[i].second].shaderIndex)
 		{
-			continue;
+			shader = world->getAssetByIndex<Shader>(renderObjects[renderQueue[i].second].shaderIndex);
+			shader->use(shader->getProgramFromVariant(variant));
+
+			currentShaderIndex = renderObjects[renderQueue[i].second].shaderIndex;
 		}
 
-		Material* material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
-		Shader* shader = world->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
+		shader->setMat4("model", renderObjects[renderQueue[i].second].model);
 
-		int shaderProgram = shader->getProgramFromVariant(variant);
+		if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
+		{
+			material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
+			material->apply(world);
 
-		shader->use(shaderProgram);
-		shader->setMat4("model", renderObjects[i].model);
-
-		material->apply(world);
+			currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
+		}
 
 		if (light->mLightType == LightType::Directional) {
 			for (int j = 0; j < 5; j++) {
@@ -525,7 +510,7 @@ void PhysicsEngine::renderOpaques(World* world,
 			glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
 		}
 
-		Graphics::render(world, renderObjects[i], &camera->mQuery);
+		Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -536,21 +521,15 @@ void PhysicsEngine::renderOpaques(World* world,
 void PhysicsEngine::renderColorPicking(World* world,
 	Camera* camera,
 	ForwardRendererState* state,
+	const std::vector<std::pair<uint64_t, int>>& renderQueue,
 	const std::vector<RenderObject>& renderObjects)
 {
 	camera->clearColoring();
 
 	// assign colors to render objects.
 	int color = 1;
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 ||
-			renderObjects[i].shaderIndex == -1 ||
-			renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
-
-		camera->assignColoring(color, renderObjects[i].meshRendererId);
+	for (size_t i = 0; i < renderQueue.size(); i++) {
+		camera->assignColoring(color, renderObjects[renderQueue[i].second].meshRendererId);
 
 		color++;
 	}
@@ -560,24 +539,17 @@ void PhysicsEngine::renderColorPicking(World* world,
 	state->mColorShader.use(state->mColorShaderProgram);
 
 	color = 1;
-	for (size_t i = 0; i < renderObjects.size(); i++) {
-		if (renderObjects[i].materialIndex == -1 ||
-			renderObjects[i].shaderIndex == -1 ||
-			renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}
-
+	for (size_t i = 0; i < renderQueue.size(); i++) {
 		int r = (color & 0x000000FF) >> 0;
 		int g = (color & 0x0000FF00) >> 8;
 		int b = (color & 0x00FF0000) >> 16;
 
 		color++;
 
-		state->mColorShader.setMat4(state->mColorShaderModelLoc, renderObjects[i].model);
+		state->mColorShader.setMat4(state->mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
 		state->mColorShader.setVec4(state->mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
-		Graphics::render(world, renderObjects[i], &camera->mQuery);
+		Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -597,22 +569,7 @@ void PhysicsEngine::postProcessing()
 
 void PhysicsEngine::endFrame(World* world, Camera* camera, ForwardRendererState* state)
 {
-	glEndQuery(GL_TIME_ELAPSED);
-
-	GLuint64 elapsedTime; // in nanoseconds
-	glGetQueryObjectui64v(camera->mQuery.mQueryId[camera->mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
-
-	camera->mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
-
-	// swap which query is active
-	if (camera->mQuery.mQueryBack) {
-		camera->mQuery.mQueryBack = 0;
-		camera->mQuery.mQueryFront = 1;
-	}
-	else {
-		camera->mQuery.mQueryBack = 1;
-		camera->mQuery.mQueryFront = 0;
-	}
+	camera->endQuery();
 
 	if (state->mRenderToScreen) {
 		glViewport(0, 0, 1024, 1024);
