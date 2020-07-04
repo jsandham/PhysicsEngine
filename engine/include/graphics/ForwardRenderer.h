@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <gl/gl.h>
 
-#include "../core/World.h"
+#include "../components/Camera.h"
 #include "../core/Input.h"
 
 #include "ForwardRendererState.h"
@@ -13,6 +13,8 @@
 
 namespace PhysicsEngine
 {
+	class World; 
+
 	class ForwardRenderer
 	{
 		private:

@@ -37,6 +37,8 @@ namespace PhysicsEngine
 	const bool IsCleanUpSystem<CleanUpSystem>::value = true;
 	template<>
 	const bool IsSystem<CleanUpSystem>::value = true;
+	template<>
+	const bool IsSystemInternal<CleanUpSystem>::value = true;
 }
 
 #endif

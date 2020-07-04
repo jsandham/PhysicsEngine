@@ -63,11 +63,11 @@ void ProjectView::render(const std::string currentProjectPath, const LibraryDire
 					ImGui::Selectable(fileName.c_str());
 
 					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
-						//clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
+						clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
 					}
 
 					if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0)) {
-						//clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
+						clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension), library.getFileId(filePaths[i]));
 					}
 
 					if (!ImGui::IsMouseDown(0)) {

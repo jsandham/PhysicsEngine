@@ -52,6 +52,8 @@ namespace PhysicsEngine
 	const bool IsPhysicsSystem<PhysicsSystem>::value = true;
 	template<>
 	const bool IsSystem<PhysicsSystem>::value = true;
+	template<>
+	const bool IsSystemInternal<PhysicsSystem>::value = true;
 }
 
 #endif

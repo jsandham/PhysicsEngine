@@ -1,27 +1,8 @@
 #include "../../include/core/InternalShaders.h"
+#include "../../include/core/World.h"
+#include "../../include/core/Log.h"
 
 using namespace PhysicsEngine;
-
-const std::string InternalShaders::lineVertexShader =
-"layout (std140) uniform CameraBlock\n"
-"{\n"
-"	mat4 projection;\n"
-"	mat4 view;\n"
-"	vec3 cameraPos;\n"
-"}Camera;\n"
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = Camera.projection * Camera.view * vec4(position, 1.0);\n"
-"}";
-
-const std::string InternalShaders::lineFragmentShader =
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
 
 const std::string InternalShaders::colorVertexShader =
 "#define DIRECTIONALLIGHT\n"
@@ -48,26 +29,7 @@ const std::string InternalShaders::colorFragmentShader =
 "	FragColor = color;\n"
 "}";
 
-
-
-
-
-
-const std::string InternalShaders::graphVertexShader =
-"in vec3 position;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = vec4(position, 1.0);\n"
-"}";
-
-const std::string InternalShaders::graphFragmentShader =
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-"}";
-
-const std::string InternalShaders::windowVertexShader =
+const std::string InternalShaders::screenQuadVertexShader =
 "in vec3 position;\n"
 "in vec2 texCoord;\n"
 "out vec2 TexCoord;\n"
@@ -77,7 +39,7 @@ const std::string InternalShaders::windowVertexShader =
 "   TexCoord = texCoord;\n"
 "}";
 
-const std::string InternalShaders::windowFragmentShader =
+const std::string InternalShaders::screenQuadFragmentShader =
 "uniform sampler2D texture0;\n"
 "in vec2 TexCoord;\n"
 "out vec4 FragColor;\n"
@@ -187,12 +149,6 @@ const std::string InternalShaders::shadowDepthCubemapFragmentShader =
 "   gl_FragDepth = 1.0f;\n"
 "}";
 
-
-
-
-
-
-
 const std::string InternalShaders::overdrawVertexShader =
 "layout (std140) uniform CameraBlock\n"
 "{\n"
@@ -234,29 +190,6 @@ const std::string InternalShaders::fontFragmentShader =
 "    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
 "    color = vec4(textColor, 1.0) * sampled;\n"
 "}";
-
-const std::string InternalShaders::instanceVertexShader =
-"out vec4 FragColor;\n"
-"in vec3 fColor;\n"
-"void main()\n"
-"{\n"
-"    FragColor = vec4(fColor, 1.0);\n"
-"}";
-
-const std::string InternalShaders::instanceFragmentShader =
-"layout (location = 0) in vec2 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"layout (location = 2) in vec2 aOffset;\n"
-"out vec3 fColor;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = vec4(aPos + aOffset, 0.0, 1.0);\n"
-"    fColor = aColor;\n"
-"}";
-
-
-
-
 
 const std::string InternalShaders::gbufferVertexShader =
 "layout (location = 0) in vec3 aPos;\n"
@@ -570,3 +503,152 @@ const std::string InternalShaders::simpleLitDeferredFragmentShader =
 
 "	FragColor = vec4(lighting, 1.0);\n"
 "}\n";
+
+const Guid InternalShaders::fontShaderId("9b37ce25-cc6c-497c-bed9-7c5dbd13b61f");
+const Guid InternalShaders::colorShaderId("cfb7774e-0f7d-4990-b0ff-45034483ecea");
+const Guid InternalShaders::positionAndNormalShaderId("dd530a6e-96ba-4a79-a6f5-5a634cd449b9");
+const Guid InternalShaders::ssaoShaderId("dba46e51-a544-4fac-a9a1-e9d3d91244b0");
+const Guid InternalShaders::screenQuadShaderId("7b42abd4-2053-47c2-bc1b-71db2771a3f4");
+const Guid InternalShaders::normalMapShaderId("20ec40c9-6ced-4b47-a68b-acba2234809d");
+const Guid InternalShaders::depthMapShaderId("725b606b-db20-4dc3-a550-08836e86cf0d");
+const Guid InternalShaders::shadowDepthMapShaderId("bdf4bd00-f3ae-4e57-b558-e8569ab05423");
+const Guid InternalShaders::shadowDepthCubemapShaderId("a6bd6d1a-a977-45f6-88fb-a3d40c696453");
+const Guid InternalShaders::gbufferShaderId("2b794f1c-97b4-4d90-a1a8-e2e391ff154c");
+const Guid InternalShaders::simpleLitShaderId("77cc0f14-157a-4364-b156-2543db31b717");
+const Guid InternalShaders::simpleLitDeferredShaderId("a0561704-c34b-42ba-b792-c1b940df329d");
+const Guid InternalShaders::overdrawShaderId("da3a582e-35e2-412e-9060-1e8cfe183b5a");
+
+Guid InternalShaders::loadInternalShader(World* world, const Guid shaderId, const std::string vertex, const std::string fragment, const std::string geometry)
+{
+	// Create temp shader to compute serialized data vector
+	Shader temp;
+	temp.load(vertex, fragment, geometry);
+
+	std::vector<char> data = temp.serialize(shaderId);
+
+	Shader* shader = world->createAsset<Shader>(data);
+	if (shader != NULL) {
+		return shader->getId();
+	}
+	else {
+		Log::error("Could not load internal shader\n");
+		return Guid::INVALID;
+	}
+}
+
+Guid InternalShaders::loadFontShader(World* world)
+{
+	return loadInternalShader(world, 
+							  InternalShaders::fontShaderId,
+							  InternalShaders::fontVertexShader,
+							  InternalShaders::fontFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadColorShader(World* world)
+{
+	return loadInternalShader(world,
+							 InternalShaders::colorShaderId,
+							 InternalShaders::colorVertexShader,
+							 InternalShaders::colorFragmentShader,
+							 "");
+}
+
+Guid InternalShaders::loadPositionAndNormalsShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::positionAndNormalShaderId,
+							  InternalShaders::positionAndNormalsVertexShader,
+							  InternalShaders::positionAndNormalsFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadSsaoShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::ssaoShaderId,
+							  InternalShaders::ssaoVertexShader,
+							  InternalShaders::ssaoFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadScreenQuadShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::screenQuadShaderId,
+							  InternalShaders::screenQuadVertexShader,
+							  InternalShaders::screenQuadFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadNormalMapShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::normalMapShaderId,
+							  InternalShaders::normalMapVertexShader,
+							  InternalShaders::normalMapFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadDepthMapShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::depthMapShaderId,
+							  InternalShaders::depthMapVertexShader,
+							  InternalShaders::depthMapFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadShadowDepthMapShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::shadowDepthMapShaderId,
+							  InternalShaders::shadowDepthMapVertexShader,
+							  InternalShaders::shadowDepthMapFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadShadowDepthCubemapShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::shadowDepthCubemapShaderId,
+							  InternalShaders::shadowDepthCubemapVertexShader,
+							  InternalShaders::shadowDepthCubemapFragmentShader,
+							  InternalShaders::shadowDepthCubemapGeometryShader);
+}
+
+Guid InternalShaders::loadGBufferShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::gbufferShaderId,
+							  InternalShaders::gbufferVertexShader,
+							  InternalShaders::gbufferFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadSimpleLitShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::simpleLitShaderId,
+							  InternalShaders::simpleLitVertexShader,
+							  InternalShaders::simpleLitFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadSimpleLitDeferredShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::simpleLitDeferredShaderId,
+							  InternalShaders::simpleLitDeferredVertexShader,
+							  InternalShaders::simpleLitDeferredFragmentShader,
+							  "");
+}
+
+Guid InternalShaders::loadOverdrawShader(World* world)
+{
+	return loadInternalShader(world,
+							  InternalShaders::overdrawShaderId,
+							  InternalShaders::overdrawVertexShader,
+							  InternalShaders::overdrawFragmentShader,
+							  "");
+}

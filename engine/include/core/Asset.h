@@ -17,12 +17,6 @@ namespace PhysicsEngine
 	
 	class World;
 
-	template <typename T>
-	struct AssetType { static const int type; };
-
-	template <typename T>
-	const int AssetType<T>::type = -1;
-
 	class Asset
 	{
 		protected:
@@ -43,6 +37,12 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
+	struct AssetType { static const int type; };
+
+	template <typename T>
+	const int AssetType<T>::type = -1;
+
+	template <typename T>
 	struct IsAsset { static const bool value; };
 
 	template <typename T>
@@ -50,6 +50,12 @@ namespace PhysicsEngine
 
 	template<>
 	const bool IsAsset<Asset>::value = true;
+
+	template<typename T>
+	struct IsAssetInternal { static const bool value; };
+
+	template<>
+	const bool IsAssetInternal<Asset>::value = false;
 }
 
 #endif

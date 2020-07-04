@@ -31,6 +31,10 @@
 #include "../components/MeshCollider.h"
 
 #include "../systems/System.h"
+#include "../systems/RenderSystem.h"
+#include "../systems/PhysicsSystem.h"
+#include "../systems/CleanUpSystem.h"
+#include "../systems/DebugSystem.h"
 
 namespace PhysicsEngine
 {
@@ -48,7 +52,13 @@ namespace PhysicsEngine
 									 std::vector<char> data, 
 									 int type, 
 									 int* index);
-	System* loadInternalSystem(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
+	System* loadInternalSystem(PoolAllocator<RenderSystem>* renderSystemAllocator,
+							   PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
+							   PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
+							   PoolAllocator<DebugSystem>* debugSystemAllocator, 
+							   std::vector<char> data, 
+							   int type, 
+							   int* index);
 	Asset* loadInternalAsset(PoolAllocator<Mesh>* meshAllocator,
 							 PoolAllocator<Material>* materialAllocator,
 							 PoolAllocator<Shader>* shaderAllocator,
@@ -71,14 +81,6 @@ namespace PhysicsEngine
 										PoolAllocator<BoxCollider>* boxColliderAllocator,
 										PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
 										PoolAllocator<MeshCollider>* meshColliderAllocator, int type, int index);
-
-	/*Entity* loadInternalEntity(Allocator* allocator, std::vector<char> data, int* index);
-	Component* loadInternalComponent(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
-	System* loadInternalSystem(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
-	Asset* loadInternalAsset(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index);
-
-	Entity* destroyInternalEntity(Allocator* allocator, int index);
-	Component* destroyInternalComponent(std::unordered_map<int, Allocator*>* allocatorMap, int type, int index);*/
 }
 
 #endif

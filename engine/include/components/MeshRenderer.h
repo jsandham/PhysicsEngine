@@ -65,6 +65,8 @@ namespace PhysicsEngine
 	const bool IsMeshRenderer<MeshRenderer>::value = true;
 	template<>
 	const bool IsComponent<MeshRenderer>::value = true;
+	template<>
+	const bool IsComponentInternal<MeshRenderer>::value = true;
 }
 
 #endif

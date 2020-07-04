@@ -78,6 +78,8 @@ namespace PhysicsEngine
 	const bool IsMesh<Mesh>::value = true;
 	template<>
 	const bool IsAsset<Mesh>::value = true;
+	template<>
+	const bool IsAssetInternal<Mesh>::value = true;
 }
 
 #endif

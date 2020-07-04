@@ -39,8 +39,8 @@ void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state
 	state->mDepthCubemapShader.setFragmentShader(InternalShaders::shadowDepthCubemapFragmentShader);
 	state->mDepthCubemapShader.compile();
 
-	state->mQuadShader.setVertexShader(InternalShaders::windowVertexShader);
-	state->mQuadShader.setFragmentShader(InternalShaders::windowFragmentShader);
+	state->mQuadShader.setVertexShader(InternalShaders::screenQuadVertexShader);
+	state->mQuadShader.setFragmentShader(InternalShaders::screenQuadFragmentShader);
 	state->mQuadShader.compile();
 
 	// cache internal shader uniforms

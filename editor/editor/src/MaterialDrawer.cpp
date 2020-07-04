@@ -133,14 +133,14 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 	//Log::info(("material view world shader count: " + std::to_string(previewWorld.getNumberOfAssets<Shader>()) + "\n").c_str());
 	//Log::info(("material view world texture count: " + std::to_string(previewWorld.getNumberOfAssets<Texture2D>()) + "\n").c_str());
 
-	RenderSystem* renderSystem = previewWorld.getSystem<RenderSystem>();
-	EditorCameraSystem* cameraSystem = previewWorld.getSystem<EditorCameraSystem>();
+	//RenderSystem* renderSystem = previewWorld.getSystem<RenderSystem>();
+	//EditorCameraSystem* cameraSystem = previewWorld.getSystem<EditorCameraSystem>();
 
 	//GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;// ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ? ImGuiWindowFlags_NoScrollWithMouse : 0);
 	ImGui::BeginChild("MaterialPreviewWindow", ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true, window_flags);
-	ImGui::Image((void*)(intptr_t)cameraSystem->getNativeGraphicsColorTex(), ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
+	ImGui::Image((void*)(intptr_t)previewCamera->getNativeGraphicsColorTex(), ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1), ImVec2(0, 0));
 	ImGui::EndChild();
 }
 
@@ -221,7 +221,7 @@ void MaterialDrawer::populatePreviewWorld(World* world)
 	cameraTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
 	cameraTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	Camera* camera = cameraEntity->addComponent<Camera>(&previewWorld);
+	previewCamera = cameraEntity->addComponent<Camera>(&previewWorld);
 	/*camera->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
 	camera->mFront = glm::vec3(-3.0f, 0.0f, 0.0f);
 	camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);*/

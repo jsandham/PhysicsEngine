@@ -65,6 +65,12 @@ namespace PhysicsEngine
 
 	template<>
 	const bool IsComponent<Component>::value = true;
+
+	template<typename T>
+	struct IsComponentInternal { static const bool value; };
+
+	template<>
+	const bool IsComponentInternal<Component>::value = false;
 }
 
 #endif

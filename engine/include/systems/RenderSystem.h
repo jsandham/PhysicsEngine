@@ -6,7 +6,8 @@
 #include "System.h"
 
 #include "../core/Input.h"
-//#include "../core/World.h"
+
+#include "../components/Camera.h"
 
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/DeferredRenderer.h"
@@ -62,6 +63,8 @@ namespace PhysicsEngine
 	const bool IsRenderSystem<RenderSystem>::value = true;
 	template<>
 	const bool IsSystem<RenderSystem>::value = true;
+	template<>
+	const bool IsSystemInternal<RenderSystem>::value = true;
 }
 
 #endif

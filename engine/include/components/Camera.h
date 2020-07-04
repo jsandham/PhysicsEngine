@@ -152,6 +152,8 @@ namespace PhysicsEngine
 	const bool IsCamera<Camera>::value = true;
 	template<>
 	const bool IsComponent<Camera>::value = true;
+	template<>
+	const bool IsComponentInternal<Camera>::value = true;
 }
 
 #endif

@@ -8,6 +8,7 @@
 #include "../../include/core/Shader.h"
 #include "../../include/core/InternalShaders.h"
 #include "../../include/core/Geometry.h"
+#include "../../include/core/World.h"
 
 #include "../../include/systems/RenderSystem.h"
 

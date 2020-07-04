@@ -5,7 +5,6 @@
 
 #include "../glm/glm.hpp"
 #include "../core/Sphere.h"
-#include "../core/Color.h"
 
 namespace PhysicsEngine
 {

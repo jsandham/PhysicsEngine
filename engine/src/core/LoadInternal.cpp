@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../../include/core/LoadInternal.h"
+#include "../../include/core/Log.h"
 
 #include "../../include/systems/RenderSystem.h"
 #include "../../include/systems/PhysicsSystem.h"
@@ -16,56 +17,56 @@ Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator
 }
 
 Component* PhysicsEngine::loadInternalComponent(PoolAllocator<Transform>* transformAllocator,
-								PoolAllocator<MeshRenderer>* meshRendererAllocator,
-								PoolAllocator<LineRenderer>* lineRendererAllocator,
-								PoolAllocator<Rigidbody>* rigidbodyAllocator,
-								PoolAllocator<Camera>* cameraAllocator,
-								PoolAllocator<Light>* lightAllocator,
-								PoolAllocator<SphereCollider>* sphereColliderAllocator,
-								PoolAllocator<BoxCollider>* boxColliderAllocator,
-								PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
-								PoolAllocator<MeshCollider>* meshColliderAllocator,
-								std::vector<char> data,
-								int type,
-								int* index)
+												PoolAllocator<MeshRenderer>* meshRendererAllocator,
+												PoolAllocator<LineRenderer>* lineRendererAllocator,
+												PoolAllocator<Rigidbody>* rigidbodyAllocator,
+												PoolAllocator<Camera>* cameraAllocator,
+												PoolAllocator<Light>* lightAllocator,
+												PoolAllocator<SphereCollider>* sphereColliderAllocator,
+												PoolAllocator<BoxCollider>* boxColliderAllocator,
+												PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
+												PoolAllocator<MeshCollider>* meshColliderAllocator,
+												std::vector<char> data,
+												int type,
+												int* index)
 {
-	if (type == 0) {
+	if (type == ComponentType<Transform>::type) {
 		*index = (int)transformAllocator->getCount();
 		return transformAllocator->construct(data);
 	}
-	else if (type == 1) {
+	else if (type == ComponentType<Rigidbody>::type) {
 		*index = (int)rigidbodyAllocator->getCount();
 		return rigidbodyAllocator->construct(data);
 	}
-	else if (type == 2) {
+	else if (type == ComponentType<Camera>::type) {
 		*index = (int)cameraAllocator->getCount();
 		return cameraAllocator->construct(data);
 	}
-	else if (type == 3) {
+	else if (type == ComponentType<MeshRenderer>::type) {
 		*index = (int)meshRendererAllocator->getCount();
 		return meshRendererAllocator->construct(data);
 	}
-	else if (type == 4) {
+	else if (type == ComponentType<LineRenderer>::type) {
 		*index = (int)lineRendererAllocator->getCount();
 		return lineRendererAllocator->construct(data);
 	}
-	else if (type == 5) {
+	else if (type == ComponentType<Light>::type) {
 		*index = (int)lightAllocator->getCount();
 		return lightAllocator->construct(data);
 	}
-	else if (type == 8) {
+	else if (type == ComponentType<BoxCollider>::type) {
 		*index = (int)boxColliderAllocator->getCount();
 		return boxColliderAllocator->construct(data);
 	}
-	else if (type == 9) {
+	else if (type == ComponentType<SphereCollider>::type) {
 		*index = (int)sphereColliderAllocator->getCount();
 		return sphereColliderAllocator->construct(data);
 	}
-	else if (type == 10) {
+	else if (type == ComponentType<MeshCollider>::type) {
 		*index = (int)meshColliderAllocator->getCount();
 		return meshColliderAllocator->construct(data);
 	}
-	else if (type == 15) {
+	else if (type == ComponentType<CapsuleCollider>::type) {
 		*index = (int)capsuleColliderAllocator->getCount();
 		return capsuleColliderAllocator->construct(data);
 	}
@@ -76,62 +77,29 @@ Component* PhysicsEngine::loadInternalComponent(PoolAllocator<Transform>* transf
 	}
 }
 
-System* PhysicsEngine::loadInternalSystem(std::unordered_map<int, Allocator*>* allocatorMap, std::vector<char> data, int type, int* index)
+System* PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem>* renderSystemAllocator,
+										  PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
+										  PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
+										  PoolAllocator<DebugSystem>* debugSystemAllocator,
+										  std::vector<char> data,
+										  int type,
+										  int* index)
 {
-	if (allocatorMap == NULL) {
-		return NULL;
+	if (type == SystemType<RenderSystem>::type) {
+		*index = (int)renderSystemAllocator->getCount();
+		return renderSystemAllocator->construct(data);
 	}
-
-	Allocator* allocator = NULL;
-
-	std::unordered_map<int, Allocator*>::iterator it = allocatorMap->find(type);
-	if (it != allocatorMap->end()) {
-		allocator = it->second;
+	else if (type == SystemType<PhysicsSystem>::type) {
+		*index = (int)physicsSystemAllocator->getCount();
+		return physicsSystemAllocator->construct(data);
 	}
-
-	if (type == 0) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<RenderSystem>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<RenderSystem>* poolAllocator = static_cast<PoolAllocator<RenderSystem>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+	else if (type == SystemType<CleanUpSystem>::type) {
+		*index = (int)cleanupSystemAllocator->getCount();
+		return cleanupSystemAllocator->construct(data);
 	}
-	else if (type == 1) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<PhysicsSystem>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<PhysicsSystem>* poolAllocator = static_cast<PoolAllocator<PhysicsSystem>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
-	}
-	else if (type == 2) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<CleanUpSystem>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<CleanUpSystem>* poolAllocator = static_cast<PoolAllocator<CleanUpSystem>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
-	}
-	else if (type == 3) {
-		if (allocator == NULL) {
-			allocator = new PoolAllocator<DebugSystem>();
-			(*allocatorMap)[type] = allocator;
-		}
-
-		PoolAllocator<DebugSystem>* poolAllocator = static_cast<PoolAllocator<DebugSystem>*>(allocator);
-
-		*index = (int)poolAllocator->getCount();
-		return poolAllocator->construct(data);
+	else if (type == SystemType<DebugSystem>::type) {
+		*index = (int)debugSystemAllocator->getCount();
+		return debugSystemAllocator->construct(data);
 	}
 	else {
 		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
@@ -151,31 +119,31 @@ Asset* PhysicsEngine::loadInternalAsset(PoolAllocator<Mesh>* meshAllocator,
 						int type,
 						int* index)
 {
-	if (type == 0) {
+	if (type == AssetType<Shader>::type) {
 		*index = (int)shaderAllocator->getCount();
 		return shaderAllocator->construct(data);
 	}
-	else if (type == 1) {
+	else if (type == AssetType<Texture2D>::type) {
 		*index = (int)texture2DAllocator->getCount();
 		return texture2DAllocator->construct(data);
 	}
-	else if (type == 2) {
+	else if (type == AssetType<Texture3D>::type) {
 		*index = (int)texture3DAllocator->getCount();
 		return texture3DAllocator->construct(data);
 	}
-	else if (type == 3) {
+	else if (type == AssetType<Cubemap>::type) {
 		*index = (int)cubemapAllocator->getCount();
 		return cubemapAllocator->construct(data);
 	}
-	else if (type == 4) {
+	else if (type == AssetType<Material>::type) {
 		*index = (int)materialAllocator->getCount();
 		return materialAllocator->construct(data);
 	}
-	else if (type == 5) {
+	else if (type == AssetType<Mesh>::type) {
 		*index = (int)meshAllocator->getCount();
 		return meshAllocator->construct(data);
 	}
-	else if (type == 6) {
+	else if (type == AssetType<Font>::type) {
 		*index = (int)fontAllocator->getCount();
 		return fontAllocator->construct(data);
 	}

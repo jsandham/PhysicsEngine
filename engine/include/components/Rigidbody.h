@@ -69,6 +69,8 @@ namespace PhysicsEngine
 	const bool IsRigidbody<Rigidbody>::value = true;
 	template<>
 	const bool IsComponent<Rigidbody>::value = true;
+	template<>
+	const bool IsComponentInternal<Rigidbody>::value = true;
 }
 
 

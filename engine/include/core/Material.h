@@ -15,8 +15,9 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct MaterialHeader
 	{
-		Guid mAssetId;
+		Guid mMaterialId;
 		Guid mShaderId;
+		RenderQueue mRenderQueue;
 		size_t mUniformCount;
 	};
 #pragma pack(pop)
@@ -27,6 +28,9 @@ namespace PhysicsEngine
 			Guid mShaderId;
 			bool mShaderChanged;
 			std::vector<ShaderUniform> mUniforms; // current storing all uniforms but maybe we should just hold the material uniforms herre?
+
+		public:
+			RenderQueue mRenderQueue;
 
 		public:
 			Material();
@@ -115,6 +119,8 @@ namespace PhysicsEngine
 	const bool IsMaterial<Material>::value = true;
 	template<>
 	const bool IsAsset<Material>::value = true;
+	template<>
+	const bool IsAssetInternal<Material>::value = true;
 }
 
 #endif

@@ -78,6 +78,8 @@ namespace PhysicsEngine
 	const bool IsTexture<Cubemap>::value = true;
 	template<>
 	const bool IsAsset<Cubemap>::value = true;
+	template<>
+	const bool IsAssetInternal<Cubemap>::value = true;
 }
 
 #endif

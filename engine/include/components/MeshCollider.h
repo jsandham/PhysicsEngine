@@ -50,6 +50,8 @@ namespace PhysicsEngine
 	const bool IsMeshCollider<MeshCollider>::value = true;
 	template<>
 	const bool IsComponent<MeshCollider>::value = true;
+	template<>
+	const bool IsComponentInternal<MeshCollider>::value = true;
 }
 
 #endif

@@ -8,7 +8,6 @@
 #include "../core/Input.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
-#include "../graphics/Graphics.h"
 
 namespace PhysicsEngine
 {
@@ -46,6 +45,8 @@ namespace PhysicsEngine
 	const bool IsDebugSystem<DebugSystem>::value = true;
 	template<>
 	const bool IsSystem<DebugSystem>::value = true;
+	template<>
+	const bool IsSystemInternal<DebugSystem>::value = true;
 }
 
 #endif

@@ -16,6 +16,7 @@ namespace PhysicsEngine
 	typedef struct material_data
 	{
 		Guid mShaderId;
+		RenderQueue mRenderQueue;
 		std::vector<ShaderUniform> mUniforms;
 	}material_data;
 
@@ -36,12 +37,21 @@ namespace PhysicsEngine
 		json::JSON::JSONWrapper<std::map<std::string, json::JSON>> objects = jsonMaterial.ObjectRange();
 		std::map<std::string, json::JSON>::iterator it;
 
+		mat.mShaderId = Guid::INVALID;
+		mat.mRenderQueue = RenderQueue::Opaque;
+
 		// really we only need to serialize the uniform name and the corresponding data here...
 		std::vector<ShaderUniform> uniforms;
 		for (it = objects.begin(); it != objects.end(); it++) {
 
 			if (it->first == "shader") {
 				mat.mShaderId = Guid(it->second.ToString());
+
+				continue;
+			}
+
+			if (it->first == "renderQueue") {
+				mat.mRenderQueue = static_cast<RenderQueue>(it->second.ToInt());
 
 				continue;
 			}

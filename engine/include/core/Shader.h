@@ -27,6 +27,11 @@ namespace PhysicsEngine
 	};
 #pragma pack(pop)
 
+	enum RenderQueue
+	{
+		Opaque = 0,
+		Transparent = 1
+	};
 
 	enum ShaderVariant
 	{
@@ -174,6 +179,8 @@ namespace PhysicsEngine
 	const bool IsShader<Shader>::value = true;
 	template<>
 	const bool IsAsset<Shader>::value = true;
+	template<>
+	const bool IsAssetInternal<Shader>::value = true;
 }
 
 #endif

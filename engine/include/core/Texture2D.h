@@ -74,6 +74,8 @@ namespace PhysicsEngine
 	const bool IsTexture<Texture2D>::value = true;
 	template<>
 	const bool IsAsset<Texture2D>::value = true;
+	template<>
+	const bool IsAssetInternal<Texture2D>::value = true;
 }
 
 #endif

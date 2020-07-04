@@ -80,6 +80,12 @@ namespace PhysicsEngine
 
 	template<>
 	bool IsEntity<Entity>::value = true;
+
+	template<typename>
+	struct IsEntityInternal { static const bool value; };
+
+	template<>
+	const bool IsEntityInternal<Entity>::value = true;
 }
 
 #endif

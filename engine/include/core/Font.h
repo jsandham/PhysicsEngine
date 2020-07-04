@@ -67,6 +67,8 @@ namespace PhysicsEngine
 	const bool IsFont<Font>::value = true;
 	template<>
 	const bool IsAsset<Font>::value = true;
+	template<>
+	const bool IsAssetInternal<Font>::value = true;
 }
 
 #endif

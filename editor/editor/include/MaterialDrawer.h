@@ -22,6 +22,7 @@ namespace PhysicsEditor
 	{
 		private:
 			World previewWorld; 
+			Camera* previewCamera;
 			MeshRenderer* sphereMeshRenderer;
 			//Shader* previewShader;
 			//Material* previewMaterial;

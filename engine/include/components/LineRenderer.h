@@ -54,6 +54,8 @@ namespace PhysicsEngine
 	const bool IsLineRenderer<LineRenderer>::value = true;
 	template<>
 	const bool IsComponent<LineRenderer>::value = true;
+	template<>
+	const bool IsComponentInternal<LineRenderer>::value = true;
 }
 
 #endif

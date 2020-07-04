@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <map>
 
 #include "FileSystemUtil.h"
 #include "EditorFileIO.h"
@@ -38,6 +39,9 @@ namespace PhysicsEditor
 			// library directory path
 			std::string mLibraryPath;
 
+			// filepath to id map
+			std::map<const std::string, PhysicsEngine::Guid> filePathToId;
+
 			// buffer of added/modified library file paths
 			std::vector<std::string> mBuffer;
 
@@ -58,6 +62,8 @@ namespace PhysicsEditor
 			void update();
 			void loadQueuedAssetsIntoWorld(PhysicsEngine::World* world);
 			void generateBinaryLibraryFile(std::string filePath);
+
+			PhysicsEngine::Guid getFileId(const std::string& filePath) const;
 	};
 }
 

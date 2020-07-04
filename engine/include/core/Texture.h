@@ -11,17 +11,17 @@ namespace PhysicsEngine
 {
 	typedef enum TextureDimension
 	{
-		Tex2D,
-		Tex3D,
-		Cube
+		Tex2D = 0,
+		Tex3D = 1,
+		Cube = 2
 	}TextureDimension;
 
 	typedef enum TextureFormat
 	{
-		Depth,
-		RG,
-		RGB,
-		RGBA
+		Depth = 0,
+		RG = 1,
+		RGB = 2,
+		RGBA = 3
 	}TextureFormat;
 
 	class Texture : public Asset
@@ -58,6 +58,8 @@ namespace PhysicsEngine
 	const bool IsTexture<Texture>::value = true;
 	template<>
 	const bool IsAsset<Texture>::value = true;
+	template<>
+	const bool IsAssetInternal<Texture>::value = true;
 }
 
 #endif

@@ -74,11 +74,11 @@ void LibraryDirectory::watch(std::string projectPath)
 	}
 
 	// get all data files in project
-	std::vector<std::string> filesInProject = getFilesInDirectoryRecursive(mDataPath, true);
+	std::vector<std::string>& filesInProject = getFilesInDirectoryRecursive(mDataPath, true);
 
 	// generate binary library file from project data file
-	for (size_t i = 0; i < filesInProject.size(); i++) {
-		generateBinaryLibraryFile(filesInProject[i]);
+	for (auto file : filesInProject){
+		generateBinaryLibraryFile(file);
 	}
 
 	// remove old watch
@@ -109,6 +109,8 @@ void LibraryDirectory::generateBinaryLibraryFile(std::string filePath)
 		}
 
 		PhysicsEngine::Guid id = findGuidFromMetaFilePath(metaFilePath);
+
+		filePathToId[filePath] = id;
 
 		// create binary version of scene or asset in library directory
 		std::string binaryFilePath = mLibraryPath + "\\" + id.toString();
@@ -148,4 +150,15 @@ void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World* world)
 
 	// clear buffer
 	mBuffer.clear();
+}
+
+PhysicsEngine::Guid LibraryDirectory::getFileId(const std::string& filePath) const
+{
+	std::map<const std::string, PhysicsEngine::Guid>::const_iterator it = filePathToId.find(filePath);
+	if (it != filePathToId.end())
+	{
+		return it->second;
+	}
+
+	return PhysicsEngine::Guid::INVALID;
 }

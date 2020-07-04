@@ -100,11 +100,6 @@ void PhysicsEngine::geometryPass(World* world, Camera* camera, DeferredRendererS
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
 	state->mGeometryShader.use(state->mGeometryShaderProgram);
 	for (size_t i = 0; i < renderObjects.size(); i++) {
-		/*if (renderObjects[i].materialIndex == -1 || renderObjects[i].shaderIndex == -1 || renderObjects[i].meshIndex == -1)
-		{
-			continue;
-		}*/
-
 		state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
 
 		Graphics::render(world, renderObjects[i], &camera->mQuery);
@@ -126,8 +121,6 @@ void PhysicsEngine::lightingPass(World* world, Camera* camera, DeferredRendererS
     glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsAlbedoSpecTex());
-
-	//const PoolAllocator<Light>* lightAllocator = world->getComponentAllocator_Const<Light>();
 
 	for (int i = 0; i < world->getNumberOfComponents<Light>(); i++) {
 		Light* light = world->getComponentByIndex<Light>(i);

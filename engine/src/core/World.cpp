@@ -7,6 +7,9 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Load.h"
 #include "../../include/core/LoadInternal.h"
+#include "../../include/core/InternalMeshes.h"
+#include "../../include/core/InternalShaders.h"
+#include "../../include/core/InternalMaterials.h"
 #include "../../include/core/World.h"
 #include "../../include/core/Geometry.h"
 
@@ -14,6 +17,28 @@ using namespace PhysicsEngine;
 
 World::World()
 {
+	// load default included meshes
+	mSphereMeshId = InternalMeshes::loadSphereMesh(this);
+	mCubeMeshId = InternalMeshes::loadCubeMesh(this);
+
+	// load default included shaders
+	mFontShaderId = InternalShaders::loadFontShader(this);
+	mColorShaderId = InternalShaders::loadColorShader(this);
+	mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
+	mSsaoShaderId = InternalShaders::loadSsaoShader(this);
+	mScreenQuadShaderId = InternalShaders::loadScreenQuadShader(this);
+	mNormalMapShaderId = InternalShaders::loadNormalMapShader(this);
+	mDepthMapShaderId = InternalShaders::loadDepthMapShader(this);
+	mShadowDepthMapShaderId = InternalShaders::loadShadowDepthMapShader(this);
+	mShadowDepthCubemapShaderId = InternalShaders::loadShadowDepthCubemapShader(this);
+	mGbufferShaderId = InternalShaders::loadGBufferShader(this);
+	mSimpleLitShaderId = InternalShaders::loadSimpleLitShader(this);
+	mSimpleLitDeferedShaderId = InternalShaders::loadSimpleLitDeferredShader(this);
+	mOverdrawShaderId = InternalShaders::loadOverdrawShader(this);
+
+	// load default included materials
+	mSimpleLitMaterialId = InternalMaterials::loadSimpleLitMaterial(this, mSimpleLitShaderId);
+	mColorMaterialId = InternalMaterials::loadColorMaterial(this, mColorShaderId);
 }
 
 World::~World()
@@ -256,7 +281,13 @@ bool World::loadScene(const std::string& filePath, bool ignoreSystemsAndCamera)
 		else if(classification == 's' && !ignoreSystemsAndCamera){
 			System* system = NULL;
 			if(type < 20){
-				system = PhysicsEngine::loadInternalSystem(&mSystemAllocatorMap, data, type, &index);
+				system = PhysicsEngine::loadInternalSystem(&mRenderSystemAllocator,
+														   &mPhysicsSystemAllocator,
+														   &mCleanupSystemAllocator,
+														   &mDebugSystemAllocator, 
+														   data, 
+														   type, 
+														   &index);
 			}
 			else{
 				system = PhysicsEngine::loadSystem(&mSystemAllocatorMap, data, type, &index);
@@ -330,13 +361,7 @@ void World::latentDestroyEntitiesInWorld()
 		Entity* entity = getEntityByIndex(i);
 
 		if (!entity->mDoNotDestroy) {
-			std::string message = "Adding entity: " + entity->mEntityId.toString() + " to latent destroy list\n";
-			Log::warn(message.c_str());
 			latentDestroyEntity(entity->mEntityId);
-		}
-		else {
-			std::string message = "Warn: Skipping entity: " + entity->mEntityId.toString() + " as it is marked do not destroy\n";
-			Log::warn(message.c_str());
 		}
 	}
 }
@@ -407,15 +432,18 @@ Entity* World::createEntity()
 	Guid entityId = Guid::newGuid();
 
 	Entity* entity = mEntityAllocator.construct();
-	entity->mEntityId = entityId;
-	entity->mDoNotDestroy = false;
 
-	mIdToGlobalIndex[entityId] = globalIndex;
-	mIdToType[entityId] = type;
-	
-	mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+	if (entity != NULL) {
+		entity->mEntityId = entityId;
+		entity->mDoNotDestroy = false;
 
-	mEntityIdsMarkedCreated.push_back(entityId);
+		mIdToGlobalIndex[entityId] = globalIndex;
+		mIdToType[entityId] = type;
+
+		mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+
+		mEntityIdsMarkedCreated.push_back(entityId);
+	}
 
 	return entity;
 }
@@ -427,12 +455,14 @@ Entity* World::createEntity(const std::vector<char>& data)
 
 	Entity* entity = mEntityAllocator.construct(data);
 
-	mIdToGlobalIndex[entity->mEntityId] = globalIndex;
-	mIdToType[entity->mEntityId] = type;
+	if (entity != NULL) {
+		mIdToGlobalIndex[entity->mEntityId] = globalIndex;
+		mIdToType[entity->mEntityId] = type;
 
-	mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
+		mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
 
-	mEntityIdsMarkedCreated.push_back(entity->mEntityId);
+		mEntityIdsMarkedCreated.push_back(entity->mEntityId);
+	}
 
 	return entity;
 }
@@ -444,6 +474,7 @@ void World::latentDestroyEntity(Guid entityId)
 	// add any components found on the entity to the latent destroy component list
 	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
 	if(it != mEntityIdToComponentIds.end()){
+
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
 		for(size_t i = 0; i < componentsOnEntity.size(); i++){
 			Guid componentId = componentsOnEntity[i].first;
@@ -515,8 +546,6 @@ void World::immediateDestroyEntity(Guid entityId)
 
 void World::latentDestroyComponent(Guid entityId, Guid componentId, int componentType)
 {
-	std::string message = "latent destroy component: " + entityId.toString() + " " + componentId.toString() + " " + std::to_string(componentType) + "\n";
-	Log::warn(message.c_str());
 	mComponentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
 }
 
@@ -559,7 +588,6 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 		mIdToGlobalIndex.erase(it2);
 
 		if(swappedComponent != NULL){
-			Log::info("Non null swapp component found\n");
 			mComponentIdsMarkedMoved.push_back(make_triple(swappedComponent->mComponentId, componentType, mIdToGlobalIndex[swappedComponent->mComponentId]));
 
 			mIdToGlobalIndex[swappedComponent->mComponentId] = index;
@@ -665,6 +693,25 @@ std::string World::getAssetFilepath(const Guid& assetId) const
 	return "";
 }
 
+Guid World::getSphereMesh() const 
+{
+	return mSphereMeshId;
+}
+
+Guid World::getCubeMesh() const
+{
+	return mCubeMeshId;
+}
+
+Guid World::getColorMaterial() const
+{
+	return mColorMaterialId;
+}
+
+Guid World::getSimpleLitMaterial() const
+{
+	return mSimpleLitMaterialId;
+}
 //bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 //{
 //	Ray ray;

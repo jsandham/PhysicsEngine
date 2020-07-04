@@ -61,6 +61,9 @@ namespace PhysicsEngine
 	const bool IsTransform<Transform>::value = true;
 	template<>
 	const bool IsComponent<Transform>::value = true;
+	template<>
+	const bool IsComponentInternal<Transform>::value = true;
+
 }
 
 #endif

@@ -51,6 +51,12 @@ namespace PhysicsEngine
 
 	template<>
 	const bool IsSystem<System>::value = true;
+
+	template<typename T>
+	struct IsSystemInternal { static const bool value; };
+
+	template<>
+	const bool IsSystemInternal<System>::value = false;
 }
 
 #endif

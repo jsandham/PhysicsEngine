@@ -54,6 +54,8 @@ namespace PhysicsEngine
 	const bool IsCollider<BoxCollider>::value = true;
 	template<>
 	const bool IsComponent<BoxCollider>::value = true;
+	template<>
+	const bool IsComponentInternal<BoxCollider>::value = true;
 }
 
 #endif

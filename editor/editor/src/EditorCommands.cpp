@@ -128,6 +128,9 @@ void CreateCubeCommand::execute()
 		Transform* transform = entity->addComponent<Transform>(world);
 		BoxCollider* collider = entity->addComponent<BoxCollider>(world);
 		MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world);
+		meshRenderer->setMesh(world->getCubeMesh());
+		meshRenderer->setMaterial(world->getSimpleLitMaterial());
+
 		entityData = entity->serialize();
 		transformData = transform->serialize();
 		boxColliderData = collider->serialize();
@@ -167,6 +170,9 @@ void CreateSphereCommand::execute()
 		Transform* transform = entity->addComponent<Transform>(world);
 		SphereCollider* collider = entity->addComponent<SphereCollider>(world);
 		MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world);
+		meshRenderer->setMesh(world->getSphereMesh());
+		meshRenderer->setMaterial(world->getColorMaterial());
+
 		entityData = entity->serialize();
 		transformData = transform->serialize();
 		sphereColliderData = collider->serialize();

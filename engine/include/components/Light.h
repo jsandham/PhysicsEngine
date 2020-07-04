@@ -82,6 +82,8 @@ namespace PhysicsEngine
 	const bool IsLight<Light>::value = true;
 	template<>
 	const bool IsComponent<Light>::value = true;
+	template<>
+	const bool IsComponentInternal<Light>::value = true;
 }
 
 #endif

@@ -72,6 +72,8 @@ namespace PhysicsEngine
 	const bool IsTexture<Texture3D>::value = true;
 	template<>
 	const bool IsAsset<Texture3D>::value = true;
+	template<>
+	const bool IsAssetInternal<Texture3D>::value = true;
 }
 
 #endif

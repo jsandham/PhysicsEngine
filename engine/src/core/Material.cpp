@@ -13,6 +13,7 @@ using namespace PhysicsEngine;
 Material::Material()
 {
 	mShaderId = Guid::INVALID;
+	mRenderQueue = RenderQueue::Opaque;
 
 	mShaderChanged = true;
 }
@@ -35,8 +36,9 @@ std::vector<char> Material::serialize() const
 std::vector<char> Material::serialize(Guid assetId) const
 {
 	MaterialHeader header;
-	header.mAssetId = assetId;
+	header.mMaterialId = assetId;
 	header.mShaderId = mShaderId;
+	header.mRenderQueue = mRenderQueue;
 	header.mUniformCount = mUniforms.size();
 
 	size_t numberOfBytes = sizeof(MaterialHeader) + mUniforms.size() * sizeof(ShaderUniform);
@@ -60,8 +62,9 @@ void Material::deserialize(std::vector<char> data)
 
 	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[0]);
 
-	mAssetId = header->mAssetId;
+	mAssetId = header->mMaterialId;
 	mShaderId = header->mShaderId;
+	mRenderQueue = header->mRenderQueue;
 	mUniforms.resize(header->mUniformCount);
 	
 	size_t startIndex = sizeof(MaterialHeader);
@@ -84,6 +87,7 @@ void Material::load(const std::string& filepath)
 	{
 		mUniforms = mat.mUniforms;
 		mShaderId = mat.mShaderId;
+		mRenderQueue = mat.mRenderQueue;
 
 		mShaderChanged = true;
 	}

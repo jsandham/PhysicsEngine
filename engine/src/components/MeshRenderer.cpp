@@ -78,6 +78,9 @@ void MeshRenderer::setMaterial(Guid materialId)
 {
 	mMaterialIds[0] = materialId;
 	mMaterialChanged = true;
+	if (mMaterialCount == 0) {
+		mMaterialCount = 1;
+	}
 }
 
 void MeshRenderer::setMaterial(Guid materialId, int index)

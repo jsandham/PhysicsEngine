@@ -14,6 +14,20 @@ namespace PhysicsEngine
 	void writeInternalEntityToJson(json::JSON& obj, World* world, Guid entityId);
 	void writeInternalComponentToJson(json::JSON& obj, World* world, Guid entityId, Guid componentId, int type);
 	void writeInternalSystemToJson(json::JSON& obj, World* world, Guid systemId, int type, int order);
+
+	template<int T>
+	void writeInternalAssetToJson(json::JSON& obj, World* world, Guid assetId)
+	{
+
+	}
+
+	template<>
+	inline void writeInternalAssetToJson<1>(json::JSON& obj, World* world, Guid assetId)
+	{
+
+	}
+
+
 }
 
 #endif
