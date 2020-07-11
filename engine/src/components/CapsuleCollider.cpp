@@ -9,7 +9,7 @@ CapsuleCollider::CapsuleCollider()
 	
 }
 
-CapsuleCollider::CapsuleCollider(std::vector<char> data)
+CapsuleCollider::CapsuleCollider(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -38,9 +38,9 @@ std::vector<char> CapsuleCollider::serialize(Guid componentId, Guid entityId) co
 	return data;
 }
 
-void CapsuleCollider::deserialize(std::vector<char> data)
+void CapsuleCollider::deserialize(const std::vector<char>& data)
 {
-	CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[0]);
+	const CapsuleColliderHeader* header = reinterpret_cast<const CapsuleColliderHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

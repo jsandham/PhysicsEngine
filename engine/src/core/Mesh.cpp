@@ -11,7 +11,7 @@ Mesh::Mesh()
 	mCreated = false;
 }
 
-Mesh::Mesh(std::vector<char> data)
+Mesh::Mesh(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -58,12 +58,12 @@ std::vector<char> Mesh::serialize(Guid assetId) const
 	return data;
 }
 
-void Mesh::deserialize(std::vector<char> data)
+void Mesh::deserialize(const std::vector<char>& data)
 {
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(MeshHeader);
 
-	MeshHeader* header = reinterpret_cast<MeshHeader*>(&data[start1]);
+	const MeshHeader* header = reinterpret_cast<const MeshHeader*>(&data[start1]);
 
 	mAssetId = header->mMeshId;
 	mVertices.resize(header->mVerticesSize);
@@ -76,19 +76,19 @@ void Mesh::deserialize(std::vector<char> data)
 	size_t start5 = start4 + sizeof(float) * mTexCoords.size();
 
 	for(size_t i = 0; i < header->mVerticesSize; i++){
-		mVertices[i] = *reinterpret_cast<float*>(&data[start2 + sizeof(float) * i]);
+		mVertices[i] = *reinterpret_cast<const float*>(&data[start2 + sizeof(float) * i]);
 	}
 
 	for(size_t i = 0; i < header->mNormalsSize; i++){
-		mNormals[i] = *reinterpret_cast<float*>(&data[start3 + sizeof(float) * i]);
+		mNormals[i] = *reinterpret_cast<const float*>(&data[start3 + sizeof(float) * i]);
 	}
 
 	for(size_t i = 0; i < header->mTexCoordsSize; i++){
-		mTexCoords[i] = *reinterpret_cast<float*>(&data[start4 + sizeof(float) * i]);
+		mTexCoords[i] = *reinterpret_cast<const float*>(&data[start4 + sizeof(float) * i]);
 	}
 
 	for(size_t i = 0; i < header->mSubMeshVertexStartIndiciesSize; i++){
-		mSubMeshVertexStartIndices[i] = *reinterpret_cast<int*>(&data[start5 + sizeof(int) * i]);
+		mSubMeshVertexStartIndices[i] = *reinterpret_cast<const int*>(&data[start5 + sizeof(int) * i]);
 	}
 
 	mCreated = false;

@@ -50,7 +50,7 @@ bool ImGui::Combo(const char* label, int* currIndex, std::vector<std::string>& v
 {
 	if (values.empty()) { return false; }
 	return Combo(label, currIndex, vector_getter,
-		static_cast<void*>(&values), values.size());
+		static_cast<void*>(&values), (int)values.size());
 }
 
 

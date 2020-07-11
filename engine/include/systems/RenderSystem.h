@@ -15,6 +15,14 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct RenderSystemHeader
+	{
+		uint32_t mUpdateOrder;
+		Guid mSystemId;
+	};
+#pragma pack(pop)
+
 	class RenderSystem : public System
 	{
 		private:
@@ -29,12 +37,12 @@ namespace PhysicsEngine
 
 		public:
 			RenderSystem();
-			RenderSystem(std::vector<char> data);
+			RenderSystem(const std::vector<char>& data);
 			~RenderSystem();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid systemId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void init(World* world);
 			void update(Input input, Time time);

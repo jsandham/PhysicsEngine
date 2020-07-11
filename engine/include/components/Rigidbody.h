@@ -48,12 +48,12 @@ namespace PhysicsEngine
 
 		public:
 			Rigidbody();
-			Rigidbody(std::vector<char> data);
+			Rigidbody(const std::vector<char>& data);
 			~Rigidbody();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 	};
 
 	template <>

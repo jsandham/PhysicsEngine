@@ -35,12 +35,12 @@ namespace PhysicsEngine
 
 		public:
 			Transform();
-			Transform(std::vector<char> data);
+			Transform(const std::vector<char>& data);
 			~Transform();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			glm::mat4 getModelMatrix() const;
 			glm::vec3 getForward() const;

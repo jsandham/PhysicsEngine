@@ -31,13 +31,13 @@ namespace PhysicsEngine
 
 		public:
 			Texture3D();
-			Texture3D(std::vector<char> data);
+			Texture3D(const std::vector<char>& data);
 			Texture3D(int width, int height, int depth, int numChannels);
 			~Texture3D();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			int getWidth() const;
 			int getHeight() const;

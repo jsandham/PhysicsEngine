@@ -12,7 +12,7 @@ Entity::Entity()
 	mDoNotDestroy = false;
 }
 
-Entity::Entity(std::vector<char> data)
+Entity::Entity(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -40,9 +40,9 @@ std::vector<char> Entity::serialize(Guid entityId) const
 	return data;
 }
 
-void Entity::deserialize(std::vector<char> data)
+void Entity::deserialize(const std::vector<char>& data)
 {
-	EntityHeader* header = reinterpret_cast<EntityHeader*>(&data[0]);
+	const EntityHeader* header = reinterpret_cast<const EntityHeader*>(&data[0]);
 
 	mEntityId = header->mEntityId;
 	mDoNotDestroy = header->mDoNotDestroy;

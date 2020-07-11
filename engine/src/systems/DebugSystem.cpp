@@ -21,7 +21,7 @@ DebugSystem::DebugSystem()
 	
 }
 
-DebugSystem::DebugSystem(std::vector<char> data)
+DebugSystem::DebugSystem(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -38,17 +38,23 @@ std::vector<char> DebugSystem::serialize() const
 
 std::vector<char> DebugSystem::serialize(Guid systemId) const
 {
-	size_t numberOfBytes = sizeof(int);
-	std::vector<char> data(numberOfBytes);
+	DebugSystemHeader header;
+	header.mSystemId = systemId;
+	header.mUpdateOrder = mOrder;
 
-	memcpy(&data[0], &mOrder, sizeof(int));
+	std::vector<char> data(sizeof(DebugSystemHeader));
+
+	memcpy(&data[0], &header, sizeof(DebugSystemHeader));
 
 	return data;
 }
 
-void DebugSystem::deserialize(std::vector<char> data)
+void DebugSystem::deserialize(const std::vector<char>& data)
 {
-	mOrder = *reinterpret_cast<int*>(&data[0]);
+	const DebugSystemHeader* header = reinterpret_cast<const DebugSystemHeader*>(&data[0]);
+
+	mSystemId = header->mSystemId;
+	mOrder = header->mUpdateOrder;
 }
 
 void DebugSystem::init(World* world)

@@ -9,6 +9,16 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct SystemHeader
+	{
+		uint32_t mType;
+		uint32_t mStartPtr;
+		uint32_t mSize;
+		Guid mSystemId;
+	};
+#pragma pack(pop)
+
 	class World;
 
 	class System
@@ -25,7 +35,7 @@ namespace PhysicsEngine
 
 			virtual std::vector<char> serialize() const = 0;
 			virtual std::vector<char> serialize(Guid systemId) const = 0;
-			virtual void deserialize(std::vector<char> data) = 0;
+			virtual void deserialize(const std::vector<char>& data) = 0;
 
 			virtual void init(World* world) = 0;
 			virtual void update(Input input, Time time) = 0;

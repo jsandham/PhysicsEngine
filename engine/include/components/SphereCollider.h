@@ -29,12 +29,12 @@ namespace PhysicsEngine
 
 		public:
 			SphereCollider();
-			SphereCollider(std::vector<char> data);
+			SphereCollider(const std::vector<char>& data);
 			~SphereCollider();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			bool intersect(AABB aabb) const;
 

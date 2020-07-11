@@ -32,44 +32,24 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 		Shader shader;
 		shader.load(filePath);
 		data = shader.serialize(id);
-
-		/*if (AssetLoader::load(filePath, shader)) {
-			shader.assetId = id.toString();
-			data = shader.serialize();
-		}*/
 	}
 	else if (fileExtension == "png") {
 		assetType = AssetType<Texture2D>::type;
 		Texture2D texture;
 		texture.load(filePath);
 		data = texture.serialize(id);
-
-		/*if (AssetLoader::load(filePath, texture)) {
-			texture.assetId = id.toString();
-			data = texture.serialize();
-		}*/
 	}
 	else if (fileExtension == "obj") {
 		assetType = AssetType<Mesh>::type;
 		Mesh mesh;
-
 		mesh.load(filePath);
 		data = mesh.serialize(id);
-		/*if (AssetLoader::load(filePath, mesh)) {
-			mesh.assetId = id.toString();
-			data = mesh.serialize();
-		}*/
 	}
 	else if (fileExtension == "material") {
 		assetType = AssetType<Material>::type;
 		Material material;
 		material.load(filePath);
 		data = material.serialize(id);
-
-		/*if (AssetLoader::load(filePath, material)) {
-			material.assetId = id.toString();
-			data = material.serialize();
-		}*/
 	}
 
 	// write data to binary version of asset in library 
@@ -77,15 +57,14 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 
 	if (outFile.is_open()) {
 		AssetHeader header = {};
+		header.mSignature = 0x9a9e9b4153534554;
+		header.mType = assetType;
+		header.mSize = data.size();
+		header.mMajor = 0;
+		header.mMinor = 1;
+		header.mAssetId = id;
 
 		outFile.write((char*)&header, sizeof(header));
-
-		char classification = 'a';
-		size_t size = data.size();
-
-		outFile.write(&classification, 1);
-		outFile.write((char*)&assetType, sizeof(int));
-		outFile.write((char*)&size, sizeof(size_t));
 		outFile.write(&data[0], data.size());
 
 		outFile.close();
@@ -135,29 +114,39 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	json::JSON::JSONWrapper<map<string, JSON>> objects = jsonScene.ObjectRange();
 	map<string, JSON>::iterator it;
 
+	uint32_t entityCount = 0;
+	uint32_t componentCount = 0;
+	uint32_t systemCount = 0;
 	for (it = objects.begin(); it != objects.end(); it++) {
 		std::string type = it->second["type"].ToString();
 
 		if (type == "Entity") {
 			entities[it->first] = it->second;
+			entityCount++;
 		}
 		else if (type == "Transform") {
 			transforms[it->first] = it->second;
+			componentCount++;
 		}
 		else if (type == "Camera") {
 			cameras[it->first] = it->second;
+			componentCount++
 		}
 		else if (type == "MeshRenderer") {
 			meshRenderers[it->first] = it->second;
+			componentCount++
 		}
 		else if (type == "Light") {
 			lights[it->first] = it->second;
+			componentCount++;
 		}
 		else if (type == "BoxCollider") {
 			boxColliders[it->first] = it->second;
+			componentCount++;
 		}
 		else if(type == "SphereCollider") {
 			sphereColliders[it->first] = it->second;
+			componentCount++;
 		}
 	}
 
@@ -165,119 +154,121 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 	if (outFile.is_open()) {
 		SceneHeader header = {};
+		header.mSignature = 0x9a9e9b5343454e45;
+		header.mEntityCount = entityCount;
+		header.mComponentCount = componentCount;
+		header.mSystemCount = systemCount;
+		header.mMajor = 0;
+		header.mMinor = 1;
+		header.mSceneId = id;
 
-		outFile.write((char*)&header, sizeof(header));
+		std::vector<EntityHeader> entityHeaders(entityCount);
+		std::vector<ComponentHeader> componentHeaders(componentCount);
+		std::vector<SystemHeader> systemHeaders(systemCount);
+
+		std::vector<TransformHeader> transformHeaders(transforms.length());
+		std::vector<CameraHeader> cameraHeaders(cameras.length());
+		std::vector<MeshRendererHeader> meshRendererHeaders(meshRenderers.length());
+		std::vector<LightHeader> lightHeaders(lights.length());
+		std::vector<BoxColliderHeader> boxColliderHeaders(boxColliders.length());
+		std::vector<SphereColliderHeader> sphereColliderHeaders(sphereColliders.length());
+
+		header.mSize = sizeof(SceneHeader) +
+					sizeof(EntityHeader) * entityHeaders.size() +
+					sizeof(ComponentHeader) * componentHeaders.size() +
+					sizeof(SystemHeader) * systemHeaders.size() +
+					sizeof(TransformHeader) * transformHeaders.size() +
+					sizeof(CameraHeader) * cameraHeaders.size() +
+					sizeof(MeshRendererHeader) * meshRendererHeaders.size() +
+					sizeof(LightHeader) * lightHeaders.size() +
+					sizeof(BoxColliderHeader) * boxColliderHeaders.size() +
+					sizeof(SphereColliderHeader) * sphereColliderHeaders.size();
 
 		// serialize entities
 		if (!entities.IsNull()) {
+			int index = 0;
 			json::JSON::JSONWrapper<map<string, JSON>> entityObjects = entities.ObjectRange();
 			for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
-				Entity entity;
-				//entity.entityId = Guid(it->first);
-				entity.mDoNotDestroy = false;
+				
+				entityHeaders[index].mEntityId = Guid(it->first);
+				entityHeaders[index].mDoNotDestroy = false;
+				entityHeaders[index].mType = EntityType<Entity>::type;
 
-				std::vector<char> data = entity.serialize(Guid(it->first));
-
-				char classification = 'e';
-				int type = 0;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
+				index++;
 			}
 		}
 
 		// serialize transforms
 		if (!transforms.IsNull()) {
+			int index = 0;
 			json::JSON::JSONWrapper<map<string, JSON>> transformObjects = transforms.ObjectRange();
 			for (it = transformObjects.begin(); it != transformObjects.end(); it++) {
-				Transform transform;
+				transformHeaders[index].mComponentId = Guid(it->first);
+				transformHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+				transformHeaders[index].mParentId = Guid(it->second["parent"].ToString());
 
-				//transform.componentId = Guid(it->first);
-				transform.mParentId = Guid(it->second["parent"].ToString());
-				//transform.entityId = Guid(it->second["entity"].ToString());
+				transformHeaders[index].mPosition.x = (float)it->second["position"][0].ToFloat();
+				transformHeaders[index].mPosition.y = (float)it->second["position"][1].ToFloat();
+				transformHeaders[index].mPosition.z = (float)it->second["position"][2].ToFloat();
 
-				transform.mPosition.x = (float)it->second["position"][0].ToFloat();
-				transform.mPosition.y = (float)it->second["position"][1].ToFloat();
-				transform.mPosition.z = (float)it->second["position"][2].ToFloat();
+				transformHeaders[index].mRotation.x = (float)it->second["rotation"][0].ToFloat();
+				transformHeaders[index].mRotation.y = (float)it->second["rotation"][1].ToFloat();
+				transformHeaders[index].mRotation.z = (float)it->second["rotation"][2].ToFloat();
+				transformHeaders[index].mRotation.w = (float)it->second["rotation"][3].ToFloat();
 
-				transform.mRotation.x = (float)it->second["rotation"][0].ToFloat();
-				transform.mRotation.y = (float)it->second["rotation"][1].ToFloat();
-				transform.mRotation.z = (float)it->second["rotation"][2].ToFloat();
-				transform.mRotation.w = (float)it->second["rotation"][3].ToFloat();
+				transformHeaders[index].mScale.x = (float)it->second["scale"][0].ToFloat();
+				transformHeaders[index].mScale.y = (float)it->second["scale"][1].ToFloat();
+				transformHeaders[index].mScale.z = (float)it->second["scale"][2].ToFloat();
 
-				transform.mScale.x = (float)it->second["scale"][0].ToFloat();
-				transform.mScale.y = (float)it->second["scale"][1].ToFloat();
-				transform.mScale.z = (float)it->second["scale"][2].ToFloat();
-
-				std::vector<char> data = transform.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 0;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
+				index++;
 			}
 		}
 
 		// serialize camera
 		if (!cameras.IsNull()) {
+			int index = 0;
 			json::JSON::JSONWrapper<map<string, JSON>> cameraObjects = cameras.ObjectRange();
 			for (it = cameraObjects.begin(); it != cameraObjects.end(); it++) {
-				Camera camera;
+				cameraHeaders[index].mComponentId = Guid(it->first);
+				cameraHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
 
-				//camera.componentId = Guid(it->first);
-				//camera.entityId = Guid(it->second["entity"].ToString());
-				camera.mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
+				cameraHeaders[index].mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
 
-				/*camera.mPosition.x = (float)it->second["position"][0].ToFloat();
-				camera.mPosition.y = (float)it->second["position"][1].ToFloat();
-				camera.mPosition.z = (float)it->second["position"][2].ToFloat();
+				cameraHeaders[index].mBackgroundColor.r = (float)it->second["backgroundColor"][0].ToFloat();
+				cameraHeaders[index].mBackgroundColor.g = (float)it->second["backgroundColor"][1].ToFloat();
+				cameraHeaders[index].mBackgroundColor.b = (float)it->second["backgroundColor"][2].ToFloat();
+				cameraHeaders[index].mBackgroundColor.a = (float)it->second["backgroundColor"][3].ToFloat();
 
-				camera.mFront.x = (float)it->second["front"][0].ToFloat();
-				camera.mFront.y = (float)it->second["front"][1].ToFloat();
-				camera.mFront.z = (float)it->second["front"][2].ToFloat();
+				cameraHeaders[index].mX = (int)it->second["x"].ToInt();
+				cameraHeaders[index].mY = (int)it->second["y"].ToInt();
+				cameraHeaders[index].mWidth = (int)it->second["width"].ToInt();
+				cameraHeaders[index].mHeight = (int)it->second["height"].ToInt();
 
-				camera.mUp.x = (float)it->second["up"][0].ToFloat();
-				camera.mUp.y = (float)it->second["up"][1].ToFloat();
-				camera.mUp.z = (float)it->second["up"][2].ToFloat();*/
-
-				camera.mBackgroundColor.r = (float)it->second["backgroundColor"][0].ToFloat();
-				camera.mBackgroundColor.g = (float)it->second["backgroundColor"][1].ToFloat();
-				camera.mBackgroundColor.b = (float)it->second["backgroundColor"][2].ToFloat();
-				camera.mBackgroundColor.a = (float)it->second["backgroundColor"][3].ToFloat();
-
-				camera.mViewport.mX = (int)it->second["x"].ToInt();
-				camera.mViewport.mY = (int)it->second["y"].ToInt();
-				camera.mViewport.mWidth = (int)it->second["width"].ToInt();
-				camera.mViewport.mHeight = (int)it->second["height"].ToInt();
-
-				camera.mFrustum.mFov = (float)it->second["fov"].ToFloat();
-				camera.mFrustum.mNearPlane = (float)it->second["near"].ToFloat();
-				camera.mFrustum.mFarPlane = (float)it->second["far"].ToFloat();
-
-				std::vector<char> data = camera.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 2;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
+				cameraHeaders[index].mFov = (float)it->second["fov"].ToFloat();
+				cameraHeaders[index].mNearPlane = (float)it->second["near"].ToFloat();
+				cameraHeaders[index].mFarPlane = (float)it->second["far"].ToFloat();
 			}
 		}
 
 		// serialize mesh renderers
 		if (!meshRenderers.IsNull()) {
+			int index = 0;
 			json::JSON::JSONWrapper<map<string, JSON>> meshRendererObjects = meshRenderers.ObjectRange();
 			for (it = meshRendererObjects.begin(); it != meshRendererObjects.end(); it++) {
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				MeshRenderer meshRenderer;
 
 				//meshRenderer.componentId = Guid(it->first);
@@ -428,6 +419,8 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 		}
 
+		outFile.write((char*)&header, sizeof(header));
+
 		outFile.close();
 	}
 	else {
@@ -521,198 +514,6 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 	file.close();
 
 	return true;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//std::ofstream file;
-
-	//std::string test = "Writing world to file " + outFilePath + "\n";
-	//PhysicsEngine::Log::info(test.c_str());
-
-	//file.open(outFilePath, std::ios::out);
-
-	//if (!file.is_open()) {
-	//	std::string message = "Could not write world to file path " + outFilePath + "\n";
-	//	PhysicsEngine::Log::error(message.c_str());
-	//	return false;
-	//}
-
-	//json::JSON obj;
-
-	//for (int i = 0; i < world->getNumberOfEntities(); i++) {
-	//	Entity* entity = world->getEntityByIndex(i);
-
-	//	if (entity->entityId == Guid("11111111-1111-1111-1111-111111111111")) {
-	//		continue;
-	//	}
-
-	//	std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
-
-	//	Guid entityId = entity->entityId;
-
-	//	// write entity to json
-	//	obj[entityId.toString()] = json::Object();
-	//	obj[entityId.toString()]["type"] = "Entity";
-	//	for (size_t j = 0; j < componentsOnEntity.size(); j++) {
-	//		obj[entityId.toString()]["components"].append(componentsOnEntity[j].first.toString());
-	//	}
-
-	//	// write each component on entity to json
-	//	for (size_t j = 0; j < componentsOnEntity.size(); j++) {
-	//		Guid componentId = componentsOnEntity[j].first;
-	//		int componentType = componentsOnEntity[j].second;
-
-	//		//json::JSON componentObj = json::Object();
-	//		if (componentType == 0) {
-	//			Transform* transform = world->getComponent<Transform>(entityId);
-	//			
-	//			obj[componentId.toString()]["type"] = "Transform";
-	//			obj[componentId.toString()]["parent"] = transform->parentId.toString();
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-	//			obj[componentId.toString()]["position"].append(transform->position.x, transform->position.y, transform->position.z);
-	//			obj[componentId.toString()]["rotation"].append(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w);
-	//			obj[componentId.toString()]["scale"].append(transform->scale.x, transform->scale.y, transform->scale.z);
-	//		}
-	//		else if (componentType == 1) {
-	//			Rigidbody* rigidbody = world->getComponent<Rigidbody>(entityId);
-	//		}
-	//		else if (componentType == 2) {
-	//			Camera* camera = world->getComponent<Camera>(entityId);
-
-	//			obj[componentId.toString()]["type"] = "Camera";
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-	//			obj[componentId.toString()]["targetTextureId"] = camera->targetTextureId.toString();
-	//			obj[componentId.toString()]["position"].append(camera->position.x, camera->position.y, camera->position.z);
-	//			obj[componentId.toString()]["front"].append(camera->front.x, camera->front.y, camera->front.z);
-	//			obj[componentId.toString()]["up"].append(camera->up.x, camera->up.y, camera->up.z);
-	//			obj[componentId.toString()]["backgroundColor"].append(camera->backgroundColor.x, camera->backgroundColor.y, camera->backgroundColor.z, camera->backgroundColor.w);
-	//			obj[componentId.toString()]["x"] = camera->viewport.x;
-	//			obj[componentId.toString()]["y"] = camera->viewport.y;
-	//			obj[componentId.toString()]["width"] = camera->viewport.width;
-	//			obj[componentId.toString()]["height"] = camera->viewport.height;
-	//			obj[componentId.toString()]["fov"] = camera->frustum.fov;
-	//			obj[componentId.toString()]["near"] = camera->frustum.nearPlane;
-	//			obj[componentId.toString()]["far"] = camera->frustum.farPlane;
-	//		}
-	//		else if (componentType == 3) {
-	//			MeshRenderer* meshRenderer = world->getComponent<MeshRenderer>(entityId);
-
-	//			obj[componentId.toString()]["type"] = "MeshRenderer";
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-	//			obj[componentId.toString()]["mesh"] = meshRenderer->meshId.toString();
-
-	//			int materialCount = meshRenderer->materialCount;
-
-	//			std::string label = "material";
-	//			if (materialCount > 1) {
-	//				label = "materials";
-	//			}
-
-	//			std::string value = "";
-	//			if (materialCount == 0) {
-	//				value = Guid::INVALID.toString();
-	//			}
-	//			else if (materialCount == 1) {
-	//				value = meshRenderer->materialIds[0].toString();
-	//			}
-	//			else { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
-	//				value += "[";
-	//				for (int m = 0; m < materialCount; m++) {
-	//					value += meshRenderer->materialIds[m].toString();
-	//					if (m != materialCount - 1) {
-	//						value += ",";
-	//					}
-	//				}
-	//				value += "]";
-	//			}
-	//		
-	//			obj[componentId.toString()][label] = value;
-	//			obj[componentId.toString()]["isStatic"] = meshRenderer->isStatic;
-	//		}
-	//		else if (componentType == 4) {
-	//			LineRenderer* lineRenderer = world->getComponent<LineRenderer>(entityId);
-	//		}
-	//		else if (componentType == 5) {
-	//			Light* light = world->getComponent<Light>(entityId);
-
-	//			obj[componentId.toString()]["type"] = "Light";
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-	//			obj[componentId.toString()]["position"].append(light->position.x, light->position.y, light->position.z);
-	//			obj[componentId.toString()]["direction"].append(light->direction.x, light->direction.y, light->direction.z);
-	//			obj[componentId.toString()]["ambient"].append(light->ambient.x, light->ambient.y, light->ambient.z);
-	//			obj[componentId.toString()]["diffuse"].append(light->diffuse.x, light->diffuse.y, light->diffuse.z);
-	//			obj[componentId.toString()]["specular"].append(light->specular.x, light->specular.y, light->specular.z);
-	//			obj[componentId.toString()]["constant"] = light->constant;
-	//			obj[componentId.toString()]["linear"] = light->linear;
-	//			obj[componentId.toString()]["quadratic"] = light->quadratic;
-	//			obj[componentId.toString()]["cutOff"] = light->cutOff;
-	//			obj[componentId.toString()]["outerCutOff"] = light->outerCutOff;
-	//			obj[componentId.toString()]["lightType"] = static_cast<int>(light->lightType);
-	//			obj[componentId.toString()]["shadowType"] = static_cast<int>(light->shadowType);
-	//		}
-	//		else if (componentType == 8) {
-	//			BoxCollider* collider = world->getComponent<BoxCollider>(entityId);
-
-	//			obj[componentId.toString()]["type"] = "SphereCollider";
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-
-	//			obj[componentId.toString()]["centre"].append(collider->bounds.centre.x, collider->bounds.centre.y, collider->bounds.centre.z);
-	//			obj[componentId.toString()]["size"].append(collider->bounds.size.x, collider->bounds.size.y, collider->bounds.size.z);
-	//		}
-	//		else if (componentType == 9) {
-	//			SphereCollider* collider = world->getComponent<SphereCollider>(entityId);
-
-	//			obj[componentId.toString()]["type"] = "SphereCollider";
-	//			obj[componentId.toString()]["entity"] = entityId.toString();
-
-	//			obj[componentId.toString()]["centre"].append(collider->sphere.centre.x, collider->sphere.centre.y, collider->sphere.centre.z);
-	//			obj[componentId.toString()]["radius"] = collider->sphere.radius;
-	//		}
-	//		else if (componentType == 10) {
-	//			CapsuleCollider* capsuleCollider = world->getComponent<CapsuleCollider>(entityId);
-	//		}
-	//		else if (componentType == 15) {
-	//			MeshCollider* meshCollider = world->getComponent<MeshCollider>(entityId);
-	//		}
-	//	}
-
-
-
-		//// Create a new Array as a field of an Object.
-		//obj["array"] = json::Array(true, "Two", 3, 4.0);
-		//// Create a new Object as a field of another Object.
-		//obj["obj"] = json::Object();
-		//// Assign to one of the inner object's fields
-		//obj["obj"]["inner"] = "Inside";
-
-		//// We don't need to specify the type of the JSON object:
-		//obj["new"]["some"]["deep"]["key"] = "Value";
-		//obj["array2"].append(false, "three");
-
-		//// We can also parse a string into a JSON object:
-		//obj["parsed"] = JSON::Load("[ { \"Key\" : \"Value\" }, false ]");
-	//}
-
-	/*file << obj;
-	file << "\n";
-
-	file.close();
-
-	return true;*/
 }
 
 bool PhysicsEditor::createMetaFile(std::string metaFilePath)

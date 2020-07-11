@@ -15,7 +15,7 @@ Cubemap::Cubemap()
 	mCreated = false;
 }
 
-Cubemap::Cubemap(std::vector<char> data)
+Cubemap::Cubemap(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -93,12 +93,12 @@ std::vector<char> Cubemap::serialize(Guid assetId) const
 	return data;
 }
 
-void Cubemap::deserialize(std::vector<char> data)
+void Cubemap::deserialize(const std::vector<char>& data)
 {
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(CubemapHeader);
 
-	CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[start1]);
+	const CubemapHeader* header = reinterpret_cast<const CubemapHeader*>(&data[start1]);
 
 	mAssetId = header->mTextureId;
 	mWidth = header->mWidth;
@@ -108,7 +108,7 @@ void Cubemap::deserialize(std::vector<char> data)
 
 	mRawTextureData.resize(header->mTextureSize);
 	for(size_t i = 0; i < header->mTextureSize; i++){
-		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+		mRawTextureData[i] = *reinterpret_cast<const unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 }
 

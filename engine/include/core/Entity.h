@@ -10,6 +10,7 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct EntityHeader
 	{
+		uint32_t mType;
 		Guid mEntityId;
 		bool mDoNotDestroy;
 	};
@@ -27,12 +28,12 @@ namespace PhysicsEngine
 
 		public:
 			Entity();
-			Entity(std::vector<char> data);
+			Entity(const std::vector<char>& data);
 			~Entity();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void latentDestroy(World* world);
 			void immediateDestroy(World* world);

@@ -41,13 +41,13 @@ namespace PhysicsEngine
 
 		public:
 			Font();
-			Font(std::string filepath);
-			Font(std::vector<char> data);
+			Font(const std::string& filepath);
+			Font(const std::vector<char>& data);
 			~Font();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void load(std::string filepath);
 

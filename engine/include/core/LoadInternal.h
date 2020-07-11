@@ -38,7 +38,40 @@
 
 namespace PhysicsEngine
 {
-	Entity* loadInternalEntity(PoolAllocator<Entity>* entityAllocator, std::vector<char> data, int* index);
+	// Get internal entity, component, system or asset from allocators
+	Entity* getInternalEntity(PoolAllocator<Entity>* entityAllocator, int index);
+	Component* getInternalComponent(PoolAllocator<Transform>* transformAllocator,
+		PoolAllocator<MeshRenderer>* meshRendererAllocator,
+		PoolAllocator<LineRenderer>* lineRendererAllocator,
+		PoolAllocator<Rigidbody>* rigidbodyAllocator,
+		PoolAllocator<Camera>* cameraAllocator,
+		PoolAllocator<Light>* lightAllocator,
+		PoolAllocator<SphereCollider>* sphereColliderAllocator,
+		PoolAllocator<BoxCollider>* boxColliderAllocator,
+		PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
+		PoolAllocator<MeshCollider>* meshColliderAllocator,
+		int type,
+		int index);
+	System* getInternalSystem(PoolAllocator<RenderSystem>* renderSystemAllocator,
+		PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
+		PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
+		PoolAllocator<DebugSystem>* debugSystemAllocator,
+		int type,
+		int index);
+	Asset* getInternalAsset(PoolAllocator<Mesh>* meshAllocator,
+		PoolAllocator<Material>* materialAllocator,
+		PoolAllocator<Shader>* shaderAllocator,
+		PoolAllocator<Texture2D>* texture2DAllocator,
+		PoolAllocator<Texture3D>* texture3DAllocator,
+		PoolAllocator<Cubemap>* cubemapAllocator,
+		PoolAllocator<Font>* fontAllocator,
+		int type,
+		int index);
+
+	// Load internal entity, component, system or asset into allocators
+	Entity* loadInternalEntity(PoolAllocator<Entity>* entityAllocator, 
+							   const std::vector<char>& data, 
+							   int* index);
 	Component* loadInternalComponent(PoolAllocator<Transform>* transformAllocator,
 									 PoolAllocator<MeshRenderer>* meshRendererAllocator,
 									 PoolAllocator<LineRenderer>* lineRendererAllocator,
@@ -49,14 +82,14 @@ namespace PhysicsEngine
 									 PoolAllocator<BoxCollider>* boxColliderAllocator,
 									 PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
 									 PoolAllocator<MeshCollider>* meshColliderAllocator,
-									 std::vector<char> data, 
+									 const std::vector<char>& data, 
 									 int type, 
 									 int* index);
 	System* loadInternalSystem(PoolAllocator<RenderSystem>* renderSystemAllocator,
 							   PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
 							   PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
 							   PoolAllocator<DebugSystem>* debugSystemAllocator, 
-							   std::vector<char> data, 
+							   const std::vector<char>& data, 
 							   int type, 
 							   int* index);
 	Asset* loadInternalAsset(PoolAllocator<Mesh>* meshAllocator,
@@ -66,10 +99,11 @@ namespace PhysicsEngine
 							 PoolAllocator<Texture3D>* texture3DAllocator,
 							 PoolAllocator<Cubemap>* cubemapAllocator,
 							 PoolAllocator<Font>* fontAllocator,
-							 std::vector<char> data, 
+							 const std::vector<char>& data, 
 							 int type, 
 							 int* index);
 
+	// Destroy internal entity, component, system or asset into allocators
 	Entity* destroyInternalEntity(PoolAllocator<Entity>* entityAllocator, int index);
 	Component* destroyInternalComponent(PoolAllocator<Transform>* transformAllocator,
 										PoolAllocator<MeshRenderer>* meshRendererAllocator,

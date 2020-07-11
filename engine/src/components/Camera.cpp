@@ -48,7 +48,7 @@ Camera::Camera()
 	mIsCreated = false;
 }
 
-Camera::Camera(std::vector<char> data)
+Camera::Camera(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -92,9 +92,9 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void Camera::deserialize(std::vector<char> data)
+void Camera::deserialize(const std::vector<char>& data)
 {
-	CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[0]);
+	const CameraHeader* header = reinterpret_cast<const CameraHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;
@@ -241,7 +241,7 @@ Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 
 	int temp = color.r + color.g * 256 + color.b * 256 * 256;
 
-	std::map<int, Guid>::const_iterator it = mColoringMap.find(temp);
+	std::unordered_map<int, Guid>::const_iterator it = mColoringMap.find(temp);
 	if (it != mColoringMap.end()) {
 		return it->second;
 	}

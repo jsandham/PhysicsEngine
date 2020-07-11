@@ -11,22 +11,28 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct DebugSystemHeader
+	{
+		uint32_t mUpdateOrder;
+		Guid mSystemId;
+	};
+#pragma pack(pop)
+
 	class DebugSystem : public System
 	{
 		private:
-			//LineBuffer mBuffer;
-
 			Material* mColorMat;
 			Shader* mColorShader;
 
 		public:
 			DebugSystem();
-			DebugSystem(std::vector<char> data);
+			DebugSystem(const std::vector<char>& data);
 			~DebugSystem();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid systemId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void init(World* world);
 			void update(Input input, Time time);

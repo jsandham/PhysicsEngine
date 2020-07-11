@@ -11,7 +11,7 @@ SphereCollider::SphereCollider()
 
 }
 
-SphereCollider::SphereCollider(std::vector<char> data)
+SphereCollider::SphereCollider(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -40,9 +40,9 @@ std::vector<char> SphereCollider::serialize(Guid componentId, Guid entityId) con
 	return data;
 }
 
-void SphereCollider::deserialize(std::vector<char> data)
+void SphereCollider::deserialize(const std::vector<char>& data)
 {
-	SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[0]);
+	const SphereColliderHeader* header = reinterpret_cast<const SphereColliderHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

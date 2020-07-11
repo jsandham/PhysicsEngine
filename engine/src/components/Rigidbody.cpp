@@ -17,7 +17,7 @@ Rigidbody::Rigidbody()
 	mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(std::vector<char> data)
+Rigidbody::Rigidbody(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -56,9 +56,9 @@ std::vector<char> Rigidbody::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void Rigidbody::deserialize(std::vector<char> data)
+void Rigidbody::deserialize(const std::vector<char>& data)
 {
-	RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[0]);
+	const RigidbodyHeader* header = reinterpret_cast<const RigidbodyHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

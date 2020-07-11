@@ -10,7 +10,7 @@ LineRenderer::LineRenderer()
 	mMaterialId = Guid::INVALID;
 }
 
-LineRenderer::LineRenderer(std::vector<char> data)
+LineRenderer::LineRenderer(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -41,9 +41,9 @@ std::vector<char> LineRenderer::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void LineRenderer::deserialize(std::vector<char> data)
+void LineRenderer::deserialize(const std::vector<char>& data)
 {
-	LineRendererHeader* header = reinterpret_cast<LineRendererHeader*>(&data[0]);
+	const LineRendererHeader* header = reinterpret_cast<const LineRendererHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

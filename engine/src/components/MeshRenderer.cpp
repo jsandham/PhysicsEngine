@@ -17,7 +17,7 @@ MeshRenderer::MeshRenderer()
 	mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(std::vector<char> data)
+MeshRenderer::MeshRenderer(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -51,9 +51,9 @@ std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void MeshRenderer::deserialize(std::vector<char> data)
+void MeshRenderer::deserialize(const std::vector<char>& data)
 {
-	MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[0]);
+	const MeshRendererHeader* header = reinterpret_cast<const MeshRendererHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

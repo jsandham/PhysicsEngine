@@ -86,14 +86,14 @@ void SceneView::render(PhysicsEngine::World* world,
 									   "SSAO",
 									   "SSAO Noise" };
 
-		const GLint textures[] = { cameraSystem->getNativeGraphicsColorTex(),
-								   cameraSystem->getNativeGraphicsColorPickingTex(),
-								   cameraSystem->getNativeGraphicsDepthTex(),
-								   cameraSystem->getNativeGraphicsNormalTex(),
-								   cameraSystem->getNativeGraphicsPositionTex(),
-								   cameraSystem->getNativeGraphicsAlbedoSpecTex(),
-								   cameraSystem->getNativeGraphicsSSAOColorTex(),
-								   cameraSystem->getNativeGraphicsSSAONoiseTex()};
+		const GLint textures[] = { static_cast<GLint>(cameraSystem->getNativeGraphicsColorTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsColorPickingTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsDepthTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsNormalTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsPositionTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsAlbedoSpecTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
+								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex())};
 
 		// select draw texture dropdown
 		static GLuint currentTexture = (GLuint)textures[0];

@@ -38,12 +38,12 @@ namespace PhysicsEngine
 
 		public:
 			Mesh();
-			Mesh(std::vector<char> data);
+			Mesh(const std::vector<char>& data);
 			~Mesh();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void load(const std::string& filename);
 			void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords, std::vector<int> subMeshStartIndices);

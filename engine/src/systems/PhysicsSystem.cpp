@@ -22,7 +22,7 @@ PhysicsSystem::PhysicsSystem()
 
 }
 
-PhysicsSystem::PhysicsSystem(std::vector<char> data)
+PhysicsSystem::PhysicsSystem(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -39,16 +39,27 @@ std::vector<char> PhysicsSystem::serialize() const
 
 std::vector<char> PhysicsSystem::serialize(Guid systemId) const
 {
-	std::vector<char> data(sizeof(int));
+	PhysicsSystemHeader header;
+	header.mSystemId = systemId;
+	header.mGravity = mGravity;
+	header.mTimestep = mTimestep;
+	header.mUpdateOrder = mOrder;
 
-	memcpy(&data[0], &mOrder, sizeof(int));
+	std::vector<char> data(sizeof(PhysicsSystemHeader));
+
+	memcpy(&data[0], &header, sizeof(PhysicsSystemHeader));
 
 	return data;
 }
 
-void PhysicsSystem::deserialize(std::vector<char> data)
+void PhysicsSystem::deserialize(const std::vector<char>& data)
 {
-	mOrder = *reinterpret_cast<int*>(&data[0]);
+	const PhysicsSystemHeader* header = reinterpret_cast<const PhysicsSystemHeader*>(&data[0]);
+
+	mSystemId = header->mSystemId;
+	mOrder = header->mUpdateOrder;
+	mGravity = header->mGravity;
+	mTimestep = header->mTimestep;
 }
 
 void PhysicsSystem::init(World* world)

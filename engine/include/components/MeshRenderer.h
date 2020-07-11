@@ -35,12 +35,12 @@ namespace PhysicsEngine
 
 		public:
 			MeshRenderer();
-			MeshRenderer(std::vector<char> data);
+			MeshRenderer(const std::vector<char>& data);
 			~MeshRenderer();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void setMesh(Guid meshId);
 			void setMaterial(Guid materialId);

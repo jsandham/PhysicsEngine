@@ -10,7 +10,126 @@
 
 using namespace PhysicsEngine;
 
-Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator, std::vector<char> data, int* index)
+Entity* PhysicsEngine::getInternalEntity(PoolAllocator<Entity>* entityAllocator, int index)
+{
+	return entityAllocator->get(index);
+}
+
+Component* PhysicsEngine::getInternalComponent(PoolAllocator<Transform>* transformAllocator,
+	PoolAllocator<MeshRenderer>* meshRendererAllocator,
+	PoolAllocator<LineRenderer>* lineRendererAllocator,
+	PoolAllocator<Rigidbody>* rigidbodyAllocator,
+	PoolAllocator<Camera>* cameraAllocator,
+	PoolAllocator<Light>* lightAllocator,
+	PoolAllocator<SphereCollider>* sphereColliderAllocator,
+	PoolAllocator<BoxCollider>* boxColliderAllocator,
+	PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
+	PoolAllocator<MeshCollider>* meshColliderAllocator,
+	int type,
+	int index)
+{
+	if (type == ComponentType<Transform>::type) {
+		return transformAllocator->get(index);
+	}
+	else if (type == ComponentType<Rigidbody>::type) {
+		return rigidbodyAllocator->get(index);
+	}
+	else if (type == ComponentType<Camera>::type) {
+		return cameraAllocator->get(index);
+	}
+	else if (type == ComponentType<MeshRenderer>::type) {
+		return meshRendererAllocator->get(index);
+	}
+	else if (type == ComponentType<LineRenderer>::type) {
+		return lineRendererAllocator->get(index);
+	}
+	else if (type == ComponentType<Light>::type) {
+		return lightAllocator->get(index);
+	}
+	else if (type == ComponentType<BoxCollider>::type) {
+		return boxColliderAllocator->get(index);
+	}
+	else if (type == ComponentType<SphereCollider>::type) {
+		return sphereColliderAllocator->get(index);
+	}
+	else if (type == ComponentType<MeshCollider>::type) {
+		return meshColliderAllocator->get(index);
+	}
+	else if (type == ComponentType<CapsuleCollider>::type) {
+		return capsuleColliderAllocator->get(index);
+	}
+	else {
+		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
+		Log::error(message.c_str());
+		return NULL;
+	}
+}
+
+System* PhysicsEngine::getInternalSystem(PoolAllocator<RenderSystem>* renderSystemAllocator,
+	PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
+	PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
+	PoolAllocator<DebugSystem>* debugSystemAllocator,
+	int type,
+	int index)
+{
+	if (type == SystemType<RenderSystem>::type) {
+		return renderSystemAllocator->get(index);
+	}
+	else if (type == SystemType<PhysicsSystem>::type) {
+		return physicsSystemAllocator->get(index);
+	}
+	else if (type == SystemType<CleanUpSystem>::type) {
+		return cleanupSystemAllocator->get(index);
+	}
+	else if (type == SystemType<DebugSystem>::type) {
+		return debugSystemAllocator->get(index);
+	}
+	else {
+		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
+		Log::error(message.c_str());
+		return NULL;
+	}
+}
+
+Asset* PhysicsEngine::getInternalAsset(PoolAllocator<Mesh>* meshAllocator,
+	PoolAllocator<Material>* materialAllocator,
+	PoolAllocator<Shader>* shaderAllocator,
+	PoolAllocator<Texture2D>* texture2DAllocator,
+	PoolAllocator<Texture3D>* texture3DAllocator,
+	PoolAllocator<Cubemap>* cubemapAllocator,
+	PoolAllocator<Font>* fontAllocator,
+	int type,
+	int index)
+{
+	if (type == AssetType<Shader>::type) {
+		return shaderAllocator->get(index);
+	}
+	else if (type == AssetType<Texture2D>::type) {
+		return texture2DAllocator->get(index);
+	}
+	else if (type == AssetType<Texture3D>::type) {
+		return texture3DAllocator->get(index);
+	}
+	else if (type == AssetType<Cubemap>::type) {
+		return cubemapAllocator->get(index);
+	}
+	else if (type == AssetType<Material>::type) {
+		return materialAllocator->get(index);
+	}
+	else if (type == AssetType<Mesh>::type) {
+		return meshAllocator->get(index);
+	}
+	else if (type == AssetType<Font>::type) {
+		return fontAllocator->get(index);
+	}
+	else {
+		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal asset\n";
+		Log::error(message.c_str());
+		return NULL;
+	}
+}
+
+Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator, const std::vector<char>& data, int* index)
 {
 	*index = (int)entityAllocator->getCount();
 	return entityAllocator->construct(data);
@@ -26,7 +145,7 @@ Component* PhysicsEngine::loadInternalComponent(PoolAllocator<Transform>* transf
 												PoolAllocator<BoxCollider>* boxColliderAllocator,
 												PoolAllocator<CapsuleCollider>* capsuleColliderAllocator,
 												PoolAllocator<MeshCollider>* meshColliderAllocator,
-												std::vector<char> data,
+												const std::vector<char>& data,
 												int type,
 												int* index)
 {
@@ -81,7 +200,7 @@ System* PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem>* renderSys
 										  PoolAllocator<PhysicsSystem>* physicsSystemAllocator,
 										  PoolAllocator<CleanUpSystem>* cleanupSystemAllocator,
 										  PoolAllocator<DebugSystem>* debugSystemAllocator,
-										  std::vector<char> data,
+										  const std::vector<char>& data,
 										  int type,
 										  int* index)
 {
@@ -115,7 +234,7 @@ Asset* PhysicsEngine::loadInternalAsset(PoolAllocator<Mesh>* meshAllocator,
 						PoolAllocator<Texture3D>* texture3DAllocator,
 						PoolAllocator<Cubemap>* cubemapAllocator,
 						PoolAllocator<Font>* fontAllocator,
-						std::vector<char> data,
+						const std::vector<char>& data,
 						int type,
 						int* index)
 {

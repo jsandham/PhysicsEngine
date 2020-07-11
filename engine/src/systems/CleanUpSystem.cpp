@@ -11,7 +11,7 @@ CleanUpSystem::CleanUpSystem()
 	
 }
 
-CleanUpSystem::CleanUpSystem(std::vector<char> data)
+CleanUpSystem::CleanUpSystem(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -28,16 +28,23 @@ std::vector<char> CleanUpSystem::serialize() const
 
 std::vector<char> CleanUpSystem::serialize(Guid systemId) const
 {
-	std::vector<char> data(sizeof(int));
+	CleanUpSystemHeader header;
+	header.mSystemId = systemId;
+	header.mUpdateOrder = mOrder;
 
-	memcpy(&data[0], &mOrder, sizeof(int));
+	std::vector<char> data(sizeof(CleanUpSystemHeader));
+
+	memcpy(&data[0], &header, sizeof(CleanUpSystemHeader));
 
 	return data;
 }
 
-void CleanUpSystem::deserialize(std::vector<char> data)
+void CleanUpSystem::deserialize(const std::vector<char>& data)
 {
-	mOrder = *reinterpret_cast<int*>(&data[0]);
+	const CleanUpSystemHeader* header = reinterpret_cast<const CleanUpSystemHeader*>(&data[0]);
+
+	mSystemId = header->mSystemId;
+	mOrder = header->mUpdateOrder;
 }
 
 void CleanUpSystem::init(World* world)

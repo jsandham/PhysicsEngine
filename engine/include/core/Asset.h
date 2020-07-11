@@ -10,8 +10,12 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct AssetHeader
 	{
-		unsigned short mFileType;
-		unsigned int mFileSize;
+		uint64_t mSignature;
+		uint32_t mType;
+		uint32_t mSize;
+		uint8_t mMajor;
+		uint8_t mMinor;
+		Guid mAssetId;
 	};
 #pragma pack(pop)
 	
@@ -28,7 +32,7 @@ namespace PhysicsEngine
 
 			virtual std::vector<char> serialize() const = 0;
 			virtual std::vector<char> serialize(Guid assetId) const = 0;
-			virtual void deserialize(std::vector<char> data) = 0;
+			virtual void deserialize(const std::vector<char>& data) = 0;
 
 			Guid getId() const;
 

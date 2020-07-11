@@ -5,6 +5,16 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct ComponentHeader
+	{
+		uint32_t mType;
+		uint32_t mStartPtr;
+		uint32_t mSize;
+		Guid mComponentId;
+	};
+#pragma pack(pop)
+
 	class Entity;
 	class World;
 
@@ -20,7 +30,7 @@ namespace PhysicsEngine
 
 			virtual std::vector<char> serialize() const = 0;
 			virtual std::vector<char> serialize(Guid componentId, Guid entityId) const = 0;
-			virtual void deserialize(std::vector<char> data) = 0;
+			virtual void deserialize(const std::vector<char>& data) = 0;
 
 			Entity* getEntity(World* world) const;
 

@@ -12,6 +12,7 @@
 #include "../../include/core/InternalMaterials.h"
 #include "../../include/core/World.h"
 #include "../../include/core/Geometry.h"
+#include "../../include/core/WorldSerialization.h"
 
 using namespace PhysicsEngine;
 
@@ -43,310 +44,260 @@ World::World()
 
 World::~World()
 {
-	std::unordered_map<int, Allocator*>::iterator it1 = mComponentAllocatorMap.begin();
-	for (it1 == mComponentAllocatorMap.begin(); it1 != mComponentAllocatorMap.end(); it1++) {
-		delete it1->second;
+	for (auto it = mComponentAllocatorMap.begin(); it != mComponentAllocatorMap.end(); it++) {
+		delete it->second;
 	}
 
-	std::unordered_map<int, Allocator*>::iterator it2 = mSystemAllocatorMap.begin();
-	for (it2 == mSystemAllocatorMap.begin(); it2 != mSystemAllocatorMap.end(); it2++) {
-		delete it2->second;
+	for (auto it = mSystemAllocatorMap.begin(); it != mSystemAllocatorMap.end(); it++) {
+		delete it->second;
 	}
 
-	std::unordered_map<int, Allocator*>::iterator it3 = mAssetAllocatorMap.begin();
-	for (it3 == mAssetAllocatorMap.begin(); it3 != mAssetAllocatorMap.end(); it3++) {
-		delete it3->second;
+	for (auto it = mAssetAllocatorMap.begin(); it != mAssetAllocatorMap.end(); it++) {
+		delete it->second;
 	}
 }
 
 bool World::loadAsset(const std::string& filePath)
 {
-	Log::info(("file path: " + filePath + "\n").c_str());
-
-	std::ifstream file;
-	file.open(filePath, std::ios::binary);
-
-	if(!file.is_open()){
-		std::string errorMessage = "Failed to open asset bundle " + filePath + "\n";
-		Log::error(&errorMessage[0]);
-		return false;
-	}
-	
-	AssetHeader header;
-	file.read(reinterpret_cast<char*>(&header), sizeof(AssetHeader));
-
-	while( file.peek() != EOF )
-	{
-		char classification;
-		int type;
-		size_t size;
-
-		file.read(reinterpret_cast<char*>(&classification), sizeof(char));
-		file.read(reinterpret_cast<char*>(&type), sizeof(int));
-		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-
-		if(type <= -1){
-			Log::error("Type cannot be less than 0 when reading asset bundle file\n");
-			return false;
-		}
-
-		if(size <= 0){
-			Log::error("Size cannot be less than 1 when reading asset bundle file\n");
-			return false;
-		}
-
-		std::vector<char> data(size);
-		file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));		
-
-		int index = -1;
-		Asset* asset = NULL;
-		if(type < 20){
-			asset = PhysicsEngine::loadInternalAsset(&mMeshAllocator,
-													 &mMaterialAllocator,
-													 &mShaderAllocator,
-													 &mTexture2DAllocator,
-													 &mTexture3DAllocator,
-													 &mCubemapAllocator,
-													 &mFontAllocator, 
-													 data, 
-													 type, 
-													 &index);
-		}
-		else{
-			asset = PhysicsEngine::loadAsset(&mAssetAllocatorMap, data, type, &index);
-		}
-
-		if(asset == NULL || index == -1){
-			Log::error("Error: Could not load asset\n");
-			return false;
-		}
-
-		assetIdToFilepath[asset->mAssetId] = filePath;
-
-		if(mIdToGlobalIndex.find(asset->mAssetId) == mIdToGlobalIndex.end()){
-			mIdToGlobalIndex[asset->mAssetId] = index;
-		}
-		else{
-			std::string errorMessage = "Asset with id " + asset->mAssetId.toString() + " already exists in id to global index map\n";
-			Log::error(&errorMessage[0]);
-			return false;
-		}
-
-		if (mIdToType.find(asset->mAssetId) == mIdToType.end()){
-			mIdToType[asset->mAssetId] = type;
-		}
-		else {
-			std::string errorMessage = "Asset with id " + asset->mAssetId.toString() + " already exists in id to type map\n";
-			Log::error(&errorMessage[0]);
-			return false;
-		}
-	}
-
-	file.close();
+	PhysicsEngine::loadAssetIntoWorld(filePath, 
+									mMeshAllocator,
+									mMaterialAllocator,
+									mShaderAllocator,
+									mTexture2DAllocator,
+									mTexture3DAllocator,
+									mCubemapAllocator,
+									mFontAllocator, 
+									mAssetAllocatorMap,
+									mIdToGlobalIndex, 
+									mIdToType,
+									mAssetIdToFilepath);
 
 	return true;
 }
 
 bool World::loadScene(const std::string& filePath, bool ignoreSystemsAndCamera)
 {
-	std::ifstream file;
-	file.open(filePath, std::ios::binary);
-
-	if(!file.is_open()){
-		std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-		Log::error(&errorMessage[0]);
-		return false;
-	}
-
-	SceneHeader sceneHeader;
-	file.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
-	while( file.peek() != EOF ){
-		char classification;
-		int type;
-		size_t size;
-
-		file.read(reinterpret_cast<char*>(&classification), sizeof(char));
-		file.read(reinterpret_cast<char*>(&type), sizeof(int));
-		file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-
-		if(type <= -1){
-			Log::error("Type cannot be less than 0 when reading scene file\n");
-			return false;
-		}
-
-		if(size <= 0){
-			Log::error("Size cannot be less than 1 when reading scene file\n");
-			return false;
-		}
-
-		std::vector<char> data(size);
-
-		file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
-
-		int index = -1;
-		if(classification == 'e'){
-			Entity* entity = NULL;
-			if(type == 0){
-				entity = PhysicsEngine::loadInternalEntity(&mEntityAllocator, data, &index);
-			}
-			else{
-				Log::error("Entity must be of type 0\n");
-				return false;
-			}
-
-			if(entity == NULL || index == -1){
-				std::string errorMessage = "Could not load entity corresponding to type " + std::to_string(type) + "\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			if(mIdToGlobalIndex.find(entity->mEntityId) == mIdToGlobalIndex.end()){
-				mIdToGlobalIndex[entity->mEntityId] = index;
-
-				mEntityIdsMarkedCreated.push_back(entity->mEntityId);
-			}
-			else{
-				std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to global index map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			if (mIdToType.find(entity->mEntityId) == mIdToType.end()) {
-				mIdToType[entity->mEntityId] = type;
-			}
-			else {
-				std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to type map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
-			if (it == mEntityIdToComponentIds.end()) {
-				mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
-			}
-		}
-		else if(classification == 'c'){
-			if (ignoreSystemsAndCamera && type == ComponentType<Camera>::type) {
-				continue;
-			}
-
-			Component* component = NULL;
-			if(type < 20){
-				component = PhysicsEngine::loadInternalComponent(&mTransformAllocator,
-																 &mMeshRendererAllocator,
-																 &mLineRendererAllocator,
-																 &mRigidbodyAllocator,
-																 &mCameraAllocator,
-																 &mLightAllocator,
-																 &mSphereColliderAllocator,
-																 &mBoxColliderAllocator,
-																 &mCapsuleColliderAllocator,
-																 &mMeshColliderAllocator, 
-																 data, 
-																 type, 
-																 &index);
-			}
-			else{
-				component = PhysicsEngine::loadComponent(&mComponentAllocatorMap, data, type, &index);
-			}
-
-			if(component == NULL || index == -1){
-				std::string errorMessage = "Could not load component corresponding to type " + std::to_string(type) + "\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			if(mIdToGlobalIndex.find(component->mComponentId) == mIdToGlobalIndex.end()){
-				mIdToGlobalIndex[component->mComponentId] = index;
-
-				mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, type));
-			}
-			else{
-				std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to global index map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-			
-			if (mIdToType.find(component->mComponentId) == mIdToType.end()) {
-				mIdToType[component->mComponentId] = type;
-			}
-			else {
-				std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to type map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, type));
-		}
-		else if(classification == 's' && !ignoreSystemsAndCamera){
-			System* system = NULL;
-			if(type < 20){
-				system = PhysicsEngine::loadInternalSystem(&mRenderSystemAllocator,
-														   &mPhysicsSystemAllocator,
-														   &mCleanupSystemAllocator,
-														   &mDebugSystemAllocator, 
-														   data, 
-														   type, 
-														   &index);
-			}
-			else{
-				system = PhysicsEngine::loadSystem(&mSystemAllocatorMap, data, type, &index);
-			}
-
-			if(system == NULL || index == -1){
-				std::string errorMessage = "Could not load system corresponding to type " + std::to_string(type) + "\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			if (mIdToGlobalIndex.find(system->mSystemId) == mIdToGlobalIndex.end()) {
-				mIdToGlobalIndex[system->mSystemId] = index;
-			}
-			else {
-				std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to global index map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			if (mIdToType.find(system->mSystemId) == mIdToType.end()) {
-				mIdToType[system->mSystemId] = type;
-			}
-			else {
-				std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to type map\n";
-				Log::error(&errorMessage[0]);
-				return false;
-			}
-
-			// maybe set system in vector??
-			mSystems.push_back(system);
-		}
-		else{
-			Log::error("Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)");
-			return false;
-		}
-	}
-
-	// sort systems by order
-	if(!ignoreSystemsAndCamera){
-		for(size_t i = 0; i < mSystems.size(); i++){
-			int minOrder = mSystems[i]->getOrder();
-			int minOrderIndex = (int)i;
-			for(size_t j = i + 1; j < mSystems.size(); j++){
-				if(mSystems[j]->getOrder() < minOrder){
-					minOrder = mSystems[j]->getOrder();
-					minOrderIndex = (int)j;
-				}
-			}
-
-			System* temp = mSystems[i];
-			mSystems[i] = mSystems[minOrderIndex];
-			mSystems[minOrderIndex] = temp;
-		}
-	}
-
-	file.close();
-
+	PhysicsEngine::loadSceneIntoWorld(filePath,
+		mEntityAllocator,
+		mTransformAllocator,
+		mMeshRendererAllocator,
+		mLineRendererAllocator,
+		mRigidbodyAllocator,
+		mCameraAllocator,
+		mLightAllocator,
+		mSphereColliderAllocator,
+		mBoxColliderAllocator,
+		mCapsuleColliderAllocator,
+		mMeshColliderAllocator,
+		mRenderSystemAllocator,
+		mPhysicsSystemAllocator,
+		mCleanupSystemAllocator,
+		mDebugSystemAllocator,
+		mComponentAllocatorMap,
+		mSystemAllocatorMap,
+		mIdToGlobalIndex,
+		mIdToType,
+		mSceneIdToFilepath);
+	
 	return true;
+	//std::ifstream file;
+	//file.open(filePath, std::ios::binary);
+
+	//if(!file.is_open()){
+	//	std::string errorMessage = "Failed to open scene file " + filePath + "\n";
+	//	Log::error(&errorMessage[0]);
+	//	return false;
+	//}
+
+	//SceneHeader sceneHeader;
+	//file.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
+	//while( file.peek() != EOF ){
+	//	char classification;
+	//	int type;
+	//	size_t size;
+
+	//	file.read(reinterpret_cast<char*>(&classification), sizeof(char));
+	//	file.read(reinterpret_cast<char*>(&type), sizeof(int));
+	//	file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+
+	//	if(type <= -1){
+	//		Log::error("Type cannot be less than 0 when reading scene file\n");
+	//		return false;
+	//	}
+
+	//	if(size <= 0){
+	//		Log::error("Size cannot be less than 1 when reading scene file\n");
+	//		return false;
+	//	}
+
+	//	std::vector<char> data(size);
+
+	//	file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
+
+	//	int index = -1;
+	//	if(classification == 'e'){
+	//		Entity* entity = NULL;
+	//		if(type == 0){
+	//			entity = PhysicsEngine::loadInternalEntity(&mEntityAllocator, data, &index);
+	//		}
+	//		else{
+	//			Log::error("Entity must be of type 0\n");
+	//			return false;
+	//		}
+
+	//		if(entity == NULL || index == -1){
+	//			std::string errorMessage = "Could not load entity corresponding to type " + std::to_string(type) + "\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		if(mIdToGlobalIndex.find(entity->mEntityId) == mIdToGlobalIndex.end()){
+	//			mIdToGlobalIndex[entity->mEntityId] = index;
+
+	//			mEntityIdsMarkedCreated.push_back(entity->mEntityId);
+	//		}
+	//		else{
+	//			std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to global index map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		if (mIdToType.find(entity->mEntityId) == mIdToType.end()) {
+	//			mIdToType[entity->mEntityId] = type;
+	//		}
+	//		else {
+	//			std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to type map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
+	//		if (it == mEntityIdToComponentIds.end()) {
+	//			mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
+	//		}
+	//	}
+	//	else if(classification == 'c'){
+	//		if (ignoreSystemsAndCamera && type == ComponentType<Camera>::type) {
+	//			continue;
+	//		}
+
+	//		Component* component = NULL;
+	//		if(type < 20){
+	//			component = PhysicsEngine::loadInternalComponent(&mTransformAllocator,
+	//															 &mMeshRendererAllocator,
+	//															 &mLineRendererAllocator,
+	//															 &mRigidbodyAllocator,
+	//															 &mCameraAllocator,
+	//															 &mLightAllocator,
+	//															 &mSphereColliderAllocator,
+	//															 &mBoxColliderAllocator,
+	//															 &mCapsuleColliderAllocator,
+	//															 &mMeshColliderAllocator, 
+	//															 data, 
+	//															 type, 
+	//															 &index);
+	//		}
+	//		else{
+	//			component = PhysicsEngine::loadComponent(&mComponentAllocatorMap, data, type, &index);
+	//		}
+
+	//		if(component == NULL || index == -1){
+	//			std::string errorMessage = "Could not load component corresponding to type " + std::to_string(type) + "\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		if(mIdToGlobalIndex.find(component->mComponentId) == mIdToGlobalIndex.end()){
+	//			mIdToGlobalIndex[component->mComponentId] = index;
+
+	//			mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, type));
+	//		}
+	//		else{
+	//			std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to global index map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+	//		
+	//		if (mIdToType.find(component->mComponentId) == mIdToType.end()) {
+	//			mIdToType[component->mComponentId] = type;
+	//		}
+	//		else {
+	//			std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to type map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, type));
+	//	}
+	//	else if(classification == 's' && !ignoreSystemsAndCamera){
+	//		System* system = NULL;
+	//		if(type < 20){
+	//			system = PhysicsEngine::loadInternalSystem(&mRenderSystemAllocator,
+	//													   &mPhysicsSystemAllocator,
+	//													   &mCleanupSystemAllocator,
+	//													   &mDebugSystemAllocator, 
+	//													   data, 
+	//													   type, 
+	//													   &index);
+	//		}
+	//		else{
+	//			system = PhysicsEngine::loadSystem(&mSystemAllocatorMap, data, type, &index);
+	//		}
+
+	//		if(system == NULL || index == -1){
+	//			std::string errorMessage = "Could not load system corresponding to type " + std::to_string(type) + "\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		if (mIdToGlobalIndex.find(system->mSystemId) == mIdToGlobalIndex.end()) {
+	//			mIdToGlobalIndex[system->mSystemId] = index;
+	//		}
+	//		else {
+	//			std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to global index map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		if (mIdToType.find(system->mSystemId) == mIdToType.end()) {
+	//			mIdToType[system->mSystemId] = type;
+	//		}
+	//		else {
+	//			std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to type map\n";
+	//			Log::error(&errorMessage[0]);
+	//			return false;
+	//		}
+
+	//		// maybe set system in vector??
+	//		mSystems.push_back(system);
+	//	}
+	//	else{
+	//		Log::error("Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)");
+	//		return false;
+	//	}
+	//}
+
+	//// sort systems by order
+	//if(!ignoreSystemsAndCamera){
+	//	for(size_t i = 0; i < mSystems.size(); i++){
+	//		int minOrder = mSystems[i]->getOrder();
+	//		int minOrderIndex = (int)i;
+	//		for(size_t j = i + 1; j < mSystems.size(); j++){
+	//			if(mSystems[j]->getOrder() < minOrder){
+	//				minOrder = mSystems[j]->getOrder();
+	//				minOrderIndex = (int)j;
+	//			}
+	//		}
+
+	//		System* temp = mSystems[i];
+	//		mSystems[i] = mSystems[minOrderIndex];
+	//		mSystems[minOrderIndex] = temp;
+	//	}
+	//}
+
+	//file.close();
+
+	//return true;
 }
 
 bool World::loadSceneFromEditor(const std::string& filePath)
@@ -685,8 +636,18 @@ std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved() const
 
 std::string World::getAssetFilepath(const Guid& assetId) const
 {
-	std::unordered_map<Guid, std::string>::const_iterator it = assetIdToFilepath.find(assetId);
-	if (it != assetIdToFilepath.end()) {
+	std::unordered_map<Guid, std::string>::const_iterator it = mAssetIdToFilepath.find(assetId);
+	if (it != mAssetIdToFilepath.end()) {
+		return it->second;
+	}
+
+	return "";
+}
+
+std::string World::getSceneFilepath(const Guid& sceneId) const
+{
+	std::unordered_map<Guid, std::string>::const_iterator it = mSceneIdToFilepath.find(sceneId);
+	if (it != mSceneIdToFilepath.end()) {
 		return it->second;
 	}
 

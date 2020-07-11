@@ -22,7 +22,7 @@ Shader::Shader()
 	mActiveProgram = -1;
 }
 
-Shader::Shader(std::vector<char> data)
+Shader::Shader(const std::vector<char>& data)
 {
 	deserialize(data);
 
@@ -70,12 +70,12 @@ std::vector<char> Shader::serialize(Guid assetId) const
 	return data;
 }
 
-void Shader::deserialize(std::vector<char> data)
+void Shader::deserialize(const std::vector<char>& data)
 {
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(ShaderHeader);
 
-	ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[start1]);
+	const ShaderHeader* header = reinterpret_cast<const ShaderHeader*>(&data[start1]);
 
 	mAssetId = header->mShaderId;
 
@@ -83,8 +83,8 @@ void Shader::deserialize(std::vector<char> data)
 	size_t geometryShaderSize = header->mGeometryShaderSize;
 	size_t fragmentShaderSize = header->mFragmentShaderSize;
 
-	std::vector<char>::iterator start = data.begin();
-	std::vector<char>::iterator end = data.begin();
+	std::vector<char>::const_iterator start = data.begin();
+	std::vector<char>::const_iterator end = data.begin();
 	start += start2;
 	end += start2 + vertexShaderSize;
 

@@ -2,7 +2,7 @@
 #define __CAMERA_H__
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #include <GL/glew.h>
 #include <gl/gl.h>
@@ -98,16 +98,16 @@ namespace PhysicsEngine
 
 			bool mIsCreated;
 
-			std::map<int, Guid> mColoringMap;
+			std::unordered_map<int, Guid> mColoringMap;
 
 		public:
 			Camera();
-			Camera(std::vector<char> data);
+			Camera(const std::vector<char>& data);
 			~Camera();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void create();
 			void destroy();

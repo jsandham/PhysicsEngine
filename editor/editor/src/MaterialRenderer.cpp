@@ -151,7 +151,7 @@ void MaterialRenderer::render(PhysicsEngine::World* world, PhysicsEngine::Materi
 	PhysicsEngine::Graphics::checkError();
 
 	glBindVertexArray(mesh.getNativeGraphicsVAO());
-	glDrawArrays(GL_TRIANGLES, 0, mesh.getVertices().size() / 3);
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mesh.getVertices().size() / 3);
 	glBindVertexArray(0);
 
 	PhysicsEngine::Graphics::checkError();

@@ -27,12 +27,12 @@ namespace PhysicsEngine
 
 		public:
 			BoxCollider();
-			BoxCollider(std::vector<char> data);
+			BoxCollider(const std::vector<char>& data);
 			~BoxCollider();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			bool intersect(AABB aabb) const;
 

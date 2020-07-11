@@ -9,7 +9,7 @@ BoxCollider::BoxCollider()
 
 }
 
-BoxCollider::BoxCollider(std::vector<char> data)
+BoxCollider::BoxCollider(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -38,9 +38,9 @@ std::vector<char> BoxCollider::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void BoxCollider::deserialize(std::vector<char> data)
+void BoxCollider::deserialize(const std::vector<char>& data)
 {
-	BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[0]);
+	const BoxColliderHeader* header = reinterpret_cast<const BoxColliderHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

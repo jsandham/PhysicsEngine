@@ -19,7 +19,7 @@ Light::Light()
 	mShadowType = ShadowType::Hard;
 }
 
-Light::Light(std::vector<char> data)
+Light::Light(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -57,9 +57,9 @@ std::vector<char> Light::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void Light::deserialize(std::vector<char> data)
+void Light::deserialize(const std::vector<char>& data)
 {
-	LightHeader* header = reinterpret_cast<LightHeader*>(&data[0]);
+	const LightHeader* header = reinterpret_cast<const LightHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

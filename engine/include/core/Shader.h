@@ -93,12 +93,12 @@ namespace PhysicsEngine
 
 		public:
 			Shader();
-			Shader(std::vector<char> data);
+			Shader(const std::vector<char>& data);
 			~Shader();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void load(const std::string& filepath);
 			void load(const std::string vertexShader, const std::string fragmentShader, const std::string geometryShader);

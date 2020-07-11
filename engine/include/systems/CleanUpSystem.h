@@ -9,16 +9,24 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct CleanUpSystemHeader
+	{
+		uint32_t mUpdateOrder;
+		Guid mSystemId;
+	};
+#pragma pack(pop)
+
 	class CleanUpSystem : public System
 	{
 		public:
 			CleanUpSystem();
-			CleanUpSystem(std::vector<char> data);
+			CleanUpSystem(const std::vector<char>& data);
 			~CleanUpSystem();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid systemId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void init(World* world);
 			void update(Input input, Time time);

@@ -33,12 +33,12 @@ namespace PhysicsEngine
 
 		public:
 			LineRenderer();
-			LineRenderer(std::vector<char> data);
+			LineRenderer(const std::vector<char>& data);
 			~LineRenderer();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 	};
 
 	template <>

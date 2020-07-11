@@ -437,8 +437,8 @@ void Editor::updateInputPassedToSystems(Input* input)
 		ImVec2 sceneViewContentMin = sceneView.getSceneContentMin();
 		ImVec2 sceneViewContentMax = sceneView.getSceneContentMax();
 
-		int sceneViewContentWidth = sceneViewContentMax.x - sceneViewContentMin.x;
-		int sceneViewContentHeight = sceneViewContentMax.y - sceneViewContentMin.y;
+		int sceneViewContentWidth = (int)(sceneViewContentMax.x - sceneViewContentMin.x);
+		int sceneViewContentHeight = (int)(sceneViewContentMax.y - sceneViewContentMin.y);
 
 		//input->mousePosX = (int)io.MousePos.x;
 		//input->mousePosY = (int)io.MousePos.y;

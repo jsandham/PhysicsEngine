@@ -17,7 +17,7 @@ Texture2D::Texture2D()
 	mCreated = false;
 }
 
-Texture2D::Texture2D(std::vector<char> data)
+Texture2D::Texture2D(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -85,12 +85,12 @@ std::vector<char> Texture2D::serialize(Guid assetId) const
 	return data;
 }
 
-void Texture2D::deserialize(std::vector<char> data)
+void Texture2D::deserialize(const std::vector<char>& data)
 {
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(Texture2DHeader);
 
-	Texture2DHeader* header = reinterpret_cast<Texture2DHeader*>(&data[start1]);
+	const Texture2DHeader* header = reinterpret_cast<const Texture2DHeader*>(&data[start1]);
 
 	mAssetId = header->mTextureId;
 	mWidth = header->mWidth;
@@ -101,7 +101,7 @@ void Texture2D::deserialize(std::vector<char> data)
 
 	mRawTextureData.resize(header->mTextureSize);
 	for(size_t i = 0; i < header->mTextureSize; i++){
-		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+		mRawTextureData[i] = *reinterpret_cast<const unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 
 	mCreated = false;

@@ -10,7 +10,7 @@ Transform::Transform()
 	mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-Transform::Transform(std::vector<char> data)
+Transform::Transform(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -42,9 +42,9 @@ std::vector<char> Transform::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void Transform::deserialize(std::vector<char> data)
+void Transform::deserialize(const std::vector<char>& data)
 {
-	TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[0]);
+	const TransformHeader* header = reinterpret_cast<const TransformHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mParentId = header->mParentId;

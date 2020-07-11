@@ -26,7 +26,7 @@ RenderSystem::RenderSystem()
 	mRenderToScreen = true;
 }
 
-RenderSystem::RenderSystem(std::vector<char> data)
+RenderSystem::RenderSystem(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -42,16 +42,23 @@ std::vector<char> RenderSystem::serialize() const
 
 std::vector<char> RenderSystem::serialize(Guid systemId) const
 {
-	std::vector<char> data(sizeof(int));
+	RenderSystemHeader header;
+	header.mSystemId = systemId;
+	header.mUpdateOrder = mOrder;
 
-	memcpy(&data[0], &mOrder, sizeof(int));
+	std::vector<char> data(sizeof(RenderSystemHeader));
+
+	memcpy(&data[0], &header, sizeof(RenderSystemHeader));
 
 	return data;
 }
 
-void RenderSystem::deserialize(std::vector<char> data)
+void RenderSystem::deserialize(const std::vector<char>& data)
 {
-	mOrder = *reinterpret_cast<int*>(&data[0]);
+	const RenderSystemHeader* header = reinterpret_cast<const RenderSystemHeader*>(&data[0]);
+
+	mSystemId = header->mSystemId;
+	mOrder = header->mUpdateOrder;
 }
 
 void RenderSystem::init(World* world)

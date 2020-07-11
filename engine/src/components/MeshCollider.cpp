@@ -9,7 +9,7 @@ MeshCollider::MeshCollider()
 	mMeshId = Guid::INVALID;
 }
 
-MeshCollider::MeshCollider(std::vector<char> data)
+MeshCollider::MeshCollider(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -38,9 +38,9 @@ std::vector<char> MeshCollider::serialize(Guid componentId, Guid entityId) const
 	return data;
 }
 
-void MeshCollider::deserialize(std::vector<char> data)
+void MeshCollider::deserialize(const std::vector<char>& data)
 {
-	MeshColliderHeader* header = reinterpret_cast<MeshColliderHeader*>(&data[0]);
+	const MeshColliderHeader* header = reinterpret_cast<const MeshColliderHeader*>(&data[0]);
 
 	mComponentId = header->mComponentId;
 	mEntityId = header->mEntityId;

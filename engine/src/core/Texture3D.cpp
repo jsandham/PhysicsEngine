@@ -17,7 +17,7 @@ Texture3D::Texture3D()
 	mCreated = false;
 }
 
-Texture3D::Texture3D(std::vector<char> data)
+Texture3D::Texture3D(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -73,12 +73,12 @@ std::vector<char> Texture3D::serialize(Guid assetId) const
 	return data;
 }
 
-void Texture3D::deserialize(std::vector<char> data)
+void Texture3D::deserialize(const std::vector<char>& data)
 {
 	size_t start1 = 0;
 	size_t start2 = start1 + sizeof(Texture3DHeader);
 
-	Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[start1]);
+	const Texture3DHeader* header = reinterpret_cast<const Texture3DHeader*>(&data[start1]);
 
 	mAssetId = header->mTextureId;
 	mWidth = header->mWidth;
@@ -90,7 +90,7 @@ void Texture3D::deserialize(std::vector<char> data)
 
 	mRawTextureData.resize(header->mTextureSize);
 	for(size_t i = 0; i < header->mTextureSize; i++){
-		mRawTextureData[i] = *reinterpret_cast<unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
+		mRawTextureData[i] = *reinterpret_cast<const unsigned char*>(&data[start2 + sizeof(unsigned char) * i]);
 	}
 	this->mCreated = false;
 }

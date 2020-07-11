@@ -15,13 +15,13 @@ Font::Font()
 	mAssetId = Guid::INVALID;
 }
 
-Font::Font(std::string filepath)
+Font::Font(const std::string& filepath)
 {
 	mAssetId = Guid::INVALID;
 	mFilepath = filepath;
 }
 
-Font::Font(std::vector<char> data)
+Font::Font(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -56,10 +56,10 @@ std::vector<char> Font::serialize(Guid assetId) const
 	return data;
 }
 
-void Font::deserialize(std::vector<char> data)
+void Font::deserialize(const std::vector<char>& data)
 {
     int index = sizeof(int);
-    FontHeader* header = reinterpret_cast<FontHeader*>(&data[index]);
+    const FontHeader* header = reinterpret_cast<const FontHeader*>(&data[index]);
     
     mAssetId = header->mFontId;
 

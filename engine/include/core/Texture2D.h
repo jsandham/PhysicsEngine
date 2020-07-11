@@ -29,14 +29,14 @@ namespace PhysicsEngine
 
 		public:
 			Texture2D();
-			Texture2D(std::vector<char> data);
+			Texture2D(const std::vector<char>& data);
 			Texture2D(int width, int height);
 			Texture2D(int width, int height, TextureFormat format);
 			~Texture2D();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void load(const std::string& filepath);
 

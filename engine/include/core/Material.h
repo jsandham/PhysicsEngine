@@ -34,12 +34,12 @@ namespace PhysicsEngine
 
 		public:
 			Material();
-			Material(std::vector<char> data);
+			Material(const std::vector<char>& data);
 			~Material();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid assetId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			void load(const std::string& filepath);
 			void load(Guid shaderId);

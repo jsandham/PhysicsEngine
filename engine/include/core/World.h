@@ -87,11 +87,15 @@ namespace PhysicsEngine
 			std::vector<System*> mSystems;
 
 			// world entity, components, system, and asset id state
-			std::unordered_map<Guid, int> mIdToGlobalIndex;  // could instead map Guid -> std::pair(index, type)?
+			std::unordered_map<Guid, int> mIdToGlobalIndex; 
 			std::unordered_map<Guid, int> mIdToType;
 
 			// entity ids to component ids
 			std::unordered_map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds;
+
+			// asset and scene id to filepath
+			std::unordered_map<Guid, std::string> mAssetIdToFilepath;
+			std::unordered_map<Guid, std::string> mSceneIdToFilepath;
 
 			// entity creation/deletion state
 			std::vector<Guid> mEntityIdsMarkedCreated;
@@ -102,9 +106,6 @@ namespace PhysicsEngine
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedCreated;
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
 			std::vector<triple<Guid, int, int>> mComponentIdsMarkedMoved;
-
-			// asset id to filepath
-			std::unordered_map<Guid, std::string> assetIdToFilepath;
 
 			// default loaded meshes
 			Guid mSphereMeshId;
@@ -294,6 +295,7 @@ namespace PhysicsEngine
 			std::vector<triple<Guid, int, int>> getComponentIdsMarkedMoved() const;
 
 			std::string getAssetFilepath(const Guid& assetId) const;
+			std::string getSceneFilepath(const Guid& sceneId) const;
 
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance);
 			//bool raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance, Collider** collider);

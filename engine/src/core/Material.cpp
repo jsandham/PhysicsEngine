@@ -18,7 +18,7 @@ Material::Material()
 	mShaderChanged = true;
 }
 
-Material::Material(std::vector<char> data)
+Material::Material(const std::vector<char>& data)
 {
 	deserialize(data);
 }
@@ -56,11 +56,11 @@ std::vector<char> Material::serialize(Guid assetId) const
 	return data;
 }
 
-void Material::deserialize(std::vector<char> data)
+void Material::deserialize(const std::vector<char>& data)
 {
 	mUniforms.clear();
 
-	MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[0]);
+	const MaterialHeader* header = reinterpret_cast<const MaterialHeader*>(&data[0]);
 
 	mAssetId = header->mMaterialId;
 	mShaderId = header->mShaderId;
@@ -69,7 +69,7 @@ void Material::deserialize(std::vector<char> data)
 	
 	size_t startIndex = sizeof(MaterialHeader);
 	for (size_t i = 0; i < mUniforms.size(); i++) {
-		ShaderUniform* uniform = reinterpret_cast<ShaderUniform*>(&data[startIndex]);
+		const ShaderUniform* uniform = reinterpret_cast<const ShaderUniform*>(&data[startIndex]);
 
 		mUniforms[i] = *uniform;
 

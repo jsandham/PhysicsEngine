@@ -59,12 +59,12 @@ namespace PhysicsEngine
 
 		public:
 			Light();
-			Light(std::vector<char> data);
+			Light(const std::vector<char>& data);
 			~Light();
 
 			std::vector<char> serialize() const;
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(std::vector<char> data);
+			void deserialize(const std::vector<char>& data);
 
 			glm::mat4 getProjMatrix() const;
 	};
