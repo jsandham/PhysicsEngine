@@ -16,10 +16,9 @@ namespace PhysicsEngine
 	{
 		Guid mComponentId;
 		Guid mEntityId;
+		Guid mMaterialId;
 		glm::vec3 mStart;
 		glm::vec3 mEnd;
-
-		Guid mMaterialId;
 	};
 #pragma pack(pop)
 

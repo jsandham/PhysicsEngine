@@ -40,9 +40,9 @@ std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
 	for (int i = 0; i < 8; i++) {
 		header.mMaterialIds[i] = mMaterialIds[i];
 	}
-	header.mMaterialCount = mMaterialCount;
-	header.mIsStatic = mIsStatic;
-	header.mEnabled = mEnabled;
+	header.mMaterialCount = static_cast<int32_t>(mMaterialCount);
+	header.mIsStatic = static_cast<uint8_t>(mIsStatic);
+	header.mEnabled = static_cast<uint8_t>(mEnabled);
 
 	std::vector<char> data(sizeof(MeshRendererHeader));
 
@@ -61,9 +61,9 @@ void MeshRenderer::deserialize(const std::vector<char>& data)
 	for(int i = 0; i < 8; i++){
 		mMaterialIds[i] = header->mMaterialIds[i];
 	}
-	mMaterialCount = header->mMaterialCount;
-	mIsStatic = header->mIsStatic;
-	mEnabled = header->mEnabled;
+	mMaterialCount = static_cast<int>(header->mMaterialCount);
+	mIsStatic = static_cast<bool>(header->mIsStatic);
+	mEnabled = static_cast<bool>(header->mEnabled);
 	mMeshChanged = true;
 	mMaterialChanged = true;
 }

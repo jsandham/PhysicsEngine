@@ -14,8 +14,8 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct DebugSystemHeader
 	{
-		uint32_t mUpdateOrder;
 		Guid mSystemId;
+		int32_t mUpdateOrder;
 	};
 #pragma pack(pop)
 

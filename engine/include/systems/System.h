@@ -9,16 +9,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-	struct SystemHeader
-	{
-		uint32_t mType;
-		uint32_t mStartPtr;
-		uint32_t mSize;
-		Guid mSystemId;
-	};
-#pragma pack(pop)
-
 	class World;
 
 	class System

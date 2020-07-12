@@ -44,7 +44,7 @@ std::vector<char> RenderSystem::serialize(Guid systemId) const
 {
 	RenderSystemHeader header;
 	header.mSystemId = systemId;
-	header.mUpdateOrder = mOrder;
+	header.mUpdateOrder = static_cast<int32_t>(mOrder);
 
 	std::vector<char> data(sizeof(RenderSystemHeader));
 
@@ -58,7 +58,7 @@ void RenderSystem::deserialize(const std::vector<char>& data)
 	const RenderSystemHeader* header = reinterpret_cast<const RenderSystemHeader*>(&data[0]);
 
 	mSystemId = header->mSystemId;
-	mOrder = header->mUpdateOrder;
+	mOrder = static_cast<int>(header->mUpdateOrder);
 }
 
 void RenderSystem::init(World* world)

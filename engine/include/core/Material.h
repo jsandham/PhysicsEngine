@@ -17,8 +17,8 @@ namespace PhysicsEngine
 	{
 		Guid mMaterialId;
 		Guid mShaderId;
-		RenderQueue mRenderQueue;
 		size_t mUniformCount;
+		uint8_t mRenderQueue;
 	};
 #pragma pack(pop)
 

@@ -31,7 +31,7 @@ std::vector<char> Entity::serialize(Guid entityId) const
 {
 	EntityHeader header;
 	header.mEntityId = entityId;
-	header.mDoNotDestroy = mDoNotDestroy;
+	header.mDoNotDestroy = static_cast<uint8_t>(mDoNotDestroy);
 
 	std::vector<char> data(sizeof(EntityHeader));
 
@@ -45,7 +45,7 @@ void Entity::deserialize(const std::vector<char>& data)
 	const EntityHeader* header = reinterpret_cast<const EntityHeader*>(&data[0]);
 
 	mEntityId = header->mEntityId;
-	mDoNotDestroy = header->mDoNotDestroy;
+	mDoNotDestroy = static_cast<bool>(header->mDoNotDestroy);
 }
 
 void Entity::latentDestroy(World* world)

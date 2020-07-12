@@ -69,17 +69,17 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
 	header.mComponentId = componentId;
 	header.mEntityId = entityId;
 	header.mTargetTextureId = mTargetTextureId;
-	header.mRenderPath = mRenderPath;
-	header.mMode = mMode;
-	header.mSSAO = mSSAO;
+	header.mRenderPath = static_cast<uint8_t>(mRenderPath);
+	header.mMode = static_cast<uint8_t>(mMode);
+	header.mSSAO = static_cast<uint8_t>(mSSAO);
 	header.mBackgroundColor = glm::vec4(mBackgroundColor.r,
 										mBackgroundColor.g,
 										mBackgroundColor.b, 
 										mBackgroundColor.a);
-	header.mX = mViewport.mX;
-	header.mY = mViewport.mY;
-	header.mWidth = mViewport.mWidth;
-	header.mHeight = mViewport.mHeight;
+	header.mX = static_cast<int32_t>(mViewport.mX);
+	header.mY = static_cast<int32_t>(mViewport.mY);
+	header.mWidth = static_cast<int32_t>(mViewport.mWidth);
+	header.mHeight = static_cast<int32_t>(mViewport.mHeight);
 	header.mFov = mFrustum.mFov;
 	header.mAspectRatio = mFrustum.mAspectRatio;
 	header.mNearPlane = mFrustum.mNearPlane;
@@ -100,14 +100,14 @@ void Camera::deserialize(const std::vector<char>& data)
 	mEntityId = header->mEntityId;
 	mTargetTextureId = header->mTargetTextureId;
 
-	mRenderPath = header->mRenderPath;
-	mMode = header->mMode;
-	mSSAO = header->mSSAO;
+	mRenderPath = static_cast<RenderPath>(header->mRenderPath);
+	mMode = static_cast<CameraMode>(header->mMode);
+	mSSAO = static_cast<CameraSSAO>(header->mSSAO);
 
-	mViewport.mX = header->mX;
-	mViewport.mY = header->mY;
-	mViewport.mWidth = header->mWidth;
-	mViewport.mHeight = header->mHeight;
+	mViewport.mX = static_cast<int>(header->mX);
+	mViewport.mY = static_cast<int>(header->mY);
+	mViewport.mWidth = static_cast<int>(header->mWidth);
+	mViewport.mHeight = static_cast<int>(header->mHeight);
 
 	mFrustum.mFov = header->mFov;
 	mFrustum.mAspectRatio = header->mAspectRatio;

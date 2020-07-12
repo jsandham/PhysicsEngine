@@ -6,9 +6,11 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/LoadInternal.h"
 #include "../../include/core/Load.h"
-#include "../../include/core/Scene.h"
 
 using namespace PhysicsEngine;
+
+const uint64_t PhysicsEngine::ASSET_FILE_SIGNATURE = 0x9a9e9b4153534554;
+const uint64_t PhysicsEngine::SCENE_FILE_SIGNATURE = 0x9a9e9b5343454e45;
 
 void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 										PoolAllocator<Mesh>& meshAllocator,
@@ -32,10 +34,10 @@ void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 		return;
 	}
 
-	AssetHeader header;
-	file.read(reinterpret_cast<char*>(&header), sizeof(AssetHeader));
+	AssetFileHeader header;
+	file.read(reinterpret_cast<char*>(&header), sizeof(AssetFileHeader));
 
-	assert(header.mSignature == 0x9a9e9b4153534554 && "Trying to load an invalid binary asset file\n");
+	assert(header.mSignature == ASSET_FILE_SIGNATURE && "Trying to load an invalid binary asset file\n");
 
 	std::vector<char> data(header.mSize);
 	file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
@@ -123,10 +125,10 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 		return;
 	}
 
-	SceneHeader sceneHeader;
-	file.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
+	SceneFileHeader sceneHeader;
+	file.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneFileHeader));
 
-	assert(sceneHeader.mSignature == 0x9a9e9b5343454e45 && "Trying to load an invalid binary scene file\n");
+	assert(sceneHeader.mSignature == SCENE_FILE_SIGNATURE && "Trying to load an invalid binary scene file\n");
 
 	std::vector<char> data(sceneHeader.mSize);
 	file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
@@ -136,7 +138,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 	size_t end = 0;
 
 	// load all entities
-	for (uint32_t i = 0; i < sceneHeader.mEntityCount; i++) {
+	for (int32_t i = 0; i < sceneHeader.mEntityCount; i++) {
 		start = end;
 		end += sizeof(EntityHeader);
 
@@ -161,18 +163,18 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 			assert(index >= 0 && "Returned a negative index for entity after loading\n");
 
 			idToGlobalIndex[entity->getId()] = index;
-			idToType[entity->getId()] = entityHeader->mType;
+			idToType[entity->getId()] = EntityType<Entity>::type;
 		}
 	}
 
 	// load all components
-	for (uint32_t i = 0; i < sceneHeader.mComponentCount; i++) {
+	for (int32_t i = 0; i < sceneHeader.mComponentCount; i++) {
 		start = end;
-		end += sizeof(ComponentHeader);
+		end += sizeof(ComponentInfoHeader);
 
 		std::vector<char> componentData(&data[start], &data[end]);
 
-		ComponentHeader* componentHeader = reinterpret_cast<ComponentHeader*>(&componentData);
+		ComponentInfoHeader* componentHeader = reinterpret_cast<ComponentInfoHeader*>(&componentData);
 
 		std::vector<char> temp(&data[componentHeader->mStartPtr], &data[componentHeader->mStartPtr + componentHeader->mSize]);
 
@@ -239,13 +241,13 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 	}
 
 	// load all systems
-	for (uint32_t i = 0; i < sceneHeader.mSystemCount; i++) {
+	for (int32_t i = 0; i < sceneHeader.mSystemCount; i++) {
 		start = end;
-		end += sizeof(SystemHeader);
+		end += sizeof(SystemInfoHeader);
 
 		std::vector<char> systemData(&data[start], &data[end]);
 
-		SystemHeader* systemHeader = reinterpret_cast<SystemHeader*>(&systemData);
+		SystemInfoHeader* systemHeader = reinterpret_cast<SystemInfoHeader*>(&systemData);
 
 		std::unordered_map<Guid, int>::iterator it = idToGlobalIndex.find(systemHeader->mSystemId);
 		if (it != idToGlobalIndex.end()) {

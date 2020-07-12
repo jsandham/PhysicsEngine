@@ -50,16 +50,23 @@ std::vector<char> EditorCameraSystem::serialize() const
 
 std::vector<char> EditorCameraSystem::serialize(Guid systemId) const
 {
-	std::vector<char> data(sizeof(int));
+	EditorCameraSystemHeader header;
+	header.mSystemId = systemId;
+	header.mUpdateOrder = static_cast<int32_t>(mOrder);
 
-	memcpy(&data[0], &mOrder, sizeof(int));
+	std::vector<char> data(sizeof(EditorCameraSystemHeader));
+
+	memcpy(&data[0], &header, sizeof(EditorCameraSystemHeader));
 
 	return data;
 }
 
-void EditorCameraSystem::deserialize(std::vector<char> data)
+void EditorCameraSystem::deserialize(const std::vector<char>& data)
 {
-	mOrder = *reinterpret_cast<int*>(&data[0]);
+	const EditorCameraSystemHeader* header = reinterpret_cast<const EditorCameraSystemHeader*>(&data[0]);
+
+	mSystemId = header->mSystemId;
+	mOrder = static_cast<int>(header->mUpdateOrder);
 }
 
 void EditorCameraSystem::init(World* world)

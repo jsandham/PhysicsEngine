@@ -43,7 +43,7 @@ std::vector<char> PhysicsSystem::serialize(Guid systemId) const
 	header.mSystemId = systemId;
 	header.mGravity = mGravity;
 	header.mTimestep = mTimestep;
-	header.mUpdateOrder = mOrder;
+	header.mUpdateOrder = static_cast<int32_t>(mOrder);
 
 	std::vector<char> data(sizeof(PhysicsSystemHeader));
 
@@ -57,7 +57,7 @@ void PhysicsSystem::deserialize(const std::vector<char>& data)
 	const PhysicsSystemHeader* header = reinterpret_cast<const PhysicsSystemHeader*>(&data[0]);
 
 	mSystemId = header->mSystemId;
-	mOrder = header->mUpdateOrder;
+	mOrder = static_cast<int>(header->mUpdateOrder);
 	mGravity = header->mGravity;
 	mTimestep = header->mTimestep;
 }

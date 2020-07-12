@@ -32,6 +32,55 @@
 
 namespace PhysicsEngine
 {
+	extern const uint64_t ASSET_FILE_SIGNATURE;
+	extern const uint64_t SCENE_FILE_SIGNATURE;
+
+#pragma pack(push, 1)
+	struct AssetFileHeader
+	{
+		Guid mAssetId;
+		uint64_t mSignature;
+		int32_t mType;
+		size_t mSize;
+		uint8_t mMajor;
+		uint8_t mMinor;
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct SceneFileHeader
+	{
+		uint64_t mSignature;
+		Guid mSceneId;
+		size_t mSize;
+		int32_t mEntityCount;
+		int32_t mComponentCount;
+		int32_t mSystemCount;
+		uint8_t mMajor;
+		uint8_t mMinor;
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct ComponentInfoHeader
+	{
+		Guid mComponentId;
+		int32_t mType;
+		size_t mStartPtr;
+		size_t mSize;
+	};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+	struct SystemInfoHeader
+	{
+		Guid mSystemId;
+		int32_t mType;
+		size_t mStartPtr;
+		size_t mSize;
+	};
+#pragma pack(pop)
+
 	void loadAssetIntoWorld(const std::string& filepath,
 							PoolAllocator<Mesh>& meshAllocator,
 							PoolAllocator<Material>& materialAllocator,

@@ -12,11 +12,11 @@ namespace PhysicsEngine
 	struct CubemapHeader
 	{
 		Guid mTextureId;
-		int mWidth;
-		int mNumChannels;
-		int mDimension;
-		int mFormat;
 		size_t mTextureSize;
+		int32_t mWidth;
+		int32_t mNumChannels;
+		uint8_t mDimension;
+		uint8_t mFormat;
 	};
 #pragma pack(pop)
 

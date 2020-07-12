@@ -12,6 +12,14 @@
 
 namespace PhysicsEngine
 {
+#pragma pack(push, 1)
+	struct EditorCameraSystemHeader
+	{
+		Guid mSystemId;
+		int32_t mUpdateOrder;
+	};
+#pragma pack(pop)
+
 	class EditorCameraSystem : public System
 	{
 	private:
@@ -39,7 +47,7 @@ namespace PhysicsEngine
 
 		std::vector<char> serialize() const;
 		std::vector<char> serialize(Guid systemId) const;
-		void deserialize(std::vector<char> data);
+		void deserialize(const std::vector<char>& data);
 
 		void init(World* world);
 		void update(Input input, Time time);

@@ -40,7 +40,7 @@ std::vector<char> DebugSystem::serialize(Guid systemId) const
 {
 	DebugSystemHeader header;
 	header.mSystemId = systemId;
-	header.mUpdateOrder = mOrder;
+	header.mUpdateOrder = static_cast<int32_t>(mOrder);
 
 	std::vector<char> data(sizeof(DebugSystemHeader));
 
@@ -54,7 +54,7 @@ void DebugSystem::deserialize(const std::vector<char>& data)
 	const DebugSystemHeader* header = reinterpret_cast<const DebugSystemHeader*>(&data[0]);
 
 	mSystemId = header->mSystemId;
-	mOrder = header->mUpdateOrder;
+	mOrder = static_cast<int>(header->mUpdateOrder);
 }
 
 void DebugSystem::init(World* world)

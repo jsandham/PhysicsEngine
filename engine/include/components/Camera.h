@@ -52,18 +52,18 @@ namespace PhysicsEngine
 		Guid mComponentId;
 		Guid mEntityId;
 		Guid mTargetTextureId;
-		RenderPath mRenderPath;
-		CameraMode mMode;
-		CameraSSAO mSSAO;
 		glm::vec4 mBackgroundColor;
-		int mX;
-		int mY;
-		int mWidth;
-		int mHeight;
+		int32_t mX;
+		int32_t mY;
+		int32_t mWidth;
+		int32_t mHeight;
 		float mFov;
 		float mAspectRatio;
 		float mNearPlane;
 		float mFarPlane;
+		uint8_t mRenderPath;
+		uint8_t mMode;
+		uint8_t mSSAO;
 	};
 #pragma pack(pop)
 

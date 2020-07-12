@@ -18,10 +18,10 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct PhysicsSystemHeader
 	{
+		Guid mSystemId;
+		int32_t mUpdateOrder;
 		float mTimestep;
 		float mGravity;
-		uint32_t mUpdateOrder;
-		Guid mSystemId;
 	};
 #pragma pack(pop)
 

@@ -23,8 +23,8 @@ namespace PhysicsEngine
 		float mQuadratic;
 		float mCutOff;
 		float mOuterCutOff;
-		int mLightType;
-		int mShadowType;
+		uint8_t mLightType;
+		uint8_t mShadowType;
 	};
 #pragma pack(pop)
 	

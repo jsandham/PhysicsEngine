@@ -30,7 +30,7 @@ std::vector<char> CleanUpSystem::serialize(Guid systemId) const
 {
 	CleanUpSystemHeader header;
 	header.mSystemId = systemId;
-	header.mUpdateOrder = mOrder;
+	header.mUpdateOrder = static_cast<int32_t>(mOrder);
 
 	std::vector<char> data(sizeof(CleanUpSystemHeader));
 
@@ -44,7 +44,7 @@ void CleanUpSystem::deserialize(const std::vector<char>& data)
 	const CleanUpSystemHeader* header = reinterpret_cast<const CleanUpSystemHeader*>(&data[0]);
 
 	mSystemId = header->mSystemId;
-	mOrder = header->mUpdateOrder;
+	mOrder = static_cast<int>(header->mUpdateOrder);
 }
 
 void CleanUpSystem::init(World* world)

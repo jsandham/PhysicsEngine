@@ -16,17 +16,14 @@ namespace PhysicsEngine
 	{
 		Guid mComponentId;
 		Guid mEntityId;
-		bool mUseGravity;
-		float mMass;
-		float mDrag;
-		float mAngularDrag;
-
+		glm::mat3 mInertiaTensor;
 		glm::vec3 mVelocity;
 		glm::vec3 mAngularVelocity;
 		glm::vec3 mCentreOfMass;
-		glm::mat3 mInertiaTensor;
-		
-		glm::vec3 mHalfVelocity;
+		float mMass;
+		float mDrag;
+		float mAngularDrag;
+		uint8_t mUseGravity;
 	};
 #pragma pack(pop)
 

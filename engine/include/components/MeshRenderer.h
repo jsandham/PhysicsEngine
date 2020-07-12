@@ -14,9 +14,9 @@ namespace PhysicsEngine
 		Guid mEntityId;
 		Guid mMeshId;
 		Guid mMaterialIds[8];
-		int mMaterialCount;
-		bool mIsStatic;
-		bool mEnabled;
+		int32_t mMaterialCount;
+		uint8_t mIsStatic;
+		uint8_t mEnabled;
 	};
 #pragma pack(pop)
 

@@ -10,9 +10,8 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct EntityHeader
 	{
-		uint32_t mType;
 		Guid mEntityId;
-		bool mDoNotDestroy;
+		uint8_t mDoNotDestroy;
 	};
 #pragma pack(pop)
 	

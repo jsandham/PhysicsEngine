@@ -8,7 +8,6 @@
 #include "Allocator.h"
 #include "PoolAllocator.h"
 #include "Log.h"
-#include "Scene.h"
 #include "Asset.h"
 #include "Entity.h"
 #include "Mesh.h"

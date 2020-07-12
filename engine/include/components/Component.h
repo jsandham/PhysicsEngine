@@ -5,16 +5,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-	struct ComponentHeader
-	{
-		uint32_t mType;
-		uint32_t mStartPtr;
-		uint32_t mSize;
-		Guid mComponentId;
-	};
-#pragma pack(pop)
-
 	class Entity;
 	class World;
 

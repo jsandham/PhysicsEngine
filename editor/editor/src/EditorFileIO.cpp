@@ -7,6 +7,7 @@
 #include "core/WriteToJson.h"
 #include "core/Log.h"
 #include "core/Entity.h"
+#include "core/WorldSerialization.h"
 
 #include "components/MeshRenderer.h"
 #include "components/Light.h"
@@ -56,9 +57,9 @@ bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExt
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {
-		AssetHeader header = {};
-		header.mSignature = 0x9a9e9b4153534554;
-		header.mType = assetType;
+		AssetFileHeader header = {};
+		header.mSignature = PhysicsEngine::ASSET_FILE_SIGNATURE;
+		header.mType = static_cast<int32_t>(assetType);
 		header.mSize = data.size();
 		header.mMajor = 0;
 		header.mMinor = 1;
@@ -114,9 +115,15 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	json::JSON::JSONWrapper<map<string, JSON>> objects = jsonScene.ObjectRange();
 	map<string, JSON>::iterator it;
 
-	uint32_t entityCount = 0;
-	uint32_t componentCount = 0;
-	uint32_t systemCount = 0;
+	int32_t entityCount = 0;
+	int32_t componentCount = 0;
+	int32_t systemCount = 0;
+	int32_t transformCount = 0;
+	int32_t cameraCount = 0;
+	int32_t meshRendererCount = 0;
+	int32_t lightCount = 0;
+	int32_t boxColliderCount = 0;
+	int32_t sphereColliderCount = 0;
 	for (it = objects.begin(); it != objects.end(); it++) {
 		std::string type = it->second["type"].ToString();
 
@@ -127,299 +134,386 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 		else if (type == "Transform") {
 			transforms[it->first] = it->second;
 			componentCount++;
+			transformCount++;
 		}
 		else if (type == "Camera") {
 			cameras[it->first] = it->second;
-			componentCount++
+			componentCount++;
+			cameraCount++;
 		}
 		else if (type == "MeshRenderer") {
 			meshRenderers[it->first] = it->second;
-			componentCount++
+			componentCount++;
+			meshRendererCount++;
 		}
 		else if (type == "Light") {
 			lights[it->first] = it->second;
 			componentCount++;
+			lightCount++;
 		}
 		else if (type == "BoxCollider") {
 			boxColliders[it->first] = it->second;
 			componentCount++;
+			boxColliderCount++;
 		}
 		else if(type == "SphereCollider") {
 			sphereColliders[it->first] = it->second;
 			componentCount++;
+			sphereColliderCount++;
 		}
 	}
 
+	SceneFileHeader header = {};
+	header.mSignature = PhysicsEngine::SCENE_FILE_SIGNATURE;
+	header.mEntityCount = entityCount;
+	header.mComponentCount = componentCount;
+	header.mSystemCount = systemCount;
+	header.mMajor = 0;
+	header.mMinor = 1;
+	header.mSceneId = id;
+
+	std::vector<ComponentInfoHeader> componentHeaders(componentCount);
+	std::vector<SystemInfoHeader> systemHeaders(systemCount);
+
+	std::vector<EntityHeader> entityHeaders(entityCount);
+	std::vector<TransformHeader> transformHeaders(transformCount);
+	std::vector<CameraHeader> cameraHeaders(cameraCount);
+	std::vector<MeshRendererHeader> meshRendererHeaders(meshRendererCount);
+	std::vector<LightHeader> lightHeaders(lightCount);
+	std::vector<BoxColliderHeader> boxColliderHeaders(boxColliderCount);
+	std::vector<SphereColliderHeader> sphereColliderHeaders(sphereColliderCount);
+
+	header.mSize = sizeof(SceneFileHeader) +
+				sizeof(EntityHeader) * entityHeaders.size() +
+				sizeof(ComponentInfoHeader) * componentHeaders.size() +
+				sizeof(SystemInfoHeader) * systemHeaders.size() +
+				sizeof(TransformHeader) * transformHeaders.size() +
+				sizeof(CameraHeader) * cameraHeaders.size() +
+				sizeof(MeshRendererHeader) * meshRendererHeaders.size() +
+				sizeof(LightHeader) * lightHeaders.size() +
+				sizeof(BoxColliderHeader) * boxColliderHeaders.size() +
+				sizeof(SphereColliderHeader) * sphereColliderHeaders.size();
+
+	// serialize entities
+	if (!entities.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> entityObjects = entities.ObjectRange();
+		for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
+				
+			entityHeaders[index].mEntityId = Guid(it->first);
+			entityHeaders[index].mDoNotDestroy = static_cast<uint8_t>(false);
+
+			index++;
+		}
+	}
+
+	int componentIndex = 0;
+
+	// serialize transforms
+	if (!transforms.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> transformObjects = transforms.ObjectRange();
+		for (it = transformObjects.begin(); it != transformObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<Transform>::type);
+			componentHeaders[componentIndex].mSize = sizeof(TransformHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			transformHeaders[index].mComponentId = Guid(it->first);
+			transformHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+			transformHeaders[index].mParentId = Guid(it->second["parent"].ToString());
+
+			transformHeaders[index].mPosition.x = (float)it->second["position"][0].ToFloat();
+			transformHeaders[index].mPosition.y = (float)it->second["position"][1].ToFloat();
+			transformHeaders[index].mPosition.z = (float)it->second["position"][2].ToFloat();
+
+			transformHeaders[index].mRotation.x = (float)it->second["rotation"][0].ToFloat();
+			transformHeaders[index].mRotation.y = (float)it->second["rotation"][1].ToFloat();
+			transformHeaders[index].mRotation.z = (float)it->second["rotation"][2].ToFloat();
+			transformHeaders[index].mRotation.w = (float)it->second["rotation"][3].ToFloat();
+
+			transformHeaders[index].mScale.x = (float)it->second["scale"][0].ToFloat();
+			transformHeaders[index].mScale.y = (float)it->second["scale"][1].ToFloat();
+			transformHeaders[index].mScale.z = (float)it->second["scale"][2].ToFloat();
+
+			index++;
+			componentIndex++;
+		}
+	}
+
+	// serialize camera
+	if (!cameras.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> cameraObjects = cameras.ObjectRange();
+		for (it = cameraObjects.begin(); it != cameraObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<Camera>::type);
+			componentHeaders[componentIndex].mSize = sizeof(CameraHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			cameraHeaders[index].mComponentId = Guid(it->first);
+			cameraHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+
+			cameraHeaders[index].mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
+
+			cameraHeaders[index].mBackgroundColor.r = (float)it->second["backgroundColor"][0].ToFloat();
+			cameraHeaders[index].mBackgroundColor.g = (float)it->second["backgroundColor"][1].ToFloat();
+			cameraHeaders[index].mBackgroundColor.b = (float)it->second["backgroundColor"][2].ToFloat();
+			cameraHeaders[index].mBackgroundColor.a = (float)it->second["backgroundColor"][3].ToFloat();
+
+			cameraHeaders[index].mX = static_cast<int32_t>(it->second["x"].ToInt());
+			cameraHeaders[index].mY = static_cast<int32_t>(it->second["y"].ToInt());
+			cameraHeaders[index].mWidth = static_cast<int32_t>(it->second["width"].ToInt());
+			cameraHeaders[index].mHeight = static_cast<int32_t>(it->second["height"].ToInt());
+
+			cameraHeaders[index].mFov = (float)it->second["fov"].ToFloat();
+			cameraHeaders[index].mNearPlane = (float)it->second["near"].ToFloat();
+			cameraHeaders[index].mFarPlane = (float)it->second["far"].ToFloat();
+
+			index++;
+			componentIndex++;
+		}
+	}
+
+	// serialize mesh renderers
+	if (!meshRenderers.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> meshRendererObjects = meshRenderers.ObjectRange();
+		for (it = meshRendererObjects.begin(); it != meshRendererObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<MeshRenderer>::type);
+			componentHeaders[componentIndex].mSize = sizeof(MeshRendererHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			meshRendererHeaders[index].mComponentId = Guid(it->first);
+			meshRendererHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+			meshRendererHeaders[index].mMeshId = Guid(it->second["mesh"].ToString());
+				
+			if (it->second.hasKey("material")) {
+				meshRendererHeaders[index].mMaterialCount = 1;
+				meshRendererHeaders[index].mMaterialIds[0] = Guid(it->second["material"].ToString());
+				
+				for (int j = 1; j < 8; j++) {
+					meshRendererHeaders[index].mMaterialIds[j] = Guid::INVALID;
+				}
+			}
+			else if (it->second.hasKey("materials")) {
+				int materialCount = it->second["materials"].length();
+				if (materialCount > 8) {
+					Log::error("Currently only support at most 8 materials");
+					return false;
+				}
+
+				meshRendererHeaders[index].mMaterialCount = static_cast<int32_t>(materialCount);
+
+				for (int j = 0; j < materialCount; j++) {
+					meshRendererHeaders[index].mMaterialIds[j] = Guid(it->second["materials"][j].ToString());
+				}
+
+				for (int j = materialCount; j < 8; j++) {
+					meshRendererHeaders[index].mMaterialIds[j] = Guid::INVALID;
+				}
+			}
+
+			meshRendererHeaders[index].mIsStatic = static_cast<uint8_t>(it->second["isStatic"].ToBool());
+			meshRendererHeaders[index].mEnabled = static_cast<uint8_t>(it->second["enabled"].ToBool());
+
+			index++;
+			componentIndex++;
+		}
+	}
+
+	// serialize lights
+	if (!lights.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> lightObjects = lights.ObjectRange();
+		for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<Light>::type);
+			componentHeaders[componentIndex].mSize = sizeof(LightHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			lightHeaders[index].mComponentId = Guid(it->first);
+			lightHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+
+			lightHeaders[index].mAmbient.x = (float)it->second["ambient"][0].ToFloat();
+			lightHeaders[index].mAmbient.y = (float)it->second["ambient"][1].ToFloat();
+			lightHeaders[index].mAmbient.z = (float)it->second["ambient"][2].ToFloat();
+
+			lightHeaders[index].mDiffuse.x = (float)it->second["diffuse"][0].ToFloat();
+			lightHeaders[index].mDiffuse.y = (float)it->second["diffuse"][1].ToFloat();
+			lightHeaders[index].mDiffuse.z = (float)it->second["diffuse"][2].ToFloat();
+
+			lightHeaders[index].mSpecular.x = (float)it->second["specular"][0].ToFloat();
+			lightHeaders[index].mSpecular.y = (float)it->second["specular"][1].ToFloat();
+			lightHeaders[index].mSpecular.z = (float)it->second["specular"][2].ToFloat();
+
+			lightHeaders[index].mConstant = (float)it->second["constant"].ToFloat();
+			lightHeaders[index].mLinear = (float)it->second["linear"].ToFloat();
+			lightHeaders[index].mQuadratic = (float)it->second["quadratic"].ToFloat();
+			lightHeaders[index].mCutOff = (float)it->second["cutOff"].ToFloat();
+			lightHeaders[index].mOuterCutOff = (float)it->second["outerCutOff"].ToFloat();
+
+			lightHeaders[index].mLightType = static_cast<uint8_t>((int)it->second["lightType"].ToInt());
+			lightHeaders[index].mShadowType = static_cast<uint8_t>((int)it->second["shadowType"].ToInt());
+
+			index++;
+			componentIndex++;
+		}
+	}
+	if (!boxColliders.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> boxColliderObjects = boxColliders.ObjectRange();
+		for (it = boxColliderObjects.begin(); it != boxColliderObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<BoxCollider>::type);
+			componentHeaders[componentIndex].mSize = sizeof(BoxColliderHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			boxColliderHeaders[index].mComponentId = Guid(it->first);
+			boxColliderHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+
+			boxColliderHeaders[index].mAABB.mCentre.x = (float)it->second["centre"][0].ToFloat();
+			boxColliderHeaders[index].mAABB.mCentre.y = (float)it->second["centre"][1].ToFloat();
+			boxColliderHeaders[index].mAABB.mCentre.z = (float)it->second["centre"][2].ToFloat();
+
+			boxColliderHeaders[index].mAABB.mSize.x = (float)it->second["size"][0].ToFloat();
+			boxColliderHeaders[index].mAABB.mSize.y = (float)it->second["size"][1].ToFloat();
+			boxColliderHeaders[index].mAABB.mSize.z = (float)it->second["size"][2].ToFloat();
+
+			index++;
+			componentIndex++;
+		}
+
+	}
+	if (!sphereColliders.IsNull()) {
+		int index = 0;
+		json::JSON::JSONWrapper<map<string, JSON>> sphereColliderObjects = sphereColliders.ObjectRange();
+		for (it = sphereColliderObjects.begin(); it != sphereColliderObjects.end(); it++) {
+			componentHeaders[componentIndex].mComponentId = Guid(it->first);
+			componentHeaders[componentIndex].mType = static_cast<int32_t>(ComponentType<SphereCollider>::type);
+			componentHeaders[componentIndex].mSize = sizeof(SphereColliderHeader);
+			componentHeaders[componentIndex].mStartPtr = 0;
+
+			sphereColliderHeaders[index].mComponentId = Guid(it->first);
+			sphereColliderHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
+
+			sphereColliderHeaders[index].mSphere.mCentre.x = (float)it->second["centre"][0].ToFloat();
+			sphereColliderHeaders[index].mSphere.mCentre.y = (float)it->second["centre"][1].ToFloat();
+			sphereColliderHeaders[index].mSphere.mCentre.z = (float)it->second["centre"][2].ToFloat();
+
+			sphereColliderHeaders[index].mSphere.mRadius = (float)it->second["radius"].ToFloat();
+
+			index++;
+			componentIndex++;
+		}
+
+	}
+
+	// determine start pointer offsets for components
+	componentIndex = 0;
+	size_t offset = sizeof(SceneFileHeader) + 
+					sizeof(ComponentInfoHeader) * componentHeaders.size() + 
+					sizeof(SystemInfoHeader) * systemHeaders.size() +
+					sizeof(EntityHeader)* entityHeaders.size();
+	// transforms
+	for (size_t i = 0; i < transformHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(transformHeaders[i]);
+		componentIndex++;
+	}
+
+	// cameras
+	for (size_t i = 0; i < cameraHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(cameraHeaders[i]);
+		componentIndex++;
+	}
+
+	// mesh renderers
+	for (size_t i = 0; i < meshRendererHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(meshRendererHeaders[i]);
+		componentIndex++;
+	}
+
+	// lights
+	for (size_t i = 0; i < lightHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(lightHeaders[i]);
+		componentIndex++;
+	}
+
+	// box colliders
+	for (size_t i = 0; i < boxColliderHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(boxColliderHeaders[i]);
+		componentIndex++;
+	}
+
+	// sphere colliders
+	for (size_t i = 0; i < sphereColliderHeaders.size(); i++) {
+		componentHeaders[componentIndex].mStartPtr = offset;
+
+		offset += sizeof(sphereColliderHeaders[i]);
+		componentIndex++;
+	}
+
+	// write data out to binary scene file
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {
-		SceneHeader header = {};
-		header.mSignature = 0x9a9e9b5343454e45;
-		header.mEntityCount = entityCount;
-		header.mComponentCount = componentCount;
-		header.mSystemCount = systemCount;
-		header.mMajor = 0;
-		header.mMinor = 1;
-		header.mSceneId = id;
-
-		std::vector<EntityHeader> entityHeaders(entityCount);
-		std::vector<ComponentHeader> componentHeaders(componentCount);
-		std::vector<SystemHeader> systemHeaders(systemCount);
-
-		std::vector<TransformHeader> transformHeaders(transforms.length());
-		std::vector<CameraHeader> cameraHeaders(cameras.length());
-		std::vector<MeshRendererHeader> meshRendererHeaders(meshRenderers.length());
-		std::vector<LightHeader> lightHeaders(lights.length());
-		std::vector<BoxColliderHeader> boxColliderHeaders(boxColliders.length());
-		std::vector<SphereColliderHeader> sphereColliderHeaders(sphereColliders.length());
-
-		header.mSize = sizeof(SceneHeader) +
-					sizeof(EntityHeader) * entityHeaders.size() +
-					sizeof(ComponentHeader) * componentHeaders.size() +
-					sizeof(SystemHeader) * systemHeaders.size() +
-					sizeof(TransformHeader) * transformHeaders.size() +
-					sizeof(CameraHeader) * cameraHeaders.size() +
-					sizeof(MeshRendererHeader) * meshRendererHeaders.size() +
-					sizeof(LightHeader) * lightHeaders.size() +
-					sizeof(BoxColliderHeader) * boxColliderHeaders.size() +
-					sizeof(SphereColliderHeader) * sphereColliderHeaders.size();
-
-		// serialize entities
-		if (!entities.IsNull()) {
-			int index = 0;
-			json::JSON::JSONWrapper<map<string, JSON>> entityObjects = entities.ObjectRange();
-			for (it = entityObjects.begin(); it != entityObjects.end(); it++) {
-				
-				entityHeaders[index].mEntityId = Guid(it->first);
-				entityHeaders[index].mDoNotDestroy = false;
-				entityHeaders[index].mType = EntityType<Entity>::type;
-
-				index++;
-			}
-		}
-
-		// serialize transforms
-		if (!transforms.IsNull()) {
-			int index = 0;
-			json::JSON::JSONWrapper<map<string, JSON>> transformObjects = transforms.ObjectRange();
-			for (it = transformObjects.begin(); it != transformObjects.end(); it++) {
-				transformHeaders[index].mComponentId = Guid(it->first);
-				transformHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
-				transformHeaders[index].mParentId = Guid(it->second["parent"].ToString());
-
-				transformHeaders[index].mPosition.x = (float)it->second["position"][0].ToFloat();
-				transformHeaders[index].mPosition.y = (float)it->second["position"][1].ToFloat();
-				transformHeaders[index].mPosition.z = (float)it->second["position"][2].ToFloat();
-
-				transformHeaders[index].mRotation.x = (float)it->second["rotation"][0].ToFloat();
-				transformHeaders[index].mRotation.y = (float)it->second["rotation"][1].ToFloat();
-				transformHeaders[index].mRotation.z = (float)it->second["rotation"][2].ToFloat();
-				transformHeaders[index].mRotation.w = (float)it->second["rotation"][3].ToFloat();
-
-				transformHeaders[index].mScale.x = (float)it->second["scale"][0].ToFloat();
-				transformHeaders[index].mScale.y = (float)it->second["scale"][1].ToFloat();
-				transformHeaders[index].mScale.z = (float)it->second["scale"][2].ToFloat();
-
-				index++;
-			}
-		}
-
-		// serialize camera
-		if (!cameras.IsNull()) {
-			int index = 0;
-			json::JSON::JSONWrapper<map<string, JSON>> cameraObjects = cameras.ObjectRange();
-			for (it = cameraObjects.begin(); it != cameraObjects.end(); it++) {
-				cameraHeaders[index].mComponentId = Guid(it->first);
-				cameraHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
-
-				cameraHeaders[index].mTargetTextureId = Guid(it->second["targetTextureId"].ToString());
-
-				cameraHeaders[index].mBackgroundColor.r = (float)it->second["backgroundColor"][0].ToFloat();
-				cameraHeaders[index].mBackgroundColor.g = (float)it->second["backgroundColor"][1].ToFloat();
-				cameraHeaders[index].mBackgroundColor.b = (float)it->second["backgroundColor"][2].ToFloat();
-				cameraHeaders[index].mBackgroundColor.a = (float)it->second["backgroundColor"][3].ToFloat();
-
-				cameraHeaders[index].mX = (int)it->second["x"].ToInt();
-				cameraHeaders[index].mY = (int)it->second["y"].ToInt();
-				cameraHeaders[index].mWidth = (int)it->second["width"].ToInt();
-				cameraHeaders[index].mHeight = (int)it->second["height"].ToInt();
-
-				cameraHeaders[index].mFov = (float)it->second["fov"].ToFloat();
-				cameraHeaders[index].mNearPlane = (float)it->second["near"].ToFloat();
-				cameraHeaders[index].mFarPlane = (float)it->second["far"].ToFloat();
-			}
-		}
-
-		// serialize mesh renderers
-		if (!meshRenderers.IsNull()) {
-			int index = 0;
-			json::JSON::JSONWrapper<map<string, JSON>> meshRendererObjects = meshRenderers.ObjectRange();
-			for (it = meshRendererObjects.begin(); it != meshRendererObjects.end(); it++) {
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				MeshRenderer meshRenderer;
-
-				//meshRenderer.componentId = Guid(it->first);
-				//meshRenderer.entityId = Guid(it->second["entity"].ToString());
-				meshRenderer.setMesh(Guid(it->second["mesh"].ToString()));
-
-				if (it->second.hasKey("material")) {
-					meshRenderer.mMaterialCount = 1;
-					meshRenderer.setMaterial(Guid(it->second["material"].ToString()), 0);
-					//meshRenderer.mMaterialIds[0] = Guid(it->second["material"].ToString());
-					for (int j = 1; j < 8; j++) {
-						meshRenderer.setMaterial(Guid::INVALID, j);
-						//meshRenderer.mMaterialIds[j] = Guid::INVALID;
-					}
-				}
-				else if (it->second.hasKey("materials")) {
-					int materialCount = it->second["materials"].length();
-					if (materialCount > 8) {
-						Log::error("Currently only support at most 8 materials");
-						return false;
-					}
-
-					meshRenderer.mMaterialCount = materialCount;
-
-					for (int j = 0; j < materialCount; j++) {
-						meshRenderer.setMaterial(Guid(it->second["materials"][j].ToString()), j);
-						//meshRenderer.mMaterialIds[j] = Guid(it->second["materials"][j].ToString());
-					}
-
-					for (int j = materialCount; j < 8; j++) {
-						meshRenderer.setMaterial(Guid::INVALID, j);
-						//meshRenderer.mMaterialIds[j] = Guid::INVALID;
-					}
-				}
-
-				meshRenderer.mIsStatic = it->second["isStatic"].ToBool();
-				meshRenderer.mEnabled = it->second["enabled"].ToBool();
-
-				std::vector<char> data = meshRenderer.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 3;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
-			}
-		}
-
-		// serialize lights
-		if (!lights.IsNull()) {
-			json::JSON::JSONWrapper<map<string, JSON>> lightObjects = lights.ObjectRange();
-			for (it = lightObjects.begin(); it != lightObjects.end(); it++) {
-				Light light;
-
-				light.mAmbient.x = (float)it->second["ambient"][0].ToFloat();
-				light.mAmbient.y = (float)it->second["ambient"][1].ToFloat();
-				light.mAmbient.z = (float)it->second["ambient"][2].ToFloat();
-
-				light.mDiffuse.x = (float)it->second["diffuse"][0].ToFloat();
-				light.mDiffuse.y = (float)it->second["diffuse"][1].ToFloat();
-				light.mDiffuse.z = (float)it->second["diffuse"][2].ToFloat();
-
-				light.mSpecular.x = (float)it->second["specular"][0].ToFloat();
-				light.mSpecular.y = (float)it->second["specular"][1].ToFloat();
-				light.mSpecular.z = (float)it->second["specular"][2].ToFloat();
-
-				light.mConstant = (float)it->second["constant"].ToFloat();
-				light.mLinear = (float)it->second["linear"].ToFloat();
-				light.mQuadratic = (float)it->second["quadratic"].ToFloat();
-				light.mCutOff = (float)it->second["cutOff"].ToFloat();
-				light.mOuterCutOff = (float)it->second["outerCutOff"].ToFloat();
-
-				light.mLightType = static_cast<LightType>((int)it->second["lightType"].ToInt());
-				light.mShadowType = static_cast<ShadowType>((int)it->second["shadowType"].ToInt());
-
-				std::cout << "Light type: " << (int)light.mLightType << " shadow type: " << (int)light.mShadowType << std::endl;
-
-				std::vector<char> data = light.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 5;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
-			}
-		}
-		if (!boxColliders.IsNull()) {
-			json::JSON::JSONWrapper<map<string, JSON>> boxColliderObjects = boxColliders.ObjectRange();
-			for (it = boxColliderObjects.begin(); it != boxColliderObjects.end(); it++) {
-				BoxCollider collider;
-
-				/*collider.componentId = Guid(it->first);
-				collider.entityId = Guid(it->second["entity"].ToString());*/
-
-				collider.mAABB.mCentre.x = (float)it->second["centre"][0].ToFloat();
-				collider.mAABB.mCentre.y = (float)it->second["centre"][1].ToFloat();
-				collider.mAABB.mCentre.z = (float)it->second["centre"][2].ToFloat();
-
-				collider.mAABB.mSize.x = (float)it->second["size"][0].ToFloat();
-				collider.mAABB.mSize.y = (float)it->second["size"][1].ToFloat();
-				collider.mAABB.mSize.z = (float)it->second["size"][2].ToFloat();
-
-				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 8;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
-			}
-
-		}
-		if (!sphereColliders.IsNull()) {
-			json::JSON::JSONWrapper<map<string, JSON>> sphereColliderObjects = sphereColliders.ObjectRange();
-			for (it = sphereColliderObjects.begin(); it != sphereColliderObjects.end(); it++) {
-				SphereCollider collider;
-
-				//collider.componentId = Guid(it->first);
-				//collider.entityId = Guid(it->second["entity"].ToString());
-
-				collider.mSphere.mCentre.x = (float)it->second["centre"][0].ToFloat();
-				collider.mSphere.mCentre.y = (float)it->second["centre"][1].ToFloat();
-				collider.mSphere.mCentre.z = (float)it->second["centre"][2].ToFloat();
-
-				collider.mSphere.mRadius = (float)it->second["radius"].ToFloat();
-
-				std::vector<char> data = collider.serialize(Guid(it->first), Guid(it->second["entity"].ToString()));
-
-				char classification = 'c';
-				int type = 9;
-				size_t size = data.size();
-
-				outFile.write(&classification, 1);
-				outFile.write((char*)&type, sizeof(int));
-				outFile.write((char*)&size, sizeof(size_t));
-				outFile.write(&data[0], data.size());
-
-			}
-
-		}
-
 		outFile.write((char*)&header, sizeof(header));
+
+		// component info
+		for (size_t i = 0; i < componentHeaders.size(); i++) {
+			outFile.write((char*)&componentHeaders[i], sizeof(componentHeaders[i]));
+		}
+
+		// system info
+		for (size_t i = 0; i < systemHeaders.size(); i++) {
+			outFile.write((char*)&systemHeaders[i], sizeof(systemHeaders[i]));
+		}
+
+		// entities
+		for (size_t i = 0; i < entityHeaders.size(); i++) {
+			outFile.write((char*)&entityHeaders[i], sizeof(entityHeaders[i]));
+		}
+
+		// transforms
+		for (size_t i = 0; i < transformHeaders.size(); i++) {
+			outFile.write((char*)&transformHeaders[i], sizeof(transformHeaders[i]));
+		}
+
+		// cameras
+		for (size_t i = 0; i < cameraHeaders.size(); i++) {
+			outFile.write((char*)&cameraHeaders[i], sizeof(cameraHeaders[i]));
+		}
+
+		// mesh renderers
+		for (size_t i = 0; i < meshRendererHeaders.size(); i++) {
+			outFile.write((char*)&meshRendererHeaders[i], sizeof(meshRendererHeaders[i]));
+		}
+
+		// lights
+		for (size_t i = 0; i < lightHeaders.size(); i++) {
+			outFile.write((char*)&lightHeaders[i], sizeof(lightHeaders[i]));
+		}
+
+		// box colliders
+		for (size_t i = 0; i < boxColliderHeaders.size(); i++) {
+			outFile.write((char*)&boxColliderHeaders[i], sizeof(boxColliderHeaders[i]));
+		}
+
+		// sphere colliders
+		for (size_t i = 0; i < sphereColliderHeaders.size(); i++) {
+			outFile.write((char*)&sphereColliderHeaders[i], sizeof(sphereColliderHeaders[i]));
+		}
 
 		outFile.close();
 	}

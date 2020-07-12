@@ -12,8 +12,8 @@ namespace PhysicsEngine
 #pragma pack(push, 1)
 	struct CleanUpSystemHeader
 	{
-		uint32_t mUpdateOrder;
 		Guid mSystemId;
+		int32_t mUpdateOrder;
 	};
 #pragma pack(pop)
 

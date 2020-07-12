@@ -51,12 +51,12 @@ std::vector<char> Texture3D::serialize(Guid assetId) const
 {
 	Texture3DHeader header;
 	header.mTextureId = assetId;
-	header.mWidth = mWidth;
-	header.mHeight = mHeight;
-	header.mDepth = mDepth;
-	header.mNumChannels = mNumChannels;
-	header.mDimension = mDimension;
-	header.mFormat = mFormat;
+	header.mWidth = static_cast<int32_t>(mWidth);
+	header.mHeight = static_cast<int32_t>(mHeight);
+	header.mDepth = static_cast<int32_t>(mDepth);
+	header.mNumChannels = static_cast<int32_t>(mNumChannels);
+	header.mDimension = static_cast<uint8_t>(mDimension);
+	header.mFormat = static_cast<uint8_t>(mFormat);
 	header.mTextureSize = mRawTextureData.size();
 
 	size_t numberOfBytes = sizeof(Texture3DHeader) +
@@ -81,10 +81,10 @@ void Texture3D::deserialize(const std::vector<char>& data)
 	const Texture3DHeader* header = reinterpret_cast<const Texture3DHeader*>(&data[start1]);
 
 	mAssetId = header->mTextureId;
-	mWidth = header->mWidth;
-	mHeight = header->mHeight;
-	mDepth = header->mDepth;
-	mNumChannels = header->mNumChannels;
+	mWidth = static_cast<int>(header->mWidth);
+	mHeight = static_cast<int>(header->mHeight);
+	mDepth = static_cast<int>(header->mDepth);
+	mNumChannels = static_cast<int>(header->mNumChannels);
 	mDimension = static_cast<TextureDimension>(header->mDimension);
 	mFormat = static_cast<TextureFormat>(header->mFormat);
 

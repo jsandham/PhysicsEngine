@@ -2,7 +2,6 @@
 #include "../include/FileSystemUtil.h"
 #include "../include/EditorFileIO.h"
 
-#include "core/Scene.h"
 #include "core/Texture2D.h"
 #include "core/Shader.h"
 #include "core/Mesh.h"

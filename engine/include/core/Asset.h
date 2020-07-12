@@ -6,19 +6,7 @@
 #include "Guid.h"
 
 namespace PhysicsEngine
-{
-#pragma pack(push, 1)
-	struct AssetHeader
-	{
-		uint64_t mSignature;
-		uint32_t mType;
-		uint32_t mSize;
-		uint8_t mMajor;
-		uint8_t mMinor;
-		Guid mAssetId;
-	};
-#pragma pack(pop)
-	
+{	
 	class World;
 
 	class Asset

@@ -47,8 +47,8 @@ std::vector<char> Light::serialize(Guid componentId, Guid entityId) const
 	header.mQuadratic = mQuadratic;
 	header.mCutOff = mCutOff;
 	header.mOuterCutOff = mOuterCutOff;
-	header.mLightType = static_cast<int>(mLightType);
-	header.mShadowType = static_cast<int>(mShadowType);
+	header.mLightType = static_cast<uint8_t>(mLightType);
+	header.mShadowType = static_cast<uint8_t>(mShadowType);
 
 	std::vector<char> data(sizeof(LightHeader));
 

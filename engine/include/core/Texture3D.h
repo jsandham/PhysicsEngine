@@ -12,13 +12,13 @@ namespace PhysicsEngine
 	struct Texture3DHeader
 	{
 		Guid mTextureId;
-		int mWidth;
-		int mHeight;
-		int mDepth;
-		int mNumChannels;
-		int mDimension;
-		int mFormat;
 		size_t mTextureSize;
+		int32_t mWidth;
+		int32_t mHeight;
+		int32_t mDepth;
+		int32_t mNumChannels;
+		uint8_t mDimension;
+		uint8_t mFormat;
 	};
 #pragma pack(pop)
 

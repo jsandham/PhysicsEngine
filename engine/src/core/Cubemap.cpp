@@ -73,10 +73,10 @@ std::vector<char> Cubemap::serialize(Guid assetId) const
 {
 	CubemapHeader header;
 	header.mTextureId = assetId;
-	header.mWidth = mWidth;
-	header.mNumChannels = mNumChannels;
-	header.mDimension = mDimension;
-	header.mFormat = mFormat;
+	header.mWidth = static_cast<int32_t>(mWidth);
+	header.mNumChannels = static_cast<int32_t>(mNumChannels);
+	header.mDimension = static_cast<int8_t>(mDimension);
+	header.mFormat = static_cast<int8_t>(mFormat);
 	header.mTextureSize = mRawTextureData.size();
 
 	size_t numberOfBytes = sizeof(CubemapHeader) +
@@ -101,8 +101,8 @@ void Cubemap::deserialize(const std::vector<char>& data)
 	const CubemapHeader* header = reinterpret_cast<const CubemapHeader*>(&data[start1]);
 
 	mAssetId = header->mTextureId;
-	mWidth = header->mWidth;
-	mNumChannels = header->mNumChannels;
+	mWidth = static_cast<int32_t>(header->mWidth);
+	mNumChannels = static_cast<int32_t>(header->mNumChannels);
 	mDimension = static_cast<TextureDimension>(header->mDimension);
 	mFormat = static_cast<TextureFormat>(header->mFormat);
 
