@@ -184,9 +184,9 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	std::vector<SphereColliderHeader> sphereColliderHeaders(sphereColliderCount);
 
 	header.mSize = sizeof(SceneFileHeader) +
-				sizeof(EntityHeader) * entityHeaders.size() +
 				sizeof(ComponentInfoHeader) * componentHeaders.size() +
 				sizeof(SystemInfoHeader) * systemHeaders.size() +
+				sizeof(EntityHeader) * entityHeaders.size() +
 				sizeof(TransformHeader) * transformHeaders.size() +
 				sizeof(CameraHeader) * cameraHeaders.size() +
 				sizeof(MeshRendererHeader) * meshRendererHeaders.size() +
@@ -412,10 +412,14 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 
 	// determine start pointer offsets for components
 	componentIndex = 0;
-	size_t offset = sizeof(SceneFileHeader) + 
+	/*size_t offset = sizeof(SceneFileHeader) + 
 					sizeof(ComponentInfoHeader) * componentHeaders.size() + 
 					sizeof(SystemInfoHeader) * systemHeaders.size() +
-					sizeof(EntityHeader)* entityHeaders.size();
+					sizeof(EntityHeader)* entityHeaders.size();*/
+	size_t offset = sizeof(ComponentInfoHeader) * componentHeaders.size() +
+					sizeof(SystemInfoHeader) * systemHeaders.size() +
+					sizeof(EntityHeader) * entityHeaders.size();
+
 	// transforms
 	for (size_t i = 0; i < transformHeaders.size(); i++) {
 		componentHeaders[componentIndex].mStartPtr = offset;
@@ -468,11 +472,14 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 	std::fstream outFile(outFilePath, std::ios::out | std::ios::binary);
 
 	if (outFile.is_open()) {
+		// write scene file header
 		outFile.write((char*)&header, sizeof(header));
 
 		// component info
 		for (size_t i = 0; i < componentHeaders.size(); i++) {
 			outFile.write((char*)&componentHeaders[i], sizeof(componentHeaders[i]));
+
+			size_t test = sizeof(componentHeaders[i]);
 		}
 
 		// system info
@@ -588,8 +595,8 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 		}
 	}
 
-	for (int i = 0; i < world->getNumberOfSystems(); i++) {
-		System* system = world->getSystemByIndex(i);
+	for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++) {
+		System* system = world->getSystemByUpdateOrder(i);
 
 		Guid systemId = system->getId();
 		int systemType = world->getTypeOf(system->getId());

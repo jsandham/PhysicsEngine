@@ -88,8 +88,8 @@ void Editor::init(HWND window, int width, int height)
 
 	renderSystem->mRenderToScreen = false;
 
-	for (int i = 0; i < world.getNumberOfSystems(); i++) {
-		System* system = world.getSystemByIndex(i);
+	for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++) {
+		System* system = world.getSystemByUpdateOrder(i);
 
 		system->init(&world);
 	}
@@ -155,8 +155,8 @@ void Editor::render(bool editorBecameActiveThisFrame)
 
 	// call update on all systems in world
 	auto start = std::chrono::steady_clock::now();
-	for (int i = 0; i < world.getNumberOfSystems(); i++) {
-		System* system = world.getSystemByIndex(i);
+	for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++) {
+		System* system = world.getSystemByUpdateOrder(i);
 
 		system->update(input, time);
 	}

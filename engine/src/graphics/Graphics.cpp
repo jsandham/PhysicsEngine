@@ -644,7 +644,7 @@ void Graphics::render(World* world, Material* material, int variant, glm::mat4 m
 		return;
 	}
 
-	Shader* shader = world->getAsset<Shader>(material->getShaderId());
+	Shader* shader = world->getAssetById<Shader>(material->getShaderId());
 
 	if(shader == NULL){
 		std::cout << "Shader is NULL" << std::endl;

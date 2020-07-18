@@ -174,7 +174,7 @@ void RenderSystem::buildRenderObjectsList(World* world)
 
 		if (meshRenderer->mEnabled) {
 			Transform* transform = meshRenderer->getComponent<Transform>(world);
-			Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
+			Mesh* mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
 			if (mesh == NULL || transform == NULL) { continue; }
 

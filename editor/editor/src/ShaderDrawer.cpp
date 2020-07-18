@@ -27,7 +27,7 @@ ShaderDrawer::~ShaderDrawer()
 
 void ShaderDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
-	Shader* shader = world->getAsset<Shader>(id);
+	Shader* shader = world->getAssetById<Shader>(id);
 
 	std::vector<ShaderProgram> programs = shader->getPrograms();
 	std::vector<ShaderUniform> uniforms = shader->getUniforms();

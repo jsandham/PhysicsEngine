@@ -106,14 +106,14 @@ void Material::load(Guid shaderId)
 
 void Material::apply(World* world)
 {
-	Shader* shader = world->getAsset<Shader>(mShaderId);
+	Shader* shader = world->getAssetById<Shader>(mShaderId);
 
 	int textureSlot = 0;
 	for (size_t i = 0; i < mUniforms.size(); i++) {
 
 		if (mUniforms[i].mType == GL_SAMPLER_2D) {
 
-			Texture2D* texture = world->getAsset<Texture2D>(*reinterpret_cast<Guid*>(mUniforms[i].mData));
+			Texture2D* texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid*>(mUniforms[i].mData));
 			if(texture != NULL) {
 				shader->setInt(mUniforms[i].mName, textureSlot);
 
@@ -147,7 +147,7 @@ void Material::apply(World* world)
 
 void Material::onShaderChanged(World* world)
 {
-	Shader* shader = world->getAsset<Shader>(mShaderId);
+	Shader* shader = world->getAssetById<Shader>(mShaderId);
 
 	if (shader == NULL) {
 		return;

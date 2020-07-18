@@ -30,6 +30,8 @@
 #include "../systems/CleanUpSystem.h"
 #include "../systems/DebugSystem.h"
 
+#include "Util.h"
+
 namespace PhysicsEngine
 {
 	extern const uint64_t ASSET_FILE_SIGNATURE;
@@ -114,6 +116,9 @@ namespace PhysicsEngine
 							std::unordered_map<int, Allocator*>& systemAllocatorMap,
 							std::unordered_map<Guid, int>& idToGlobalIndex,
 							std::unordered_map<Guid, int>& idToType,
+							std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>& entityIdToComponentIds,
+							std::vector<Guid>& entityIdsMarkedCreated,
+							std::vector<triple<Guid, Guid, int>>& componentIdsMarkedCreated,
 							std::unordered_map<Guid, std::string>& sceneIdToFilepath);
 }
 

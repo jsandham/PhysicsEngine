@@ -180,7 +180,7 @@ namespace PhysicsEditor
 
 			void execute()
 			{
-				Entity* entity = world->getEntity(entityId);
+				Entity* entity = world->getEntityById(entityId);
 				T* component = entity->addComponent<T>(world);
 				componentId = component->getId();
 

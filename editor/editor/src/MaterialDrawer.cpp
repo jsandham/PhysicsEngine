@@ -31,7 +31,7 @@ MaterialDrawer::~MaterialDrawer()
 
 void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
-	Material* material = world->getAsset<Material>(id);
+	Material* material = world->getAssetById<Material>(id);
 
 	Guid currentShaderId = material->getShaderId();
 
@@ -100,15 +100,15 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 	if (previewWorld.getNumberOfEntities() == 0) {
 		populatePreviewWorld(world);
 
-		for (int i = 0; i < previewWorld.getNumberOfSystems(); i++) {
-			System* system = previewWorld.getSystemByIndex(i);
+		for (int i = 0; i < previewWorld.getNumberOfUpdatingSystems(); i++) {
+			System* system = previewWorld.getSystemByUpdateOrder(i);
 
 			system->init(&previewWorld);
 		}
 	}
 
 	// copy currently selected material from world to corresponding material in preview world
-	Material* previewMaterial = previewWorld.getAsset<Material>(material->getId());
+	Material* previewMaterial = previewWorld.getAssetById<Material>(material->getId());
 	MaterialUtil::copyMaterialTo(world, material, &previewWorld, previewMaterial);
 
 	// set preview material on sphere meshrenderer
@@ -119,8 +119,8 @@ void MaterialDrawer::render(World* world, EditorProject& project, EditorScene& s
 	//Log::info(("material view world shader count: " + std::to_string(previewWorld.getNumberOfAssets<Shader>()) + "\n").c_str());
 	//Log::info(("material view world texture count: " + std::to_string(previewWorld.getNumberOfAssets<Texture2D>()) + "\n").c_str());
 
-	for (int i = 0; i < previewWorld.getNumberOfSystems(); i++) {
-		System* system = previewWorld.getSystemByIndex(i);
+	for (int i = 0; i < previewWorld.getNumberOfUpdatingSystems(); i++) {
+		System* system = previewWorld.getSystemByUpdateOrder(i);
 
 		system->update({}, {});
 	}

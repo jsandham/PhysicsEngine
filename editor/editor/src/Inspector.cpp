@@ -62,7 +62,7 @@ void Inspector::render(World* world, EditorProject& project, EditorScene& scene,
 
 void Inspector::drawEntity(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard)
 {
-	Entity* entity = world->getEntity(clipboard.getSelectedId());
+	Entity* entity = world->getEntityById(clipboard.getSelectedId());
 
 	// entity may have been recently deleted
 	if (entity == NULL) {

@@ -97,207 +97,12 @@ bool World::loadScene(const std::string& filePath, bool ignoreSystemsAndCamera)
 		mSystemAllocatorMap,
 		mIdToGlobalIndex,
 		mIdToType,
+		mEntityIdToComponentIds,
+		mEntityIdsMarkedCreated,
+		mComponentIdsMarkedCreated,
 		mSceneIdToFilepath);
 	
 	return true;
-	//std::ifstream file;
-	//file.open(filePath, std::ios::binary);
-
-	//if(!file.is_open()){
-	//	std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-	//	Log::error(&errorMessage[0]);
-	//	return false;
-	//}
-
-	//SceneHeader sceneHeader;
-	//file.read(reinterpret_cast<char*>(&sceneHeader), sizeof(SceneHeader));
-	//while( file.peek() != EOF ){
-	//	char classification;
-	//	int type;
-	//	size_t size;
-
-	//	file.read(reinterpret_cast<char*>(&classification), sizeof(char));
-	//	file.read(reinterpret_cast<char*>(&type), sizeof(int));
-	//	file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-
-	//	if(type <= -1){
-	//		Log::error("Type cannot be less than 0 when reading scene file\n");
-	//		return false;
-	//	}
-
-	//	if(size <= 0){
-	//		Log::error("Size cannot be less than 1 when reading scene file\n");
-	//		return false;
-	//	}
-
-	//	std::vector<char> data(size);
-
-	//	file.read(reinterpret_cast<char*>(&data[0]), data.size() * sizeof(char));
-
-	//	int index = -1;
-	//	if(classification == 'e'){
-	//		Entity* entity = NULL;
-	//		if(type == 0){
-	//			entity = PhysicsEngine::loadInternalEntity(&mEntityAllocator, data, &index);
-	//		}
-	//		else{
-	//			Log::error("Entity must be of type 0\n");
-	//			return false;
-	//		}
-
-	//		if(entity == NULL || index == -1){
-	//			std::string errorMessage = "Could not load entity corresponding to type " + std::to_string(type) + "\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		if(mIdToGlobalIndex.find(entity->mEntityId) == mIdToGlobalIndex.end()){
-	//			mIdToGlobalIndex[entity->mEntityId] = index;
-
-	//			mEntityIdsMarkedCreated.push_back(entity->mEntityId);
-	//		}
-	//		else{
-	//			std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to global index map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		if (mIdToType.find(entity->mEntityId) == mIdToType.end()) {
-	//			mIdToType[entity->mEntityId] = type;
-	//		}
-	//		else {
-	//			std::string errorMessage = "Entity with id " + entity->mEntityId.toString() + " already exists in id to type map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entity->mEntityId);
-	//		if (it == mEntityIdToComponentIds.end()) {
-	//			mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
-	//		}
-	//	}
-	//	else if(classification == 'c'){
-	//		if (ignoreSystemsAndCamera && type == ComponentType<Camera>::type) {
-	//			continue;
-	//		}
-
-	//		Component* component = NULL;
-	//		if(type < 20){
-	//			component = PhysicsEngine::loadInternalComponent(&mTransformAllocator,
-	//															 &mMeshRendererAllocator,
-	//															 &mLineRendererAllocator,
-	//															 &mRigidbodyAllocator,
-	//															 &mCameraAllocator,
-	//															 &mLightAllocator,
-	//															 &mSphereColliderAllocator,
-	//															 &mBoxColliderAllocator,
-	//															 &mCapsuleColliderAllocator,
-	//															 &mMeshColliderAllocator, 
-	//															 data, 
-	//															 type, 
-	//															 &index);
-	//		}
-	//		else{
-	//			component = PhysicsEngine::loadComponent(&mComponentAllocatorMap, data, type, &index);
-	//		}
-
-	//		if(component == NULL || index == -1){
-	//			std::string errorMessage = "Could not load component corresponding to type " + std::to_string(type) + "\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		if(mIdToGlobalIndex.find(component->mComponentId) == mIdToGlobalIndex.end()){
-	//			mIdToGlobalIndex[component->mComponentId] = index;
-
-	//			mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, type));
-	//		}
-	//		else{
-	//			std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to global index map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-	//		
-	//		if (mIdToType.find(component->mComponentId) == mIdToType.end()) {
-	//			mIdToType[component->mComponentId] = type;
-	//		}
-	//		else {
-	//			std::string errorMessage = "Component with id " + component->mComponentId.toString() + " already exists in id to type map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, type));
-	//	}
-	//	else if(classification == 's' && !ignoreSystemsAndCamera){
-	//		System* system = NULL;
-	//		if(type < 20){
-	//			system = PhysicsEngine::loadInternalSystem(&mRenderSystemAllocator,
-	//													   &mPhysicsSystemAllocator,
-	//													   &mCleanupSystemAllocator,
-	//													   &mDebugSystemAllocator, 
-	//													   data, 
-	//													   type, 
-	//													   &index);
-	//		}
-	//		else{
-	//			system = PhysicsEngine::loadSystem(&mSystemAllocatorMap, data, type, &index);
-	//		}
-
-	//		if(system == NULL || index == -1){
-	//			std::string errorMessage = "Could not load system corresponding to type " + std::to_string(type) + "\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		if (mIdToGlobalIndex.find(system->mSystemId) == mIdToGlobalIndex.end()) {
-	//			mIdToGlobalIndex[system->mSystemId] = index;
-	//		}
-	//		else {
-	//			std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to global index map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		if (mIdToType.find(system->mSystemId) == mIdToType.end()) {
-	//			mIdToType[system->mSystemId] = type;
-	//		}
-	//		else {
-	//			std::string errorMessage = "System with id " + system->mSystemId.toString() + " already exists in id to type map\n";
-	//			Log::error(&errorMessage[0]);
-	//			return false;
-	//		}
-
-	//		// maybe set system in vector??
-	//		mSystems.push_back(system);
-	//	}
-	//	else{
-	//		Log::error("Classification must be \'e\' (entity), \'c\' (component), or \'s\' (system)");
-	//		return false;
-	//	}
-	//}
-
-	//// sort systems by order
-	//if(!ignoreSystemsAndCamera){
-	//	for(size_t i = 0; i < mSystems.size(); i++){
-	//		int minOrder = mSystems[i]->getOrder();
-	//		int minOrderIndex = (int)i;
-	//		for(size_t j = i + 1; j < mSystems.size(); j++){
-	//			if(mSystems[j]->getOrder() < minOrder){
-	//				minOrder = mSystems[j]->getOrder();
-	//				minOrderIndex = (int)j;
-	//			}
-	//		}
-
-	//		System* temp = mSystems[i];
-	//		mSystems[i] = mSystems[minOrderIndex];
-	//		mSystems[minOrderIndex] = temp;
-	//	}
-	//}
-
-	//file.close();
-
-	//return true;
 }
 
 bool World::loadSceneFromEditor(const std::string& filePath)
@@ -322,13 +127,13 @@ int World::getNumberOfEntities() const
 	return (int)mEntityAllocator.getCount();
 }
 
-int World::getNumberOfSystems() const
+int World::getNumberOfUpdatingSystems() const
 {
 	return (int)mSystems.size();
 }
 
 // error here if entityId does not correspond to an entity but instead an asset or component
-Entity* World::getEntity(const Guid& entityId)
+Entity* World::getEntityById(const Guid& entityId)
 {
 	if (entityId == Guid::INVALID) {
 		return NULL;
@@ -347,13 +152,13 @@ Entity* World::getEntityByIndex(int index)
 	return mEntityAllocator.get(index);
 }
 
-System* World::getSystemByIndex(int index)
+System* World::getSystemByUpdateOrder(int order)
 {
-	if (index < 0 || index >= mSystems.size()) {
+	if (order < 0 || order >= mSystems.size()) {
 		return NULL;
 	}
 
-	return mSystems[index];
+	return mSystems[order];
 }
 
 int World::getIndexOf(const Guid& id) const
@@ -418,7 +223,7 @@ Entity* World::createEntity(const std::vector<char>& data)
 	return entity;
 }
 
-void World::latentDestroyEntity(Guid entityId)
+void World::latentDestroyEntity(const Guid& entityId)
 {
 	mEntityIdsMarkedLatentDestroy.push_back(entityId);
 
@@ -441,7 +246,7 @@ void World::latentDestroyEntity(Guid entityId)
 	}
 }
 
-void World::immediateDestroyEntity(Guid entityId)
+void World::immediateDestroyEntity(const Guid& entityId)
 {
 	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
 	if(it1 != mEntityIdToComponentIds.end()){
@@ -495,12 +300,12 @@ void World::immediateDestroyEntity(Guid entityId)
 	}
 }
 
-void World::latentDestroyComponent(Guid entityId, Guid componentId, int componentType)
+void World::latentDestroyComponent(const Guid& entityId, const Guid& componentId, int componentType)
 {
 	mComponentIdsMarkedLatentDestroy.push_back(make_triple(entityId, componentId, componentType));
 }
 
-void World::immediateDestroyComponent(Guid entityId, Guid componentId, int componentType)
+void World::immediateDestroyComponent(const Guid& entityId, const Guid &componentId, int componentType)
 {
 	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
 	if(it1 != mEntityIdToComponentIds.end()){
@@ -561,7 +366,7 @@ void World::immediateDestroyComponent(Guid entityId, Guid componentId, int compo
 	}
 }
 
-bool World::isMarkedForLatentDestroy(Guid id)
+bool World::isMarkedForLatentDestroy(const Guid& id)
 {
 	for(size_t i = 0; i < mEntityIdsMarkedLatentDestroy.size(); i++){
 		if(mEntityIdsMarkedLatentDestroy[i] == id){
@@ -592,7 +397,7 @@ void World::clearIdsMarkedMoved()
 	mComponentIdsMarkedMoved.clear();
 }
 
-std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(Guid entityId)
+std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid& entityId)
 {
 	std::vector<std::pair<Guid, int>> componentsOnEntity;
 

@@ -136,7 +136,7 @@ void MaterialRenderer::render(PhysicsEngine::World* world, PhysicsEngine::Materi
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	PhysicsEngine::Shader* shader = world->getAsset<PhysicsEngine::Shader>(material->getShaderId());
+	PhysicsEngine::Shader* shader = world->getAssetById<PhysicsEngine::Shader>(material->getShaderId());
 
 	int shaderProgram = shader->getProgramFromVariant(PhysicsEngine::ShaderVariant::None);
 

@@ -32,7 +32,7 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON& obj, World* world, Guid
 	// only materials are stored in json format
 	if (type == 4) {
 		//material
-		Material* material = world->getAsset<Material>(assetId);
+		Material* material = world->getAssetById<Material>(assetId);
 
 		obj["shader"] = material->getShaderId().toString();
 
@@ -76,7 +76,7 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON& obj, World* world, Guid
 
 void PhysicsEngine::writeInternalEntityToJson(json::JSON& obj, World* world, Guid entityId)
 {
-	Entity* entity = world->getEntity(entityId);
+	Entity* entity = world->getEntityById(entityId);
 
 	std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(world);
 

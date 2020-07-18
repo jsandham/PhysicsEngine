@@ -18,7 +18,7 @@ Component::~Component()
 
 Entity* Component::getEntity(World* world) const
 {
-	return world->getEntity(mEntityId);
+	return world->getEntityById(mEntityId);
 }
 
 Guid Component::getId() const

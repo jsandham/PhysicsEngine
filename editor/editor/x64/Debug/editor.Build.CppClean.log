@@ -10,6 +10,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorfileio.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcommands.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorclipboard.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcamerasystem.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editor.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cubemapdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\commandmanager.obj
@@ -34,8 +35,8 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\loadinspectordraw
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\load.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\linerendererdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\lightdrawer.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarydirectory.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspectordrawer.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspector.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_styles.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_extensions.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\writetojson.obj

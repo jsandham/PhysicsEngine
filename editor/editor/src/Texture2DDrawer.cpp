@@ -23,7 +23,7 @@ Texture2DDrawer::~Texture2DDrawer()
 
 void Texture2DDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
 {
-	Texture2D* texture = world->getAsset<Texture2D>(id);
+	Texture2D* texture = world->getAssetById<Texture2D>(id);
 
 	ImGui::Separator();
 
