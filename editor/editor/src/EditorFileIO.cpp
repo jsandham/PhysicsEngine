@@ -586,7 +586,7 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 			Guid componentId = componentsOnEntity[j].first;
 			int componentType = componentsOnEntity[j].second;
 
-			if (componentType < 20) {
+			if (Component::isInternal(componentType)) {
 				PhysicsEngine::writeInternalComponentToJson(sceneObj, world, entity->getId(), componentId, componentType);
 			}
 			else {
@@ -602,7 +602,7 @@ bool PhysicsEditor::writeSceneToJson(PhysicsEngine::World* world, std::string ou
 		int systemType = world->getTypeOf(system->getId());
 		int systemOrder = system->getOrder();
 
-		if (systemType < 20) {
+		if (System::isInternal(systemType)) {
 			PhysicsEngine::writeInternalSystemToJson(sceneObj, world, systemId, systemType, systemOrder);
 		}
 		else {

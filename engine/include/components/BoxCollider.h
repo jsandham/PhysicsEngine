@@ -39,23 +39,19 @@ namespace PhysicsEngine
 			std::vector<float> getLines() const;
 	};
 
+	template <typename T>
+	struct IsBoxCollider { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<BoxCollider>::type = 8;
-
-	template <typename T>
-	struct IsBoxCollider { static const bool value; };
-
-	template <typename T>
-	const bool IsBoxCollider<T>::value = false;
-
-	template<>
-	const bool IsBoxCollider<BoxCollider>::value = true;
-	template<>
-	const bool IsCollider<BoxCollider>::value = true;
-	template<>
-	const bool IsComponent<BoxCollider>::value = true;
-	template<>
-	const bool IsComponentInternal<BoxCollider>::value = true;
+	struct ComponentType<BoxCollider> { static constexpr int type = BOXCOLLIDER_TYPE;};
+	template <>
+	struct IsCollider<BoxCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsBoxCollider<BoxCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<BoxCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<BoxCollider> { static constexpr bool value = true; };
 }
 
 #endif

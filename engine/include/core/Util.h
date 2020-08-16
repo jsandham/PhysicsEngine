@@ -47,7 +47,6 @@ namespace PhysicsEngine
 		return triple;
 	}
 
-
 	class Util
 	{
 		public:

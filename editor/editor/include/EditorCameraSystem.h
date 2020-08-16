@@ -81,19 +81,15 @@ namespace PhysicsEngine
 		GraphicsQuery getQuery() const;
 	};
 
+	template <typename T>
+	struct IsEditorCameraSystem { static constexpr bool value = false; };
+
 	template <>
-	const int SystemType<EditorCameraSystem>::type = 21;
-
-	template< typename T>
-	struct IsEditorCameraSystem { static const bool value; };
-
-	template<typename T>
-	const bool IsEditorCameraSystem<T>::value = false;
-
-	template<>
-	const bool IsEditorCameraSystem<EditorCameraSystem>::value = true;
-	template<>
-	const bool IsSystem<EditorCameraSystem>::value = true;
+	struct SystemType<EditorCameraSystem> { static constexpr int type = 21; };
+	template <>
+	struct IsEditorCameraSystem<EditorCameraSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystem<EditorCameraSystem> { static constexpr bool value = true; };
 }
 
 #endif

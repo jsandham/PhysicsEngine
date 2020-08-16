@@ -106,21 +106,17 @@ namespace PhysicsEngine
 			int findIndexOfUniform(int nameLocation) const;
 	};
 
+	template <typename T>
+	struct IsMaterial { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Material>::type = 4;
-
-	template <typename T>
-	struct IsMaterial { static const bool value; };
-
-	template <typename T>
-	const bool IsMaterial<T>::value = false;
-
-	template<>
-	const bool IsMaterial<Material>::value = true;
-	template<>
-	const bool IsAsset<Material>::value = true;
-	template<>
-	const bool IsAssetInternal<Material>::value = true;
+	struct AssetType<Material> { static constexpr int type = PhysicsEngine::MATERIAL_TYPE;};
+	template <>
+	struct IsMaterial<Material> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Material> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Material> { static constexpr bool value = true; };
 }
 
 #endif

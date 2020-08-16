@@ -53,21 +53,17 @@ namespace PhysicsEngine
 			void deserialize(const std::vector<char>& data);
 	};
 
+	template <typename T>
+	struct IsRigidbody { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<Rigidbody>::type = 1;
-
-	template <typename T>
-	struct IsRigidbody { static const bool value; };
-
-	template <typename T>
-	const bool IsRigidbody<T>::value = false;
-
-	template<>
-	const bool IsRigidbody<Rigidbody>::value = true;
-	template<>
-	const bool IsComponent<Rigidbody>::value = true;
-	template<>
-	const bool IsComponentInternal<Rigidbody>::value = true;
+	struct ComponentType<Rigidbody> { static constexpr int type = PhysicsEngine::RIGIDBODY_TYPE;};
+	template <>
+	struct IsRigidbody<Rigidbody> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<Rigidbody> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<Rigidbody> { static constexpr bool value = true; };
 }
 
 

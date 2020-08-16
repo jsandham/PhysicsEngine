@@ -49,17 +49,14 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
-	struct IsTexture { static const bool value; };
+	struct IsTexture { static constexpr bool value = false; };
 
-	template <typename T>
-	const bool IsTexture<T>::value = false;
-
-	template<>
-	const bool IsTexture<Texture>::value = true;
-	template<>
-	const bool IsAsset<Texture>::value = true;
-	template<>
-	const bool IsAssetInternal<Texture>::value = true;
+	template <>
+	struct IsTexture<Texture> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Texture> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Texture> { static constexpr bool value = true; };
 }
 
 #endif

@@ -30,3 +30,8 @@ Guid Component::getEntityId() const
 {
 	return mEntityId;
 }
+
+bool Component::isInternal(int type)
+{
+	return type >= PhysicsEngine::MIN_INTERNAL_COMPONENT && type <= PhysicsEngine::MAX_INTERNAL_COMPONENT;
+}

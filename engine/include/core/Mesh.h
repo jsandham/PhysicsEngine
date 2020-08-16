@@ -65,21 +65,17 @@ namespace PhysicsEngine
 			void apply();
 	};
 
+	template <typename T>
+	struct IsMesh { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Mesh>::type = 5;
-
-	template <typename T>
-	struct IsMesh { static const bool value; };
-
-	template <typename T>
-	const bool IsMesh<T>::value = false;
-
-	template<>
-	const bool IsMesh<Mesh>::value = true;
-	template<>
-	const bool IsAsset<Mesh>::value = true;
-	template<>
-	const bool IsAssetInternal<Mesh>::value = true;
+	struct AssetType<Mesh> { static constexpr int type = PhysicsEngine::MESH_TYPE;};
+	template <>
+	struct IsMesh<Mesh> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Mesh> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Mesh> { static constexpr bool value = true; };
 }
 
 #endif

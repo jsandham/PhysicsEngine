@@ -57,23 +57,19 @@ namespace PhysicsEngine
 			void apply();
 	};
 
+	template <typename T>
+	struct IsTexture3D { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Texture3D>::type = 2;
-
-	template <typename T>
-	struct IsTexture3D { static const bool value; };
-
-	template <typename T>
-	const bool IsTexture3D<T>::value = false;
-
-	template<>
-	const bool IsTexture3D<Texture3D>::value = true;
-	template<>
-	const bool IsTexture<Texture3D>::value = true;
-	template<>
-	const bool IsAsset<Texture3D>::value = true;
-	template<>
-	const bool IsAssetInternal<Texture3D>::value = true;
+	struct AssetType<Texture3D> { static constexpr int type = PhysicsEngine::TEXTURE3D_TYPE; };
+	template <>
+	struct IsTexture<Texture3D> { static constexpr bool value = true; };
+	template <>
+	struct IsTexture3D<Texture3D> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Texture3D> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Texture3D> { static constexpr bool value = true; };
 }
 
 #endif

@@ -13,17 +13,9 @@ const uint64_t PhysicsEngine::ASSET_FILE_SIGNATURE = 0x9a9e9b4153534554;
 const uint64_t PhysicsEngine::SCENE_FILE_SIGNATURE = 0x9a9e9b5343454e45;
 
 void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
-										PoolAllocator<Mesh>& meshAllocator,
-										PoolAllocator<Material>& materialAllocator,
-										PoolAllocator<Shader>& shaderAllocator,
-										PoolAllocator<Texture2D>& texture2DAllocator,
-										PoolAllocator<Texture3D>& texture3DAllocator,
-										PoolAllocator<Cubemap>& cubemapAllocator,
-										PoolAllocator<Font>& fontAllocator,
-										std::unordered_map<int, Allocator*>& assetAllocatorMap,
-										std::unordered_map<Guid, int>& idToGlobalIndex,
-										std::unordered_map<Guid, int>& idToType,
-										std::unordered_map<Guid, std::string>& assetIdToFilepath)
+									   WorldAllocators& allocators,
+									   WorldIsState& idState,
+									   std::unordered_map<Guid, std::string>& assetIdToFilepath)
 {
 	std::ifstream file;
 	file.open(filepath, std::ios::binary);
@@ -45,21 +37,21 @@ void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 	
 	Asset* asset = NULL;
 
-	std::unordered_map<Guid, int>::iterator it = idToGlobalIndex.find(header.mAssetId);
-	if (it != idToGlobalIndex.end()) {
-		if (header.mType < 20) {
-			asset = PhysicsEngine::getInternalAsset(&meshAllocator,
-				&materialAllocator,
-				&shaderAllocator,
-				&texture2DAllocator,
-				&texture3DAllocator,
-				&cubemapAllocator,
-				&fontAllocator,
-				header.mType,
-				it->second);
+	std::unordered_map<Guid, int>::iterator it = idState.mIdToGlobalIndex->find(header.mAssetId);
+	if (it != idState.mIdToGlobalIndex->end()) {
+		if (Asset::isInternal(header.mType)) {
+			asset = PhysicsEngine::getInternalAsset(allocators.mMeshAllocator,
+													allocators.mMaterialAllocator,
+													allocators.mShaderAllocator,
+													allocators.mTexture2DAllocator,
+													allocators.mTexture3DAllocator,
+													allocators.mCubemapAllocator,
+													allocators.mFontAllocator,
+													header.mType,
+													it->second);
 		}
 		else {
-			asset = PhysicsEngine::getAsset(&assetAllocatorMap, header.mType, it->second);
+			asset = PhysicsEngine::getAsset(allocators.mAssetAllocatorMap, header.mType, it->second);
 		}
 		
 		assert(asset != NULL && "Could not find asset\n");
@@ -69,55 +61,52 @@ void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 	else
 	{
 		int index = -1;
-		if (header.mType < 20) {
-			asset = PhysicsEngine::loadInternalAsset(&meshAllocator,
-				&materialAllocator,
-				&shaderAllocator,
-				&texture2DAllocator,
-				&texture3DAllocator,
-				&cubemapAllocator,
-				&fontAllocator,
-				data,
-				header.mType,
-				&index);
+		if (Asset::isInternal(header.mType)) {
+			asset = PhysicsEngine::loadInternalAsset(allocators.mMeshAllocator,
+													 allocators.mMaterialAllocator,
+													 allocators.mShaderAllocator,
+													 allocators.mTexture2DAllocator,
+													 allocators.mTexture3DAllocator,
+													 allocators.mCubemapAllocator,
+													 allocators.mFontAllocator,
+													 data,
+													 header.mType,
+													 &index);
 		}
 		else {
-			asset = PhysicsEngine::loadAsset(&assetAllocatorMap, data, header.mType, &index);
+			asset = PhysicsEngine::loadAsset(allocators.mAssetAllocatorMap, data, header.mType, &index);
 		}
 
 		assert(asset != NULL && "Returned a NULL asset after loading\n");
 		assert(index >= 0 && "Returned a negative index for asset after loading\n");
 
-		idToGlobalIndex[asset->getId()] = index;
-		idToType[asset->getId()] = header.mType;
+		if (Asset::isInternal(header.mType)) {
+			PhysicsEngine::addInternalAssetIdToIndexMap(idState.mMeshIdToGlobalIndex,
+														idState.mMaterialIdToGlobalIndex,
+														idState.mShaderIdToGlobalIndex,
+														idState.mTexture2DIdToGlobalIndex,
+														idState.mTexture3DIdToGlobalIndex,
+														idState.mCubemapIdToGlobalIndex,
+														idState.mFontIdToGlobalIndex,
+														idState.mIdToGlobalIndex,
+														asset->getId(),
+														header.mType,
+														index);
+		}
+		else 
+		{
+
+		}
+
+		(*idState.mIdToType)[asset->getId()] = header.mType;
 		assetIdToFilepath[asset->getId()] = filepath;
 	}
 }
 
 void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
-					PoolAllocator<Entity>& entityAllocator,
-					PoolAllocator<Transform>& transformAllocator,
-					PoolAllocator<MeshRenderer>& meshRendererAllocator,
-					PoolAllocator<LineRenderer>& lineRendererAllocator,
-					PoolAllocator<Rigidbody>& rigidbodyAllocator,
-					PoolAllocator<Camera>& cameraAllocator,
-					PoolAllocator<Light>& lightAllocator,
-					PoolAllocator<SphereCollider>& sphereColliderAllocator,
-					PoolAllocator<BoxCollider>& boxColliderAllocator,
-					PoolAllocator<CapsuleCollider>& capsuleColliderAllocator,
-					PoolAllocator<MeshCollider>& meshColliderAllocator,
-					PoolAllocator<RenderSystem>& renderSystemAllocator,
-					PoolAllocator<PhysicsSystem>& physicsSystemAllocator,
-					PoolAllocator<CleanUpSystem>& cleanupSystemAllocator,
-					PoolAllocator<DebugSystem>& debugSystemAllocator,
-					std::unordered_map<int, Allocator*>& componentAllocatorMap,
-					std::unordered_map<int, Allocator*>& systemAllocatorMap,
-					std::unordered_map<Guid, int>& idToGlobalIndex,
-					std::unordered_map<Guid, int>& idToType,
-					std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>& entityIdToComponentIds,
-					std::vector<Guid>& entityIdsMarkedCreated,
-					std::vector<triple<Guid, Guid, int>>& componentIdsMarkedCreated,
-					std::unordered_map<Guid, std::string>& sceneIdToFilepath)
+									   WorldAllocators& allocators,
+									   WorldIsState& idState,
+									   std::unordered_map<Guid, std::string>& sceneIdToFilepath)
 {
 	std::ifstream file;
 	file.open(filepath, std::ios::binary);
@@ -172,9 +161,9 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 
 		EntityHeader* entityHeader = reinterpret_cast<EntityHeader*>(entityData.data()); // use endian agnostic function to read header
 
-		std::unordered_map<Guid, int>::iterator it = idToGlobalIndex.find(entityHeader->mEntityId);
-		if (it != idToGlobalIndex.end()) {
-			Entity* entity = PhysicsEngine::getInternalEntity(&entityAllocator, it->second);
+		std::unordered_map<Guid, int>::iterator it = idState.mIdToGlobalIndex->find(entityHeader->mEntityId);
+		if (it != idState.mIdToGlobalIndex->end()) {
+			Entity* entity = PhysicsEngine::getInternalEntity(allocators.mEntityAllocator, it->second);
 
 			assert(entity != NULL && "Could not find entity\n");
 
@@ -183,15 +172,16 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 		else
 		{
 			int index = -1;
-			Entity* entity = PhysicsEngine::loadInternalEntity(&entityAllocator, entityData, &index);
+			Entity* entity = PhysicsEngine::loadInternalEntity(allocators.mEntityAllocator, entityData, &index);
 
 			assert(entity != NULL && "Returned a NULL entity after loading\n");
 			assert(index >= 0 && "Returned a negative index for entity after loading\n");
 
-			idToGlobalIndex[entity->getId()] = index;
-			idToType[entity->getId()] = EntityType<Entity>::type;
-			entityIdToComponentIds[entity->getId()] = std::vector<std::pair<Guid, int>>();
-			entityIdsMarkedCreated.push_back(entity->getId());  
+			PhysicsEngine::addInternalEntityIdToIndexMap(idState.mEntityIdToGlobalIndex, idState.mIdToGlobalIndex, entity->getId(), index);
+
+			(*idState.mIdToType)[entity->getId()] = EntityType<Entity>::type;
+			(*idState.mEntityIdToComponentIds)[entity->getId()] = std::vector<std::pair<Guid, int>>();
+			(*idState.mEntityIdsMarkedCreated).push_back(entity->getId());
 		}
 	}
 
@@ -199,25 +189,25 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 	for (int32_t i = 0; i < sceneHeader.mComponentCount; i++) {
 		std::vector<char> temp(&data[componentInfoHeaders[i].mStartPtr], &data[componentInfoHeaders[i].mStartPtr + componentInfoHeaders[i].mSize]);
 
-		std::unordered_map<Guid, int>::iterator it = idToGlobalIndex.find(componentInfoHeaders[i].mComponentId);
-		if (it != idToGlobalIndex.end()) {
+		std::unordered_map<Guid, int>::iterator it = idState.mIdToGlobalIndex->find(componentInfoHeaders[i].mComponentId);
+		if (it != idState.mIdToGlobalIndex->end()) {
 			Component* component = NULL;
-			if (componentInfoHeaders[i].mType < 20) {
-				component = PhysicsEngine::getInternalComponent(&transformAllocator,
-															&meshRendererAllocator,
-															&lineRendererAllocator,
-															&rigidbodyAllocator,
-															&cameraAllocator,
-															&lightAllocator,
-															&sphereColliderAllocator,
-															&boxColliderAllocator,
-															&capsuleColliderAllocator,
-															&meshColliderAllocator,
-															componentInfoHeaders[i].mType,
-															it->second);
+			if (Component::isInternal(componentInfoHeaders[i].mType)) {
+				component = PhysicsEngine::getInternalComponent(allocators.mTransformAllocator,
+																allocators.mMeshRendererAllocator,
+																allocators.mLineRendererAllocator,
+																allocators.mRigidbodyAllocator,
+																allocators.mCameraAllocator,
+																allocators.mLightAllocator,
+																allocators.mSphereColliderAllocator,
+																allocators.mBoxColliderAllocator,
+																allocators.mCapsuleColliderAllocator,
+																allocators.mMeshColliderAllocator,
+																componentInfoHeaders[i].mType,
+																it->second);
 			}
 			else {
-				component = PhysicsEngine::getComponent(&componentAllocatorMap,
+				component = PhysicsEngine::getComponent(allocators.mComponentAllocatorMap,
 														componentInfoHeaders[i].mType,
 														it->second);
 			}
@@ -230,36 +220,59 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 		{
 			Component* component = NULL;
 			int index = -1;
-			if (componentInfoHeaders[i].mType < 20) {
-				component = PhysicsEngine::loadInternalComponent(&transformAllocator,
-															&meshRendererAllocator,
-															&lineRendererAllocator,
-															&rigidbodyAllocator,
-															&cameraAllocator,
-															&lightAllocator,
-															&sphereColliderAllocator,
-															&boxColliderAllocator,
-															&capsuleColliderAllocator,
-															&meshColliderAllocator,
-															temp,
-															componentInfoHeaders[i].mType,
-															&index);
+			if (Component::isInternal(componentInfoHeaders[i].mType)) {
+				component = PhysicsEngine::loadInternalComponent(allocators.mTransformAllocator,
+																 allocators.mMeshRendererAllocator,
+																 allocators.mLineRendererAllocator,
+																 allocators.mRigidbodyAllocator,
+																 allocators.mCameraAllocator,
+																 allocators.mLightAllocator,
+																 allocators.mSphereColliderAllocator,
+																 allocators.mBoxColliderAllocator,
+																 allocators.mCapsuleColliderAllocator,
+																 allocators.mMeshColliderAllocator,
+																 temp,
+																 componentInfoHeaders[i].mType,
+																 &index);
 			}
 			else
 			{
-				component = PhysicsEngine::loadComponent(&componentAllocatorMap,
-														temp,
-														componentInfoHeaders[i].mType,
-														&index);
+				component = PhysicsEngine::loadComponent(allocators.mComponentAllocatorMap,
+														 temp,
+														 componentInfoHeaders[i].mType,
+														 &index);
 			}
 
 			assert(component != NULL && "Returned a NULL component after loading\n");
 			assert(index >= 0 && "Returned a negative index for component after loading\n");
 
-			idToGlobalIndex[component->getId()] = index;
-			idToType[component->getId()] = componentInfoHeaders[i].mType;
-			entityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), componentInfoHeaders[i].mType));
-			componentIdsMarkedCreated.push_back(make_triple(component->getEntityId(), component->getId(), componentInfoHeaders[i].mType));
+			if (Component::isInternal(componentInfoHeaders[i].mType)) {
+				 PhysicsEngine::addInternalComponentIdToIndexMap(idState.mTransformIdToGlobalIndex,
+																 idState.mMeshRendererIdToGlobalIndex,
+																 idState.mLineRendererIdToGlobalIndex,
+																 idState.mRigidbodyIdToGlobalIndex,
+																 idState.mCameraIdToGlobalIndex,
+																 idState.mLightIdToGlobalIndex,
+																 idState.mSphereColliderIdToGlobalIndex,
+																 idState.mBoxColliderIdToGlobalIndex,
+																 idState.mCapsuleColliderIdToGlobalIndex,
+																 idState.mMeshColliderIdToGlobalIndex,
+																 idState.mIdToGlobalIndex,
+																 component->getId(),
+																 componentInfoHeaders[i].mType,
+																 index);
+			}
+			else
+			{
+				PhysicsEngine::addComponentIdToIndexMap(idState.mIdToGlobalIndex,
+														component->getId(),
+														componentInfoHeaders[i].mType,
+														index);
+			}
+
+			(*idState.mIdToType)[component->getId()] = componentInfoHeaders[i].mType;
+			(*idState.mEntityIdToComponentIds)[component->getEntityId()].push_back(std::make_pair(component->getId(), componentInfoHeaders[i].mType));
+			(*idState.mComponentIdsMarkedCreated).push_back(make_triple(component->getEntityId(), component->getId(), componentInfoHeaders[i].mType));
 		}
 	}
 
@@ -267,19 +280,19 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 	for (int32_t i = 0; i < sceneHeader.mSystemCount; i++) {
 		std::vector<char> temp(&data[systemInfoHeaders[i].mStartPtr], &data[systemInfoHeaders[i].mStartPtr + systemInfoHeaders[i].mSize]);
 
-		std::unordered_map<Guid, int>::iterator it = idToGlobalIndex.find(systemInfoHeaders[i].mSystemId);
-		if (it != idToGlobalIndex.end()) {
+		std::unordered_map<Guid, int>::iterator it = idState.mIdToGlobalIndex->find(systemInfoHeaders[i].mSystemId);
+		if (it != idState.mIdToGlobalIndex->end()) {
 			System* system = NULL;
-			if (systemInfoHeaders[i].mType < 20) {
-				system = PhysicsEngine::getInternalSystem(&renderSystemAllocator,
-														  &physicsSystemAllocator,
-														  &cleanupSystemAllocator,
-														  &debugSystemAllocator,
+			if (systemInfoHeaders[i].mType <= PhysicsEngine::MAX_INTERNAL_SYSTEM) {
+				system = PhysicsEngine::getInternalSystem(allocators.mRenderSystemAllocator,
+														  allocators.mPhysicsSystemAllocator,
+														  allocators.mCleanupSystemAllocator,
+														  allocators.mDebugSystemAllocator,
 														  systemInfoHeaders[i].mType,
 														  it->second);
 			}
 			else {
-				system = PhysicsEngine::getSystem(&systemAllocatorMap,
+				system = PhysicsEngine::getSystem(allocators.mSystemAllocatorMap,
 												  systemInfoHeaders[i].mType,
 												  it->second);
 			}
@@ -292,18 +305,18 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 		{
 			System* system = NULL;
 			int index = -1;
-			if (systemInfoHeaders[i].mType < 20) {
-				system = PhysicsEngine::loadInternalSystem(&renderSystemAllocator,
-															&physicsSystemAllocator,
-															&cleanupSystemAllocator,
-															&debugSystemAllocator,
+			if (systemInfoHeaders[i].mType <= PhysicsEngine::MAX_INTERNAL_SYSTEM) {
+				system = PhysicsEngine::loadInternalSystem(allocators.mRenderSystemAllocator,
+														   allocators.mPhysicsSystemAllocator,
+														   allocators.mCleanupSystemAllocator,
+														   allocators.mDebugSystemAllocator,
 															temp,
 															systemInfoHeaders[i].mType,
 															&index);
 			}
 			else
 			{
-				system = PhysicsEngine::loadSystem(&systemAllocatorMap,
+				system = PhysicsEngine::loadSystem(allocators.mSystemAllocatorMap,
 													temp,
 													systemInfoHeaders[i].mType,
 													&index);
@@ -312,8 +325,25 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 			assert(system != NULL && "Returned a NULL system after loading\n");
 			assert(index >= 0 && "Returned a negative index for system after loading\n");
 
-			idToGlobalIndex[system->getId()] = index;
-			idToType[system->getId()] = systemInfoHeaders[i].mType;
+			if (systemInfoHeaders[i].mType <= PhysicsEngine::MAX_INTERNAL_SYSTEM) {
+				PhysicsEngine::addInternalSystemIdToIndexMap(idState.mRenderSystemIdToGlobalIndex,
+															 idState.mPhysicsSystemIdToGlobalIndex,
+															 idState.mCleanupSystemIdToGlobalIndex,
+															 idState.mDebugSystemIdToGlobalIndex,
+															 idState.mIdToGlobalIndex,
+															 system->getId(),
+															 systemInfoHeaders[i].mType,
+															 index);
+			}
+			else
+			{
+				PhysicsEngine::addSystemIdToIndexMap(idState.mIdToGlobalIndex,
+													 system->getId(),
+													 systemInfoHeaders[i].mType,
+													 index);
+			}
+
+			(*idState.mIdToType)[system->getId()] = systemInfoHeaders[i].mType;
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #define __COMPONENT_H__
 
 #include "../core/Guid.h"
+#include "../core/Types.h"
 
 namespace PhysicsEngine
 {
@@ -47,30 +48,21 @@ namespace PhysicsEngine
 			Guid getId() const;
 			Guid getEntityId() const;
 
+			static bool isInternal(int type);
+
 		private:
 			friend class World;
 	};
 
 	template <typename T>
-	struct ComponentType { static const int type; };
-
+	struct ComponentType { static constexpr int type = PhysicsEngine::INVALID_TYPE;};
 	template <typename T>
-	const int ComponentType<T>::type = -1;
-
-	template <typename T>
-	struct IsComponent { static const bool value; };
-
-	template <typename T>
-	const bool IsComponent<T>::value = false;
-
-	template<>
-	const bool IsComponent<Component>::value = true;
-
+	struct IsComponent { static constexpr bool value = false; };
 	template<typename T>
-	struct IsComponentInternal { static const bool value; };
+	struct IsComponentInternal { static constexpr bool value = false; };
 
-	template<>
-	const bool IsComponentInternal<Component>::value = false;
+	template <>
+	struct IsComponent<Component> { static constexpr bool value = true; };
 }
 
 #endif

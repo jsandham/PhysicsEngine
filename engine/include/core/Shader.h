@@ -166,21 +166,17 @@ namespace PhysicsEngine
 			glm::mat4 getMat4(int nameLocation) const;
 	};
 
+	template <typename T>
+	struct IsShader { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Shader>::type = 0;
-
-	template <typename T>
-	struct IsShader { static const bool value; };
-
-	template <typename T>
-	const bool IsShader<T>::value = false;
-
-	template<>
-	const bool IsShader<Shader>::value = true;
-	template<>
-	const bool IsAsset<Shader>::value = true;
-	template<>
-	const bool IsAssetInternal<Shader>::value = true;
+	struct AssetType<Shader> { static constexpr int type = PhysicsEngine::SHADER_TYPE;};
+	template <>
+	struct IsShader<Shader> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Shader> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Shader> { static constexpr bool value = true; };
 }
 
 #endif

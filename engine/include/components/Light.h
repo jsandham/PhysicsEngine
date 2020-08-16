@@ -69,21 +69,17 @@ namespace PhysicsEngine
 			glm::mat4 getProjMatrix() const;
 	};
 
+	template <typename T>
+	struct IsLight { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<Light>::type = 5;
-
-	template <typename T>
-	struct IsLight { static const bool value; };
-
-	template <typename T>
-	const bool IsLight<T>::value = false;
-
-	template<>
-	const bool IsLight<Light>::value = true;
-	template<>
-	const bool IsComponent<Light>::value = true;
-	template<>
-	const bool IsComponentInternal<Light>::value = true;
+	struct ComponentType<Light> { static constexpr int type = PhysicsEngine::LIGHT_TYPE;};
+	template <>
+	struct IsLight<Light> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<Light> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<Light> { static constexpr bool value = true; };
 }
 
 #endif

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Guid.h"
+#include "Types.h"
 
 namespace PhysicsEngine
 {
@@ -64,28 +65,18 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
-	struct EntityType { static const int type; };
-
+	struct EntityType { static constexpr int type = PhysicsEngine::INVALID_TYPE;};
 	template <typename T>
-	const int EntityType<T>::type = -1;
+	struct IsEntity { static constexpr bool value = false; };
+	template<typename>
+	struct IsEntityInternal { static constexpr bool value = false; };
 
 	template <>
-	const int EntityType<Entity>::type = 0;
-
-	template <typename T>
-	struct IsEntity { static bool value; };
-
-	template <typename T>
-	bool IsEntity<T>::value = false;
-
-	template<>
-	bool IsEntity<Entity>::value = true;
-
-	template<typename>
-	struct IsEntityInternal { static const bool value; };
-
-	template<>
-	const bool IsEntityInternal<Entity>::value = true;
+	struct EntityType<Entity> { static constexpr int type = PhysicsEngine::ENTITY_TYPE;};
+	template <>
+	struct IsEntity<Entity> { static constexpr bool value = true; };
+	template <>
+	struct IsEntityInternal<Entity> { static constexpr bool value = true; };
 }
 
 #endif

@@ -32,21 +32,17 @@ namespace PhysicsEngine
 			void update(Input input, Time time);
 	};
 
+	template <typename T>
+	struct IsCleanUpSystem { static constexpr bool value = false; };
+
 	template <>
-	const int SystemType<CleanUpSystem>::type = 2;
-
-	template< typename T>
-	struct IsCleanUpSystem { static const bool value; };
-
-	template<typename T>
-	const bool IsCleanUpSystem<T>::value = false;
-
-	template<>
-	const bool IsCleanUpSystem<CleanUpSystem>::value = true;
-	template<>
-	const bool IsSystem<CleanUpSystem>::value = true;
-	template<>
-	const bool IsSystemInternal<CleanUpSystem>::value = true;
+	struct SystemType<CleanUpSystem> { static constexpr int type = PhysicsEngine::CLEANUPSYSTEM_TYPE;};
+	template <>
+	struct IsCleanUpSystem<CleanUpSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystem<CleanUpSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystemInternal<CleanUpSystem> { static constexpr bool value = true; };
 }
 
 #endif

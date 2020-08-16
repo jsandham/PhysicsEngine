@@ -22,17 +22,14 @@ namespace PhysicsEngine
 	};
 
 	template <typename T>
-	struct IsCollider { static const bool value; };
+	struct IsCollider { static constexpr bool value = false; };
 
-	template <typename T>
-	const bool IsCollider<T>::value = false;
-
-	template<>
-	const bool IsCollider<Collider>::value = true;
-	template<>
-	const bool IsComponent<Collider>::value = true;
-	template<>
-	const bool IsComponentInternal<Collider>::value = true;
+	template <>
+	struct IsCollider<Collider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<Collider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<Collider> { static constexpr bool value = true; };
 }
 
 #endif

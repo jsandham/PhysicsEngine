@@ -49,21 +49,17 @@ namespace PhysicsEngine
 			void update(Input input, Time time);
 	};
 
+	template <typename T>
+	struct IsPhysicsSystem { static constexpr bool value = false; };
+
 	template <>
-	const int SystemType<PhysicsSystem>::type = 1;
-
-	template< typename T>
-	struct IsPhysicsSystem { static const bool value; };
-
-	template<typename T>
-	const bool IsPhysicsSystem<T>::value = false;
-
-	template<>
-	const bool IsPhysicsSystem<PhysicsSystem>::value = true;
-	template<>
-	const bool IsSystem<PhysicsSystem>::value = true;
-	template<>
-	const bool IsSystemInternal<PhysicsSystem>::value = true;
+	struct SystemType<PhysicsSystem> { static constexpr int type = PhysicsEngine::PHYSICSSYSTEM_TYPE;};
+	template <>
+	struct IsPhysicsSystem<PhysicsSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystem<PhysicsSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystemInternal<PhysicsSystem> { static constexpr bool value = true; };
 }
 
 #endif

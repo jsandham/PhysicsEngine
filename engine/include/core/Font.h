@@ -54,21 +54,17 @@ namespace PhysicsEngine
 			Character getCharacter(char c) const;
 	};
 
+	template <typename T>
+	struct IsFont { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Font>::type = 6;
-
-	template <typename T>
-	struct IsFont { static const bool value; };
-
-	template <typename T>
-	const bool IsFont<T>::value = false;
-
-	template<>
-	const bool IsFont<Font>::value = true;
-	template<>
-	const bool IsAsset<Font>::value = true;
-	template<>
-	const bool IsAssetInternal<Font>::value = true;
+	struct AssetType<Font> { static constexpr int type = PhysicsEngine::FONT_TYPE;};
+	template <>
+	struct IsFont<Font> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Font> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Font> { static constexpr bool value = true; };
 }
 
 #endif

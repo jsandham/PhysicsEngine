@@ -6,6 +6,7 @@
 #include "../core/Time.h"
 #include "../core/Input.h"
 #include "../core/Guid.h"
+#include "../core/Types.h"
 
 namespace PhysicsEngine
 {
@@ -33,30 +34,21 @@ namespace PhysicsEngine
 			Guid getId() const;
 			int getOrder() const;
 
+			static bool isInternal(int type);
+
 		private:
 			friend class World;
 	};
 
 	template <typename T>
-	struct SystemType { static const int type; };
-
+	struct SystemType { static constexpr int type = PhysicsEngine::INVALID_TYPE; };
 	template <typename T>
-	const int SystemType<T>::type = -1;
-
-	template< typename T>
-	struct IsSystem { static const bool value; };
-
+	struct IsSystem { static constexpr bool value = false; };
 	template<typename T>
-	const bool IsSystem<T>::value = false;
+	struct IsSystemInternal { static constexpr bool value = false; };
 
-	template<>
-	const bool IsSystem<System>::value = true;
-
-	template<typename T>
-	struct IsSystemInternal { static const bool value; };
-
-	template<>
-	const bool IsSystemInternal<System>::value = false;
+	template <>
+	struct IsSystem<System> { static constexpr bool value = true; };
 }
 
 #endif

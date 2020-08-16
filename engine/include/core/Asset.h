@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Guid.h"
+#include "Types.h"
 
 namespace PhysicsEngine
 {	
@@ -24,30 +25,21 @@ namespace PhysicsEngine
 
 			Guid getId() const;
 
+			static bool isInternal(int type);
+
 		private:
 			friend class World;
 	};
 
 	template <typename T>
-	struct AssetType { static const int type; };
-
+	struct AssetType { static constexpr int type = PhysicsEngine::INVALID_TYPE; };
 	template <typename T>
-	const int AssetType<T>::type = -1;
-
-	template <typename T>
-	struct IsAsset { static const bool value; };
-
-	template <typename T>
-	const bool IsAsset<T>::value = false;
-
-	template<>
-	const bool IsAsset<Asset>::value = true;
-
+	struct IsAsset { static constexpr bool value = false; };
 	template<typename T>
-	struct IsAssetInternal { static const bool value; };
+	struct IsAssetInternal { static constexpr bool value = false; };
 
-	template<>
-	const bool IsAssetInternal<Asset>::value = false;
+	template <>
+	struct IsAsset<Asset> { static constexpr bool value = true; };
 }
 
 #endif

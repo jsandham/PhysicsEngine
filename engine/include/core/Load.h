@@ -11,6 +11,15 @@
 
 namespace PhysicsEngine
 {
+	// add external asset defined by the user to global index map (assets with type 10 or greater)
+	void addAssetIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+
+	// add external component defined by the user to global index map (assets with type 10 or greater)
+	void addComponentIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+
+	// add external system defined by the user to global index map (assets with type 10 or greater)
+	void addSystemIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+
 	// get external asset defined by the user (assets with type 10 or greater)
 	Asset* getAsset(std::unordered_map<int, Allocator*>* allocatorMap, int type, int index);
 

@@ -31,6 +31,7 @@
 #include "../systems/DebugSystem.h"
 
 #include "Util.h"
+#include "WorldUtil.h"
 
 namespace PhysicsEngine
 {
@@ -84,41 +85,13 @@ namespace PhysicsEngine
 #pragma pack(pop)
 
 	void loadAssetIntoWorld(const std::string& filepath,
-							PoolAllocator<Mesh>& meshAllocator,
-							PoolAllocator<Material>& materialAllocator,
-							PoolAllocator<Shader>& shaderAllocator,
-							PoolAllocator<Texture2D>& texture2DAllocator,
-							PoolAllocator<Texture3D>& texture3DAllocator,
-							PoolAllocator<Cubemap>& cubemapAllocator,
-							PoolAllocator<Font>& fontAllocator,
-							std::unordered_map<int, Allocator*>& assetAllocatorMap,
-							std::unordered_map<Guid, int>& idToGlobalIndex, 
-							std::unordered_map<Guid, int>& idToType,
+							WorldAllocators& allocators,
+							WorldIsState& idState,
 							std::unordered_map<Guid, std::string>& assetIdToFilepath);
 
 	void loadSceneIntoWorld(const std::string& filepath,
-							PoolAllocator<Entity>& entityAllocator,
-							PoolAllocator<Transform>& transformAllocator,
-							PoolAllocator<MeshRenderer>& meshRendererAllocator,
-							PoolAllocator<LineRenderer>& lineRendererAllocator,
-							PoolAllocator<Rigidbody>& rigidbodyAllocator,
-							PoolAllocator<Camera>& cameraAllocator,
-							PoolAllocator<Light>& lightAllocator,
-							PoolAllocator<SphereCollider>& sphereColliderAllocator,
-							PoolAllocator<BoxCollider>& boxColliderAllocator,
-							PoolAllocator<CapsuleCollider>& capsuleColliderAllocator,
-							PoolAllocator<MeshCollider>& meshColliderAllocator,
-							PoolAllocator<RenderSystem>& renderSystemAllocator,
-							PoolAllocator<PhysicsSystem>& physicsSystemAllocator,
-							PoolAllocator<CleanUpSystem>& cleanupSystemAllocator,
-							PoolAllocator<DebugSystem>& debugSystemAllocator,
-							std::unordered_map<int, Allocator*>& componentAllocatorMap,
-							std::unordered_map<int, Allocator*>& systemAllocatorMap,
-							std::unordered_map<Guid, int>& idToGlobalIndex,
-							std::unordered_map<Guid, int>& idToType,
-							std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>& entityIdToComponentIds,
-							std::vector<Guid>& entityIdsMarkedCreated,
-							std::vector<triple<Guid, Guid, int>>& componentIdsMarkedCreated,
+							WorldAllocators& allocators,
+							WorldIsState& idState,
 							std::unordered_map<Guid, std::string>& sceneIdToFilepath);
 }
 

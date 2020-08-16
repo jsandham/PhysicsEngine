@@ -24,6 +24,7 @@
 #include "SerializationInternal.h"
 #include "Serialization.h"
 #include "Util.h"
+#include "WorldUtil.h"
 
 #include "../components/Transform.h"
 #include "../components/MeshRenderer.h"
@@ -82,9 +83,6 @@ namespace PhysicsEngine
 			std::unordered_map<int, Allocator*> mSystemAllocatorMap;
 			std::unordered_map<int, Allocator*> mAssetAllocatorMap;
 
-			// all systems in world listed in order they should be updated
-			std::vector<System*> mSystems;
-
 			// internal world entity id state
 			std::unordered_map<Guid, int> mEntityIdToGlobalIndex;
 
@@ -115,16 +113,12 @@ namespace PhysicsEngine
 			std::unordered_map<Guid, int> mCleanupSystemIdToGlobalIndex;
 			std::unordered_map<Guid, int> mDebugSystemIdToGlobalIndex;
 
-			// generic world id state for all entity, components, systems, and assets
+			// world id state for all entity, components, systems, and assets
 			std::unordered_map<Guid, int> mIdToGlobalIndex; 
 			std::unordered_map<Guid, int> mIdToType;
 
 			// entity ids to component ids
 			std::unordered_map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds;
-
-			// asset and scene id to filepath
-			std::unordered_map<Guid, std::string> mAssetIdToFilepath;
-			std::unordered_map<Guid, std::string> mSceneIdToFilepath;
 
 			// entity creation/deletion state
 			std::vector<Guid> mEntityIdsMarkedCreated;
@@ -135,6 +129,13 @@ namespace PhysicsEngine
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedCreated;
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
 			std::vector<triple<Guid, int, int>> mComponentIdsMarkedMoved;
+
+			// all systems in world listed in order they should be updated
+			std::vector<System*> mSystems;
+
+			// asset and scene id to filepath
+			std::unordered_map<Guid, std::string> mAssetIdToFilepath;
+			std::unordered_map<Guid, std::string> mSceneIdToFilepath;
 
 			// default loaded meshes
 			Guid mSphereMeshId;
@@ -333,6 +334,7 @@ namespace PhysicsEngine
 			std::string getSceneFilepath(const Guid& sceneId) const;
 
 			// Explicit template specializations
+
 			template<>
 			int getNumberOfSystems<RenderSystem>() const
 			{
@@ -1029,138 +1031,136 @@ namespace PhysicsEngine
 			Guid getColorMaterial() const;
 			Guid getSimpleLitMaterial() const;
 
-			private:
-				template<typename T>
-				int getNumberOfSystems_impl(const PoolAllocator<T>* allocator) const
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+		private:
+			template<typename T>
+			int getNumberOfSystems_impl(const PoolAllocator<T>* allocator) const
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
 
-					return allocator != NULL ? (int)allocator->getCount() : 0;
-				}
+				return allocator != NULL ? (int)allocator->getCount() : 0;
+			}
 
-				template<typename T>
-				int getNumberOfComponents_impl(const PoolAllocator<T>* allocator) const
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+			template<typename T>
+			int getNumberOfComponents_impl(const PoolAllocator<T>* allocator) const
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-					return allocator != NULL ? (int)allocator->getCount() : 0;
-				}
+				return allocator != NULL ? (int)allocator->getCount() : 0;
+			}
 
-				template<typename T>
-				int getNumberOfAssets_impl(const PoolAllocator<T>* allocator) const
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+			template<typename T>
+			int getNumberOfAssets_impl(const PoolAllocator<T>* allocator) const
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
-					return allocator != NULL ? (int)allocator->getCount() : 0;
-				}
+				return allocator != NULL ? (int)allocator->getCount() : 0;
+			}
 
-				template<typename T>
-				T* getSystem_impl(const PoolAllocator<T>* allocator)
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+			template<typename T>
+			T* getSystem_impl(const PoolAllocator<T>* allocator)
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
 
-					return allocator != NULL ? allocator->get(0) : NULL;
-				}
+				return allocator != NULL ? allocator->get(0) : NULL;
+			}
 
-				template<typename T>
-				T* getComponent_impl(const PoolAllocator<T>* allocator, const Guid& entityId)
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+			template<typename T>
+			T* getComponent_impl(const PoolAllocator<T>* allocator, const Guid& entityId)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-					if (entityId == Guid::INVALID || allocator == NULL) {
-						return NULL;
-					}
-
-					std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
-					if (it1 != mEntityIdToComponentIds.end()) {
-						std::vector<std::pair<Guid, int>>& componentsOnEntity = it1->second;
-
-						for (size_t i = 0; i < componentsOnEntity.size(); i++) {
-							if (ComponentType<T>::type == componentsOnEntity[i].second) {
-								Guid& componentId = componentsOnEntity[i].first;
-
-								std::unordered_map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(componentId);
-								if (it2 != mIdToGlobalIndex.end()) {
-									return allocator->get(it2->second);
-								}
-
-								break;
-							}
-						}
-					}
-
+				if (allocator == NULL) {
 					return NULL;
 				}
 
-				template<typename T>
-				T* addComponent_impl(PoolAllocator<T>* allocator, const Guid& entityId)
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+				auto it1 = mEntityIdToComponentIds.find(entityId);
 
-					if (entityId == Guid::INVALID) {
-						return NULL;
+				if (it1 != mEntityIdToComponentIds.end()) {
+					std::vector<std::pair<Guid, int>>& componentsOnEntity = it1->second;
+
+					for (size_t i = 0; i < componentsOnEntity.size(); i++) {
+						if (ComponentType<T>::type == componentsOnEntity[i].second) {
+
+							std::unordered_map<Guid, int>::const_iterator it2 = mIdToGlobalIndex.find(componentsOnEntity[i].first);
+							if (it2 != mIdToGlobalIndex.end()) {
+								return allocator->get(it2->second);
+							}
+
+							break;
+						}
 					}
-
-					int componentGlobalIndex = (int)allocator->getCount();
-					int componentType = ComponentType<T>::type;
-					Guid componentId = Guid::newGuid();
-
-					T* component = allocator->construct();
-
-					if (component != NULL) {
-						component->mEntityId = entityId;
-						component->mComponentId = componentId;
-
-						mIdToGlobalIndex[componentId] = componentGlobalIndex;
-						mIdToType[componentId] = componentType;
-
-						mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
-
-						mComponentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
-					}
-
-					return component;
 				}
 
-				template<typename T>
-				T* addComponent_impl(PoolAllocator<T>* allocator, const std::vector<char>& data)
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+				return NULL;
+			}
 
-					int componentGlobalIndex = (int)allocator->getCount();
-					int componentType = ComponentType<T>::type;
+			template<typename T>
+			T* addComponent_impl(PoolAllocator<T>* allocator, const Guid& entityId)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-					T* component = allocator->construct(data);
-
-					if (component == NULL || component->mComponentId == Guid::INVALID) {
-						return NULL;
-					}
-
-					mIdToGlobalIndex[component->mComponentId] = componentGlobalIndex;
-					mIdToType[component->mComponentId] = componentType;
-
-					mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, componentType));
-
-					mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, componentType));
-
-					return component;
+				if (getTypeOf(entityId) != EntityType<Entity>::type) {
+					return NULL;
 				}
 
-				template<typename T>
-				T* addSystem_impl(PoolAllocator<T>* allocator, int order)
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+				int componentGlobalIndex = (int)allocator->getCount();
+				int componentType = ComponentType<T>::type;
+				Guid componentId = Guid::newGuid();
 
-					int systemGlobalIndex = (int)allocator->getCount();
-					int systemType = SystemType<T>::type;
-					Guid systemId = Guid::newGuid();
+				T* component = allocator->construct();
 
-					T* system = allocator->construct();
+				if (component != NULL) {
+					component->mEntityId = entityId;
+					component->mComponentId = componentId;
 
+					addIdToGlobalIndexMap_impl<T>(componentId, componentGlobalIndex, componentType);
+
+					mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
+
+					mComponentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
+				}
+
+				return component;
+			}
+
+			template<typename T>
+			T* addComponent_impl(PoolAllocator<T>* allocator, const std::vector<char>& data)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+				int componentGlobalIndex = (int)allocator->getCount();
+				int componentType = ComponentType<T>::type;
+
+				T* component = allocator->construct(data);
+
+				if (component == NULL || component->mComponentId == Guid::INVALID || component->mEntityId == Guid::INVALID) {
+					return NULL;
+				}
+
+				addIdToGlobalIndexMap_impl<T>(component->mComponentId, componentGlobalIndex, componentType);
+
+				mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, componentType));
+
+				mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, componentType));
+
+				return component;
+			}
+
+			template<typename T>
+			T* addSystem_impl(PoolAllocator<T>* allocator, int order)
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				int systemGlobalIndex = (int)allocator->getCount();
+				int systemType = SystemType<T>::type;
+				Guid systemId = Guid::newGuid();
+
+				T* system = allocator->construct();
+
+				if (system != NULL) {
 					system->mSystemId = systemId;
 
-					mIdToGlobalIndex[system->mSystemId] = systemGlobalIndex;
-					mIdToType[system->mSystemId] = systemType;
+					addIdToGlobalIndexMap_impl<T>(systemId, systemGlobalIndex, systemType);
 
 					size_t locationToInsert = mSystems.size();
 					for (size_t i = 0; i < mSystems.size(); i++) {
@@ -1171,223 +1171,758 @@ namespace PhysicsEngine
 					}
 
 					mSystems.insert(mSystems.begin() + locationToInsert, system);
-
-					return system;
 				}
 
-				template<typename T>
-				T* getSystemByIndex_impl(const PoolAllocator<T>* allocator, int index)
+				return system;
+			}
+
+			template<typename T>
+			T* getSystemByIndex_impl(const PoolAllocator<T>* allocator, int index)
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				return allocator != NULL ? allocator->get(index) : NULL;
+			}
+
+			template<typename T>
+			T* getSystemById_impl(const PoolAllocator<T>* allocator, const Guid& systemId)
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				if (allocator == NULL ||
+					SystemType<T>::type != getTypeOf(systemId))
 				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
-
-					return allocator != NULL ? allocator->get(index) : NULL;
-				}
-
-				template<typename T>
-				T* getSystemById_impl(const PoolAllocator<T>* allocator, const Guid& systemId)
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
-
-					if (allocator == NULL ||
-						systemId == Guid::INVALID ||
-						SystemType<T>::type != getTypeOf(systemId))
-					{
-						return NULL;
-					}
-
-					std::unordered_map<Guid, int>::iterator it = mIdToGlobalIndex.find(systemId);
-					if (it != mIdToGlobalIndex.end()) {
-						return allocator->get(it->second);
-					}
-					else {
-						return NULL;
-					}
-				}
-
-				template<typename T>
-				T* getAssetByIndex_impl(const PoolAllocator<T>* allocator, int index)
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
-
-					return allocator != NULL ? allocator->get(index) : NULL;
-				}
-
-				template<typename T>
-				T* getAssetById_impl(const PoolAllocator<T>* allocator, const Guid& assetId)
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
-
-					if (allocator == NULL || 
-						assetId == Guid::INVALID || 
-						AssetType<T>::type != getTypeOf(assetId)) 
-					{
-						return NULL;
-					}
-
-					std::unordered_map<Guid, int>::iterator it = mIdToGlobalIndex.find(assetId);
-					if (it != mIdToGlobalIndex.end()) {
-						return allocator->get(it->second);
-					}
-					else {
-						return NULL;
-					}
-				}
-
-				template<typename T>
-				T* getComponentByIndex_impl(const PoolAllocator<T>* allocator, int index)
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-
-					return allocator != NULL ? allocator->get(index) : NULL;
-				}
-
-				template<typename T>
-				T* getComponentById_impl(const PoolAllocator<T>* allocator, const Guid& componentId)
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-
-					if (allocator == NULL ||
-						componentId == Guid::INVALID || 
-						ComponentType<T>::type != getTypeOf(componentId)) {
-						return NULL;
-					}
-
-					std::unordered_map<Guid, int>::iterator it = mIdToGlobalIndex.find(componentId);
-					if (it != mIdToGlobalIndex.end()) {
-						return allocator->get(it->second);
-					}
-					else {
-						return NULL;
-					}
-				}
-
-				template<typename T>
-				T* createAsset_impl(PoolAllocator<T>* allocator)
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
-
-					int index = (int)allocator->getCount();
-					int type = AssetType<T>::type;
-					Guid id = Guid::newGuid();
-
-					T* asset = allocator->construct();
-
-					if (asset != NULL) {
-						mIdToGlobalIndex[id] = index;
-						mIdToType[id] = type;
-
-						asset->mAssetId = id;
-					}
-
-					return asset;
-				}
-
-				template<typename T>
-				T* createAsset_impl(PoolAllocator<T>* allocator, const std::vector<char>& data)
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
-
-					int index = (int)allocator->getCount();
-					int type = AssetType<T>::type;
-					Guid id = IsAssetInternal<T>::value ? PhysicsEngine::ExtactInternalAssetId<T>(data)
-												   : PhysicsEngine::ExtactAssetId<T>(data);
-
-					if (id == Guid::INVALID) {
-						return NULL;
-					}
-
-					T* asset = allocator->construct(data);
-
-					if (asset != NULL){
-						mIdToGlobalIndex[id] = index;
-						mIdToType[id] = type;
-
-						asset->mAssetId = id;
-					}
-
-					return asset;
-				}
-
-				template<typename T>
-				PoolAllocator<T>* getComponentAllocator_impl()
-				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-
-					std::unordered_map<int, Allocator*>::iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
-					if (it != mComponentAllocatorMap.end()) {
-						return static_cast<PoolAllocator<T>*>(it->second);
-					}
-
 					return NULL;
 				}
 
-				template<typename T>
-				PoolAllocator<T>* getComponentOrAddAllocator_impl()
+				return getById_impl<T>(mIdToGlobalIndex, allocator, systemId);
+			}
+
+			template<typename T>
+			T* getAssetByIndex_impl(const PoolAllocator<T>* allocator, int index)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				return allocator != NULL ? allocator->get(index) : NULL;
+			}
+
+			template<typename T>
+			T* getAssetById_impl(const PoolAllocator<T>* allocator, const Guid& assetId)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				if (allocator == NULL || 
+					AssetType<T>::type != getTypeOf(assetId)) 
 				{
-					static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-
-					PoolAllocator<T>* allocator = getComponentAllocator_impl<T>();
-					if (allocator == NULL) {
-						allocator = new PoolAllocator<T>();
-						mComponentAllocatorMap[ComponentType<T>::type] = allocator;
-					}
-
-					return allocator;
-				}
-
-				template<typename T>
-				PoolAllocator<T>* getSystemAllocator_impl()
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
-
-					std::unordered_map<int, Allocator*>::iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
-					if (it != mSystemAllocatorMap.end()) {
-						return static_cast<PoolAllocator<T>*>(it->second);
-					}
-
 					return NULL;
 				}
 
-				template<typename T>
-				PoolAllocator<T>* getSystemOrAddAllocator_impl()
-				{
-					static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+				return getById_impl<T>(mIdToGlobalIndex, allocator, assetId);
+			}
 
-					PoolAllocator<T>* allocator = getSystemAllocator_impl<T>();
-					if (allocator == NULL) {
-						allocator = new PoolAllocator<T>();
-						mSystemAllocatorMap[SystemType<T>::type] = allocator;
-					}
+			template<typename T>
+			T* getComponentByIndex_impl(const PoolAllocator<T>* allocator, int index)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-					return allocator;
-				}
+				return allocator != NULL ? allocator->get(index) : NULL;
+			}
 
-				template<typename T>
-				PoolAllocator<T>* getAssetAllocator_impl()
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+			template<typename T>
+			T* getComponentById_impl(const PoolAllocator<T>* allocator, const Guid& componentId)
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
-					std::unordered_map<int, Allocator*>::iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
-					if (it != mAssetAllocatorMap.end()) {
-						return static_cast<PoolAllocator<T>*>(it->second);
-					}
-
+				if (allocator == NULL || ComponentType<T>::type != getTypeOf(componentId)) {
 					return NULL;
 				}
 
-				template<typename T>
-				PoolAllocator<T>* getAssetOrAddAllocator_impl()
-				{
-					static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+				return getById_impl<T>(mIdToGlobalIndex, allocator, componentId);
+			}
 
-					PoolAllocator<T>* allocator = getAssetAllocator_impl<T>();
-					if (allocator == NULL) {
-						allocator = new PoolAllocator<T>();
-						mAssetAllocatorMap[AssetType<T>::type] = allocator;
-					}
+			template<typename T>
+			T* createAsset_impl(PoolAllocator<T>* allocator)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
-					return allocator;
+				int index = (int)allocator->getCount();
+				int type = AssetType<T>::type;
+				Guid id = Guid::newGuid();
+
+				T* asset = allocator->construct();
+
+				if (asset != NULL) {
+					asset->mAssetId = id;
+
+					addIdToGlobalIndexMap_impl<T>(id, index, type);
 				}
+
+				return asset;
+			}
+
+			template<typename T>
+			T* createAsset_impl(PoolAllocator<T>* allocator, const std::vector<char>& data)
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				int index = (int)allocator->getCount();
+				int type = AssetType<T>::type;
+				Guid id = IsAssetInternal<T>::value ? PhysicsEngine::ExtactInternalAssetId<T>(data)
+												: PhysicsEngine::ExtactAssetId<T>(data);
+
+				if (id == Guid::INVALID) {
+					return NULL;
+				}
+
+				T* asset = allocator->construct(data);
+
+				if (asset != NULL){
+					asset->mAssetId = id;
+
+					addIdToGlobalIndexMap_impl<T>(id, index, type);
+				}
+
+				return asset;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getComponentAllocator_impl()
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+				std::unordered_map<int, Allocator*>::iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
+				if (it != mComponentAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getComponentOrAddAllocator_impl()
+			{
+				static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+				PoolAllocator<T>* allocator = getComponentAllocator_impl<T>();
+				if (allocator == NULL) {
+					allocator = new PoolAllocator<T>();
+					mComponentAllocatorMap[ComponentType<T>::type] = allocator;
+				}
+
+				return allocator;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getSystemAllocator_impl()
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				std::unordered_map<int, Allocator*>::iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
+				if (it != mSystemAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getSystemOrAddAllocator_impl()
+			{
+				static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+
+				PoolAllocator<T>* allocator = getSystemAllocator_impl<T>();
+				if (allocator == NULL) {
+					allocator = new PoolAllocator<T>();
+					mSystemAllocatorMap[SystemType<T>::type] = allocator;
+				}
+
+				return allocator;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getAssetAllocator_impl()
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				std::unordered_map<int, Allocator*>::iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
+				if (it != mAssetAllocatorMap.end()) {
+					return static_cast<PoolAllocator<T>*>(it->second);
+				}
+
+				return NULL;
+			}
+
+			template<typename T>
+			PoolAllocator<T>* getAssetOrAddAllocator_impl()
+			{
+				static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+
+				PoolAllocator<T>* allocator = getAssetAllocator_impl<T>();
+				if (allocator == NULL) {
+					allocator = new PoolAllocator<T>();
+					mAssetAllocatorMap[AssetType<T>::type] = allocator;
+				}
+
+				return allocator;
+			}
+
+			template<typename T>
+			T* getById_impl(const std::unordered_map<Guid, int>& idToIndexMap, const PoolAllocator<T>* allocator, const Guid& id)
+			{
+				std::unordered_map<Guid, int>::const_iterator it = idToIndexMap.find(id);
+				if (it != idToIndexMap.end()) {
+					return allocator->get(it->second);
+				}
+				else {
+					return NULL;
+				}
+			}
+
+			template<typename T>
+			void addIdToGlobalIndexMap_impl(const Guid& id, int index, int type)
+			{
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<int N>
+			void removeIdToGlobalIndexMap_impl(const Guid& id, int type)
+			{
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<typename T>
+			bool verifyData_impl(const std::vector<T>& data) const
+			{
+				return true;
+			}
+
+			// Explicit specializations
+
+			template<>
+			Transform* getComponentById_impl<Transform>(const PoolAllocator<Transform>* allocator, const Guid& componentId)
+			{
+				return getById_impl<Transform>(mTransformIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			MeshRenderer* getComponentById_impl<MeshRenderer>(const PoolAllocator<MeshRenderer>* allocator, const Guid& componentId)
+			{
+				return getById_impl<MeshRenderer>(mMeshRendererIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			LineRenderer* getComponentById_impl<LineRenderer>(const PoolAllocator<LineRenderer>* allocator, const Guid& componentId)
+			{
+				return getById_impl<LineRenderer>(mLineRendererIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			Rigidbody* getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody>* allocator, const Guid& componentId)
+			{
+				return getById_impl<Rigidbody>(mRigidbodyIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			Camera* getComponentById_impl<Camera>(const PoolAllocator<Camera>* allocator, const Guid& componentId)
+			{
+				return getById_impl<Camera>(mCameraIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			Light* getComponentById_impl<Light>(const PoolAllocator<Light>* allocator, const Guid& componentId)
+			{
+				return getById_impl<Light>(mLightIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			SphereCollider* getComponentById_impl<SphereCollider>(const PoolAllocator<SphereCollider>* allocator, const Guid& componentId)
+			{
+				return getById_impl<SphereCollider>(mSphereColliderIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			BoxCollider* getComponentById_impl<BoxCollider>(const PoolAllocator<BoxCollider>* allocator, const Guid& componentId)
+			{
+				return getById_impl<BoxCollider>(mBoxColliderIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			CapsuleCollider* getComponentById_impl<CapsuleCollider>(const PoolAllocator<CapsuleCollider>* allocator, const Guid& componentId)
+			{
+				return getById_impl<CapsuleCollider>(mCapsuleColliderIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			MeshCollider* getComponentById_impl<MeshCollider>(const PoolAllocator<MeshCollider>* allocator, const Guid& componentId)
+			{
+				return getById_impl<MeshCollider>(mMeshColliderIdToGlobalIndex, allocator, componentId);
+			}
+
+			template<>
+			Mesh* getAssetById_impl<Mesh>(const PoolAllocator<Mesh>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Mesh>(mMeshIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Material* getAssetById_impl<Material>(const PoolAllocator<Material>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Material>(mMaterialIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Shader* getAssetById_impl<Shader>(const PoolAllocator<Shader>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Shader>(mShaderIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Texture2D* getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Texture2D>(mTexture2DIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Texture3D* getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Texture3D>(mTexture3DIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Cubemap* getAssetById_impl<Cubemap>(const PoolAllocator<Cubemap>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Cubemap>(mCubemapIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			Font* getAssetById_impl<Font>(const PoolAllocator<Font>* allocator, const Guid& assetId)
+			{
+				return getById_impl<Font>(mFontIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			RenderSystem* getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem>* allocator, const Guid& assetId)
+			{
+				return getById_impl<RenderSystem>(mRenderSystemIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			PhysicsSystem* getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem>* allocator, const Guid& assetId)
+			{
+				return getById_impl<PhysicsSystem>(mPhysicsSystemIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			CleanUpSystem* getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem>* allocator, const Guid& assetId)
+			{
+				return getById_impl<CleanUpSystem>(mCleanupSystemIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			DebugSystem* getSystemById_impl<DebugSystem>(const PoolAllocator<DebugSystem>* allocator, const Guid& assetId)
+			{
+				return getById_impl<DebugSystem>(mDebugSystemIdToGlobalIndex, allocator, assetId);
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Transform>(const Guid& id, int index, int type)
+			{
+				mTransformIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<MeshRenderer>(const Guid& id, int index, int type)
+			{
+				mMeshRendererIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<LineRenderer>(const Guid& id, int index, int type)
+			{
+				mLineRendererIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Rigidbody>(const Guid& id, int index, int type)
+			{
+				mRigidbodyIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Camera>(const Guid& id, int index, int type)
+			{
+				mCameraIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Light>(const Guid& id, int index, int type)
+			{
+				mLightIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<SphereCollider>(const Guid& id, int index, int type)
+			{
+				mSphereColliderIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<BoxCollider>(const Guid& id, int index, int type)
+			{
+				mBoxColliderIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<CapsuleCollider>(const Guid& id, int index, int type)
+			{
+				mCapsuleColliderIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<MeshCollider>(const Guid& id, int index, int type)
+			{
+				mMeshColliderIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Mesh>(const Guid& id, int index, int type)
+			{
+				mMeshIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Material>(const Guid& id, int index, int type)
+			{
+				mMaterialIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Shader>(const Guid& id, int index, int type)
+			{
+				mShaderIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Texture2D>(const Guid& id, int index, int type)
+			{
+				mTexture2DIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Texture3D>(const Guid& id, int index, int type)
+			{
+				mTexture3DIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Cubemap>(const Guid& id, int index, int type)
+			{
+				mCubemapIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<Font>(const Guid& id, int index, int type)
+			{
+				mFontIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<RenderSystem>(const Guid& id, int index, int type)
+			{
+				mRenderSystemIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<PhysicsSystem>(const Guid& id, int index, int type)
+			{
+				mPhysicsSystemIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<CleanUpSystem>(const Guid& id, int index, int type)
+			{
+				mCleanupSystemIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
+			void addIdToGlobalIndexMap_impl<DebugSystem>(const Guid& id, int index, int type)
+			{
+				mDebugSystemIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			/*template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<Transform>::type>(const Guid& id, int type)
+			{
+				mTransformIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<MeshRenderer>::type>(const Guid& id, int type)
+			{
+				mMeshRendererIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<LineRenderer>::type>(const Guid& id, int type)
+			{
+				mLineRendererIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<Rigidbody>::type>(const Guid& id, int type)
+			{
+				mRigidbodyIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<Camera>::type>(const Guid& id, int type)
+			{
+				mCameraIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<Light>::type>(const Guid& id, int type)
+			{
+				mLightIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<SphereCollider>::type>(const Guid& id, int type)
+			{
+				mSphereColliderIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<BoxCollider>::type>(const Guid& id, int type)
+			{
+				mBoxColliderIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<CapsuleCollider>::type>(const Guid& id, int type)
+			{
+				mCapsuleColliderIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<ComponentType<MeshCollider>::type>(const Guid& id, int type)
+			{
+				mMeshColliderIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Mesh>::type>(const Guid& id, int type)
+			{
+				mMeshIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Material>::type>(const Guid& id, int type)
+			{
+				mMaterialIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Shader>::type>(const Guid& id, int type)
+			{
+				mShaderIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Texture2D>::type>(const Guid& id, int type)
+			{
+				mTexture2DIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Texture3D>::type>(const Guid& id, int type)
+			{
+				mTexture3DIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Cubemap>::type>(const Guid& id, int type)
+			{
+				mCubemapIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<AssetType<Font>::type>(const Guid& id, int type)
+			{
+				mFontIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<SystemType<RenderSystem>::type>(const Guid& id, int type)
+			{
+				mRenderSystemIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<SystemType<PhysicsSystem>::type>(const Guid& id, int type)
+			{
+				mPhysicsSystemIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<SystemType<CleanUpSystem>::type>(const Guid& id, int type)
+			{
+				mCleanupSystemIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
+			void removeIdToGlobalIndexMap_impl<SystemType<DebugSystem>::type>(const Guid& id, int type)
+			{
+				mDebugSystemIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			//template<typename T> 
+			//void updateIdToGlobalIndexMap(const Guid& componentId, int componentGlobalIndex)
+			//{
+
+			//}
+
+
+
+			///*template<typename T>
+			//T* addComponent_impl1(PoolAllocator<T>* allocator, const Guid& entityId)
+			//{
+			//	static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+
+			//	if (getTypeOf(entityId) == EntityType<Entity>::type) {
+			//		return NULL;
+			//	}
+
+			//	int componentGlobalIndex = (int)allocator->getCount();
+			//	int componentType = ComponentType<T>::type;
+			//	Guid componentId = Guid::newGuid();
+
+			//	T* component = allocator->construct();
+
+			//	if (component != NULL) {
+			//		component->mEntityId = entityId;
+			//		component->mComponentId = componentId;
+
+			//		mIdToGlobalIndex[componentId] = componentGlobalIndex;
+			//		mIdToType[componentId] = componentType;
+
+			//		if (IsComponentInternal<T>::value) {
+			//			updateIdToGlobalIndexMap<T>(componentId, componentGlobalIndex);
+			//		}
+
+			//		mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
+
+			//		mComponentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
+			//	}
+
+			//	return component;
+			//}*/
 	};
 }
 

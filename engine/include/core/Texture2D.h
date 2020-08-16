@@ -59,23 +59,19 @@ namespace PhysicsEngine
 			void apply();
 	};
 
+	template <typename T>
+	struct IsTexture2D { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Texture2D>::type = 1;
-
-	template <typename T>
-	struct IsTexture2D { static const bool value; };
-
-	template <typename T>
-	const bool IsTexture2D<T>::value = false;
-
-	template<>
-	const bool IsTexture2D<Texture2D>::value = true;
-	template<>
-	const bool IsTexture<Texture2D>::value = true;
-	template<>
-	const bool IsAsset<Texture2D>::value = true;
-	template<>
-	const bool IsAssetInternal<Texture2D>::value = true;
+	struct AssetType<Texture2D> { static constexpr int type = PhysicsEngine::TEXTURE2D_TYPE;};
+	template <>
+	struct IsTexture<Texture2D> { static constexpr bool value = true; };
+	template <>
+	struct IsTexture2D<Texture2D> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Texture2D> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Texture2D> { static constexpr bool value = true; };
 }
 
 #endif

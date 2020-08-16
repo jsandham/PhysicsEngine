@@ -76,7 +76,7 @@ void Inspector::drawEntity(World* world, EditorProject& project, EditorScene& sc
 		int componentType = componentsOnEntity[i].second;
 
 		InspectorDrawer* drawer = NULL;
-		if (componentType < 20) {
+		if (Component::isInternal(componentType)) {
 			drawer = loadInternalInspectorComponentDrawer(componentType);
 		}
 		else {

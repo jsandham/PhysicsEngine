@@ -58,21 +58,17 @@ namespace PhysicsEngine
 			void updateRenderObjects(World* world);
 	};
 
+	template <typename T>
+	struct IsRenderSystem { static constexpr bool value = false; };
+
 	template <>
-	const int SystemType<RenderSystem>::type = 0;
-
-	template< typename T>
-	struct IsRenderSystem { static const bool value; };
-
-	template<typename T>
-	const bool IsRenderSystem<T>::value = false;
-
-	template<>
-	const bool IsRenderSystem<RenderSystem>::value = true;
-	template<>
-	const bool IsSystem<RenderSystem>::value = true;
-	template<>
-	const bool IsSystemInternal<RenderSystem>::value = true;
+	struct SystemType<RenderSystem> { static constexpr int type = PhysicsEngine::RENDERSYSTEM_TYPE; };
+	template <>
+	struct IsRenderSystem<RenderSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystem<RenderSystem> { static constexpr bool value = true; };
+	template <>
+	struct IsSystemInternal<RenderSystem> { static constexpr bool value = true; };
 }
 
 #endif

@@ -12,7 +12,7 @@
 namespace PhysicsEngine
 {
 	template<class T>
-	Guid ExtactInternalAssetId(std::vector<char> data)
+	Guid ExtactInternalAssetId(const std::vector<char>& data)
 	{
 		static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
@@ -20,7 +20,7 @@ namespace PhysicsEngine
 	}
 
 	template<class T>
-	Guid ExtactInternalComponentId(std::vector<char> data)
+	Guid ExtactInternalComponentId(const std::vector<char>& data)
 	{
 		static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
@@ -28,7 +28,7 @@ namespace PhysicsEngine
 	}
 
 	template<class T>
-	Guid ExtactInternalSystemId(std::vector<char> data)
+	Guid ExtactInternalSystemId(const std::vector<char>& data)
 	{
 		static_assert(IsSystem<T>::value == true, "'T' is not of type System");
 
@@ -38,57 +38,57 @@ namespace PhysicsEngine
 	// Explicit asset template specializations
 
 	template<>
-	inline Guid ExtactInternalAssetId<Shader>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Shader>(const std::vector<char>& data)
 	{
-		ShaderHeader* header = reinterpret_cast<ShaderHeader*>(&data[0]);
+		const ShaderHeader* header = reinterpret_cast<const ShaderHeader*>(&data[0]);
 
 		return header->mShaderId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Mesh>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Mesh>(const std::vector<char>& data)
 	{
-		MeshHeader* header = reinterpret_cast<MeshHeader*>(&data[0]);
+		const MeshHeader* header = reinterpret_cast<const MeshHeader*>(&data[0]);
 
 		return header->mMeshId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Material>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Material>(const std::vector<char>& data)
 	{
-		MaterialHeader* header = reinterpret_cast<MaterialHeader*>(&data[0]);
+		const MaterialHeader* header = reinterpret_cast<const MaterialHeader*>(&data[0]);
 
 		return header->mMaterialId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Texture2D>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Texture2D>(const std::vector<char>& data)
 	{
-		Texture2DHeader* header = reinterpret_cast<Texture2DHeader*>(&data[0]);
+		const Texture2DHeader* header = reinterpret_cast<const Texture2DHeader*>(&data[0]);
 
 		return header->mTextureId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Texture3D>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Texture3D>(const std::vector<char>& data)
 	{
-		Texture3DHeader* header = reinterpret_cast<Texture3DHeader*>(&data[0]);
+		const Texture3DHeader* header = reinterpret_cast<const Texture3DHeader*>(&data[0]);
 
 		return header->mTextureId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Cubemap>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Cubemap>(const std::vector<char>& data)
 	{
-		CubemapHeader* header = reinterpret_cast<CubemapHeader*>(&data[0]);
+		const CubemapHeader* header = reinterpret_cast<const CubemapHeader*>(&data[0]);
 
 		return header->mTextureId;
 	}
 
 	template<>
-	inline Guid ExtactInternalAssetId<Font>(std::vector<char> data)
+	inline Guid ExtactInternalAssetId<Font>(const std::vector<char>& data)
 	{
-		FontHeader* header = reinterpret_cast<FontHeader*>(&data[0]);
+		const FontHeader* header = reinterpret_cast<const FontHeader*>(&data[0]);
 
 		return header->mFontId;
 	}
@@ -96,81 +96,81 @@ namespace PhysicsEngine
 	// Explicit component template specializations
 
 	template<>
-	inline Guid ExtactInternalComponentId<Transform>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<Transform>(const std::vector<char>& data)
 	{
-		TransformHeader* header = reinterpret_cast<TransformHeader*>(&data[0]);
+		const TransformHeader* header = reinterpret_cast<const TransformHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<Camera>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<Camera>(const std::vector<char>& data)
 	{
-		CameraHeader* header = reinterpret_cast<CameraHeader*>(&data[0]);
+		const CameraHeader* header = reinterpret_cast<const CameraHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<Light>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<Light>(const std::vector<char>& data)
 	{
-		LightHeader* header = reinterpret_cast<LightHeader*>(&data[0]);
+		const LightHeader* header = reinterpret_cast<const LightHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<MeshRenderer>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<MeshRenderer>(const std::vector<char>& data)
 	{
-		MeshRendererHeader* header = reinterpret_cast<MeshRendererHeader*>(&data[0]);
+		const MeshRendererHeader* header = reinterpret_cast<const MeshRendererHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<LineRenderer>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<LineRenderer>(const std::vector<char>& data)
 	{
-		LineRendererHeader* header = reinterpret_cast<LineRendererHeader*>(&data[0]);
+		const LineRendererHeader* header = reinterpret_cast<const LineRendererHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<Rigidbody>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<Rigidbody>(const std::vector<char>& data)
 	{
-		RigidbodyHeader* header = reinterpret_cast<RigidbodyHeader*>(&data[0]);
+		const RigidbodyHeader* header = reinterpret_cast<const RigidbodyHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<SphereCollider>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<SphereCollider>(const std::vector<char>& data)
 	{
-		SphereColliderHeader* header = reinterpret_cast<SphereColliderHeader*>(&data[0]);
+		const SphereColliderHeader* header = reinterpret_cast<const SphereColliderHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<BoxCollider>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<BoxCollider>(const std::vector<char>& data)
 	{
-		BoxColliderHeader* header = reinterpret_cast<BoxColliderHeader*>(&data[0]);
+		const BoxColliderHeader* header = reinterpret_cast<const BoxColliderHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<CapsuleCollider>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<CapsuleCollider>(const std::vector<char>& data)
 	{
-		CapsuleColliderHeader* header = reinterpret_cast<CapsuleColliderHeader*>(&data[0]);
+		const CapsuleColliderHeader* header = reinterpret_cast<const CapsuleColliderHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
 
 	template<>
-	inline Guid ExtactInternalComponentId<MeshCollider>(std::vector<char> data)
+	inline Guid ExtactInternalComponentId<MeshCollider>(const std::vector<char>& data)
 	{
-		MeshColliderHeader* header = reinterpret_cast<MeshColliderHeader*>(&data[0]);
+		const MeshColliderHeader* header = reinterpret_cast<const MeshColliderHeader*>(&data[0]);
 
 		return header->mComponentId;
 	}
@@ -178,25 +178,25 @@ namespace PhysicsEngine
 	// Explicit system template specializations
 
 	template<>
-	inline Guid ExtactInternalSystemId<RenderSystem>(std::vector<char> data)
+	inline Guid ExtactInternalSystemId<RenderSystem>(const std::vector<char>& data)
 	{
 		return Guid::INVALID;
 	}
 
 	template<>
-	inline Guid ExtactInternalSystemId<PhysicsSystem>(std::vector<char> data)
+	inline Guid ExtactInternalSystemId<PhysicsSystem>(const std::vector<char>& data)
 	{
 		return Guid::INVALID;
 	}
 
 	template<>
-	inline Guid ExtactInternalSystemId<CleanUpSystem>(std::vector<char> data)
+	inline Guid ExtactInternalSystemId<CleanUpSystem>(const std::vector<char>& data)
 	{
 		return Guid::INVALID;
 	}
 
 	template<>
-	inline Guid ExtactInternalSystemId<DebugSystem>(std::vector<char> data)
+	inline Guid ExtactInternalSystemId<DebugSystem>(const std::vector<char>& data)
 	{
 		return Guid::INVALID;
 	}

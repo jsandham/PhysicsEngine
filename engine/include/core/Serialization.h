@@ -6,7 +6,7 @@
 namespace PhysicsEngine
 {
 	template<class T>
-	Guid ExtactAssetId(std::vector<char> data)
+	Guid ExtactAssetId(const std::vector<char>& data)
 	{
 		static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
 
@@ -14,7 +14,7 @@ namespace PhysicsEngine
 	}
 
 	template<class T>
-	Guid ExtactComponentId(std::vector<char> data)
+	Guid ExtactComponentId(const std::vector<char>& data)
 	{
 		static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
 
@@ -22,7 +22,7 @@ namespace PhysicsEngine
 	}
 
 	template<class T>
-	Guid ExtactSystemId(std::vector<char> data)
+	Guid ExtactSystemId(const std::vector<char>& data)
 	{
 		static_assert(IsSystem<T>::value == true, "'T' is not of type System");
 

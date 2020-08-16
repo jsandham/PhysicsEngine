@@ -139,21 +139,17 @@ namespace PhysicsEngine
 			GLuint getNativeGraphicsSSAONoiseTex() const;
 	};
 
+	template <typename T>
+	struct IsCamera { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<Camera>::type = 2;
-
-	template <typename T>
-	struct IsCamera { static const bool value; };
-
-	template <typename T>
-	const bool IsCamera<T>::value = false;
-
-	template<>
-	const bool IsCamera<Camera>::value = true;
-	template<>
-	const bool IsComponent<Camera>::value = true;
-	template<>
-	const bool IsComponentInternal<Camera>::value = true;
+	struct ComponentType<Camera> { static constexpr int type = CAMERA_TYPE;};
+	template <>
+	struct IsCamera<Camera> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<Camera> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<Camera> { static constexpr bool value = true; };
 }
 
 #endif

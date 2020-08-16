@@ -48,22 +48,17 @@ namespace PhysicsEngine
 			glm::vec3 getRight() const;
 	};
 
+	template <typename T>
+	struct IsTransform { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<Transform>::type = 0;
-
-	template <typename T>
-	struct IsTransform { static const bool value; };
-
-	template <typename T>
-	const bool IsTransform<T>::value = false;
-
-	template<>
-	const bool IsTransform<Transform>::value = true;
-	template<>
-	const bool IsComponent<Transform>::value = true;
-	template<>
-	const bool IsComponentInternal<Transform>::value = true;
-
+	struct ComponentType<Transform> { static constexpr int type = PhysicsEngine::TRANSFORM_TYPE;};
+	template <>
+	struct IsTransform<Transform> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<Transform> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<Transform> { static constexpr bool value = true; };
 }
 
 #endif

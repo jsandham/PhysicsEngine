@@ -40,21 +40,17 @@ namespace PhysicsEngine
 			void deserialize(const std::vector<char>& data);
 	};
 
+	template <typename T>
+	struct IsLineRenderer { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<LineRenderer>::type = 4;
-
-	template <typename T>
-	struct IsLineRenderer { static const bool value; };
-
-	template <typename T>
-	const bool IsLineRenderer<T>::value = false;
-
-	template<>
-	const bool IsLineRenderer<LineRenderer>::value = true;
-	template<>
-	const bool IsComponent<LineRenderer>::value = true;
-	template<>
-	const bool IsComponentInternal<LineRenderer>::value = true;
+	struct ComponentType<LineRenderer> { static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;};
+	template <>
+	struct IsLineRenderer<LineRenderer> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<LineRenderer> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<LineRenderer> { static constexpr bool value = true; };
 }
 
 #endif

@@ -22,3 +22,8 @@ int System::getOrder() const
 {
 	return mOrder;
 }
+
+bool System::isInternal(int type)
+{
+	return type >= PhysicsEngine::MIN_INTERNAL_SYSTEM && type <= PhysicsEngine::MAX_INTERNAL_SYSTEM;
+}

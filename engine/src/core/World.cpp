@@ -59,48 +59,82 @@ World::~World()
 
 bool World::loadAsset(const std::string& filePath)
 {
+	WorldAllocators allocators;
+	allocators.mMeshAllocator = &mMeshAllocator;
+	allocators.mMaterialAllocator = &mMaterialAllocator;
+	allocators.mShaderAllocator = &mShaderAllocator;
+	allocators.mTexture2DAllocator = &mTexture2DAllocator;
+	allocators.mTexture3DAllocator = &mTexture3DAllocator;
+	allocators.mCubemapAllocator = &mCubemapAllocator;
+	allocators.mFontAllocator = &mFontAllocator;
+	allocators.mAssetAllocatorMap = &mAssetAllocatorMap;
+
+	WorldIsState idState;
+	idState.mMeshIdToGlobalIndex = &mMeshIdToGlobalIndex;
+	idState.mMaterialIdToGlobalIndex = &mMaterialIdToGlobalIndex;
+	idState.mShaderIdToGlobalIndex = &mShaderIdToGlobalIndex;
+	idState.mTexture2DIdToGlobalIndex = &mTexture2DIdToGlobalIndex;
+	idState.mTexture3DIdToGlobalIndex = &mTexture3DIdToGlobalIndex;
+	idState.mCubemapIdToGlobalIndex = &mCubemapIdToGlobalIndex;
+	idState.mFontIdToGlobalIndex = &mFontIdToGlobalIndex;
+	idState.mIdToGlobalIndex = &mIdToGlobalIndex;
+	idState.mIdToType = &mIdToType;
+
 	PhysicsEngine::loadAssetIntoWorld(filePath, 
-									mMeshAllocator,
-									mMaterialAllocator,
-									mShaderAllocator,
-									mTexture2DAllocator,
-									mTexture3DAllocator,
-									mCubemapAllocator,
-									mFontAllocator, 
-									mAssetAllocatorMap,
-									mIdToGlobalIndex, 
-									mIdToType,
-									mAssetIdToFilepath);
+									  allocators,
+									  idState,
+									  mAssetIdToFilepath);
 
 	return true;
 }
 
 bool World::loadScene(const std::string& filePath, bool ignoreSystemsAndCamera)
 {
+	WorldAllocators allocators;
+	allocators.mEntityAllocator = &mEntityAllocator;
+	allocators.mTransformAllocator = &mTransformAllocator;
+	allocators.mMeshRendererAllocator = &mMeshRendererAllocator;
+	allocators.mLineRendererAllocator = &mLineRendererAllocator;
+	allocators.mRigidbodyAllocator = &mRigidbodyAllocator;
+	allocators.mCameraAllocator = &mCameraAllocator;
+	allocators.mLightAllocator = &mLightAllocator;
+	allocators.mSphereColliderAllocator = &mSphereColliderAllocator;
+	allocators.mBoxColliderAllocator = &mBoxColliderAllocator;
+	allocators.mCapsuleColliderAllocator = &mCapsuleColliderAllocator;
+	allocators.mMeshColliderAllocator = &mMeshColliderAllocator;
+	allocators.mRenderSystemAllocator = &mRenderSystemAllocator;
+	allocators.mPhysicsSystemAllocator = &mPhysicsSystemAllocator;
+	allocators.mCleanupSystemAllocator = &mCleanupSystemAllocator;
+	allocators.mDebugSystemAllocator = &mDebugSystemAllocator;
+	allocators.mComponentAllocatorMap = &mComponentAllocatorMap;
+	allocators.mSystemAllocatorMap = &mSystemAllocatorMap;
+
+	WorldIsState idState;
+	idState.mEntityIdToGlobalIndex = &mEntityIdToGlobalIndex;
+	idState.mTransformIdToGlobalIndex = &mTransformIdToGlobalIndex;
+	idState.mMeshRendererIdToGlobalIndex = &mMeshRendererIdToGlobalIndex;
+	idState.mLineRendererIdToGlobalIndex = &mLineRendererIdToGlobalIndex;
+	idState.mRigidbodyIdToGlobalIndex = &mRigidbodyIdToGlobalIndex;
+	idState.mCameraIdToGlobalIndex = &mCameraIdToGlobalIndex;
+	idState.mLightIdToGlobalIndex = &mLightIdToGlobalIndex;
+	idState.mSphereColliderIdToGlobalIndex = &mSphereColliderIdToGlobalIndex;
+	idState.mBoxColliderIdToGlobalIndex = &mBoxColliderIdToGlobalIndex;
+	idState.mCapsuleColliderIdToGlobalIndex = &mCapsuleColliderIdToGlobalIndex;
+	idState.mMeshColliderIdToGlobalIndex = &mMeshColliderIdToGlobalIndex;
+	idState.mRenderSystemIdToGlobalIndex = &mRenderSystemIdToGlobalIndex;
+	idState.mPhysicsSystemIdToGlobalIndex = &mPhysicsSystemIdToGlobalIndex;
+	idState.mCleanupSystemIdToGlobalIndex = &mCleanupSystemIdToGlobalIndex;
+	idState.mDebugSystemIdToGlobalIndex = &mDebugSystemIdToGlobalIndex;
+	idState.mIdToGlobalIndex = &mIdToGlobalIndex;
+	idState.mIdToType = &mIdToType;
+	idState.mEntityIdToComponentIds = &mEntityIdToComponentIds;
+	idState.mEntityIdsMarkedCreated = &mEntityIdsMarkedCreated;
+	idState.mComponentIdsMarkedCreated = &mComponentIdsMarkedCreated;
+
 	PhysicsEngine::loadSceneIntoWorld(filePath,
-		mEntityAllocator,
-		mTransformAllocator,
-		mMeshRendererAllocator,
-		mLineRendererAllocator,
-		mRigidbodyAllocator,
-		mCameraAllocator,
-		mLightAllocator,
-		mSphereColliderAllocator,
-		mBoxColliderAllocator,
-		mCapsuleColliderAllocator,
-		mMeshColliderAllocator,
-		mRenderSystemAllocator,
-		mPhysicsSystemAllocator,
-		mCleanupSystemAllocator,
-		mDebugSystemAllocator,
-		mComponentAllocatorMap,
-		mSystemAllocatorMap,
-		mIdToGlobalIndex,
-		mIdToType,
-		mEntityIdToComponentIds,
-		mEntityIdsMarkedCreated,
-		mComponentIdsMarkedCreated,
-		mSceneIdToFilepath);
+									  allocators,
+									  idState,
+									  mSceneIdToFilepath);
 	
 	return true;
 }
@@ -132,19 +166,9 @@ int World::getNumberOfUpdatingSystems() const
 	return (int)mSystems.size();
 }
 
-// error here if entityId does not correspond to an entity but instead an asset or component
 Entity* World::getEntityById(const Guid& entityId)
 {
-	if (entityId == Guid::INVALID) {
-		return NULL;
-	}
-
-	std::unordered_map<Guid, int>::iterator it = mIdToGlobalIndex.find(entityId);
-	if(it != mIdToGlobalIndex.end()){
-		return mEntityAllocator.get(it->second);
-	}
-
-	return NULL;
+	return getById_impl<Entity>(mEntityIdToGlobalIndex, &mEntityAllocator, entityId);
 }
 
 Entity* World::getEntityByIndex(int index)
@@ -193,6 +217,7 @@ Entity* World::createEntity()
 		entity->mEntityId = entityId;
 		entity->mDoNotDestroy = false;
 
+		mEntityIdToGlobalIndex[entityId] = globalIndex;
 		mIdToGlobalIndex[entityId] = globalIndex;
 		mIdToType[entityId] = type;
 
@@ -212,6 +237,7 @@ Entity* World::createEntity(const std::vector<char>& data)
 	Entity* entity = mEntityAllocator.construct(data);
 
 	if (entity != NULL) {
+		mEntityIdToGlobalIndex[entity->mEntityId] = globalIndex;
 		mIdToGlobalIndex[entity->mEntityId] = globalIndex;
 		mIdToType[entity->mEntityId] = type;
 
@@ -228,7 +254,7 @@ void World::latentDestroyEntity(const Guid& entityId)
 	mEntityIdsMarkedLatentDestroy.push_back(entityId);
 
 	// add any components found on the entity to the latent destroy component list
-	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it = mEntityIdToComponentIds.find(entityId);
 	if(it != mEntityIdToComponentIds.end()){
 
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
@@ -248,7 +274,7 @@ void World::latentDestroyEntity(const Guid& entityId)
 
 void World::immediateDestroyEntity(const Guid& entityId)
 {
-	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it1 = mEntityIdToComponentIds.find(entityId);
 	if(it1 != mEntityIdToComponentIds.end()){
 		std::vector<std::pair<Guid, int>> componentsOnEntity = it1->second;
 
@@ -268,7 +294,7 @@ void World::immediateDestroyEntity(const Guid& entityId)
 	}
 
 	// remove from id to global index map
-	std::unordered_map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(entityId);
+	std::unordered_map<Guid, int>::const_iterator it2 = mIdToGlobalIndex.find(entityId);
 	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
@@ -289,7 +315,7 @@ void World::immediateDestroyEntity(const Guid& entityId)
 	}
 
 	//remove from id to type map
-	std::unordered_map<Guid, int>::iterator it3 = mIdToType.find(entityId);
+	std::unordered_map<Guid, int>::const_iterator it3 = mIdToType.find(entityId);
 	if (it3 != mIdToType.end()) {
 		mIdToType.erase(it3);
 	}
@@ -318,12 +344,12 @@ void World::immediateDestroyComponent(const Guid& entityId, const Guid &componen
 	}
 
 	// remove from id to global index map
-	std::unordered_map<Guid, int>::iterator it2 = mIdToGlobalIndex.find(componentId);
+	std::unordered_map<Guid, int>::const_iterator it2 = mIdToGlobalIndex.find(componentId);
 	if(it2 != mIdToGlobalIndex.end()){
 		int index = it2->second;
 
 		Component* swappedComponent = NULL;
-		if(componentType < 20){
+		if(Component::isInternal(componentType)){
 			swappedComponent = destroyInternalComponent(&mTransformAllocator,
 														&mMeshRendererAllocator,
 														&mLineRendererAllocator,
@@ -355,7 +381,7 @@ void World::immediateDestroyComponent(const Guid& entityId, const Guid &componen
 	} 
 
 	//remove from id to type map
-	std::unordered_map<Guid, int>::iterator it3 = mIdToType.find(componentId);
+	std::unordered_map<Guid, int>::const_iterator it3 = mIdToType.find(componentId);
 	if (it3 != mIdToType.end()) {
 		mIdToType.erase(it3);
 	}
@@ -401,7 +427,7 @@ std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid& entit
 {
 	std::vector<std::pair<Guid, int>> componentsOnEntity;
 
-	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it = mEntityIdToComponentIds.find(entityId);
 	if(it != mEntityIdToComponentIds.end()){
 		componentsOnEntity = it->second;
 	}

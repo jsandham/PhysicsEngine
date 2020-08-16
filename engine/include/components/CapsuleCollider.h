@@ -39,23 +39,19 @@ namespace PhysicsEngine
 			bool intersect(AABB aabb) const;
 	};
 
+	template <typename T>
+	struct IsCapsuleCollider { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<CapsuleCollider>::type = 10;
-
-	template <typename T>
-	struct IsCapsuleCollider { static const bool value; };
-
-	template <typename T>
-	const bool IsCapsuleCollider<T>::value = false;
-
-	template<>
-	const bool IsCapsuleCollider<CapsuleCollider>::value = true;
-	template<>
-	const bool IsCollider<CapsuleCollider>::value = true;
-	template<>
-	const bool IsComponent<CapsuleCollider>::value = true;
-	template<>
-	const bool IsComponentInternal<CapsuleCollider>::value = true;
+	struct ComponentType<CapsuleCollider> { static constexpr int type = CAPSULECOLLIDER_TYPE;};
+	template <>
+	struct IsCollider<CapsuleCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsCapsuleCollider<CapsuleCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<CapsuleCollider> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<CapsuleCollider> { static constexpr bool value = true; };
 }
 
 #endif

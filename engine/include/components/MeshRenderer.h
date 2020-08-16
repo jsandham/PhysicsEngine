@@ -52,21 +52,17 @@ namespace PhysicsEngine
 			std::vector<Guid> getMaterials() const;
 	};
 
+	template <typename T>
+	struct IsMeshRenderer { static constexpr bool value = false; };
+
 	template <>
-	const int ComponentType<MeshRenderer>::type = 3;
-
-	template <typename T>
-	struct IsMeshRenderer { static const bool value; };
-
-	template <typename T>
-	const bool IsMeshRenderer<T>::value = false;
-
-	template<>
-	const bool IsMeshRenderer<MeshRenderer>::value = true;
-	template<>
-	const bool IsComponent<MeshRenderer>::value = true;
-	template<>
-	const bool IsComponentInternal<MeshRenderer>::value = true;
+	struct ComponentType<MeshRenderer> { static constexpr int type = PhysicsEngine::MESHRENDERER_TYPE;};
+	template <>
+	struct IsMeshRenderer<MeshRenderer> { static constexpr bool value = true; };
+	template <>
+	struct IsComponent<MeshRenderer> { static constexpr bool value = true; };
+	template <>
+	struct IsComponentInternal<MeshRenderer> { static constexpr bool value = true; };
 }
 
 #endif

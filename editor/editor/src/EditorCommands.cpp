@@ -210,7 +210,7 @@ DestroyEntityCommand::DestroyEntityCommand(World* world, PhysicsEngine::Guid ent
 		int componentType = componentsOnEntity[i].second;
 
 		Component* component = NULL;
-		if (componentType < 20) {
+		if (Component::isInternal(componentType)) {
 			// component = getComponentInternal(world, componentType);
 		}
 		else {

@@ -63,23 +63,19 @@ namespace PhysicsEngine
 			void apply();
 	};
 
+	template <typename T>
+	struct IsCubemap { static constexpr bool value = false; };
+
 	template <>
-	const int AssetType<Cubemap>::type = 3;
-
-	template <typename T>
-	struct IsCubemap { static const bool value; };
-
-	template <typename T>
-	const bool IsCubemap<T>::value = false;
-
-	template<>
-	const bool IsCubemap<Cubemap>::value = true;
-	template<>
-	const bool IsTexture<Cubemap>::value = true;
-	template<>
-	const bool IsAsset<Cubemap>::value = true;
-	template<>
-	const bool IsAssetInternal<Cubemap>::value = true;
+	struct AssetType<Cubemap> { static constexpr int type = PhysicsEngine::CUBEMAP_TYPE;};
+	template <>
+	struct IsTexture<Cubemap> { static constexpr bool value = true; };
+	template <>
+	struct IsCubemap<Cubemap> { static constexpr bool value = true; };
+	template <>
+	struct IsAsset<Cubemap> { static constexpr bool value = true; };
+	template <>
+	struct IsAssetInternal<Cubemap> { static constexpr bool value = true; };
 }
 
 #endif
