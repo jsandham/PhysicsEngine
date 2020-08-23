@@ -54,8 +54,6 @@ void CleanUpSystem::init(World* world)
 
 void CleanUpSystem::update(Input input, Time time)
 {
-	mWorld->clearIdsMarkedMoved();
-
 	std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy = mWorld->getComponentIdsMarkedLatentDestroy();
 	for(size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++){
 

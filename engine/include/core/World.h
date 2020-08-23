@@ -123,12 +123,10 @@ namespace PhysicsEngine
 			// entity creation/deletion state
 			std::vector<Guid> mEntityIdsMarkedCreated;
 			std::vector<Guid> mEntityIdsMarkedLatentDestroy;
-			std::vector<std::pair<Guid, int>> mEntityIdsMarkedMoved;
 
 			// component create/deletion state
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedCreated;
 			std::vector<triple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
-			std::vector<triple<Guid, int, int>> mComponentIdsMarkedMoved;
 
 			// all systems in world listed in order they should be updated
 			std::vector<System*> mSystems;
@@ -319,16 +317,13 @@ namespace PhysicsEngine
 			void immediateDestroyComponent(const Guid& entityId, const Guid& componentId, int componentType);
 			bool isMarkedForLatentDestroy(const Guid& id);
 			void clearIdsMarkedCreatedOrDestroyed();
-			void clearIdsMarkedMoved();
 
 			std::vector<std::pair<Guid, int>> getComponentsOnEntity(const Guid& entityId);
 
 			std::vector<Guid> getEntityIdsMarkedCreated() const;
 			std::vector<Guid> getEntityIdsMarkedLatentDestroy() const;
-			std::vector<std::pair<Guid, int>> getEntityIdsMarkedMoved() const;
 			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedCreated() const;
 			std::vector<triple<Guid, Guid, int>> getComponentIdsMarkedLatentDestroy() const;
-			std::vector<triple<Guid, int, int>> getComponentIdsMarkedMoved() const;
 
 			std::string getAssetFilepath(const Guid& assetId) const;
 			std::string getSceneFilepath(const Guid& sceneId) const;
@@ -1527,6 +1522,14 @@ namespace PhysicsEngine
 			}
 
 			template<>
+			void addIdToGlobalIndexMap_impl<Entity>(const Guid& id, int index, int type)
+			{
+				mEntityIdToGlobalIndex[id] = index;
+				mIdToGlobalIndex[id] = index;
+				mIdToType[id] = type;
+			}
+
+			template<>
 			void addIdToGlobalIndexMap_impl<Transform>(const Guid& id, int index, int type)
 			{
 				mTransformIdToGlobalIndex[id] = index;
@@ -1695,6 +1698,14 @@ namespace PhysicsEngine
 			}
 
 			/*template<>
+			void removeIdToGlobalIndexMap_impl<EntityType<Entity>::type>(const Guid& id, int type)
+			{
+				mEntityIdToGlobalIndex.erase(id);
+				mIdToGlobalIndex.erase(id);
+				mIdToType.erase(id);
+			}
+
+			template<>
 			void removeIdToGlobalIndexMap_impl<ComponentType<Transform>::type>(const Guid& id, int type)
 			{
 				mTransformIdToGlobalIndex.erase(id);
@@ -1860,69 +1871,7 @@ namespace PhysicsEngine
 				mDebugSystemIdToGlobalIndex.erase(id);
 				mIdToGlobalIndex.erase(id);
 				mIdToType.erase(id);
-			}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			//template<typename T> 
-			//void updateIdToGlobalIndexMap(const Guid& componentId, int componentGlobalIndex)
-			//{
-
-			//}
-
-
-
-			///*template<typename T>
-			//T* addComponent_impl1(PoolAllocator<T>* allocator, const Guid& entityId)
-			//{
-			//	static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
-
-			//	if (getTypeOf(entityId) == EntityType<Entity>::type) {
-			//		return NULL;
-			//	}
-
-			//	int componentGlobalIndex = (int)allocator->getCount();
-			//	int componentType = ComponentType<T>::type;
-			//	Guid componentId = Guid::newGuid();
-
-			//	T* component = allocator->construct();
-
-			//	if (component != NULL) {
-			//		component->mEntityId = entityId;
-			//		component->mComponentId = componentId;
-
-			//		mIdToGlobalIndex[componentId] = componentGlobalIndex;
-			//		mIdToType[componentId] = componentType;
-
-			//		if (IsComponentInternal<T>::value) {
-			//			updateIdToGlobalIndexMap<T>(componentId, componentGlobalIndex);
-			//		}
-
-			//		mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
-
-			//		mComponentIdsMarkedCreated.push_back(make_triple(entityId, componentId, componentType));
-			//	}
-
-			//	return component;
-			//}*/
+			}*/
 	};
 }
 

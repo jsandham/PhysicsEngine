@@ -217,9 +217,7 @@ Entity* World::createEntity()
 		entity->mEntityId = entityId;
 		entity->mDoNotDestroy = false;
 
-		mEntityIdToGlobalIndex[entityId] = globalIndex;
-		mIdToGlobalIndex[entityId] = globalIndex;
-		mIdToType[entityId] = type;
+		addIdToGlobalIndexMap_impl<Entity>(entity->mEntityId, globalIndex, type);
 
 		mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 
@@ -237,9 +235,7 @@ Entity* World::createEntity(const std::vector<char>& data)
 	Entity* entity = mEntityAllocator.construct(data);
 
 	if (entity != NULL) {
-		mEntityIdToGlobalIndex[entity->mEntityId] = globalIndex;
-		mIdToGlobalIndex[entity->mEntityId] = globalIndex;
-		mIdToType[entity->mEntityId] = type;
+		addIdToGlobalIndexMap_impl<Entity>(entity->mEntityId, globalIndex, type);
 
 		mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
 
@@ -255,74 +251,43 @@ void World::latentDestroyEntity(const Guid& entityId)
 
 	// add any components found on the entity to the latent destroy component list
 	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it = mEntityIdToComponentIds.find(entityId);
-	if(it != mEntityIdToComponentIds.end()){
 
-		std::vector<std::pair<Guid, int>> componentsOnEntity = it->second;
-		for(size_t i = 0; i < componentsOnEntity.size(); i++){
-			Guid componentId = componentsOnEntity[i].first;
-			int componentType = componentsOnEntity[i].second;
+	assert(it != mEntityIdToComponentIds.end());
 
-			latentDestroyComponent(entityId, componentId, componentType);
-		}
-	}
-	else{
-		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to add to latent destroy list\n";
-		Log::error(message.c_str());
-		return;
+	for(size_t i = 0; i < it->second.size(); i++){
+		latentDestroyComponent(entityId, it->second[i].first, it->second[i].second);
 	}
 }
 
 void World::immediateDestroyEntity(const Guid& entityId)
 {
-	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it1 = mEntityIdToComponentIds.find(entityId);
-	if(it1 != mEntityIdToComponentIds.end()){
-		std::vector<std::pair<Guid, int>> componentsOnEntity = it1->second;
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it = mEntityIdToComponentIds.find(entityId);
 
-		for(size_t i = 0; i < componentsOnEntity.size(); i++){
-			Guid componentId = componentsOnEntity[i].first;
-			int componentType = componentsOnEntity[i].second;
+	assert(it != mEntityIdToComponentIds.end());
 
-			immediateDestroyComponent(entityId, componentId, componentType);
-		}
-
-		mEntityIdToComponentIds.erase(it1);
-	}
-	else{
-		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete\n";
-		Log::error(message.c_str());
-		return;
+	for(size_t i = 0; i < it->second.size(); i++){
+		immediateDestroyComponent(entityId, it->second[i].first, it->second[i].second);
 	}
 
-	// remove from id to global index map
-	std::unordered_map<Guid, int>::const_iterator it2 = mIdToGlobalIndex.find(entityId);
-	if(it2 != mIdToGlobalIndex.end()){
-		int index = it2->second;
+	mEntityIdToComponentIds.erase(it);
 
-		Entity* swappedEntity = destroyInternalEntity(&mEntityAllocator, index);
+	int index = getIndexOf(entityId);
 
-		mIdToGlobalIndex.erase(it2);
+	assert(index != -1);
 
-		if(swappedEntity != NULL){
-			mEntityIdsMarkedMoved.push_back(std::make_pair(swappedEntity->mEntityId, mIdToGlobalIndex[swappedEntity->mEntityId]));
+	Entity* swappedEntity = destroyInternalEntity(&mEntityAllocator, index);
 
-			mIdToGlobalIndex[swappedEntity->mEntityId] = index;
-		}
-	}
-	else{
-		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete from id to global index map\n";
-		Log::error(message.c_str());
-		return;
-	}
+	removeInternalEntityIdFromIndexMap(&mEntityIdToGlobalIndex,
+									   &mIdToGlobalIndex,
+									   &mIdToType,
+									   entityId);
 
-	//remove from id to type map
-	std::unordered_map<Guid, int>::const_iterator it3 = mIdToType.find(entityId);
-	if (it3 != mIdToType.end()) {
-		mIdToType.erase(it3);
-	}
-	else {
-		std::string message = "Error: Could not find entity with id " + entityId.toString() + " when trying to delete from id to type map\n";
-		Log::error(message.c_str());
-		return;
+	if (swappedEntity != NULL) {
+		addInternalEntityIdToIndexMap(&mEntityIdToGlobalIndex,
+			&mIdToGlobalIndex,
+			&mIdToType,
+			swappedEntity->mEntityId,
+			index);
 	}
 }
 
@@ -333,62 +298,80 @@ void World::latentDestroyComponent(const Guid& entityId, const Guid& componentId
 
 void World::immediateDestroyComponent(const Guid& entityId, const Guid &componentId, int componentType)
 {
-	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it1 = mEntityIdToComponentIds.find(entityId);
-	if(it1 != mEntityIdToComponentIds.end()){
-		for(size_t i = 0; i < it1->second.size(); i++){
-			if(it1->second[i].first == componentId){
-				it1->second.erase(it1->second.begin() + i);
-				break;
-			}
+	std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mEntityIdToComponentIds.find(entityId);
+
+	assert(it != mEntityIdToComponentIds.end());
+
+	for(size_t i = 0; i < it->second.size(); i++){
+		if(it->second[i].first == componentId){
+			it->second.erase(it->second.begin() + i);
+			break;
 		}
 	}
 
-	// remove from id to global index map
-	std::unordered_map<Guid, int>::const_iterator it2 = mIdToGlobalIndex.find(componentId);
-	if(it2 != mIdToGlobalIndex.end()){
-		int index = it2->second;
+	int index = getIndexOf(componentId);
 
-		Component* swappedComponent = NULL;
-		if(Component::isInternal(componentType)){
-			swappedComponent = destroyInternalComponent(&mTransformAllocator,
-														&mMeshRendererAllocator,
-														&mLineRendererAllocator,
-														&mRigidbodyAllocator,
-														&mCameraAllocator,
-														&mLightAllocator,
-														&mSphereColliderAllocator,
-														&mBoxColliderAllocator,
-														&mCapsuleColliderAllocator,
-														&mMeshColliderAllocator, 
-														componentType, 
-														index);
-		}
-		else{
-			swappedComponent = destroyComponent(&mComponentAllocatorMap, componentType, index);
-		}
+	assert(index != -1);
 
-		mIdToGlobalIndex.erase(it2);
-
-		if(swappedComponent != NULL){
-			mComponentIdsMarkedMoved.push_back(make_triple(swappedComponent->mComponentId, componentType, mIdToGlobalIndex[swappedComponent->mComponentId]));
-
-			mIdToGlobalIndex[swappedComponent->mComponentId] = index;
-		}
-	}
-	else{
-		std::string message = "Error: component id " + componentId.toString() + " not found in map when trying to destroy\n";
-		Log::error(message.c_str());
-	} 
-
-	//remove from id to type map
-	std::unordered_map<Guid, int>::const_iterator it3 = mIdToType.find(componentId);
-	if (it3 != mIdToType.end()) {
-		mIdToType.erase(it3);
+	Component* swappedComponent = NULL;
+	if (Component::isInternal(componentType)) {
+		swappedComponent = destroyInternalComponent(&mTransformAllocator,
+			&mMeshRendererAllocator,
+			&mLineRendererAllocator,
+			&mRigidbodyAllocator,
+			&mCameraAllocator,
+			&mLightAllocator,
+			&mSphereColliderAllocator,
+			&mBoxColliderAllocator,
+			&mCapsuleColliderAllocator,
+			&mMeshColliderAllocator,
+			componentType,
+			index);
 	}
 	else {
-		std::string message = "Error: Could not find component with id " + componentId.toString() + " when trying to delete from id to type map\n";
-		Log::error(message.c_str());
-		return;
+		swappedComponent = destroyComponent(&mComponentAllocatorMap, componentType, index);
+	}
+
+	if (Component::isInternal(componentType)) {
+		removeInternalComponentIdFromIndexMap(&mTransformIdToGlobalIndex,
+											  &mMeshRendererIdToGlobalIndex,
+											  &mLineRendererIdToGlobalIndex,
+											  &mRigidbodyIdToGlobalIndex,
+											  &mCameraIdToGlobalIndex,
+											  &mLightIdToGlobalIndex,
+											  &mSphereColliderIdToGlobalIndex,
+											  &mBoxColliderIdToGlobalIndex,
+										 	  &mCapsuleColliderIdToGlobalIndex,
+										 	  &mMeshColliderIdToGlobalIndex,
+											  &mIdToGlobalIndex,
+										 	  &mIdToType,
+											  componentId,
+											  componentType);
+
+		if (swappedComponent != NULL) {
+			addInternalComponentIdToIndexMap(&mTransformIdToGlobalIndex,
+				&mMeshRendererIdToGlobalIndex,
+				&mLineRendererIdToGlobalIndex,
+				&mRigidbodyIdToGlobalIndex,
+				&mCameraIdToGlobalIndex,
+				&mLightIdToGlobalIndex,
+				&mSphereColliderIdToGlobalIndex,
+				&mBoxColliderIdToGlobalIndex,
+				&mCapsuleColliderIdToGlobalIndex,
+				&mMeshColliderIdToGlobalIndex,
+				&mIdToGlobalIndex,
+				&mIdToType,
+				swappedComponent->mComponentId,
+				componentType,
+				index);
+		}
+	}
+	else {
+		removeComponentIdFromIndexMap(&mIdToGlobalIndex, &mIdToType, componentId, componentType);
+
+		if (swappedComponent != NULL) {
+			addComponentIdToIndexMap(&mIdToGlobalIndex, &mIdToType, swappedComponent->mComponentId, componentType, index);
+		}
 	}
 }
 
@@ -417,12 +400,6 @@ void World::clearIdsMarkedCreatedOrDestroyed()
 	mComponentIdsMarkedLatentDestroy.clear();
 }
 
-void World::clearIdsMarkedMoved()
-{
-	mEntityIdsMarkedMoved.clear();
-	mComponentIdsMarkedMoved.clear();
-}
-
 std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid& entityId)
 {
 	std::vector<std::pair<Guid, int>> componentsOnEntity;
@@ -444,11 +421,6 @@ std::vector<Guid> World::getEntityIdsMarkedLatentDestroy() const
 {
 	return mEntityIdsMarkedLatentDestroy;
 }
-
-std::vector<std::pair<Guid, int>> World::getEntityIdsMarkedMoved() const
-{
-	return mEntityIdsMarkedMoved;
-}
 			
 std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedCreated() const
 {
@@ -458,11 +430,6 @@ std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedCreated() const
 std::vector<triple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestroy() const
 {
 	return mComponentIdsMarkedLatentDestroy;
-}
-
-std::vector<triple<Guid, int, int>> World::getComponentIdsMarkedMoved() const
-{
-	return mComponentIdsMarkedMoved;
 }
 
 std::string World::getAssetFilepath(const Guid& assetId) const

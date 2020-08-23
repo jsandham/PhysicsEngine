@@ -12,13 +12,22 @@
 namespace PhysicsEngine
 {
 	// add external asset defined by the user to global index map (assets with type 10 or greater)
-	void addAssetIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+	void addAssetIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type, int index);
 
 	// add external component defined by the user to global index map (assets with type 10 or greater)
-	void addComponentIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+	void addComponentIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type, int index);
 
 	// add external system defined by the user to global index map (assets with type 10 or greater)
-	void addSystemIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index);
+	void addSystemIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type, int index);
+
+	// remove external asset defined by the user to global index map (assets with type 10 or greater)
+	void removeAssetIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type);
+
+	// remove external component defined by the user to global index map (assets with type 10 or greater)
+	void removeComponentIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type);
+
+	// remove external system defined by the user to global index map (assets with type 10 or greater)
+	void removeSystemIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToTypeMap, const Guid& id, int type);
 
 	// get external asset defined by the user (assets with type 10 or greater)
 	Asset* getAsset(std::unordered_map<int, Allocator*>* allocatorMap, int type, int index);

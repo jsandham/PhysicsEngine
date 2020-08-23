@@ -28,34 +28,34 @@ using namespace PhysicsEngine;
 
 InspectorDrawer* PhysicsEditor::loadInternalInspectorComponentDrawer(int type)
 {
-	if (type == 0){
+	if (type == ComponentType<Transform>::type){
 		return new TransformDrawer();
 	}
-	else if (type == 1){
+	else if (type == ComponentType<Rigidbody>::type){
 		return new RigidbodyDrawer();
 	}
-	else if (type == 2){
+	else if (type == ComponentType<Camera>::type){
 		return new CameraDrawer();
 	}
-	else if (type == 3){
+	else if (type == ComponentType<MeshRenderer>::type){
 		return new MeshRendererDrawer();
 	}
-	else if (type == 4){
+	else if (type == ComponentType<LineRenderer>::type){
 		return new LineRendererDrawer();
 	}
-	else if (type == 5){
+	else if (type == ComponentType<Light>::type){
 		return new LightDrawer();
 	}
-	else if (type == 8){
+	else if (type == ComponentType<BoxCollider>::type){
 		return new BoxColliderDrawer();
 	}
-	else if (type == 9){
+	else if (type == ComponentType<SphereCollider>::type){
 		return new SphereColliderDrawer();
 	}
-	else if (type == 10) {
+	else if (type == ComponentType<CapsuleCollider>::type) {
 		return new CapsuleColliderDrawer();
 	}
-	else if (type == 15){
+	else if (type == ComponentType<MeshCollider>::type){
 		return new MeshColliderDrawer();
 	}
 	else{
@@ -67,25 +67,25 @@ InspectorDrawer* PhysicsEditor::loadInternalInspectorComponentDrawer(int type)
 
 InspectorDrawer* PhysicsEditor::loadInternalInspectorAssetDrawer(int type)
 {
-	if (type == 0) {
+	if (type == AssetType<Shader>::type) {
 		return new ShaderDrawer();
 	}
-	else if (type == 1) {
+	else if (type == AssetType<Texture2D>::type) {
 		return new Texture2DDrawer();
 	}
-	else if (type == 2) {
+	else if (type == AssetType<Texture3D>::type) {
 		return new Texture3DDrawer();
 	}
-	else if (type == 3) {
+	else if (type == AssetType<Cubemap>::type) {
 		return new CubemapDrawer();
 	}
-	else if (type == 4) {
+	else if (type == AssetType<Material>::type) {
 		return new MaterialDrawer();
 	}
-	else if (type == 5) {
+	else if (type == AssetType<Mesh>::type) {
 		return new MeshDrawer();
 	}
-	else if (type == 6) {
+	else if (type == AssetType<Font>::type) {
 		return new FontDrawer();
 	}
 	else {

@@ -41,7 +41,8 @@ namespace PhysicsEngine
 	// Add internal entity, component, system or asset id to global index maps
 	void addInternalEntityIdToIndexMap(std::unordered_map<Guid, int>* entityIdToGlobalIndex, 
 									   std::unordered_map<Guid, int>* idToGlobalIndex, 
-									   Guid id, 
+									   std::unordered_map<Guid, int>* idToType,
+									   const Guid& id, 
 									   int index);
 	void addInternalComponentIdToIndexMap(std::unordered_map<Guid, int>* transformIdToGlobalIndex,
 										  std::unordered_map<Guid, int>* meshRendererIdToGlobalIndex,
@@ -54,7 +55,8 @@ namespace PhysicsEngine
 										  std::unordered_map<Guid, int>* capsuleColliderIdToGlobalIndex,
 										  std::unordered_map<Guid, int>* meshColliderIdToGlobalIndex,
 										  std::unordered_map<Guid, int>* idToGlobalIndex,
-										  Guid id, 
+										  std::unordered_map<Guid, int>* idToType,
+										  const Guid& id, 
 										  int type, 
 										  int index);
 	void addInternalSystemIdToIndexMap(std::unordered_map<Guid, int>* renderSystemIdToGlobalIndex,
@@ -62,7 +64,8 @@ namespace PhysicsEngine
 									   std::unordered_map<Guid, int>* cleanupSystemIdToGlobalIndex,
 									   std::unordered_map<Guid, int>* debugSystemIdToGlobalIndex, 
 									   std::unordered_map<Guid, int>* idToGlobalIndex,
-									   Guid id,
+									   std::unordered_map<Guid, int>* idToType,
+									   const Guid& id,
 									   int type,
 									   int index);
 	void addInternalAssetIdToIndexMap(std::unordered_map<Guid, int>* meshIdToGlobalIndex,
@@ -73,9 +76,49 @@ namespace PhysicsEngine
 									  std::unordered_map<Guid, int>* cubemapIdToGlobalIndex,
 									  std::unordered_map<Guid, int>* fontIdToGlobalIndex, 
 									  std::unordered_map<Guid, int>* idToGlobalIndex,
-									  Guid id,
+									  std::unordered_map<Guid, int>* idToType,
+									  const Guid& id,
 									  int type,
 									  int index);
+
+	// Remove internal entity, component, system or asset id to global index maps
+	void removeInternalEntityIdFromIndexMap(std::unordered_map<Guid, int>* entityIdToGlobalIndex,
+										  std::unordered_map<Guid, int>* idToGlobalIndex,
+										  std::unordered_map<Guid, int>* idToType,
+										  const Guid& id);
+	void removeInternalComponentIdFromIndexMap(std::unordered_map<Guid, int>* transformIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* meshRendererIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* lineRendererIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* rigidbodyIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* cameraIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* lightIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* sphereColliderIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* boxColliderIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* capsuleColliderIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* meshColliderIdToGlobalIndex,
+											 std::unordered_map<Guid, int>* idToGlobalIndex,
+											 std::unordered_map<Guid, int>* idToType,
+											 const Guid& id,
+											 int type);
+	void removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, int>* renderSystemIdToGlobalIndex,
+										  std::unordered_map<Guid, int>* physicsSystemIdToGlobalIndex,
+										  std::unordered_map<Guid, int>* cleanupSystemIdToGlobalIndex,
+										  std::unordered_map<Guid, int>* debugSystemIdToGlobalIndex,
+										  std::unordered_map<Guid, int>* idToGlobalIndex,
+										  std::unordered_map<Guid, int>* idToType,
+										  const Guid& id,
+										  int type);
+	void removeInternalAssetIdFromIndexMap(std::unordered_map<Guid, int>* meshIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* materialIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* shaderIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* texture2DIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* texture3DIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* cubemapIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* fontIdToGlobalIndex,
+										 std::unordered_map<Guid, int>* idToGlobalIndex,
+										 std::unordered_map<Guid, int>* idToType,
+										 const Guid& id,
+										 int type);
 
 	// Get internal entity, component, system or asset from allocators
 	Entity* getInternalEntity(PoolAllocator<Entity>* entityAllocator, int index);

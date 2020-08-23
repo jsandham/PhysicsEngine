@@ -89,6 +89,7 @@ void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 														idState.mCubemapIdToGlobalIndex,
 														idState.mFontIdToGlobalIndex,
 														idState.mIdToGlobalIndex,
+														idState.mIdToType,
 														asset->getId(),
 														header.mType,
 														index);
@@ -98,7 +99,6 @@ void PhysicsEngine::loadAssetIntoWorld(const std::string& filepath,
 
 		}
 
-		(*idState.mIdToType)[asset->getId()] = header.mType;
 		assetIdToFilepath[asset->getId()] = filepath;
 	}
 }
@@ -177,9 +177,8 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 			assert(entity != NULL && "Returned a NULL entity after loading\n");
 			assert(index >= 0 && "Returned a negative index for entity after loading\n");
 
-			PhysicsEngine::addInternalEntityIdToIndexMap(idState.mEntityIdToGlobalIndex, idState.mIdToGlobalIndex, entity->getId(), index);
+			PhysicsEngine::addInternalEntityIdToIndexMap(idState.mEntityIdToGlobalIndex, idState.mIdToGlobalIndex, idState.mIdToType, entity->getId(), index);
 
-			(*idState.mIdToType)[entity->getId()] = EntityType<Entity>::type;
 			(*idState.mEntityIdToComponentIds)[entity->getId()] = std::vector<std::pair<Guid, int>>();
 			(*idState.mEntityIdsMarkedCreated).push_back(entity->getId());
 		}
@@ -258,6 +257,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 																 idState.mCapsuleColliderIdToGlobalIndex,
 																 idState.mMeshColliderIdToGlobalIndex,
 																 idState.mIdToGlobalIndex,
+																 idState.mIdToType,
 																 component->getId(),
 																 componentInfoHeaders[i].mType,
 																 index);
@@ -265,12 +265,12 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 			else
 			{
 				PhysicsEngine::addComponentIdToIndexMap(idState.mIdToGlobalIndex,
+														idState.mIdToType,
 														component->getId(),
 														componentInfoHeaders[i].mType,
 														index);
 			}
 
-			(*idState.mIdToType)[component->getId()] = componentInfoHeaders[i].mType;
 			(*idState.mEntityIdToComponentIds)[component->getEntityId()].push_back(std::make_pair(component->getId(), componentInfoHeaders[i].mType));
 			(*idState.mComponentIdsMarkedCreated).push_back(make_triple(component->getEntityId(), component->getId(), componentInfoHeaders[i].mType));
 		}
@@ -331,6 +331,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 															 idState.mCleanupSystemIdToGlobalIndex,
 															 idState.mDebugSystemIdToGlobalIndex,
 															 idState.mIdToGlobalIndex,
+															 idState.mIdToType,
 															 system->getId(),
 															 systemInfoHeaders[i].mType,
 															 index);
@@ -338,12 +339,11 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string& filepath,
 			else
 			{
 				PhysicsEngine::addSystemIdToIndexMap(idState.mIdToGlobalIndex,
+													 idState.mIdToType,
 													 system->getId(),
 													 systemInfoHeaders[i].mType,
 													 index);
 			}
-
-			(*idState.mIdToType)[system->getId()] = systemInfoHeaders[i].mType;
 		}
 	}
 }

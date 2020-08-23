@@ -9,21 +9,37 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::addAssetIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index)
+void PhysicsEngine::addAssetIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type, int index)
 {
 
 }
 
-void PhysicsEngine::addComponentIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index)
+void PhysicsEngine::addComponentIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type, int index)
 {
 
 }
 
-void PhysicsEngine::addSystemIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, Guid id, int type, int index)
+void PhysicsEngine::addSystemIdToIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type, int index)
 {
 	if (type == ComponentType<EditorCameraSystem>::type) {
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
+}
+
+void PhysicsEngine::removeAssetIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type)
+{
+
+}
+
+void PhysicsEngine::removeComponentIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type)
+{
+
+}
+
+void PhysicsEngine::removeSystemIdFromIndexMap(std::unordered_map<Guid, int>* idToGlobalIndex, std::unordered_map<Guid, int>* idToType, const Guid& id, int type)
+{
+	
 }
 
 Asset* PhysicsEngine::getAsset(std::unordered_map<int, Allocator*>* allocatorMap, int type, int index)

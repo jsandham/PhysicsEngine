@@ -1,61 +1,7 @@
-﻿  AboutPopup.cpp
-  BoxColliderDrawer.cpp
-  BuildWindow.cpp
-  CameraDrawer.cpp
-  CapsuleColliderDrawer.cpp
-  Command.cpp
-  CommandManager.cpp
-  Console.cpp
-  CubemapDrawer.cpp
-  Editor.cpp
+﻿  Editor.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Editor.cpp(166,40): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=double
           ]
-  EditorCameraSystem.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(225,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(226,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-  EditorClipboard.cpp
-  EditorCommands.cpp
-  EditorFileIO.cpp
-  EditorOnlyEntityCreation.cpp
-  EditorToolbar.cpp
-  Filebrowser.cpp
-  FileSystemUtil.cpp
-  FontDrawer.cpp
-  Hierarchy.cpp
-  Generating Code...
-  Compiling...
-  imgui_extensions.cpp
-  imgui_styles.cpp
-  Inspector.cpp
-  InspectorDrawer.cpp
-  LibraryDirectory.cpp
-  LightDrawer.cpp
-  LineRendererDrawer.cpp
-  Load.cpp
-  LoadInspectorDrawerInternal.cpp
-  main.cpp
-  EditorMenuBar.cpp
-  MaterialDrawer.cpp
-  MaterialRenderer.cpp
-  MeshColliderDrawer.cpp
-  MeshDrawer.cpp
-  MeshRendererDrawer.cpp
-  PerformanceQueue.cpp
-  PreferencesWindow.cpp
-  ProjectView.cpp
-  ProjectWindow.cpp
-  Generating Code...
-  Compiling...
-  RigidbodyDrawer.cpp
-  SceneView.cpp
-  ShaderDrawer.cpp
-  SphereColliderDrawer.cpp
-  Texture2DDrawer.cpp
-  Texture3DDrawer.cpp
-  TransformDrawer.cpp
-  WriteToJson.cpp
-  Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

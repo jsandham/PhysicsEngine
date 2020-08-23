@@ -12,11 +12,13 @@ using namespace PhysicsEngine;
 
 void PhysicsEngine::addInternalEntityIdToIndexMap(std::unordered_map<Guid, int>* entityIdToGlobalIndex, 
 												  std::unordered_map<Guid, int>* idToGlobalIndex, 
-												  Guid id, 
+												  std::unordered_map<Guid, int>* idToType,
+												  const Guid& id, 
 												  int index)
 {
 	(*entityIdToGlobalIndex)[id] = index;
 	(*idToGlobalIndex)[id] = index;
+	(*idToType)[id] = EntityType<Entity>::type;
 }
 
 void PhysicsEngine::addInternalComponentIdToIndexMap(std::unordered_map<Guid, int>* transformIdToGlobalIndex,
@@ -30,49 +32,60 @@ void PhysicsEngine::addInternalComponentIdToIndexMap(std::unordered_map<Guid, in
 													std::unordered_map<Guid, int>* capsuleColliderIdToGlobalIndex,
 													std::unordered_map<Guid, int>* meshColliderIdToGlobalIndex,
 													std::unordered_map<Guid, int>* idToGlobalIndex,
-													Guid id,
+													std::unordered_map<Guid, int>* idToType,
+													const Guid& id,
 													int type,
 													int index)
 {
 	if (type == ComponentType<Transform>::type) {
 		(*transformIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<Rigidbody>::type) {
 		(*rigidbodyIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<Camera>::type) {
 		(*cameraIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<MeshRenderer>::type) {
 		(*meshRendererIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<LineRenderer>::type) {
 		(*lineRendererIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<Light>::type) {
 		(*lightIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<BoxCollider>::type) {
 		(*boxColliderIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<SphereCollider>::type) {
 		(*sphereColliderIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<MeshCollider>::type) {
 		(*meshColliderIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == ComponentType<CapsuleCollider>::type) {
 		(*capsuleColliderIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else {
 		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to add internal component id to index map\n";
@@ -85,25 +98,30 @@ void PhysicsEngine::addInternalSystemIdToIndexMap(std::unordered_map<Guid, int>*
 												std::unordered_map<Guid, int>* cleanupSystemIdToGlobalIndex,
 												std::unordered_map<Guid, int>* debugSystemIdToGlobalIndex,
 												std::unordered_map<Guid, int>* idToGlobalIndex,
-												Guid id,
+												std::unordered_map<Guid, int>* idToType,
+												const Guid& id,
 												int type,
 												int index)
 {
 	if (type == SystemType<RenderSystem>::type) {
 		(*renderSystemIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == SystemType<PhysicsSystem>::type) {
 		(*physicsSystemIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == SystemType<CleanUpSystem>::type) {
 		(*cleanupSystemIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == SystemType<DebugSystem>::type) {
 		(*debugSystemIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else {
 		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to add internal system id to index map\n";
@@ -119,40 +137,217 @@ void PhysicsEngine::addInternalAssetIdToIndexMap(std::unordered_map<Guid, int>* 
 												std::unordered_map<Guid, int>* cubemapIdToGlobalIndex,
 												std::unordered_map<Guid, int>* fontIdToGlobalIndex,
 												std::unordered_map<Guid, int>* idToGlobalIndex,
-												Guid id,
+												std::unordered_map<Guid, int>* idToType,
+												const Guid& id,
 												int type,
 												int index)
 {
 	if (type == AssetType<Shader>::type) {
 		(*shaderIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Texture2D>::type) {
 		(*texture2DIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Texture3D>::type) {
 		(*texture3DIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Cubemap>::type) {
 		(*cubemapIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Material>::type) {
 		(*materialIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Mesh>::type) {
 		(*meshIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else if (type == AssetType<Font>::type) {
 		(*fontIdToGlobalIndex)[id] = index;
 		(*idToGlobalIndex)[id] = index;
+		(*idToType)[id] = type;
 	}
 	else {
 		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to add internal asset id to index map\n";
+		Log::error(message.c_str());
+	}
+}
+
+void PhysicsEngine::removeInternalEntityIdFromIndexMap(std::unordered_map<Guid, int>* entityIdToGlobalIndex,
+													 std::unordered_map<Guid, int>* idToGlobalIndex,
+													 std::unordered_map<Guid, int>* idToType,
+													 const Guid& id)
+{
+	(*entityIdToGlobalIndex).erase(id);
+	(*idToGlobalIndex).erase(id);
+	(*idToType).erase(id);
+}
+
+void PhysicsEngine::removeInternalComponentIdFromIndexMap(std::unordered_map<Guid, int>* transformIdToGlobalIndex,
+														std::unordered_map<Guid, int>* meshRendererIdToGlobalIndex,
+														std::unordered_map<Guid, int>* lineRendererIdToGlobalIndex,
+														std::unordered_map<Guid, int>* rigidbodyIdToGlobalIndex,
+														std::unordered_map<Guid, int>* cameraIdToGlobalIndex,
+														std::unordered_map<Guid, int>* lightIdToGlobalIndex,
+														std::unordered_map<Guid, int>* sphereColliderIdToGlobalIndex,
+														std::unordered_map<Guid, int>* boxColliderIdToGlobalIndex,
+														std::unordered_map<Guid, int>* capsuleColliderIdToGlobalIndex,
+														std::unordered_map<Guid, int>* meshColliderIdToGlobalIndex,
+														std::unordered_map<Guid, int>* idToGlobalIndex,
+														std::unordered_map<Guid, int>* idToType,
+														const Guid& id,
+														int type)
+{
+	if (type == ComponentType<Transform>::type) {
+		(*transformIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<Rigidbody>::type) {
+		(*rigidbodyIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<Camera>::type) {
+		(*cameraIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<MeshRenderer>::type) {
+		(*meshRendererIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<LineRenderer>::type) {
+		(*lineRendererIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<Light>::type) {
+		(*lightIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<BoxCollider>::type) {
+		(*boxColliderIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<SphereCollider>::type) {
+		(*sphereColliderIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<MeshCollider>::type) {
+		(*meshColliderIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == ComponentType<CapsuleCollider>::type) {
+		(*capsuleColliderIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else {
+		std::string message = "Error: Invalid component type (" + std::to_string(type) + ") when trying to remove internal component id to index map\n";
+		Log::error(message.c_str());
+	}
+}
+
+void PhysicsEngine::removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, int>* renderSystemIdToGlobalIndex,
+													 std::unordered_map<Guid, int>* physicsSystemIdToGlobalIndex,
+													 std::unordered_map<Guid, int>* cleanupSystemIdToGlobalIndex,
+													 std::unordered_map<Guid, int>* debugSystemIdToGlobalIndex,
+													 std::unordered_map<Guid, int>* idToGlobalIndex,
+													 std::unordered_map<Guid, int>* idToType,
+													 const Guid& id,
+													 int type)
+{
+	if (type == SystemType<RenderSystem>::type) {
+		(*renderSystemIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == SystemType<PhysicsSystem>::type) {
+		(*physicsSystemIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == SystemType<CleanUpSystem>::type) {
+		(*cleanupSystemIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == SystemType<DebugSystem>::type) {
+		(*debugSystemIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else {
+		std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to remove internal system id to index map\n";
+		Log::error(message.c_str());
+	}
+}
+
+void PhysicsEngine::removeInternalAssetIdFromIndexMap(std::unordered_map<Guid, int>* meshIdToGlobalIndex,
+													std::unordered_map<Guid, int>* materialIdToGlobalIndex,
+													std::unordered_map<Guid, int>* shaderIdToGlobalIndex,
+													std::unordered_map<Guid, int>* texture2DIdToGlobalIndex,
+													std::unordered_map<Guid, int>* texture3DIdToGlobalIndex,
+													std::unordered_map<Guid, int>* cubemapIdToGlobalIndex,
+													std::unordered_map<Guid, int>* fontIdToGlobalIndex,
+													std::unordered_map<Guid, int>* idToGlobalIndex,
+													std::unordered_map<Guid, int>* idToType,
+													const Guid& id,
+													int type)
+{
+	if (type == AssetType<Shader>::type) {
+		(*shaderIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Texture2D>::type) {
+		(*texture2DIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Texture3D>::type) {
+		(*texture3DIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Cubemap>::type) {
+		(*cubemapIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Material>::type) {
+		(*materialIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Mesh>::type) {
+		(*meshIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else if (type == AssetType<Font>::type) {
+		(*fontIdToGlobalIndex).erase(id);
+		(*idToGlobalIndex).erase(id);
+		(*idToType).erase(id);
+	}
+	else {
+		std::string message = "Error: Invalid asset type (" + std::to_string(type) + ") when trying to remove internal asset id to index map\n";
 		Log::error(message.c_str());
 	}
 }
