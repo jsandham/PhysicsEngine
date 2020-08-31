@@ -1,6 +1,7 @@
 #include "../include/SceneView.h"
 
 #include "core/Log.h"
+#include "graphics/Gizmos.h"
 
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
@@ -49,14 +50,6 @@ void SceneView::render(PhysicsEngine::World* world,
 
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
-		// draw transform gizmo if entity is selected
-		if (clipboard.getSelectedType() == InteractionType::Entity) {
-			Guid selectedEntityId = clipboard.getSelectedId();
-			if (selectedEntityId != Guid::INVALID) {
-				//Graphics::draw(world, MeshRenderer * meshRenderer, );
-			}
-		}
-
 		focused = ImGui::IsWindowFocused();
 		hovered = ImGui::IsWindowHovered();
 
@@ -249,7 +242,7 @@ void SceneView::render(PhysicsEngine::World* world,
 		size.x -= sceneContentMin.x;
 		size.y -= sceneContentMin.y;
 
-		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
+		/*ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));*/
 
 		// Check if entity is selected
 		if (cameraSystem->isLeftMouseClicked()) {
@@ -266,9 +259,45 @@ void SceneView::render(PhysicsEngine::World* world,
 				Log::warn(("entity id: " + meshRenderer->getEntityId().toString() + " transform id: " + transform->getId().toString() + " mesh renderer id: " + meshRendererId.toString() + "\n").c_str());
 			}
 			else {
-				clipboard.setSelectedItem(InteractionType::Entity, Guid::INVALID);
+				clipboard.setSelectedItem(InteractionType::None, Guid::INVALID);
 			}
 		}
+
+		// draw transform gizmo if entity is selected
+		if (clipboard.getSelectedType() == InteractionType::Entity) {
+			Guid selectedEntityId = clipboard.getSelectedId();
+
+			assert(selectedEntityId != Guid::INVALID);
+
+			Transform* transform = world->getComponent<Transform>(selectedEntityId);
+
+			assert(transform != NULL);
+
+			Gizmos::drawTranslationGizmo(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
+
+			Gizmos::drawRotationGizmo(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
+			
+			// gives mouse pixel coordinates in the [-1, 1] range
+			/*Vec2f n = platform().mouse.normalized_coordinates();
+
+			Vec4f ray_start, ray_end;
+			Mat4f view_proj_inverse = inverse(camera_matrix);
+
+			ray_start = view_proj_inverse * Vec4f(n.x, n.y, 0.f, 1.f);
+			ray_start *= 1.f / ray_start.w;
+
+			ray_end = view_proj_inverse * Vec4f(n.x, n.y, 1.f, 1.f);
+			ray_end *= 1.f / ray_end.w;
+
+			context.camera_ray.origin = (Vec3f&)ray_start;
+			context.camera_ray.direction = (Vec3f&)normalize(ray_end - ray_start);
+
+			context.camera_ray.t = FLT_MAX;*/
+			
+		}
+
+		// Finally draw scene
+		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
 	}
 	ImGui::End();
 }

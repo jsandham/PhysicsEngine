@@ -226,8 +226,13 @@ Guid EditorCameraSystem::getMeshRendererUnderMouse(float nx, float ny) const
 	int y = mCamera->mViewport.mY + mCamera->mViewport.mHeight * ny;
 
 	return mCamera->getMeshRendererIdAtScreenPos(x, y);
-	/*return mCamera->getMeshRendererIdAtScreenPos(mMousePosX, mMousePosY);*/
 }
+
+GLuint EditorCameraSystem::getNativeGraphicsMainFBO() const
+{
+	return mCamera->getNativeGraphicsMainFBO();
+}
+
 
 GLuint EditorCameraSystem::getNativeGraphicsColorTex() const
 {
@@ -272,4 +277,14 @@ GLuint EditorCameraSystem::getNativeGraphicsSSAONoiseTex() const
 GraphicsQuery EditorCameraSystem::getQuery() const
 {
 	return mCamera->mQuery;
+}
+
+glm::mat4 EditorCameraSystem::getViewMatrix() const
+{
+	return mCamera->getViewMatrix();
+}
+
+glm::mat4 EditorCameraSystem::getProjMatrix() const
+{
+	return mCamera->getProjMatrix();
 }

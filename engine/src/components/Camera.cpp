@@ -249,6 +249,47 @@ Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
 	return Guid::INVALID;
 }
 
+Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const
+{
+	// compute ray cast from the normalized device coordinate ([-1, 1] x [-1, 1]) into the scene
+	// gives mouse pixel coordinates in the [-1, 1] range
+	x = std::min(1.0f, std::max(-1.0f, x));
+	y = std::min(1.0f, std::max(-1.0f, y));
+
+	glm::vec4 start = glm::vec4(x, y, 0, 1.0f);
+	glm::vec4 end = glm::vec4(x, y, 1.0f, 1.0f);
+
+	glm::mat4 invProjMatrix = glm::inverse(getProjMatrix());
+	glm::mat4 invViewMatrix = glm::inverse(getViewMatrix());
+
+	// transform to view space
+	start = invProjMatrix * start;
+	end = invProjMatrix * end;
+
+	// transform to world space
+	start = invViewMatrix * start;
+	end = invViewMatrix * end;
+
+	start *= 1.0f / start.w;
+	end *= 1.0f / end.w;
+
+	glm::vec4 direction = glm::normalize(end - start);
+
+	Ray ray;
+	ray.mOrigin = glm::vec3(start.x, start.y, start.z);
+	ray.mDirection = glm::vec3(direction.x, direction.y, direction.z);
+
+	return ray;
+}
+
+Ray Camera::screenSpaceToRay(int x, int y) const
+{
+	// compute ray cast from the screen space ([0, 0] x [pixelWidth, pixelHeight]) into the scene
+	Ray ray;
+
+	return ray;
+}
+
 GLuint Camera::getNativeGraphicsMainFBO() const
 {
 	return mTargets.mMainFBO;

@@ -148,6 +148,7 @@ namespace PhysicsEngine
 
 			// draw? blit? render? Move to drawing utility class?
 			static void draw(World* world, MeshRenderer* meshRenderer, GLuint fbo);
+
 	};
 }
 

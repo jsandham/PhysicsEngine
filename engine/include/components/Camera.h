@@ -22,6 +22,7 @@
 
 #include "../core/Frustum.h"
 #include "../core/Color.h"
+#include "../core/Ray.h"
 
 #include "../graphics/GraphicsTargets.h"
 #include "../graphics/GraphicsQuery.h"
@@ -123,6 +124,9 @@ namespace PhysicsEngine
 			glm::mat4 getProjMatrix() const;
 			glm::vec3 getSSAOSample(int sample) const;
 			Guid getMeshRendererIdAtScreenPos(int x, int y) const;
+
+			Ray normalizedDeviceSpaceToRay(float x, float y) const;
+			Ray screenSpaceToRay(int x, int y) const;
 
 			GLuint getNativeGraphicsMainFBO() const;
 			GLuint getNativeGraphicsColorPickingFBO() const;

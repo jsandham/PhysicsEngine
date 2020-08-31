@@ -11,6 +11,10 @@ namespace PhysicsEngine
 	class InternalShaders
 	{
 		public:
+			static const std::string gizmoVertexShader;
+			static const std::string gizmoFragmentShader;
+
+
 			static const std::string fontVertexShader;
 			static const std::string fontFragmentShader;
 			static const std::string colorVertexShader;

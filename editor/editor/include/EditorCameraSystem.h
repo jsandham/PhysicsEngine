@@ -69,6 +69,8 @@ namespace PhysicsEngine
 		bool isLeftMouseClicked() const;
 		bool isRightMouseClicked() const;
 
+		GLuint getNativeGraphicsMainFBO() const;
+
 		GLuint getNativeGraphicsColorTex() const;
 		GLuint getNativeGraphicsDepthTex() const;
 		GLuint getNativeGraphicsColorPickingTex() const;
@@ -79,6 +81,9 @@ namespace PhysicsEngine
 		GLuint getNativeGraphicsSSAONoiseTex() const;
 
 		GraphicsQuery getQuery() const;
+
+		glm::mat4 getViewMatrix() const;
+		glm::mat4 getProjMatrix() const;
 	};
 
 	template <typename T>

@@ -4,6 +4,40 @@
 
 using namespace PhysicsEngine;
 
+
+const std::string InternalShaders::gizmoVertexShader =
+"uniform mat4 mvp;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = mvp * vec4(position, 1.0);\n"
+"}";
+
+
+const std::string InternalShaders::gizmoFragmentShader =
+"uniform vec4 color;\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = color;\n"
+"}";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const std::string InternalShaders::colorVertexShader =
 "#define DIRECTIONALLIGHT\n"
 "#define HARDSHADOWS\n"

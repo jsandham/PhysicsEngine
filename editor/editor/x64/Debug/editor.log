@@ -1,7 +1,44 @@
-﻿  Editor.cpp
+﻿  BoxColliderDrawer.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  CubemapDrawer.cpp
+  Editor.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Editor.cpp(166,40): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=double
           ]
+  EditorCameraSystem.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(225,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(226,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  EditorCommands.cpp
+  EditorFileIO.cpp
+  EditorOnlyEntityCreation.cpp
+  FontDrawer.cpp
+  Hierarchy.cpp
+  Inspector.cpp
+  InspectorDrawer.cpp
+  LibraryDirectory.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  Load.cpp
+  LoadInspectorDrawerInternal.cpp
+  MaterialDrawer.cpp
+  MaterialRenderer.cpp
+  Generating Code...
+  Compiling...
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+  MeshRendererDrawer.cpp
+  ProjectView.cpp
+  RigidbodyDrawer.cpp
+  SceneView.cpp
+  ShaderDrawer.cpp
+  SphereColliderDrawer.cpp
+  Texture2DDrawer.cpp
+  Texture3DDrawer.cpp
+  TransformDrawer.cpp
+  WriteToJson.cpp
+  main.cpp
+  Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
