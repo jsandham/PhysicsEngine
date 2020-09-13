@@ -7,7 +7,7 @@
 
 #include "../../include/core/Shader.h"
 #include "../../include/core/InternalShaders.h"
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 #include "../../include/core/World.h"
 
 #include "../../include/systems/RenderSystem.h"
@@ -224,7 +224,7 @@ void RenderSystem::cullRenderObjects(Camera* camera)
 		cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
 		cullingSphere.mRadius = radius;
 
-		if (Geometry::intersect(cullingSphere, camera->mFrustum)) {
+		if (Intersect::intersect(cullingSphere, camera->mFrustum)) {
 			count++;
 		}
 	}

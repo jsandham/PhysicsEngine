@@ -1,6 +1,6 @@
 #include "../../include/components/MeshCollider.h"
 
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 

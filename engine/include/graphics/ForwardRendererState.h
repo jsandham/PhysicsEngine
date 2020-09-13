@@ -31,7 +31,7 @@ namespace PhysicsEngine
 		glm::mat4 mCascadeOrthoProj[5];
 		glm::mat4 mCascadeLightView[5];
 		
-		Shader mDepthShader;
+		Shader* mDepthShader;
 		int mDepthShaderProgram;
 		int mDepthShaderModelLoc;
 		int mDepthShaderViewLoc;
@@ -48,7 +48,7 @@ namespace PhysicsEngine
 		GLuint mShadowCubemapDepth;
 		glm::mat4 mCubeViewProjMatrices[6];
 		
-		Shader mDepthCubemapShader;
+		Shader* mDepthCubemapShader;
 		int mDepthCubemapShaderProgram;
 		int mDepthCubemapShaderLightPosLoc;
 		int mDepthCubemapShaderFarPlaneLoc;
@@ -60,17 +60,17 @@ namespace PhysicsEngine
 		int mDepthCubemapShaderCubeViewProjMatricesLoc4;
 		int mDepthCubemapShaderCubeViewProjMatricesLoc5;
 
-		Shader mGeometryShader;  
+		Shader* mGeometryShader;  
 		int mGeometryShaderProgram;
 		int mGeometryShaderModelLoc;
 
-		Shader mColorShader;
+		Shader* mColorShader;
 		int mColorShaderProgram;
 		int mColorShaderModelLoc;
 		int mColorShaderColorLoc;
 
 		// ssao
-		Shader mSsaoShader;
+		Shader* mSsaoShader;
 		int mSsaoShaderProgram;
 		int mSsaoShaderProjectionLoc;
 		int mSsaoShaderPositionTexLoc;
@@ -81,7 +81,7 @@ namespace PhysicsEngine
 		// quad
 		GLuint mQuadVAO;
 		GLuint mQuadVBO;
-		Shader mQuadShader;
+		Shader* mQuadShader;
 	};
 }
 

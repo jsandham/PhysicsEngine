@@ -11,7 +11,6 @@
 #include "../../include/core/InternalShaders.h"
 #include "../../include/core/InternalMaterials.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Geometry.h"
 #include "../../include/core/WorldSerialization.h"
 
 using namespace PhysicsEngine;
@@ -471,6 +470,73 @@ Guid World::getSimpleLitMaterial() const
 {
 	return mSimpleLitMaterialId;
 }
+
+Guid World::getFontShaderId() const
+{
+	return mFontShaderId;
+}
+
+Guid World::getColorShaderId() const
+{
+	return mColorShaderId;
+}
+
+Guid World::getPositionAndNormalsShaderId() const
+{
+	return mPositionAndNormalsShaderId;
+}
+
+Guid World::getSsaoShaderId() const
+{
+	return mSsaoShaderId;
+}
+
+Guid World::getScreenQuadShaderId() const
+{
+	return mScreenQuadShaderId;
+}
+
+Guid World::getNormalMapShaderId() const
+{
+	return mNormalMapShaderId;
+}
+
+Guid World::getDepthMapShaderId() const
+{
+	return mDepthMapShaderId;
+}
+
+Guid World::getShadowDepthMapShaderId() const
+{
+	return mShadowDepthMapShaderId;
+}
+
+Guid World::getShadowDepthCubemapShaderId() const
+{
+	return mShadowDepthCubemapShaderId;
+}
+
+Guid World::getGbufferShaderId() const
+{
+	return mGbufferShaderId;
+}
+
+Guid World::getSimpleLitShaderId() const
+{
+	return mSimpleLitShaderId;
+}
+
+Guid World::getSimpleLitDeferredShaderId() const
+{
+	return mSimpleLitDeferedShaderId;
+}
+
+Guid World::getOverdrawShaderId() const
+{
+	return mOverdrawShaderId;
+}
+
+
 //bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 //{
 //	Ray ray;

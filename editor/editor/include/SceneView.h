@@ -13,6 +13,7 @@
 
 #include "EditorCameraSystem.h"
 #include "EditorClipboard.h"
+#include "TransformGizmo.h"
 
 #include "imgui.h"
 
@@ -24,6 +25,7 @@ namespace PhysicsEditor
 			bool focused;
 			bool hovered;
 			PerformanceQueue perfQueue;
+			TransformGizmo transformGizmo;
 
 			ImVec2 windowPos;
 			ImVec2 sceneContentMin;

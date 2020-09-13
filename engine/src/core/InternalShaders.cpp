@@ -24,20 +24,6 @@ const std::string InternalShaders::gizmoFragmentShader =
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const std::string InternalShaders::colorVertexShader =
 "#define DIRECTIONALLIGHT\n"
 "#define HARDSHADOWS\n"

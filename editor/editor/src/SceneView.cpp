@@ -1,11 +1,12 @@
 #include "../include/SceneView.h"
 
 #include "core/Log.h"
-#include "graphics/Gizmos.h"
 
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+
+#include "../include/imgui_extensions.h"
 
 using namespace PhysicsEngine;
 using namespace PhysicsEditor;
@@ -20,6 +21,8 @@ SceneView::SceneView()
 	windowPos = ImVec2(0, 0);
 	sceneContentMin = ImVec2(0, 0);
 	sceneContentMax = ImVec2(0, 0);
+
+	transformGizmo.initialize();
 }
 
 SceneView::~SceneView()
@@ -88,10 +91,10 @@ void SceneView::render(PhysicsEngine::World* world,
 								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
 								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex())};
 
-		// select draw texture dropdown
 		static GLuint currentTexture = (GLuint)textures[0];
 		static const char* currentTextureName = textureNames[0];
 
+		// select draw texture dropdown
 		if (ImGui::BeginCombo("##DrawTexture", currentTextureName))
 		{
 			for (int n = 0; n < count; n++)
@@ -226,6 +229,11 @@ void SceneView::render(PhysicsEngine::World* world,
 				ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
 				ImGui::Text("Normalized Mouse Position: %f %f\n", cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x), cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y));
 
+
+				float width = (float)(sceneContentMax.x - sceneContentMin.x);
+				float height = (float)(sceneContentMax.y - sceneContentMin.y);
+				ImGui::Text("NDC: %f %f\n", 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width, 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height);
+
 				ImGui::GetForegroundDrawList()->AddRect(sceneContentMin, sceneContentMax, 0xFFFF0000);
 
 				perfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
@@ -236,13 +244,6 @@ void SceneView::render(PhysicsEngine::World* world,
 			}
 			ImGui::End();
 		}
-
-		// draw selected texture
-		ImVec2 size = sceneContentMax;
-		size.x -= sceneContentMin.x;
-		size.y -= sceneContentMin.y;
-
-		/*ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));*/
 
 		// Check if entity is selected
 		if (cameraSystem->isLeftMouseClicked()) {
@@ -263,6 +264,18 @@ void SceneView::render(PhysicsEngine::World* world,
 			}
 		}
 
+
+
+		float width = (float)(sceneContentMax.x - sceneContentMin.x);
+		float height = (float)(sceneContentMax.y - sceneContentMin.y);
+		float ndcX = 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width;
+		float ndcY = 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height;
+
+		//Ray ray = cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY);
+		//std::string test = "Origin: " + std::to_string(ray.mOrigin.x) + " " + std::to_string(ray.mOrigin.y) + " " + std::to_string(ray.mOrigin.z) + " direction: " + std::to_string(ray.mDirection.x) + " " + std::to_string(ray.mDirection.y) + " " + std::to_string(ray.mDirection.z) + "\n";
+		//og::info(test.c_str());
+			
+
 		// draw transform gizmo if entity is selected
 		if (clipboard.getSelectedType() == InteractionType::Entity) {
 			Guid selectedEntityId = clipboard.getSelectedId();
@@ -273,9 +286,12 @@ void SceneView::render(PhysicsEngine::World* world,
 
 			assert(transform != NULL);
 
-			Gizmos::drawTranslationGizmo(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
+			//transformGizmo.drawTranslation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY));
 
-			Gizmos::drawRotationGizmo(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
+			transformGizmo.drawRotation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY));
+
+
+			//transformGizmo.drawRotation(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
 			
 			// gives mouse pixel coordinates in the [-1, 1] range
 			/*Vec2f n = platform().mouse.normalized_coordinates();
@@ -297,6 +313,9 @@ void SceneView::render(PhysicsEngine::World* world,
 		}
 
 		// Finally draw scene
+		ImVec2 size = sceneContentMax;
+		size.x -= sceneContentMin.x;
+		size.y -= sceneContentMin.y;
 		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
 	}
 	ImGui::End();

@@ -16,60 +16,24 @@
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
 
-#define LOG 0
-
-//#if LOG 
-//	#define GLLOG(func) (printf("%s\n", #func)); func  
-//#else
-//	#define GLLOG(func) func
-//#endif
-
-constexpr std::uint32_t stringLength(const char* cstr)
-{
-	return (*cstr != '\0') ? (stringLength(cstr + 1) + 1) : 0;
-}
-
-constexpr std::uint32_t sumSHL(std::uint32_t h, std::uint32_t shift) { return h + (h << shift); }
-constexpr std::uint32_t sumSHR(std::uint32_t h, std::uint32_t shift) { return h + (h >> shift); }
-constexpr std::uint32_t xorSHR(std::uint32_t h, std::uint32_t shift) { return h ^ (h >> shift); }
-
-constexpr std::uint32_t hashFinishImpl(std::uint32_t h)
-{
-	// h += (h <<  3)
-	// h ^= (h >> 11)
-	// h += (h << 15)
-	return sumSHL(xorSHR(sumSHL(h, 3), 11), 15);
-}
-
-constexpr std::uint32_t hashStepImpl(std::uint32_t h, std::uint32_t c)
-{
-	// h += c
-	// h += (h << 10)
-	// h ^= (h >>  6)
-	return xorSHR(sumSHL(h + c, 10), 6);
-}
-
-constexpr std::uint32_t hashImpl(const char* cstr, std::uint32_t length, std::uint32_t h)
-{
-	return (length != 0) ? hashImpl(cstr + 1, length - 1, hashStepImpl(h, *cstr)) : hashFinishImpl(h);
-}
-
-constexpr std::uint32_t hashCString(const char* cstr)
-{
-	return hashImpl(cstr, stringLength(cstr), 0);
-}
-
-#if LOG 
-	#define LOG_OGL(func)	                     \
-        /*Log::warn((std::to_string(hashCString(#func)) + "\n").c_str());*/ \
-		Log::warn(#func); \
-        func                                                         
-#else
-	#define LOG_OGL(func) func
-#endif
-
 namespace PhysicsEngine
 {
+	struct Uniform
+	{
+		GLsizei nameLength;
+		GLint size;
+		GLenum type;
+		GLchar name[32];
+	};
+
+	struct Attribute
+	{
+		GLsizei nameLength;
+		GLint size;
+		GLenum type;
+		GLchar name[32];
+	};
+
 	class Graphics
 	{
 		public:
@@ -138,17 +102,37 @@ namespace PhysicsEngine
 			static void destroy(Mesh* mesh, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2, bool* created);
 			static void apply(Mesh* mesh);
 
-			static void render(World* world, Material* material, int variant, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, int variant, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query);
-			static void render(World* world, Shader* shader, int variant, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query);
-			static void renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color);
+
+			static bool compile(const std::string& vert, const std::string& frag, const std::string& geom, GLuint* program);
+			static int findUniformLocation(const char* name, int program);
+			static int getUniformCount(int program);
+			static int getAttributeCount(int program);
+			static std::vector<Uniform> getUniforms(int program);
+			static std::vector<Attribute> getAttributes(int program);
+			static void setUniformBlock(const char* blockName, int bindingPoint, int program);
+			static void use(int program);
+			static void unuse();
+			static void destroy(int program);
+			static void setBool(int nameLocation, bool value);
+			static void setInt(int nameLocation, int value);
+			static void setFloat(int nameLocation, float value);
+			static void setVec2(int nameLocation, const glm::vec2& vec);
+			static void setVec3(int nameLocation, const glm::vec3& vec);
+			static void setVec4(int nameLocation, const glm::vec4& vec);
+			static void setMat2(int nameLocation, const glm::mat2& mat);
+			static void setMat3(int nameLocation, const glm::mat3& mat);
+			static void setMat4(int nameLocation, const glm::mat4& mat);
+			static bool getBool(int nameLocation, int program);
+			static int getInt(int nameLocation, int program);
+			static float getFloat(int nameLocation, int program);
+			static glm::vec2 getVec2(int nameLocation, int program);
+			static glm::vec3 getVec3(int nameLocation, int program);
+			static glm::vec4 getVec4(int nameLocation, int program);
+			static glm::mat2 getMat2(int nameLocation, int program);
+			static glm::mat3 getMat3(int nameLocation, int program);
+			static glm::mat4 getMat4(int nameLocation, int program);
+
 			static void render(World* world, RenderObject renderObject, GraphicsQuery* query);
-
-
-
-			// draw? blit? render? Move to drawing utility class?
-			static void draw(World* world, MeshRenderer* meshRenderer, GLuint fbo);
-
 	};
 }
 

@@ -14,6 +14,12 @@
 
 namespace ImGui
 {
+	void ToggleButton(const char* str_id, bool* v);
+
+
+
+
+
 	bool BeginDropdown(std::string name, std::vector<std::string> values, int* selection);
 	void EndDropdown();
 

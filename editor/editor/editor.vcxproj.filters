@@ -159,6 +159,9 @@
     <ClCompile Include="src\EditorOnlyEntityCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TransformGizmo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
@@ -300,6 +303,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorOnlyEntityCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TransformGizmo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -288,3 +288,8 @@ glm::mat4 EditorCameraSystem::getProjMatrix() const
 {
 	return mCamera->getProjMatrix();
 }
+
+Ray EditorCameraSystem::normalizedDeviceSpaceToRay(float x, float y) const
+{
+	return mCamera->normalizedDeviceSpaceToRay(x, y);
+}

@@ -4,7 +4,7 @@
 
 #include "../../include/core/OctTree.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 

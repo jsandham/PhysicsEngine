@@ -1025,6 +1025,19 @@ namespace PhysicsEngine
 			Guid getCubeMesh() const;
 			Guid getColorMaterial() const;
 			Guid getSimpleLitMaterial() const;
+			Guid getFontShaderId() const;
+			Guid getColorShaderId() const;
+			Guid getPositionAndNormalsShaderId() const;
+			Guid getSsaoShaderId() const;
+			Guid getScreenQuadShaderId() const;
+			Guid getNormalMapShaderId() const;
+			Guid getDepthMapShaderId() const;
+			Guid getShadowDepthMapShaderId() const;
+			Guid getShadowDepthCubemapShaderId() const;
+			Guid getGbufferShaderId() const;
+			Guid getSimpleLitShaderId() const;
+			Guid getSimpleLitDeferredShaderId() const;
+			Guid getOverdrawShaderId() const;
 
 		private:
 			template<typename T>

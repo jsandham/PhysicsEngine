@@ -84,6 +84,8 @@ namespace PhysicsEngine
 
 		glm::mat4 getViewMatrix() const;
 		glm::mat4 getProjMatrix() const;
+
+		Ray normalizedDeviceSpaceToRay(float x, float y) const;
 	};
 
 	template <typename T>

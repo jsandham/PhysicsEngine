@@ -637,726 +637,293 @@ void Graphics::apply(Mesh* mesh)
 
 }
 
-void Graphics::render(World* world, Material* material, int variant, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query) 
+bool Graphics::compile(const std::string& vert, const std::string& frag, const std::string& geom, GLuint* program)
 {
-	if(material == NULL){
-		std::cout << "Material is NULL" << std::endl;
-		return;
+	const GLchar* vertexShaderCharPtr = vert.c_str();
+	const GLchar* geometryShaderCharPtr = geom.c_str();
+	const GLchar* fragmentShaderCharPtr = frag.c_str();
+
+	GLuint vertexShaderObj = 0;
+	GLuint fragmentShaderObj = 0;
+	GLuint geometryShaderObj = 0;
+	GLint success = 0;
+	GLchar infoLog[512];
+
+	// Compile vertex shader
+	vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL);
+	glCompileShader(vertexShaderObj);
+	glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
+		std::string message = "Shader: Vertex shader compilation failed\n";
+		Log::error(message.c_str());
 	}
 
-	Shader* shader = world->getAssetById<Shader>(material->getShaderId());
-
-	if(shader == NULL){
-		std::cout << "Shader is NULL" << std::endl;
-		return;
+	// Compile fragment shader
+	fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL);
+	glCompileShader(fragmentShaderObj);
+	glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
+		std::string message = "Shader: Fragment shader compilation failed\n";
+		Log::error(message.c_str());
 	}
 
-	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
-		return;
+	// Compile geometry shader
+	if (!geom.empty()) {
+		geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
+		glCompileShader(geometryShaderObj);
+		glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
+			std::string message = "Shader: Geometry shader compilation failed\n";
+			Log::error(message.c_str());
+		}
 	}
 
-	shader->use(variant);
-	shader->setMat4("model", model);
-	material->apply(world);
-	/*shader->setFloat("material.shininess", material->shininess);
-	shader->setVec3("material.ambient", material->ambient);
-	shader->setVec3("material.ambient", material->diffuse);
-	shader->setVec3("material.ambient", material->specular);
+	// Create shader program
+	*program = glCreateProgram();
 
-	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-	if(mainTexture != NULL){
-		shader->setInt("material.mainTexture", 0);
-
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
+	// Attach shader objects to shader program
+	glAttachShader(*program, vertexShaderObj);
+	glAttachShader(*program, fragmentShaderObj);
+	if (geometryShaderObj != 0) {
+		glAttachShader(*program, geometryShaderObj);
 	}
 
-	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-	if(normalMap != NULL){
-		shader->setInt("material.normalMap", 1);
-
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
+	// Link shader program
+	glLinkProgram(*program);
+	glGetProgramiv(*program, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(*program, 512, NULL, infoLog);
+		std::string message = "Shader: Shader program linking failed\n";
+		Log::error(message.c_str());
 	}
 
-	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
-	if(specularMap != NULL){
-		shader->setInt("material.specularMap", 2);
+	// Detach shader objects from shader program
+	glDetachShader(*program, vertexShaderObj);
+	glDetachShader(*program, fragmentShaderObj);
+	if (geometryShaderObj != 0) {
+		glDetachShader(*program, geometryShaderObj);
+	}
 
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
-	}*/
+	// Delete shader objects
+	glDeleteShader(vertexShaderObj);
+	glDeleteShader(fragmentShaderObj);
+	if (!geom.empty()) {
+		glDeleteShader(geometryShaderObj);
+	}
 
-	/*if(query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}*/
-
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, numVertices);
-	glBindVertexArray(0);
-
-	//if(query != NULL){
-	//	glEndQuery(GL_TIME_ELAPSED);
-
-	//	GLint done = 0;
-	//    while (!done) {
-	//	    glGetQueryObjectiv(query->mQueryId, 
-	//	            GL_QUERY_RESULT_AVAILABLE, 
-	//	            &done);
-	//	}
-
-	//	// get the query result
-	//	GLuint64 elapsedTime; // in nanoseconds
-	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
-
-	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-	//	query->mNumDrawCalls++;
-	//	query->mVerts += numVertices;
-	//	query->mTris += numVertices / 3;
-	//}
-
-	Graphics::checkError();
+	return true;
 }
 
-void Graphics::render(World* world, Shader* shader, int variant, Texture2D* texture, glm::mat4 model, GLuint vao, int numVertices, GraphicsQuery* query)
+int Graphics::findUniformLocation(const char* name, int program)
 {
-	if(shader == NULL){
-		std::cout << "Shader is NULL" << std::endl;
-		return;
-	}
-
-	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
-		return;
-	}
-
-	shader->use(variant);
-	shader->setMat4("model", model);
-
-	if(texture != NULL){
-		shader->setInt("texture0", 0);
-
-
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
-	}
-
-	/*if(query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}*/
-
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, numVertices);
-	glBindVertexArray(0);
-
-	//if(query != NULL){
-	//	glEndQuery(GL_TIME_ELAPSED);
-
-	//	GLint done = 0;
-	//    while (!done) {
-	//	    glGetQueryObjectiv(query->mQueryId, 
-	//	            GL_QUERY_RESULT_AVAILABLE, 
-	//	            &done);
-	//	}
-
-	//	// get the query result
-	//	GLuint64 elapsedTime; // in nanoseconds
-	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
-
-	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-	//	query->mNumDrawCalls++;
-	//	query->mVerts += numVertices;
-	//	query->mTris += numVertices / 3;
-	//}
-
-	Graphics::checkError();
+	return glGetUniformLocation(program, name);
 }
 
-void Graphics::render(World* world, Shader* shader, int variant, glm::mat4 model, GLuint vao, GLenum mode, int numVertices, GraphicsQuery* query)
+int Graphics::getUniformCount(int program)
 {
-	if(shader == NULL){
-		std::cout << "Shader is NULL" << std::endl;
-		return;
-	}
+	GLint uniformCount;
+	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-	if(!shader->isCompiled()){
-		std::cout << "Shader " << shader->getId().toString() << " has not been compiled." << std::endl;
-		return;
-	}
-
-	shader->use(variant);
-	shader->setMat4("model", model);
-
-	/*if(query != NULL){
-		glBeginQuery(GL_TIME_ELAPSED, query->mQueryId);
-	}*/
-
-	glBindVertexArray(vao);
-	glDrawArrays(mode, 0, numVertices);
-	glBindVertexArray(0);
-
-	//if(query != NULL){
-	//	glEndQuery(GL_TIME_ELAPSED);
-
-	//	GLint done = 0;
-	//    while (!done) {
-	//	    glGetQueryObjectiv(query->mQueryId,
-	//	            GL_QUERY_RESULT_AVAILABLE, 
-	//	            &done);
-	//	}
-
-	//	// get the query result
-	//	GLuint64 elapsedTime; // in nanoseconds
-	//	glGetQueryObjectui64v(query->mQueryId, GL_QUERY_RESULT, &elapsedTime);
-
-	//	query->mTotalElapsedTime += elapsedTime / 1000000.0f;
-	//	query->mNumDrawCalls++;
-	//	query->mVerts += numVertices;
-	//	if(mode == GL_TRIANGLES){
-	//		query->mTris += numVertices / 3;
-	//	}
-	//	else if(mode == GL_LINES){
-	//		query->mLines += numVertices / 2;
-	//	}
-	//	else if(mode == GL_POINTS){
-	//		query->mPoints += numVertices;
-	//	}
-	//}
-
-	Graphics::checkError();
+	return uniformCount;
 }
 
-void Graphics::renderText(World* world, Camera* camera, Font* font, std::string text, float x, float y, float scale, glm::vec3 color)
+int Graphics::getAttributeCount(int program)
 {
-	if(!font->mShader.isCompiled()){
-		std::cout << "Shader " << font->mShader.getId().toString() << " has not been compiled." << std::endl;
-		return;
-	}
+	GLint attributeCount;
+	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount);
 
-	glm::mat4 ortho = glm::ortho(0.0f, (float)camera->mViewport.mWidth, 0.0f, (float)camera->mViewport.mHeight);
-
-	font->mShader.use(ShaderVariant::None);
-	font->mShader.setMat4("projection", ortho);
-	font->mShader.setVec3("textColor", color);
-
-	glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(font->mVao);
-
-    // Iterate through all characters
-    std::string::const_iterator it;
-    for (it = text.begin(); it != text.end(); it++) 
-    {
-        Character ch = font->getCharacter(*it);//Characters[*it];
-
-        GLfloat xpos = x + ch.mBearing.x * scale;
-        GLfloat ypos = y - (ch.mSize.y - ch.mBearing.y) * scale;
-
-        GLfloat w = ch.mSize.x * scale;
-        GLfloat h = ch.mSize.y * scale;
-        // Update VBO for each character
-        GLfloat vertices[6][4] = {
-            { xpos,     ypos + h,   0.0, 0.0 },            
-            { xpos,     ypos,       0.0, 1.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
-
-            { xpos,     ypos + h,   0.0, 0.0 },
-            { xpos + w, ypos,       1.0, 1.0 },
-            { xpos + w, ypos + h,   1.0, 0.0 }           
-        };
-        // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.mGlyphId);
-
-        // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, font->mVbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // Render quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.mAdvance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    glBindVertexArray(0);
-
-    Graphics::checkError();
+	return attributeCount;
 }
 
+std::vector<Uniform> Graphics::getUniforms(int program)
+{
+	GLint uniformCount;
+	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+	std::vector<Uniform> uniforms(uniformCount);
+
+	for (int j = 0; j < uniformCount; j++)
+	{
+		glGetActiveUniform(program, (GLuint)j, 32, &uniforms[j].nameLength, &uniforms[j].size, &uniforms[j].type, &uniforms[j].name[0]);
+	}
+
+	return uniforms;
+}
+
+std::vector<Attribute> Graphics::getAttributes(int program)
+{
+	GLint attributeCount;
+	glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount);
+
+	std::vector<Attribute> attributes(attributeCount);
+
+	for (int j = 0; j < attributeCount; j++)
+	{
+		glGetActiveAttrib(program, (GLuint)j, 32, &attributes[j].nameLength, &attributes[j].size, &attributes[j].type, &attributes[j].name[0]);
+	}
+
+	return attributes;
+}
+
+void Graphics::setUniformBlock(const char* blockName, int bindingPoint, int program)
+{
+	GLuint blockIndex = glGetUniformBlockIndex(program, blockName);
+	if (blockIndex != GL_INVALID_INDEX) {
+		glUniformBlockBinding(program, blockIndex, bindingPoint);
+	}
+}
+
+void Graphics::use(int program)
+{
+	glUseProgram(program);
+}
+
+void Graphics::unuse()
+{
+	glUseProgram(0);
+}
+
+void Graphics::destroy(int program)
+{
+	glDeleteProgram(program);
+}
+
+void Graphics::setBool(int nameLocation, bool value)
+{
+	glUniform1i(nameLocation, (int)value);
+}
+void Graphics::setInt(int nameLocation, int value)
+{
+	glUniform1i(nameLocation, value);
+}
+
+void Graphics::setFloat(int nameLocation, float value)
+{
+	glUniform1f(nameLocation, value);
+}
+
+void Graphics::setVec2(int nameLocation, const glm::vec2& vec)
+{
+	glUniform2fv(nameLocation, 1, &vec[0]);
+}
+
+void Graphics::setVec3(int nameLocation, const glm::vec3& vec)
+{
+	glUniform3fv(nameLocation, 1, &vec[0]);
+}
+
+void Graphics::setVec4(int nameLocation, const glm::vec4& vec)
+{
+	glUniform4fv(nameLocation, 1, &vec[0]);
+}
+
+void Graphics::setMat2(int nameLocation, const glm::mat2& mat)
+{
+	glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Graphics::setMat3(int nameLocation, const glm::mat3& mat)
+{
+	glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+}
+
+void Graphics::setMat4(int nameLocation, const glm::mat4& mat)
+{
+	glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
+}
+
+bool Graphics::getBool(int nameLocation, int program)
+{
+	int value = 0;
+	glGetUniformiv(program, nameLocation, &value);
 
+	return (bool)value;
+}
 
+int Graphics::getInt(int nameLocation, int program)
+{
+	int value = 0;
+	glGetUniformiv(program, nameLocation, &value);
 
+	return value;
+}
 
+float Graphics::getFloat(int nameLocation, int program)
+{
+	float value = 0.0f;
+	glGetUniformfv(program, nameLocation, &value);
 
+	return value;
+}
 
+glm::vec2 Graphics::getVec2(int nameLocation, int program)
+{
+	glm::vec2 value = glm::vec2(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::vec2), &value[0]);
 
+	return value;
+}
 
+glm::vec3 Graphics::getVec3(int nameLocation, int program)
+{
+	glm::vec3 value = glm::vec3(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::vec3), &value[0]);
 
+	return value;
+}
 
+glm::vec4 Graphics::getVec4(int nameLocation, int program)
+{
+	glm::vec4 value = glm::vec4(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::vec4), &value[0]);
 
-// void Graphics::render(World* world, Material* material, LightType lightType, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
-// {
-// 	if(material == NULL){
-// 		std::cout << "Material is NULL" << std::endl;
-// 		return;
-// 	}
+	return value;
+}
 
-// 	Shader* shader = world->getAsset<Shader>(material->shaderId);
+glm::mat2 Graphics::getMat2(int nameLocation, int program)
+{
+	glm::mat2 value = glm::mat2(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::mat2), &value[0][0]);
 
-// 	if(shader == NULL){
-// 		std::cout << "Shader is NULL" << std::endl;
-// 		return;
-// 	}
+	return value;
+}
 
-// 	if(!shader->isCompiled()){
-// 		std::cout << "Shader " << shader->assetId.toString() << " has not been compiled." << std::endl;
-// 		return;
-// 	}
+glm::mat3 Graphics::getMat3(int nameLocation, int program)
+{
+	glm::mat3 value = glm::mat3(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::mat3), &value[0][0]);
 
-// 	Graphics::use(shader, lightType);
-// 	Graphics::setMat4(shader, lightType, "model", model);
-// 	Graphics::setFloat(shader, lightType, "material.shininess", material->shininess);
-// 	Graphics::setVec3(shader, lightType, "material.ambient", material->ambient);
-// 	Graphics::setVec3(shader, lightType, "material.diffuse", material->diffuse);
-// 	Graphics::setVec3(shader, lightType, "material.specular", material->specular);
+	return value;
+}
 
-// 	Texture2D* mainTexture = world->getAsset<Texture2D>(material->textureId);
-// 	if(mainTexture != NULL){
-// 		Graphics::setInt(shader, lightType, "material.mainTexture", 0);
+glm::mat4 Graphics::getMat4(int nameLocation, int program)
+{
+	glm::mat4 value = glm::mat4(0.0f);
+	glGetnUniformfv(program, nameLocation, sizeof(glm::mat4), &value[0][0]);
 
-// 		glActiveTexture(GL_TEXTURE0 + 0);
-// 		glBindTexture(GL_TEXTURE_2D, mainTexture->handle.handle);
-// 	}
-
-// 	Texture2D* normalMap = world->getAsset<Texture2D>(material->normalMapId);
-// 	if(normalMap != NULL){
-
-// 		Graphics::setInt(shader, lightType, "material.normalMap", 1);
-
-// 		glActiveTexture(GL_TEXTURE0 + 1);
-// 		glBindTexture(GL_TEXTURE_2D, normalMap->handle.handle);
-// 	}
-
-// 	Texture2D* specularMap = world->getAsset<Texture2D>(material->specularMapId);
-// 	if(specularMap != NULL){
-
-// 		Graphics::setInt(shader, lightType, "material.specularMap", 2);
-
-// 		glActiveTexture(GL_TEXTURE0 + 2);
-// 		glBindTexture(GL_TEXTURE_2D, specularMap->handle.handle);
-// 	}
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = size / 3;
-// 	GLint startIndex = start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
-
-// void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GraphicsQuery* query)
-// {
-// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
-
-// 	GLuint shaderProgram = renderObject.shaders[(int)variant];
-
-// 	Graphics::use(shaderProgram);
-// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
-// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
-// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
-// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
-// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
-
-// 	if(renderObject.mainTexture != -1){
-// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
-
-// 		glActiveTexture(GL_TEXTURE0 + 0);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
-// 	}
-
-// 	if(renderObject.normalMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
-
-// 		glActiveTexture(GL_TEXTURE0 + 1);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
-// 	}
-
-// 	if(renderObject.specularMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
-
-// 		glActiveTexture(GL_TEXTURE0 + 2);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
-// 	}
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = renderObject.size / 3;
-// 	GLint startIndex = renderObject.start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
-
-// void Graphics::render(World* world, RenderObject renderObject, ShaderVariant variant, GLuint* shadowMaps, int shadowMapCount, GraphicsQuery* query)
-// {
-// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
-
-// 	GLuint shaderProgram = renderObject.shaders[(int)variant];
-
-// 	Graphics::use(shaderProgram);
-// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
-// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
-// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
-// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
-// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
-
-// 	if(renderObject.mainTexture != -1){
-// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
-
-// 		glActiveTexture(GL_TEXTURE0 + 0);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
-// 	}
-
-// 	if(renderObject.normalMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
-
-// 		glActiveTexture(GL_TEXTURE0 + 1);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
-// 	}
-
-// 	if(renderObject.specularMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
-
-// 		glActiveTexture(GL_TEXTURE0 + 2);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
-// 	}
-
-// 	for(int i = 0; i < shadowMapCount; i++){
-// 		//std::cout << "shadowMap[" + std::to_string(i) + "]: " << 3 + i << std::endl;
-// 		Graphics::setInt(shaderProgram, "shadowMap[" + std::to_string(i) + "]", 3 + i);
-
-// 		glActiveTexture(GL_TEXTURE0 + 3 + i);
-// 		glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
-// 	}
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = renderObject.size / 3;
-// 	GLint startIndex = renderObject.start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
-// void Graphics::render(World* world, RenderObject renderObject, GLuint shaderProgram, GraphicsQuery* query)
-// {
-// 	Material* material = world->getAssetByIndex<Material>(renderObject.materialIndex);
-
-// 	Graphics::setMat4(shaderProgram, "model", renderObject.model);
-// 	Graphics::setFloat(shaderProgram, "material.shininess", material->shininess);
-// 	Graphics::setVec3(shaderProgram, "material.ambient", material->ambient);
-// 	Graphics::setVec3(shaderProgram, "material.diffuse", material->diffuse);
-// 	Graphics::setVec3(shaderProgram, "material.specular", material->specular);	
-
-// 	if(renderObject.mainTexture != -1){
-// 		Graphics::setInt(shaderProgram, "material.mainTexture", 0);
-
-// 		glActiveTexture(GL_TEXTURE0 + 0);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.mainTexture);
-// 	}
-
-// 	if(renderObject.normalMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.normalMap", 1);
-
-// 		glActiveTexture(GL_TEXTURE0 + 1);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.normalMap);		
-// 	}
-
-// 	if(renderObject.specularMap != -1){
-// 		Graphics::setInt(shaderProgram, "material.specularMap", 2);
-
-// 		glActiveTexture(GL_TEXTURE0 + 2);
-// 		glBindTexture(GL_TEXTURE_2D, (GLuint)renderObject.specularMap);		
-// 	}
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = renderObject.size / 3;
-// 	GLint startIndex = renderObject.start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
-
-
-// void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, int start, GLsizei size, GraphicsQuery* query)
-// {
-// 	Graphics::use(shader, variant);
-// 	Graphics::setMat4(shader, variant, "model", model);
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = size / 3;
-// 	GLint startIndex = start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
-
-// void Graphics::render(World* world, Shader* shader, ShaderVariant variant, glm::mat4 model, glm::mat4 view, glm::mat4 projection, int start, GLsizei size, GraphicsQuery* query)
-// {
-// 	Graphics::use(shader, variant);
-// 	Graphics::setMat4(shader, variant, "model", model);
-// 	Graphics::setMat4(shader, variant, "view", view);
-// 	Graphics::setMat4(shader, variant, "projection", projection);
-
-// 	if(world->debug && query != NULL){
-// 		glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-// 	}
-
-// 	GLsizei numVertices = size / 3;
-// 	GLint startIndex = start / 3;
-
-// 	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
-
-// 	if(world->debug && query != NULL){
-// 		glEndQuery(GL_TIME_ELAPSED);
-
-// 		GLint done = 0;
-// 	    while (!done) {
-// 		    glGetQueryObjectiv(query->queryId, 
-// 		            GL_QUERY_RESULT_AVAILABLE, 
-// 		            &done);
-// 		}
-
-// 		// get the query result
-// 		GLuint64 elapsedTime; // in nanoseconds
-// 		glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-// 		query->totalElapsedTime += elapsedTime / 1000000.0f;
-// 		query->numDrawCalls++;
-// 		query->verts += numVertices;
-// 		query->tris += numVertices / 3;
-// 	}
-
-// 	Graphics::checkError();
-// }
+	return value;
+}
 
 void Graphics::render(World* world, RenderObject renderObject, GraphicsQuery* query)
 {
-	//if(world->debug && query != NULL){
-	//	glBeginQuery(GL_TIME_ELAPSED, query->queryId);
-	//}
-
 	GLsizei numVertices = renderObject.size / 3;
-	GLint startIndex = renderObject.start / 3;
 
 	glBindVertexArray(renderObject.vao);
-	glDrawArrays(GL_TRIANGLES, startIndex, numVertices);
+	glDrawArrays(GL_TRIANGLES, renderObject.start / 3, numVertices);
 	glBindVertexArray(0);
 
 	query->mNumDrawCalls++;
 	query->mVerts += numVertices;
 	query->mTris += numVertices / 3;
 
-	//if(world->debug && query != NULL){
-	//	glEndQuery(GL_TIME_ELAPSED);
-
-	//	GLint done = 0;
-	//    while (!done) {
-	//	    glGetQueryObjectiv(query->queryId, 
-	//	            GL_QUERY_RESULT_AVAILABLE, 
-	//	            &done);
-	//	}
-
-	//	// get the query result
-	//	GLuint64 elapsedTime; // in nanoseconds
-	//	glGetQueryObjectui64v(query->queryId, GL_QUERY_RESULT, &elapsedTime);
-
-	//	query->totalElapsedTime += elapsedTime / 1000000.0f;
-	//	query->numDrawCalls++;
-	//	query->verts += numVertices;
-	//	query->tris += numVertices / 3;
-	//}
-
 	Graphics::checkError();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Graphics::draw(World* world, MeshRenderer* meshRenderer, GLuint fbo)
-{
-	/*if (world == NULL || meshRenderer == NULL) {
-		return;
-	}
-
-	Transform* transform = meshRenderer->getComponent<Transform>();
-	Material* material = world->getAsset<Material>(meshRenderer->getMaterial());
-	Mesh* mesh = world->getAsset<Mesh>(meshRenderer->getMesh());
-
-	if (transform == NULL || material == NULL || mesh == NULL) {
-		return;
-	}
-
-	Shader* shader = world->getAsset<Shader>(material->getShaderId());
-
-	if (shader == NULL) {
-		return;
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	int shaderProgram = shader->getProgramFromVariant(0);
-
-	shader->use(shaderProgram);
-	shader->setMat4("model", transform->getModelMatrix());
-
-	material->apply(world);
-
-	int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(0);
-	int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(0);
-
-	GLsizei numVertices = (subMeshVertexEndIndex - subMeshVertexStartIndex) / 3;
-
-	glBindVertexArray(mesh->getNativeGraphicsVAO());
-	glDrawArrays(GL_TRIANGLES, 0, numVertices);
-	glBindVertexArray(0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 }

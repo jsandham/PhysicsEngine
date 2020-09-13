@@ -2,7 +2,7 @@
 
 #include "../../include/components/SphereCollider.h"
 
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 
@@ -51,7 +51,7 @@ void SphereCollider::deserialize(const std::vector<char>& data)
 
 bool SphereCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(mSphere, aabb);
+	return Intersect::intersect(mSphere, aabb);
 }
 
 std::vector<float> SphereCollider::getLines() const

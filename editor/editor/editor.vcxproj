@@ -206,6 +206,7 @@
     <ClCompile Include="src\Texture2DDrawer.cpp" />
     <ClCompile Include="src\Texture3DDrawer.cpp" />
     <ClCompile Include="src\TransformDrawer.cpp" />
+    <ClCompile Include="src\TransformGizmo.cpp" />
     <ClCompile Include="src\WriteToJson.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -256,6 +257,7 @@
     <ClInclude Include="include\Texture2DDrawer.h" />
     <ClInclude Include="include\Texture3DDrawer.h" />
     <ClInclude Include="include\TransformDrawer.h" />
+    <ClInclude Include="include\TransformGizmo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

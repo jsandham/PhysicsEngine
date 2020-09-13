@@ -1,6 +1,6 @@
 #include "../../include/components/BoxCollider.h"
 
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 
@@ -49,7 +49,7 @@ void BoxCollider::deserialize(const std::vector<char>& data)
 
 bool BoxCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(mAABB, aabb);
+	return Intersect::intersect(mAABB, aabb);
 }
 
 std::vector<float> BoxCollider::getLines() const  //might not want to store lines in class so if I end up doing that, instead move this to a utility method??

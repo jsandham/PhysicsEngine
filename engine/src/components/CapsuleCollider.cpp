@@ -1,6 +1,6 @@
 #include "../../include/components/CapsuleCollider.h"
 
-#include "../../include/core/Geometry.h"
+#include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 
@@ -49,5 +49,5 @@ void CapsuleCollider::deserialize(const std::vector<char>& data)
 
 bool CapsuleCollider::intersect(AABB aabb) const
 {
-	return Geometry::intersect(aabb, mCapsule);
+	return Intersect::intersect(aabb, mCapsule);
 }

@@ -117,6 +117,8 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	ImGui::ShowDemoWindow();
+
 	// draw menu and toolbar
 	editorMenu.render(currentProject, currentScene);
 	editorToolbar.render(clipboard);

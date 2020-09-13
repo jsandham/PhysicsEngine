@@ -1,9 +1,6 @@
 #include <iostream>
 #include <string>
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
 #include "../../include/core/mat_load.h"
