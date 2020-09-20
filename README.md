@@ -14,11 +14,14 @@ Compilation
 -----------
 
 To compile the engine static library:
-* navigate to engine build folder
-* cmake ..
-* msbuild PhysicsEngine.sln /p:Configuration=Release
+* navigate to engine/lib build folder
+* run build_engine.bat
 
-The static library (engine.lib) should then be located in build/Release
+By default this builds the engine static library in debug mode. You can specify 
+the build mode as /debug or /release:
+* build_engine.bat <build mode>
+
+The static library (engine.lib) should then be located in build/Debug or build/Release
 
 Editor
 ======
@@ -26,4 +29,6 @@ Editor
 Overview
 --------
 
-The editor is built as a visual studio project which links with the engine static library. To use the editor simply navigate to editor/x64/debug or editor/x64/release folder and run executable. You can also rebuild the editor by opening the visual studio project and rebuilding from there. 
+The editor is built as a visual studio project which links with the engine static library. 
+To use the editor simply navigate to editor/x64/debug or editor/x64/release folder and run 
+executable. You can also rebuild the editor by opening the visual studio project and rebuilding from there. 

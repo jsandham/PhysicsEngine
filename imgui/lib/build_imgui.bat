@@ -34,7 +34,6 @@ echo [92mBuild mode: %MODE%[0m
 echo [92mOptimization level: %OPT%[0m	
 
 :: compile c++ code
-
 echo [92mCompiling C++ imgui code...[0m
 for /R "../src" %%f in (*.cpp) do (
 	call cl /c /I%GLEW% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
