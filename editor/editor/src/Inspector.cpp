@@ -38,6 +38,10 @@ void Inspector::render(World* world, EditorProject& project, EditorScene& scene,
 
 	if (ImGui::Begin("Inspector", &inspectorActive))
 	{
+		if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered()) {
+			ImGui::SetWindowFocus("Inspector");
+		}
+
 		// draw entity
 		if (clipboard.getSelectedType() == InteractionType::Entity) {
 			drawEntity(world, project, scene, clipboard);

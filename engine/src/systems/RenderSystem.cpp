@@ -193,6 +193,7 @@ void RenderSystem::buildRenderObjectsList(World* world)
 						int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
 
 						RenderObject object;
+						object.transformId = transform->getId();
 						object.meshRendererId = meshRenderer->getId();
 						object.meshRendererIndex = i;
 						object.materialIndex = materialIndex;

@@ -183,6 +183,10 @@ void Console::render(bool isOpenedThisFrame)
 
 	if (ImGui::Begin("Console", &consoleActive))
 	{
+		if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered()) {
+			ImGui::SetWindowFocus("Console");
+		}
+
 		std::queue<std::string> messages = Log::getMessages();
 		while (!messages.empty()){
 			std::string message = messages.front();

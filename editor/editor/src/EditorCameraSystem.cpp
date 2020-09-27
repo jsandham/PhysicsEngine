@@ -126,26 +126,27 @@ void EditorCameraSystem::update(Input input, Time time)
 	mMousePosY = input.mousePosY;
 
 	// Mouse buttons
-	if (getMouseButtonDown(input, RButton)) {
+	mIsLeftMouseClicked = getMouseButtonDown(input, LButton);
+	mIsRightMouseClicked = getMouseButtonDown(input, RButton);
+	mIsLeftMouseHeldDown = getMouseButton(input, LButton);
+	mIsRightMouseHeldDown = getMouseButton(input, RButton);
+
+	if (mIsLeftMouseClicked) {
+		mMousePosXOnLeftClick = mMousePosX;
+		mMousePosYOnLeftClick = mMousePosY;
+	}
+
+	if (mIsRightMouseClicked) {
 		mMousePosXOnRightClick = mMousePosX;
 		mMousePosYOnRightClick = mMousePosY;
 		rotationOnClick = mTransform->mRotation;
 	}
-	else if (getMouseButton(input, RButton)) {
+	else if (mIsRightMouseHeldDown) {
 		float yaw = EditorCameraSystem::YAW_PAN_SENSITIVITY * (mMousePosXOnRightClick - mMousePosX);
 		float pitch = EditorCameraSystem::PITCH_PAN_SENSITIVITY * (mMousePosYOnRightClick - mMousePosY);
 
 		// https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
 		mTransform->mRotation = glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
-	}
-
-	mIsLeftMouseClicked = false;
-	mIsRightMouseClicked = false;
-	if (getMouseButtonDown(input, LButton)){
-		mIsLeftMouseClicked = true;
-	}
-	if (getMouseButtonDown(input, RButton)) {
-		mIsRightMouseClicked = true;
 	}
 
 	mCamera->mFrustum.computePlanes(position, front, up, right);
@@ -220,12 +221,33 @@ bool EditorCameraSystem::isRightMouseClicked() const
 	return mIsRightMouseClicked;
 }
 
-Guid EditorCameraSystem::getMeshRendererUnderMouse(float nx, float ny) const
+bool EditorCameraSystem::isLeftMouseHeldDown() const
+{
+	return mIsLeftMouseHeldDown;
+}
+
+bool EditorCameraSystem::isRightMouseHeldDown() const
+{
+	return mIsRightMouseHeldDown;
+}
+
+glm::vec2 EditorCameraSystem::distanceTraveledSinceLeftMouseClick() const
+{
+	return glm::vec2(mMousePosX - mMousePosXOnLeftClick, mMousePosY - mMousePosYOnLeftClick);
+}
+
+glm::vec2 EditorCameraSystem::distanceTraveledSinceRightMouseClick() const
+{
+	return glm::vec2(mMousePosX - mMousePosXOnRightClick, mMousePosY - mMousePosYOnRightClick);
+}
+
+
+Guid EditorCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
 	int x = mCamera->mViewport.mX + mCamera->mViewport.mWidth * nx;
 	int y = mCamera->mViewport.mY + mCamera->mViewport.mHeight * ny;
 
-	return mCamera->getMeshRendererIdAtScreenPos(x, y);
+	return mCamera->getTransformIdAtScreenPos(x, y);
 }
 
 GLuint EditorCameraSystem::getNativeGraphicsMainFBO() const

@@ -16,7 +16,8 @@ namespace ImGui
 {
 	void ToggleButton(const char* str_id, bool* v);
 
-
+	bool StampButton(const char* label, bool active);
+	bool StampButtonEx(const char* label, const ImVec2& size_arg, ImGuiButtonFlags flags, bool active);
 
 
 

@@ -535,7 +535,7 @@ void PhysicsEngine::renderColorPicking(World* world,
 	// assign colors to render objects.
 	int color = 1;
 	for (size_t i = 0; i < renderQueue.size(); i++) {
-		camera->assignColoring(color, renderObjects[renderQueue[i].second].meshRendererId);
+		camera->assignColoring(color, renderObjects[renderQueue[i].second].transformId);
 
 		color++;
 	}

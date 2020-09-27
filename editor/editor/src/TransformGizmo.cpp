@@ -53,6 +53,9 @@ void TransformGizmo::initialize()
 		glBindVertexArray(0);
 
 		Graphics::checkError();
+
+		highlightedTransformAxis = Axis::Axis_None;
+		selectedTransformAxis = Axis::Axis_None;
 	}
 
 	GLfloat rotationVertices[3 * 3 * 120];
@@ -105,7 +108,86 @@ void TransformGizmo::initialize()
 	mIsInitialized = true;
 }
 
-void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Ray cameraRay)
+void TransformGizmo::update(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight)
+{
+	assert(cameraSystem != NULL);
+	assert(selectedTransform != NULL);
+
+	if (!cameraSystem->isLeftMouseHeldDown()) {
+		selectedTransformAxis = Axis::Axis_None;
+	}
+
+	glm::mat4 model = selectedTransform->getModelMatrix();
+
+	glm::vec3 position = glm::vec3(model[3]);
+
+	Ray xAxisRay(position, glm::vec3(model * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
+	Ray yAxisRay(position, glm::vec3(model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
+	Ray zAxisRay(position, glm::vec3(model * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
+
+	float width = contentWidth;// (float)(sceneContentMax.x - sceneContentMin.x);
+	float height = contentHeight;// (float)(sceneContentMax.y - sceneContentMin.y);
+	float ndcX = 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width;
+	float ndcY = 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height;
+
+	Ray cameraRay = cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY);
+
+	float closestDistanceToAxisX = ClosestDistance::closestDistance(cameraRay, xAxisRay);
+	float closestDistanceToAxisY = ClosestDistance::closestDistance(cameraRay, yAxisRay);
+	float closestDistanceToAxisZ = ClosestDistance::closestDistance(cameraRay, zAxisRay);
+
+	highlightedTransformAxis = Axis::Axis_None;
+	if (closestDistanceToAxisX < closestDistanceToAxisY && closestDistanceToAxisX < closestDistanceToAxisZ) {
+		if (closestDistanceToAxisX < 0.05f) {
+			highlightedTransformAxis = Axis::Axis_X;
+		}
+	}
+	else if (closestDistanceToAxisY < closestDistanceToAxisX && closestDistanceToAxisY < closestDistanceToAxisZ) {
+		if (closestDistanceToAxisY < 0.05f) {
+			highlightedTransformAxis = Axis::Axis_Y;
+		}
+	}
+	else if (closestDistanceToAxisZ < closestDistanceToAxisX && closestDistanceToAxisZ < closestDistanceToAxisY) {
+		if (closestDistanceToAxisZ < 0.05f) {
+			highlightedTransformAxis = Axis::Axis_Z;
+		}
+	}
+
+	if (cameraSystem->isLeftMouseHeldDown()) {
+		if (selectedTransformAxis == Axis::Axis_None) {
+			selectedTransformAxis = highlightedTransformAxis;
+			selectedTransformModel = model;
+		}
+
+		glm::vec2 delta = cameraSystem->distanceTraveledSinceLeftMouseClick();
+
+		if (selectedTransformAxis == Axis::Axis_X) {
+			selectedTransform->mPosition = glm::vec3(selectedTransformModel * glm::vec4(0.05f * delta.x, 0, 0, 1));
+		}
+		else if (selectedTransformAxis == Axis::Axis_Y) {
+			selectedTransform->mPosition = glm::vec3(selectedTransformModel * glm::vec4(0, 0.05f * delta.x, 0, 1));
+		}
+		else if (selectedTransformAxis == Axis::Axis_Z) {
+			selectedTransform->mPosition = glm::vec3(selectedTransformModel * glm::vec4(0, 0, 0.05f * delta.x, 1));
+		}
+	}
+
+	drawTranslation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+	//transformGizmo.drawRotation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+	//transformGizmo.drawScale(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+}
+
+void TransformGizmo::setGizmoMode(GizmoMode mode)
+{
+	this->mode = mode;
+}
+
+bool TransformGizmo::isGizmoHighlighted() const
+{
+	return highlightedTransformAxis != Axis::Axis_None;
+}
+
+void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
 	if (!mIsInitialized) {
 		initialize();
@@ -115,45 +197,23 @@ void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glm::vec3 position = glm::vec3(model[3]);
-
-	Ray xAxisRay(position, glm::vec3(model * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)));
-	Ray yAxisRay(position, glm::vec3(model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)));
-	Ray zAxisRay(position, glm::vec3(model * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)));
-
-	float closestDistanceToAxisX = ClosestDistance::closestDistance(cameraRay, xAxisRay);
-	float closestDistanceToAxisY = ClosestDistance::closestDistance(cameraRay, yAxisRay);
-	float closestDistanceToAxisZ = ClosestDistance::closestDistance(cameraRay, zAxisRay);
-
-	//std::string test = "X: " + std::to_string(closestDistanceToAxisX) + " Y: " + std::to_string(closestDistanceToAxisY) + " Z: " + std::to_string(closestDistanceToAxisZ) + "\n";
-	//Log::info(test.c_str());
-
-	Axis highLightAxis = Axis::Axis_None;
-
-	if (closestDistanceToAxisX < closestDistanceToAxisY && closestDistanceToAxisX < closestDistanceToAxisZ) {
-		if (closestDistanceToAxisX < 0.05f) {
-			highLightAxis = Axis::Axis_X;
-		}
-	}
-	else if (closestDistanceToAxisY < closestDistanceToAxisX && closestDistanceToAxisY < closestDistanceToAxisZ) {
-		if (closestDistanceToAxisY < 0.05f) {
-			highLightAxis = Axis::Axis_Y;
-		}
-	}
-	else if (closestDistanceToAxisZ < closestDistanceToAxisX && closestDistanceToAxisZ < closestDistanceToAxisY) {
-		if (closestDistanceToAxisZ < 0.05f) {
-			highLightAxis = Axis::Axis_Z;
-		}
-	}
-
 	for (int i = 0; i < 3; i++)
 	{
 		glm::vec4 axis_color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		axis_color[i] = 1.0f;
 
-		if (i == static_cast<int>(highLightAxis))
+		if (i == static_cast<int>(highlightAxis))
 		{
 			axis_color = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);
+		}
+
+		if (selectedAxis != Axis::Axis_None) {
+			if (i != static_cast<int>(selectedAxis)) {
+				axis_color = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);
+			}
+			else {
+				axis_color = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);
+			}
 		}
 
 		glm::mat4 mvp = projection * view * model;
@@ -171,7 +231,7 @@ void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Ray cameraRay)
+void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
 	if (!mIsInitialized) {
 		initialize();
@@ -181,66 +241,23 @@ void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glm::vec3 position = glm::vec3(model[3]);
-
-	Circle xAxisCircle(position, glm::vec3(model * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f)), 1.0f);
-	Circle yAxisCircle(position, glm::vec3(model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)), 1.0f);
-	Circle zAxisCircle(position, glm::vec3(model * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)), 1.0f);
-
-	float closestDistanceToAxisX = ClosestDistance::closestDistance(cameraRay, xAxisCircle);
-	float closestDistanceToAxisY = ClosestDistance::closestDistance(cameraRay, yAxisCircle);
-	float closestDistanceToAxisZ = ClosestDistance::closestDistance(cameraRay, zAxisCircle);
-
-	/*if (closestDistanceToAxisX >= xAxisCircle.mRadius){
-		closestDistanceToAxisX = closestDistanceToAxisX - xAxisCircle.mRadius;
-	}
-	else {
-		closestDistanceToAxisX = xAxisCircle.mRadius - closestDistanceToAxisX;
-	}
-
-	if (closestDistanceToAxisY >= yAxisCircle.mRadius) {
-		closestDistanceToAxisY = closestDistanceToAxisY - yAxisCircle.mRadius;
-	}
-	else {
-		closestDistanceToAxisY = yAxisCircle.mRadius - closestDistanceToAxisY;
-	}
-
-	if (closestDistanceToAxisZ >= zAxisCircle.mRadius) {
-		closestDistanceToAxisZ = closestDistanceToAxisZ - zAxisCircle.mRadius;
-	}
-	else {
-		closestDistanceToAxisZ = zAxisCircle.mRadius - closestDistanceToAxisZ;
-	}*/
-
-	//std::string test = "X: " + std::to_string(closestDistanceToAxisX) + " Y: " + std::to_string(closestDistanceToAxisY) + " Z: " + std::to_string(closestDistanceToAxisZ) + "\n";
-	//Log::info(test.c_str());
-
-	Axis highLightAxis = Axis::Axis_None;
-
-	if (closestDistanceToAxisX < closestDistanceToAxisY && closestDistanceToAxisX < closestDistanceToAxisZ) {
-		if (closestDistanceToAxisX < 0.1f) {
-			highLightAxis = Axis::Axis_X;
-		}
-	}
-	else if (closestDistanceToAxisY < closestDistanceToAxisX && closestDistanceToAxisY < closestDistanceToAxisZ) {
-		if (closestDistanceToAxisY < 0.1f) {
-			highLightAxis = Axis::Axis_Y;
-		}
-	}
-	else if (closestDistanceToAxisZ < closestDistanceToAxisX && closestDistanceToAxisZ < closestDistanceToAxisY) {
-		if (closestDistanceToAxisZ < 0.1f) {
-			highLightAxis = Axis::Axis_Z;
-		}
-	}
-
 	for (int i = 0; i < 3; i++)
 	{
 		glm::vec4 axis_color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		axis_color[i] = 1.0f;
 
-		if (i == static_cast<int>(highLightAxis))
+		if (i == static_cast<int>(highlightAxis))
 		{
 			axis_color = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);
+		}
+
+		if (selectedAxis != Axis::Axis_None) {
+			if (i != static_cast<int>(selectedAxis)) {
+				axis_color = glm::vec4(0.65f, 0.65f, 0.65f, 1.0f);
+			}
+			else {
+				axis_color = glm::vec4(1.0f, 0.65f, 0.0f, 1.0f);
+			}
 		}
 
 		glm::mat4 mvp = projection * view * model;
@@ -258,7 +275,7 @@ void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Ray cameraRay)
+void TransformGizmo::drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
 	if (!mIsInitialized) {
 		initialize();

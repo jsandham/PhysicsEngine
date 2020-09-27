@@ -5,8 +5,11 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "imgui.h"
 
 #include "../include/imgui_extensions.h"
+
+#include "core/ClosestDistance.h"
 
 using namespace PhysicsEngine;
 using namespace PhysicsEditor;
@@ -15,6 +18,8 @@ SceneView::SceneView()
 {
 	focused = false;
 	hovered = false;
+
+	activeTextureIndex = 0;
 
 	perfQueue.setNumberOfSamples(100);
 
@@ -50,12 +55,18 @@ void SceneView::render(PhysicsEngine::World* world,
 	static bool gizmosChecked = false;
 	static bool overlayChecked = false;
 	static bool cameraSettingsClicked = false;
+	static bool translationModeActive = true;
+	static bool rotationModeActive = false;
+	static bool scaleModeActive = false;
 
 	ImGui::Begin("Scene View", &sceneViewActive);
 	{
+		if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered()) {
+			ImGui::SetWindowFocus("Scene View");
+		}
+
 		focused = ImGui::IsWindowFocused();
 		hovered = ImGui::IsWindowHovered();
-
 		windowPos = ImGui::GetWindowPos();
 		
 		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
@@ -72,7 +83,7 @@ void SceneView::render(PhysicsEngine::World* world,
 		// account for the fact that Image will draw below buttons
 		sceneContentMin.y += 23;
 
-		int count = 6;
+		const int count = 8;
 		const char* textureNames[] = { "Color",
 									   "Color Picking",
 									   "Depth",
@@ -91,11 +102,8 @@ void SceneView::render(PhysicsEngine::World* world,
 								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
 								   static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex())};
 
-		static GLuint currentTexture = (GLuint)textures[0];
-		static const char* currentTextureName = textureNames[0];
-
 		// select draw texture dropdown
-		if (ImGui::BeginCombo("##DrawTexture", currentTextureName))
+		if (ImGui::BeginCombo("##DrawTexture", textureNames[activeTextureIndex]))
 		{
 			for (int n = 0; n < count; n++)
 			{
@@ -104,10 +112,9 @@ void SceneView::render(PhysicsEngine::World* world,
 					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 				}
 
-				bool is_selected = (currentTextureName == textureNames[n]); // You can store your selection however you want, outside or inside your objects
+				bool is_selected = (textureNames[activeTextureIndex] == textureNames[n]);
 				if (ImGui::Selectable(textureNames[n], is_selected)) {
-					currentTextureName = textureNames[n];
-					currentTexture = (GLuint)textures[n];
+					activeTextureIndex = n;
 					
 					if (is_selected) {
 						ImGui::SetItemDefaultFocus();
@@ -135,6 +142,37 @@ void SceneView::render(PhysicsEngine::World* world,
 		}
 		ImGui::SameLine();
 
+		// select transform gizmo movement mode
+		if (ImGui::StampButton("T", translationModeActive))
+		{
+			translationModeActive = true;
+			rotationModeActive = false;
+			scaleModeActive = false;
+
+			transformGizmo.setGizmoMode(GizmoMode::Translation);
+		}
+		ImGui::SameLine();
+
+		if (ImGui::StampButton("R", rotationModeActive))
+		{
+			translationModeActive = false;
+			rotationModeActive = true;
+			scaleModeActive = false;
+
+			transformGizmo.setGizmoMode(GizmoMode::Rotation);
+		}
+		ImGui::SameLine();
+
+		if (ImGui::StampButton("S", scaleModeActive))
+		{
+			translationModeActive = false;
+			rotationModeActive = false;
+			scaleModeActive = true;
+
+			transformGizmo.setGizmoMode(GizmoMode::Scale);
+		}
+		ImGui::SameLine();
+
 		// editor camera settings
 		if (ImGui::Button("Camera Settings"))
 		{
@@ -142,182 +180,150 @@ void SceneView::render(PhysicsEngine::World* world,
 		}
 
 		if (cameraSettingsClicked) {
-			static bool cameraSettingsWindowOpen = false;
-
-			ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-			if (ImGui::Begin("Editor Camera Settings", &cameraSettingsClicked))
-			{
-				Viewport viewport = cameraSystem->getViewport();
-				Frustum frustum = cameraSystem->getFrustum();
-
-				// Viewport settings
-				if (ImGui::InputInt("X", &viewport.mX)) {
-					cameraSystem->setViewport(viewport);
-				}
-				if (ImGui::InputInt("Y", &viewport.mY)) {
-					cameraSystem->setViewport(viewport);
-				}
-				if (ImGui::InputInt("Width", &viewport.mWidth)) {
-					cameraSystem->setViewport(viewport);
-				}
-				if (ImGui::InputInt("Height", &viewport.mHeight)) {
-					cameraSystem->setViewport(viewport);
-				}
-
-				// Frustum settings
-				if (ImGui::InputFloat("FOV", &frustum.mFov)) {
-					cameraSystem->setFrustum(frustum);
-				}
-				if (ImGui::InputFloat("Aspect Ratio", &frustum.mAspectRatio)) {
-					cameraSystem->setFrustum(frustum);
-				}
-				if (ImGui::InputFloat("Near Plane", &frustum.mNearPlane)) {
-					cameraSystem->setFrustum(frustum);
-				}
-				if (ImGui::InputFloat("Far Plane", &frustum.mFarPlane)) {
-					cameraSystem->setFrustum(frustum);
-				}
-
-				// SSAO and render path
-				int renderPath = static_cast<int>(cameraSystem->getRenderPath());
-				int ssao = static_cast<int>(cameraSystem->getSSAO());
-
-				const char* renderPathNames[] = { "Forward", "Deferred" };
-				const char* ssaoNames[] = { "On", "Off" };
-
-				if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2)) {
-					cameraSystem->setRenderPath(static_cast<RenderPath>(renderPath));
-				}
-
-				if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
-					cameraSystem->setSSAO(static_cast<CameraSSAO>(ssao));
-				}
-			}
-
-			ImGui::End();
-
+			drawCameraSettingsPopup(cameraSystem, &cameraSettingsClicked);
 		}
 
 		// performance overlay
 		if (overlayChecked) {
-			static bool overlayOpened = false;
-			static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip |
-												   ImGuiWindowFlags_ChildWindow |
-												   ImGuiWindowFlags_NoTitleBar |
-												   ImGuiWindowFlags_AlwaysAutoResize |
-												   ImGuiWindowFlags_NoSavedSettings |
-												   ImGuiWindowFlags_NoResize |
-												   ImGuiWindowFlags_NoDocking |
-												   ImGuiWindowFlags_NoNav |
-												   ImGuiWindowFlags_NoMove;
-
-			ImVec2 overlayPos = ImVec2(sceneContentMax.x, sceneContentMin.y);
-
-			ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always, ImVec2(1.0f, 0.0f));
-			ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-			if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, overlayFlags))
-			{
-				ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
-				ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
-				ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
-				ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
-				ImGui::Text("Window position: %f %f\n", windowPos.x, windowPos.y);
-				ImGui::Text("Content min: %f %f\n", contentMin.x, contentMin.y);
-				ImGui::Text("Content max: %f %f\n", contentMax.x, contentMax.y);
-				ImGui::Text("Scene content min: %f %f\n", sceneContentMin.x, sceneContentMin.y);
-				ImGui::Text("Scene content max: %f %f\n", sceneContentMax.x, sceneContentMax.y);
-				ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
-				ImGui::Text("Normalized Mouse Position: %f %f\n", cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x), cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y));
-
-
-				float width = (float)(sceneContentMax.x - sceneContentMin.x);
-				float height = (float)(sceneContentMax.y - sceneContentMin.y);
-				ImGui::Text("NDC: %f %f\n", 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width, 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height);
-
-				ImGui::GetForegroundDrawList()->AddRect(sceneContentMin, sceneContentMax, 0xFFFF0000);
-
-				perfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
-
-				std::vector<float> perfData = perfQueue.getData();
-				ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
-				//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
-			}
-			ImGui::End();
+			drawPerformanceOverlay(cameraSystem);
 		}
 
-		// Check if entity is selected
-		if (cameraSystem->isLeftMouseClicked()) {
+		// Update selected entity
+		if (cameraSystem->isLeftMouseClicked() && !transformGizmo.isGizmoHighlighted()) {
 			float nx = cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x);
 			float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
-			Guid meshRendererId = cameraSystem->getMeshRendererUnderMouse(nx, ny);
+			Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
-			MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(meshRendererId);
+			Transform* transform = world->getComponentById<Transform>(transformId);
 
-			if (meshRenderer != NULL) {
-				clipboard.setSelectedItem(InteractionType::Entity, meshRenderer->getEntityId());
-
-				Transform* transform = world->getComponent<Transform>(meshRenderer->getEntityId());
-				Log::warn(("entity id: " + meshRenderer->getEntityId().toString() + " transform id: " + transform->getId().toString() + " mesh renderer id: " + meshRendererId.toString() + "\n").c_str());
+			if (transform != NULL) {
+				clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityId());
 			}
 			else {
 				clipboard.setSelectedItem(InteractionType::None, Guid::INVALID);
 			}
 		}
-
-
-
-		float width = (float)(sceneContentMax.x - sceneContentMin.x);
-		float height = (float)(sceneContentMax.y - sceneContentMin.y);
-		float ndcX = 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width;
-		float ndcY = 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height;
-
-		//Ray ray = cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY);
-		//std::string test = "Origin: " + std::to_string(ray.mOrigin.x) + " " + std::to_string(ray.mOrigin.y) + " " + std::to_string(ray.mOrigin.z) + " direction: " + std::to_string(ray.mDirection.x) + " " + std::to_string(ray.mDirection.y) + " " + std::to_string(ray.mDirection.z) + "\n";
-		//og::info(test.c_str());
 			
-
 		// draw transform gizmo if entity is selected
 		if (clipboard.getSelectedType() == InteractionType::Entity) {
-			Guid selectedEntityId = clipboard.getSelectedId();
+			Transform* transform = world->getComponent<Transform>(clipboard.getSelectedId());
 
-			assert(selectedEntityId != Guid::INVALID);
+			float width = (float)(sceneContentMax.x - sceneContentMin.x);
+			float height = (float)(sceneContentMax.y - sceneContentMin.y);
 
-			Transform* transform = world->getComponent<Transform>(selectedEntityId);
-
-			assert(transform != NULL);
-
-			//transformGizmo.drawTranslation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY));
-
-			transformGizmo.drawRotation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), cameraSystem->normalizedDeviceSpaceToRay(ndcX, ndcY));
-
-
-			//transformGizmo.drawRotation(transform, cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getNativeGraphicsMainFBO(), Axis::Axis_None);
-			
-			// gives mouse pixel coordinates in the [-1, 1] range
-			/*Vec2f n = platform().mouse.normalized_coordinates();
-
-			Vec4f ray_start, ray_end;
-			Mat4f view_proj_inverse = inverse(camera_matrix);
-
-			ray_start = view_proj_inverse * Vec4f(n.x, n.y, 0.f, 1.f);
-			ray_start *= 1.f / ray_start.w;
-
-			ray_end = view_proj_inverse * Vec4f(n.x, n.y, 1.f, 1.f);
-			ray_end *= 1.f / ray_end.w;
-
-			context.camera_ray.origin = (Vec3f&)ray_start;
-			context.camera_ray.direction = (Vec3f&)normalize(ray_end - ray_start);
-
-			context.camera_ray.t = FLT_MAX;*/
-			
+			transformGizmo.update(cameraSystem, transform, width, height);
 		}
 
 		// Finally draw scene
 		ImVec2 size = sceneContentMax;
 		size.x -= sceneContentMin.x;
 		size.y -= sceneContentMin.y;
-		ImGui::Image((void*)(intptr_t)currentTexture, size, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, 1), ImVec2(1, 0));
 	}
+	ImGui::End();
+}
+
+void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem* cameraSystem)
+{
+	static bool overlayOpened = false;
+	static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip |
+		ImGuiWindowFlags_ChildWindow |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_NoNav |
+		ImGuiWindowFlags_NoMove;
+
+	ImVec2 overlayPos = ImVec2(sceneContentMax.x, sceneContentMin.y);
+
+	ImGui::SetNextWindowPos(overlayPos, ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+	ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+	if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, overlayFlags))
+	{
+		ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
+		ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
+		ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
+		ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
+		ImGui::Text("Window position: %f %f\n", windowPos.x, windowPos.y);
+		//ImGui::Text("Content min: %f %f\n", contentMin.x, contentMin.y);
+		//ImGui::Text("Content max: %f %f\n", contentMax.x, contentMax.y);
+		ImGui::Text("Scene content min: %f %f\n", sceneContentMin.x, sceneContentMin.y);
+		ImGui::Text("Scene content max: %f %f\n", sceneContentMax.x, sceneContentMax.y);
+		ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
+		ImGui::Text("Normalized Mouse Position: %f %f\n", cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x), cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y));
+
+
+		float width = (float)(sceneContentMax.x - sceneContentMin.x);
+		float height = (float)(sceneContentMax.y - sceneContentMin.y);
+		ImGui::Text("NDC: %f %f\n", 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width, 2 * (cameraSystem->getMousePosY() - 0.5f * height) / height);
+
+		ImGui::GetForegroundDrawList()->AddRect(sceneContentMin, sceneContentMax, 0xFFFF0000);
+
+		perfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
+
+		std::vector<float> perfData = perfQueue.getData();
+		ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
+		//ImGui::PlotLines("Curve", &perfData[0], perfData.size());
+	}
+	ImGui::End();
+}
+
+void SceneView::drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem* cameraSystem, bool* cameraSettingsActive)
+{
+	static bool cameraSettingsWindowOpen = false;
+
+	ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Editor Camera Settings", cameraSettingsActive))
+	{
+		Viewport viewport = cameraSystem->getViewport();
+		Frustum frustum = cameraSystem->getFrustum();
+
+		// Viewport settings
+		if (ImGui::InputInt("X", &viewport.mX)) {
+			cameraSystem->setViewport(viewport);
+		}
+		if (ImGui::InputInt("Y", &viewport.mY)) {
+			cameraSystem->setViewport(viewport);
+		}
+		if (ImGui::InputInt("Width", &viewport.mWidth)) {
+			cameraSystem->setViewport(viewport);
+		}
+		if (ImGui::InputInt("Height", &viewport.mHeight)) {
+			cameraSystem->setViewport(viewport);
+		}
+
+		// Frustum settings
+		if (ImGui::InputFloat("FOV", &frustum.mFov)) {
+			cameraSystem->setFrustum(frustum);
+		}
+		if (ImGui::InputFloat("Aspect Ratio", &frustum.mAspectRatio)) {
+			cameraSystem->setFrustum(frustum);
+		}
+		if (ImGui::InputFloat("Near Plane", &frustum.mNearPlane)) {
+			cameraSystem->setFrustum(frustum);
+		}
+		if (ImGui::InputFloat("Far Plane", &frustum.mFarPlane)) {
+			cameraSystem->setFrustum(frustum);
+		}
+
+		// SSAO and render path
+		int renderPath = static_cast<int>(cameraSystem->getRenderPath());
+		int ssao = static_cast<int>(cameraSystem->getSSAO());
+
+		const char* renderPathNames[] = { "Forward", "Deferred" };
+		const char* ssaoNames[] = { "On", "Off" };
+
+		if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2)) {
+			cameraSystem->setRenderPath(static_cast<RenderPath>(renderPath));
+		}
+
+		if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2)) {
+			cameraSystem->setSSAO(static_cast<CameraSSAO>(ssao));
+		}
+	}
+
 	ImGui::End();
 }
 

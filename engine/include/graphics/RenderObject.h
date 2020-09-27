@@ -12,6 +12,7 @@ namespace PhysicsEngine
 	{
 		glm::mat4 model;
 		Sphere boundingSphere;
+		Guid transformId;
 		Guid meshRendererId;
 		int meshRendererIndex;
 		int materialIndex;

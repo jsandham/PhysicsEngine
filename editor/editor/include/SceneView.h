@@ -9,7 +9,6 @@
 
 #include "systems/RenderSystem.h"
 #include "graphics/GraphicsQuery.h"
-//#include "graphics/GraphicsTargets.h"
 
 #include "EditorCameraSystem.h"
 #include "EditorClipboard.h"
@@ -24,6 +23,7 @@ namespace PhysicsEditor
 		private:
 			bool focused;
 			bool hovered;
+			int activeTextureIndex;
 			PerformanceQueue perfQueue;
 			TransformGizmo transformGizmo;
 
@@ -40,6 +40,9 @@ namespace PhysicsEditor
 						EditorClipboard& clipboard, 
 						bool isOpenedThisFrame);
 
+			void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem* cameraSystem);
+			void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem* cameraSystem, bool* cameraSettingsActive);
+		
 			bool isFocused() const;
 			bool isHovered() const;
 

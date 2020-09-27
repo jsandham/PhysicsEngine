@@ -34,10 +34,14 @@ namespace PhysicsEngine
 
 		int mMousePosX;
 		int mMousePosY;
+		int mMousePosXOnLeftClick;
+		int mMousePosYOnLeftClick;
 		int mMousePosXOnRightClick;
 		int mMousePosYOnRightClick;
 		bool mIsLeftMouseClicked;
 		bool mIsRightMouseClicked;
+		bool mIsLeftMouseHeldDown;
+		bool mIsRightMouseHeldDown;
 		glm::quat rotationOnClick;
 
 	public:
@@ -63,14 +67,17 @@ namespace PhysicsEngine
 		RenderPath getRenderPath() const;
 		CameraSSAO getSSAO() const;
 
-		Guid getMeshRendererUnderMouse(float nx, float ny) const;
+		Guid getTransformUnderMouse(float nx, float ny) const;
 		int getMousePosX() const;
 		int getMousePosY() const;
 		bool isLeftMouseClicked() const;
 		bool isRightMouseClicked() const;
+		bool isLeftMouseHeldDown() const;
+		bool isRightMouseHeldDown() const;
+		glm::vec2 distanceTraveledSinceLeftMouseClick() const;
+		glm::vec2 distanceTraveledSinceRightMouseClick() const;
 
 		GLuint getNativeGraphicsMainFBO() const;
-
 		GLuint getNativeGraphicsColorTex() const;
 		GLuint getNativeGraphicsDepthTex() const;
 		GLuint getNativeGraphicsColorPickingTex() const;

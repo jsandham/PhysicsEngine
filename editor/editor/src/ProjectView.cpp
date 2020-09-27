@@ -44,6 +44,10 @@ void ProjectView::render(const std::string currentProjectPath, const LibraryDire
 	}
 
 	if (ImGui::Begin("Project View", &projectViewActive)) {
+		if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered()) {
+			ImGui::SetWindowFocus("Project View");
+		}
+
 		if (currentProjectPath != "") {
 			ImGui::Columns(2, "ProjectViews", true);
 

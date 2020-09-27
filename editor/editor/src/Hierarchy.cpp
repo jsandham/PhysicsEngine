@@ -62,6 +62,10 @@ void Hierarchy::render(World* world, EditorScene& scene, EditorClipboard& clipbo
 
 	if (ImGui::Begin("Hierarchy", &hierarchyActive))
 	{
+		if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered()) {
+			ImGui::SetWindowFocus("Hierarchy");
+		}
+
 		if (scene.name.length() > 0) {
 			if (scene.isDirty) {
 				ImGui::Text((scene.name+"*").c_str());

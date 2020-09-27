@@ -170,9 +170,9 @@ void Camera::computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 
 	viewMatrix = glm::lookAt(position, position + forward, up);
 }
 
-void Camera::assignColoring(int color, Guid meshRendererId)
+void Camera::assignColoring(int color, Guid transformId)
 {
-	mColoringMap.insert(std::pair<int, Guid>(color, meshRendererId));
+	mColoringMap.insert(std::pair<int, Guid>(color, transformId));
 }
 
 void Camera::clearColoring()
@@ -233,7 +233,7 @@ glm::vec3 Camera::getSSAOSample(int sample) const
 	return mSsaoSamples[sample];
 }
 
-Guid Camera::getMeshRendererIdAtScreenPos(int x, int y) const
+Guid Camera::getTransformIdAtScreenPos(int x, int y) const
 {
 	// Note: OpenGL assumes that the window origin is the bottom left corner
 	Color32 color;

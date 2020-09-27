@@ -1,6 +1,11 @@
 #include "../../include/core/ClosestDistance.h"
+#include "../../include/core/PolynomialRoots.h"
 
 #include "../../include/glm/glm.hpp"
+
+#include <string>
+#include <array>
+#include "../../include/core/Log.h"
 
 using namespace PhysicsEngine;
 
@@ -85,7 +90,6 @@ float ClosestDistance::closestDistance(Ray ray, Circle circle)
 	glm::vec3 D = ray.mOrigin - circle.mCentre;
 	glm::vec3 NxM = glm::cross(circle.mNormal, ray.mDirection);
 	glm::vec3 NxD = glm::cross(circle.mNormal, D);
-	float t;
 
 	if (NxM != glm::vec3(0.0f, 0.0f, 0.0f))
 	{
@@ -111,25 +115,75 @@ float ClosestDistance::closestDistance(Ray ray, Circle circle)
 
 				// Solve the quartic polynomial for real roots
 				// H(t) = h0 + h1*t + h2*t^2 + h3*t^3 + h4*t^4
-				//
-				// To solve this we make the substitution t = y - h3 / (4 * h4) giving:
-				//
-				// y^4 + A*y^2 + B*y + C = 0
-				//
-				// where
-				// A = h2 / h4 - (3*h3^2) / (8*h4^2)
-				// B = h1 / h4 - (h3*h2) / (2*h4^2) + (h3^3) / (8*h4^3)
-				// C = h0 / h4 - (h3*h1) / (4*h4^2) + (h3^2*h2) / (16*h4^3) - (3*h3^4) / (256*h4^4)
-				//
-				// The closed form roots are then:
-				//
-				// y1 = -0.5*
+				std::vector<float> roots = PolynomialRoots::solveQuartic(h4, h3, h2, h1, h0);
+
+				int index = 0;
+				std::array<float, 4> candidates;
+				candidates.fill(10000000.0f);
+
+				for (size_t i = 0; i < roots.size(); i++) {
+					glm::vec3 lineClosest;
+					glm::vec3 circleClosest;
+
+					glm::vec3 NxDelta = NxD + roots[i] * NxM;
+					if (NxDelta != glm::vec3(0.0f, 0.0f, 0.0f)) {
+						glm::vec3 delta = D + roots[i] * ray.mDirection;
+						lineClosest = circle.mCentre + delta;
+						delta -= glm::dot(circle.mNormal, delta) * circle.mNormal;
+						glm::normalize(delta);
+						circleClosest = circle.mCentre + circle.mRadius * delta;
+					}
+					else {
+
+					}
+
+					glm::vec3 diff = lineClosest - circleClosest;
+					candidates[index] = glm::dot(diff, diff);
+					index++;
+				}
+
+				std::sort(candidates.begin(), candidates.begin() + index);
+
+				for (int i = 0; i < 4; i++) {
+					std::string test3 = "candidates: " + std::to_string(candidates[i]) + "\n";
+					Log::info(test3.c_str());
+				}
+				Log::info("\n");
 			}
 			else {
 				// The line is parallel to the plane of the circle.
 				// The polynomial has the form
 				// H(t) = (t+v)^2*[(t+v)^2-(r^2-u^2)].
+				float u = glm::dot(NxM, D);
+				float v = glm::dot(ray.mDirection, D);
+				float discr = circle.mRadius * circle.mRadius - u * u;
+				if (discr > 0.0f) {
+					float rootDiscr = glm::sqrt(discr);
+					float root0 = -v + rootDiscr;
+
+
+					float root1 = -v - rootDiscr;
+				}
+				else {
+
+				}
 			}
+		}
+	}
+	else {
+		if (NxD != glm::vec3(0.0f, 0.0f, 0.0f))
+		{
+			// H(t) = |Cross(N,D)|^2*(t + Dot(M,D))^2.
+			float root0 = -glm::dot(ray.mDirection, D);
+
+			/*glm::vec3 delta = D + root0 * ray.mDirection;
+			lineClosest = circle.mCentre + delta;
+			delta -= glm::dot(circle.mNormal, delta) * circle.mNormal;
+			glm::normalize(delta);
+			circleClosest = circle.mCentre + circle.mRadius * delta;*/
+		}
+		else {
+
 		}
 	}
 

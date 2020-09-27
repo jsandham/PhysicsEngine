@@ -113,7 +113,7 @@ namespace PhysicsEngine
 			void create();
 			void destroy();
 			void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
-			void assignColoring(int color, Guid meshRendererId);
+			void assignColoring(int color, Guid transformId);
 			void clearColoring();
 
 			void beginQuery();
@@ -123,7 +123,7 @@ namespace PhysicsEngine
 			glm::mat4 getViewMatrix() const;
 			glm::mat4 getProjMatrix() const;
 			glm::vec3 getSSAOSample(int sample) const;
-			Guid getMeshRendererIdAtScreenPos(int x, int y) const;
+			Guid getTransformIdAtScreenPos(int x, int y) const;
 
 			Ray normalizedDeviceSpaceToRay(float x, float y) const;
 			Ray screenSpaceToRay(int x, int y) const;

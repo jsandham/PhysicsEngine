@@ -8,6 +8,8 @@
 #include "glm/detail/func_trigonometric.hpp"
 #include "glm/gtc/constants.hpp"
 
+#include "EditorCameraSystem.h"
+
 namespace PhysicsEditor
 {
 	typedef enum Axis
@@ -17,6 +19,13 @@ namespace PhysicsEditor
 		Axis_Z = 2,
 		Axis_None = 3
 	}Axis;
+
+	typedef enum GizmoMode
+	{
+		Translation = 0,
+		Rotation = 1,
+		Scale = 2
+	};
 
 	class TransformGizmo
 	{
@@ -34,11 +43,22 @@ namespace PhysicsEditor
 			int mGizmoShaderMVPLoc;
 			int mGizmoShaderColorLoc;
 
+			GizmoMode mode;
+			Axis highlightedTransformAxis;
+			Axis selectedTransformAxis;
+			glm::mat4 selectedTransformModel;
+
 		public:
 			void initialize();
-			void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, PhysicsEngine::Ray cameraRay);
-			void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, PhysicsEngine::Ray cameraRay);
-			void drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, PhysicsEngine::Ray cameraRay);
+			void update(PhysicsEngine::EditorCameraSystem * cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight);
+			void setGizmoMode(GizmoMode mode);
+
+			bool isGizmoHighlighted() const;
+
+		private:
+			void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
+			void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
+			void drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
 	};
 }
 

@@ -169,10 +169,10 @@ void Editor::render(bool editorBecameActiveThisFrame)
 	time.frameCount++;
 
 	// draw scene view window
-	sceneView.render(&world, 
-					 cameraSystem, 
-					 clipboard, 
-					 editorMenu.isOpenSceneViewCalled());
+	sceneView.render(&world,
+		cameraSystem,
+		clipboard,
+		editorMenu.isOpenSceneViewCalled());
 
 	// imgui render calls
 	ImGui::Render();
