@@ -105,7 +105,7 @@ void TransformGizmo::initialize()
 
 	Graphics::checkError();
 
-	mIsInitialized = true;
+	mode = GizmoMode::Translation;
 }
 
 void TransformGizmo::update(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight)
@@ -113,6 +113,29 @@ void TransformGizmo::update(PhysicsEngine::EditorCameraSystem* cameraSystem, Phy
 	assert(cameraSystem != NULL);
 	assert(selectedTransform != NULL);
 
+	if (mode == GizmoMode::Translation) {
+		updateTranslation(cameraSystem, selectedTransform, contentWidth, contentHeight);
+	}
+	else if(mode == GizmoMode::Rotation) {
+		updateRotation(cameraSystem, selectedTransform, contentWidth, contentHeight);
+	}
+	else {
+		updateScale(cameraSystem, selectedTransform, contentWidth, contentHeight);
+	}
+}
+
+void TransformGizmo::setGizmoMode(GizmoMode mode)
+{
+	this->mode = mode;
+}
+
+bool TransformGizmo::isGizmoHighlighted() const
+{
+	return highlightedTransformAxis != Axis::Axis_None;
+}
+
+void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight)
+{
 	if (!cameraSystem->isLeftMouseHeldDown()) {
 		selectedTransformAxis = Axis::Axis_None;
 	}
@@ -172,27 +195,36 @@ void TransformGizmo::update(PhysicsEngine::EditorCameraSystem* cameraSystem, Phy
 		}
 	}
 
-	drawTranslation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
-	//transformGizmo.drawRotation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
-	//transformGizmo.drawScale(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), transform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+	drawTranslation(cameraSystem->getProjMatrix(), 
+					cameraSystem->getViewMatrix(), 
+					selectedTransform->getModelMatrix(), 
+					cameraSystem->getNativeGraphicsMainFBO(), 
+					highlightedTransformAxis, 
+					selectedTransformAxis);
 }
 
-void TransformGizmo::setGizmoMode(GizmoMode mode)
+void TransformGizmo::updateRotation(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight)
 {
-	this->mode = mode;
+	drawRotation(cameraSystem->getProjMatrix(), 
+				 cameraSystem->getViewMatrix(), 
+				 selectedTransform->getModelMatrix(), 
+				 cameraSystem->getNativeGraphicsMainFBO(), 
+				 highlightedTransformAxis, 
+				 selectedTransformAxis);
 }
 
-bool TransformGizmo::isGizmoHighlighted() const
+void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight)
 {
-	return highlightedTransformAxis != Axis::Axis_None;
+	drawScale(cameraSystem->getProjMatrix(), 
+			  cameraSystem->getViewMatrix(), 
+			  selectedTransform->getModelMatrix(), 
+			  cameraSystem->getNativeGraphicsMainFBO(), 
+			  highlightedTransformAxis, 
+			  selectedTransformAxis);
 }
 
 void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
-	if (!mIsInitialized) {
-		initialize();
-	}
-
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -233,10 +265,6 @@ void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::
 
 void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
-	if (!mIsInitialized) {
-		initialize();
-	}
-
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -277,8 +305,5 @@ void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat
 
 void TransformGizmo::drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
-	if (!mIsInitialized) {
-		initialize();
-	}
 
 }

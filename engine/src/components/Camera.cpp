@@ -46,11 +46,14 @@ Camera::Camera()
 	mFrustum.mFarPlane = 250.0f;
 
 	mIsCreated = false;
+	mIsViewportChanged = false;
 }
 
 Camera::Camera(const std::vector<char>& data)
 {
 	deserialize(data);
+
+	mIsCreated = false;
 }
 
 Camera::~Camera()
@@ -115,6 +118,8 @@ void Camera::deserialize(const std::vector<char>& data)
 	mFrustum.mFarPlane = header->mFarPlane;
 
 	mBackgroundColor = Color(header->mBackgroundColor);
+
+	mIsViewportChanged = true;
 }
 
 bool Camera::isCreated() const
@@ -122,47 +127,63 @@ bool Camera::isCreated() const
 	return mIsCreated;
 }
 
-void Camera::create()
+bool Camera::isViewportChanged() const
 {
-	Graphics::create(this, 
-					 &mTargets.mMainFBO, 
-					 &mTargets.mColorTex,
-					 &mTargets.mDepthTex,
-					 &mTargets.mColorPickingFBO,
-					 &mTargets.mColorPickingTex,
-					 &mTargets.mColorPickingDepthTex,
-					 &mTargets.mGeometryFBO,
-					 &mTargets.mPositionTex,
-					 &mTargets.mNormalTex,
-					 &mTargets.mAlbedoSpecTex,
-					 &mTargets.mSsaoFBO,
-					 &mTargets.mSsaoColorTex,
-					 &mTargets.mSsaoNoiseTex,
-					 &mSsaoSamples[0],
-					 &mQuery.mQueryId[0],
-					 &mQuery.mQueryId[1],
-					 &mIsCreated);
+	return mIsViewportChanged;
 }
 
-void Camera::destroy()
+void Camera::createTargets()
 {
-	Graphics::destroy(this,
-					  &mTargets.mMainFBO,
-					  &mTargets.mColorTex,
-					  &mTargets.mDepthTex,
-					  &mTargets.mColorPickingFBO,
-					  &mTargets.mColorPickingTex,
-					  &mTargets.mColorPickingDepthTex,
-					  &mTargets.mGeometryFBO,
-				  	  &mTargets.mPositionTex,
-					  &mTargets.mNormalTex,
-					  &mTargets.mAlbedoSpecTex,
-					  &mTargets.mSsaoFBO,
-					  &mTargets.mSsaoColorTex,
-					  &mTargets.mSsaoNoiseTex,
-					  &mQuery.mQueryId[0],
-					  &mQuery.mQueryId[1],
-					  &mIsCreated);
+	Graphics::createTargets(&mTargets, 
+							mViewport, 
+							&mSsaoSamples[0],
+							&mQuery.mQueryId[0],
+							&mQuery.mQueryId[1],
+							&mIsCreated);
+}
+
+void Camera::destroyTargets()
+{
+	Graphics::destroyTargets(&mTargets, 
+							&mQuery.mQueryId[0],
+							&mQuery.mQueryId[1], 
+							&mIsCreated);
+}
+
+void Camera::resizeTargets()
+{
+
+}
+
+void Camera::beginQuery()
+{
+	mQuery.mNumBatchDrawCalls = 0;
+	mQuery.mNumDrawCalls = 0;
+	mQuery.mTotalElapsedTime = 0.0f;
+	mQuery.mVerts = 0;
+	mQuery.mTris = 0;
+	mQuery.mLines = 0;
+	mQuery.mPoints = 0;
+
+	Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+}
+
+void Camera::endQuery()
+{
+	GLuint64 elapsedTime; // in nanoseconds
+	Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+
+	mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
+
+	// swap which query is active
+	if (mQuery.mQueryBack) {
+		mQuery.mQueryBack = 0;
+		mQuery.mQueryFront = 1;
+	}
+	else {
+		mQuery.mQueryBack = 1;
+		mQuery.mQueryFront = 0;
+	}
 }
 
 void Camera::computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up)
@@ -178,44 +199,6 @@ void Camera::assignColoring(int color, Guid transformId)
 void Camera::clearColoring()
 {
 	mColoringMap.clear();
-}
-
-void Camera::beginQuery()
-{
-	mQuery.mNumBatchDrawCalls = 0;
-	mQuery.mNumDrawCalls = 0;
-	mQuery.mTotalElapsedTime = 0.0f;
-	mQuery.mVerts = 0;
-	mQuery.mTris = 0;
-	mQuery.mLines = 0;
-	mQuery.mPoints = 0;
-
-	Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
-
-	//glBeginQuery(GL_TIME_ELAPSED, mQuery.mQueryId[mQuery.mQueryBack]);
-}
-
-void Camera::endQuery()
-{
-	//glEndQuery(GL_TIME_ELAPSED);
-
-	//GLuint64 elapsedTime; // in nanoseconds
-	//glGetQueryObjectui64v(mQuery.mQueryId[mQuery.mQueryFront], GL_QUERY_RESULT, &elapsedTime);
-
-	GLuint64 elapsedTime; // in nanoseconds
-	Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
-
-	mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
-
-	// swap which query is active
-	if (mQuery.mQueryBack) {
-		mQuery.mQueryBack = 0;
-		mQuery.mQueryFront = 1;
-	}
-	else {
-		mQuery.mQueryBack = 1;
-		mQuery.mQueryFront = 0;
-	}
 }
 
 glm::mat4 Camera::getViewMatrix() const
@@ -237,7 +220,7 @@ Guid Camera::getTransformIdAtScreenPos(int x, int y) const
 {
 	// Note: OpenGL assumes that the window origin is the bottom left corner
 	Color32 color;
-	Graphics::readColorPickingPixel(this, x, y, &color);
+	Graphics::readColorPickingPixel(&mTargets, x, y, &color);
 
 	int temp = color.r + color.g * 256 + color.b * 256 * 256;
 
@@ -247,6 +230,24 @@ Guid Camera::getTransformIdAtScreenPos(int x, int y) const
 	}
 
 	return Guid::INVALID;
+}
+
+Viewport Camera::getViewport() const
+{
+	return mViewport;
+}
+
+void Camera::setViewport(int x, int y, int width, int height)
+{
+	mIsViewportChanged = mViewport.mX != x ||
+						 mViewport.mY != y ||
+						 mViewport.mWidth != width ||
+						 mViewport.mHeight != height;
+
+	mViewport.mX = x;
+	mViewport.mY = y;
+	mViewport.mWidth = width;
+	mViewport.mHeight = height;
 }
 
 Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const
@@ -285,9 +286,10 @@ Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const
 Ray Camera::screenSpaceToRay(int x, int y) const
 {
 	// compute ray cast from the screen space ([0, 0] x [pixelWidth, pixelHeight]) into the scene
-	Ray ray;
+	float ndcX = 0;
+	float ndcY = 0;
 
-	return ray;
+	return normalizedDeviceSpaceToRay(ndcX, ndcY);
 }
 
 GLuint Camera::getNativeGraphicsMainFBO() const

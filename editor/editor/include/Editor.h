@@ -62,8 +62,6 @@ namespace PhysicsEditor
 			EditorScene currentScene;
 			EditorClipboard clipboard;
 			
-			Time time;
-			Input input;
 			EditorCameraSystem* cameraSystem;
 			RenderSystem* renderSystem;
 			CleanUpSystem* cleanupSystem;
@@ -90,7 +88,6 @@ namespace PhysicsEditor
 			void openProject(std::string name, std::string path);
 			void saveProject(std::string name, std::string path);
 			void updateProjectAndSceneState();
-			void updateInputPassedToSystems(Input* input);
 	};
 }
 

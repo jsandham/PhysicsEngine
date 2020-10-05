@@ -129,10 +129,10 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 		//obj[componentId.toString()]["front"].append(camera->mFront.x, camera->mFront.y, camera->mFront.z);
 		//obj[componentId.toString()]["up"].append(camera->mUp.x, camera->mUp.y, camera->mUp.z);
 		obj[componentId.toString()]["backgroundColor"].append(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b, camera->mBackgroundColor.a);
-		obj[componentId.toString()]["x"] = camera->mViewport.mX;
-		obj[componentId.toString()]["y"] = camera->mViewport.mY;
-		obj[componentId.toString()]["width"] = camera->mViewport.mWidth;
-		obj[componentId.toString()]["height"] = camera->mViewport.mHeight;
+		obj[componentId.toString()]["x"] = camera->getViewport().mX;
+		obj[componentId.toString()]["y"] = camera->getViewport().mY;
+		obj[componentId.toString()]["width"] = camera->getViewport().mWidth;
+		obj[componentId.toString()]["height"] = camera->getViewport().mHeight;
 		obj[componentId.toString()]["fov"] = camera->mFrustum.mFov;
 		obj[componentId.toString()]["aspectRatio"] = camera->mFrustum.mAspectRatio;
 		obj[componentId.toString()]["near"] = camera->mFrustum.mNearPlane;
@@ -185,18 +185,18 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON& obj, World* world, 
 
 		obj[componentId.toString()]["type"] = "Light";
 		obj[componentId.toString()]["entity"] = entityId.toString();
-		//obj[componentId.toString()]["position"].append(light->mPosition.x, light->mPosition.y, light->mPosition.z);
-		//obj[componentId.toString()]["direction"].append(light->mDirection.x, light->mDirection.y, light->mDirection.z);
-		obj[componentId.toString()]["ambient"].append(light->mAmbient.x, light->mAmbient.y, light->mAmbient.z);
-		obj[componentId.toString()]["diffuse"].append(light->mDiffuse.x, light->mDiffuse.y, light->mDiffuse.z);
-		obj[componentId.toString()]["specular"].append(light->mSpecular.x, light->mSpecular.y, light->mSpecular.z);
-		obj[componentId.toString()]["constant"] = light->mConstant;
-		obj[componentId.toString()]["linear"] = light->mLinear;
-		obj[componentId.toString()]["quadratic"] = light->mQuadratic;
-		obj[componentId.toString()]["cutOff"] = light->mCutOff;
-		obj[componentId.toString()]["outerCutOff"] = light->mOuterCutOff;
+		obj[componentId.toString()]["color"].append(light->mColor.x, light->mColor.y, light->mColor.z, light->mColor.w);
+		obj[componentId.toString()]["intensity"] = light->mIntensity;
+		obj[componentId.toString()]["spotAngle"] = light->mSpotAngle;
+		obj[componentId.toString()]["innerSpotAngle"] = light->mInnerSpotAngle;
+		obj[componentId.toString()]["shadowNearPlane"] = light->mShadowNearPlane;
+		obj[componentId.toString()]["shadowFarPlane"] = light->mShadowFarPlane;
+		obj[componentId.toString()]["shadowAngle"] = light->mShadowAngle;
+		obj[componentId.toString()]["shadowRadius"] = light->mShadowRadius;
+		obj[componentId.toString()]["shadowStrength"] = light->mShadowStrength;
 		obj[componentId.toString()]["lightType"] = static_cast<int>(light->mLightType);
 		obj[componentId.toString()]["shadowType"] = static_cast<int>(light->mShadowType);
+		obj[componentId.toString()]["shadowMapResolution"] = static_cast<int>(light->getShadowMapResolution());
 	}
 	else if (type == 8) {
 		//boxcollider

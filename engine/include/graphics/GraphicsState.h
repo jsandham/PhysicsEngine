@@ -24,70 +24,19 @@ namespace PhysicsEngine
 		glm::mat4 mLightView[5];       // 320  384  448  512  576 
 		glm::vec3 mPosition;           // 640
 		glm::vec3 mDirection;          // 656
-		glm::vec3 mAmbient;            // 672
-		glm::vec3 mDiffuse;            // 688
-		glm::vec3 mSpecular;           // 704
-		float mCascadeEnds[5];         // 720  736  752  768  784
-		float mFarPlane;               // 800
-		float mConstant;               // 804
-		float mLinear;                 // 808
-		float mQuadratic;              // 812
-		float mCutOff;                 // 816
-		float mOuterCutOff;            // 820
+		glm::vec4 mColor;              // 672
+		float mCascadeEnds[5];         // 688  704  720  736  752
+		float mIntensity;              // 768
+		float mSpotAngle;              // 772
+		float mInnerSpotAngle;         // 776
+		float mShadowNearPlane;        // 780
+		float mShadowFarPlane;         // 784
+		float mShadowAngle;            // 788
+		float mShadowRadius;           // 792
+		float mShadowStrength;         // 796
 
 		GLuint mHandle;
 	};
-
-	
-
-	// struct GraphicsShadowState
-	// {
-	// 	glm::mat4 lightProjection[5]; // 0    64   128  192  256
-	// 	glm::mat4 lightView[5];       // 320  384  448  512  576 
-	// 	float cascadeEnd[5];          // 640  656  672  688  704
-	// 	float farPlane;               // 720
-
-	// 	GLuint handle;
-	// };
-
-	// struct GraphicsDirectionalLightState
-	// {
-	// 	glm::vec3 direction;  // 0
-	// 	glm::vec3 ambient;    // 16
-	// 	glm::vec3 diffuse;    // 32
-	// 	glm::vec3 specular;   // 48
-
-	// 	GLuint handle;
-	// };
-
-	// struct GraphicsSpotLightState
-	// {
-	// 	glm::vec3 position;  // 0
-	// 	glm::vec3 direction; // 16
-	// 	glm::vec3 ambient;   // 32
-	// 	glm::vec3 diffuse;   // 48
-	// 	glm::vec3 specular;  // 64
-	// 	float constant;      // 80
-	// 	float linear;        // 84
-	// 	float quadratic;     // 88
-	// 	float cutOff;        // 92
-	// 	float outerCutOff;   // 96
-
-	// 	GLuint handle;
-	// };
-
-	// struct GraphicsPointLightState
-	// {
-	// 	glm::vec3 position; // 0
-	// 	glm::vec3 ambient;  // 16
-	// 	glm::vec3 diffuse;  // 32
-	// 	glm::vec3 specular; // 48
-	// 	float constant;     // 64
-	// 	float linear;       // 68
-	// 	float quadratic;    // 72
-
-	// 	GLuint handle;
-	// };
 }
 
 #endif

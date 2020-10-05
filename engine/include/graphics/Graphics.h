@@ -44,44 +44,22 @@ namespace PhysicsEngine
 			static void beginQuery(GLuint queryId);
 			static void endQuery(GLuint queryId, GLuint64* elapsedTime);
 
-			static void create(Camera* camera, 
-							   GLuint* mainFBO, 
-							   GLuint* colorTex,
-							   GLuint* depthTex,
-							   GLuint* colorPickingFBO,
-							   GLuint* colorPickingTex,
-							   GLuint* colorPickingDepthTex,
-							   GLuint* geometryFBO, 
-							   GLuint* positionTex, 
-							   GLuint* normalTex, 
-							   GLuint* albedoSpecTex,
-							   GLuint* ssaoFBO, 
-							   GLuint* ssaoColorTex, 
-							   GLuint* ssaoNoiseTex,
-							   glm::vec3* ssaoSamples,
-							   GLuint* queryId0,
-							   GLuint* queryId1,
-							   bool* created);
+			static void createTargets(CameraTargets* targets, 
+									  Viewport viewport, 
+									  glm::vec3* ssaoSamples,
+									  GLuint* queryId0,
+									  GLuint* queryId1, 
+									  bool* created);
+			static void destroyTargets(CameraTargets* targets, 
+									   GLuint* queryId0,
+									   GLuint* queryId1, 
+									   bool* created);
+			static void resizeTargets(CameraTargets* targets, Viewport viewport, bool* viewportChanged);
+			static void readColorPickingPixel(const CameraTargets* targets, int x, int y, Color32* color);
 
-			static void destroy(Camera* camera,
-								GLuint* mainFBO,
-								GLuint* colorTex,
-								GLuint* depthTex,
-								GLuint* colorPickingFBO,
-								GLuint* colorPickingTex,
-								GLuint* colorPickingDepthTex,
-								GLuint* geometryFBO,
-								GLuint* positionTex,
-								GLuint* normalTex,
-								GLuint* albedoSpecTex,
-								GLuint* ssaoFBO,
-								GLuint* ssaoColorTex,
-								GLuint* ssaoNoiseTex,
-								GLuint* queryId0,
-								GLuint* queryId1,
-								bool* created);
-
-			static void readColorPickingPixel(const Camera* camera, int x, int y, Color32* color);
+			static void createTargets(LightTargets* targets, ShadowMapResolution resolution, bool* created);
+			static void destroyTargets(LightTargets* targets, bool* created);
+			static void resizeTargets(LightTargets* targets, ShadowMapResolution resolution, bool* resolutionChanged);
 
 			static void create(Texture2D* texture, GLuint* tex, bool* created);
 			static void destroy(Texture2D* texture, GLuint* tex, bool* created);

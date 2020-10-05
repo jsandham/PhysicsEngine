@@ -25,8 +25,8 @@ namespace PhysicsEngine
 		bool mRenderToScreen;
 
 		// directional light cascade shadow map data
-		GLuint mShadowCascadeFBO[5];
-		GLuint mShadowCascadeDepth[5];
+		//GLuint mShadowCascadeFBO[5];
+		//GLuint mShadowCascadeDepth[5];
 		float mCascadeEnds[6];
 		glm::mat4 mCascadeOrthoProj[5];
 		glm::mat4 mCascadeLightView[5];
@@ -38,14 +38,14 @@ namespace PhysicsEngine
 		int mDepthShaderProjectionLoc;
 
 		// spotlight shadow map data
-		GLuint mShadowSpotlightFBO;
-		GLuint mShadowSpotlightDepth;
+		//GLuint mShadowSpotlightFBO;
+		//GLuint mShadowSpotlightDepth;
 		glm::mat4 mShadowViewMatrix;
 		glm::mat4 mShadowProjMatrix;
 
 		// pointlight cubemap shadow map data
-		GLuint mShadowCubemapFBO;
-		GLuint mShadowCubemapDepth;
+		//GLuint mShadowCubemapFBO;
+		//GLuint mShadowCubemapDepth;
 		glm::mat4 mCubeViewProjMatrices[6];
 		
 		Shader* mDepthCubemapShader;

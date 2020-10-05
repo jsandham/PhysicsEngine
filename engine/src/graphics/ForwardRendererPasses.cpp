@@ -109,83 +109,6 @@ void PhysicsEngine::initializeRenderer(World* world, ForwardRendererState* state
 
 	Graphics::checkError();
 
-	// generate shadow map fbos
-	// create directional light cascade shadow map fbo
-	glGenFramebuffers(5, &state->mShadowCascadeFBO[0]);
-	glGenTextures(5, &state->mShadowCascadeDepth[0]);
-
-	for (int i = 0; i < 5; i++) {
-		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCascadeFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, state->mShadowCascadeDepth[i]);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, state->mShadowCascadeDepth[i], 0);
-
-		Graphics::checkFrambufferError();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	// create spotlight shadow map fbo
-	glGenFramebuffers(1, &state->mShadowSpotlightFBO);
-	glGenTextures(1, &state->mShadowSpotlightDepth);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowSpotlightFBO);
-	glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, state->mShadowSpotlightDepth, 0);
-
-	Graphics::checkFrambufferError();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// create pointlight shadow cubemap fbo
-	glGenFramebuffers(1, &state->mShadowCubemapFBO);
-	glGenTextures(1, &state->mShadowCubemapDepth);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCubemapFBO);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, state->mShadowCubemapDepth);
-
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, state->mShadowCubemapDepth, 0);
-
-	Graphics::checkFrambufferError();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	Graphics::checkError();
-
 	glGenBuffers(1, &(state->mCameraState.mHandle));
 	glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
 	glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
@@ -220,15 +143,15 @@ void PhysicsEngine::beginFrame(World* world, Camera* camera, ForwardRendererStat
 	glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->mLightState.mHandle, 0, 824);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glEnable(GL_SCISSOR_TEST);
+	//glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glBlendEquation(GL_FUNC_ADD);
 
-	glViewport(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
-	glScissor(camera->mViewport.mX, camera->mViewport.mY, camera->mViewport.mWidth, camera->mViewport.mHeight);
+	glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
+	glScissor(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
 
 	glClearColor(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b, camera->mBackgroundColor.a);
 	glClearDepth(1.0f);
@@ -264,6 +187,7 @@ void PhysicsEngine::computeSSAO(World* world,
 {
 	// fill geometry framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
+	glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
 
 	state->mGeometryShader->use(state->mGeometryShaderProgram);
 
@@ -278,6 +202,7 @@ void PhysicsEngine::computeSSAO(World* world,
 
 	// fill ssao color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
+	glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
 	state->mSsaoShader->use(state->mSsaoShaderProgram);
 	state->mSsaoShader->setMat4(state->mSsaoShaderProjectionLoc, camera->getProjMatrix());
 	for (int i = 0; i < 64; i++) {
@@ -317,7 +242,8 @@ void PhysicsEngine::renderShadows(World* world,
 		calcCascadeOrthoProj(camera, lightTransform->getForward(), state);
 
 		for (int i = 0; i < 5; i++) {
-			glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCascadeFBO[i]);
+			glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowCascadeFBO(i));
+			glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()), static_cast<GLsizei>(light->getShadowMapResolution()));
 
 			glClearDepth(1.0f);
 			glClear(GL_DEPTH_BUFFER_BIT);
@@ -335,7 +261,8 @@ void PhysicsEngine::renderShadows(World* world,
 		}
 	}
 	else if (light->mLightType == LightType::Spot) {
-		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowSpotlightFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowSpotlightFBO());
+		glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()), static_cast<GLsizei>(light->getShadowMapResolution()));
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -365,7 +292,8 @@ void PhysicsEngine::renderShadows(World* world,
 		state->mCubeViewProjMatrices[4] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
 		state->mCubeViewProjMatrices[5] = (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-		glBindFramebuffer(GL_FRAMEBUFFER, state->mShadowCubemapFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowCubemapFBO());
+		glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()), static_cast<GLsizei>(light->getShadowMapResolution()));
 
 		glClearDepth(1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -399,15 +327,16 @@ void PhysicsEngine::renderOpaques(World* world,
 {
 	state->mLightState.mPosition = lightTransform->mPosition;
 	state->mLightState.mDirection = lightTransform->getForward();
-	state->mLightState.mAmbient = light->mAmbient;
-	state->mLightState.mDiffuse = light->mDiffuse;
-	state->mLightState.mSpecular = light->mSpecular;
+	state->mLightState.mColor = light->mColor;
 
-	state->mLightState.mConstant = light->mConstant;
-	state->mLightState.mLinear = light->mLinear;
-	state->mLightState.mQuadratic = light->mQuadratic;
-	state->mLightState.mCutOff = light->mCutOff;
-	state->mLightState.mOuterCutOff = light->mOuterCutOff;
+	state->mLightState.mIntensity = light->mIntensity;
+	state->mLightState.mSpotAngle = light->mSpotAngle;
+	state->mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
+	state->mLightState.mShadowNearPlane = light->mShadowNearPlane;
+	state->mLightState.mShadowFarPlane = light->mShadowFarPlane;
+	state->mLightState.mShadowAngle = light->mShadowAngle;
+	state->mLightState.mShadowRadius = light->mShadowRadius;
+	state->mLightState.mShadowStrength = light->mShadowStrength;
 
 	if (light->mLightType == LightType::Directional) {
 		for (int i = 0; i < 5; i++) {
@@ -427,29 +356,27 @@ void PhysicsEngine::renderOpaques(World* world,
 		}
 	}
 
-	state->mLightState.mFarPlane = camera->mFrustum.mFarPlane;
-
 	glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &state->mLightState.mLightProjection[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &state->mLightState.mLightView[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(state->mLightState.mPosition));
 	glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(state->mLightState.mDirection));
-	glBufferSubData(GL_UNIFORM_BUFFER, 672, 12, glm::value_ptr(state->mLightState.mAmbient));
-	glBufferSubData(GL_UNIFORM_BUFFER, 688, 12, glm::value_ptr(state->mLightState.mDiffuse));
-	glBufferSubData(GL_UNIFORM_BUFFER, 704, 12, glm::value_ptr(state->mLightState.mSpecular));
-	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &state->mLightState.mCascadeEnds[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &state->mLightState.mCascadeEnds[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &state->mLightState.mCascadeEnds[2]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &state->mLightState.mCascadeEnds[3]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &state->mLightState.mCascadeEnds[4]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 800, 4, &state->mLightState.mFarPlane);
-	glBufferSubData(GL_UNIFORM_BUFFER, 804, 4, &(state->mLightState.mConstant));
-	glBufferSubData(GL_UNIFORM_BUFFER, 808, 4, &(state->mLightState.mLinear));
-	glBufferSubData(GL_UNIFORM_BUFFER, 812, 4, &(state->mLightState.mQuadratic));
-	glBufferSubData(GL_UNIFORM_BUFFER, 816, 4, &(state->mLightState.mCutOff));
-	glBufferSubData(GL_UNIFORM_BUFFER, 820, 4, &(state->mLightState.mOuterCutOff));
+	glBufferSubData(GL_UNIFORM_BUFFER, 672, 16, glm::value_ptr(state->mLightState.mColor));
+	glBufferSubData(GL_UNIFORM_BUFFER, 688, 4, &state->mLightState.mCascadeEnds[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 704, 4, &state->mLightState.mCascadeEnds[1]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &state->mLightState.mCascadeEnds[2]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &state->mLightState.mCascadeEnds[3]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &state->mLightState.mCascadeEnds[4]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &state->mLightState.mIntensity);
+	glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(state->mLightState.mSpotAngle));
+	glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(state->mLightState.mInnerSpotAngle));
+	glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(state->mLightState.mShadowNearPlane));
+	glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(state->mLightState.mShadowFarPlane));
+	glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(state->mLightState.mShadowAngle));
+	glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(state->mLightState.mShadowRadius));
+	glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(state->mLightState.mShadowStrength));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	
 	int variant = ShaderVariant::None;
 	if (light->mLightType == LightType::Directional) {
 		variant = ShaderVariant::Directional;
@@ -475,6 +402,7 @@ void PhysicsEngine::renderOpaques(World* world,
 												 "shadowMap[4]" };
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
+	glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
 
 	int currentMaterialIndex = -1;
 	int currentShaderIndex = -1;
@@ -506,14 +434,14 @@ void PhysicsEngine::renderOpaques(World* world,
 				shader->setInt(shaderShadowMapNames[j], 3 + j);
 
 				glActiveTexture(GL_TEXTURE0 + 3 + j);
-				glBindTexture(GL_TEXTURE_2D, state->mShadowCascadeDepth[j]);
+				glBindTexture(GL_TEXTURE_2D, light->getNativeGraphicsShadowCascadeDepthTex(j));
 			}
 		}
 		else if (light->mLightType == LightType::Spot) {
 			shader->setInt(shaderShadowMapNames[0], 3);
 
 			glActiveTexture(GL_TEXTURE0 + 3);
-			glBindTexture(GL_TEXTURE_2D, state->mShadowSpotlightDepth);
+			glBindTexture(GL_TEXTURE_2D, light->getNativeGrpahicsShadowSpotlightDepthTex());
 		}
 
 		Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
@@ -541,6 +469,7 @@ void PhysicsEngine::renderColorPicking(World* world,
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+	glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
 
 	state->mColorShader->use(state->mColorShaderProgram);
 
@@ -577,9 +506,10 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, ForwardRendererState*
 {
 	camera->endQuery();
 
-	if (state->mRenderToScreen) {
-		glViewport(0, 0, 1024, 1024);
-		glScissor(0, 0, 1024, 1024);
+	/*if (state->mRenderToScreen) {
+		glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
+		glScissor(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth, camera->getViewport().mHeight);
+		
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -591,7 +521,7 @@ void PhysicsEngine::endFrame(World* world, Camera* camera, ForwardRendererState*
 		glBindVertexArray(state->mQuadVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
-	}
+	}*/
 }
 
 void PhysicsEngine::calcShadowmapCascades(Camera* camera, ForwardRendererState* state)

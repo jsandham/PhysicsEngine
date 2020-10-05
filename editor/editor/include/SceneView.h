@@ -6,6 +6,8 @@
 #include "PerformanceQueue.h"
 
 #include "core/World.h"
+#include "core/Time.h"
+#include "core/Input.h"
 
 #include "systems/RenderSystem.h"
 #include "graphics/GraphicsQuery.h"
@@ -31,6 +33,9 @@ namespace PhysicsEditor
 			ImVec2 sceneContentMin;
 			ImVec2 sceneContentMax;
 
+			PhysicsEngine::Input input;
+			PhysicsEngine::Time time;
+
 		public:
 			SceneView();
 			~SceneView();
@@ -39,9 +44,6 @@ namespace PhysicsEditor
 						PhysicsEngine::EditorCameraSystem* cameraSystem, 
 						EditorClipboard& clipboard, 
 						bool isOpenedThisFrame);
-
-			void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem* cameraSystem);
-			void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem* cameraSystem, bool* cameraSettingsActive);
 		
 			bool isFocused() const;
 			bool isHovered() const;
@@ -50,6 +52,10 @@ namespace PhysicsEditor
 			ImVec2 getSceneContentMax() const;
 			ImVec2 getWindowPos() const;
 
+		private:
+			void updateWorld(PhysicsEngine::World* world);
+			void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem* cameraSystem);
+			void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem* cameraSystem, bool* cameraSettingsActive);
 	};
 }
 

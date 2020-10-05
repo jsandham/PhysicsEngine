@@ -13,8 +13,8 @@ using namespace PhysicsEngine;
 
 const float EditorCameraSystem::YAW_PAN_SENSITIVITY = 0.0025f;
 const float EditorCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
-const float EditorCameraSystem::ZOOM_SENSITIVITY = 125.0f;
-const float EditorCameraSystem::TRANSLATE_SENSITIVITY = 75.0f;
+const float EditorCameraSystem::ZOOM_SENSITIVITY = 1.0f;// 125.0f;
+const float EditorCameraSystem::TRANSLATE_SENSITIVITY = 1.0f;// 75.0f;
 
 EditorCameraSystem::EditorCameraSystem()
 {
@@ -89,37 +89,37 @@ void EditorCameraSystem::update(Input input, Time time)
 	// D pad controls
 	if (!getMouseButton(input, RButton)) {
 		if (getKey(input, KeyCode::Up)) {
-			position += EditorCameraSystem::ZOOM_SENSITIVITY * time.deltaTime * front;
+			position += EditorCameraSystem::ZOOM_SENSITIVITY * front;
 		}
 		if (getKey(input, KeyCode::Down)) {
-			position -= EditorCameraSystem::ZOOM_SENSITIVITY * time.deltaTime * front;
+			position -= EditorCameraSystem::ZOOM_SENSITIVITY * front;
 		}
 		if (getKey(input, KeyCode::Left)) {
-			position += EditorCameraSystem::TRANSLATE_SENSITIVITY * time.deltaTime * right;
+			position += EditorCameraSystem::TRANSLATE_SENSITIVITY * right;
 		}
 		if (getKey(input, KeyCode::Right)) {
-			position -= EditorCameraSystem::TRANSLATE_SENSITIVITY * time.deltaTime * right;
+			position -= EditorCameraSystem::TRANSLATE_SENSITIVITY * right;
 		}
 	}
 
 	// WASD controls
 	if (getMouseButton(input, RButton)) {
 		if (getKey(input, KeyCode::W)) {
-			position += EditorCameraSystem::ZOOM_SENSITIVITY * time.deltaTime * front;
+			position += EditorCameraSystem::ZOOM_SENSITIVITY * front;
 		}
 		if (getKey(input, KeyCode::S)) {
-			position -= EditorCameraSystem::ZOOM_SENSITIVITY * time.deltaTime * front;
+			position -= EditorCameraSystem::ZOOM_SENSITIVITY * front;
 		}
 		if (getKey(input, KeyCode::A)) {
-			position += EditorCameraSystem::TRANSLATE_SENSITIVITY * time.deltaTime * right;
+			position += EditorCameraSystem::TRANSLATE_SENSITIVITY * right;
 		}
 		if (getKey(input, KeyCode::D)) {
-			position -= EditorCameraSystem::TRANSLATE_SENSITIVITY * time.deltaTime * right;
+			position -= EditorCameraSystem::TRANSLATE_SENSITIVITY * right;
 		}
 	}
 
 	// Mouse scroll wheel
-	position += EditorCameraSystem::ZOOM_SENSITIVITY * input.mouseDelta * time.deltaTime * front;
+	position += EditorCameraSystem::ZOOM_SENSITIVITY * input.mouseDelta * front;
 
 	// Mouse position
 	mMousePosX = input.mousePosX;
@@ -163,7 +163,7 @@ void EditorCameraSystem::resetCamera()
 
 void EditorCameraSystem::setViewport(Viewport viewport)
 {
-	mCamera->mViewport = viewport;
+	mCamera->setViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
 }
 
 void EditorCameraSystem::setFrustum(Frustum frustum)
@@ -183,7 +183,7 @@ void EditorCameraSystem::setSSAO(CameraSSAO ssao)
 
 Viewport EditorCameraSystem::getViewport() const
 {
-	return mCamera->mViewport;
+	return mCamera->getViewport();
 }
 
 Frustum EditorCameraSystem::getFrustum() const
@@ -244,8 +244,8 @@ glm::vec2 EditorCameraSystem::distanceTraveledSinceRightMouseClick() const
 
 Guid EditorCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
-	int x = mCamera->mViewport.mX + mCamera->mViewport.mWidth * nx;
-	int y = mCamera->mViewport.mY + mCamera->mViewport.mHeight * ny;
+	int x = mCamera->getViewport().mX + mCamera->getViewport().mWidth * nx;
+	int y = mCamera->getViewport().mY + mCamera->getViewport().mHeight * ny;
 
 	return mCamera->getTransformIdAtScreenPos(x, y);
 }
@@ -254,7 +254,6 @@ GLuint EditorCameraSystem::getNativeGraphicsMainFBO() const
 {
 	return mCamera->getNativeGraphicsMainFBO();
 }
-
 
 GLuint EditorCameraSystem::getNativeGraphicsColorTex() const
 {

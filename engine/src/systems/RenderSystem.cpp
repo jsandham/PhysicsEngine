@@ -73,6 +73,7 @@ void RenderSystem::update(Input input, Time time)
 {
 	registerRenderAssets(mWorld);
 	registerCameras(mWorld);
+	registerLights(mWorld);
 
 	buildRenderObjectsList(mWorld);
 
@@ -158,7 +159,26 @@ void RenderSystem::registerCameras(World* world)
 		Camera* camera = world->getComponentByIndex<Camera>(i);
 
 		if (!camera->isCreated()) {
-			camera->create();
+			camera->createTargets();
+		}
+
+		/*if (camera->isViewportChanged()) {
+			camera->resize();
+		}*/
+	}
+}
+
+void RenderSystem::registerLights(World* world)
+{
+	for (int i = 0; i < world->getNumberOfComponents<Light>(); i++) {
+		Light* light = world->getComponentByIndex<Light>(i);
+
+		if (!light->isCreated()) {
+			light->createTargets();
+		}
+
+		if (light->isShadowMapResolutionChanged()) {
+			light->resizeTargets();
 		}
 	}
 }

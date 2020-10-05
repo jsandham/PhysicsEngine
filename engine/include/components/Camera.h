@@ -24,7 +24,6 @@
 #include "../core/Color.h"
 #include "../core/Ray.h"
 
-#include "../graphics/GraphicsTargets.h"
 #include "../graphics/GraphicsQuery.h"
 
 namespace PhysicsEngine
@@ -76,11 +75,30 @@ namespace PhysicsEngine
 		int mHeight;
 	};
 
+	struct CameraTargets
+	{
+		GLuint mMainFBO;
+		GLuint mColorTex;
+		GLuint mDepthTex;
+
+		GLuint mColorPickingFBO;
+		GLuint mColorPickingTex;
+		GLuint mColorPickingDepthTex;
+
+		GLuint mGeometryFBO;
+		GLuint mPositionTex;
+		GLuint mNormalTex;
+		GLuint mAlbedoSpecTex;
+
+		GLuint mSsaoFBO;
+		GLuint mSsaoColorTex;
+		GLuint mSsaoNoiseTex;
+	};
+
 	class Camera : public Component
 	{
 		public:
 			Frustum mFrustum;
-			Viewport mViewport;
 			Guid mTargetTextureId;
 
 			RenderPath mRenderPath;
@@ -92,12 +110,14 @@ namespace PhysicsEngine
 			GraphicsQuery mQuery;
 
 		private:
-			GraphicsTargets mTargets;
+			Viewport mViewport;
+			CameraTargets mTargets;
 
 			glm::vec3 mSsaoSamples[64];
 			glm::mat4 viewMatrix;
 
 			bool mIsCreated;
+			bool mIsViewportChanged;
 
 			std::unordered_map<int, Guid> mColoringMap;
 
@@ -110,20 +130,25 @@ namespace PhysicsEngine
 			std::vector<char> serialize(Guid componentId, Guid entityId) const;
 			void deserialize(const std::vector<char>& data);
 
-			void create();
-			void destroy();
+			void createTargets();
+			void destroyTargets();
+			void resizeTargets();
+			void beginQuery();
+			void endQuery();
+
 			void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
 			void assignColoring(int color, Guid transformId);
 			void clearColoring();
 
-			void beginQuery();
-			void endQuery();
-
 			bool isCreated() const;
+			bool isViewportChanged() const;
 			glm::mat4 getViewMatrix() const;
 			glm::mat4 getProjMatrix() const;
 			glm::vec3 getSSAOSample(int sample) const;
 			Guid getTransformIdAtScreenPos(int x, int y) const;
+
+			Viewport getViewport() const;
+			void setViewport(int x, int y, int width, int height);
 
 			Ray normalizedDeviceSpaceToRay(float x, float y) const;
 			Ray screenSpaceToRay(int x, int y) const;

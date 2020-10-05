@@ -124,47 +124,32 @@ void Graphics::endQuery(GLuint queryId, GLuint64* elapsedTime)
 	glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime);
 }
 
-void Graphics::create(Camera* camera,
-					  GLuint* mainFBO,
-					  GLuint* colorTex,
-					  GLuint* depthTex,
-					  GLuint* colorPickingFBO,
-					  GLuint* colorPickingTex,
-					  GLuint* colorPickingDepthTex,
-					  GLuint* geometryFBO,
-					  GLuint* positionTex,
-					  GLuint* normalTex,
-					  GLuint* albedoSpecTex,
-					  GLuint* ssaoFBO,
-					  GLuint* ssaoColorTex,
-					  GLuint* ssaoNoiseTex,
-					  glm::vec3* ssaoSamples,
-					  GLuint* queryId0,
-					  GLuint* queryId1,
-				      bool* created)
+void Graphics::createTargets(CameraTargets* targets, Viewport viewport, glm::vec3* ssaoSamples,
+							GLuint* queryId0,
+							GLuint* queryId1, bool* created)
 {
 	// generate timing queries
 	glGenQueries(1, queryId0);
 	glGenQueries(1, queryId1);
 
 	// generate main camera fbo (color + depth)
-	glGenFramebuffers(1, mainFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
+	glGenFramebuffers(1, &(targets->mMainFBO));
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
 
-	glGenTextures(1, colorTex);
-	glBindTexture(GL_TEXTURE_2D, *colorTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mColorTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mColorTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glGenTextures(1, depthTex);
-	glBindTexture(GL_TEXTURE_2D, *depthTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glGenTextures(1, &(targets->mDepthTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *colorTex, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depthTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
@@ -175,23 +160,23 @@ void Graphics::create(Camera* camera,
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// generate color picking fbo (color + depth)
-	glGenFramebuffers(1, colorPickingFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, *colorPickingFBO);
+	glGenFramebuffers(1, &(targets->mColorPickingFBO));
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
 
-	glGenTextures(1, colorPickingTex);
-	glBindTexture(GL_TEXTURE_2D, *colorPickingTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mColorPickingTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mColorPickingTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glGenTextures(1, colorPickingDepthTex);
-	glBindTexture(GL_TEXTURE_2D, *colorPickingDepthTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glGenTextures(1, &(targets->mColorPickingDepthTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mColorPickingDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *colorPickingTex, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *colorPickingDepthTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorPickingTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mColorPickingDepthTex, 0);
 
 	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
 	unsigned int colorPickingAttachments[1] = { GL_COLOR_ATTACHMENT0 };
@@ -202,30 +187,30 @@ void Graphics::create(Camera* camera,
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// generate geometry fbo
-	glGenFramebuffers(1, geometryFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, *geometryFBO);
+	glGenFramebuffers(1, &(targets->mGeometryFBO));
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO);
 
-	glGenTextures(1, positionTex);
-	glBindTexture(GL_TEXTURE_2D, *positionTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mPositionTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mPositionTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glGenTextures(1, normalTex);
-	glBindTexture(GL_TEXTURE_2D, *normalTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mNormalTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mNormalTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glGenTextures(1, albedoSpecTex);
-	glBindTexture(GL_TEXTURE_2D, *albedoSpecTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mAlbedoSpecTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mAlbedoSpecTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *positionTex, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *normalTex, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, *albedoSpecTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mPositionTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, targets->mNormalTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, targets->mAlbedoSpecTex, 0);
 
 	unsigned int geometryAttachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, geometryAttachments);
@@ -235,16 +220,16 @@ void Graphics::create(Camera* camera,
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// generate ssao fbo
-	glGenFramebuffers(1, ssaoFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, *ssaoFBO);
+	glGenFramebuffers(1, &(targets->mSsaoFBO));
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO);
 
-	glGenTextures(1, ssaoColorTex);
-	glBindTexture(GL_TEXTURE_2D, *ssaoColorTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glGenTextures(1, &(targets->mSsaoColorTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mSsaoColorTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *ssaoColorTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mSsaoColorTex, 0);
 
 	unsigned int ssaoAttachments[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, ssaoAttachments);
@@ -283,8 +268,8 @@ void Graphics::create(Camera* camera,
 		ssaoNoise[j] = noise;
 	}
 
-	glGenTextures(1, ssaoNoiseTex);
-	glBindTexture(GL_TEXTURE_2D, *ssaoNoiseTex);
+	glGenTextures(1, &(targets->mSsaoNoiseTex));
+	glBindTexture(GL_TEXTURE_2D, targets->mSsaoNoiseTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -297,60 +282,47 @@ void Graphics::create(Camera* camera,
 	*created = true;
 }
 
-void Graphics::destroy(Camera* camera,
-					   GLuint* mainFBO,
-					   GLuint* colorTex,
-					   GLuint* depthTex,
-					   GLuint* colorPickingFBO,
-					   GLuint* colorPickingTex,
-					   GLuint* colorPickingDepthTex,
-					   GLuint* geometryFBO,
-					   GLuint* positionTex,
-					   GLuint* normalTex,
-					   GLuint* albedoSpecTex,
-					   GLuint* ssaoFBO,
-					   GLuint* ssaoColorTex,
-					   GLuint* ssaoNoiseTex,
-					   GLuint* queryId0,
-					   GLuint* queryId1,
-					   bool* created)
+void Graphics::destroyTargets(CameraTargets* targets,
+							  GLuint* queryId0,
+							  GLuint* queryId1,
+							  bool* created)
 {
 	// detach textures from their framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, *mainFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, *colorPickingFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, *geometryFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, *ssaoFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// delete frambuffers
-	glDeleteFramebuffers(1, mainFBO);
-	glDeleteFramebuffers(1, colorPickingFBO);
-	glDeleteFramebuffers(1, geometryFBO);
-	glDeleteFramebuffers(1, ssaoFBO);
+	glDeleteFramebuffers(1, &(targets->mMainFBO));
+	glDeleteFramebuffers(1, &(targets->mColorPickingFBO));
+	glDeleteFramebuffers(1, &(targets->mGeometryFBO));
+	glDeleteFramebuffers(1, &(targets->mSsaoFBO));
 
 	// delete textures
-	glDeleteTextures(1, colorTex);
-	glDeleteTextures(1, depthTex);
-	glDeleteTextures(1, colorPickingTex);
-	glDeleteTextures(1, colorPickingDepthTex);
-	glDeleteTextures(1, positionTex);
-	glDeleteTextures(1, normalTex);
-	glDeleteTextures(1, albedoSpecTex);
-	glDeleteTextures(1, ssaoColorTex);
-	glDeleteTextures(1, ssaoNoiseTex);
+	glDeleteTextures(1, &(targets->mColorTex));
+	glDeleteTextures(1, &(targets->mDepthTex));
+	glDeleteTextures(1, &(targets->mColorPickingTex));
+	glDeleteTextures(1, &(targets->mColorPickingDepthTex));
+	glDeleteTextures(1, &(targets->mPositionTex));
+	glDeleteTextures(1, &(targets->mNormalTex));
+	glDeleteTextures(1, &(targets->mAlbedoSpecTex));
+	glDeleteTextures(1, &(targets->mSsaoColorTex));
+	glDeleteTextures(1, &(targets->mSsaoNoiseTex));
 
 	// delete timing query
 	glDeleteQueries(1, queryId0);
@@ -359,17 +331,245 @@ void Graphics::destroy(Camera* camera,
 	*created = false;
 }
 
-void Graphics::readColorPickingPixel(const Camera* camera, int x, int y, Color32* color)
+void Graphics::resizeTargets(CameraTargets* targets, Viewport viewport, bool* viewportChanged)
 {
-	//glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorPickingTex());
+	/*int width = camera->getViewport().mWidth;
+	int height = camera->getViewport().mHeight;
 
+	glBindTexture(GL_TEXTURE_2D, *colorTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+	glBindTexture(GL_TEXTURE_2D, *depthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, *colorPickingTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, *colorPickingDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if (camera->mSSAO == CameraSSAO::SSAO_On) {
+		glBindTexture(GL_TEXTURE_2D, *positionTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glBindTexture(GL_TEXTURE_2D, *normalTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glBindTexture(GL_TEXTURE_2D, *albedoSpecTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glBindTexture(GL_TEXTURE_2D, *ssaoColorTex);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	*viewportChanged = false;*/
+}
+
+void Graphics::readColorPickingPixel(const CameraTargets* targets, int x, int y, Color32* color)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
 	Graphics::checkError();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Graphics::createTargets(LightTargets* targets, ShadowMapResolution resolution, bool* created)
+{
+	GLsizei res = 512;
+	switch (resolution)
+	{
+		case ShadowMapResolution::Low512x512:
+			res = 512;
+			break;
+		case ShadowMapResolution::Medium1024x1024:
+			res = 1024;
+			break;
+		case ShadowMapResolution::High2048x2048:
+			res = 2048;
+			break;
+		case ShadowMapResolution::VeryHigh4096x4096:
+			res = 4096;
+			break;
+		default:
+			res = 1024;
+			break;
+	}
+
+	// generate shadow map fbos
+	// create directional light cascade shadow map fbo
+	glGenFramebuffers(5, &(targets->mShadowCascadeFBO[0]));
+	glGenTextures(5, &(targets->mShadowCascadeDepthTex[0]));
+
+	for (int i = 0; i < 5; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i], 0);
+
+		Graphics::checkFrambufferError();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// create spotlight shadow map fbo
+	glGenFramebuffers(1, &(targets->mShadowSpotlightFBO));
+	glGenTextures(1, &(targets->mShadowSpotlightDepthTex));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO);
+	glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex, 0);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// create pointlight shadow cubemap fbo
+	glGenFramebuffers(1, &(targets->mShadowCubemapFBO));
+	glGenTextures(1, &(targets->mShadowCubemapDepthTex));
+
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex);
+
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, targets->mShadowCubemapDepthTex, 0);
+
+	Graphics::checkFrambufferError();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	Graphics::checkError();
+
+	*created = true;
+}
+
+void Graphics::destroyTargets(LightTargets* targets, bool* created)
+{
+	// detach textures from their framebuffer
+	for (int i = 0; i < 5; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// delete frambuffers
+	for (int i = 0; i < 5; i++) {
+		glDeleteFramebuffers(1, &(targets->mShadowCascadeFBO[i]));
+	}
+	glDeleteFramebuffers(1, &(targets->mShadowSpotlightFBO));
+	glDeleteFramebuffers(1, &(targets->mShadowCubemapFBO));
+
+	// delete textures
+	for (int i = 0; i < 5; i++) {
+		glDeleteTextures(1, &(targets->mShadowCascadeDepthTex[i]));
+	}
+	glDeleteTextures(1, &(targets->mShadowSpotlightDepthTex));
+	glDeleteTextures(1, &(targets->mShadowCubemapDepthTex));
+
+	Graphics::checkError();
+
+	*created = false;
+}
+
+void Graphics::resizeTargets(LightTargets* targets, ShadowMapResolution resolution, bool* resolutionChanged)
+{
+	GLsizei res = 512;
+	switch (resolution)
+	{
+	case ShadowMapResolution::Low512x512:
+		res = 512;
+		break;
+	case ShadowMapResolution::Medium1024x1024:
+		res = 1024;
+		break;
+	case ShadowMapResolution::High2048x2048:
+		res = 2048;
+		break;
+	case ShadowMapResolution::VeryHigh4096x4096:
+		res = 4096;
+		break;
+	default:
+		res = 1024;
+		break;
+	}
+
+	// If resolution not actually changed, return
+	/*if (res == static_cast<GLsizei>(resolution)) {
+		*resolutionChanged = false;
+		return;
+	}*/
+
+	for (int i = 0; i < 5; i++) {
+		glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	Graphics::checkError();
+
+	*resolutionChanged = false;
 }
 
 void Graphics::create(Texture2D* texture, GLuint* tex, bool* created)

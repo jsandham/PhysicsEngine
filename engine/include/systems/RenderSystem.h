@@ -50,6 +50,7 @@ namespace PhysicsEngine
 		private:
 			void registerRenderAssets(World* world);
 			void registerCameras(World* world);
+			void registerLights(World* world);
 			void buildRenderObjectsList(World* world);
 			void cullRenderObjects(Camera* camera);
 			void buildRenderQueue();

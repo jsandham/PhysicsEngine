@@ -75,23 +75,29 @@ void CameraDrawer::render(World* world, EditorProject& project, EditorScene& sce
 
 		if (ImGui::TreeNode("Viewport"))
 		{
-			int x = camera->mViewport.mX;
+			/*int x = camera->mViewport.mX;
 			int y = camera->mViewport.mY;
 			int width = camera->mViewport.mWidth;
-			int height = camera->mViewport.mHeight;
+			int height = camera->mViewport.mHeight;*/
+			int x = camera->getViewport().mX;
+			int y = camera->getViewport().mY;
+			int width = camera->getViewport().mWidth;
+			int height = camera->getViewport().mHeight;
 
 			if (ImGui::InputInt("x", &x)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mX, x, &scene.isDirty));
+				//CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mX, x, &scene.isDirty));
 			}
 			if (ImGui::InputInt("y", &y)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mY, y, &scene.isDirty));
+				//CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mY, y, &scene.isDirty));
 			}
 			if (ImGui::InputInt("Width", &width)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mWidth, width, &scene.isDirty));
+				//CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mWidth, width, &scene.isDirty));
 			}
 			if (ImGui::InputInt("Height", &height)) {
-				CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mHeight, height, &scene.isDirty));
+				//CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mHeight, height, &scene.isDirty));
 			}
+
+			camera->setViewport(x, y, width, height);
 
 			ImGui::TreePop();
 		}

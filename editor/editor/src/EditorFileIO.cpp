@@ -336,26 +336,23 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
 			lightHeaders[index].mComponentId = Guid(it->first);
 			lightHeaders[index].mEntityId = Guid(it->second["entity"].ToString());
 
-			lightHeaders[index].mAmbient.x = (float)it->second["ambient"][0].ToFloat();
-			lightHeaders[index].mAmbient.y = (float)it->second["ambient"][1].ToFloat();
-			lightHeaders[index].mAmbient.z = (float)it->second["ambient"][2].ToFloat();
+			lightHeaders[index].mColor.x = (float)it->second["color"][0].ToFloat();
+			lightHeaders[index].mColor.y = (float)it->second["color"][1].ToFloat();
+			lightHeaders[index].mColor.z = (float)it->second["color"][2].ToFloat();
+			lightHeaders[index].mColor.w = (float)it->second["color"][3].ToFloat();
 
-			lightHeaders[index].mDiffuse.x = (float)it->second["diffuse"][0].ToFloat();
-			lightHeaders[index].mDiffuse.y = (float)it->second["diffuse"][1].ToFloat();
-			lightHeaders[index].mDiffuse.z = (float)it->second["diffuse"][2].ToFloat();
-
-			lightHeaders[index].mSpecular.x = (float)it->second["specular"][0].ToFloat();
-			lightHeaders[index].mSpecular.y = (float)it->second["specular"][1].ToFloat();
-			lightHeaders[index].mSpecular.z = (float)it->second["specular"][2].ToFloat();
-
-			lightHeaders[index].mConstant = (float)it->second["constant"].ToFloat();
-			lightHeaders[index].mLinear = (float)it->second["linear"].ToFloat();
-			lightHeaders[index].mQuadratic = (float)it->second["quadratic"].ToFloat();
-			lightHeaders[index].mCutOff = (float)it->second["cutOff"].ToFloat();
-			lightHeaders[index].mOuterCutOff = (float)it->second["outerCutOff"].ToFloat();
+			lightHeaders[index].mIntensity = (float)it->second["intensity"].ToFloat();
+			lightHeaders[index].mSpotAngle = (float)it->second["spotAngle"].ToFloat();
+			lightHeaders[index].mInnerSpotAngle = (float)it->second["innerSpotAngle"].ToFloat();
+			lightHeaders[index].mShadowNearPlane = (float)it->second["shadowNearPlane"].ToFloat();
+			lightHeaders[index].mShadowFarPlane = (float)it->second["shadowFarPlane"].ToFloat();
+			lightHeaders[index].mShadowAngle = (float)it->second["shadowAngle"].ToFloat();
+			lightHeaders[index].mShadowRadius = (float)it->second["shadowRadius"].ToFloat();
+			lightHeaders[index].mShadowStrength = (float)it->second["shadowStrength"].ToFloat();
 
 			lightHeaders[index].mLightType = static_cast<uint8_t>((int)it->second["lightType"].ToInt());
 			lightHeaders[index].mShadowType = static_cast<uint8_t>((int)it->second["shadowType"].ToInt());
+			lightHeaders[index].mShadowMapResolution = static_cast<uint16_t>((int)it->second["shadowMapResolution"].ToInt());
 
 			index++;
 			componentIndex++;
