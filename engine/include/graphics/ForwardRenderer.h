@@ -1,9 +1,9 @@
 #ifndef __FORWARDRENDERER_H__
 #define __FORWARDRENDERER_H__
 
-#include <vector>
 #include <GL/glew.h>
 #include <gl/gl.h>
+#include <vector>
 
 #include "../components/Camera.h"
 #include "../core/Input.h"
@@ -13,25 +13,23 @@
 
 namespace PhysicsEngine
 {
-	class World; 
+class World;
 
-	class ForwardRenderer
-	{
-		private:
-			World* mWorld;
+class ForwardRenderer
+{
+  private:
+    World *mWorld;
 
-			ForwardRendererState mState;
+    ForwardRendererState mState;
 
-		public:
-			ForwardRenderer();
-			~ForwardRenderer();
+  public:
+    ForwardRenderer();
+    ~ForwardRenderer();
 
-			void init(World* world, bool renderToScreen);
-			void update(Input input, 
-						Camera* camera, 
-						const std::vector<std::pair<uint64_t, int>>& renderQueue, 
-						const std::vector<RenderObject>& renderObjects);
-	};
-}
+    void init(World *world, bool renderToScreen);
+    void update(Input input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+                const std::vector<RenderObject> &renderObjects);
+};
+} // namespace PhysicsEngine
 
 #endif

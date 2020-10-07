@@ -5,55 +5,55 @@ using namespace PhysicsEngine;
 
 Texture::Texture()
 {
-	mAssetId = Guid::INVALID;
+    mAssetId = Guid::INVALID;
 }
 
 bool Texture::isCreated() const
 {
-	return mCreated;
+    return mCreated;
 }
 
 int Texture::getNumChannels() const
 {
-	return mNumChannels;
+    return mNumChannels;
 }
 
 TextureDimension Texture::getDimension() const
 {
-	return mDimension;
+    return mDimension;
 }
 
 TextureFormat Texture::getFormat() const
 {
-	return mFormat;
+    return mFormat;
 }
 
 GLuint Texture::getNativeGraphics() const
 {
-	return mTex;
+    return mTex;
 }
 
 int Texture::calcNumChannels(TextureFormat format) const
 {
-	int nChannels = 0;
+    int nChannels = 0;
 
-	switch (format)
-	{
-	case Depth:
-		nChannels = 1;
-		break;
-	case RG:
-		nChannels = 2;
-		break;
-	case RGB:
-		nChannels = 3;
-		break;
-	case RGBA:
-		nChannels = 4;
-		break;
-	default:
-		Log::error("Error: Texture: Invalid texture format\n");
-	}
+    switch (format)
+    {
+    case Depth:
+        nChannels = 1;
+        break;
+    case RG:
+        nChannels = 2;
+        break;
+    case RGB:
+        nChannels = 3;
+        break;
+    case RGBA:
+        nChannels = 4;
+        break;
+    default:
+        Log::error("Error: Texture: Invalid texture format\n");
+    }
 
-	return nChannels;
+    return nChannels;
 }

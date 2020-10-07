@@ -9,74 +9,83 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct EntityHeader
-	{
-		Guid mEntityId;
-		uint8_t mDoNotDestroy;
-	};
+struct EntityHeader
+{
+    Guid mEntityId;
+    uint8_t mDoNotDestroy;
+};
 #pragma pack(pop)
-	
-	class World;
 
-	class Entity
-	{
-		private:
-			Guid mEntityId;
-		
-		public:
-			bool mDoNotDestroy;
+class World;
 
-		public:
-			Entity();
-			Entity(const std::vector<char>& data);
-			~Entity();
+class Entity
+{
+  private:
+    Guid mEntityId;
 
-			std::vector<char> serialize() const;
-			std::vector<char> serialize(Guid entityId) const;
-			void deserialize(const std::vector<char>& data);
+  public:
+    bool mDoNotDestroy;
 
-			void latentDestroy(World* world);
-			void immediateDestroy(World* world);
+  public:
+    Entity();
+    Entity(const std::vector<char> &data);
+    ~Entity();
 
-			template<typename T>
-			T* addComponent(World* world)
-			{
-				return world->addComponent<T>(mEntityId);
-			}
+    std::vector<char> serialize() const;
+    std::vector<char> serialize(Guid entityId) const;
+    void deserialize(const std::vector<char> &data);
 
-			template<typename T>
-			T* addComponent(World* world, std::vector<char> data)
-			{
-				return world->addComponent<T>(data);
-			}
+    void latentDestroy(World *world);
+    void immediateDestroy(World *world);
 
-			template<typename T>
-			T* getComponent(World* world)
-			{
-				return world->getComponent<T>(mEntityId);
-			}
+    template <typename T> T *addComponent(World *world)
+    {
+        return world->addComponent<T>(mEntityId);
+    }
 
-			std::vector<std::pair<Guid, int>> getComponentsOnEntity(World* world);
+    template <typename T> T *addComponent(World *world, std::vector<char> data)
+    {
+        return world->addComponent<T>(data);
+    }
 
-			Guid getId() const;
+    template <typename T> T *getComponent(World *world)
+    {
+        return world->getComponent<T>(mEntityId);
+    }
 
-		private:
-			friend class World;
-	};
+    std::vector<std::pair<Guid, int>> getComponentsOnEntity(World *world);
 
-	template <typename T>
-	struct EntityType { static constexpr int type = PhysicsEngine::INVALID_TYPE;};
-	template <typename T>
-	struct IsEntity { static constexpr bool value = false; };
-	template<typename>
-	struct IsEntityInternal { static constexpr bool value = false; };
+    Guid getId() const;
 
-	template <>
-	struct EntityType<Entity> { static constexpr int type = PhysicsEngine::ENTITY_TYPE;};
-	template <>
-	struct IsEntity<Entity> { static constexpr bool value = true; };
-	template <>
-	struct IsEntityInternal<Entity> { static constexpr bool value = true; };
-}
+  private:
+    friend class World;
+};
+
+template <typename T> struct EntityType
+{
+    static constexpr int type = PhysicsEngine::INVALID_TYPE;
+};
+template <typename T> struct IsEntity
+{
+    static constexpr bool value = false;
+};
+template <typename> struct IsEntityInternal
+{
+    static constexpr bool value = false;
+};
+
+template <> struct EntityType<Entity>
+{
+    static constexpr int type = PhysicsEngine::ENTITY_TYPE;
+};
+template <> struct IsEntity<Entity>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsEntityInternal<Entity>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

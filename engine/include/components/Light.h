@@ -14,119 +14,129 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct LightHeader
-	{
-		Guid mComponentId;
-		Guid mEntityId;
-		glm::vec4 mColor;
-		float mIntensity;
-		float mSpotAngle;
-		float mInnerSpotAngle;
-		float mShadowNearPlane;
-		float mShadowFarPlane;
-		float mShadowAngle;
-		float mShadowRadius;
-		float mShadowStrength;
-		uint8_t mLightType;
-		uint8_t mShadowType;
-		uint16_t mShadowMapResolution;
-	};
+struct LightHeader
+{
+    Guid mComponentId;
+    Guid mEntityId;
+    glm::vec4 mColor;
+    float mIntensity;
+    float mSpotAngle;
+    float mInnerSpotAngle;
+    float mShadowNearPlane;
+    float mShadowFarPlane;
+    float mShadowAngle;
+    float mShadowRadius;
+    float mShadowStrength;
+    uint8_t mLightType;
+    uint8_t mShadowType;
+    uint16_t mShadowMapResolution;
+};
 #pragma pack(pop)
-	
-	enum class LightType
-	{
-		Directional,
-		Spot,
-		Point,
-		None
-	};
 
-	enum class ShadowType
-	{
-		Hard,
-		Soft,
-		None
-	};
+enum class LightType
+{
+    Directional,
+    Spot,
+    Point,
+    None
+};
 
-	enum class ShadowMapResolution
-	{
-		Low512x512 = 512,
-		Medium1024x1024 = 1024,
-		High2048x2048 = 2048,
-		VeryHigh4096x4096 = 4096
-	};
+enum class ShadowType
+{
+    Hard,
+    Soft,
+    None
+};
 
-	struct LightTargets
-	{
-		GLuint mShadowCascadeFBO[5];
-		GLuint mShadowCascadeDepthTex[5];
-		GLuint mShadowSpotlightFBO;
-		GLuint mShadowSpotlightDepthTex;
-		GLuint mShadowCubemapFBO;
-		GLuint mShadowCubemapDepthTex;
-	};
+enum class ShadowMapResolution
+{
+    Low512x512 = 512,
+    Medium1024x1024 = 1024,
+    High2048x2048 = 2048,
+    VeryHigh4096x4096 = 4096
+};
 
-	class Light : public Component
-	{
-		public:
-			glm::vec4 mColor;
-			float mIntensity;
-			float mSpotAngle;
-			float mInnerSpotAngle;
-			float mShadowNearPlane;
-			float mShadowFarPlane;
-			float mShadowAngle;
-			float mShadowRadius;
-			float mShadowStrength;
-			LightType mLightType;
-			ShadowType mShadowType;
+struct LightTargets
+{
+    GLuint mShadowCascadeFBO[5];
+    GLuint mShadowCascadeDepthTex[5];
+    GLuint mShadowSpotlightFBO;
+    GLuint mShadowSpotlightDepthTex;
+    GLuint mShadowCubemapFBO;
+    GLuint mShadowCubemapDepthTex;
+};
 
-		private:
-			bool mIsShadowMapResolutionChanged;
-			bool mIsCreated;
-			ShadowMapResolution mShadowMapResolution;
-			LightTargets mTargets;
+class Light : public Component
+{
+  public:
+    glm::vec4 mColor;
+    float mIntensity;
+    float mSpotAngle;
+    float mInnerSpotAngle;
+    float mShadowNearPlane;
+    float mShadowFarPlane;
+    float mShadowAngle;
+    float mShadowRadius;
+    float mShadowStrength;
+    LightType mLightType;
+    ShadowType mShadowType;
 
-		public:
-			Light();
-			Light(const std::vector<char>& data);
-			~Light();
+  private:
+    bool mIsShadowMapResolutionChanged;
+    bool mIsCreated;
+    ShadowMapResolution mShadowMapResolution;
+    LightTargets mTargets;
 
-			std::vector<char> serialize() const;
-			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(const std::vector<char>& data);
+  public:
+    Light();
+    Light(const std::vector<char> &data);
+    ~Light();
 
-			void createTargets();
-			void destroyTargets();
-			void resizeTargets();
+    std::vector<char> serialize() const;
+    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    void deserialize(const std::vector<char> &data);
 
-			bool isCreated() const;
-			bool isShadowMapResolutionChanged() const;
-			void setShadowMapResolution(ShadowMapResolution resolution);
-			ShadowMapResolution getShadowMapResolution() const;
+    void createTargets();
+    void destroyTargets();
+    void resizeTargets();
 
-			glm::mat4 getProjMatrix() const;
+    bool isCreated() const;
+    bool isShadowMapResolutionChanged() const;
+    void setShadowMapResolution(ShadowMapResolution resolution);
+    ShadowMapResolution getShadowMapResolution() const;
 
-			GLuint getNativeGraphicsShadowCascadeFBO(int index) const;
-			GLuint getNativeGraphicsShadowSpotlightFBO() const;
-			GLuint getNativeGraphicsShadowCubemapFBO() const;
+    glm::mat4 getProjMatrix() const;
 
-			GLuint getNativeGraphicsShadowCascadeDepthTex(int index) const;
-			GLuint getNativeGrpahicsShadowSpotlightDepthTex() const;
-			GLuint getNativeGraphicsShadowCubemapDepthTex() const;
-	};
+    GLuint getNativeGraphicsShadowCascadeFBO(int index) const;
+    GLuint getNativeGraphicsShadowSpotlightFBO() const;
+    GLuint getNativeGraphicsShadowCubemapFBO() const;
 
-	template <typename T>
-	struct IsLight { static constexpr bool value = false; };
+    GLuint getNativeGraphicsShadowCascadeDepthTex(int index) const;
+    GLuint getNativeGrpahicsShadowSpotlightDepthTex() const;
+    GLuint getNativeGraphicsShadowCubemapDepthTex() const;
+};
 
-	template <>
-	struct ComponentType<Light> { static constexpr int type = PhysicsEngine::LIGHT_TYPE;};
-	template <>
-	struct IsLight<Light> { static constexpr bool value = true; };
-	template <>
-	struct IsComponent<Light> { static constexpr bool value = true; };
-	template <>
-	struct IsComponentInternal<Light> { static constexpr bool value = true; };
-}
+template <typename T> struct IsLight
+{
+    static constexpr bool value = false;
+};
+
+template <> struct ComponentType<Light>
+{
+    static constexpr int type = PhysicsEngine::LIGHT_TYPE;
+};
+template <> struct IsLight<Light>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponent<Light>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponentInternal<Light>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

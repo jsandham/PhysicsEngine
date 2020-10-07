@@ -6,21 +6,21 @@
 
 namespace PhysicsEngine
 {
-	class Circle
-	{
-	public:
-		glm::vec3 mCentre;
-		glm::vec3 mNormal;
-		float mRadius;
+class Circle
+{
+  public:
+    glm::vec3 mCentre;
+    glm::vec3 mNormal;
+    float mRadius;
 
-	public:
-		Circle();
-		Circle(glm::vec3 centre, glm::vec3 normal, float radius);
-		~Circle();
+  public:
+    Circle();
+    Circle(glm::vec3 centre, glm::vec3 normal, float radius);
+    ~Circle();
 
-		float getArea() const;
-		float getCircumference() const;
-	};
-}
+    float getArea() const;
+    float getCircumference() const;
+};
+} // namespace PhysicsEngine
 
 #endif

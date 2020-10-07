@@ -6,12 +6,12 @@
 //
 //#include "../core/Shader.h"
 //
-//namespace PhysicsEngine
+// namespace PhysicsEngine
 //{
 //	struct ScreenData // ScreenQuadData? RendererData? GraphicsScreenData? GraphicsRenderData? InternalData?
 //	{
-//		Shader mPositionAndNormalsShader;  // whats a good name for this shader which fills depth, normals, and position? geometryShader? forwardGbufferShader?
-//		Shader mColorShader;
+//		Shader mPositionAndNormalsShader;  // whats a good name for this shader which fills depth, normals, and position?
+//geometryShader? forwardGbufferShader? 		Shader mColorShader;
 //
 //		// ssao
 //		Shader mSsaoShader;

@@ -6,10 +6,8 @@ using namespace PhysicsEngine;
 
 Collider::Collider()
 {
-	
 }
 
 Collider::~Collider()
 {
-	
 }

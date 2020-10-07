@@ -7,21 +7,21 @@
 
 namespace PhysicsEngine
 {
-	class AABB
-	{
-		public:
-			glm::vec3 mCentre;
-			glm::vec3 mSize;
+class AABB
+{
+  public:
+    glm::vec3 mCentre;
+    glm::vec3 mSize;
 
-		public:
-			AABB();
-			AABB(glm::vec3 centre, glm::vec3 size);
-			~AABB();
+  public:
+    AABB();
+    AABB(glm::vec3 centre, glm::vec3 size);
+    ~AABB();
 
-			glm::vec3 getExtents() const;
-			glm::vec3 getMin() const;
-			glm::vec3 getMax() const;
-	};
-}
+    glm::vec3 getExtents() const;
+    glm::vec3 getMin() const;
+    glm::vec3 getMax() const;
+};
+} // namespace PhysicsEngine
 
 #endif

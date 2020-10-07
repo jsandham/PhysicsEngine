@@ -3,14 +3,14 @@
 
 namespace PhysicsEngine
 {
-	class Allocator
-	{
-		public:
-			Allocator();
-			virtual ~Allocator() = 0;
+class Allocator
+{
+  public:
+    Allocator();
+    virtual ~Allocator() = 0;
 
-			virtual size_t getCount() const = 0;
-	};
-}
+    virtual size_t getCount() const = 0;
+};
+} // namespace PhysicsEngine
 
 #endif

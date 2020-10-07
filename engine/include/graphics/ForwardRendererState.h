@@ -14,75 +14,75 @@
 
 namespace PhysicsEngine
 {
-	struct ForwardRendererState
-	{
-		// internal graphics camera state
-		GraphicsCameraState mCameraState;
+struct ForwardRendererState
+{
+    // internal graphics camera state
+    GraphicsCameraState mCameraState;
 
-		// internal graphics light state
-		GraphicsLightState mLightState;
+    // internal graphics light state
+    GraphicsLightState mLightState;
 
-		bool mRenderToScreen;
+    bool mRenderToScreen;
 
-		// directional light cascade shadow map data
-		//GLuint mShadowCascadeFBO[5];
-		//GLuint mShadowCascadeDepth[5];
-		float mCascadeEnds[6];
-		glm::mat4 mCascadeOrthoProj[5];
-		glm::mat4 mCascadeLightView[5];
-		
-		Shader* mDepthShader;
-		int mDepthShaderProgram;
-		int mDepthShaderModelLoc;
-		int mDepthShaderViewLoc;
-		int mDepthShaderProjectionLoc;
+    // directional light cascade shadow map data
+    // GLuint mShadowCascadeFBO[5];
+    // GLuint mShadowCascadeDepth[5];
+    float mCascadeEnds[6];
+    glm::mat4 mCascadeOrthoProj[5];
+    glm::mat4 mCascadeLightView[5];
 
-		// spotlight shadow map data
-		//GLuint mShadowSpotlightFBO;
-		//GLuint mShadowSpotlightDepth;
-		glm::mat4 mShadowViewMatrix;
-		glm::mat4 mShadowProjMatrix;
+    Shader *mDepthShader;
+    int mDepthShaderProgram;
+    int mDepthShaderModelLoc;
+    int mDepthShaderViewLoc;
+    int mDepthShaderProjectionLoc;
 
-		// pointlight cubemap shadow map data
-		//GLuint mShadowCubemapFBO;
-		//GLuint mShadowCubemapDepth;
-		glm::mat4 mCubeViewProjMatrices[6];
-		
-		Shader* mDepthCubemapShader;
-		int mDepthCubemapShaderProgram;
-		int mDepthCubemapShaderLightPosLoc;
-		int mDepthCubemapShaderFarPlaneLoc;
-		int mDepthCubemapShaderModelLoc;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc0;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc1;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc2;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc3;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc4;
-		int mDepthCubemapShaderCubeViewProjMatricesLoc5;
+    // spotlight shadow map data
+    // GLuint mShadowSpotlightFBO;
+    // GLuint mShadowSpotlightDepth;
+    glm::mat4 mShadowViewMatrix;
+    glm::mat4 mShadowProjMatrix;
 
-		Shader* mGeometryShader;  
-		int mGeometryShaderProgram;
-		int mGeometryShaderModelLoc;
+    // pointlight cubemap shadow map data
+    // GLuint mShadowCubemapFBO;
+    // GLuint mShadowCubemapDepth;
+    glm::mat4 mCubeViewProjMatrices[6];
 
-		Shader* mColorShader;
-		int mColorShaderProgram;
-		int mColorShaderModelLoc;
-		int mColorShaderColorLoc;
+    Shader *mDepthCubemapShader;
+    int mDepthCubemapShaderProgram;
+    int mDepthCubemapShaderLightPosLoc;
+    int mDepthCubemapShaderFarPlaneLoc;
+    int mDepthCubemapShaderModelLoc;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc0;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc1;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc2;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc3;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc4;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc5;
 
-		// ssao
-		Shader* mSsaoShader;
-		int mSsaoShaderProgram;
-		int mSsaoShaderProjectionLoc;
-		int mSsaoShaderPositionTexLoc;
-		int mSsaoShaderNormalTexLoc;
-		int mSsaoShaderNoiseTexLoc;
-		int mSsaoShaderSamplesLoc[64];
+    Shader *mGeometryShader;
+    int mGeometryShaderProgram;
+    int mGeometryShaderModelLoc;
 
-		// quad
-		GLuint mQuadVAO;
-		GLuint mQuadVBO;
-		Shader* mQuadShader;
-	};
-}
+    Shader *mColorShader;
+    int mColorShaderProgram;
+    int mColorShaderModelLoc;
+    int mColorShaderColorLoc;
+
+    // ssao
+    Shader *mSsaoShader;
+    int mSsaoShaderProgram;
+    int mSsaoShaderProjectionLoc;
+    int mSsaoShaderPositionTexLoc;
+    int mSsaoShaderNormalTexLoc;
+    int mSsaoShaderNoiseTexLoc;
+    int mSsaoShaderSamplesLoc[64];
+
+    // quad
+    GLuint mQuadVAO;
+    GLuint mQuadVBO;
+    Shader *mQuadShader;
+};
+} // namespace PhysicsEngine
 
 #endif

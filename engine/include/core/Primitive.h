@@ -3,17 +3,17 @@
 
 namespace PhysicsEngine
 {
-	typedef enum PrimitiveType
-	{
-		Sphere,
-		Bounds,
-		Capsule
-	};
+typedef enum PrimitiveType
+{
+    Sphere,
+    Bounds,
+    Capsule
+};
 
-	class Primitive
-	{
-		virtual PrimitiveType getPrimitiveType() = 0;
-	};
-}
+class Primitive
+{
+    virtual PrimitiveType getPrimitiveType() = 0;
+};
+} // namespace PhysicsEngine
 
 #endif

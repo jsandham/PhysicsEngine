@@ -12,7 +12,7 @@
 //
 //#include "../core/Shader.h"
 //
-//namespace PhysicsEngine
+// namespace PhysicsEngine
 //{
 //	struct ShadowMapData
 //	{

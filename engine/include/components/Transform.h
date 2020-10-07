@@ -8,57 +8,67 @@
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
-#include "../glm/gtx/quaternion.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
+#include "../glm/gtx/quaternion.hpp"
 
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct TransformHeader
-	{
-		Guid mComponentId;
-		Guid mParentId;
-		Guid mEntityId;
-		glm::vec3 mPosition;
-		glm::quat mRotation;
-		glm::vec3 mScale;
-	};
+struct TransformHeader
+{
+    Guid mComponentId;
+    Guid mParentId;
+    Guid mEntityId;
+    glm::vec3 mPosition;
+    glm::quat mRotation;
+    glm::vec3 mScale;
+};
 #pragma pack(pop)
 
-	class Transform : public Component
-	{
-		public:
-			Guid mParentId;
-			glm::vec3 mPosition;
-			glm::quat mRotation;
-			glm::vec3 mScale;
+class Transform : public Component
+{
+  public:
+    Guid mParentId;
+    glm::vec3 mPosition;
+    glm::quat mRotation;
+    glm::vec3 mScale;
 
-		public:
-			Transform();
-			Transform(const std::vector<char>& data);
-			~Transform();
+  public:
+    Transform();
+    Transform(const std::vector<char> &data);
+    ~Transform();
 
-			std::vector<char> serialize() const;
-			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(const std::vector<char>& data);
+    std::vector<char> serialize() const;
+    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    void deserialize(const std::vector<char> &data);
 
-			glm::mat4 getModelMatrix() const;
-			glm::vec3 getForward() const;
-			glm::vec3 getUp() const;
-			glm::vec3 getRight() const;
-	};
+    glm::mat4 getModelMatrix() const;
+    glm::vec3 getForward() const;
+    glm::vec3 getUp() const;
+    glm::vec3 getRight() const;
+};
 
-	template <typename T>
-	struct IsTransform { static constexpr bool value = false; };
+template <typename T> struct IsTransform
+{
+    static constexpr bool value = false;
+};
 
-	template <>
-	struct ComponentType<Transform> { static constexpr int type = PhysicsEngine::TRANSFORM_TYPE;};
-	template <>
-	struct IsTransform<Transform> { static constexpr bool value = true; };
-	template <>
-	struct IsComponent<Transform> { static constexpr bool value = true; };
-	template <>
-	struct IsComponentInternal<Transform> { static constexpr bool value = true; };
-}
+template <> struct ComponentType<Transform>
+{
+    static constexpr int type = PhysicsEngine::TRANSFORM_TYPE;
+};
+template <> struct IsTransform<Transform>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponent<Transform>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponentInternal<Transform>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

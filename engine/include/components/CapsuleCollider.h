@@ -14,44 +14,56 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct CapsuleColliderHeader
-	{
-		Guid mComponentId;
-		Guid mEntityId;
-		Capsule mCapsule;
-	};
+struct CapsuleColliderHeader
+{
+    Guid mComponentId;
+    Guid mEntityId;
+    Capsule mCapsule;
+};
 #pragma pack(pop)
 
-	class CapsuleCollider : public Collider
-	{
-		public:
-			Capsule mCapsule;
+class CapsuleCollider : public Collider
+{
+  public:
+    Capsule mCapsule;
 
-		public:
-			CapsuleCollider();
-			CapsuleCollider(const std::vector<char>& data);
-			~CapsuleCollider();
+  public:
+    CapsuleCollider();
+    CapsuleCollider(const std::vector<char> &data);
+    ~CapsuleCollider();
 
-			std::vector<char> serialize() const;
-			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(const std::vector<char>& data);
+    std::vector<char> serialize() const;
+    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    void deserialize(const std::vector<char> &data);
 
-			bool intersect(AABB aabb) const;
-	};
+    bool intersect(AABB aabb) const;
+};
 
-	template <typename T>
-	struct IsCapsuleCollider { static constexpr bool value = false; };
+template <typename T> struct IsCapsuleCollider
+{
+    static constexpr bool value = false;
+};
 
-	template <>
-	struct ComponentType<CapsuleCollider> { static constexpr int type = CAPSULECOLLIDER_TYPE;};
-	template <>
-	struct IsCollider<CapsuleCollider> { static constexpr bool value = true; };
-	template <>
-	struct IsCapsuleCollider<CapsuleCollider> { static constexpr bool value = true; };
-	template <>
-	struct IsComponent<CapsuleCollider> { static constexpr bool value = true; };
-	template <>
-	struct IsComponentInternal<CapsuleCollider> { static constexpr bool value = true; };
-}
+template <> struct ComponentType<CapsuleCollider>
+{
+    static constexpr int type = CAPSULECOLLIDER_TYPE;
+};
+template <> struct IsCollider<CapsuleCollider>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsCapsuleCollider<CapsuleCollider>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponent<CapsuleCollider>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponentInternal<CapsuleCollider>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef __DEFERREDRENDERER_H__
 #define __DEFERREDRENDERER_H__
 
-#include <vector>
 #include <GL/glew.h>
 #include <gl/gl.h>
+#include <vector>
 
 #include "../components/Camera.h"
 #include "../core/Input.h"
@@ -13,22 +13,22 @@
 
 namespace PhysicsEngine
 {
-	class World;
+class World;
 
-	class DeferredRenderer
-	{
-		private:
-			World* mWorld;
+class DeferredRenderer
+{
+  private:
+    World *mWorld;
 
-			DeferredRendererState mState;
+    DeferredRendererState mState;
 
-		public:
-			DeferredRenderer();
-			~DeferredRenderer();
+  public:
+    DeferredRenderer();
+    ~DeferredRenderer();
 
-			void init(World* world, bool renderToScreen);
-			void update(Input input, Camera* camera, std::vector<RenderObject>& renderObjects);
-	};
-}
+    void init(World *world, bool renderToScreen);
+    void update(Input input, Camera *camera, std::vector<RenderObject> &renderObjects);
+};
+} // namespace PhysicsEngine
 
 #endif

@@ -5,7 +5,6 @@ using namespace PhysicsEngine;
 
 WorldManager::WorldManager()
 {
-	
 }
 
 WorldManager::~WorldManager()
@@ -14,35 +13,40 @@ WorldManager::~WorldManager()
 
 bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
 {
-	for(size_t i = 0; i < assetFilePaths.size(); i++){
-		if(!world.loadAsset(assetFilePaths[i])){
-			Log::error("Could not load asset file\n");
-			return false;
-		}
-	}
+    for (size_t i = 0; i < assetFilePaths.size(); i++)
+    {
+        if (!world.loadAsset(assetFilePaths[i]))
+        {
+            Log::error("Could not load asset file\n");
+            return false;
+        }
+    }
 
-	if(!world.loadScene(sceneFilePath)){
-		Log::error("Could not load scene file\n");
-		return false;
-	}
+    if (!world.loadScene(sceneFilePath))
+    {
+        Log::error("Could not load scene file\n");
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 void WorldManager::init()
 {
-	for(int i = 0; i < world.getNumberOfUpdatingSystems(); i++){
-		System* system = world.getSystemByUpdateOrder(i);
+    for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++)
+    {
+        System *system = world.getSystemByUpdateOrder(i);
 
-		system->init(&world);
-	}
+        system->init(&world);
+    }
 }
 
 void WorldManager::update(Time time, Input input)
 {
-	for(int i = 0; i < world.getNumberOfUpdatingSystems(); i++){
-		System* system = world.getSystemByUpdateOrder(i);
+    for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++)
+    {
+        System *system = world.getSystemByUpdateOrder(i);
 
-		system->update(input, time);
-	}
+        system->update(input, time);
+    }
 }

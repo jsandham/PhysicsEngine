@@ -12,67 +12,67 @@ using namespace PhysicsEngine;
 
 Font::Font()
 {
-	mAssetId = Guid::INVALID;
+    mAssetId = Guid::INVALID;
 }
 
-Font::Font(const std::string& filepath)
+Font::Font(const std::string &filepath)
 {
-	mAssetId = Guid::INVALID;
-	mFilepath = filepath;
+    mAssetId = Guid::INVALID;
+    mFilepath = filepath;
 }
 
-Font::Font(const std::vector<char>& data)
+Font::Font(const std::vector<char> &data)
 {
-	deserialize(data);
+    deserialize(data);
 }
 
 Font::~Font()
 {
-
 }
 
 std::vector<char> Font::serialize() const
 {
-	return serialize(mAssetId);
+    return serialize(mAssetId);
 }
 
 std::vector<char> Font::serialize(Guid assetId) const
 {
-	FontHeader header;
-	header.mFontId = assetId;
-	header.mFilepathSize = mFilepath.length();
+    FontHeader header;
+    header.mFontId = assetId;
+    header.mFilepathSize = mFilepath.length();
 
-	size_t numberOfBytes = sizeof(FontHeader) +
-		sizeof(char) * mFilepath.length();
+    size_t numberOfBytes = sizeof(FontHeader) + sizeof(char) * mFilepath.length();
 
-	std::vector<char> data(numberOfBytes);
+    std::vector<char> data(numberOfBytes);
 
-	size_t start1 = 0;
-	size_t start2 = start1 + sizeof(FontHeader);
+    size_t start1 = 0;
+    size_t start2 = start1 + sizeof(FontHeader);
 
-	memcpy(&data[start1], &header, sizeof(FontHeader));
-	memcpy(&data[start2], mFilepath.c_str(), sizeof(char) * mFilepath.length());
+    memcpy(&data[start1], &header, sizeof(FontHeader));
+    memcpy(&data[start2], mFilepath.c_str(), sizeof(char) * mFilepath.length());
 
-	return data;
+    return data;
 }
 
-void Font::deserialize(const std::vector<char>& data)
+void Font::deserialize(const std::vector<char> &data)
 {
     int index = sizeof(int);
-    const FontHeader* header = reinterpret_cast<const FontHeader*>(&data[index]);
-    
+    const FontHeader *header = reinterpret_cast<const FontHeader *>(&data[index]);
+
     mAssetId = header->mFontId;
 
     index += sizeof(FontHeader);
 
-    if(header->mFilepathSize > 0 && header->mFilepathSize < 256){
+    if (header->mFilepathSize > 0 && header->mFilepathSize < 256)
+    {
         mFilepath = std::string(&data[index], header->mFilepathSize);
 
         std::cout << "font filepath loaded: " << mFilepath << std::endl;
     }
-    else{
+    else
+    {
         std::cout << "Error: Font filepath size (" << header->mFilepathSize << ") is invalid" << std::endl;
-        return; 
+        return;
     }
 }
 
@@ -80,18 +80,20 @@ void Font::load(std::string filepath)
 {
     mFilepath = filepath;
 
-	FT_Library ft;
+    FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
-    if (FT_Init_FreeType(&ft)){
+    if (FT_Init_FreeType(&ft))
+    {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-    	return;
+        return;
     }
 
     std::cout << "loading font with filepath: " << filepath << std::endl;
 
     // Load font as face
     FT_Face face;
-    if (FT_New_Face(ft, filepath.c_str(), 0, &face)){
+    if (FT_New_Face(ft, filepath.c_str(), 0, &face))
+    {
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
         return;
     }
@@ -99,13 +101,13 @@ void Font::load(std::string filepath)
     // Set size to load glyphs as
     FT_Set_Pixel_Sizes(face, 0, 48);
 
-    //TODO: Move into Graphics so Font does not depend on opengl
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
+    // TODO: Move into Graphics so Font does not depend on opengl
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // Load first 128 characters of ASCII set
     for (unsigned char c = 0; c < 128; c++)
     {
-        // Load character glyph 
+        // Load character glyph
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
@@ -116,17 +118,8 @@ void Font::load(std::string filepath)
         GLuint texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            face->glyph->bitmap.width,
-            face->glyph->bitmap.rows,
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-        );
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED,
+                     GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
         // Set texture options
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -135,12 +128,9 @@ void Font::load(std::string filepath)
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Now store character for later use
-        Character character = {
-            texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            (unsigned int)face->glyph->advance.x
-        };
+        Character character = {texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                               glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                               (unsigned int)face->glyph->advance.x};
 
         mCharacters.insert(std::pair<GLchar, Character>(c, character));
     }
@@ -166,13 +156,15 @@ void Font::load(std::string filepath)
 
 Character Font::getCharacter(char c) const
 {
-	std::map<char, Character>::const_iterator it = mCharacters.find(c);
-	if(it != mCharacters.end()){
-		return it->second;
-	}
-	else{
-		std::cout << "Error: Character " << c << " does not exist in font" << std::endl;
-		Character character;
-		return character;
-	}
+    std::map<char, Character>::const_iterator it = mCharacters.find(c);
+    if (it != mCharacters.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cout << "Error: Character " << c << " does not exist in font" << std::endl;
+        Character character;
+        return character;
+    }
 }

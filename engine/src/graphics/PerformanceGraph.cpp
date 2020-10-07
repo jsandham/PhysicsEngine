@@ -3,9 +3,9 @@
 //#include "../../include/graphics/PerformanceGraph.h"
 //#include "../../include/core/InternalShaders.h"
 //
-//using namespace PhysicsEngine;
+// using namespace PhysicsEngine;
 //
-//void PerformanceGraph::init()
+// void PerformanceGraph::init()
 //{
 //	mShader.setVertexShader(InternalShaders::graphVertexShader);
 //	mShader.setFragmentShader(InternalShaders::graphFragmentShader);
@@ -34,7 +34,7 @@
 //	glBindVertexArray(0);
 //}
 //
-//void PerformanceGraph::add(float sample)
+// void PerformanceGraph::add(float sample)
 //{
 //	float oldSample = mCurrentSample;
 //	mCurrentSample = fmin(fmax(sample, mRangeMin), mRangeMax);

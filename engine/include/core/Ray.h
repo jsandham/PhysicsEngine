@@ -5,19 +5,19 @@
 
 namespace PhysicsEngine
 {
-	class Ray
-	{
-		public:
-			glm::vec3 mOrigin;
-			glm::vec3 mDirection;
+class Ray
+{
+  public:
+    glm::vec3 mOrigin;
+    glm::vec3 mDirection;
 
-		public:
-			Ray();
-			Ray(glm::vec3 origin, glm::vec3 direction);
-			~Ray();
+  public:
+    Ray();
+    Ray(glm::vec3 origin, glm::vec3 direction);
+    ~Ray();
 
-			glm::vec3 getPoint(float t) const;
-	};
-}
+    glm::vec3 getPoint(float t) const;
+};
+} // namespace PhysicsEngine
 
 #endif

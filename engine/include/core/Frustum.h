@@ -11,33 +11,34 @@
 
 namespace PhysicsEngine
 {
-	class Frustum
-	{
-		public:
-			// normals in frustum plane are assumed to point inward
-			Plane mPlanes[6];
+class Frustum
+{
+  public:
+    // normals in frustum plane are assumed to point inward
+    Plane mPlanes[6];
 
-			float mFov;          // vertical fov
-			float mAspectRatio;  // determines horizontal fov
-			float mNearPlane;
-			float mFarPlane;
+    float mFov;         // vertical fov
+    float mAspectRatio; // determines horizontal fov
+    float mNearPlane;
+    float mFarPlane;
 
-			enum {
-				TOP = 0,
-				BOTTOM,
-				LEFT,
-				RIGHT,
-				NEAR,
-				FAR
-			};
+    enum
+    {
+        TOP = 0,
+        BOTTOM,
+        LEFT,
+        RIGHT,
+        NEAR,
+        FAR
+    };
 
-		public:
-			Frustum();
-			~Frustum();
+  public:
+    Frustum();
+    ~Frustum();
 
-			void computePlanes(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::vec3 right);
-			bool containsPoint(glm::vec3 point) const;
-	};
-}
+    void computePlanes(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::vec3 right);
+    bool containsPoint(glm::vec3 point) const;
+};
+} // namespace PhysicsEngine
 
 #endif

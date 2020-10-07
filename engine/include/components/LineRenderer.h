@@ -12,45 +12,55 @@
 namespace PhysicsEngine
 {
 #pragma pack(push, 1)
-	struct LineRendererHeader
-	{
-		Guid mComponentId;
-		Guid mEntityId;
-		Guid mMaterialId;
-		glm::vec3 mStart;
-		glm::vec3 mEnd;
-	};
+struct LineRendererHeader
+{
+    Guid mComponentId;
+    Guid mEntityId;
+    Guid mMaterialId;
+    glm::vec3 mStart;
+    glm::vec3 mEnd;
+};
 #pragma pack(pop)
 
-	class LineRenderer : public Component
-	{
-		public:
-			glm::vec3 mStart;
-			glm::vec3 mEnd;
+class LineRenderer : public Component
+{
+  public:
+    glm::vec3 mStart;
+    glm::vec3 mEnd;
 
-			Guid mMaterialId;
+    Guid mMaterialId;
 
-		public:
-			LineRenderer();
-			LineRenderer(const std::vector<char>& data);
-			~LineRenderer();
+  public:
+    LineRenderer();
+    LineRenderer(const std::vector<char> &data);
+    ~LineRenderer();
 
-			std::vector<char> serialize() const;
-			std::vector<char> serialize(Guid componentId, Guid entityId) const;
-			void deserialize(const std::vector<char>& data);
-	};
+    std::vector<char> serialize() const;
+    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    void deserialize(const std::vector<char> &data);
+};
 
-	template <typename T>
-	struct IsLineRenderer { static constexpr bool value = false; };
+template <typename T> struct IsLineRenderer
+{
+    static constexpr bool value = false;
+};
 
-	template <>
-	struct ComponentType<LineRenderer> { static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;};
-	template <>
-	struct IsLineRenderer<LineRenderer> { static constexpr bool value = true; };
-	template <>
-	struct IsComponent<LineRenderer> { static constexpr bool value = true; };
-	template <>
-	struct IsComponentInternal<LineRenderer> { static constexpr bool value = true; };
-}
+template <> struct ComponentType<LineRenderer>
+{
+    static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;
+};
+template <> struct IsLineRenderer<LineRenderer>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponent<LineRenderer>
+{
+    static constexpr bool value = true;
+};
+template <> struct IsComponentInternal<LineRenderer>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

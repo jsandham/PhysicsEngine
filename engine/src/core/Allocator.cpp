@@ -2,5 +2,7 @@
 
 using namespace PhysicsEngine;
 
-Allocator::Allocator() {}
-Allocator::~Allocator() {};
+Allocator::Allocator()
+{
+}
+Allocator::~Allocator(){};

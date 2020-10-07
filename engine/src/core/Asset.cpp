@@ -5,20 +5,19 @@ using namespace PhysicsEngine;
 
 Asset::Asset()
 {
-	mAssetId = Guid::INVALID;
+    mAssetId = Guid::INVALID;
 }
 
 Asset::~Asset()
 {
-
 }
 
 Guid Asset::getId() const
 {
-	return mAssetId;
+    return mAssetId;
 }
 
 bool Asset::isInternal(int type)
 {
-	return type >= PhysicsEngine::MIN_INTERNAL_ASSET && type <= PhysicsEngine::MAX_INTERNAL_ASSET;
+    return type >= PhysicsEngine::MIN_INTERNAL_ASSET && type <= PhysicsEngine::MAX_INTERNAL_ASSET;
 }

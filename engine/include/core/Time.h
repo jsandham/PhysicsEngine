@@ -3,16 +3,15 @@
 
 namespace PhysicsEngine
 {
-	struct Time
-	{
-		size_t frameCount;
-		float time;
-		float deltaTime;
-		size_t deltaCycles;
-	};
+struct Time
+{
+    size_t frameCount;
+    float time;
+    float deltaTime;
+    size_t deltaCycles;
+};
 
-	float getFPS(Time time);
-}
-
+float getFPS(Time time);
+} // namespace PhysicsEngine
 
 #endif
