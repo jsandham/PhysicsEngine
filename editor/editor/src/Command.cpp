@@ -4,10 +4,8 @@ using namespace PhysicsEditor;
 
 Command::Command()
 {
-
 }
 
 Command::~Command()
 {
-
 }

@@ -3,12 +3,12 @@
 
 namespace PhysicsEditor
 {
-	struct EditorProject
-	{
-		std::string name;
-		std::string path;
-		bool isDirty;
-	};
-}
+struct EditorProject
+{
+    std::string name;
+    std::string path;
+    bool isDirty;
+};
+} // namespace PhysicsEditor
 
 #endif

@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class CubemapDrawer : public InspectorDrawer
-	{
-	public:
-		CubemapDrawer();
-		~CubemapDrawer();
+class CubemapDrawer : public InspectorDrawer
+{
+  public:
+    CubemapDrawer();
+    ~CubemapDrawer();
 
-		void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
-	};
-}
+    void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
+};
+} // namespace PhysicsEditor
 
 #endif

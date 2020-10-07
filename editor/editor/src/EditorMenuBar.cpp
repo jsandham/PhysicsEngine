@@ -2,256 +2,280 @@
 #include "../include/CommandManager.h"
 
 #include "imgui.h"
-#include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
 using namespace PhysicsEditor;
 
 EditorMenuBar::EditorMenuBar()
 {
-	projectSelected = false;
+    projectSelected = false;
 
-	newSceneClicked = false;
-	openSceneClicked = false;
-	saveClicked = false;
-	saveAsClicked = false;
-	newProjectClicked = false;
-	openProjectClicked = false;
-	saveProjectClicked = false;
-	buildClicked = false;
-	quitClicked = false;
-	openInspectorClicked = false;
-	openHierarchyClicked = false;
-	openConsoleClicked = false;
-	openSceneViewClicked = false;
-	openProjectViewClicked = false;
-	aboutClicked = false;
-	preferencesClicked = false;
-	runTestsClicked = false;
+    newSceneClicked = false;
+    openSceneClicked = false;
+    saveClicked = false;
+    saveAsClicked = false;
+    newProjectClicked = false;
+    openProjectClicked = false;
+    saveProjectClicked = false;
+    buildClicked = false;
+    quitClicked = false;
+    openInspectorClicked = false;
+    openHierarchyClicked = false;
+    openConsoleClicked = false;
+    openSceneViewClicked = false;
+    openProjectViewClicked = false;
+    aboutClicked = false;
+    preferencesClicked = false;
+    runTestsClicked = false;
 }
 
 EditorMenuBar::~EditorMenuBar()
 {
-
 }
 
 void EditorMenuBar::render(const EditorProject project, const EditorScene scene)
 {
-	projectSelected = project.path != "";
-	sceneSelected = scene.name != "";
+    projectSelected = project.path != "";
+    sceneSelected = scene.name != "";
 
-	newSceneClicked = false;
-	openSceneClicked = false;
-	saveClicked = false;
-	saveAsClicked = false;
-	newProjectClicked = false;
-	openProjectClicked = false;
-	saveProjectClicked = false;
-	buildClicked = false;
-	quitClicked = false;
-	openInspectorClicked = false;
-	openHierarchyClicked = false;
-	openConsoleClicked = false;
-	openSceneViewClicked = false;
-	openProjectViewClicked = false;
-	aboutClicked = false;
-	preferencesClicked = false;
-	runTestsClicked = false;
+    newSceneClicked = false;
+    openSceneClicked = false;
+    saveClicked = false;
+    saveAsClicked = false;
+    newProjectClicked = false;
+    openProjectClicked = false;
+    saveProjectClicked = false;
+    buildClicked = false;
+    quitClicked = false;
+    openInspectorClicked = false;
+    openHierarchyClicked = false;
+    openConsoleClicked = false;
+    openSceneViewClicked = false;
+    openProjectViewClicked = false;
+    aboutClicked = false;
+    preferencesClicked = false;
+    runTestsClicked = false;
 
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			showMenuFile();
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			showMenuEdit();
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Windows")){
-			showMenuWindow();
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Help")){
-			showMenuHelp();
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
-	}
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            showMenuFile();
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            showMenuEdit();
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Windows"))
+        {
+            showMenuWindow();
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Help"))
+        {
+            showMenuHelp();
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 }
 
 bool EditorMenuBar::isNewSceneClicked() const
 {
-	return newSceneClicked;
+    return newSceneClicked;
 }
 
 bool EditorMenuBar::isOpenSceneClicked() const
 {
-	return openSceneClicked;
+    return openSceneClicked;
 }
 
 bool EditorMenuBar::isSaveClicked() const
 {
-	return saveClicked;
+    return saveClicked;
 }
 
 bool EditorMenuBar::isSaveAsClicked() const
 {
-	return saveAsClicked;
+    return saveAsClicked;
 }
 
 bool EditorMenuBar::isBuildClicked() const
 {
-	return buildClicked;
+    return buildClicked;
 }
 
 bool EditorMenuBar::isQuitClicked() const
 {
-	return quitClicked;
+    return quitClicked;
 }
 
 bool EditorMenuBar::isNewProjectClicked() const
 {
-	return newProjectClicked;
+    return newProjectClicked;
 }
 
 bool EditorMenuBar::isOpenProjectClicked() const
 {
-	return openProjectClicked;
+    return openProjectClicked;
 }
 
 bool EditorMenuBar::isSaveProjectClicked() const
 {
-	return saveProjectClicked;
+    return saveProjectClicked;
 }
 
 bool EditorMenuBar::isOpenInspectorCalled() const
 {
-	return openInspectorClicked;
+    return openInspectorClicked;
 }
 
 bool EditorMenuBar::isOpenHierarchyCalled() const
 {
-	return openHierarchyClicked;
+    return openHierarchyClicked;
 }
 
 bool EditorMenuBar::isOpenConsoleCalled() const
 {
-	return openConsoleClicked;
+    return openConsoleClicked;
 }
 
 bool EditorMenuBar::isOpenSceneViewCalled() const
 {
-	return openSceneViewClicked;
+    return openSceneViewClicked;
 }
 
 bool EditorMenuBar::isOpenProjectViewCalled() const
 {
-	return openProjectViewClicked;
+    return openProjectViewClicked;
 }
 
 bool EditorMenuBar::isAboutClicked() const
 {
-	return aboutClicked;
+    return aboutClicked;
 }
 
 bool EditorMenuBar::isPreferencesClicked() const
 {
-	return preferencesClicked;
+    return preferencesClicked;
 }
 
 bool EditorMenuBar::isRunTestsClicked() const
 {
-	return runTestsClicked;
+    return runTestsClicked;
 }
 
 void EditorMenuBar::showMenuFile()
 {
-	if (ImGui::MenuItem("New Scene", NULL, false, projectSelected)) {
-		newSceneClicked = true;
-	}
-	if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, projectSelected))
-	{
-		openSceneClicked = true;
-	}
+    if (ImGui::MenuItem("New Scene", NULL, false, projectSelected))
+    {
+        newSceneClicked = true;
+    }
+    if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, projectSelected))
+    {
+        openSceneClicked = true;
+    }
 
-	ImGui::Separator();
+    ImGui::Separator();
 
-	if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, projectSelected && sceneSelected)) {
-		saveClicked = true;
-	}
-	if (ImGui::MenuItem("Save As..", NULL, false, projectSelected && sceneSelected)) {
-		saveAsClicked = true;
-	}
+    if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, projectSelected && sceneSelected))
+    {
+        saveClicked = true;
+    }
+    if (ImGui::MenuItem("Save As..", NULL, false, projectSelected && sceneSelected))
+    {
+        saveAsClicked = true;
+    }
 
-	ImGui::Separator();
+    ImGui::Separator();
 
-	if (ImGui::MenuItem("New Project")) {
-		newProjectClicked = true;
-	}
-	if (ImGui::MenuItem("Open Project"))
-	{
-		openProjectClicked = true;
-	}
-	if (ImGui::MenuItem("Save Project", NULL, false, projectSelected)) {
-		saveProjectClicked = true;
-	}
-	if (ImGui::MenuItem("Build", NULL, false, projectSelected)) {
-		buildClicked = true;
-	}
+    if (ImGui::MenuItem("New Project"))
+    {
+        newProjectClicked = true;
+    }
+    if (ImGui::MenuItem("Open Project"))
+    {
+        openProjectClicked = true;
+    }
+    if (ImGui::MenuItem("Save Project", NULL, false, projectSelected))
+    {
+        saveProjectClicked = true;
+    }
+    if (ImGui::MenuItem("Build", NULL, false, projectSelected))
+    {
+        buildClicked = true;
+    }
 
-	if (ImGui::MenuItem("Quit", "Alt+F4")) {
-		quitClicked = true;
-	}
+    if (ImGui::MenuItem("Quit", "Alt+F4"))
+    {
+        quitClicked = true;
+    }
 }
 
 void EditorMenuBar::showMenuEdit()
 {
-	if (ImGui::MenuItem("Undo", "CTRL+Z", false, CommandManager::canUndo())) {
-		CommandManager::undoCommand();
-	}
-	if (ImGui::MenuItem("Redo", "CTRL+Y", false, CommandManager::canRedo())) {
-		CommandManager::executeCommand();
-	}
-	ImGui::Separator();
-	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-	ImGui::Separator();
-	if (ImGui::MenuItem("Preferences...")) {
-		preferencesClicked = true;
-	}
-	ImGui::Separator();
-	if (ImGui::MenuItem("Run Tests")) {
-		runTestsClicked = true;
-	}
+    if (ImGui::MenuItem("Undo", "CTRL+Z", false, CommandManager::canUndo()))
+    {
+        CommandManager::undoCommand();
+    }
+    if (ImGui::MenuItem("Redo", "CTRL+Y", false, CommandManager::canRedo()))
+    {
+        CommandManager::executeCommand();
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Cut", "CTRL+X"))
+    {
+    }
+    if (ImGui::MenuItem("Copy", "CTRL+C"))
+    {
+    }
+    if (ImGui::MenuItem("Paste", "CTRL+V"))
+    {
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Preferences..."))
+    {
+        preferencesClicked = true;
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Run Tests"))
+    {
+        runTestsClicked = true;
+    }
 }
 
 void EditorMenuBar::showMenuWindow()
 {
-	if (ImGui::MenuItem("Heirarchy")){
-		openHierarchyClicked = true;
-	}
-	if (ImGui::MenuItem("Inspector")){
-		openInspectorClicked = true;
-	}
-	if (ImGui::MenuItem("Console")){
-		openConsoleClicked = true;
-	}
-	if (ImGui::MenuItem("Scene View")) {
-		openSceneViewClicked = true;
-	}
-	if (ImGui::MenuItem("Project View")) {
-		openProjectViewClicked = true;
-	}
+    if (ImGui::MenuItem("Heirarchy"))
+    {
+        openHierarchyClicked = true;
+    }
+    if (ImGui::MenuItem("Inspector"))
+    {
+        openInspectorClicked = true;
+    }
+    if (ImGui::MenuItem("Console"))
+    {
+        openConsoleClicked = true;
+    }
+    if (ImGui::MenuItem("Scene View"))
+    {
+        openSceneViewClicked = true;
+    }
+    if (ImGui::MenuItem("Project View"))
+    {
+        openProjectViewClicked = true;
+    }
 }
 
 void EditorMenuBar::showMenuHelp()
 {
-	if (ImGui::MenuItem("About PhysicsEngine")) {
-		aboutClicked = true;
-	}
+    if (ImGui::MenuItem("About PhysicsEngine"))
+    {
+        aboutClicked = true;
+    }
 }

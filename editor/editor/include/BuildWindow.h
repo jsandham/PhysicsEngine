@@ -3,14 +3,14 @@
 
 namespace PhysicsEditor
 {
-	class BuildWindow
-	{
-		public:
-			BuildWindow();
-			~BuildWindow();
+class BuildWindow
+{
+  public:
+    BuildWindow();
+    ~BuildWindow();
 
-			void render();
-	};
-}
+    void render();
+};
+} // namespace PhysicsEditor
 
 #endif

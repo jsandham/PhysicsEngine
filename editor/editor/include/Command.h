@@ -3,15 +3,15 @@
 
 namespace PhysicsEditor
 {
-	class Command
-	{
-		public:
-			Command();
-			virtual ~Command() = 0;
+class Command
+{
+  public:
+    Command();
+    virtual ~Command() = 0;
 
-			virtual void execute() = 0;
-			virtual void undo() = 0;
-	};
-}
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+};
+} // namespace PhysicsEditor
 
 #endif

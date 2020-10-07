@@ -9,8 +9,8 @@
   CubemapDrawer.cpp
   Editor.cpp
   EditorCameraSystem.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(247,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(248,8): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(259,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(260,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
   EditorClipboard.cpp
   EditorCommands.cpp
   EditorFileIO.cpp
@@ -46,9 +46,9 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(
   Compiling...
   RigidbodyDrawer.cpp
   SceneView.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(96,25): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(97,26): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(357,40): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(96,31): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(97,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(369,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=double

@@ -3,17 +3,17 @@
 
 namespace PhysicsEditor
 {
-	class AboutPopup
-	{
-		private:
-			bool isVisible;
+class AboutPopup
+{
+  private:
+    bool isVisible;
 
-		public:
-			AboutPopup();
-			~AboutPopup();
+  public:
+    AboutPopup();
+    ~AboutPopup();
 
-			void render(bool becomeVisibleThisFrame);
-	};
-}
+    void render(bool becomeVisibleThisFrame);
+};
+} // namespace PhysicsEditor
 
 #endif

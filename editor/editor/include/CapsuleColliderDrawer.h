@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class CapsuleColliderDrawer : public InspectorDrawer
-	{
-		public:
-			CapsuleColliderDrawer();
-			~CapsuleColliderDrawer();
+class CapsuleColliderDrawer : public InspectorDrawer
+{
+  public:
+    CapsuleColliderDrawer();
+    ~CapsuleColliderDrawer();
 
-			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
-	};
-}
+    void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
+};
+} // namespace PhysicsEditor
 
 #endif

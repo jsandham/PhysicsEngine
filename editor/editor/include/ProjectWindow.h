@@ -5,38 +5,38 @@
 
 namespace PhysicsEditor
 {
-	typedef enum ProjectWindowMode
-	{
-		OpenProject,
-		NewProject
-	}ProjectWindowMode;
+typedef enum ProjectWindowMode
+{
+    OpenProject,
+    NewProject
+} ProjectWindowMode;
 
-	class ProjectWindow
-	{
-		private:
-			bool isVisible;
-			bool openClicked;
-			bool createClicked;
-			ProjectWindowMode mode;
-			Filebrowser filebrowser;
-			std::vector<char> inputBuffer;
+class ProjectWindow
+{
+  private:
+    bool isVisible;
+    bool openClicked;
+    bool createClicked;
+    ProjectWindowMode mode;
+    Filebrowser filebrowser;
+    std::vector<char> inputBuffer;
 
-		public:
-			ProjectWindow();
-			~ProjectWindow();
+  public:
+    ProjectWindow();
+    ~ProjectWindow();
 
-			void render(bool becomeVisibleThisFrame);
-			void setMode(ProjectWindowMode mode);
+    void render(bool becomeVisibleThisFrame);
+    void setMode(ProjectWindowMode mode);
 
-			bool isOpenClicked() const;
-			bool isCreateClicked() const;
+    bool isOpenClicked() const;
+    bool isCreateClicked() const;
 
-			std::string getProjectName() const;
-			std::string getSelectedFolderPath() const;
+    std::string getProjectName() const;
+    std::string getSelectedFolderPath() const;
 
-		private:
-			void renderOpenMode();
-			void renderNewMode();
-	};
-}
+  private:
+    void renderOpenMode();
+    void renderNewMode();
+};
+} // namespace PhysicsEditor
 #endif

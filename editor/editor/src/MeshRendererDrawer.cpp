@@ -5,8 +5,8 @@
 #include "components/MeshRenderer.h"
 
 #include "imgui.h"
-#include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
 #include "../include/imgui_extensions.h"
@@ -15,87 +15,101 @@ using namespace PhysicsEditor;
 
 MeshRendererDrawer::MeshRendererDrawer()
 {
-
 }
 
 MeshRendererDrawer::~MeshRendererDrawer()
 {
-
 }
 
-void MeshRendererDrawer::render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id)
+void MeshRendererDrawer::render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard,
+                                Guid id)
 {
-	if(ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		MeshRenderer* meshRenderer = world->getComponentById<MeshRenderer>(id);
+    if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        MeshRenderer *meshRenderer = world->getComponentById<MeshRenderer>(id);
 
-		ImGui::Text(("EntityId: " + meshRenderer->getEntityId().toString()).c_str());
-		ImGui::Text(("ComponentId: " + id.toString()).c_str());
+        ImGui::Text(("EntityId: " + meshRenderer->getEntityId().toString()).c_str());
+        ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-		// Mesh
-		Guid meshId = meshRenderer->getMesh();
-		
-		std::string meshName = "None (Mesh)";
-		if (meshId != Guid::INVALID) {
-			meshName = meshId.toString();
-		}
+        // Mesh
+        Guid meshId = meshRenderer->getMesh();
 
-		bool slotFilled = false;
-		bool isClicked = ImGui::Slot("Mesh", meshName, clipboard.getDraggedType() == InteractionType::Mesh, &slotFilled);
+        std::string meshName = "None (Mesh)";
+        if (meshId != Guid::INVALID)
+        {
+            meshName = meshId.toString();
+        }
 
-		if (slotFilled) {
-			meshId = clipboard.getDraggedId();
-			clipboard.clearDraggedItem();
+        bool slotFilled = false;
+        bool isClicked =
+            ImGui::Slot("Mesh", meshName, clipboard.getDraggedType() == InteractionType::Mesh, &slotFilled);
 
-			/*CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->mMeshId, meshId, &scene.isDirty));*/
-			meshRenderer->setMesh(meshId);
-		}
+        if (slotFilled)
+        {
+            meshId = clipboard.getDraggedId();
+            clipboard.clearDraggedItem();
 
-		bool isStatic = meshRenderer->mIsStatic;
-		if (ImGui::Checkbox("Is Static?", &isStatic)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->mIsStatic, isStatic, &scene.isDirty));
-		}
+            /*CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->mMeshId, meshId,
+             * &scene.isDirty));*/
+            meshRenderer->setMesh(meshId);
+        }
 
-		bool enabled = meshRenderer->mEnabled;
-		if (ImGui::Checkbox("Enabled?", &enabled)) {
-			CommandManager::addCommand(new ChangePropertyCommand<bool>(&meshRenderer->mEnabled, enabled, &scene.isDirty));
-		}
+        bool isStatic = meshRenderer->mIsStatic;
+        if (ImGui::Checkbox("Is Static?", &isStatic))
+        {
+            CommandManager::addCommand(
+                new ChangePropertyCommand<bool>(&meshRenderer->mIsStatic, isStatic, &scene.isDirty));
+        }
 
-		// Materials
-		int materialCount = meshRenderer->mMaterialCount;
-		const int increment = 1;
-		ImGui::PushItemWidth(80);
-		if (ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d")) {
-			materialCount = std::max(0, std::min(materialCount, 8));
+        bool enabled = meshRenderer->mEnabled;
+        if (ImGui::Checkbox("Enabled?", &enabled))
+        {
+            CommandManager::addCommand(
+                new ChangePropertyCommand<bool>(&meshRenderer->mEnabled, enabled, &scene.isDirty));
+        }
 
-			CommandManager::addCommand(new ChangePropertyCommand<int>(&meshRenderer->mMaterialCount, materialCount, &scene.isDirty));
-		}
-		ImGui::PopItemWidth();
+        // Materials
+        int materialCount = meshRenderer->mMaterialCount;
+        const int increment = 1;
+        ImGui::PushItemWidth(80);
+        if (ImGui::InputScalar("Material Count", ImGuiDataType_S32, &materialCount, &increment, NULL, "%d"))
+        {
+            materialCount = std::max(0, std::min(materialCount, 8));
 
-		Guid materialIds[8];
-		for (int i = 0; i < materialCount; i++) {
-			materialIds[i] = meshRenderer->getMaterial(i);
+            CommandManager::addCommand(
+                new ChangePropertyCommand<int>(&meshRenderer->mMaterialCount, materialCount, &scene.isDirty));
+        }
+        ImGui::PopItemWidth();
 
-			std::string materialName = "None (Material)";
-			if (materialIds[i] != PhysicsEngine::Guid::INVALID) {
-				materialName = materialIds[i].toString();
-			}
+        Guid materialIds[8];
+        for (int i = 0; i < materialCount; i++)
+        {
+            materialIds[i] = meshRenderer->getMaterial(i);
 
-			bool materialSlotFillable = clipboard.getDraggedType() == InteractionType::Material;
-			bool materialSlotFilled = false;
-			bool materialIsClicked = ImGui::Slot("Material", materialName, materialSlotFillable, &materialSlotFilled);
+            std::string materialName = "None (Material)";
+            if (materialIds[i] != PhysicsEngine::Guid::INVALID)
+            {
+                materialName = materialIds[i].toString();
+            }
 
-			if (materialSlotFilled) {
-				materialIds[i] = clipboard.getDraggedId();
-				clipboard.clearDraggedItem();
+            bool materialSlotFillable = clipboard.getDraggedType() == InteractionType::Material;
+            bool materialSlotFilled = false;
+            bool materialIsClicked = ImGui::Slot("Material", materialName, materialSlotFillable, &materialSlotFilled);
 
-				meshRenderer->setMaterial(materialIds[i], i);
-			}
+            if (materialSlotFilled)
+            {
+                materialIds[i] = clipboard.getDraggedId();
+                clipboard.clearDraggedItem();
 
-			// this current is always getting called when you click on an entity in the hierarchy causing the scene to be dirtied
-			//CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i], &scene.isDirty));
-		}
+                meshRenderer->setMaterial(materialIds[i], i);
+            }
 
-		ImGui::TreePop();
-	}
+            // this current is always getting called when you click on an entity in the hierarchy causing the scene to
+            // be dirtied
+            // CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i],
+            // &scene.isDirty));
+        }
+
+        ImGui::TreePop();
+    }
 }

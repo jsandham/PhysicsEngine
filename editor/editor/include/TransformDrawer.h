@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class TransformDrawer : public InspectorDrawer
-	{
-		public:
-			TransformDrawer();
-			~TransformDrawer();
+class TransformDrawer : public InspectorDrawer
+{
+  public:
+    TransformDrawer();
+    ~TransformDrawer();
 
-			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
-	};
-}
+    void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
+};
+} // namespace PhysicsEditor
 
 #endif

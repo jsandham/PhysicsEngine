@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class Texture2DDrawer : public InspectorDrawer
-	{
-	public:
-		Texture2DDrawer();
-		~Texture2DDrawer();
+class Texture2DDrawer : public InspectorDrawer
+{
+  public:
+    Texture2DDrawer();
+    ~Texture2DDrawer();
 
-		void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
-	};
-}
+    void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
+};
+} // namespace PhysicsEditor
 
 #endif

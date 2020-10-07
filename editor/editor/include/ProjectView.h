@@ -9,40 +9,42 @@
 
 namespace PhysicsEditor
 {
-	struct ProjectNode
-	{
-		int id;
-		ProjectNode* parent;
-		std::vector<ProjectNode*> children;
-		std::string directoryName;
-		std::string directoryPath;
-		bool isExpanded;
+struct ProjectNode
+{
+    int id;
+    ProjectNode *parent;
+    std::vector<ProjectNode *> children;
+    std::string directoryName;
+    std::string directoryPath;
+    bool isExpanded;
 
-		ProjectNode() : id(-1), parent(NULL), directoryName(""), directoryPath(""), isExpanded(false){ }
-	};
+    ProjectNode() : id(-1), parent(NULL), directoryName(""), directoryPath(""), isExpanded(false)
+    {
+    }
+};
 
+class ProjectView
+{
+  private:
+    ProjectNode *root;
+    ProjectNode *selected;
+    std::vector<ProjectNode *> nodes;
+    bool projectViewActive;
 
-	class ProjectView
-	{
-		private:
-			ProjectNode* root;
-			ProjectNode* selected;
-			std::vector<ProjectNode*> nodes;
-			bool projectViewActive;
+  public:
+    ProjectView();
+    ~ProjectView();
 
-		public:
-			ProjectView();
-			~ProjectView();
+    void render(const std::string currentProjectPath, const LibraryDirectory &library, EditorClipboard &clipboard,
+                bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
-			void render(const std::string currentProjectPath, const LibraryDirectory& library, EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+    void deleteProjectTree();
+    void buildProjectTree(std::string currentProjectPath);
+    void drawProjectTree();
+    void drawProjectNodeRecursive(ProjectNode *node);
 
-			void deleteProjectTree();
-			void buildProjectTree(std::string currentProjectPath);
-			void drawProjectTree();
-			void drawProjectNodeRecursive(ProjectNode* node);
-
-			InteractionType getInteractionTypeFromFileExtension(const std::string extension);
-	};
-}
+    InteractionType getInteractionTypeFromFileExtension(const std::string extension);
+};
+} // namespace PhysicsEditor
 
 #endif

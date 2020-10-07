@@ -3,14 +3,14 @@
 
 namespace PhysicsEditor
 {
-	class Console
-	{
-		public:
-			Console();
-			~Console();
+class Console
+{
+  public:
+    Console();
+    ~Console();
 
-			void render(bool isOpenedThisFrame);
-	};
-}
+    void render(bool isOpenedThisFrame);
+};
+} // namespace PhysicsEditor
 
 #endif

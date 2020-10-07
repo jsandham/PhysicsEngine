@@ -7,15 +7,15 @@
 
 namespace PhysicsEditor
 {
-	struct EditorScene
-	{
-		std::string name;
-		std::string path;
-		std::string metaPath;
-		std::string libraryPath;
-		PhysicsEngine::Guid sceneId;
-		bool isDirty;
-	};
-}
+struct EditorScene
+{
+    std::string name;
+    std::string path;
+    std::string metaPath;
+    std::string libraryPath;
+    PhysicsEngine::Guid sceneId;
+    bool isDirty;
+};
+} // namespace PhysicsEditor
 
 #endif

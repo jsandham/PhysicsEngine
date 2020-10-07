@@ -5,12 +5,12 @@
 
 #include "PerformanceQueue.h"
 
-#include "core/World.h"
-#include "core/Time.h"
 #include "core/Input.h"
+#include "core/Time.h"
+#include "core/World.h"
 
-#include "systems/RenderSystem.h"
 #include "graphics/GraphicsQuery.h"
+#include "systems/RenderSystem.h"
 
 #include "EditorCameraSystem.h"
 #include "EditorClipboard.h"
@@ -20,43 +20,41 @@
 
 namespace PhysicsEditor
 {
-	class SceneView
-	{
-		private:
-			bool focused;
-			bool hovered;
-			int activeTextureIndex;
-			PerformanceQueue perfQueue;
-			TransformGizmo transformGizmo;
+class SceneView
+{
+  private:
+    bool focused;
+    bool hovered;
+    int activeTextureIndex;
+    PerformanceQueue perfQueue;
+    TransformGizmo transformGizmo;
 
-			ImVec2 windowPos;
-			ImVec2 sceneContentMin;
-			ImVec2 sceneContentMax;
+    ImVec2 windowPos;
+    ImVec2 sceneContentMin;
+    ImVec2 sceneContentMax;
 
-			PhysicsEngine::Input input;
-			PhysicsEngine::Time time;
+    PhysicsEngine::Input input;
+    PhysicsEngine::Time time;
 
-		public:
-			SceneView();
-			~SceneView();
+  public:
+    SceneView();
+    ~SceneView();
 
-			void render(PhysicsEngine::World* world, 
-						PhysicsEngine::EditorCameraSystem* cameraSystem, 
-						EditorClipboard& clipboard, 
-						bool isOpenedThisFrame);
-		
-			bool isFocused() const;
-			bool isHovered() const;
+    void render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraSystem *cameraSystem,
+                EditorClipboard &clipboard, bool isOpenedThisFrame);
 
-			ImVec2 getSceneContentMin() const;
-			ImVec2 getSceneContentMax() const;
-			ImVec2 getWindowPos() const;
+    bool isFocused() const;
+    bool isHovered() const;
 
-		private:
-			void updateWorld(PhysicsEngine::World* world);
-			void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem* cameraSystem);
-			void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem* cameraSystem, bool* cameraSettingsActive);
-	};
-}
+    ImVec2 getSceneContentMin() const;
+    ImVec2 getSceneContentMax() const;
+    ImVec2 getWindowPos() const;
+
+  private:
+    void updateWorld(PhysicsEngine::World *world);
+    void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem);
+    void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *cameraSystem, bool *cameraSettingsActive);
+};
+} // namespace PhysicsEditor
 
 #endif

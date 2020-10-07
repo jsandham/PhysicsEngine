@@ -4,64 +4,71 @@
 #include <GL/glew.h>
 #include <gl/gl.h>
 
-#include "glm/glm.hpp"
 #include "glm/detail/func_trigonometric.hpp"
+#include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
 
 #include "EditorCameraSystem.h"
 
 namespace PhysicsEditor
 {
-	typedef enum Axis
-	{
-		Axis_X = 0,
-		Axis_Y = 1,
-		Axis_Z = 2,
-		Axis_None = 3
-	}Axis;
+typedef enum Axis
+{
+    Axis_X = 0,
+    Axis_Y = 1,
+    Axis_Z = 2,
+    Axis_None = 3
+} Axis;
 
-	typedef enum GizmoMode
-	{
-		Translation = 0,
-		Rotation = 1,
-		Scale = 2
-	}GizmoMode;
+typedef enum GizmoMode
+{
+    Translation = 0,
+    Rotation = 1,
+    Scale = 2
+} GizmoMode;
 
-	class TransformGizmo
-	{
-		private:
-			GLuint mTranslationVAO[3];
-			GLuint mTranslationVBO[3];
-			GLuint mRotationVAO[3];
-			GLuint mRotationVBO[3];
+class TransformGizmo
+{
+  private:
+    GLuint mTranslationVAO[3];
+    GLuint mTranslationVBO[3];
+    GLuint mRotationVAO[3];
+    GLuint mRotationVBO[3];
 
-			std::string mVertexShader;
-			std::string mFragmentShader;
-			GLuint mGizmoShaderProgram;
-			int mGizmoShaderMVPLoc;
-			int mGizmoShaderColorLoc;
+    std::string mVertexShader;
+    std::string mFragmentShader;
+    GLuint mGizmoShaderProgram;
+    int mGizmoShaderMVPLoc;
+    int mGizmoShaderColorLoc;
 
-			GizmoMode mode;
-			Axis highlightedTransformAxis;
-			Axis selectedTransformAxis;
-			glm::mat4 selectedTransformModel;
+    GizmoMode mode;
+    Axis highlightedTransformAxis;
+    Axis selectedTransformAxis;
+    glm::mat4 selectedTransformModel;
 
-		public:
-			void initialize();
-			void update(PhysicsEngine::EditorCameraSystem * cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight);
-			void setGizmoMode(GizmoMode mode);
+  public:
+    void initialize();
+    void update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+                float contentWidth, float contentHeight);
+    void setGizmoMode(GizmoMode mode);
 
-			bool isGizmoHighlighted() const;
+    bool isGizmoHighlighted() const;
 
-		private:
-			void updateTranslation(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight);
-			void updateRotation(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight);
-			void updateScale(PhysicsEngine::EditorCameraSystem* cameraSystem, PhysicsEngine::Transform* selectedTransform, float contentWidth, float contentHeight);
+  private:
+    void updateTranslation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+                           float contentWidth, float contentHeight);
+    void updateRotation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+                        float contentWidth, float contentHeight);
+    void updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+                     float contentWidth, float contentHeight);
 
-			void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
-			void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
-			void drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis, Axis selectedAxis);
-	};
-}
+    void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+                         Axis selectedAxis);
+    void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+                      Axis selectedAxis);
+    void drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+                   Axis selectedAxis);
+};
+} // namespace PhysicsEditor
 
 #endif

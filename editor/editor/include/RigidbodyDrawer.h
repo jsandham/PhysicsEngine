@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class RigidbodyDrawer : public InspectorDrawer
-	{
-		public:
-			RigidbodyDrawer();
-			~RigidbodyDrawer();
+class RigidbodyDrawer : public InspectorDrawer
+{
+  public:
+    RigidbodyDrawer();
+    ~RigidbodyDrawer();
 
-			void render(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard, Guid id);
-	};
-}
+    void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
+};
+} // namespace PhysicsEditor
 
 #endif

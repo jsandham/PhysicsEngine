@@ -5,14 +5,14 @@
 
 namespace PhysicsEditor
 {
-	class EditorToolbar 
-	{
-		public:
-			EditorToolbar();
-			~EditorToolbar();
+class EditorToolbar
+{
+  public:
+    EditorToolbar();
+    ~EditorToolbar();
 
-			void render(EditorClipboard& clipboard);
-	};
-}
+    void render(EditorClipboard &clipboard);
+};
+} // namespace PhysicsEditor
 
 #endif

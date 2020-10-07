@@ -5,8 +5,8 @@
 
 namespace PhysicsEditor
 {
-	InspectorDrawer* loadInternalInspectorComponentDrawer(int type);
-	InspectorDrawer* loadInternalInspectorAssetDrawer(int type);
-}
+InspectorDrawer *loadInternalInspectorComponentDrawer(int type);
+InspectorDrawer *loadInternalInspectorAssetDrawer(int type);
+} // namespace PhysicsEditor
 
 #endif

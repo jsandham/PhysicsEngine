@@ -3,17 +3,17 @@
 
 namespace PhysicsEditor
 {
-	class PreferencesWindow
-	{
-		private:
-			bool isVisible;
+class PreferencesWindow
+{
+  private:
+    bool isVisible;
 
-		public:
-			PreferencesWindow();
-			~PreferencesWindow();
+  public:
+    PreferencesWindow();
+    ~PreferencesWindow();
 
-			void render(bool becomeVisibleThisFrame);
-	};
-}
+    void render(bool becomeVisibleThisFrame);
+};
+} // namespace PhysicsEditor
 
 #endif

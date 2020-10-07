@@ -5,24 +5,23 @@
 
 namespace PhysicsEditor
 {
-	class PerformanceQueue
-	{
-		private:
-			int numberOfSamples;
-			int index;
-			std::vector<float> queue;
-			std::vector<float> data;
+class PerformanceQueue
+{
+  private:
+    int numberOfSamples;
+    int index;
+    std::vector<float> queue;
+    std::vector<float> data;
 
-		public:
-			PerformanceQueue();
-			~PerformanceQueue();
+  public:
+    PerformanceQueue();
+    ~PerformanceQueue();
 
-			void setNumberOfSamples(int numberOfSamples);
-			void addSample(float value);
-			void clear();
-			std::vector<float> getData();
-
-	};
-}
+    void setNumberOfSamples(int numberOfSamples);
+    void addSample(float value);
+    void clear();
+    std::vector<float> getData();
+};
+} // namespace PhysicsEditor
 
 #endif
