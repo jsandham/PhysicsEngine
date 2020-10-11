@@ -148,6 +148,7 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
         // whether to render gizmos or not
         if (ImGui::Checkbox("Gizmos", &gizmosChecked))
         {
+            cameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
         }
         ImGui::SameLine();
 
@@ -235,14 +236,35 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
             transformGizmo.update(cameraSystem, transform, width, height);
         }
 
+
+        GizmoSystem* gizmoSystem = world->getSystem<GizmoSystem>();
+
+        if (gizmoSystem != nullptr) {
+            if (getKeyDown(input, KeyCode::A)) {
+                Sphere sphere(glm::vec3(-1.0f, 4.0f, 2.0f), 1.0f);
+                gizmoSystem->addToDrawList(sphere, Color::blue);
+            }
+            else if (getKeyDown(input, KeyCode::B)) {
+                Line line(glm::vec3(1.0f, 2.0f, -2.0f), glm::vec3(5.0f, 3.0f, 1.0f));
+                gizmoSystem->addToDrawList(line, Color::red);
+            }
+            else if (getKeyDown(input, KeyCode::C)) {
+                AABB aabb(glm::vec3(3.0f, 10.0f, -4.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                gizmoSystem->addToDrawList(aabb, Color::green);
+            }
+            else if (getKeyDown(input, KeyCode::Z)) {
+                gizmoSystem->clearDrawList();
+            }
+        }
+
+
+
+
+
+
         // Finally draw scene
-        /*ImVec2 size = sceneContentMax;
-        size.x -= sceneContentMin.x;
-        size.y -= sceneContentMin.y;*/
-        // ImGui::Image((void*)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, 1), ImVec2(1, 0));
         ImGui::Image((void *)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, size.y / 1080.0f),
                      ImVec2(size.x / 1920.0f, 0));
-        // ImGui::Image((void*)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, 0), ImVec2(1, 1));
     }
     ImGui::End();
 }
@@ -419,7 +441,7 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *camer
     static bool cameraSettingsWindowOpen = false;
 
     ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Editor Camera Settings", cameraSettingsActive))
+    if (ImGui::Begin("Editor Camera Settings", cameraSettingsActive, ImGuiWindowFlags_NoResize))
     {
         // Viewport viewport = cameraSystem->getViewport();
         Frustum frustum = cameraSystem->getFrustum();

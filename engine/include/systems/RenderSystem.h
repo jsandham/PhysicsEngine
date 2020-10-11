@@ -55,8 +55,6 @@ class RenderSystem : public System
     void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
-
-    void updateRenderObjects(World *world);
 };
 
 template <typename T> struct IsRenderSystem

@@ -23,6 +23,7 @@ World::World()
 
     // load default included shaders
     mFontShaderId = InternalShaders::loadFontShader(this);
+    mGizmoShaderId = InternalShaders::loadGizmoShader(this);
     mColorShaderId = InternalShaders::loadColorShader(this);
     mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
     mSsaoShaderId = InternalShaders::loadSsaoShader(this);
@@ -468,6 +469,11 @@ Guid World::getSimpleLitMaterial() const
 Guid World::getFontShaderId() const
 {
     return mFontShaderId;
+}
+
+Guid World::getGizmoShaderId() const
+{
+    return mGizmoShaderId;
 }
 
 Guid World::getColorShaderId() const

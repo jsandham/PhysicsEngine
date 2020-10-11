@@ -21,10 +21,6 @@ struct DebugSystemHeader
 
 class DebugSystem : public System
 {
-  private:
-    Material *mColorMat;
-    Shader *mColorShader;
-
   public:
     DebugSystem();
     DebugSystem(const std::vector<char> &data);

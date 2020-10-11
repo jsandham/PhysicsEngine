@@ -58,19 +58,19 @@ void Frustum::computePlanes(glm::vec3 position, glm::vec3 front, glm::vec3 up, g
     mPlanes[RIGHT].mX0 = nc + nearPlaneWidth * right;
 
     // near corners
-    glm::vec3 ntl = nc + nearPlaneHeight * up - nearPlaneWidth * right;
-    glm::vec3 ntr = nc + nearPlaneHeight * up + nearPlaneWidth * right;
-    glm::vec3 nbl = nc - nearPlaneHeight * up - nearPlaneWidth * right;
-    glm::vec3 nbr = nc - nearPlaneHeight * up + nearPlaneWidth * right;
+    mNtl = nc + nearPlaneHeight * up - nearPlaneWidth * right;
+    mNtr = nc + nearPlaneHeight * up + nearPlaneWidth * right;
+    mNbl = nc - nearPlaneHeight * up - nearPlaneWidth * right;
+    mNbr = nc - nearPlaneHeight * up + nearPlaneWidth * right;
 
     // far corners
     float farPlaneHeight = mFarPlane * tan;
     float farPlaneWidth = mAspectRatio * farPlaneHeight;
 
-    glm::vec3 ftl = fc + farPlaneHeight * up - farPlaneWidth * right;
-    glm::vec3 ftr = fc + farPlaneHeight * up + farPlaneWidth * right;
-    glm::vec3 fbl = fc - farPlaneHeight * up - farPlaneWidth * right;
-    glm::vec3 fbr = fc - farPlaneHeight * up + farPlaneWidth * right;
+    mFtl = fc + farPlaneHeight * up - farPlaneWidth * right;
+    mFtr = fc + farPlaneHeight * up + farPlaneWidth * right;
+    mFbl = fc - farPlaneHeight * up - farPlaneWidth * right;
+    mFbr = fc - farPlaneHeight * up + farPlaneWidth * right;
 }
 
 bool Frustum::containsPoint(glm::vec3 point) const

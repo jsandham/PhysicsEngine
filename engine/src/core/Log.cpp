@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-int Log::maxMessageCount = 100;
+size_t Log::maxMessageCount = 100;
 std::queue<std::string> Log::messages;
 
 void Log::info(const char *format, ...)

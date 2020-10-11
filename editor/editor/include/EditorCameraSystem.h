@@ -61,11 +61,13 @@ class EditorCameraSystem : public System
     void setFrustum(Frustum frustum);
     void setRenderPath(RenderPath path);
     void setSSAO(CameraSSAO ssao);
+    void setGizmos(CameraGizmos gizmos);
 
     Viewport getViewport() const;
     Frustum getFrustum() const;
     RenderPath getRenderPath() const;
     CameraSSAO getSSAO() const;
+    CameraGizmos getGizmos() const;
 
     Guid getTransformUnderMouse(float nx, float ny) const;
     int getMousePosX() const;

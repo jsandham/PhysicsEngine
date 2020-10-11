@@ -1,4 +1,5 @@
 #include "core/ClosestDistance.h"
+#include "core/Intersect.h"
 #include "graphics/Graphics.h"
 
 #include "../include/TransformGizmo.h"
@@ -195,6 +196,31 @@ void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem *camera
             selectedTransformAxis = highlightedTransformAxis;
             selectedTransformModel = model;
         }
+
+        if (selectedTransformAxis == Axis::Axis_X)
+        {
+            Plane plane0(selectedTransform->getUp(), selectedTransform->mPosition);
+            Plane plane1(selectedTransform->getForward(), selectedTransform->mPosition);
+
+            float t0 = std::numeric_limits<float>().max();
+            float t1 = std::numeric_limits<float>().max();
+            bool int0 = Intersect::intersect(cameraRay, plane0, t0);
+            bool int1 = Intersect::intersect(cameraRay, plane1, t1);
+
+
+            
+        }
+        else if (selectedTransformAxis == Axis::Axis_Y)
+        {
+            
+        }
+        else if (selectedTransformAxis == Axis::Axis_Z)
+        {
+            
+        }
+
+
+
 
         glm::vec2 delta = cameraSystem->distanceTraveledSinceLeftMouseClick();
 

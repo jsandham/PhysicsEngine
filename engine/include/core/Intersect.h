@@ -17,20 +17,22 @@ class Intersect
     static float EPSILON;
 
   public:
-    static bool intersect(Ray ray, Triangle triangle);
-    static bool intersect(Ray ray, Plane plane);
-    static bool intersect(Ray ray, Sphere sphere);
-    static bool intersect(Ray ray, AABB aabb);
-    static bool intersect(Ray ray, Capsule capsule);
-    static bool intersect(Ray ray, Frustum frustum);
-    static bool intersect(Sphere sphere, Sphere sphere2);
-    static bool intersect(Sphere sphere, AABB aabb);
-    static bool intersect(Sphere sphere, Capsule capsule);
-    static bool intersect(Sphere sphere, Frustum frustum);
-    static bool intersect(AABB aabb, AABB aabb2);
-    static bool intersect(AABB aabb, Capsule capsule);
-    static bool intersect(AABB aabb, Frustum frustum);
-    static bool intersect(Frustum frustum, Frustum frustum2);
+    static bool intersect(const Ray &ray, const Plane &plane, float &dist);
+
+    static bool intersect(const Ray &ray, const Triangle &triangle);
+    static bool intersect(const Ray &ray, const Plane &plane);
+    static bool intersect(const Ray &ray, const Sphere &sphere);
+    static bool intersect(const Ray &ray, const AABB &aabb);
+    static bool intersect(const Ray &ray, const Capsule &capsule);
+    static bool intersect(const Ray &ray, const Frustum &frustum);
+    static bool intersect(const Sphere &sphere, const Sphere &sphere2);
+    static bool intersect(const Sphere &sphere, const AABB &aabb);
+    static bool intersect(const Sphere &sphere, const Capsule &capsule);
+    static bool intersect(const Sphere &sphere, const Frustum &frustum);
+    static bool intersect(const AABB &aabb, const AABB &aabb2);
+    static bool intersect(const AABB &aabb, const Capsule &capsule);
+    static bool intersect(const AABB &aabb, const Frustum &frustum);
+    static bool intersect(const Frustum &frustum, const Frustum &frustum2);
 };
 } // namespace PhysicsEngine
 

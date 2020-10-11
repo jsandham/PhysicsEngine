@@ -1,7 +1,7 @@
 #include <vector>
 
-#include "../core/Log.h"
-#include "../core/MaterialUtil.h"
+#include "../../include/core/Log.h"
+#include "../../include/core/MaterialUtil.h"
 
 using namespace PhysicsEngine;
 

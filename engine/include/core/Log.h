@@ -14,7 +14,7 @@ class Log
     static std::string convertToString(const char *format, va_list args);
 
   public:
-    static int maxMessageCount;
+    static size_t maxMessageCount;
 
     static void info(const char *format, ...);
     static void warn(const char *format, ...);

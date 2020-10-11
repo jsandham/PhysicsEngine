@@ -86,6 +86,7 @@ class Graphics
     static void setBool(int nameLocation, bool value);
     static void setInt(int nameLocation, int value);
     static void setFloat(int nameLocation, float value);
+    static void setColor(int nameLocation, const Color &color);
     static void setVec2(int nameLocation, const glm::vec2 &vec);
     static void setVec3(int nameLocation, const glm::vec3 &vec);
     static void setVec4(int nameLocation, const glm::vec4 &vec);
@@ -95,6 +96,7 @@ class Graphics
     static bool getBool(int nameLocation, int program);
     static int getInt(int nameLocation, int program);
     static float getFloat(int nameLocation, int program);
+    static Color getColor(int nameLocation, int program);
     static glm::vec2 getVec2(int nameLocation, int program);
     static glm::vec3 getVec3(int nameLocation, int program);
     static glm::vec4 getVec4(int nameLocation, int program);

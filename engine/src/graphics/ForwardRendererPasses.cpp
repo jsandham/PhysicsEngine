@@ -258,7 +258,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
             state->mDepthShader->setMat4(state->mDepthShaderViewLoc, state->mCascadeLightView[i]);
             state->mDepthShader->setMat4(state->mDepthShaderProjectionLoc, state->mCascadeOrthoProj[i]);
 
-            for (int j = 0; j < renderQueue.size(); j++)
+            for (size_t j = 0; j < renderQueue.size(); j++)
             {
                 state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
                 Graphics::render(world, renderObjects[renderQueue[j].second], &camera->mQuery);
@@ -285,7 +285,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         state->mDepthShader->setMat4(state->mDepthShaderProjectionLoc, state->mShadowProjMatrix);
         state->mDepthShader->setMat4(state->mDepthShaderViewLoc, state->mShadowViewMatrix);
 
-        for (int i = 0; i < renderQueue.size(); i++)
+        for (size_t i = 0; i < renderQueue.size(); i++)
         {
             state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
             Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
@@ -344,7 +344,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc5,
                                             state->mCubeViewProjMatrices[5]);
 
-        for (int i = 0; i < renderQueue.size(); i++)
+        for (size_t i = 0; i < renderQueue.size(); i++)
         {
             state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderModelLoc,
                                                 renderObjects[renderQueue[i].second].model);
@@ -451,7 +451,7 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     Shader *shader = NULL;
     Material *material = NULL;
 
-    for (int i = 0; i < renderQueue.size(); i++)
+    for (size_t i = 0; i < renderQueue.size(); i++)
     {
         if (currentShaderIndex != renderObjects[renderQueue[i].second].shaderIndex)
         {

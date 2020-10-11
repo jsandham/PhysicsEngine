@@ -4,19 +4,34 @@
 
 using namespace PhysicsEngine;
 
-const std::string InternalShaders::gizmoVertexShader = "uniform mat4 mvp;\n"
-                                                       "in vec3 position;\n"
-                                                       "void main()\n"
-                                                       "{\n"
-                                                       "	gl_Position = mvp * vec4(position, 1.0);\n"
-                                                       "}";
 
-const std::string InternalShaders::gizmoFragmentShader = "uniform vec4 color;\n"
-                                                         "out vec4 FragColor;\n"
-                                                         "void main()\n"
-                                                         "{\n"
-                                                         "	FragColor = color;\n"
-                                                         "}";
+const std::string InternalShaders::gizmoVertexShader = "layout(location = 0) in vec3 position;\n"
+"layout(location = 1) in vec3 normal;\n"
+"out vec3 FragPos;\n"
+"out vec3 Normal;\n"
+"uniform mat4 model;\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+"void main()\n"
+"{\n"
+"    FragPos = vec3(model * vec4(position, 1.0));\n"
+"    Normal = mat3(transpose(inverse(model))) * normal;\n"
+"    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
+"}";
+
+const std::string InternalShaders::gizmoFragmentShader ="out vec4 FragColor;\n"
+                                                        "in vec3 Normal;\n"
+                                                        "in vec3 FragPos;\n"
+                                                        "uniform vec3 lightPos;\n"
+                                                        "uniform vec4 color;\n"
+                                                        "void main()\n"
+                                                        "{\n"
+                                                        "    vec3 norm = normalize(Normal);\n"
+                                                        "    vec3 lightDir = normalize(lightPos - FragPos);\n"
+                                                        "    float diff = max(dot(norm, lightDir), 0.1);\n"
+                                                        "    vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
+                                                        "    FragColor = diffuse * color;\n"
+                                                        "}";
 
 const std::string InternalShaders::colorVertexShader =
     "#define DIRECTIONALLIGHT\n"
@@ -494,6 +509,7 @@ const std::string InternalShaders::simpleLitDeferredFragmentShader =
     "}\n";
 
 const Guid InternalShaders::fontShaderId("9b37ce25-cc6c-497c-bed9-7c5dbd13b61f");
+const Guid InternalShaders::gizmoShaderId("2e8d5044-ae07-4d62-b7f1-48bd13d05625");
 const Guid InternalShaders::colorShaderId("cfb7774e-0f7d-4990-b0ff-45034483ecea");
 const Guid InternalShaders::positionAndNormalShaderId("dd530a6e-96ba-4a79-a6f5-5a634cd449b9");
 const Guid InternalShaders::ssaoShaderId("dba46e51-a544-4fac-a9a1-e9d3d91244b0");
@@ -532,6 +548,12 @@ Guid InternalShaders::loadFontShader(World *world)
 {
     return loadInternalShader(world, InternalShaders::fontShaderId, InternalShaders::fontVertexShader,
                               InternalShaders::fontFragmentShader, "");
+}
+
+Guid InternalShaders::loadGizmoShader(World* world)
+{
+    return loadInternalShader(world, InternalShaders::gizmoShaderId, InternalShaders::gizmoVertexShader,
+        InternalShaders::gizmoFragmentShader, "");
 }
 
 Guid InternalShaders::loadColorShader(World *world)

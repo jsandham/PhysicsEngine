@@ -20,7 +20,7 @@ struct GraphicsQuery
     GLuint mQueryId[2];
     float mTotalElapsedTime;
 
-    GraphicsQuery::GraphicsQuery()
+    GraphicsQuery()
     {
         mNumBatchDrawCalls = 0;
         mNumDrawCalls = 0;

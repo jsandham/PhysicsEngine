@@ -101,6 +101,7 @@ void PhysicsEngine::addInternalSystemIdToIndexMap(std::unordered_map<Guid, int> 
                                                   std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
+                                                  std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *idToGlobalIndex,
                                                   std::unordered_map<Guid, int> *idToType, const Guid &id, int type,
                                                   int index)
@@ -126,6 +127,12 @@ void PhysicsEngine::addInternalSystemIdToIndexMap(std::unordered_map<Guid, int> 
     else if (type == SystemType<DebugSystem>::type)
     {
         (*debugSystemIdToGlobalIndex)[id] = index;
+        (*idToGlobalIndex)[id] = index;
+        (*idToType)[id] = type;
+    }
+    else if (type == SystemType<GizmoSystem>::type)
+    {
+        (*gizmoSystemIdToGlobalIndex)[id] = index;
         (*idToGlobalIndex)[id] = index;
         (*idToType)[id] = type;
     }
@@ -285,6 +292,7 @@ void PhysicsEngine::removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, 
                                                        std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
+                                                       std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *idToGlobalIndex,
                                                        std::unordered_map<Guid, int> *idToType, const Guid &id,
                                                        int type)
@@ -310,6 +318,12 @@ void PhysicsEngine::removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, 
     else if (type == SystemType<DebugSystem>::type)
     {
         (*debugSystemIdToGlobalIndex).erase(id);
+        (*idToGlobalIndex).erase(id);
+        (*idToType).erase(id);
+    }
+    else if (type == SystemType<GizmoSystem>::type)
+    {
+        (*gizmoSystemIdToGlobalIndex).erase(id);
         (*idToGlobalIndex).erase(id);
         (*idToType).erase(id);
     }
@@ -443,7 +457,8 @@ Component *PhysicsEngine::getInternalComponent(
 System *PhysicsEngine::getInternalSystem(PoolAllocator<RenderSystem> *renderSystemAllocator,
                                          PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                                          PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
-                                         PoolAllocator<DebugSystem> *debugSystemAllocator, int type, int index)
+                                         PoolAllocator<DebugSystem> *debugSystemAllocator,
+                                         PoolAllocator<GizmoSystem>* gizmoSystemAllocator, int type, int index)
 {
     if (type == SystemType<RenderSystem>::type)
     {
@@ -460,6 +475,10 @@ System *PhysicsEngine::getInternalSystem(PoolAllocator<RenderSystem> *renderSyst
     else if (type == SystemType<DebugSystem>::type)
     {
         return debugSystemAllocator->get(index);
+    }
+    else if (type == SystemType<GizmoSystem>::type)
+    {
+        return gizmoSystemAllocator->get(index);
     }
     else
     {
@@ -592,6 +611,7 @@ System *PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem> *renderSys
                                           PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                                           PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
                                           PoolAllocator<DebugSystem> *debugSystemAllocator,
+                                          PoolAllocator<GizmoSystem>* gizmoSystemAllocator,
                                           const std::vector<char> &data, int type, int *index)
 {
     if (type == SystemType<RenderSystem>::type)
@@ -613,6 +633,11 @@ System *PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem> *renderSys
     {
         *index = (int)debugSystemAllocator->getCount();
         return debugSystemAllocator->construct(data);
+    }
+    else if (type == SystemType<GizmoSystem>::type)
+    {
+        *index = (int)gizmoSystemAllocator->getCount();
+        return gizmoSystemAllocator->construct(data);
     }
     else
     {

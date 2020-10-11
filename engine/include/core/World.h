@@ -16,7 +16,6 @@
 #include "Log.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Octtree.h"
 #include "PoolAllocator.h"
 #include "Serialization.h"
 #include "SerializationInternal.h"
@@ -41,6 +40,7 @@
 #include "../systems/DebugSystem.h"
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
+#include "../systems/GizmoSystem.h"
 #include "../systems/System.h"
 
 namespace PhysicsEngine
@@ -77,6 +77,7 @@ class World
     PoolAllocator<PhysicsSystem> mPhysicsSystemAllocator;
     PoolAllocator<CleanUpSystem> mCleanupSystemAllocator;
     PoolAllocator<DebugSystem> mDebugSystemAllocator;
+    PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
 
     // non-internal allocators for user defined components, systems and assets
     std::unordered_map<int, Allocator *> mComponentAllocatorMap;
@@ -112,6 +113,7 @@ class World
     std::unordered_map<Guid, int> mPhysicsSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mCleanupSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mDebugSystemIdToGlobalIndex;
+    std::unordered_map<Guid, int> mGizmoSystemIdToGlobalIndex;
 
     // world id state for all entity, components, systems, and assets
     std::unordered_map<Guid, int> mIdToGlobalIndex;
@@ -141,6 +143,7 @@ class World
 
     // default loaded shaders
     Guid mFontShaderId;
+    Guid mGizmoShaderId;
     Guid mColorShaderId;
     Guid mPositionAndNormalsShaderId;
     Guid mSsaoShaderId;
@@ -334,6 +337,11 @@ class World
         return (int)mDebugSystemAllocator.getCount();
     }
 
+    template <> int getNumberOfSystems<GizmoSystem>() const
+    {
+        return (int)mGizmoSystemAllocator.getCount();
+    }
+
     template <> int getNumberOfComponents<Transform>() const
     {
         return (int)mTransformAllocator.getCount();
@@ -437,6 +445,11 @@ class World
     template <> DebugSystem *getSystem<DebugSystem>()
     {
         return getSystem_impl(&mDebugSystemAllocator);
+    }
+
+    template <> GizmoSystem* getSystem<GizmoSystem>()
+    {
+        return getSystem_impl(&mGizmoSystemAllocator);
     }
 
     template <> Transform *getComponent<Transform>(const Guid &entityId)
@@ -609,6 +622,11 @@ class World
         return addSystem_impl(&mDebugSystemAllocator, order);
     }
 
+    template <> GizmoSystem* addSystem<GizmoSystem>(int order)
+    {
+        return addSystem_impl(&mGizmoSystemAllocator, order);
+    }
+
     template <> RenderSystem *getSystemByIndex<RenderSystem>(int index)
     {
         return getSystemByIndex_impl(&mRenderSystemAllocator, index);
@@ -629,6 +647,11 @@ class World
         return getSystemByIndex_impl(&mDebugSystemAllocator, index);
     }
 
+    template <> GizmoSystem* getSystemByIndex<GizmoSystem>(int index)
+    {
+        return getSystemByIndex_impl(&mGizmoSystemAllocator, index);
+    }
+
     template <> RenderSystem *getSystemById<RenderSystem>(const Guid &systemId)
     {
         return getSystemById_impl(&mRenderSystemAllocator, systemId);
@@ -647,6 +670,11 @@ class World
     template <> DebugSystem *getSystemById<DebugSystem>(const Guid &systemId)
     {
         return getSystemById_impl(&mDebugSystemAllocator, systemId);
+    }
+
+    template <> GizmoSystem* getSystemById<GizmoSystem>(const Guid& systemId)
+    {
+        return getSystemById_impl(&mGizmoSystemAllocator, systemId);
     }
 
     template <> Mesh *getAssetByIndex<Mesh>(int index)
@@ -895,6 +923,7 @@ class World
     Guid getColorMaterial() const;
     Guid getSimpleLitMaterial() const;
     Guid getFontShaderId() const;
+    Guid getGizmoShaderId() const;
     Guid getColorShaderId() const;
     Guid getPositionAndNormalsShaderId() const;
     Guid getSsaoShaderId() const;
@@ -1397,6 +1426,11 @@ class World
     {
         return getById_impl<DebugSystem>(mDebugSystemIdToGlobalIndex, allocator, assetId);
     }
+    template <>
+    GizmoSystem* getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem>* allocator, const Guid& assetId)
+    {
+        return getById_impl<GizmoSystem>(mGizmoSystemIdToGlobalIndex, allocator, assetId);
+    }
 
     template <> void addIdToGlobalIndexMap_impl<Entity>(const Guid &id, int index, int type)
     {
@@ -1548,6 +1582,13 @@ class World
     template <> void addIdToGlobalIndexMap_impl<DebugSystem>(const Guid &id, int index, int type)
     {
         mDebugSystemIdToGlobalIndex[id] = index;
+        mIdToGlobalIndex[id] = index;
+        mIdToType[id] = type;
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid& id, int index, int type)
+    {
+        mGizmoSystemIdToGlobalIndex[id] = index;
         mIdToGlobalIndex[id] = index;
         mIdToType[id] = type;
     }

@@ -36,6 +36,7 @@ constexpr int RENDERSYSTEM_TYPE = 3000;
 constexpr int PHYSICSSYSTEM_TYPE = 3001;
 constexpr int CLEANUPSYSTEM_TYPE = 3002;
 constexpr int DEBUGSYSTEM_TYPE = 3003;
+constexpr int GIZMOSYSTEM_TYPE = 3004;
 } // namespace PhysicsEngine
 
 #endif

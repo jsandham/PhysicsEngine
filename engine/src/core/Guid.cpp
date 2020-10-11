@@ -36,7 +36,7 @@ Guid::Guid(const std::string &str)
     char c2 = '\0';
     bool firstCharFound = false;
     int byteIndex = 0;
-    for (int i = 0; i < str.length(); i++)
+    for (size_t i = 0; i < str.length(); i++)
     {
         if (str[i] == '-')
         {

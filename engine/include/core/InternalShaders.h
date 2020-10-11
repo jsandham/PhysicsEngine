@@ -43,6 +43,7 @@ class InternalShaders
     static const std::string overdrawFragmentShader;
 
     static const Guid fontShaderId;
+    static const Guid gizmoShaderId;
     static const Guid colorShaderId;
     static const Guid positionAndNormalShaderId;
     static const Guid ssaoShaderId;
@@ -57,6 +58,7 @@ class InternalShaders
     static const Guid overdrawShaderId;
 
     static Guid loadFontShader(World *world);
+    static Guid loadGizmoShader(World* world);
     static Guid loadColorShader(World *world);
     static Guid loadPositionAndNormalsShader(World *world);
     static Guid loadSsaoShader(World *world);

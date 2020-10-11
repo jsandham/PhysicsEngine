@@ -81,8 +81,10 @@ void Editor::init(HWND window, int width, int height)
     cameraSystem = world.addSystem<EditorCameraSystem>(0);
     // add simple editor render pass system to render line floor and default skymap
     renderSystem = world.addSystem<RenderSystem>(1);
+    // add gizmo system
+    gizmoSystem = world.addSystem<GizmoSystem>(2);
     // add simple editor render system to render gizmo's
-    cleanupSystem = world.addSystem<CleanUpSystem>(2);
+    cleanupSystem = world.addSystem<CleanUpSystem>(3);
 
     renderSystem->mRenderToScreen = false;
 

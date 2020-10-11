@@ -17,6 +17,18 @@ class Frustum
     // normals in frustum plane are assumed to point inward
     Plane mPlanes[6];
 
+    // near corner points of frustum
+    glm::vec3 mNtl;
+    glm::vec3 mNtr;
+    glm::vec3 mNbl;
+    glm::vec3 mNbr;
+
+    // far corner points of frustum
+    glm::vec3 mFtl;
+    glm::vec3 mFtr;
+    glm::vec3 mFbl;
+    glm::vec3 mFbr;
+
     float mFov;         // vertical fov
     float mAspectRatio; // determines horizontal fov
     float mNearPlane;

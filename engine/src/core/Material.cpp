@@ -213,7 +213,7 @@ std::vector<ShaderUniform> Material::getUniforms() const
     return mUniforms;
 }
 
-void Material::setBool(std::string name, bool value)
+void Material::setBool(const std::string &name, bool value)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_INT)
@@ -222,7 +222,7 @@ void Material::setBool(std::string name, bool value)
     }
 }
 
-void Material::setInt(std::string name, int value)
+void Material::setInt(const std::string &name, int value)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_INT)
@@ -231,7 +231,7 @@ void Material::setInt(std::string name, int value)
     }
 }
 
-void Material::setFloat(std::string name, float value)
+void Material::setFloat(const std::string &name, float value)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT)
@@ -240,7 +240,7 @@ void Material::setFloat(std::string name, float value)
     }
 }
 
-void Material::setColor(std::string name, const Color &color)
+void Material::setColor(const std::string &name, const Color &color)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_VEC4)
@@ -249,7 +249,7 @@ void Material::setColor(std::string name, const Color &color)
     }
 }
 
-void Material::setVec2(std::string name, const glm::vec2 &vec)
+void Material::setVec2(const std::string &name, const glm::vec2 &vec)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_VEC2)
@@ -258,7 +258,7 @@ void Material::setVec2(std::string name, const glm::vec2 &vec)
     }
 }
 
-void Material::setVec3(std::string name, const glm::vec3 &vec)
+void Material::setVec3(const std::string &name, const glm::vec3 &vec)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_VEC3)
@@ -267,7 +267,7 @@ void Material::setVec3(std::string name, const glm::vec3 &vec)
     }
 }
 
-void Material::setVec4(std::string name, const glm::vec4 &vec)
+void Material::setVec4(const std::string &name, const glm::vec4 &vec)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_VEC4)
@@ -276,7 +276,7 @@ void Material::setVec4(std::string name, const glm::vec4 &vec)
     }
 }
 
-void Material::setMat2(std::string name, const glm::mat2 &mat)
+void Material::setMat2(const std::string &name, const glm::mat2 &mat)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_MAT2)
@@ -285,7 +285,7 @@ void Material::setMat2(std::string name, const glm::mat2 &mat)
     }
 }
 
-void Material::setMat3(std::string name, const glm::mat3 &mat)
+void Material::setMat3(const std::string &name, const glm::mat3 &mat)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_MAT3)
@@ -294,7 +294,7 @@ void Material::setMat3(std::string name, const glm::mat3 &mat)
     }
 }
 
-void Material::setMat4(std::string name, const glm::mat4 &mat)
+void Material::setMat4(const std::string &name, const glm::mat4 &mat)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_FLOAT_MAT4)
@@ -303,7 +303,7 @@ void Material::setMat4(std::string name, const glm::mat4 &mat)
     }
 }
 
-void Material::setTexture(std::string name, const Guid &textureId)
+void Material::setTexture(const std::string &name, const Guid &textureId)
 {
     int index = findIndexOfUniform(name);
     if (index != -1 && mUniforms[index].mType == GL_SAMPLER_2D)

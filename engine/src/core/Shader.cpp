@@ -512,6 +512,11 @@ void Shader::setFloat(const char *name, float value) const
     this->setFloat(Graphics::findUniformLocation(name, mActiveProgram), value);
 }
 
+void Shader::setColor(const char* name, const Color &color) const
+{
+    this->setColor(Graphics::findUniformLocation(name, mActiveProgram), color);
+}
+
 void Shader::setVec2(const char *name, const glm::vec2 &vec) const
 {
     this->setVec2(Graphics::findUniformLocation(name, mActiveProgram), vec);
@@ -562,6 +567,14 @@ void Shader::setFloat(int nameLocation, float value) const
     if (mActiveProgram != -1)
     {
         Graphics::setFloat(nameLocation, value);
+    }
+}
+
+void Shader::setColor(int nameLocation, const Color &color) const
+{
+    if (mActiveProgram != -1)
+    {
+        Graphics::setColor(nameLocation, color);
     }
 }
 
@@ -628,6 +641,11 @@ float Shader::getFloat(const char *name) const
     return this->getFloat(Graphics::findUniformLocation(name, mActiveProgram));
 }
 
+Color Shader::getColor(const char* name) const
+{
+    return this->getColor(Graphics::findUniformLocation(name, mActiveProgram));
+}
+
 glm::vec2 Shader::getVec2(const char *name) const
 {
     return this->getVec2(Graphics::findUniformLocation(name, mActiveProgram));
@@ -686,6 +704,16 @@ float Shader::getFloat(int nameLocation) const
     }
 
     return 0.0f;
+}
+
+Color Shader::getColor(int nameLocation) const
+{
+    if (mActiveProgram != -1)
+    {
+        return Graphics::getColor(nameLocation, mActiveProgram);
+    }
+
+    return Color(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 glm::vec2 Shader::getVec2(int nameLocation) const

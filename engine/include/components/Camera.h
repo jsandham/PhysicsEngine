@@ -40,6 +40,12 @@ enum class CameraSSAO
     SSAO_Off,
 };
 
+enum class CameraGizmos
+{
+    Gizmos_On,
+    Gizmos_Off,
+};
+
 enum class RenderPath
 {
     Forward,
@@ -64,6 +70,7 @@ struct CameraHeader
     uint8_t mRenderPath;
     uint8_t mMode;
     uint8_t mSSAO;
+    uint8_t mGizmos;
 };
 #pragma pack(pop)
 
@@ -104,6 +111,7 @@ class Camera : public Component
     RenderPath mRenderPath;
     CameraMode mMode;
     CameraSSAO mSSAO;
+    CameraGizmos mGizmos;
 
     Color mBackgroundColor;
 

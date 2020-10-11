@@ -7,11 +7,24 @@
 
 using namespace PhysicsEngine;
 
-float Intersect::EPSILON = 0.0001f;
+float Intersect::EPSILON = 0.000001f;
+
+bool Intersect::intersect(const Ray &ray, const Plane &plane, float& dist)
+{
+    float denom = glm::dot(plane.mNormal, ray.mDirection);
+    if (abs(denom) > EPSILON)
+    {
+        dist = glm::dot(plane.mX0 - ray.mOrigin, plane.mNormal) / denom;
+        return dist >= 0;
+    }
+
+    dist = 0.0f;
+    return false;
+}
 
 // Moller-Trumbore algorithm
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
-bool Intersect::intersect(Ray ray, Triangle triangle)
+bool Intersect::intersect(const Ray &ray, const Triangle &triangle)
 {
     glm::vec3 v0v1 = triangle.v1 - triangle.v0;
     glm::vec3 v0v2 = triangle.v2 - triangle.v0;
@@ -44,7 +57,7 @@ bool Intersect::intersect(Ray ray, Triangle triangle)
     return true;
 }
 
-bool Intersect::intersect(Ray ray, Plane plane)
+bool Intersect::intersect(const Ray &ray, const Plane &plane)
 {
     float denom = glm::dot(plane.mNormal, ray.mDirection);
     if (abs(denom) > EPSILON)
@@ -59,9 +72,9 @@ bool Intersect::intersect(Ray ray, Plane plane)
 }
 
 // see "3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics" by David H Eberly
-bool Intersect::intersect(Ray ray, Sphere sphere)
+bool Intersect::intersect(const Ray &ray, const Sphere &sphere)
 {
-    ray.mDirection = glm::normalize(ray.mDirection);
+    //ray.mDirection = glm::normalize(ray.mDirection);
 
     // quadratic of form 0 = t^2 + 2*a1*t + a0
     glm::vec3 q = ray.mOrigin - sphere.mCentre;
@@ -85,7 +98,7 @@ bool Intersect::intersect(Ray ray, Sphere sphere)
     return (a1 * a1 >= a0);
 }
 
-bool Intersect::intersect(Ray ray, AABB aabb)
+bool Intersect::intersect(const Ray &ray, const AABB &aabb)
 {
     glm::vec3 min = aabb.mCentre - 0.5f * aabb.mSize;
     glm::vec3 max = aabb.mCentre + 0.5f * aabb.mSize;
@@ -108,12 +121,12 @@ bool Intersect::intersect(Ray ray, AABB aabb)
     return tmax >= tmin && tmax >= 0.0f;
 }
 
-bool Intersect::intersect(Ray ray, Capsule capsule)
+bool Intersect::intersect(const Ray &ray, const Capsule &capsule)
 {
     return false;
 }
 
-bool Intersect::intersect(Ray ray, Frustum frustum)
+bool Intersect::intersect(const Ray &ray, const Frustum &frustum)
 {
     if (frustum.containsPoint(ray.mOrigin))
     {
@@ -123,14 +136,14 @@ bool Intersect::intersect(Ray ray, Frustum frustum)
     return false;
 }
 
-bool Intersect::intersect(Sphere sphere, Sphere sphere2)
+bool Intersect::intersect(const Sphere &sphere, const Sphere &sphere2)
 {
     float distance = glm::length(sphere.mCentre - sphere2.mCentre);
 
     return distance <= (sphere.mRadius + sphere2.mRadius);
 }
 
-bool Intersect::intersect(Sphere sphere, AABB aabb)
+bool Intersect::intersect(const Sphere &sphere, const AABB &aabb)
 {
     glm::vec3 min = aabb.getMin();
     glm::vec3 max = aabb.getMax();
@@ -143,12 +156,12 @@ bool Intersect::intersect(Sphere sphere, AABB aabb)
            (ex * ex + ey * ey + ez * ez < sphere.mRadius * sphere.mRadius);
 }
 
-bool Intersect::intersect(Sphere sphere, Capsule capsule)
+bool Intersect::intersect(const Sphere &sphere, const Capsule &capsule)
 {
     return true;
 }
 
-bool Intersect::intersect(Sphere sphere, Frustum frustum)
+bool Intersect::intersect(const Sphere &sphere, const Frustum &frustum)
 {
     // sphere lies outside frustum
     if (frustum.mPlanes[0].signedDistance(sphere.mCentre) < -sphere.mRadius)
@@ -180,7 +193,7 @@ bool Intersect::intersect(Sphere sphere, Frustum frustum)
     return true;
 }
 
-bool Intersect::intersect(AABB aabb, AABB aabb2)
+bool Intersect::intersect(const AABB &aabb, const AABB &aabb2)
 {
     bool overlap_x = std::abs(aabb.mCentre.x - aabb2.mCentre.x) <= 0.5f * (aabb.mSize.x + aabb2.mSize.x);
     bool overlap_y = std::abs(aabb.mCentre.y - aabb2.mCentre.y) <= 0.5f * (aabb.mSize.y + aabb2.mSize.y);
@@ -198,12 +211,12 @@ bool Intersect::intersect(AABB aabb, AABB aabb2)
     // return (ex < 0) && (ey < 0) && (ez < 0);
 }
 
-bool Intersect::intersect(AABB aabb, Capsule capsule)
+bool Intersect::intersect(const AABB &aabb, const Capsule &capsule)
 {
     return true;
 }
 
-bool Intersect::intersect(AABB aabb, Frustum frustum)
+bool Intersect::intersect(const AABB &aabb, const Frustum &frustum)
 {
     for (int i = 0; i < 6; i++)
     {

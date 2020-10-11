@@ -265,7 +265,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string &filepath, WorldAllocat
             {
                 system = PhysicsEngine::getInternalSystem(
                     allocators.mRenderSystemAllocator, allocators.mPhysicsSystemAllocator,
-                    allocators.mCleanupSystemAllocator, allocators.mDebugSystemAllocator, systemInfoHeaders[i].mType,
+                    allocators.mCleanupSystemAllocator, allocators.mDebugSystemAllocator, allocators.mGizmoSystemAllocator, systemInfoHeaders[i].mType,
                     it->second);
             }
             else
@@ -286,7 +286,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string &filepath, WorldAllocat
             {
                 system = PhysicsEngine::loadInternalSystem(
                     allocators.mRenderSystemAllocator, allocators.mPhysicsSystemAllocator,
-                    allocators.mCleanupSystemAllocator, allocators.mDebugSystemAllocator, temp,
+                    allocators.mCleanupSystemAllocator, allocators.mDebugSystemAllocator, allocators.mGizmoSystemAllocator, temp,
                     systemInfoHeaders[i].mType, &index);
             }
             else
@@ -302,7 +302,7 @@ void PhysicsEngine::loadSceneIntoWorld(const std::string &filepath, WorldAllocat
             {
                 PhysicsEngine::addInternalSystemIdToIndexMap(
                     idState.mRenderSystemIdToGlobalIndex, idState.mPhysicsSystemIdToGlobalIndex,
-                    idState.mCleanupSystemIdToGlobalIndex, idState.mDebugSystemIdToGlobalIndex,
+                    idState.mCleanupSystemIdToGlobalIndex, idState.mDebugSystemIdToGlobalIndex, idState.mGizmoSystemIdToGlobalIndex,
                     idState.mIdToGlobalIndex, idState.mIdToType, system->getId(), systemInfoHeaders[i].mType, index);
             }
             else

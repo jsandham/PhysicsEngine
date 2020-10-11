@@ -34,8 +34,6 @@ class PhysicsSystem : public System
     float mTimestep;
     float mGravity;
 
-    bool mStart = false;
-
   public:
     PhysicsSystem();
     PhysicsSystem(const std::vector<char> &data);

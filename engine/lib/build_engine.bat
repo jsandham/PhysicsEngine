@@ -48,6 +48,7 @@ echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
 	call cl /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
+::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 
 :: create list of .obj files
 echo [92mCompiled objects...[0m

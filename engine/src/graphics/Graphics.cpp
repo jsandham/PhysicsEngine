@@ -1050,6 +1050,11 @@ void Graphics::setFloat(int nameLocation, float value)
     glUniform1f(nameLocation, value);
 }
 
+void Graphics::setColor(int nameLocation, const Color& color)
+{
+    glUniform4fv(nameLocation, 1, static_cast<const GLfloat*>(&color.r));
+}
+
 void Graphics::setVec2(int nameLocation, const glm::vec2 &vec)
 {
     glUniform2fv(nameLocation, 1, &vec[0]);
@@ -1102,6 +1107,14 @@ float Graphics::getFloat(int nameLocation, int program)
     glGetUniformfv(program, nameLocation, &value);
 
     return value;
+}
+
+Color Graphics::getColor(int nameLocation, int program)
+{
+    Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+    glGetnUniformfv(program, nameLocation, sizeof(Color), &color.r);
+
+    return color;
 }
 
 glm::vec2 Graphics::getVec2(int nameLocation, int program)

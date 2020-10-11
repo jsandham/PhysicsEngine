@@ -42,6 +42,7 @@ struct WorldAllocators
     PoolAllocator<PhysicsSystem> *mPhysicsSystemAllocator;
     PoolAllocator<CleanUpSystem> *mCleanupSystemAllocator;
     PoolAllocator<DebugSystem> *mDebugSystemAllocator;
+    PoolAllocator<GizmoSystem>* mGizmoSystemAllocator;
 
     // non-internal allocators for user defined components, systems and assets
     std::unordered_map<int, Allocator *> *mComponentAllocatorMap;
@@ -81,6 +82,7 @@ struct WorldIsState
     std::unordered_map<Guid, int> *mPhysicsSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> *mCleanupSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> *mDebugSystemIdToGlobalIndex;
+    std::unordered_map<Guid, int>* mGizmoSystemIdToGlobalIndex;
 
     // world id state for all entity, components, systems, and assets
     std::unordered_map<Guid, int> *mIdToGlobalIndex;

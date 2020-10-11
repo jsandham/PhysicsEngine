@@ -1,8 +1,6 @@
 #ifndef __AABB_H__
 #define __AABB_H__
 
-#include <vector>
-
 #include "../glm/glm.hpp"
 
 namespace PhysicsEngine

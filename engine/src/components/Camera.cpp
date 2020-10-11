@@ -32,6 +32,7 @@ Camera::Camera()
     mRenderPath = RenderPath::Forward;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
+    mGizmos = CameraGizmos::Gizmos_Off;
 
     mViewport.mX = 0;
     mViewport.mY = 0;
@@ -74,6 +75,7 @@ std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
     header.mRenderPath = static_cast<uint8_t>(mRenderPath);
     header.mMode = static_cast<uint8_t>(mMode);
     header.mSSAO = static_cast<uint8_t>(mSSAO);
+    header.mGizmos = static_cast<uint8_t>(mGizmos);
     header.mBackgroundColor = glm::vec4(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, mBackgroundColor.a);
     header.mX = static_cast<int32_t>(mViewport.mX);
     header.mY = static_cast<int32_t>(mViewport.mY);
@@ -102,6 +104,7 @@ void Camera::deserialize(const std::vector<char> &data)
     mRenderPath = static_cast<RenderPath>(header->mRenderPath);
     mMode = static_cast<CameraMode>(header->mMode);
     mSSAO = static_cast<CameraSSAO>(header->mSSAO);
+    mGizmos = static_cast<CameraGizmos>(header->mGizmos);
 
     mViewport.mX = static_cast<int>(header->mX);
     mViewport.mY = static_cast<int>(header->mY);

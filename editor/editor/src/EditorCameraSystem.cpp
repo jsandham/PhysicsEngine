@@ -194,6 +194,11 @@ void EditorCameraSystem::setSSAO(CameraSSAO ssao)
     mCamera->mSSAO = ssao;
 }
 
+void EditorCameraSystem::setGizmos(CameraGizmos gizmos)
+{
+    mCamera->mGizmos = gizmos;
+}
+
 Viewport EditorCameraSystem::getViewport() const
 {
     return mCamera->getViewport();
@@ -212,6 +217,11 @@ RenderPath EditorCameraSystem::getRenderPath() const
 CameraSSAO EditorCameraSystem::getSSAO() const
 {
     return mCamera->mSSAO;
+}
+
+CameraGizmos EditorCameraSystem::getGizmos() const
+{
+    return mCamera->mGizmos;
 }
 
 int EditorCameraSystem::getMousePosX() const

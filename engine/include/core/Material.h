@@ -52,17 +52,17 @@ class Material : public Asset
     Guid getShaderId() const;
     std::vector<ShaderUniform> getUniforms() const;
 
-    void setBool(std::string name, bool value);
-    void setInt(std::string name, int value);
-    void setFloat(std::string name, float value);
-    void setColor(std::string name, const Color &color);
-    void setVec2(std::string name, const glm::vec2 &vec);
-    void setVec3(std::string name, const glm::vec3 &vec);
-    void setVec4(std::string name, const glm::vec4 &vec);
-    void setMat2(std::string name, const glm::mat2 &mat);
-    void setMat3(std::string name, const glm::mat3 &mat);
-    void setMat4(std::string name, const glm::mat4 &mat);
-    void setTexture(std::string name, const Guid &textureId);
+    void setBool(const std::string &name, bool value);
+    void setInt(const std::string &name, int value);
+    void setFloat(const std::string &name, float value);
+    void setColor(const std::string &name, const Color &color);
+    void setVec2(const std::string &name, const glm::vec2 &vec);
+    void setVec3(const std::string &name, const glm::vec3 &vec);
+    void setVec4(const std::string &name, const glm::vec4 &vec);
+    void setMat2(const std::string &name, const glm::mat2 &mat);
+    void setMat3(const std::string &name, const glm::mat3 &mat);
+    void setMat4(const std::string &name, const glm::mat4 &mat);
+    void setTexture(const std::string &name, const Guid &textureId);
 
     void setBool(int nameLocation, bool value);
     void setInt(int nameLocation, int value);

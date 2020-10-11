@@ -32,6 +32,7 @@
 #include "EditorCameraSystem.h"
 #include "systems/CleanUpSystem.h"
 #include "systems/RenderSystem.h"
+#include "systems/GizmoSystem.h"
 
 namespace PhysicsEditor
 {
@@ -65,6 +66,7 @@ class Editor
     EditorCameraSystem *cameraSystem;
     RenderSystem *renderSystem;
     CleanUpSystem *cleanupSystem;
+    GizmoSystem* gizmoSystem;
 
     std::set<PhysicsEngine::Guid> editorOnlyEntityIds;
 
