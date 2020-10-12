@@ -38,18 +38,17 @@ namespace PhysicsEngine
         ~GizmoSystem();
 
         std::vector<char> serialize() const;
-        std::vector<char> serialize(Guid systemId) const;
+        std::vector<char> serialize(const Guid &systemId) const;
         void deserialize(const std::vector<char>& data);
 
         void init(World* world);
-        void update(Input input, Time time);
+        void update(const Input& input, const Time& time);
 
         void addToDrawList(const Line &line, const Color &color);
         void addToDrawList(const Ray& ray, float t, const Color& color);
         void addToDrawList(const AABB& aabb, const Color& color);
         void addToDrawList(const Sphere& sphere, const Color& color);
-        void addToDrawList(const Frustum& frustum, const glm::vec3& pos, const glm::vec3& front,
-            const glm::vec3& up, const glm::vec3& right, const Color& color);
+        void addToDrawList(const Frustum& frustum, const Color& color);
 
         void clearDrawList();
     };

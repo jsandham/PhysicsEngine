@@ -32,7 +32,7 @@ std::vector<char> MeshRenderer::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> MeshRenderer::serialize(Guid componentId, Guid entityId) const
+std::vector<char> MeshRenderer::serialize(const Guid& componentId, const Guid& entityId) const
 {
     MeshRendererHeader header;
     header.mComponentId = componentId;

@@ -22,7 +22,7 @@ std::vector<char> BoxCollider::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> BoxCollider::serialize(Guid componentId, Guid entityId) const
+std::vector<char> BoxCollider::serialize(const Guid& componentId, const Guid& entityId) const
 {
     BoxColliderHeader header;
     header.mComponentId = componentId;

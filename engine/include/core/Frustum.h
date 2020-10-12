@@ -46,10 +46,11 @@ class Frustum
 
   public:
     Frustum();
+    Frustum(float fov, float aspectRatio, float near, float far);
     ~Frustum();
 
-    void computePlanes(glm::vec3 position, glm::vec3 front, glm::vec3 up, glm::vec3 right);
-    bool containsPoint(glm::vec3 point) const;
+    void computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up, const glm::vec3 &right);
+    bool containsPoint(const glm::vec3 &point) const;
 };
 } // namespace PhysicsEngine
 

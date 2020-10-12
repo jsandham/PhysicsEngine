@@ -39,7 +39,7 @@ class MeshRenderer : public Component
     ~MeshRenderer();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    std::vector<char> serialize(const Guid& componentId, const Guid& entityId) const;
     void deserialize(const std::vector<char> &data);
 
     void setMesh(Guid meshId);

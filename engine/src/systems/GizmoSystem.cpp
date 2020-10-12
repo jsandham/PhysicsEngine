@@ -24,7 +24,7 @@ std::vector<char> GizmoSystem::serialize() const
 	return serialize(mSystemId);
 }
 
-std::vector<char> GizmoSystem::serialize(Guid systemId) const
+std::vector<char> GizmoSystem::serialize(const Guid &systemId) const
 {
 	GizmoSystemHeader header;
 	header.mSystemId = systemId;
@@ -52,7 +52,7 @@ void GizmoSystem::init(World* world)
 	mGizmoRenderer.init(mWorld);
 }
 
-void GizmoSystem::update(Input input, Time time)
+void GizmoSystem::update(const Input& input, const Time& time)
 {
 	for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++) 
 	{
@@ -62,16 +62,6 @@ void GizmoSystem::update(Input input, Time time)
 			mGizmoRenderer.update(camera);
 		}
 	}
-	//registerCameras(mWorld);
-
-	//for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
-	//{
-	//	Camera* camera = mWorld->getComponentByIndex<Camera>(i);
-
-	//	//if (camera->mDrawGizmos) {
-	//		mGizmoRenderer.update(camera);
-	//	//}
-	//}
 }
 
 void GizmoSystem::addToDrawList(const Line& line, const Color &color)
@@ -94,10 +84,9 @@ void GizmoSystem::addToDrawList(const Sphere& sphere, const Color& color)
 	mGizmoRenderer.addToDrawList(sphere, color);
 }
 
-void GizmoSystem::addToDrawList(const Frustum& frustum, const glm::vec3& pos, const glm::vec3& front,
-	const glm::vec3& up, const glm::vec3& right, const Color& color)
+void GizmoSystem::addToDrawList(const Frustum& frustum, const Color& color)
 {
-	mGizmoRenderer.addToDrawList(frustum, pos, front, up, right, color);
+	mGizmoRenderer.addToDrawList(frustum, color);
 }
 
 void GizmoSystem::clearDrawList()

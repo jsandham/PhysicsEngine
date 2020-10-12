@@ -13,8 +13,10 @@ class Sphere
 
   public:
     Sphere();
-    Sphere(glm::vec3 centre, float radius);
+    Sphere(const glm::vec3 &centre, float radius);
     ~Sphere();
+
+    float getVolume() const;
 };
 } // namespace PhysicsEngine
 #endif

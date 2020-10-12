@@ -61,7 +61,7 @@ std::vector<char> Light::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> Light::serialize(Guid componentId, Guid entityId) const
+std::vector<char> Light::serialize(const Guid& componentId, const Guid& entityId) const
 {
     LightHeader header;
     header.mComponentId = componentId;

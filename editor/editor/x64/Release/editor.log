@@ -1,142 +1,65 @@
-﻿Build started 2020-04-06 8:16:58 PM.
-     1>Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" on node 2 (Rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file "x64\Release\editor.tlog\editor.lastbuildstate".
-       InitializeBuildStatus:
-         Creating "x64\Release\editor.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
-       ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\CL.exe /c /IC:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include /I"C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\include\glew-2.1.0" /Zi /nologo /W3 /WX- /diagnostics:column /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Release\\" /Fd"x64\Release\vc142.pdb" /Gd /TP /FC /errorReport:prompt src\AboutPopup.cpp src\BoxColliderDrawer.cpp src\BuildWindow.cpp src\CameraDrawer.cpp src\CapsuleColliderDrawer.cpp src\Command.cpp src\CommandManager.cpp src\Console.cpp src\CubemapDrawer.cpp src\Editor.cpp src\EditorCameraSystem.cpp src\EditorClipboard.cpp src\EditorCommands.cpp src\EditorFileIO.cpp src\EditorToolbar.cpp src\Filebrowser.cpp src\FileSystemUtil.cpp src\FontDrawer.cpp src\Hierarchy.cpp src\imgui_extensions.cpp src\imgui_styles.cpp src\Inspector.cpp src\InspectorDrawer.cpp src\LibraryCache.cpp src\LibraryDirectory.cpp src\LightDrawer.cpp src\LineRendererDrawer.cpp src\Load.cpp src\LoadInspectorDrawerInternal.cpp src\main.cpp src\imgui\imgui.cpp src\imgui\imgui_demo.cpp src\imgui\imgui_draw.cpp src\imgui\imgui_impl_opengl3.cpp src\imgui\imgui_impl_win32.cpp src\imgui\imgui_widgets.cpp src\EditorMenuBar.cpp src\MaterialDrawer.cpp src\MaterialRenderer.cpp src\MeshColliderDrawer.cpp src\MeshDrawer.cpp src\MeshRendererDrawer.cpp src\PerformanceQueue.cpp src\PreferencesWindow.cpp src\ProjectView.cpp src\ProjectWindow.cpp src\RigidbodyDrawer.cpp src\SceneView.cpp src\ShaderDrawer.cpp src\SphereColliderDrawer.cpp src\Texture2DDrawer.cpp src\Texture3DDrawer.cpp src\TransformDrawer.cpp src\WriteToJson.cpp
-         AboutPopup.cpp
-         BoxColliderDrawer.cpp
-         BuildWindow.cpp
-         CameraDrawer.cpp
-         CapsuleColliderDrawer.cpp
-         Command.cpp
-         CommandManager.cpp
-         Console.cpp
-         CubemapDrawer.cpp
-         Editor.cpp
-         EditorCameraSystem.cpp
-         EditorClipboard.cpp
-         EditorCommands.cpp
-         EditorFileIO.cpp
-         EditorToolbar.cpp
-         Filebrowser.cpp
-         FileSystemUtil.cpp
-         FontDrawer.cpp
-         Hierarchy.cpp
-         imgui_extensions.cpp
-         Compiling...
-         imgui_styles.cpp
-         Inspector.cpp
-         InspectorDrawer.cpp
-         LibraryCache.cpp
-         LibraryDirectory.cpp
-         LightDrawer.cpp
-         LineRendererDrawer.cpp
-         Load.cpp
-         LoadInspectorDrawerInternal.cpp
-         main.cpp
-         imgui.cpp
-         imgui_demo.cpp
-         imgui_draw.cpp
-         imgui_impl_opengl3.cpp
-         imgui_impl_win32.cpp
-         imgui_widgets.cpp
-         EditorMenuBar.cpp
-         MaterialDrawer.cpp
-         MaterialRenderer.cpp
-     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\imgui_extensions.cpp(53,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-         MeshColliderDrawer.cpp
-         Compiling...
-         MeshDrawer.cpp
-         MeshRendererDrawer.cpp
-         PerformanceQueue.cpp
-         PreferencesWindow.cpp
-         ProjectView.cpp
-         ProjectWindow.cpp
-         RigidbodyDrawer.cpp
-         SceneView.cpp
-         ShaderDrawer.cpp
-         SphereColliderDrawer.cpp
-         Texture2DDrawer.cpp
-         Texture3DDrawer.cpp
-         TransformDrawer.cpp
-         WriteToJson.cpp
-     1>C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialRenderer.cpp(154,61): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\bin\HostX86\x64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\jsand\Documents\PhysicsEngine\editor\..\engine\lib\release engine.lib glew32.lib xinput.lib opengl32.lib cudart.lib freetype.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.lib" /MACHINE:X64 x64\Release\AboutPopup.obj
-         x64\Release\BoxColliderDrawer.obj
-         x64\Release\BuildWindow.obj
-         x64\Release\CameraDrawer.obj
-         x64\Release\CapsuleColliderDrawer.obj
-         x64\Release\Command.obj
-         x64\Release\CommandManager.obj
-         x64\Release\Console.obj
-         x64\Release\CubemapDrawer.obj
-         x64\Release\Editor.obj
-         x64\Release\EditorCameraSystem.obj
-         x64\Release\EditorClipboard.obj
-         x64\Release\EditorCommands.obj
-         x64\Release\EditorFileIO.obj
-         x64\Release\EditorToolbar.obj
-         x64\Release\Filebrowser.obj
-         x64\Release\FileSystemUtil.obj
-         x64\Release\FontDrawer.obj
-         x64\Release\Hierarchy.obj
-         x64\Release\imgui_extensions.obj
-         x64\Release\imgui_styles.obj
-         x64\Release\Inspector.obj
-         x64\Release\InspectorDrawer.obj
-         x64\Release\LibraryCache.obj
-         x64\Release\LibraryDirectory.obj
-         x64\Release\LightDrawer.obj
-         x64\Release\LineRendererDrawer.obj
-         x64\Release\Load.obj
-         x64\Release\LoadInspectorDrawerInternal.obj
-         x64\Release\main.obj
-         x64\Release\imgui.obj
-         x64\Release\imgui_demo.obj
-         x64\Release\imgui_draw.obj
-         x64\Release\imgui_impl_opengl3.obj
-         x64\Release\imgui_impl_win32.obj
-         x64\Release\imgui_widgets.obj
-         x64\Release\EditorMenuBar.obj
-         x64\Release\MaterialDrawer.obj
-         x64\Release\MaterialRenderer.obj
-         x64\Release\MeshColliderDrawer.obj
-         x64\Release\MeshDrawer.obj
-         x64\Release\MeshRendererDrawer.obj
-         x64\Release\PerformanceQueue.obj
-         x64\Release\PreferencesWindow.obj
-         x64\Release\ProjectView.obj
-         x64\Release\ProjectWindow.obj
-         x64\Release\RigidbodyDrawer.obj
-         x64\Release\SceneView.obj
-         x64\Release\ShaderDrawer.obj
-         x64\Release\SphereColliderDrawer.obj
-         x64\Release\Texture2DDrawer.obj
-         x64\Release\Texture3DDrawer.obj
-         x64\Release\TransformDrawer.obj
-         x64\Release\WriteToJson.obj
-         Generating code
-         Previous IPDB not found, fall back to full compilation.
-         All 5083 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-         Finished generating code
-         editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.exe
-       FinalizeBuildStatus:
-         Deleting file "x64\Release\editor.tlog\unsuccessfulbuild".
-         Touching "x64\Release\editor.tlog\editor.lastbuildstate".
-     1>Done Building Project "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target(s)).
-
-Build succeeded.
-
-       "C:\Users\jsand\Documents\PhysicsEngine\editor\editor\editor.vcxproj" (Rebuild target) (1) ->
-       (ClCompile target) -> 
-         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\imgui_extensions.cpp(53,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-         C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialRenderer.cpp(154,61): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-
-    2 Warning(s)
-    0 Error(s)
-
-Time Elapsed 00:00:35.09
+﻿  AboutPopup.cpp
+  BoxColliderDrawer.cpp
+  BuildWindow.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  Command.cpp
+  CommandManager.cpp
+  Console.cpp
+  CubemapDrawer.cpp
+  Editor.cpp
+  EditorCameraSystem.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(269,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(270,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  EditorClipboard.cpp
+  EditorCommands.cpp
+  EditorFileIO.cpp
+  EditorOnlyEntityCreation.cpp
+  EditorToolbar.cpp
+  Filebrowser.cpp
+  FileSystemUtil.cpp
+  FontDrawer.cpp
+  Hierarchy.cpp
+  Compiling...
+  imgui_extensions.cpp
+  imgui_styles.cpp
+  Inspector.cpp
+  InspectorDrawer.cpp
+  LibraryDirectory.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  Load.cpp
+  LoadInspectorDrawerInternal.cpp
+  main.cpp
+  EditorMenuBar.cpp
+  MaterialDrawer.cpp
+  MaterialRenderer.cpp
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+  MeshRendererDrawer.cpp
+  PerformanceQueue.cpp
+  PreferencesWindow.cpp
+  ProjectView.cpp
+  ProjectWindow.cpp
+  Compiling...
+  RigidbodyDrawer.cpp
+  SceneView.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(96,31): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(97,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(399,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=double
+          ]
+  ShaderDrawer.cpp
+  SphereColliderDrawer.cpp
+  Texture2DDrawer.cpp
+  Texture3DDrawer.cpp
+  TransformDrawer.cpp
+  TransformGizmo.cpp
+  WriteToJson.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 3554 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.exe

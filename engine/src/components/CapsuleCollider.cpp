@@ -22,7 +22,7 @@ std::vector<char> CapsuleCollider::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> CapsuleCollider::serialize(Guid componentId, Guid entityId) const
+std::vector<char> CapsuleCollider::serialize(const Guid& componentId, const Guid& entityId) const
 {
     CapsuleColliderHeader header;
     header.mComponentId = componentId;

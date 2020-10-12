@@ -32,7 +32,7 @@ class Entity
     ~Entity();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid entityId) const;
+    std::vector<char> serialize(const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
 
     void latentDestroy(World *world);

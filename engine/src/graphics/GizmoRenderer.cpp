@@ -53,10 +53,9 @@ void GizmoRenderer::addToDrawList(const Sphere& sphere, const Color& color)
 	mSpheres.push_back(SphereGizmo(sphere, color));
 }
 
-void GizmoRenderer::addToDrawList(const Frustum& frustum, const glm::vec3& pos, const glm::vec3& front,
-	const glm::vec3& up, const glm::vec3& right, const Color& color)
+void GizmoRenderer::addToDrawList(const Frustum& frustum, const Color& color)
 {
-	mFrustums.push_back(FrustumGizmo(frustum, pos, front, up, right, color));
+	mFrustums.push_back(FrustumGizmo(frustum, color));
 }
 
 void GizmoRenderer::clearDrawList()

@@ -34,7 +34,7 @@ std::vector<char> DebugSystem::serialize() const
     return serialize(mSystemId);
 }
 
-std::vector<char> DebugSystem::serialize(Guid systemId) const
+std::vector<char> DebugSystem::serialize(const Guid &systemId) const
 {
     DebugSystemHeader header;
     header.mSystemId = systemId;
@@ -60,7 +60,7 @@ void DebugSystem::init(World *world)
     mWorld = world;
 }
 
-void DebugSystem::update(Input input, Time time)
+void DebugSystem::update(const Input& input, const Time& time)
 {
     
 }

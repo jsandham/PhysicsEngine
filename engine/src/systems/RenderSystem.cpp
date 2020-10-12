@@ -40,7 +40,7 @@ std::vector<char> RenderSystem::serialize() const
     return serialize(mSystemId);
 }
 
-std::vector<char> RenderSystem::serialize(Guid systemId) const
+std::vector<char> RenderSystem::serialize(const Guid &systemId) const
 {
     RenderSystemHeader header;
     header.mSystemId = systemId;
@@ -69,7 +69,7 @@ void RenderSystem::init(World *world)
     mDeferredRenderer.init(mWorld, mRenderToScreen);
 }
 
-void RenderSystem::update(Input input, Time time)
+void RenderSystem::update(const Input& input, const Time& time)
 {
     registerRenderAssets(mWorld);
     registerCameras(mWorld);

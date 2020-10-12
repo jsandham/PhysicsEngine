@@ -19,7 +19,7 @@ void DeferredRenderer::init(World *world, bool renderToScreen)
     initializeDeferredRenderer(mWorld, &mState);
 }
 
-void DeferredRenderer::update(Input input, Camera *camera, std::vector<RenderObject> &renderObjects)
+void DeferredRenderer::update(const Input &input, Camera *camera, std::vector<RenderObject> &renderObjects)
 {
     beginDeferredFrame(mWorld, camera, &mState);
 

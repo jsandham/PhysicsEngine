@@ -66,7 +66,7 @@ std::vector<char> Camera::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> Camera::serialize(Guid componentId, Guid entityId) const
+std::vector<char> Camera::serialize(const Guid& componentId, const Guid& entityId) const
 {
     CameraHeader header;
     header.mComponentId = componentId;
@@ -179,12 +179,12 @@ void Camera::endQuery()
     }
 }
 
-void Camera::computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up)
+void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up)
 {
     viewMatrix = glm::lookAt(position, position + forward, up);
 }
 
-void Camera::assignColoring(int color, Guid transformId)
+void Camera::assignColoring(int color, const Guid &transformId)
 {
     mColoringMap.insert(std::pair<int, Guid>(color, transformId));
 }

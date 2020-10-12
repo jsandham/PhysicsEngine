@@ -32,7 +32,7 @@ void ForwardRenderer::init(World *world, bool renderToScreen)
     initializeRenderer(mWorld, &mState);
 }
 
-void ForwardRenderer::update(Input input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
                              const std::vector<RenderObject> &renderObjects)
 {
     beginFrame(mWorld, camera, &mState);

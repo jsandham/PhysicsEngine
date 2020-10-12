@@ -135,7 +135,7 @@ class Camera : public Component
     ~Camera();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid componentId, Guid entityId) const;
+    std::vector<char> serialize(const Guid& componentId, const Guid& entityId) const;
     void deserialize(const std::vector<char> &data);
 
     void createTargets();
@@ -144,8 +144,8 @@ class Camera : public Component
     void beginQuery();
     void endQuery();
 
-    void computeViewMatrix(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
-    void assignColoring(int color, Guid transformId);
+    void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up);
+    void assignColoring(int color, const Guid &transformId);
     void clearColoring();
 
     bool isCreated() const;

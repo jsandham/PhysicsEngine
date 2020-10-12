@@ -252,6 +252,14 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
                 AABB aabb(glm::vec3(3.0f, 10.0f, -4.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 gizmoSystem->addToDrawList(aabb, Color::green);
             }
+            else if (getKeyDown(input, KeyCode::D)) {
+                Frustum frustum(45.0f, 1.0f, 0.1f, 10.0f);
+                frustum.computePlanes(glm::vec3(10.0f, 10.0f, 10.0f), 
+                                      glm::vec3(0.0f, 0.0f, 1.0f), 
+                                      glm::vec3(0.0f, 1.0f, 0.0f), 
+                                      glm::vec3(1.0f, 0.0f, 0.0f));
+                gizmoSystem->addToDrawList(frustum, Color::green);
+            }
             else if (getKeyDown(input, KeyCode::Z)) {
                 gizmoSystem->clearDrawList();
             }

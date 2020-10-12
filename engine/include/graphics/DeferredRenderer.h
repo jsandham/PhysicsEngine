@@ -27,7 +27,7 @@ class DeferredRenderer
     ~DeferredRenderer();
 
     void init(World *world, bool renderToScreen);
-    void update(Input input, Camera *camera, std::vector<RenderObject> &renderObjects);
+    void update(const Input &input, Camera *camera, std::vector<RenderObject> &renderObjects);
 };
 } // namespace PhysicsEngine
 

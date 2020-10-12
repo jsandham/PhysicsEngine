@@ -31,7 +31,7 @@ std::vector<char> Rigidbody::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> Rigidbody::serialize(Guid componentId, Guid entityId) const
+std::vector<char> Rigidbody::serialize(const Guid& componentId, const Guid& entityId) const
 {
     RigidbodyHeader header;
     header.mComponentId = componentId;

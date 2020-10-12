@@ -25,11 +25,11 @@ class System
     virtual ~System() = 0;
 
     virtual std::vector<char> serialize() const = 0;
-    virtual std::vector<char> serialize(Guid systemId) const = 0;
+    virtual std::vector<char> serialize(const Guid &systemId) const = 0;
     virtual void deserialize(const std::vector<char> &data) = 0;
 
     virtual void init(World *world) = 0;
-    virtual void update(Input input, Time time) = 0;
+    virtual void update(const Input &input, const Time &time) = 0;
 
     Guid getId() const;
     int getOrder() const;

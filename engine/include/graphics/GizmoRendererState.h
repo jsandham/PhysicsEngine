@@ -28,6 +28,11 @@ namespace PhysicsEngine
         GLuint mLineVAO;
         GLuint mLineVBO;
 
+        // frustum
+        GLuint mFrustumVAO;
+        GLuint mFrustumVBO0;
+        GLuint mFrustumVBO1;
+
         // sphere
         GLuint mSphereVAO;
         GLuint mSphereVBO;
@@ -68,15 +73,9 @@ namespace PhysicsEngine
     {
         Frustum mFrustum;
         Color mColor;
-        glm::vec3 mPosition;
-        glm::vec3 mFront;
-        glm::vec3 mUp;
-        glm::vec3 mRight;
 
         FrustumGizmo() {}
-        FrustumGizmo(const Frustum& frustum, const glm::vec3 &pos, const glm::vec3 &front, 
-            const glm::vec3 &up, const glm::vec3 &right, const Color& color) 
-            : mFrustum(frustum), mFront(front), mUp(up), mRight(right), mColor(color) {}
+        FrustumGizmo(const Frustum& frustum, const Color& color) : mFrustum(frustum), mColor(color) {}
     };
 } // namespace PhysicsEngine
 

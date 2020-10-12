@@ -44,8 +44,7 @@ namespace PhysicsEngine
         void addToDrawList(const Ray& ray, float t, const Color &color);
         void addToDrawList(const AABB& aabb, const Color &color);
         void addToDrawList(const Sphere& sphere, const Color &color);
-        void addToDrawList(const Frustum &frustum, const glm::vec3 &pos, const glm::vec3 &front, 
-            const glm::vec3 &up, const glm::vec3 &right, const Color& color);
+        void addToDrawList(const Frustum &frustum, const Color& color);
         void clearDrawList();
     };
 } // namespace PhysicsEngine

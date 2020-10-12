@@ -26,7 +26,7 @@ std::vector<char> Entity::serialize() const
     return serialize(mEntityId);
 }
 
-std::vector<char> Entity::serialize(Guid entityId) const
+std::vector<char> Entity::serialize(const Guid &entityId) const
 {
     EntityHeader header;
     header.mEntityId = entityId;

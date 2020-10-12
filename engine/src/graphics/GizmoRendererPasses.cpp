@@ -153,6 +153,9 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glDeleteVertexArrays(1, &state.mLineVAO);
+    glDeleteBuffers(1, &state.mLineVBO);
+
     glDisable(GL_BLEND);
 
     Graphics::checkError();
@@ -160,7 +163,7 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
 
 void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<FrustumGizmo>& gizmos)
 {
-    /*if (gizmos.empty()) {
+    if (gizmos.empty()) {
         return;
     }
 
@@ -169,63 +172,116 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
 
     Transform* transform = camera->getComponent<Transform>(world);
 
+    std::vector<float> vertices(108, 0.0f);
+    std::vector<float> normals(108, 0.0f);
 
+    glGenVertexArrays(1, &state.mFrustumVAO);
+    glBindVertexArray(state.mFrustumVAO);
 
-    std::vector<float> vertices;
-    vertices.resize(108 * frustums.size());
-
-    for (size_t i = 0; i < frustums.size(); i++) {
-        frustums[i].com
-        vertices[6 * i + 0] = lines[i].mStart.x;
-        vertices[6 * i + 1] = lines[i].mStart.y;
-        vertices[6 * i + 2] = lines[i].mStart.z;
-
-        vertices[6 * i + 3] = lines[i].mEnd.x;
-        vertices[6 * i + 4] = lines[i].mEnd.y;
-        vertices[6 * i + 5] = lines[i].mEnd.z;
-    }
-
-    glGenVertexArrays(1, &state.mLineVAO);
-    glBindVertexArray(state.mLineVAO);
-
-    glGenBuffers(1, &state.mLineVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mLineVBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &state.mFrustumVBO0);
+    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glGenBuffers(1, &state.mFrustumVBO1);
+    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO1);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-
-
-
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
         camera->getViewport().mHeight);
 
-    glBindVertexArray(mesh->getNativeGraphicsVAO());
+    glBindVertexArray(state.mFrustumVAO);
 
     state.mGizmoShader->use(state.mGizmoShaderProgram);
 
     state.mGizmoShader->setVec4(state.mGizmoShaderColorLoc, glm::vec4(0.0f, 0.5f, 1.0f, 0.2f));
     state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, glm::mat4());
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < spheres.size(); i++) {
-        glm::mat4 model = glm::translate(glm::mat4(), spheres[i].mCentre);
-        model = glm::scale(model, glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius));
+    for (size_t i = 0; i < gizmos.size(); i++) {
+        glm::vec3 temp[36];
+        temp[0] = gizmos[i].mFrustum.mNtl;
+        temp[1] = gizmos[i].mFrustum.mNtr;
+        temp[2] = gizmos[i].mFrustum.mNbr;
 
-        state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, model);
+        temp[3] = gizmos[i].mFrustum.mNtl;
+        temp[4] = gizmos[i].mFrustum.mNbr;
+        temp[5] = gizmos[i].mFrustum.mNbl;
 
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
+        temp[6] = gizmos[i].mFrustum.mFtl;
+        temp[7] = gizmos[i].mFrustum.mFtr;
+        temp[8] = gizmos[i].mFrustum.mFbr;
+
+        temp[9] = gizmos[i].mFrustum.mFtl;
+        temp[10] = gizmos[i].mFrustum.mFbr;
+        temp[11] = gizmos[i].mFrustum.mFbl;
+
+        temp[12] = gizmos[i].mFrustum.mNtl;
+        temp[13] = gizmos[i].mFrustum.mFtl;
+        temp[14] = gizmos[i].mFrustum.mFtr;
+
+        temp[15] = gizmos[i].mFrustum.mNtl;
+        temp[16] = gizmos[i].mFrustum.mFtr;
+        temp[17] = gizmos[i].mFrustum.mNtr;
+
+        temp[18] = gizmos[i].mFrustum.mNbl;
+        temp[19] = gizmos[i].mFrustum.mFbl;
+        temp[20] = gizmos[i].mFrustum.mFbr;
+
+        temp[21] = gizmos[i].mFrustum.mNbl;
+        temp[22] = gizmos[i].mFrustum.mFbr;
+        temp[23] = gizmos[i].mFrustum.mNbr;
+
+        temp[24] = gizmos[i].mFrustum.mNbl;
+        temp[25] = gizmos[i].mFrustum.mFbl;
+        temp[26] = gizmos[i].mFrustum.mFtl;
+
+        temp[27] = gizmos[i].mFrustum.mNtl;
+        temp[28] = gizmos[i].mFrustum.mFtl;
+        temp[29] = gizmos[i].mFrustum.mNtl;
+
+        temp[30] = gizmos[i].mFrustum.mNbr;
+        temp[31] = gizmos[i].mFrustum.mFbr;
+        temp[32] = gizmos[i].mFrustum.mFtr;
+
+        temp[33] = gizmos[i].mFrustum.mNtr;
+        temp[34] = gizmos[i].mFrustum.mFtr;
+        temp[35] = gizmos[i].mFrustum.mNtr;
+
+        for (int j = 0; j < 36; j++) {
+            vertices[3 * j + 0] = temp[j].x;
+            vertices[3 * j + 1] = temp[j].y;
+            vertices[3 * j + 2] = temp[j].z;
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO0);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), &vertices[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO1);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), &normals[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(vertices.size() / 3));
     }
 
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glDeleteVertexArrays(1, &state.mFrustumVAO);
+    glDeleteBuffers(1, &state.mFrustumVBO0);
+    glDeleteBuffers(1, &state.mFrustumVBO1);
+
     glDisable(GL_BLEND);
 
-    Graphics::checkError();*/
+    Graphics::checkError();
 }

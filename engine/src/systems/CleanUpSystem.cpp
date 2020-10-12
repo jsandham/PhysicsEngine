@@ -24,7 +24,7 @@ std::vector<char> CleanUpSystem::serialize() const
     return serialize(mSystemId);
 }
 
-std::vector<char> CleanUpSystem::serialize(Guid systemId) const
+std::vector<char> CleanUpSystem::serialize(const Guid &systemId) const
 {
     CleanUpSystemHeader header;
     header.mSystemId = systemId;
@@ -50,7 +50,7 @@ void CleanUpSystem::init(World *world)
     mWorld = world;
 }
 
-void CleanUpSystem::update(Input input, Time time)
+void CleanUpSystem::update(const Input& input, const Time& time)
 {
     std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy = mWorld->getComponentIdsMarkedLatentDestroy();
     for (size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++)

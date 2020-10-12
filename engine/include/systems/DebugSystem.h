@@ -27,11 +27,11 @@ class DebugSystem : public System
     ~DebugSystem();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid systemId) const;
+    std::vector<char> serialize(const Guid &systemId) const;
     void deserialize(const std::vector<char> &data);
 
     void init(World *world);
-    void update(Input input, Time time);
+    void update(const Input& input, const Time& time);
 };
 
 template <typename T> struct IsDebugSystem

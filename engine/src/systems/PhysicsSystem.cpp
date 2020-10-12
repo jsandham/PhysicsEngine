@@ -35,7 +35,7 @@ std::vector<char> PhysicsSystem::serialize() const
     return serialize(mSystemId);
 }
 
-std::vector<char> PhysicsSystem::serialize(Guid systemId) const
+std::vector<char> PhysicsSystem::serialize(const Guid &systemId) const
 {
     PhysicsSystemHeader header;
     header.mSystemId = systemId;
@@ -65,7 +65,7 @@ void PhysicsSystem::init(World *world)
     mWorld = world;
 }
 
-void PhysicsSystem::update(Input input, Time time)
+void PhysicsSystem::update(const Input& input, const Time& time)
 {
     
 }

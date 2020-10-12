@@ -1,18 +1,20 @@
-﻿  Editor.cpp
+﻿  BoxColliderDrawer.cpp
+  Editor.cpp
   EditorCameraSystem.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(269,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(270,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
   Load.cpp
+  main.cpp
   MaterialDrawer.cpp
+  MaterialRenderer.cpp
   SceneView.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(96,31): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(97,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(391,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\SceneView.cpp(399,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=double
           ]
   TransformGizmo.cpp
-  main.cpp
   Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
