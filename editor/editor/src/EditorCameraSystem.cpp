@@ -47,7 +47,7 @@ std::vector<char> EditorCameraSystem::serialize() const
     return serialize(mSystemId);
 }
 
-std::vector<char> EditorCameraSystem::serialize(Guid systemId) const
+std::vector<char> EditorCameraSystem::serialize(const Guid &systemId) const
 {
     EditorCameraSystemHeader header;
     header.mSystemId = systemId;

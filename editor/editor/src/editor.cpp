@@ -72,10 +72,6 @@ void Editor::init(HWND window, int width, int height)
 
     // add editor camera to world
     PhysicsEditor::createEditorCamera(&world, editorOnlyEntityIds);
-    // add editor transform gizmo to world
-    PhysicsEditor::createEditorTransformGizmo(&world, editorOnlyEntityIds);
-    // add editor light gizmo to world
-    PhysicsEditor::createEditorLightGizmo(&world, editorOnlyEntityIds);
 
     // add camera, render, and cleanup system to world
     cameraSystem = world.addSystem<EditorCameraSystem>(0);

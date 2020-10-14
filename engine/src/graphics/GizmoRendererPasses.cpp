@@ -5,13 +5,20 @@ using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeGizmoRenderer(World* world, GizmoRendererState& state)
 {
+    state.mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
     state.mGizmoShader = world->getAssetById<Shader>(world->getGizmoShaderId());
 
+    assert(state.mColorShader != NULL);
     assert(state.mGizmoShader != NULL);
   
+    state.mColorShader->compile();
     state.mGizmoShader->compile();
 
     // cache internal shader uniforms
+    state.mColorShaderProgram = state.mColorShader->getProgramFromVariant(ShaderVariant::None);
+    state.mColorShaderColorLoc = state.mColorShader->findUniformLocation("color", state.mColorShaderProgram);
+    state.mColorShaderMVPLoc = state.mColorShader->findUniformLocation("mvp", state.mColorShaderProgram);
+
     state.mGizmoShaderProgram = state.mGizmoShader->getProgramFromVariant(ShaderVariant::None);
     state.mGizmoShaderColorLoc = state.mGizmoShader->findUniformLocation("color", state.mGizmoShaderProgram);
     state.mGizmoShaderLightPosLoc = state.mGizmoShader->findUniformLocation("lightPos", state.mGizmoShaderProgram);
@@ -26,8 +33,6 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
         return;
     }
 
-    Transform* transform = camera->getComponent<Transform>(world);
-
     std::vector<float> vertices;
     vertices.resize(6 * gizmos.size());
 
@@ -41,11 +46,14 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
         vertices[6 * i + 5] = gizmos[i].mLine.mEnd.z;
     }
 
-    glGenVertexArrays(1, &state.mLineVAO);
-    glBindVertexArray(state.mLineVAO);
+    GLuint lineVAO;
+    GLuint lineVBO;
 
-    glGenBuffers(1, &state.mLineVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mLineVBO);
+    glGenVertexArrays(1, &lineVAO);
+    glBindVertexArray(lineVAO);
+
+    glGenBuffers(1, &lineVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -56,18 +64,23 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
         camera->getViewport().mHeight);
 
-    state.mGizmoShader->use(state.mGizmoShaderProgram);
-    state.mGizmoShader->setVec4(state.mGizmoShaderColorLoc, glm::vec4(1.0f, 0.0f, 0.0f, 0.5f));
-    state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
-    state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
-    state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    glBindVertexArray(state.mLineVAO);
-    glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
-    glBindVertexArray(0);
+    state.mColorShader->use(state.mColorShaderProgram);
+    state.mColorShader->setMat4(state.mColorShaderMVPLoc, mvp);
+
+    for (size_t i = 0; i < gizmos.size(); i++) {
+        state.mColorShader->setColor(state.mColorShaderColorLoc, gizmos[i].mColor);
+
+        glBindVertexArray(lineVAO);
+        glDrawArrays(GL_LINES, (GLint)(2 * i), (GLsizei)(vertices.size() / 3));
+        glBindVertexArray(0);
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glDeleteVertexArrays(1, &lineVAO);
+    glDeleteBuffers(1, &lineVBO);
 
     Graphics::checkError();
 }
@@ -153,9 +166,6 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glDeleteVertexArrays(1, &state.mLineVAO);
-    glDeleteBuffers(1, &state.mLineVBO);
-
     glDisable(GL_BLEND);
 
     Graphics::checkError();
@@ -175,17 +185,20 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
     std::vector<float> vertices(108, 0.0f);
     std::vector<float> normals(108, 0.0f);
 
-    glGenVertexArrays(1, &state.mFrustumVAO);
-    glBindVertexArray(state.mFrustumVAO);
+    GLuint frustumVAO;
+    GLuint frustumVBO[2];
 
-    glGenBuffers(1, &state.mFrustumVBO0);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO0);
+    glGenVertexArrays(1, &frustumVAO);
+    glBindVertexArray(frustumVAO);
+
+    glGenBuffers(2, &frustumVBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    glGenBuffers(1, &state.mFrustumVBO1);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO1);
+    glGenBuffers(1, &frustumVBO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[1]);
     glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
@@ -197,11 +210,9 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
         camera->getViewport().mHeight);
 
-    glBindVertexArray(state.mFrustumVAO);
+    glBindVertexArray(frustumVAO);
 
     state.mGizmoShader->use(state.mGizmoShaderProgram);
-
-    state.mGizmoShader->setVec4(state.mGizmoShaderColorLoc, glm::vec4(0.0f, 0.5f, 1.0f, 0.2f));
     state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
     state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, glm::mat4());
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
@@ -245,7 +256,7 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
         temp[25] = gizmos[i].mFrustum.mFbl;
         temp[26] = gizmos[i].mFrustum.mFtl;
 
-        temp[27] = gizmos[i].mFrustum.mNtl;
+        temp[27] = gizmos[i].mFrustum.mNbl;
         temp[28] = gizmos[i].mFrustum.mFtl;
         temp[29] = gizmos[i].mFrustum.mNtl;
 
@@ -253,23 +264,41 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
         temp[31] = gizmos[i].mFrustum.mFbr;
         temp[32] = gizmos[i].mFrustum.mFtr;
 
-        temp[33] = gizmos[i].mFrustum.mNtr;
+        temp[33] = gizmos[i].mFrustum.mNbr;
         temp[34] = gizmos[i].mFrustum.mFtr;
         temp[35] = gizmos[i].mFrustum.mNtr;
 
-        for (int j = 0; j < 36; j++) {
+        for (int j = 0; j < 36; j++) 
+        {
             vertices[3 * j + 0] = temp[j].x;
             vertices[3 * j + 1] = temp[j].y;
             vertices[3 * j + 2] = temp[j].z;
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO0);
+        for (int j = 0; j < 6; j++) 
+        {
+            glm::vec3 a = temp[6 * j + 1] - temp[6 * j];
+            glm::vec3 b = temp[6 * j + 2] - temp[6 * j];
+
+            glm::vec3 normal = glm::cross(a, b);
+
+            for (int k = 0; k < 6; k++)
+            {
+                normals[18 * j + 3 * k + 0] = normal.x;
+                normals[18 * j + 3 * k + 1] = normal.y;
+                normals[18 * j + 3 * k + 2] = normal.z;
+            }
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[0]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), &vertices[0]);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO1);
+        glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[1]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), &normals[0]);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        state.mGizmoShader->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
 
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(vertices.size() / 3));
     }
@@ -277,9 +306,8 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glDeleteVertexArrays(1, &state.mFrustumVAO);
-    glDeleteBuffers(1, &state.mFrustumVBO0);
-    glDeleteBuffers(1, &state.mFrustumVBO1);
+    glDeleteVertexArrays(1, &frustumVAO);
+    glDeleteBuffers(2, &frustumVBO[0]);
 
     glDisable(GL_BLEND);
 

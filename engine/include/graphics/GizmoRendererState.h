@@ -14,6 +14,11 @@ namespace PhysicsEngine
 {
     struct GizmoRendererState
     {
+        Shader* mColorShader;
+        int mColorShaderProgram;
+        int mColorShaderMVPLoc;
+        int mColorShaderColorLoc;
+
         Shader* mGizmoShader;
         int mGizmoShaderProgram;
         int mGizmoShaderModelLoc;
@@ -21,25 +26,6 @@ namespace PhysicsEngine
         int mGizmoShaderProjLoc;
         int mGizmoShaderColorLoc;
         int mGizmoShaderLightPosLoc;
-
-        int mGizmoShaderMVPLoc;
-
-        // lines & rays 
-        GLuint mLineVAO;
-        GLuint mLineVBO;
-
-        // frustum
-        GLuint mFrustumVAO;
-        GLuint mFrustumVBO0;
-        GLuint mFrustumVBO1;
-
-        // sphere
-        GLuint mSphereVAO;
-        GLuint mSphereVBO;
-
-        // AABB
-        GLuint mAABBVAO;
-        GLuint mAABBVBO;
     };
 
     struct LineGizmo

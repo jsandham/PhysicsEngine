@@ -33,29 +33,43 @@ const std::string InternalShaders::gizmoFragmentShader ="out vec4 FragColor;\n"
                                                         "    FragColor = diffuse * color;\n"
                                                         "}";
 
+//const std::string InternalShaders::colorVertexShader =
+//    "#define DIRECTIONALLIGHT\n"
+//    "#define HARDSHADOWS\n"
+//    "#define SOFTSHADOWS\n"
+//    "layout (std140) uniform CameraBlock\n"
+//    "{\n"
+//    "	mat4 projection;\n"
+//    "	mat4 view;\n"
+//    "	vec3 cameraPos;\n"
+//    "}Camera;\n"
+//    "uniform mat4 model;\n"
+//    "in vec3 position;\n"
+//    "void main()\n"
+//    "{\n"
+//    "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+//    "}";
+//
+//const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
+//                                                         "out vec4 FragColor;\n"
+//                                                         "void main()\n"
+//                                                         "{\n"
+//                                                         "	FragColor = color;\n"
+//                                                         "}";
 const std::string InternalShaders::colorVertexShader =
-    "#define DIRECTIONALLIGHT\n"
-    "#define HARDSHADOWS\n"
-    "#define SOFTSHADOWS\n"
-    "layout (std140) uniform CameraBlock\n"
-    "{\n"
-    "	mat4 projection;\n"
-    "	mat4 view;\n"
-    "	vec3 cameraPos;\n"
-    "}Camera;\n"
-    "uniform mat4 model;\n"
-    "in vec3 position;\n"
-    "void main()\n"
-    "{\n"
-    "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-    "}";
+"uniform mat4 mvp;\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = mvp * vec4(position, 1.0);\n"
+"}";
 
 const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
-                                                         "out vec4 FragColor;\n"
-                                                         "void main()\n"
-                                                         "{\n"
-                                                         "	FragColor = color;\n"
-                                                         "}";
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = color;\n"
+"}";
 
 const std::string InternalShaders::screenQuadVertexShader = "in vec3 position;\n"
                                                             "in vec2 texCoord;\n"

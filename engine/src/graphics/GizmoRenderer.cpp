@@ -3,7 +3,6 @@
 
 using namespace PhysicsEngine;
 
-
 GizmoRenderer::GizmoRenderer()
 {
 
