@@ -28,47 +28,50 @@ const std::string InternalShaders::gizmoFragmentShader ="out vec4 FragColor;\n"
                                                         "{\n"
                                                         "    vec3 norm = normalize(Normal);\n"
                                                         "    vec3 lightDir = normalize(lightPos - FragPos);\n"
-                                                        "    float diff = max(dot(norm, lightDir), 0.1);\n"
+                                                        "    float diff = max(abs(dot(norm, lightDir)), 0.1);\n"
                                                         "    vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
                                                         "    FragColor = diffuse * color;\n"
                                                         "}";
 
-//const std::string InternalShaders::colorVertexShader =
-//    "#define DIRECTIONALLIGHT\n"
-//    "#define HARDSHADOWS\n"
-//    "#define SOFTSHADOWS\n"
-//    "layout (std140) uniform CameraBlock\n"
-//    "{\n"
-//    "	mat4 projection;\n"
-//    "	mat4 view;\n"
-//    "	vec3 cameraPos;\n"
-//    "}Camera;\n"
-//    "uniform mat4 model;\n"
-//    "in vec3 position;\n"
-//    "void main()\n"
-//    "{\n"
-//    "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
-//    "}";
-//
-//const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
-//                                                         "out vec4 FragColor;\n"
-//                                                         "void main()\n"
-//                                                         "{\n"
-//                                                         "	FragColor = color;\n"
-//                                                         "}";
 const std::string InternalShaders::colorVertexShader =
+    "#define DIRECTIONALLIGHT\n"
+    "#define HARDSHADOWS\n"
+    "#define SOFTSHADOWS\n"
+    "layout (std140) uniform CameraBlock\n"
+    "{\n"
+    "	mat4 projection;\n"
+    "	mat4 view;\n"
+    "	vec3 cameraPos;\n"
+    "}Camera;\n"
+    "uniform mat4 model;\n"
+    "in vec3 position;\n"
+    "void main()\n"
+    "{\n"
+    "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+    "}";
+
+const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
+                                                         "out vec4 FragColor;\n"
+                                                         "void main()\n"
+                                                         "{\n"
+                                                         "	FragColor = color;\n"
+                                                         "}";
+const std::string InternalShaders::lineVertexShader =
+"layout(location = 0) in vec3 position;\n"
+"layout(location = 1) in vec4 color;\n"
 "uniform mat4 mvp;\n"
-"in vec3 position;\n"
+"out vec4 Color;\n"
 "void main()\n"
 "{\n"
+"   Color = color;\n"
 "	gl_Position = mvp * vec4(position, 1.0);\n"
 "}";
 
-const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
+const std::string InternalShaders::lineFragmentShader = "in vec4 Color;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"	FragColor = color;\n"
+"	FragColor = Color;\n"
 "}";
 
 const std::string InternalShaders::screenQuadVertexShader = "in vec3 position;\n"
@@ -524,6 +527,7 @@ const std::string InternalShaders::simpleLitDeferredFragmentShader =
 
 const Guid InternalShaders::fontShaderId("9b37ce25-cc6c-497c-bed9-7c5dbd13b61f");
 const Guid InternalShaders::gizmoShaderId("2e8d5044-ae07-4d62-b7f1-48bd13d05625");
+const Guid InternalShaders::lineShaderId("bac0a1a5-45fa-40f8-affb-44dab0e9f9b4");
 const Guid InternalShaders::colorShaderId("cfb7774e-0f7d-4990-b0ff-45034483ecea");
 const Guid InternalShaders::positionAndNormalShaderId("dd530a6e-96ba-4a79-a6f5-5a634cd449b9");
 const Guid InternalShaders::ssaoShaderId("dba46e51-a544-4fac-a9a1-e9d3d91244b0");
@@ -568,6 +572,12 @@ Guid InternalShaders::loadGizmoShader(World* world)
 {
     return loadInternalShader(world, InternalShaders::gizmoShaderId, InternalShaders::gizmoVertexShader,
         InternalShaders::gizmoFragmentShader, "");
+}
+
+Guid InternalShaders::loadLineShader(World* world)
+{
+    return loadInternalShader(world, InternalShaders::lineShaderId, InternalShaders::lineVertexShader,
+        InternalShaders::lineFragmentShader, "");
 }
 
 Guid InternalShaders::loadColorShader(World *world)

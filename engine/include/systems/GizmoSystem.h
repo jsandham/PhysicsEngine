@@ -12,6 +12,7 @@
 #include "../core/AABB.h"
 #include "../core/Sphere.h"
 #include "../core/Frustum.h"
+#include "../core/Plane.h"
 
 #include "../components/Camera.h"
 
@@ -49,6 +50,7 @@ namespace PhysicsEngine
         void addToDrawList(const AABB& aabb, const Color& color);
         void addToDrawList(const Sphere& sphere, const Color& color);
         void addToDrawList(const Frustum& frustum, const Color& color);
+        void addToDrawList(const Plane& plane, const glm::vec3 &extents, const Color& color);
 
         void clearDrawList();
     };

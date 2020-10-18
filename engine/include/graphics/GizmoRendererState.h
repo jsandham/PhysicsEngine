@@ -14,10 +14,9 @@ namespace PhysicsEngine
 {
     struct GizmoRendererState
     {
-        Shader* mColorShader;
-        int mColorShaderProgram;
-        int mColorShaderMVPLoc;
-        int mColorShaderColorLoc;
+        Shader* mLineShader;
+        int mLineShaderProgram;
+        int mLineShaderMVPLoc;
 
         Shader* mGizmoShader;
         int mGizmoShaderProgram;
@@ -62,6 +61,16 @@ namespace PhysicsEngine
 
         FrustumGizmo() {}
         FrustumGizmo(const Frustum& frustum, const Color& color) : mFrustum(frustum), mColor(color) {}
+    };
+
+    struct PlaneGizmo
+    {
+        Plane mPlane;
+        Color mColor;
+        glm::vec3 mExtents;
+
+        PlaneGizmo() {}
+        PlaneGizmo(const Plane& plane, glm::vec3 extents, const Color& color) : mPlane(plane), mExtents(extents), mColor(color) {}
     };
 } // namespace PhysicsEngine
 

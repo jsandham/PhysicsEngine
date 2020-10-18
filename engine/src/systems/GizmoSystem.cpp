@@ -89,6 +89,11 @@ void GizmoSystem::addToDrawList(const Frustum& frustum, const Color& color)
 	mGizmoRenderer.addToDrawList(frustum, color);
 }
 
+void GizmoSystem::addToDrawList(const Plane& plane, const glm::vec3 &extents, const Color& color)
+{
+	mGizmoRenderer.addToDrawList(plane, extents, color);
+}
+
 void GizmoSystem::clearDrawList()
 {
 	mGizmoRenderer.clearDrawList();

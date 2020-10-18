@@ -23,6 +23,7 @@ void GizmoRenderer::init(World* world)
 void GizmoRenderer::update(Camera* camera)
 {
 	renderLineGizmos(mWorld, camera, mState, mLines);
+	renderPlaneGizmos(mWorld, camera, mState, mPlanes);
 	renderAABBGizmos(mWorld, camera, mState, mAABBs);
 	renderSphereGizmos(mWorld, camera, mState, mSpheres);
 	renderFrustumGizmos(mWorld, camera, mState, mFrustums);
@@ -57,10 +58,16 @@ void GizmoRenderer::addToDrawList(const Frustum& frustum, const Color& color)
 	mFrustums.push_back(FrustumGizmo(frustum, color));
 }
 
+void GizmoRenderer::addToDrawList(const Plane& plane, const glm::vec3 &extents, const Color& color)
+{
+	mPlanes.push_back(PlaneGizmo(plane, extents, color));
+}
+
 void GizmoRenderer::clearDrawList()
 {
 	mLines.clear();
 	mAABBs.clear();
 	mSpheres.clear();
 	mFrustums.clear();
+	mPlanes.clear();
 }

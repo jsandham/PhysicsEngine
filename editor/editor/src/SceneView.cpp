@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "core/Log.h"
+#include "core/Intersect.h"
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -225,6 +226,10 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
             }
         }
 
+        GizmoSystem* gizmoSystem = world->getSystem<GizmoSystem>();
+
+        gizmoSystem->clearDrawList();
+
         // draw transform gizmo if entity is selected
         if (clipboard.getSelectedType() == InteractionType::Entity)
         {
@@ -233,50 +238,9 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
             float width = (float)(sceneContentMax.x - sceneContentMin.x);
             float height = (float)(sceneContentMax.y - sceneContentMin.y);
 
-            transformGizmo.update(cameraSystem, transform, width, height);
+            transformGizmo.update(cameraSystem, gizmoSystem, transform, width, height);
         }
-
-
-        GizmoSystem* gizmoSystem = world->getSystem<GizmoSystem>();
-
-        if (gizmoSystem != nullptr) {
-            if (getKeyDown(input, KeyCode::A)) {
-                Sphere sphere(glm::vec3(-1.0f, 4.0f, 2.0f), 1.0f);
-                gizmoSystem->addToDrawList(sphere, Color::blue);
-            }
-            else if (getKeyDown(input, KeyCode::B)) {
-                Line line(glm::vec3(1.0f, 2.0f, -2.0f), glm::vec3(5.0f, 3.0f, 1.0f));
-                gizmoSystem->addToDrawList(line, Color::red);
-            }
-            else if (getKeyDown(input, KeyCode::C)) {
-                AABB aabb(glm::vec3(3.0f, 10.0f, -4.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                gizmoSystem->addToDrawList(aabb, Color::green);
-            }
-            else if (getKeyDown(input, KeyCode::D)) {
-                Frustum frustum0(45.0f, 1.0f, 0.1f, 10.0f);
-                frustum0.computePlanes(glm::vec3(10.0f, 10.0f, 10.0f), 
-                                      glm::vec3(0.0f, 0.0f, 1.0f), 
-                                      glm::vec3(0.0f, 1.0f, 0.0f), 
-                                      glm::vec3(1.0f, 0.0f, 0.0f));
-                gizmoSystem->addToDrawList(frustum0, Color::green);
-
-                Frustum frustum1(75.0f, 1.0f, 1.0f, 10.0f);
-                frustum1.computePlanes(glm::vec3(0.0f, 7.0f, -4.0f),
-                    glm::vec3(0.0f, 0.0f, 1.0f),
-                    glm::vec3(0.0f, 1.0f, 0.0f),
-                    glm::vec3(1.0f, 0.0f, 0.0f));
-                gizmoSystem->addToDrawList(frustum1, Color::red);
-            }
-            else if (getKeyDown(input, KeyCode::Z)) {
-                gizmoSystem->clearDrawList();
-            }
-        }
-
-
-
-
-
-
+        
         // Finally draw scene
         ImGui::Image((void *)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, size.y / 1080.0f),
                      ImVec2(size.x / 1920.0f, 0));

@@ -13,6 +13,8 @@ class InternalShaders
   public:
     static const std::string gizmoVertexShader;
     static const std::string gizmoFragmentShader;
+    static const std::string lineVertexShader;
+    static const std::string lineFragmentShader;
 
     static const std::string fontVertexShader;
     static const std::string fontFragmentShader;
@@ -44,6 +46,7 @@ class InternalShaders
 
     static const Guid fontShaderId;
     static const Guid gizmoShaderId;
+    static const Guid lineShaderId;
     static const Guid colorShaderId;
     static const Guid positionAndNormalShaderId;
     static const Guid ssaoShaderId;
@@ -59,6 +62,7 @@ class InternalShaders
 
     static Guid loadFontShader(World *world);
     static Guid loadGizmoShader(World* world);
+    static Guid loadLineShader(World* world);
     static Guid loadColorShader(World *world);
     static Guid loadPositionAndNormalsShader(World *world);
     static Guid loadSsaoShader(World *world);

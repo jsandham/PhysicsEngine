@@ -1,23 +1,24 @@
 #include "../../include/graphics/GizmoRendererPasses.h"
 #include "../../include/graphics/Graphics.h"
 
+#include "../../include/glm/gtx/rotate_vector.hpp"
+
 using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeGizmoRenderer(World* world, GizmoRendererState& state)
 {
-    state.mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
+    state.mLineShader = world->getAssetById<Shader>(world->getLineShaderId());
     state.mGizmoShader = world->getAssetById<Shader>(world->getGizmoShaderId());
 
-    assert(state.mColorShader != NULL);
+    assert(state.mLineShader != NULL);
     assert(state.mGizmoShader != NULL);
   
-    state.mColorShader->compile();
+    state.mLineShader->compile();
     state.mGizmoShader->compile();
 
     // cache internal shader uniforms
-    state.mColorShaderProgram = state.mColorShader->getProgramFromVariant(ShaderVariant::None);
-    state.mColorShaderColorLoc = state.mColorShader->findUniformLocation("color", state.mColorShaderProgram);
-    state.mColorShaderMVPLoc = state.mColorShader->findUniformLocation("mvp", state.mColorShaderProgram);
+    state.mLineShaderProgram = state.mLineShader->getProgramFromVariant(ShaderVariant::None);
+    state.mLineShaderMVPLoc = state.mLineShader->findUniformLocation("mvp", state.mLineShaderProgram);
 
     state.mGizmoShaderProgram = state.mGizmoShader->getProgramFromVariant(ShaderVariant::None);
     state.mGizmoShaderColorLoc = state.mGizmoShader->findUniformLocation("color", state.mGizmoShaderProgram);
@@ -33,9 +34,8 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
         return;
     }
 
-    std::vector<float> vertices;
-    vertices.resize(6 * gizmos.size());
-
+    std::vector<float> vertices(6 * gizmos.size());
+   
     for (size_t i = 0; i < gizmos.size(); i++) {
         vertices[6 * i + 0] = gizmos[i].mLine.mStart.x;
         vertices[6 * i + 1] = gizmos[i].mLine.mStart.y;
@@ -46,17 +46,38 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
         vertices[6 * i + 5] = gizmos[i].mLine.mEnd.z;
     }
 
+    std::vector<float> colors(8 * gizmos.size());
+
+    for (size_t i = 0; i < gizmos.size(); i++) {
+        colors[8 * i + 0] = gizmos[i].mColor.r;
+        colors[8 * i + 1] = gizmos[i].mColor.g;
+        colors[8 * i + 2] = gizmos[i].mColor.b;
+        colors[8 * i + 3] = gizmos[i].mColor.a;
+
+        colors[8 * i + 4] = gizmos[i].mColor.r;
+        colors[8 * i + 5] = gizmos[i].mColor.g;
+        colors[8 * i + 6] = gizmos[i].mColor.b;
+        colors[8 * i + 7] = gizmos[i].mColor.a;
+    }
+
     GLuint lineVAO;
-    GLuint lineVBO;
+    GLuint lineVBO[2];
 
     glGenVertexArrays(1, &lineVAO);
     glBindVertexArray(lineVAO);
 
-    glGenBuffers(1, &lineVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+    glGenBuffers(2, &lineVBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, lineVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glGenBuffers(1, &lineVBO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, lineVBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), &colors[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -66,21 +87,17 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    state.mColorShader->use(state.mColorShaderProgram);
-    state.mColorShader->setMat4(state.mColorShaderMVPLoc, mvp);
+    state.mLineShader->use(state.mLineShaderProgram);
+    state.mLineShader->setMat4(state.mLineShaderMVPLoc, mvp);
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
-        state.mColorShader->setColor(state.mColorShaderColorLoc, gizmos[i].mColor);
-
-        glBindVertexArray(lineVAO);
-        glDrawArrays(GL_LINES, (GLint)(2 * i), (GLsizei)(vertices.size() / 3));
-        glBindVertexArray(0);
-    }
+    glBindVertexArray(lineVAO);
+    glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
+    glBindVertexArray(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glDeleteVertexArrays(1, &lineVAO);
-    glDeleteBuffers(1, &lineVBO);
+    glDeleteBuffers(2, &lineVBO[0]);
 
     Graphics::checkError();
 }
@@ -113,6 +130,55 @@ void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRenderer
     for (size_t i = 0; i < gizmos.size(); i++) {
         glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mAABB.mCentre);
         model = glm::scale(model, gizmos[i].mAABB.mSize);
+
+        state.mGizmoShader->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
+        state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, model);
+
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
+    }
+
+    glBindVertexArray(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glDisable(GL_BLEND);
+
+    Graphics::checkError();
+}
+
+void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<PlaneGizmo>& gizmos)
+{
+    if (gizmos.empty()) {
+        return;
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Transform* transform = camera->getComponent<Transform>(world);
+
+    Mesh* mesh = world->getAssetById<Mesh>(world->getPlaneMesh());
+
+    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
+    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+        camera->getViewport().mHeight);
+
+    glBindVertexArray(mesh->getNativeGraphicsVAO());
+
+    state.mGizmoShader->use(state.mGizmoShaderProgram);
+
+    state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
+    state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+
+    for (size_t i = 0; i < gizmos.size(); i++) {
+        glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mPlane.mX0);
+        glm::vec3 a = glm::vec3(0, 0, 1);
+        glm::vec3 b = gizmos[i].mPlane.mNormal;
+        float d = glm::dot(a, b);
+        glm::vec3 c = glm::cross(a, b);
+        float angle = glm::atan(glm::length(c), d);
+
+        model = glm::rotate(model, angle, c);
 
         state.mGizmoShader->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
         state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, model);

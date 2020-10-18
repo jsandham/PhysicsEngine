@@ -14,6 +14,7 @@
 #include "../core/AABB.h"
 #include "../core/Sphere.h"
 #include "../core/Frustum.h"
+#include "../core/Plane.h"
 
 #include "../graphics/GizmoRendererState.h"
 
@@ -32,6 +33,7 @@ namespace PhysicsEngine
         std::vector<AABBGizmo> mAABBs;
         std::vector<SphereGizmo> mSpheres;
         std::vector<FrustumGizmo> mFrustums;
+        std::vector<PlaneGizmo> mPlanes;
 
     public:
         GizmoRenderer();
@@ -45,6 +47,7 @@ namespace PhysicsEngine
         void addToDrawList(const AABB& aabb, const Color &color);
         void addToDrawList(const Sphere& sphere, const Color &color);
         void addToDrawList(const Frustum &frustum, const Color& color);
+        void addToDrawList(const Plane& plane, const glm::vec3 &extents, const Color& color);
         void clearDrawList();
     };
 } // namespace PhysicsEngine

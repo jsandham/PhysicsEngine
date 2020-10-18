@@ -140,10 +140,12 @@ class World
     // default loaded meshes
     Guid mSphereMeshId;
     Guid mCubeMeshId;
+    Guid mPlaneMeshId;
 
     // default loaded shaders
     Guid mFontShaderId;
     Guid mGizmoShaderId;
+    Guid mLineShaderId;
     Guid mColorShaderId;
     Guid mPositionAndNormalsShaderId;
     Guid mSsaoShaderId;
@@ -920,10 +922,12 @@ class World
     // default asset getters
     Guid getSphereMesh() const;
     Guid getCubeMesh() const;
+    Guid getPlaneMesh() const;
     Guid getColorMaterial() const;
     Guid getSimpleLitMaterial() const;
     Guid getFontShaderId() const;
     Guid getGizmoShaderId() const;
+    Guid getLineShaderId() const;
     Guid getColorShaderId() const;
     Guid getPositionAndNormalsShaderId() const;
     Guid getSsaoShaderId() const;

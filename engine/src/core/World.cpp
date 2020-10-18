@@ -20,10 +20,12 @@ World::World()
     // load default included meshes
     mSphereMeshId = InternalMeshes::loadSphereMesh(this);
     mCubeMeshId = InternalMeshes::loadCubeMesh(this);
+    mPlaneMeshId = InternalMeshes::loadPlaneMesh(this);
 
     // load default included shaders
     mFontShaderId = InternalShaders::loadFontShader(this);
     mGizmoShaderId = InternalShaders::loadGizmoShader(this);
+    mLineShaderId = InternalShaders::loadLineShader(this);
     mColorShaderId = InternalShaders::loadColorShader(this);
     mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
     mSsaoShaderId = InternalShaders::loadSsaoShader(this);
@@ -456,6 +458,11 @@ Guid World::getCubeMesh() const
     return mCubeMeshId;
 }
 
+Guid World::getPlaneMesh() const
+{
+    return mPlaneMeshId;
+}
+
 Guid World::getColorMaterial() const
 {
     return mColorMaterialId;
@@ -474,6 +481,11 @@ Guid World::getFontShaderId() const
 Guid World::getGizmoShaderId() const
 {
     return mGizmoShaderId;
+}
+
+Guid World::getLineShaderId() const
+{
+    return mLineShaderId;
 }
 
 Guid World::getColorShaderId() const

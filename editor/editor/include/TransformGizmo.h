@@ -12,20 +12,20 @@
 
 namespace PhysicsEditor
 {
-typedef enum Axis
+enum class Axis
 {
     Axis_X = 0,
     Axis_Y = 1,
     Axis_Z = 2,
     Axis_None = 3
-} Axis;
+};
 
-typedef enum GizmoMode
+enum class GizmoMode
 {
     Translation = 0,
     Rotation = 1,
     Scale = 2
-} GizmoMode;
+};
 
 class TransformGizmo
 {
@@ -44,11 +44,13 @@ class TransformGizmo
     GizmoMode mode;
     Axis highlightedTransformAxis;
     Axis selectedTransformAxis;
-    glm::mat4 selectedTransformModel;
+    glm::vec3 start;
+    glm::vec3 end;
+    glm::vec3 normal;
 
   public:
     void initialize();
-    void update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+    void update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem* gizmoSystem, PhysicsEngine::Transform *selectedTransform,
                 float contentWidth, float contentHeight);
     void setGizmoMode(GizmoMode mode);
 
@@ -57,7 +59,7 @@ class TransformGizmo
   private:
     void updateTranslation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
                            float contentWidth, float contentHeight);
-    void updateRotation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
+    void updateRotation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem* gizmoSystem, PhysicsEngine::Transform *selectedTransform,
                         float contentWidth, float contentHeight);
     void updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
                      float contentWidth, float contentHeight);
