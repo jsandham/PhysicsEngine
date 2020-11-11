@@ -181,7 +181,9 @@ void Camera::endQuery()
 
 void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up)
 {
-    viewMatrix = glm::lookAt(position, position + forward, up);
+    mPosition = position;
+    mViewMatrix = glm::lookAt(position, position + forward, up);
+    mInvViewMatrix = glm::inverse(mViewMatrix);
 }
 
 void Camera::assignColoring(int color, const Guid &transformId)
@@ -194,9 +196,19 @@ void Camera::clearColoring()
     mColoringMap.clear();
 }
 
+glm::vec3 Camera::getPosition() const
+{
+    return mPosition;
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
-    return viewMatrix;
+    return mViewMatrix;
+}
+
+glm::mat4 Camera::getInvViewMatrix() const
+{
+    return mInvViewMatrix;
 }
 
 glm::mat4 Camera::getProjMatrix() const

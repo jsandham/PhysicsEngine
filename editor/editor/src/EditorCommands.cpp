@@ -119,6 +119,46 @@ void CreateLightCommand::undo()
     *saveStatePtr = oldSaveState;
 }
 
+CreatePlaneCommand::CreatePlaneCommand(World* world, bool* saveStatePtr)
+{
+    this->world = world;
+    this->saveStatePtr = saveStatePtr;
+    this->oldSaveState = *saveStatePtr;
+}
+
+void CreatePlaneCommand::execute()
+{
+    if (entityData.size() == 0)
+    {
+        Entity* entity = world->createEntity();
+        Transform* transform = entity->addComponent<Transform>(world);
+        MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world);
+        meshRenderer->setMesh(world->getPlaneMesh());
+        meshRenderer->setMaterial(world->getColorMaterial());
+
+        entityData = entity->serialize();
+        transformData = transform->serialize();
+        meshRendererData = meshRenderer->serialize();
+    }
+    else
+    {
+        Entity* entity = world->createEntity(entityData);
+        Transform* transform = entity->addComponent<Transform>(world, transformData);
+        MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
+    }
+
+    *saveStatePtr = true;
+}
+
+void CreatePlaneCommand::undo()
+{
+    Entity temp(entityData);
+
+    world->latentDestroyEntity(temp.getId());
+
+    *saveStatePtr = oldSaveState;
+}
+
 CreateCubeCommand::CreateCubeCommand(World *world, bool *saveStatePtr)
 {
     this->world = world;
@@ -135,7 +175,7 @@ void CreateCubeCommand::execute()
         BoxCollider *collider = entity->addComponent<BoxCollider>(world);
         MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
         meshRenderer->setMesh(world->getCubeMesh());
-        meshRenderer->setMaterial(world->getSimpleLitMaterial());
+        meshRenderer->setMaterial(world->getColorMaterial());
 
         entityData = entity->serialize();
         transformData = transform->serialize();

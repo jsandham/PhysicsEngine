@@ -46,7 +46,7 @@ void MaterialRenderer::init()
     unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, mainAttachments);
 
-    PhysicsEngine::Graphics::checkFrambufferError();
+    PhysicsEngine::Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -80,7 +80,7 @@ void MaterialRenderer::init()
 
     glBindVertexArray(0);*/
 
-    PhysicsEngine::Graphics::checkError();
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
 
     /*Shader* shader
 
@@ -144,13 +144,13 @@ void MaterialRenderer::render(PhysicsEngine::World *world, PhysicsEngine::Materi
 
     material->apply(world);
 
-    PhysicsEngine::Graphics::checkError();
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
 
     glBindVertexArray(mesh.getNativeGraphicsVAO());
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mesh.getVertices().size() / 3);
     glBindVertexArray(0);
 
-    PhysicsEngine::Graphics::checkError();
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

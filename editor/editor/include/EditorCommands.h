@@ -65,6 +65,24 @@ class CreateLightCommand : public Command
     void undo() override;
 };
 
+class CreatePlaneCommand : public Command
+{
+private:
+    PhysicsEngine::World* world;
+    std::vector<char> entityData;
+    std::vector<char> transformData;
+    std::vector<char> meshRendererData;
+
+    bool* saveStatePtr;
+    bool oldSaveState;
+
+public:
+    CreatePlaneCommand(PhysicsEngine::World* world, bool* saveStatePtr);
+
+    void execute() override;
+    void undo() override;
+};
+
 class CreateCubeCommand : public Command
 {
   private:

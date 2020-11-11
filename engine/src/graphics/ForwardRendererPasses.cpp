@@ -87,7 +87,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState *state
     state->mColorShaderModelLoc = state->mColorShader->findUniformLocation("model", state->mColorShaderProgram);
     state->mColorShaderColorLoc = state->mColorShader->findUniformLocation("color", state->mColorShaderProgram);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     // generate screen quad for final rendering
     constexpr float quadVertices[] = {
@@ -109,7 +109,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState *state
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     glGenBuffers(1, &(state->mCameraState.mHandle));
     glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
@@ -121,7 +121,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState *state
     glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState *state)
@@ -199,11 +199,11 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
     {
         state->mGeometryShader->setMat4(state->mGeometryShaderModelLoc, renderObjects[renderQueue[i].second].model);
 
-        Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
+        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     // fill ssao color texture
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
@@ -232,7 +232,7 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
@@ -261,7 +261,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
             for (size_t j = 0; j < renderQueue.size(); j++)
             {
                 state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
-                Graphics::render(world, renderObjects[renderQueue[j].second], &camera->mQuery);
+                Graphics::render(renderObjects[renderQueue[j].second], camera->mQuery);
             }
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -288,7 +288,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         for (size_t i = 0; i < renderQueue.size(); i++)
         {
             state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
-            Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
+            Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -348,7 +348,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         {
             state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderModelLoc,
                                                 renderObjects[renderQueue[i].second].model);
-            Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
+            Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -489,12 +489,12 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
             glBindTexture(GL_TEXTURE_2D, light->getNativeGrpahicsShadowSpotlightDepthTex());
         }
 
-        Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
+        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState *state,
@@ -513,6 +513,7 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                camera->getViewport().mHeight);
 
@@ -530,12 +531,12 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
         state->mColorShader->setMat4(state->mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
         state->mColorShader->setVec4(state->mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
-        Graphics::render(world, renderObjects[renderQueue[i].second], &camera->mQuery);
+        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderTransparents()

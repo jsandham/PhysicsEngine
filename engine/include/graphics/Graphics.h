@@ -37,8 +37,8 @@ struct Attribute
 class Graphics
 {
   public:
-    static void checkError();
-    static void checkFrambufferError();
+    static void checkError(long line, const char* file);
+    static void checkFrambufferError(long line, const char* file);
     static GLenum getTextureFormat(TextureFormat format);
 
     static void beginQuery(GLuint queryId);
@@ -104,7 +104,7 @@ class Graphics
     static glm::mat3 getMat3(int nameLocation, int program);
     static glm::mat4 getMat4(int nameLocation, int program);
 
-    static void render(World *world, RenderObject renderObject, GraphicsQuery *query);
+    static void render(const RenderObject &renderObject, GraphicsQuery &query);
 };
 } // namespace PhysicsEngine
 

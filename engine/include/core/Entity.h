@@ -2,6 +2,7 @@
 #define __ENTITY_H__
 
 #include <vector>
+#include <string>
 
 #include "Guid.h"
 #include "Types.h"
@@ -12,6 +13,7 @@ namespace PhysicsEngine
 struct EntityHeader
 {
     Guid mEntityId;
+    char mEntityName[64];
     uint8_t mDoNotDestroy;
 };
 #pragma pack(pop)
@@ -22,6 +24,7 @@ class Entity
 {
   private:
     Guid mEntityId;
+    std::string mEntityName;
 
   public:
     bool mDoNotDestroy;
@@ -56,6 +59,8 @@ class Entity
     std::vector<std::pair<Guid, int>> getComponentsOnEntity(World *world);
 
     Guid getId() const;
+    std::string getName() const;
+    void setName(const std::string& name);
 
   private:
     friend class World;

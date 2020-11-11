@@ -322,9 +322,19 @@ GraphicsQuery EditorCameraSystem::getQuery() const
     return mCamera->mQuery;
 }
 
+glm::vec3 EditorCameraSystem::getCameraPosition() const
+{
+    return mCamera->getPosition();
+}
+
 glm::mat4 EditorCameraSystem::getViewMatrix() const
 {
     return mCamera->getViewMatrix();
+}
+
+glm::mat4 EditorCameraSystem::getInvViewMatrix() const
+{
+    return mCamera->getInvViewMatrix();
 }
 
 glm::mat4 EditorCameraSystem::getProjMatrix() const

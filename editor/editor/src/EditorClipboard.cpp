@@ -5,8 +5,8 @@ using namespace PhysicsEditor;
 EditorClipboard::EditorClipboard()
 {
     draggedType = InteractionType::None;
-    draggedId = PhysicsEngine::Guid::INVALID;
     selectedType = InteractionType::None;
+    draggedId = PhysicsEngine::Guid::INVALID;
     selectedId = PhysicsEngine::Guid::INVALID;
 }
 

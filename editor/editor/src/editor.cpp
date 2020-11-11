@@ -13,6 +13,8 @@
 #include "systems/CleanUpSystem.h"
 #include "systems/RenderSystem.h"
 
+#include "graphics/Graphics.h"
+
 #include <json/json.hpp>
 
 #include "imgui.h"
@@ -90,6 +92,8 @@ void Editor::init(HWND window, int width, int height)
 
         system->init(&world);
     }
+
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Editor::cleanUp()
@@ -104,6 +108,8 @@ void Editor::render(bool editorBecameActiveThisFrame)
 {
     // ImGui::ShowDemoWindow();
     // ImGui::ShowMetricsWindow();
+
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
 
     libraryDirectory.update();
 
@@ -173,6 +179,10 @@ void Editor::newScene()
     // re-centre editor camera to default position
     cameraSystem->resetCamera();
 
+    // clear any dragged and selected items on clipboard
+    clipboard.clearDraggedItem();
+    clipboard.clearSelectedItem();
+
     currentScene.name = "default.scene";
     currentScene.path = "";
     currentScene.metaPath = "";
@@ -207,6 +217,10 @@ void Editor::openScene(std::string name, std::string path)
 
     // reset editor camera to default position
     cameraSystem->resetCamera();
+
+    // clear any dragged and selected items on clipboard
+    clipboard.clearDraggedItem();
+    clipboard.clearSelectedItem();
 
     // load binary version of scene into world (ignoring systems and cameras)
     if (world.loadSceneFromEditor(binarySceneFilePath))

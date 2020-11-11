@@ -10,7 +10,7 @@
 
 using namespace PhysicsEngine;
 
-void Graphics::checkError()
+void Graphics::checkError(long line, const char* file)
 {
     GLenum error;
     while ((error = glGetError()) != GL_NO_ERROR)
@@ -19,39 +19,40 @@ void Graphics::checkError()
         switch (error)
         {
         case GL_INVALID_ENUM:
-            errorStr = "Error: An unacceptable value is specified for an enumerated argument";
+            errorStr = "An unacceptable value is specified for an enumerated argument";
             break;
         case GL_INVALID_VALUE:
-            errorStr = "Error: A numeric argument is out of range";
+            errorStr = "A numeric argument is out of range";
             break;
         case GL_INVALID_OPERATION:
-            errorStr = "Error: The specified operation is not allowed in the current state";
+            errorStr = "The specified operation is not allowed in the current state";
             break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
-            errorStr = "Error: The framebuffer object is not complete";
+            errorStr = "The framebuffer object is not complete";
             break;
         case GL_OUT_OF_MEMORY:
-            errorStr = "Error: There is not enough money left to execute the command";
+            errorStr = "There is not enough money left to execute the command";
             break;
         case GL_STACK_UNDERFLOW:
-            errorStr = "Error: An attempt has been made to perform an operation that would cause an internal stack to "
+            errorStr = "An attempt has been made to perform an operation that would cause an internal stack to "
                        "underflow";
             break;
         case GL_STACK_OVERFLOW:
-            errorStr = "Error: An attempt has been made to perform an operation that would cause an internal stack to "
+            errorStr = "An attempt has been made to perform an operation that would cause an internal stack to "
                        "overflow";
             break;
         default:
-            errorStr = "Error: Unknown error";
+            errorStr = "Unknown error";
             break;
         }
 
-        std::string errorMessage = errorStr + "(" + std::to_string(error) + ")\n";
+        std::string errorMessage = errorStr + "(" + std::to_string(error) + ") line: " + std::to_string(line) + 
+                                   " file: " + file + "\n";
         Log::error(errorMessage.c_str());
     }
 }
 
-void Graphics::checkFrambufferError()
+void Graphics::checkFrambufferError(long line, const char* file)
 {
     GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
     if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE)
@@ -60,36 +61,37 @@ void Graphics::checkFrambufferError()
         switch (framebufferStatus)
         {
         case GL_FRAMEBUFFER_UNDEFINED:
-            errorStr = "Error: The current FBO binding is 0 but no default framebuffer exists";
+            errorStr = "The current FBO binding is 0 but no default framebuffer exists";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-            errorStr = "Error: One of the buffers enabled for rendering is incomplete";
+            errorStr = "One of the buffers enabled for rendering is incomplete";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
             errorStr =
-                "Error: No buffers are attached to the FBO and it is not configured for rendering without attachments";
+                "No buffers are attached to the FBO and it is not configured for rendering without attachments";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-            errorStr = "Error: Not all attachments enabled via glDrawBuffers exists in framebuffer";
+            errorStr = "Not all attachments enabled via glDrawBuffers exists in framebuffer";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-            errorStr = "Error: Not all buffers specified via glReadBuffer exists in framebuffer";
+            errorStr = "Not all buffers specified via glReadBuffer exists in framebuffer";
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED:
-            errorStr = "Error: The combination of internal buffer formats is unsupported";
+            errorStr = "The combination of internal buffer formats is unsupported";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-            errorStr = "Error: The number of samples for each attachment is not the same";
+            errorStr = "The number of samples for each attachment is not the same";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-            errorStr = "Error: Not all color attachments are layered textures or bound to the same target";
+            errorStr = "Not all color attachments are layered textures or bound to the same target";
             break;
         default:
-            errorStr = "Error: Unknown framebuffer status error";
+            errorStr = "Unknown framebuffer status error";
             break;
         }
 
-        std::string errorMessage = errorStr + "(" + std::to_string(framebufferStatus) + ")\n";
+        std::string errorMessage = errorStr + "(" + std::to_string(framebufferStatus) + ") line: " + std::to_string(line) +
+                                   " file: " + file + "\n";
         Log::error(errorMessage.c_str());
     }
 }
@@ -114,6 +116,7 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
         break;
     default:
         Log::error("OpengGL: Invalid texture format\n");
+        break;
     }
 
     return openglFormat;
@@ -160,7 +163,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, mainAttachments);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -187,7 +190,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     unsigned int colorPickingAttachments[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, colorPickingAttachments);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -220,7 +223,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     unsigned int geometryAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, geometryAttachments);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -239,7 +242,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     unsigned int ssaoAttachments[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, ssaoAttachments);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -283,7 +286,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     *created = true;
 }
@@ -381,7 +384,7 @@ void Graphics::readColorPickingPixel(const CameraTargets *targets, int x, int y,
     glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -429,7 +432,7 @@ void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resoluti
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i],
                                0);
 
-        Graphics::checkFrambufferError();
+        Graphics::checkFrambufferError(__LINE__, __FILE__);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -451,7 +454,7 @@ void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resoluti
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex, 0);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -486,11 +489,11 @@ void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resoluti
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, targets->mShadowCubemapDepthTex, 0);
 
-    Graphics::checkFrambufferError();
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     *created = true;
 }
@@ -529,7 +532,7 @@ void Graphics::destroyTargets(LightTargets *targets, bool *created)
     glDeleteTextures(1, &(targets->mShadowSpotlightDepthTex));
     glDeleteTextures(1, &(targets->mShadowCubemapDepthTex));
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     *created = false;
 }
@@ -588,7 +591,7 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
                  NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     *resolutionChanged = false;
 }
@@ -618,7 +621,7 @@ void Graphics::create(Texture2D *texture, GLuint *tex, bool *created)
 
     *created = true;
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::destroy(Texture2D *texture, GLuint *tex, bool *created)
@@ -647,7 +650,7 @@ void Graphics::readPixels(Texture2D *texture)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::apply(Texture2D *texture)
@@ -665,7 +668,7 @@ void Graphics::apply(Texture2D *texture)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::create(Texture3D *texture, GLuint *tex, bool *created)
@@ -694,7 +697,7 @@ void Graphics::create(Texture3D *texture, GLuint *tex, bool *created)
 
     *created = true;
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::destroy(Texture3D *texture, GLuint *tex, bool *created)
@@ -724,7 +727,7 @@ void Graphics::readPixels(Texture3D *texture)
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::apply(Texture3D *texture)
@@ -744,7 +747,7 @@ void Graphics::apply(Texture3D *texture)
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::create(Cubemap *cubemap, GLuint *tex, bool *created)
@@ -774,7 +777,7 @@ void Graphics::create(Cubemap *cubemap, GLuint *tex, bool *created)
 
     *created = true;
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::destroy(Cubemap *cubemap, GLuint *tex, bool *created)
@@ -803,7 +806,7 @@ void Graphics::readPixels(Cubemap *cubemap)
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::apply(Cubemap *cubemap)
@@ -824,7 +827,7 @@ void Graphics::apply(Cubemap *cubemap)
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::create(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2, bool *created)
@@ -857,7 +860,7 @@ void Graphics::create(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuin
 
     *created = true;
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::destroy(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2, bool *created)
@@ -1165,7 +1168,7 @@ glm::mat4 Graphics::getMat4(int nameLocation, int program)
     return value;
 }
 
-void Graphics::render(World *world, RenderObject renderObject, GraphicsQuery *query)
+void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
 {
     GLsizei numVertices = renderObject.size / 3;
 
@@ -1173,9 +1176,9 @@ void Graphics::render(World *world, RenderObject renderObject, GraphicsQuery *qu
     glDrawArrays(GL_TRIANGLES, renderObject.start / 3, numVertices);
     glBindVertexArray(0);
 
-    query->mNumDrawCalls++;
-    query->mVerts += numVertices;
-    query->mTris += numVertices / 3;
+    query.mNumDrawCalls++;
+    query.mVerts += numVertices;
+    query.mTris += numVertices / 3;
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }

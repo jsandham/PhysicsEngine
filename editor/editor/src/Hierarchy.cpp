@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../include/Hierarchy.h"
 #include "../include/CommandManager.h"
 #include "../include/EditorCommands.h"
@@ -6,6 +8,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
+#include "../include/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 
@@ -25,39 +28,6 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
     if (isOpenedThisFrame)
     {
         hierarchyActive = true;
-
-        entityIds.clear();
-        entityNames.clear();
-    }
-
-    int numberOfEntities = world->getNumberOfEntities() - (int)editorOnlyEntityIds.size();
-
-    if (numberOfEntities < 0)
-    {
-        Log::error("Error: Number of non editor only entities is negative\n");
-        return;
-    }
-
-    if (entityIds.size() != numberOfEntities)
-    {
-        entityIds.resize(numberOfEntities);
-        entityNames.resize(numberOfEntities);
-
-        int index = 0;
-        for (int i = 0; i < world->getNumberOfEntities(); i++)
-        {
-            Entity *entity = world->getEntityByIndex(i);
-
-            std::string test = entity->getId().toString();
-
-            std::set<Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
-            if (it == editorOnlyEntityIds.end())
-            {
-                entityIds[index] = entity->getId();
-                entityNames[index] = entity->getId().toString();
-                index++;
-            }
-        }
     }
 
     if (!hierarchyActive)
@@ -72,8 +42,26 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
             ImGui::SetWindowFocus("Hierarchy");
         }
 
+        rebuildRequired = entries.size() != std::max(0, world->getNumberOfEntities() - (int)editorOnlyEntityIds.size());
+
+        // If number of entities has changed, update cached entity ids and names
+        if (rebuildRequired)
+        {
+            rebuildEntityLists(world, editorOnlyEntityIds);
+        }
+
         if (scene.name.length() > 0)
         {
+            // Set selected entity in hierarchy
+            int selectedIndex;
+            if (clipboard.getSelectedType() == InteractionType::Entity) {
+                selectedIndex = idToEntryIndex[clipboard.getSelectedId()];
+            }
+            else {
+                selectedIndex = -1;
+            }
+
+            // Check if scene is dirty and mark accordingly
             if (scene.isDirty)
             {
                 ImGui::Text((scene.name + "*").c_str());
@@ -84,17 +72,29 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
             }
             ImGui::Separator();
 
-            for (size_t i = 0; i < entityIds.size(); i++)
+            // Display entities in hierarchy
+            for (size_t i = 0; i < entries.size(); i++)
             {
-                // std::string name = entities[i].entityId.toString();
-
                 static bool selected = false;
-                if (ImGui::Selectable(entityNames[i].c_str(), &selected))
+                char buf1[64];
+                std::size_t len = std::min(size_t(64 - 1), entries[i].entity->getName().length());
+                strncpy(buf1, entries[i].entity->getName().c_str(), len);
+                buf1[len] = '\0';
+
+                bool edited = false;
+                if (ImGui::SelectableInput(entries[i].label.c_str(), selectedIndex == i, &edited, ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
                 {
-                    clipboard.setSelectedItem(InteractionType::Entity, entityIds[i]);
+                    entries[i].entity->setName(std::string(buf1));
+
+                    clipboard.setSelectedItem(InteractionType::Entity, entries[i].entity->getId());
+                }
+
+                if (edited) {
+                    scene.isDirty = true;
                 }
             }
 
+            // Right click popup menu
             if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
             {
                 if (ImGui::MenuItem("Copy", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
@@ -107,6 +107,8 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
                     clipboard.getSelectedType() == InteractionType::Entity)
                 {
                     world->latentDestroyEntity(clipboard.getSelectedId());
+
+                    clipboard.clearSelectedItem();
                 }
 
                 ImGui::Separator();
@@ -124,6 +126,15 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
                     if (ImGui::MenuItem("Light"))
                     {
                         CommandManager::addCommand(new CreateLightCommand(world, &scene.isDirty));
+                    }
+
+                    if (ImGui::BeginMenu("2D"))
+                    {
+                        if (ImGui::MenuItem("Plane"))
+                        {
+                            CommandManager::addCommand(new CreatePlaneCommand(world, &scene.isDirty));
+                        }
+                        ImGui::EndMenu();
                     }
 
                     if (ImGui::BeginMenu("3D"))
@@ -148,4 +159,27 @@ void Hierarchy::render(World *world, EditorScene &scene, EditorClipboard &clipbo
     }
 
     ImGui::End();
+}
+
+void Hierarchy::rebuildEntityLists(World* world, const std::set<Guid>& editorOnlyEntityIds)
+{
+    int numberOfEntities = std::max(0, world->getNumberOfEntities() - (int)editorOnlyEntityIds.size());
+
+    entries.resize(numberOfEntities);
+
+    int index = 0;
+    for (int i = 0; i < world->getNumberOfEntities(); i++)
+    {
+        Entity* entity = world->getEntityByIndex(i);
+
+        std::set<Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
+        if (it == editorOnlyEntityIds.end())
+        {
+            entries[index].entity = entity;
+            entries[index].label = entity->getId().toString();
+            entries[index].indentLevel = 0;
+            idToEntryIndex[entity->getId()] = index;
+            index++;
+        }
+    }
 }

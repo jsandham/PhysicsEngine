@@ -76,6 +76,51 @@ float ClosestDistance::closestDistance(const Ray& ray, const Circle& circle, flo
     }
 }
 
+float ClosestDistance::closestDistance(const Ray& ray, const Sphere& sphere, float& t, glm::vec3& spherePoint)
+{
+    glm::vec3 diff = sphere.mCentre - ray.mOrigin;
+
+    t = glm::dot(ray.mDirection, diff) / glm::dot(ray.mDirection, ray.mDirection);
+
+    glm::vec3 temp = ray.mOrigin + t * ray.mDirection - sphere.mCentre;
+    float d = glm::sqrt(glm::dot(temp, temp)) - sphere.mRadius;
+
+    float ratio = sphere.mRadius / (sphere.mRadius + d);
+
+    spherePoint = sphere.mCentre + ratio * temp;
+
+    return d;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Equation for the plane that the circle lies on:
 // nx * x + ny * y + nz * z = dot(N, C) where N = (nx, ny, nz) is the
 // plane normal and C is the circle origin.

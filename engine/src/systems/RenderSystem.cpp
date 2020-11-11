@@ -14,6 +14,7 @@
 
 #include "../../include/graphics/DeferredRenderer.h"
 #include "../../include/graphics/ForwardRenderer.h"
+#include "../../include/graphics/Graphics.h"
 
 #include "../../include/core/Input.h"
 #include "../../include/core/Log.h"
@@ -103,7 +104,7 @@ void RenderSystem::registerRenderAssets(World *world)
     for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
     {
         Texture2D *texture = world->getAssetByIndex<Texture2D>(i);
-        if (texture != NULL && !texture->isCreated())
+        if (!texture->isCreated())
         {
             texture->create();
 
@@ -123,7 +124,6 @@ void RenderSystem::registerRenderAssets(World *world)
 
         if (!shader->isCompiled())
         {
-
             shader->compile();
 
             if (!shader->isCompiled())
@@ -155,7 +155,7 @@ void RenderSystem::registerRenderAssets(World *world)
     {
         Mesh *mesh = world->getAssetByIndex<Mesh>(i);
 
-        if (mesh != NULL && !mesh->isCreated())
+        if (!mesh->isCreated())
         {
             mesh->create();
 
@@ -217,7 +217,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
             Transform *transform = meshRenderer->getComponent<Transform>(world);
             Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
-            if (mesh == NULL || transform == NULL)
+            if (transform == NULL)
             {
                 continue;
             }
@@ -229,31 +229,24 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
                 Material *material = world->getAssetByIndex<Material>(materialIndex);
 
-                if (material != NULL)
-                {
-                    int shaderIndex = world->getIndexOf(material->getShaderId());
-                    Shader *shader = world->getAssetByIndex<Shader>(shaderIndex);
+                int shaderIndex = world->getIndexOf(material->getShaderId());
 
-                    if (shader != NULL)
-                    {
-                        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);
-                        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
+                int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);
+                int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
 
-                        RenderObject object;
-                        object.transformId = transform->getId();
-                        object.meshRendererId = meshRenderer->getId();
-                        object.meshRendererIndex = i;
-                        object.materialIndex = materialIndex;
-                        object.shaderIndex = shaderIndex;
-                        object.model = model;
-                        object.start = subMeshVertexStartIndex;
-                        object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-                        object.vao = mesh->getNativeGraphicsVAO();
-                        object.culled = false;
+                RenderObject object;
+                object.transformId = transform->getId();
+                object.meshRendererId = meshRenderer->getId();
+                object.meshRendererIndex = i;
+                object.materialIndex = materialIndex;
+                object.shaderIndex = shaderIndex;
+                object.model = model;
+                object.start = subMeshVertexStartIndex;
+                object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
+                object.vao = mesh->getNativeGraphicsVAO();
+                object.culled = false;
 
-                        mRenderObjects.push_back(object);
-                    }
-                }
+                mRenderObjects.push_back(object);
             }
         }
     }

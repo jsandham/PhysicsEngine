@@ -87,6 +87,7 @@ void PhysicsEngine::writeInternalEntityToJson(json::JSON &obj, World *world, Gui
 
     // write entity to json
     obj[entityId.toString()] = json::Object();
+    obj[entityId.toString()]["name"] = entity->getName();
     obj[entityId.toString()]["type"] = "Entity";
     for (size_t j = 0; j < componentsOnEntity.size(); j++)
     {

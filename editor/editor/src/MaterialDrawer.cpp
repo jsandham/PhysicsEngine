@@ -170,7 +170,7 @@ void MaterialDrawer::populatePreviewWorld(World *world)
 
         if (!previewWorld.loadAsset(filepath))
         {
-            Log::error("Error: Could not load shader into preview world\n");
+            Log::error("Could not load shader into preview world\n");
         }
     }
 
@@ -183,7 +183,7 @@ void MaterialDrawer::populatePreviewWorld(World *world)
 
         if (!previewWorld.loadAsset(filepath))
         {
-            Log::error("Error: Could not load material into preview world\n");
+            Log::error("Could not load material into preview world\n");
         }
     }
 
@@ -196,7 +196,7 @@ void MaterialDrawer::populatePreviewWorld(World *world)
 
         if (!previewWorld.loadAsset(filepath))
         {
-            Log::error("Error: Could not load texture into preview world\n");
+            Log::error("Could not load texture into preview world\n");
         }
     }
 

@@ -34,12 +34,19 @@ class TransformGizmo
     GLuint mTranslationVBO[3];
     GLuint mRotationVAO[3];
     GLuint mRotationVBO[3];
+    GLuint mScaleVAO[3];
+    GLuint mScaleVBO[6];
 
-    std::string mVertexShader;
-    std::string mFragmentShader;
     GLuint mGizmoShaderProgram;
     int mGizmoShaderMVPLoc;
     int mGizmoShaderColorLoc;
+
+    GLuint mGizmo3dShaderProgram;
+    int mGizmo3dShaderModelLoc;
+    int mGizmo3dShaderViewLoc;
+    int mGizmo3dShaderProjLoc;
+    int mGizmo3dShaderColorLoc;
+    int mGizmo3dShaderLightPosLoc;
 
     GizmoMode mode;
     Axis highlightedTransformAxis;
@@ -51,24 +58,24 @@ class TransformGizmo
   public:
     void initialize();
     void update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem* gizmoSystem, PhysicsEngine::Transform *selectedTransform,
-                float contentWidth, float contentHeight);
+                float mousePosX, float mousePosY, float contentWidth, float contentHeight);
     void setGizmoMode(GizmoMode mode);
 
     bool isGizmoHighlighted() const;
 
   private:
     void updateTranslation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
-                           float contentWidth, float contentHeight);
+                           float mousePosX, float mousePosY, float contentWidth, float contentHeight);
     void updateRotation(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem* gizmoSystem, PhysicsEngine::Transform *selectedTransform,
-                        float contentWidth, float contentHeight);
+                        float mousePosX, float mousePosY, float contentWidth, float contentHeight);
     void updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
-                     float contentWidth, float contentHeight);
+                     float mousePosX, float mousePosY, float contentWidth, float contentHeight);
 
     void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
                          Axis selectedAxis);
     void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
                       Axis selectedAxis);
-    void drawScale(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+    void drawScale(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos, glm::mat4 model, GLuint fbo, Axis highlightAxis,
                    Axis selectedAxis);
 };
 } // namespace PhysicsEditor

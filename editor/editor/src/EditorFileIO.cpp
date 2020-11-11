@@ -215,6 +215,12 @@ bool PhysicsEditor::writeSceneToBinary(std::string filePath, Guid id, std::strin
         {
 
             entityHeaders[index].mEntityId = Guid(it->first);
+
+            std::string name = it->second["name"].ToString();
+            std::size_t len = std::min(size_t(64 - 1), name.size());
+            memcpy(&(entityHeaders[index].mEntityName[0]), &name[0], len);
+            entityHeaders[index].mEntityName[len] = '\0';
+
             entityHeaders[index].mDoNotDestroy = static_cast<uint8_t>(false);
 
             index++;

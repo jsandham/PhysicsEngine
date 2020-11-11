@@ -4,7 +4,8 @@ if not defined DevEnvDir (
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 )
 
-set GLEW="../include"
+set GLEW="../include/glew-2.1.0"
+set ROOT_INCLUDE="../include"
 set WARN=-W4 
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
@@ -36,7 +37,7 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ imgui code...[0m
 for /R "../src" %%f in (*.cpp) do (
-	call cl /c /I%GLEW% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /I%GLEW% /I%ROOT_INCLUDE% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
 
 :: create list of .obj files

@@ -9,7 +9,7 @@ void PhysicsEngine::writeComponentToJson(json::JSON &obj, World *world, Guid ent
 {
     if (Component::isInternal(type))
     {
-        std::string message = "Error: Invalid component type (" + std::to_string(type) +
+        std::string message = "Invalid component type (" + std::to_string(type) +
                               ") when trying to write internal component to json\n";
         Log::error(message.c_str());
         return;
@@ -23,7 +23,7 @@ void PhysicsEngine::writeSystemToJson(json::JSON &obj, World *world, Guid system
     if (System::isInternal(type))
     {
         std::string message =
-            "Error: Invalid system type (" + std::to_string(type) + ") when trying to write internal system to json\n";
+            "Invalid system type (" + std::to_string(type) + ") when trying to write internal system to json\n";
         Log::error(message.c_str());
         return;
     }
@@ -35,7 +35,7 @@ void PhysicsEngine::writeSystemToJson(json::JSON &obj, World *world, Guid system
 
     //}
     // else {
-    //	std::string message = "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal
+    //	std::string message = "Invalid system type (" + std::to_string(type) + ") when trying to load internal
     // system\n"; 	Log::error(message.c_str()); 	return;
     //}
 

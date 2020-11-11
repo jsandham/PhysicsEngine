@@ -5,6 +5,8 @@
 #include "core/Log.h"
 #include "core/Intersect.h"
 
+#include "graphics/Graphics.h"
+
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
@@ -41,6 +43,8 @@ SceneView::~SceneView()
 void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraSystem *cameraSystem,
                        EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
+    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
+
     focused = false;
     hovered = false;
     static bool sceneViewActive = true;
@@ -207,11 +211,19 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
             drawPerformanceOverlay(cameraSystem);
         }
 
+        ImGuiIO& io = ImGui::GetIO();
+        float sceneContentWidth = (sceneContentMax.x - sceneContentMin.x);
+        float sceneContentHeight = (sceneContentMax.y - sceneContentMin.y);
+        float mousePosX = std::min(std::max(io.MousePos.x - sceneContentMin.x, 0.0f), sceneContentWidth);
+        float mousePosY = sceneContentHeight -
+                          std::min(std::max(io.MousePos.y - sceneContentMin.y, 0.0f), sceneContentHeight);
+
+        float nx = mousePosX / sceneContentWidth;
+        float ny = mousePosY / sceneContentHeight;
+
         // Update selected entity
-        if (cameraSystem->isLeftMouseClicked() && !transformGizmo.isGizmoHighlighted())
+        if (isHovered() && io.MouseClicked[0] && !transformGizmo.isGizmoHighlighted())
         {
-            float nx = cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x);
-            float ny = cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y);
             Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
             Transform *transform = world->getComponentById<Transform>(transformId);
@@ -235,10 +247,7 @@ void SceneView::render(PhysicsEngine::World *world, PhysicsEngine::EditorCameraS
         {
             Transform *transform = world->getComponent<Transform>(clipboard.getSelectedId());
 
-            float width = (float)(sceneContentMax.x - sceneContentMin.x);
-            float height = (float)(sceneContentMax.y - sceneContentMin.y);
-
-            transformGizmo.update(cameraSystem, gizmoSystem, transform, width, height);
+            transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth, sceneContentHeight);
         }
         
         // Finally draw scene
@@ -278,7 +287,7 @@ void SceneView::updateWorld(World *world)
     ImGuiIO &io = ImGui::GetIO();
 
     // Mouse
-    if (isFocused() /*&& sceneView.isHovered()*/)
+    if (isFocused())
     {
         for (int i = 0; i < 5; i++)
         {
@@ -310,7 +319,7 @@ void SceneView::updateWorld(World *world)
     }
 
     // Keyboard
-    if (isFocused() /*&& sceneView.isHovered()*/)
+    if (isFocused())
     {
         for (int i = 0; i < 61; i++)
         {
@@ -375,7 +384,7 @@ void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *camera
 {
     static bool overlayOpened = false;
     static ImGuiWindowFlags overlayFlags =
-        ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 
@@ -398,6 +407,8 @@ void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *camera
         ImGui::Text("Normalized Mouse Position: %f %f\n",
                     cameraSystem->getMousePosX() / (float)(sceneContentMax.x - sceneContentMin.x),
                     cameraSystem->getMousePosY() / (float)(sceneContentMax.y - sceneContentMin.y));
+
+        ImGui::Text("Is heirarchy hovered? %d\n", isHovered());
 
         float width = (float)(sceneContentMax.x - sceneContentMin.x);
         float height = (float)(sceneContentMax.y - sceneContentMin.y);

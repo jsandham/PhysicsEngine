@@ -99,7 +99,7 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
     glDeleteVertexArrays(1, &lineVAO);
     glDeleteBuffers(2, &lineVBO[0]);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<AABBGizmo>& gizmos)
@@ -142,7 +142,7 @@ void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRenderer
 
     glDisable(GL_BLEND);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<PlaneGizmo>& gizmos)
@@ -191,7 +191,7 @@ void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendere
 
     glDisable(GL_BLEND);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<SphereGizmo>& gizmos)
@@ -234,7 +234,7 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
 
     glDisable(GL_BLEND);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<FrustumGizmo>& gizmos)
@@ -377,5 +377,5 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
 
     glDisable(GL_BLEND);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }

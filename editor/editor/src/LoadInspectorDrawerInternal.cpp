@@ -70,7 +70,7 @@ InspectorDrawer *PhysicsEditor::loadInternalInspectorComponentDrawer(int type)
     }
     else
     {
-        std::string message = "Error: Invalid component type (" + std::to_string(type) +
+        std::string message = "Invalid component type (" + std::to_string(type) +
                               ") when trying to load internal inspector component drawer\n";
         Log::error(message.c_str());
         return NULL;
@@ -109,7 +109,7 @@ InspectorDrawer *PhysicsEditor::loadInternalInspectorAssetDrawer(int type)
     }
     else
     {
-        std::string message = "Error: Invalid asset type (" + std::to_string(type) +
+        std::string message = "Invalid asset type (" + std::to_string(type) +
                               ") when trying to load internal inspector asset drawer\n";
         Log::error(message.c_str());
         return NULL;

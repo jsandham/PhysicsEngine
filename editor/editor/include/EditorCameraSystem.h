@@ -91,7 +91,9 @@ class EditorCameraSystem : public System
 
     GraphicsQuery getQuery() const;
 
+    glm::vec3 getCameraPosition() const;
     glm::mat4 getViewMatrix() const;
+    glm::mat4 getInvViewMatrix() const;
     glm::mat4 getProjMatrix() const;
 
     Ray normalizedDeviceSpaceToRay(float x, float y) const;

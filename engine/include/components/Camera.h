@@ -122,7 +122,10 @@ class Camera : public Component
     CameraTargets mTargets;
 
     glm::vec3 mSsaoSamples[64];
-    glm::mat4 viewMatrix;
+
+    glm::vec3 mPosition;
+    glm::mat4 mViewMatrix;
+    glm::mat4 mInvViewMatrix;
 
     bool mIsCreated;
     bool mIsViewportChanged;
@@ -150,7 +153,9 @@ class Camera : public Component
 
     bool isCreated() const;
     bool isViewportChanged() const;
+    glm::vec3 getPosition() const;
     glm::mat4 getViewMatrix() const;
+    glm::mat4 getInvViewMatrix() const;
     glm::mat4 getProjMatrix() const;
     glm::vec3 getSSAOSample(int sample) const;
     Guid getTransformIdAtScreenPos(int x, int y) const;

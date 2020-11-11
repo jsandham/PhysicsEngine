@@ -71,7 +71,6 @@ void ImGui::StyleColorsCherry(ImGuiStyle *dst)
     colors[ImGuiCol_Text] = TEXT(0.78f);
     colors[ImGuiCol_TextDisabled] = TEXT(0.28f);
     colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
-    colors[ImGuiCol_ChildWindowBg] = BG(0.58f);
     colors[ImGuiCol_PopupBg] = BG(0.9f);
     colors[ImGuiCol_Border] = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
     colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
@@ -220,7 +219,6 @@ void ImGui::StyleColorsYellow(ImGuiStyle *dst)
     colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
     colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
     colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
-    colors[ImGuiCol_ChildWindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
     colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
     colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
     colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);

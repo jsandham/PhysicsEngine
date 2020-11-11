@@ -57,14 +57,14 @@ void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererSta
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 
     glGenBuffers(1, &(state->mCameraState.mHandle));
     glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
     glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRendererState *state)
@@ -108,11 +108,11 @@ void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererS
     {
         state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
 
-        Graphics::render(world, renderObjects[i], &camera->mQuery);
+        Graphics::render(renderObjects[i], camera->mQuery);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Graphics::checkError();
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererState *state,

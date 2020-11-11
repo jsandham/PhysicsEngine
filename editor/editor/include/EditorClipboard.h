@@ -24,8 +24,8 @@ class EditorClipboard
 {
   private:
     InteractionType draggedType;
-    PhysicsEngine::Guid draggedId;
     InteractionType selectedType;
+    PhysicsEngine::Guid draggedId;
     PhysicsEngine::Guid selectedId;
 
   public:
