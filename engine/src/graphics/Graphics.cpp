@@ -9,7 +9,7 @@
 
 using namespace PhysicsEngine;
 
-void Graphics::checkError(long line, const char* file)
+void Graphics::checkError(long line, const char *file)
 {
     GLenum error;
     while ((error = glGetError()) != GL_NO_ERROR)
@@ -45,13 +45,13 @@ void Graphics::checkError(long line, const char* file)
             break;
         }
 
-        std::string errorMessage = errorStr + "(" + std::to_string(error) + ") line: " + std::to_string(line) + 
-                                   " file: " + file + "\n";
+        std::string errorMessage =
+            errorStr + "(" + std::to_string(error) + ") line: " + std::to_string(line) + " file: " + file + "\n";
         Log::error(errorMessage.c_str());
     }
 }
 
-void Graphics::checkFrambufferError(long line, const char* file)
+void Graphics::checkFrambufferError(long line, const char *file)
 {
     GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
     if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE)
@@ -66,8 +66,7 @@ void Graphics::checkFrambufferError(long line, const char* file)
             errorStr = "One of the buffers enabled for rendering is incomplete";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-            errorStr =
-                "No buffers are attached to the FBO and it is not configured for rendering without attachments";
+            errorStr = "No buffers are attached to the FBO and it is not configured for rendering without attachments";
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
             errorStr = "Not all attachments enabled via glDrawBuffers exists in framebuffer";
@@ -89,8 +88,8 @@ void Graphics::checkFrambufferError(long line, const char* file)
             break;
         }
 
-        std::string errorMessage = errorStr + "(" + std::to_string(framebufferStatus) + ") line: " + std::to_string(line) +
-                                   " file: " + file + "\n";
+        std::string errorMessage = errorStr + "(" + std::to_string(framebufferStatus) +
+                                   ") line: " + std::to_string(line) + " file: " + file + "\n";
         Log::error(errorMessage.c_str());
     }
 }
@@ -132,7 +131,7 @@ void Graphics::endQuery(GLuint queryId, GLuint64 *elapsedTime)
     glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime);
 }
 
-void Graphics::createGlobalCameraUniforms(CameraUniform& uniform)
+void Graphics::createGlobalCameraUniforms(CameraUniform &uniform)
 {
     glGenBuffers(1, &uniform.mBuffer);
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
@@ -143,7 +142,7 @@ void Graphics::createGlobalCameraUniforms(CameraUniform& uniform)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createGlobalLightUniforms(LightUniform& uniform)
+void Graphics::createGlobalLightUniforms(LightUniform &uniform)
 {
     glGenBuffers(1, &uniform.mBuffer);
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
@@ -154,7 +153,7 @@ void Graphics::createGlobalLightUniforms(LightUniform& uniform)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::setGlobalCameraUniforms(const CameraUniform& uniform)
+void Graphics::setGlobalCameraUniforms(const CameraUniform &uniform)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 144);
@@ -166,7 +165,7 @@ void Graphics::setGlobalCameraUniforms(const CameraUniform& uniform)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::setGlobalLightUniforms(const LightUniform& uniform)
+void Graphics::setGlobalLightUniforms(const LightUniform &uniform)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &uniform.mLightProjection[0]);
@@ -192,7 +191,7 @@ void Graphics::setGlobalLightUniforms(const LightUniform& uniform)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createScreenQuad(GLuint* vao, GLuint* vbo)
+void Graphics::createScreenQuad(GLuint *vao, GLuint *vbo)
 {
     // generate screen quad for final rendering
     constexpr float quadVertices[] = {
@@ -208,9 +207,9 @@ void Graphics::createScreenQuad(GLuint* vao, GLuint* vbo)
     glBindBuffer(GL_ARRAY_BUFFER, *vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -225,7 +224,7 @@ void Graphics::renderScreenQuad(GLuint vao)
     glBindVertexArray(0);
 }
 
-void Graphics::createFramebuffer(int width, int height, GLuint* fbo, GLuint* color, GLuint* depth)
+void Graphics::createFramebuffer(int width, int height, GLuint *fbo, GLuint *color, GLuint *depth)
 {
     // generate fbo (color + depth)
     glGenFramebuffers(1, fbo);
@@ -247,7 +246,7 @@ void Graphics::createFramebuffer(int width, int height, GLuint* fbo, GLuint* col
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depth, 0);
 
     // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, mainAttachments);
 
     Graphics::checkFrambufferError(__LINE__, __FILE__);
@@ -255,7 +254,7 @@ void Graphics::createFramebuffer(int width, int height, GLuint* fbo, GLuint* col
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Graphics::destroyFramebuffer(GLuint* fbo, GLuint* color, GLuint* depth)
+void Graphics::destroyFramebuffer(GLuint *fbo, GLuint *color, GLuint *depth)
 {
     // detach textures from their framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
@@ -281,7 +280,7 @@ void Graphics::unbindFramebuffer()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Graphics::clearFrambufferColor(const Color& color)
+void Graphics::clearFrambufferColor(const Color &color)
 {
     glClearColor(color.r, color.g, color.b, color.a);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -758,7 +757,8 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint* tex)
+void Graphics::createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+                               GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
@@ -779,12 +779,13 @@ void Graphics::createTexture2D(TextureFormat format, int width, int height, cons
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyTexture2D(GLuint* tex)
+void Graphics::destroyTexture2D(GLuint *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels, std::vector<unsigned char>& data, GLuint tex)
+void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
+                                   std::vector<unsigned char> &data, GLuint tex)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -797,7 +798,8 @@ void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint tex)
+void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+                                    GLuint tex)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -810,15 +812,15 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint* tex)
+void Graphics::createTexture3D(TextureFormat format, int width, int height, int depth,
+                               const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE,
-        &data[0]);
+    glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -831,40 +833,40 @@ void Graphics::createTexture3D(TextureFormat format, int width, int height, int 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyTexture3D(GLuint* tex)
+void Graphics::destroyTexture3D(GLuint *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels, std::vector<unsigned char>& data, GLuint tex)
+void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
+                                   std::vector<unsigned char> &data, GLuint tex)
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE,
-        width * height * depth * numChannels, &data[0]);
+    glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * depth * numChannels, &data[0]);
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint tex)
+void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
+                                    const std::vector<unsigned char> &data, GLuint tex)
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE,
-        &data[0]);
+    glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint* tex)
+void Graphics::createCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
@@ -874,7 +876,7 @@ void Graphics::createCubemap(TextureFormat format, int width, const std::vector<
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-            GL_UNSIGNED_BYTE, &data[0]);
+                     GL_UNSIGNED_BYTE, &data[0]);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -888,12 +890,13 @@ void Graphics::createCubemap(TextureFormat format, int width, const std::vector<
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyCubemap(GLuint* tex)
+void Graphics::destroyCubemap(GLuint *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data, GLuint tex)
+void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
+                                 GLuint tex)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
@@ -902,7 +905,7 @@ void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannel
     for (unsigned int i = 0; i < 6; i++)
     {
         glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE,
-            &data[i * width * width * numChannels]);
+                      &data[i * width * width * numChannels]);
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -910,7 +913,7 @@ void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannel
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint tex)
+void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint tex)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
@@ -919,7 +922,7 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-            GL_UNSIGNED_BYTE, &data[0]);
+                     GL_UNSIGNED_BYTE, &data[0]);
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -927,8 +930,8 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-
-void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals, const std::vector<float> &texCoords, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2)
+void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
+                          const std::vector<float> &texCoords, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
@@ -948,8 +951,7 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &(texCoords[0]),
-        GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &(texCoords[0]), GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
@@ -958,12 +960,12 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyMesh(GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2)
+void Graphics::destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2)
 {
     glDeleteBuffers(1, vbo0);
     glDeleteBuffers(1, vbo1);
     glDeleteBuffers(1, vbo2);
-    
+
     glDeleteVertexArrays(1, vao);
 }
 
@@ -1149,9 +1151,9 @@ void Graphics::setFloat(int nameLocation, float value)
     glUniform1f(nameLocation, value);
 }
 
-void Graphics::setColor(int nameLocation, const Color& color)
+void Graphics::setColor(int nameLocation, const Color &color)
 {
-    glUniform4fv(nameLocation, 1, static_cast<const GLfloat*>(&color.r));
+    glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.r));
 }
 
 void Graphics::setVec2(int nameLocation, const glm::vec2 &vec)
@@ -1281,7 +1283,8 @@ int Graphics::getTexture2D(int nameLocation, int texUnit, int program)
     return tex;
 }
 
-void Graphics::applyMaterial(const std::vector<ShaderUniform>& uniforms, const std::vector<GLint>& textures, int shaderProgram)
+void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<GLint> &textures,
+                             int shaderProgram)
 {
     int textureUnit = 0;
     for (size_t i = 0; i < uniforms.size(); i++)
@@ -1290,7 +1293,8 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform>& uniforms, const s
         {
             if (textures[textureUnit] != -1)
             {
-                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit, textures[textureUnit]);
+                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit,
+                                       textures[textureUnit]);
             }
             else
             {
@@ -1301,23 +1305,28 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform>& uniforms, const s
         }
         else if (uniforms[i].mType == GL_INT)
         {
-            Graphics::setInt(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const int*>(uniforms[i].mData));
+            Graphics::setInt(findUniformLocation(uniforms[i].mName, shaderProgram),
+                             *reinterpret_cast<const int *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT)
         {
-            Graphics::setFloat(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const float*>(uniforms[i].mData));
+            Graphics::setFloat(findUniformLocation(uniforms[i].mName, shaderProgram),
+                               *reinterpret_cast<const float *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC2)
         {
-            Graphics::setVec2(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec2*>(uniforms[i].mData));
+            Graphics::setVec2(findUniformLocation(uniforms[i].mName, shaderProgram),
+                              *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC3)
         {
-            Graphics::setVec3(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec3*>(uniforms[i].mData));
+            Graphics::setVec3(findUniformLocation(uniforms[i].mName, shaderProgram),
+                              *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC4)
         {
-            Graphics::setVec4(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec4*>(uniforms[i].mData));
+            Graphics::setVec4(findUniformLocation(uniforms[i].mName, shaderProgram),
+                              *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
         }
     }
 

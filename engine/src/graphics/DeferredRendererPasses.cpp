@@ -131,8 +131,8 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
 
     for (int i = 0; i < world->getNumberOfComponents<Light>(); i++)
     {
-        //Light *light = world->getComponentByIndex<Light>(i);
-        //Transform *lightTransform = light->getComponent<Transform>(world);
+        // Light *light = world->getComponentByIndex<Light>(i);
+        // Transform *lightTransform = light->getComponent<Transform>(world);
 
         // state->mSimpleLitDeferredShader.setVec3(state->mSimpleLitDeferredShaderLightPosLocs,
         // lightTransform->mPosition);

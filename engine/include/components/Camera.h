@@ -138,7 +138,7 @@ class Camera : public Component
     ~Camera();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid& componentId, const Guid& entityId) const;
+    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
 
     void createTargets();

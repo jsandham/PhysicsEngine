@@ -68,7 +68,7 @@ std::vector<char> Camera::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> Camera::serialize(const Guid& componentId, const Guid& entityId) const
+std::vector<char> Camera::serialize(const Guid &componentId, const Guid &entityId) const
 {
     CameraHeader header;
     header.mComponentId = componentId;

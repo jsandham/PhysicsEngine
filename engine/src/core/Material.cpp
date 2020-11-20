@@ -115,12 +115,12 @@ void Material::apply(World *world)
     {
         if (mUniforms[i].mType == GL_SAMPLER_2D)
         {
-            Texture2D* texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid*>(mUniforms[i].mData));
+            Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != NULL)
             {
                 textures.push_back(texture->getNativeGraphics());
             }
-            else 
+            else
             {
                 textures.push_back(-1);
             }

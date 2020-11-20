@@ -55,28 +55,31 @@ float ClosestDistance::closestDistance(const Ray &ray1, const Ray &ray2, float &
     }
 }
 
-float ClosestDistance::closestDistance(const Ray& ray, const Circle& circle, float& t, glm::vec3& circlePoint)
+float ClosestDistance::closestDistance(const Ray &ray, const Circle &circle, float &t, glm::vec3 &circlePoint)
 {
     float D = glm::dot(circle.mNormal, circle.mCentre);
 
     t = (D - glm::dot(circle.mNormal, ray.mOrigin)) / glm::dot(circle.mNormal, ray.mDirection);
 
-    if (t >= 0.0f) { // ray intersects circle plane
+    if (t >= 0.0f)
+    { // ray intersects circle plane
         glm::vec3 planePoint = ray.getPoint(t);
         circlePoint = circle.mCentre + circle.mRadius * glm::normalize(planePoint - circle.mCentre);
 
         return glm::distance(planePoint, circlePoint);
     }
-    else { // ray does not intersect circle plane
+    else
+    { // ray does not intersect circle plane
         // find closest circle point to ray origin
         glm::vec3 temp = ray.mOrigin - circle.mCentre;
-        circlePoint = temp - (glm::dot(temp, circle.mNormal) / glm::dot(circle.mNormal, circle.mNormal)) * circle.mNormal;
-        
+        circlePoint =
+            temp - (glm::dot(temp, circle.mNormal) / glm::dot(circle.mNormal, circle.mNormal)) * circle.mNormal;
+
         return glm::distance(ray.mOrigin, circlePoint);
     }
 }
 
-float ClosestDistance::closestDistance(const Ray& ray, const Sphere& sphere, float& t, glm::vec3& spherePoint)
+float ClosestDistance::closestDistance(const Ray &ray, const Sphere &sphere, float &t, glm::vec3 &spherePoint)
 {
     glm::vec3 diff = sphere.mCentre - ray.mOrigin;
 
@@ -91,35 +94,6 @@ float ClosestDistance::closestDistance(const Ray& ray, const Sphere& sphere, flo
 
     return d;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Equation for the plane that the circle lies on:
 // nx * x + ny * y + nz * z = dot(N, C) where N = (nx, ny, nz) is the
@@ -155,7 +129,7 @@ float ClosestDistance::closestDistance(const Ray& ray, const Sphere& sphere, flo
 // h4 = a
 //
 // See https://www.geometrictools.com/Documentation/DistanceToCircle3.pdf
-//float ClosestDistance::closestDistance(const Ray &ray, const Circle &circle, float &t)
+// float ClosestDistance::closestDistance(const Ray &ray, const Circle &circle, float &t)
 //{
 //    glm::vec3 D = ray.mOrigin - circle.mCentre;
 //    glm::vec3 NxM = glm::cross(circle.mNormal, ray.mDirection);

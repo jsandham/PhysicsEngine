@@ -29,7 +29,7 @@ class CleanUpSystem : public System
     void deserialize(const std::vector<char> &data);
 
     void init(World *world);
-    void update(const Input& input, const Time& time);
+    void update(const Input &input, const Time &time);
 };
 
 template <typename T> struct IsCleanUpSystem

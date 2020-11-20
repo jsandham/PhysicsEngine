@@ -50,7 +50,7 @@ void CleanUpSystem::init(World *world)
     mWorld = world;
 }
 
-void CleanUpSystem::update(const Input& input, const Time& time)
+void CleanUpSystem::update(const Input &input, const Time &time)
 {
     std::vector<triple<Guid, Guid, int>> componentIdsMarkedLatentDestroy = mWorld->getComponentIdsMarkedLatentDestroy();
     for (size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++)

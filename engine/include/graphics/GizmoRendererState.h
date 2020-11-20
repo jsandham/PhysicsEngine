@@ -12,66 +12,87 @@
 
 namespace PhysicsEngine
 {
-    struct GizmoRendererState
+struct GizmoRendererState
+{
+    Shader *mLineShader;
+    int mLineShaderProgram;
+    int mLineShaderMVPLoc;
+
+    Shader *mGizmoShader;
+    int mGizmoShaderProgram;
+    int mGizmoShaderModelLoc;
+    int mGizmoShaderViewLoc;
+    int mGizmoShaderProjLoc;
+    int mGizmoShaderColorLoc;
+    int mGizmoShaderLightPosLoc;
+};
+
+struct LineGizmo
+{
+    Line mLine;
+    Color mColor;
+
+    LineGizmo()
     {
-        Shader* mLineShader;
-        int mLineShaderProgram;
-        int mLineShaderMVPLoc;
-
-        Shader* mGizmoShader;
-        int mGizmoShaderProgram;
-        int mGizmoShaderModelLoc;
-        int mGizmoShaderViewLoc;
-        int mGizmoShaderProjLoc;
-        int mGizmoShaderColorLoc;
-        int mGizmoShaderLightPosLoc;
-    };
-
-    struct LineGizmo
+    }
+    LineGizmo(const Line &line, const Color &color) : mLine(line), mColor(color)
     {
-        Line mLine;
-        Color mColor;
+    }
+};
 
-        LineGizmo() {}
-        LineGizmo(const Line& line, const Color& color) : mLine(line), mColor(color) {}
-    };
+struct SphereGizmo
+{
+    Sphere mSphere;
+    Color mColor;
 
-    struct SphereGizmo
+    SphereGizmo()
     {
-        Sphere mSphere;
-        Color mColor;
-
-        SphereGizmo() {}
-        SphereGizmo(const Sphere& sphere, const Color& color) : mSphere(sphere), mColor(color) {}
-    };
-
-    struct AABBGizmo
+    }
+    SphereGizmo(const Sphere &sphere, const Color &color) : mSphere(sphere), mColor(color)
     {
-        AABB mAABB;
-        Color mColor;
+    }
+};
 
-        AABBGizmo() {}
-        AABBGizmo(const AABB& aabb, const Color& color) : mAABB(aabb), mColor(color) {}
-    };
+struct AABBGizmo
+{
+    AABB mAABB;
+    Color mColor;
 
-    struct FrustumGizmo
+    AABBGizmo()
     {
-        Frustum mFrustum;
-        Color mColor;
-
-        FrustumGizmo() {}
-        FrustumGizmo(const Frustum& frustum, const Color& color) : mFrustum(frustum), mColor(color) {}
-    };
-
-    struct PlaneGizmo
+    }
+    AABBGizmo(const AABB &aabb, const Color &color) : mAABB(aabb), mColor(color)
     {
-        Plane mPlane;
-        Color mColor;
-        glm::vec3 mExtents;
+    }
+};
 
-        PlaneGizmo() {}
-        PlaneGizmo(const Plane& plane, glm::vec3 extents, const Color& color) : mPlane(plane), mExtents(extents), mColor(color) {}
-    };
+struct FrustumGizmo
+{
+    Frustum mFrustum;
+    Color mColor;
+
+    FrustumGizmo()
+    {
+    }
+    FrustumGizmo(const Frustum &frustum, const Color &color) : mFrustum(frustum), mColor(color)
+    {
+    }
+};
+
+struct PlaneGizmo
+{
+    Plane mPlane;
+    Color mColor;
+    glm::vec3 mExtents;
+
+    PlaneGizmo()
+    {
+    }
+    PlaneGizmo(const Plane &plane, glm::vec3 extents, const Color &color)
+        : mPlane(plane), mExtents(extents), mColor(color)
+    {
+    }
+};
 } // namespace PhysicsEngine
 
 #endif

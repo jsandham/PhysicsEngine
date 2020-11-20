@@ -61,8 +61,8 @@ class InternalShaders
     static const Guid overdrawShaderId;
 
     static Guid loadFontShader(World *world);
-    static Guid loadGizmoShader(World* world);
-    static Guid loadLineShader(World* world);
+    static Guid loadGizmoShader(World *world);
+    static Guid loadLineShader(World *world);
     static Guid loadColorShader(World *world);
     static Guid loadPositionAndNormalsShader(World *world);
     static Guid loadSsaoShader(World *world);

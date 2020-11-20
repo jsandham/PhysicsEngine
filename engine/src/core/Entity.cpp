@@ -1,5 +1,5 @@
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 #include "../../include/core/Entity.h"
 #include "../../include/core/PoolAllocator.h"
@@ -35,7 +35,7 @@ std::vector<char> Entity::serialize(const Guid &entityId) const
     header.mDoNotDestroy = static_cast<uint8_t>(mDoNotDestroy);
 
     std::size_t len = std::min(size_t(64 - 1), mEntityName.size());
-    memcpy(&header.mEntityName[0], &mEntityName[0], len); 
+    memcpy(&header.mEntityName[0], &mEntityName[0], len);
     header.mEntityName[len] = '\0';
 
     std::vector<char> data(sizeof(EntityHeader));
@@ -79,7 +79,7 @@ std::string Entity::getName() const
     return mEntityName;
 }
 
-void Entity::setName(const std::string& name)
+void Entity::setName(const std::string &name)
 {
     mEntityName = name;
 }

@@ -38,9 +38,9 @@
 
 #include "../systems/CleanUpSystem.h"
 #include "../systems/DebugSystem.h"
+#include "../systems/GizmoSystem.h"
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
-#include "../systems/GizmoSystem.h"
 #include "../systems/System.h"
 
 namespace PhysicsEngine
@@ -449,7 +449,7 @@ class World
         return getSystem_impl(&mDebugSystemAllocator);
     }
 
-    template <> GizmoSystem* getSystem<GizmoSystem>()
+    template <> GizmoSystem *getSystem<GizmoSystem>()
     {
         return getSystem_impl(&mGizmoSystemAllocator);
     }
@@ -624,7 +624,7 @@ class World
         return addSystem_impl(&mDebugSystemAllocator, order);
     }
 
-    template <> GizmoSystem* addSystem<GizmoSystem>(int order)
+    template <> GizmoSystem *addSystem<GizmoSystem>(int order)
     {
         return addSystem_impl(&mGizmoSystemAllocator, order);
     }
@@ -649,7 +649,7 @@ class World
         return getSystemByIndex_impl(&mDebugSystemAllocator, index);
     }
 
-    template <> GizmoSystem* getSystemByIndex<GizmoSystem>(int index)
+    template <> GizmoSystem *getSystemByIndex<GizmoSystem>(int index)
     {
         return getSystemByIndex_impl(&mGizmoSystemAllocator, index);
     }
@@ -674,7 +674,7 @@ class World
         return getSystemById_impl(&mDebugSystemAllocator, systemId);
     }
 
-    template <> GizmoSystem* getSystemById<GizmoSystem>(const Guid& systemId)
+    template <> GizmoSystem *getSystemById<GizmoSystem>(const Guid &systemId)
     {
         return getSystemById_impl(&mGizmoSystemAllocator, systemId);
     }
@@ -1431,7 +1431,7 @@ class World
         return getById_impl<DebugSystem>(mDebugSystemIdToGlobalIndex, allocator, assetId);
     }
     template <>
-    GizmoSystem* getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem>* allocator, const Guid& assetId)
+    GizmoSystem *getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem> *allocator, const Guid &assetId)
     {
         return getById_impl<GizmoSystem>(mGizmoSystemIdToGlobalIndex, allocator, assetId);
     }
@@ -1590,7 +1590,7 @@ class World
         mIdToType[id] = type;
     }
 
-    template <> void addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid& id, int index, int type)
+    template <> void addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid &id, int index, int type)
     {
         mGizmoSystemIdToGlobalIndex[id] = index;
         mIdToGlobalIndex[id] = index;

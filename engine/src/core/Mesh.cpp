@@ -270,5 +270,4 @@ void Mesh::destroy()
 
 void Mesh::writeMesh()
 {
-    
 }

@@ -60,7 +60,6 @@ void DebugSystem::init(World *world)
     mWorld = world;
 }
 
-void DebugSystem::update(const Input& input, const Time& time)
+void DebugSystem::update(const Input &input, const Time &time)
 {
-    
 }

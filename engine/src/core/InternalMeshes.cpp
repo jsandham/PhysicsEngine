@@ -194,16 +194,16 @@ const std::vector<float> InternalMeshes::cubeTexCoords = {
 
 const std::vector<int> InternalMeshes::cubeSubMeshStartIndicies = {0, 108};
 
-const std::vector<float> InternalMeshes::planeVertices = { -1.0f, -1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 1.0f,  1.0f,  0.0f,
-                                                        -1.0f, -1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f, 1.0f, 0.0f};
+const std::vector<float> InternalMeshes::planeVertices = {-1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+                                                          -1.0f, -1.0f, 0.0f, 1.0f, 1.0f,  0.0f, -1.0f, 1.0f, 0.0f};
 
-const std::vector<float> InternalMeshes::planeNormals = { 0.0f,  0.0f,  1.0f, 0.0f,  0.0f,  1.0f, 0.0f,  0.0f,  1.0f,
-                                                        0.0f,  0.0f,  1.0f, 0.0f,  0.0f,  1.0f, 0.0f,  0.0f,  1.0f};
+const std::vector<float> InternalMeshes::planeNormals = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                                                         0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 
-const std::vector<float> InternalMeshes::planeTexCoords = {
-    0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
+const std::vector<float> InternalMeshes::planeTexCoords = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                                                           0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
 
-const std::vector<int> InternalMeshes::planeSubMeshStartIndicies = { 0, 18 };
+const std::vector<int> InternalMeshes::planeSubMeshStartIndicies = {0, 18};
 
 const Guid InternalMeshes::sphereMeshId("0a79687e-6398-4a50-9187-4387b9098bef");
 const Guid InternalMeshes::cubeMeshId("4d267f0a-bacf-403e-9381-b7b313f609f6");
@@ -245,9 +245,9 @@ Guid InternalMeshes::loadCubeMesh(World *world)
                             InternalMeshes::cubeSubMeshStartIndicies);
 }
 
-Guid InternalMeshes::loadPlaneMesh(World* world)
+Guid InternalMeshes::loadPlaneMesh(World *world)
 {
     return loadInternalMesh(world, InternalMeshes::planeMeshId, InternalMeshes::planeVertices,
-        InternalMeshes::planeNormals, InternalMeshes::planeTexCoords,
-        InternalMeshes::planeSubMeshStartIndicies);
+                            InternalMeshes::planeNormals, InternalMeshes::planeTexCoords,
+                            InternalMeshes::planeSubMeshStartIndicies);
 }

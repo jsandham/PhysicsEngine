@@ -378,8 +378,8 @@ std::vector<float> Octtree::getLines() const
 // 		int localNodeIndex = firstNode(tx0, ty0, tz0, txm, tym, tzm);
 
 // 		while(localNodeIndex < 8){
-// 			std::cout << "first local node index: " << localNodeIndex << " direction corrected first local node index: " <<
-// (localNodeIndex ^ a) << std::endl; 			stack.push(8*nodeIndex + (localNodeIndex ^ a) + 1);
+// 			std::cout << "first local node index: " << localNodeIndex << " direction corrected first local node index: "
+// << (localNodeIndex ^ a) << std::endl; 			stack.push(8*nodeIndex + (localNodeIndex ^ a) + 1);
 // 			//stack.push(8*nodeIndex + localNodeIndex + 1);
 // 			// testStack.push(8*testNodeIndex + (localNodeIndex ^ a) + 1);
 
@@ -859,13 +859,16 @@ int Octtree::nextNode(float tx, int i, float ty, int j, float tz, int k)
 // 			}
 
 // 			nodes[8 * index + 1].bounds.centre = nodes[index].bounds.centre + 0.5f * glm::vec3(extents.x, extents.y,
-// extents.z); 			nodes[8 * index + 2].bounds.centre = nodes[index].bounds.centre + 0.5f * glm::vec3(extents.x, extents.y,
-// -extents.z); 			nodes[8 * index + 3].bounds.centre = nodes[index].bounds.centre + 0.5f * glm::vec3(extents.x,
-// -extents.y, extents.z); 			nodes[8 * index + 4].bounds.centre = nodes[index].bounds.centre + 0.5f *
-// glm::vec3(-extents.x, extents.y, extents.z); 			nodes[8 * index + 5].bounds.centre = nodes[index].bounds.centre + 0.5f *
-// glm::vec3(extents.x, -extents.y, -extents.z); 			nodes[8 * index + 6].bounds.centre = nodes[index].bounds.centre + 0.5f
-// * glm::vec3(-extents.x, -extents.y, extents.z); 			nodes[8 * index + 7].bounds.centre = nodes[index].bounds.centre +
-// 0.5f * glm::vec3(-extents.x, extents.y, -extents.z); 			nodes[8 * index + 8].bounds.centre = nodes[index].bounds.centre
+// extents.z); 			nodes[8 * index + 2].bounds.centre = nodes[index].bounds.centre + 0.5f * glm::vec3(extents.x,
+// extents.y, -extents.z); 			nodes[8 * index + 3].bounds.centre = nodes[index].bounds.centre + 0.5f *
+// glm::vec3(extents.x, -extents.y, extents.z); 			nodes[8 * index + 4].bounds.centre =
+// nodes[index].bounds.centre + 0.5f * glm::vec3(-extents.x, extents.y, extents.z); 			nodes[8 * index +
+// 5].bounds.centre = nodes[index].bounds.centre + 0.5f *
+// glm::vec3(extents.x, -extents.y, -extents.z); 			nodes[8 * index + 6].bounds.centre = nodes[index].bounds.centre +
+// 0.5f
+// * glm::vec3(-extents.x, -extents.y, extents.z); 			nodes[8 * index + 7].bounds.centre = nodes[index].bounds.centre
+// + 0.5f * glm::vec3(-extents.x, extents.y, -extents.z); 			nodes[8 * index + 8].bounds.centre =
+// nodes[index].bounds.centre
 // + 0.5f * glm::vec3(-extents.x, -extents.y, -extents.z);
 
 // 			for (int i = 8 * index + 1; i <= 8 * index + 8; i++){

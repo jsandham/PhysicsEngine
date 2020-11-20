@@ -70,7 +70,7 @@ void RenderSystem::init(World *world)
     mDeferredRenderer.init(mWorld, mRenderToScreen);
 }
 
-void RenderSystem::update(const Input& input, const Time& time)
+void RenderSystem::update(const Input &input, const Time &time)
 {
     registerRenderAssets(mWorld);
     registerCameras(mWorld);

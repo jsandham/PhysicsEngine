@@ -20,7 +20,7 @@ class Component
     virtual ~Component() = 0;
 
     virtual std::vector<char> serialize() const = 0;
-    virtual std::vector<char> serialize(const Guid& componentId, const Guid& entityId) const = 0;
+    virtual std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const = 0;
     virtual void deserialize(const std::vector<char> &data) = 0;
 
     Entity *getEntity(World *world) const;

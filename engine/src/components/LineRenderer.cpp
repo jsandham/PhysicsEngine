@@ -24,7 +24,7 @@ std::vector<char> LineRenderer::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> LineRenderer::serialize(const Guid& componentId, const Guid& entityId) const
+std::vector<char> LineRenderer::serialize(const Guid &componentId, const Guid &entityId) const
 {
     LineRendererHeader header;
     header.mComponentId = componentId;

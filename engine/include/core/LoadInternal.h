@@ -32,9 +32,9 @@
 
 #include "../systems/CleanUpSystem.h"
 #include "../systems/DebugSystem.h"
+#include "../systems/GizmoSystem.h"
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
-#include "../systems/GizmoSystem.h"
 #include "../systems/System.h"
 
 namespace PhysicsEngine
@@ -56,7 +56,7 @@ void addInternalSystemIdToIndexMap(std::unordered_map<Guid, int> *renderSystemId
                                    std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                    std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                    std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                   std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
+                                   std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
                                    std::unordered_map<Guid, int> *idToGlobalIndex,
                                    std::unordered_map<Guid, int> *idToType, const Guid &id, int type, int index);
 void addInternalAssetIdToIndexMap(
@@ -83,7 +83,7 @@ void removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, int> *renderSys
                                         std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                         std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                         std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                        std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
+                                        std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
                                         std::unordered_map<Guid, int> *idToGlobalIndex,
                                         std::unordered_map<Guid, int> *idToType, const Guid &id, int type);
 void removeInternalAssetIdFromIndexMap(
@@ -108,7 +108,7 @@ System *getInternalSystem(PoolAllocator<RenderSystem> *renderSystemAllocator,
                           PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                           PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
                           PoolAllocator<DebugSystem> *debugSystemAllocator,
-                          PoolAllocator<GizmoSystem>* gizmoSystemAllocator, int type, int index);
+                          PoolAllocator<GizmoSystem> *gizmoSystemAllocator, int type, int index);
 Asset *getInternalAsset(PoolAllocator<Mesh> *meshAllocator, PoolAllocator<Material> *materialAllocator,
                         PoolAllocator<Shader> *shaderAllocator, PoolAllocator<Texture2D> *texture2DAllocator,
                         PoolAllocator<Texture3D> *texture3DAllocator, PoolAllocator<Cubemap> *cubemapAllocator,
@@ -127,7 +127,7 @@ System *loadInternalSystem(PoolAllocator<RenderSystem> *renderSystemAllocator,
                            PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                            PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
                            PoolAllocator<DebugSystem> *debugSystemAllocator,
-                           PoolAllocator<GizmoSystem>* gizmoSystemAllocator, const std::vector<char> &data, int type,
+                           PoolAllocator<GizmoSystem> *gizmoSystemAllocator, const std::vector<char> &data, int type,
                            int *index);
 Asset *loadInternalAsset(PoolAllocator<Mesh> *meshAllocator, PoolAllocator<Material> *materialAllocator,
                          PoolAllocator<Shader> *shaderAllocator, PoolAllocator<Texture2D> *texture2DAllocator,

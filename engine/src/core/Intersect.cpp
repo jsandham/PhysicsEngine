@@ -9,7 +9,7 @@ using namespace PhysicsEngine;
 
 float Intersect::EPSILON = 0.000001f;
 
-bool Intersect::intersect(const Ray &ray, const Plane &plane, float& dist)
+bool Intersect::intersect(const Ray &ray, const Plane &plane, float &dist)
 {
     float denom = glm::dot(plane.mNormal, ray.mDirection);
     if (abs(denom) > EPSILON)
@@ -74,7 +74,7 @@ bool Intersect::intersect(const Ray &ray, const Plane &plane)
 // see "3D Game Engine Design: A Practical Approach to Real-Time Computer Graphics" by David H Eberly
 bool Intersect::intersect(const Ray &ray, const Sphere &sphere)
 {
-    //ray.mDirection = glm::normalize(ray.mDirection);
+    // ray.mDirection = glm::normalize(ray.mDirection);
 
     // quadratic of form 0 = t^2 + 2*a1*t + a0
     glm::vec3 q = ray.mOrigin - sphere.mCentre;

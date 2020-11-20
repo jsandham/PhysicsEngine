@@ -3,10 +3,10 @@
 
 #include "../glm/glm.hpp"
 
-#include "../core/Texture.h"
-#include "../core/Shader.h"
 #include "../components/Camera.h"
 #include "../components/Light.h"
+#include "../core/Shader.h"
+#include "../core/Texture.h"
 
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
@@ -61,26 +61,26 @@ struct LightUniform
 class Graphics
 {
   public:
-    static void checkError(long line, const char* file);
-    static void checkFrambufferError(long line, const char* file);
+    static void checkError(long line, const char *file);
+    static void checkFrambufferError(long line, const char *file);
     static GLenum getTextureFormat(TextureFormat format);
 
     static void beginQuery(GLuint queryId);
     static void endQuery(GLuint queryId, GLuint64 *elapsedTime);
 
-    static void createGlobalCameraUniforms(CameraUniform& uniform);
-    static void createGlobalLightUniforms(LightUniform& uniform);
-    static void setGlobalCameraUniforms(const CameraUniform& uniform);
-    static void setGlobalLightUniforms(const LightUniform& uniform);
+    static void createGlobalCameraUniforms(CameraUniform &uniform);
+    static void createGlobalLightUniforms(LightUniform &uniform);
+    static void setGlobalCameraUniforms(const CameraUniform &uniform);
+    static void setGlobalLightUniforms(const LightUniform &uniform);
 
-    static void createScreenQuad(GLuint* vao, GLuint* vbo);
+    static void createScreenQuad(GLuint *vao, GLuint *vbo);
     static void renderScreenQuad(GLuint vao);
 
-    static void createFramebuffer(int width, int height, GLuint* fbo, GLuint* color, GLuint* depth);
-    static void destroyFramebuffer(GLuint* fbo, GLuint* color, GLuint* depth);
+    static void createFramebuffer(int width, int height, GLuint *fbo, GLuint *color, GLuint *depth);
+    static void destroyFramebuffer(GLuint *fbo, GLuint *color, GLuint *depth);
     static void bindFramebuffer(GLuint fbo);
     static void unbindFramebuffer();
-    static void clearFrambufferColor(const Color& color);
+    static void clearFrambufferColor(const Color &color);
     static void clearFrambufferColor(float r, float g, float b, float a);
     static void clearFramebufferDepth(float depth);
 
@@ -96,23 +96,31 @@ class Graphics
     static void destroyTargets(LightTargets *targets);
     static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
 
-    static void createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint* tex);
-    static void destroyTexture2D(GLuint* tex);
-    static void readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels, std::vector<unsigned char>& data, GLuint tex);
-    static void writePixelsTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint tex);
+    static void createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+                                GLuint *tex);
+    static void destroyTexture2D(GLuint *tex);
+    static void readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
+                                    std::vector<unsigned char> &data, GLuint tex);
+    static void writePixelsTexture2D(TextureFormat format, int width, int height,
+                                     const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint* tex);
-    static void destroyTexture3D(GLuint* tex);
-    static void readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels, std::vector<unsigned char>& data, GLuint tex);
-    static void writePixelsTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint tex);
+    static void createTexture3D(TextureFormat format, int width, int height, int depth,
+                                const std::vector<unsigned char> &data, GLuint *tex);
+    static void destroyTexture3D(GLuint *tex);
+    static void readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
+                                    std::vector<unsigned char> &data, GLuint tex);
+    static void writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
+                                     const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint* tex);
-    static void destroyCubemap(GLuint* tex);
-    static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data, GLuint tex);
-    static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint tex);
+    static void createCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint *tex);
+    static void destroyCubemap(GLuint *tex);
+    static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
+                                  GLuint tex);
+    static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals, const std::vector<float> &texCoords, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2);
-    static void destroyMesh(GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2);
+    static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
+                           const std::vector<float> &texCoords, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2);
+    static void destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2);
 
     static bool compile(const std::string &vert, const std::string &frag, const std::string &geom, GLuint *program);
     static int findUniformLocation(const char *name, int program);
@@ -147,10 +155,11 @@ class Graphics
     static glm::mat4 getMat4(int nameLocation, int program);
     static int getTexture2D(int nameLocation, int texUnit, int program);
 
-    static void applyMaterial(const std::vector<ShaderUniform>& uniforms, const std::vector<GLint>& textures, int shaderProgram);
+    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<GLint> &textures,
+                              int shaderProgram);
 
     static void render(int start, int count, GLuint vao);
-    static void render(const RenderObject& renderObject, GraphicsQuery& query);
+    static void render(const RenderObject &renderObject, GraphicsQuery &query);
 };
 } // namespace PhysicsEngine
 

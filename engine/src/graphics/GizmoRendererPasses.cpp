@@ -5,14 +5,14 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeGizmoRenderer(World* world, GizmoRendererState& state)
+void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &state)
 {
     state.mLineShader = world->getAssetById<Shader>(world->getLineShaderId());
     state.mGizmoShader = world->getAssetById<Shader>(world->getGizmoShaderId());
 
     assert(state.mLineShader != NULL);
     assert(state.mGizmoShader != NULL);
-  
+
     state.mLineShader->compile();
     state.mGizmoShader->compile();
 
@@ -28,15 +28,18 @@ void PhysicsEngine::initializeGizmoRenderer(World* world, GizmoRendererState& st
     state.mGizmoShaderProjLoc = state.mGizmoShader->findUniformLocation("projection", state.mGizmoShaderProgram);
 }
 
-void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<LineGizmo>& gizmos)
+void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
+                                     const std::vector<LineGizmo> &gizmos)
 {
-    if (gizmos.empty()) {
+    if (gizmos.empty())
+    {
         return;
     }
 
     std::vector<float> vertices(6 * gizmos.size());
-   
-    for (size_t i = 0; i < gizmos.size(); i++) {
+
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         vertices[6 * i + 0] = gizmos[i].mLine.mStart.x;
         vertices[6 * i + 1] = gizmos[i].mLine.mStart.y;
         vertices[6 * i + 2] = gizmos[i].mLine.mStart.z;
@@ -48,7 +51,8 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
 
     std::vector<float> colors(8 * gizmos.size());
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         colors[8 * i + 0] = gizmos[i].mColor.r;
         colors[8 * i + 1] = gizmos[i].mColor.g;
         colors[8 * i + 2] = gizmos[i].mColor.b;
@@ -70,7 +74,7 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
     glGenBuffers(1, &lineVBO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO[1]);
@@ -83,7 +87,7 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
+               camera->getViewport().mHeight);
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
@@ -102,22 +106,24 @@ void PhysicsEngine::renderLineGizmos(World* world, Camera* camera, GizmoRenderer
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<AABBGizmo>& gizmos)
+void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state,
+                                     const std::vector<AABBGizmo> &gizmos)
 {
-    if (gizmos.empty()) {
+    if (gizmos.empty())
+    {
         return;
     }
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>(world);
 
-    Mesh* mesh = world->getAssetById<Mesh>(world->getCubeMesh());
+    Mesh *mesh = world->getAssetById<Mesh>(world->getCubeMesh());
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
+               camera->getViewport().mHeight);
 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
@@ -127,7 +133,8 @@ void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRenderer
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mAABB.mCentre);
         model = glm::scale(model, gizmos[i].mAABB.mSize);
 
@@ -145,22 +152,24 @@ void PhysicsEngine::renderAABBGizmos(World* world, Camera* camera, GizmoRenderer
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<PlaneGizmo>& gizmos)
+void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state,
+                                      const std::vector<PlaneGizmo> &gizmos)
 {
-    if (gizmos.empty()) {
+    if (gizmos.empty())
+    {
         return;
     }
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>(world);
 
-    Mesh* mesh = world->getAssetById<Mesh>(world->getPlaneMesh());
+    Mesh *mesh = world->getAssetById<Mesh>(world->getPlaneMesh());
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
+               camera->getViewport().mHeight);
 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
@@ -170,7 +179,8 @@ void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendere
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mPlane.mX0);
         glm::vec3 a = glm::vec3(0, 0, 1);
         glm::vec3 b = gizmos[i].mPlane.mNormal;
@@ -194,22 +204,24 @@ void PhysicsEngine::renderPlaneGizmos(World* world, Camera* camera, GizmoRendere
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<SphereGizmo>& gizmos)
+void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
+                                       const std::vector<SphereGizmo> &gizmos)
 {
-    if (gizmos.empty()) {
+    if (gizmos.empty())
+    {
         return;
     }
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>(world);
 
-    Mesh* mesh = world->getAssetById<Mesh>(world->getSphereMesh());
+    Mesh *mesh = world->getAssetById<Mesh>(world->getSphereMesh());
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
+               camera->getViewport().mHeight);
 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
@@ -219,16 +231,18 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mSphere.mCentre);
-        model = glm::scale(model, glm::vec3(gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius));
+        model = glm::scale(model,
+                           glm::vec3(gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius));
 
         state.mGizmoShader->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
         state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, model);
 
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
     }
-    
+
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -237,16 +251,18 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<FrustumGizmo>& gizmos)
+void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
+                                        const std::vector<FrustumGizmo> &gizmos)
 {
-    if (gizmos.empty()) {
+    if (gizmos.empty())
+    {
         return;
     }
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>(world);
 
     std::vector<float> vertices(108, 0.0f);
     std::vector<float> normals(108, 0.0f);
@@ -261,7 +277,7 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
     glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
     glGenBuffers(1, &frustumVBO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, frustumVBO[1]);
@@ -274,7 +290,7 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
+               camera->getViewport().mHeight);
 
     glBindVertexArray(frustumVAO);
 
@@ -284,7 +300,8 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++) {
+    for (size_t i = 0; i < gizmos.size(); i++)
+    {
         glm::vec3 temp[36];
         temp[0] = gizmos[i].mFrustum.mNtl;
         temp[1] = gizmos[i].mFrustum.mNtr;
@@ -334,14 +351,14 @@ void PhysicsEngine::renderFrustumGizmos(World* world, Camera* camera, GizmoRende
         temp[34] = gizmos[i].mFrustum.mFtr;
         temp[35] = gizmos[i].mFrustum.mNtr;
 
-        for (int j = 0; j < 36; j++) 
+        for (int j = 0; j < 36; j++)
         {
             vertices[3 * j + 0] = temp[j].x;
             vertices[3 * j + 1] = temp[j].y;
             vertices[3 * j + 2] = temp[j].z;
         }
 
-        for (int j = 0; j < 6; j++) 
+        for (int j = 0; j < 6; j++)
         {
             glm::vec3 a = temp[6 * j + 1] - temp[6 * j];
             glm::vec3 b = temp[6 * j + 2] - temp[6 * j];

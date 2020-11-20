@@ -12,8 +12,8 @@
 #include "../glm/glm.hpp"
 
 #include "Asset.h"
-#include "Guid.h"
 #include "Color.h"
+#include "Guid.h"
 
 namespace PhysicsEngine
 {
@@ -130,7 +130,7 @@ class Shader : public Asset
     void setBool(const char *name, bool value) const;
     void setInt(const char *name, int value) const;
     void setFloat(const char *name, float value) const;
-    void setColor(const char* name, const Color &color) const;
+    void setColor(const char *name, const Color &color) const;
     void setVec2(const char *name, const glm::vec2 &vec) const;
     void setVec3(const char *name, const glm::vec3 &vec) const;
     void setVec4(const char *name, const glm::vec4 &vec) const;
@@ -154,7 +154,7 @@ class Shader : public Asset
     bool getBool(const char *name) const;
     int getInt(const char *name) const;
     float getFloat(const char *name) const;
-    Color getColor(const char* name) const;
+    Color getColor(const char *name) const;
     glm::vec2 getVec2(const char *name) const;
     glm::vec3 getVec3(const char *name) const;
     glm::vec4 getVec4(const char *name) const;

@@ -1,8 +1,8 @@
 #ifndef __ENTITY_H__
 #define __ENTITY_H__
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Guid.h"
 #include "Types.h"
@@ -60,7 +60,7 @@ class Entity
 
     Guid getId() const;
     std::string getName() const;
-    void setName(const std::string& name);
+    void setName(const std::string &name);
 
   private:
     friend class World;

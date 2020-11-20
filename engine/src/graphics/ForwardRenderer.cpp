@@ -32,7 +32,8 @@ void ForwardRenderer::init(World *world, bool renderToScreen)
     initializeRenderer(mWorld, mState);
 }
 
-void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+void ForwardRenderer::update(const Input &input, Camera *camera,
+                             const std::vector<std::pair<uint64_t, int>> &renderQueue,
                              const std::vector<RenderObject> &renderObjects)
 {
     beginFrame(mWorld, camera, mState);
@@ -44,8 +45,8 @@ void ForwardRenderer::update(const Input &input, Camera *camera, const std::vect
 
     for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
     {
-        Light* light = mWorld->getComponentByIndex<Light>(j);
-        Transform* lightTransform = light->getComponent<Transform>(mWorld);
+        Light *light = mWorld->getComponentByIndex<Light>(j);
+        Transform *lightTransform = light->getComponent<Transform>(mWorld);
 
         renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
         renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
@@ -55,6 +56,6 @@ void ForwardRenderer::update(const Input &input, Camera *camera, const std::vect
     renderColorPicking(mWorld, camera, mState, renderQueue, renderObjects);
 
     postProcessing();
- 
+
     endFrame(mWorld, camera, mState);
 }

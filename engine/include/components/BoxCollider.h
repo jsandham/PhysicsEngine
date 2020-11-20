@@ -31,7 +31,7 @@ class BoxCollider : public Collider
     ~BoxCollider();
 
     std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid& componentId, const Guid& entityId) const;
+    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
 
     bool intersect(AABB aabb) const;

@@ -24,7 +24,7 @@ std::vector<char> SphereCollider::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> SphereCollider::serialize(const Guid& componentId, const Guid& entityId) const
+std::vector<char> SphereCollider::serialize(const Guid &componentId, const Guid &entityId) const
 {
     SphereColliderHeader header;
     header.mComponentId = componentId;

@@ -34,7 +34,7 @@ class InternalMeshes
 
     static Guid loadSphereMesh(World *world);
     static Guid loadCubeMesh(World *world);
-    static Guid loadPlaneMesh(World* world);
+    static Guid loadPlaneMesh(World *world);
 
   private:
     static Guid loadInternalMesh(World *world, const Guid meshId, const std::vector<float> &vertices,

@@ -4,20 +4,19 @@ using namespace PhysicsEngine;
 
 Frustum::Frustum() : mFov(45.0f), mAspectRatio(1.0f), mNearPlane(0.1f), mFarPlane(250.0f)
 {
- 
 }
 
-Frustum::Frustum(float fov, float aspectRatio, float near, float far) 
+Frustum::Frustum(float fov, float aspectRatio, float near, float far)
     : mFov(fov), mAspectRatio(aspectRatio), mNearPlane(near), mFarPlane(far)
 {
-
 }
 
 Frustum::~Frustum()
 {
 }
 
-void Frustum::computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up, const glm::vec3 &right)
+void Frustum::computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up,
+                            const glm::vec3 &right)
 {
     glm::vec3 nfront = glm::normalize(front);
     glm::vec3 nup = glm::normalize(up);

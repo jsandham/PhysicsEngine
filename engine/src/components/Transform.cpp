@@ -24,7 +24,7 @@ std::vector<char> Transform::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> Transform::serialize(const Guid& componentId, const Guid& entityId) const
+std::vector<char> Transform::serialize(const Guid &componentId, const Guid &entityId) const
 {
     TransformHeader header;
     header.mComponentId = componentId;

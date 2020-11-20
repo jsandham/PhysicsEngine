@@ -65,7 +65,6 @@ void PhysicsSystem::init(World *world)
     mWorld = world;
 }
 
-void PhysicsSystem::update(const Input& input, const Time& time)
+void PhysicsSystem::update(const Input &input, const Time &time)
 {
-    
 }

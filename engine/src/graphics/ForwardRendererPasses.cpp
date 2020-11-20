@@ -18,12 +18,12 @@ using namespace PhysicsEngine;
 void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
 {
     // compile internal shader programs
-    Shader* mGeometryShader = world->getAssetById<Shader>(world->getPositionAndNormalsShaderId());
-    Shader* mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
-    Shader* mSsaoShader = world->getAssetById<Shader>(world->getSsaoShaderId());
-    Shader* mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
-    Shader* mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
-    Shader* mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
+    Shader *mGeometryShader = world->getAssetById<Shader>(world->getPositionAndNormalsShaderId());
+    Shader *mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
+    Shader *mSsaoShader = world->getAssetById<Shader>(world->getSsaoShaderId());
+    Shader *mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
+    Shader *mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
+    Shader *mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
 
     assert(mGeometryShader != NULL);
     assert(mColorShader != NULL);
@@ -41,13 +41,11 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
 
     // cache internal shader uniforms
     state.mGeometryShaderProgram = mGeometryShader->getProgramFromVariant(ShaderVariant::None);
-    state.mGeometryShaderModelLoc =
-        mGeometryShader->findUniformLocation("model", state.mGeometryShaderProgram);
+    state.mGeometryShaderModelLoc = mGeometryShader->findUniformLocation("model", state.mGeometryShaderProgram);
 
     state.mSsaoShaderProgram = mSsaoShader->getProgramFromVariant(ShaderVariant::None);
     state.mSsaoShaderProjectionLoc = mSsaoShader->findUniformLocation("projection", state.mSsaoShaderProgram);
-    state.mSsaoShaderPositionTexLoc =
-        mSsaoShader->findUniformLocation("positionTex", state.mSsaoShaderProgram);
+    state.mSsaoShaderPositionTexLoc = mSsaoShader->findUniformLocation("positionTex", state.mSsaoShaderProgram);
     state.mSsaoShaderNormalTexLoc = mSsaoShader->findUniformLocation("normalTex", state.mSsaoShaderProgram);
     state.mSsaoShaderNoiseTexLoc = mSsaoShader->findUniformLocation("noiseTex", state.mSsaoShaderProgram);
 
@@ -60,8 +58,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     state.mDepthShaderProgram = mDepthShader->getProgramFromVariant(ShaderVariant::None);
     state.mDepthShaderModelLoc = mDepthShader->findUniformLocation("model", state.mDepthShaderProgram);
     state.mDepthShaderViewLoc = mDepthShader->findUniformLocation("view", state.mDepthShaderProgram);
-    state.mDepthShaderProjectionLoc =
-        mDepthShader->findUniformLocation("projection", state.mDepthShaderProgram);
+    state.mDepthShaderProjectionLoc = mDepthShader->findUniformLocation("projection", state.mDepthShaderProgram);
 
     state.mDepthCubemapShaderProgram = mDepthCubemapShader->getProgramFromVariant(ShaderVariant::None);
     state.mDepthCubemapShaderLightPosLoc =
@@ -111,8 +108,8 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     Graphics::setGlobalCameraUniforms(state.mCameraState);
 
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-        camera->getViewport().mHeight);
-    
+                          camera->getViewport().mHeight);
+
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::clearFrambufferColor(camera->mBackgroundColor);
     Graphics::clearFramebufferDepth(1.0f);
@@ -149,7 +146,7 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
 
         Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
-  
+
     Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -170,7 +167,7 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
     Graphics::setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
 
     Graphics::renderScreenQuad(state.mQuadVAO);
-    
+
     Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -188,8 +185,8 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         for (int i = 0; i < 5; i++)
         {
             Graphics::bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
-            Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
-                                        static_cast<int>(light->getShadowMapResolution()));
+            Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+                                  static_cast<int>(light->getShadowMapResolution()));
 
             Graphics::clearFramebufferDepth(1.0f);
 
@@ -209,8 +206,8 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
     else if (light->mLightType == LightType::Spot)
     {
         Graphics::bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
-        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
-                                    static_cast<int>(light->getShadowMapResolution()));
+        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+                              static_cast<int>(light->getShadowMapResolution()));
 
         Graphics::clearFramebufferDepth(1.0f);
 
@@ -260,8 +257,8 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
                                                   glm::vec3(0.0, -1.0, 0.0)));
 
         Graphics::bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
-        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
-                                    static_cast<int>(light->getShadowMapResolution()));
+        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+                              static_cast<int>(light->getShadowMapResolution()));
 
         Graphics::clearFramebufferDepth(1.0f);
 
@@ -469,7 +466,7 @@ void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState &
         const float si = i / 5.0f;
 
         state.mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) +
-                                          (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
+                                         (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
     }
 }
 

@@ -23,7 +23,7 @@ std::vector<char> MeshCollider::serialize() const
     return serialize(mComponentId, mEntityId);
 }
 
-std::vector<char> MeshCollider::serialize(const Guid& componentId, const Guid& entityId) const
+std::vector<char> MeshCollider::serialize(const Guid &componentId, const Guid &entityId) const
 {
     MeshColliderHeader header;
     header.mComponentId = componentId;

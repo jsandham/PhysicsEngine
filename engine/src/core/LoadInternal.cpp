@@ -101,7 +101,7 @@ void PhysicsEngine::addInternalSystemIdToIndexMap(std::unordered_map<Guid, int> 
                                                   std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
+                                                  std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
                                                   std::unordered_map<Guid, int> *idToGlobalIndex,
                                                   std::unordered_map<Guid, int> *idToType, const Guid &id, int type,
                                                   int index)
@@ -292,7 +292,7 @@ void PhysicsEngine::removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, 
                                                        std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int>* gizmoSystemIdToGlobalIndex,
+                                                       std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
                                                        std::unordered_map<Guid, int> *idToGlobalIndex,
                                                        std::unordered_map<Guid, int> *idToType, const Guid &id,
                                                        int type)
@@ -458,7 +458,7 @@ System *PhysicsEngine::getInternalSystem(PoolAllocator<RenderSystem> *renderSyst
                                          PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                                          PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
                                          PoolAllocator<DebugSystem> *debugSystemAllocator,
-                                         PoolAllocator<GizmoSystem>* gizmoSystemAllocator, int type, int index)
+                                         PoolAllocator<GizmoSystem> *gizmoSystemAllocator, int type, int index)
 {
     if (type == SystemType<RenderSystem>::type)
     {
@@ -611,7 +611,7 @@ System *PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem> *renderSys
                                           PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
                                           PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
                                           PoolAllocator<DebugSystem> *debugSystemAllocator,
-                                          PoolAllocator<GizmoSystem>* gizmoSystemAllocator,
+                                          PoolAllocator<GizmoSystem> *gizmoSystemAllocator,
                                           const std::vector<char> &data, int type, int *index)
 {
     if (type == SystemType<RenderSystem>::type)

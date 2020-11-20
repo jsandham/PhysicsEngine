@@ -1,11 +1,11 @@
 #include <fstream>
 #include <iostream>
-#include <set>
-#include <vector>
 #include <map>
+#include <set>
 #include <sstream>
 #include <stack>
 #include <stdlib.h>
+#include <vector>
 
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
@@ -520,7 +520,7 @@ void Shader::setFloat(const char *name, float value) const
     this->setFloat(Graphics::findUniformLocation(name, mActiveProgram), value);
 }
 
-void Shader::setColor(const char* name, const Color &color) const
+void Shader::setColor(const char *name, const Color &color) const
 {
     this->setColor(Graphics::findUniformLocation(name, mActiveProgram), color);
 }
@@ -555,7 +555,7 @@ void Shader::setMat4(const char *name, const glm::mat4 &mat) const
     this->setMat4(Graphics::findUniformLocation(name, mActiveProgram), mat);
 }
 
-void Shader::setTexture2D(const char* name, int texUnit, int tex) const
+void Shader::setTexture2D(const char *name, int texUnit, int tex) const
 {
     this->setTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit, tex);
 }
@@ -663,7 +663,7 @@ float Shader::getFloat(const char *name) const
     return this->getFloat(Graphics::findUniformLocation(name, mActiveProgram));
 }
 
-Color Shader::getColor(const char* name) const
+Color Shader::getColor(const char *name) const
 {
     return this->getColor(Graphics::findUniformLocation(name, mActiveProgram));
 }
@@ -698,7 +698,7 @@ glm::mat4 Shader::getMat4(const char *name) const
     return this->getMat4(Graphics::findUniformLocation(name, mActiveProgram));
 }
 
-int Shader::getTexture2D(const char* name, int texUnit) const
+int Shader::getTexture2D(const char *name, int texUnit) const
 {
     return this->getTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit);
 }
