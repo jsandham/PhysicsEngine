@@ -169,7 +169,10 @@ void Texture3D::create()
     {
         return;
     }
-    Graphics::create(this, &mTex, &mCreated);
+
+    Graphics::createTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
+
+    mCreated = true;
 }
 
 void Texture3D::destroy()
@@ -179,15 +182,17 @@ void Texture3D::destroy()
         return;
     }
 
-    Graphics::destroy(this, &mTex, &mCreated);
+    Graphics::destroyTexture3D(&mTex);
+
+    mCreated = false;
 }
 
 void Texture3D::readPixels()
 {
-    Graphics::readPixels(this);
+    Graphics::readPixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mNumChannels, mRawTextureData, mTex);
 }
 
-void Texture3D::apply()
+void Texture3D::writePixels()
 {
-    Graphics::apply(this);
+    Graphics::writePixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, mTex);
 }

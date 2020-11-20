@@ -60,7 +60,7 @@ class Cubemap : public Texture
     void create();
     void destroy();
     void readPixels();
-    void apply();
+    void writePixels();
 };
 
 template <typename T> struct IsCubemap

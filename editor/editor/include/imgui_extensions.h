@@ -19,8 +19,11 @@ void ToggleButton(const char *str_id, bool *v);
 bool StampButton(const char *label, bool active);
 bool StampButtonEx(const char *label, const ImVec2 &size_arg, ImGuiButtonFlags flags, bool active);
 
-bool BeginDropdown(std::string name, std::vector<std::string> values, int *selection);
+bool BeginDropdown(const std::string& name, const std::vector<std::string>& values, int *selection);
 void EndDropdown();
+
+bool BeginDropdownWindow(const std::string& name, const std::vector<std::string>& values, std::string& selection);
+void EndDropdownWindow();
 
 bool Combo(const char *label, int *currIndex, std::vector<std::string> &values);
 

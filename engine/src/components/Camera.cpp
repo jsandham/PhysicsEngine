@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../../include/components/Camera.h"
 #include "../../include/graphics/Graphics.h"
 
@@ -133,13 +135,16 @@ bool Camera::isViewportChanged() const
 
 void Camera::createTargets()
 {
-    Graphics::createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1],
-                            &mIsCreated);
+    Graphics::createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+
+    mIsCreated = true;
 }
 
 void Camera::destroyTargets()
 {
-    Graphics::destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1], &mIsCreated);
+    Graphics::destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+
+    mIsCreated = false;
 }
 
 void Camera::resizeTargets()

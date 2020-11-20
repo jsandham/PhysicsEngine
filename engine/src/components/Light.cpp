@@ -110,17 +110,23 @@ void Light::deserialize(const std::vector<char> &data)
 
 void Light::createTargets()
 {
-    Graphics::createTargets(&mTargets, mShadowMapResolution, &mIsCreated);
+    Graphics::createTargets(&mTargets, mShadowMapResolution);
+
+    mIsCreated = true;
 }
 
 void Light::destroyTargets()
 {
-    Graphics::destroyTargets(&mTargets, &mIsCreated);
+    Graphics::destroyTargets(&mTargets);
+
+    mIsCreated = false;
 }
 
 void ::Light::resizeTargets()
 {
-    Graphics::resizeTargets(&mTargets, mShadowMapResolution, &mIsShadowMapResolutionChanged);
+    Graphics::resizeTargets(&mTargets, mShadowMapResolution);
+
+    mIsShadowMapResolutionChanged = false;
 }
 
 bool Light::isCreated() const

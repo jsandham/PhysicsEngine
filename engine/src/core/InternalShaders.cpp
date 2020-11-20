@@ -50,11 +50,15 @@ const std::string InternalShaders::colorVertexShader =
     "	gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
     "}";
 
-const std::string InternalShaders::colorFragmentShader = "uniform vec4 color;\n"
+const std::string InternalShaders::colorFragmentShader = "struct Material\n"
+                                                         "{\n"
+                                                         "   vec4 color;\n"
+                                                         "};\n"
+                                                         "uniform Material material;\n"
                                                          "out vec4 FragColor;\n"
                                                          "void main()\n"
                                                          "{\n"
-                                                         "	FragColor = color;\n"
+                                                         "	FragColor = material.color;\n"
                                                          "}";
 const std::string InternalShaders::lineVertexShader =
 "layout(location = 0) in vec3 position;\n"

@@ -16,15 +16,15 @@ void DeferredRenderer::init(World *world, bool renderToScreen)
     mWorld = world;
     mState.mRenderToScreen = renderToScreen;
 
-    initializeDeferredRenderer(mWorld, &mState);
+    initializeDeferredRenderer(mWorld, mState);
 }
 
 void DeferredRenderer::update(const Input &input, Camera *camera, std::vector<RenderObject> &renderObjects)
 {
-    beginDeferredFrame(mWorld, camera, &mState);
+    beginDeferredFrame(mWorld, camera, mState);
 
-    geometryPass(mWorld, camera, &mState, renderObjects);
-    lightingPass(mWorld, camera, &mState, renderObjects);
+    geometryPass(mWorld, camera, mState, renderObjects);
+    lightingPass(mWorld, camera, mState, renderObjects);
 
-    endDeferredFrame(mWorld, camera, &mState);
+    endDeferredFrame(mWorld, camera, mState);
 }

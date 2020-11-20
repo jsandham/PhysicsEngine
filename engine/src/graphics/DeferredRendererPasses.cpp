@@ -8,32 +8,32 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererState *state)
+void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererState &state)
 {
     // generate all internal shader programs
-    state->mGeometryShader.setVertexShader(InternalShaders::gbufferVertexShader);
-    state->mGeometryShader.setFragmentShader(InternalShaders::gbufferFragmentShader);
-    state->mGeometryShader.compile();
+    state.mGeometryShader.setVertexShader(InternalShaders::gbufferVertexShader);
+    state.mGeometryShader.setFragmentShader(InternalShaders::gbufferFragmentShader);
+    state.mGeometryShader.compile();
 
-    state->mSimpleLitDeferredShader.setVertexShader(InternalShaders::simpleLitDeferredVertexShader);
-    state->mSimpleLitDeferredShader.setFragmentShader(InternalShaders::simpleLitDeferredFragmentShader);
-    state->mSimpleLitDeferredShader.compile();
+    state.mSimpleLitDeferredShader.setVertexShader(InternalShaders::simpleLitDeferredVertexShader);
+    state.mSimpleLitDeferredShader.setFragmentShader(InternalShaders::simpleLitDeferredFragmentShader);
+    state.mSimpleLitDeferredShader.compile();
 
     // cache internal shader uniforms
-    state->mGeometryShaderProgram = state->mGeometryShader.getProgramFromVariant(ShaderVariant::None);
-    state->mGeometryShaderModelLoc = state->mGeometryShader.findUniformLocation("model", state->mGeometryShaderProgram);
-    state->mGeometryShaderDiffuseTexLoc =
-        state->mGeometryShader.findUniformLocation("texture_diffuse1", state->mGeometryShaderProgram);
-    state->mGeometryShaderSpecTexLoc =
-        state->mGeometryShader.findUniformLocation("texture_specular1", state->mGeometryShaderProgram);
+    state.mGeometryShaderProgram = state.mGeometryShader.getProgramFromVariant(ShaderVariant::None);
+    state.mGeometryShaderModelLoc = state.mGeometryShader.findUniformLocation("model", state.mGeometryShaderProgram);
+    state.mGeometryShaderDiffuseTexLoc =
+        state.mGeometryShader.findUniformLocation("texture_diffuse1", state.mGeometryShaderProgram);
+    state.mGeometryShaderSpecTexLoc =
+        state.mGeometryShader.findUniformLocation("texture_specular1", state.mGeometryShaderProgram);
 
-    state->mSimpleLitDeferredShaderProgram = state->mSimpleLitDeferredShader.getProgramFromVariant(ShaderVariant::None);
-    state->mSimpleLitDeferredShaderViewPosLoc =
-        state->mSimpleLitDeferredShader.findUniformLocation("viewPos", state->mSimpleLitDeferredShaderProgram);
+    state.mSimpleLitDeferredShaderProgram = state.mSimpleLitDeferredShader.getProgramFromVariant(ShaderVariant::None);
+    state.mSimpleLitDeferredShaderViewPosLoc =
+        state.mSimpleLitDeferredShader.findUniformLocation("viewPos", state.mSimpleLitDeferredShaderProgram);
     for (int i = 0; i < 32; i++)
     {
-        state->mSimpleLitDeferredShaderLightLocs[i] = state->mSimpleLitDeferredShader.findUniformLocation(
-            "lights [" + std::to_string(i) + "]", state->mSimpleLitDeferredShaderProgram);
+        state.mSimpleLitDeferredShaderLightLocs[i] = state.mSimpleLitDeferredShader.findUniformLocation(
+            "lights [" + std::to_string(i) + "]", state.mSimpleLitDeferredShaderProgram);
     }
 
     // generate screen quad for final rendering
@@ -44,11 +44,11 @@ void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererSta
     };
 
     // screen quad mesh
-    glGenVertexArrays(1, &state->mQuadVAO);
-    glBindVertexArray(state->mQuadVAO);
+    glGenVertexArrays(1, &state.mQuadVAO);
+    glBindVertexArray(state.mQuadVAO);
 
-    glGenBuffers(1, &state->mQuadVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, state->mQuadVBO);
+    glGenBuffers(1, &state.mQuadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, state.mQuadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
@@ -59,28 +59,28 @@ void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererSta
 
     Graphics::checkError(__LINE__, __FILE__);
 
-    glGenBuffers(1, &(state->mCameraState.mHandle));
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
+    glGenBuffers(1, &(state.mCameraState.mBuffer));
+    glBindBuffer(GL_UNIFORM_BUFFER, state.mCameraState.mBuffer);
     glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRendererState *state)
+void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRendererState &state)
 {
     camera->beginQuery();
 
-    state->mCameraState.mProjection = camera->getProjMatrix();
-    state->mCameraState.mView = camera->getViewMatrix();
-    state->mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
+    state.mCameraState.mProjection = camera->getProjMatrix();
+    state.mCameraState.mView = camera->getViewMatrix();
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
 
     // set camera state binding point and update camera state data
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->mCameraState.mHandle, 0, 144);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(state->mCameraState.mProjection));
-    glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(state->mCameraState.mView));
-    glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(state->mCameraState.mCameraPos));
+    glBindBuffer(GL_UNIFORM_BUFFER, state.mCameraState.mBuffer);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, state.mCameraState.mBuffer, 0, 144);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(state.mCameraState.mProjection));
+    glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(state.mCameraState.mView));
+    glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(state.mCameraState.mCameraPos));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glClearColor(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b,
@@ -98,15 +98,15 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererState *state,
+void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererState &state,
                                  const std::vector<RenderObject> &renderObjects)
 {
     // fill geometry framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-    state->mGeometryShader.use(state->mGeometryShaderProgram);
+    state.mGeometryShader.use(state.mGeometryShaderProgram);
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        state->mGeometryShader.setMat4(state->mGeometryShaderModelLoc, renderObjects[i].model);
+        state.mGeometryShader.setMat4(state.mGeometryShaderModelLoc, renderObjects[i].model);
 
         Graphics::render(renderObjects[i], camera->mQuery);
     }
@@ -115,12 +115,12 @@ void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererS
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererState *state,
+void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererState &state,
                                  const std::vector<RenderObject> &renderObjects)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
 
-    state->mSimpleLitDeferredShader.use(state->mSimpleLitDeferredShaderProgram);
+    state.mSimpleLitDeferredShader.use(state.mSimpleLitDeferredShaderProgram);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
@@ -139,30 +139,30 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
         // state->mSimpleLitDeferredShader.setVec3(state->mSimpleLitDeferredShaderLightColLocs, light->mAmbient);
     }
 
-    glBindVertexArray(state->mQuadVAO);
+    glBindVertexArray(state.mQuadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void PhysicsEngine::endDeferredFrame(World *world, Camera *camera, DeferredRendererState *state)
+void PhysicsEngine::endDeferredFrame(World *world, Camera *camera, DeferredRendererState &state)
 {
     camera->endQuery();
 
-    if (state->mRenderToScreen)
+    if (state.mRenderToScreen)
     {
         glViewport(0, 0, 1024, 1024);
         glScissor(0, 0, 1024, 1024);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        state->mQuadShader.use(ShaderVariant::None);
+        state.mQuadShader.use(ShaderVariant::None);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorTex());
 
-        glBindVertexArray(state->mQuadVAO);
+        glBindVertexArray(state.mQuadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
     }

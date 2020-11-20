@@ -330,7 +330,10 @@ void Texture2D::create()
     {
         return;
     }
-    Graphics::create(this, &mTex, &mCreated);
+
+    Graphics::createTexture2D(mFormat, mWidth, mHeight, mRawTextureData, &mTex);
+
+    mCreated = true;
 }
 
 void Texture2D::destroy()
@@ -340,15 +343,17 @@ void Texture2D::destroy()
         return;
     }
 
-    Graphics::destroy(this, &mTex, &mCreated);
+    Graphics::destroyTexture2D(&mTex);
+
+    mCreated = false;
 }
 
 void Texture2D::readPixels()
 {
-    Graphics::readPixels(this);
+    Graphics::readPixelsTexture2D(mFormat, mWidth, mHeight, mNumChannels, mRawTextureData, mTex);
 }
 
-void Texture2D::apply()
+void Texture2D::writePixels()
 {
-    Graphics::apply(this);
+    Graphics::writePixelsTexture2D(mFormat, mWidth, mHeight, mRawTextureData, mTex);
 }

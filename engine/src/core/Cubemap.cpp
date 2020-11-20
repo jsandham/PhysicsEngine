@@ -244,7 +244,10 @@ void Cubemap::create()
     {
         return;
     }
-    Graphics::create(this, &mTex, &mCreated);
+
+    Graphics::createCubemap(mFormat, mWidth, mRawTextureData, &mTex);
+
+    mCreated = true;
 }
 
 void Cubemap::destroy()
@@ -254,15 +257,17 @@ void Cubemap::destroy()
         return;
     }
 
-    Graphics::destroy(this, &mTex, &mCreated);
+    Graphics::destroyCubemap(&mTex);
+
+    mCreated = false;
 }
 
 void Cubemap::readPixels()
 {
-    Graphics::readPixels(this);
+    Graphics::readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
 }
 
-void Cubemap::apply()
+void Cubemap::writePixels()
 {
-    Graphics::apply(this);
+    Graphics::writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
 }

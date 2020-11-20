@@ -10,6 +10,8 @@
 
 #include "EditorCameraSystem.h"
 
+#include "systems/GizmoSystem.h"
+
 namespace PhysicsEditor
 {
 enum class Axis
@@ -71,11 +73,11 @@ class TransformGizmo
     void updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::Transform *selectedTransform,
                      float mousePosX, float mousePosY, float contentWidth, float contentHeight);
 
-    void drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+    void drawTranslation(const PhysicsEngine::Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
                          Axis selectedAxis);
-    void drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+    void drawRotation(const PhysicsEngine::Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
                       Axis selectedAxis);
-    void drawScale(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+    void drawScale(const PhysicsEngine::Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
                    Axis selectedAxis);
 };
 } // namespace PhysicsEditor

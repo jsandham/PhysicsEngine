@@ -5,6 +5,8 @@
 #include "../../include/core/World.h"
 #include "../../include/core/mat_load.h"
 
+#include "../../include/graphics/Graphics.h"
+
 using namespace PhysicsEngine;
 
 Material::Material()
@@ -107,50 +109,25 @@ void Material::apply(World *world)
 {
     Shader *shader = world->getAssetById<Shader>(mShaderId);
 
-    int textureSlot = 0;
+    // Find all texture handles
+    std::vector<GLint> textures;
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
-
         if (mUniforms[i].mType == GL_SAMPLER_2D)
         {
-
-            Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
+            Texture2D* texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid*>(mUniforms[i].mData));
             if (texture != NULL)
             {
-                shader->setInt(mUniforms[i].mName, textureSlot);
-
-                glActiveTexture(GL_TEXTURE0 + textureSlot);
-                glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
+                textures.push_back(texture->getNativeGraphics());
             }
-            else
+            else 
             {
-                glActiveTexture(GL_TEXTURE0 + textureSlot);
-                glBindTexture(GL_TEXTURE_2D, 0);
+                textures.push_back(-1);
             }
-
-            textureSlot++;
-        }
-        else if (mUniforms[i].mType == GL_INT)
-        {
-            shader->setInt(mUniforms[i].mName, *reinterpret_cast<int *>(mUniforms[i].mData));
-        }
-        else if (mUniforms[i].mType == GL_FLOAT)
-        {
-            shader->setFloat(mUniforms[i].mName, *reinterpret_cast<float *>(mUniforms[i].mData));
-        }
-        else if (mUniforms[i].mType == GL_FLOAT_VEC2)
-        {
-            shader->setVec2(mUniforms[i].mName, *reinterpret_cast<glm::vec2 *>(mUniforms[i].mData));
-        }
-        else if (mUniforms[i].mType == GL_FLOAT_VEC3)
-        {
-            shader->setVec3(mUniforms[i].mName, *reinterpret_cast<glm::vec3 *>(mUniforms[i].mData));
-        }
-        else if (mUniforms[i].mType == GL_FLOAT_VEC4)
-        {
-            shader->setVec4(mUniforms[i].mName, *reinterpret_cast<glm::vec4 *>(mUniforms[i].mData));
         }
     }
+
+    Graphics::applyMaterial(mUniforms, textures, shader->getActiveProgram());
 }
 
 void Material::onShaderChanged(World *world)
@@ -164,7 +141,7 @@ void Material::onShaderChanged(World *world)
 
     if (!shader->isCompiled())
     {
-        std::string message = "Error: Must compile shader before calling onShaderChanged\n";
+        std::string message = "Must compile shader before calling onShaderChanged\n";
         Log::error(message.c_str());
         return;
     }

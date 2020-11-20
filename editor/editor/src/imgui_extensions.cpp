@@ -151,7 +151,7 @@ bool ImGui::StampButton(const char *label, bool active)
     return StampButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_None, active);
 }
 
-bool ImGui::BeginDropdown(std::string name, std::vector<std::string> values, int *selection)
+bool ImGui::BeginDropdown(const std::string& name, const std::vector<std::string>& values, int *selection)
 {
     ImGui::SameLine(0.f, 0.f);
     ImGui::PushID(("##" + name).c_str());
@@ -185,6 +185,82 @@ void ImGui::EndDropdown()
 {
     ImGui::EndPopup();
 }
+
+
+bool ImGui::BeginDropdownWindow(const std::string& name, const std::vector<std::string>& values, std::string& selection)
+{
+    ImGui::PushID("##Dropdown");
+    bool pressed = ImGui::Button(name.c_str());
+    ImGui::PopID();
+
+    if (pressed)
+    {
+        ImGui::OpenPopup("##Dropdown");
+    }
+
+    if (ImGui::BeginPopup("##Dropdown"))
+    {
+        std::vector<char> inputBuffer(128);
+        if (ImGui::InputTextWithHint("##Search string", "search...", &inputBuffer[0], (int)inputBuffer.size()))
+        {
+        }
+
+        ImGuiTextFilter componentFilter(&inputBuffer[0]);
+        std::vector<std::string> filteredComponents;
+        for (size_t i = 0; i < values.size(); i++)
+        {
+            if (componentFilter.PassFilter(values[i].c_str()))
+            {
+                filteredComponents.push_back(values[i]);
+            }
+        }
+
+        if (filteredComponents.size() == 0)
+        {
+            filteredComponents.push_back("");
+        }
+
+        std::vector<const char*> cStrFilteredComponents;
+        for (size_t i = 0; i < filteredComponents.size(); ++i)
+        {
+            cStrFilteredComponents.push_back(filteredComponents[i].c_str());
+        }
+
+        int s = 0;
+        if (ImGui::ListBox("##Filter", &s, &cStrFilteredComponents[0], (int)cStrFilteredComponents.size(), 4))
+        {
+            selection = filteredComponents[s];
+            ImGui::CloseCurrentPopup();
+        }
+        return true;
+    }
+
+    return false;
+}
+
+void ImGui::EndDropdownWindow()
+{
+    ImGui::EndPopup();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static auto vector_getter = [](void *vec, int idx, const char **out_text) {
     auto &vector = *static_cast<std::vector<std::string> *>(vec);

@@ -56,7 +56,7 @@ class Texture2D : public Texture
     void create();
     void destroy();
     void readPixels();
-    void apply();
+    void writePixels();
 };
 
 template <typename T> struct IsTexture2D

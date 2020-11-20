@@ -6,7 +6,7 @@
 
 #include "../core/Shader.h"
 
-#include "GraphicsState.h"
+#include "Graphics.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -17,10 +17,10 @@ namespace PhysicsEngine
 struct ForwardRendererState
 {
     // internal graphics camera state
-    GraphicsCameraState mCameraState;
+    CameraUniform mCameraState;
 
     // internal graphics light state
-    GraphicsLightState mLightState;
+    LightUniform mLightState;
 
     bool mRenderToScreen;
 
@@ -29,7 +29,6 @@ struct ForwardRendererState
     glm::mat4 mCascadeOrthoProj[5];
     glm::mat4 mCascadeLightView[5];
 
-    Shader *mDepthShader;
     int mDepthShaderProgram;
     int mDepthShaderModelLoc;
     int mDepthShaderViewLoc;
@@ -42,7 +41,6 @@ struct ForwardRendererState
     // pointlight cubemap shadow map data
     glm::mat4 mCubeViewProjMatrices[6];
 
-    Shader *mDepthCubemapShader;
     int mDepthCubemapShaderProgram;
     int mDepthCubemapShaderLightPosLoc;
     int mDepthCubemapShaderFarPlaneLoc;
@@ -54,17 +52,14 @@ struct ForwardRendererState
     int mDepthCubemapShaderCubeViewProjMatricesLoc4;
     int mDepthCubemapShaderCubeViewProjMatricesLoc5;
 
-    Shader *mGeometryShader;
     int mGeometryShaderProgram;
     int mGeometryShaderModelLoc;
 
-    Shader *mColorShader;
     int mColorShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
     // ssao
-    Shader *mSsaoShader;
     int mSsaoShaderProgram;
     int mSsaoShaderProjectionLoc;
     int mSsaoShaderPositionTexLoc;
@@ -75,7 +70,6 @@ struct ForwardRendererState
     // quad
     GLuint mQuadVAO;
     GLuint mQuadVBO;
-    Shader *mQuadShader;
 };
 } // namespace PhysicsEngine
 

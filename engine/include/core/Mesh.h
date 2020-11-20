@@ -63,7 +63,7 @@ class Mesh : public Asset
 
     void create();
     void destroy();
-    void apply();
+    void writeMesh();
 };
 
 template <typename T> struct IsMesh

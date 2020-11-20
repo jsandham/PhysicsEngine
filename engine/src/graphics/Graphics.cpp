@@ -6,7 +6,6 @@
 #include "../../include/core/InternalShaders.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
-#include "../../include/graphics/GraphicsState.h"
 
 using namespace PhysicsEngine;
 
@@ -133,8 +132,180 @@ void Graphics::endQuery(GLuint queryId, GLuint64 *elapsedTime)
     glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime);
 }
 
+void Graphics::createGlobalCameraUniforms(CameraUniform& uniform)
+{
+    glGenBuffers(1, &uniform.mBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 144);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::createGlobalLightUniforms(LightUniform& uniform)
+{
+    glGenBuffers(1, &uniform.mBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 1, uniform.mBuffer, 0, 824);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::setGlobalCameraUniforms(const CameraUniform& uniform)
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 144);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(uniform.mProjection));
+    glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(uniform.mView));
+    glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(uniform.mCameraPos));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::setGlobalLightUniforms(const LightUniform& uniform)
+{
+    glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &uniform.mLightProjection[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &uniform.mLightView[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(uniform.mPosition));
+    glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(uniform.mDirection));
+    glBufferSubData(GL_UNIFORM_BUFFER, 672, 16, glm::value_ptr(uniform.mColor));
+    glBufferSubData(GL_UNIFORM_BUFFER, 688, 4, &uniform.mCascadeEnds[0]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 704, 4, &uniform.mCascadeEnds[1]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &uniform.mCascadeEnds[2]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &uniform.mCascadeEnds[3]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &uniform.mCascadeEnds[4]);
+    glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &uniform.mIntensity);
+    glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(uniform.mSpotAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(uniform.mInnerSpotAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(uniform.mShadowNearPlane));
+    glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(uniform.mShadowFarPlane));
+    glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(uniform.mShadowRadius));
+    glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(uniform.mShadowStrength));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::createScreenQuad(GLuint* vao, GLuint* vbo)
+{
+    // generate screen quad for final rendering
+    constexpr float quadVertices[] = {
+        // positions        // texture Coords
+        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
+    };
+
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(1, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::renderScreenQuad(GLuint vao)
+{
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
+void Graphics::createFramebuffer(int width, int height, GLuint* fbo, GLuint* color, GLuint* depth)
+{
+    // generate fbo (color + depth)
+    glGenFramebuffers(1, fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+
+    glGenTextures(1, color);
+    glBindTexture(GL_TEXTURE_2D, *color);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glGenTextures(1, depth);
+    glBindTexture(GL_TEXTURE_2D, *depth);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depth, 0);
+
+    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+    unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, mainAttachments);
+
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Graphics::destroyFramebuffer(GLuint* fbo, GLuint* color, GLuint* depth)
+{
+    // detach textures from their framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // delete frambuffer
+    glDeleteFramebuffers(1, fbo);
+
+    // delete textures
+    glDeleteTextures(1, color);
+    glDeleteTextures(1, depth);
+}
+
+void Graphics::bindFramebuffer(GLuint fbo)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+void Graphics::unbindFramebuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Graphics::clearFrambufferColor(const Color& color)
+{
+    glClearColor(color.r, color.g, color.b, color.a);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Graphics::clearFrambufferColor(float r, float g, float b, float a)
+{
+    glClearColor(r, g, b, a);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Graphics::clearFramebufferDepth(float depth)
+{
+    glClearDepth(depth);
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Graphics::setViewport(int x, int y, int width, int height)
+{
+    glViewport(x, y, width, height);
+}
+
 void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, GLuint *queryId0,
-                             GLuint *queryId1, bool *created)
+                             GLuint *queryId1)
 {
     // generate timing queries
     glGenQueries(1, queryId0);
@@ -287,11 +458,9 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
-
-    *created = true;
 }
 
-void Graphics::destroyTargets(CameraTargets *targets, GLuint *queryId0, GLuint *queryId1, bool *created)
+void Graphics::destroyTargets(CameraTargets *targets, GLuint *queryId0, GLuint *queryId1)
 {
     // detach textures from their framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
@@ -333,8 +502,6 @@ void Graphics::destroyTargets(CameraTargets *targets, GLuint *queryId0, GLuint *
     // delete timing query
     glDeleteQueries(1, queryId0);
     glDeleteQueries(1, queryId1);
-
-    *created = false;
 }
 
 void Graphics::resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged)
@@ -384,11 +551,12 @@ void Graphics::readColorPickingPixel(const CameraTargets *targets, int x, int y,
     glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
-    Graphics::checkError(__LINE__, __FILE__);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resolution, bool *created)
+void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resolution)
 {
     GLsizei res = 512;
     switch (resolution)
@@ -494,11 +662,9 @@ void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resoluti
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
-
-    *created = true;
 }
 
-void Graphics::destroyTargets(LightTargets *targets, bool *created)
+void Graphics::destroyTargets(LightTargets *targets)
 {
     // detach textures from their framebuffer
     for (int i = 0; i < 5; i++)
@@ -533,11 +699,9 @@ void Graphics::destroyTargets(LightTargets *targets, bool *created)
     glDeleteTextures(1, &(targets->mShadowCubemapDepthTex));
 
     Graphics::checkError(__LINE__, __FILE__);
-
-    *created = false;
 }
 
-void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resolution, bool *resolutionChanged)
+void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resolution)
 {
     GLsizei res = 512;
     switch (resolution)
@@ -592,23 +756,16 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
-
-    *resolutionChanged = false;
 }
 
-void Graphics::create(Texture2D *texture, GLuint *tex, bool *created)
+void Graphics::createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint* tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -619,73 +776,49 @@ void Graphics::create(Texture2D *texture, GLuint *tex, bool *created)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    *created = true;
-
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroy(Texture2D *texture, GLuint *tex, bool *created)
+void Graphics::destroyTexture2D(GLuint* tex)
 {
     glDeleteTextures(1, tex);
-
-    *created = false;
 }
 
-void Graphics::readPixels(Texture2D *texture)
+void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels, std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    int numChannels = texture->getNumChannels();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
-    glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_2D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glGetTextureImage(texture->getNativeGraphics(), 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels,
-                      &rawTextureData[0]);
-
-    texture->setRawTextureData(rawTextureData, width, height, format);
+    glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels, &data[0]);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::apply(Texture2D *texture)
+void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
-    glBindTexture(GL_TEXTURE_2D, texture->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_2D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &rawTextureData[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::create(Texture3D *texture, GLuint *tex, bool *created)
+void Graphics::createTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint* tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    int depth = texture->getDepth();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE,
-                 &rawTextureData[0]);
+        &data[0]);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -695,67 +828,44 @@ void Graphics::create(Texture3D *texture, GLuint *tex, bool *created)
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
-    *created = true;
-
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroy(Texture3D *texture, GLuint *tex, bool *created)
+void Graphics::destroyTexture3D(GLuint* tex)
 {
     glDeleteTextures(1, tex);
-
-    *created = false;
 }
 
-void Graphics::readPixels(Texture3D *texture)
+void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels, std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    int depth = texture->getDepth();
-    int numChannels = texture->getNumChannels();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
-    glBindTexture(GL_TEXTURE_3D, texture->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_3D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glGetTextureImage(texture->getNativeGraphics(), 0, openglFormat, GL_UNSIGNED_BYTE,
-                      width * height * depth * numChannels, &rawTextureData[0]);
-
-    texture->setRawTextureData(rawTextureData, width, height, depth, format);
+    glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE,
+        width * height * depth * numChannels, &data[0]);
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::apply(Texture3D *texture)
+void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height, int depth, const std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = texture->getWidth();
-    int height = texture->getHeight();
-    int depth = texture->getDepth();
-    TextureFormat format = texture->getFormat();
-    std::vector<unsigned char> rawTextureData = texture->getRawTextureData();
-
-    glBindTexture(GL_TEXTURE_3D, texture->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_3D, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE,
-                 &rawTextureData[0]);
+        &data[0]);
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::create(Cubemap *cubemap, GLuint *tex, bool *created)
+void Graphics::createCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint* tex)
 {
-    int width = cubemap->getWidth();
-    TextureFormat format = cubemap->getFormat();
-    std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
-
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
 
@@ -764,7 +874,7 @@ void Graphics::create(Cubemap *cubemap, GLuint *tex, bool *created)
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, &rawCubemapData[0]);
+            GL_UNSIGNED_BYTE, &data[0]);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -775,33 +885,24 @@ void Graphics::create(Cubemap *cubemap, GLuint *tex, bool *created)
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    *created = true;
-
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroy(Cubemap *cubemap, GLuint *tex, bool *created)
+void Graphics::destroyCubemap(GLuint* tex)
 {
     glDeleteTextures(1, tex);
-
-    *created = false;
 }
 
-void Graphics::readPixels(Cubemap *cubemap)
+void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = cubemap->getWidth();
-    int numChannels = cubemap->getNumChannels();
-    TextureFormat format = cubemap->getFormat();
-    std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
     for (unsigned int i = 0; i < 6; i++)
     {
         glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE,
-                      &rawCubemapData[i * width * width * numChannels]);
+            &data[i * width * width * numChannels]);
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -809,20 +910,16 @@ void Graphics::readPixels(Cubemap *cubemap)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::apply(Cubemap *cubemap)
+void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint tex)
 {
-    int width = cubemap->getWidth();
-    TextureFormat format = cubemap->getFormat();
-    std::vector<unsigned char> rawCubemapData = cubemap->getRawCubemapData();
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->getNativeGraphics());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, &rawCubemapData[0]);
+            GL_UNSIGNED_BYTE, &data[0]);
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -830,7 +927,8 @@ void Graphics::apply(Cubemap *cubemap)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::create(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2, bool *created)
+
+void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals, const std::vector<float> &texCoords, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
@@ -840,35 +938,33 @@ void Graphics::create(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuin
 
     glBindVertexArray(*vao);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() * sizeof(float), &(mesh->getVertices()[0]),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
-    glBufferData(GL_ARRAY_BUFFER, mesh->getNormals().size() * sizeof(float), &(mesh->getNormals()[0]), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
-    glBufferData(GL_ARRAY_BUFFER, mesh->getTexCoords().size() * sizeof(float), &(mesh->getTexCoords()[0]),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &(texCoords[0]),
+        GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
     glBindVertexArray(0);
 
-    *created = true;
-
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroy(Mesh *mesh, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2, bool *created)
+void Graphics::destroyMesh(GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2)
 {
-}
-
-void Graphics::apply(Mesh *mesh)
-{
+    glDeleteBuffers(1, vbo0);
+    glDeleteBuffers(1, vbo1);
+    glDeleteBuffers(1, vbo2);
+    
+    glDeleteVertexArrays(1, vao);
 }
 
 bool Graphics::compile(const std::string &vert, const std::string &frag, const std::string &geom, GLuint *program)
@@ -1088,6 +1184,14 @@ void Graphics::setMat4(int nameLocation, const glm::mat4 &mat)
     glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
 }
 
+void Graphics::setTexture2D(int nameLocation, int texUnit, int tex)
+{
+    glUniform1i(nameLocation, texUnit);
+
+    glActiveTexture(GL_TEXTURE0 + texUnit);
+    glBindTexture(GL_TEXTURE_2D, tex);
+}
+
 bool Graphics::getBool(int nameLocation, int program)
 {
     int value = 0;
@@ -1168,17 +1272,74 @@ glm::mat4 Graphics::getMat4(int nameLocation, int program)
     return value;
 }
 
+int Graphics::getTexture2D(int nameLocation, int texUnit, int program)
+{
+    int tex = -1;
+    glActiveTexture(GL_TEXTURE0 + texUnit);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex);
+
+    return tex;
+}
+
+void Graphics::applyMaterial(const std::vector<ShaderUniform>& uniforms, const std::vector<GLint>& textures, int shaderProgram)
+{
+    int textureUnit = 0;
+    for (size_t i = 0; i < uniforms.size(); i++)
+    {
+        if (uniforms[i].mType == GL_SAMPLER_2D)
+        {
+            if (textures[textureUnit] != -1)
+            {
+                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit, textures[textureUnit]);
+            }
+            else
+            {
+                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit, 0);
+            }
+
+            textureUnit++;
+        }
+        else if (uniforms[i].mType == GL_INT)
+        {
+            Graphics::setInt(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const int*>(uniforms[i].mData));
+        }
+        else if (uniforms[i].mType == GL_FLOAT)
+        {
+            Graphics::setFloat(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const float*>(uniforms[i].mData));
+        }
+        else if (uniforms[i].mType == GL_FLOAT_VEC2)
+        {
+            Graphics::setVec2(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec2*>(uniforms[i].mData));
+        }
+        else if (uniforms[i].mType == GL_FLOAT_VEC3)
+        {
+            Graphics::setVec3(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec3*>(uniforms[i].mData));
+        }
+        else if (uniforms[i].mType == GL_FLOAT_VEC4)
+        {
+            Graphics::setVec4(findUniformLocation(uniforms[i].mName, shaderProgram), *reinterpret_cast<const glm::vec4*>(uniforms[i].mData));
+        }
+    }
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::render(int start, int count, GLuint vao)
+{
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, start, count);
+    glBindVertexArray(0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
 void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
 {
     GLsizei numVertices = renderObject.size / 3;
 
-    glBindVertexArray(renderObject.vao);
-    glDrawArrays(GL_TRIANGLES, renderObject.start / 3, numVertices);
-    glBindVertexArray(0);
+    Graphics::render(renderObject.start / 3, numVertices, renderObject.vao);
 
     query.mNumDrawCalls++;
     query.mVerts += numVertices;
     query.mTris += numVertices / 3;
-
-    Graphics::checkError(__LINE__, __FILE__);
 }

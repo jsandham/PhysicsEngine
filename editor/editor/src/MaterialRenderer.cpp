@@ -3,6 +3,7 @@
 #include "core/InternalMeshes.h"
 #include "core/InternalShaders.h"
 #include "core/Log.h"
+#include "core/World.h"
 #include "graphics/Graphics.h"
 
 #define GLM_FORCE_RADIANS

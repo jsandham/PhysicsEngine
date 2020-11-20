@@ -305,7 +305,7 @@ void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem *camera
         selectedTransformAxis = Axis::Axis_None;
     }
 
-    drawTranslation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
+    drawTranslation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
                     cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
 }
 
@@ -417,7 +417,7 @@ void TransformGizmo::updateRotation(PhysicsEngine::EditorCameraSystem *cameraSys
         selectedTransformAxis = Axis::Axis_None;
     }
 
-    drawRotation(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
+    drawRotation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
                  cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
 }
 
@@ -512,7 +512,7 @@ void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem
     }
 
 
-    drawScale(cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getCameraPosition(), selectedTransform->getModelMatrix(),
+    drawScale(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getCameraPosition(), selectedTransform->getModelMatrix(),
               cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
 
     /*Plane plane0(selectedTransform->getUp(), selectedTransform->mPosition);
@@ -542,9 +542,12 @@ void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem
     }*/
 }
 
-void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo,
+void TransformGizmo::drawTranslation(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo,
                                      Axis highlightAxis, Axis selectedAxis)
 {
+    glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+    glScissor(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -587,13 +590,15 @@ void TransformGizmo::drawTranslation(glm::mat4 projection, glm::mat4 view, glm::
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+void TransformGizmo::drawRotation(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
                                   Axis selectedAxis)
 {
+    glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+    glScissor(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glClear(GL_DEPTH_BUFFER_BIT);
-
 
     glm::mat4 mvp = projection * view * model;
 
@@ -633,9 +638,12 @@ void TransformGizmo::drawRotation(glm::mat4 projection, glm::mat4 view, glm::mat
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawScale(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos, glm::mat4 model, GLuint fbo, Axis highlightAxis,
+void TransformGizmo::drawScale(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
                                Axis selectedAxis)
 {
+    glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+    glScissor(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glClear(GL_DEPTH_BUFFER_BIT);

@@ -37,37 +37,6 @@ class Inspector
 
   private:
     void drawEntity(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard);
-
-    // template<class T>
-    // void drawAsset(World* world, EditorProject& project, EditorScene& scene, EditorClipboard& clipboard)
-    //{
-    //	if (AssetType<T>::type == AssetType<Material>::type) {
-    //		materialDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
-    //	}
-    //	else if (AssetType<T>::type == AssetType<Shader>::type) {
-    //		shaderDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
-    //	}
-    //	else if (AssetType<T>::type == AssetType<Texture2D>::type) {
-    //		texture2DDrawer->render(world, project, scene, clipboard, clipboard.getSelectedId());
-    //	}
-
-    //	ImGui::Separator();
-
-    //	/*T* asset = world->getAsset<T>(clipboard.getSelectedId());
-
-    //	InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<T>::type);
-
-    //	drawer->render(world, project, scene, clipboard, asset->assetId);
-    //	ImGui::Separator();*/
-
-    //	delete drawer;
-    //}
-
-    void drawCodeFile(World *world, EditorScene &scene, EditorClipboard &clipboard);
-
-    // move to imgui extensions?
-    bool BeginAddComponentDropdown(std::string filter, std::string &componentToAdd);
-    void EndAddComponentDropdown();
 };
 } // namespace PhysicsEditor
 

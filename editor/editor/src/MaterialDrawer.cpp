@@ -15,17 +15,45 @@
 #include "systems/CleanUpSystem.h"
 #include "systems/RenderSystem.h"
 
+#include "graphics/Graphics.h"
+
 #include "../include/EditorCameraSystem.h"
 
 using namespace PhysicsEditor;
 
 MaterialDrawer::MaterialDrawer()
 {
-    // initViewWorld();
+    /*glGenVertexArrays(1, &mVAO);
+    glBindVertexArray(mVAO);
+
+    glGenBuffers(1, &mVBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, InternalMeshes::sphereVertices.size() * sizeof(float), InternalMeshes::sphereVertices.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+
+    glGenBuffers(1, &mVBO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, InternalMeshes::sphereNormals.size() * sizeof(float), InternalMeshes::sphereNormals.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);*/
+
+    cameraPos = glm::vec3(0.0f, 0.0f,-2.0);
+    model = glm::mat4(1.0f);
+    view = glm::lookAt(cameraPos, cameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
+    projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
+
+    Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 MaterialDrawer::~MaterialDrawer()
 {
+    Graphics::destroyFramebuffer(&mFBO, &mColor, &mDepth);
 }
 
 void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard,
@@ -62,7 +90,7 @@ void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &s
     std::vector<ShaderUniform> uniforms = material->getUniforms();
     for (size_t i = 0; i < uniforms.size(); i++)
     {
-        // only expose uniforms exist in a Material uniform struct in the shader
+        // only expose uniforms that exist in a Material uniform struct in the shader
         if (std::strcmp(uniforms[i].mBlockName, "material") != 0)
         {
             continue;
@@ -100,7 +128,43 @@ void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &s
     // Draw material preview child window
     ImGui::Text("Preview");
 
-    if (previewWorld.getNumberOfEntities() == 0)
+    Mesh* mesh = world->getAssetById<Mesh>(world->getSphereMesh());
+    assert(mesh != NULL);
+
+    Shader* shader = world->getAssetById<Shader>(currentShaderId);
+    assert(shader != NULL);
+
+    int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
+
+    shader->use(shaderProgram);
+
+    material->apply(world);
+
+    Graphics::bindFramebuffer(mFBO);
+    Graphics::clearFrambufferColor(Color(1.0f, 0.0, 0.0, 1.0f));
+    Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+    Graphics::unbindFramebuffer();
+
+    ImGuiWindowFlags window_flags =
+        ImGuiWindowFlags_None; // ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ?
+                               // ImGuiWindowFlags_NoScrollWithMouse : 0);
+    ImGui::BeginChild("MaterialPreviewWindow",
+        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+        window_flags);
+    ImGui::Image((void *)(intptr_t)mColor,
+                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                 ImVec2(0, 0));
+    ImGui::EndChild();
+
+
+
+
+
+
+
+
+
+    /*if (previewWorld.getNumberOfEntities() == 0)
     {
         populatePreviewWorld(world);
 
@@ -110,14 +174,14 @@ void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &s
 
             system->init(&previewWorld);
         }
-    }
+    }*/
 
     // copy currently selected material from world to corresponding material in preview world
-    Material *previewMaterial = previewWorld.getAssetById<Material>(material->getId());
-    MaterialUtil::copyMaterialTo(world, material, &previewWorld, previewMaterial);
+    //Material *previewMaterial = previewWorld.getAssetById<Material>(material->getId());
+    //MaterialUtil::copyMaterialTo(world, material, &previewWorld, previewMaterial);
 
     // set preview material on sphere meshrenderer
-    sphereMeshRenderer->setMaterial(previewMaterial->getId(), 0);
+    //sphereMeshRenderer->setMaterial(previewMaterial->getId(), 0);
 
     // Log::info(("material view world material count: " + std::to_string(previewWorld.getNumberOfAssets<Material>()) +
     // "\n").c_str()); Log::info(("material view world mesh count: " +
@@ -125,12 +189,12 @@ void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &s
     // count: " + std::to_string(previewWorld.getNumberOfAssets<Shader>()) + "\n").c_str()); Log::info(("material view
     // world texture count: " + std::to_string(previewWorld.getNumberOfAssets<Texture2D>()) + "\n").c_str());
 
-    for (int i = 0; i < previewWorld.getNumberOfUpdatingSystems(); i++)
+    /*for (int i = 0; i < previewWorld.getNumberOfUpdatingSystems(); i++)
     {
         System *system = previewWorld.getSystemByUpdateOrder(i);
 
         system->update({}, {});
-    }
+    }*/
 
     // Log::info("\n");
     // Log::info(("material view world system count: " + std::to_string(previewWorld.getNumberOfSystems()) +
@@ -147,108 +211,108 @@ void MaterialDrawer::render(World *world, EditorProject &project, EditorScene &s
 
     // GraphicsTargets targets = renderSystem->getGraphicsTargets();
 
-    ImGuiWindowFlags window_flags =
-        ImGuiWindowFlags_None; // ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ?
-                               // ImGuiWindowFlags_NoScrollWithMouse : 0);
-    ImGui::BeginChild("MaterialPreviewWindow",
-                      ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-                      window_flags);
-    ImGui::Image((void *)(intptr_t)previewCamera->getNativeGraphicsColorTex(),
-                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                 ImVec2(0, 0));
-    ImGui::EndChild();
+    //ImGuiWindowFlags window_flags =
+    //    ImGuiWindowFlags_None; // ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ?
+    //                           // ImGuiWindowFlags_NoScrollWithMouse : 0);
+    //ImGui::BeginChild("MaterialPreviewWindow",
+    //                  ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+    //                  window_flags);
+    ///*ImGui::Image((void *)(intptr_t)previewCamera->getNativeGraphicsColorTex(),
+    //             ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+    //             ImVec2(0, 0));*/
+    //ImGui::EndChild();
 }
 
-void MaterialDrawer::populatePreviewWorld(World *world)
-{
-    // add all shaders found in world to preview world
-    for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++)
-    {
-        Shader *shader = world->getAssetByIndex<Shader>(i);
-
-        std::string filepath = world->getAssetFilepath(shader->getId());
-
-        if (!previewWorld.loadAsset(filepath))
-        {
-            Log::error("Could not load shader into preview world\n");
-        }
-    }
-
-    // add all materials found in world to preview world
-    for (int i = 0; i < world->getNumberOfAssets<Material>(); i++)
-    {
-        Material *material = world->getAssetByIndex<Material>(i);
-
-        std::string filepath = world->getAssetFilepath(material->getId());
-
-        if (!previewWorld.loadAsset(filepath))
-        {
-            Log::error("Could not load material into preview world\n");
-        }
-    }
-
-    // add all textures found in world to preview world
-    for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
-    {
-        Texture2D *texture = world->getAssetByIndex<Texture2D>(i);
-
-        std::string filepath = world->getAssetFilepath(texture->getId());
-
-        if (!previewWorld.loadAsset(filepath))
-        {
-            Log::error("Could not load texture into preview world\n");
-        }
-    }
-
-    // create sphere mesh in material preview world
-    Mesh *sphereMesh = previewWorld.createAsset<Mesh>();
-    sphereMesh->load(PhysicsEngine::InternalMeshes::sphereVertices, PhysicsEngine::InternalMeshes::sphereNormals,
-                     PhysicsEngine::InternalMeshes::sphereTexCoords,
-                     PhysicsEngine::InternalMeshes::sphereSubMeshStartIndicies);
-
-    // create sphere entity in material view world
-    Entity *sphereEntity = previewWorld.createEntity();
-
-    Transform *sphereTransform = sphereEntity->addComponent<Transform>(&previewWorld);
-    sphereTransform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    sphereTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-    sphereTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    sphereMeshRenderer = sphereEntity->addComponent<MeshRenderer>(&previewWorld);
-    sphereMeshRenderer->setMesh(sphereMesh->getId());
-    sphereMeshRenderer->setMaterial(Guid::INVALID, 0);
-    sphereMeshRenderer->mMaterialCount = 1;
-    sphereMeshRenderer->mIsStatic = false;
-
-    // create light entity in material view world
-    Entity *lightEntity = previewWorld.createEntity();
-
-    Transform *lightTransform = lightEntity->addComponent<Transform>(&previewWorld);
-    lightTransform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    lightTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-    lightTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    Light *light = lightEntity->addComponent<Light>(&previewWorld);
-
-    // create camera entity in material view world
-    Entity *cameraEntity = previewWorld.createEntity();
-
-    Transform *cameraTransform = cameraEntity->addComponent<Transform>(&previewWorld);
-    cameraTransform->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
-    cameraTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-    cameraTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    previewCamera = cameraEntity->addComponent<Camera>(&previewWorld);
-    /*camera->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
-    camera->mFront = glm::vec3(-3.0f, 0.0f, 0.0f);
-    camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);*/
-
-    // add render system to material view world
-    RenderSystem *renderSystem = previewWorld.addSystem<RenderSystem>(0);
-    renderSystem->mRenderToScreen = false;
-
-    // add required clean-up system to material view world
-    CleanUpSystem *cleanUpSystem = previewWorld.addSystem<CleanUpSystem>(1);
+//void MaterialDrawer::populatePreviewWorld(World *world)
+//{
+//    // add all shaders found in world to preview world
+//    for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++)
+//    {
+//        Shader *shader = world->getAssetByIndex<Shader>(i);
+//
+//        std::string filepath = world->getAssetFilepath(shader->getId());
+//
+//        if (!previewWorld.loadAsset(filepath))
+//        {
+//            Log::error("Could not load shader into preview world\n");
+//        }
+//    }
+//
+//    // add all materials found in world to preview world
+//    for (int i = 0; i < world->getNumberOfAssets<Material>(); i++)
+//    {
+//        Material *material = world->getAssetByIndex<Material>(i);
+//
+//        std::string filepath = world->getAssetFilepath(material->getId());
+//
+//        if (!previewWorld.loadAsset(filepath))
+//        {
+//            Log::error("Could not load material into preview world\n");
+//        }
+//    }
+//
+//    // add all textures found in world to preview world
+//    for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
+//    {
+//        Texture2D *texture = world->getAssetByIndex<Texture2D>(i);
+//
+//        std::string filepath = world->getAssetFilepath(texture->getId());
+//
+//        if (!previewWorld.loadAsset(filepath))
+//        {
+//            Log::error("Could not load texture into preview world\n");
+//        }
+//    }
+//
+//    // create sphere mesh in material preview world
+//    Mesh *sphereMesh = previewWorld.createAsset<Mesh>();
+//    sphereMesh->load(PhysicsEngine::InternalMeshes::sphereVertices, PhysicsEngine::InternalMeshes::sphereNormals,
+//                     PhysicsEngine::InternalMeshes::sphereTexCoords,
+//                     PhysicsEngine::InternalMeshes::sphereSubMeshStartIndicies);
+//
+//    // create sphere entity in material view world
+//    Entity *sphereEntity = previewWorld.createEntity();
+//
+//    Transform *sphereTransform = sphereEntity->addComponent<Transform>(&previewWorld);
+//    sphereTransform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+//    sphereTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+//    sphereTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+//
+//    sphereMeshRenderer = sphereEntity->addComponent<MeshRenderer>(&previewWorld);
+//    sphereMeshRenderer->setMesh(sphereMesh->getId());
+//    sphereMeshRenderer->setMaterial(Guid::INVALID, 0);
+//    sphereMeshRenderer->mMaterialCount = 1;
+//    sphereMeshRenderer->mIsStatic = false;
+//
+//    // create light entity in material view world
+//    Entity *lightEntity = previewWorld.createEntity();
+//
+//    Transform *lightTransform = lightEntity->addComponent<Transform>(&previewWorld);
+//    lightTransform->mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+//    lightTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+//    lightTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+//
+//    Light *light = lightEntity->addComponent<Light>(&previewWorld);
+//
+//    // create camera entity in material view world
+//    Entity *cameraEntity = previewWorld.createEntity();
+//
+//    Transform *cameraTransform = cameraEntity->addComponent<Transform>(&previewWorld);
+//    cameraTransform->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
+//    cameraTransform->mRotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+//    cameraTransform->mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+//
+//    previewCamera = cameraEntity->addComponent<Camera>(&previewWorld);
+//    /*camera->mPosition = glm::vec3(3.0f, 0.0f, 0.0f);
+//    camera->mFront = glm::vec3(-3.0f, 0.0f, 0.0f);
+//    camera->mUp = glm::vec3(0.0f, 0.0f, 1.0f);*/
+//
+//    // add render system to material view world
+//    RenderSystem *renderSystem = previewWorld.addSystem<RenderSystem>(0);
+//    renderSystem->mRenderToScreen = false;
+//
+//    // add required clean-up system to material view world
+//    CleanUpSystem *cleanUpSystem = previewWorld.addSystem<CleanUpSystem>(1);
 
     //// create material in material view world
     // previewMaterial = previewWorld.createAsset<Material>();
@@ -304,7 +368,7 @@ void MaterialDrawer::populatePreviewWorld(World *world)
 
     //// add required clean-up system to material view world
     // CleanUpSystem* cleanUpSystem = previewWorld.addSystem<CleanUpSystem>(1);
-}
+//}
 
 // void MaterialDrawer::initViewWorld()
 //{

@@ -15,405 +15,316 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState *state)
+void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
 {
     // compile internal shader programs
-    state->mGeometryShader = world->getAssetById<Shader>(world->getPositionAndNormalsShaderId());
-    state->mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
-    state->mSsaoShader = world->getAssetById<Shader>(world->getSsaoShaderId());
-    state->mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
-    state->mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
-    state->mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
+    Shader* mGeometryShader = world->getAssetById<Shader>(world->getPositionAndNormalsShaderId());
+    Shader* mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
+    Shader* mSsaoShader = world->getAssetById<Shader>(world->getSsaoShaderId());
+    Shader* mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
+    Shader* mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
+    Shader* mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
 
-    assert(state->mGeometryShader != NULL);
-    assert(state->mColorShader != NULL);
-    assert(state->mSsaoShader != NULL);
-    assert(state->mDepthShader != NULL);
-    assert(state->mDepthCubemapShader != NULL);
-    assert(state->mQuadShader != NULL);
+    assert(mGeometryShader != NULL);
+    assert(mColorShader != NULL);
+    assert(mSsaoShader != NULL);
+    assert(mDepthShader != NULL);
+    assert(mDepthCubemapShader != NULL);
+    assert(mQuadShader != NULL);
 
-    state->mGeometryShader->compile();
-    state->mColorShader->compile();
-    state->mSsaoShader->compile();
-    state->mDepthShader->compile();
-    state->mDepthCubemapShader->compile();
-    state->mQuadShader->compile();
+    mGeometryShader->compile();
+    mColorShader->compile();
+    mSsaoShader->compile();
+    mDepthShader->compile();
+    mDepthCubemapShader->compile();
+    mQuadShader->compile();
 
     // cache internal shader uniforms
-    state->mGeometryShaderProgram = state->mGeometryShader->getProgramFromVariant(ShaderVariant::None);
-    state->mGeometryShaderModelLoc =
-        state->mGeometryShader->findUniformLocation("model", state->mGeometryShaderProgram);
+    state.mGeometryShaderProgram = mGeometryShader->getProgramFromVariant(ShaderVariant::None);
+    state.mGeometryShaderModelLoc =
+        mGeometryShader->findUniformLocation("model", state.mGeometryShaderProgram);
 
-    state->mSsaoShaderProgram = state->mSsaoShader->getProgramFromVariant(ShaderVariant::None);
-    state->mSsaoShaderProjectionLoc = state->mSsaoShader->findUniformLocation("projection", state->mSsaoShaderProgram);
-    state->mSsaoShaderPositionTexLoc =
-        state->mSsaoShader->findUniformLocation("positionTex", state->mSsaoShaderProgram);
-    state->mSsaoShaderNormalTexLoc = state->mSsaoShader->findUniformLocation("normalTex", state->mSsaoShaderProgram);
-    state->mSsaoShaderNoiseTexLoc = state->mSsaoShader->findUniformLocation("noiseTex", state->mSsaoShaderProgram);
+    state.mSsaoShaderProgram = mSsaoShader->getProgramFromVariant(ShaderVariant::None);
+    state.mSsaoShaderProjectionLoc = mSsaoShader->findUniformLocation("projection", state.mSsaoShaderProgram);
+    state.mSsaoShaderPositionTexLoc =
+        mSsaoShader->findUniformLocation("positionTex", state.mSsaoShaderProgram);
+    state.mSsaoShaderNormalTexLoc = mSsaoShader->findUniformLocation("normalTex", state.mSsaoShaderProgram);
+    state.mSsaoShaderNoiseTexLoc = mSsaoShader->findUniformLocation("noiseTex", state.mSsaoShaderProgram);
 
     for (int i = 0; i < 64; i++)
     {
-        state->mSsaoShaderSamplesLoc[i] =
-            state->mSsaoShader->findUniformLocation("samples[" + std::to_string(i) + "]", state->mSsaoShaderProgram);
+        state.mSsaoShaderSamplesLoc[i] =
+            mSsaoShader->findUniformLocation("samples[" + std::to_string(i) + "]", state.mSsaoShaderProgram);
     }
 
-    state->mDepthShaderProgram = state->mDepthShader->getProgramFromVariant(ShaderVariant::None);
-    state->mDepthShaderModelLoc = state->mDepthShader->findUniformLocation("model", state->mDepthShaderProgram);
-    state->mDepthShaderViewLoc = state->mDepthShader->findUniformLocation("view", state->mDepthShaderProgram);
-    state->mDepthShaderProjectionLoc =
-        state->mDepthShader->findUniformLocation("projection", state->mDepthShaderProgram);
+    state.mDepthShaderProgram = mDepthShader->getProgramFromVariant(ShaderVariant::None);
+    state.mDepthShaderModelLoc = mDepthShader->findUniformLocation("model", state.mDepthShaderProgram);
+    state.mDepthShaderViewLoc = mDepthShader->findUniformLocation("view", state.mDepthShaderProgram);
+    state.mDepthShaderProjectionLoc =
+        mDepthShader->findUniformLocation("projection", state.mDepthShaderProgram);
 
-    state->mDepthCubemapShaderProgram = state->mDepthCubemapShader->getProgramFromVariant(ShaderVariant::None);
-    state->mDepthCubemapShaderLightPosLoc =
-        state->mDepthCubemapShader->findUniformLocation("lightPos", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderFarPlaneLoc =
-        state->mDepthCubemapShader->findUniformLocation("farPlane", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderModelLoc =
-        state->mDepthCubemapShader->findUniformLocation("model", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc0 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[0]", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc1 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[1]", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc2 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[2]", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc3 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[3]", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc4 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[4]", state->mDepthCubemapShaderProgram);
-    state->mDepthCubemapShaderCubeViewProjMatricesLoc5 =
-        state->mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[5]", state->mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderProgram = mDepthCubemapShader->getProgramFromVariant(ShaderVariant::None);
+    state.mDepthCubemapShaderLightPosLoc =
+        mDepthCubemapShader->findUniformLocation("lightPos", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderFarPlaneLoc =
+        mDepthCubemapShader->findUniformLocation("farPlane", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderModelLoc =
+        mDepthCubemapShader->findUniformLocation("model", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc0 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[0]", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc1 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[1]", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc2 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[2]", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc3 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[3]", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc4 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[4]", state.mDepthCubemapShaderProgram);
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc5 =
+        mDepthCubemapShader->findUniformLocation("cubeViewProjMatrices[5]", state.mDepthCubemapShaderProgram);
 
-    state->mColorShaderProgram = state->mColorShader->getProgramFromVariant(ShaderVariant::None);
-    state->mColorShaderModelLoc = state->mColorShader->findUniformLocation("model", state->mColorShaderProgram);
-    state->mColorShaderColorLoc = state->mColorShader->findUniformLocation("color", state->mColorShaderProgram);
+    state.mColorShaderProgram = mColorShader->getProgramFromVariant(ShaderVariant::None);
+    state.mColorShaderModelLoc = mColorShader->findUniformLocation("model", state.mColorShaderProgram);
+    state.mColorShaderColorLoc = mColorShader->findUniformLocation("material.color", state.mColorShaderProgram);
 
-    Graphics::checkError(__LINE__, __FILE__);
+    Graphics::createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
 
-    // generate screen quad for final rendering
-    constexpr float quadVertices[] = {
-        // positions        // texture Coords
-        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
-    };
+    Graphics::createGlobalCameraUniforms(state.mCameraState);
+    Graphics::createGlobalLightUniforms(state.mLightState);
 
-    glGenVertexArrays(1, &state->mQuadVAO);
-    glBindVertexArray(state->mQuadVAO);
-
-    glGenBuffers(1, &state->mQuadVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, state->mQuadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    Graphics::checkError(__LINE__, __FILE__);
-
-    glGenBuffers(1, &(state->mCameraState.mHandle));
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
-    glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    glGenBuffers(1, &(state->mLightState.mHandle));
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
-    glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    Graphics::checkError(__LINE__, __FILE__);
-}
-
-void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState *state)
-{
-    camera->beginQuery();
-
-    state->mCameraState.mProjection = camera->getProjMatrix();
-    state->mCameraState.mView = camera->getViewMatrix();
-    state->mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
-
-    // set camera state binding point and update camera state data
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mCameraState.mHandle);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, state->mCameraState.mHandle, 0, 144);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(state->mCameraState.mProjection));
-    glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(state->mCameraState.mView));
-    glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(state->mCameraState.mCameraPos));
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    // set light state binding point
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 1, state->mLightState.mHandle, 0, 824);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    // glEnable(GL_SCISSOR_TEST);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBlendEquation(GL_FUNC_ADD);
-
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
-    glScissor(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-              camera->getViewport().mHeight);
-
-    glClearColor(camera->mBackgroundColor.r, camera->mBackgroundColor.g, camera->mBackgroundColor.b,
-                 camera->mBackgroundColor.a);
-    glClearDepth(1.0f);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererState *state,
+void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState &state)
+{
+    camera->beginQuery();
+
+    state.mCameraState.mProjection = camera->getProjMatrix();
+    state.mCameraState.mView = camera->getViewMatrix();
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
+
+    // update camera state data
+    Graphics::setGlobalCameraUniforms(state.mCameraState);
+
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+        camera->getViewport().mHeight);
+    
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::clearFrambufferColor(camera->mBackgroundColor);
+    Graphics::clearFramebufferDepth(1.0f);
+    Graphics::unbindFramebuffer();
+
+    Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Graphics::clearFramebufferDepth(1.0f);
+    Graphics::unbindFramebuffer();
+
+    Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
+    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Graphics::unbindFramebuffer();
+
+    Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Graphics::unbindFramebuffer();
+}
+
+void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
                                 const std::vector<std::pair<uint64_t, int>> &renderQueue,
                                 const std::vector<RenderObject> &renderObjects)
 {
     // fill geometry framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
-    state->mGeometryShader->use(state->mGeometryShaderProgram);
+    Graphics::use(state.mGeometryShaderProgram);
 
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        state->mGeometryShader->setMat4(state->mGeometryShaderModelLoc, renderObjects[renderQueue[i].second].model);
+        Graphics::setMat4(state.mGeometryShaderModelLoc, renderObjects[renderQueue[i].second].model);
 
         Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  
+    Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
 
     // fill ssao color texture
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsSSAOFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
-    state->mSsaoShader->use(state->mSsaoShaderProgram);
-    state->mSsaoShader->setMat4(state->mSsaoShaderProjectionLoc, camera->getProjMatrix());
+    Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
+
+    Graphics::use(state.mSsaoShaderProgram);
+    Graphics::setMat4(state.mSsaoShaderProjectionLoc, camera->getProjMatrix());
     for (int i = 0; i < 64; i++)
     {
-        state->mSsaoShader->setVec3(state->mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
+        Graphics::setVec3(state.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
     }
-    state->mSsaoShader->setInt(state->mSsaoShaderPositionTexLoc, 0);
-    state->mSsaoShader->setInt(state->mSsaoShaderNormalTexLoc, 1);
-    state->mSsaoShader->setInt(state->mSsaoShaderNoiseTexLoc, 2);
+    Graphics::setTexture2D(state.mSsaoShaderPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
+    Graphics::setTexture2D(state.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
+    Graphics::setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsNormalTex());
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsSSAONoiseTex());
-
-    glBindVertexArray(state->mQuadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::renderScreenQuad(state.mQuadVAO);
+    
+    Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState *state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+                                  ForwardRendererState &state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
                                   const std::vector<RenderObject> &renderObjects)
 {
     if (light->mLightType == LightType::Directional)
     {
-
         calcShadowmapCascades(camera, state);
         calcCascadeOrthoProj(camera, lightTransform->getForward(), state);
 
         for (int i = 0; i < 5; i++)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowCascadeFBO(i));
-            glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()),
-                       static_cast<GLsizei>(light->getShadowMapResolution()));
+            Graphics::bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
+            Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
+                                        static_cast<int>(light->getShadowMapResolution()));
 
-            glClearDepth(1.0f);
-            glClear(GL_DEPTH_BUFFER_BIT);
+            Graphics::clearFramebufferDepth(1.0f);
 
-            state->mDepthShader->use(state->mDepthShaderProgram);
-            state->mDepthShader->setMat4(state->mDepthShaderViewLoc, state->mCascadeLightView[i]);
-            state->mDepthShader->setMat4(state->mDepthShaderProjectionLoc, state->mCascadeOrthoProj[i]);
+            Graphics::use(state.mDepthShaderProgram);
+            Graphics::setMat4(state.mDepthShaderViewLoc, state.mCascadeLightView[i]);
+            Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mCascadeOrthoProj[i]);
 
             for (size_t j = 0; j < renderQueue.size(); j++)
             {
-                state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
+                Graphics::setMat4(state.mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
                 Graphics::render(renderObjects[renderQueue[j].second], camera->mQuery);
             }
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            Graphics::unbindFramebuffer();
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowSpotlightFBO());
-        glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()),
-                   static_cast<GLsizei>(light->getShadowMapResolution()));
+        Graphics::bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
+        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
+                                    static_cast<int>(light->getShadowMapResolution()));
 
-        glClearDepth(1.0f);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        Graphics::clearFramebufferDepth(1.0f);
 
-        state->mShadowProjMatrix = light->getProjMatrix();
-        state->mShadowViewMatrix =
+        state.mShadowProjMatrix = light->getProjMatrix();
+        state.mShadowViewMatrix =
             glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + lightTransform->getForward(),
                         glm::vec3(0.0f, 1.0f, 0.0f));
 
-        state->mDepthShader->use(state->mDepthShaderProgram);
-        state->mDepthShader->setMat4(state->mDepthShaderProjectionLoc, state->mShadowProjMatrix);
-        state->mDepthShader->setMat4(state->mDepthShaderViewLoc, state->mShadowViewMatrix);
+        Graphics::use(state.mDepthShaderProgram);
+        Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mShadowProjMatrix);
+        Graphics::setMat4(state.mDepthShaderViewLoc, state.mShadowViewMatrix);
 
         for (size_t i = 0; i < renderQueue.size(); i++)
         {
-            state->mDepthShader->setMat4(state->mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
+            Graphics::setMat4(state.mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
             Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Graphics::unbindFramebuffer();
     }
     else if (light->mLightType == LightType::Point)
     {
 
-        state->mCubeViewProjMatrices[0] =
+        state.mCubeViewProjMatrices[0] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state->mCubeViewProjMatrices[1] =
+        state.mCubeViewProjMatrices[1] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(-1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state->mCubeViewProjMatrices[2] =
+        state.mCubeViewProjMatrices[2] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(0.0, 1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, 1.0)));
-        state->mCubeViewProjMatrices[3] =
+        state.mCubeViewProjMatrices[3] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(0.0, -1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, -1.0)));
-        state->mCubeViewProjMatrices[4] =
+        state.mCubeViewProjMatrices[4] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(0.0, 0.0, 1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state->mCubeViewProjMatrices[5] =
+        state.mCubeViewProjMatrices[5] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
                                                   lightTransform->mPosition + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
 
-        glBindFramebuffer(GL_FRAMEBUFFER, light->getNativeGraphicsShadowCubemapFBO());
-        glViewport(0, 0, static_cast<GLsizei>(light->getShadowMapResolution()),
-                   static_cast<GLsizei>(light->getShadowMapResolution()));
+        Graphics::bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
+        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()), 
+                                    static_cast<int>(light->getShadowMapResolution()));
 
-        glClearDepth(1.0f);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        Graphics::clearFramebufferDepth(1.0f);
 
-        state->mDepthCubemapShader->use(state->mDepthCubemapShaderProgram);
-        state->mDepthCubemapShader->setVec3(state->mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
-        state->mDepthCubemapShader->setFloat(state->mDepthCubemapShaderFarPlaneLoc, camera->mFrustum.mFarPlane);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc0,
-                                            state->mCubeViewProjMatrices[0]);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc1,
-                                            state->mCubeViewProjMatrices[1]);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc2,
-                                            state->mCubeViewProjMatrices[2]);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc3,
-                                            state->mCubeViewProjMatrices[3]);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc4,
-                                            state->mCubeViewProjMatrices[4]);
-        state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderCubeViewProjMatricesLoc5,
-                                            state->mCubeViewProjMatrices[5]);
+        Graphics::use(state.mDepthCubemapShaderProgram);
+        Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
+        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->mFrustum.mFarPlane);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1, state.mCubeViewProjMatrices[1]);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2, state.mCubeViewProjMatrices[2]);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc3, state.mCubeViewProjMatrices[3]);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc4, state.mCubeViewProjMatrices[4]);
+        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc5, state.mCubeViewProjMatrices[5]);
 
         for (size_t i = 0; i < renderQueue.size(); i++)
         {
-            state->mDepthCubemapShader->setMat4(state->mDepthCubemapShaderModelLoc,
-                                                renderObjects[renderQueue[i].second].model);
+            Graphics::setMat4(state.mDepthCubemapShaderModelLoc, renderObjects[renderQueue[i].second].model);
             Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Graphics::unbindFramebuffer();
     }
 }
 
 void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState *state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+                                  ForwardRendererState &state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
                                   const std::vector<RenderObject> &renderObjects)
 {
-    state->mLightState.mPosition = lightTransform->mPosition;
-    state->mLightState.mDirection = lightTransform->getForward();
-    state->mLightState.mColor = light->mColor;
+    state.mLightState.mPosition = lightTransform->mPosition;
+    state.mLightState.mDirection = lightTransform->getForward();
+    state.mLightState.mColor = light->mColor;
 
-    state->mLightState.mIntensity = light->mIntensity;
-    state->mLightState.mSpotAngle = light->mSpotAngle;
-    state->mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
-    state->mLightState.mShadowNearPlane = light->mShadowNearPlane;
-    state->mLightState.mShadowFarPlane = light->mShadowFarPlane;
-    state->mLightState.mShadowAngle = light->mShadowAngle;
-    state->mLightState.mShadowRadius = light->mShadowRadius;
-    state->mLightState.mShadowStrength = light->mShadowStrength;
+    state.mLightState.mIntensity = light->mIntensity;
+    state.mLightState.mSpotAngle = light->mSpotAngle;
+    state.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
+    state.mLightState.mShadowNearPlane = light->mShadowNearPlane;
+    state.mLightState.mShadowFarPlane = light->mShadowFarPlane;
+    state.mLightState.mShadowAngle = light->mShadowAngle;
+    state.mLightState.mShadowRadius = light->mShadowRadius;
+    state.mLightState.mShadowStrength = light->mShadowStrength;
 
     if (light->mLightType == LightType::Directional)
     {
         for (int i = 0; i < 5; i++)
         {
-            state->mLightState.mLightProjection[i] = state->mCascadeOrthoProj[i];
+            state.mLightState.mLightProjection[i] = state.mCascadeOrthoProj[i];
 
-            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, state->mCascadeEnds[i + 1], 1.0f);
+            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, state.mCascadeEnds[i + 1], 1.0f);
             glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-            state->mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
+            state.mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
 
-            state->mLightState.mLightView[i] = state->mCascadeLightView[i];
+            state.mLightState.mLightView[i] = state.mCascadeLightView[i];
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
         for (int i = 0; i < 5; i++)
         {
-            state->mLightState.mLightProjection[i] = state->mShadowProjMatrix;
-            state->mLightState.mLightView[i] = state->mShadowViewMatrix;
+            state.mLightState.mLightProjection[i] = state.mShadowProjMatrix;
+            state.mLightState.mLightView[i] = state.mShadowViewMatrix;
         }
     }
 
-    glBindBuffer(GL_UNIFORM_BUFFER, state->mLightState.mHandle);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &state->mLightState.mLightProjection[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &state->mLightState.mLightView[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(state->mLightState.mPosition));
-    glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(state->mLightState.mDirection));
-    glBufferSubData(GL_UNIFORM_BUFFER, 672, 16, glm::value_ptr(state->mLightState.mColor));
-    glBufferSubData(GL_UNIFORM_BUFFER, 688, 4, &state->mLightState.mCascadeEnds[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 704, 4, &state->mLightState.mCascadeEnds[1]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &state->mLightState.mCascadeEnds[2]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &state->mLightState.mCascadeEnds[3]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &state->mLightState.mCascadeEnds[4]);
-    glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &state->mLightState.mIntensity);
-    glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(state->mLightState.mSpotAngle));
-    glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(state->mLightState.mInnerSpotAngle));
-    glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(state->mLightState.mShadowNearPlane));
-    glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(state->mLightState.mShadowFarPlane));
-    glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(state->mLightState.mShadowAngle));
-    glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(state->mLightState.mShadowRadius));
-    glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(state->mLightState.mShadowStrength));
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    Graphics::setGlobalLightUniforms(state.mLightState);
 
     int variant = ShaderVariant::None;
     if (light->mLightType == LightType::Directional)
@@ -441,9 +352,9 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     const char *const shaderShadowMapNames[] = {"shadowMap[0]", "shadowMap[1]", "shadowMap[2]", "shadowMap[3]",
                                                 "shadowMap[4]"};
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     int currentMaterialIndex = -1;
     int currentShaderIndex = -1;
@@ -475,29 +386,23 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         {
             for (int j = 0; j < 5; j++)
             {
-                shader->setInt(shaderShadowMapNames[j], 3 + j);
-
-                glActiveTexture(GL_TEXTURE0 + 3 + j);
-                glBindTexture(GL_TEXTURE_2D, light->getNativeGraphicsShadowCascadeDepthTex(j));
+                shader->setTexture2D(shaderShadowMapNames[j], 3 + j, light->getNativeGraphicsShadowCascadeDepthTex(j));
             }
         }
         else if (light->mLightType == LightType::Spot)
         {
-            shader->setInt(shaderShadowMapNames[0], 3);
-
-            glActiveTexture(GL_TEXTURE0 + 3);
-            glBindTexture(GL_TEXTURE_2D, light->getNativeGrpahicsShadowSpotlightDepthTex());
+            shader->setTexture2D(shaderShadowMapNames[0], 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
         }
 
         Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState *state,
+void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
                                        const std::vector<std::pair<uint64_t, int>> &renderQueue,
                                        const std::vector<RenderObject> &renderObjects)
 {
@@ -512,12 +417,11 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
         color++;
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsColorPickingFBO());
+    Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
-
-    state->mColorShader->use(state->mColorShaderProgram);
+    Graphics::use(state.mColorShaderProgram);
 
     color = 1;
     for (size_t i = 0; i < renderQueue.size(); i++)
@@ -528,13 +432,13 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
 
         color++;
 
-        state->mColorShader->setMat4(state->mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
-        state->mColorShader->setVec4(state->mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
+        Graphics::setMat4(state.mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
+        Graphics::setVec4(state.mColorShaderColorLoc, glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f));
 
         Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -547,30 +451,12 @@ void PhysicsEngine::postProcessing()
 {
 }
 
-void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState *state)
+void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState &state)
 {
     camera->endQuery();
-
-    /*if (state->mRenderToScreen) {
-        glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-    camera->getViewport().mHeight); glScissor(camera->getViewport().mX, camera->getViewport().mY,
-    camera->getViewport().mWidth, camera->getViewport().mHeight);
-
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        state->mQuadShader->use(ShaderVariant::None);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorTex());
-
-        glBindVertexArray(state->mQuadVAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        glBindVertexArray(0);
-    }*/
 }
 
-void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState *state)
+void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState &state)
 {
     float nearDist = camera->mFrustum.mNearPlane;
     float farDist = camera->mFrustum.mFarPlane;
@@ -582,12 +468,12 @@ void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState *
     {
         const float si = i / 5.0f;
 
-        state->mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) +
+        state.mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) +
                                           (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
     }
 }
 
-void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState *state)
+void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
 {
     glm::mat4 viewInv = glm::inverse(camera->getViewMatrix());
     float fov = camera->mFrustum.mFov;
@@ -597,22 +483,22 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
 
     for (int i = 0; i < 5; i++)
     {
-        float xn = -1.0f * state->mCascadeEnds[i] * tanHalfHFOV;
-        float xf = -1.0f * state->mCascadeEnds[i + 1] * tanHalfHFOV;
-        float yn = -1.0f * state->mCascadeEnds[i] * tanHalfVFOV;
-        float yf = -1.0f * state->mCascadeEnds[i + 1] * tanHalfVFOV;
+        float xn = -1.0f * state.mCascadeEnds[i] * tanHalfHFOV;
+        float xf = -1.0f * state.mCascadeEnds[i + 1] * tanHalfHFOV;
+        float yn = -1.0f * state.mCascadeEnds[i] * tanHalfVFOV;
+        float yf = -1.0f * state.mCascadeEnds[i + 1] * tanHalfVFOV;
 
         // Find cascade frustum corners
         glm::vec4 frustumCorners[8];
-        frustumCorners[0] = glm::vec4(xn, yn, state->mCascadeEnds[i], 1.0f);
-        frustumCorners[1] = glm::vec4(-xn, yn, state->mCascadeEnds[i], 1.0f);
-        frustumCorners[2] = glm::vec4(xn, -yn, state->mCascadeEnds[i], 1.0f);
-        frustumCorners[3] = glm::vec4(-xn, -yn, state->mCascadeEnds[i], 1.0f);
+        frustumCorners[0] = glm::vec4(xn, yn, state.mCascadeEnds[i], 1.0f);
+        frustumCorners[1] = glm::vec4(-xn, yn, state.mCascadeEnds[i], 1.0f);
+        frustumCorners[2] = glm::vec4(xn, -yn, state.mCascadeEnds[i], 1.0f);
+        frustumCorners[3] = glm::vec4(-xn, -yn, state.mCascadeEnds[i], 1.0f);
 
-        frustumCorners[4] = glm::vec4(xf, yf, state->mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[5] = glm::vec4(-xf, yf, state->mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[6] = glm::vec4(xf, -yf, state->mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[7] = glm::vec4(-xf, -yf, state->mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[4] = glm::vec4(xf, yf, state.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[5] = glm::vec4(-xf, yf, state.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[6] = glm::vec4(xf, -yf, state.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[7] = glm::vec4(-xf, -yf, state.mCascadeEnds[i + 1], 1.0f);
 
         // find frustum centre by averaging corners
         glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -637,7 +523,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
                                 frustrumCentreWorldSpace.y + d * lightDirection.y,
                                 frustrumCentreWorldSpace.z + d * lightDirection.z);
 
-        state->mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
+        state.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::lowest();
@@ -646,7 +532,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
         float minZ = std::numeric_limits<float>::max();
         float maxZ = std::numeric_limits<float>::lowest();
 
-        glm::mat4 cascadeLightView = state->mCascadeLightView[i];
+        glm::mat4 cascadeLightView = state.mCascadeLightView[i];
 
         // Transform the frustum coordinates from view to world space and then world to light space
         glm::vec4 vL0 = cascadeLightView * (viewInv * frustumCorners[0]);
@@ -714,6 +600,6 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
         minZ = glm::min(minZ, vL7.z);
         maxZ = glm::max(maxZ, vL7.z);
 
-        state->mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
+        state.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
     }
 }

@@ -251,7 +251,9 @@ void Mesh::create()
         return;
     }
 
-    Graphics::create(this, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mCreated);
+    Graphics::createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2]);
+
+    mCreated = true;
 }
 
 void Mesh::destroy()
@@ -261,10 +263,12 @@ void Mesh::destroy()
         return;
     }
 
-    Graphics::destroy(this, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mCreated);
+    Graphics::destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2]);
+
+    mCreated = false;
 }
 
-void Mesh::apply()
+void Mesh::writeMesh()
 {
-    Graphics::apply(this);
+    
 }

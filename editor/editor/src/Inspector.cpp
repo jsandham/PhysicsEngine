@@ -44,13 +44,13 @@ void Inspector::render(World *world, EditorProject &project, EditorScene &scene,
             ImGui::SetWindowFocus("Inspector");
         }
 
-        // draw entity
+        // draw selected entity
         if (clipboard.getSelectedType() == InteractionType::Entity)
         {
             drawEntity(world, project, scene, clipboard);
         }
 
-        // draw asset
+        // draw selected asset
         if (clipboard.getSelectedType() == InteractionType::Material)
         {
             materialDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
@@ -103,7 +103,10 @@ void Inspector::drawEntity(World *world, EditorProject &project, EditorScene &sc
     }
 
     std::string componentToAdd = "";
-    if (BeginAddComponentDropdown("Add component", componentToAdd))
+    std::vector<std::string> components = { "Transform",    "Camera",       "Light",       "Rigidbody",
+                                            "MeshRenderer", "LineRenderer", "BoxCollider", "SphereCollider"};
+
+    if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
 
         if (componentToAdd == "Transform")
@@ -127,81 +130,6 @@ void Inspector::drawEntity(World *world, EditorProject &project, EditorScene &sc
             CommandManager::addCommand(new AddComponentCommand<Light>(world, entity->getId(), &scene.isDirty));
         }
 
-        EndAddComponentDropdown();
+        ImGui::EndDropdownWindow();
     }
-}
-
-// void drawAsset(World* world, EditorScene& scene, EditorClipboard& clipboard)
-// {
-// 	Texture2D* texture = world->getAsset<Texture2D>(clipboard.getSelectedId());
-
-// 	InspectorDrawer* drawer = loadInternalInspectorAssetDrawer(AssetType<Texture2D>::type);
-
-// 	//drawer->render(world, clipboard, entity->entityId, componentId);
-// 	ImGui::Separator();
-
-// 	delete drawer;
-// }
-
-void drawCodeFile(World *world, EditorScene &scene, EditorClipboard &clipboard)
-{
-}
-
-bool Inspector::BeginAddComponentDropdown(std::string name, std::string &componentToAdd)
-{
-    ImGui::PushID("##Dropdown");
-    bool pressed = ImGui::Button(name.c_str());
-    ImGui::PopID();
-
-    if (pressed)
-    {
-        ImGui::OpenPopup("##Dropdown");
-    }
-
-    if (ImGui::BeginPopup("##Dropdown"))
-    {
-        std::vector<char> inputBuffer(128);
-        if (ImGui::InputTextWithHint("##Search string", "search...", &inputBuffer[0], (int)inputBuffer.size()))
-        {
-        }
-
-        std::vector<std::string> components = {"Transform",    "Camera",       "Light",       "Rigidbody",
-                                               "MeshRenderer", "LineRenderer", "BoxCollider", "SphereCollider"};
-
-        ImGuiTextFilter componentFilter(&inputBuffer[0]);
-        std::vector<std::string> filteredComponents;
-        for (size_t i = 0; i < components.size(); i++)
-        {
-            if (componentFilter.PassFilter(components[i].c_str()))
-            {
-                filteredComponents.push_back(components[i]);
-            }
-        }
-
-        if (filteredComponents.size() == 0)
-        {
-            filteredComponents.push_back("");
-        }
-
-        std::vector<const char *> cStrFilteredComponents;
-        for (size_t i = 0; i < filteredComponents.size(); ++i)
-        {
-            cStrFilteredComponents.push_back(filteredComponents[i].c_str());
-        }
-
-        int s = 0;
-        if (ImGui::ListBox("##Filter", &s, &cStrFilteredComponents[0], (int)cStrFilteredComponents.size(), 4))
-        {
-            componentToAdd = filteredComponents[s];
-            ImGui::CloseCurrentPopup();
-        }
-        return true;
-    }
-
-    return false;
-}
-
-void Inspector::EndAddComponentDropdown()
-{
-    ImGui::EndPopup();
 }

@@ -1,10 +1,13 @@
 #include <fstream>
 #include <iostream>
 #include <set>
+#include <vector>
+#include <map>
 #include <sstream>
 #include <stack>
 #include <stdlib.h>
 
+#include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
 #include "../../include/graphics/Graphics.h"
@@ -467,6 +470,11 @@ int Shader::getProgramFromVariant(int variant) const
     return -1;
 }
 
+int Shader::getActiveProgram() const
+{
+    return mActiveProgram;
+}
+
 std::vector<ShaderProgram> Shader::getPrograms() const
 {
     return mPrograms;
@@ -547,6 +555,11 @@ void Shader::setMat4(const char *name, const glm::mat4 &mat) const
     this->setMat4(Graphics::findUniformLocation(name, mActiveProgram), mat);
 }
 
+void Shader::setTexture2D(const char* name, int texUnit, int tex) const
+{
+    this->setTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit, tex);
+}
+
 void Shader::setBool(int nameLocation, bool value) const
 {
     if (mActiveProgram != -1)
@@ -554,6 +567,7 @@ void Shader::setBool(int nameLocation, bool value) const
         Graphics::setBool(nameLocation, (int)value);
     }
 }
+
 void Shader::setInt(int nameLocation, int value) const
 {
     if (mActiveProgram != -1)
@@ -626,6 +640,14 @@ void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
     }
 }
 
+void Shader::setTexture2D(int nameLocation, int texUnit, int tex) const
+{
+    if (mActiveProgram != -1)
+    {
+        Graphics::setTexture2D(nameLocation, texUnit, tex);
+    }
+}
+
 bool Shader::getBool(const char *name) const
 {
     return this->getBool(Graphics::findUniformLocation(name, mActiveProgram));
@@ -674,6 +696,11 @@ glm::mat3 Shader::getMat3(const char *name) const
 glm::mat4 Shader::getMat4(const char *name) const
 {
     return this->getMat4(Graphics::findUniformLocation(name, mActiveProgram));
+}
+
+int Shader::getTexture2D(const char* name, int texUnit) const
+{
+    return this->getTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit);
 }
 
 bool Shader::getBool(int nameLocation) const
@@ -774,4 +801,14 @@ glm::mat4 Shader::getMat4(int nameLocation) const
     }
 
     return glm::mat4(0.0f);
+}
+
+int Shader::getTexture2D(int nameLocation, int texUnit) const
+{
+    if (mActiveProgram != -1)
+    {
+        return Graphics::getTexture2D(nameLocation, texUnit, mActiveProgram);
+    }
+
+    return -1;
 }

@@ -21,25 +21,20 @@ namespace PhysicsEditor
 class MaterialDrawer : public InspectorDrawer
 {
   private:
-    World previewWorld;
-    Camera *previewCamera;
-    MeshRenderer *sphereMeshRenderer;
-    // Shader* previewShader;
-    // Material* previewMaterial;
+      GLuint mFBO;
+      GLuint mColor;
+      GLuint mDepth;
+      
+      glm::vec3 cameraPos;
+      glm::mat4 model;
+      glm::mat4 view;
+      glm::mat4 projection;
 
   public:
     MaterialDrawer();
     ~MaterialDrawer();
 
     void render(World *world, EditorProject &project, EditorScene &scene, EditorClipboard &clipboard, Guid id);
-
-  private:
-    void populatePreviewWorld(World *world);
-
-    // void initViewWorld();
-    // void updateViewWorld();
-    // void drawUniforms();
-    // void drawPreview();
 };
 
 template <GLenum T> struct UniformDrawer

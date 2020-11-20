@@ -54,6 +54,10 @@ void MeshRendererDrawer::render(World *world, EditorProject &project, EditorScen
             meshRenderer->setMesh(meshId);
         }
 
+        if (isClicked) {
+            clipboard.setSelectedItem(InteractionType::Mesh, meshId);
+        }
+
         bool isStatic = meshRenderer->mIsStatic;
         if (ImGui::Checkbox("Is Static?", &isStatic))
         {
@@ -102,6 +106,12 @@ void MeshRendererDrawer::render(World *world, EditorProject &project, EditorScen
                 clipboard.clearDraggedItem();
 
                 meshRenderer->setMaterial(materialIds[i], i);
+            }
+
+            if (materialIsClicked) {
+                Log::info((materialName + "\n").c_str());
+
+                clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
             }
 
             // this current is always getting called when you click on an entity in the hierarchy causing the scene to

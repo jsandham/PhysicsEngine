@@ -6,7 +6,7 @@
 
 #include "../core/Shader.h"
 
-#include "GraphicsState.h"
+#include "Graphics.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -17,7 +17,7 @@ namespace PhysicsEngine
 struct DeferredRendererState
 {
     // internal graphics camera state
-    GraphicsCameraState mCameraState;
+    CameraUniform mCameraState;
 
     bool mRenderToScreen;
 
@@ -31,11 +31,6 @@ struct DeferredRendererState
     int mSimpleLitDeferredShaderProgram;
     int mSimpleLitDeferredShaderViewPosLoc;
     int mSimpleLitDeferredShaderLightLocs[32];
-
-    // Shader mColorShader;
-    // int mColorShaderProgram;
-    // int mColorShaderModelLoc;
-    // int mColorShaderColorLoc;
 
     // quad
     GLuint mQuadVAO;
