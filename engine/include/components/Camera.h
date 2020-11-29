@@ -105,7 +105,6 @@ struct CameraTargets
 class Camera : public Component
 {
   public:
-    Frustum mFrustum;
     Guid mTargetTextureId;
 
     RenderPath mRenderPath;
@@ -118,6 +117,7 @@ class Camera : public Component
     GraphicsQuery mQuery;
 
   private:
+    Frustum mFrustum;
     Viewport mViewport;
     CameraTargets mTargets;
 
@@ -126,6 +126,7 @@ class Camera : public Component
     glm::vec3 mPosition;
     glm::mat4 mViewMatrix;
     glm::mat4 mInvViewMatrix;
+    glm::mat4 mProjMatrix;
 
     bool mIsCreated;
     bool mIsViewportChanged;
@@ -160,7 +161,9 @@ class Camera : public Component
     glm::vec3 getSSAOSample(int sample) const;
     Guid getTransformIdAtScreenPos(int x, int y) const;
 
+    Frustum getFrustum() const;
     Viewport getViewport() const;
+    void setFrustum(float fov, float aspectRatio, float nearPlane, float farPlane);
     void setViewport(int x, int y, int width, int height);
 
     Ray normalizedDeviceSpaceToRay(float x, float y) const;

@@ -12,13 +12,17 @@ namespace PhysicsEngine
 struct Texture3DHeader
 {
     Guid mTextureId;
+    char mTextureName[64];
     size_t mTextureSize;
     int32_t mWidth;
     int32_t mHeight;
     int32_t mDepth;
     int32_t mNumChannels;
+    int32_t mAnisoLevel;
     uint8_t mDimension;
     uint8_t mFormat;
+    uint8_t mWrapMode;
+    uint8_t mFilterMode;
 };
 #pragma pack(pop)
 
@@ -48,13 +52,14 @@ class Texture3D : public Texture
     std::vector<unsigned char> getRawTextureData() const;
     Color getPixel(int x, int y, int z) const;
 
-    void setRawTextureData(std::vector<unsigned char> data, int width, int height, int depth, TextureFormat format);
-    void setPixel(int x, int y, int z, Color color);
+    void setRawTextureData(const std::vector<unsigned char> &data, int width, int height, int depth, TextureFormat format);
+    void setPixel(int x, int y, int z, const Color &color);
 
-    void create();
-    void destroy();
-    void readPixels();
-    void writePixels();
+    void create() override;
+    void destroy() override;
+    void update() override;
+    void readPixels() override;
+    void writePixels() override;
 };
 
 template <typename T> struct IsTexture3D

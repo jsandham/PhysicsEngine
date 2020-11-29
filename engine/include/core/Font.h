@@ -16,6 +16,7 @@ namespace PhysicsEngine
 struct FontHeader
 {
     Guid mFontId;
+    char mFontName[64];
     size_t mFilepathSize;
 };
 #pragma pack(pop)

@@ -64,6 +64,8 @@ class Graphics
     static void checkError(long line, const char *file);
     static void checkFrambufferError(long line, const char *file);
     static GLenum getTextureFormat(TextureFormat format);
+    static GLint getTextureWrapMode(TextureWrapMode wrapMode);
+    static GLint getTextureFilterMode(TextureFilterMode filterMode);
 
     static void beginQuery(GLuint queryId);
     static void endQuery(GLuint queryId, GLuint64 *elapsedTime);
@@ -96,24 +98,27 @@ class Graphics
     static void destroyTargets(LightTargets *targets);
     static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
 
-    static void createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+    static void createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, const std::vector<unsigned char> &data,
                                 GLuint *tex);
     static void destroyTexture2D(GLuint *tex);
+    static void updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
                                     std::vector<unsigned char> &data, GLuint tex);
     static void writePixelsTexture2D(TextureFormat format, int width, int height,
                                      const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createTexture3D(TextureFormat format, int width, int height, int depth,
+    static void createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, int depth,
                                 const std::vector<unsigned char> &data, GLuint *tex);
     static void destroyTexture3D(GLuint *tex);
+    static void updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
                                     std::vector<unsigned char> &data, GLuint tex);
     static void writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
                                      const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint *tex);
+    static void createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, const std::vector<unsigned char> &data, GLuint *tex);
     static void destroyCubemap(GLuint *tex);
+    static void updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
                                   GLuint tex);
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint tex);
@@ -158,7 +163,7 @@ class Graphics
     static void applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<GLint> &textures,
                               int shaderProgram);
 
-    static void render(int start, int count, GLuint vao);
+    static void render(int start, int count, GLuint vao, bool wireframe = false);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
 };
 } // namespace PhysicsEngine

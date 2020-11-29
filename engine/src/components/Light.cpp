@@ -13,7 +13,7 @@ Light::Light()
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = glm::cos(glm::radians(15.0f));
-    ;
+    
     mInnerSpotAngle = glm::cos(glm::radians(12.5f));
     mShadowNearPlane = 0.1f;
     mShadowFarPlane = 100.0f;

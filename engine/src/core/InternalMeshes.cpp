@@ -209,13 +209,18 @@ const Guid InternalMeshes::sphereMeshId("0a79687e-6398-4a50-9187-4387b9098bef");
 const Guid InternalMeshes::cubeMeshId("4d267f0a-bacf-403e-9381-b7b313f609f6");
 const Guid InternalMeshes::planeMeshId("4899cc8c-ec05-4b99-9dfe-908dfb17359d");
 
-Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std::vector<float> &vertices,
+const std::string InternalMeshes::sphereMeshName = "Sphere";
+const std::string InternalMeshes::cubeMeshName = "Cube";
+const std::string InternalMeshes::planeMeshName = "Plane";
+
+Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std::string &name, const std::vector<float> &vertices,
                                       const std::vector<float> &normals, const std::vector<float> &texCoords,
                                       const std::vector<int> &startIndices)
 {
     // Create temp mesh to compute serialized data vector
     Mesh temp;
     temp.load(vertices, normals, texCoords, startIndices);
+    temp.setName(name);
 
     std::vector<char> data = temp.serialize(meshId);
 
@@ -233,21 +238,21 @@ Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std
 
 Guid InternalMeshes::loadSphereMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::sphereMeshId, InternalMeshes::sphereVertices,
+    return loadInternalMesh(world, InternalMeshes::sphereMeshId, InternalMeshes::sphereMeshName, InternalMeshes::sphereVertices,
                             InternalMeshes::sphereNormals, InternalMeshes::sphereTexCoords,
                             InternalMeshes::sphereSubMeshStartIndicies);
 }
 
 Guid InternalMeshes::loadCubeMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::cubeMeshId, InternalMeshes::cubeVertices,
+    return loadInternalMesh(world, InternalMeshes::cubeMeshId, InternalMeshes::cubeMeshName, InternalMeshes::cubeVertices,
                             InternalMeshes::cubeNormals, InternalMeshes::cubeTexCoords,
                             InternalMeshes::cubeSubMeshStartIndicies);
 }
 
 Guid InternalMeshes::loadPlaneMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::planeMeshId, InternalMeshes::planeVertices,
+    return loadInternalMesh(world, InternalMeshes::planeMeshId, InternalMeshes::planeMeshName, InternalMeshes::planeVertices,
                             InternalMeshes::planeNormals, InternalMeshes::planeTexCoords,
                             InternalMeshes::planeSubMeshStartIndicies);
 }

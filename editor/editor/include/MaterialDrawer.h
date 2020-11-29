@@ -24,6 +24,9 @@ class MaterialDrawer : public InspectorDrawer
       GLuint mFBO;
       GLuint mColor;
       GLuint mDepth;
+
+      CameraUniform cameraUniform;
+      LightUniform lightUniform;
       
       glm::vec3 cameraPos;
       glm::mat4 model;

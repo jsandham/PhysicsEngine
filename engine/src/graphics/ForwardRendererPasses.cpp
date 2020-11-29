@@ -264,7 +264,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 
         Graphics::use(state.mDepthCubemapShaderProgram);
         Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
-        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->mFrustum.mFarPlane);
+        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->getFrustum().mFarPlane);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1, state.mCubeViewProjMatrices[1]);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2, state.mCubeViewProjMatrices[2]);
@@ -455,8 +455,8 @@ void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState 
 
 void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState &state)
 {
-    float nearDist = camera->mFrustum.mNearPlane;
-    float farDist = camera->mFrustum.mFarPlane;
+    float nearDist = camera->getFrustum().mNearPlane;
+    float farDist = camera->getFrustum().mFarPlane;
 
     const float splitWeight = 0.95f;
     const float ratio = farDist / nearDist;
@@ -472,9 +472,9 @@ void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState &
 
 void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
 {
-    glm::mat4 viewInv = glm::inverse(camera->getViewMatrix());
-    float fov = camera->mFrustum.mFov;
-    float aspect = camera->mFrustum.mAspectRatio;
+    glm::mat4 viewInv = camera->getInvViewMatrix();
+    float fov = camera->getFrustum().mFov;
+    float aspect = camera->getFrustum().mAspectRatio;
     float tanHalfHFOV = glm::tan(glm::radians(0.5f * fov));
     float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
 

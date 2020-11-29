@@ -8,6 +8,7 @@
 #include "EditorScene.h"
 #include "InspectorDrawer.h"
 
+#include "MeshDrawer.h"
 #include "MaterialDrawer.h"
 #include "ShaderDrawer.h"
 #include "Texture2DDrawer.h"
@@ -22,6 +23,7 @@ namespace PhysicsEditor
 class Inspector
 {
   private:
+    MeshDrawer meshDrawer;
     MaterialDrawer materialDrawer;
     ShaderDrawer shaderDrawer;
     Texture2DDrawer texture2DDrawer;

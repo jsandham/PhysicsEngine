@@ -12,9 +12,13 @@ Texture2D::Texture2D()
     mWidth = 0;
     mHeight = 0;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 }
 
 Texture2D::Texture2D(const std::vector<char> &data)
@@ -29,9 +33,13 @@ Texture2D::Texture2D(int width, int height)
     mWidth = width;
     mHeight = height;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
 }
@@ -44,8 +52,13 @@ Texture2D::Texture2D(int width, int height, TextureFormat format)
     mHeight = height;
     mFormat = format;
 
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
+
     mNumChannels = calcNumChannels(format);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
 }
@@ -66,9 +79,17 @@ std::vector<char> Texture2D::serialize(Guid assetId) const
     header.mWidth = static_cast<int32_t>(mWidth);
     header.mHeight = static_cast<int32_t>(mHeight);
     header.mNumChannels = static_cast<int32_t>(mNumChannels);
+    header.mAnisoLevel = static_cast<int32_t>(mAnisoLevel);
     header.mDimension = static_cast<uint8_t>(mDimension);
     header.mFormat = static_cast<uint8_t>(mFormat);
+    header.mWrapMode = static_cast<uint8_t>(mWrapMode);
+    header.mFilterMode = static_cast<uint8_t>(mFilterMode);
+
     header.mTextureSize = mRawTextureData.size();
+
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mTextureName[0], &mAssetName[0], len);
+    header.mTextureName[len] = '\0';
 
     size_t numberOfBytes = sizeof(Texture2DHeader) + sizeof(unsigned char) * mRawTextureData.size();
 
@@ -91,11 +112,15 @@ void Texture2D::deserialize(const std::vector<char> &data)
     const Texture2DHeader *header = reinterpret_cast<const Texture2DHeader *>(&data[start1]);
 
     mAssetId = header->mTextureId;
+    mAssetName = std::string(header->mTextureName);
     mWidth = static_cast<int>(header->mWidth);
     mHeight = static_cast<int>(header->mHeight);
     mNumChannels = static_cast<int>(header->mNumChannels);
+    mAnisoLevel = static_cast<int>(header->mAnisoLevel);
     mDimension = static_cast<TextureDimension>(header->mDimension);
     mFormat = static_cast<TextureFormat>(header->mFormat);
+    mWrapMode = static_cast<TextureWrapMode>(header->mWrapMode);
+    mFilterMode = static_cast<TextureFilterMode>(header->mFilterMode);
 
     mRawTextureData.resize(header->mTextureSize);
     for (size_t i = 0; i < header->mTextureSize; i++)
@@ -104,6 +129,7 @@ void Texture2D::deserialize(const std::vector<char> &data)
     }
 
     mCreated = false;
+    mUpdateRequired = false;
 }
 
 void Texture2D::load(const std::string &filepath)
@@ -237,7 +263,7 @@ Color32 Texture2D::getPixel(int x, int y) const
     return color;
 }
 
-void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format)
+void Texture2D::setRawTextureData(const std::vector<unsigned char> &data, int width, int height, TextureFormat format)
 {
     switch (format)
     {
@@ -265,7 +291,7 @@ void Texture2D::setRawTextureData(std::vector<unsigned char> data, int width, in
     mRawTextureData = data;
 }
 
-void Texture2D::setPixels(std::vector<Color32> colors)
+void Texture2D::setPixels(const std::vector<Color32> &colors)
 {
     if (colors.size() != mWidth * mHeight)
     {
@@ -295,7 +321,7 @@ void Texture2D::setPixels(std::vector<Color32> colors)
     }
 }
 
-void Texture2D::setPixel(int x, int y, Color32 color)
+void Texture2D::setPixel(int x, int y, const Color32 &color)
 {
     int index = mNumChannels * (x + mWidth * y);
 
@@ -331,7 +357,7 @@ void Texture2D::create()
         return;
     }
 
-    Graphics::createTexture2D(mFormat, mWidth, mHeight, mRawTextureData, &mTex);
+    Graphics::createTexture2D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -346,6 +372,18 @@ void Texture2D::destroy()
     Graphics::destroyTexture2D(&mTex);
 
     mCreated = false;
+}
+
+void Texture2D::update()
+{
+    if (!mUpdateRequired)
+    {
+        return;
+    }
+
+    Graphics::updateTexture2D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+
+    mUpdateRequired = false;
 }
 
 void Texture2D::readPixels()

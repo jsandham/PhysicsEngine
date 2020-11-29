@@ -10,7 +10,7 @@ using namespace PhysicsEngine;
 Entity::Entity()
 {
     mEntityId = Guid::INVALID;
-    mEntityName = "New Entity";
+    mEntityName = "Unnamed Entity";
     mDoNotDestroy = false;
 }
 

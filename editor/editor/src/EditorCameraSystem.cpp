@@ -162,7 +162,7 @@ void EditorCameraSystem::update(const Input& input, const Time& time)
             glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
     }
 
-    mCamera->mFrustum.computePlanes(position, front, up, right);
+    mCamera->getFrustum().computePlanes(position, front, up, right);
     mCamera->computeViewMatrix(position, front, up);
 
     mTransform->mPosition = position;
@@ -181,7 +181,7 @@ void EditorCameraSystem::setViewport(Viewport viewport)
 
 void EditorCameraSystem::setFrustum(Frustum frustum)
 {
-    mCamera->mFrustum = frustum;
+    mCamera->setFrustum(frustum.mFov, frustum.mAspectRatio, frustum.mNearPlane, frustum.mFarPlane);
 }
 
 void EditorCameraSystem::setRenderPath(RenderPath path)
@@ -206,7 +206,7 @@ Viewport EditorCameraSystem::getViewport() const
 
 Frustum EditorCameraSystem::getFrustum() const
 {
-    return mCamera->mFrustum;
+    return mCamera->getFrustum();
 }
 
 RenderPath EditorCameraSystem::getRenderPath() const

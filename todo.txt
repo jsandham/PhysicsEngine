@@ -41,3 +41,5 @@ TODO:
 ------------ fix logging so I dont need to construct a string first before calling log function
 ------------ create pre-render systems that handles all the registering of cameras, assets, and lights
 
+clang-format -i -style=microsoft *.cpp
+clang-tidy src\core\*.cpp -- -Iinclude\glew-2.1.0

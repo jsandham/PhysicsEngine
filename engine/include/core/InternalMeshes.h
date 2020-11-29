@@ -32,12 +32,16 @@ class InternalMeshes
     static const Guid cubeMeshId;
     static const Guid planeMeshId;
 
+    static const std::string sphereMeshName;
+    static const std::string cubeMeshName;
+    static const std::string planeMeshName;
+
     static Guid loadSphereMesh(World *world);
     static Guid loadCubeMesh(World *world);
     static Guid loadPlaneMesh(World *world);
 
   private:
-    static Guid loadInternalMesh(World *world, const Guid meshId, const std::vector<float> &vertices,
+    static Guid loadInternalMesh(World *world, const Guid meshId, const std::string &name, const std::vector<float> &vertices,
                                  const std::vector<float> &normals, const std::vector<float> &texCoords,
                                  const std::vector<int> &startIndices);
 };

@@ -24,28 +24,60 @@ typedef enum TextureFormat
     RGBA = 3
 } TextureFormat;
 
+typedef enum TextureWrapMode
+{
+    Repeat = 0,
+    Clamp = 1
+}TextureWrapMode;
+
+typedef enum TextureFilterMode
+{
+    Nearest = 0,
+    Bilinear = 1,
+    Trilinear = 2
+}TextureFilterMode;
+
 class Texture : public Asset
 {
   protected:
     std::vector<unsigned char> mRawTextureData;
     int mNumChannels;
+    int mAnisoLevel;
     TextureDimension mDimension;
     TextureFormat mFormat;
+    TextureWrapMode mWrapMode;
+    TextureFilterMode mFilterMode;
     GLuint mTex;
     bool mCreated;
+    bool mUpdateRequired;
 
   public:
     Texture();
     virtual ~Texture(){};
 
+    virtual void create() = 0;
+    virtual void destroy() = 0;
+    virtual void update() = 0;
+    virtual void readPixels() = 0;
+    virtual void writePixels() = 0;
+
     bool isCreated() const;
+    bool updateRequired() const;
     int getNumChannels() const;
+    int getAnisoLevel() const;
     TextureDimension getDimension() const;
     TextureFormat getFormat() const;
+    TextureWrapMode getWrapMode() const;
+    TextureFilterMode getFilterMode() const;
     GLuint getNativeGraphics() const;
+
+    void setAnisoLevel(int anisoLevel);
+    void setWrapMode(TextureWrapMode wrapMode);
+    void setFilterMode(TextureFilterMode filterMode);
 
   protected:
     int calcNumChannels(TextureFormat format) const;
+
 };
 
 template <typename T> struct IsTexture

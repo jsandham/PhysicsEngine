@@ -6,6 +6,7 @@ using namespace PhysicsEngine;
 Asset::Asset()
 {
     mAssetId = Guid::INVALID;
+    mAssetName = "Unnamed Asset";
 }
 
 Asset::~Asset()
@@ -15,6 +16,16 @@ Asset::~Asset()
 Guid Asset::getId() const
 {
     return mAssetId;
+}
+
+std::string Asset::getName() const
+{
+    return mAssetName;
+}
+
+void Asset::setName(const std::string& name)
+{
+    mAssetName = name;
 }
 
 bool Asset::isInternal(int type)

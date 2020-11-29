@@ -59,7 +59,9 @@ bool Util::writeToBMP(const std::string &filepath, std::vector<unsigned char> &d
     header.colorsUsed = 0;
     header.colorsImportant = 0;
 
-    FILE *file = fopen(filepath.c_str(), "wb");
+    /*FILE *file = fopen(filepath.c_str(), "wb");*/
+    FILE* file;
+    fopen_s(&file, filepath.c_str(), "wb");
     if (file)
     {
         fwrite(&header, sizeof(BMPHeader), 1, file);
@@ -131,7 +133,9 @@ bool Util::writeToBMP(const std::string &filepath, std::vector<float> &data, int
     header.colorsUsed = 0;
     header.colorsImportant = 0;
 
-    FILE *file = fopen(filepath.c_str(), "wb");
+    /*FILE *file = fopen(filepath.c_str(), "wb");*/
+    FILE* file;
+    fopen_s(&file, filepath.c_str(), "wb");
     if (file)
     {
         fwrite(&header, sizeof(BMPHeader), 1, file);

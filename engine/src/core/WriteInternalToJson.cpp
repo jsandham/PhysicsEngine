@@ -33,6 +33,7 @@ void PhysicsEngine::writeInternalAssetToJson(json::JSON &obj, World *world, Guid
         Material *material = world->getAssetById<Material>(assetId);
 
         obj["shader"] = material->getShaderId().toString();
+        obj["name"] = material->getName();
 
         std::vector<ShaderUniform> uniforms = material->getUniforms();
         for (size_t i = 0; i < uniforms.size(); i++)
@@ -149,10 +150,10 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON &obj, World *world, 
         obj[componentId.toString()]["y"] = camera->getViewport().mY;
         obj[componentId.toString()]["width"] = camera->getViewport().mWidth;
         obj[componentId.toString()]["height"] = camera->getViewport().mHeight;
-        obj[componentId.toString()]["fov"] = camera->mFrustum.mFov;
-        obj[componentId.toString()]["aspectRatio"] = camera->mFrustum.mAspectRatio;
-        obj[componentId.toString()]["near"] = camera->mFrustum.mNearPlane;
-        obj[componentId.toString()]["far"] = camera->mFrustum.mFarPlane;
+        obj[componentId.toString()]["fov"] = camera->getFrustum().mFov;
+        obj[componentId.toString()]["aspectRatio"] = camera->getFrustum().mAspectRatio;
+        obj[componentId.toString()]["near"] = camera->getFrustum().mNearPlane;
+        obj[componentId.toString()]["far"] = camera->getFrustum().mFarPlane;
     }
     else if (type == 3)
     {

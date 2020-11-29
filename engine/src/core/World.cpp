@@ -23,6 +23,10 @@ World::World()
     mPlaneMeshId = InternalMeshes::loadPlaneMesh(this);
 
     // load default included shaders
+    mColorLitShaderId = InternalShaders::loadColorLitShader(this);
+    mNormalLitShaderId = InternalShaders::loadNormalLitShader(this);
+    mTangentLitShaderId = InternalShaders::loadTangentLitShader(this);
+
     mFontShaderId = InternalShaders::loadFontShader(this);
     mGizmoShaderId = InternalShaders::loadGizmoShader(this);
     mLineShaderId = InternalShaders::loadLineShader(this);
@@ -471,6 +475,21 @@ Guid World::getColorMaterial() const
 Guid World::getSimpleLitMaterial() const
 {
     return mSimpleLitMaterialId;
+}
+
+Guid World::getColorLitShaderId() const
+{
+    return mColorLitShaderId;
+}
+
+Guid World::getNormalLitShaderId() const
+{
+    return mNormalLitShaderId;
+}
+
+Guid World::getTangentLitShaderId() const
+{
+    return mTangentLitShaderId;
 }
 
 Guid World::getFontShaderId() const

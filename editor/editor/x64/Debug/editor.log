@@ -17,15 +17,16 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Hierarchy.cpp(81,17): w
   LibraryDirectory.cpp
   LightDrawer.cpp
   LineRendererDrawer.cpp
-  Load.cpp
   LoadInspectorDrawerInternal.cpp
   MaterialDrawer.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialDrawer.cpp(145,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   MaterialRenderer.cpp
+  MeshColliderDrawer.cpp
   Generating Code...
   Compiling...
-  MeshColliderDrawer.cpp
   MeshDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MeshDrawer.cpp(134,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\MeshDrawer.cpp(139,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   MeshRendererDrawer.cpp
   ProjectView.cpp
   RigidbodyDrawer.cpp

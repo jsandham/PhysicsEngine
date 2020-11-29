@@ -20,8 +20,6 @@ Shader::Shader()
     mFragmentShader = "";
     mGeometryShader = "";
 
-    mAssetId = Guid::INVALID;
-
     mAllProgramsCompiled = false;
     mActiveProgram = -1;
 }
@@ -52,6 +50,10 @@ std::vector<char> Shader::serialize(Guid assetId) const
     header.mFragmentShaderSize = mFragmentShader.length();
     header.mNumberOfShaderUniforms = mUniforms.size();
 
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mShaderName[0], &mAssetName[0], len);
+    header.mShaderName[len] = '\0';
+
     size_t numberOfBytes = sizeof(ShaderHeader) + sizeof(char) * mVertexShader.length() +
                            sizeof(char) * mFragmentShader.length() + sizeof(char) * mGeometryShader.length() +
                            sizeof(ShaderUniform) * mUniforms.size();
@@ -79,6 +81,7 @@ void Shader::deserialize(const std::vector<char> &data)
     const ShaderHeader *header = reinterpret_cast<const ShaderHeader *>(&data[start1]);
 
     mAssetId = header->mShaderId;
+    mAssetName = std::string(header->mShaderName);
 
     size_t vertexShaderSize = header->mVertexShaderSize;
     size_t geometryShaderSize = header->mGeometryShaderSize;
@@ -119,7 +122,7 @@ void Shader::load(const std::string &filepath)
     }
 }
 
-void Shader::load(const std::string vertexShader, const std::string fragmentShader, const std::string geometryShader)
+void Shader::load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader)
 {
     this->setVertexShader(vertexShader);
     this->setGeometryShader(geometryShader);
@@ -425,19 +428,19 @@ void Shader::unuse()
     Graphics::unuse();
 }
 
-void Shader::setVertexShader(const std::string vertexShader)
+void Shader::setVertexShader(const std::string &vertexShader)
 {
     mVertexShader = vertexShader;
     mAllProgramsCompiled = false;
 }
 
-void Shader::setGeometryShader(const std::string geometryShader)
+void Shader::setGeometryShader(const std::string &geometryShader)
 {
     mGeometryShader = geometryShader;
     mAllProgramsCompiled = false;
 }
 
-void Shader::setFragmentShader(const std::string fragmentShader)
+void Shader::setFragmentShader(const std::string &fragmentShader)
 {
     mFragmentShader = fragmentShader;
     mAllProgramsCompiled = false;

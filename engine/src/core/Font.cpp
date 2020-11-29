@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 #include "../../include/core/Font.h"
 #include "../../include/core/InternalShaders.h"
@@ -12,12 +13,10 @@ using namespace PhysicsEngine;
 
 Font::Font()
 {
-    mAssetId = Guid::INVALID;
 }
 
 Font::Font(const std::string &filepath)
 {
-    mAssetId = Guid::INVALID;
     mFilepath = filepath;
 }
 
@@ -41,6 +40,10 @@ std::vector<char> Font::serialize(Guid assetId) const
     header.mFontId = assetId;
     header.mFilepathSize = mFilepath.length();
 
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mFontName[0], &mAssetName[0], len);
+    header.mFontName[len] = '\0';
+
     size_t numberOfBytes = sizeof(FontHeader) + sizeof(char) * mFilepath.length();
 
     std::vector<char> data(numberOfBytes);
@@ -60,6 +63,7 @@ void Font::deserialize(const std::vector<char> &data)
     const FontHeader *header = reinterpret_cast<const FontHeader *>(&data[index]);
 
     mAssetId = header->mFontId;
+    mAssetName = std::string(header->mFontName);
 
     index += sizeof(FontHeader);
 

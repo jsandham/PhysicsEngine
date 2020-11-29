@@ -143,6 +143,10 @@ class World
     Guid mPlaneMeshId;
 
     // default loaded shaders
+    Guid mColorLitShaderId;
+    Guid mNormalLitShaderId;
+    Guid mTangentLitShaderId;
+
     Guid mFontShaderId;
     Guid mGizmoShaderId;
     Guid mLineShaderId;
@@ -925,6 +929,10 @@ class World
     Guid getPlaneMesh() const;
     Guid getColorMaterial() const;
     Guid getSimpleLitMaterial() const;
+
+    Guid getColorLitShaderId() const;
+    Guid getNormalLitShaderId() const;
+    Guid getTangentLitShaderId() const;
     Guid getFontShaderId() const;
     Guid getGizmoShaderId() const;
     Guid getLineShaderId() const;

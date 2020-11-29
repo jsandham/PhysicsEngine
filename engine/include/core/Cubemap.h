@@ -12,11 +12,15 @@ namespace PhysicsEngine
 struct CubemapHeader
 {
     Guid mTextureId;
+    char mTextureName[64];
     size_t mTextureSize;
     int32_t mWidth;
     int32_t mNumChannels;
+    int32_t mAnisoLevel;
     uint8_t mDimension;
     uint8_t mFormat;
+    uint8_t mWrapMode;
+    uint8_t mFilterMode;
 };
 #pragma pack(pop)
 
@@ -53,14 +57,15 @@ class Cubemap : public Texture
     std::vector<Color32> getPixels(CubemapFace face) const;
     Color32 getPixel(CubemapFace face, int x, int y) const;
 
-    void setRawCubemapData(std::vector<unsigned char> data);
-    void setPixels(CubemapFace face, int x, int y, Color32 color);
-    void setPixel(CubemapFace face, int x, int y, Color32 color);
+    void setRawCubemapData(const std::vector<unsigned char> &data);
+    void setPixels(CubemapFace face, int x, int y, const Color32 &color);
+    void setPixel(CubemapFace face, int x, int y, const Color32 &color);
 
-    void create();
-    void destroy();
-    void readPixels();
-    void writePixels();
+    void create() override;
+    void destroy() override;
+    void update() override;
+    void readPixels() override;
+    void writePixels() override;
 };
 
 template <typename T> struct IsCubemap

@@ -21,6 +21,7 @@ namespace PhysicsEngine
 struct ShaderHeader
 {
     Guid mShaderId;
+    char mShaderName[64];
     size_t mVertexShaderSize;
     size_t mGeometryShaderSize;
     size_t mFragmentShaderSize;
@@ -102,7 +103,7 @@ class Shader : public Asset
     void deserialize(const std::vector<char> &data);
 
     void load(const std::string &filepath);
-    void load(const std::string vertexShader, const std::string fragmentShader, const std::string geometryShader);
+    void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);
 
     bool isCompiled() const;
     bool contains(int variant) const;
@@ -112,9 +113,9 @@ class Shader : public Asset
     void compile();
     void use(int program);
     void unuse();
-    void setVertexShader(const std::string vertexShader);
-    void setGeometryShader(const std::string geometryShader);
-    void setFragmentShader(const std::string fragmentShader);
+    void setVertexShader(const std::string &vertexShader);
+    void setGeometryShader(const std::string &geometryShader);
+    void setFragmentShader(const std::string &fragmentShader);
     void setUniformBlock(const std::string &blockName, int bindingPoint) const;
     int findUniformLocation(const std::string &name, int program) const;
     int getProgramFromVariant(int variant) const;

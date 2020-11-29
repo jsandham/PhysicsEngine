@@ -48,6 +48,9 @@ Camera::Camera()
     mFrustum.mNearPlane = 0.1f;
     mFrustum.mFarPlane = 250.0f;
 
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+        mFrustum.mFarPlane);
+
     mIsCreated = false;
     mIsViewportChanged = false;
 }
@@ -117,6 +120,9 @@ void Camera::deserialize(const std::vector<char> &data)
     mFrustum.mAspectRatio = header->mAspectRatio;
     mFrustum.mNearPlane = header->mNearPlane;
     mFrustum.mFarPlane = header->mFarPlane;
+
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+        mFrustum.mFarPlane);
 
     mBackgroundColor = Color(header->mBackgroundColor);
 
@@ -218,8 +224,7 @@ glm::mat4 Camera::getInvViewMatrix() const
 
 glm::mat4 Camera::getProjMatrix() const
 {
-    return glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-                            mFrustum.mFarPlane);
+    return mProjMatrix;
 }
 
 glm::vec3 Camera::getSSAOSample(int sample) const
@@ -244,9 +249,25 @@ Guid Camera::getTransformIdAtScreenPos(int x, int y) const
     return Guid::INVALID;
 }
 
+Frustum Camera::getFrustum() const
+{
+    return mFrustum;
+}
+
 Viewport Camera::getViewport() const
 {
     return mViewport;
+}
+
+void Camera::setFrustum(float fov, float aspectRatio, float nearPlane, float farPlane)
+{
+    mFrustum.mFov = fov;
+    mFrustum.mAspectRatio = aspectRatio;
+    mFrustum.mNearPlane = nearPlane;
+    mFrustum.mFarPlane = farPlane;
+
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+                        mFrustum.mFarPlane);
 }
 
 void Camera::setViewport(int x, int y, int width, int height)
@@ -271,7 +292,7 @@ Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const
     glm::vec4 end = glm::vec4(x, y, 1.0f, 1.0f);
 
     glm::mat4 invProjMatrix = glm::inverse(getProjMatrix());
-    glm::mat4 invViewMatrix = glm::inverse(getViewMatrix());
+    glm::mat4 invViewMatrix = getInvViewMatrix();
 
     // transform to view space
     start = invProjMatrix * start;
@@ -296,8 +317,11 @@ Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const
 Ray Camera::screenSpaceToRay(int x, int y) const
 {
     // compute ray cast from the screen space ([0, 0] x [pixelWidth, pixelHeight]) into the scene
-    float ndcX = 0;
-    float ndcY = 0;
+    x = std::min(mViewport.mWidth, std::max(0, x));
+    y = std::min(mViewport.mHeight, std::max(0, y));
+    
+    float ndcX = (2.0f * x - mViewport.mWidth) / mViewport.mWidth;
+    float ndcY = (2.0f * y - mViewport.mHeight) / mViewport.mHeight;
 
     return normalizedDeviceSpaceToRay(ndcX, ndcY);
 }

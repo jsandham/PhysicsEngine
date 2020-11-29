@@ -16,6 +16,7 @@ namespace PhysicsEngine
 struct MaterialHeader
 {
     Guid mMaterialId;
+    char mMaterialName[64];
     Guid mShaderId;
     size_t mUniformCount;
     uint8_t mRenderQueue;

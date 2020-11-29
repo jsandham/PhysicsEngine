@@ -18,6 +18,7 @@ namespace PhysicsEngine
 struct MeshHeader
 {
     Guid mMeshId;
+    char mMeshName[64];
     size_t mVerticesSize;
     size_t mNormalsSize;
     size_t mTexCoordsSize;
@@ -34,7 +35,9 @@ class Mesh : public Asset
     std::vector<int> mSubMeshVertexStartIndices;
     GLuint mVao;
     GLuint mVbo[3];
+    Sphere mBounds;
     bool mCreated;
+    bool mChanged;
 
   public:
     Mesh();
@@ -49,9 +52,9 @@ class Mesh : public Asset
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
               std::vector<int> subMeshStartIndices);
 
-    Sphere computeBoundingSphere() const;
-
     bool isCreated() const;
+    bool isChanged() const;
+
     const std::vector<float> &getVertices() const;
     const std::vector<float> &getNormals() const;
     const std::vector<float> &getTexCoords() const;
@@ -59,11 +62,19 @@ class Mesh : public Asset
     int getSubMeshStartIndex(int subMeshIndex) const;
     int getSubMeshEndIndex(int subMeshIndex) const;
     int getSubMeshCount() const;
+    Sphere getBounds() const;
     GLuint getNativeGraphicsVAO() const;
+
+    void setVertices(const std::vector<float>& vertices);
+    void setNormals(const std::vector<float>& normals);
+    void setTexCoords(const std::vector<float>& texCoords);
 
     void create();
     void destroy();
     void writeMesh();
+
+  private:
+    void computeBoundingSphere();
 };
 
 template <typename T> struct IsMesh

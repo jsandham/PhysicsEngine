@@ -10,9 +10,13 @@ Cubemap::Cubemap()
 
     mWidth = 0;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 }
 
 Cubemap::Cubemap(const std::vector<char> &data)
@@ -26,9 +30,13 @@ Cubemap::Cubemap(int width)
 
     mWidth = width;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
@@ -39,9 +47,13 @@ Cubemap::Cubemap(int width, TextureFormat format)
 
     mWidth = width;
     mFormat = format;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(format);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
@@ -52,9 +64,13 @@ Cubemap::Cubemap(int width, int height, TextureFormat format)
 
     mWidth = width;
     mFormat = format;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(format);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
@@ -74,9 +90,16 @@ std::vector<char> Cubemap::serialize(Guid assetId) const
     header.mTextureId = assetId;
     header.mWidth = static_cast<int32_t>(mWidth);
     header.mNumChannels = static_cast<int32_t>(mNumChannels);
+    header.mAnisoLevel = static_cast<int32_t>(mAnisoLevel);
     header.mDimension = static_cast<int8_t>(mDimension);
     header.mFormat = static_cast<int8_t>(mFormat);
+    header.mWrapMode = static_cast<uint8_t>(mWrapMode);
+    header.mFilterMode = static_cast<uint8_t>(mFilterMode);
     header.mTextureSize = mRawTextureData.size();
+
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mTextureName[0], &mAssetName[0], len);
+    header.mTextureName[len] = '\0';
 
     size_t numberOfBytes = sizeof(CubemapHeader) + sizeof(unsigned char) * mRawTextureData.size();
 
@@ -99,10 +122,14 @@ void Cubemap::deserialize(const std::vector<char> &data)
     const CubemapHeader *header = reinterpret_cast<const CubemapHeader *>(&data[start1]);
 
     mAssetId = header->mTextureId;
-    mWidth = static_cast<int32_t>(header->mWidth);
-    mNumChannels = static_cast<int32_t>(header->mNumChannels);
+    mAssetName = std::string(header->mTextureName);
+    mWidth = static_cast<int>(header->mWidth);
+    mNumChannels = static_cast<int>(header->mNumChannels);
+    mAnisoLevel = static_cast<int>(header->mAnisoLevel);
     mDimension = static_cast<TextureDimension>(header->mDimension);
     mFormat = static_cast<TextureFormat>(header->mFormat);
+    mWrapMode = static_cast<TextureWrapMode>(header->mWrapMode);
+    mFilterMode = static_cast<TextureFilterMode>(header->mFilterMode);
 
     mRawTextureData.resize(header->mTextureSize);
     for (size_t i = 0; i < header->mTextureSize; i++)
@@ -194,7 +221,7 @@ Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
     return color;
 }
 
-void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
+void Cubemap::setRawCubemapData(const std::vector<unsigned char> &data)
 {
     if (6 * mWidth * mWidth * mNumChannels != data.size())
     {
@@ -205,11 +232,11 @@ void Cubemap::setRawCubemapData(std::vector<unsigned char> data)
     mRawTextureData = data;
 }
 
-void Cubemap::setPixels(CubemapFace face, int x, int y, Color32 color)
+void Cubemap::setPixels(CubemapFace face, int x, int y, const Color32 &color)
 {
 }
 
-void Cubemap::setPixel(CubemapFace face, int x, int y, Color32 color)
+void Cubemap::setPixel(CubemapFace face, int x, int y, const Color32 &color)
 {
     int index = (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
 
@@ -245,7 +272,7 @@ void Cubemap::create()
         return;
     }
 
-    Graphics::createCubemap(mFormat, mWidth, mRawTextureData, &mTex);
+    Graphics::createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -260,6 +287,18 @@ void Cubemap::destroy()
     Graphics::destroyCubemap(&mTex);
 
     mCreated = false;
+}
+
+void Cubemap::update()
+{
+    if (!mUpdateRequired)
+    {
+        return;
+    }
+
+    Graphics::updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+
+    mUpdateRequired = false;
 }
 
 void Cubemap::readPixels()

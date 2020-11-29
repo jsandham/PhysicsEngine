@@ -8,7 +8,9 @@ using namespace PhysicsEngine;
 Mesh::Mesh()
 {
     mAssetId = Guid::INVALID;
+    mAssetName = "";
     mCreated = false;
+    mChanged = false;
 }
 
 Mesh::Mesh(const std::vector<char> &data)
@@ -33,6 +35,10 @@ std::vector<char> Mesh::serialize(Guid assetId) const
     header.mNormalsSize = mNormals.size();
     header.mTexCoordsSize = mTexCoords.size();
     header.mSubMeshVertexStartIndiciesSize = mSubMeshVertexStartIndices.size();
+
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mMeshName[0], &mAssetName[0], len);
+    header.mMeshName[len] = '\0';
 
     size_t numberOfBytes = sizeof(MeshHeader) + mVertices.size() * sizeof(float) + mNormals.size() * sizeof(float) +
                            mTexCoords.size() * sizeof(float) + mSubMeshVertexStartIndices.size() * sizeof(int);
@@ -62,6 +68,7 @@ void Mesh::deserialize(const std::vector<char> &data)
     const MeshHeader *header = reinterpret_cast<const MeshHeader *>(&data[start1]);
 
     mAssetId = header->mMeshId;
+    mAssetName = std::string(header->mMeshName);
     mVertices.resize(header->mVerticesSize);
     mNormals.resize(header->mNormalsSize);
     mTexCoords.resize(header->mTexCoordsSize);
@@ -91,7 +98,10 @@ void Mesh::deserialize(const std::vector<char> &data)
         mSubMeshVertexStartIndices[i] = *reinterpret_cast<const int *>(&data[start5 + sizeof(int) * i]);
     }
 
+    computeBoundingSphere();
+
     mCreated = false;
+    mChanged = false;
 }
 
 void Mesh::load(const std::string &filepath)
@@ -105,12 +115,13 @@ void Mesh::load(const std::string &filepath)
         mTexCoords = mesh.mTexCoords;
         mSubMeshVertexStartIndices = mesh.mSubMeshVertexStartIndices;
 
+        computeBoundingSphere();
+
         mCreated = false;
     }
     else
     {
-        std::string message = "Error: Could not load obj mesh " + filepath + "\n";
-        Log::error(message.c_str());
+        Log::error(("Could not load obj mesh " + filepath + "\n").c_str());
     }
 }
 
@@ -122,76 +133,19 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
     mTexCoords = texCoords;
     mSubMeshVertexStartIndices = subMeshStartIndices;
 
+    computeBoundingSphere();
+
     mCreated = false;
-}
-
-Sphere Mesh::computeBoundingSphere() const
-{
-    Sphere sphere;
-    sphere.mRadius = 1.0f;
-    sphere.mCentre = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    size_t numVertices = mVertices.size() / 3;
-
-    if (numVertices == 0)
-    {
-        std::string message = "Error: No vertices assigned in mesh when trying to compute bounding sphere\n";
-        Log::error(message.c_str());
-        return sphere;
-    }
-
-    // Ritter algorithm for bounding sphere
-    // find furthest point from first vertex
-    glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
-
-    glm::vec3 y = x;
-    float maxDistance = 0.0f;
-    for (size_t i = 1; i < numVertices; i++)
-    {
-
-        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
-        float distance = glm::distance(x, temp);
-        if (distance > maxDistance)
-        {
-            y = temp;
-            maxDistance = distance;
-        }
-    }
-
-    // now find furthest point from y
-    glm::vec3 z = y;
-    maxDistance = 0.0f;
-    for (size_t i = 0; i < numVertices; i++)
-    {
-
-        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
-        float distance = glm::distance(y, temp);
-        if (distance > maxDistance)
-        {
-            z = temp;
-            maxDistance = distance;
-        }
-    }
-
-    sphere.mRadius = 0.5f * glm::distance(y, z);
-    sphere.mCentre = 0.5f * (y + z);
-
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
-        float radius = glm::distance(temp, sphere.mCentre);
-        if (radius > sphere.mRadius)
-        {
-            sphere.mRadius = radius;
-        }
-    }
-
-    return sphere;
 }
 
 bool Mesh::isCreated() const
 {
     return mCreated;
+}
+
+bool Mesh::isChanged() const
+{
+    return mChanged;
 }
 
 const std::vector<float> &Mesh::getVertices() const
@@ -239,9 +193,36 @@ int Mesh::getSubMeshCount() const
     return (int)mSubMeshVertexStartIndices.size() - 1;
 }
 
+Sphere Mesh::getBounds() const
+{
+    return mBounds;
+}
+
 GLuint Mesh::getNativeGraphicsVAO() const
 {
     return mVao;
+}
+
+void Mesh::setVertices(const std::vector<float>& vertices)
+{
+    mVertices = vertices;
+    computeBoundingSphere();
+
+    mChanged = true;
+}
+
+void Mesh::setNormals(const std::vector<float>& normals)
+{
+    mNormals = normals;
+
+    mChanged = true;
+}
+
+void Mesh::setTexCoords(const std::vector<float>& texCoords)
+{
+    mTexCoords = texCoords;
+
+    mChanged = true;
 }
 
 void Mesh::create()
@@ -270,4 +251,63 @@ void Mesh::destroy()
 
 void Mesh::writeMesh()
 {
+}
+
+void Mesh::computeBoundingSphere()
+{
+    mBounds.mRadius = 0.0f;
+    mBounds.mCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    size_t numVertices = mVertices.size() / 3;
+
+    if (numVertices == 0)
+    {
+        return;
+    }
+
+    // Ritter algorithm for bounding sphere
+    // find furthest point from first vertex
+    glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
+
+    glm::vec3 y = x;
+    float maxDistance = 0.0f;
+    for (size_t i = 1; i < numVertices; i++)
+    {
+
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float distance = glm::distance(x, temp);
+        if (distance > maxDistance)
+        {
+            y = temp;
+            maxDistance = distance;
+        }
+    }
+
+    // now find furthest point from y
+    glm::vec3 z = y;
+    maxDistance = 0.0f;
+    for (size_t i = 0; i < numVertices; i++)
+    {
+
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float distance = glm::distance(y, temp);
+        if (distance > maxDistance)
+        {
+            z = temp;
+            maxDistance = distance;
+        }
+    }
+
+    mBounds.mRadius = 0.5f * glm::distance(y, z);
+    mBounds.mCentre = 0.5f * (y + z);
+
+    for (size_t i = 0; i < numVertices; i++)
+    {
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float radius = glm::distance(temp, mBounds.mCentre);
+        if (radius > mBounds.mRadius)
+        {
+            mBounds.mRadius = radius;
+        }
+    }
 }

@@ -114,6 +114,11 @@ void RenderSystem::registerRenderAssets(World *world)
                 Log::error(errorMessage.c_str());
             }
         }
+
+        if (texture->updateRequired())
+        {
+            texture->update();
+        }
     }
 
     // compile all shader assets and configure uniform blocks not already compiled
@@ -266,7 +271,7 @@ void RenderSystem::cullRenderObjects(Camera *camera)
         cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
         cullingSphere.mRadius = radius;
 
-        if (Intersect::intersect(cullingSphere, camera->mFrustum))
+        if (Intersect::intersect(cullingSphere, camera->getFrustum()))
         {
             count++;
         }

@@ -83,10 +83,6 @@ void CameraDrawer::render(World *world, EditorProject &project, EditorScene &sce
 
         if (ImGui::TreeNode("Viewport"))
         {
-            /*int x = camera->mViewport.mX;
-            int y = camera->mViewport.mY;
-            int width = camera->mViewport.mWidth;
-            int height = camera->mViewport.mHeight;*/
             int x = camera->getViewport().mX;
             int y = camera->getViewport().mY;
             int width = camera->getViewport().mWidth;
@@ -118,53 +114,31 @@ void CameraDrawer::render(World *world, EditorProject &project, EditorScene &sce
 
         if (ImGui::TreeNode("Frustum"))
         {
-            float fov = camera->mFrustum.mFov;
-            float nearPlane = camera->mFrustum.mNearPlane;
-            float farPlane = camera->mFrustum.mFarPlane;
+            float fov = camera->getFrustum().mFov;
+            float nearPlane = camera->getFrustum().mNearPlane;
+            float farPlane = camera->getFrustum().mFarPlane;
 
             if (ImGui::InputFloat("Field of View", &fov))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<float>(&camera->mFrustum.mFov, fov, &scene.isDirty));
+                /*CommandManager::addCommand(
+                    new ChangePropertyCommand<float>(&camera->mFrustum.mFov, fov, &scene.isDirty));*/
+                camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
             if (ImGui::InputFloat("Near Plane", &nearPlane))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<float>(&camera->mFrustum.mNearPlane, nearPlane, &scene.isDirty));
+                //CommandManager::addCommand(
+                //    new ChangePropertyCommand<float>(&camera->mFrustum.mNearPlane, nearPlane, &scene.isDirty));
+                camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
             if (ImGui::InputFloat("Far Plane", &farPlane))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<float>(&camera->mFrustum.mFarPlane, farPlane, &scene.isDirty));
+                //CommandManager::addCommand(
+                //    new ChangePropertyCommand<float>(&camera->mFrustum.mFarPlane, farPlane, &scene.isDirty));
+                camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
 
             ImGui::TreePop();
         }
-
-        // if (ImGui::TreeNode("Targets")) {
-        // 	bool useColor = camera->useColorTarget;
-        // 	bool usePosition = camera->usePositionTarget;
-        // 	bool useNormal = camera->useNormalTarget;
-        // 	bool useDepth = camera->useDepthTarget;
-
-        // 	if (ImGui::Checkbox("Color", &useColor)) {
-        // 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useColorTarget, useColor));
-        // 	}
-
-        // 	if (ImGui::Checkbox("Position", &usePosition)) {
-        // 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->usePositionTarget, usePosition));
-        // 	}
-
-        // 	if (ImGui::Checkbox("Normal", &useNormal)) {
-        // 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useNormalTarget, useNormal));
-        // 	}
-
-        // 	if (ImGui::Checkbox("Depth", &useDepth)) {
-        // 		CommandManager::addCommand(new ChangePropertyCommand<bool>(&camera->useDepthTarget, useDepth));
-        // 	}
-
-        // 	ImGui::TreePop();
-        // }
 
         ImGui::TreePop();
     }

@@ -11,6 +11,18 @@ namespace PhysicsEngine
 class InternalShaders
 {
   public:
+    static const std::string colorLitVertexShader;
+    static const std::string colorLitFragmentShader;
+    static const std::string normalLitVertexShader;
+    static const std::string normalLitFragmentShader;
+    static const std::string tangentLitVertexShader;
+    static const std::string tangentLitFragmentShader;
+
+
+
+
+
+
     static const std::string gizmoVertexShader;
     static const std::string gizmoFragmentShader;
     static const std::string lineVertexShader;
@@ -44,6 +56,10 @@ class InternalShaders
     static const std::string overdrawVertexShader;
     static const std::string overdrawFragmentShader;
 
+    static const Guid colorLitShaderId;
+    static const Guid normalLitShaderId;
+    static const Guid tangentLitShaderId;
+
     static const Guid fontShaderId;
     static const Guid gizmoShaderId;
     static const Guid lineShaderId;
@@ -59,6 +75,32 @@ class InternalShaders
     static const Guid simpleLitShaderId;
     static const Guid simpleLitDeferredShaderId;
     static const Guid overdrawShaderId;
+
+    static const std::string colorLitShaderName;
+    static const std::string normalLitShaderName;
+    static const std::string tangentLitShaderName;
+
+    static const std::string fontShaderName;
+    static const std::string gizmoShaderName;
+    static const std::string lineShaderName;
+    static const std::string colorShaderName;
+    static const std::string positionAndNormalShaderName;
+    static const std::string ssaoShaderName;
+    static const std::string screenQuadShaderName;
+    static const std::string normalMapShaderName;
+    static const std::string depthMapShaderName;
+    static const std::string shadowDepthMapShaderName;
+    static const std::string shadowDepthCubemapShaderName;
+    static const std::string gbufferShaderName;
+    static const std::string simpleLitShaderName;
+    static const std::string simpleLitDeferredShaderName;
+    static const std::string overdrawShaderName;
+
+
+    static Guid loadColorLitShader(World* world);
+    static Guid loadNormalLitShader(World* world);
+    static Guid loadTangentLitShader(World* world);
+
 
     static Guid loadFontShader(World *world);
     static Guid loadGizmoShader(World *world);
@@ -77,7 +119,7 @@ class InternalShaders
     static Guid loadOverdrawShader(World *world);
 
   private:
-    static Guid loadInternalShader(World *world, const Guid shaderId, const std::string vertex,
+    static Guid loadInternalShader(World *world, const Guid shaderId, const std::string &name, const std::string vertex,
                                    const std::string fragment, const std::string geometry);
 };
 } // namespace PhysicsEngine

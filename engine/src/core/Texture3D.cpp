@@ -12,9 +12,13 @@ Texture3D::Texture3D()
     mHeight = 0;
     mDepth = 0;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 }
 
 Texture3D::Texture3D(const std::vector<char> &data)
@@ -30,9 +34,13 @@ Texture3D::Texture3D(int width, int height, int depth, int numChannels)
     mHeight = height;
     mDepth = depth;
     mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
 
     mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
     mCreated = false;
+    mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * depth * numChannels);
 }
@@ -54,9 +62,16 @@ std::vector<char> Texture3D::serialize(Guid assetId) const
     header.mHeight = static_cast<int32_t>(mHeight);
     header.mDepth = static_cast<int32_t>(mDepth);
     header.mNumChannels = static_cast<int32_t>(mNumChannels);
+    header.mAnisoLevel = static_cast<int32_t>(mAnisoLevel);
     header.mDimension = static_cast<uint8_t>(mDimension);
     header.mFormat = static_cast<uint8_t>(mFormat);
+    header.mWrapMode = static_cast<uint8_t>(mWrapMode);
+    header.mFilterMode = static_cast<uint8_t>(mFilterMode);
     header.mTextureSize = mRawTextureData.size();
+
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mTextureName[0], &mAssetName[0], len);
+    header.mTextureName[len] = '\0';
 
     size_t numberOfBytes = sizeof(Texture3DHeader) + sizeof(unsigned char) * mRawTextureData.size();
 
@@ -79,12 +94,16 @@ void Texture3D::deserialize(const std::vector<char> &data)
     const Texture3DHeader *header = reinterpret_cast<const Texture3DHeader *>(&data[start1]);
 
     mAssetId = header->mTextureId;
+    mAssetName = std::string(header->mTextureName);
     mWidth = static_cast<int>(header->mWidth);
     mHeight = static_cast<int>(header->mHeight);
     mDepth = static_cast<int>(header->mDepth);
     mNumChannels = static_cast<int>(header->mNumChannels);
+    mAnisoLevel = static_cast<int>(header->mAnisoLevel);
     mDimension = static_cast<TextureDimension>(header->mDimension);
     mFormat = static_cast<TextureFormat>(header->mFormat);
+    mWrapMode = static_cast<TextureWrapMode>(header->mWrapMode);
+    mFilterMode = static_cast<TextureFilterMode>(header->mFilterMode);
 
     mRawTextureData.resize(header->mTextureSize);
     for (size_t i = 0; i < header->mTextureSize; i++)
@@ -92,6 +111,7 @@ void Texture3D::deserialize(const std::vector<char> &data)
         mRawTextureData[i] = *reinterpret_cast<const unsigned char *>(&data[start2 + sizeof(unsigned char) * i]);
     }
     this->mCreated = false;
+    this->mUpdateRequired = false;
 }
 
 int Texture3D::getWidth() const
@@ -129,7 +149,7 @@ Color Texture3D::getPixel(int x, int y, int z) const
     return Color::white;
 }
 
-void Texture3D::setRawTextureData(std::vector<unsigned char> data, int width, int height, int depth,
+void Texture3D::setRawTextureData(const std::vector<unsigned char> &data, int width, int height, int depth,
                                   TextureFormat format)
 {
     switch (format)
@@ -159,7 +179,7 @@ void Texture3D::setRawTextureData(std::vector<unsigned char> data, int width, in
     mRawTextureData = data;
 }
 
-void Texture3D::setPixel(int x, int y, int z, Color color)
+void Texture3D::setPixel(int x, int y, int z, const Color &color)
 {
 }
 
@@ -170,7 +190,7 @@ void Texture3D::create()
         return;
     }
 
-    Graphics::createTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
+    Graphics::createTexture3D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -185,6 +205,18 @@ void Texture3D::destroy()
     Graphics::destroyTexture3D(&mTex);
 
     mCreated = false;
+}
+
+void Texture3D::update()
+{
+    if (!mUpdateRequired)
+    {
+        return;
+    }
+
+    Graphics::updateTexture3D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+
+    mUpdateRequired = false;
 }
 
 void Texture3D::readPixels()

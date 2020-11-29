@@ -120,6 +120,49 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
     return openglFormat;
 }
 
+GLint Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
+{
+    GLint openglWrapMode = GL_REPEAT;
+
+    switch (wrapMode)
+    {
+    case Repeat:
+        openglWrapMode = GL_REPEAT;
+        break;
+    case Clamp:
+        openglWrapMode = GL_CLAMP_TO_EDGE;
+        break;
+    default:
+        Log::error("OpengGL: Invalid texture wrap mode\n");
+        break;
+    }
+
+    return openglWrapMode;
+}
+
+GLint Graphics::getTextureFilterMode(TextureFilterMode filterMode)
+{
+    GLint openglFilterMode = GL_NEAREST;
+
+    switch (filterMode)
+    {
+    case Nearest:
+        openglFilterMode = GL_NEAREST;
+        break;
+    case Bilinear:
+        openglFilterMode = GL_LINEAR;
+        break;
+    case Trilinear:
+        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
+        break;
+    default:
+        Log::error("OpengGL: Invalid texture filter mode\n");
+        break;
+    }
+
+    return openglFilterMode;
+}
+
 void Graphics::beginQuery(GLuint queryId)
 {
     glBeginQuery(GL_TIME_ELAPSED, queryId);
@@ -757,22 +800,32 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, const std::vector<unsigned char> &data,
                                GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
 
     glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
+
+    float aniso = 0.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+
+    // to set aniso
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+
+    Log::info(("Aniso: " + std::to_string(aniso) + "\n").c_str());
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -782,6 +835,23 @@ void Graphics::createTexture2D(TextureFormat format, int width, int height, cons
 void Graphics::destroyTexture2D(GLuint *tex)
 {
     glDeleteTextures(1, tex);
+}
+
+void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+{
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
+    //float aniso = 0.0f;
+    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
@@ -812,21 +882,23 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture3D(TextureFormat format, int width, int height, int depth,
+void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, int depth,
                                const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
 
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
 
     glBindTexture(GL_TEXTURE_3D, 0);
 
@@ -836,6 +908,24 @@ void Graphics::createTexture3D(TextureFormat format, int width, int height, int 
 void Graphics::destroyTexture3D(GLuint *tex)
 {
     glDeleteTextures(1, tex);
+}
+
+void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+{
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+
+    glBindTexture(GL_TEXTURE_3D, tex);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
+    // to set aniso
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    glBindTexture(GL_TEXTURE_3D, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
@@ -866,12 +956,14 @@ void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height,
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint *tex)
+void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
 
     for (unsigned int i = 0; i < 6; i++)
     {
@@ -879,11 +971,11 @@ void Graphics::createCubemap(TextureFormat format, int width, const std::vector<
                      GL_UNSIGNED_BYTE, &data[0]);
     }
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
@@ -893,6 +985,24 @@ void Graphics::createCubemap(TextureFormat format, int width, const std::vector<
 void Graphics::destroyCubemap(GLuint *tex)
 {
     glDeleteTextures(1, tex);
+}
+
+void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+{
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode);
+    // to set aniso
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
@@ -1333,11 +1443,20 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::render(int start, int count, GLuint vao)
+void Graphics::render(int start, int count, GLuint vao, bool wireframe)
 {
+    if (wireframe) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, start, count);
     glBindVertexArray(0);
+
+    if (wireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     Graphics::checkError(__LINE__, __FILE__);
 }

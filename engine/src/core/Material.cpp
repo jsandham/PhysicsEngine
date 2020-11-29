@@ -39,6 +39,10 @@ std::vector<char> Material::serialize(Guid assetId) const
     header.mRenderQueue = static_cast<uint8_t>(mRenderQueue);
     header.mUniformCount = mUniforms.size();
 
+    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
+    memcpy(&header.mMaterialName[0], &mAssetName[0], len);
+    header.mMaterialName[len] = '\0';
+
     size_t numberOfBytes = sizeof(MaterialHeader) + mUniforms.size() * sizeof(ShaderUniform);
 
     std::vector<char> data(numberOfBytes);
@@ -62,6 +66,7 @@ void Material::deserialize(const std::vector<char> &data)
     const MaterialHeader *header = reinterpret_cast<const MaterialHeader *>(&data[0]);
 
     mAssetId = header->mMaterialId;
+    mAssetName = std::string(header->mMaterialName);
     mShaderId = header->mShaderId;
     mRenderQueue = static_cast<RenderQueue>(header->mRenderQueue);
     mUniforms.resize(header->mUniformCount);

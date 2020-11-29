@@ -5,7 +5,6 @@ using namespace PhysicsEngine;
 
 Texture::Texture()
 {
-    mAssetId = Guid::INVALID;
 }
 
 bool Texture::isCreated() const
@@ -13,9 +12,19 @@ bool Texture::isCreated() const
     return mCreated;
 }
 
+bool Texture::updateRequired() const
+{
+    return mUpdateRequired;
+}
+
 int Texture::getNumChannels() const
 {
     return mNumChannels;
+}
+
+int Texture::getAnisoLevel() const
+{
+    return mAnisoLevel;
 }
 
 TextureDimension Texture::getDimension() const
@@ -28,9 +37,37 @@ TextureFormat Texture::getFormat() const
     return mFormat;
 }
 
+TextureWrapMode Texture::getWrapMode() const
+{
+    return mWrapMode;
+}
+
+TextureFilterMode Texture::getFilterMode() const
+{
+    return mFilterMode;
+}
+
 GLuint Texture::getNativeGraphics() const
 {
     return mTex;
+}
+
+void Texture::setAnisoLevel(int anisoLevel)
+{
+    mAnisoLevel = anisoLevel;
+    mUpdateRequired = true;
+}
+
+void Texture::setWrapMode(TextureWrapMode wrapMode)
+{
+    mWrapMode = wrapMode;
+    mUpdateRequired = true;
+}
+
+void Texture::setFilterMode(TextureFilterMode filterMode)
+{
+    mFilterMode = filterMode;
+    mUpdateRequired = true;
 }
 
 int Texture::calcNumChannels(TextureFormat format) const

@@ -12,12 +12,16 @@ namespace PhysicsEngine
 struct Texture2DHeader
 {
     Guid mTextureId;
+    char mTextureName[64];
     size_t mTextureSize;
     int32_t mWidth;
     int32_t mHeight;
     int32_t mNumChannels;
+    int32_t mAnisoLevel;
     uint8_t mDimension;
     uint8_t mFormat;
+    uint8_t mWrapMode;
+    uint8_t mFilterMode;
 };
 #pragma pack(pop)
 
@@ -49,14 +53,15 @@ class Texture2D : public Texture
     std::vector<Color32> getPixels() const;
     Color32 getPixel(int x, int y) const;
 
-    void setRawTextureData(std::vector<unsigned char> data, int width, int height, TextureFormat format);
-    void setPixels(std::vector<Color32> colors);
-    void setPixel(int x, int y, Color32 color);
+    void setRawTextureData(const std::vector<unsigned char> &data, int width, int height, TextureFormat format);
+    void setPixels(const std::vector<Color32> &colors);
+    void setPixel(int x, int y, const Color32 &color);
 
-    void create();
-    void destroy();
-    void readPixels();
-    void writePixels();
+    void create() override;
+    void destroy() override;
+    void update() override;
+    void readPixels() override;
+    void writePixels() override;
 };
 
 template <typename T> struct IsTexture2D

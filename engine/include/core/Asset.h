@@ -14,6 +14,7 @@ class Asset
 {
   protected:
     Guid mAssetId;
+    std::string mAssetName;
 
   public:
     Asset();
@@ -24,6 +25,8 @@ class Asset
     virtual void deserialize(const std::vector<char> &data) = 0;
 
     Guid getId() const;
+    std::string getName() const;
+    void setName(const std::string &name);
 
     static bool isInternal(int type);
 

@@ -51,7 +51,11 @@ void Inspector::render(World *world, EditorProject &project, EditorScene &scene,
         }
 
         // draw selected asset
-        if (clipboard.getSelectedType() == InteractionType::Material)
+        if (clipboard.getSelectedType() == InteractionType::Mesh)
+        {
+            meshDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
+        }
+        else if (clipboard.getSelectedType() == InteractionType::Material)
         {
             materialDrawer.render(world, project, scene, clipboard, clipboard.getSelectedId());
         }
