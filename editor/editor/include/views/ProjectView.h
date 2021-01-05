@@ -18,7 +18,7 @@ struct ProjectNode
     std::string directoryPath;
     std::vector<std::string> filePaths;
     int id;
-        
+
     ProjectNode() : id(-1), parent(NULL), directoryName(""), directoryPath("")
     {
     }
@@ -36,17 +36,17 @@ class ProjectView : public Window
   public:
     ProjectView();
     ~ProjectView();
-    ProjectView(const ProjectView& other) = delete;
-    ProjectView& operator=(const ProjectView& other) = delete;
+    ProjectView(const ProjectView &other) = delete;
+    ProjectView &operator=(const ProjectView &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
     void drawLeftPane();
-    void drawRightPane(EditorClipboard& clipboard);
+    void drawRightPane(EditorClipboard &clipboard);
 
     void deleteProjectTree();
-    void buildProjectTree(const std::string& currentProjectPath);
+    void buildProjectTree(const std::string &currentProjectPath);
     void drawProjectTree();
     void drawProjectNodeRecursive(ProjectNode *node);
 

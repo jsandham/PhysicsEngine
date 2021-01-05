@@ -1,35 +1,34 @@
 #ifndef __MESH_DRAWER_H__
 #define __MESH_DRAWER_H__
 
-#include "InspectorDrawer.h"
 #include "../EditorClipboard.h"
+#include "InspectorDrawer.h"
 
 namespace PhysicsEditor
 {
 class MeshDrawer : public InspectorDrawer
 {
   private:
-      GLuint mFBO;
-      GLuint mColor;
-      GLuint mDepth;
+    GLuint mFBO;
+    GLuint mColor;
+    GLuint mDepth;
 
-      CameraUniform cameraUniform;
+    CameraUniform cameraUniform;
 
-      glm::mat4 model;
+    glm::mat4 model;
 
-      float mouseX;
-      float mouseY;
+    float mouseX;
+    float mouseY;
 
-      int activeDrawModeIndex;
-      bool wireframeOn;
-      bool resetModelMatrix;
-
+    int activeDrawModeIndex;
+    bool wireframeOn;
+    bool resetModelMatrix;
 
   public:
     MeshDrawer();
     ~MeshDrawer();
 
-    void render(EditorClipboard& clipboard, Guid id);
+    void render(EditorClipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

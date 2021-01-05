@@ -6,8 +6,8 @@
 #include "Window.h"
 
 #include "../drawers/InspectorDrawer.h"
-#include "../drawers/MeshDrawer.h"
 #include "../drawers/MaterialDrawer.h"
+#include "../drawers/MeshDrawer.h"
 #include "../drawers/ShaderDrawer.h"
 #include "../drawers/Texture2DDrawer.h"
 
@@ -27,11 +27,11 @@ class Inspector : public Window
     Inspector(const Inspector &other) = delete;
     Inspector &operator=(const Inspector &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 
   private:
-      void drawEntity(EditorClipboard& clipboard);
+    void drawEntity(EditorClipboard &clipboard);
 };
 } // namespace PhysicsEditor
 

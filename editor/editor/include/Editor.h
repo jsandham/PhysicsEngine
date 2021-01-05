@@ -30,8 +30,8 @@
 
 #include "EditorCameraSystem.h"
 #include "systems/CleanUpSystem.h"
-#include "systems/RenderSystem.h"
 #include "systems/GizmoSystem.h"
+#include "systems/RenderSystem.h"
 
 namespace PhysicsEditor
 {
@@ -40,7 +40,7 @@ class Editor
   private:
     HWND window;
 
-    //LibraryDirectory libraryDirectory;
+    // LibraryDirectory libraryDirectory;
     CommandManager commandManager;
 
     EditorMenuBar editorMenu;

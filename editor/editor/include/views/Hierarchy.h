@@ -17,7 +17,7 @@ class Hierarchy : public Window
   private:
     struct HierarchyEntry
     {
-        PhysicsEngine::Entity* entity;
+        PhysicsEngine::Entity *entity;
         std::string label;
         int indentLevel;
     };
@@ -30,14 +30,14 @@ class Hierarchy : public Window
   public:
     Hierarchy();
     ~Hierarchy();
-    Hierarchy(const Hierarchy& other) = delete;
-    Hierarchy& operator=(const Hierarchy& other) = delete;
+    Hierarchy(const Hierarchy &other) = delete;
+    Hierarchy &operator=(const Hierarchy &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 
   private:
-    void rebuildEntityLists(PhysicsEngine::World* world, const std::set<PhysicsEngine::Guid>& editorOnlyEntityIds);
+    void rebuildEntityLists(PhysicsEngine::World *world, const std::set<PhysicsEngine::Guid> &editorOnlyEntityIds);
 };
 } // namespace PhysicsEditor
 

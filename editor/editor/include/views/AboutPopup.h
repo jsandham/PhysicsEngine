@@ -10,11 +10,11 @@ class AboutPopup : public Window
   public:
     AboutPopup();
     ~AboutPopup();
-    AboutPopup(const AboutPopup& other) = delete;
-    AboutPopup& operator=(const AboutPopup& other) = delete;
+    AboutPopup(const AboutPopup &other) = delete;
+    AboutPopup &operator=(const AboutPopup &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 };
 } // namespace PhysicsEditor
 

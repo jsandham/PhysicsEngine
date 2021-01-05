@@ -5,26 +5,24 @@
 
 namespace PhysicsEditor
 {
-	class Window //View?
-	{
-	protected:
-		bool windowActive;
+class Window // View?
+{
+  protected:
+    bool windowActive;
 
-	public:
-		Window();
-		virtual ~Window() = 0;
+  public:
+    Window();
+    virtual ~Window() = 0;
 
-		virtual void init(EditorClipboard& clipboard);
-		virtual void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
-	};
-}
+    virtual void init(EditorClipboard &clipboard);
+    virtual void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+};
+} // namespace PhysicsEditor
 
-
-
-//void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-//void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-//void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-//void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-//void render(EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
+// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
+// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
+// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
+// void render(EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
 #endif

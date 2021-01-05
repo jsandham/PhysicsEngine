@@ -42,8 +42,8 @@ class EditorMenuBar
     EditorMenuBar();
     ~EditorMenuBar();
 
-    //void render(const EditorProject project, const EditorScene scene);
-    void render(const EditorClipboard& clipboard);
+    // void render(const EditorProject project, const EditorScene scene);
+    void render(const EditorClipboard &clipboard);
 
     bool isNewSceneClicked() const;
     bool isOpenSceneClicked() const;

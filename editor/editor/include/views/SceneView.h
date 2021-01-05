@@ -7,10 +7,10 @@
 #include "core/Time.h"
 #include "core/World.h"
 
-#include "Window.h"
-#include "../PerformanceQueue.h"
 #include "../EditorCameraSystem.h"
+#include "../PerformanceQueue.h"
 #include "../TransformGizmo.h"
+#include "Window.h"
 
 #include "imgui.h"
 
@@ -35,11 +35,11 @@ class SceneView : public Window
   public:
     SceneView();
     ~SceneView();
-    SceneView(const SceneView& other) = delete;
-    SceneView& operator=(const SceneView& other) = delete;
+    SceneView(const SceneView &other) = delete;
+    SceneView &operator=(const SceneView &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 
     bool isFocused() const;
     bool isHovered() const;
@@ -49,7 +49,7 @@ class SceneView : public Window
     ImVec2 getWindowPos() const;
 
   private:
-    void initWorld(PhysicsEngine::World* world);
+    void initWorld(PhysicsEngine::World *world);
     void updateWorld(PhysicsEngine::World *world);
     void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem);
     void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *cameraSystem, bool *cameraSettingsActive);

@@ -10,11 +10,11 @@ class BuildWindow : public Window
   public:
     BuildWindow();
     ~BuildWindow();
-    BuildWindow(const BuildWindow& other) = delete;
-    BuildWindow& operator=(const BuildWindow& other) = delete;
+    BuildWindow(const BuildWindow &other) = delete;
+    BuildWindow &operator=(const BuildWindow &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 };
 } // namespace PhysicsEditor
 

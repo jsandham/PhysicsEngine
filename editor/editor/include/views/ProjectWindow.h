@@ -25,11 +25,11 @@ class ProjectWindow : public Window
   public:
     ProjectWindow();
     ~ProjectWindow();
-    ProjectWindow(const ProjectWindow& other) = delete;
-    ProjectWindow& operator=(const ProjectWindow& other) = delete;
+    ProjectWindow(const ProjectWindow &other) = delete;
+    ProjectWindow &operator=(const ProjectWindow &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 
     void setMode(ProjectWindowMode mode);
 

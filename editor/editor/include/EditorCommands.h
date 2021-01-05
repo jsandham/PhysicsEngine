@@ -67,17 +67,17 @@ class CreateLightCommand : public Command
 
 class CreatePlaneCommand : public Command
 {
-private:
-    PhysicsEngine::World* world;
+  private:
+    PhysicsEngine::World *world;
     std::vector<char> entityData;
     std::vector<char> transformData;
     std::vector<char> meshRendererData;
 
-    bool* saveStatePtr;
+    bool *saveStatePtr;
     bool oldSaveState;
 
-public:
-    CreatePlaneCommand(PhysicsEngine::World* world, bool* saveStatePtr);
+  public:
+    CreatePlaneCommand(PhysicsEngine::World *world, bool *saveStatePtr);
 
     void execute() override;
     void undo() override;

@@ -1,8 +1,8 @@
 #ifndef __LINERENDERER_DRAWER_H__
 #define __LINERENDERER_DRAWER_H__
 
-#include "InspectorDrawer.h"
 #include "../EditorClipboard.h"
+#include "InspectorDrawer.h"
 
 namespace PhysicsEditor
 {
@@ -12,7 +12,7 @@ class LineRendererDrawer : public InspectorDrawer
     LineRendererDrawer();
     ~LineRendererDrawer();
 
-    void render(EditorClipboard& clipboard, Guid id);
+    void render(EditorClipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

@@ -1,8 +1,8 @@
 #ifndef __EDITOR_UI_H__
 #define __EDITOR_UI_H__
 
-#include <string>
 #include <set>
+#include <string>
 
 #include "core/Guid.h"
 #include "core/World.h"
@@ -79,17 +79,17 @@ class EditorClipboard
     std::string getScenePath() const;
     std::string getProjectPath() const;
 
-    LibraryDirectory& getLibrary();
+    LibraryDirectory &getLibrary();
 
-    PhysicsEngine::World* getWorld();
+    PhysicsEngine::World *getWorld();
 
-    std::set<PhysicsEngine::Guid>& getEditorOnlyIds();
+    std::set<PhysicsEngine::Guid> &getEditorOnlyIds();
 
     void init();
-    void openScene(const std::string& name, const std::string& path);
-    void openScene(const std::string& name, const std::string& path, const std::string& metaPath, 
-                    const std::string& libraryPath, const PhysicsEngine::Guid& sceneId);
-    void openProject(const std::string& name, const std::string& path);
+    void openScene(const std::string &name, const std::string &path);
+    void openScene(const std::string &name, const std::string &path, const std::string &metaPath,
+                   const std::string &libraryPath, const PhysicsEngine::Guid &sceneId);
+    void openProject(const std::string &name, const std::string &path);
 };
 } // namespace PhysicsEditor
 

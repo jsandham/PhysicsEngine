@@ -1,38 +1,38 @@
 #ifndef __TEXTURE2D_DRAWER_H__
 #define __TEXTURE2D_DRAWER_H__
 
-#include "InspectorDrawer.h"
 #include "../EditorClipboard.h"
+#include "InspectorDrawer.h"
 
 namespace PhysicsEditor
 {
 class Texture2DDrawer : public InspectorDrawer
 {
   private:
-      GLuint mFBO;
-      GLuint mColor;
-      GLuint mDepth;
+    GLuint mFBO;
+    GLuint mColor;
+    GLuint mDepth;
 
-      GLuint mVAO;
-      GLuint mVBO;
+    GLuint mVAO;
+    GLuint mVBO;
 
-      GLuint mProgramR;
-      GLuint mProgramG;
-      GLuint mProgramB;
-      GLuint mProgramA;
-      int mTexLocR;
-      int mTexLocG;
-      int mTexLocB;
-      int mTexLocA;
+    GLuint mProgramR;
+    GLuint mProgramG;
+    GLuint mProgramB;
+    GLuint mProgramA;
+    int mTexLocR;
+    int mTexLocG;
+    int mTexLocB;
+    int mTexLocA;
 
-      Guid mCurrentTexId;
-      GLint mDrawTex;
+    Guid mCurrentTexId;
+    GLint mDrawTex;
 
   public:
     Texture2DDrawer();
     ~Texture2DDrawer();
 
-    void render(EditorClipboard& clipboard, Guid id);
+    void render(EditorClipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

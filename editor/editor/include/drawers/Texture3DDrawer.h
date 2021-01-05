@@ -1,8 +1,8 @@
 #ifndef __TEXTURE3D_DRAWER_H__
 #define __TEXTURE3D_DRAWER_H__
 
-#include "InspectorDrawer.h"
 #include "../EditorClipboard.h"
+#include "InspectorDrawer.h"
 
 namespace PhysicsEditor
 {
@@ -12,7 +12,7 @@ class Texture3DDrawer : public InspectorDrawer
     Texture3DDrawer();
     ~Texture3DDrawer();
 
-    void render(EditorClipboard& clipboard, Guid id);
+    void render(EditorClipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

@@ -10,11 +10,11 @@ class PreferencesWindow : public Window
   public:
     PreferencesWindow();
     ~PreferencesWindow();
-    PreferencesWindow(const PreferencesWindow& other) = delete;
-    PreferencesWindow& operator=(const PreferencesWindow& other) = delete;
+    PreferencesWindow(const PreferencesWindow &other) = delete;
+    PreferencesWindow &operator=(const PreferencesWindow &other) = delete;
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard);
+    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
 };
 } // namespace PhysicsEditor
 
