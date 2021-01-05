@@ -35,10 +35,13 @@ EditorMenuBar::~EditorMenuBar()
 {
 }
 
-void EditorMenuBar::render(const EditorProject project, const EditorScene scene)
+//void EditorMenuBar::render(const EditorProject project, const EditorScene scene)
+void EditorMenuBar::render(const EditorClipboard& clipboard)
 {
-    projectSelected = project.path != "";
-    sceneSelected = scene.name != "";
+    /*projectSelected = project.path != "";
+    sceneSelected = scene.name != "";*/
+    projectSelected = clipboard.getProjectPath() != "";
+    sceneSelected = clipboard.getScene() != "";
 
     newSceneClicked = false;
     openSceneClicked = false;

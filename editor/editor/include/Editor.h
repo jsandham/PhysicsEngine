@@ -12,22 +12,21 @@
 
 #include "LibraryDirectory.h"
 
-#include "AboutPopup.h"
-#include "BuildWindow.h"
+#include "views/AboutPopup.h"
+#include "views/BuildWindow.h"
+#include "views/Console.h"
+#include "views/Hierarchy.h"
+#include "views/Inspector.h"
+#include "views/PreferencesWindow.h"
+#include "views/ProjectView.h"
+#include "views/ProjectWindow.h"
+#include "views/SceneView.h"
+
 #include "CommandManager.h"
-#include "Console.h"
 #include "EditorClipboard.h"
 #include "EditorMenuBar.h"
-#include "EditorProject.h"
-#include "EditorScene.h"
 #include "EditorToolbar.h"
 #include "Filebrowser.h"
-#include "Hierarchy.h"
-#include "Inspector.h"
-#include "PreferencesWindow.h"
-#include "ProjectView.h"
-#include "ProjectWindow.h"
-#include "SceneView.h"
 
 #include "EditorCameraSystem.h"
 #include "systems/CleanUpSystem.h"
@@ -41,9 +40,7 @@ class Editor
   private:
     HWND window;
 
-    World world;
-
-    LibraryDirectory libraryDirectory;
+    //LibraryDirectory libraryDirectory;
     CommandManager commandManager;
 
     EditorMenuBar editorMenu;
@@ -59,16 +56,7 @@ class Editor
     PreferencesWindow preferencesWindow;
     AboutPopup aboutPopup;
 
-    EditorProject currentProject;
-    EditorScene currentScene;
     EditorClipboard clipboard;
-
-    EditorCameraSystem *cameraSystem;
-    RenderSystem *renderSystem;
-    CleanUpSystem *cleanupSystem;
-    GizmoSystem* gizmoSystem;
-
-    std::set<PhysicsEngine::Guid> editorOnlyEntityIds;
 
   public:
     Editor();

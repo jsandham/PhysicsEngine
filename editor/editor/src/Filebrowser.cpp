@@ -10,7 +10,7 @@
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
-#include "../include/imgui_extensions.h"
+#include "../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 

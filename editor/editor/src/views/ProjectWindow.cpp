@@ -1,0 +1,166 @@
+#include "../../include/views/ProjectWindow.h"
+#include "../../include/FileSystemUtil.h"
+
+#include "imgui.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_win32.h"
+#include "imgui_internal.h"
+
+using namespace PhysicsEditor;
+
+ProjectWindow::ProjectWindow()
+{
+    openClicked = false;
+    createClicked = false;
+    mode = ProjectWindowMode::OpenProject;
+
+    inputBuffer.resize(256);
+
+    filebrowser.setMode(FilebrowserMode::SelectFolder);
+}
+
+ProjectWindow::~ProjectWindow()
+{
+}
+
+void ProjectWindow::init(EditorClipboard& clipboard)
+{
+}
+
+void ProjectWindow::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+{
+    this->Window::update(clipboard, isOpenedThisFrame);
+
+    if (!windowActive)
+    {
+        return;
+    }
+
+    openClicked = false;
+    createClicked = false;
+
+    if (isOpenedThisFrame)
+    {
+        ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 200.0f), ImVec2(1920.0f, 1080.0f));
+        ImGui::OpenPopup("##ProjectWindow");
+    }
+
+    bool projectWindowOpen = true;
+    if (ImGui::BeginPopupModal("##ProjectWindow", &projectWindowOpen))
+    {
+        float windowWidth = ImGui::GetWindowWidth();
+
+        if (mode == ProjectWindowMode::NewProject)
+        {
+            renderNewMode();
+        }
+        else if (mode == ProjectWindowMode::OpenProject)
+        {
+            renderOpenMode();
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+bool ProjectWindow::isOpenClicked() const
+{
+    return openClicked;
+}
+
+bool ProjectWindow::isCreateClicked() const
+{
+    return createClicked;
+}
+
+std::string ProjectWindow::getProjectName() const
+{
+    int index = 0;
+    for (size_t i = 0; i < inputBuffer.size(); i++)
+    {
+        if (inputBuffer[i] == '\0')
+        {
+            index = (int)i;
+            break;
+        }
+    }
+    return std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+}
+
+std::string ProjectWindow::getSelectedFolderPath() const
+{
+    return filebrowser.getSelectedFolderPath();
+}
+
+void ProjectWindow::renderNewMode()
+{
+    float projectNameTitleWidth = 100.0f;
+    float inputTextWidth = 400.0f;
+
+    ImGui::SetNextItemWidth(projectNameTitleWidth);
+    ImGui::Text("Project Name");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(inputTextWidth);
+    if (ImGui::InputText("##Project Name", &inputBuffer[0], (int)inputBuffer.size(),
+                         ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+    }
+
+    bool openSelectFolderBrowser = false;
+    if (ImGui::Button("Select Folder"))
+    {
+        openSelectFolderBrowser = true;
+    }
+
+    ImGui::SameLine();
+    ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
+
+    filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
+
+    if (ImGui::Button("Create Project"))
+    {
+        createClicked = true;
+        ImGui::CloseCurrentPopup();
+    }
+}
+
+void ProjectWindow::renderOpenMode()
+{
+    bool openSelectFolderBrowser = false;
+    if (ImGui::Button("Select Folder"))
+    {
+        openSelectFolderBrowser = true;
+    }
+
+    ImGui::SameLine();
+    ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
+
+    filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
+
+    // only allow the open button to be clicked if the selected folder path meets basic criteria for it being a legit
+    // project folder
+    bool meetsProjectCriteria = doesDirectoryExist(filebrowser.getSelectedFolderPath() + "\\data");
+
+    if (!meetsProjectCriteria)
+    {
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    }
+
+    if (ImGui::Button("Open Project"))
+    {
+        openClicked = true;
+        ImGui::CloseCurrentPopup();
+    }
+
+    if (!meetsProjectCriteria)
+    {
+        ImGui::PopItemFlag();
+        ImGui::PopStyleVar();
+    }
+}
+
+void ProjectWindow::setMode(ProjectWindowMode mode)
+{
+    this->mode = mode;
+}

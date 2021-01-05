@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\drawers">
+      <UniqueIdentifier>{87a65d84-9bde-49b7-abb7-2949ab8c383c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\views">
+      <UniqueIdentifier>{6a6e73d8-9538-4cce-8341-73209e5a5aa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\views">
+      <UniqueIdentifier>{dd55a27c-8ef9-4a0f-a629-20ed33ad49b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\drawers">
+      <UniqueIdentifier>{f4f7ce6b-e202-4acf-b717-6ff89add1745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\imgui">
+      <UniqueIdentifier>{b4d45816-6c12-4bab-b610-583b0f5d6d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\imgui">
+      <UniqueIdentifier>{dbad220b-6cc9-455f-8080-054a8185ca55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -24,79 +42,16 @@
     <ClCompile Include="src\Load.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Inspector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Filebrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hierarchy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AboutPopup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TransformDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InspectorDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LightDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LoadInspectorDrawerInternal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CameraDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshRendererDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LineRendererDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BoxColliderDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CapsuleColliderDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshColliderDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SphereColliderDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_extensions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ProjectWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BuildWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\FileSystemUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RigidbodyDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorCameraSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LibraryDirectory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ProjectView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PerformanceQueue.cpp">
@@ -117,43 +72,13 @@
     <ClCompile Include="src\EditorMenuBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\PreferencesWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_styles.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EditorFileIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorClipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShaderDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CubemapDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FontDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MaterialDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture2DDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture3DDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WriteToJson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MaterialRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorOnlyEntityCreation.cpp">
@@ -162,84 +87,114 @@
     <ClCompile Include="src\TransformGizmo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\drawers\BoxColliderDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\CameraDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\CapsuleColliderDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\CubemapDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\FontDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\InspectorDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\LightDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\LineRendererDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\LoadInspectorDrawerInternal.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\MaterialDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\MeshColliderDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\MeshDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\MeshRendererDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\RigidbodyDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\ShaderDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\SphereColliderDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\Texture2DDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\Texture3DDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\TransformDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\AboutPopup.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\BuildWindow.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\Console.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\Hierarchy.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\Inspector.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\PreferencesWindow.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\ProjectView.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\ProjectWindow.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\SceneView.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\views\Window.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_extensions.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_styles.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inspector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Hierarchy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\AboutPopup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\InspectorDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\TransformDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\LightDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\LoadInspectorDrawerInternal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CameraDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Filebrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MeshRendererDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\LineRendererDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BoxColliderDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CapsuleColliderDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MeshColliderDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\SphereColliderDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\imgui_extensions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ProjectWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BuildWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\FileSystemUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RigidbodyDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorCameraSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\LibraryDirectory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\SceneView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ProjectView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PerformanceQueue.h">
@@ -260,46 +215,10 @@
     <ClInclude Include="include\EditorMenuBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\PreferencesWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\imgui_styles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorProject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\EditorFileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorClipboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ShaderDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CubemapDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\FontDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MaterialDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MeshDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Texture2DDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Texture3DDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MaterialRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorOnlyEntityCreation.h">
@@ -307,6 +226,102 @@
     </ClInclude>
     <ClInclude Include="include\TransformGizmo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\IconsFontAwesome4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\BoxColliderDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\CameraDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\CapsuleColliderDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\CubemapDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\FontDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\InspectorDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\LightDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\LineRendererDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\LoadInspectorDrawerInternal.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\MaterialDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\MeshColliderDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\MeshDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\MeshRendererDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\RigidbodyDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\ShaderDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\SphereColliderDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\Texture2DDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\Texture3DDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\TransformDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\AboutPopup.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\BuildWindow.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\Console.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\Hierarchy.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\Inspector.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\PreferencesWindow.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\ProjectView.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\ProjectWindow.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\SceneView.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\Window.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui_extensions.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui_styles.h">
+      <Filter>Header Files\imgui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

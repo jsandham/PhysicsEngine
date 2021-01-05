@@ -22,25 +22,20 @@
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
-#include "../include/imgui_extensions.h"
-#include "../include/imgui_styles.h"
+#include "../include/imgui/imgui_extensions.h"
+#include "../include/imgui/imgui_styles.h"
 
 #include "core/WriteInternalToJson.h"
 
 #include "core/InternalShaders.h"
+
+#include "../include/IconsFontAwesome4.h"
 
 using namespace PhysicsEditor;
 using namespace json;
 
 Editor::Editor()
 {
-    cameraSystem = NULL;
-    renderSystem = NULL;
-    cleanupSystem = NULL;
-
-    currentProject = {};
-    currentScene = {};
-    clipboard = {};
 }
 
 Editor::~Editor()
@@ -72,28 +67,24 @@ void Editor::init(HWND window, int width, int height)
     // Setup style
     ImGui::StyleColorsCorporate();
 
-    // add editor camera to world
-    PhysicsEditor::createEditorCamera(&world, editorOnlyEntityIds);
+    io.Fonts->AddFontDefault();
 
-    // add camera, render, and cleanup system to world
-    cameraSystem = world.addSystem<EditorCameraSystem>(0);
-    // add simple editor render pass system to render line floor and default skymap
-    renderSystem = world.addSystem<RenderSystem>(1);
-    // add gizmo system
-    gizmoSystem = world.addSystem<GizmoSystem>(2);
-    // add simple editor render system to render gizmo's
-    cleanupSystem = world.addSystem<CleanUpSystem>(3);
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    io.Fonts->AddFontFromFileTTF("C:\\Users\\jsand\\Downloads\\fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->Build();
 
-    renderSystem->mRenderToScreen = false;
+    clipboard.init();
 
-    for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++)
-    {
-        System *system = world.getSystemByUpdateOrder(i);
+    aboutPopup.init(clipboard);
 
-        system->init(&world);
-    }
-
-    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
+    hierarchy.init(clipboard);
+    inspector.init(clipboard);
+    console.init(clipboard);
+    projectView.init(clipboard);
+    sceneView.init(clipboard);
 }
 
 void Editor::cleanUp()
@@ -108,12 +99,10 @@ void Editor::render(bool editorBecameActiveThisFrame)
 {
     // ImGui::ShowDemoWindow();
     // ImGui::ShowMetricsWindow();
+    // ImGui::ShowStyleEditor();
 
-    PhysicsEngine::Graphics::checkError(__LINE__, __FILE__);
-
-    libraryDirectory.update();
-
-    libraryDirectory.loadQueuedAssetsIntoWorld(&world);
+    clipboard.getLibrary().update();
+    clipboard.getLibrary().loadQueuedAssetsIntoWorld(clipboard.getWorld());
 
     // start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -123,30 +112,21 @@ void Editor::render(bool editorBecameActiveThisFrame)
     ImGui::ShowDemoWindow();
 
     // draw menu and toolbar
-    editorMenu.render(currentProject, currentScene);
+    editorMenu.render(clipboard);
     editorToolbar.render(clipboard);
 
     // TODO: Should this be moved into editorMenu.render?
     updateProjectAndSceneState();
 
-    // draw hierarchy window
-    hierarchy.render(&world, currentScene, clipboard, editorOnlyEntityIds, editorMenu.isOpenHierarchyCalled());
+    hierarchy.update(clipboard, editorMenu.isOpenHierarchyCalled());
+    inspector.update(clipboard, editorMenu.isOpenInspectorCalled());
+    console.update(clipboard, editorMenu.isOpenConsoleCalled());
+    projectView.update(clipboard, editorBecameActiveThisFrame, editorMenu.isOpenProjectViewCalled());
 
-    // draw inspector window
-    inspector.render(&world, currentProject, currentScene, clipboard, editorMenu.isOpenInspectorCalled());
+    aboutPopup.update(clipboard, editorMenu.isAboutClicked());
+    preferencesWindow.update(clipboard, editorMenu.isPreferencesClicked());
 
-    // draw console window
-    console.render(editorMenu.isOpenConsoleCalled());
-
-    // draw project view window
-    projectView.render(currentProject.path, libraryDirectory, clipboard, editorBecameActiveThisFrame,
-                       editorMenu.isOpenProjectViewCalled());
-
-    aboutPopup.render(editorMenu.isAboutClicked());
-    preferencesWindow.render(editorMenu.isPreferencesClicked());
-
-    // draw scene view window
-    sceneView.render(&world, cameraSystem, clipboard, editorMenu.isOpenSceneViewCalled());
+    sceneView.update(clipboard, editorMenu.isOpenSceneViewCalled());
 
     // imgui render calls
     ImGui::Render();
@@ -163,41 +143,36 @@ bool Editor::isQuitCalled() const
 
 std::string Editor::getCurrentProjectPath() const
 {
-    return currentProject.path;
+    return clipboard.getProjectPath();
 }
 
 std::string Editor::getCurrentScenePath() const
 {
-    return currentScene.path;
+    return clipboard.getScenePath();
 }
 
 void Editor::newScene()
 {
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+    clipboard.getWorld()->latentDestroyEntitiesInWorld(); // need to destroy assets too!
 
     // re-centre editor camera to default position
-    cameraSystem->resetCamera();
+    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
-    currentScene.name = "default.scene";
-    currentScene.path = "";
-    currentScene.metaPath = "";
-    currentScene.libraryPath = "";
-    currentScene.sceneId = Guid::newGuid();
-    currentScene.isDirty = true;
+    clipboard.openScene("default.scene", "", "", "", Guid::newGuid());
 }
 
 void Editor::openScene(std::string name, std::string path)
 {
     // check to make sure the scene is part of the current project
-    if (path.find(currentProject.path + "\\data\\") != 0)
+    if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
     {
         std::string errorMessage =
-            "Could not open scene " + path + " because it is not part of current project " + currentProject.path + "\n";
+            "Could not open scene " + path + " because it is not part of current project " + clipboard.getProjectPath() + "\n";
         Log::error(&errorMessage[0]);
         return;
     }
@@ -209,28 +184,23 @@ void Editor::openScene(std::string name, std::string path)
     Guid sceneId = PhysicsEditor::findGuidFromMetaFilePath(sceneMetaFilePath);
 
     // binary scene file path
-    std::string binarySceneFilePath = currentProject.path + "\\library\\" + sceneId.toString() + ".sdata";
+    std::string binarySceneFilePath = clipboard.getProjectPath() + "\\library\\" + sceneId.toString() + ".sdata";
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
     // TODO: Need todestroy assets too!
-    world.latentDestroyEntitiesInWorld();
+    clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // reset editor camera to default position
-    cameraSystem->resetCamera();
+    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
     // load binary version of scene into world (ignoring systems and cameras)
-    if (world.loadSceneFromEditor(binarySceneFilePath))
+    if (clipboard.getWorld()->loadSceneFromEditor(binarySceneFilePath))
     {
-        currentScene.name = name;
-        currentScene.path = path;
-        currentScene.metaPath = sceneMetaFilePath;
-        currentScene.libraryPath = binarySceneFilePath;
-        currentScene.sceneId = sceneId;
-        currentScene.isDirty = false;
+        clipboard.openScene(name, path, sceneMetaFilePath, binarySceneFilePath, sceneId);
     }
     else
     {
@@ -241,16 +211,14 @@ void Editor::openScene(std::string name, std::string path)
 
 void Editor::saveScene(std::string name, std::string path)
 {
-    if (!currentScene.isDirty)
+    //if (!currentScene.isDirty)
+    //{
+    //    return;
+    //}
+    
+    if (PhysicsEditor::writeSceneToJson(clipboard.getWorld(), path, clipboard.getEditorOnlyIds()))
     {
-        return;
-    }
-
-    if (PhysicsEditor::writeSceneToJson(&world, path, editorOnlyEntityIds))
-    {
-        currentScene.name = name;
-        currentScene.path = path;
-        currentScene.isDirty = false;
+        clipboard.openScene(name, path);
     }
     else
     {
@@ -274,18 +242,10 @@ void Editor::createProject(std::string name, std::string path)
 
         if (success)
         {
-            currentProject.name = name;
-            currentProject.path = path;
-            currentProject.isDirty = false;
+            clipboard.openProject(name, path);
+            clipboard.openScene("", "", "", "", Guid::INVALID);
 
-            currentScene.name = "";
-            currentScene.path = "";
-            currentScene.metaPath = "";
-            currentScene.libraryPath = "";
-            currentScene.sceneId = Guid::INVALID;
-            currentScene.isDirty = false;
-
-            SetWindowTextA(window, ("Physics Engine - " + currentProject.path).c_str());
+            SetWindowTextA(window, ("Physics Engine - " + clipboard.getProjectPath()).c_str());
         }
         else
         {
@@ -300,62 +260,40 @@ void Editor::createProject(std::string name, std::string path)
     }
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    world.latentDestroyEntitiesInWorld(); // need to destroy assets too!
+    clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // tell library directory which project to watch
-    libraryDirectory.watch(path);
+    clipboard.getLibrary().watch(path);;
 
     // reset editor camera
-    cameraSystem->resetCamera();
+    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
 }
 
 void Editor::openProject(std::string name, std::string path)
 {
-    currentProject.name = name;
-    currentProject.path = path;
-    currentProject.isDirty = false;
-
-    currentScene.name = "";
-    currentScene.path = "";
-    currentScene.metaPath = "";
-    currentScene.libraryPath = "";
-    currentScene.sceneId = Guid::INVALID;
-    currentScene.isDirty = false;
+    clipboard.openProject(name, path);
+    clipboard.openScene("", "", "", "", Guid::INVALID);
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    world.latentDestroyEntitiesInWorld();
+    clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // tell library directory which project to watch
-    libraryDirectory.watch(path);
+    clipboard.getLibrary().watch(path);
 
     // reset editor camera
-    cameraSystem->resetCamera();
+    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
 
-    SetWindowTextA(window, ("Physics Engine - " + currentProject.path).c_str());
+    SetWindowTextA(window, ("Physics Engine - " + clipboard.getProjectPath()).c_str());
 }
 
 void Editor::saveProject(std::string name, std::string path)
 {
-    if (!currentProject.isDirty)
-    {
-        return;
-    }
+    //if (!currentProject.isDirty)
+    //{
+    //    return;
+    //}
 
-    for (int i = 0; i < world.getNumberOfAssets<Material>(); i++)
-    {
-        Material *material = world.getAssetByIndex<Material>(i);
-        /*std::string assetPath = libraryDirectory.getFilePath(material->getId());
-
-        if (!PhysicsEditor::writeAssetToJson(&world, assetPath, material->getId(), AssetType<Material>::type)) {
-            std::string message = "Could not save material in project " + assetPath + "\n";
-            Log::error(message.c_str());
-            return;
-        }*/
-    }
-
-    currentScene.name = name;
-    currentScene.path = path;
-    currentScene.isDirty = false;
+    clipboard.openScene(name, path);
 }
 
 void Editor::updateProjectAndSceneState()
@@ -369,17 +307,17 @@ void Editor::updateProjectAndSceneState()
     {
         filebrowser.setMode(FilebrowserMode::Open);
     }
-    else if (editorMenu.isSaveClicked() && currentScene.path != "")
+    else if (editorMenu.isSaveClicked() && clipboard.getScenePath() != "")
     {
-        saveScene(currentScene.name, currentScene.path);
+        saveScene(clipboard.getScene(), clipboard.getScenePath());
     }
-    else if (editorMenu.isSaveAsClicked() || editorMenu.isSaveClicked() && currentScene.path == "")
+    else if (editorMenu.isSaveAsClicked() || editorMenu.isSaveClicked() && clipboard.getScenePath() == "")
     {
         filebrowser.setMode(FilebrowserMode::Save);
     }
 
-    filebrowser.render(currentProject.path, editorMenu.isOpenSceneClicked() || editorMenu.isSaveAsClicked() ||
-                                                editorMenu.isSaveClicked() && currentScene.path == "");
+    filebrowser.render(clipboard.getProjectPath(), editorMenu.isOpenSceneClicked() || editorMenu.isSaveAsClicked() ||
+        editorMenu.isSaveClicked() && clipboard.getScenePath() == "");
 
     if (filebrowser.isOpenClicked())
     {
@@ -401,10 +339,10 @@ void Editor::updateProjectAndSceneState()
     }
     else if (editorMenu.isSaveProjectClicked())
     {
-        saveProject(currentProject.name, currentProject.path);
+        saveProject(clipboard.getProject(), clipboard.getProjectPath());
     }
 
-    projectWindow.render(editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
+    projectWindow.update(clipboard, editorMenu.isOpenProjectClicked() | editorMenu.isNewProjectClicked());
 
     if (projectWindow.isOpenClicked())
     {

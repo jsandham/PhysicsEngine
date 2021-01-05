@@ -11,12 +11,12 @@
 
 namespace PhysicsEditor
 {
-typedef enum FilebrowserMode
+enum class FilebrowserMode
 {
     Open,
     Save,
     SelectFolder
-} FilebrowserMode;
+};
 
 struct FilebrowserItem
 {

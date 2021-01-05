@@ -203,6 +203,11 @@ bool PhysicsEditor::getFileTime(std::string path, std::string &createTime, std::
     return true;
 }
 
+std::string PhysicsEditor::getDirectoryName(std::string path)
+{
+    return path.substr(path.find_last_of("\\") + 1);
+}
+
 std::string PhysicsEditor::getFileName(std::string path)
 {
     return path.substr(path.find_last_of("\\") + 1);

@@ -3,8 +3,7 @@
 
 #include <string>
 
-#include "EditorProject.h"
-#include "EditorScene.h"
+#include "EditorClipboard.h"
 
 namespace PhysicsEditor
 {
@@ -43,7 +42,8 @@ class EditorMenuBar
     EditorMenuBar();
     ~EditorMenuBar();
 
-    void render(const EditorProject project, const EditorScene scene);
+    //void render(const EditorProject project, const EditorScene scene);
+    void render(const EditorClipboard& clipboard);
 
     bool isNewSceneClicked() const;
     bool isOpenSceneClicked() const;
