@@ -22,12 +22,11 @@ Inspector::~Inspector()
 {
 }
 
-void Inspector::init(EditorClipboard& clipboard)
+void Inspector::init(EditorClipboard &clipboard)
 {
-
 }
 
-void Inspector::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Inspector::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 
@@ -73,9 +72,9 @@ void Inspector::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
     ImGui::End();
 }
 
-void Inspector::drawEntity(EditorClipboard& clipboard)
+void Inspector::drawEntity(EditorClipboard &clipboard)
 {
-    Entity* entity = clipboard.getWorld()->getEntityById(clipboard.getSelectedId());
+    Entity *entity = clipboard.getWorld()->getEntityById(clipboard.getSelectedId());
 
     // entity may have been recently deleted
     if (entity == NULL)
@@ -106,31 +105,36 @@ void Inspector::drawEntity(EditorClipboard& clipboard)
     }
 
     std::string componentToAdd = "";
-    std::vector<std::string> components = { "Transform",    "Camera",       "Light",       "Rigidbody",
-                                            "MeshRenderer", "LineRenderer", "BoxCollider", "SphereCollider"};
+    std::vector<std::string> components = {"Transform",    "Camera",       "Light",       "Rigidbody",
+                                           "MeshRenderer", "LineRenderer", "BoxCollider", "SphereCollider"};
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
 
         if (componentToAdd == "Transform")
         {
-            CommandManager::addCommand(new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+            CommandManager::addCommand(
+                new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Rigidbody")
         {
-            CommandManager::addCommand(new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+            CommandManager::addCommand(
+                new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Camera")
         {
-            CommandManager::addCommand(new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+            CommandManager::addCommand(
+                new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "MeshRenderer")
         {
-            CommandManager::addCommand(new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+            CommandManager::addCommand(
+                new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Light")
         {
-            CommandManager::addCommand(new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+            CommandManager::addCommand(
+                new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
 
         ImGui::EndDropdownWindow();

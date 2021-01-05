@@ -19,11 +19,11 @@ RigidbodyDrawer::~RigidbodyDrawer()
 {
 }
 
-void RigidbodyDrawer::render(EditorClipboard& clipboard, Guid id)
+void RigidbodyDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Rigidbody* rigidbody = clipboard.getWorld()->getComponentById<Rigidbody>(id);
+        Rigidbody *rigidbody = clipboard.getWorld()->getComponentById<Rigidbody>(id);
 
         ImGui::Text(("EntityId: " + rigidbody->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());

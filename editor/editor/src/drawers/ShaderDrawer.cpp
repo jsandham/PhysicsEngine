@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 
-#include "../../include/drawers/ShaderDrawer.h"
 #include "../../include/CommandManager.h"
 #include "../../include/EditorCommands.h"
+#include "../../include/drawers/ShaderDrawer.h"
 
 #include "core/Shader.h"
 
@@ -23,9 +23,9 @@ ShaderDrawer::~ShaderDrawer()
 {
 }
 
-void ShaderDrawer::render(EditorClipboard& clipboard, Guid id)
+void ShaderDrawer::render(EditorClipboard &clipboard, Guid id)
 {
-    Shader* shader = clipboard.getWorld()->getAssetById<Shader>(id);
+    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(id);
 
     std::vector<ShaderProgram> programs = shader->getPrograms();
     std::vector<ShaderUniform> uniforms = shader->getUniforms();

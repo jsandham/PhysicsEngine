@@ -19,11 +19,11 @@ BoxColliderDrawer::~BoxColliderDrawer()
 {
 }
 
-void BoxColliderDrawer::render(EditorClipboard& clipboard, Guid id)
+void BoxColliderDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        BoxCollider* boxCollider = clipboard.getWorld()->getComponentById<BoxCollider>(id);
+        BoxCollider *boxCollider = clipboard.getWorld()->getComponentById<BoxCollider>(id);
 
         ImGui::Text(("EntityId: " + boxCollider->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());

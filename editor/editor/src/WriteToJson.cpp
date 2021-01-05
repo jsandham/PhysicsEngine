@@ -9,8 +9,8 @@ void PhysicsEngine::writeComponentToJson(json::JSON &obj, World *world, Guid ent
 {
     if (Component::isInternal(type))
     {
-        std::string message = "Invalid component type (" + std::to_string(type) +
-                              ") when trying to write internal component to json\n";
+        std::string message =
+            "Invalid component type (" + std::to_string(type) + ") when trying to write internal component to json\n";
         Log::error(message.c_str());
         return;
     }

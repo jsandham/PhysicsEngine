@@ -19,11 +19,11 @@ CameraDrawer::~CameraDrawer()
 {
 }
 
-void CameraDrawer::render(EditorClipboard& clipboard, Guid id)
+void CameraDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Camera* camera = clipboard.getWorld()->getComponentById<Camera>(id);
+        Camera *camera = clipboard.getWorld()->getComponentById<Camera>(id);
         Transform *transform = camera->getComponent<Transform>(clipboard.getWorld());
 
         ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
@@ -45,14 +45,14 @@ void CameraDrawer::render(EditorClipboard& clipboard, Guid id)
 
         if (ImGui::Combo("Mode", &mode, modeNames, 2))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<CameraMode>(&camera->mMode, static_cast<CameraMode>(mode), &clipboard.isDirty));
+            CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(
+                &camera->mMode, static_cast<CameraMode>(mode), &clipboard.isDirty));
         }
 
         if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<CameraSSAO>(&camera->mSSAO, static_cast<CameraSSAO>(ssao), &clipboard.isDirty));
+            CommandManager::addCommand(new ChangePropertyCommand<CameraSSAO>(
+                &camera->mSSAO, static_cast<CameraSSAO>(ssao), &clipboard.isDirty));
         }
 
         glm::vec3 position = transform->mPosition; // camera->mPosition;
@@ -77,8 +77,8 @@ void CameraDrawer::render(EditorClipboard& clipboard, Guid id)
         }
         if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor)))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<Color>(&camera->mBackgroundColor, Color(backgroundColor), &clipboard.isDirty));
+            CommandManager::addCommand(new ChangePropertyCommand<Color>(&camera->mBackgroundColor,
+                                                                        Color(backgroundColor), &clipboard.isDirty));
         }
 
         if (ImGui::TreeNode("Viewport"))
@@ -126,13 +126,13 @@ void CameraDrawer::render(EditorClipboard& clipboard, Guid id)
             }
             if (ImGui::InputFloat("Near Plane", &nearPlane))
             {
-                //CommandManager::addCommand(
+                // CommandManager::addCommand(
                 //    new ChangePropertyCommand<float>(&camera->mFrustum.mNearPlane, nearPlane, &scene.isDirty));
                 camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
             if (ImGui::InputFloat("Far Plane", &farPlane))
             {
-                //CommandManager::addCommand(
+                // CommandManager::addCommand(
                 //    new ChangePropertyCommand<float>(&camera->mFrustum.mFarPlane, farPlane, &scene.isDirty));
                 camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }

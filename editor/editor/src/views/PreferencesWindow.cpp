@@ -10,18 +10,17 @@ using namespace PhysicsEditor;
 
 PreferencesWindow::PreferencesWindow()
 {
-  
 }
 
 PreferencesWindow::~PreferencesWindow()
 {
 }
 
-void PreferencesWindow::init(EditorClipboard& clipboard)
+void PreferencesWindow::init(EditorClipboard &clipboard)
 {
 }
 
-void PreferencesWindow::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void PreferencesWindow::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 
@@ -44,8 +43,8 @@ void PreferencesWindow::update(EditorClipboard& clipboard, bool isOpenedThisFram
     {
         float windowWidth = ImGui::GetWindowWidth();
 
-        const char* themeNames[] = { "Classic",    "Light",  "Dark", "Dracula",  "Cherry",
-                                    "LightGreen", "Yellow", "Grey", "Charcoal", "Corporate" };
+        const char *themeNames[] = {"Classic",    "Light",  "Dark", "Dracula",  "Cherry",
+                                    "LightGreen", "Yellow", "Grey", "Charcoal", "Corporate"};
 
         if (ImGui::BeginCombo("##Themes", themeNames[0]))
         {

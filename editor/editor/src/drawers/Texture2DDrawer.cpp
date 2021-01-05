@@ -1,7 +1,7 @@
 #include "../../include/drawers/Texture2DDrawer.h"
 #include "../../include/CommandManager.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/EditorClipboard.h"
+#include "../../include/EditorCommands.h"
 
 #include "core/Texture2D.h"
 
@@ -26,44 +26,44 @@ Texture2DDrawer::Texture2DDrawer()
     Graphics::unbindFramebuffer();
 
     std::string vertexShader = "in vec3 position;\n"
-                            "in vec2 texCoord;\n"
-                            "out vec2 TexCoord;\n"
-                            "void main()\n"
-                            "{\n"
-                            "	gl_Position = vec4(position, 1.0);\n"
-                            "   TexCoord = texCoord;\n"
-                            "}";
+                               "in vec2 texCoord;\n"
+                               "out vec2 TexCoord;\n"
+                               "void main()\n"
+                               "{\n"
+                               "	gl_Position = vec4(position, 1.0);\n"
+                               "   TexCoord = texCoord;\n"
+                               "}";
 
     std::string fragmentShaderR = "uniform sampler2D texture0;\n"
-                                "in vec2 TexCoord;\n"
-                                "out vec4 FragColor;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    FragColor = vec4(texture(texture0, TexCoord).r, 0, 0, 1);\n"
-                                "}";
+                                  "in vec2 TexCoord;\n"
+                                  "out vec4 FragColor;\n"
+                                  "void main()\n"
+                                  "{\n"
+                                  "    FragColor = vec4(texture(texture0, TexCoord).r, 0, 0, 1);\n"
+                                  "}";
     std::string fragmentShaderG = "uniform sampler2D texture0;\n"
-                                "in vec2 TexCoord;\n"
-                                "out vec4 FragColor;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    FragColor = vec4(0, texture(texture0, TexCoord).g, 0, 1);\n"
-                                "}";
+                                  "in vec2 TexCoord;\n"
+                                  "out vec4 FragColor;\n"
+                                  "void main()\n"
+                                  "{\n"
+                                  "    FragColor = vec4(0, texture(texture0, TexCoord).g, 0, 1);\n"
+                                  "}";
     std::string fragmentShaderB = "uniform sampler2D texture0;\n"
-                                "in vec2 TexCoord;\n"
-                                "out vec4 FragColor;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    FragColor = vec4(0, 0, texture(texture0, TexCoord).b, 1);\n"
-                                "}";
+                                  "in vec2 TexCoord;\n"
+                                  "out vec4 FragColor;\n"
+                                  "void main()\n"
+                                  "{\n"
+                                  "    FragColor = vec4(0, 0, texture(texture0, TexCoord).b, 1);\n"
+                                  "}";
     std::string fragmentShaderA = "uniform sampler2D texture0;\n"
-                                "in vec2 TexCoord;\n"
-                                "out vec4 FragColor;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    FragColor = vec4(texture(texture0, TexCoord).a,\n"
-                                "                     texture(texture0, TexCoord).a,\n"
-                                "                     texture(texture0, TexCoord).a, 1);\n"
-                                "}";
+                                  "in vec2 TexCoord;\n"
+                                  "out vec4 FragColor;\n"
+                                  "void main()\n"
+                                  "{\n"
+                                  "    FragColor = vec4(texture(texture0, TexCoord).a,\n"
+                                  "                     texture(texture0, TexCoord).a,\n"
+                                  "                     texture(texture0, TexCoord).a, 1);\n"
+                                  "}";
 
     Graphics::compile(vertexShader, fragmentShaderR, "", &mProgramR);
     Graphics::compile(vertexShader, fragmentShaderG, "", &mProgramG);
@@ -83,9 +83,9 @@ Texture2DDrawer::~Texture2DDrawer()
 {
 }
 
-void Texture2DDrawer::render(EditorClipboard& clipboard, Guid id)
+void Texture2DDrawer::render(EditorClipboard &clipboard, Guid id)
 {
-    Texture2D* texture = clipboard.getWorld()->getAssetById<Texture2D>(id);
+    Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(id);
 
     ImGui::Separator();
 
@@ -95,8 +95,8 @@ void Texture2DDrawer::render(EditorClipboard& clipboard, Guid id)
         mDrawTex = texture->getNativeGraphics();
     }
 
-    const std::array<const char*, 2> wrapMode = { "Repeat", "Clamp To Edge" };
-    const std::array<const char*, 3> filterMode = { "Nearest", "Linear", "Bilinear" };
+    const std::array<const char *, 2> wrapMode = {"Repeat", "Clamp To Edge"};
+    const std::array<const char *, 3> filterMode = {"Nearest", "Linear", "Bilinear"};
 
     static int activeWrapModeIndex = 0;
     static int activeFilterModeIndex = 0;
@@ -138,12 +138,11 @@ void Texture2DDrawer::render(EditorClipboard& clipboard, Guid id)
         }
         ImGui::EndCombo();
     }
-    
+
     // select aniso filtering for texture
     static int aniso = 0;
     if (ImGui::SliderInt("Aniso", &aniso, 0, 16))
     {
-
     }
 
     // Draw texture child window
@@ -331,9 +330,9 @@ void Texture2DDrawer::render(EditorClipboard& clipboard, Guid id)
             ImGui::PopStyleColor();
         }
 
-        ImGui::Image((void*)(intptr_t)mDrawTex,
-            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-            ImVec2(0, 0));
+        ImGui::Image((void *)(intptr_t)mDrawTex,
+                     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                     ImVec2(0, 0));
 
         ImGui::EndChild();
     }

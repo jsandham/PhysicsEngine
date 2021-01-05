@@ -9,7 +9,7 @@
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
-#include "../../include/imgui_extensions.h"
+#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 
@@ -21,11 +21,11 @@ MeshRendererDrawer::~MeshRendererDrawer()
 {
 }
 
-void MeshRendererDrawer::render(EditorClipboard& clipboard, Guid id)
+void MeshRendererDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshRenderer* meshRenderer = clipboard.getWorld()->getComponentById<MeshRenderer>(id);
+        MeshRenderer *meshRenderer = clipboard.getWorld()->getComponentById<MeshRenderer>(id);
 
         ImGui::Text(("EntityId: " + meshRenderer->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());
@@ -51,7 +51,8 @@ void MeshRendererDrawer::render(EditorClipboard& clipboard, Guid id)
             meshRenderer->setMesh(meshId);
         }
 
-        if (isClicked) {
+        if (isClicked)
+        {
             clipboard.setSelectedItem(InteractionType::Mesh, meshId);
         }
 
@@ -105,7 +106,8 @@ void MeshRendererDrawer::render(EditorClipboard& clipboard, Guid id)
                 meshRenderer->setMaterial(materialIds[i], i);
             }
 
-            if (materialIsClicked) {
+            if (materialIsClicked)
+            {
                 Log::info((materialName + "\n").c_str());
 
                 clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);

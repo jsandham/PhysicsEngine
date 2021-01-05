@@ -72,7 +72,7 @@ void Editor::init(HWND window, int width, int height)
     ImFontConfig config;
     config.MergeMode = true;
     config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     io.Fonts->AddFontFromFileTTF("C:\\Users\\jsand\\Downloads\\fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
     io.Fonts->Build();
 
@@ -171,8 +171,8 @@ void Editor::openScene(std::string name, std::string path)
     // check to make sure the scene is part of the current project
     if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
     {
-        std::string errorMessage =
-            "Could not open scene " + path + " because it is not part of current project " + clipboard.getProjectPath() + "\n";
+        std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " +
+                                   clipboard.getProjectPath() + "\n";
         Log::error(&errorMessage[0]);
         return;
     }
@@ -211,11 +211,11 @@ void Editor::openScene(std::string name, std::string path)
 
 void Editor::saveScene(std::string name, std::string path)
 {
-    //if (!currentScene.isDirty)
+    // if (!currentScene.isDirty)
     //{
     //    return;
     //}
-    
+
     if (PhysicsEditor::writeSceneToJson(clipboard.getWorld(), path, clipboard.getEditorOnlyIds()))
     {
         clipboard.openScene(name, path);
@@ -263,7 +263,8 @@ void Editor::createProject(std::string name, std::string path)
     clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // tell library directory which project to watch
-    clipboard.getLibrary().watch(path);;
+    clipboard.getLibrary().watch(path);
+    ;
 
     // reset editor camera
     clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
@@ -288,7 +289,7 @@ void Editor::openProject(std::string name, std::string path)
 
 void Editor::saveProject(std::string name, std::string path)
 {
-    //if (!currentProject.isDirty)
+    // if (!currentProject.isDirty)
     //{
     //    return;
     //}
@@ -317,7 +318,7 @@ void Editor::updateProjectAndSceneState()
     }
 
     filebrowser.render(clipboard.getProjectPath(), editorMenu.isOpenSceneClicked() || editorMenu.isSaveAsClicked() ||
-        editorMenu.isSaveClicked() && clipboard.getScenePath() == "");
+                                                       editorMenu.isSaveClicked() && clipboard.getScenePath() == "");
 
     if (filebrowser.isOpenClicked())
     {

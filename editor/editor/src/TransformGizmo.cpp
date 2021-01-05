@@ -1,6 +1,6 @@
 #include "core/ClosestDistance.h"
-#include "core/Intersect.h"
 #include "core/InternalMeshes.h"
+#include "core/Intersect.h"
 #include "graphics/Graphics.h"
 
 #include "../include/TransformGizmo.h"
@@ -13,50 +13,50 @@ using namespace PhysicsEngine;
 void TransformGizmo::initialize()
 {
     const std::string gizmoVertShader = "#version 430 core\n"
-                                 "uniform mat4 mvp;\n"
-                                 "in vec3 position;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "	gl_Position = mvp * vec4(position, 1.0);\n"
-                                 "}";
+                                        "uniform mat4 mvp;\n"
+                                        "in vec3 position;\n"
+                                        "void main()\n"
+                                        "{\n"
+                                        "	gl_Position = mvp * vec4(position, 1.0);\n"
+                                        "}";
 
     const std::string gizmoFragShader = "#version 430 core\n"
-                                 "uniform vec4 color;\n"
-                                 "out vec4 FragColor;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "	FragColor = color;\n"
-                                 "}";
+                                        "uniform vec4 color;\n"
+                                        "out vec4 FragColor;\n"
+                                        "void main()\n"
+                                        "{\n"
+                                        "	FragColor = color;\n"
+                                        "}";
 
     const std::string gizmo3dVertShader = "#version 430 core\n"
-                                "layout(location = 0) in vec3 position;\n"
-                                "layout(location = 1) in vec3 normal;\n"
-                                "out vec3 FragPos;\n"
-                                "out vec3 Normal;\n"
-                                "uniform mat4 model;\n"
-                                "uniform mat4 view;\n"
-                                "uniform mat4 projection;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    FragPos = vec3(model * vec4(position, 1.0));\n"
-                                "    Normal = mat3(transpose(inverse(model))) * normal;\n"
-                                "    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
-                                "}";
+                                          "layout(location = 0) in vec3 position;\n"
+                                          "layout(location = 1) in vec3 normal;\n"
+                                          "out vec3 FragPos;\n"
+                                          "out vec3 Normal;\n"
+                                          "uniform mat4 model;\n"
+                                          "uniform mat4 view;\n"
+                                          "uniform mat4 projection;\n"
+                                          "void main()\n"
+                                          "{\n"
+                                          "    FragPos = vec3(model * vec4(position, 1.0));\n"
+                                          "    Normal = mat3(transpose(inverse(model))) * normal;\n"
+                                          "    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
+                                          "}";
 
     const std::string gizmo3dFragShader = "#version 430 core\n"
-                                "out vec4 FragColor;\n"
-                                "in vec3 Normal;\n"
-                                "in vec3 FragPos;\n"
-                                "uniform vec3 lightPos;\n"
-                                "uniform vec4 color;\n"
-                                "void main()\n"
-                                "{\n"
-                                "    vec3 norm = normalize(Normal);\n"
-                                "    vec3 lightDir = normalize(lightPos - FragPos);\n"
-                                "    float diff = max(abs(dot(norm, lightDir)), 0.1);\n"
-                                "    vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
-                                "    FragColor = diffuse * color;\n"
-                                "}";
+                                          "out vec4 FragColor;\n"
+                                          "in vec3 Normal;\n"
+                                          "in vec3 FragPos;\n"
+                                          "uniform vec3 lightPos;\n"
+                                          "uniform vec4 color;\n"
+                                          "void main()\n"
+                                          "{\n"
+                                          "    vec3 norm = normalize(Normal);\n"
+                                          "    vec3 lightDir = normalize(lightPos - FragPos);\n"
+                                          "    float diff = max(abs(dot(norm, lightDir)), 0.1);\n"
+                                          "    vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
+                                          "    FragColor = diffuse * color;\n"
+                                          "}";
 
     Graphics::compile(gizmoVertShader, gizmoFragShader, "", &mGizmoShaderProgram);
     Graphics::compile(gizmo3dVertShader, gizmo3dFragShader, "", &mGizmo3dShaderProgram);
@@ -145,11 +145,13 @@ void TransformGizmo::initialize()
     }
 
     // Set up scale gizmo vertex buffers etc
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         std::vector<float> scaleVertices = InternalMeshes::cubeVertices;
         std::vector<float> scaleNormals = InternalMeshes::cubeNormals;
 
-        for (size_t j = 0; j < scaleVertices.size() / 3; j++) {
+        for (size_t j = 0; j < scaleVertices.size() / 3; j++)
+        {
             scaleVertices[3 * j + 0] *= 0.1f;
             scaleVertices[3 * j + 1] *= 0.1f;
             scaleVertices[3 * j + 2] *= 0.1f;
@@ -164,7 +166,7 @@ void TransformGizmo::initialize()
         glBindBuffer(GL_ARRAY_BUFFER, mScaleVBO[2 * i]);
         glBufferData(GL_ARRAY_BUFFER, scaleVertices.size() * sizeof(float), scaleVertices.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
         glGenBuffers(1, &mScaleVBO[2 * i + 1]);
         glBindBuffer(GL_ARRAY_BUFFER, mScaleVBO[2 * i + 1]);
@@ -183,8 +185,8 @@ void TransformGizmo::initialize()
     mode = GizmoMode::Translation;
 }
 
-void TransformGizmo::update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem* gizmoSystem,
-                            PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY, 
+void TransformGizmo::update(PhysicsEngine::EditorCameraSystem *cameraSystem, PhysicsEngine::GizmoSystem *gizmoSystem,
+                            PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY,
                             float contentWidth, float contentHeight)
 {
     assert(cameraSystem != NULL);
@@ -215,7 +217,7 @@ bool TransformGizmo::isGizmoHighlighted() const
 }
 
 void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem *cameraSystem,
-                                       PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY, 
+                                       PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY,
                                        float contentWidth, float contentHeight)
 {
     glm::mat4 model = selectedTransform->getModelMatrix();
@@ -244,20 +246,23 @@ void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem *camera
     float closestDistanceToAxisZ = ClosestDistance::closestDistance(cameraRay, zAxisRay, t, zt);
 
     highlightedTransformAxis = Axis::Axis_None;
-    if (xt >= 0.0f && xt <= 1.0f && closestDistanceToAxisX < closestDistanceToAxisY && closestDistanceToAxisX < closestDistanceToAxisZ)
+    if (xt >= 0.0f && xt <= 1.0f && closestDistanceToAxisX < closestDistanceToAxisY &&
+        closestDistanceToAxisX < closestDistanceToAxisZ)
     {
         highlightedTransformAxis = closestDistanceToAxisX < 0.05f ? Axis::Axis_X : highlightedTransformAxis;
     }
-    else if (yt >= 0.0f && yt <= 1.0f && closestDistanceToAxisY < closestDistanceToAxisX && closestDistanceToAxisY < closestDistanceToAxisZ)
+    else if (yt >= 0.0f && yt <= 1.0f && closestDistanceToAxisY < closestDistanceToAxisX &&
+             closestDistanceToAxisY < closestDistanceToAxisZ)
     {
         highlightedTransformAxis = closestDistanceToAxisY < 0.05f ? Axis::Axis_Y : highlightedTransformAxis;
     }
-    else if (zt >= 0.0f && zt <= 1.0f && closestDistanceToAxisZ < closestDistanceToAxisX && closestDistanceToAxisZ < closestDistanceToAxisY)
+    else if (zt >= 0.0f && zt <= 1.0f && closestDistanceToAxisZ < closestDistanceToAxisX &&
+             closestDistanceToAxisZ < closestDistanceToAxisY)
     {
         highlightedTransformAxis = closestDistanceToAxisZ < 0.05f ? Axis::Axis_Z : highlightedTransformAxis;
     }
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
 
     if (io.MouseDown[0])
     {
@@ -301,17 +306,19 @@ void TransformGizmo::updateTranslation(PhysicsEngine::EditorCameraSystem *camera
 
         selectedTransform->mPosition += delta;
     }
-    else {
+    else
+    {
         selectedTransformAxis = Axis::Axis_None;
     }
 
-    drawTranslation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
-                    cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+    drawTranslation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(),
+                    selectedTransform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(),
+                    highlightedTransformAxis, selectedTransformAxis);
 }
 
 void TransformGizmo::updateRotation(PhysicsEngine::EditorCameraSystem *cameraSystem,
                                     PhysicsEngine::GizmoSystem *gizmoSystem,
-                                    PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY, 
+                                    PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY,
                                     float contentWidth, float contentHeight)
 {
     glm::mat4 model = selectedTransform->getModelMatrix();
@@ -353,7 +360,7 @@ void TransformGizmo::updateRotation(PhysicsEngine::EditorCameraSystem *cameraSys
         highlightedTransformAxis = closestDistanceToAxisZ < 0.05f ? Axis::Axis_Z : highlightedTransformAxis;
     }
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
 
     if (io.MouseDown[0])
     {
@@ -413,16 +420,18 @@ void TransformGizmo::updateRotation(PhysicsEngine::EditorCameraSystem *cameraSys
 
         selectedTransform->mRotation = glm::angleAxis(sign * angle, normal) * selectedTransform->mRotation;
     }
-    else {
+    else
+    {
         selectedTransformAxis = Axis::Axis_None;
     }
 
-    drawRotation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), selectedTransform->getModelMatrix(),
-                 cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
+    drawRotation(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(),
+                 selectedTransform->getModelMatrix(), cameraSystem->getNativeGraphicsMainFBO(),
+                 highlightedTransformAxis, selectedTransformAxis);
 }
 
 void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem,
-                                 PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY, 
+                                 PhysicsEngine::Transform *selectedTransform, float mousePosX, float mousePosY,
                                  float contentWidth, float contentHeight)
 {
     float ndcX = 2 * (mousePosX - 0.5f * contentWidth) / contentWidth;
@@ -463,7 +472,7 @@ void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem
         highlightedTransformAxis = closestDistanceToAxisZ < 0.05f ? Axis::Axis_Z : highlightedTransformAxis;
     }
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
 
     if (io.MouseDown[0])
     {
@@ -507,12 +516,13 @@ void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem
 
         selectedTransform->mScale += delta;
     }
-    else {
+    else
+    {
         selectedTransformAxis = Axis::Axis_None;
     }
 
-
-    drawScale(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(), cameraSystem->getCameraPosition(), selectedTransform->getModelMatrix(),
+    drawScale(cameraSystem->getViewport(), cameraSystem->getProjMatrix(), cameraSystem->getViewMatrix(),
+              cameraSystem->getCameraPosition(), selectedTransform->getModelMatrix(),
               cameraSystem->getNativeGraphicsMainFBO(), highlightedTransformAxis, selectedTransformAxis);
 
     /*Plane plane0(selectedTransform->getUp(), selectedTransform->mPosition);
@@ -542,8 +552,8 @@ void TransformGizmo::updateScale(PhysicsEngine::EditorCameraSystem *cameraSystem
     }*/
 }
 
-void TransformGizmo::drawTranslation(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo,
-                                     Axis highlightAxis, Axis selectedAxis)
+void TransformGizmo::drawTranslation(const Viewport &viewport, const glm::mat4 &projection, const glm::mat4 &view,
+                                     const glm::mat4 &model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
     glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
     glScissor(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
@@ -590,8 +600,8 @@ void TransformGizmo::drawTranslation(const Viewport& viewport, const glm::mat4& 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawRotation(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
-                                  Axis selectedAxis)
+void TransformGizmo::drawRotation(const Viewport &viewport, const glm::mat4 &projection, const glm::mat4 &view,
+                                  const glm::mat4 &model, GLuint fbo, Axis highlightAxis, Axis selectedAxis)
 {
     glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
     glScissor(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
@@ -638,7 +648,8 @@ void TransformGizmo::drawRotation(const Viewport& viewport, const glm::mat4& pro
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void TransformGizmo::drawScale(const Viewport& viewport, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& cameraPos, const glm::mat4& model, GLuint fbo, Axis highlightAxis,
+void TransformGizmo::drawScale(const Viewport &viewport, const glm::mat4 &projection, const glm::mat4 &view,
+                               const glm::vec3 &cameraPos, const glm::mat4 &model, GLuint fbo, Axis highlightAxis,
                                Axis selectedAxis)
 {
     glViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);

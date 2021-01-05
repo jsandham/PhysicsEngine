@@ -1,7 +1,7 @@
 #include "../../include/drawers/Texture3DDrawer.h"
 #include "../../include/CommandManager.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/EditorClipboard.h"
+#include "../../include/EditorCommands.h"
 
 #include "core/Texture3D.h"
 
@@ -20,6 +20,6 @@ Texture3DDrawer::~Texture3DDrawer()
 {
 }
 
-void Texture3DDrawer::render(EditorClipboard& clipboard, Guid id)
+void Texture3DDrawer::render(EditorClipboard &clipboard, Guid id)
 {
 }

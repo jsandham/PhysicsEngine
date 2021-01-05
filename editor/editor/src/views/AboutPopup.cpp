@@ -9,18 +9,17 @@ using namespace PhysicsEditor;
 
 AboutPopup::AboutPopup()
 {
- 
 }
 
 AboutPopup::~AboutPopup()
 {
 }
 
-void AboutPopup::init(EditorClipboard& clipboard)
+void AboutPopup::init(EditorClipboard &clipboard)
 {
 }
 
-void AboutPopup::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void AboutPopup::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 

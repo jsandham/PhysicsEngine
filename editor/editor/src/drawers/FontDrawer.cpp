@@ -19,6 +19,6 @@ FontDrawer::~FontDrawer()
 {
 }
 
-void FontDrawer::render(EditorClipboard& clipboard, Guid id)
+void FontDrawer::render(EditorClipboard &clipboard, Guid id)
 {
 }

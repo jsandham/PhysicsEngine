@@ -17,11 +17,11 @@ CapsuleColliderDrawer::~CapsuleColliderDrawer()
 {
 }
 
-void CapsuleColliderDrawer::render(EditorClipboard& clipboard, Guid id)
+void CapsuleColliderDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        CapsuleCollider* capsuleCollider = clipboard.getWorld()->getComponentById<CapsuleCollider>(id);
+        CapsuleCollider *capsuleCollider = clipboard.getWorld()->getComponentById<CapsuleCollider>(id);
 
         ImGui::Text(("EntityId: " + capsuleCollider->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());

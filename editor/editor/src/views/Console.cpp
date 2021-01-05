@@ -192,12 +192,11 @@ Console::~Console()
 {
 }
 
-void Console::init(EditorClipboard& clipboard)
+void Console::init(EditorClipboard &clipboard)
 {
-
 }
 
-void Console::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Console::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 

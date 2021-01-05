@@ -69,13 +69,10 @@ static inline ImVec4 operator*(const ImVec4 &lhs, const ImVec4 &rhs)
 
 using namespace ImGui;
 
-void ImGui::TextCentered(const ImVec4& col, const std::string text)
+void ImGui::TextCentered(const ImVec4 &col, const std::string text)
 {
     float font_size = ImGui::GetFontSize() * text.size() / 2;
-    ImGui::SameLine(
-        ImGui::GetWindowSize().x / 2 -
-        font_size + (font_size / 2)
-    );
+    ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
     ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), text.c_str());
 }
 
@@ -161,7 +158,7 @@ bool ImGui::StampButton(const char *label, bool active)
     return StampButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_None, active);
 }
 
-bool ImGui::BeginDropdown(const std::string& name, const std::vector<std::string>& values, int *selection)
+bool ImGui::BeginDropdown(const std::string &name, const std::vector<std::string> &values, int *selection)
 {
     ImGui::SameLine(0.f, 0.f);
     ImGui::PushID(("##" + name).c_str());
@@ -196,8 +193,7 @@ void ImGui::EndDropdown()
     ImGui::EndPopup();
 }
 
-
-bool ImGui::BeginDropdownWindow(const std::string& name, const std::vector<std::string>& values, std::string& selection)
+bool ImGui::BeginDropdownWindow(const std::string &name, const std::vector<std::string> &values, std::string &selection)
 {
     ImGui::PushID("##Dropdown");
     bool pressed = ImGui::Button(name.c_str());
@@ -230,7 +226,7 @@ bool ImGui::BeginDropdownWindow(const std::string& name, const std::vector<std::
             filteredComponents.push_back("");
         }
 
-        std::vector<const char*> cStrFilteredComponents;
+        std::vector<const char *> cStrFilteredComponents;
         for (size_t i = 0; i < filteredComponents.size(); ++i)
         {
             cStrFilteredComponents.push_back(filteredComponents[i].c_str());
@@ -252,25 +248,6 @@ void ImGui::EndDropdownWindow()
 {
     ImGui::EndPopup();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static auto vector_getter = [](void *vec, int idx, const char **out_text) {
     auto &vector = *static_cast<std::vector<std::string> *>(vec);
@@ -383,15 +360,17 @@ bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool slotFill
     return isClicked;
 }
 
-bool ImGui::SelectableInput(const char* str_id, bool selected, bool* edited, ImGuiSelectableFlags flags, char* buf, size_t buf_size)
+bool ImGui::SelectableInput(const char *str_id, bool selected, bool *edited, ImGuiSelectableFlags flags, char *buf,
+                            size_t buf_size)
 {
-    ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiContext &g = *GImGui;
+    ImGuiWindow *window = g.CurrentWindow;
     ImVec2 pos_before = window->DC.CursorPos;
 
     PushID(str_id);
     PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(g.Style.ItemSpacing.x, g.Style.FramePadding.y * 2.0f));
-    bool ret = Selectable("##Selectable", selected, flags | ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_AllowItemOverlap);
+    bool ret = Selectable("##Selectable", selected,
+                          flags | ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_AllowItemOverlap);
     PopStyleVar();
 
     ImGuiID id = window->GetID("##Input");
@@ -421,16 +400,19 @@ bool ImGui::SelectableInput(const char* str_id, bool selected, bool* edited, ImG
     return ret;
 }
 
-bool ImGui::Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size)
+bool ImGui::Splitter(bool split_vertically, float thickness, float *size1, float *size2, float min_size1,
+                     float min_size2, float splitter_long_axis_size)
 {
-    ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiContext &g = *GImGui;
+    ImGuiWindow *window = g.CurrentWindow;
     ImGuiID id = window->GetID("##Splitter");
 
     ImRect bb;
     bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
-    bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) 
-                                                    : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
-   
-    return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
+    bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size)
+                                                    : ImVec2(splitter_long_axis_size, thickness),
+                                   0.0f, 0.0f);
+
+    return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2,
+                            0.0f);
 }

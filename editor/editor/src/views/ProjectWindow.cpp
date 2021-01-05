@@ -23,11 +23,11 @@ ProjectWindow::~ProjectWindow()
 {
 }
 
-void ProjectWindow::init(EditorClipboard& clipboard)
+void ProjectWindow::init(EditorClipboard &clipboard)
 {
 }
 
-void ProjectWindow::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void ProjectWindow::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 

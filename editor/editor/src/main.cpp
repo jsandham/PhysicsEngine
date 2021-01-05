@@ -20,8 +20,8 @@
 
 #include "../include/Editor.h"
 
-#include "core/Log.h"
 #include "core/Input.h"
+#include "core/Log.h"
 
 #ifndef WGL_EXT_extensions_string
 #define WGL_EXT_extensions_string 1

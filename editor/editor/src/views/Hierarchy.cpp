@@ -1,14 +1,14 @@
 #include <algorithm>
 
-#include "../../include/views/Hierarchy.h"
 #include "../../include/CommandManager.h"
 #include "../../include/EditorCommands.h"
+#include "../../include/views/Hierarchy.h"
 
+#include "../../include/imgui/imgui_extensions.h"
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
-#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;
@@ -21,12 +21,11 @@ Hierarchy::~Hierarchy()
 {
 }
 
-void Hierarchy::init(EditorClipboard& clipboard)
+void Hierarchy::init(EditorClipboard &clipboard)
 {
-
 }
 
-void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Hierarchy::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 
@@ -42,7 +41,8 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
             ImGui::SetWindowFocus("Hierarchy");
         }
 
-        rebuildRequired = entries.size() != std::max(0, clipboard.getWorld()->getNumberOfEntities() - (int)clipboard.getEditorOnlyIds().size());
+        rebuildRequired = entries.size() != std::max(0, clipboard.getWorld()->getNumberOfEntities() -
+                                                            (int)clipboard.getEditorOnlyIds().size());
 
         // If number of entities has changed, update cached entity ids and names
         if (rebuildRequired)
@@ -54,10 +54,12 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
         {
             // Set selected entity in hierarchy
             int selectedIndex;
-            if (clipboard.getSelectedType() == InteractionType::Entity) {
+            if (clipboard.getSelectedType() == InteractionType::Entity)
+            {
                 selectedIndex = idToEntryIndex[clipboard.getSelectedId()];
             }
-            else {
+            else
+            {
                 selectedIndex = -1;
             }
 
@@ -82,14 +84,16 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
                 buf1[len] = '\0';
 
                 bool edited = false;
-                if (ImGui::SelectableInput(entries[i].label.c_str(), selectedIndex == i, &edited, ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
+                if (ImGui::SelectableInput(entries[i].label.c_str(), selectedIndex == i, &edited,
+                                           ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
                 {
                     entries[i].entity->setName(std::string(buf1));
 
                     clipboard.setSelectedItem(InteractionType::Entity, entries[i].entity->getId());
                 }
 
-                if (edited) {
+                if (edited)
+                {
                     clipboard.isDirty = true;
                 }
             }
@@ -132,7 +136,8 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
                     {
                         if (ImGui::MenuItem("Plane"))
                         {
-                            CommandManager::addCommand(new CreatePlaneCommand(clipboard.getWorld(), &clipboard.isDirty));
+                            CommandManager::addCommand(
+                                new CreatePlaneCommand(clipboard.getWorld(), &clipboard.isDirty));
                         }
                         ImGui::EndMenu();
                     }
@@ -145,7 +150,8 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
                         }
                         if (ImGui::MenuItem("Sphere"))
                         {
-                            CommandManager::addCommand(new CreateSphereCommand(clipboard.getWorld(), &clipboard.isDirty));
+                            CommandManager::addCommand(
+                                new CreateSphereCommand(clipboard.getWorld(), &clipboard.isDirty));
                         }
                         ImGui::EndMenu();
                     }
@@ -161,7 +167,7 @@ void Hierarchy::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
     ImGui::End();
 }
 
-void Hierarchy::rebuildEntityLists(World* world, const std::set<Guid>& editorOnlyEntityIds)
+void Hierarchy::rebuildEntityLists(World *world, const std::set<Guid> &editorOnlyEntityIds)
 {
     int numberOfEntities = std::max(0, world->getNumberOfEntities() - (int)editorOnlyEntityIds.size());
 
@@ -170,7 +176,7 @@ void Hierarchy::rebuildEntityLists(World* world, const std::set<Guid>& editorOnl
     int index = 0;
     for (int i = 0; i < world->getNumberOfEntities(); i++)
     {
-        Entity* entity = world->getEntityByIndex(i);
+        Entity *entity = world->getEntityByIndex(i);
 
         std::set<Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
         if (it == editorOnlyEntityIds.end())

@@ -17,11 +17,11 @@ MeshColliderDrawer::~MeshColliderDrawer()
 {
 }
 
-void MeshColliderDrawer::render(EditorClipboard& clipboard, Guid id)
+void MeshColliderDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshCollider* meshCollider = clipboard.getWorld()->getComponentById<MeshCollider>(id);
+        MeshCollider *meshCollider = clipboard.getWorld()->getComponentById<MeshCollider>(id);
 
         ImGui::Text(("EntityId: " + meshCollider->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());

@@ -119,7 +119,7 @@ void CreateLightCommand::undo()
     *saveStatePtr = oldSaveState;
 }
 
-CreatePlaneCommand::CreatePlaneCommand(World* world, bool* saveStatePtr)
+CreatePlaneCommand::CreatePlaneCommand(World *world, bool *saveStatePtr)
 {
     this->world = world;
     this->saveStatePtr = saveStatePtr;
@@ -130,9 +130,9 @@ void CreatePlaneCommand::execute()
 {
     if (entityData.size() == 0)
     {
-        Entity* entity = world->createEntity();
-        Transform* transform = entity->addComponent<Transform>(world);
-        MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world);
+        Entity *entity = world->createEntity();
+        Transform *transform = entity->addComponent<Transform>(world);
+        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
         meshRenderer->setMesh(world->getPlaneMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
@@ -142,9 +142,9 @@ void CreatePlaneCommand::execute()
     }
     else
     {
-        Entity* entity = world->createEntity(entityData);
-        Transform* transform = entity->addComponent<Transform>(world, transformData);
-        MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
+        Entity *entity = world->createEntity(entityData);
+        Transform *transform = entity->addComponent<Transform>(world, transformData);
+        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
     }
 
     *saveStatePtr = true;

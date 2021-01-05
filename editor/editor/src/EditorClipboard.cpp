@@ -4,9 +4,9 @@
 
 #include "../include/EditorCameraSystem.h"
 
-#include "systems/RenderSystem.h"
-#include "systems/GizmoSystem.h"
 #include "systems/CleanUpSystem.h"
+#include "systems/GizmoSystem.h"
+#include "systems/RenderSystem.h"
 
 using namespace PhysicsEditor;
 
@@ -86,29 +86,29 @@ std::string EditorClipboard::getProjectPath() const
     return project.path;
 }
 
-PhysicsEngine::World* EditorClipboard::getWorld()
+PhysicsEngine::World *EditorClipboard::getWorld()
 {
     return &world;
 }
 
-LibraryDirectory& EditorClipboard::getLibrary()
+LibraryDirectory &EditorClipboard::getLibrary()
 {
     return library;
 }
 
-std::set<PhysicsEngine::Guid>& EditorClipboard::getEditorOnlyIds()
+std::set<PhysicsEngine::Guid> &EditorClipboard::getEditorOnlyIds()
 {
     return editorOnlyEntityIds;
 }
 
-void EditorClipboard::openScene(const std::string& name, const std::string& path)
+void EditorClipboard::openScene(const std::string &name, const std::string &path)
 {
     scene.name = name;
     scene.path = path;
 }
 
-void EditorClipboard::openScene(const std::string& name, const std::string& path, const std::string& metaPath,
-    const std::string& libraryPath, const PhysicsEngine::Guid& sceneId)
+void EditorClipboard::openScene(const std::string &name, const std::string &path, const std::string &metaPath,
+                                const std::string &libraryPath, const PhysicsEngine::Guid &sceneId)
 {
     scene.name = name;
     scene.path = path;
@@ -117,7 +117,7 @@ void EditorClipboard::openScene(const std::string& name, const std::string& path
     scene.sceneId = sceneId;
 }
 
-void EditorClipboard::openProject(const std::string& name, const std::string& path)
+void EditorClipboard::openProject(const std::string &name, const std::string &path)
 {
     project.name = name;
     project.path = path;
@@ -137,7 +137,7 @@ void EditorClipboard::init()
     // add simple editor render system to render gizmo's
     world.addSystem<PhysicsEngine::CleanUpSystem>(3);
 
-    PhysicsEngine::RenderSystem* renderSystem = world.getSystem<PhysicsEngine::RenderSystem>();
+    PhysicsEngine::RenderSystem *renderSystem = world.getSystem<PhysicsEngine::RenderSystem>();
 
     renderSystem->mRenderToScreen = false;
 }

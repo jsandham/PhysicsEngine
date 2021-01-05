@@ -19,11 +19,11 @@ LightDrawer::~LightDrawer()
 {
 }
 
-void LightDrawer::render(EditorClipboard& clipboard, Guid id)
+void LightDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Light* light = clipboard.getWorld()->getComponentById<Light>(id);
+        Light *light = clipboard.getWorld()->getComponentById<Light>(id);
 
         ImGui::Text(("EntityId: " + light->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());
@@ -46,11 +46,13 @@ void LightDrawer::render(EditorClipboard& clipboard, Guid id)
 
         if (ImGui::InputFloat("Intensity", &intensity))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<float>(&light->mIntensity, intensity, &clipboard.isDirty));
+            CommandManager::addCommand(
+                new ChangePropertyCommand<float>(&light->mIntensity, intensity, &clipboard.isDirty));
         }
         if (ImGui::InputFloat("Spot Angle", &spotAngle))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<float>(&light->mSpotAngle, spotAngle, &clipboard.isDirty));
+            CommandManager::addCommand(
+                new ChangePropertyCommand<float>(&light->mSpotAngle, spotAngle, &clipboard.isDirty));
         }
         if (ImGui::InputFloat("Inner Spot Angle", &innerSpotAngle))
         {

@@ -2,8 +2,8 @@
 
 #include <chrono>
 
-#include "core/Log.h"
 #include "core/Intersect.h"
+#include "core/Log.h"
 
 #include "graphics/Graphics.h"
 
@@ -40,12 +40,12 @@ SceneView::~SceneView()
 {
 }
 
-void SceneView::init(EditorClipboard& clipboard)
+void SceneView::init(EditorClipboard &clipboard)
 {
     initWorld(clipboard.getWorld());
 }
 
-void SceneView::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void SceneView::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 
@@ -99,7 +99,7 @@ void SceneView::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
         viewport.mWidth = size.x;
         viewport.mHeight = size.y;
 
-        EditorCameraSystem* cameraSystem = clipboard.getWorld()->getSystem<EditorCameraSystem>();
+        EditorCameraSystem *cameraSystem = clipboard.getWorld()->getSystem<EditorCameraSystem>();
 
         cameraSystem->setViewport(viewport);
 
@@ -211,12 +211,12 @@ void SceneView::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
             drawPerformanceOverlay(cameraSystem);
         }
 
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         float sceneContentWidth = (sceneContentMax.x - sceneContentMin.x);
         float sceneContentHeight = (sceneContentMax.y - sceneContentMin.y);
         float mousePosX = std::min(std::max(io.MousePos.x - sceneContentMin.x, 0.0f), sceneContentWidth);
-        float mousePosY = sceneContentHeight -
-                          std::min(std::max(io.MousePos.y - sceneContentMin.y, 0.0f), sceneContentHeight);
+        float mousePosY =
+            sceneContentHeight - std::min(std::max(io.MousePos.y - sceneContentMin.y, 0.0f), sceneContentHeight);
 
         float nx = mousePosX / sceneContentWidth;
         float ny = mousePosY / sceneContentHeight;
@@ -226,7 +226,7 @@ void SceneView::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
         {
             Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
-            Transform* transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
+            Transform *transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
 
             if (transform != NULL)
             {
@@ -238,18 +238,19 @@ void SceneView::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
             }
         }
 
-        GizmoSystem* gizmoSystem = clipboard.getWorld()->getSystem<GizmoSystem>();
+        GizmoSystem *gizmoSystem = clipboard.getWorld()->getSystem<GizmoSystem>();
 
         gizmoSystem->clearDrawList();
 
         // draw transform gizmo if entity is selected
         if (clipboard.getSelectedType() == InteractionType::Entity)
         {
-            Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
+            Transform *transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
 
-            transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth, sceneContentHeight);
+            transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
+                                  sceneContentHeight);
         }
-        
+
         // Finally draw scene
         ImGui::Image((void *)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, size.y / 1080.0f),
                      ImVec2(size.x / 1920.0f, 0));
@@ -282,11 +283,11 @@ ImVec2 SceneView::getWindowPos() const
     return windowPos;
 }
 
-void SceneView::initWorld(PhysicsEngine::World* world)
+void SceneView::initWorld(PhysicsEngine::World *world)
 {
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
-        System* system = world->getSystemByUpdateOrder(i);
+        System *system = world->getSystemByUpdateOrder(i);
 
         system->init(world);
     }
@@ -393,10 +394,10 @@ void SceneView::updateWorld(World *world)
 void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem)
 {
     static bool overlayOpened = false;
-    static ImGuiWindowFlags overlayFlags =
-        ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+    static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar |
+                                           ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                           ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoDocking |
+                                           ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 
     ImVec2 overlayPos = ImVec2(sceneContentMax.x, sceneContentMin.y);
 

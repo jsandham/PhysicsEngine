@@ -1,7 +1,6 @@
 #include "../../include/drawers/LineRendererDrawer.h"
 #include "../../include/CommandManager.h"
 #include "../../include/EditorCommands.h"
-#include "../../include/CommandManager.h"
 
 #include "components/LineRenderer.h"
 
@@ -20,11 +19,11 @@ LineRendererDrawer::~LineRendererDrawer()
 {
 }
 
-void LineRendererDrawer::render(EditorClipboard& clipboard, Guid id)
+void LineRendererDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        LineRenderer* lineRenderer = clipboard.getWorld()->getComponentById<LineRenderer>(id);
+        LineRenderer *lineRenderer = clipboard.getWorld()->getComponentById<LineRenderer>(id);
 
         ImGui::Text(("EntityId: " + lineRenderer->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());
@@ -39,7 +38,8 @@ void LineRendererDrawer::render(EditorClipboard& clipboard, Guid id)
         }
         if (ImGui::InputFloat3("End", glm::value_ptr(end)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&lineRenderer->mEnd, end, &clipboard.isDirty));
+            CommandManager::addCommand(
+                new ChangePropertyCommand<glm::vec3>(&lineRenderer->mEnd, end, &clipboard.isDirty));
         }
 
         ImGui::TreePop();

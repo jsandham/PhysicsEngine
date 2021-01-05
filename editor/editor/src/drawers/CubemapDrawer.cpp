@@ -19,6 +19,6 @@ CubemapDrawer::~CubemapDrawer()
 {
 }
 
-void CubemapDrawer::render(EditorClipboard& clipboard, Guid id)
+void CubemapDrawer::render(EditorClipboard &clipboard, Guid id)
 {
 }

@@ -23,13 +23,13 @@ using namespace PhysicsEditor;
 
 MaterialDrawer::MaterialDrawer()
 {
-    cameraPos = glm::vec3(0.0f, 0.0f,-2.0);
+    cameraPos = glm::vec3(0.0f, 0.0f, -2.0);
     model = glm::mat4(1.0f);
     view = glm::lookAt(cameraPos, cameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
     projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
 
     Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
-    
+
     Graphics::createGlobalCameraUniforms(cameraUniform);
     Graphics::createGlobalLightUniforms(lightUniform);
 
@@ -50,19 +50,19 @@ MaterialDrawer::~MaterialDrawer()
     Graphics::destroyFramebuffer(&mFBO, &mColor, &mDepth);
 }
 
-void MaterialDrawer::render(EditorClipboard& clipboard, Guid id)
+void MaterialDrawer::render(EditorClipboard &clipboard, Guid id)
 {
-    Material* material = clipboard.getWorld()->getAssetById<Material>(id);
+    Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 
     Guid currentShaderId = material->getShaderId();
 
-    Shader* ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
+    Shader *ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
 
     if (ImGui::BeginCombo("Shader", ss->getName().c_str(), ImGuiComboFlags_None))
     {
         for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<Shader>(); i++)
         {
-            Shader* s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
+            Shader *s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
 
             std::string label = s->getName() + "##" + s->getId().toString();
 
@@ -72,7 +72,7 @@ void MaterialDrawer::render(EditorClipboard& clipboard, Guid id)
                 currentShaderId = s->getId();
 
                 material->setShaderId(currentShaderId);
-                
+
                 material->onShaderChanged(clipboard.getWorld());
             }
             if (is_selected)
@@ -125,10 +125,10 @@ void MaterialDrawer::render(EditorClipboard& clipboard, Guid id)
     // Draw material preview child window
     ImGui::Text("Preview");
 
-    Mesh* mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getSphereMesh());
+    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getSphereMesh());
     assert(mesh != NULL);
 
-    Shader* shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
+    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
     assert(shader != NULL);
 
     Graphics::setGlobalCameraUniforms(cameraUniform);
@@ -152,8 +152,8 @@ void MaterialDrawer::render(EditorClipboard& clipboard, Guid id)
         ImGuiWindowFlags_None; // ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ?
                                // ImGuiWindowFlags_NoScrollWithMouse : 0);
     ImGui::BeginChild("MaterialPreviewWindow",
-        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-        window_flags);
+                      ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+                      window_flags);
     ImGui::Image((void *)(intptr_t)mColor,
                  ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                  ImVec2(0, 0));

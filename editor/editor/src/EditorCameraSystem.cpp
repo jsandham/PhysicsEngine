@@ -78,7 +78,7 @@ void EditorCameraSystem::init(World *world)
     mTransform->mPosition = glm::vec3(0, 2, -10);
 }
 
-void EditorCameraSystem::update(const Input& input, const Time& time)
+void EditorCameraSystem::update(const Input &input, const Time &time)
 {
     glm::vec3 position = mTransform->mPosition;
     glm::vec3 front = mTransform->getForward();

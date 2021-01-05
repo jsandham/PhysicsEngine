@@ -3,8 +3,8 @@
 #include "../../include/EditorCommands.h"
 #include "../../include/imgui/imgui_extensions.h"
 
-#include "core/Mesh.h"
 #include "core/InternalShaders.h"
+#include "core/Mesh.h"
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -30,16 +30,15 @@ MeshDrawer::~MeshDrawer()
 {
 }
 
-void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
+void MeshDrawer::render(EditorClipboard &clipboard, Guid id)
 {
-    Mesh* mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
+    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
 
     const int count = 3;
-    const char* drawMode[] = { "Color", "Normals", "Tangents"};
+    const char *drawMode[] = {"Color", "Normals", "Tangents"};
 
-    const Guid shaders[] = { clipboard.getWorld()->getColorLitShaderId(), 
-                             clipboard.getWorld()->getNormalLitShaderId(), 
-                             clipboard.getWorld()->getTangentLitShaderId() };
+    const Guid shaders[] = {clipboard.getWorld()->getColorLitShaderId(), clipboard.getWorld()->getNormalLitShaderId(),
+                            clipboard.getWorld()->getTangentLitShaderId()};
 
     // select draw mode for mesh
     if (ImGui::BeginCombo("##DrawMode", drawMode[activeDrawModeIndex]))
@@ -69,11 +68,9 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
 
     if (ImGui::Checkbox("Wireframe", &wireframeOn))
     {
-      
     }
 
     ImGui::Separator();
-
 
     ImGui::Text("Vertices");
     ImGui::Indent();
@@ -89,16 +86,17 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
         int startIndex = mesh->getSubMeshStartIndex(i);
         int endIndex = mesh->getSubMeshEndIndex(i);
 
-        std::string str = std::to_string(i) + ". start index: " + std::to_string(startIndex) + " end index: " + std::to_string(endIndex);
+        std::string str = std::to_string(i) + ". start index: " + std::to_string(startIndex) +
+                          " end index: " + std::to_string(endIndex);
         ImGui::Text(str.c_str());
     }
     ImGui::Unindent();
 
     ImGui::Text("Bounds");
     ImGui::Indent();
-    ImGui::Text(("Centre: " + std::to_string(mesh->getBounds().mCentre.x) + " " + 
-                              std::to_string(mesh->getBounds().mCentre.y) + " " + 
-                              std::to_string(mesh->getBounds().mCentre.z)).c_str());
+    ImGui::Text(("Centre: " + std::to_string(mesh->getBounds().mCentre.x) + " " +
+                 std::to_string(mesh->getBounds().mCentre.y) + " " + std::to_string(mesh->getBounds().mCentre.z))
+                    .c_str());
     ImGui::Text(("Radius: " + std::to_string(mesh->getBounds().mRadius)).c_str());
     ImGui::Unindent();
 
@@ -107,13 +105,14 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
     // Draw mesh preview child window
     ImGui::Text("Preview");
 
-    Shader* shader = clipboard.getWorld()->getAssetById<Shader>(shaders[activeDrawModeIndex]);
+    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(shaders[activeDrawModeIndex]);
     int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
 
     float meshRadius = mesh->getBounds().mRadius;
 
     cameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
-    cameraUniform.mView = glm::lookAt(cameraUniform.mCameraPos, cameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
+    cameraUniform.mView = glm::lookAt(cameraUniform.mCameraPos, cameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
+                                      glm::vec3(0.0, 1.0f, 0.0f));
     cameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
     Graphics::setGlobalCameraUniforms(cameraUniform);
 
@@ -135,7 +134,8 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
 
     Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
 
-    if (wireframeOn) {
+    if (wireframeOn)
+    {
         shader->setInt("wireframe", 0);
 
         Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
@@ -144,8 +144,8 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
     Graphics::unbindFramebuffer();
 
     if (ImGui::BeginChild("MeshPreviewWindow",
-        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-        ImGuiWindowFlags_None))
+                          ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+                          ImGuiWindowFlags_None))
     {
         ImVec2 windowPos = ImGui::GetWindowPos();
         ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
@@ -156,12 +156,11 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
         contentMax.x += windowPos.x;
         contentMax.y += windowPos.y;
 
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         float contentWidth = (contentMax.x - contentMin.x);
         float contentHeight = (contentMax.y - contentMin.y);
         float mousePosX = std::min(std::max(io.MousePos.x - contentMin.x, 0.0f), contentWidth);
-        float mousePosY = contentHeight -
-            std::min(std::max(io.MousePos.y - contentMin.y, 0.0f), contentHeight);
+        float mousePosY = contentHeight - std::min(std::max(io.MousePos.y - contentMin.y, 0.0f), contentHeight);
 
         float nx = mousePosX / contentWidth;
         float ny = mousePosY / contentHeight;
@@ -185,14 +184,15 @@ void MeshDrawer::render(EditorClipboard& clipboard, Guid id)
             mouseY = ny;
         }
 
-        //ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
+        // ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
 
-        ImGui::Image((void*)(intptr_t)mColor,
-            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-            ImVec2(0, 0));
+        ImGui::Image((void *)(intptr_t)mColor,
+                     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                     ImVec2(0, 0));
     }
 
-    if (resetModelMatrix) {
+    if (resetModelMatrix)
+    {
         model = glm::mat4(1.0f);
         resetModelMatrix = false;
     }

@@ -1,8 +1,8 @@
 #include <math.h>
 
 #include "../../include/CommandManager.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/EditorClipboard.h"
+#include "../../include/EditorCommands.h"
 #include "../../include/drawers/TransformDrawer.h"
 
 #include "components/Transform.h"
@@ -22,11 +22,11 @@ TransformDrawer::~TransformDrawer()
 {
 }
 
-void TransformDrawer::render(EditorClipboard& clipboard, Guid id)
+void TransformDrawer::render(EditorClipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Transform* transform = clipboard.getWorld()->getComponentById<Transform>(id);
+        Transform *transform = clipboard.getWorld()->getComponentById<Transform>(id);
 
         ImGui::Text(("EntityId: " + transform->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + transform->getId().toString()).c_str());
@@ -41,7 +41,7 @@ void TransformDrawer::render(EditorClipboard& clipboard, Guid id)
             CommandManager::addCommand(
                 new ChangePropertyCommand<glm::vec3>(&transform->mPosition, position, &clipboard.isDirty));
         }
-        
+
         if (ImGui::InputFloat3("Rotation", glm::value_ptr(eulerAngles)))
         {
             glm::quat x = glm::angleAxis(glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -52,7 +52,8 @@ void TransformDrawer::render(EditorClipboard& clipboard, Guid id)
         }
         if (ImGui::InputFloat3("Scale", glm::value_ptr(scale)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&transform->mScale, scale, &clipboard.isDirty));
+            CommandManager::addCommand(
+                new ChangePropertyCommand<glm::vec3>(&transform->mScale, scale, &clipboard.isDirty));
         }
 
         ImGui::TreePop();

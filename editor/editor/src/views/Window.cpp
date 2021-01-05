@@ -4,20 +4,18 @@ using namespace PhysicsEditor;
 
 Window::Window()
 {
-
 }
 
 Window::~Window()
 {
-
 }
 
-void Window::init(EditorClipboard& clipboard)
+void Window::init(EditorClipboard &clipboard)
 {
     windowActive = true;
 }
 
-void Window::update(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Window::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
 {
     if (isOpenedThisFrame)
     {

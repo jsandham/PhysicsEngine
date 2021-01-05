@@ -9,8 +9,8 @@
 
 #include "../../include/FileSystemUtil.h"
 
-#include <stack>
 #include <algorithm>
+#include <stack>
 
 #include "core/Guid.h"
 #include "core/Log.h"
@@ -31,12 +31,11 @@ ProjectView::~ProjectView()
     deleteProjectTree();
 }
 
-void ProjectView::init(EditorClipboard& clipboard)
+void ProjectView::init(EditorClipboard &clipboard)
 {
-
 }
 
-void ProjectView::update(EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
+void ProjectView::update(EditorClipboard &clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
 {
     this->Window::update(clipboard, isOpenedThisFrame);
 
@@ -53,7 +52,7 @@ void ProjectView::update(EditorClipboard& clipboard, bool editorBecameActiveThis
             buildProjectTree(clipboard.getProjectPath());
         }
     }
-    
+
     if (ImGui::Begin("Project View", &windowActive))
     {
         if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
@@ -76,9 +75,8 @@ void ProjectView::update(EditorClipboard& clipboard, bool editorBecameActiveThis
 
             ratio = sz1 / WindowSize.x;
 
-            ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar |
-                ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoDocking;
+            ImGuiWindowFlags flags =
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 
             if (ImGui::BeginChild("LeftPane", ImVec2(sz1, WindowSize.y), true, flags))
             {
@@ -104,9 +102,9 @@ void ProjectView::drawLeftPane()
     drawProjectTree();
 }
 
-void ProjectView::drawRightPane(EditorClipboard& clipboard)
+void ProjectView::drawRightPane(EditorClipboard &clipboard)
 {
-    std::vector<ProjectNode*> directories;
+    std::vector<ProjectNode *> directories;
     std::vector<std::string> files;
 
     // Determine directories and files to be drawn in right pane
@@ -133,14 +131,14 @@ void ProjectView::drawRightPane(EditorClipboard& clipboard)
     }
     else
     {
-        if (selected != NULL) 
+        if (selected != NULL)
         {
             directories = selected->children;
             files = selected->filePaths;
         }
     }
 
-    ProjectNode* newSelection = NULL;
+    ProjectNode *newSelection = NULL;
 
     // draw directories and files in right pane
     for (size_t i = 0; i < directories.size(); i++)
@@ -174,13 +172,13 @@ void ProjectView::drawRightPane(EditorClipboard& clipboard)
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0))
         {
             clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension),
-                clipboard.getLibrary().getFileId(files[i]));
+                                     clipboard.getLibrary().getFileId(files[i]));
         }
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
         {
             clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension),
-                clipboard.getLibrary().getFileId(files[i]));
+                                      clipboard.getLibrary().getFileId(files[i]));
         }
 
         if (!ImGui::IsMouseDown(0))
@@ -189,7 +187,8 @@ void ProjectView::drawRightPane(EditorClipboard& clipboard)
         }
     }
 
-    if (newSelection != NULL) {
+    if (newSelection != NULL)
+    {
         selected = newSelection;
     }
 }
@@ -221,7 +220,7 @@ void ProjectView::deleteProjectTree()
     }
 }
 
-void ProjectView::buildProjectTree(const std::string& currentProjectPath)
+void ProjectView::buildProjectTree(const std::string &currentProjectPath)
 {
     deleteProjectTree();
 
@@ -275,7 +274,8 @@ void ProjectView::drawProjectTree()
 
 void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 {
-    if (node == NULL) {
+    if (node == NULL)
+    {
         return;
     }
 
@@ -283,10 +283,11 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
     std::string icon = std::string(ICON_FA_FOLDER);
     if (node->children.empty())
     {
-        if (node->filePaths.empty()) {
+        if (node->filePaths.empty())
+        {
             icon = std::string(ICON_FA_FOLDER_O);
         }
-    
+
         node_flags |= ImGuiTreeNodeFlags_Leaf;
     }
 
