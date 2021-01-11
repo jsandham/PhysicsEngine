@@ -38,8 +38,8 @@ class SceneView : public Window
     SceneView(const SceneView &other) = delete;
     SceneView &operator=(const SceneView &other) = delete;
 
-    void init(EditorClipboard &clipboard);
-    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard) override;
+    void update(EditorClipboard &clipboard) override;
 
     bool isFocused() const;
     bool isHovered() const;

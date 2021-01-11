@@ -1,5 +1,5 @@
 #include "../../include/drawers/MeshRendererDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/MeshRenderer.h"
@@ -59,15 +59,17 @@ void MeshRendererDrawer::render(EditorClipboard &clipboard, Guid id)
         bool isStatic = meshRenderer->mIsStatic;
         if (ImGui::Checkbox("Is Static?", &isStatic))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<bool>(&meshRenderer->mIsStatic, isStatic, &clipboard.isDirty));
+            Undo::recordComponent(meshRenderer);
+
+            meshRenderer->mIsStatic = isStatic;
         }
 
         bool enabled = meshRenderer->mEnabled;
         if (ImGui::Checkbox("Enabled?", &enabled))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<bool>(&meshRenderer->mEnabled, enabled, &clipboard.isDirty));
+            Undo::recordComponent(meshRenderer);
+
+            meshRenderer->mEnabled = enabled;
         }
 
         // Materials
@@ -78,8 +80,9 @@ void MeshRendererDrawer::render(EditorClipboard &clipboard, Guid id)
         {
             materialCount = std::max(0, std::min(materialCount, 8));
 
-            CommandManager::addCommand(
-                new ChangePropertyCommand<int>(&meshRenderer->mMaterialCount, materialCount, &clipboard.isDirty));
+            Undo::recordComponent(meshRenderer);
+
+            meshRenderer->mMaterialCount = materialCount;
         }
         ImGui::PopItemWidth();
 

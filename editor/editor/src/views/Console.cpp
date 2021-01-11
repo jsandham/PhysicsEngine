@@ -184,7 +184,7 @@ struct AppLog
     }
 };
 
-Console::Console()
+Console::Console() : Window("Console")
 {
 }
 
@@ -196,36 +196,19 @@ void Console::init(EditorClipboard &clipboard)
 {
 }
 
-void Console::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void Console::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
-
-    if (!windowActive)
-    {
-        return;
-    }
-
     static AppLog log;
 
-    if (ImGui::Begin("Console", &windowActive))
+    std::queue<std::string> messages = Log::getMessages();
+    while (!messages.empty())
     {
-        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
-        {
-            ImGui::SetWindowFocus("Console");
-        }
-
-        std::queue<std::string> messages = Log::getMessages();
-        while (!messages.empty())
-        {
-            std::string message = messages.front();
-            messages.pop();
-            log.AddLog(message.c_str());
-        }
-
-        Log::clear();
-
-        log.Draw("Console", &windowActive);
+        std::string message = messages.front();
+        messages.pop();
+        log.AddLog(message.c_str());
     }
 
-    ImGui::End();
+    Log::clear();
+
+    log.Draw("Console");
 }

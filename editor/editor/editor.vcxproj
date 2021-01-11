@@ -160,7 +160,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Command.cpp" />
-    <ClCompile Include="src\CommandManager.cpp" />
     <ClCompile Include="src\drawers\BoxColliderDrawer.cpp" />
     <ClCompile Include="src\drawers\CameraDrawer.cpp" />
     <ClCompile Include="src\drawers\CapsuleColliderDrawer.cpp" />
@@ -187,6 +186,7 @@
     <ClCompile Include="src\EditorFileIO.cpp" />
     <ClCompile Include="src\EditorOnlyEntityCreation.cpp" />
     <ClCompile Include="src\EditorToolbar.cpp" />
+    <ClCompile Include="src\EditorWin32.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
     <ClCompile Include="src\imgui\imgui_extensions.cpp" />
@@ -194,14 +194,16 @@
     <ClCompile Include="src\LibraryDirectory.cpp" />
     <ClCompile Include="src\Load.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\EditorMenuBar.cpp" />
+    <ClCompile Include="src\MenuBar.cpp" />
     <ClCompile Include="src\PerformanceQueue.cpp" />
     <ClCompile Include="src\TransformGizmo.cpp" />
+    <ClCompile Include="src\Undo.cpp" />
     <ClCompile Include="src\views\AboutPopup.cpp" />
     <ClCompile Include="src\views\BuildWindow.cpp" />
     <ClCompile Include="src\views\Console.cpp" />
     <ClCompile Include="src\views\Hierarchy.cpp" />
     <ClCompile Include="src\views\Inspector.cpp" />
+    <ClCompile Include="src\views\PopupWindow.cpp" />
     <ClCompile Include="src\views\PreferencesWindow.cpp" />
     <ClCompile Include="src\views\ProjectView.cpp" />
     <ClCompile Include="src\views\ProjectWindow.cpp" />
@@ -211,7 +213,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Command.h" />
-    <ClInclude Include="include\CommandManager.h" />
     <ClInclude Include="include\drawers\BoxColliderDrawer.h" />
     <ClInclude Include="include\drawers\CameraDrawer.h" />
     <ClInclude Include="include\drawers\CapsuleColliderDrawer.h" />
@@ -238,20 +239,23 @@
     <ClInclude Include="include\EditorOnlyEntityCreation.h" />
     <ClInclude Include="include\EditorToolbar.h" />
     <ClInclude Include="include\EditorClipboard.h" />
+    <ClInclude Include="include\EditorWin32.h" />
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />
     <ClInclude Include="include\IconsFontAwesome4.h" />
     <ClInclude Include="include\imgui\imgui_extensions.h" />
     <ClInclude Include="include\imgui\imgui_styles.h" />
     <ClInclude Include="include\LibraryDirectory.h" />
-    <ClInclude Include="include\EditorMenuBar.h" />
+    <ClInclude Include="include\MenuBar.h" />
     <ClInclude Include="include\PerformanceQueue.h" />
     <ClInclude Include="include\TransformGizmo.h" />
+    <ClInclude Include="include\Undo.h" />
     <ClInclude Include="include\views\AboutPopup.h" />
     <ClInclude Include="include\views\BuildWindow.h" />
     <ClInclude Include="include\views\Console.h" />
     <ClInclude Include="include\views\Hierarchy.h" />
     <ClInclude Include="include\views\Inspector.h" />
+    <ClInclude Include="include\views\PopupWindow.h" />
     <ClInclude Include="include\views\PreferencesWindow.h" />
     <ClInclude Include="include\views\ProjectView.h" />
     <ClInclude Include="include\views\ProjectWindow.h" />

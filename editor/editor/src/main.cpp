@@ -18,7 +18,7 @@
 #include <windowsx.h>
 #include <xinput.h>
 
-#include "../include/Editor.h"
+#include "../include/EditorWin32.h"
 
 #include "core/Input.h"
 #include "core/Log.h"
@@ -110,7 +110,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     HWND prevActiveWindow = NULL;
     HWND activeWindow = NULL;
 
-    Editor editor;
+    EditorWin32 editor;
 
     // initialize editor
     editor.init(g_hwnd, g_display_w, g_display_h);
@@ -143,7 +143,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
         wglMakeCurrent(g_HDCDeviceContext, g_GLRenderContext);
 
-        editor.render(activeWindow == g_hwnd && activeWindow != prevActiveWindow);
+        editor.update(g_hwnd, activeWindow == g_hwnd && activeWindow != prevActiveWindow);
 
         SwapBuffers(g_HDCDeviceContext);
 

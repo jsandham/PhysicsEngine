@@ -57,9 +57,6 @@
     <ClCompile Include="src\PerformanceQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CommandManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -67,9 +64,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorToolbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EditorMenuBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EditorFileIO.cpp">
@@ -180,6 +174,18 @@
     <ClCompile Include="src\imgui\imgui_styles.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\views\PopupWindow.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Undo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
@@ -200,9 +206,6 @@
     <ClInclude Include="include\PerformanceQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CommandManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -210,9 +213,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorToolbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorMenuBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorFileIO.h">
@@ -322,6 +322,18 @@
     </ClInclude>
     <ClInclude Include="include\imgui\imgui_styles.h">
       <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\PopupWindow.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Undo.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

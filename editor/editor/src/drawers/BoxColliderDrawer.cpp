@@ -1,5 +1,5 @@
 #include "../../include/drawers/BoxColliderDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/BoxCollider.h"
@@ -35,13 +35,15 @@ void BoxColliderDrawer::render(EditorClipboard &clipboard, Guid id)
 
             if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<glm::vec3>(&boxCollider->mAABB.mCentre, centre, &clipboard.isDirty));
+                Undo::recordComponent(boxCollider);
+
+                boxCollider->mAABB.mCentre = centre;
             }
             if (ImGui::InputFloat3("Size", glm::value_ptr(size)))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<glm::vec3>(&boxCollider->mAABB.mSize, size, &clipboard.isDirty));
+                Undo::recordComponent(boxCollider);
+
+                boxCollider->mAABB.mSize = size;
             }
 
             ImGui::TreePop();

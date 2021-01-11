@@ -1,5 +1,5 @@
 #include "../../include/views/Inspector.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 #include "../../include/FileSystemUtil.h"
 #include "../../include/drawers/LoadInspectorDrawerInternal.h"
@@ -14,7 +14,7 @@
 
 using namespace PhysicsEditor;
 
-Inspector::Inspector()
+Inspector::Inspector() : Window("Inspector")
 {
 }
 
@@ -26,50 +26,33 @@ void Inspector::init(EditorClipboard &clipboard)
 {
 }
 
-void Inspector::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void Inspector::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
-
-    if (!windowActive)
+    // draw selected entity
+    if (clipboard.getSelectedType() == InteractionType::Entity)
     {
-        return;
+        drawEntity(clipboard);
     }
 
-    if (ImGui::Begin("Inspector", &windowActive))
+    // draw selected asset
+    if (clipboard.getSelectedType() == InteractionType::Mesh)
     {
-        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
-        {
-            ImGui::SetWindowFocus("Inspector");
-        }
-
-        // draw selected entity
-        if (clipboard.getSelectedType() == InteractionType::Entity)
-        {
-            drawEntity(clipboard);
-        }
-
-        // draw selected asset
-        if (clipboard.getSelectedType() == InteractionType::Mesh)
-        {
-            meshDrawer.render(clipboard, clipboard.getSelectedId());
-        }
-        else if (clipboard.getSelectedType() == InteractionType::Material)
-        {
-            materialDrawer.render(clipboard, clipboard.getSelectedId());
-        }
-        else if (clipboard.getSelectedType() == InteractionType::Shader)
-        {
-            shaderDrawer.render(clipboard, clipboard.getSelectedId());
-        }
-        else if (clipboard.getSelectedType() == InteractionType::Texture2D)
-        {
-            texture2DDrawer.render(clipboard, clipboard.getSelectedId());
-        }
-
-        ImGui::Separator();
+        meshDrawer.render(clipboard, clipboard.getSelectedId());
+    }
+    else if (clipboard.getSelectedType() == InteractionType::Material)
+    {
+        materialDrawer.render(clipboard, clipboard.getSelectedId());
+    }
+    else if (clipboard.getSelectedType() == InteractionType::Shader)
+    {
+        shaderDrawer.render(clipboard, clipboard.getSelectedId());
+    }
+    else if (clipboard.getSelectedType() == InteractionType::Texture2D)
+    {
+        texture2DDrawer.render(clipboard, clipboard.getSelectedId());
     }
 
-    ImGui::End();
+    ImGui::Separator();
 }
 
 void Inspector::drawEntity(EditorClipboard &clipboard)
@@ -113,27 +96,27 @@ void Inspector::drawEntity(EditorClipboard &clipboard)
 
         if (componentToAdd == "Transform")
         {
-            CommandManager::addCommand(
+            Undo::addCommand(
                 new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Rigidbody")
         {
-            CommandManager::addCommand(
+            Undo::addCommand(
                 new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Camera")
         {
-            CommandManager::addCommand(
+            Undo::addCommand(
                 new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "MeshRenderer")
         {
-            CommandManager::addCommand(
+            Undo::addCommand(
                 new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
         else if (componentToAdd == "Light")
         {
-            CommandManager::addCommand(
+            Undo::addCommand(
                 new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
         }
 

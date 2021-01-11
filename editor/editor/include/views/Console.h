@@ -13,8 +13,8 @@ class Console : public Window
     Console(const Console &other) = delete;
     Console &operator=(const Console &other) = delete;
 
-    void init(EditorClipboard &clipboard);
-    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard) override;
+    void update(EditorClipboard &clipboard) override;
 };
 } // namespace PhysicsEditor
 

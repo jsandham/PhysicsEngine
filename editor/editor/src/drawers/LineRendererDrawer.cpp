@@ -1,5 +1,5 @@
 #include "../../include/drawers/LineRendererDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/LineRenderer.h"
@@ -33,13 +33,15 @@ void LineRendererDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::InputFloat3("Start", glm::value_ptr(start)))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<glm::vec3>(&lineRenderer->mStart, start, &clipboard.isDirty));
+            Undo::recordComponent(lineRenderer);
+
+            lineRenderer->mStart = start;
         }
         if (ImGui::InputFloat3("End", glm::value_ptr(end)))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<glm::vec3>(&lineRenderer->mEnd, end, &clipboard.isDirty));
+            Undo::recordComponent(lineRenderer);
+
+            lineRenderer->mEnd = end;
         }
 
         ImGui::TreePop();

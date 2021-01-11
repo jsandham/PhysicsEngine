@@ -1,5 +1,5 @@
 #include "../../include/drawers/RigidbodyDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/Rigidbody.h"
@@ -35,24 +35,30 @@ void RigidbodyDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::Checkbox("Use Gravity", &useGravity))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<bool>(&rigidbody->mUseGravity, useGravity, &clipboard.isDirty));
+            Undo::recordComponent(rigidbody);
+
+            rigidbody->mUseGravity = useGravity;
         }
 
         if (ImGui::InputFloat("Mass", &mass))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mMass, mass, &clipboard.isDirty));
+            Undo::recordComponent(rigidbody);
+
+            rigidbody->mMass = mass;
         }
 
         if (ImGui::InputFloat("Drag", &drag))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<float>(&rigidbody->mDrag, drag, &clipboard.isDirty));
+            Undo::recordComponent(rigidbody);
+
+            rigidbody->mDrag = drag;
         }
 
         if (ImGui::InputFloat("Angular Drag", &angularDrag))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&rigidbody->mAngularDrag, angularDrag, &clipboard.isDirty));
+            Undo::recordComponent(rigidbody);
+
+            rigidbody->mAngularDrag = angularDrag;
         }
 
         ImGui::TreePop();

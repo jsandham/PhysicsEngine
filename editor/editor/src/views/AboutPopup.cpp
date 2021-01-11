@@ -7,7 +7,7 @@
 
 using namespace PhysicsEditor;
 
-AboutPopup::AboutPopup()
+AboutPopup::AboutPopup() : PopupWindow("About", 0.0f, 0.0f, 500.0f, 500.0f)
 {
 }
 
@@ -19,30 +19,13 @@ void AboutPopup::init(EditorClipboard &clipboard)
 {
 }
 
-void AboutPopup::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void AboutPopup::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
+    ImGui::Text("About PhysicsEngine");
+    ImGui::TextWrapped("About engine text goes here");
 
-    if (!windowActive)
+    if (ImGui::Button("Ok"))
     {
-        return;
-    }
-
-    if (isOpenedThisFrame)
-    {
-        ImGui::SetNextWindowSize(ImVec2(500, 500));
-        ImGui::OpenPopup("About");
-    }
-
-    if (ImGui::BeginPopupModal("About"))
-    {
-        ImGui::Text("About PhysicsEngine");
-        ImGui::TextWrapped("About engine text goes here");
-
-        if (ImGui::Button("Ok"))
-        {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+        ImGui::CloseCurrentPopup();
     }
 }

@@ -1,5 +1,5 @@
 #include "../../include/drawers/SphereColliderDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/SphereCollider.h"
@@ -35,13 +35,15 @@ void SphereColliderDrawer::render(EditorClipboard &clipboard, Guid id)
 
             if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<glm::vec3>(&sphereCollider->mSphere.mCentre, centre, &clipboard.isDirty));
+                Undo::recordComponent(sphereCollider);
+
+                sphereCollider->mSphere.mCentre = centre;
             }
             if (ImGui::InputFloat("Radius", &radius))
             {
-                CommandManager::addCommand(
-                    new ChangePropertyCommand<float>(&sphereCollider->mSphere.mRadius, radius, &clipboard.isDirty));
+                Undo::recordComponent(sphereCollider);
+
+                sphereCollider->mSphere.mRadius = radius;
             }
 
             ImGui::TreePop();

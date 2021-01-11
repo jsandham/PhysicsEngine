@@ -1,11 +1,11 @@
 #ifndef __PREFERENCES_WINDOW_H__
 #define __PREFERENCES_WINDOW_H__
 
-#include "Window.h"
+#include "PopupWindow.h"
 
 namespace PhysicsEditor
 {
-class PreferencesWindow : public Window
+class PreferencesWindow : public PopupWindow
 {
   public:
     PreferencesWindow();
@@ -13,8 +13,8 @@ class PreferencesWindow : public Window
     PreferencesWindow(const PreferencesWindow &other) = delete;
     PreferencesWindow &operator=(const PreferencesWindow &other) = delete;
 
-    void init(EditorClipboard &clipboard);
-    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard) override;
+    void update(EditorClipboard &clipboard) override;
 };
 } // namespace PhysicsEditor
 

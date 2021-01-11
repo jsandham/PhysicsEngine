@@ -1,5 +1,6 @@
 #include "../../include/views/ProjectWindow.h"
 #include "../../include/FileSystemUtil.h"
+#include "../../include/EditorCameraSystem.h"
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -7,11 +8,10 @@
 #include "imgui_internal.h"
 
 using namespace PhysicsEditor;
+using namespace PhysicsEngine;
 
-ProjectWindow::ProjectWindow()
+ProjectWindow::ProjectWindow() : PopupWindow("##ProjectWindow", 500.0f, 200.0f, 1920.0f, 1080.0f)
 {
-    openClicked = false;
-    createClicked = false;
     mode = ProjectWindowMode::OpenProject;
 
     inputBuffer.resize(256);
@@ -27,64 +27,23 @@ void ProjectWindow::init(EditorClipboard &clipboard)
 {
 }
 
-void ProjectWindow::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void ProjectWindow::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
+    float windowWidth = ImGui::GetWindowWidth();
 
-    if (!windowActive)
+    if (mode == ProjectWindowMode::NewProject)
     {
-        return;
+        renderNewMode(clipboard);
     }
-
-    openClicked = false;
-    createClicked = false;
-
-    if (isOpenedThisFrame)
+    else if (mode == ProjectWindowMode::OpenProject)
     {
-        ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 200.0f), ImVec2(1920.0f, 1080.0f));
-        ImGui::OpenPopup("##ProjectWindow");
+        renderOpenMode(clipboard);
     }
-
-    bool projectWindowOpen = true;
-    if (ImGui::BeginPopupModal("##ProjectWindow", &projectWindowOpen))
-    {
-        float windowWidth = ImGui::GetWindowWidth();
-
-        if (mode == ProjectWindowMode::NewProject)
-        {
-            renderNewMode();
-        }
-        else if (mode == ProjectWindowMode::OpenProject)
-        {
-            renderOpenMode();
-        }
-
-        ImGui::EndPopup();
-    }
-}
-
-bool ProjectWindow::isOpenClicked() const
-{
-    return openClicked;
-}
-
-bool ProjectWindow::isCreateClicked() const
-{
-    return createClicked;
 }
 
 std::string ProjectWindow::getProjectName() const
 {
-    int index = 0;
-    for (size_t i = 0; i < inputBuffer.size(); i++)
-    {
-        if (inputBuffer[i] == '\0')
-        {
-            index = (int)i;
-            break;
-        }
-    }
-    return std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+    return std::string(inputBuffer.data());
 }
 
 std::string ProjectWindow::getSelectedFolderPath() const
@@ -92,7 +51,7 @@ std::string ProjectWindow::getSelectedFolderPath() const
     return filebrowser.getSelectedFolderPath();
 }
 
-void ProjectWindow::renderNewMode()
+void ProjectWindow::renderNewMode(EditorClipboard& clipboard)
 {
     float projectNameTitleWidth = 100.0f;
     float inputTextWidth = 400.0f;
@@ -119,12 +78,50 @@ void ProjectWindow::renderNewMode()
 
     if (ImGui::Button("Create Project"))
     {
-        createClicked = true;
+        std::string name = getProjectName();
+        std::string path = getSelectedFolderPath() + "\\" + getProjectName();
+
+        if (PhysicsEditor::createDirectory(path))
+        {
+            bool success = true;
+            success &= createDirectory(path + "\\data");
+            success &= createDirectory(path + "\\data\\scenes");
+            success &= createDirectory(path + "\\data\\textures");
+            success &= createDirectory(path + "\\data\\meshes");
+            success &= createDirectory(path + "\\data\\materials");
+            success &= createDirectory(path + "\\data\\shaders");
+
+            if (success)
+            {
+                clipboard.openProject(name, path);
+                clipboard.openScene("", "", "", "", Guid::INVALID);
+            }
+            else
+            {
+                Log::error("Could not create project sub directories\n");
+                return;
+            }
+        }
+        else
+        {
+            Log::error("Could not create project root directory\n");
+            return;
+        }
+
+        // mark any (non-editor) entities in currently opened scene to be latent destroyed
+        clipboard.getWorld()->latentDestroyEntitiesInWorld();
+
+        // tell library directory which project to watch
+        clipboard.getLibrary().watch(path);
+
+        // reset editor camera
+        clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
+
         ImGui::CloseCurrentPopup();
     }
 }
 
-void ProjectWindow::renderOpenMode()
+void ProjectWindow::renderOpenMode(EditorClipboard& clipboard)
 {
     bool openSelectFolderBrowser = false;
     if (ImGui::Button("Select Folder"))
@@ -149,7 +146,18 @@ void ProjectWindow::renderOpenMode()
 
     if (ImGui::Button("Open Project"))
     {
-        openClicked = true;
+        clipboard.openProject(getProjectName(), getSelectedFolderPath());
+        clipboard.openScene("", "", "", "", Guid::INVALID);
+
+        // mark any (non-editor) entities in currently opened scene to be latent destroyed
+        clipboard.getWorld()->latentDestroyEntitiesInWorld();
+
+        // tell library directory which project to watch
+        clipboard.getLibrary().watch(getSelectedFolderPath());
+
+        // reset editor camera
+        clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
+
         ImGui::CloseCurrentPopup();
     }
 

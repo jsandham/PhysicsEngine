@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorClipboard.h"
 #include "../../include/EditorCommands.h"
 #include "../../include/drawers/TransformDrawer.h"
@@ -38,12 +38,15 @@ void TransformDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::InputFloat3("Position", glm::value_ptr(position)))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<glm::vec3>(&transform->mPosition, position, &clipboard.isDirty));
+            Undo::recordComponent(transform);
+
+            transform->mPosition = position;
         }
 
         if (ImGui::InputFloat3("Rotation", glm::value_ptr(eulerAngles)))
         {
+            Undo::recordComponent(transform);
+
             glm::quat x = glm::angleAxis(glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
             glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::quat z = glm::angleAxis(glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -52,8 +55,9 @@ void TransformDrawer::render(EditorClipboard &clipboard, Guid id)
         }
         if (ImGui::InputFloat3("Scale", glm::value_ptr(scale)))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<glm::vec3>(&transform->mScale, scale, &clipboard.isDirty));
+            Undo::recordComponent(transform);
+
+            transform->mScale = scale;
         }
 
         ImGui::TreePop();

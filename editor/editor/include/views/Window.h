@@ -1,28 +1,28 @@
 #ifndef __WINDOW_H__
 #define __WINDOW_H__
 
+#include <string>
+
 #include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class Window // View?
+class Window
 {
-  protected:
-    bool windowActive;
+  private:
+      std::string mName;
+      bool mOpen;
 
   public:
     Window();
+    Window(const std::string name);
     virtual ~Window() = 0;
 
-    virtual void init(EditorClipboard &clipboard);
-    virtual void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+    void draw(EditorClipboard& clipboard, bool isOpenedThisFrame);
+
+    virtual void init(EditorClipboard &clipboard) = 0;
+    virtual void update(EditorClipboard &clipboard) = 0;
 };
 } // namespace PhysicsEditor
-
-// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-// void render(EditorClipboard& clipboard, bool isOpenedThisFrame);
-// void render(EditorClipboard& clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
 
 #endif

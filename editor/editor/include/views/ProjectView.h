@@ -39,8 +39,8 @@ class ProjectView : public Window
     ProjectView(const ProjectView &other) = delete;
     ProjectView &operator=(const ProjectView &other) = delete;
 
-    void init(EditorClipboard &clipboard);
-    void update(EditorClipboard &clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame);
+    void init(EditorClipboard &clipboard) override;
+    void update(EditorClipboard &clipboard) override;
 
     void drawLeftPane();
     void drawRightPane(EditorClipboard &clipboard);

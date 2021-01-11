@@ -20,7 +20,7 @@
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;
 
-ProjectView::ProjectView()
+ProjectView::ProjectView() : Window("Project View")
 {
     root = NULL;
     selected = NULL;
@@ -35,66 +35,49 @@ void ProjectView::init(EditorClipboard &clipboard)
 {
 }
 
-void ProjectView::update(EditorClipboard &clipboard, bool editorBecameActiveThisFrame, bool isOpenedThisFrame)
+void ProjectView::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
-
-    if (!windowActive)
-    {
-        return;
-    }
-
     if (clipboard.getProjectPath() != "")
     {
-        if (root != NULL && root->directoryPath != (clipboard.getProjectPath() + "\\data") || root == NULL ||
-            editorBecameActiveThisFrame)
+        if (root != NULL && root->directoryPath != (clipboard.getProjectPath() + "\\data") || root == NULL /*||
+            editorBecameActiveThisFrame*/)
         {
             buildProjectTree(clipboard.getProjectPath());
         }
     }
 
-    if (ImGui::Begin("Project View", &windowActive))
+    if (clipboard.getProjectPath() != "")
     {
-        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        filter.Draw("Filter", -100.0f);
+
+        ImVec2 WindowSize = ImGui::GetWindowSize();
+
+        static float ratio = 0.5f;
+
+        float sz1 = ratio * WindowSize.x;
+        float sz2 = (1.0f - ratio) * WindowSize.x;
+
+        ImGui::Splitter(true, 8.0f, &sz1, &sz2, 8, 8, WindowSize.y);
+
+        ratio = sz1 / WindowSize.x;
+
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+
+        if (ImGui::BeginChild("LeftPane", ImVec2(sz1, WindowSize.y), true, flags))
         {
-            ImGui::SetWindowFocus("Project View");
+            drawLeftPane();
         }
+        ImGui::EndChild();
 
-        if (clipboard.getProjectPath() != "")
+        ImGui::SameLine();
+
+        if (ImGui::BeginChild("RightPane", ImVec2(sz2, WindowSize.y), true, flags))
         {
-            filter.Draw("Filter", -100.0f);
-
-            ImVec2 WindowSize = ImGui::GetWindowSize();
-
-            static float ratio = 0.5f;
-
-            float sz1 = ratio * WindowSize.x;
-            float sz2 = (1.0f - ratio) * WindowSize.x;
-
-            ImGui::Splitter(true, 8.0f, &sz1, &sz2, 8, 8, WindowSize.y);
-
-            ratio = sz1 / WindowSize.x;
-
-            ImGuiWindowFlags flags =
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
-
-            if (ImGui::BeginChild("LeftPane", ImVec2(sz1, WindowSize.y), true, flags))
-            {
-                drawLeftPane();
-            }
-            ImGui::EndChild();
-
-            ImGui::SameLine();
-
-            if (ImGui::BeginChild("RightPane", ImVec2(sz2, WindowSize.y), true, flags))
-            {
-                drawRightPane(clipboard);
-            }
-            ImGui::EndChild();
+            drawRightPane(clipboard);
         }
+        ImGui::EndChild();
     }
-
-    ImGui::End();
 }
 
 void ProjectView::drawLeftPane()

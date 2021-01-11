@@ -1,5 +1,5 @@
 #include "../../include/drawers/LightDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/Light.h"
@@ -32,7 +32,9 @@ void LightDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::InputFloat4("Color", glm::value_ptr(color)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<glm::vec4>(&light->mColor, color, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mColor = color;
         }
 
         float intensity = light->mIntensity;
@@ -46,59 +48,69 @@ void LightDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::InputFloat("Intensity", &intensity))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mIntensity, intensity, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mIntensity = intensity;
         }
         if (ImGui::InputFloat("Spot Angle", &spotAngle))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mSpotAngle, spotAngle, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mSpotAngle = spotAngle;
         }
         if (ImGui::InputFloat("Inner Spot Angle", &innerSpotAngle))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mInnerSpotAngle, innerSpotAngle, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mInnerSpotAngle = innerSpotAngle;
         }
         if (ImGui::InputFloat("Shadow Near Plane", &shadowNearPlane))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mShadowNearPlane, shadowNearPlane, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowNearPlane = shadowNearPlane;
         }
         if (ImGui::InputFloat("Shadow Far Plane", &shadowFarPlane))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mShadowFarPlane, shadowFarPlane, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowFarPlane = shadowFarPlane;
         }
         if (ImGui::InputFloat("Shadow Angle", &shadowAngle))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mShadowAngle, shadowAngle, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowAngle = shadowAngle;
         }
         if (ImGui::InputFloat("Shadow Radius", &shadowRadius))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mShadowRadius, shadowRadius, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowRadius = shadowRadius;
         }
         if (ImGui::InputFloat("Shadow Strength", &shadowStrength))
         {
-            CommandManager::addCommand(
-                new ChangePropertyCommand<float>(&light->mShadowStrength, shadowStrength, &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowStrength = shadowStrength;
         }
 
         const char *lightTypes[] = {"Directional", "Spot", "Point"};
         int lightTypeIndex = static_cast<int>(light->mLightType);
         if (ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<LightType>(
-                &light->mLightType, static_cast<LightType>(lightTypeIndex), &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mLightType = static_cast<LightType>(lightTypeIndex);
         }
 
         const char *shadowTypes[] = {"Hard", "Soft"};
         int shadowTypeIndex = static_cast<int>(light->mShadowType);
         if (ImGui::Combo("##ShadowType", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<ShadowType>(
-                &light->mShadowType, static_cast<ShadowType>(shadowTypeIndex), &clipboard.isDirty));
+            Undo::recordComponent(light);
+
+            light->mShadowType = static_cast<ShadowType>(shadowTypeIndex);
         }
 
         const char *shadowMapResolutions[] = {"Low (512x512)", "Medium (1024x1024)", "High (2048x2048)",

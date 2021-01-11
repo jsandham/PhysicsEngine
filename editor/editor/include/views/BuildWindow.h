@@ -5,7 +5,7 @@
 
 namespace PhysicsEditor
 {
-class BuildWindow : public Window
+class BuildWindow
 {
   public:
     BuildWindow();

@@ -1,5 +1,5 @@
 #include "../../include/drawers/CameraDrawer.h"
-#include "../../include/CommandManager.h"
+#include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 
 #include "components/Camera.h"
@@ -39,20 +39,23 @@ void CameraDrawer::render(EditorClipboard &clipboard, Guid id)
 
         if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<RenderPath>(
-                &camera->mRenderPath, static_cast<RenderPath>(renderPath), &clipboard.isDirty));
+            Undo::recordComponent(camera);
+
+            camera->mRenderPath = static_cast<RenderPath>(renderPath);
         }
 
         if (ImGui::Combo("Mode", &mode, modeNames, 2))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<CameraMode>(
-                &camera->mMode, static_cast<CameraMode>(mode), &clipboard.isDirty));
+            Undo::recordComponent(camera);
+
+            camera->mMode = static_cast<CameraMode>(mode);
         }
 
         if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<CameraSSAO>(
-                &camera->mSSAO, static_cast<CameraSSAO>(ssao), &clipboard.isDirty));
+            Undo::recordComponent(camera);
+
+            camera->mSSAO = static_cast<CameraSSAO>(ssao);
         }
 
         glm::vec3 position = transform->mPosition; // camera->mPosition;
@@ -61,24 +64,11 @@ void CameraDrawer::render(EditorClipboard &clipboard, Guid id)
         glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.r, camera->mBackgroundColor.g,
                                               camera->mBackgroundColor.b, camera->mBackgroundColor.a);
 
-        if (ImGui::InputFloat3("Position", glm::value_ptr(position)))
-        {
-            transform->mPosition = position;
-            // CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mPosition, position,
-            // &scene.isDirty));
-        }
-        if (ImGui::InputFloat3("Front", glm::value_ptr(front)))
-        {
-            // CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mFront, front, &scene.isDirty));
-        }
-        if (ImGui::InputFloat3("Up", glm::value_ptr(up)))
-        {
-            // CommandManager::addCommand(new ChangePropertyCommand<glm::vec3>(&camera->mUp, up, &scene.isDirty));
-        }
         if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor)))
         {
-            CommandManager::addCommand(new ChangePropertyCommand<Color>(&camera->mBackgroundColor,
-                                                                        Color(backgroundColor), &clipboard.isDirty));
+            Undo::recordComponent(camera);
+
+            camera->mBackgroundColor = Color(backgroundColor);
         }
 
         if (ImGui::TreeNode("Viewport"))
@@ -120,20 +110,20 @@ void CameraDrawer::render(EditorClipboard &clipboard, Guid id)
 
             if (ImGui::InputFloat("Field of View", &fov))
             {
-                /*CommandManager::addCommand(
-                    new ChangePropertyCommand<float>(&camera->mFrustum.mFov, fov, &scene.isDirty));*/
+                Undo::recordComponent(camera);
+            
                 camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
             if (ImGui::InputFloat("Near Plane", &nearPlane))
             {
-                // CommandManager::addCommand(
-                //    new ChangePropertyCommand<float>(&camera->mFrustum.mNearPlane, nearPlane, &scene.isDirty));
+                Undo::recordComponent(camera);
+               
                 camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
             if (ImGui::InputFloat("Far Plane", &farPlane))
             {
-                // CommandManager::addCommand(
-                //    new ChangePropertyCommand<float>(&camera->mFrustum.mFarPlane, farPlane, &scene.isDirty));
+                Undo::recordComponent(camera);
+               
                 camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
             }
 

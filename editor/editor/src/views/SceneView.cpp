@@ -17,8 +17,9 @@
 using namespace PhysicsEngine;
 using namespace PhysicsEditor;
 
-SceneView::SceneView()
+SceneView::SceneView() : Window("Scene View")
 {
+
     focused = false;
     hovered = false;
 
@@ -45,15 +46,8 @@ void SceneView::init(EditorClipboard &clipboard)
     initWorld(clipboard.getWorld());
 }
 
-void SceneView::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void SceneView::update(EditorClipboard &clipboard)
 {
-    this->Window::update(clipboard, isOpenedThisFrame);
-
-    if (!windowActive)
-    {
-        return;
-    }
-
     focused = false;
     hovered = false;
 
@@ -64,198 +58,189 @@ void SceneView::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
     static bool rotationModeActive = false;
     static bool scaleModeActive = false;
 
-    ImGui::Begin("Scene View", &windowActive);
+    focused = ImGui::IsWindowFocused();
+    hovered = ImGui::IsWindowHovered();
+    windowPos = ImGui::GetWindowPos();
+
+    ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+    ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+
+    contentMin.x += windowPos.x;
+    contentMin.y += windowPos.y;
+    contentMax.x += windowPos.x;
+    contentMax.y += windowPos.y;
+
+    sceneContentMin = contentMin;
+    sceneContentMax = contentMax;
+
+    // account for the fact that Image will draw below buttons
+    sceneContentMin.y += 23;
+
+    ImVec2 size = sceneContentMax;
+    size.x -= sceneContentMin.x;
+    size.y -= sceneContentMin.y;
+
+    Viewport viewport;
+    viewport.mX = 0;
+    viewport.mY = 0;
+    viewport.mWidth = size.x;
+    viewport.mHeight = size.y;
+
+    EditorCameraSystem* cameraSystem = clipboard.getWorld()->getSystem<EditorCameraSystem>();
+
+    cameraSystem->setViewport(viewport);
+
+    updateWorld(clipboard.getWorld());
+
+    const int count = 8;
+    const char* textureNames[] = { "Color",    "Color Picking",   "Depth", "Normals",
+                                    "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
+
+    const GLint textures[] = { static_cast<GLint>(cameraSystem->getNativeGraphicsColorTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsColorPickingTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsDepthTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsNormalTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsPositionTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsAlbedoSpecTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
+                                static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex()) };
+
+    // select draw texture dropdown
+    if (ImGui::BeginCombo("##DrawTexture", textureNames[activeTextureIndex]))
     {
-        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        for (int n = 0; n < count; n++)
         {
-            ImGui::SetWindowFocus("Scene View");
-        }
-
-        focused = ImGui::IsWindowFocused();
-        hovered = ImGui::IsWindowHovered();
-        windowPos = ImGui::GetWindowPos();
-
-        ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-        ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
-
-        contentMin.x += windowPos.x;
-        contentMin.y += windowPos.y;
-        contentMax.x += windowPos.x;
-        contentMax.y += windowPos.y;
-
-        sceneContentMin = contentMin;
-        sceneContentMax = contentMax;
-
-        // account for the fact that Image will draw below buttons
-        sceneContentMin.y += 23;
-
-        ImVec2 size = sceneContentMax;
-        size.x -= sceneContentMin.x;
-        size.y -= sceneContentMin.y;
-
-        Viewport viewport;
-        viewport.mX = 0;
-        viewport.mY = 0;
-        viewport.mWidth = size.x;
-        viewport.mHeight = size.y;
-
-        EditorCameraSystem *cameraSystem = clipboard.getWorld()->getSystem<EditorCameraSystem>();
-
-        cameraSystem->setViewport(viewport);
-
-        updateWorld(clipboard.getWorld());
-
-        const int count = 8;
-        const char *textureNames[] = {"Color",    "Color Picking",   "Depth", "Normals",
-                                      "Position", "Albedo/Specular", "SSAO",  "SSAO Noise"};
-
-        const GLint textures[] = {static_cast<GLint>(cameraSystem->getNativeGraphicsColorTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsColorPickingTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsDepthTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsNormalTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsPositionTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsAlbedoSpecTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
-                                  static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex())};
-
-        // select draw texture dropdown
-        if (ImGui::BeginCombo("##DrawTexture", textureNames[activeTextureIndex]))
-        {
-            for (int n = 0; n < count; n++)
+            if (textures[n] == -1)
             {
-                if (textures[n] == -1)
-                {
-                    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-                }
+                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            }
 
-                bool is_selected = (textureNames[activeTextureIndex] == textureNames[n]);
-                if (ImGui::Selectable(textureNames[n], is_selected))
-                {
-                    activeTextureIndex = n;
+            bool is_selected = (textureNames[activeTextureIndex] == textureNames[n]);
+            if (ImGui::Selectable(textureNames[n], is_selected))
+            {
+                activeTextureIndex = n;
 
-                    if (is_selected)
-                    {
-                        ImGui::SetItemDefaultFocus();
-                    }
-                }
-
-                if (textures[n] == -1)
+                if (is_selected)
                 {
-                    ImGui::PopItemFlag();
-                    ImGui::PopStyleVar();
+                    ImGui::SetItemDefaultFocus();
                 }
             }
-            ImGui::EndCombo();
-        }
-        ImGui::SameLine();
 
-        // whether to render gizmos or not
-        if (ImGui::Checkbox("Gizmos", &gizmosChecked))
-        {
-            cameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
-        }
-        ImGui::SameLine();
-
-        // editor rendering performance overlay
-        if (ImGui::Checkbox("Perf", &overlayChecked))
-        {
-        }
-        ImGui::SameLine();
-
-        // select transform gizmo movement mode
-        if (ImGui::StampButton("T", translationModeActive))
-        {
-            translationModeActive = true;
-            rotationModeActive = false;
-            scaleModeActive = false;
-
-            transformGizmo.setGizmoMode(GizmoMode::Translation);
-        }
-        ImGui::SameLine();
-
-        if (ImGui::StampButton("R", rotationModeActive))
-        {
-            translationModeActive = false;
-            rotationModeActive = true;
-            scaleModeActive = false;
-
-            transformGizmo.setGizmoMode(GizmoMode::Rotation);
-        }
-        ImGui::SameLine();
-
-        if (ImGui::StampButton("S", scaleModeActive))
-        {
-            translationModeActive = false;
-            rotationModeActive = false;
-            scaleModeActive = true;
-
-            transformGizmo.setGizmoMode(GizmoMode::Scale);
-        }
-        ImGui::SameLine();
-
-        // editor camera settings
-        if (ImGui::Button("Camera Settings"))
-        {
-            cameraSettingsClicked = true;
-        }
-
-        if (cameraSettingsClicked)
-        {
-            drawCameraSettingsPopup(cameraSystem, &cameraSettingsClicked);
-        }
-
-        // performance overlay
-        if (overlayChecked)
-        {
-            drawPerformanceOverlay(cameraSystem);
-        }
-
-        ImGuiIO &io = ImGui::GetIO();
-        float sceneContentWidth = (sceneContentMax.x - sceneContentMin.x);
-        float sceneContentHeight = (sceneContentMax.y - sceneContentMin.y);
-        float mousePosX = std::min(std::max(io.MousePos.x - sceneContentMin.x, 0.0f), sceneContentWidth);
-        float mousePosY =
-            sceneContentHeight - std::min(std::max(io.MousePos.y - sceneContentMin.y, 0.0f), sceneContentHeight);
-
-        float nx = mousePosX / sceneContentWidth;
-        float ny = mousePosY / sceneContentHeight;
-
-        // Update selected entity
-        if (isHovered() && io.MouseClicked[0] && !transformGizmo.isGizmoHighlighted())
-        {
-            Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
-
-            Transform *transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
-
-            if (transform != NULL)
+            if (textures[n] == -1)
             {
-                clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityId());
-            }
-            else
-            {
-                clipboard.setSelectedItem(InteractionType::None, Guid::INVALID);
+                ImGui::PopItemFlag();
+                ImGui::PopStyleVar();
             }
         }
-
-        GizmoSystem *gizmoSystem = clipboard.getWorld()->getSystem<GizmoSystem>();
-
-        gizmoSystem->clearDrawList();
-
-        // draw transform gizmo if entity is selected
-        if (clipboard.getSelectedType() == InteractionType::Entity)
-        {
-            Transform *transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
-
-            transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
-                                  sceneContentHeight);
-        }
-
-        // Finally draw scene
-        ImGui::Image((void *)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, size.y / 1080.0f),
-                     ImVec2(size.x / 1920.0f, 0));
+        ImGui::EndCombo();
     }
-    ImGui::End();
+    ImGui::SameLine();
+
+    // whether to render gizmos or not
+    if (ImGui::Checkbox("Gizmos", &gizmosChecked))
+    {
+        cameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
+    }
+    ImGui::SameLine();
+
+    // editor rendering performance overlay
+    if (ImGui::Checkbox("Perf", &overlayChecked))
+    {
+    }
+    ImGui::SameLine();
+
+    // select transform gizmo movement mode
+    if (ImGui::StampButton("T", translationModeActive))
+    {
+        translationModeActive = true;
+        rotationModeActive = false;
+        scaleModeActive = false;
+
+        transformGizmo.setGizmoMode(GizmoMode::Translation);
+    }
+    ImGui::SameLine();
+
+    if (ImGui::StampButton("R", rotationModeActive))
+    {
+        translationModeActive = false;
+        rotationModeActive = true;
+        scaleModeActive = false;
+
+        transformGizmo.setGizmoMode(GizmoMode::Rotation);
+    }
+    ImGui::SameLine();
+
+    if (ImGui::StampButton("S", scaleModeActive))
+    {
+        translationModeActive = false;
+        rotationModeActive = false;
+        scaleModeActive = true;
+
+        transformGizmo.setGizmoMode(GizmoMode::Scale);
+    }
+    ImGui::SameLine();
+
+    // editor camera settings
+    if (ImGui::Button("Camera Settings"))
+    {
+        cameraSettingsClicked = true;
+    }
+
+    if (cameraSettingsClicked)
+    {
+        drawCameraSettingsPopup(cameraSystem, &cameraSettingsClicked);
+    }
+
+    // performance overlay
+    if (overlayChecked)
+    {
+        drawPerformanceOverlay(cameraSystem);
+    }
+
+    ImGuiIO& io = ImGui::GetIO();
+    float sceneContentWidth = (sceneContentMax.x - sceneContentMin.x);
+    float sceneContentHeight = (sceneContentMax.y - sceneContentMin.y);
+    float mousePosX = std::min(std::max(io.MousePos.x - sceneContentMin.x, 0.0f), sceneContentWidth);
+    float mousePosY =
+        sceneContentHeight - std::min(std::max(io.MousePos.y - sceneContentMin.y, 0.0f), sceneContentHeight);
+
+    float nx = mousePosX / sceneContentWidth;
+    float ny = mousePosY / sceneContentHeight;
+
+    // Update selected entity
+    if (isHovered() && io.MouseClicked[0] && !transformGizmo.isGizmoHighlighted())
+    {
+        Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
+
+        Transform* transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
+
+        if (transform != NULL)
+        {
+            clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityId());
+        }
+        else
+        {
+            clipboard.setSelectedItem(InteractionType::None, Guid::INVALID);
+        }
+    }
+
+    GizmoSystem* gizmoSystem = clipboard.getWorld()->getSystem<GizmoSystem>();
+
+    gizmoSystem->clearDrawList();
+
+    // draw transform gizmo if entity is selected
+    if (clipboard.getSelectedType() == InteractionType::Entity)
+    {
+        Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
+
+        transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
+            sceneContentHeight);
+    }
+
+    // Finally draw scene
+    ImGui::Image((void*)(intptr_t)textures[activeTextureIndex], size, ImVec2(0, size.y / 1080.0f),
+        ImVec2(size.x / 1920.0f, 0));
 }
 
 bool SceneView::isFocused() const
