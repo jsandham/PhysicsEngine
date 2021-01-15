@@ -6,13 +6,12 @@
 
 using namespace PhysicsEngine;
 
-SphereCollider::SphereCollider()
+SphereCollider::SphereCollider() : Collider()
 {
 }
 
-SphereCollider::SphereCollider(const std::vector<char> &data)
+SphereCollider::SphereCollider(Guid id) : Collider(id)
 {
-    deserialize(data);
 }
 
 SphereCollider::~SphereCollider()
@@ -21,7 +20,7 @@ SphereCollider::~SphereCollider()
 
 std::vector<char> SphereCollider::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> SphereCollider::serialize(const Guid &componentId, const Guid &entityId) const
@@ -42,7 +41,7 @@ void SphereCollider::deserialize(const std::vector<char> &data)
 {
     const SphereColliderHeader *header = reinterpret_cast<const SphereColliderHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mSphere = header->mSphere;
 }

@@ -53,6 +53,7 @@ class Texture : public Asset
 
   public:
     Texture();
+    Texture(Guid id);
     virtual ~Texture(){};
 
     virtual void create() = 0;

@@ -6,13 +6,12 @@
 
 using namespace PhysicsEngine;
 
-CleanUpSystem::CleanUpSystem()
+CleanUpSystem::CleanUpSystem() : System()
 {
 }
 
-CleanUpSystem::CleanUpSystem(const std::vector<char> &data)
+CleanUpSystem::CleanUpSystem(Guid id) : System(id)
 {
-    deserialize(data);
 }
 
 CleanUpSystem::~CleanUpSystem()
@@ -21,7 +20,7 @@ CleanUpSystem::~CleanUpSystem()
 
 std::vector<char> CleanUpSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> CleanUpSystem::serialize(const Guid &systemId) const
@@ -41,7 +40,7 @@ void CleanUpSystem::deserialize(const std::vector<char> &data)
 {
     const CleanUpSystemHeader *header = reinterpret_cast<const CleanUpSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 

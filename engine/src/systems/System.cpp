@@ -2,19 +2,18 @@
 
 using namespace PhysicsEngine;
 
-System::System()
+System::System() : Object()
 {
     mOrder = -1;
-    mSystemId = Guid::INVALID;
+}
+
+System::System(Guid id) : Object(id)
+{
+    mOrder = -1;
 }
 
 System::~System()
 {
-}
-
-Guid System::getId() const
-{
-    return mSystemId;
 }
 
 int System::getOrder() const

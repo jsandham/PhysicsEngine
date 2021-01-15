@@ -5,9 +5,13 @@
 
 using namespace PhysicsEngine;
 
-Component::Component()
+Component::Component() : Object()
 {
-    mComponentId = Guid::INVALID;
+    mEntityId = Guid::INVALID;
+}
+
+Component::Component(Guid id) : Object(id)
+{
     mEntityId = Guid::INVALID;
 }
 
@@ -18,11 +22,6 @@ Component::~Component()
 Entity *Component::getEntity(World *world) const
 {
     return world->getEntityById(mEntityId);
-}
-
-Guid Component::getId() const
-{
-    return mComponentId;
 }
 
 Guid Component::getEntityId() const

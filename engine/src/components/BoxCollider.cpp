@@ -4,13 +4,12 @@
 
 using namespace PhysicsEngine;
 
-BoxCollider::BoxCollider()
+BoxCollider::BoxCollider() : Collider()
 {
 }
 
-BoxCollider::BoxCollider(const std::vector<char> &data)
+BoxCollider::BoxCollider(Guid id) : Collider(id)
 {
-    deserialize(data);
 }
 
 BoxCollider::~BoxCollider()
@@ -19,7 +18,7 @@ BoxCollider::~BoxCollider()
 
 std::vector<char> BoxCollider::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> BoxCollider::serialize(const Guid &componentId, const Guid &entityId) const
@@ -40,7 +39,7 @@ void BoxCollider::deserialize(const std::vector<char> &data)
 {
     const BoxColliderHeader *header = reinterpret_cast<const BoxColliderHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mAABB = header->mAABB;
 }

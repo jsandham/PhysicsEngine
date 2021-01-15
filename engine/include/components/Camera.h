@@ -135,7 +135,7 @@ class Camera : public Component
 
   public:
     Camera();
-    Camera(const std::vector<char> &data);
+    Camera(Guid id);
     ~Camera();
 
     std::vector<char> serialize() const;

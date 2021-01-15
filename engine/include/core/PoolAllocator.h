@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Allocator.h"
+#include "Guid.h"
 
 namespace PhysicsEngine
 {
@@ -66,9 +67,23 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return new (allocate()) T();
     }
 
-    T *construct(std::vector<char> data)
+    T* construct(Guid id)
     {
-        return new (allocate()) T(data);
+        return new (allocate()) T(id);
+    }
+
+    T* construct(std::vector<char> data)
+    {
+        T* t = new (allocate()) T();
+        t->deserialize(data);
+        return t;
+    }
+
+    T *construct(Guid id, std::vector<char> data)
+    {
+        T* t = new (allocate()) T(id);
+        t->deserialize(data);
+        return t;
     }
 
     size_t getCount() const

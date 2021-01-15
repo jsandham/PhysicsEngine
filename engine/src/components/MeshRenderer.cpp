@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-MeshRenderer::MeshRenderer()
+MeshRenderer::MeshRenderer() : Component()
 {
     mMeshId = Guid::INVALID;
 
@@ -18,9 +18,20 @@ MeshRenderer::MeshRenderer()
     mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(const std::vector<char> &data)
+MeshRenderer::MeshRenderer(Guid id) : Component(id)
 {
-    deserialize(data);
+    mMeshId = Guid::INVALID;
+
+    for (int i = 0; i < 8; i++)
+    {
+        mMaterialIds[i] = Guid::INVALID;
+    }
+
+    mMaterialCount = 0;
+    mMeshChanged = true;
+    mMaterialChanged = true;
+    mIsStatic = true;
+    mEnabled = true;
 }
 
 MeshRenderer::~MeshRenderer()
@@ -29,7 +40,7 @@ MeshRenderer::~MeshRenderer()
 
 std::vector<char> MeshRenderer::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> MeshRenderer::serialize(const Guid &componentId, const Guid &entityId) const
@@ -57,7 +68,7 @@ void MeshRenderer::deserialize(const std::vector<char> &data)
 {
     const MeshRendererHeader *header = reinterpret_cast<const MeshRendererHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mMeshId = header->mMeshId;
     for (int i = 0; i < 8; i++)

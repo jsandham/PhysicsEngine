@@ -37,7 +37,7 @@ class RenderSystem : public System
 
   public:
     RenderSystem();
-    RenderSystem(const std::vector<char> &data);
+    RenderSystem(Guid id);
     ~RenderSystem();
 
     std::vector<char> serialize() const;

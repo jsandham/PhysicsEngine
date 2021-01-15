@@ -14,7 +14,7 @@
 
 using namespace PhysicsEngine;
 
-Shader::Shader()
+Shader::Shader() : Asset()
 {
     mVertexShader = "";
     mFragmentShader = "";
@@ -24,9 +24,11 @@ Shader::Shader()
     mActiveProgram = -1;
 }
 
-Shader::Shader(const std::vector<char> &data)
+Shader::Shader(Guid id) : Asset(id)
 {
-    deserialize(data);
+    mVertexShader = "";
+    mFragmentShader = "";
+    mGeometryShader = "";
 
     mAllProgramsCompiled = false;
     mActiveProgram = -1;
@@ -38,7 +40,7 @@ Shader::~Shader()
 
 std::vector<char> Shader::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Shader::serialize(Guid assetId) const
@@ -80,7 +82,7 @@ void Shader::deserialize(const std::vector<char> &data)
 
     const ShaderHeader *header = reinterpret_cast<const ShaderHeader *>(&data[start1]);
 
-    mAssetId = header->mShaderId;
+    mId = header->mShaderId;
     mAssetName = std::string(header->mShaderName);
 
     size_t vertexShaderSize = header->mVertexShaderSize;

@@ -29,7 +29,7 @@ class CapsuleCollider : public Collider
 
   public:
     CapsuleCollider();
-    CapsuleCollider(const std::vector<char> &data);
+    CapsuleCollider(Guid id);
     ~CapsuleCollider();
 
     std::vector<char> serialize() const;

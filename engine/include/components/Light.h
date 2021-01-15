@@ -89,7 +89,7 @@ class Light : public Component
 
   public:
     Light();
-    Light(const std::vector<char> &data);
+    Light(Guid id);
     ~Light();
 
     std::vector<char> serialize() const;

@@ -27,7 +27,7 @@ class BoxCollider : public Collider
 
   public:
     BoxCollider();
-    BoxCollider(const std::vector<char> &data);
+    BoxCollider(Guid id);
     ~BoxCollider();
 
     std::vector<char> serialize() const;

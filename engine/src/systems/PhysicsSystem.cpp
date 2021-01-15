@@ -17,13 +17,12 @@
 
 using namespace PhysicsEngine;
 
-PhysicsSystem::PhysicsSystem()
+PhysicsSystem::PhysicsSystem() : System()
 {
 }
 
-PhysicsSystem::PhysicsSystem(const std::vector<char> &data)
+PhysicsSystem::PhysicsSystem(Guid id) : System(id)
 {
-    deserialize(data);
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -32,7 +31,7 @@ PhysicsSystem::~PhysicsSystem()
 
 std::vector<char> PhysicsSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> PhysicsSystem::serialize(const Guid &systemId) const
@@ -54,7 +53,7 @@ void PhysicsSystem::deserialize(const std::vector<char> &data)
 {
     const PhysicsSystemHeader *header = reinterpret_cast<const PhysicsSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
     mGravity = header->mGravity;
     mTimestep = header->mTimestep;

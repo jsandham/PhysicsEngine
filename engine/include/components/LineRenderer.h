@@ -32,7 +32,7 @@ class LineRenderer : public Component
 
   public:
     LineRenderer();
-    LineRenderer(const std::vector<char> &data);
+    LineRenderer(Guid id);
     ~LineRenderer();
 
     std::vector<char> serialize() const;

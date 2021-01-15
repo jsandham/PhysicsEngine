@@ -4,13 +4,12 @@
 
 using namespace PhysicsEngine;
 
-CapsuleCollider::CapsuleCollider()
+CapsuleCollider::CapsuleCollider() : Collider()
 {
 }
 
-CapsuleCollider::CapsuleCollider(const std::vector<char> &data)
+CapsuleCollider::CapsuleCollider(Guid id) : Collider(id)
 {
-    deserialize(data);
 }
 
 CapsuleCollider::~CapsuleCollider()
@@ -19,7 +18,7 @@ CapsuleCollider::~CapsuleCollider()
 
 std::vector<char> CapsuleCollider::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> CapsuleCollider::serialize(const Guid &componentId, const Guid &entityId) const
@@ -40,7 +39,7 @@ void CapsuleCollider::deserialize(const std::vector<char> &data)
 {
     const CapsuleColliderHeader *header = reinterpret_cast<const CapsuleColliderHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mCapsule = header->mCapsule;
 }

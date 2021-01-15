@@ -35,7 +35,7 @@ class GizmoSystem : public System
 
   public:
     GizmoSystem();
-    GizmoSystem(const std::vector<char> &data);
+    GizmoSystem(Guid id);
     ~GizmoSystem();
 
     std::vector<char> serialize() const;

@@ -27,7 +27,7 @@ class MeshCollider : public Collider
 
   public:
     MeshCollider();
-    MeshCollider(const std::vector<char> &data);
+    MeshCollider(Guid id);
     ~MeshCollider();
 
     std::vector<char> serialize() const;

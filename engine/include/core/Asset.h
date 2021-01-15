@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "Object.h"
 #include "Guid.h"
 #include "Types.h"
 
@@ -10,21 +11,16 @@ namespace PhysicsEngine
 {
 class World;
 
-class Asset
+class Asset : public Object
 {
   protected:
-    Guid mAssetId;
     std::string mAssetName;
 
   public:
     Asset();
+    Asset(Guid id);
     virtual ~Asset() = 0;
 
-    virtual std::vector<char> serialize() const = 0;
-    virtual std::vector<char> serialize(Guid assetId) const = 0;
-    virtual void deserialize(const std::vector<char> &data) = 0;
-
-    Guid getId() const;
     std::string getName() const;
     void setName(const std::string &name);
 

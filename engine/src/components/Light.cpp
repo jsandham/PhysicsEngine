@@ -5,9 +5,8 @@
 
 using namespace PhysicsEngine;
 
-Light::Light()
+Light::Light() : Component()
 {
-    mComponentId = Guid::INVALID;
     mEntityId = Guid::INVALID;
 
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -45,11 +44,43 @@ Light::Light()
     mTargets.mShadowCubemapDepthTex = 0;
 }
 
-Light::Light(const std::vector<char> &data)
+Light::Light(Guid id) : Component(id)
 {
-    deserialize(data);
+    mEntityId = Guid::INVALID;
+
+    mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
+    mIntensity = 1.0f;
+    mSpotAngle = glm::cos(glm::radians(15.0f));
+
+    mInnerSpotAngle = glm::cos(glm::radians(12.5f));
+    mShadowNearPlane = 0.1f;
+    mShadowFarPlane = 100.0f;
+    mShadowAngle = 0.0f;
+    mShadowRadius = 0.0f;
+    mShadowStrength = 1.0f;
+    mLightType = LightType::Directional;
+    mShadowType = ShadowType::Hard;
 
     mIsCreated = false;
+    mIsShadowMapResolutionChanged = false;
+    mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
+
+    mTargets.mShadowCascadeFBO[0] = 0;
+    mTargets.mShadowCascadeFBO[1] = 0;
+    mTargets.mShadowCascadeFBO[2] = 0;
+    mTargets.mShadowCascadeFBO[3] = 0;
+    mTargets.mShadowCascadeFBO[4] = 0;
+
+    mTargets.mShadowCascadeDepthTex[0] = 0;
+    mTargets.mShadowCascadeDepthTex[1] = 0;
+    mTargets.mShadowCascadeDepthTex[2] = 0;
+    mTargets.mShadowCascadeDepthTex[3] = 0;
+    mTargets.mShadowCascadeDepthTex[4] = 0;
+
+    mTargets.mShadowSpotlightFBO = 0;
+    mTargets.mShadowSpotlightDepthTex = 0;
+    mTargets.mShadowCubemapFBO = 0;
+    mTargets.mShadowCubemapDepthTex = 0;
 }
 
 Light::~Light()
@@ -58,7 +89,7 @@ Light::~Light()
 
 std::vector<char> Light::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> Light::serialize(const Guid &componentId, const Guid &entityId) const
@@ -90,7 +121,7 @@ void Light::deserialize(const std::vector<char> &data)
 {
     const LightHeader *header = reinterpret_cast<const LightHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mColor = header->mColor;
     mIntensity = header->mIntensity;

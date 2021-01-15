@@ -21,7 +21,7 @@ class CleanUpSystem : public System
 {
   public:
     CleanUpSystem();
-    CleanUpSystem(const std::vector<char> &data);
+    CleanUpSystem(Guid id);
     ~CleanUpSystem();
 
     std::vector<char> serialize() const;

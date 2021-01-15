@@ -3,7 +3,11 @@
 
 using namespace PhysicsEngine;
 
-Texture::Texture()
+Texture::Texture() : Asset()
+{
+}
+
+Texture::Texture(Guid id) : Asset(id)
 {
 }
 

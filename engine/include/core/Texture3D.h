@@ -35,7 +35,7 @@ class Texture3D : public Texture
 
   public:
     Texture3D();
-    Texture3D(const std::vector<char> &data);
+    Texture3D(Guid id);
     Texture3D(int width, int height, int depth, int numChannels);
     ~Texture3D();
 

@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-LineRenderer::LineRenderer()
+LineRenderer::LineRenderer() : Component()
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -10,9 +10,12 @@ LineRenderer::LineRenderer()
     mMaterialId = Guid::INVALID;
 }
 
-LineRenderer::LineRenderer(const std::vector<char> &data)
+LineRenderer::LineRenderer(Guid id) : Component(id)
 {
-    deserialize(data);
+    mStart = glm::vec3(0.0f, 0.0f, 0.0f);
+    mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    mMaterialId = Guid::INVALID;
 }
 
 LineRenderer::~LineRenderer()
@@ -21,7 +24,7 @@ LineRenderer::~LineRenderer()
 
 std::vector<char> LineRenderer::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> LineRenderer::serialize(const Guid &componentId, const Guid &entityId) const
@@ -44,7 +47,7 @@ void LineRenderer::deserialize(const std::vector<char> &data)
 {
     const LineRendererHeader *header = reinterpret_cast<const LineRendererHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mStart = header->mStart;
     mEnd = header->mEnd;

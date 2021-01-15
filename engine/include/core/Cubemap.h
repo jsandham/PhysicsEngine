@@ -41,7 +41,7 @@ class Cubemap : public Texture
 
   public:
     Cubemap();
-    Cubemap(const std::vector<char> &data);
+    Cubemap(Guid id);
     Cubemap(int width);
     Cubemap(int width, TextureFormat format);
     Cubemap(int width, int height, TextureFormat format);

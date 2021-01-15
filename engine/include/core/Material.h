@@ -36,7 +36,7 @@ class Material : public Asset
 
   public:
     Material();
-    Material(const std::vector<char> &data);
+    Material(Guid id);
     ~Material();
 
     std::vector<char> serialize() const;

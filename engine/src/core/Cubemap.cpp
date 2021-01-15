@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-Cubemap::Cubemap()
+Cubemap::Cubemap() : Texture()
 {
     mDimension = TextureDimension::Cube;
 
@@ -19,12 +19,22 @@ Cubemap::Cubemap()
     mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(const std::vector<char> &data)
+Cubemap::Cubemap(Guid id) : Texture(id)
 {
-    deserialize(data);
+    mDimension = TextureDimension::Cube;
+
+    mWidth = 0;
+    mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
+
+    mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
+    mCreated = false;
+    mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(int width)
+Cubemap::Cubemap(int width) : Texture()
 {
     mDimension = TextureDimension::Cube;
 
@@ -41,7 +51,7 @@ Cubemap::Cubemap(int width)
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
 
-Cubemap::Cubemap(int width, TextureFormat format)
+Cubemap::Cubemap(int width, TextureFormat format) : Texture()
 {
     mDimension = TextureDimension::Cube;
 
@@ -58,7 +68,7 @@ Cubemap::Cubemap(int width, TextureFormat format)
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
 
-Cubemap::Cubemap(int width, int height, TextureFormat format)
+Cubemap::Cubemap(int width, int height, TextureFormat format) : Texture()
 {
     mDimension = TextureDimension::Cube;
 
@@ -81,7 +91,7 @@ Cubemap::~Cubemap()
 
 std::vector<char> Cubemap::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Cubemap::serialize(Guid assetId) const
@@ -121,7 +131,7 @@ void Cubemap::deserialize(const std::vector<char> &data)
 
     const CubemapHeader *header = reinterpret_cast<const CubemapHeader *>(&data[start1]);
 
-    mAssetId = header->mTextureId;
+    mId = header->mTextureId;
     mAssetName = std::string(header->mTextureName);
     mWidth = static_cast<int>(header->mWidth);
     mNumChannels = static_cast<int>(header->mNumChannels);

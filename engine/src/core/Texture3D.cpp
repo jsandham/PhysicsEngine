@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-Texture3D::Texture3D()
+Texture3D::Texture3D() : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -21,12 +21,24 @@ Texture3D::Texture3D()
     mUpdateRequired = false;
 }
 
-Texture3D::Texture3D(const std::vector<char> &data)
+Texture3D::Texture3D(Guid id) : Texture(id)
 {
-    deserialize(data);
+    mDimension = TextureDimension::Tex2D;
+
+    mWidth = 0;
+    mHeight = 0;
+    mDepth = 0;
+    mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
+
+    mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
+    mCreated = false;
+    mUpdateRequired = false;
 }
 
-Texture3D::Texture3D(int width, int height, int depth, int numChannels)
+Texture3D::Texture3D(int width, int height, int depth, int numChannels) : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -51,7 +63,7 @@ Texture3D::~Texture3D()
 
 std::vector<char> Texture3D::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Texture3D::serialize(Guid assetId) const
@@ -93,7 +105,7 @@ void Texture3D::deserialize(const std::vector<char> &data)
 
     const Texture3DHeader *header = reinterpret_cast<const Texture3DHeader *>(&data[start1]);
 
-    mAssetId = header->mTextureId;
+    mId = header->mTextureId;
     mAssetName = std::string(header->mTextureName);
     mWidth = static_cast<int>(header->mWidth);
     mHeight = static_cast<int>(header->mHeight);

@@ -16,7 +16,8 @@ class Collider : public Component
 {
   public:
     Collider();
-    virtual ~Collider() = 0;
+    Collider(Guid id);
+    ~Collider();
 
     virtual bool intersect(AABB aabb) const = 0;
 };

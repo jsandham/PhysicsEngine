@@ -45,7 +45,7 @@ class Rigidbody : public Component
 
   public:
     Rigidbody();
-    Rigidbody(const std::vector<char> &data);
+    Rigidbody(Guid id);
     ~Rigidbody();
 
     std::vector<char> serialize() const;

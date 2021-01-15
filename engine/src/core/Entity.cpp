@@ -7,16 +7,16 @@
 
 using namespace PhysicsEngine;
 
-Entity::Entity()
+Entity::Entity() : Object()
 {
-    mEntityId = Guid::INVALID;
     mEntityName = "Unnamed Entity";
     mDoNotDestroy = false;
 }
 
-Entity::Entity(const std::vector<char> &data)
+Entity::Entity(Guid id) : Object(id)
 {
-    deserialize(data);
+    mEntityName = "Unnamed Entity";
+    mDoNotDestroy = false;
 }
 
 Entity::~Entity()
@@ -25,7 +25,7 @@ Entity::~Entity()
 
 std::vector<char> Entity::serialize() const
 {
-    return serialize(mEntityId);
+    return serialize(mId);
 }
 
 std::vector<char> Entity::serialize(const Guid &entityId) const
@@ -49,29 +49,24 @@ void Entity::deserialize(const std::vector<char> &data)
 {
     const EntityHeader *header = reinterpret_cast<const EntityHeader *>(&data[0]);
 
-    mEntityId = header->mEntityId;
+    mId = header->mEntityId;
     mEntityName = std::string(header->mEntityName);
     mDoNotDestroy = static_cast<bool>(header->mDoNotDestroy);
 }
 
 void Entity::latentDestroy(World *world)
 {
-    world->latentDestroyEntity(mEntityId);
+    world->latentDestroyEntity(mId);
 }
 
 void Entity::immediateDestroy(World *world)
 {
-    world->immediateDestroyEntity(mEntityId);
+    world->immediateDestroyEntity(mId);
 }
 
 std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity(World *world)
 {
-    return world->getComponentsOnEntity(mEntityId);
-}
-
-Guid Entity::getId() const
-{
-    return mEntityId;
+    return world->getComponentsOnEntity(mId);
 }
 
 std::string Entity::getName() const

@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-Rigidbody::Rigidbody()
+Rigidbody::Rigidbody() : Component()
 {
     mUseGravity = true;
     mMass = 1.0f;
@@ -17,9 +17,19 @@ Rigidbody::Rigidbody()
     mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(const std::vector<char> &data)
+Rigidbody::Rigidbody(Guid id) : Component(id)
 {
-    deserialize(data);
+    mUseGravity = true;
+    mMass = 1.0f;
+    mDrag = 0.0f;
+    mAngularDrag = 0.05f;
+
+    mVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    mCentreOfMass = glm::vec3(0.0f, 0.0f, 0.0f);
+    mAngularVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+    mInertiaTensor = glm::mat3(1.0f);
+
+    mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 Rigidbody::~Rigidbody()
@@ -28,7 +38,7 @@ Rigidbody::~Rigidbody()
 
 std::vector<char> Rigidbody::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> Rigidbody::serialize(const Guid &componentId, const Guid &entityId) const
@@ -57,7 +67,7 @@ void Rigidbody::deserialize(const std::vector<char> &data)
 {
     const RigidbodyHeader *header = reinterpret_cast<const RigidbodyHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mUseGravity = static_cast<bool>(header->mUseGravity);
     mMass = header->mMass;

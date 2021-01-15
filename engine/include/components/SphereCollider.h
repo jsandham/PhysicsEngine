@@ -29,7 +29,7 @@ class SphereCollider : public Collider
 
   public:
     SphereCollider();
-    SphereCollider(const std::vector<char> &data);
+    SphereCollider(Guid id);
     ~SphereCollider();
 
     std::vector<char> serialize() const;

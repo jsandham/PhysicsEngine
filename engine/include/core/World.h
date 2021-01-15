@@ -1026,12 +1026,11 @@ class World
         int componentType = ComponentType<T>::type;
         Guid componentId = Guid::newGuid();
 
-        T *component = allocator->construct();
+        T *component = allocator->construct(componentId);
 
         if (component != NULL)
         {
             component->mEntityId = entityId;
-            component->mComponentId = componentId;
 
             addIdToGlobalIndexMap_impl<T>(componentId, componentGlobalIndex, componentType);
 
@@ -1052,16 +1051,16 @@ class World
 
         T *component = allocator->construct(data);
 
-        if (component == NULL || component->mComponentId == Guid::INVALID || component->mEntityId == Guid::INVALID)
+        if (component == NULL || component->getId() == Guid::INVALID || component->getEntityId() == Guid::INVALID)
         {
             return NULL;
         }
 
-        addIdToGlobalIndexMap_impl<T>(component->mComponentId, componentGlobalIndex, componentType);
+        addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
 
-        mEntityIdToComponentIds[component->mEntityId].push_back(std::make_pair(component->mComponentId, componentType));
+        mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), componentType));
 
-        mComponentIdsMarkedCreated.push_back(make_triple(component->mEntityId, component->mComponentId, componentType));
+        mComponentIdsMarkedCreated.push_back(make_triple(component->getEntityId(), component->getId(), componentType));
 
         return component;
     }
@@ -1074,12 +1073,10 @@ class World
         int systemType = SystemType<T>::type;
         Guid systemId = Guid::newGuid();
 
-        T *system = allocator->construct();
+        T *system = allocator->construct(systemId);
 
         if (system != NULL)
         {
-            system->mSystemId = systemId;
-
             addIdToGlobalIndexMap_impl<T>(systemId, systemGlobalIndex, systemType);
 
             size_t locationToInsert = mSystems.size();
@@ -1163,12 +1160,10 @@ class World
         int type = AssetType<T>::type;
         Guid id = Guid::newGuid();
 
-        T *asset = allocator->construct();
+        T *asset = allocator->construct(id);
 
         if (asset != NULL)
         {
-            asset->mAssetId = id;
-
             addIdToGlobalIndexMap_impl<T>(id, index, type);
         }
 
@@ -1189,12 +1184,10 @@ class World
             return NULL;
         }
 
-        T *asset = allocator->construct(data);
+        T *asset = allocator->construct(id, data);
 
         if (asset != NULL)
         {
-            asset->mAssetId = id;
-
             addIdToGlobalIndexMap_impl<T>(id, index, type);
         }
 

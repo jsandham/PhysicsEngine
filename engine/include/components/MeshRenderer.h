@@ -35,7 +35,7 @@ class MeshRenderer : public Component
 
   public:
     MeshRenderer();
-    MeshRenderer(const std::vector<char> &data);
+    MeshRenderer(Guid id);
     ~MeshRenderer();
 
     std::vector<char> serialize() const;

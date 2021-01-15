@@ -5,17 +5,18 @@
 
 using namespace PhysicsEngine;
 
-Mesh::Mesh()
+Mesh::Mesh() : Asset()
 {
-    mAssetId = Guid::INVALID;
     mAssetName = "";
     mCreated = false;
     mChanged = false;
 }
 
-Mesh::Mesh(const std::vector<char> &data)
+Mesh::Mesh(Guid id) : Asset(id)
 {
-    deserialize(data);
+    mAssetName = "";
+    mCreated = false;
+    mChanged = false;
 }
 
 Mesh::~Mesh()
@@ -24,7 +25,7 @@ Mesh::~Mesh()
 
 std::vector<char> Mesh::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Mesh::serialize(Guid assetId) const
@@ -67,7 +68,7 @@ void Mesh::deserialize(const std::vector<char> &data)
 
     const MeshHeader *header = reinterpret_cast<const MeshHeader *>(&data[start1]);
 
-    mAssetId = header->mMeshId;
+    mId = header->mMeshId;
     mAssetName = std::string(header->mMeshName);
     mVertices.resize(header->mVerticesSize);
     mNormals.resize(header->mNormalsSize);

@@ -222,7 +222,7 @@ void Octtree::create(AABB bounds, int depth, int maxNumOfObjectsPerNode)
 
 void Octtree::insert(Sphere sphere, Guid id)
 {
-    Object object;
+    Object1 object;
     object.mSphere = sphere;
     object.mId = id;
 
@@ -427,7 +427,7 @@ std::vector<float> Octtree::getLines() const
 
 // Ray octtree intersection as described in the paper
 // "An Efficient Parametric Algorithm for Octree Traversal" by Revelles, Urena, & Lastra
-Object *Octtree::intersect(Ray ray)
+Object1 *Octtree::intersect(Ray ray)
 {
     size_t test = 0;
 

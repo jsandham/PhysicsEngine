@@ -38,7 +38,8 @@ void CreateEntityCommand::execute()
 
 void CreateEntityCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 
@@ -75,7 +76,8 @@ void CreateCameraCommand::execute()
 
 void CreateCameraCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 
@@ -112,7 +114,8 @@ void CreateLightCommand::execute()
 
 void CreateLightCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 
@@ -152,7 +155,8 @@ void CreatePlaneCommand::execute()
 
 void CreatePlaneCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 
@@ -195,7 +199,8 @@ void CreateCubeCommand::execute()
 
 void CreateCubeCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 
@@ -238,7 +243,8 @@ void CreateSphereCommand::execute()
 
 void CreateSphereCommand::undo()
 {
-    Entity temp(entityData);
+    Entity temp;
+    temp.deserialize(entityData);
 
     world->latentDestroyEntity(temp.getId());
 

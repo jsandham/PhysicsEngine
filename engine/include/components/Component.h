@@ -1,6 +1,7 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
+#include "../core/Object.h"
 #include "../core/Guid.h"
 #include "../core/Types.h"
 
@@ -9,19 +10,19 @@ namespace PhysicsEngine
 class Entity;
 class World;
 
-class Component
+class Component : public Object
 {
   protected:
-    Guid mComponentId;
     Guid mEntityId;
 
   public:
     Component();
-    virtual ~Component() = 0;
+    Component(Guid id);
+    ~Component();
 
-    virtual std::vector<char> serialize() const = 0;
     virtual std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const = 0;
-    virtual void deserialize(const std::vector<char> &data) = 0;
+    virtual std::vector<char> serialize() const = 0;
+    virtual void deserialize(const std::vector<char>& data) = 0;
 
     Entity *getEntity(World *world) const;
 
@@ -42,7 +43,6 @@ class Component
         return entity->getComponent<T>(world);
     }
 
-    Guid getId() const;
     Guid getEntityId() const;
 
     static bool isInternal(int type);

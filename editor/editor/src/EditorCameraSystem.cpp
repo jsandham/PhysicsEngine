@@ -16,7 +16,7 @@ const float EditorCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
 const float EditorCameraSystem::ZOOM_SENSITIVITY = 1.0f;      // 125.0f;
 const float EditorCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
-EditorCameraSystem::EditorCameraSystem()
+EditorCameraSystem::EditorCameraSystem() : System()
 {
     mTransform = NULL;
     mCamera = NULL;
@@ -28,10 +28,8 @@ EditorCameraSystem::EditorCameraSystem()
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-EditorCameraSystem::EditorCameraSystem(std::vector<char> data)
+EditorCameraSystem::EditorCameraSystem(Guid id) : System(id)
 {
-    deserialize(data);
-
     mMousePosX = 0;
     mMousePosY = 0;
     mIsLeftMouseClicked = false;
@@ -44,7 +42,7 @@ EditorCameraSystem::~EditorCameraSystem()
 
 std::vector<char> EditorCameraSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> EditorCameraSystem::serialize(const Guid &systemId) const
@@ -64,7 +62,7 @@ void EditorCameraSystem::deserialize(const std::vector<char> &data)
 {
     const EditorCameraSystemHeader *header = reinterpret_cast<const EditorCameraSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 

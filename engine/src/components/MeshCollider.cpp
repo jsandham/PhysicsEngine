@@ -4,14 +4,14 @@
 
 using namespace PhysicsEngine;
 
-MeshCollider::MeshCollider()
+MeshCollider::MeshCollider() : Collider()
 {
     mMeshId = Guid::INVALID;
 }
 
-MeshCollider::MeshCollider(const std::vector<char> &data)
+MeshCollider::MeshCollider(Guid id) : Collider(id)
 {
-    deserialize(data);
+    mMeshId = Guid::INVALID;
 }
 
 MeshCollider::~MeshCollider()
@@ -20,7 +20,7 @@ MeshCollider::~MeshCollider()
 
 std::vector<char> MeshCollider::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> MeshCollider::serialize(const Guid &componentId, const Guid &entityId) const
@@ -41,7 +41,7 @@ void MeshCollider::deserialize(const std::vector<char> &data)
 {
     const MeshColliderHeader *header = reinterpret_cast<const MeshColliderHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mMeshId = header->mMeshId;
 }

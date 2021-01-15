@@ -35,7 +35,7 @@ class Transform : public Component
 
   public:
     Transform();
-    Transform(const std::vector<char> &data);
+    Transform(Guid id);
     ~Transform();
 
     std::vector<char> serialize() const;

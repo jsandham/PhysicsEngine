@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-Texture2D::Texture2D()
+Texture2D::Texture2D() : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -21,12 +21,23 @@ Texture2D::Texture2D()
     mUpdateRequired = false;
 }
 
-Texture2D::Texture2D(const std::vector<char> &data)
+Texture2D::Texture2D(Guid id) : Texture(id)
 {
-    deserialize(data);
+    mDimension = TextureDimension::Tex2D;
+
+    mWidth = 0;
+    mHeight = 0;
+    mFormat = TextureFormat::RGB;
+    mWrapMode = TextureWrapMode::Repeat;
+    mFilterMode = TextureFilterMode::Trilinear;
+
+    mNumChannels = calcNumChannels(mFormat);
+    mAnisoLevel = 1;
+    mCreated = false;
+    mUpdateRequired = false;
 }
 
-Texture2D::Texture2D(int width, int height)
+Texture2D::Texture2D(int width, int height) : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -44,7 +55,7 @@ Texture2D::Texture2D(int width, int height)
     mRawTextureData.resize(width * height * mNumChannels);
 }
 
-Texture2D::Texture2D(int width, int height, TextureFormat format)
+Texture2D::Texture2D(int width, int height, TextureFormat format) : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -69,7 +80,7 @@ Texture2D::~Texture2D()
 
 std::vector<char> Texture2D::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Texture2D::serialize(Guid assetId) const
@@ -111,7 +122,7 @@ void Texture2D::deserialize(const std::vector<char> &data)
 
     const Texture2DHeader *header = reinterpret_cast<const Texture2DHeader *>(&data[start1]);
 
-    mAssetId = header->mTextureId;
+    mId = header->mTextureId;
     mAssetName = std::string(header->mTextureName);
     mWidth = static_cast<int>(header->mWidth);
     mHeight = static_cast<int>(header->mHeight);

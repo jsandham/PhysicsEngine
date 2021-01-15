@@ -156,7 +156,7 @@ void World::latentDestroyEntitiesInWorld()
 
         if (!entity->mDoNotDestroy)
         {
-            latentDestroyEntity(entity->mEntityId);
+            latentDestroyEntity(entity->getId());
         }
     }
 }
@@ -219,14 +219,13 @@ Entity *World::createEntity()
     int type = EntityType<Entity>::type;
     Guid entityId = Guid::newGuid();
 
-    Entity *entity = mEntityAllocator.construct();
+    Entity* entity = mEntityAllocator.construct(entityId);
 
     if (entity != NULL)
     {
-        entity->mEntityId = entityId;
         entity->mDoNotDestroy = false;
 
-        addIdToGlobalIndexMap_impl<Entity>(entity->mEntityId, globalIndex, type);
+        addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
 
         mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
 
@@ -245,11 +244,11 @@ Entity *World::createEntity(const std::vector<char> &data)
 
     if (entity != NULL)
     {
-        addIdToGlobalIndexMap_impl<Entity>(entity->mEntityId, globalIndex, type);
+        addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
 
-        mEntityIdToComponentIds[entity->mEntityId] = std::vector<std::pair<Guid, int>>();
+        mEntityIdToComponentIds[entity->getId()] = std::vector<std::pair<Guid, int>>();
 
-        mEntityIdsMarkedCreated.push_back(entity->mEntityId);
+        mEntityIdsMarkedCreated.push_back(entity->getId());
     }
 
     return entity;
@@ -295,7 +294,7 @@ void World::immediateDestroyEntity(const Guid &entityId)
 
     if (swappedEntity != NULL)
     {
-        addInternalEntityIdToIndexMap(&mEntityIdToGlobalIndex, &mIdToGlobalIndex, &mIdToType, swappedEntity->mEntityId,
+        addInternalEntityIdToIndexMap(&mEntityIdToGlobalIndex, &mIdToGlobalIndex, &mIdToType, swappedEntity->getId(),
                                       index);
     }
 }
@@ -351,7 +350,7 @@ void World::immediateDestroyComponent(const Guid &entityId, const Guid &componen
                 &mTransformIdToGlobalIndex, &mMeshRendererIdToGlobalIndex, &mLineRendererIdToGlobalIndex,
                 &mRigidbodyIdToGlobalIndex, &mCameraIdToGlobalIndex, &mLightIdToGlobalIndex,
                 &mSphereColliderIdToGlobalIndex, &mBoxColliderIdToGlobalIndex, &mCapsuleColliderIdToGlobalIndex,
-                &mMeshColliderIdToGlobalIndex, &mIdToGlobalIndex, &mIdToType, swappedComponent->mComponentId,
+                &mMeshColliderIdToGlobalIndex, &mIdToGlobalIndex, &mIdToType, swappedComponent->getId(),
                 componentType, index);
         }
     }
@@ -361,7 +360,7 @@ void World::immediateDestroyComponent(const Guid &entityId, const Guid &componen
 
         if (swappedComponent != NULL)
         {
-            addComponentIdToIndexMap(&mIdToGlobalIndex, &mIdToType, swappedComponent->mComponentId, componentType,
+            addComponentIdToIndexMap(&mIdToGlobalIndex, &mIdToType, swappedComponent->getId(), componentType,
                                      index);
         }
     }

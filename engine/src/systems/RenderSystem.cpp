@@ -22,14 +22,14 @@
 
 using namespace PhysicsEngine;
 
-RenderSystem::RenderSystem()
+RenderSystem::RenderSystem() : System()
 {
     mRenderToScreen = true;
 }
 
-RenderSystem::RenderSystem(const std::vector<char> &data)
+RenderSystem::RenderSystem(Guid id) : System(id)
 {
-    deserialize(data);
+    mRenderToScreen = true;
 }
 
 RenderSystem::~RenderSystem()
@@ -38,7 +38,7 @@ RenderSystem::~RenderSystem()
 
 std::vector<char> RenderSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> RenderSystem::serialize(const Guid &systemId) const
@@ -58,7 +58,7 @@ void RenderSystem::deserialize(const std::vector<char> &data)
 {
     const RenderSystemHeader *header = reinterpret_cast<const RenderSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 

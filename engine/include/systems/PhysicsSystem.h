@@ -36,7 +36,7 @@ class PhysicsSystem : public System
 
   public:
     PhysicsSystem();
-    PhysicsSystem(const std::vector<char> &data);
+    PhysicsSystem(Guid id);
     ~PhysicsSystem();
 
     std::vector<char> serialize() const;

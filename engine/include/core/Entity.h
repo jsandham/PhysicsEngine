@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "Object.h"
 #include "Guid.h"
 #include "Types.h"
 
@@ -18,12 +19,19 @@ struct EntityHeader
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct EntityHeader1
+{
+    char mEntityName[64];
+    uint8_t mDoNotDestroy;
+};
+#pragma pack(pop)
+
 class World;
 
-class Entity
+class Entity : public Object
 {
   private:
-    Guid mEntityId;
     std::string mEntityName;
 
   public:
@@ -31,7 +39,7 @@ class Entity
 
   public:
     Entity();
-    Entity(const std::vector<char> &data);
+    Entity(Guid id);
     ~Entity();
 
     std::vector<char> serialize() const;
@@ -43,7 +51,7 @@ class Entity
 
     template <typename T> T *addComponent(World *world)
     {
-        return world->addComponent<T>(mEntityId);
+        return world->addComponent<T>(mId);
     }
 
     template <typename T> T *addComponent(World *world, std::vector<char> data)
@@ -53,12 +61,11 @@ class Entity
 
     template <typename T> T *getComponent(World *world)
     {
-        return world->getComponent<T>(mEntityId);
+        return world->getComponent<T>(mId);
     }
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity(World *world);
 
-    Guid getId() const;
     std::string getName() const;
     void setName(const std::string &name);
 

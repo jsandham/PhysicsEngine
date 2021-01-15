@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-Transform::Transform()
+Transform::Transform() : Component()
 {
     mParentId = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -10,9 +10,12 @@ Transform::Transform()
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-Transform::Transform(const std::vector<char> &data)
+Transform::Transform(Guid id) : Component(id)
 {
-    deserialize(data);
+    mParentId = Guid::INVALID;
+    mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
 Transform::~Transform()
@@ -21,7 +24,7 @@ Transform::~Transform()
 
 std::vector<char> Transform::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> Transform::serialize(const Guid &componentId, const Guid &entityId) const
@@ -45,7 +48,7 @@ void Transform::deserialize(const std::vector<char> &data)
 {
     const TransformHeader *header = reinterpret_cast<const TransformHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mParentId = header->mParentId;
     mEntityId = header->mEntityId;
     mPosition = header->mPosition;

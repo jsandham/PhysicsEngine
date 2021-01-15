@@ -23,7 +23,7 @@ class DebugSystem : public System
 {
   public:
     DebugSystem();
-    DebugSystem(const std::vector<char> &data);
+    DebugSystem(Guid id);
     ~DebugSystem();
 
     std::vector<char> serialize() const;

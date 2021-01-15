@@ -46,7 +46,7 @@ class EditorCameraSystem : public System
 
   public:
     EditorCameraSystem();
-    EditorCameraSystem(std::vector<char> data);
+    EditorCameraSystem(Guid id);
     ~EditorCameraSystem();
 
     std::vector<char> serialize() const;

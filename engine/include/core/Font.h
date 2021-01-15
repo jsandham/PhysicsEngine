@@ -42,8 +42,8 @@ class Font : public Asset
 
   public:
     Font();
+    Font(Guid id);
     Font(const std::string &filepath);
-    Font(const std::vector<char> &data);
     ~Font();
 
     std::vector<char> serialize() const;

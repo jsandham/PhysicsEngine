@@ -16,13 +16,13 @@
 
 using namespace PhysicsEngine;
 
-DebugSystem::DebugSystem()
+DebugSystem::DebugSystem() : System()
 {
 }
 
-DebugSystem::DebugSystem(const std::vector<char> &data)
+DebugSystem::DebugSystem(Guid id) : System(id)
 {
-    deserialize(data);
+  
 }
 
 DebugSystem::~DebugSystem()
@@ -31,7 +31,7 @@ DebugSystem::~DebugSystem()
 
 std::vector<char> DebugSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> DebugSystem::serialize(const Guid &systemId) const
@@ -51,7 +51,7 @@ void DebugSystem::deserialize(const std::vector<char> &data)
 {
     const DebugSystemHeader *header = reinterpret_cast<const DebugSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 

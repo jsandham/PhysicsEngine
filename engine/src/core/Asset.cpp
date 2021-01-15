@@ -3,19 +3,18 @@
 
 using namespace PhysicsEngine;
 
-Asset::Asset()
+Asset::Asset() : Object()
 {
-    mAssetId = Guid::INVALID;
+    mAssetName = "Unnamed Asset";
+}
+
+Asset::Asset(Guid id) : Object(id)
+{
     mAssetName = "Unnamed Asset";
 }
 
 Asset::~Asset()
 {
-}
-
-Guid Asset::getId() const
-{
-    return mAssetId;
 }
 
 std::string Asset::getName() const

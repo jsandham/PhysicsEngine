@@ -41,7 +41,7 @@ class Mesh : public Asset
 
   public:
     Mesh();
-    Mesh(const std::vector<char> &data);
+    Mesh(Guid id);
     ~Mesh();
 
     std::vector<char> serialize() const;

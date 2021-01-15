@@ -95,7 +95,7 @@ class Shader : public Asset
 
   public:
     Shader();
-    Shader(const std::vector<char> &data);
+    Shader(Guid id);
     ~Shader();
 
     std::vector<char> serialize() const;

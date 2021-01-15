@@ -11,18 +11,17 @@
 
 using namespace PhysicsEngine;
 
-Font::Font()
+Font::Font() : Asset()
 {
 }
 
-Font::Font(const std::string &filepath)
+Font::Font(Guid id) : Asset(id)
+{
+}
+
+Font::Font(const std::string &filepath) : Asset()
 {
     mFilepath = filepath;
-}
-
-Font::Font(const std::vector<char> &data)
-{
-    deserialize(data);
 }
 
 Font::~Font()
@@ -31,7 +30,7 @@ Font::~Font()
 
 std::vector<char> Font::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Font::serialize(Guid assetId) const
@@ -62,7 +61,7 @@ void Font::deserialize(const std::vector<char> &data)
     int index = sizeof(int);
     const FontHeader *header = reinterpret_cast<const FontHeader *>(&data[index]);
 
-    mAssetId = header->mFontId;
+    mId = header->mFontId;
     mAssetName = std::string(header->mFontName);
 
     index += sizeof(FontHeader);

@@ -9,7 +9,7 @@
 
 using namespace PhysicsEngine;
 
-Material::Material()
+Material::Material() : Asset()
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -17,9 +17,12 @@ Material::Material()
     mShaderChanged = true;
 }
 
-Material::Material(const std::vector<char> &data)
+Material::Material(Guid id) : Asset(id)
 {
-    deserialize(data);
+    mShaderId = Guid::INVALID;
+    mRenderQueue = RenderQueue::Opaque;
+
+    mShaderChanged = true;
 }
 
 Material::~Material()
@@ -28,7 +31,7 @@ Material::~Material()
 
 std::vector<char> Material::serialize() const
 {
-    return serialize(mAssetId);
+    return serialize(mId);
 }
 
 std::vector<char> Material::serialize(Guid assetId) const
@@ -65,7 +68,7 @@ void Material::deserialize(const std::vector<char> &data)
 
     const MaterialHeader *header = reinterpret_cast<const MaterialHeader *>(&data[0]);
 
-    mAssetId = header->mMaterialId;
+    mId = header->mMaterialId;
     mAssetName = std::string(header->mMaterialName);
     mShaderId = header->mShaderId;
     mRenderQueue = static_cast<RenderQueue>(header->mRenderQueue);

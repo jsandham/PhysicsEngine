@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "../core/Object.h"
 #include "../core/Guid.h"
 #include "../core/Input.h"
 #include "../core/Time.h"
@@ -12,26 +13,23 @@ namespace PhysicsEngine
 {
 class World;
 
-class System
+class System : public Object
 {
   protected:
-    Guid mSystemId;
     int mOrder;
 
     World *mWorld;
 
   public:
     System();
-    virtual ~System() = 0;
+    System(Guid id);
+    ~System();
 
-    virtual std::vector<char> serialize() const = 0;
     virtual std::vector<char> serialize(const Guid &systemId) const = 0;
-    virtual void deserialize(const std::vector<char> &data) = 0;
 
     virtual void init(World *world) = 0;
     virtual void update(const Input &input, const Time &time) = 0;
 
-    Guid getId() const;
     int getOrder() const;
 
     static bool isInternal(int type);

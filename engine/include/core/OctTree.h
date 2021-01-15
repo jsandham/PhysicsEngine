@@ -13,17 +13,17 @@
 
 namespace PhysicsEngine
 {
-typedef struct Object
+typedef struct Object1
 {
     Guid mId;
     Sphere mSphere; // Primitive which sphere, bounds, capsule, triangle derive from?
-} Object;
+} Object1;
 
 typedef struct Node
 {
     glm::vec3 mCentre;
     glm::vec3 mExtent;
-    std::vector<Object> mObjects;
+    std::vector<Object1> mObjects;
 } Node;
 
 typedef struct Cell
@@ -53,7 +53,7 @@ class Octtree
     void clear();
     void create(AABB bounds, int depth, int maxNumOfObjectsPerNode);
     void insert(Sphere sphere, Guid id);
-    Object *intersect(Ray ray);
+    Object1 *intersect(Ray ray);
 
     int getDepth() const;
     AABB getBounds() const;

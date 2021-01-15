@@ -4,11 +4,11 @@
 
 using namespace PhysicsEngine;
 
-GizmoSystem::GizmoSystem()
+GizmoSystem::GizmoSystem() : System()
 {
 }
 
-GizmoSystem::GizmoSystem(const std::vector<char> &data)
+GizmoSystem::GizmoSystem(Guid id) : System(id)
 {
 }
 
@@ -18,7 +18,7 @@ GizmoSystem::~GizmoSystem()
 
 std::vector<char> GizmoSystem::serialize() const
 {
-    return serialize(mSystemId);
+    return serialize(mId);
 }
 
 std::vector<char> GizmoSystem::serialize(const Guid &systemId) const
@@ -38,7 +38,7 @@ void GizmoSystem::deserialize(const std::vector<char> &data)
 {
     const GizmoSystemHeader *header = reinterpret_cast<const GizmoSystemHeader *>(&data[0]);
 
-    mSystemId = header->mSystemId;
+    mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 

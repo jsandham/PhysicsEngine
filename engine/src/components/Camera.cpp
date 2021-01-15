@@ -5,9 +5,8 @@
 
 using namespace PhysicsEngine;
 
-Camera::Camera()
+Camera::Camera() : Component()
 {
-    mComponentId = Guid::INVALID;
     mEntityId = Guid::INVALID;
     mTargetTextureId = Guid::INVALID;
 
@@ -55,12 +54,55 @@ Camera::Camera()
     mIsViewportChanged = false;
 }
 
-Camera::Camera(const std::vector<char> &data)
+Camera::Camera(Guid id) : Component(id)
 {
-    deserialize(data);
+    mEntityId = Guid::INVALID;
+    mTargetTextureId = Guid::INVALID;
+
+    mQuery.mQueryBack = 0;
+    mQuery.mQueryFront = 1;
+
+    mTargets.mMainFBO = 0;
+    mTargets.mColorTex = 0;
+    mTargets.mDepthTex = 0;
+
+    mTargets.mColorPickingFBO = 0;
+    mTargets.mColorPickingTex = 0;
+    mTargets.mColorPickingDepthTex = 0;
+
+    mTargets.mGeometryFBO = 0;
+    mTargets.mPositionTex = 0;
+    mTargets.mNormalTex = 0;
+    mTargets.mAlbedoSpecTex = 0;
+
+    mTargets.mSsaoFBO = 0;
+    mTargets.mSsaoColorTex = 0;
+    mTargets.mSsaoNoiseTex = 0;
+
+    mRenderPath = RenderPath::Forward;
+    mMode = CameraMode::Main;
+    mSSAO = CameraSSAO::SSAO_Off;
+    mGizmos = CameraGizmos::Gizmos_Off;
+
+    mViewport.mX = 0;
+    mViewport.mY = 0;
+    mViewport.mWidth = 1024;
+    mViewport.mHeight = 1024;
+
+    mBackgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
+
+    mFrustum.mFov = 45.0f;
+    mFrustum.mAspectRatio = 1.0f;
+    mFrustum.mNearPlane = 0.1f;
+    mFrustum.mFarPlane = 250.0f;
+
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+        mFrustum.mFarPlane);
 
     mIsCreated = false;
+    mIsViewportChanged = false;
 }
+
 
 Camera::~Camera()
 {
@@ -68,7 +110,7 @@ Camera::~Camera()
 
 std::vector<char> Camera::serialize() const
 {
-    return serialize(mComponentId, mEntityId);
+    return serialize(mId, mEntityId);
 }
 
 std::vector<char> Camera::serialize(const Guid &componentId, const Guid &entityId) const
@@ -102,7 +144,7 @@ void Camera::deserialize(const std::vector<char> &data)
 {
     const CameraHeader *header = reinterpret_cast<const CameraHeader *>(&data[0]);
 
-    mComponentId = header->mComponentId;
+    mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mTargetTextureId = header->mTargetTextureId;
 
