@@ -62,27 +62,11 @@ class Texture3D : public Texture
     void writePixels() override;
 };
 
-template <typename T> struct IsTexture3D
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Texture3D>
 {
     static constexpr int type = PhysicsEngine::TEXTURE3D_TYPE;
 };
-template <> struct IsTexture<Texture3D>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsTexture3D<Texture3D>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Texture3D>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsAssetInternal<Texture3D>
 {
     static constexpr bool value = true;

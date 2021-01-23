@@ -42,18 +42,9 @@ template <typename T> struct SystemType
 {
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
-template <typename T> struct IsSystem
-{
-    static constexpr bool value = false;
-};
 template <typename T> struct IsSystemInternal
 {
     static constexpr bool value = false;
-};
-
-template <> struct IsSystem<System>
-{
-    static constexpr bool value = true;
 };
 } // namespace PhysicsEngine
 

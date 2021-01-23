@@ -55,22 +55,9 @@ class Font : public Asset
     Character getCharacter(char c) const;
 };
 
-template <typename T> struct IsFont
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Font>
 {
     static constexpr int type = PhysicsEngine::FONT_TYPE;
-};
-template <> struct IsFont<Font>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Font>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsAssetInternal<Font>
 {

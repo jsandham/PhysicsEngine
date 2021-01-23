@@ -32,22 +32,9 @@ class CleanUpSystem : public System
     void update(const Input &input, const Time &time);
 };
 
-template <typename T> struct IsCleanUpSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<CleanUpSystem>
 {
     static constexpr int type = PhysicsEngine::CLEANUPSYSTEM_TYPE;
-};
-template <> struct IsCleanUpSystem<CleanUpSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<CleanUpSystem>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsSystemInternal<CleanUpSystem>
 {

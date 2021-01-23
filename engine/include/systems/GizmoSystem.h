@@ -55,22 +55,9 @@ class GizmoSystem : public System
     void clearDrawList();
 };
 
-template <typename T> struct IsGizmoSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<GizmoSystem>
 {
     static constexpr int type = PhysicsEngine::GIZMOSYSTEM_TYPE;
-};
-template <> struct IsGizmoSystem<GizmoSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<GizmoSystem>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsSystemInternal<GizmoSystem>
 {

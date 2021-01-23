@@ -47,22 +47,9 @@ class PhysicsSystem : public System
     void update(const Input &input, const Time &time);
 };
 
-template <typename T> struct IsPhysicsSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<PhysicsSystem>
 {
     static constexpr int type = PhysicsEngine::PHYSICSSYSTEM_TYPE;
-};
-template <> struct IsPhysicsSystem<PhysicsSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<PhysicsSystem>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsSystemInternal<PhysicsSystem>
 {

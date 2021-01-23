@@ -34,18 +34,9 @@ template <typename T> struct AssetType
 {
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
-template <typename T> struct IsAsset
-{
-    static constexpr bool value = false;
-};
 template <typename T> struct IsAssetInternal
 {
     static constexpr bool value = false;
-};
-
-template <> struct IsAsset<Asset>
-{
-    static constexpr bool value = true;
 };
 } // namespace PhysicsEngine
 

@@ -22,19 +22,6 @@ class Collider : public Component
     virtual bool intersect(AABB aabb) const = 0;
 };
 
-template <typename T> struct IsCollider
-{
-    static constexpr bool value = false;
-};
-
-template <> struct IsCollider<Collider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<Collider>
-{
-    static constexpr bool value = true;
-};
 template <> struct IsComponentInternal<Collider>
 {
     static constexpr bool value = true;

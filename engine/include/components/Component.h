@@ -55,19 +55,12 @@ template <typename T> struct ComponentType
 {
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
-template <typename T> struct IsComponent
-{
-    static constexpr bool value = false;
-};
+
 template <typename T> struct IsComponentInternal
 {
     static constexpr bool value = false;
 };
 
-template <> struct IsComponent<Component>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

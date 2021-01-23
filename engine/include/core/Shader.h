@@ -177,22 +177,9 @@ class Shader : public Asset
     int getTexture2D(int nameLocation, int texUnit) const;
 };
 
-template <typename T> struct IsShader
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Shader>
 {
     static constexpr int type = PhysicsEngine::SHADER_TYPE;
-};
-template <> struct IsShader<Shader>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Shader>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsAssetInternal<Shader>
 {

@@ -108,23 +108,11 @@ class Material : public Asset
     int findIndexOfUniform(int nameLocation) const;
 };
 
-template <typename T> struct IsMaterial
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Material>
 {
     static constexpr int type = PhysicsEngine::MATERIAL_TYPE;
 };
-template <> struct IsMaterial<Material>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Material>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsAssetInternal<Material>
 {
     static constexpr bool value = true;

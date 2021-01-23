@@ -184,56 +184,56 @@ class World
 
     template <typename T> int getNumberOfSystems() const
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return getNumberOfSystems_impl<T>(getSystemAllocator_impl<T>());
     }
 
     template <typename T> int getNumberOfComponents() const
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getNumberOfComponents_impl<T>(getComponentAllocator_impl<T>());
     }
 
     template <typename T> int getNumberOfAssets() const
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return getNumberOfAssets_impl(getAssetAllocator_impl<T>());
     }
 
     template <typename T> T *getSystem()
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return getSystem_impl(getSystemAllocator_impl<T>());
     }
 
     template <typename T> T *getComponent(const Guid &entityId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getComponent_impl<T>(getComponentAllocator_impl<T>(), entityId);
     }
 
     template <typename T> T *addComponent(const Guid &entityId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), entityId);
     }
 
     template <typename T> T *addComponent(const std::vector<char> &data)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), data);
     }
 
     template <typename T> T *addSystem(int order)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return addSystem_impl<T>(getSystemOrAddAllocator_impl<T>(), order);
     }
@@ -244,56 +244,56 @@ class World
 
     template <typename T> T *getSystemByIndex(int index)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return getSystemByIndex_impl(getSystemAllocator_impl<T>(), index);
     }
 
     template <typename T> T *getSystemById(const Guid &systemId)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return getSystemById_impl<T>(getSystemAllocator_impl<T>(), systemId);
     }
 
     template <typename T> T *getAssetByIndex(int index)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return getAssetByIndex_impl(getAssetAllocator_impl<T>(), index);
     }
 
     template <typename T> T *getAssetById(const Guid &assetId)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return getAssetById_impl<T>(getAssetAllocator_impl<T>(), assetId);
     }
 
     template <typename T> T *getComponentByIndex(int index)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getComponentByIndex_impl(getComponentAllocator_impl<T>(), index);
     }
 
     template <typename T> T *getComponentById(const Guid &componentId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getComponentById_impl<T>(getComponentAllocator_impl<T>(), componentId);
     }
 
     template <typename T> T *createAsset()
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>());
     }
 
     template <typename T> T *createAsset(const std::vector<char> &data)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>(), data);
     }
@@ -952,35 +952,35 @@ class World
   private:
     template <typename T> int getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return allocator != NULL ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> int getNumberOfComponents_impl(const PoolAllocator<T> *allocator) const
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return allocator != NULL ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> int getNumberOfAssets_impl(const PoolAllocator<T> *allocator) const
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return allocator != NULL ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> T *getSystem_impl(const PoolAllocator<T> *allocator)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return allocator != NULL ? allocator->get(0) : NULL;
     }
 
     template <typename T> T *getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         if (allocator == NULL)
         {
@@ -1015,7 +1015,7 @@ class World
 
     template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         if (getTypeOf(entityId) != EntityType<Entity>::type)
         {
@@ -1044,7 +1044,7 @@ class World
 
     template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const std::vector<char> &data)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         int componentGlobalIndex = (int)allocator->getCount();
         int componentType = ComponentType<T>::type;
@@ -1067,7 +1067,7 @@ class World
 
     template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, int order)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         int systemGlobalIndex = (int)allocator->getCount();
         int systemType = SystemType<T>::type;
@@ -1097,14 +1097,14 @@ class World
 
     template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, int index)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return allocator != NULL ? allocator->get(index) : NULL;
     }
 
     template <typename T> T *getSystemById_impl(const PoolAllocator<T> *allocator, const Guid &systemId)
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         if (allocator == NULL || SystemType<T>::type != getTypeOf(systemId))
         {
@@ -1116,14 +1116,14 @@ class World
 
     template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, int index)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         return allocator != NULL ? allocator->get(index) : NULL;
     }
 
     template <typename T> T *getAssetById_impl(const PoolAllocator<T> *allocator, const Guid &assetId)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         if (allocator == NULL || AssetType<T>::type != getTypeOf(assetId))
         {
@@ -1135,14 +1135,14 @@ class World
 
     template <typename T> T *getComponentByIndex_impl(const PoolAllocator<T> *allocator, int index)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return allocator != NULL ? allocator->get(index) : NULL;
     }
 
     template <typename T> T *getComponentById_impl(const PoolAllocator<T> *allocator, const Guid &componentId)
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         if (allocator == NULL || ComponentType<T>::type != getTypeOf(componentId))
         {
@@ -1154,7 +1154,7 @@ class World
 
     template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         int index = (int)allocator->getCount();
         int type = AssetType<T>::type;
@@ -1172,7 +1172,7 @@ class World
 
     template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const std::vector<char> &data)
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         int index = (int)allocator->getCount();
         int type = AssetType<T>::type;
@@ -1196,7 +1196,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getComponentAllocator_impl()
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         std::unordered_map<int, Allocator *>::iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
         if (it != mComponentAllocatorMap.end())
@@ -1209,7 +1209,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getComponentOrAddAllocator_impl()
     {
-        static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         PoolAllocator<T> *allocator = getComponentAllocator_impl<T>();
         if (allocator == NULL)
@@ -1223,7 +1223,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getSystemAllocator_impl()
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         std::unordered_map<int, Allocator *>::iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
         if (it != mSystemAllocatorMap.end())
@@ -1236,7 +1236,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getSystemOrAddAllocator_impl()
     {
-        static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         PoolAllocator<T> *allocator = getSystemAllocator_impl<T>();
         if (allocator == NULL)
@@ -1250,7 +1250,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getAssetAllocator_impl()
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         std::unordered_map<int, Allocator *>::iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
         if (it != mAssetAllocatorMap.end())
@@ -1263,7 +1263,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getAssetOrAddAllocator_impl()
     {
-        static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         PoolAllocator<T> *allocator = getAssetAllocator_impl<T>();
         if (allocator == NULL)

@@ -116,23 +116,11 @@ class Light : public Component
     GLuint getNativeGraphicsShadowCubemapDepthTex() const;
 };
 
-template <typename T> struct IsLight
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<Light>
 {
     static constexpr int type = PhysicsEngine::LIGHT_TYPE;
 };
-template <> struct IsLight<Light>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<Light>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<Light>
 {
     static constexpr bool value = true;

@@ -40,23 +40,11 @@ class LineRenderer : public Component
     void deserialize(const std::vector<char> &data);
 };
 
-template <typename T> struct IsLineRenderer
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<LineRenderer>
 {
     static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;
 };
-template <> struct IsLineRenderer<LineRenderer>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<LineRenderer>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<LineRenderer>
 {
     static constexpr bool value = true;

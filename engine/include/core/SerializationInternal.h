@@ -13,21 +13,21 @@ namespace PhysicsEngine
 {
 template <class T> Guid ExtactInternalAssetId(const std::vector<char> &data)
 {
-    static_assert(IsAsset<T>::value == true, "'T' is not of type Asset");
+    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     return Guid::INVALID;
 }
 
 template <class T> Guid ExtactInternalComponentId(const std::vector<char> &data)
 {
-    static_assert(IsComponent<T>::value == true, "'T' is not of type Component");
+    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
     return Guid::INVALID;
 }
 
 template <class T> Guid ExtactInternalSystemId(const std::vector<char> &data)
 {
-    static_assert(IsSystem<T>::value == true, "'T' is not of type System");
+    static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
     return Guid::INVALID;
 }

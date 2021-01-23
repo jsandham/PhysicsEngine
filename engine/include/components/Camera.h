@@ -184,23 +184,11 @@ class Camera : public Component
     GLuint getNativeGraphicsSSAONoiseTex() const;
 };
 
-template <typename T> struct IsCamera
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<Camera>
 {
     static constexpr int type = CAMERA_TYPE;
 };
-template <> struct IsCamera<Camera>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<Camera>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<Camera>
 {
     static constexpr bool value = true;

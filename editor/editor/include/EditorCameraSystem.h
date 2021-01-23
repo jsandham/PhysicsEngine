@@ -99,23 +99,11 @@ class EditorCameraSystem : public System
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
 };
 
-template <typename T> struct IsEditorCameraSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<EditorCameraSystem>
 {
     static constexpr int type = 21;
 };
-template <> struct IsEditorCameraSystem<EditorCameraSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<EditorCameraSystem>
-{
-    static constexpr bool value = true;
-};
+
 } // namespace PhysicsEngine
 
 #endif

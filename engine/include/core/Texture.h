@@ -81,19 +81,6 @@ class Texture : public Asset
 
 };
 
-template <typename T> struct IsTexture
-{
-    static constexpr bool value = false;
-};
-
-template <> struct IsTexture<Texture>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Texture>
-{
-    static constexpr bool value = true;
-};
 template <> struct IsAssetInternal<Texture>
 {
     static constexpr bool value = true;

@@ -39,27 +39,11 @@ class CapsuleCollider : public Collider
     bool intersect(AABB aabb) const;
 };
 
-template <typename T> struct IsCapsuleCollider
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<CapsuleCollider>
 {
     static constexpr int type = CAPSULECOLLIDER_TYPE;
 };
-template <> struct IsCollider<CapsuleCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsCapsuleCollider<CapsuleCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<CapsuleCollider>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<CapsuleCollider>
 {
     static constexpr bool value = true;

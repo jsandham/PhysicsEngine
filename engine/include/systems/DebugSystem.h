@@ -34,22 +34,9 @@ class DebugSystem : public System
     void update(const Input &input, const Time &time);
 };
 
-template <typename T> struct IsDebugSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<DebugSystem>
 {
     static constexpr int type = PhysicsEngine::DEBUGSYSTEM_TYPE;
-};
-template <> struct IsDebugSystem<DebugSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<DebugSystem>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsSystemInternal<DebugSystem>
 {

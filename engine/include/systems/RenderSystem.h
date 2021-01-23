@@ -57,22 +57,9 @@ class RenderSystem : public System
     void sortRenderQueue();
 };
 
-template <typename T> struct IsRenderSystem
-{
-    static constexpr bool value = false;
-};
-
 template <> struct SystemType<RenderSystem>
 {
     static constexpr int type = PhysicsEngine::RENDERSYSTEM_TYPE;
-};
-template <> struct IsRenderSystem<RenderSystem>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSystem<RenderSystem>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsSystemInternal<RenderSystem>
 {

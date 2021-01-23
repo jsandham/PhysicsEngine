@@ -53,23 +53,11 @@ class Rigidbody : public Component
     void deserialize(const std::vector<char> &data);
 };
 
-template <typename T> struct IsRigidbody
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<Rigidbody>
 {
     static constexpr int type = PhysicsEngine::RIGIDBODY_TYPE;
 };
-template <> struct IsRigidbody<Rigidbody>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<Rigidbody>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<Rigidbody>
 {
     static constexpr bool value = true;

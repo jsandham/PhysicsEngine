@@ -52,23 +52,11 @@ class MeshRenderer : public Component
     std::vector<Guid> getMaterials() const;
 };
 
-template <typename T> struct IsMeshRenderer
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<MeshRenderer>
 {
     static constexpr int type = PhysicsEngine::MESHRENDERER_TYPE;
 };
-template <> struct IsMeshRenderer<MeshRenderer>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<MeshRenderer>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<MeshRenderer>
 {
     static constexpr bool value = true;

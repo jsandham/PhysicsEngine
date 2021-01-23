@@ -77,23 +77,12 @@ template <typename T> struct EntityType
 {
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
-template <typename T> struct IsEntity
-{
-    static constexpr bool value = false;
-};
+
 template <typename> struct IsEntityInternal
 {
     static constexpr bool value = false;
 };
 
-template <> struct EntityType<Entity>
-{
-    static constexpr int type = PhysicsEngine::ENTITY_TYPE;
-};
-template <> struct IsEntity<Entity>
-{
-    static constexpr bool value = true;
-};
 template <> struct IsEntityInternal<Entity>
 {
     static constexpr bool value = true;

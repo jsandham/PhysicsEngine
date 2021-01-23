@@ -68,26 +68,9 @@ class Cubemap : public Texture
     void writePixels() override;
 };
 
-template <typename T> struct IsCubemap
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Cubemap>
 {
     static constexpr int type = PhysicsEngine::CUBEMAP_TYPE;
-};
-template <> struct IsTexture<Cubemap>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsCubemap<Cubemap>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Cubemap>
-{
-    static constexpr bool value = true;
 };
 template <> struct IsAssetInternal<Cubemap>
 {

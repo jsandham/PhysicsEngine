@@ -41,27 +41,11 @@ class SphereCollider : public Collider
     std::vector<float> getLines() const;
 };
 
-template <typename T> struct IsSphereCollider
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<SphereCollider>
 {
     static constexpr int type = PhysicsEngine::SPHERECOLLIDER_TYPE;
 };
-template <> struct IsCollider<SphereCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsSphereCollider<SphereCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<SphereCollider>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<SphereCollider>
 {
     static constexpr bool value = true;

@@ -48,23 +48,11 @@ class Transform : public Component
     glm::vec3 getRight() const;
 };
 
-template <typename T> struct IsTransform
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<Transform>
 {
     static constexpr int type = PhysicsEngine::TRANSFORM_TYPE;
 };
-template <> struct IsTransform<Transform>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<Transform>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<Transform>
 {
     static constexpr bool value = true;

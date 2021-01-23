@@ -77,23 +77,11 @@ class Mesh : public Asset
     void computeBoundingSphere();
 };
 
-template <typename T> struct IsMesh
-{
-    static constexpr bool value = false;
-};
-
 template <> struct AssetType<Mesh>
 {
     static constexpr int type = PhysicsEngine::MESH_TYPE;
 };
-template <> struct IsMesh<Mesh>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsAsset<Mesh>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsAssetInternal<Mesh>
 {
     static constexpr bool value = true;

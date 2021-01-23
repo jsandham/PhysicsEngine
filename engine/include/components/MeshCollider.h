@@ -37,27 +37,11 @@ class MeshCollider : public Collider
     bool intersect(AABB aabb) const;
 };
 
-template <typename T> struct IsMeshCollider
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<MeshCollider>
 {
     static constexpr int type = PhysicsEngine::MESHCOLLIDER_TYPE;
 };
-template <> struct IsCollider<MeshCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsMeshCollider<MeshCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<MeshCollider>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<MeshCollider>
 {
     static constexpr bool value = true;

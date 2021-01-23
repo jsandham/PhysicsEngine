@@ -39,27 +39,11 @@ class BoxCollider : public Collider
     std::vector<float> getLines() const;
 };
 
-template <typename T> struct IsBoxCollider
-{
-    static constexpr bool value = false;
-};
-
 template <> struct ComponentType<BoxCollider>
 {
     static constexpr int type = BOXCOLLIDER_TYPE;
 };
-template <> struct IsCollider<BoxCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsBoxCollider<BoxCollider>
-{
-    static constexpr bool value = true;
-};
-template <> struct IsComponent<BoxCollider>
-{
-    static constexpr bool value = true;
-};
+
 template <> struct IsComponentInternal<BoxCollider>
 {
     static constexpr bool value = true;
