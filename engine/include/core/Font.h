@@ -50,6 +50,9 @@ class Font : public Asset
     std::vector<char> serialize(Guid assetId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     void load(std::string filepath);
 
     Character getCharacter(char c) const;

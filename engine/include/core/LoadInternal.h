@@ -116,6 +116,7 @@ Asset *getInternalAsset(PoolAllocator<Mesh> *meshAllocator, PoolAllocator<Materi
 
 // Load internal entity, component, system or asset into allocators
 Entity *loadInternalEntity(PoolAllocator<Entity> *entityAllocator, const std::vector<char> &data, int *index);
+Entity* loadInternalEntity(PoolAllocator<Entity>* entityAllocator, const std::istream& in, int* index);
 Component *loadInternalComponent(
     PoolAllocator<Transform> *transformAllocator, PoolAllocator<MeshRenderer> *meshRendererAllocator,
     PoolAllocator<LineRenderer> *lineRendererAllocator, PoolAllocator<Rigidbody> *rigidbodyAllocator,

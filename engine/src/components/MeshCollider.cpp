@@ -1,6 +1,7 @@
 #include "../../include/components/MeshCollider.h"
 
 #include "../../include/core/Intersect.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -44,6 +45,20 @@ void MeshCollider::deserialize(const std::vector<char> &data)
     mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mMeshId = header->mMeshId;
+}
+
+void MeshCollider::serialize(std::ostream& out) const
+{
+    Collider::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mMeshId);
+}
+
+void MeshCollider::deserialize(std::istream& in)
+{
+    Collider::deserialize(in);
+
+    PhysicsEngine::read(in, mMeshId);
 }
 
 bool MeshCollider::intersect(AABB aabb) const

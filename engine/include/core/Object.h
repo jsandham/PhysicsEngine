@@ -21,8 +21,8 @@ namespace PhysicsEngine
         Object(Guid id);
         virtual ~Object() = 0;
 
-        virtual std::vector<char> serialize() const = 0;
-        virtual void deserialize(const std::vector<char>& data) = 0;
+        virtual void serialize(std::ostream& out) const;
+        virtual void deserialize(std::istream& in);
 
         Guid getId() const;
     };

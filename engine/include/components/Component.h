@@ -24,6 +24,9 @@ class Component : public Object
     virtual std::vector<char> serialize() const = 0;
     virtual void deserialize(const std::vector<char>& data) = 0;
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     Entity *getEntity(World *world) const;
 
     template <typename T> void latentDestroy(World *world)

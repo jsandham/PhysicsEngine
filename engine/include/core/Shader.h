@@ -102,6 +102,9 @@ class Shader : public Asset
     std::vector<char> serialize(Guid assetId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     void load(const std::string &filepath);
     void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);
 

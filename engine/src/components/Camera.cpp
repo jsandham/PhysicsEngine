@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "../../include/core/Serialize.h"
 #include "../../include/components/Camera.h"
 #include "../../include/graphics/Graphics.h"
 
@@ -167,6 +168,51 @@ void Camera::deserialize(const std::vector<char> &data)
         mFrustum.mFarPlane);
 
     mBackgroundColor = Color(header->mBackgroundColor);
+
+    mIsViewportChanged = true;
+}
+
+void Camera::serialize(std::ostream& out) const
+{
+    Component::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mTargetTextureId);
+    PhysicsEngine::write<RenderPath>(out, mRenderPath);
+    PhysicsEngine::write<CameraMode>(out, mMode);
+    PhysicsEngine::write<CameraSSAO>(out, mSSAO);
+    PhysicsEngine::write<CameraGizmos>(out, mGizmos);
+    PhysicsEngine::write<int>(out, mViewport.mX);
+    PhysicsEngine::write<int>(out, mViewport.mY);
+    PhysicsEngine::write<int>(out, mViewport.mWidth);
+    PhysicsEngine::write<int>(out, mViewport.mHeight);
+    PhysicsEngine::write<float>(out, mFrustum.mFov);
+    PhysicsEngine::write<float>(out, mFrustum.mAspectRatio);
+    PhysicsEngine::write<float>(out, mFrustum.mNearPlane);
+    PhysicsEngine::write<float>(out, mFrustum.mFarPlane);
+    PhysicsEngine::write<Color>(out, mBackgroundColor);
+}
+
+void Camera::deserialize(std::istream& in)
+{
+    Component::deserialize(in);
+
+    PhysicsEngine::read<Guid>(in, mTargetTextureId);
+    PhysicsEngine::read<RenderPath>(in, mRenderPath);
+    PhysicsEngine::read<CameraMode>(in, mMode);
+    PhysicsEngine::read<CameraSSAO>(in, mSSAO);
+    PhysicsEngine::read<CameraGizmos>(in, mGizmos);
+    PhysicsEngine::read<int>(in, mViewport.mX);
+    PhysicsEngine::read<int>(in, mViewport.mY);
+    PhysicsEngine::read<int>(in, mViewport.mWidth);
+    PhysicsEngine::read<int>(in, mViewport.mHeight);
+    PhysicsEngine::read<float>(in, mFrustum.mFov);
+    PhysicsEngine::read<float>(in, mFrustum.mAspectRatio);
+    PhysicsEngine::read<float>(in, mFrustum.mNearPlane);
+    PhysicsEngine::read<float>(in, mFrustum.mFarPlane);
+    PhysicsEngine::read<Color>(in, mBackgroundColor);
+
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+        mFrustum.mFarPlane);
 
     mIsViewportChanged = true;
 }

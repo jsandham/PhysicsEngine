@@ -1,5 +1,6 @@
 #include "../../include/core/Mesh.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Serialize.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/obj_load/obj_load.h"
 
@@ -104,6 +105,37 @@ void Mesh::deserialize(const std::vector<char> &data)
     mCreated = false;
     mChanged = false;
 }
+
+
+void Mesh::serialize(std::ostream& out) const
+{
+    Asset::serialize(out);
+
+    PhysicsEngine::write<size_t>(out, mVertices.size());
+    PhysicsEngine::write<size_t>(out, mNormals.size());
+    PhysicsEngine::write<size_t>(out, mTexCoords.size());
+    PhysicsEngine::write<size_t>(out, mSubMeshVertexStartIndices.size());
+    //mVertices
+    //mNormals
+    //mTexCoords
+    //mSubMeshVertexStartIndices
+}
+
+void Mesh::deserialize(std::istream& in)
+{
+    Asset::deserialize(in);
+
+    size_t vertexCount, normalCount, texCoordCount, subMeshCount;
+    PhysicsEngine::read<size_t>(in, vertexCount);
+    PhysicsEngine::read<size_t>(in, normalCount);
+    PhysicsEngine::read<size_t>(in, texCoordCount);
+    PhysicsEngine::read<size_t>(in, subMeshCount);
+    //mVertexShader
+    //mGeometryShader
+    //mFragmentShader
+}
+
+
 
 void Mesh::load(const std::string &filepath)
 {

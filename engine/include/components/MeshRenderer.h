@@ -42,6 +42,9 @@ class MeshRenderer : public Component
     std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     void setMesh(Guid meshId);
     void setMaterial(Guid materialId);
     void setMaterial(Guid materialId, int index);

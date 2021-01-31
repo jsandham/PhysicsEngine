@@ -1,5 +1,7 @@
 #include "../../include/components/Transform.h"
 
+#include "../../include/core/Serialize.h"
+
 using namespace PhysicsEngine;
 
 Transform::Transform() : Component()
@@ -54,6 +56,26 @@ void Transform::deserialize(const std::vector<char> &data)
     mPosition = header->mPosition;
     mRotation = header->mRotation;
     mScale = header->mScale;
+}
+
+void Transform::serialize(std::ostream& out) const
+{
+    Component::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mParentId);
+    PhysicsEngine::write<glm::vec3>(out, mPosition);
+    PhysicsEngine::write<glm::quat>(out, mRotation);
+    PhysicsEngine::write<glm::vec3>(out, mScale);
+}
+
+void Transform::deserialize(std::istream& in)
+{
+    Component::deserialize(in);
+
+    PhysicsEngine::read<Guid>(in, mParentId);
+    PhysicsEngine::read<glm::vec3>(in, mPosition);
+    PhysicsEngine::read<glm::quat>(in, mRotation);
+    PhysicsEngine::read<glm::vec3>(in, mScale);
 }
 
 glm::mat4 Transform::getModelMatrix() const

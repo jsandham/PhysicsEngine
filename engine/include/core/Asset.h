@@ -21,6 +21,13 @@ class Asset : public Object
     Asset(Guid id);
     virtual ~Asset() = 0;
 
+    virtual std::vector<char> serialize() const = 0;
+    virtual std::vector<char> serialize(Guid assetId) const = 0;
+    virtual void deserialize(const std::vector<char>& data) = 0;
+
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     std::string getName() const;
     void setName(const std::string &name);
 

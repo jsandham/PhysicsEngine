@@ -4,6 +4,7 @@
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
 #include "../../include/core/mat_load.h"
+#include "../../include/core/Serialize.h"
 
 #include "../../include/graphics/Graphics.h"
 
@@ -85,6 +86,27 @@ void Material::deserialize(const std::vector<char> &data)
     }
 
     mShaderChanged = true;
+}
+
+void Material::serialize(std::ostream& out) const
+{
+    Asset::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mShaderId);
+    PhysicsEngine::write<RenderQueue>(out, mRenderQueue);
+    PhysicsEngine::write<size_t>(out, mUniforms.size());
+    // uniforms
+}
+
+void Material::deserialize(std::istream& in)
+{
+    Asset::deserialize(in);
+
+    size_t uniformCount;
+    PhysicsEngine::read<Guid>(in, mShaderId);
+    PhysicsEngine::read<RenderQueue>(in, mRenderQueue);
+    PhysicsEngine::read<size_t>(in, uniformCount);
+    // uniforms
 }
 
 void Material::load(const std::string &filepath)

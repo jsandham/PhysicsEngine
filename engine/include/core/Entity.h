@@ -19,13 +19,13 @@ struct EntityHeader
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
-struct EntityHeader1
-{
-    char mEntityName[64];
-    uint8_t mDoNotDestroy;
-};
-#pragma pack(pop)
+//#pragma pack(push, 1)
+//struct EntityHeader1
+//{
+//    char mEntityName[64];
+//    uint8_t mDoNotDestroy;
+//};
+//#pragma pack(pop)
 
 class World;
 
@@ -45,6 +45,9 @@ class Entity : public Object
     std::vector<char> serialize() const;
     std::vector<char> serialize(const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
+
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
 
     void latentDestroy(World *world);
     void immediateDestroy(World *world);

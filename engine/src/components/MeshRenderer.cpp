@@ -1,5 +1,7 @@
 #include "../../include/components/MeshRenderer.h"
 
+#include "../../include/core/Serialize.h"
+
 using namespace PhysicsEngine;
 
 MeshRenderer::MeshRenderer() : Component()
@@ -80,6 +82,38 @@ void MeshRenderer::deserialize(const std::vector<char> &data)
     mEnabled = static_cast<bool>(header->mEnabled);
     mMeshChanged = true;
     mMaterialChanged = true;
+}
+
+void MeshRenderer::serialize(std::ostream& out) const
+{
+    Component::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mMeshId);
+    for (int i = 0; i < 8; i++)
+    {
+        PhysicsEngine::write<Guid>(out, mMaterialIds[i]);
+    }
+    PhysicsEngine::write<int>(out, mMaterialCount);
+    PhysicsEngine::write<bool>(out, mIsStatic);
+    PhysicsEngine::write<bool>(out, mEnabled);
+    PhysicsEngine::write<bool>(out, mMeshChanged);
+    PhysicsEngine::write<bool>(out, mMaterialChanged);
+}
+
+void MeshRenderer::deserialize(std::istream& in)
+{
+    Component::deserialize(in);
+
+    PhysicsEngine::read<Guid>(in, mMeshId);
+    for (int i = 0; i < 8; i++)
+    {
+        PhysicsEngine::read<Guid>(in, mMaterialIds[i]);
+    }
+    PhysicsEngine::read<int>(in, mMaterialCount);
+    PhysicsEngine::read<bool>(in, mIsStatic);
+    PhysicsEngine::read<bool>(in, mEnabled);
+    PhysicsEngine::read<bool>(in, mMeshChanged);
+    PhysicsEngine::read<bool>(in, mMaterialChanged);
 }
 
 void MeshRenderer::setMesh(Guid meshId)

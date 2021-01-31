@@ -1,6 +1,7 @@
 #include "../../include/components/CapsuleCollider.h"
 
 #include "../../include/core/Intersect.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -42,6 +43,20 @@ void CapsuleCollider::deserialize(const std::vector<char> &data)
     mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mCapsule = header->mCapsule;
+}
+
+void CapsuleCollider::serialize(std::ostream& out) const
+{
+    Collider::serialize(out);
+
+    PhysicsEngine::write<Capsule>(out, mCapsule);
+}
+
+void CapsuleCollider::deserialize(std::istream& in)
+{
+    Collider::deserialize(in);
+
+    PhysicsEngine::read(in, mCapsule);
 }
 
 bool CapsuleCollider::intersect(AABB aabb) const

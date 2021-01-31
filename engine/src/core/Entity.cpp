@@ -4,6 +4,7 @@
 #include "../../include/core/Entity.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -52,6 +53,22 @@ void Entity::deserialize(const std::vector<char> &data)
     mId = header->mEntityId;
     mEntityName = std::string(header->mEntityName);
     mDoNotDestroy = static_cast<bool>(header->mDoNotDestroy);
+}
+
+void Entity::serialize(std::ostream& out) const
+{
+    Object::serialize(out);
+
+    PhysicsEngine::write<bool>(out, mDoNotDestroy);
+    PhysicsEngine::write<std::string>(out, mEntityName);
+}
+
+void Entity::deserialize(std::istream& in)
+{
+    Object::deserialize(in);
+
+    PhysicsEngine::read<bool>(in, mDoNotDestroy);
+    PhysicsEngine::read<std::string>(in, mEntityName);
 }
 
 void Entity::latentDestroy(World *world)

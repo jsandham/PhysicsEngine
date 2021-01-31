@@ -43,6 +43,9 @@ class Texture3D : public Texture
     std::vector<char> serialize(Guid assetId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     int getWidth() const;
     int getHeight() const;
     int getDepth() const;

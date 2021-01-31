@@ -3,6 +3,7 @@
 #include "../../include/components/SphereCollider.h"
 
 #include "../../include/core/Intersect.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -44,6 +45,20 @@ void SphereCollider::deserialize(const std::vector<char> &data)
     mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mSphere = header->mSphere;
+}
+
+void SphereCollider::serialize(std::ostream& out) const
+{
+    Collider::serialize(out);
+
+    PhysicsEngine::write<Sphere>(out, mSphere);
+}
+
+void SphereCollider::deserialize(std::istream& in)
+{
+    Collider::deserialize(in);
+
+    PhysicsEngine::read<Sphere>(in, mSphere);
 }
 
 bool SphereCollider::intersect(AABB aabb) const

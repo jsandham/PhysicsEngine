@@ -5,6 +5,7 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/Transform.h"
@@ -53,6 +54,16 @@ void DebugSystem::deserialize(const std::vector<char> &data)
 
     mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
+}
+
+void DebugSystem::serialize(std::ostream& out) const
+{
+    System::serialize(out);
+}
+
+void DebugSystem::deserialize(std::istream& in)
+{
+    System::deserialize(in);
 }
 
 void DebugSystem::init(World *world)

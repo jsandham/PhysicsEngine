@@ -48,6 +48,9 @@ class Mesh : public Asset
     std::vector<char> serialize(Guid assetId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
               std::vector<int> subMeshStartIndices);

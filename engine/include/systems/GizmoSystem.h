@@ -42,6 +42,9 @@ class GizmoSystem : public System
     std::vector<char> serialize(const Guid &systemId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     void init(World *world);
     void update(const Input &input, const Time &time);
 

@@ -1,4 +1,5 @@
 #include "../../include/core/Object.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -15,6 +16,16 @@ Object::Object(Guid id) : mId(id)
 Object::~Object()
 {
 
+}
+
+void Object::serialize(std::ostream& out) const
+{
+	PhysicsEngine::write<Guid>(out, mId);
+}
+
+void Object::deserialize(std::istream& in)
+{
+	PhysicsEngine::read<Guid>(in, mId);
 }
 
 Guid Object::getId() const

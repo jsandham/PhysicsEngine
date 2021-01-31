@@ -1,6 +1,7 @@
 #include "../../include/components/BoxCollider.h"
 
 #include "../../include/core/Intersect.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -42,6 +43,18 @@ void BoxCollider::deserialize(const std::vector<char> &data)
     mId = header->mComponentId;
     mEntityId = header->mEntityId;
     mAABB = header->mAABB;
+}
+
+void BoxCollider::serialize(std::ostream& out) const
+{
+    Collider::serialize(out);
+    PhysicsEngine::write<AABB>(out, mAABB);
+}
+
+void BoxCollider::deserialize(std::istream& in)
+{
+    Collider::deserialize(in);
+    PhysicsEngine::read<AABB>(in, mAABB);
 }
 
 bool BoxCollider::intersect(AABB aabb) const

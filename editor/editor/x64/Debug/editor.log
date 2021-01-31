@@ -1,19 +1,64 @@
 ﻿  Command.cpp
-  InspectorDrawer.cpp
-  LightDrawer.cpp
   Editor.cpp
   EditorCameraSystem.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(267,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(268,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
   EditorClipboard.cpp
   EditorCommands.cpp
+  EditorFileIO.cpp
+  EditorOnlyEntityCreation.cpp
   EditorWin32.cpp
   LibraryDirectory.cpp
   Load.cpp
   MenuBar.cpp
   TransformGizmo.cpp
   Undo.cpp
+  WriteToJson.cpp
+  BoxColliderDrawer.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  CubemapDrawer.cpp
+  FontDrawer.cpp
+  InspectorDrawer.cpp
+  Generating Code...
+  Compiling...
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  LoadInspectorDrawerInternal.cpp
+  MaterialDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(135,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshRendererDrawer.cpp
+  RigidbodyDrawer.cpp
+  ShaderDrawer.cpp
+  SphereColliderDrawer.cpp
+  Texture2DDrawer.cpp
+  Texture3DDrawer.cpp
+  TransformDrawer.cpp
+  main.cpp
+  AboutPopup.cpp
+  BuildWindow.cpp
+  Console.cpp
+  Hierarchy.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(69,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Inspector.cpp
   PopupWindow.cpp
+  Generating Code...
+  Compiling...
+  PreferencesWindow.cpp
+  ProjectView.cpp
+  ProjectWindow.cpp
+  SceneView.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(86,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(87,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(375,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=double
+          ]
   Window.cpp
   Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

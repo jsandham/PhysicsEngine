@@ -1,5 +1,6 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Serialize.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/stb_image/stb_image.h"
 
@@ -141,6 +142,22 @@ void Texture2D::deserialize(const std::vector<char> &data)
 
     mCreated = false;
     mUpdateRequired = false;
+}
+
+void Texture2D::serialize(std::ostream& out) const
+{
+    Texture::serialize(out);
+
+    PhysicsEngine::write<int>(out, mWidth);
+    PhysicsEngine::write<int>(out, mHeight);
+}
+
+void Texture2D::deserialize(std::istream& in)
+{
+    Texture::deserialize(in);
+
+    PhysicsEngine::read<int>(in, mWidth);
+    PhysicsEngine::read<int>(in, mHeight);
 }
 
 void Texture2D::load(const std::string &filepath)

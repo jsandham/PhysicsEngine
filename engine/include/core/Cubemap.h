@@ -51,6 +51,9 @@ class Cubemap : public Texture
     std::vector<char> serialize(Guid assetId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     int getWidth() const;
 
     std::vector<unsigned char> getRawCubemapData() const;

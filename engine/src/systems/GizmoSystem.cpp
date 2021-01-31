@@ -1,6 +1,7 @@
 #include "../../include/systems/GizmoSystem.h"
 
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -40,6 +41,16 @@ void GizmoSystem::deserialize(const std::vector<char> &data)
 
     mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
+}
+
+void GizmoSystem::serialize(std::ostream& out) const
+{
+    System::serialize(out);
+}
+
+void GizmoSystem::deserialize(std::istream& in)
+{
+    System::deserialize(in);
 }
 
 void GizmoSystem::init(World *world)

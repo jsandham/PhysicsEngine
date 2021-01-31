@@ -1,4 +1,5 @@
 #include "../../include/systems/System.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -14,6 +15,20 @@ System::System(Guid id) : Object(id)
 
 System::~System()
 {
+}
+
+void System::serialize(std::ostream& out) const
+{
+    Object::serialize(out);
+
+    PhysicsEngine::write<int>(out, mOrder);
+}
+
+void System::deserialize(std::istream& in)
+{
+    Object::deserialize(in);
+
+    PhysicsEngine::read<int>(in, mOrder);
 }
 
 int System::getOrder() const

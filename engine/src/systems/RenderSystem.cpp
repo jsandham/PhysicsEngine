@@ -62,6 +62,16 @@ void RenderSystem::deserialize(const std::vector<char> &data)
     mOrder = static_cast<int>(header->mUpdateOrder);
 }
 
+void RenderSystem::serialize(std::ostream& out) const
+{
+    System::serialize(out);
+}
+
+void RenderSystem::deserialize(std::istream& in)
+{
+    System::deserialize(in);
+}
+
 void RenderSystem::init(World *world)
 {
     mWorld = world;

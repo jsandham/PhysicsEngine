@@ -3,6 +3,7 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -42,6 +43,16 @@ void CleanUpSystem::deserialize(const std::vector<char> &data)
 
     mId = header->mSystemId;
     mOrder = static_cast<int>(header->mUpdateOrder);
+}
+
+void CleanUpSystem::serialize(std::ostream& out) const
+{
+    System::serialize(out);
+}
+
+void CleanUpSystem::deserialize(std::istream& in)
+{
+    System::deserialize(in);
 }
 
 void CleanUpSystem::init(World *world)

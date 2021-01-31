@@ -3,6 +3,7 @@
 
 #include "../../include/core/Font.h"
 #include "../../include/core/InternalShaders.h"
+#include "../../include/core/Serialize.h"
 #include "../../include/graphics/Graphics.h"
 
 // #include "../../include/freetype/ft2build.h"
@@ -77,6 +78,16 @@ void Font::deserialize(const std::vector<char> &data)
         std::cout << "Error: Font filepath size (" << header->mFilepathSize << ") is invalid" << std::endl;
         return;
     }
+}
+
+void Font::serialize(std::ostream& out) const
+{
+    Asset::serialize(out);
+}
+
+void Font::deserialize(std::istream& in)
+{
+    Asset::deserialize(in);
 }
 
 void Font::load(std::string filepath)

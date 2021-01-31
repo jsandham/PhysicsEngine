@@ -36,6 +36,9 @@ class CapsuleCollider : public Collider
     std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
     void deserialize(const std::vector<char> &data);
 
+    void serialize(std::ostream& out) const;
+    void deserialize(std::istream& in);
+
     bool intersect(AABB aabb) const;
 };
 

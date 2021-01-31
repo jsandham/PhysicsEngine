@@ -540,6 +540,15 @@ Entity *PhysicsEngine::loadInternalEntity(PoolAllocator<Entity> *entityAllocator
     return entityAllocator->construct(data);
 }
 
+
+Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator, const std::istream& in, int* index)
+{
+    //*index = (int)entityAllocator->getCount();
+    return nullptr;// entityAllocator->construct(in);
+}
+
+
+
 Component *PhysicsEngine::loadInternalComponent(
     PoolAllocator<Transform> *transformAllocator, PoolAllocator<MeshRenderer> *meshRendererAllocator,
     PoolAllocator<LineRenderer> *lineRendererAllocator, PoolAllocator<Rigidbody> *rigidbodyAllocator,

@@ -2,6 +2,7 @@
 
 #include "../../include/components/Component.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -17,6 +18,20 @@ Component::Component(Guid id) : Object(id)
 
 Component::~Component()
 {
+}
+
+void Component::serialize(std::ostream& out) const
+{
+    Object::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mEntityId);
+}
+
+void Component::deserialize(std::istream& in)
+{
+    Object::deserialize(in);
+
+    PhysicsEngine::read<Guid>(in, mEntityId);
 }
 
 Entity *Component::getEntity(World *world) const

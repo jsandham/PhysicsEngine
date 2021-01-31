@@ -1,5 +1,7 @@
 #include "../../include/components/LineRenderer.h"
 
+#include "../../include/core/Serialize.h"
+
 using namespace PhysicsEngine;
 
 LineRenderer::LineRenderer() : Component()
@@ -52,4 +54,22 @@ void LineRenderer::deserialize(const std::vector<char> &data)
     mStart = header->mStart;
     mEnd = header->mEnd;
     mMaterialId = header->mMaterialId;
+}
+
+void LineRenderer::serialize(std::ostream& out) const
+{
+    Component::serialize(out);
+
+    PhysicsEngine::write<Guid>(out, mMaterialId);
+    PhysicsEngine::write<glm::vec3>(out, mStart);
+    PhysicsEngine::write<glm::vec3>(out, mEnd);
+}
+
+void LineRenderer::deserialize(std::istream& in)
+{
+    Component::deserialize(in);
+
+    PhysicsEngine::read<Guid>(in, mMaterialId);
+    PhysicsEngine::read<glm::vec3>(in, mStart);
+    PhysicsEngine::read<glm::vec3>(in, mEnd);
 }

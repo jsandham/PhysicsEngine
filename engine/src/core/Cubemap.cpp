@@ -1,5 +1,6 @@
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Serialize.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
@@ -146,6 +147,20 @@ void Cubemap::deserialize(const std::vector<char> &data)
     {
         mRawTextureData[i] = *reinterpret_cast<const unsigned char *>(&data[start2 + sizeof(unsigned char) * i]);
     }
+}
+
+void Cubemap::serialize(std::ostream& out) const
+{
+    Texture::serialize(out);
+
+    PhysicsEngine::write<int>(out, mWidth);
+}
+
+void Cubemap::deserialize(std::istream& in)
+{
+    Texture::deserialize(in);
+
+    PhysicsEngine::read<int>(in, mWidth);
 }
 
 int Cubemap::getWidth() const

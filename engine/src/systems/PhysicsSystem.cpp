@@ -9,6 +9,7 @@
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Triangle.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Serialize.h"
 
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/MeshCollider.h"
@@ -57,6 +58,22 @@ void PhysicsSystem::deserialize(const std::vector<char> &data)
     mOrder = static_cast<int>(header->mUpdateOrder);
     mGravity = header->mGravity;
     mTimestep = header->mTimestep;
+}
+
+void PhysicsSystem::serialize(std::ostream& out) const
+{
+    System::serialize(out);
+
+    PhysicsEngine::write<float>(out, mGravity);
+    PhysicsEngine::write<float>(out, mTimestep);
+}
+
+void PhysicsSystem::deserialize(std::istream& in)
+{
+    System::deserialize(in);
+
+    PhysicsEngine::read<float>(in, mGravity);
+    PhysicsEngine::read<float>(in, mTimestep);
 }
 
 void PhysicsSystem::init(World *world)

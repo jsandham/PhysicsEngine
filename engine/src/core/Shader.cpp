@@ -10,6 +10,7 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
+#include "../../include/core/Serialize.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
@@ -105,6 +106,31 @@ void Shader::deserialize(const std::vector<char> &data)
     end += fragmentShaderSize;
 
     mFragmentShader = std::string(start, end);
+}
+
+void Shader::serialize(std::ostream& out) const
+{
+    Asset::serialize(out);
+
+    PhysicsEngine::write<size_t>(out, mVertexShader.length());
+    PhysicsEngine::write<size_t>(out, mGeometryShader.length());
+    PhysicsEngine::write<size_t>(out, mFragmentShader.length());
+    //mVertexShader
+    //mGeometryShader
+    //mFragmentShader
+}
+
+void Shader::deserialize(std::istream& in)
+{
+    Asset::deserialize(in);
+
+    size_t vertShaderSize, geoShaderSize, fragShaderSize;
+    PhysicsEngine::read<size_t>(in, vertShaderSize);
+    PhysicsEngine::read<size_t>(in, geoShaderSize);
+    PhysicsEngine::read<size_t>(in, fragShaderSize);
+    //mVertexShader
+    //mGeometryShader
+    //mFragmentShader
 }
 
 void Shader::load(const std::string &filepath)

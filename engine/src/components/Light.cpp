@@ -2,6 +2,7 @@
 
 #include "../../include/components/Light.h"
 #include "../../include/graphics/Graphics.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -135,6 +136,44 @@ void Light::deserialize(const std::vector<char> &data)
     mLightType = static_cast<LightType>(header->mLightType);
     mShadowType = static_cast<ShadowType>(header->mShadowType);
     mShadowMapResolution = static_cast<ShadowMapResolution>(header->mShadowMapResolution);
+
+    mIsShadowMapResolutionChanged = true;
+}
+
+void Light::serialize(std::ostream& out) const
+{
+    Component::serialize(out);
+
+    PhysicsEngine::write<glm::vec4>(out, mColor);
+    PhysicsEngine::write<float>(out, mIntensity);
+    PhysicsEngine::write<float>(out, mSpotAngle);
+    PhysicsEngine::write<float>(out, mInnerSpotAngle);
+    PhysicsEngine::write<float>(out, mShadowNearPlane);
+    PhysicsEngine::write<float>(out, mShadowFarPlane);
+    PhysicsEngine::write<float>(out, mShadowAngle);
+    PhysicsEngine::write<float>(out, mShadowRadius);
+    PhysicsEngine::write<float>(out, mShadowStrength);
+    PhysicsEngine::write<LightType>(out, mLightType);
+    PhysicsEngine::write<ShadowType>(out, mShadowType);
+    PhysicsEngine::write<ShadowMapResolution>(out, mShadowMapResolution);
+}
+
+void Light::deserialize(std::istream& in)
+{
+    Component::deserialize(in);
+
+    PhysicsEngine::read<glm::vec4>(in, mColor);
+    PhysicsEngine::read<float>(in, mIntensity);
+    PhysicsEngine::read<float>(in, mSpotAngle);
+    PhysicsEngine::read<float>(in, mInnerSpotAngle);
+    PhysicsEngine::read<float>(in, mShadowNearPlane);
+    PhysicsEngine::read<float>(in, mShadowFarPlane);
+    PhysicsEngine::read<float>(in, mShadowAngle);
+    PhysicsEngine::read<float>(in, mShadowRadius);
+    PhysicsEngine::read<float>(in, mShadowStrength);
+    PhysicsEngine::read<LightType>(in, mLightType);
+    PhysicsEngine::read<ShadowType>(in, mShadowType);
+    PhysicsEngine::read<ShadowMapResolution>(in, mShadowMapResolution);
 
     mIsShadowMapResolutionChanged = true;
 }

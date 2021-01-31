@@ -1,5 +1,6 @@
 #include "../../include/core/Texture.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Serialize.h"
 
 using namespace PhysicsEngine;
 
@@ -9,6 +10,38 @@ Texture::Texture() : Asset()
 
 Texture::Texture(Guid id) : Asset(id)
 {
+}
+
+void Texture::serialize(std::ostream& out) const
+{
+    Asset::serialize(out);
+
+    PhysicsEngine::write<TextureDimension>(out, mDimension);
+    PhysicsEngine::write<TextureFormat>(out, mFormat);
+    PhysicsEngine::write<TextureWrapMode>(out, mWrapMode);
+    PhysicsEngine::write<TextureFilterMode>(out, mFilterMode);
+    PhysicsEngine::write<int>(out, mNumChannels);
+    PhysicsEngine::write<int>(out, mAnisoLevel);
+    PhysicsEngine::write<size_t>(out, mRawTextureData.size());
+    //mRawTextureData
+}
+
+void Texture::deserialize(std::istream& in)
+{
+    Asset::deserialize(in);
+
+    size_t dataSize;
+    PhysicsEngine::read<TextureDimension>(in, mDimension);
+    PhysicsEngine::read<TextureFormat>(in, mFormat);
+    PhysicsEngine::read<TextureWrapMode>(in, mWrapMode);
+    PhysicsEngine::read<TextureFilterMode>(in, mFilterMode);
+    PhysicsEngine::read<int>(in, mNumChannels);
+    PhysicsEngine::read<int>(in, mAnisoLevel);
+    PhysicsEngine::read<size_t>(in, dataSize);
+    //mRawTextureData
+
+    mCreated = false;
+    mUpdateRequired = false;
 }
 
 bool Texture::isCreated() const
