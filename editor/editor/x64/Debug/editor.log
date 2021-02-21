@@ -1,56 +1,404 @@
 ﻿  Command.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  BoxColliderDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  CameraDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  CapsuleColliderDrawer.cpp
+  CubemapDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  FontDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  InspectorDrawer.cpp
+  LightDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  LineRendererDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  LoadInspectorDrawerInternal.cpp
+  MaterialDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(135,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshRendererDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  RigidbodyDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  ShaderDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  SphereColliderDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  Texture2DDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  Texture3DDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  TransformDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  Generating Code...
+  Compiling...
   Editor.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
   EditorCameraSystem.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(267,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(268,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
   EditorClipboard.cpp
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(1170,13): error C2065: 'mSystemAllocatorMap': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(165): message : see reference to function template instantiation 'PhysicsEngine::PoolAllocator<T,256> *PhysicsEngine::World::getSystemOrAddAllocator_impl<T>(void)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorClipboard.cpp(132): message : see reference to function template instantiation 'T *PhysicsEngine::World::addSystem<PhysicsEngine::EditorCameraSystem>(int)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
   EditorCommands.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(27,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(28,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(32,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(42,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(63,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(64,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(65,40): error C2660: 'PhysicsEngine::Camera::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Camera.h(119,18): message : see declaration of 'PhysicsEngine::Camera::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(69,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(80,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(101,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(102,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(103,38): error C2660: 'PhysicsEngine::Light::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Light.h(75,18): message : see declaration of 'PhysicsEngine::Light::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(107,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(118,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(142,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(143,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(144,52): error C2660: 'PhysicsEngine::MeshRenderer::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\MeshRenderer.h(28,18): message : see declaration of 'PhysicsEngine::MeshRenderer::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(148,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(159,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(184,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(185,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(186,47): error C2660: 'PhysicsEngine::BoxCollider::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\BoxCollider.h(24,18): message : see declaration of 'PhysicsEngine::BoxCollider::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(187,52): error C2660: 'PhysicsEngine::MeshRenderer::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\MeshRenderer.h(28,18): message : see declaration of 'PhysicsEngine::MeshRenderer::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(191,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(203,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(228,40): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(229,46): error C2660: 'PhysicsEngine::Transform::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Transform.h(30,18): message : see declaration of 'PhysicsEngine::Transform::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(230,50): error C2660: 'PhysicsEngine::SphereCollider::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\SphereCollider.h(27,18): message : see declaration of 'PhysicsEngine::SphereCollider::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(231,52): error C2660: 'PhysicsEngine::MeshRenderer::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\MeshRenderer.h(28,18): message : see declaration of 'PhysicsEngine::MeshRenderer::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(235,56): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(247,32): error C2664: 'void PhysicsEngine::Entity::deserialize(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(29,18): message : see declaration of 'PhysicsEngine::Entity::deserialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCommands.cpp(276,64): error C2660: 'PhysicsEngine::Component::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Component.h(23,18): message : see declaration of 'PhysicsEngine::Component::serialize'
   EditorFileIO.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(37,35): error C2664: 'void PhysicsEngine::Shader::serialize(std::ostream &) const': cannot convert argument 1 from 'PhysicsEngine::Guid' to 'std::ostream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Shader.h(89,18): message : see declaration of 'PhysicsEngine::Shader::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(44,36): error C2664: 'void PhysicsEngine::Texture2D::serialize(std::ostream &) const': cannot convert argument 1 from 'PhysicsEngine::Guid' to 'std::ostream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Texture2D.h(24,18): message : see declaration of 'PhysicsEngine::Texture2D::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(51,33): error C2664: 'void PhysicsEngine::Mesh::serialize(std::ostream &) const': cannot convert argument 1 from 'PhysicsEngine::Guid' to 'std::ostream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Mesh.h(35,18): message : see declaration of 'PhysicsEngine::Mesh::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(58,37): error C2664: 'void PhysicsEngine::Material::serialize(std::ostream &) const': cannot convert argument 1 from 'PhysicsEngine::Guid' to 'std::ostream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Material.h(31,18): message : see declaration of 'PhysicsEngine::Material::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(66,9): error C2065: 'AssetFileHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(66,25): error C2146: syntax error: missing ';' before identifier 'header'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(66,25): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(67,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(68,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(69,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(70,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(71,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(72,9): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(74,32): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(74,47): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(182,5): error C2065: 'SceneFileHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(182,21): error C2146: syntax error: missing ';' before identifier 'header'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(182,21): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(183,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(184,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(185,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(186,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(187,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(188,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(189,5): error C2065: 'header': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,17): error C2065: 'ComponentInfoHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,10): error C2923: 'std::vector': 'ComponentInfoHeader' is not a valid template type argument for parameter '_Ty'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,10): error C2976: 'std::vector': too few template arguments
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,54): error C2641: cannot deduce template arguments for 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2783: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Alloc &)': could not deduce template argument for '_Ty'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(469): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Ty &,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(474): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2780: 'std::vector<_Ty,_Alloc> std::vector(_Iter,_Iter,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(504): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &,const _Alloc &)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(537): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2780: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&,const _Alloc &) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(586): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(191,70): error C2514: 'std::vector': class template cannot be constructed
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,17): error C2065: 'SystemInfoHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,10): error C2923: 'std::vector': 'SystemInfoHeader' is not a valid template type argument for parameter '_Ty'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,10): error C2976: 'std::vector': too few template arguments
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,48): error C2641: cannot deduce template arguments for 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2783: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Alloc &)': could not deduce template argument for '_Ty'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(469): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Ty &,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(474): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2780: 'std::vector<_Ty,_Alloc> std::vector(_Iter,_Iter,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(504): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &,const _Alloc &)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(537): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2780: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&,const _Alloc &) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(586): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(192,61): error C2514: 'std::vector': class template cannot be constructed
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,17): error C2065: 'EntityHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,10): error C2923: 'std::vector': 'EntityHeader' is not a valid template type argument for parameter '_Ty'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,10): error C2976: 'std::vector': too few template arguments
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,44): error C2641: cannot deduce template arguments for 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2783: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Alloc &)': could not deduce template argument for '_Ty'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(469): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Ty &,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(474): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(_Iter,_Iter,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(504): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &,const _Alloc &)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(537): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&,const _Alloc &) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(586): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(194,57): error C2514: 'std::vector': class template cannot be constructed
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,17): error C2065: 'TransformHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,10): error C2923: 'std::vector': 'TransformHeader' is not a valid template type argument for parameter '_Ty'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,10): error C2976: 'std::vector': too few template arguments
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,50): error C2641: cannot deduce template arguments for 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2783: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Alloc &)': could not deduce template argument for '_Ty'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(469): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Ty &,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(474): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2780: 'std::vector<_Ty,_Alloc> std::vector(_Iter,_Iter,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(504): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &,const _Alloc &)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(537): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&) noexcept': could not deduce template argument for 'std::vector<_Ty,_Alloc> &&' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(581): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2780: 'std::vector<_Ty,_Alloc> std::vector(std::vector<_Ty,_Alloc> &&,const _Alloc &) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(586): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(195,66): error C2514: 'std::vector': class template cannot be constructed
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,17): error C2065: 'CameraHeader': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,10): error C2923: 'std::vector': 'CameraHeader' is not a valid template type argument for parameter '_Ty'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,10): error C2976: 'std::vector': too few template arguments
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(412): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,44): error C2641: cannot deduce template arguments for 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2783: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Alloc &)': could not deduce template argument for '_Ty'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(469): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const allocator_traits<allocator_traits<_Alloc>::rebind_alloc<_Node>>::size_type,const _Ty &,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(474): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(_Iter,_Iter,const _Alloc &)': expects 3 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(504): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(std::initializer_list<_Elem>,const _Alloc &)': could not deduce template argument for 'std::initializer_list<_Elem>' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(512): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2784: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &)': could not deduce template argument for 'const std::vector<_Ty,_Alloc> &' from 'int32_t'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(519): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): error C2780: 'std::vector<_Ty,_Alloc> std::vector(const std::vector<_Ty,_Alloc> &,const _Alloc &)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(537): message : see declaration of 'std::vector'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorFileIO.cpp(196,57): fatal error C1003: error count exceeds 100; stopping compilation
   EditorOnlyEntityCreation.cpp
+  EditorToolbar.cpp
   EditorWin32.cpp
+  Filebrowser.cpp
+  FileSystemUtil.cpp
+  imgui_extensions.cpp
+  imgui_styles.cpp
   LibraryDirectory.cpp
   Load.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(12,21): error C2039: 'addAssetIdToIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(17,21): error C2039: 'addComponentIdToIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(23,21): error C2039: 'addSystemIdToIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(33,21): error C2039: 'removeAssetIdFromIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(38,21): error C2039: 'removeComponentIdFromIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(43,21): error C2039: 'removeSystemIdFromIndexMap': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(48,23): error C2039: 'getAsset': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(53,27): error C2039: 'getComponent': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(58,24): error C2039: 'getSystem': is not a member of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\EditorCameraSystem.h(13): message : see declaration of 'PhysicsEngine'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(68,1): error C2244: 'loadAsset': unable to match function definition to an existing declaration
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(67): message : see declaration of 'loadAsset'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(73,1): error C2244: 'loadComponent': unable to match function definition to an existing declaration
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(72): message : see declaration of 'loadComponent'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(78,1): error C2244: 'loadSystem': unable to match function definition to an existing declaration
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(77): message : see declaration of 'loadSystem'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(96,1): error C2244: 'destroyComponent': unable to match function definition to an existing declaration
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Load.cpp(95): message : see declaration of 'destroyComponent'
+  main.cpp
   MenuBar.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+  PerformanceQueue.cpp
   TransformGizmo.cpp
   Undo.cpp
-  WriteToJson.cpp
-  BoxColliderDrawer.cpp
-  CameraDrawer.cpp
-  CapsuleColliderDrawer.cpp
-  CubemapDrawer.cpp
-  FontDrawer.cpp
-  InspectorDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(32,63): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(42,66): error C2660: 'PhysicsEngine::Component::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Component.h(23,18): message : see declaration of 'PhysicsEngine::Component::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(100,81): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(100,45): error C2672: 'std::make_pair': no matching overloaded function found
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(100,82): error C2780: 'std::pair<_Unrefwrap_helper<decay<_Ty>::type>::type,_Unrefwrap_helper<decay<_Ty2>::type>::type> std::make_pair(_Ty1 &&,_Ty2 &&) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\utility(351): message : see declaration of 'std::make_pair'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(105,74): error C2660: 'PhysicsEngine::Entity::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\Entity.h(28,18): message : see declaration of 'PhysicsEngine::Entity::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(105,38): error C2672: 'std::make_pair': no matching overloaded function found
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(105,75): error C2780: 'std::pair<_Unrefwrap_helper<decay<_Ty>::type>::type,_Unrefwrap_helper<decay<_Ty2>::type>::type> std::make_pair(_Ty1 &&,_Ty2 &&) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\utility(351): message : see declaration of 'std::make_pair'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(110,83): error C2660: 'PhysicsEngine::Component::serialize': function does not take 0 arguments
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\components\Component.h(23,18): message : see declaration of 'PhysicsEngine::Component::serialize'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(110,41): error C2672: 'std::make_pair': no matching overloaded function found
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\Undo.cpp(110,84): error C2780: 'std::pair<_Unrefwrap_helper<decay<_Ty>::type>::type,_Unrefwrap_helper<decay<_Ty2>::type>::type> std::make_pair(_Ty1 &&,_Ty2 &&) noexcept(<expr>)': expects 2 arguments - 1 provided
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\utility(351): message : see declaration of 'std::make_pair'
+  AboutPopup.cpp
   Generating Code...
   Compiling...
-  LightDrawer.cpp
-  LineRendererDrawer.cpp
-  LoadInspectorDrawerInternal.cpp
-  MaterialDrawer.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  MeshColliderDrawer.cpp
-  MeshDrawer.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(135,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  MeshRendererDrawer.cpp
-  RigidbodyDrawer.cpp
-  ShaderDrawer.cpp
-  SphereColliderDrawer.cpp
-  Texture2DDrawer.cpp
-  Texture3DDrawer.cpp
-  TransformDrawer.cpp
-  main.cpp
-  AboutPopup.cpp
   BuildWindow.cpp
   Console.cpp
   Hierarchy.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(69,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   Inspector.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\include\Command.h(44,1): error C2664: 'PhysicsEngine::Entity *PhysicsEngine::World::createEntity(std::istream &)': cannot convert argument 1 from 'std::vector<char,std::allocator<char>>' to 'std::istream &'
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(232,13): message : see declaration of 'PhysicsEngine::World::createEntity'
   PopupWindow.cpp
-  Generating Code...
-  Compiling...
   PreferencesWindow.cpp
   ProjectView.cpp
   ProjectWindow.cpp
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(1153,61): error C2065: 'mSystemAllocatorMap': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(137): message : see reference to function template instantiation 'PhysicsEngine::PoolAllocator<T,256> *PhysicsEngine::World::getSystemAllocator_impl<T>(void)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\ProjectWindow.cpp(118): message : see reference to function template instantiation 'T *PhysicsEngine::World::getSystem<PhysicsEngine::EditorCameraSystem>(void)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(1154,19): error C2065: 'mSystemAllocatorMap': undeclared identifier
   SceneView.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(86,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(87,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
@@ -59,6 +407,18 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(375
           [
               _Rep=double
           ]
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(1153,61): error C2065: 'mSystemAllocatorMap': undeclared identifier
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(137): message : see reference to function template instantiation 'PhysicsEngine::PoolAllocator<T,256> *PhysicsEngine::World::getSystemAllocator_impl<T>(void)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(89): message : see reference to function template instantiation 'T *PhysicsEngine::World::getSystem<PhysicsEngine::EditorCameraSystem>(void)' being compiled
+          with
+          [
+              T=PhysicsEngine::EditorCameraSystem
+          ]
+C:\Users\jsand\Documents\PhysicsEngine\engine\include\core\World.h(1154,19): error C2065: 'mSystemAllocatorMap': undeclared identifier
   Window.cpp
+  WriteToJson.cpp
   Generating Code...
-  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

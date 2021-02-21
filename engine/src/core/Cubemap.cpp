@@ -90,65 +90,6 @@ Cubemap::~Cubemap()
 {
 }
 
-std::vector<char> Cubemap::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Cubemap::serialize(Guid assetId) const
-{
-    CubemapHeader header;
-    header.mTextureId = assetId;
-    header.mWidth = static_cast<int32_t>(mWidth);
-    header.mNumChannels = static_cast<int32_t>(mNumChannels);
-    header.mAnisoLevel = static_cast<int32_t>(mAnisoLevel);
-    header.mDimension = static_cast<int8_t>(mDimension);
-    header.mFormat = static_cast<int8_t>(mFormat);
-    header.mWrapMode = static_cast<uint8_t>(mWrapMode);
-    header.mFilterMode = static_cast<uint8_t>(mFilterMode);
-    header.mTextureSize = mRawTextureData.size();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mTextureName[0], &mAssetName[0], len);
-    header.mTextureName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(CubemapHeader) + sizeof(unsigned char) * mRawTextureData.size();
-
-    std::vector<char> data(numberOfBytes);
-
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(CubemapHeader);
-
-    memcpy(&data[start1], &header, sizeof(CubemapHeader));
-    memcpy(&data[start2], &mRawTextureData[0], sizeof(unsigned char) * mRawTextureData.size());
-
-    return data;
-}
-
-void Cubemap::deserialize(const std::vector<char> &data)
-{
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(CubemapHeader);
-
-    const CubemapHeader *header = reinterpret_cast<const CubemapHeader *>(&data[start1]);
-
-    mId = header->mTextureId;
-    mAssetName = std::string(header->mTextureName);
-    mWidth = static_cast<int>(header->mWidth);
-    mNumChannels = static_cast<int>(header->mNumChannels);
-    mAnisoLevel = static_cast<int>(header->mAnisoLevel);
-    mDimension = static_cast<TextureDimension>(header->mDimension);
-    mFormat = static_cast<TextureFormat>(header->mFormat);
-    mWrapMode = static_cast<TextureWrapMode>(header->mWrapMode);
-    mFilterMode = static_cast<TextureFilterMode>(header->mFilterMode);
-
-    mRawTextureData.resize(header->mTextureSize);
-    for (size_t i = 0; i < header->mTextureSize; i++)
-    {
-        mRawTextureData[i] = *reinterpret_cast<const unsigned char *>(&data[start2 + sizeof(unsigned char) * i]);
-    }
-}
-
 void Cubemap::serialize(std::ostream& out) const
 {
     Texture::serialize(out);

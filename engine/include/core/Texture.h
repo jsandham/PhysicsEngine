@@ -54,10 +54,10 @@ class Texture : public Asset
   public:
     Texture();
     Texture(Guid id);
-    virtual ~Texture(){};
+    ~Texture();
 
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     virtual void create() = 0;
     virtual void destroy() = 0;

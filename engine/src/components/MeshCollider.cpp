@@ -19,34 +19,6 @@ MeshCollider::~MeshCollider()
 {
 }
 
-std::vector<char> MeshCollider::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> MeshCollider::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    MeshColliderHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mMeshId = mMeshId;
-
-    std::vector<char> data(sizeof(MeshColliderHeader));
-
-    memcpy(&data[0], &header, sizeof(MeshColliderHeader));
-
-    return data;
-}
-
-void MeshCollider::deserialize(const std::vector<char> &data)
-{
-    const MeshColliderHeader *header = reinterpret_cast<const MeshColliderHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mMeshId = header->mMeshId;
-}
-
 void MeshCollider::serialize(std::ostream& out) const
 {
     Collider::serialize(out);

@@ -6,9 +6,14 @@ using namespace PhysicsEngine;
 
 Texture::Texture() : Asset()
 {
+  
 }
 
 Texture::Texture(Guid id) : Asset(id)
+{
+}
+
+Texture::~Texture()
 {
 }
 
@@ -23,7 +28,7 @@ void Texture::serialize(std::ostream& out) const
     PhysicsEngine::write<int>(out, mNumChannels);
     PhysicsEngine::write<int>(out, mAnisoLevel);
     PhysicsEngine::write<size_t>(out, mRawTextureData.size());
-    //mRawTextureData
+    PhysicsEngine::write<const unsigned char>(out, mRawTextureData.data(), mRawTextureData.size());
 }
 
 void Texture::deserialize(std::istream& in)
@@ -38,7 +43,7 @@ void Texture::deserialize(std::istream& in)
     PhysicsEngine::read<int>(in, mNumChannels);
     PhysicsEngine::read<int>(in, mAnisoLevel);
     PhysicsEngine::read<size_t>(in, dataSize);
-    //mRawTextureData
+    PhysicsEngine::read<unsigned char>(in, mRawTextureData.data(), dataSize);
 
     mCreated = false;
     mUpdateRequired = false;

@@ -12,17 +12,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct MaterialHeader
-{
-    Guid mMaterialId;
-    char mMaterialName[64];
-    Guid mShaderId;
-    size_t mUniformCount;
-    uint8_t mRenderQueue;
-};
-#pragma pack(pop)
-
 class Material : public Asset
 {
   private:
@@ -39,12 +28,8 @@ class Material : public Asset
     Material(Guid id);
     ~Material();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid assetId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void load(const std::string &filepath);
     void load(Guid shaderId);

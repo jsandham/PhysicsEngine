@@ -9,14 +9,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct CleanUpSystemHeader
-{
-    Guid mSystemId;
-    int32_t mUpdateOrder;
-};
-#pragma pack(pop)
-
 class CleanUpSystem : public System
 {
   public:
@@ -24,12 +16,8 @@ class CleanUpSystem : public System
     CleanUpSystem(Guid id);
     ~CleanUpSystem();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &systemId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void init(World *world);
     void update(const Input &input, const Time &time);

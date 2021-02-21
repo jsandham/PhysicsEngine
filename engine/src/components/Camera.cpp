@@ -104,72 +104,8 @@ Camera::Camera(Guid id) : Component(id)
     mIsViewportChanged = false;
 }
 
-
 Camera::~Camera()
 {
-}
-
-std::vector<char> Camera::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> Camera::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    CameraHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mTargetTextureId = mTargetTextureId;
-    header.mRenderPath = static_cast<uint8_t>(mRenderPath);
-    header.mMode = static_cast<uint8_t>(mMode);
-    header.mSSAO = static_cast<uint8_t>(mSSAO);
-    header.mGizmos = static_cast<uint8_t>(mGizmos);
-    header.mBackgroundColor = glm::vec4(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, mBackgroundColor.a);
-    header.mX = static_cast<int32_t>(mViewport.mX);
-    header.mY = static_cast<int32_t>(mViewport.mY);
-    header.mWidth = static_cast<int32_t>(mViewport.mWidth);
-    header.mHeight = static_cast<int32_t>(mViewport.mHeight);
-    header.mFov = mFrustum.mFov;
-    header.mAspectRatio = mFrustum.mAspectRatio;
-    header.mNearPlane = mFrustum.mNearPlane;
-    header.mFarPlane = mFrustum.mFarPlane;
-
-    std::vector<char> data(sizeof(CameraHeader));
-
-    memcpy(&data[0], &header, sizeof(CameraHeader));
-
-    return data;
-}
-
-void Camera::deserialize(const std::vector<char> &data)
-{
-    const CameraHeader *header = reinterpret_cast<const CameraHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mTargetTextureId = header->mTargetTextureId;
-
-    mRenderPath = static_cast<RenderPath>(header->mRenderPath);
-    mMode = static_cast<CameraMode>(header->mMode);
-    mSSAO = static_cast<CameraSSAO>(header->mSSAO);
-    mGizmos = static_cast<CameraGizmos>(header->mGizmos);
-
-    mViewport.mX = static_cast<int>(header->mX);
-    mViewport.mY = static_cast<int>(header->mY);
-    mViewport.mWidth = static_cast<int>(header->mWidth);
-    mViewport.mHeight = static_cast<int>(header->mHeight);
-
-    mFrustum.mFov = header->mFov;
-    mFrustum.mAspectRatio = header->mAspectRatio;
-    mFrustum.mNearPlane = header->mNearPlane;
-    mFrustum.mFarPlane = header->mFarPlane;
-
-    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-        mFrustum.mFarPlane);
-
-    mBackgroundColor = Color(header->mBackgroundColor);
-
-    mIsViewportChanged = true;
 }
 
 void Camera::serialize(std::ostream& out) const

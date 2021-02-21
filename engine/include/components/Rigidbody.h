@@ -11,22 +11,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct RigidbodyHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    glm::mat3 mInertiaTensor;
-    glm::vec3 mVelocity;
-    glm::vec3 mAngularVelocity;
-    glm::vec3 mCentreOfMass;
-    float mMass;
-    float mDrag;
-    float mAngularDrag;
-    uint8_t mUseGravity;
-};
-#pragma pack(pop)
-
 class Rigidbody : public Component
 {
   public:
@@ -48,12 +32,8 @@ class Rigidbody : public Component
     Rigidbody(Guid id);
     ~Rigidbody();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 };
 
 template <> struct ComponentType<Rigidbody>

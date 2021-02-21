@@ -6,6 +6,8 @@
 #include <string>
 #include <algorithm>
 
+#include "Guid.h"
+
 namespace PhysicsEngine
 {
     // Write
@@ -15,6 +17,14 @@ namespace PhysicsEngine
     {
         out.write(reinterpret_cast<const char*>(&value), sizeof(T));
     }
+
+    template <class T>
+    void write(std::ostream& out, T* ptr, size_t size)
+    {
+        out.write(reinterpret_cast<const char*>(ptr), size * sizeof(T));
+    }
+
+    // Write template specializations
 
     template <> inline void PhysicsEngine::write(std::ostream& out, bool value)
     {
@@ -55,6 +65,14 @@ namespace PhysicsEngine
     {
         in.read(reinterpret_cast<char*>(&value), sizeof(T));
     }
+
+    template <class T>
+    void read(std::istream& in, T* ptr, size_t size)
+    {
+        in.read(reinterpret_cast<char*>(ptr), size * sizeof(T));
+    }
+
+    // Read template specializations
 
     template <> inline void PhysicsEngine::read(std::istream& in, bool& value)
     {

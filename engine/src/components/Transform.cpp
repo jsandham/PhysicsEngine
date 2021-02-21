@@ -24,40 +24,6 @@ Transform::~Transform()
 {
 }
 
-std::vector<char> Transform::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> Transform::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    TransformHeader header;
-    header.mComponentId = componentId;
-    header.mParentId = mParentId;
-    header.mEntityId = entityId;
-    header.mPosition = mPosition;
-    header.mRotation = mRotation;
-    header.mScale = mScale;
-
-    std::vector<char> data(sizeof(TransformHeader));
-
-    memcpy(&data[0], &header, sizeof(TransformHeader));
-
-    return data;
-}
-
-void Transform::deserialize(const std::vector<char> &data)
-{
-    const TransformHeader *header = reinterpret_cast<const TransformHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mParentId = header->mParentId;
-    mEntityId = header->mEntityId;
-    mPosition = header->mPosition;
-    mRotation = header->mRotation;
-    mScale = header->mScale;
-}
-
 void Transform::serialize(std::ostream& out) const
 {
     Component::serialize(out);

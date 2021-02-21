@@ -24,38 +24,6 @@ LineRenderer::~LineRenderer()
 {
 }
 
-std::vector<char> LineRenderer::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> LineRenderer::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    LineRendererHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mStart = mStart;
-    header.mEnd = mEnd;
-    header.mMaterialId = mMaterialId;
-
-    std::vector<char> data(sizeof(LineRendererHeader));
-
-    memcpy(&data[0], &header, sizeof(LineRendererHeader));
-
-    return data;
-}
-
-void LineRenderer::deserialize(const std::vector<char> &data)
-{
-    const LineRendererHeader *header = reinterpret_cast<const LineRendererHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mStart = header->mStart;
-    mEnd = header->mEnd;
-    mMaterialId = header->mMaterialId;
-}
-
 void LineRenderer::serialize(std::ostream& out) const
 {
     Component::serialize(out);

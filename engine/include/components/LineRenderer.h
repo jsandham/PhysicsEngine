@@ -11,17 +11,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct LineRendererHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    Guid mMaterialId;
-    glm::vec3 mStart;
-    glm::vec3 mEnd;
-};
-#pragma pack(pop)
-
 class LineRenderer : public Component
 {
   public:
@@ -35,12 +24,8 @@ class LineRenderer : public Component
     LineRenderer(Guid id);
     ~LineRenderer();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 };
 
 template <> struct ComponentType<LineRenderer>

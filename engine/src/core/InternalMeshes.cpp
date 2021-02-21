@@ -217,16 +217,12 @@ Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std
                                       const std::vector<float> &normals, const std::vector<float> &texCoords,
                                       const std::vector<int> &startIndices)
 {
-    // Create temp mesh to compute serialized data vector
-    Mesh temp;
-    temp.load(vertices, normals, texCoords, startIndices);
-    temp.setName(name);
-
-    std::vector<char> data = temp.serialize(meshId);
-
-    Mesh *mesh = world->createAsset<Mesh>(data);
+    // Need to figure out how to make this created asset have id to be meshId. Maybe createAsset<Mesh>(meshId)?
+    Mesh *mesh = world->createAsset<Mesh>();
     if (mesh != NULL)
     {
+        mesh->load(vertices, normals, texCoords, startIndices);
+        mesh->setName(name);
         return mesh->getId();
     }
     else

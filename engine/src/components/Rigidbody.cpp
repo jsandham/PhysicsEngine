@@ -38,49 +38,6 @@ Rigidbody::~Rigidbody()
 {
 }
 
-std::vector<char> Rigidbody::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> Rigidbody::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    RigidbodyHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mUseGravity = static_cast<uint8_t>(mUseGravity);
-    header.mMass = mMass;
-    header.mDrag = mDrag;
-    header.mAngularDrag = mAngularDrag;
-
-    header.mVelocity = mVelocity;
-    header.mAngularVelocity = mAngularVelocity;
-    header.mCentreOfMass = mCentreOfMass;
-    header.mInertiaTensor = mInertiaTensor;
-
-    std::vector<char> data(sizeof(RigidbodyHeader));
-
-    memcpy(&data[0], &header, sizeof(RigidbodyHeader));
-
-    return data;
-}
-
-void Rigidbody::deserialize(const std::vector<char> &data)
-{
-    const RigidbodyHeader *header = reinterpret_cast<const RigidbodyHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mUseGravity = static_cast<bool>(header->mUseGravity);
-    mMass = header->mMass;
-    mDrag = header->mDrag;
-    mAngularDrag = header->mAngularDrag;
-    mVelocity = header->mVelocity;
-    mAngularVelocity = header->mAngularVelocity;
-    mCentreOfMass = header->mCentreOfMass;
-    mInertiaTensor = header->mInertiaTensor;
-}
-
 void Rigidbody::serialize(std::ostream& out) const
 {
     Component::serialize(out);

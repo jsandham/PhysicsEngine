@@ -14,19 +14,15 @@ class World;
 class Asset : public Object
 {
   protected:
-    std::string mAssetName;
+    std::string mName;
 
   public:
     Asset();
     Asset(Guid id);
-    virtual ~Asset() = 0;
+    ~Asset();
 
-    virtual std::vector<char> serialize() const = 0;
-    virtual std::vector<char> serialize(Guid assetId) const = 0;
-    virtual void deserialize(const std::vector<char>& data) = 0;
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     std::string getName() const;
     void setName(const std::string &name);

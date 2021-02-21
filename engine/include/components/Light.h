@@ -13,26 +13,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct LightHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    glm::vec4 mColor;
-    float mIntensity;
-    float mSpotAngle;
-    float mInnerSpotAngle;
-    float mShadowNearPlane;
-    float mShadowFarPlane;
-    float mShadowAngle;
-    float mShadowRadius;
-    float mShadowStrength;
-    uint8_t mLightType;
-    uint8_t mShadowType;
-    uint16_t mShadowMapResolution;
-};
-#pragma pack(pop)
-
 enum class LightType
 {
     Directional,
@@ -92,12 +72,8 @@ class Light : public Component
     Light(Guid id);
     ~Light();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void createTargets();
     void destroyTargets();

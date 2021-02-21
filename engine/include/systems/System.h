@@ -25,12 +25,8 @@ class System : public Object
     System(Guid id);
     ~System();
 
-    virtual std::vector<char> serialize() const = 0;
-    virtual std::vector<char> serialize(const Guid& systemId) const = 0;
-    virtual void deserialize(const std::vector<char>& data) = 0;
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     virtual void init(World *world) = 0;
     virtual void update(const Input &input, const Time &time) = 0;

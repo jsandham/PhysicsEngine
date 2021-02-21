@@ -30,32 +30,6 @@ DebugSystem::~DebugSystem()
 {
 }
 
-std::vector<char> DebugSystem::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> DebugSystem::serialize(const Guid &systemId) const
-{
-    DebugSystemHeader header;
-    header.mSystemId = systemId;
-    header.mUpdateOrder = static_cast<int32_t>(mOrder);
-
-    std::vector<char> data(sizeof(DebugSystemHeader));
-
-    memcpy(&data[0], &header, sizeof(DebugSystemHeader));
-
-    return data;
-}
-
-void DebugSystem::deserialize(const std::vector<char> &data)
-{
-    const DebugSystemHeader *header = reinterpret_cast<const DebugSystemHeader *>(&data[0]);
-
-    mId = header->mSystemId;
-    mOrder = static_cast<int>(header->mUpdateOrder);
-}
-
 void DebugSystem::serialize(std::ostream& out) const
 {
     System::serialize(out);

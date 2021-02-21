@@ -13,17 +13,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct TransformHeader
-{
-    Guid mComponentId;
-    Guid mParentId;
-    Guid mEntityId;
-    glm::vec3 mPosition;
-    glm::quat mRotation;
-    glm::vec3 mScale;
-};
-#pragma pack(pop)
 
 class Transform : public Component
 {
@@ -38,12 +27,8 @@ class Transform : public Component
     Transform(Guid id);
     ~Transform();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     glm::mat4 getModelMatrix() const;
     glm::vec3 getForward() const;

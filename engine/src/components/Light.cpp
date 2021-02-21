@@ -88,58 +88,6 @@ Light::~Light()
 {
 }
 
-std::vector<char> Light::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> Light::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    LightHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mColor = mColor;
-    header.mIntensity = mIntensity;
-    header.mSpotAngle = mSpotAngle;
-    header.mInnerSpotAngle = mInnerSpotAngle;
-    header.mShadowNearPlane = mShadowNearPlane;
-    header.mShadowFarPlane = mShadowFarPlane;
-    header.mShadowAngle = mShadowAngle;
-    header.mShadowRadius = mShadowRadius;
-    header.mShadowStrength = mShadowStrength;
-    header.mLightType = static_cast<uint8_t>(mLightType);
-    header.mShadowType = static_cast<uint8_t>(mShadowType);
-    header.mShadowMapResolution = static_cast<uint16_t>(mShadowMapResolution);
-
-    std::vector<char> data(sizeof(LightHeader));
-
-    memcpy(&data[0], &header, sizeof(LightHeader));
-
-    return data;
-}
-
-void Light::deserialize(const std::vector<char> &data)
-{
-    const LightHeader *header = reinterpret_cast<const LightHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mColor = header->mColor;
-    mIntensity = header->mIntensity;
-    mSpotAngle = header->mSpotAngle;
-    mInnerSpotAngle = header->mInnerSpotAngle;
-    mShadowNearPlane = header->mShadowNearPlane;
-    mShadowFarPlane = header->mShadowFarPlane;
-    mShadowAngle = header->mShadowAngle;
-    mShadowRadius = header->mShadowRadius;
-    mShadowStrength = header->mShadowStrength;
-    mLightType = static_cast<LightType>(header->mLightType);
-    mShadowType = static_cast<ShadowType>(header->mShadowType);
-    mShadowMapResolution = static_cast<ShadowMapResolution>(header->mShadowMapResolution);
-
-    mIsShadowMapResolutionChanged = true;
-}
-
 void Light::serialize(std::ostream& out) const
 {
     Component::serialize(out);

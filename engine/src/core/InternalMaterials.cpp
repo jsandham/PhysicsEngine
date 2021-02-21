@@ -12,16 +12,12 @@ const std::string InternalMaterials::colorMaterialName = "Color";
 
 Guid InternalMaterials::loadInternalMaterial(World *world, const Guid materialId, const std::string &name, const Guid shaderId)
 {
-    // Create temp material to compute serialized data vector
-    Material temp;
-    temp.load(shaderId);
-    temp.setName(name);
-
-    std::vector<char> data = temp.serialize(materialId);
-
-    Material *material = world->createAsset<Material>(data);
+    // Need to figure out how to make this created asset have id to be materialId
+    Material* material = world->createAsset<Material>();
     if (material != NULL)
     {
+        material->setShaderId(shaderId);
+        material->setName(name);
         return material->getId();
     }
     else

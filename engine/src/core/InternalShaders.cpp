@@ -879,16 +879,12 @@ const std::string InternalShaders::overdrawShaderName = "Overdraw";
 Guid InternalShaders::loadInternalShader(World *world, const Guid shaderId, const std::string &name, const std::string vertex,
                                          const std::string fragment, const std::string geometry)
 {
-    // Create temp shader to compute serialized data vector
-    Shader temp;
-    temp.load(vertex, fragment, geometry);
-    temp.setName(name);
-
-    std::vector<char> data = temp.serialize(shaderId);
-
-    Shader *shader = world->createAsset<Shader>(data);
+    // Need to figure out how to make this created asset have id to be meshId. Maybe createAsset<Shader>(shaderId)?
+    Shader *shader = world->createAsset<Shader>();
     if (shader != NULL)
     {
+        shader->load(vertex, fragment, geometry);
+        shader->setName(name);
         return shader->getId();
     }
     else

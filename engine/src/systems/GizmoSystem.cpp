@@ -17,32 +17,6 @@ GizmoSystem::~GizmoSystem()
 {
 }
 
-std::vector<char> GizmoSystem::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> GizmoSystem::serialize(const Guid &systemId) const
-{
-    GizmoSystemHeader header;
-    header.mSystemId = systemId;
-    header.mUpdateOrder = static_cast<int32_t>(mOrder);
-
-    std::vector<char> data(sizeof(GizmoSystemHeader));
-
-    memcpy(&data[0], &header, sizeof(GizmoSystemHeader));
-
-    return data;
-}
-
-void GizmoSystem::deserialize(const std::vector<char> &data)
-{
-    const GizmoSystemHeader *header = reinterpret_cast<const GizmoSystemHeader *>(&data[0]);
-
-    mId = header->mSystemId;
-    mOrder = static_cast<int>(header->mUpdateOrder);
-}
-
 void GizmoSystem::serialize(std::ostream& out) const
 {
     System::serialize(out);

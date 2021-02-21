@@ -40,50 +40,6 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-std::vector<char> MeshRenderer::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> MeshRenderer::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    MeshRendererHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mMeshId = mMeshId;
-    for (int i = 0; i < 8; i++)
-    {
-        header.mMaterialIds[i] = mMaterialIds[i];
-    }
-    header.mMaterialCount = static_cast<int32_t>(mMaterialCount);
-    header.mIsStatic = static_cast<uint8_t>(mIsStatic);
-    header.mEnabled = static_cast<uint8_t>(mEnabled);
-
-    std::vector<char> data(sizeof(MeshRendererHeader));
-
-    memcpy(&data[0], &header, sizeof(MeshRendererHeader));
-
-    return data;
-}
-
-void MeshRenderer::deserialize(const std::vector<char> &data)
-{
-    const MeshRendererHeader *header = reinterpret_cast<const MeshRendererHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mMeshId = header->mMeshId;
-    for (int i = 0; i < 8; i++)
-    {
-        mMaterialIds[i] = header->mMaterialIds[i];
-    }
-    mMaterialCount = static_cast<int>(header->mMaterialCount);
-    mIsStatic = static_cast<bool>(header->mIsStatic);
-    mEnabled = static_cast<bool>(header->mEnabled);
-    mMeshChanged = true;
-    mMaterialChanged = true;
-}
-
 void MeshRenderer::serialize(std::ostream& out) const
 {
     Component::serialize(out);
@@ -96,8 +52,6 @@ void MeshRenderer::serialize(std::ostream& out) const
     PhysicsEngine::write<int>(out, mMaterialCount);
     PhysicsEngine::write<bool>(out, mIsStatic);
     PhysicsEngine::write<bool>(out, mEnabled);
-    PhysicsEngine::write<bool>(out, mMeshChanged);
-    PhysicsEngine::write<bool>(out, mMaterialChanged);
 }
 
 void MeshRenderer::deserialize(std::istream& in)
@@ -112,8 +66,9 @@ void MeshRenderer::deserialize(std::istream& in)
     PhysicsEngine::read<int>(in, mMaterialCount);
     PhysicsEngine::read<bool>(in, mIsStatic);
     PhysicsEngine::read<bool>(in, mEnabled);
-    PhysicsEngine::read<bool>(in, mMeshChanged);
-    PhysicsEngine::read<bool>(in, mMaterialChanged);
+   
+    mMeshChanged = true;
+    mMaterialChanged = true;
 }
 
 void MeshRenderer::setMesh(Guid meshId)

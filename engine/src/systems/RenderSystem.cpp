@@ -36,32 +36,6 @@ RenderSystem::~RenderSystem()
 {
 }
 
-std::vector<char> RenderSystem::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> RenderSystem::serialize(const Guid &systemId) const
-{
-    RenderSystemHeader header;
-    header.mSystemId = systemId;
-    header.mUpdateOrder = static_cast<int32_t>(mOrder);
-
-    std::vector<char> data(sizeof(RenderSystemHeader));
-
-    memcpy(&data[0], &header, sizeof(RenderSystemHeader));
-
-    return data;
-}
-
-void RenderSystem::deserialize(const std::vector<char> &data)
-{
-    const RenderSystemHeader *header = reinterpret_cast<const RenderSystemHeader *>(&data[0]);
-
-    mId = header->mSystemId;
-    mOrder = static_cast<int>(header->mUpdateOrder);
-}
-
 void RenderSystem::serialize(std::ostream& out) const
 {
     System::serialize(out);

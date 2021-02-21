@@ -17,34 +17,6 @@ BoxCollider::~BoxCollider()
 {
 }
 
-std::vector<char> BoxCollider::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> BoxCollider::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    BoxColliderHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mAABB = mAABB;
-
-    std::vector<char> data(sizeof(BoxColliderHeader));
-
-    memcpy(&data[0], &header, sizeof(BoxColliderHeader));
-
-    return data;
-}
-
-void BoxCollider::deserialize(const std::vector<char> &data)
-{
-    const BoxColliderHeader *header = reinterpret_cast<const BoxColliderHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mAABB = header->mAABB;
-}
-
 void BoxCollider::serialize(std::ostream& out) const
 {
     Collider::serialize(out);

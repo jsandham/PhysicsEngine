@@ -17,18 +17,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct ShaderHeader
-{
-    Guid mShaderId;
-    char mShaderName[64];
-    size_t mVertexShaderSize;
-    size_t mGeometryShaderSize;
-    size_t mFragmentShaderSize;
-    size_t mNumberOfShaderUniforms;
-};
-#pragma pack(pop)
-
 enum RenderQueue
 {
     Opaque = 0,
@@ -98,12 +86,8 @@ class Shader : public Asset
     Shader(Guid id);
     ~Shader();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid assetId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void load(const std::string &filepath);
     void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);

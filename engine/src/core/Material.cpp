@@ -30,64 +30,6 @@ Material::~Material()
 {
 }
 
-std::vector<char> Material::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Material::serialize(Guid assetId) const
-{
-    MaterialHeader header;
-    header.mMaterialId = assetId;
-    header.mShaderId = mShaderId;
-    header.mRenderQueue = static_cast<uint8_t>(mRenderQueue);
-    header.mUniformCount = mUniforms.size();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mMaterialName[0], &mAssetName[0], len);
-    header.mMaterialName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(MaterialHeader) + mUniforms.size() * sizeof(ShaderUniform);
-
-    std::vector<char> data(numberOfBytes);
-
-    memcpy(&data[0], &header, sizeof(MaterialHeader));
-
-    size_t startIndex = sizeof(MaterialHeader);
-    for (size_t i = 0; i < mUniforms.size(); i++)
-    {
-        memcpy(&data[startIndex], &mUniforms[i], sizeof(ShaderUniform));
-        startIndex += sizeof(ShaderUniform);
-    }
-
-    return data;
-}
-
-void Material::deserialize(const std::vector<char> &data)
-{
-    mUniforms.clear();
-
-    const MaterialHeader *header = reinterpret_cast<const MaterialHeader *>(&data[0]);
-
-    mId = header->mMaterialId;
-    mAssetName = std::string(header->mMaterialName);
-    mShaderId = header->mShaderId;
-    mRenderQueue = static_cast<RenderQueue>(header->mRenderQueue);
-    mUniforms.resize(header->mUniformCount);
-
-    size_t startIndex = sizeof(MaterialHeader);
-    for (size_t i = 0; i < mUniforms.size(); i++)
-    {
-        const ShaderUniform *uniform = reinterpret_cast<const ShaderUniform *>(&data[startIndex]);
-
-        mUniforms[i] = *uniform;
-
-        startIndex += sizeof(ShaderUniform);
-    }
-
-    mShaderChanged = true;
-}
-
 void Material::serialize(std::ostream& out) const
 {
     Asset::serialize(out);
@@ -95,7 +37,7 @@ void Material::serialize(std::ostream& out) const
     PhysicsEngine::write<Guid>(out, mShaderId);
     PhysicsEngine::write<RenderQueue>(out, mRenderQueue);
     PhysicsEngine::write<size_t>(out, mUniforms.size());
-    // uniforms
+    PhysicsEngine::write<const ShaderUniform>(out, mUniforms.data(), mUniforms.size());
 }
 
 void Material::deserialize(std::istream& in)
@@ -106,7 +48,12 @@ void Material::deserialize(std::istream& in)
     PhysicsEngine::read<Guid>(in, mShaderId);
     PhysicsEngine::read<RenderQueue>(in, mRenderQueue);
     PhysicsEngine::read<size_t>(in, uniformCount);
-    // uniforms
+
+    mUniforms.resize(uniformCount);
+
+    PhysicsEngine::read<ShaderUniform>(in, mUniforms.data(), uniformCount);
+
+    mShaderChanged = true;
 }
 
 void Material::load(const std::string &filepath)

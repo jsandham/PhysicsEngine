@@ -14,18 +14,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct MeshHeader
-{
-    Guid mMeshId;
-    char mMeshName[64];
-    size_t mVerticesSize;
-    size_t mNormalsSize;
-    size_t mTexCoordsSize;
-    size_t mSubMeshVertexStartIndiciesSize;
-};
-#pragma pack(pop)
-
 class Mesh : public Asset
 {
   private:
@@ -44,12 +32,8 @@ class Mesh : public Asset
     Mesh(Guid id);
     ~Mesh();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid assetId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,

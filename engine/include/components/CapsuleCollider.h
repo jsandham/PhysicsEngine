@@ -13,14 +13,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct CapsuleColliderHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    Capsule mCapsule;
-};
-#pragma pack(pop)
 
 class CapsuleCollider : public Collider
 {
@@ -32,12 +24,8 @@ class CapsuleCollider : public Collider
     CapsuleCollider(Guid id);
     ~CapsuleCollider();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     bool intersect(AABB aabb) const;
 };

@@ -52,28 +52,6 @@ enum class RenderPath
     Deferred
 };
 
-#pragma pack(push, 1)
-struct CameraHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    Guid mTargetTextureId;
-    glm::vec4 mBackgroundColor;
-    int32_t mX;
-    int32_t mY;
-    int32_t mWidth;
-    int32_t mHeight;
-    float mFov;
-    float mAspectRatio;
-    float mNearPlane;
-    float mFarPlane;
-    uint8_t mRenderPath;
-    uint8_t mMode;
-    uint8_t mSSAO;
-    uint8_t mGizmos;
-};
-#pragma pack(pop)
-
 struct Viewport
 {
     int mX;
@@ -138,12 +116,8 @@ class Camera : public Component
     Camera(Guid id);
     ~Camera();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void createTargets();
     void destroyTargets();

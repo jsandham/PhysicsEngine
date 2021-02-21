@@ -6,12 +6,12 @@ using namespace PhysicsEngine;
 
 Asset::Asset() : Object()
 {
-    mAssetName = "Unnamed Asset";
+    mName = "Unnamed Asset";
 }
 
 Asset::Asset(Guid id) : Object(id)
 {
-    mAssetName = "Unnamed Asset";
+    mName = "Unnamed Asset";
 }
 
 Asset::~Asset()
@@ -21,23 +21,23 @@ Asset::~Asset()
 void Asset::serialize(std::ostream& out) const
 {
     Object::serialize(out);
-    PhysicsEngine::write<std::string>(out, mAssetName);
+    PhysicsEngine::write<std::string>(out, mName);
 }
 
 void Asset::deserialize(std::istream& in)
 {
     Object::deserialize(in);
-    PhysicsEngine::read<std::string>(in, mAssetName);
+    PhysicsEngine::read<std::string>(in, mName);
 }
 
 std::string Asset::getName() const
 {
-    return mAssetName;
+    return mName;
 }
 
 void Asset::setName(const std::string& name)
 {
-    mAssetName = name;
+    mName = name;
 }
 
 bool Asset::isInternal(int type)

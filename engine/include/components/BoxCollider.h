@@ -11,15 +11,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct BoxColliderHeader
-{
-    Guid mComponentId;
-    Guid mEntityId;
-    AABB mAABB;
-};
-#pragma pack(pop)
-
 class BoxCollider : public Collider
 {
   public:
@@ -30,12 +21,8 @@ class BoxCollider : public Collider
     BoxCollider(Guid id);
     ~BoxCollider();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(const Guid &componentId, const Guid &entityId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     bool intersect(AABB aabb) const;
 

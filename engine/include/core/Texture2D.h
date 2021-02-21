@@ -8,23 +8,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct Texture2DHeader
-{
-    Guid mTextureId;
-    char mTextureName[64];
-    size_t mTextureSize;
-    int32_t mWidth;
-    int32_t mHeight;
-    int32_t mNumChannels;
-    int32_t mAnisoLevel;
-    uint8_t mDimension;
-    uint8_t mFormat;
-    uint8_t mWrapMode;
-    uint8_t mFilterMode;
-};
-#pragma pack(pop)
-
 class Texture2D : public Texture
 {
   private:
@@ -38,12 +21,8 @@ class Texture2D : public Texture
     Texture2D(int width, int height, TextureFormat format);
     ~Texture2D();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid assetId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void load(const std::string &filepath);
 

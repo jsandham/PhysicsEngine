@@ -29,57 +29,6 @@ Font::~Font()
 {
 }
 
-std::vector<char> Font::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Font::serialize(Guid assetId) const
-{
-    FontHeader header;
-    header.mFontId = assetId;
-    header.mFilepathSize = mFilepath.length();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mFontName[0], &mAssetName[0], len);
-    header.mFontName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(FontHeader) + sizeof(char) * mFilepath.length();
-
-    std::vector<char> data(numberOfBytes);
-
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(FontHeader);
-
-    memcpy(&data[start1], &header, sizeof(FontHeader));
-    memcpy(&data[start2], mFilepath.c_str(), sizeof(char) * mFilepath.length());
-
-    return data;
-}
-
-void Font::deserialize(const std::vector<char> &data)
-{
-    int index = sizeof(int);
-    const FontHeader *header = reinterpret_cast<const FontHeader *>(&data[index]);
-
-    mId = header->mFontId;
-    mAssetName = std::string(header->mFontName);
-
-    index += sizeof(FontHeader);
-
-    if (header->mFilepathSize > 0 && header->mFilepathSize < 256)
-    {
-        mFilepath = std::string(&data[index], header->mFilepathSize);
-
-        std::cout << "font filepath loaded: " << mFilepath << std::endl;
-    }
-    else
-    {
-        std::cout << "Error: Font filepath size (" << header->mFilepathSize << ") is invalid" << std::endl;
-        return;
-    }
-}
-
 void Font::serialize(std::ostream& out) const
 {
     Asset::serialize(out);

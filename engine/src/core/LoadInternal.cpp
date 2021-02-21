@@ -10,762 +10,778 @@
 
 using namespace PhysicsEngine;
 
-void PhysicsEngine::addInternalEntityIdToIndexMap(std::unordered_map<Guid, int> *entityIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *idToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *idToType, const Guid &id, int index)
+Entity* PhysicsEngine::loadInternalEntity(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id)
 {
-    (*entityIdToGlobalIndex)[id] = index;
-    (*idToGlobalIndex)[id] = index;
-    (*idToType)[id] = EntityType<Entity>::type;
+    std::unordered_map<Guid, int>::iterator it = state.mEntityIdToGlobalIndex.find(id);
+    if (it != state.mEntityIdToGlobalIndex.end()) {
+        Entity* entity = allocators.mEntityAllocator.get(it->second);
+
+        if (entity != nullptr) {
+            entity->deserialize(in);
+
+            return entity;
+        }
+    }
+
+    int index = (int)allocators.mEntityAllocator.getCount();
+    Entity* entity = allocators.mEntityAllocator.construct(in);
+
+    if (entity != nullptr) {
+        state.mEntityIdToGlobalIndex[entity->getId()] = index;
+        state.mIdToGlobalIndex[entity->getId()] = index;
+        state.mIdToType[entity->getId()] = EntityType<Entity>::type;
+    }
+
+    return entity;
 }
 
-void PhysicsEngine::addInternalComponentIdToIndexMap(
-    std::unordered_map<Guid, int> *transformIdToGlobalIndex, std::unordered_map<Guid, int> *meshRendererIdToGlobalIndex,
-    std::unordered_map<Guid, int> *lineRendererIdToGlobalIndex, std::unordered_map<Guid, int> *rigidbodyIdToGlobalIndex,
-    std::unordered_map<Guid, int> *cameraIdToGlobalIndex, std::unordered_map<Guid, int> *lightIdToGlobalIndex,
-    std::unordered_map<Guid, int> *sphereColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *boxColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *capsuleColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *meshColliderIdToGlobalIndex, std::unordered_map<Guid, int> *idToGlobalIndex,
-    std::unordered_map<Guid, int> *idToType, const Guid &id, int type, int index)
+Component* loadInternalComponent(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     if (type == ComponentType<Transform>::type)
     {
-        (*transformIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mTransformIdToGlobalIndex.find(id);
+        if (it != state.mTransformIdToGlobalIndex.end()) {
+            Component* component = allocators.mTransformAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<Rigidbody>::type)
     {
-        (*rigidbodyIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mRigidbodyIdToGlobalIndex.find(id);
+        if (it != state.mRigidbodyIdToGlobalIndex.end()) {
+            Component* component = allocators.mRigidbodyAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<Camera>::type)
     {
-        (*cameraIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mCameraIdToGlobalIndex.find(id);
+        if (it != state.mCameraIdToGlobalIndex.end()) {
+            Component* component = allocators.mCameraAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<MeshRenderer>::type)
     {
-        (*meshRendererIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mMeshRendererIdToGlobalIndex.find(id);
+        if (it != state.mMeshRendererIdToGlobalIndex.end()) {
+            Component* component = allocators.mMeshRendererAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<LineRenderer>::type)
     {
-        (*lineRendererIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mLineRendererIdToGlobalIndex.find(id);
+        if (it != state.mLineRendererIdToGlobalIndex.end()) {
+            Component* component = allocators.mLineRendererAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<Light>::type)
     {
-        (*lightIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mLightIdToGlobalIndex.find(id);
+        if (it != state.mLightIdToGlobalIndex.end()) {
+            Component* component = allocators.mLightAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<BoxCollider>::type)
     {
-        (*boxColliderIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mBoxColliderIdToGlobalIndex.find(id);
+        if (it != state.mBoxColliderIdToGlobalIndex.end()) {
+            Component* component = allocators.mBoxColliderAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<SphereCollider>::type)
     {
-        (*sphereColliderIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mSphereColliderIdToGlobalIndex.find(id);
+        if (it != state.mSphereColliderIdToGlobalIndex.end()) {
+            Component* component = allocators.mSphereColliderAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<MeshCollider>::type)
     {
-        (*meshColliderIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+        std::unordered_map<Guid, int>::iterator it = state.mMeshColliderIdToGlobalIndex.find(id);
+        if (it != state.mMeshColliderIdToGlobalIndex.end()) {
+            Component* component = allocators.mMeshColliderAllocator.get(it->second);
+
+            if (component != nullptr) {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
     }
     else if (type == ComponentType<CapsuleCollider>::type)
     {
-        (*capsuleColliderIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else
-    {
-        std::string message = "Error: Invalid component type (" + std::to_string(type) +
-                              ") when trying to add internal component id to index map\n";
-        Log::error(message.c_str());
-    }
-}
+        std::unordered_map<Guid, int>::iterator it = state.mCapsuleColliderIdToGlobalIndex.find(id);
+        if (it != state.mCapsuleColliderIdToGlobalIndex.end()) {
+            Component* component = allocators.mCapsuleColliderAllocator.get(it->second);
 
-void PhysicsEngine::addInternalSystemIdToIndexMap(std::unordered_map<Guid, int> *renderSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *idToGlobalIndex,
-                                                  std::unordered_map<Guid, int> *idToType, const Guid &id, int type,
-                                                  int index)
-{
-    if (type == SystemType<RenderSystem>::type)
-    {
-        (*renderSystemIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == SystemType<PhysicsSystem>::type)
-    {
-        (*physicsSystemIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == SystemType<CleanUpSystem>::type)
-    {
-        (*cleanupSystemIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == SystemType<DebugSystem>::type)
-    {
-        (*debugSystemIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == SystemType<GizmoSystem>::type)
-    {
-        (*gizmoSystemIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else
-    {
-        std::string message = "Error: Invalid system type (" + std::to_string(type) +
-                              ") when trying to add internal system id to index map\n";
-        Log::error(message.c_str());
-    }
-}
+            if (component != nullptr) {
+                component->deserialize(in);
 
-void PhysicsEngine::addInternalAssetIdToIndexMap(
-    std::unordered_map<Guid, int> *meshIdToGlobalIndex, std::unordered_map<Guid, int> *materialIdToGlobalIndex,
-    std::unordered_map<Guid, int> *shaderIdToGlobalIndex, std::unordered_map<Guid, int> *texture2DIdToGlobalIndex,
-    std::unordered_map<Guid, int> *texture3DIdToGlobalIndex, std::unordered_map<Guid, int> *cubemapIdToGlobalIndex,
-    std::unordered_map<Guid, int> *fontIdToGlobalIndex, std::unordered_map<Guid, int> *idToGlobalIndex,
-    std::unordered_map<Guid, int> *idToType, const Guid &id, int type, int index)
-{
-    if (type == AssetType<Shader>::type)
-    {
-        (*shaderIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
+                return component;
+            }
+        }
     }
-    else if (type == AssetType<Texture2D>::type)
-    {
-        (*texture2DIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == AssetType<Texture3D>::type)
-    {
-        (*texture3DIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == AssetType<Cubemap>::type)
-    {
-        (*cubemapIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == AssetType<Material>::type)
-    {
-        (*materialIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == AssetType<Mesh>::type)
-    {
-        (*meshIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else if (type == AssetType<Font>::type)
-    {
-        (*fontIdToGlobalIndex)[id] = index;
-        (*idToGlobalIndex)[id] = index;
-        (*idToType)[id] = type;
-    }
-    else
-    {
-        std::string message = "Error: Invalid asset type (" + std::to_string(type) +
-                              ") when trying to add internal asset id to index map\n";
-        Log::error(message.c_str());
-    }
-}
 
-void PhysicsEngine::removeInternalEntityIdFromIndexMap(std::unordered_map<Guid, int> *entityIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *idToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *idToType, const Guid &id)
-{
-    (*entityIdToGlobalIndex).erase(id);
-    (*idToGlobalIndex).erase(id);
-    (*idToType).erase(id);
-}
+    int index = -1;
+    Component* component = nullptr;
 
-void PhysicsEngine::removeInternalComponentIdFromIndexMap(
-    std::unordered_map<Guid, int> *transformIdToGlobalIndex, std::unordered_map<Guid, int> *meshRendererIdToGlobalIndex,
-    std::unordered_map<Guid, int> *lineRendererIdToGlobalIndex, std::unordered_map<Guid, int> *rigidbodyIdToGlobalIndex,
-    std::unordered_map<Guid, int> *cameraIdToGlobalIndex, std::unordered_map<Guid, int> *lightIdToGlobalIndex,
-    std::unordered_map<Guid, int> *sphereColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *boxColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *capsuleColliderIdToGlobalIndex,
-    std::unordered_map<Guid, int> *meshColliderIdToGlobalIndex, std::unordered_map<Guid, int> *idToGlobalIndex,
-    std::unordered_map<Guid, int> *idToType, const Guid &id, int type)
-{
     if (type == ComponentType<Transform>::type)
     {
-        (*transformIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mTransformAllocator.getCount();
+        component = allocators.mTransformAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mTransformIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<Rigidbody>::type)
     {
-        (*rigidbodyIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mRigidbodyAllocator.getCount();
+        component = allocators.mRigidbodyAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mRigidbodyIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<Camera>::type)
     {
-        (*cameraIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mCameraAllocator.getCount();
+        component = allocators.mCameraAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mCameraIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<MeshRenderer>::type)
     {
-        (*meshRendererIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mMeshRendererAllocator.getCount();
+        component = allocators.mMeshRendererAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mMeshRendererIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<LineRenderer>::type)
     {
-        (*lineRendererIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mLineRendererAllocator.getCount();
+        component = allocators.mLineRendererAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mLineRendererIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<Light>::type)
     {
-        (*lightIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mLightAllocator.getCount();
+        component = allocators.mLightAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mLightIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<BoxCollider>::type)
     {
-        (*boxColliderIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mBoxColliderAllocator.getCount();
+        component = allocators.mBoxColliderAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mBoxColliderIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<SphereCollider>::type)
     {
-        (*sphereColliderIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mSphereColliderAllocator.getCount();
+        component = allocators.mSphereColliderAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mSphereColliderIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<MeshCollider>::type)
     {
-        (*meshColliderIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
+        index = (int)allocators.mMeshColliderAllocator.getCount();
+        component = allocators.mMeshColliderAllocator.construct(in);
+
+        if (component != nullptr) {
+            state.mMeshColliderIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else if (type == ComponentType<CapsuleCollider>::type)
     {
-        (*capsuleColliderIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else
-    {
-        std::string message = "Error: Invalid component type (" + std::to_string(type) +
-                              ") when trying to remove internal component id to index map\n";
-        Log::error(message.c_str());
-    }
-}
+        index = (int)allocators.mCapsuleColliderAllocator.getCount();
+        component = allocators.mCapsuleColliderAllocator.construct(in);
 
-void PhysicsEngine::removeInternalSystemIdFromIndexMap(std::unordered_map<Guid, int> *renderSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *physicsSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *cleanupSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *debugSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *gizmoSystemIdToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *idToGlobalIndex,
-                                                       std::unordered_map<Guid, int> *idToType, const Guid &id,
-                                                       int type)
-{
-    if (type == SystemType<RenderSystem>::type)
-    {
-        (*renderSystemIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == SystemType<PhysicsSystem>::type)
-    {
-        (*physicsSystemIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == SystemType<CleanUpSystem>::type)
-    {
-        (*cleanupSystemIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == SystemType<DebugSystem>::type)
-    {
-        (*debugSystemIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == SystemType<GizmoSystem>::type)
-    {
-        (*gizmoSystemIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else
-    {
-        std::string message = "Error: Invalid system type (" + std::to_string(type) +
-                              ") when trying to remove internal system id to index map\n";
-        Log::error(message.c_str());
-    }
-}
-
-void PhysicsEngine::removeInternalAssetIdFromIndexMap(
-    std::unordered_map<Guid, int> *meshIdToGlobalIndex, std::unordered_map<Guid, int> *materialIdToGlobalIndex,
-    std::unordered_map<Guid, int> *shaderIdToGlobalIndex, std::unordered_map<Guid, int> *texture2DIdToGlobalIndex,
-    std::unordered_map<Guid, int> *texture3DIdToGlobalIndex, std::unordered_map<Guid, int> *cubemapIdToGlobalIndex,
-    std::unordered_map<Guid, int> *fontIdToGlobalIndex, std::unordered_map<Guid, int> *idToGlobalIndex,
-    std::unordered_map<Guid, int> *idToType, const Guid &id, int type)
-{
-    if (type == AssetType<Shader>::type)
-    {
-        (*shaderIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Texture2D>::type)
-    {
-        (*texture2DIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Texture3D>::type)
-    {
-        (*texture3DIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Cubemap>::type)
-    {
-        (*cubemapIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Material>::type)
-    {
-        (*materialIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Mesh>::type)
-    {
-        (*meshIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else if (type == AssetType<Font>::type)
-    {
-        (*fontIdToGlobalIndex).erase(id);
-        (*idToGlobalIndex).erase(id);
-        (*idToType).erase(id);
-    }
-    else
-    {
-        std::string message = "Error: Invalid asset type (" + std::to_string(type) +
-                              ") when trying to remove internal asset id to index map\n";
-        Log::error(message.c_str());
-    }
-}
-
-Entity *PhysicsEngine::getInternalEntity(PoolAllocator<Entity> *entityAllocator, int index)
-{
-    return entityAllocator->get(index);
-}
-
-Component *PhysicsEngine::getInternalComponent(
-    PoolAllocator<Transform> *transformAllocator, PoolAllocator<MeshRenderer> *meshRendererAllocator,
-    PoolAllocator<LineRenderer> *lineRendererAllocator, PoolAllocator<Rigidbody> *rigidbodyAllocator,
-    PoolAllocator<Camera> *cameraAllocator, PoolAllocator<Light> *lightAllocator,
-    PoolAllocator<SphereCollider> *sphereColliderAllocator, PoolAllocator<BoxCollider> *boxColliderAllocator,
-    PoolAllocator<CapsuleCollider> *capsuleColliderAllocator, PoolAllocator<MeshCollider> *meshColliderAllocator,
-    int type, int index)
-{
-    if (type == ComponentType<Transform>::type)
-    {
-        return transformAllocator->get(index);
-    }
-    else if (type == ComponentType<Rigidbody>::type)
-    {
-        return rigidbodyAllocator->get(index);
-    }
-    else if (type == ComponentType<Camera>::type)
-    {
-        return cameraAllocator->get(index);
-    }
-    else if (type == ComponentType<MeshRenderer>::type)
-    {
-        return meshRendererAllocator->get(index);
-    }
-    else if (type == ComponentType<LineRenderer>::type)
-    {
-        return lineRendererAllocator->get(index);
-    }
-    else if (type == ComponentType<Light>::type)
-    {
-        return lightAllocator->get(index);
-    }
-    else if (type == ComponentType<BoxCollider>::type)
-    {
-        return boxColliderAllocator->get(index);
-    }
-    else if (type == ComponentType<SphereCollider>::type)
-    {
-        return sphereColliderAllocator->get(index);
-    }
-    else if (type == ComponentType<MeshCollider>::type)
-    {
-        return meshColliderAllocator->get(index);
-    }
-    else if (type == ComponentType<CapsuleCollider>::type)
-    {
-        return capsuleColliderAllocator->get(index);
+        if (component != nullptr) {
+            state.mCapsuleColliderIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+        }
     }
     else
     {
         std::string message =
             "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
         Log::error(message.c_str());
-        return NULL;
+        return nullptr;
     }
+
+    return component;
 }
 
-System *PhysicsEngine::getInternalSystem(PoolAllocator<RenderSystem> *renderSystemAllocator,
-                                         PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
-                                         PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
-                                         PoolAllocator<DebugSystem> *debugSystemAllocator,
-                                         PoolAllocator<GizmoSystem> *gizmoSystemAllocator, int type, int index)
+System* loadInternalSystem(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     if (type == SystemType<RenderSystem>::type)
     {
-        return renderSystemAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mRenderSystemIdToGlobalIndex.find(id);
+        if (it != state.mRenderSystemIdToGlobalIndex.end()) {
+            System* system = allocators.mRenderSystemAllocator.get(it->second);
+
+            if (system != nullptr) {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
     }
     else if (type == SystemType<PhysicsSystem>::type)
     {
-        return physicsSystemAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mPhysicsSystemIdToGlobalIndex.find(id);
+        if (it != state.mPhysicsSystemIdToGlobalIndex.end()) {
+            System* system = allocators.mPhysicsSystemAllocator.get(it->second);
+
+            if (system != nullptr) {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
     }
     else if (type == SystemType<CleanUpSystem>::type)
     {
-        return cleanupSystemAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mCleanupSystemIdToGlobalIndex.find(id);
+        if (it != state.mCleanupSystemIdToGlobalIndex.end()) {
+            System* system = allocators.mCleanupSystemAllocator.get(it->second);
+
+            if (system != nullptr) {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
     }
     else if (type == SystemType<DebugSystem>::type)
     {
-        return debugSystemAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mDebugSystemIdToGlobalIndex.find(id);
+        if (it != state.mDebugSystemIdToGlobalIndex.end()) {
+            System* system = allocators.mDebugSystemAllocator.get(it->second);
+
+            if (system != nullptr) {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
     }
     else if (type == SystemType<GizmoSystem>::type)
     {
-        return gizmoSystemAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mGizmoSystemIdToGlobalIndex.find(id);
+        if (it != state.mGizmoSystemIdToGlobalIndex.end()) {
+            System* system = allocators.mGizmoSystemAllocator.get(it->second);
+
+            if (system != nullptr) {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
+    }
+
+    int index = -1;
+    System* system = nullptr;
+
+    if (type == SystemType<RenderSystem>::type)
+    {
+        index = (int)allocators.mRenderSystemAllocator.getCount();
+        system = allocators.mRenderSystemAllocator.construct(in);
+
+        if (system != nullptr) {
+            state.mRenderSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
+    }
+    else if (type == SystemType<PhysicsSystem>::type)
+    {
+        index = (int)allocators.mPhysicsSystemAllocator.getCount();
+        system = allocators.mPhysicsSystemAllocator.construct(in);
+
+        if (system != nullptr) {
+            state.mPhysicsSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
+    }
+    else if (type == SystemType<CleanUpSystem>::type)
+    {
+        index = (int)allocators.mCleanupSystemAllocator.getCount();
+        system = allocators.mCleanupSystemAllocator.construct(in);
+
+        if (system != nullptr) {
+            state.mCleanupSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
+    }
+    else if (type == SystemType<DebugSystem>::type)
+    {
+        index = (int)allocators.mDebugSystemAllocator.getCount();
+        system = allocators.mDebugSystemAllocator.construct(in);
+
+        if (system != nullptr) {
+            state.mDebugSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
+    }
+    else if (type == SystemType<GizmoSystem>::type)
+    {
+        index = (int)allocators.mGizmoSystemAllocator.getCount();
+        system = allocators.mGizmoSystemAllocator.construct(in);
+
+        if (system != nullptr) {
+            state.mGizmoSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
     }
     else
     {
         std::string message =
             "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
         Log::error(message.c_str());
-        return NULL;
+        return nullptr;
     }
+
+    return system;
 }
 
-Asset *PhysicsEngine::getInternalAsset(PoolAllocator<Mesh> *meshAllocator, PoolAllocator<Material> *materialAllocator,
-                                       PoolAllocator<Shader> *shaderAllocator,
-                                       PoolAllocator<Texture2D> *texture2DAllocator,
-                                       PoolAllocator<Texture3D> *texture3DAllocator,
-                                       PoolAllocator<Cubemap> *cubemapAllocator, PoolAllocator<Font> *fontAllocator,
-                                       int type, int index)
+Asset* loadInternalAsset(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     if (type == AssetType<Shader>::type)
     {
-        return shaderAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mShaderIdToGlobalIndex.find(id);
+        if (it != state.mShaderIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mShaderAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Texture2D>::type)
     {
-        return texture2DAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mTexture2DIdToGlobalIndex.find(id);
+        if (it != state.mTexture2DIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mTexture2DAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Texture3D>::type)
     {
-        return texture3DAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mTexture3DIdToGlobalIndex.find(id);
+        if (it != state.mTexture3DIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mTexture3DAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Cubemap>::type)
     {
-        return cubemapAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mCubemapIdToGlobalIndex.find(id);
+        if (it != state.mCubemapIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mCubemapAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Material>::type)
     {
-        return materialAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mMaterialIdToGlobalIndex.find(id);
+        if (it != state.mMaterialIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mMaterialAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Mesh>::type)
     {
-        return meshAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mMeshIdToGlobalIndex.find(id);
+        if (it != state.mMeshIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mMeshAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
     }
     else if (type == AssetType<Font>::type)
     {
-        return fontAllocator->get(index);
+        std::unordered_map<Guid, int>::iterator it = state.mFontIdToGlobalIndex.find(id);
+        if (it != state.mFontIdToGlobalIndex.end()) {
+            Asset* asset = allocators.mFontAllocator.get(it->second);
+
+            if (asset != nullptr) {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
+    }
+
+    int index = -1;
+    Asset* asset = nullptr;
+
+    if (type == AssetType<Shader>::type)
+    {
+        index = (int)allocators.mShaderAllocator.getCount();
+        asset = allocators.mShaderAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mShaderIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Texture2D>::type)
+    {
+        index = (int)allocators.mTexture2DAllocator.getCount();
+        asset = allocators.mTexture2DAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mTexture2DIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Texture3D>::type)
+    {
+        index = (int)allocators.mTexture3DAllocator.getCount();
+        asset = allocators.mTexture3DAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mTexture3DIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Cubemap>::type)
+    {
+        index = (int)allocators.mCubemapAllocator.getCount();
+        asset = allocators.mCubemapAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mCubemapIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Material>::type)
+    {
+        index = (int)allocators.mMaterialAllocator.getCount();
+        asset = allocators.mMaterialAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mMaterialIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Mesh>::type)
+    {
+        index = (int)allocators.mMeshAllocator.getCount();
+        asset = allocators.mMeshAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mMeshIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Font>::type)
+    {
+        index = (int)allocators.mFontAllocator.getCount();
+        asset = allocators.mFontAllocator.construct(in);
+
+        if (asset != nullptr) {
+            state.mFontIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
     }
     else
     {
         std::string message =
             "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal asset\n";
         Log::error(message.c_str());
-        return NULL;
+        return nullptr;
     }
+
+    return asset;
 }
 
-Entity *PhysicsEngine::loadInternalEntity(PoolAllocator<Entity> *entityAllocator, const std::vector<char> &data,
-                                          int *index)
+Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int index)
 {
-    *index = (int)entityAllocator->getCount();
-    return entityAllocator->construct(data);
+    Entity* swap = allocators.mEntityAllocator.destruct(index);
+
+    state.mEntityIdToGlobalIndex.erase(id);
+    state.mIdToGlobalIndex.erase(id);
+    state.mIdToType.erase(id);
+
+    if (swap != nullptr) {
+        state.mEntityIdToGlobalIndex[swap->getId()] = index;
+        state.mIdToGlobalIndex[swap->getId()] = index;
+        state.mIdToType[swap->getId()] = EntityType<Entity>::type;
+    }
+    
+    return swap;
 }
 
-
-Entity* PhysicsEngine::loadInternalEntity(PoolAllocator<Entity>* entityAllocator, const std::istream& in, int* index)
+Component *PhysicsEngine::destroyInternalComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index)
 {
-    //*index = (int)entityAllocator->getCount();
-    return nullptr;// entityAllocator->construct(in);
-}
+    Component* swap = nullptr;
 
-
-
-Component *PhysicsEngine::loadInternalComponent(
-    PoolAllocator<Transform> *transformAllocator, PoolAllocator<MeshRenderer> *meshRendererAllocator,
-    PoolAllocator<LineRenderer> *lineRendererAllocator, PoolAllocator<Rigidbody> *rigidbodyAllocator,
-    PoolAllocator<Camera> *cameraAllocator, PoolAllocator<Light> *lightAllocator,
-    PoolAllocator<SphereCollider> *sphereColliderAllocator, PoolAllocator<BoxCollider> *boxColliderAllocator,
-    PoolAllocator<CapsuleCollider> *capsuleColliderAllocator, PoolAllocator<MeshCollider> *meshColliderAllocator,
-    const std::vector<char> &data, int type, int *index)
-{
     if (type == ComponentType<Transform>::type)
     {
-        *index = (int)transformAllocator->getCount();
-        return transformAllocator->construct(data);
+        swap = allocators.mTransformAllocator.destruct(index);
+
+        state.mTransformIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mTransformIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<Rigidbody>::type)
     {
-        *index = (int)rigidbodyAllocator->getCount();
-        return rigidbodyAllocator->construct(data);
+        swap = allocators.mRigidbodyAllocator.destruct(index);
+
+        state.mRigidbodyIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mRigidbodyIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<Camera>::type)
     {
-        *index = (int)cameraAllocator->getCount();
-        return cameraAllocator->construct(data);
+        swap = allocators.mCameraAllocator.destruct(index);
+
+        state.mCameraIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mCameraIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<MeshRenderer>::type)
     {
-        *index = (int)meshRendererAllocator->getCount();
-        return meshRendererAllocator->construct(data);
+        swap = allocators.mMeshRendererAllocator.destruct(index);
+
+        state.mMeshRendererIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mMeshRendererIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<LineRenderer>::type)
     {
-        *index = (int)lineRendererAllocator->getCount();
-        return lineRendererAllocator->construct(data);
+        swap = allocators.mLineRendererAllocator.destruct(index);
+
+        state.mLineRendererIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mLineRendererIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<Light>::type)
     {
-        *index = (int)lightAllocator->getCount();
-        return lightAllocator->construct(data);
+        swap = allocators.mLightAllocator.destruct(index);
+
+        state.mLightIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mLightIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<BoxCollider>::type)
     {
-        *index = (int)boxColliderAllocator->getCount();
-        return boxColliderAllocator->construct(data);
+        swap = allocators.mBoxColliderAllocator.destruct(index);
+
+        state.mBoxColliderIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mBoxColliderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<SphereCollider>::type)
     {
-        *index = (int)sphereColliderAllocator->getCount();
-        return sphereColliderAllocator->construct(data);
+        swap = allocators.mSphereColliderAllocator.destruct(index);
+
+        state.mSphereColliderIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mSphereColliderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<MeshCollider>::type)
     {
-        *index = (int)meshColliderAllocator->getCount();
-        return meshColliderAllocator->construct(data);
+        swap = allocators.mMeshColliderAllocator.destruct(index);
+
+        state.mMeshColliderIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr) {
+            state.mMeshColliderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else if (type == ComponentType<CapsuleCollider>::type)
     {
-        *index = (int)capsuleColliderAllocator->getCount();
-        return capsuleColliderAllocator->construct(data);
-    }
-    else
-    {
-        std::string message =
-            "Error: Invalid component type (" + std::to_string(type) + ") when trying to load internal component\n";
-        Log::error(message.c_str());
-        return NULL;
-    }
-}
+        swap = allocators.mCapsuleColliderAllocator.destruct(index);
 
-System *PhysicsEngine::loadInternalSystem(PoolAllocator<RenderSystem> *renderSystemAllocator,
-                                          PoolAllocator<PhysicsSystem> *physicsSystemAllocator,
-                                          PoolAllocator<CleanUpSystem> *cleanupSystemAllocator,
-                                          PoolAllocator<DebugSystem> *debugSystemAllocator,
-                                          PoolAllocator<GizmoSystem> *gizmoSystemAllocator,
-                                          const std::vector<char> &data, int type, int *index)
-{
-    if (type == SystemType<RenderSystem>::type)
-    {
-        *index = (int)renderSystemAllocator->getCount();
-        return renderSystemAllocator->construct(data);
-    }
-    else if (type == SystemType<PhysicsSystem>::type)
-    {
-        *index = (int)physicsSystemAllocator->getCount();
-        return physicsSystemAllocator->construct(data);
-    }
-    else if (type == SystemType<CleanUpSystem>::type)
-    {
-        *index = (int)cleanupSystemAllocator->getCount();
-        return cleanupSystemAllocator->construct(data);
-    }
-    else if (type == SystemType<DebugSystem>::type)
-    {
-        *index = (int)debugSystemAllocator->getCount();
-        return debugSystemAllocator->construct(data);
-    }
-    else if (type == SystemType<GizmoSystem>::type)
-    {
-        *index = (int)gizmoSystemAllocator->getCount();
-        return gizmoSystemAllocator->construct(data);
-    }
-    else
-    {
-        std::string message =
-            "Error: Invalid system type (" + std::to_string(type) + ") when trying to load internal system\n";
-        Log::error(message.c_str());
-        return NULL;
-    }
-}
+        state.mCapsuleColliderIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
 
-Asset *PhysicsEngine::loadInternalAsset(PoolAllocator<Mesh> *meshAllocator, PoolAllocator<Material> *materialAllocator,
-                                        PoolAllocator<Shader> *shaderAllocator,
-                                        PoolAllocator<Texture2D> *texture2DAllocator,
-                                        PoolAllocator<Texture3D> *texture3DAllocator,
-                                        PoolAllocator<Cubemap> *cubemapAllocator, PoolAllocator<Font> *fontAllocator,
-                                        const std::vector<char> &data, int type, int *index)
-{
-    if (type == AssetType<Shader>::type)
-    {
-        *index = (int)shaderAllocator->getCount();
-        return shaderAllocator->construct(data);
-    }
-    else if (type == AssetType<Texture2D>::type)
-    {
-        *index = (int)texture2DAllocator->getCount();
-        return texture2DAllocator->construct(data);
-    }
-    else if (type == AssetType<Texture3D>::type)
-    {
-        *index = (int)texture3DAllocator->getCount();
-        return texture3DAllocator->construct(data);
-    }
-    else if (type == AssetType<Cubemap>::type)
-    {
-        *index = (int)cubemapAllocator->getCount();
-        return cubemapAllocator->construct(data);
-    }
-    else if (type == AssetType<Material>::type)
-    {
-        *index = (int)materialAllocator->getCount();
-        return materialAllocator->construct(data);
-    }
-    else if (type == AssetType<Mesh>::type)
-    {
-        *index = (int)meshAllocator->getCount();
-        return meshAllocator->construct(data);
-    }
-    else if (type == AssetType<Font>::type)
-    {
-        *index = (int)fontAllocator->getCount();
-        return fontAllocator->construct(data);
-    }
-    else
-    {
-        std::string message =
-            "Error: Invalid asset type (" + std::to_string(type) + ") when trying to load internal asset\n";
-        Log::error(message.c_str());
-        return NULL;
-    }
-}
-
-Entity *PhysicsEngine::destroyInternalEntity(PoolAllocator<Entity> *entityAllocator, int index)
-{
-    return entityAllocator->destruct(index);
-}
-
-Component *PhysicsEngine::destroyInternalComponent(
-    PoolAllocator<Transform> *transformAllocator, PoolAllocator<MeshRenderer> *meshRendererAllocator,
-    PoolAllocator<LineRenderer> *lineRendererAllocator, PoolAllocator<Rigidbody> *rigidbodyAllocator,
-    PoolAllocator<Camera> *cameraAllocator, PoolAllocator<Light> *lightAllocator,
-    PoolAllocator<SphereCollider> *sphereColliderAllocator, PoolAllocator<BoxCollider> *boxColliderAllocator,
-    PoolAllocator<CapsuleCollider> *capsuleColliderAllocator, PoolAllocator<MeshCollider> *meshColliderAllocator,
-    int type, int index)
-{
-    if (type == ComponentType<Transform>::type)
-    {
-        return transformAllocator->destruct(index);
-    }
-    else if (type == ComponentType<Rigidbody>::type)
-    {
-        return rigidbodyAllocator->destruct(index);
-    }
-    else if (type == ComponentType<Camera>::type)
-    {
-        return cameraAllocator->destruct(index);
-    }
-    else if (type == ComponentType<MeshRenderer>::type)
-    {
-        return meshRendererAllocator->destruct(index);
-    }
-    else if (type == ComponentType<LineRenderer>::type)
-    {
-        return lineRendererAllocator->destruct(index);
-    }
-    else if (type == ComponentType<Light>::type)
-    {
-        return lightAllocator->destruct(index);
-    }
-    else if (type == ComponentType<BoxCollider>::type)
-    {
-        return boxColliderAllocator->destruct(index);
-    }
-    else if (type == ComponentType<SphereCollider>::type)
-    {
-        return sphereColliderAllocator->destruct(index);
-    }
-    else if (type == ComponentType<MeshCollider>::type)
-    {
-        return meshColliderAllocator->destruct(index);
-    }
-    else if (type == ComponentType<CapsuleCollider>::type)
-    {
-        return capsuleColliderAllocator->destruct(index);
+        if (swap != nullptr) {
+            state.mCapsuleColliderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
     }
     else
     {
         std::string message = "Error: Invalid component instance type (" + std::to_string(type) +
                               ") when trying to destroy internal component\n";
         Log::error(message.c_str());
-        return NULL;
+        return nullptr;
     }
+
+    return swap;
 }

@@ -12,15 +12,6 @@
 
 namespace PhysicsEngine
 {
-#pragma pack(push, 1)
-struct FontHeader
-{
-    Guid mFontId;
-    char mFontName[64];
-    size_t mFilepathSize;
-};
-#pragma pack(pop)
-
 struct Character
 {
     GLuint mGlyphId;     // ID handle of the glyph texture
@@ -46,12 +37,8 @@ class Font : public Asset
     Font(const std::string &filepath);
     ~Font();
 
-    std::vector<char> serialize() const;
-    std::vector<char> serialize(Guid assetId) const;
-    void deserialize(const std::vector<char> &data);
-
-    void serialize(std::ostream& out) const;
-    void deserialize(std::istream& in);
+    virtual void serialize(std::ostream& out) const;
+    virtual void deserialize(std::istream& in);
 
     void load(std::string filepath);
 

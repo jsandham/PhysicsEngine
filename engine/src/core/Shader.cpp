@@ -39,75 +39,6 @@ Shader::~Shader()
 {
 }
 
-std::vector<char> Shader::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Shader::serialize(Guid assetId) const
-{
-    ShaderHeader header;
-    header.mShaderId = assetId;
-    header.mVertexShaderSize = mVertexShader.length();
-    header.mGeometryShaderSize = mGeometryShader.length();
-    header.mFragmentShaderSize = mFragmentShader.length();
-    header.mNumberOfShaderUniforms = mUniforms.size();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mShaderName[0], &mAssetName[0], len);
-    header.mShaderName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(ShaderHeader) + sizeof(char) * mVertexShader.length() +
-                           sizeof(char) * mFragmentShader.length() + sizeof(char) * mGeometryShader.length() +
-                           sizeof(ShaderUniform) * mUniforms.size();
-
-    std::vector<char> data(numberOfBytes);
-
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(ShaderHeader);
-    size_t start3 = start2 + sizeof(char) * mVertexShader.length();
-    size_t start4 = start3 + sizeof(char) * mGeometryShader.length();
-
-    memcpy(&data[start1], &header, sizeof(ShaderHeader));
-    memcpy(&data[start2], mVertexShader.c_str(), sizeof(char) * mVertexShader.length());
-    memcpy(&data[start3], mGeometryShader.c_str(), sizeof(char) * mGeometryShader.length());
-    memcpy(&data[start4], mFragmentShader.c_str(), sizeof(char) * mFragmentShader.length());
-
-    return data;
-}
-
-void Shader::deserialize(const std::vector<char> &data)
-{
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(ShaderHeader);
-
-    const ShaderHeader *header = reinterpret_cast<const ShaderHeader *>(&data[start1]);
-
-    mId = header->mShaderId;
-    mAssetName = std::string(header->mShaderName);
-
-    size_t vertexShaderSize = header->mVertexShaderSize;
-    size_t geometryShaderSize = header->mGeometryShaderSize;
-    size_t fragmentShaderSize = header->mFragmentShaderSize;
-
-    std::vector<char>::const_iterator start = data.begin();
-    std::vector<char>::const_iterator end = data.begin();
-    start += start2;
-    end += start2 + vertexShaderSize;
-
-    mVertexShader = std::string(start, end);
-
-    start += vertexShaderSize;
-    end += geometryShaderSize;
-
-    mGeometryShader = std::string(start, end);
-
-    start += geometryShaderSize;
-    end += fragmentShaderSize;
-
-    mFragmentShader = std::string(start, end);
-}
-
 void Shader::serialize(std::ostream& out) const
 {
     Asset::serialize(out);
@@ -115,9 +46,9 @@ void Shader::serialize(std::ostream& out) const
     PhysicsEngine::write<size_t>(out, mVertexShader.length());
     PhysicsEngine::write<size_t>(out, mGeometryShader.length());
     PhysicsEngine::write<size_t>(out, mFragmentShader.length());
-    //mVertexShader
-    //mGeometryShader
-    //mFragmentShader
+    PhysicsEngine::write<const char>(out, mVertexShader.c_str(), mVertexShader.length());
+    PhysicsEngine::write<const char>(out, mGeometryShader.c_str(), mGeometryShader.length());
+    PhysicsEngine::write<const char>(out, mFragmentShader.c_str(), mFragmentShader.length());
 }
 
 void Shader::deserialize(std::istream& in)
@@ -128,9 +59,14 @@ void Shader::deserialize(std::istream& in)
     PhysicsEngine::read<size_t>(in, vertShaderSize);
     PhysicsEngine::read<size_t>(in, geoShaderSize);
     PhysicsEngine::read<size_t>(in, fragShaderSize);
-    //mVertexShader
-    //mGeometryShader
-    //mFragmentShader
+
+    mVertexShader.resize(vertShaderSize);
+    mGeometryShader.resize(geoShaderSize);
+    mFragmentShader.resize(fragShaderSize);
+
+    PhysicsEngine::read<char>(in, &mVertexShader[0], vertShaderSize);
+    PhysicsEngine::read<char>(in, &mGeometryShader[0], geoShaderSize);
+    PhysicsEngine::read<char>(in, &mFragmentShader[0], fragShaderSize);
 }
 
 void Shader::load(const std::string &filepath)

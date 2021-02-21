@@ -19,34 +19,6 @@ SphereCollider::~SphereCollider()
 {
 }
 
-std::vector<char> SphereCollider::serialize() const
-{
-    return serialize(mId, mEntityId);
-}
-
-std::vector<char> SphereCollider::serialize(const Guid &componentId, const Guid &entityId) const
-{
-    SphereColliderHeader header;
-    header.mComponentId = componentId;
-    header.mEntityId = entityId;
-    header.mSphere = mSphere;
-
-    std::vector<char> data(sizeof(SphereColliderHeader));
-
-    memcpy(&data[0], &header, sizeof(SphereColliderHeader));
-
-    return data;
-}
-
-void SphereCollider::deserialize(const std::vector<char> &data)
-{
-    const SphereColliderHeader *header = reinterpret_cast<const SphereColliderHeader *>(&data[0]);
-
-    mId = header->mComponentId;
-    mEntityId = header->mEntityId;
-    mSphere = header->mSphere;
-}
-
 void SphereCollider::serialize(std::ostream& out) const
 {
     Collider::serialize(out);

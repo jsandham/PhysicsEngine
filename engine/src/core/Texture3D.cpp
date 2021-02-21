@@ -24,7 +24,7 @@ Texture3D::Texture3D() : Texture()
 
 Texture3D::Texture3D(Guid id) : Texture(id)
 {
-    mDimension = TextureDimension::Tex2D;
+    mDimension = TextureDimension::Tex3D;
 
     mWidth = 0;
     mHeight = 0;
@@ -41,7 +41,7 @@ Texture3D::Texture3D(Guid id) : Texture(id)
 
 Texture3D::Texture3D(int width, int height, int depth, int numChannels) : Texture()
 {
-    mDimension = TextureDimension::Tex2D;
+    mDimension = TextureDimension::Tex3D;
 
     mWidth = width;
     mHeight = height;
@@ -60,71 +60,6 @@ Texture3D::Texture3D(int width, int height, int depth, int numChannels) : Textur
 
 Texture3D::~Texture3D()
 {
-}
-
-std::vector<char> Texture3D::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Texture3D::serialize(Guid assetId) const
-{
-    Texture3DHeader header;
-    header.mTextureId = assetId;
-    header.mWidth = static_cast<int32_t>(mWidth);
-    header.mHeight = static_cast<int32_t>(mHeight);
-    header.mDepth = static_cast<int32_t>(mDepth);
-    header.mNumChannels = static_cast<int32_t>(mNumChannels);
-    header.mAnisoLevel = static_cast<int32_t>(mAnisoLevel);
-    header.mDimension = static_cast<uint8_t>(mDimension);
-    header.mFormat = static_cast<uint8_t>(mFormat);
-    header.mWrapMode = static_cast<uint8_t>(mWrapMode);
-    header.mFilterMode = static_cast<uint8_t>(mFilterMode);
-    header.mTextureSize = mRawTextureData.size();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mTextureName[0], &mAssetName[0], len);
-    header.mTextureName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(Texture3DHeader) + sizeof(unsigned char) * mRawTextureData.size();
-
-    std::vector<char> data(numberOfBytes);
-
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(Texture3DHeader);
-
-    memcpy(&data[start1], &header, sizeof(Texture3DHeader));
-    memcpy(&data[start2], &mRawTextureData[0], sizeof(unsigned char) * mRawTextureData.size());
-
-    return data;
-}
-
-void Texture3D::deserialize(const std::vector<char> &data)
-{
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(Texture3DHeader);
-
-    const Texture3DHeader *header = reinterpret_cast<const Texture3DHeader *>(&data[start1]);
-
-    mId = header->mTextureId;
-    mAssetName = std::string(header->mTextureName);
-    mWidth = static_cast<int>(header->mWidth);
-    mHeight = static_cast<int>(header->mHeight);
-    mDepth = static_cast<int>(header->mDepth);
-    mNumChannels = static_cast<int>(header->mNumChannels);
-    mAnisoLevel = static_cast<int>(header->mAnisoLevel);
-    mDimension = static_cast<TextureDimension>(header->mDimension);
-    mFormat = static_cast<TextureFormat>(header->mFormat);
-    mWrapMode = static_cast<TextureWrapMode>(header->mWrapMode);
-    mFilterMode = static_cast<TextureFilterMode>(header->mFilterMode);
-
-    mRawTextureData.resize(header->mTextureSize);
-    for (size_t i = 0; i < header->mTextureSize; i++)
-    {
-        mRawTextureData[i] = *reinterpret_cast<const unsigned char *>(&data[start2 + sizeof(unsigned char) * i]);
-    }
-    this->mCreated = false;
-    this->mUpdateRequired = false;
 }
 
 void Texture3D::serialize(std::ostream& out) const

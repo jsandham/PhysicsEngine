@@ -8,14 +8,12 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh() : Asset()
 {
-    mAssetName = "";
     mCreated = false;
     mChanged = false;
 }
 
 Mesh::Mesh(Guid id) : Asset(id)
 {
-    mAssetName = "";
     mCreated = false;
     mChanged = false;
 }
@@ -23,89 +21,6 @@ Mesh::Mesh(Guid id) : Asset(id)
 Mesh::~Mesh()
 {
 }
-
-std::vector<char> Mesh::serialize() const
-{
-    return serialize(mId);
-}
-
-std::vector<char> Mesh::serialize(Guid assetId) const
-{
-    MeshHeader header;
-    header.mMeshId = assetId;
-    header.mVerticesSize = mVertices.size();
-    header.mNormalsSize = mNormals.size();
-    header.mTexCoordsSize = mTexCoords.size();
-    header.mSubMeshVertexStartIndiciesSize = mSubMeshVertexStartIndices.size();
-
-    std::size_t len = std::min(size_t(64 - 1), mAssetName.size());
-    memcpy(&header.mMeshName[0], &mAssetName[0], len);
-    header.mMeshName[len] = '\0';
-
-    size_t numberOfBytes = sizeof(MeshHeader) + mVertices.size() * sizeof(float) + mNormals.size() * sizeof(float) +
-                           mTexCoords.size() * sizeof(float) + mSubMeshVertexStartIndices.size() * sizeof(int);
-
-    std::vector<char> data(numberOfBytes);
-
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(MeshHeader);
-    size_t start3 = start2 + sizeof(float) * mVertices.size();
-    size_t start4 = start3 + sizeof(float) * mNormals.size();
-    size_t start5 = start4 + sizeof(float) * mTexCoords.size();
-
-    memcpy(&data[start1], &header, sizeof(MeshHeader));
-    memcpy(&data[start2], &mVertices[0], sizeof(float) * mVertices.size());
-    memcpy(&data[start3], &mNormals[0], sizeof(float) * mNormals.size());
-    memcpy(&data[start4], &mTexCoords[0], sizeof(float) * mTexCoords.size());
-    memcpy(&data[start5], &mSubMeshVertexStartIndices[0], sizeof(int) * mSubMeshVertexStartIndices.size());
-
-    return data;
-}
-
-void Mesh::deserialize(const std::vector<char> &data)
-{
-    size_t start1 = 0;
-    size_t start2 = start1 + sizeof(MeshHeader);
-
-    const MeshHeader *header = reinterpret_cast<const MeshHeader *>(&data[start1]);
-
-    mId = header->mMeshId;
-    mAssetName = std::string(header->mMeshName);
-    mVertices.resize(header->mVerticesSize);
-    mNormals.resize(header->mNormalsSize);
-    mTexCoords.resize(header->mTexCoordsSize);
-    mSubMeshVertexStartIndices.resize(header->mSubMeshVertexStartIndiciesSize);
-
-    size_t start3 = start2 + sizeof(float) * mVertices.size();
-    size_t start4 = start3 + sizeof(float) * mNormals.size();
-    size_t start5 = start4 + sizeof(float) * mTexCoords.size();
-
-    for (size_t i = 0; i < header->mVerticesSize; i++)
-    {
-        mVertices[i] = *reinterpret_cast<const float *>(&data[start2 + sizeof(float) * i]);
-    }
-
-    for (size_t i = 0; i < header->mNormalsSize; i++)
-    {
-        mNormals[i] = *reinterpret_cast<const float *>(&data[start3 + sizeof(float) * i]);
-    }
-
-    for (size_t i = 0; i < header->mTexCoordsSize; i++)
-    {
-        mTexCoords[i] = *reinterpret_cast<const float *>(&data[start4 + sizeof(float) * i]);
-    }
-
-    for (size_t i = 0; i < header->mSubMeshVertexStartIndiciesSize; i++)
-    {
-        mSubMeshVertexStartIndices[i] = *reinterpret_cast<const int *>(&data[start5 + sizeof(int) * i]);
-    }
-
-    computeBoundingSphere();
-
-    mCreated = false;
-    mChanged = false;
-}
-
 
 void Mesh::serialize(std::ostream& out) const
 {
@@ -115,10 +30,10 @@ void Mesh::serialize(std::ostream& out) const
     PhysicsEngine::write<size_t>(out, mNormals.size());
     PhysicsEngine::write<size_t>(out, mTexCoords.size());
     PhysicsEngine::write<size_t>(out, mSubMeshVertexStartIndices.size());
-    //mVertices
-    //mNormals
-    //mTexCoords
-    //mSubMeshVertexStartIndices
+    PhysicsEngine::write<const float>(out, mVertices.data(), mVertices.size());
+    PhysicsEngine::write<const float>(out, mNormals.data(), mNormals.size());
+    PhysicsEngine::write<const float>(out, mTexCoords.data(), mTexCoords.size());
+    PhysicsEngine::write<const int>(out, mSubMeshVertexStartIndices.data(), mSubMeshVertexStartIndices.size());
 }
 
 void Mesh::deserialize(std::istream& in)
@@ -130,12 +45,22 @@ void Mesh::deserialize(std::istream& in)
     PhysicsEngine::read<size_t>(in, normalCount);
     PhysicsEngine::read<size_t>(in, texCoordCount);
     PhysicsEngine::read<size_t>(in, subMeshCount);
-    //mVertexShader
-    //mGeometryShader
-    //mFragmentShader
+
+    mVertices.resize(vertexCount);
+    mNormals.resize(normalCount);
+    mTexCoords.resize(texCoordCount);
+    mSubMeshVertexStartIndices.resize(subMeshCount);
+
+    PhysicsEngine::read<float>(in, mVertices.data(), vertexCount);
+    PhysicsEngine::read<float>(in, mNormals.data(), normalCount);
+    PhysicsEngine::read<float>(in, mTexCoords.data(), texCoordCount);
+    PhysicsEngine::read<int>(in, mSubMeshVertexStartIndices.data(), subMeshCount);
+
+    computeBoundingSphere();
+
+    mCreated = false;
+    mChanged = false;
 }
-
-
 
 void Mesh::load(const std::string &filepath)
 {
