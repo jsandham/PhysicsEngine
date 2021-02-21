@@ -18,15 +18,14 @@
 #include "Mesh.h"
 #include "PoolAllocator.h"
 #include "Serialization.h"
-#include "SerializationInternal.h"
 #include "Shader.h"
 #include "Texture2D.h"
 #include "Texture3D.h"
 #include "Util.h"
 #include "WorldAllocators.h"
 #include "WorldIdState.h"
+#include "WorldDefaultAssets.h"
 #include "WorldSerialization.h"
-#include "Serialize.h"
 
 #include "../components/BoxCollider.h"
 #include "../components/Camera.h"
@@ -57,42 +56,15 @@ class World
     // id state for assets, entities, components, and systems
     WorldIdState mIdState;
 
+    // default assets
+    WorldDefaultAssets mDefaultAssets;
+
     // all systems in world listed in order they should be updated
     std::vector<System *> mSystems;
 
     // asset and scene id to filepath
     std::unordered_map<Guid, std::string> mAssetIdToFilepath;
     std::unordered_map<Guid, std::string> mSceneIdToFilepath;
-
-    // default loaded meshes
-    Guid mSphereMeshId;
-    Guid mCubeMeshId;
-    Guid mPlaneMeshId;
-
-    // default loaded shaders
-    Guid mColorLitShaderId;
-    Guid mNormalLitShaderId;
-    Guid mTangentLitShaderId;
-
-    Guid mFontShaderId;
-    Guid mGizmoShaderId;
-    Guid mLineShaderId;
-    Guid mColorShaderId;
-    Guid mPositionAndNormalsShaderId;
-    Guid mSsaoShaderId;
-    Guid mScreenQuadShaderId;
-    Guid mNormalMapShaderId;
-    Guid mDepthMapShaderId;
-    Guid mShadowDepthMapShaderId;
-    Guid mShadowDepthCubemapShaderId;
-    Guid mGbufferShaderId;
-    Guid mSimpleLitShaderId;
-    Guid mSimpleLitDeferedShaderId;
-    Guid mOverdrawShaderId;
-
-    // default loaded materials
-    Guid mSimpleLitMaterialId;
-    Guid mColorMaterialId;
 
   public:
     World();
@@ -886,37 +858,37 @@ class World
     {
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
-        return allocator != NULL ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> int getNumberOfComponents_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        return allocator != NULL ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> int getNumberOfAssets_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
-        return allocator != NULL ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? (int)allocator->getCount() : 0;
     }
 
     template <typename T> T *getSystem_impl(const PoolAllocator<T> *allocator)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
-        return allocator != NULL ? allocator->get(0) : NULL;
+        return allocator != nullptr ? allocator->get(0) : nullptr;
     }
 
     template <typename T> T *getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityId)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        if (allocator == NULL)
+        if (allocator == nullptr)
         {
-            return NULL;
+            return nullptr;
         }
 
         auto it1 = mIdState.mEntityIdToComponentIds.find(entityId);
@@ -929,7 +901,6 @@ class World
             {
                 if (ComponentType<T>::type == componentsOnEntity[i].second)
                 {
-
                     std::unordered_map<Guid, int>::const_iterator it2 =
                         mIdState.mIdToGlobalIndex.find(componentsOnEntity[i].first);
                     if (it2 != mIdState.mIdToGlobalIndex.end())
@@ -942,7 +913,7 @@ class World
             }
         }
 
-        return NULL;
+        return nullptr;
     }
 
     template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityId)
@@ -951,7 +922,7 @@ class World
 
         if (getTypeOf(entityId) != EntityType<Entity>::type)
         {
-            return NULL;
+            return nullptr;
         }
 
         int componentGlobalIndex = (int)allocator->getCount();
@@ -960,7 +931,7 @@ class World
 
         T *component = allocator->construct(componentId);
 
-        if (component != NULL)
+        if (component != nullptr)
         {
             component->mEntityId = entityId;
 
@@ -983,9 +954,9 @@ class World
 
         T *component = allocator->construct(in);
 
-        if (component == NULL || component->getId() == Guid::INVALID || component->getEntityId() == Guid::INVALID)
+        if (component->getId().isInvalid() || component->getEntityId().isInvalid())
         {
-            return NULL;
+            return nullptr;
         }
 
         addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
@@ -1007,7 +978,7 @@ class World
 
         T *system = allocator->construct(systemId);
 
-        if (system != NULL)
+        if (system != nullptr)
         {
             addIdToGlobalIndexMap_impl<T>(systemId, systemGlobalIndex, systemType);
 
@@ -1031,16 +1002,16 @@ class World
     {
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
-        return allocator != NULL ? allocator->get(index) : NULL;
+        return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
     template <typename T> T *getSystemById_impl(const PoolAllocator<T> *allocator, const Guid &systemId)
     {
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
-        if (allocator == NULL || SystemType<T>::type != getTypeOf(systemId))
+        if (allocator == nullptr || SystemType<T>::type != getTypeOf(systemId))
         {
-            return NULL;
+            return nullptr;
         }
 
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, systemId);
@@ -1050,16 +1021,16 @@ class World
     {
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
-        return allocator != NULL ? allocator->get(index) : NULL;
+        return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
     template <typename T> T *getAssetById_impl(const PoolAllocator<T> *allocator, const Guid &assetId)
     {
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
-        if (allocator == NULL || AssetType<T>::type != getTypeOf(assetId))
+        if (allocator == nullptr || AssetType<T>::type != getTypeOf(assetId))
         {
-            return NULL;
+            return nullptr;
         }
 
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, assetId);
@@ -1069,16 +1040,16 @@ class World
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        return allocator != NULL ? allocator->get(index) : NULL;
+        return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
     template <typename T> T *getComponentById_impl(const PoolAllocator<T> *allocator, const Guid &componentId)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        if (allocator == NULL || ComponentType<T>::type != getTypeOf(componentId))
+        if (allocator == nullptr || ComponentType<T>::type != getTypeOf(componentId))
         {
-            return NULL;
+            return nullptr;
         }
 
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, componentId);
@@ -1094,7 +1065,7 @@ class World
 
         T *asset = allocator->construct(id);
 
-        if (asset != NULL)
+        if (asset != nullptr)
         {
             addIdToGlobalIndexMap_impl<T>(id, index, type);
         }
@@ -1111,7 +1082,7 @@ class World
 
         T *asset = allocator->construct(in);
 
-        if (asset != NULL)
+        if (asset != nullptr)
         {
             addIdToGlobalIndexMap_impl<T>(asset->getId(), index, type);
         }
@@ -1129,7 +1100,7 @@ class World
             return static_cast<PoolAllocator<T> *>(it->second);
         }
 
-        return NULL;
+        return nullptr;
     }
 
     template <typename T> PoolAllocator<T> *getComponentOrAddAllocator_impl()
@@ -1137,7 +1108,7 @@ class World
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         PoolAllocator<T> *allocator = getComponentAllocator_impl<T>();
-        if (allocator == NULL)
+        if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
             mComponentAllocatorMap[ComponentType<T>::type] = allocator;
@@ -1156,7 +1127,7 @@ class World
             return static_cast<PoolAllocator<T> *>(it->second);
         }
 
-        return NULL;
+        return nullptr;
     }
 
     template <typename T> PoolAllocator<T> *getSystemOrAddAllocator_impl()
@@ -1164,7 +1135,7 @@ class World
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         PoolAllocator<T> *allocator = getSystemAllocator_impl<T>();
-        if (allocator == NULL)
+        if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
             mSystemAllocatorMap[SystemType<T>::type] = allocator;
@@ -1183,7 +1154,7 @@ class World
             return static_cast<PoolAllocator<T> *>(it->second);
         }
 
-        return NULL;
+        return nullptr;
     }
 
     template <typename T> PoolAllocator<T> *getAssetOrAddAllocator_impl()
@@ -1191,7 +1162,7 @@ class World
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
         PoolAllocator<T> *allocator = getAssetAllocator_impl<T>();
-        if (allocator == NULL)
+        if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
             mAssetAllocatorMap[AssetType<T>::type] = allocator;
@@ -1211,7 +1182,7 @@ class World
         }
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
 

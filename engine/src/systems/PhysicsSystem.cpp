@@ -9,7 +9,7 @@
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Triangle.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/MeshCollider.h"

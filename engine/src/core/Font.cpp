@@ -3,7 +3,7 @@
 
 #include "../../include/core/Font.h"
 #include "../../include/core/InternalShaders.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 // #include "../../include/freetype/ft2build.h"

@@ -4,7 +4,7 @@
 #include "../../include/core/Material.h"
 #include "../../include/core/World.h"
 #include "../../include/core/mat_load.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 #include "../../include/graphics/Graphics.h"
 

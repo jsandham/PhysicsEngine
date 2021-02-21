@@ -1,6 +1,6 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/stb_image/stb_image.h"
 

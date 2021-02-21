@@ -2,7 +2,7 @@
 
 #include "../../include/components/Light.h"
 #include "../../include/graphics/Graphics.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 

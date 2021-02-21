@@ -19,7 +19,7 @@ struct ProjectNode
     std::vector<std::string> filePaths;
     int id;
 
-    ProjectNode() : id(-1), parent(NULL), directoryName(""), directoryPath("")
+    ProjectNode() : id(-1), parent(nullptr), directoryName(""), directoryPath("")
     {
     }
 };

@@ -1,6 +1,6 @@
 #include "../../include/core/Texture.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 

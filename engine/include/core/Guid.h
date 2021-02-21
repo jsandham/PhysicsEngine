@@ -27,6 +27,8 @@ class Guid
     bool operator<(const Guid &guid) const;
 
     bool isEmpty() const;
+    bool isValid() const;
+    bool isInvalid() const;
     std::string toString() const;
 
     static Guid newGuid();

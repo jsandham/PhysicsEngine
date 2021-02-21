@@ -41,7 +41,7 @@ namespace PhysicsEditor
 		{
 			//T* component = entity->addComponent<T>();
 			//Undo::mAddComponentRecords.push_back(std::make_pair(component, component->serialize()));
-			return NULL;
+			return nullptr;
 		}
 
 		static void addCommand(Command* command);

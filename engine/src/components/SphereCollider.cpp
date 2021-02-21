@@ -3,7 +3,7 @@
 #include "../../include/components/SphereCollider.h"
 
 #include "../../include/core/Intersect.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 

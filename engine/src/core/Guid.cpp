@@ -200,6 +200,16 @@ bool Guid::isEmpty() const
     return true;
 }
 
+bool Guid::isValid() const
+{
+    return *this != Guid::INVALID;
+}
+
+bool Guid::isInvalid() const
+{
+    return *this == Guid::INVALID;
+}
+
 std::string Guid::toString() const
 {
     char buffer[37];

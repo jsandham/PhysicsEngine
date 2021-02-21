@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/components/Camera.h"
 #include "../../include/graphics/Graphics.h"
 

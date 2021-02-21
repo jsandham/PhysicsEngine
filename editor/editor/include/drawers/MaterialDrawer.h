@@ -117,7 +117,7 @@ inline void UniformDrawer<GL_SAMPLER_2D>::draw(EditorClipboard &clipboard, Mater
     Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(textureId);
 
     bool slotFilled = false;
-    bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == NULL ? 0 : texture->getNativeGraphics(),
+    bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == nullptr ? 0 : texture->getNativeGraphics(),
                                       clipboard.getDraggedType() == InteractionType::Texture2D, &slotFilled);
     if (slotFilled)
     {

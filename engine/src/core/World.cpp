@@ -18,34 +18,34 @@ using namespace PhysicsEngine;
 World::World()
 {
     // load default included meshes
-    mSphereMeshId = InternalMeshes::loadSphereMesh(this);
-    mCubeMeshId = InternalMeshes::loadCubeMesh(this);
-    mPlaneMeshId = InternalMeshes::loadPlaneMesh(this);
+    mDefaultAssets.mSphereMeshId = InternalMeshes::loadSphereMesh(this);
+    mDefaultAssets.mCubeMeshId = InternalMeshes::loadCubeMesh(this);
+    mDefaultAssets.mPlaneMeshId = InternalMeshes::loadPlaneMesh(this);
 
     // load default included shaders
-    mColorLitShaderId = InternalShaders::loadColorLitShader(this);
-    mNormalLitShaderId = InternalShaders::loadNormalLitShader(this);
-    mTangentLitShaderId = InternalShaders::loadTangentLitShader(this);
+    mDefaultAssets.mColorLitShaderId = InternalShaders::loadColorLitShader(this);
+    mDefaultAssets.mNormalLitShaderId = InternalShaders::loadNormalLitShader(this);
+    mDefaultAssets.mTangentLitShaderId = InternalShaders::loadTangentLitShader(this);
 
-    mFontShaderId = InternalShaders::loadFontShader(this);
-    mGizmoShaderId = InternalShaders::loadGizmoShader(this);
-    mLineShaderId = InternalShaders::loadLineShader(this);
-    mColorShaderId = InternalShaders::loadColorShader(this);
-    mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
-    mSsaoShaderId = InternalShaders::loadSsaoShader(this);
-    mScreenQuadShaderId = InternalShaders::loadScreenQuadShader(this);
-    mNormalMapShaderId = InternalShaders::loadNormalMapShader(this);
-    mDepthMapShaderId = InternalShaders::loadDepthMapShader(this);
-    mShadowDepthMapShaderId = InternalShaders::loadShadowDepthMapShader(this);
-    mShadowDepthCubemapShaderId = InternalShaders::loadShadowDepthCubemapShader(this);
-    mGbufferShaderId = InternalShaders::loadGBufferShader(this);
-    mSimpleLitShaderId = InternalShaders::loadSimpleLitShader(this);
-    mSimpleLitDeferedShaderId = InternalShaders::loadSimpleLitDeferredShader(this);
-    mOverdrawShaderId = InternalShaders::loadOverdrawShader(this);
+    mDefaultAssets.mFontShaderId = InternalShaders::loadFontShader(this);
+    mDefaultAssets.mGizmoShaderId = InternalShaders::loadGizmoShader(this);
+    mDefaultAssets.mLineShaderId = InternalShaders::loadLineShader(this);
+    mDefaultAssets.mColorShaderId = InternalShaders::loadColorShader(this);
+    mDefaultAssets.mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
+    mDefaultAssets.mSsaoShaderId = InternalShaders::loadSsaoShader(this);
+    mDefaultAssets.mScreenQuadShaderId = InternalShaders::loadScreenQuadShader(this);
+    mDefaultAssets.mNormalMapShaderId = InternalShaders::loadNormalMapShader(this);
+    mDefaultAssets.mDepthMapShaderId = InternalShaders::loadDepthMapShader(this);
+    mDefaultAssets.mShadowDepthMapShaderId = InternalShaders::loadShadowDepthMapShader(this);
+    mDefaultAssets.mShadowDepthCubemapShaderId = InternalShaders::loadShadowDepthCubemapShader(this);
+    mDefaultAssets.mGbufferShaderId = InternalShaders::loadGBufferShader(this);
+    mDefaultAssets.mSimpleLitShaderId = InternalShaders::loadSimpleLitShader(this);
+    mDefaultAssets.mSimpleLitDeferedShaderId = InternalShaders::loadSimpleLitDeferredShader(this);
+    mDefaultAssets.mOverdrawShaderId = InternalShaders::loadOverdrawShader(this);
 
     // load default included materials
-    mSimpleLitMaterialId = InternalMaterials::loadSimpleLitMaterial(this, mSimpleLitShaderId);
-    mColorMaterialId = InternalMaterials::loadColorMaterial(this, mColorShaderId);
+    mDefaultAssets.mSimpleLitMaterialId = InternalMaterials::loadSimpleLitMaterial(this, mDefaultAssets.mSimpleLitShaderId);
+    mDefaultAssets.mColorMaterialId = InternalMaterials::loadColorMaterial(this, mDefaultAssets.mColorShaderId);
 }
 
 World::~World()
@@ -214,7 +214,7 @@ System *World::getSystemByUpdateOrder(int order)
 {
     if (order < 0 || order >= mSystems.size())
     {
-        return NULL;
+        return nullptr;
     }
 
     return mSystems[order];
@@ -250,7 +250,7 @@ Entity *World::createEntity()
 
     Entity* entity = mAllocators.mEntityAllocator.construct(entityId);
 
-    if (entity != NULL)
+    if (entity != nullptr)
     {
         entity->mDoNotDestroy = false;
 
@@ -271,7 +271,7 @@ Entity *World::createEntity(std::istream &in)
 
     Entity *entity = mAllocators.mEntityAllocator.construct(in);
 
-    if (entity != NULL)
+    if (entity != nullptr)
     {
         addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
 
@@ -425,7 +425,7 @@ std::string World::getAssetFilepath(const Guid &assetId) const
         return it->second;
     }
 
-    return "";
+    return std::string();
 }
 
 std::string World::getSceneFilepath(const Guid &sceneId) const
@@ -436,122 +436,122 @@ std::string World::getSceneFilepath(const Guid &sceneId) const
         return it->second;
     }
 
-    return "";
+    return std::string();
 }
 
 Guid World::getSphereMesh() const
 {
-    return mSphereMeshId;
+    return mDefaultAssets.mSphereMeshId;
 }
 
 Guid World::getCubeMesh() const
 {
-    return mCubeMeshId;
+    return mDefaultAssets.mCubeMeshId;
 }
 
 Guid World::getPlaneMesh() const
 {
-    return mPlaneMeshId;
+    return mDefaultAssets.mPlaneMeshId;
 }
 
 Guid World::getColorMaterial() const
 {
-    return mColorMaterialId;
+    return mDefaultAssets.mColorMaterialId;
 }
 
 Guid World::getSimpleLitMaterial() const
 {
-    return mSimpleLitMaterialId;
+    return mDefaultAssets.mSimpleLitMaterialId;
 }
 
 Guid World::getColorLitShaderId() const
 {
-    return mColorLitShaderId;
+    return mDefaultAssets.mColorLitShaderId;
 }
 
 Guid World::getNormalLitShaderId() const
 {
-    return mNormalLitShaderId;
+    return mDefaultAssets.mNormalLitShaderId;
 }
 
 Guid World::getTangentLitShaderId() const
 {
-    return mTangentLitShaderId;
+    return mDefaultAssets.mTangentLitShaderId;
 }
 
 Guid World::getFontShaderId() const
 {
-    return mFontShaderId;
+    return mDefaultAssets.mFontShaderId;
 }
 
 Guid World::getGizmoShaderId() const
 {
-    return mGizmoShaderId;
+    return mDefaultAssets.mGizmoShaderId;
 }
 
 Guid World::getLineShaderId() const
 {
-    return mLineShaderId;
+    return mDefaultAssets.mLineShaderId;
 }
 
 Guid World::getColorShaderId() const
 {
-    return mColorShaderId;
+    return mDefaultAssets.mColorShaderId;
 }
 
 Guid World::getPositionAndNormalsShaderId() const
 {
-    return mPositionAndNormalsShaderId;
+    return mDefaultAssets.mPositionAndNormalsShaderId;
 }
 
 Guid World::getSsaoShaderId() const
 {
-    return mSsaoShaderId;
+    return mDefaultAssets.mSsaoShaderId;
 }
 
 Guid World::getScreenQuadShaderId() const
 {
-    return mScreenQuadShaderId;
+    return mDefaultAssets.mScreenQuadShaderId;
 }
 
 Guid World::getNormalMapShaderId() const
 {
-    return mNormalMapShaderId;
+    return mDefaultAssets.mNormalMapShaderId;
 }
 
 Guid World::getDepthMapShaderId() const
 {
-    return mDepthMapShaderId;
+    return mDefaultAssets.mDepthMapShaderId;
 }
 
 Guid World::getShadowDepthMapShaderId() const
 {
-    return mShadowDepthMapShaderId;
+    return mDefaultAssets.mShadowDepthMapShaderId;
 }
 
 Guid World::getShadowDepthCubemapShaderId() const
 {
-    return mShadowDepthCubemapShaderId;
+    return mDefaultAssets.mShadowDepthCubemapShaderId;
 }
 
 Guid World::getGbufferShaderId() const
 {
-    return mGbufferShaderId;
+    return mDefaultAssets.mGbufferShaderId;
 }
 
 Guid World::getSimpleLitShaderId() const
 {
-    return mSimpleLitShaderId;
+    return mDefaultAssets.mSimpleLitShaderId;
 }
 
 Guid World::getSimpleLitDeferredShaderId() const
 {
-    return mSimpleLitDeferedShaderId;
+    return mDefaultAssets.mSimpleLitDeferedShaderId;
 }
 
 Guid World::getOverdrawShaderId() const
 {
-    return mOverdrawShaderId;
+    return mDefaultAssets.mOverdrawShaderId;
 }
 
 // bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

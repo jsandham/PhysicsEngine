@@ -5,7 +5,7 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Serialize.h"
+#include "../../include/core/Serialization.h"
 
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/Transform.h"
