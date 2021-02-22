@@ -137,9 +137,9 @@ class World
         return addSystem_impl<T>(getSystemOrAddAllocator_impl<T>(), order);
     }
 
-    Entity *getEntityByIndex(int index);
+    Entity *getEntityByIndex(size_t index);
     Entity *getEntityById(const Guid &entityId);
-    System *getSystemByUpdateOrder(int order);
+    System *getSystemByUpdateOrder(size_t order);
 
     template <typename T> T *getSystemByIndex(int index)
     {

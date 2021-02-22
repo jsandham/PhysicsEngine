@@ -86,8 +86,8 @@ class Shader : public Asset
     Shader(Guid id);
     ~Shader();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     void load(const std::string &filepath);
     void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);

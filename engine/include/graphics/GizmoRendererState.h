@@ -89,7 +89,7 @@ struct PlaneGizmo
     {
     }
     PlaneGizmo(const Plane &plane, glm::vec3 extents, const Color &color)
-        : mPlane(plane), mExtents(extents), mColor(color)
+        : mPlane(plane), mColor(color), mExtents(extents)
     {
     }
 };

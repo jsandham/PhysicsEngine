@@ -29,11 +29,11 @@ class PhysicsSystem : public System
     PhysicsSystem(Guid id);
     ~PhysicsSystem();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
-    void init(World *world);
-    void update(const Input &input, const Time &time);
+    void init(World *world) override;
+    void update(const Input &input, const Time &time) override;
 };
 
 template <> struct SystemType<PhysicsSystem>

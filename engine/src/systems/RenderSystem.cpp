@@ -62,7 +62,7 @@ void RenderSystem::update(const Input &input, const Time &time)
 
     buildRenderObjectsList(mWorld);
 
-    for (int i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
     {
         Camera *camera = mWorld->getComponentByIndex<Camera>(i);
 
@@ -85,7 +85,7 @@ void RenderSystem::update(const Input &input, const Time &time)
 void RenderSystem::registerRenderAssets(World *world)
 {
     // create all texture assets not already created
-    for (int i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
+    for (size_t i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
     {
         Texture2D *texture = world->getAssetByIndex<Texture2D>(i);
         if (!texture->isCreated())
@@ -107,7 +107,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
     // compile all shader assets and configure uniform blocks not already compiled
     std::unordered_set<Guid> shadersCompiledThisFrame;
-    for (int i = 0; i < world->getNumberOfAssets<Shader>(); i++)
+    for (size_t i = 0; i < world->getNumberOfAssets<Shader>(); i++)
     {
         Shader *shader = world->getAssetByIndex<Shader>(i);
 
@@ -126,7 +126,7 @@ void RenderSystem::registerRenderAssets(World *world)
     }
 
     // update material on shader change
-    for (int i = 0; i < world->getNumberOfAssets<Material>(); i++)
+    for (size_t i = 0; i < world->getNumberOfAssets<Material>(); i++)
     {
         Material *material = world->getAssetByIndex<Material>(i);
 
@@ -140,7 +140,7 @@ void RenderSystem::registerRenderAssets(World *world)
     }
 
     // create all mesh assets not already created
-    for (int i = 0; i < world->getNumberOfAssets<Mesh>(); i++)
+    for (size_t i = 0; i < world->getNumberOfAssets<Mesh>(); i++)
     {
         Mesh *mesh = world->getAssetByIndex<Mesh>(i);
 
@@ -159,7 +159,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
 void RenderSystem::registerCameras(World *world)
 {
-    for (int i = 0; i < world->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < world->getNumberOfComponents<Camera>(); i++)
     {
         Camera *camera = world->getComponentByIndex<Camera>(i);
 
@@ -176,7 +176,7 @@ void RenderSystem::registerCameras(World *world)
 
 void RenderSystem::registerLights(World *world)
 {
-    for (int i = 0; i < world->getNumberOfComponents<Light>(); i++)
+    for (size_t i = 0; i < world->getNumberOfComponents<Light>(); i++)
     {
         Light *light = world->getComponentByIndex<Light>(i);
 
@@ -197,7 +197,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
     mRenderObjects.clear();
 
     // add enabled renderers to render object list
-    for (int i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++)
+    for (size_t i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++)
     {
         MeshRenderer *meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
 

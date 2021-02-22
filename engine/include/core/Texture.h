@@ -56,8 +56,8 @@ class Texture : public Asset
     Texture(Guid id);
     ~Texture();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     virtual void create() = 0;
     virtual void destroy() = 0;

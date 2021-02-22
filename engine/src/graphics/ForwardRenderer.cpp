@@ -43,7 +43,7 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
         computeSSAO(mWorld, camera, mState, renderQueue, renderObjects);
     }
 
-    for (int j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
+    for (size_t j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
     {
         Light *light = mWorld->getComponentByIndex<Light>(j);
         Transform *lightTransform = light->getComponent<Transform>(mWorld);

@@ -24,28 +24,28 @@ template <class T> void write(std::ostream &out, T *ptr, size_t size)
 
 // Write template specializations
 
-template <> inline void PhysicsEngine::write(std::ostream &out, bool value)
+template <> inline void write(std::ostream &out, bool value)
 {
     uint8_t temp = static_cast<uint8_t>(value);
 
     out.write(reinterpret_cast<const char *>(&temp), sizeof(uint8_t));
 }
 
-template <> inline void PhysicsEngine::write(std::ostream &out, size_t value)
+template <> inline void write(std::ostream &out, size_t value)
 {
     uint64_t temp = static_cast<uint64_t>(value);
 
     out.write(reinterpret_cast<const char *>(&temp), sizeof(uint64_t));
 }
 
-template <> inline void PhysicsEngine::write(std::ostream &out, int value)
+template <> inline void write(std::ostream &out, int value)
 {
     int32_t temp = static_cast<int32_t>(value);
 
     out.write(reinterpret_cast<const char *>(&temp), sizeof(int32_t));
 }
 
-template <> inline void PhysicsEngine::write(std::ostream &out, std::string value)
+template <> inline void write(std::ostream &out, std::string value)
 {
     char temp[64];
     std::size_t len = std::min(size_t(64 - 1), value.size());
@@ -69,28 +69,28 @@ template <class T> void read(std::istream &in, T *ptr, size_t size)
 
 // Read template specializations
 
-template <> inline void PhysicsEngine::read(std::istream &in, bool &value)
+template <> inline void read(std::istream &in, bool &value)
 {
-    uint8_t temp;
+    uint8_t temp = 0;
     in.read(reinterpret_cast<char *>(&temp), sizeof(uint8_t));
     value = static_cast<bool>(temp);
 }
 
-template <> inline void PhysicsEngine::read(std::istream &in, size_t &value)
+template <> inline void read(std::istream &in, size_t &value)
 {
-    uint64_t temp;
+    uint64_t temp = 0;
     in.read(reinterpret_cast<char *>(&temp), sizeof(uint64_t));
     value = static_cast<size_t>(temp);
 }
 
-template <> inline void PhysicsEngine::read(std::istream &in, int &value)
+template <> inline void read(std::istream &in, int &value)
 {
-    int32_t temp;
+    int32_t temp = 0;
     in.read(reinterpret_cast<char *>(&temp), sizeof(int32_t));
     value = static_cast<int>(temp);
 }
 
-template <> inline void PhysicsEngine::read(std::istream &in, std::string &value)
+template <> inline void read(std::istream &in, std::string &value)
 {
     char temp[64];
 

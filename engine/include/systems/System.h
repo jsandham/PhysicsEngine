@@ -25,8 +25,8 @@ class System : public Object
     System(Guid id);
     ~System();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     virtual void init(World *world) = 0;
     virtual void update(const Input &input, const Time &time) = 0;

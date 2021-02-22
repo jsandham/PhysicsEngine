@@ -33,7 +33,7 @@ bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> asse
 
 void WorldManager::init()
 {
-    for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++)
+    for (size_t i = 0; i < world.getNumberOfUpdatingSystems(); i++)
     {
         System *system = world.getSystemByUpdateOrder(i);
 
@@ -43,7 +43,7 @@ void WorldManager::init()
 
 void WorldManager::update(Time time, Input input)
 {
-    for (int i = 0; i < world.getNumberOfUpdatingSystems(); i++)
+    for (size_t i = 0; i < world.getNumberOfUpdatingSystems(); i++)
     {
         System *system = world.getSystemByUpdateOrder(i);
 

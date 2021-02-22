@@ -195,7 +195,7 @@ void World::loadSystem(std::ifstream &in, const ObjectHeader &header)
 void World::latentDestroyEntitiesInWorld()
 {
     // latent destroy all entities (and thereby also all components)
-    for (int i = 0; i < getNumberOfEntities(); i++)
+    for (size_t i = 0; i < getNumberOfEntities(); i++)
     {
         Entity *entity = getEntityByIndex(i);
 
@@ -221,14 +221,14 @@ Entity *World::getEntityById(const Guid &entityId)
     return getById_impl<Entity>(mIdState.mEntityIdToGlobalIndex, &mAllocators.mEntityAllocator, entityId);
 }
 
-Entity *World::getEntityByIndex(int index)
+Entity *World::getEntityByIndex(size_t index)
 {
     return mAllocators.mEntityAllocator.get(index);
 }
 
-System *World::getSystemByUpdateOrder(int order)
+System *World::getSystemByUpdateOrder(size_t order)
 {
-    if (order < 0 || order >= mSystems.size())
+    if (order >= mSystems.size())
     {
         return nullptr;
     }

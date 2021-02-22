@@ -21,8 +21,8 @@ class Asset : public Object
     Asset(Guid id);
     ~Asset();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     std::string getName() const;
     void setName(const std::string &name);

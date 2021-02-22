@@ -32,8 +32,8 @@ class Mesh : public Asset
     Mesh(Guid id);
     ~Mesh();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,

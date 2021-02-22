@@ -129,7 +129,7 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsAlbedoSpecTex());
 
-    for (int i = 0; i < world->getNumberOfComponents<Light>(); i++)
+    for (size_t i = 0; i < world->getNumberOfComponents<Light>(); i++)
     {
         // Light *light = world->getComponentByIndex<Light>(i);
         // Transform *lightTransform = light->getComponent<Transform>(world);

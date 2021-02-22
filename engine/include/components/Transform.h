@@ -27,8 +27,8 @@ class Transform : public Component
     Transform(Guid id);
     ~Transform();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     glm::mat4 getModelMatrix() const;
     glm::vec3 getForward() const;

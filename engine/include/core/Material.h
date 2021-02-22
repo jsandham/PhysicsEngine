@@ -28,8 +28,8 @@ class Material : public Asset
     Material(Guid id);
     ~Material();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     void load(const std::string &filepath);
     void load(Guid shaderId);

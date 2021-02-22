@@ -32,8 +32,8 @@ class Rigidbody : public Component
     Rigidbody(Guid id);
     ~Rigidbody();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 };
 
 template <> struct ComponentType<Rigidbody>

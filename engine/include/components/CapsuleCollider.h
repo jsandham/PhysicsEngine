@@ -24,10 +24,10 @@ class CapsuleCollider : public Collider
     CapsuleCollider(Guid id);
     ~CapsuleCollider();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
-    bool intersect(AABB aabb) const;
+    bool intersect(AABB aabb) const override;
 };
 
 template <> struct ComponentType<CapsuleCollider>

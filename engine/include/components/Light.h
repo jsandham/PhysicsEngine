@@ -72,8 +72,8 @@ class Light : public Component
     Light(Guid id);
     ~Light();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     void createTargets();
     void destroyTargets();

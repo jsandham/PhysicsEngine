@@ -20,8 +20,8 @@ class Component : public Object
     Component(Guid id);
     ~Component();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
 
     Entity *getEntity(World *world) const;
 

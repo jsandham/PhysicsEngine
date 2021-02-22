@@ -6,7 +6,7 @@ if not defined DevEnvDir (
 
 set GLEW="../include/glew-2.1.0"
 set FREETYPE="../include/freetype"
-set WARN=-W4 -wd4100 -wd4996 -wd4211 
+set WARN=-W4 -wd4100 -wd4996 -wd4211
 set OPENMP=
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
@@ -48,6 +48,7 @@ echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
 	call cl /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
+::call cl /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 ::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 
 :: create list of .obj files
