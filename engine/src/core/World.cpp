@@ -190,14 +190,14 @@ void World::latentDestroyEntitiesInWorld()
     }
 }
 
-int World::getNumberOfEntities() const
+size_t World::getNumberOfEntities() const
 {
-    return (int)mAllocators.mEntityAllocator.getCount();
+    return mAllocators.mEntityAllocator.getCount();
 }
 
-int World::getNumberOfUpdatingSystems() const
+size_t World::getNumberOfUpdatingSystems() const
 {
-    return (int)mSystems.size();
+    return mSystems.size();
 }
 
 Entity *World::getEntityById(const Guid &entityId)

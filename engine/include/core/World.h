@@ -78,24 +78,24 @@ class World
 
     void latentDestroyEntitiesInWorld();
 
-    int getNumberOfEntities() const;
-    int getNumberOfUpdatingSystems() const;
+    size_t getNumberOfEntities() const;
+    size_t getNumberOfUpdatingSystems() const;
 
-    template <typename T> int getNumberOfSystems() const
+    template <typename T> size_t getNumberOfSystems() const
     {
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
         return getNumberOfSystems_impl<T>(getSystemAllocator_impl<T>());
     }
 
-    template <typename T> int getNumberOfComponents() const
+    template <typename T> size_t getNumberOfComponents() const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getNumberOfComponents_impl<T>(getComponentAllocator_impl<T>());
     }
 
-    template <typename T> int getNumberOfAssets() const
+    template <typename T> size_t getNumberOfAssets() const
     {
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
@@ -222,114 +222,114 @@ class World
 
     // Explicit template specializations
 
-    template <> int getNumberOfSystems<RenderSystem>() const
+    template <> size_t getNumberOfSystems<RenderSystem>() const
     {
-        return (int)mAllocators.mRenderSystemAllocator.getCount();
+        return mAllocators.mRenderSystemAllocator.getCount();
     }
 
-    template <> int getNumberOfSystems<PhysicsSystem>() const
+    template <> size_t getNumberOfSystems<PhysicsSystem>() const
     {
-        return (int)mAllocators.mPhysicsSystemAllocator.getCount();
+        return mAllocators.mPhysicsSystemAllocator.getCount();
     }
 
-    template <> int getNumberOfSystems<CleanUpSystem>() const
+    template <> size_t getNumberOfSystems<CleanUpSystem>() const
     {
-        return (int)mAllocators.mCleanupSystemAllocator.getCount();
+        return mAllocators.mCleanupSystemAllocator.getCount();
     }
 
-    template <> int getNumberOfSystems<DebugSystem>() const
+    template <> size_t getNumberOfSystems<DebugSystem>() const
     {
-        return (int)mAllocators.mDebugSystemAllocator.getCount();
+        return mAllocators.mDebugSystemAllocator.getCount();
     }
 
-    template <> int getNumberOfSystems<GizmoSystem>() const
+    template <> size_t getNumberOfSystems<GizmoSystem>() const
     {
-        return (int)mAllocators.mGizmoSystemAllocator.getCount();
+        return mAllocators.mGizmoSystemAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<Transform>() const
+    template <> size_t getNumberOfComponents<Transform>() const
     {
-        return (int)mAllocators.mTransformAllocator.getCount();
+        return mAllocators.mTransformAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<MeshRenderer>() const
+    template <> size_t getNumberOfComponents<MeshRenderer>() const
     {
-        return (int)mAllocators.mMeshRendererAllocator.getCount();
+        return mAllocators.mMeshRendererAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<LineRenderer>() const
+    template <> size_t getNumberOfComponents<LineRenderer>() const
     {
-        return (int)mAllocators.mLineRendererAllocator.getCount();
+        return mAllocators.mLineRendererAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<Rigidbody>() const
+    template <> size_t getNumberOfComponents<Rigidbody>() const
     {
-        return (int)mAllocators.mRigidbodyAllocator.getCount();
+        return mAllocators.mRigidbodyAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<Camera>() const
+    template <> size_t getNumberOfComponents<Camera>() const
     {
-        return (int)mAllocators.mCameraAllocator.getCount();
+        return mAllocators.mCameraAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<Light>() const
+    template <> size_t getNumberOfComponents<Light>() const
     {
-        return (int)mAllocators.mLightAllocator.getCount();
+        return mAllocators.mLightAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<SphereCollider>() const
+    template <> size_t getNumberOfComponents<SphereCollider>() const
     {
-        return (int)mAllocators.mSphereColliderAllocator.getCount();
+        return mAllocators.mSphereColliderAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<BoxCollider>() const
+    template <> size_t getNumberOfComponents<BoxCollider>() const
     {
-        return (int)mAllocators.mBoxColliderAllocator.getCount();
+        return mAllocators.mBoxColliderAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<CapsuleCollider>() const
+    template <> size_t getNumberOfComponents<CapsuleCollider>() const
     {
-        return (int)mAllocators.mCapsuleColliderAllocator.getCount();
+        return mAllocators.mCapsuleColliderAllocator.getCount();
     }
 
-    template <> int getNumberOfComponents<MeshCollider>() const
+    template <> size_t getNumberOfComponents<MeshCollider>() const
     {
-        return (int)mAllocators.mMeshColliderAllocator.getCount();
+        return mAllocators.mMeshColliderAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Mesh>() const
+    template <> size_t getNumberOfAssets<Mesh>() const
     {
-        return (int)mAllocators.mMeshAllocator.getCount();
+        return mAllocators.mMeshAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Material>() const
+    template <> size_t getNumberOfAssets<Material>() const
     {
-        return (int)mAllocators.mMaterialAllocator.getCount();
+        return mAllocators.mMaterialAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Shader>() const
+    template <> size_t getNumberOfAssets<Shader>() const
     {
-        return (int)mAllocators.mShaderAllocator.getCount();
+        return mAllocators.mShaderAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Texture2D>() const
+    template <> size_t getNumberOfAssets<Texture2D>() const
     {
-        return (int)mAllocators.mTexture2DAllocator.getCount();
+        return mAllocators.mTexture2DAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Texture3D>() const
+    template <> size_t getNumberOfAssets<Texture3D>() const
     {
-        return (int)mAllocators.mTexture3DAllocator.getCount();
+        return mAllocators.mTexture3DAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Cubemap>() const
+    template <> size_t getNumberOfAssets<Cubemap>() const
     {
-        return (int)mAllocators.mCubemapAllocator.getCount();
+        return mAllocators.mCubemapAllocator.getCount();
     }
 
-    template <> int getNumberOfAssets<Font>() const
+    template <> size_t getNumberOfAssets<Font>() const
     {
-        return (int)mAllocators.mFontAllocator.getCount();
+        return mAllocators.mFontAllocator.getCount();
     }
 
     template <> RenderSystem *getSystem<RenderSystem>()
@@ -854,25 +854,25 @@ class World
     void loadComponent(std::ifstream& in, const ObjectHeader& header);
     void loadSystem(std::ifstream& in, const ObjectHeader& header);
 
-    template <typename T> int getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
+    template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
 
-        return allocator != nullptr ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? allocator->getCount() : 0;
     }
 
-    template <typename T> int getNumberOfComponents_impl(const PoolAllocator<T> *allocator) const
+    template <typename T> size_t getNumberOfComponents_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        return allocator != nullptr ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? allocator->getCount() : 0;
     }
 
-    template <typename T> int getNumberOfAssets_impl(const PoolAllocator<T> *allocator) const
+    template <typename T> size_t getNumberOfAssets_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
 
-        return allocator != nullptr ? (int)allocator->getCount() : 0;
+        return allocator != nullptr ? allocator->getCount() : 0;
     }
 
     template <typename T> T *getSystem_impl(const PoolAllocator<T> *allocator)
