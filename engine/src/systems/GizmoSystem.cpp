@@ -1,7 +1,7 @@
 #include "../../include/systems/GizmoSystem.h"
 
-#include "../../include/core/World.h"
 #include "../../include/core/Serialization.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -17,12 +17,12 @@ GizmoSystem::~GizmoSystem()
 {
 }
 
-void GizmoSystem::serialize(std::ostream& out) const
+void GizmoSystem::serialize(std::ostream &out) const
 {
     System::serialize(out);
 }
 
-void GizmoSystem::deserialize(std::istream& in)
+void GizmoSystem::deserialize(std::istream &in)
 {
     System::deserialize(in);
 }

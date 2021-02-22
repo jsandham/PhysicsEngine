@@ -90,14 +90,14 @@ Cubemap::~Cubemap()
 {
 }
 
-void Cubemap::serialize(std::ostream& out) const
+void Cubemap::serialize(std::ostream &out) const
 {
     Texture::serialize(out);
 
     PhysicsEngine::write<int>(out, mWidth);
 }
 
-void Cubemap::deserialize(std::istream& in)
+void Cubemap::deserialize(std::istream &in)
 {
     Texture::deserialize(in);
 

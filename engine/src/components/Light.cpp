@@ -1,8 +1,8 @@
 #include <algorithm>
 
 #include "../../include/components/Light.h"
-#include "../../include/graphics/Graphics.h"
 #include "../../include/core/Serialization.h"
+#include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
 
@@ -13,7 +13,7 @@ Light::Light() : Component()
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = glm::cos(glm::radians(15.0f));
-    
+
     mInnerSpotAngle = glm::cos(glm::radians(12.5f));
     mShadowNearPlane = 0.1f;
     mShadowFarPlane = 100.0f;
@@ -88,7 +88,7 @@ Light::~Light()
 {
 }
 
-void Light::serialize(std::ostream& out) const
+void Light::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -106,7 +106,7 @@ void Light::serialize(std::ostream& out) const
     PhysicsEngine::write<ShadowMapResolution>(out, mShadowMapResolution);
 }
 
-void Light::deserialize(std::istream& in)
+void Light::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 

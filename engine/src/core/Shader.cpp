@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "../../include/core/Log.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
@@ -39,7 +39,7 @@ Shader::~Shader()
 {
 }
 
-void Shader::serialize(std::ostream& out) const
+void Shader::serialize(std::ostream &out) const
 {
     Asset::serialize(out);
 
@@ -51,7 +51,7 @@ void Shader::serialize(std::ostream& out) const
     PhysicsEngine::write<const char>(out, mFragmentShader.c_str(), mFragmentShader.length());
 }
 
-void Shader::deserialize(std::istream& in)
+void Shader::deserialize(std::istream &in)
 {
     Asset::deserialize(in);
 

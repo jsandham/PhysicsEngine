@@ -1,6 +1,6 @@
 #include "../../include/core/Asset.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Serialization.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -18,13 +18,13 @@ Asset::~Asset()
 {
 }
 
-void Asset::serialize(std::ostream& out) const
+void Asset::serialize(std::ostream &out) const
 {
     Object::serialize(out);
     PhysicsEngine::write<std::string>(out, mName);
 }
 
-void Asset::deserialize(std::istream& in)
+void Asset::deserialize(std::istream &in)
 {
     Object::deserialize(in);
     PhysicsEngine::read<std::string>(in, mName);
@@ -35,7 +35,7 @@ std::string Asset::getName() const
     return mName;
 }
 
-void Asset::setName(const std::string& name)
+void Asset::setName(const std::string &name)
 {
     mName = name;
 }

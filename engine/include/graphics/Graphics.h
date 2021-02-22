@@ -98,8 +98,8 @@ class Graphics
     static void destroyTargets(LightTargets *targets);
     static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
 
-    static void createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, const std::vector<unsigned char> &data,
-                                GLuint *tex);
+    static void createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                                int height, const std::vector<unsigned char> &data, GLuint *tex);
     static void destroyTexture2D(GLuint *tex);
     static void updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
@@ -107,8 +107,8 @@ class Graphics
     static void writePixelsTexture2D(TextureFormat format, int width, int height,
                                      const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, int depth,
-                                const std::vector<unsigned char> &data, GLuint *tex);
+    static void createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                                int height, int depth, const std::vector<unsigned char> &data, GLuint *tex);
     static void destroyTexture3D(GLuint *tex);
     static void updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
@@ -116,7 +116,8 @@ class Graphics
     static void writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
                                      const std::vector<unsigned char> &data, GLuint tex);
 
-    static void createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, const std::vector<unsigned char> &data, GLuint *tex);
+    static void createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                              const std::vector<unsigned char> &data, GLuint *tex);
     static void destroyCubemap(GLuint *tex);
     static void updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
     static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,

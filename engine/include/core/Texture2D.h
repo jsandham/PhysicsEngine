@@ -21,8 +21,8 @@ class Texture2D : public Texture
     Texture2D(int width, int height, TextureFormat format);
     ~Texture2D();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void load(const std::string &filepath);
 

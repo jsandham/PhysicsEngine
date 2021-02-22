@@ -36,12 +36,12 @@ RenderSystem::~RenderSystem()
 {
 }
 
-void RenderSystem::serialize(std::ostream& out) const
+void RenderSystem::serialize(std::ostream &out) const
 {
     System::serialize(out);
 }
 
-void RenderSystem::deserialize(std::istream& in)
+void RenderSystem::deserialize(std::istream &in)
 {
     System::deserialize(in);
 }

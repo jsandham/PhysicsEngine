@@ -2,8 +2,8 @@
 
 #include "../../include/core/Log.h"
 #include "../../include/core/PoolAllocator.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Serialization.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -19,12 +19,12 @@ CleanUpSystem::~CleanUpSystem()
 {
 }
 
-void CleanUpSystem::serialize(std::ostream& out) const
+void CleanUpSystem::serialize(std::ostream &out) const
 {
     System::serialize(out);
 }
 
-void CleanUpSystem::deserialize(std::istream& in)
+void CleanUpSystem::deserialize(std::istream &in)
 {
     System::deserialize(in);
 }
@@ -36,7 +36,8 @@ void CleanUpSystem::init(World *world)
 
 void CleanUpSystem::update(const Input &input, const Time &time)
 {
-    std::vector<std::tuple<Guid, Guid, int>> componentIdsMarkedLatentDestroy = mWorld->getComponentIdsMarkedLatentDestroy();
+    std::vector<std::tuple<Guid, Guid, int>> componentIdsMarkedLatentDestroy =
+        mWorld->getComponentIdsMarkedLatentDestroy();
     for (size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++)
     {
 

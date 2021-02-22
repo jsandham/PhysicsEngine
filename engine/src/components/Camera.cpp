@@ -1,7 +1,7 @@
 #include <algorithm>
 
-#include "../../include/core/Serialization.h"
 #include "../../include/components/Camera.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
@@ -48,8 +48,8 @@ Camera::Camera() : Component()
     mFrustum.mNearPlane = 0.1f;
     mFrustum.mFarPlane = 250.0f;
 
-    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-        mFrustum.mFarPlane);
+    mProjMatrix =
+        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
     mIsCreated = false;
     mIsViewportChanged = false;
@@ -97,8 +97,8 @@ Camera::Camera(Guid id) : Component(id)
     mFrustum.mNearPlane = 0.1f;
     mFrustum.mFarPlane = 250.0f;
 
-    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-        mFrustum.mFarPlane);
+    mProjMatrix =
+        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
     mIsCreated = false;
     mIsViewportChanged = false;
@@ -108,7 +108,7 @@ Camera::~Camera()
 {
 }
 
-void Camera::serialize(std::ostream& out) const
+void Camera::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -128,7 +128,7 @@ void Camera::serialize(std::ostream& out) const
     PhysicsEngine::write<Color>(out, mBackgroundColor);
 }
 
-void Camera::deserialize(std::istream& in)
+void Camera::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 
@@ -147,8 +147,8 @@ void Camera::deserialize(std::istream& in)
     PhysicsEngine::read<float>(in, mFrustum.mFarPlane);
     PhysicsEngine::read<Color>(in, mBackgroundColor);
 
-    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-        mFrustum.mFarPlane);
+    mProjMatrix =
+        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
     mIsViewportChanged = true;
 }
@@ -290,8 +290,8 @@ void Camera::setFrustum(float fov, float aspectRatio, float nearPlane, float far
     mFrustum.mNearPlane = nearPlane;
     mFrustum.mFarPlane = farPlane;
 
-    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
-                        mFrustum.mFarPlane);
+    mProjMatrix =
+        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 }
 
 void Camera::setViewport(int x, int y, int width, int height)
@@ -343,7 +343,7 @@ Ray Camera::screenSpaceToRay(int x, int y) const
     // compute ray cast from the screen space ([0, 0] x [pixelWidth, pixelHeight]) into the scene
     x = std::min(mViewport.mWidth, std::max(0, x));
     y = std::min(mViewport.mHeight, std::max(0, y));
-    
+
     float ndcX = (2.0f * x - mViewport.mWidth) / mViewport.mWidth;
     float ndcY = (2.0f * y - mViewport.mHeight) / mViewport.mHeight;
 

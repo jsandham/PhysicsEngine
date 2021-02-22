@@ -17,14 +17,14 @@ CapsuleCollider::~CapsuleCollider()
 {
 }
 
-void CapsuleCollider::serialize(std::ostream& out) const
+void CapsuleCollider::serialize(std::ostream &out) const
 {
     Collider::serialize(out);
 
     PhysicsEngine::write<Capsule>(out, mCapsule);
 }
 
-void CapsuleCollider::deserialize(std::istream& in)
+void CapsuleCollider::deserialize(std::istream &in)
 {
     Collider::deserialize(in);
 

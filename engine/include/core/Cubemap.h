@@ -31,8 +31,8 @@ class Cubemap : public Texture
     Cubemap(int width, int height, TextureFormat format);
     ~Cubemap();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     int getWidth() const;
 

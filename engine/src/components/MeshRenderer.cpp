@@ -40,7 +40,7 @@ MeshRenderer::~MeshRenderer()
 {
 }
 
-void MeshRenderer::serialize(std::ostream& out) const
+void MeshRenderer::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -54,7 +54,7 @@ void MeshRenderer::serialize(std::ostream& out) const
     PhysicsEngine::write<bool>(out, mEnabled);
 }
 
-void MeshRenderer::deserialize(std::istream& in)
+void MeshRenderer::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 
@@ -66,7 +66,7 @@ void MeshRenderer::deserialize(std::istream& in)
     PhysicsEngine::read<int>(in, mMaterialCount);
     PhysicsEngine::read<bool>(in, mIsStatic);
     PhysicsEngine::read<bool>(in, mEnabled);
-   
+
     mMeshChanged = true;
     mMaterialChanged = true;
 }

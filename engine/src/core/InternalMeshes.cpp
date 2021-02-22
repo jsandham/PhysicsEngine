@@ -213,9 +213,9 @@ const std::string InternalMeshes::sphereMeshName = "Sphere";
 const std::string InternalMeshes::cubeMeshName = "Cube";
 const std::string InternalMeshes::planeMeshName = "Plane";
 
-Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std::string &name, const std::vector<float> &vertices,
-                                      const std::vector<float> &normals, const std::vector<float> &texCoords,
-                                      const std::vector<int> &startIndices)
+Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std::string &name,
+                                      const std::vector<float> &vertices, const std::vector<float> &normals,
+                                      const std::vector<float> &texCoords, const std::vector<int> &startIndices)
 {
     // Need to figure out how to make this created asset have id to be meshId. Maybe createAsset<Mesh>(meshId)?
     Mesh *mesh = world->createAsset<Mesh>();
@@ -234,21 +234,21 @@ Guid InternalMeshes::loadInternalMesh(World *world, const Guid meshId, const std
 
 Guid InternalMeshes::loadSphereMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::sphereMeshId, InternalMeshes::sphereMeshName, InternalMeshes::sphereVertices,
-                            InternalMeshes::sphereNormals, InternalMeshes::sphereTexCoords,
-                            InternalMeshes::sphereSubMeshStartIndicies);
+    return loadInternalMesh(world, InternalMeshes::sphereMeshId, InternalMeshes::sphereMeshName,
+                            InternalMeshes::sphereVertices, InternalMeshes::sphereNormals,
+                            InternalMeshes::sphereTexCoords, InternalMeshes::sphereSubMeshStartIndicies);
 }
 
 Guid InternalMeshes::loadCubeMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::cubeMeshId, InternalMeshes::cubeMeshName, InternalMeshes::cubeVertices,
-                            InternalMeshes::cubeNormals, InternalMeshes::cubeTexCoords,
+    return loadInternalMesh(world, InternalMeshes::cubeMeshId, InternalMeshes::cubeMeshName,
+                            InternalMeshes::cubeVertices, InternalMeshes::cubeNormals, InternalMeshes::cubeTexCoords,
                             InternalMeshes::cubeSubMeshStartIndicies);
 }
 
 Guid InternalMeshes::loadPlaneMesh(World *world)
 {
-    return loadInternalMesh(world, InternalMeshes::planeMeshId, InternalMeshes::planeMeshName, InternalMeshes::planeVertices,
-                            InternalMeshes::planeNormals, InternalMeshes::planeTexCoords,
+    return loadInternalMesh(world, InternalMeshes::planeMeshId, InternalMeshes::planeMeshName,
+                            InternalMeshes::planeVertices, InternalMeshes::planeNormals, InternalMeshes::planeTexCoords,
                             InternalMeshes::planeSubMeshStartIndicies);
 }

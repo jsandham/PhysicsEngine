@@ -24,8 +24,8 @@ class CapsuleCollider : public Collider
     CapsuleCollider(Guid id);
     ~CapsuleCollider();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     bool intersect(AABB aabb) const;
 };

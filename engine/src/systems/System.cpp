@@ -17,14 +17,14 @@ System::~System()
 {
 }
 
-void System::serialize(std::ostream& out) const
+void System::serialize(std::ostream &out) const
 {
     Object::serialize(out);
 
     PhysicsEngine::write<int>(out, mOrder);
 }
 
-void System::deserialize(std::istream& in)
+void System::deserialize(std::istream &in)
 {
     Object::deserialize(in);
 

@@ -30,8 +30,8 @@ class GizmoSystem : public System
     GizmoSystem(Guid id);
     ~GizmoSystem();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void init(World *world);
     void update(const Input &input, const Time &time);

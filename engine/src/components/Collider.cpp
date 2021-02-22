@@ -16,12 +16,12 @@ Collider::~Collider()
 {
 }
 
-void Collider::serialize(std::ostream& out) const
+void Collider::serialize(std::ostream &out) const
 {
-	Component::serialize(out);
+    Component::serialize(out);
 }
 
-void Collider::deserialize(std::istream& in)
+void Collider::deserialize(std::istream &in)
 {
-	Component::deserialize(in);
+    Component::deserialize(in);
 }

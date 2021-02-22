@@ -37,8 +37,8 @@ class Font : public Asset
     Font(const std::string &filepath);
     ~Font();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void load(std::string filepath);
 

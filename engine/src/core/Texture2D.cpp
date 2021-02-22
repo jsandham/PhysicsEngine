@@ -79,7 +79,7 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::serialize(std::ostream& out) const
+void Texture2D::serialize(std::ostream &out) const
 {
     Texture::serialize(out);
 
@@ -87,7 +87,7 @@ void Texture2D::serialize(std::ostream& out) const
     PhysicsEngine::write<int>(out, mHeight);
 }
 
-void Texture2D::deserialize(std::istream& in)
+void Texture2D::deserialize(std::istream &in)
 {
     Texture::deserialize(in);
 

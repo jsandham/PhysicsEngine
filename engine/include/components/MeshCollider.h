@@ -21,8 +21,8 @@ class MeshCollider : public Collider
     MeshCollider(Guid id);
     ~MeshCollider();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     bool intersect(AABB aabb) const;
 };

@@ -1,8 +1,8 @@
 #ifndef __COMPONENT_H__
 #define __COMPONENT_H__
 
-#include "../core/Object.h"
 #include "../core/Guid.h"
+#include "../core/Object.h"
 #include "../core/Types.h"
 
 namespace PhysicsEngine
@@ -20,8 +20,8 @@ class Component : public Object
     Component(Guid id);
     ~Component();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     Entity *getEntity(World *world) const;
 

@@ -116,8 +116,8 @@ class Camera : public Component
     Camera(Guid id);
     ~Camera();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void createTargets();
     void destroyTargets();

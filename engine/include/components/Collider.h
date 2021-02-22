@@ -19,8 +19,8 @@ class Collider : public Component
     Collider(Guid id);
     ~Collider();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     virtual bool intersect(AABB aabb) const = 0;
 };

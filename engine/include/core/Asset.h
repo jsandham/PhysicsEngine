@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "Object.h"
 #include "Guid.h"
+#include "Object.h"
 #include "Types.h"
 
 namespace PhysicsEngine
@@ -21,8 +21,8 @@ class Asset : public Object
     Asset(Guid id);
     ~Asset();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     std::string getName() const;
     void setName(const std::string &name);

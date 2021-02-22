@@ -21,8 +21,8 @@ class Texture3D : public Texture
     Texture3D(int width, int height, int depth, int numChannels);
     ~Texture3D();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     int getWidth() const;
     int getHeight() const;
@@ -33,7 +33,8 @@ class Texture3D : public Texture
     std::vector<unsigned char> getRawTextureData() const;
     Color getPixel(int x, int y, int z) const;
 
-    void setRawTextureData(const std::vector<unsigned char> &data, int width, int height, int depth, TextureFormat format);
+    void setRawTextureData(const std::vector<unsigned char> &data, int width, int height, int depth,
+                           TextureFormat format);
     void setPixel(int x, int y, int z, const Color &color);
 
     void create() override;

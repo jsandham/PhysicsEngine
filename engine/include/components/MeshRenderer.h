@@ -25,8 +25,8 @@ class MeshRenderer : public Component
     MeshRenderer(Guid id);
     ~MeshRenderer();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void setMesh(Guid meshId);
     void setMaterial(Guid materialId);

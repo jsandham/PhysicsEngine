@@ -5,30 +5,28 @@ using namespace PhysicsEngine;
 
 Object::Object()
 {
-	mId = Guid::INVALID;
+    mId = Guid::INVALID;
 }
 
 Object::Object(Guid id) : mId(id)
 {
-
 }
 
 Object::~Object()
 {
-
 }
 
-void Object::serialize(std::ostream& out) const
+void Object::serialize(std::ostream &out) const
 {
-	PhysicsEngine::write<Guid>(out, mId);
+    PhysicsEngine::write<Guid>(out, mId);
 }
 
-void Object::deserialize(std::istream& in)
+void Object::deserialize(std::istream &in)
 {
-	PhysicsEngine::read<Guid>(in, mId);
+    PhysicsEngine::read<Guid>(in, mId);
 }
 
 Guid Object::getId() const
 {
-	return mId;
+    return mId;
 }

@@ -24,7 +24,7 @@ LineRenderer::~LineRenderer()
 {
 }
 
-void LineRenderer::serialize(std::ostream& out) const
+void LineRenderer::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -33,7 +33,7 @@ void LineRenderer::serialize(std::ostream& out) const
     PhysicsEngine::write<glm::vec3>(out, mEnd);
 }
 
-void LineRenderer::deserialize(std::istream& in)
+void LineRenderer::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 

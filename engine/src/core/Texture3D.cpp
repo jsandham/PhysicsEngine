@@ -62,7 +62,7 @@ Texture3D::~Texture3D()
 {
 }
 
-void Texture3D::serialize(std::ostream& out) const
+void Texture3D::serialize(std::ostream &out) const
 {
     Texture::serialize(out);
 
@@ -71,7 +71,7 @@ void Texture3D::serialize(std::ostream& out) const
     PhysicsEngine::write<int>(out, mDepth);
 }
 
-void Texture3D::deserialize(std::istream& in)
+void Texture3D::deserialize(std::istream &in)
 {
     Texture::deserialize(in);
 

@@ -6,10 +6,10 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/Physics.h"
 #include "../../include/core/PoolAllocator.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Triangle.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Serialization.h"
 
 #include "../../include/components/BoxCollider.h"
 #include "../../include/components/MeshCollider.h"
@@ -30,7 +30,7 @@ PhysicsSystem::~PhysicsSystem()
 {
 }
 
-void PhysicsSystem::serialize(std::ostream& out) const
+void PhysicsSystem::serialize(std::ostream &out) const
 {
     System::serialize(out);
 
@@ -38,7 +38,7 @@ void PhysicsSystem::serialize(std::ostream& out) const
     PhysicsEngine::write<float>(out, mTimestep);
 }
 
-void PhysicsSystem::deserialize(std::istream& in)
+void PhysicsSystem::deserialize(std::istream &in)
 {
     System::deserialize(in);
 

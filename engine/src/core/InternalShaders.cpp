@@ -5,258 +5,202 @@
 using namespace PhysicsEngine;
 
 const std::string InternalShaders::colorLitVertexShader =
-"layout(std140) uniform CameraBlock\n"
-"{\n"
-"    mat4 projection;\n"
-"    mat4 view;\n"
-"    vec3 cameraPos;\n"
-"}Camera;\n"
-"\n"
-"uniform mat4 model;\n"
-"\n"
-"in vec3 position;\n"
-"in vec3 normal;\n"
-"in vec2 texCoord;\n"
-"\n"
-"out vec3 FragPos;\n"
-"out vec3 CameraPos;\n"
-"out vec3 Normal;\n"
-"out vec2 TexCoord;\n"
-"\n"
-"void main()\n"
-"{\n"
-"    CameraPos = Camera.cameraPos;\n"
-"    FragPos = vec3(model * vec4(position, 1.0));\n"
-"    Normal = mat3(transpose(inverse(model))) * normal;\n"
-"    TexCoord = texCoord;\n"
-"    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
-"}\n";
+    "layout(std140) uniform CameraBlock\n"
+    "{\n"
+    "    mat4 projection;\n"
+    "    mat4 view;\n"
+    "    vec3 cameraPos;\n"
+    "}Camera;\n"
+    "\n"
+    "uniform mat4 model;\n"
+    "\n"
+    "in vec3 position;\n"
+    "in vec3 normal;\n"
+    "in vec2 texCoord;\n"
+    "\n"
+    "out vec3 FragPos;\n"
+    "out vec3 CameraPos;\n"
+    "out vec3 Normal;\n"
+    "out vec2 TexCoord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "    CameraPos = Camera.cameraPos;\n"
+    "    FragPos = vec3(model * vec4(position, 1.0));\n"
+    "    Normal = mat3(transpose(inverse(model))) * normal;\n"
+    "    TexCoord = texCoord;\n"
+    "    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
+    "}\n";
 
 const std::string InternalShaders::colorLitFragmentShader =
-"uniform vec3 lightDirection;\n"
-"uniform vec3 color;\n"
-"uniform int wireframe;\n"
-"in vec3 FragPos;\n"
-"in vec3 CameraPos;\n"
-"in vec3 Normal;\n"
-"in vec2 TexCoord;\n"
-"\n"
-"out vec4 FragColor;\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
-"\n"
-"void main(void)\n"
-"{\n"
-"    vec3 viewDir = normalize(CameraPos - FragPos);\n"
-"    FragColor = vec4(CalcDirLight(Normal, viewDir) * color, 1.0f);\n"
-"}\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
-"{\n"
-"    vec3 norm = normalize(normal);\n"
-"    vec3 lightDir = normalize(lightDirection);\n"
-"\n"
-"    vec3 reflectDir = reflect(-lightDir, norm);\n"
-"\n"
-"    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
-"    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
-"\n"
-"    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
-"    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
-"    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
-"\n"
-"    return (ambient + diffuse + specular);\n"
-"}\n";
+    "uniform vec3 lightDirection;\n"
+    "uniform vec3 color;\n"
+    "uniform int wireframe;\n"
+    "in vec3 FragPos;\n"
+    "in vec3 CameraPos;\n"
+    "in vec3 Normal;\n"
+    "in vec2 TexCoord;\n"
+    "\n"
+    "out vec4 FragColor;\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
+    "\n"
+    "void main(void)\n"
+    "{\n"
+    "    vec3 viewDir = normalize(CameraPos - FragPos);\n"
+    "    FragColor = vec4(CalcDirLight(Normal, viewDir) * color, 1.0f);\n"
+    "}\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
+    "{\n"
+    "    vec3 norm = normalize(normal);\n"
+    "    vec3 lightDir = normalize(lightDirection);\n"
+    "\n"
+    "    vec3 reflectDir = reflect(-lightDir, norm);\n"
+    "\n"
+    "    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
+    "    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
+    "\n"
+    "    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
+    "    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
+    "    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
+    "\n"
+    "    return (ambient + diffuse + specular);\n"
+    "}\n";
 
 const std::string InternalShaders::normalLitVertexShader =
-"layout(std140) uniform CameraBlock\n"
-"{\n"
-"    mat4 projection;\n"
-"    mat4 view;\n"
-"    vec3 cameraPos;\n"
-"}Camera;\n"
-"\n"
-"uniform mat4 model;\n"
-"\n"
-"in vec3 position;\n"
-"in vec3 normal;\n"
-"in vec2 texCoord;\n"
-"\n"
-"out vec3 FragPos;\n"
-"out vec3 CameraPos;\n"
-"out vec3 Normal;\n"
-"out vec2 TexCoord;\n"
-"\n"
-"void main()\n"
-"{\n"
-"    CameraPos = Camera.cameraPos;\n"
-"    FragPos = vec3(model * vec4(position, 1.0));\n"
-"    Normal = mat3(transpose(inverse(model))) * normal;\n"
-"    TexCoord = texCoord;\n"
-"    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
-"}\n";
+    "layout(std140) uniform CameraBlock\n"
+    "{\n"
+    "    mat4 projection;\n"
+    "    mat4 view;\n"
+    "    vec3 cameraPos;\n"
+    "}Camera;\n"
+    "\n"
+    "uniform mat4 model;\n"
+    "\n"
+    "in vec3 position;\n"
+    "in vec3 normal;\n"
+    "in vec2 texCoord;\n"
+    "\n"
+    "out vec3 FragPos;\n"
+    "out vec3 CameraPos;\n"
+    "out vec3 Normal;\n"
+    "out vec2 TexCoord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "    CameraPos = Camera.cameraPos;\n"
+    "    FragPos = vec3(model * vec4(position, 1.0));\n"
+    "    Normal = mat3(transpose(inverse(model))) * normal;\n"
+    "    TexCoord = texCoord;\n"
+    "    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
+    "}\n";
 
 const std::string InternalShaders::normalLitFragmentShader =
-"uniform vec3 lightDirection;\n"
-"uniform int wireframe;\n"
-"in vec3 FragPos;\n"
-"in vec3 CameraPos;\n"
-"in vec3 Normal;\n"
-"in vec2 TexCoord;\n"
-"\n"
-"out vec4 FragColor;\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
-"\n"
-"void main(void)\n"
-"{\n"
-"    vec3 viewDir = normalize(CameraPos - FragPos);\n"
-"    FragColor = vec4(CalcDirLight(Normal, viewDir) * wireframe * Normal, 1.0f);\n"
-"}\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
-"{\n"
-"    vec3 norm = normalize(normal);\n"
-"    vec3 lightDir = normalize(lightDirection);\n"
-"\n"
-"    vec3 reflectDir = reflect(-lightDir, norm);\n"
-"\n"
-"    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
-"    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
-"\n"
-"    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
-"    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
-"    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
-"\n"
-"    return (ambient + diffuse + specular);\n"
-"}\n";
+    "uniform vec3 lightDirection;\n"
+    "uniform int wireframe;\n"
+    "in vec3 FragPos;\n"
+    "in vec3 CameraPos;\n"
+    "in vec3 Normal;\n"
+    "in vec2 TexCoord;\n"
+    "\n"
+    "out vec4 FragColor;\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
+    "\n"
+    "void main(void)\n"
+    "{\n"
+    "    vec3 viewDir = normalize(CameraPos - FragPos);\n"
+    "    FragColor = vec4(CalcDirLight(Normal, viewDir) * wireframe * Normal, 1.0f);\n"
+    "}\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
+    "{\n"
+    "    vec3 norm = normalize(normal);\n"
+    "    vec3 lightDir = normalize(lightDirection);\n"
+    "\n"
+    "    vec3 reflectDir = reflect(-lightDir, norm);\n"
+    "\n"
+    "    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
+    "    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
+    "\n"
+    "    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
+    "    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
+    "    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
+    "\n"
+    "    return (ambient + diffuse + specular);\n"
+    "}\n";
 
 const std::string InternalShaders::tangentLitVertexShader =
-"layout(std140) uniform CameraBlock\n"
-"{\n"
-"    mat4 projection;\n"
-"    mat4 view;\n"
-"    vec3 cameraPos;\n"
-"}Camera;\n"
-"\n"
-"uniform mat4 model;\n"
-"\n"
-"in vec3 position;\n"
-"in vec3 normal;\n"
-"in vec2 texCoord;\n"
-"\n"
-"out vec3 FragPos;\n"
-"out vec3 CameraPos;\n"
-"out vec3 Normal;\n"
-"out vec2 TexCoord;\n"
-"\n"
-"void main()\n"
-"{\n"
-"    CameraPos = Camera.cameraPos;\n"
-"    FragPos = vec3(model * vec4(position, 1.0));\n"
-"    Normal = mat3(transpose(inverse(model))) * normal;\n"
-"    TexCoord = texCoord;\n"
-"    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
-"}\n";
+    "layout(std140) uniform CameraBlock\n"
+    "{\n"
+    "    mat4 projection;\n"
+    "    mat4 view;\n"
+    "    vec3 cameraPos;\n"
+    "}Camera;\n"
+    "\n"
+    "uniform mat4 model;\n"
+    "\n"
+    "in vec3 position;\n"
+    "in vec3 normal;\n"
+    "in vec2 texCoord;\n"
+    "\n"
+    "out vec3 FragPos;\n"
+    "out vec3 CameraPos;\n"
+    "out vec3 Normal;\n"
+    "out vec2 TexCoord;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "    CameraPos = Camera.cameraPos;\n"
+    "    FragPos = vec3(model * vec4(position, 1.0));\n"
+    "    Normal = mat3(transpose(inverse(model))) * normal;\n"
+    "    TexCoord = texCoord;\n"
+    "    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
+    "}\n";
 
 const std::string InternalShaders::tangentLitFragmentShader =
-"uniform vec3 lightDirection;\n"
-"uniform int wireframe;\n"
-"in vec3 FragPos;\n"
-"in vec3 CameraPos;\n"
-"in vec3 Normal;\n"
-"in vec2 TexCoord;\n"
-"\n"
-"out vec4 FragColor;\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
-"\n"
-"void main(void)\n"
-"{\n"
-"    vec3 viewDir = normalize(CameraPos - FragPos);\n"
-"    // derivations of the fragment position\n"
-"    vec3 pos_dx = dFdx(FragPos);\n"
-"    vec3 pos_dy = dFdy(FragPos);\n"
-"    // derivations of the texture coordinate\n"
-"    vec2 texC_dx = dFdx(TexCoord);\n"
-"    vec2 texC_dy = dFdy(TexCoord);\n"
-"    // tangent vector and binormal vector\n"
-"    vec3 tangent = texC_dy.y * pos_dx - texC_dx.y * pos_dy;\n"
-"    FragColor = vec4(CalcDirLight(Normal, viewDir) * FragPos, 1.0f);\n"
-"}\n"
-"\n"
-"vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
-"{\n"
-"    vec3 norm = normalize(normal);\n"
-"    vec3 lightDir = normalize(lightDirection);\n"
-"\n"
-"    vec3 reflectDir = reflect(-lightDir, norm);\n"
-"\n"
-"    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
-"    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
-"\n"
-"    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
-"    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
-"    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
-"\n"
-"    return (ambient + diffuse + specular);\n"
-"}\n";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    "uniform vec3 lightDirection;\n"
+    "uniform int wireframe;\n"
+    "in vec3 FragPos;\n"
+    "in vec3 CameraPos;\n"
+    "in vec3 Normal;\n"
+    "in vec2 TexCoord;\n"
+    "\n"
+    "out vec4 FragColor;\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
+    "\n"
+    "void main(void)\n"
+    "{\n"
+    "    vec3 viewDir = normalize(CameraPos - FragPos);\n"
+    "    // derivations of the fragment position\n"
+    "    vec3 pos_dx = dFdx(FragPos);\n"
+    "    vec3 pos_dy = dFdy(FragPos);\n"
+    "    // derivations of the texture coordinate\n"
+    "    vec2 texC_dx = dFdx(TexCoord);\n"
+    "    vec2 texC_dy = dFdy(TexCoord);\n"
+    "    // tangent vector and binormal vector\n"
+    "    vec3 tangent = texC_dy.y * pos_dx - texC_dx.y * pos_dy;\n"
+    "    FragColor = vec4(CalcDirLight(Normal, viewDir) * FragPos, 1.0f);\n"
+    "}\n"
+    "\n"
+    "vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
+    "{\n"
+    "    vec3 norm = normalize(normal);\n"
+    "    vec3 lightDir = normalize(lightDirection);\n"
+    "\n"
+    "    vec3 reflectDir = reflect(-lightDir, norm);\n"
+    "\n"
+    "    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
+    "    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
+    "\n"
+    "    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
+    "    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
+    "    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
+    "\n"
+    "    return (ambient + diffuse + specular);\n"
+    "}\n";
 
 const std::string InternalShaders::gizmoVertexShader = "layout(location = 0) in vec3 position;\n"
                                                        "layout(location = 1) in vec3 normal;\n"
@@ -673,7 +617,7 @@ const std::string InternalShaders::simpleLitFragmentShader = "in vec3 FragPos;\n
                                                              "	FragColor = vec4(1.0, 0.5, 0.5, 1.0);\n"
                                                              "}\n";
 
- /*std::string InternalShaders::simpleLitFragmentShader =
+/*std::string InternalShaders::simpleLitFragmentShader =
 "struct Material\n"
 "{\n"
 "	float shininess;\n"
@@ -727,8 +671,6 @@ const std::string InternalShaders::simpleLitFragmentShader = "in vec3 FragPos;\n
 
 "	return (fambient + fdiffuse + fspecular);\n"
 "}\n";*/
-
-
 
 // std::string InternalShaders::simpleLitFragmentShader =
 //"struct Material\n"
@@ -875,9 +817,9 @@ const std::string InternalShaders::simpleLitShaderName = "SimpleLit";
 const std::string InternalShaders::simpleLitDeferredShaderName = "SimpleLitDeferred";
 const std::string InternalShaders::overdrawShaderName = "Overdraw";
 
-
-Guid InternalShaders::loadInternalShader(World *world, const Guid shaderId, const std::string &name, const std::string vertex,
-                                         const std::string fragment, const std::string geometry)
+Guid InternalShaders::loadInternalShader(World *world, const Guid shaderId, const std::string &name,
+                                         const std::string vertex, const std::string fragment,
+                                         const std::string geometry)
 {
     // Need to figure out how to make this created asset have id to be meshId. Maybe createAsset<Shader>(shaderId)?
     Shader *shader = world->createAsset<Shader>();
@@ -894,84 +836,82 @@ Guid InternalShaders::loadInternalShader(World *world, const Guid shaderId, cons
     }
 }
 
-Guid InternalShaders::loadColorLitShader(World* world)
+Guid InternalShaders::loadColorLitShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::colorLitShaderId, InternalShaders::colorLitShaderName, InternalShaders::colorLitVertexShader,
-        InternalShaders::colorLitFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::colorLitShaderId, InternalShaders::colorLitShaderName,
+                              InternalShaders::colorLitVertexShader, InternalShaders::colorLitFragmentShader, "");
 }
 
-Guid InternalShaders::loadNormalLitShader(World* world)
+Guid InternalShaders::loadNormalLitShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::normalLitShaderId, InternalShaders::normalLitShaderName, InternalShaders::normalLitVertexShader,
-        InternalShaders::normalLitFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::normalLitShaderId, InternalShaders::normalLitShaderName,
+                              InternalShaders::normalLitVertexShader, InternalShaders::normalLitFragmentShader, "");
 }
 
-Guid InternalShaders::loadTangentLitShader(World* world)
+Guid InternalShaders::loadTangentLitShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::tangentLitShaderId, InternalShaders::tangentLitShaderName, InternalShaders::tangentLitVertexShader,
-        InternalShaders::tangentLitFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::tangentLitShaderId, InternalShaders::tangentLitShaderName,
+                              InternalShaders::tangentLitVertexShader, InternalShaders::tangentLitFragmentShader, "");
 }
 
 Guid InternalShaders::loadFontShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::fontShaderId, InternalShaders::fontShaderName, InternalShaders::fontVertexShader,
-                              InternalShaders::fontFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::fontShaderId, InternalShaders::fontShaderName,
+                              InternalShaders::fontVertexShader, InternalShaders::fontFragmentShader, "");
 }
 
 Guid InternalShaders::loadGizmoShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::gizmoShaderId, InternalShaders::gizmoShaderName, InternalShaders::gizmoVertexShader,
-                              InternalShaders::gizmoFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::gizmoShaderId, InternalShaders::gizmoShaderName,
+                              InternalShaders::gizmoVertexShader, InternalShaders::gizmoFragmentShader, "");
 }
 
 Guid InternalShaders::loadLineShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::lineShaderId, InternalShaders::lineShaderName, InternalShaders::lineVertexShader,
-                              InternalShaders::lineFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::lineShaderId, InternalShaders::lineShaderName,
+                              InternalShaders::lineVertexShader, InternalShaders::lineFragmentShader, "");
 }
 
 Guid InternalShaders::loadColorShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::colorShaderId, InternalShaders::colorShaderName, InternalShaders::colorVertexShader,
-                              InternalShaders::colorFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::colorShaderId, InternalShaders::colorShaderName,
+                              InternalShaders::colorVertexShader, InternalShaders::colorFragmentShader, "");
 }
 
 Guid InternalShaders::loadPositionAndNormalsShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::positionAndNormalShaderId,
-                              InternalShaders::positionAndNormalShaderName,
-                              InternalShaders::positionAndNormalsVertexShader,
-                              InternalShaders::positionAndNormalsFragmentShader, "");
+    return loadInternalShader(
+        world, InternalShaders::positionAndNormalShaderId, InternalShaders::positionAndNormalShaderName,
+        InternalShaders::positionAndNormalsVertexShader, InternalShaders::positionAndNormalsFragmentShader, "");
 }
 
 Guid InternalShaders::loadSsaoShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::ssaoShaderId, InternalShaders::ssaoShaderName, InternalShaders::ssaoVertexShader,
-                              InternalShaders::ssaoFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::ssaoShaderId, InternalShaders::ssaoShaderName,
+                              InternalShaders::ssaoVertexShader, InternalShaders::ssaoFragmentShader, "");
 }
 
 Guid InternalShaders::loadScreenQuadShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::screenQuadShaderId, InternalShaders::screenQuadShaderName, InternalShaders::screenQuadVertexShader,
-                              InternalShaders::screenQuadFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::screenQuadShaderId, InternalShaders::screenQuadShaderName,
+                              InternalShaders::screenQuadVertexShader, InternalShaders::screenQuadFragmentShader, "");
 }
 
 Guid InternalShaders::loadNormalMapShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::normalMapShaderId, InternalShaders::normalMapShaderName, InternalShaders::normalMapVertexShader,
-                              InternalShaders::normalMapFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::normalMapShaderId, InternalShaders::normalMapShaderName,
+                              InternalShaders::normalMapVertexShader, InternalShaders::normalMapFragmentShader, "");
 }
 
 Guid InternalShaders::loadDepthMapShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::depthMapShaderId, InternalShaders::depthMapShaderName, InternalShaders::depthMapVertexShader,
-                              InternalShaders::depthMapFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::depthMapShaderId, InternalShaders::depthMapShaderName,
+                              InternalShaders::depthMapVertexShader, InternalShaders::depthMapFragmentShader, "");
 }
 
 Guid InternalShaders::loadShadowDepthMapShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::shadowDepthMapShaderId,
-                              InternalShaders::shadowDepthMapShaderName,
+    return loadInternalShader(world, InternalShaders::shadowDepthMapShaderId, InternalShaders::shadowDepthMapShaderName,
                               InternalShaders::shadowDepthMapVertexShader,
                               InternalShaders::shadowDepthMapFragmentShader, "");
 }
@@ -979,32 +919,32 @@ Guid InternalShaders::loadShadowDepthMapShader(World *world)
 Guid InternalShaders::loadShadowDepthCubemapShader(World *world)
 {
     return loadInternalShader(
-        world, InternalShaders::shadowDepthCubemapShaderId, InternalShaders::shadowDepthCubemapShaderName, InternalShaders::shadowDepthCubemapVertexShader,
-        InternalShaders::shadowDepthCubemapFragmentShader, InternalShaders::shadowDepthCubemapGeometryShader);
+        world, InternalShaders::shadowDepthCubemapShaderId, InternalShaders::shadowDepthCubemapShaderName,
+        InternalShaders::shadowDepthCubemapVertexShader, InternalShaders::shadowDepthCubemapFragmentShader,
+        InternalShaders::shadowDepthCubemapGeometryShader);
 }
 
 Guid InternalShaders::loadGBufferShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::gbufferShaderId, InternalShaders::gbufferShaderName, InternalShaders::gbufferVertexShader,
-                              InternalShaders::gbufferFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::gbufferShaderId, InternalShaders::gbufferShaderName,
+                              InternalShaders::gbufferVertexShader, InternalShaders::gbufferFragmentShader, "");
 }
 
 Guid InternalShaders::loadSimpleLitShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::simpleLitShaderId, InternalShaders::simpleLitShaderName, InternalShaders::simpleLitVertexShader,
-                              InternalShaders::simpleLitFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::simpleLitShaderId, InternalShaders::simpleLitShaderName,
+                              InternalShaders::simpleLitVertexShader, InternalShaders::simpleLitFragmentShader, "");
 }
 
 Guid InternalShaders::loadSimpleLitDeferredShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::simpleLitDeferredShaderId,
-                              InternalShaders::simpleLitDeferredShaderName,
-                              InternalShaders::simpleLitDeferredVertexShader,
-                              InternalShaders::simpleLitDeferredFragmentShader, "");
+    return loadInternalShader(
+        world, InternalShaders::simpleLitDeferredShaderId, InternalShaders::simpleLitDeferredShaderName,
+        InternalShaders::simpleLitDeferredVertexShader, InternalShaders::simpleLitDeferredFragmentShader, "");
 }
 
 Guid InternalShaders::loadOverdrawShader(World *world)
 {
-    return loadInternalShader(world, InternalShaders::overdrawShaderId, InternalShaders::overdrawShaderName, InternalShaders::overdrawVertexShader,
-                              InternalShaders::overdrawFragmentShader, "");
+    return loadInternalShader(world, InternalShaders::overdrawShaderId, InternalShaders::overdrawShaderName,
+                              InternalShaders::overdrawVertexShader, InternalShaders::overdrawFragmentShader, "");
 }

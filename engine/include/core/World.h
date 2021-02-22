@@ -23,8 +23,8 @@
 #include "Texture3D.h"
 #include "Util.h"
 #include "WorldAllocators.h"
-#include "WorldIdState.h"
 #include "WorldDefaultAssets.h"
+#include "WorldIdState.h"
 #include "WorldSerialization.h"
 
 #include "../components/BoxCollider.h"
@@ -83,7 +83,7 @@ class World
 
     template <typename T> size_t getNumberOfSystems() const
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getNumberOfSystems_impl<T>(getSystemAllocator_impl<T>());
     }
@@ -97,14 +97,14 @@ class World
 
     template <typename T> size_t getNumberOfAssets() const
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return getNumberOfAssets_impl(getAssetAllocator_impl<T>());
     }
 
     template <typename T> T *getSystem()
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystem_impl(getSystemAllocator_impl<T>());
     }
@@ -123,7 +123,7 @@ class World
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), entityId);
     }
 
-    template <typename T> T *addComponent(std::istream& in)
+    template <typename T> T *addComponent(std::istream &in)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -132,7 +132,7 @@ class World
 
     template <typename T> T *addSystem(int order)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return addSystem_impl<T>(getSystemOrAddAllocator_impl<T>(), order);
     }
@@ -143,28 +143,28 @@ class World
 
     template <typename T> T *getSystemByIndex(int index)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystemByIndex_impl(getSystemAllocator_impl<T>(), index);
     }
 
     template <typename T> T *getSystemById(const Guid &systemId)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystemById_impl<T>(getSystemAllocator_impl<T>(), systemId);
     }
 
     template <typename T> T *getAssetByIndex(int index)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return getAssetByIndex_impl(getAssetAllocator_impl<T>(), index);
     }
 
     template <typename T> T *getAssetById(const Guid &assetId)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return getAssetById_impl<T>(getAssetAllocator_impl<T>(), assetId);
     }
@@ -185,14 +185,14 @@ class World
 
     template <typename T> T *createAsset()
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>());
     }
 
-    template <typename T> T *createAsset(std::istream& in)
+    template <typename T> T *createAsset(std::istream &in)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>(), in);
     }
@@ -457,52 +457,52 @@ class World
         return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
     }
 
-    template <> Transform *addComponent<Transform>(std::istream& in)
+    template <> Transform *addComponent<Transform>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mTransformAllocator, in);
     }
 
-    template <> MeshRenderer *addComponent<MeshRenderer>(std::istream& in)
+    template <> MeshRenderer *addComponent<MeshRenderer>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mMeshRendererAllocator, in);
     }
 
-    template <> LineRenderer *addComponent<LineRenderer>(std::istream& in)
+    template <> LineRenderer *addComponent<LineRenderer>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mLineRendererAllocator, in);
     }
 
-    template <> Rigidbody *addComponent<Rigidbody>(std::istream& in)
+    template <> Rigidbody *addComponent<Rigidbody>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mRigidbodyAllocator, in);
     }
 
-    template <> Camera *addComponent<Camera>(std::istream& in)
+    template <> Camera *addComponent<Camera>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mCameraAllocator, in);
     }
 
-    template <> Light *addComponent<Light>(std::istream& in)
+    template <> Light *addComponent<Light>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mLightAllocator, in);
     }
 
-    template <> SphereCollider *addComponent<SphereCollider>(std::istream& in)
+    template <> SphereCollider *addComponent<SphereCollider>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mSphereColliderAllocator, in);
     }
 
-    template <> BoxCollider *addComponent<BoxCollider>(std::istream& in)
+    template <> BoxCollider *addComponent<BoxCollider>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mBoxColliderAllocator, in);
     }
 
-    template <> CapsuleCollider *addComponent<CapsuleCollider>(std::istream& in)
+    template <> CapsuleCollider *addComponent<CapsuleCollider>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, in);
     }
 
-    template <> MeshCollider *addComponent<MeshCollider>(std::istream& in)
+    template <> MeshCollider *addComponent<MeshCollider>(std::istream &in)
     {
         return addComponent_impl(&mAllocators.mMeshColliderAllocator, in);
     }
@@ -787,37 +787,37 @@ class World
         return createAsset_impl(&mAllocators.mFontAllocator);
     }
 
-    template <> Mesh *createAsset(std::istream& in)
+    template <> Mesh *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mMeshAllocator, in);
     }
 
-    template <> Material *createAsset(std::istream& in)
+    template <> Material *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mMaterialAllocator, in);
     }
 
-    template <> Shader *createAsset(std::istream& in)
+    template <> Shader *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mShaderAllocator, in);
     }
 
-    template <> Texture2D *createAsset(std::istream& in)
+    template <> Texture2D *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mTexture2DAllocator, in);
     }
 
-    template <> Texture3D *createAsset(std::istream& in)
+    template <> Texture3D *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mTexture3DAllocator, in);
     }
 
-    template <> Cubemap *createAsset(std::istream& in)
+    template <> Cubemap *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mCubemapAllocator, in);
     }
 
-    template <> Font *createAsset(std::istream& in)
+    template <> Font *createAsset(std::istream &in)
     {
         return createAsset_impl(&mAllocators.mFontAllocator, in);
     }
@@ -849,14 +849,14 @@ class World
     Guid getOverdrawShaderId() const;
 
   private:
-    void loadAsset(std::ifstream& in, const ObjectHeader& header);
-    void loadEntity(std::ifstream& in, const ObjectHeader& header);
-    void loadComponent(std::ifstream& in, const ObjectHeader& header);
-    void loadSystem(std::ifstream& in, const ObjectHeader& header);
+    void loadAsset(std::ifstream &in, const ObjectHeader &header);
+    void loadEntity(std::ifstream &in, const ObjectHeader &header);
+    void loadComponent(std::ifstream &in, const ObjectHeader &header);
+    void loadSystem(std::ifstream &in, const ObjectHeader &header);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return allocator != nullptr ? allocator->getCount() : 0;
     }
@@ -870,7 +870,7 @@ class World
 
     template <typename T> size_t getNumberOfAssets_impl(const PoolAllocator<T> *allocator) const
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return allocator != nullptr ? allocator->getCount() : 0;
     }
@@ -945,7 +945,7 @@ class World
         return component;
     }
 
-    template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, std::istream& in)
+    template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, std::istream &in)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -961,16 +961,18 @@ class World
 
         addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
 
-        mIdState.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), componentType));
+        mIdState.mEntityIdToComponentIds[component->getEntityId()].push_back(
+            std::make_pair(component->getId(), componentType));
 
-        mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(component->getEntityId(), component->getId(), componentType));
+        mIdState.mComponentIdsMarkedCreated.push_back(
+            std::make_tuple(component->getEntityId(), component->getId(), componentType));
 
         return component;
     }
 
     template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, int order)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         int systemGlobalIndex = (int)allocator->getCount();
         int systemType = SystemType<T>::type;
@@ -1000,14 +1002,14 @@ class World
 
     template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, int index)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
     template <typename T> T *getSystemById_impl(const PoolAllocator<T> *allocator, const Guid &systemId)
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         if (allocator == nullptr || SystemType<T>::type != getTypeOf(systemId))
         {
@@ -1019,14 +1021,14 @@ class World
 
     template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, int index)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
     template <typename T> T *getAssetById_impl(const PoolAllocator<T> *allocator, const Guid &assetId)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         if (allocator == nullptr || AssetType<T>::type != getTypeOf(assetId))
         {
@@ -1057,7 +1059,7 @@ class World
 
     template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         int index = (int)allocator->getCount();
         int type = AssetType<T>::type;
@@ -1073,9 +1075,9 @@ class World
         return asset;
     }
 
-    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, std::istream& in)
+    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, std::istream &in)
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         int index = (int)allocator->getCount();
         int type = AssetType<T>::type;
@@ -1119,7 +1121,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getSystemAllocator_impl()
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         std::unordered_map<int, Allocator *>::iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
         if (it != mSystemAllocatorMap.end())
@@ -1132,7 +1134,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getSystemOrAddAllocator_impl()
     {
-        static_assert(std::is_base_of<System,T>(), "'T' is not of type System");
+        static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         PoolAllocator<T> *allocator = getSystemAllocator_impl<T>();
         if (allocator == nullptr)
@@ -1146,7 +1148,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getAssetAllocator_impl()
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         std::unordered_map<int, Allocator *>::iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
         if (it != mAssetAllocatorMap.end())
@@ -1159,7 +1161,7 @@ class World
 
     template <typename T> PoolAllocator<T> *getAssetOrAddAllocator_impl()
     {
-        static_assert(std::is_base_of<Asset,T>(), "'T' is not of type Asset");
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         PoolAllocator<T> *allocator = getAssetAllocator_impl<T>();
         if (allocator == nullptr)

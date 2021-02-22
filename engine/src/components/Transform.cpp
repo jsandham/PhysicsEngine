@@ -24,7 +24,7 @@ Transform::~Transform()
 {
 }
 
-void Transform::serialize(std::ostream& out) const
+void Transform::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -34,7 +34,7 @@ void Transform::serialize(std::ostream& out) const
     PhysicsEngine::write<glm::vec3>(out, mScale);
 }
 
-void Transform::deserialize(std::istream& in)
+void Transform::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 

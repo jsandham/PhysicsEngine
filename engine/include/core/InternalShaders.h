@@ -18,11 +18,6 @@ class InternalShaders
     static const std::string tangentLitVertexShader;
     static const std::string tangentLitFragmentShader;
 
-
-
-
-
-
     static const std::string gizmoVertexShader;
     static const std::string gizmoFragmentShader;
     static const std::string lineVertexShader;
@@ -96,11 +91,9 @@ class InternalShaders
     static const std::string simpleLitDeferredShaderName;
     static const std::string overdrawShaderName;
 
-
-    static Guid loadColorLitShader(World* world);
-    static Guid loadNormalLitShader(World* world);
-    static Guid loadTangentLitShader(World* world);
-
+    static Guid loadColorLitShader(World *world);
+    static Guid loadNormalLitShader(World *world);
+    static Guid loadTangentLitShader(World *world);
 
     static Guid loadFontShader(World *world);
     static Guid loadGizmoShader(World *world);

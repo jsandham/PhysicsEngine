@@ -22,7 +22,7 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::serialize(std::ostream& out) const
+void Mesh::serialize(std::ostream &out) const
 {
     Asset::serialize(out);
 
@@ -36,7 +36,7 @@ void Mesh::serialize(std::ostream& out) const
     PhysicsEngine::write<const int>(out, mSubMeshVertexStartIndices.data(), mSubMeshVertexStartIndices.size());
 }
 
-void Mesh::deserialize(std::istream& in)
+void Mesh::deserialize(std::istream &in)
 {
     Asset::deserialize(in);
 
@@ -161,7 +161,7 @@ GLuint Mesh::getNativeGraphicsVAO() const
     return mVao;
 }
 
-void Mesh::setVertices(const std::vector<float>& vertices)
+void Mesh::setVertices(const std::vector<float> &vertices)
 {
     mVertices = vertices;
     computeBoundingSphere();
@@ -169,14 +169,14 @@ void Mesh::setVertices(const std::vector<float>& vertices)
     mChanged = true;
 }
 
-void Mesh::setNormals(const std::vector<float>& normals)
+void Mesh::setNormals(const std::vector<float> &normals)
 {
     mNormals = normals;
 
     mChanged = true;
 }
 
-void Mesh::setTexCoords(const std::vector<float>& texCoords)
+void Mesh::setTexCoords(const std::vector<float> &texCoords)
 {
     mTexCoords = texCoords;
 

@@ -41,9 +41,9 @@ class InternalMeshes
     static Guid loadPlaneMesh(World *world);
 
   private:
-    static Guid loadInternalMesh(World *world, const Guid meshId, const std::string &name, const std::vector<float> &vertices,
-                                 const std::vector<float> &normals, const std::vector<float> &texCoords,
-                                 const std::vector<int> &startIndices);
+    static Guid loadInternalMesh(World *world, const Guid meshId, const std::string &name,
+                                 const std::vector<float> &vertices, const std::vector<float> &normals,
+                                 const std::vector<float> &texCoords, const std::vector<int> &startIndices);
 };
 } // namespace PhysicsEngine
 

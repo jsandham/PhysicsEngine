@@ -24,8 +24,8 @@ class LineRenderer : public Component
     LineRenderer(Guid id);
     ~LineRenderer();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 };
 
 template <> struct ComponentType<LineRenderer>

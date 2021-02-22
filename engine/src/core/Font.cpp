@@ -1,5 +1,5 @@
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 #include "../../include/core/Font.h"
 #include "../../include/core/InternalShaders.h"
@@ -29,12 +29,12 @@ Font::~Font()
 {
 }
 
-void Font::serialize(std::ostream& out) const
+void Font::serialize(std::ostream &out) const
 {
     Asset::serialize(out);
 }
 
-void Font::deserialize(std::istream& in)
+void Font::deserialize(std::istream &in)
 {
     Asset::deserialize(in);
 }

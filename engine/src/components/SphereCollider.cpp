@@ -19,14 +19,14 @@ SphereCollider::~SphereCollider()
 {
 }
 
-void SphereCollider::serialize(std::ostream& out) const
+void SphereCollider::serialize(std::ostream &out) const
 {
     Collider::serialize(out);
 
     PhysicsEngine::write<Sphere>(out, mSphere);
 }
 
-void SphereCollider::deserialize(std::istream& in)
+void SphereCollider::deserialize(std::istream &in)
 {
     Collider::deserialize(in);
 

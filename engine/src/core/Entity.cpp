@@ -3,8 +3,8 @@
 
 #include "../../include/core/Entity.h"
 #include "../../include/core/PoolAllocator.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Serialization.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
@@ -24,7 +24,7 @@ Entity::~Entity()
 {
 }
 
-void Entity::serialize(std::ostream& out) const
+void Entity::serialize(std::ostream &out) const
 {
     Object::serialize(out);
 
@@ -32,7 +32,7 @@ void Entity::serialize(std::ostream& out) const
     PhysicsEngine::write<std::string>(out, mName);
 }
 
-void Entity::deserialize(std::istream& in)
+void Entity::deserialize(std::istream &in)
 {
     Object::deserialize(in);
 

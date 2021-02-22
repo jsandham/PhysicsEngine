@@ -19,14 +19,14 @@ MeshCollider::~MeshCollider()
 {
 }
 
-void MeshCollider::serialize(std::ostream& out) const
+void MeshCollider::serialize(std::ostream &out) const
 {
     Collider::serialize(out);
 
     PhysicsEngine::write<Guid>(out, mMeshId);
 }
 
-void MeshCollider::deserialize(std::istream& in)
+void MeshCollider::deserialize(std::istream &in)
 {
     Collider::deserialize(in);
 

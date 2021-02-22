@@ -32,8 +32,8 @@ class Mesh : public Asset
     Mesh(Guid id);
     ~Mesh();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
@@ -52,9 +52,9 @@ class Mesh : public Asset
     Sphere getBounds() const;
     GLuint getNativeGraphicsVAO() const;
 
-    void setVertices(const std::vector<float>& vertices);
-    void setNormals(const std::vector<float>& normals);
-    void setTexCoords(const std::vector<float>& texCoords);
+    void setVertices(const std::vector<float> &vertices);
+    void setNormals(const std::vector<float> &normals);
+    void setTexCoords(const std::vector<float> &texCoords);
 
     void create();
     void destroy();

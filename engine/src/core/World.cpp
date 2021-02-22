@@ -44,7 +44,8 @@ World::World()
     mDefaultAssets.mOverdrawShaderId = InternalShaders::loadOverdrawShader(this);
 
     // load default included materials
-    mDefaultAssets.mSimpleLitMaterialId = InternalMaterials::loadSimpleLitMaterial(this, mDefaultAssets.mSimpleLitShaderId);
+    mDefaultAssets.mSimpleLitMaterialId =
+        InternalMaterials::loadSimpleLitMaterial(this, mDefaultAssets.mSimpleLitShaderId);
     mDefaultAssets.mColorMaterialId = InternalMaterials::loadColorMaterial(this, mDefaultAssets.mColorShaderId);
 }
 
@@ -71,11 +72,13 @@ bool World::loadAsset(const std::string &filePath)
 
     std::vector<ObjectHeader> assets(header.mAssetCount);
 
-    for (size_t i = 0; i < assets.size(); i++) {
+    for (size_t i = 0; i < assets.size(); i++)
+    {
         PhysicsEngine::read<ObjectHeader>(file, assets[i]);
     }
 
-    for (size_t i = 0; i < assets.size(); i++) {
+    for (size_t i = 0; i < assets.size(); i++)
+    {
         loadAsset(file, assets[i]);
     }
 
@@ -105,32 +108,38 @@ bool World::loadScene(const std::string &filePath, bool ignoreSystemsAndCamera)
     std::vector<ObjectHeader> components(sceneHeader.mComponentCount);
     std::vector<ObjectHeader> systems(sceneHeader.mSystemCount);
 
-    for (size_t i = 0; i < entities.size(); i++) {
+    for (size_t i = 0; i < entities.size(); i++)
+    {
         PhysicsEngine::read<ObjectHeader>(file, entities[i]);
     }
 
-    for (size_t i = 0; i < components.size(); i++) {
+    for (size_t i = 0; i < components.size(); i++)
+    {
         PhysicsEngine::read<ObjectHeader>(file, components[i]);
     }
 
-    for (size_t i = 0; i < systems.size(); i++) {
+    for (size_t i = 0; i < systems.size(); i++)
+    {
         PhysicsEngine::read<ObjectHeader>(file, systems[i]);
     }
 
-    for (size_t i = 0; i < entities.size(); i++) {
+    for (size_t i = 0; i < entities.size(); i++)
+    {
         loadEntity(file, entities[i]);
     }
 
-    for (size_t i = 0; i < components.size(); i++) {
+    for (size_t i = 0; i < components.size(); i++)
+    {
         loadComponent(file, components[i]);
     }
 
-    for (size_t i = 0; i < systems.size(); i++) {
+    for (size_t i = 0; i < systems.size(); i++)
+    {
         loadSystem(file, systems[i]);
     }
 
     file.close();
-    
+
     return true;
 }
 
@@ -139,39 +148,46 @@ bool World::loadSceneFromEditor(const std::string &filePath)
     return loadScene(filePath, true);
 }
 
-void World::loadAsset(std::ifstream& in, const ObjectHeader& header)
+void World::loadAsset(std::ifstream &in, const ObjectHeader &header)
 {
-    if (header.mIsTnternal) {
+    if (header.mIsTnternal)
+    {
         PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, header.mId, header.mType);
     }
-    else {
+    else
+    {
         PhysicsEngine::loadAsset(mAllocators, mIdState, in, header.mId, header.mType);
     }
 }
 
-void World::loadEntity(std::ifstream& in, const ObjectHeader& header)
+void World::loadEntity(std::ifstream &in, const ObjectHeader &header)
 {
-    if (header.mIsTnternal) {
+    if (header.mIsTnternal)
+    {
         PhysicsEngine::loadInternalEntity(mAllocators, mIdState, in, header.mId);
     }
 }
 
-void World::loadComponent(std::ifstream& in, const ObjectHeader& header)
+void World::loadComponent(std::ifstream &in, const ObjectHeader &header)
 {
-    if (header.mIsTnternal) {
+    if (header.mIsTnternal)
+    {
         PhysicsEngine::loadInternalComponent(mAllocators, mIdState, in, header.mId, header.mType);
     }
-    else {
+    else
+    {
         PhysicsEngine::loadComponent(mAllocators, mIdState, in, header.mId, header.mType);
     }
 }
 
-void World::loadSystem(std::ifstream& in, const ObjectHeader& header)
+void World::loadSystem(std::ifstream &in, const ObjectHeader &header)
 {
-    if (header.mIsTnternal) {
+    if (header.mIsTnternal)
+    {
         PhysicsEngine::loadInternalSystem(mAllocators, mIdState, in, header.mId, header.mType);
     }
-    else {
+    else
+    {
         PhysicsEngine::loadSystem(mAllocators, mIdState, in, header.mId, header.mType);
     }
 }
@@ -248,7 +264,7 @@ Entity *World::createEntity()
     int type = EntityType<Entity>::type;
     Guid entityId = Guid::newGuid();
 
-    Entity* entity = mAllocators.mEntityAllocator.construct(entityId);
+    Entity *entity = mAllocators.mEntityAllocator.construct(entityId);
 
     if (entity != nullptr)
     {
@@ -327,7 +343,8 @@ void World::latentDestroyComponent(const Guid &entityId, const Guid &componentId
 
 void World::immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType)
 {
-    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it = mIdState.mEntityIdToComponentIds.find(entityId);
+    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it =
+        mIdState.mEntityIdToComponentIds.find(entityId);
 
     assert(it != mIdState.mEntityIdToComponentIds.end());
 

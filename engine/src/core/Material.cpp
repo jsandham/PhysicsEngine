@@ -2,9 +2,9 @@
 #include <string>
 
 #include "../../include/core/Material.h"
+#include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
 #include "../../include/core/mat_load.h"
-#include "../../include/core/Serialization.h"
 
 #include "../../include/graphics/Graphics.h"
 
@@ -30,7 +30,7 @@ Material::~Material()
 {
 }
 
-void Material::serialize(std::ostream& out) const
+void Material::serialize(std::ostream &out) const
 {
     Asset::serialize(out);
 
@@ -40,7 +40,7 @@ void Material::serialize(std::ostream& out) const
     PhysicsEngine::write<const ShaderUniform>(out, mUniforms.data(), mUniforms.size());
 }
 
-void Material::deserialize(std::istream& in)
+void Material::deserialize(std::istream &in)
 {
     Asset::deserialize(in);
 

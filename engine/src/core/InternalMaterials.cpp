@@ -10,10 +10,11 @@ const Guid InternalMaterials::colorMaterialId("1a641451-0490-403c-a957-c0a738cdc
 const std::string InternalMaterials::simpleLitMaterialName = "SimpleLit";
 const std::string InternalMaterials::colorMaterialName = "Color";
 
-Guid InternalMaterials::loadInternalMaterial(World *world, const Guid materialId, const std::string &name, const Guid shaderId)
+Guid InternalMaterials::loadInternalMaterial(World *world, const Guid materialId, const std::string &name,
+                                             const Guid shaderId)
 {
     // Need to figure out how to make this created asset have id to be materialId
-    Material* material = world->createAsset<Material>();
+    Material *material = world->createAsset<Material>();
     if (material != NULL)
     {
         material->setShaderId(shaderId);
@@ -29,10 +30,12 @@ Guid InternalMaterials::loadInternalMaterial(World *world, const Guid materialId
 
 Guid InternalMaterials::loadSimpleLitMaterial(World *world, const Guid shaderId)
 {
-    return loadInternalMaterial(world, InternalMaterials::simpleLitMaterialId, InternalMaterials::simpleLitMaterialName, shaderId);
+    return loadInternalMaterial(world, InternalMaterials::simpleLitMaterialId, InternalMaterials::simpleLitMaterialName,
+                                shaderId);
 }
 
 Guid InternalMaterials::loadColorMaterial(World *world, const Guid shaderId)
 {
-    return loadInternalMaterial(world, InternalMaterials::colorMaterialId, InternalMaterials::colorMaterialName, shaderId);
+    return loadInternalMaterial(world, InternalMaterials::colorMaterialId, InternalMaterials::colorMaterialName,
+                                shaderId);
 }

@@ -9,8 +9,6 @@
 
 #include "Entity.h"
 
-#include "WorldAllocators.h"
-#include "WorldIdState.h"
 #include "Asset.h"
 #include "Cubemap.h"
 #include "Font.h"
@@ -19,6 +17,8 @@
 #include "Shader.h"
 #include "Texture2D.h"
 #include "Texture3D.h"
+#include "WorldAllocators.h"
+#include "WorldIdState.h"
 
 #include "../components/BoxCollider.h"
 #include "../components/Camera.h"
@@ -41,15 +41,18 @@
 
 namespace PhysicsEngine
 {
-	// Load internal entity, component, system or asset into allocators
-	Entity* loadInternalEntity(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id);
-	Component* loadInternalComponent(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type);
-	System* loadInternalSystem(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type);
-	Asset* loadInternalAsset(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type);
+// Load internal entity, component, system or asset into allocators
+Entity *loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id);
+Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id,
+                                 int type);
+System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id,
+                           int type);
+Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type);
 
-	// Destroy internal entity, component, system or asset into allocators
-	Entity *destroyInternalEntity(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int index);
-	Component *destroyInternalComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index);
+// Destroy internal entity, component, system or asset into allocators
+Entity *destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int index);
+Component *destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type,
+                                    int index);
 } // namespace PhysicsEngine
 
 #endif

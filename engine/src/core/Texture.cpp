@@ -6,7 +6,6 @@ using namespace PhysicsEngine;
 
 Texture::Texture() : Asset()
 {
-  
 }
 
 Texture::Texture(Guid id) : Asset(id)
@@ -17,7 +16,7 @@ Texture::~Texture()
 {
 }
 
-void Texture::serialize(std::ostream& out) const
+void Texture::serialize(std::ostream &out) const
 {
     Asset::serialize(out);
 
@@ -31,7 +30,7 @@ void Texture::serialize(std::ostream& out) const
     PhysicsEngine::write<const unsigned char>(out, mRawTextureData.data(), mRawTextureData.size());
 }
 
-void Texture::deserialize(std::istream& in)
+void Texture::deserialize(std::istream &in)
 {
     Asset::deserialize(in);
 

@@ -16,8 +16,8 @@ class CleanUpSystem : public System
     CleanUpSystem(Guid id);
     ~CleanUpSystem();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void init(World *world);
     void update(const Input &input, const Time &time);

@@ -28,14 +28,14 @@ typedef enum TextureWrapMode
 {
     Repeat = 0,
     Clamp = 1
-}TextureWrapMode;
+} TextureWrapMode;
 
 typedef enum TextureFilterMode
 {
     Nearest = 0,
     Bilinear = 1,
     Trilinear = 2
-}TextureFilterMode;
+} TextureFilterMode;
 
 class Texture : public Asset
 {
@@ -56,8 +56,8 @@ class Texture : public Asset
     Texture(Guid id);
     ~Texture();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     virtual void create() = 0;
     virtual void destroy() = 0;
@@ -81,7 +81,6 @@ class Texture : public Asset
 
   protected:
     int calcNumChannels(TextureFormat format) const;
-
 };
 
 template <> struct IsAssetInternal<Texture>

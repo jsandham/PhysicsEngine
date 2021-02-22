@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "Object.h"
 #include "Guid.h"
+#include "Object.h"
 #include "Types.h"
 
 namespace PhysicsEngine
@@ -25,8 +25,8 @@ class Entity : public Object
     Entity(Guid id);
     ~Entity();
 
-    virtual void serialize(std::ostream& out) const;
-    virtual void deserialize(std::istream& in);
+    virtual void serialize(std::ostream &out) const;
+    virtual void deserialize(std::istream &in);
 
     void latentDestroy(World *world);
     void immediateDestroy(World *world);

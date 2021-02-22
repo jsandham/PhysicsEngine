@@ -38,7 +38,7 @@ Rigidbody::~Rigidbody()
 {
 }
 
-void Rigidbody::serialize(std::ostream& out) const
+void Rigidbody::serialize(std::ostream &out) const
 {
     Component::serialize(out);
 
@@ -52,7 +52,7 @@ void Rigidbody::serialize(std::ostream& out) const
     PhysicsEngine::write<glm::mat3>(out, mInertiaTensor);
 }
 
-void Rigidbody::deserialize(std::istream& in)
+void Rigidbody::deserialize(std::istream &in)
 {
     Component::deserialize(in);
 
@@ -65,4 +65,3 @@ void Rigidbody::deserialize(std::istream& in)
     PhysicsEngine::read<glm::vec3>(in, mCentreOfMass);
     PhysicsEngine::read<glm::mat3>(in, mInertiaTensor);
 }
-
