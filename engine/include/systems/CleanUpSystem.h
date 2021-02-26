@@ -1,5 +1,5 @@
-#ifndef __CLEANUPSYSTEM_H__
-#define __CLEANUPSYSTEM_H__
+#ifndef CLEANUPSYSTEM_H__
+#define CLEANUPSYSTEM_H__
 
 #include <vector>
 

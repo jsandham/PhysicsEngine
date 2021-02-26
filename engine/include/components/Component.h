@@ -1,5 +1,5 @@
-#ifndef __COMPONENT_H__
-#define __COMPONENT_H__
+#ifndef COMPONENT_H__
+#define COMPONENT_H__
 
 #include "../core/Guid.h"
 #include "../core/Object.h"

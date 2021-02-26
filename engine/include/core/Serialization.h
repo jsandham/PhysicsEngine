@@ -1,5 +1,5 @@
-#ifndef __SERIALIZATION_H__
-#define __SERIALIZATION_H__
+#ifndef SERIALIZATION_H__
+#define SERIALIZATION_H__
 
 #include <algorithm>
 #include <istream>

@@ -1,5 +1,5 @@
-#ifndef __GIZMO_RENDERING_PASSES_H__
-#define __GIZMO_RENDERING_PASSES_H__
+#ifndef GIZMO_RENDERING_PASSES_H__
+#define GIZMO_RENDERING_PASSES_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

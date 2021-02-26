@@ -184,7 +184,7 @@ void PhysicsEngine::writeInternalComponentToJson(json::JSON &obj, World *world, 
         else
         { // dont think this is right. I think I need to do something like obj[componentId.toString()][label].append...
             value += "[";
-            for (int m = 0; m < materials.size(); m++)
+            for (size_t m = 0; m < materials.size(); m++)
             {
                 value += materials[m].toString();
                 if (m != materials.size() - 1)

@@ -1,5 +1,5 @@
-#ifndef __TRANSFORM_H__
-#define __TRANSFORM_H__
+#ifndef TRANSFORM_H__
+#define TRANSFORM_H__
 
 #include <vector>
 

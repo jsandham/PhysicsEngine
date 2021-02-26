@@ -1,5 +1,5 @@
-#ifndef __CLOSEST_DISTANCE_H__
-#define __CLOSEST_DISTANCE_H__
+#ifndef CLOSEST_DISTANCE_H__
+#define CLOSEST_DISTANCE_H__
 
 #include "Circle.h"
 #include "Ray.h"

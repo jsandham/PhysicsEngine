@@ -1,5 +1,5 @@
-#ifndef __COLOR_H__
-#define __COLOR_H__
+#ifndef COLOR_H__
+#define COLOR_H__
 
 #define GLM_FORCE_RADIANS
 

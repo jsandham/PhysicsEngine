@@ -1,5 +1,5 @@
-#ifndef __SHADER_PREPROCESSOR_H__
-#define __SHADER_PREPROCESSOR_H__
+#ifndef SHADER_PREPROCESSOR_H__
+#define SHADER_PREPROCESSOR_H__
 
 #include <string>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef __FRUSTUM_H__
-#define __FRUSTUM_H__
+#ifndef FRUSTUM_H__
+#define FRUSTUM_H__
 
 #define GLM_FORCE_RADIANS
 

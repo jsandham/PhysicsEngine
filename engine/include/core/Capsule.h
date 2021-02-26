@@ -1,5 +1,5 @@
-#ifndef __CAPSULE_H__
-#define __CAPSULE_H__
+#ifndef CAPSULE_H__
+#define CAPSULE_H__
 
 #include "../glm/glm.hpp"
 

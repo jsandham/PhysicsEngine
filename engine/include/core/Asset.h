@@ -1,5 +1,5 @@
-#ifndef __ASSET_H__
-#define __ASSET_H__
+#ifndef ASSET_H__
+#define ASSET_H__
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef __MESHCOLLIDER_H__
-#define __MESHCOLLIDER_H__
+#ifndef MESHCOLLIDER_H__
+#define MESHCOLLIDER_H__
 
 #include <vector>
 

@@ -1,5 +1,5 @@
-#ifndef __GIZMOSYSTEM_H__
-#define __GIZMOSYSTEM_H__
+#ifndef GIZMOSYSTEM_H__
+#define GIZMOSYSTEM_H__
 
 #include <vector>
 

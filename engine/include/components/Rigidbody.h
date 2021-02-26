@@ -1,5 +1,5 @@
-#ifndef __RIGIDBODY_H__
-#define __RIGIDBODY_H__
+#ifndef RIGIDBODY_H__
+#define RIGIDBODY_H__
 
 #include <vector>
 

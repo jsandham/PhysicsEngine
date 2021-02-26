@@ -1,5 +1,5 @@
-#ifndef __INPUT_H__
-#define __INPUT_H__
+#ifndef INPUT_H__
+#define INPUT_H__
 
 namespace PhysicsEngine
 {

@@ -1,5 +1,5 @@
-#ifndef __OBJ_LOAD_H__
-#define __OBJ_LOAD_H__
+#ifndef OBJ_LOAD_H__
+#define OBJ_LOAD_H__
 
 #include <vector>
 #include <string>
@@ -215,7 +215,7 @@ bool obj_load(const std::string& filepath, obj_mesh& mesh)
 		vn.resize(3 * (v.size() / 4), 0.0f); // v can have 4 components per vertex by the obj standard
 		f_vn.resize(f_v.size(), 0);
 
-		for (int i = 0; i < f_v.size(); i += 3) {
+		for (size_t i = 0; i < f_v.size(); i += 3) {
 			int f1 = f_v[i];
 			int f2 = f_v[i + 1];
 			int f3 = f_v[i + 2];
@@ -256,7 +256,7 @@ bool obj_load(const std::string& filepath, obj_mesh& mesh)
 			vn[3 * (f3 - 1) + 2] += c_z;
 		}
 
-		for (int i = 0; i < vn.size(); i += 3) {
+		for (size_t i = 0; i < vn.size(); i += 3) {
 			float v_x = vn[i];
 			float v_y = vn[i + 1];
 			float v_z = vn[i + 2];

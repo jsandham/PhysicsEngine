@@ -1,5 +1,5 @@
-#ifndef __SPHERECOLLIDER_H__
-#define __SPHERECOLLIDER_H__
+#ifndef SPHERECOLLIDER_H__
+#define SPHERECOLLIDER_H__
 
 #include <vector>
 

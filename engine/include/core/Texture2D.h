@@ -1,5 +1,5 @@
-#ifndef __TEXTURE2D_H__
-#define __TEXTURE2D_H__
+#ifndef TEXTURE2D_H__
+#define TEXTURE2D_H__
 
 #include <vector>
 

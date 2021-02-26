@@ -1,5 +1,5 @@
-#ifndef __MESHRENDERER_H__
-#define __MESHRENDERER_H__
+#ifndef MESHRENDERER_H__
+#define MESHRENDERER_H__
 
 #include <vector>
 

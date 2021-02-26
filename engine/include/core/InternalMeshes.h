@@ -1,5 +1,5 @@
-#ifndef __INTERNAL_MESHES_H__
-#define __INTERNAL_MESHES_H__
+#ifndef INTERNAL_MESHES_H__
+#define INTERNAL_MESHES_H__
 
 #include <vector>
 

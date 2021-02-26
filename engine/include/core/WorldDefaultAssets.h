@@ -1,5 +1,5 @@
-#ifndef __WORLD_DEFAULT_ASSETS_H__
-#define __WORLD_DEFAULT_ASSETS_H__
+#ifndef WORLD_DEFAULT_ASSETS_H__
+#define WORLD_DEFAULT_ASSETS_H__
 
 #include "Guid.h"
 

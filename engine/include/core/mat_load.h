@@ -1,5 +1,5 @@
-#ifndef __MATERIAL_LOADER_H__
-#define __MATERIAL_LOADER_H__
+#ifndef MATERIAL_LOADER_H__
+#define MATERIAL_LOADER_H__
 
 #include <fstream>
 #include <map>

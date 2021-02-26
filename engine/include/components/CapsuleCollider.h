@@ -1,5 +1,5 @@
-#ifndef __CAPSULECOLLIDER_H__
-#define __CAPSULECOLLIDER_H__
+#ifndef CAPSULECOLLIDER_H__
+#define CAPSULECOLLIDER_H__
 
 #include <vector>
 

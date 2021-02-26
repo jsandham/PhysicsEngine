@@ -1,5 +1,5 @@
-#ifndef __POOL_ALLOCATOR_H__
-#define __POOL_ALLOCATOR_H__
+#ifndef POOL_ALLOCATOR_H__
+#define POOL_ALLOCATOR_H__
 
 #define NOMINMAX
 
@@ -79,21 +79,21 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return t;
     }
 
-    size_t getCount() const
+    size_t getCount() const override
     {
         return count;
     }
 
-    size_t getCapacity() const
+    size_t getCapacity() const override
     {
         return T_per_page * pools.size();
     }
 
     T *get(size_t index) const
     {
-        if (index < 0 || index >= count)
+        if (index >= count)
         {
-            return NULL;
+            return nullptr;
         }
 
         size_t poolIndex = index / T_per_page;
@@ -102,17 +102,17 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
 
     T *getLast() const
     {
-        return get(count - 1);
+        return (count > 0) ? get(count - 1) : nullptr;
     }
 
     T *destruct(size_t index)
     {
-        if (index < 0 || index >= count)
+        if (index >= count)
         {
-            return NULL;
+            return nullptr;
         }
 
-        T *current = NULL;
+        T *current = nullptr;
         T *last = get(count - 1);
         if (index < count - 1)
         {

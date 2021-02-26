@@ -1,5 +1,5 @@
-#ifndef __DEBUGSYSTEM_H__
-#define __DEBUGSYSTEM_H__
+#ifndef DEBUGSYSTEM_H__
+#define DEBUGSYSTEM_H__
 
 #include <vector>
 

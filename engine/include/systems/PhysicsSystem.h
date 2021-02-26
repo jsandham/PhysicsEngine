@@ -1,5 +1,5 @@
-#ifndef __PHYSICSSYSTEM_H__
-#define __PHYSICSSYSTEM_H__
+#ifndef PHYSICSSYSTEM_H__
+#define PHYSICSSYSTEM_H__
 
 #include <vector>
 

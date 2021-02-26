@@ -1,5 +1,5 @@
-#ifndef __TEXTURE_H__
-#define __TEXTURE_H__
+#ifndef TEXTURE_H__
+#define TEXTURE_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

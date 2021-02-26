@@ -1,5 +1,5 @@
-#ifndef __FORWARD_RENDERING_PASSES_H__
-#define __FORWARD_RENDERING_PASSES_H__
+#ifndef FORWARD_RENDERING_PASSES_H__
+#define FORWARD_RENDERING_PASSES_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

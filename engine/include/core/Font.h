@@ -1,5 +1,5 @@
-#ifndef __FONT_H__
-#define __FONT_H__
+#ifndef FONT_H__
+#define FONT_H__
 
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef __BOXCOLLIDER_H__
-#define __BOXCOLLIDER_H__
+#ifndef BOXCOLLIDER_H__
+#define BOXCOLLIDER_H__
 
 #include <vector>
 

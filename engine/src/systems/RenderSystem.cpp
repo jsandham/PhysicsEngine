@@ -226,7 +226,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 RenderObject object;
                 object.transformId = transform->getId();
                 object.meshRendererId = meshRenderer->getId();
-                object.meshRendererIndex = i;
+                object.meshRendererIndex = (int)i;
                 object.materialIndex = materialIndex;
                 object.shaderIndex = shaderIndex;
                 object.model = model;

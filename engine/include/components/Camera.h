@@ -1,5 +1,5 @@
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#ifndef CAMERA_H__
+#define CAMERA_H__
 
 #include <unordered_map>
 #include <vector>

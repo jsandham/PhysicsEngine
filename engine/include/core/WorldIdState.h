@@ -1,5 +1,5 @@
-#ifndef __WORLD_ID_STATE_H__
-#define __WORLD_ID_STATE_H__
+#ifndef WORLD_ID_STATE_H__
+#define WORLD_ID_STATE_H__
 
 #include <unordered_map>
 

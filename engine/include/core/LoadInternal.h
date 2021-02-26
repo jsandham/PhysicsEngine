@@ -1,5 +1,5 @@
-#ifndef __LOADINTERNAL_H__
-#define __LOADINTERNAL_H__
+#ifndef LOADINTERNAL_H__
+#define LOADINTERNAL_H__
 
 #include <unordered_map>
 #include <vector>

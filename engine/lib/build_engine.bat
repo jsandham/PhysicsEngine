@@ -7,6 +7,7 @@ if not defined DevEnvDir (
 set GLEW="../include/glew-2.1.0"
 set FREETYPE="../include/freetype"
 set WARN=-W4 -wd4100 -wd4996 -wd4211
+::set WARN=-W4 -Wno-pessimizing-move -Wno-unused-parameter
 set OPENMP=
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 

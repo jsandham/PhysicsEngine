@@ -1,5 +1,5 @@
-#ifndef __PRIMITIVE_H__
-#define __PRIMITIVE_H__
+#ifndef PRIMITIVE_H__
+#define PRIMITIVE_H__
 
 namespace PhysicsEngine
 {

@@ -1,5 +1,5 @@
-#ifndef __LINERENDERER_H__
-#define __LINERENDERER_H__
+#ifndef LINERENDERER_H__
+#define LINERENDERER_H__
 
 #include <vector>
 

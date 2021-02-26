@@ -1,5 +1,5 @@
-#ifndef __WORLDMANAGER_H__
-#define __WORLDMANAGER_H__
+#ifndef WORLDMANAGER_H__
+#define WORLDMANAGER_H__
 
 #include <string>
 

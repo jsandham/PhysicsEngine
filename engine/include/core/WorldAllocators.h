@@ -1,5 +1,5 @@
-#ifndef __WORLD_ALLOCATORS_H__
-#define __WORLD_ALLOCATORS_H__
+#ifndef WORLD_ALLOCATORS_H__
+#define WORLD_ALLOCATORS_H__
 
 #include <unordered_map>
 

@@ -1,5 +1,5 @@
-#ifndef __OCTTREE_H__
-#define __OCTTREE_H__
+#ifndef OCTTREE_H__
+#define OCTTREE_H__
 
 #include <vector>
 

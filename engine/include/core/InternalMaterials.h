@@ -1,5 +1,5 @@
-#ifndef __INTERNAL_MATERIALS_H__
-#define __INTERNAL_MATERIALS_H__
+#ifndef INTERNAL_MATERIALS_H__
+#define INTERNAL_MATERIALS_H__
 
 #include <string>
 

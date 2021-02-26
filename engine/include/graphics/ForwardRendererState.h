@@ -1,5 +1,5 @@
-#ifndef __FORWARD_RENDERER_STATE_H__
-#define __FORWARD_RENDERER_STATE_H__
+#ifndef FORWARD_RENDERER_STATE_H__
+#define FORWARD_RENDERER_STATE_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

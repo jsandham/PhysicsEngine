@@ -1,5 +1,5 @@
-#ifndef __TRIANGLE_H__
-#define __TRIANGLE_H__
+#ifndef TRIANGLE_H__
+#define TRIANGLE_H__
 
 #include "../glm/glm.hpp"
 

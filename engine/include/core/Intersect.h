@@ -1,5 +1,5 @@
-#ifndef __INTERSECT_H__
-#define __INTERSECT_H__
+#ifndef INTERSECT_H__
+#define INTERSECT_H__
 
 #include "AABB.h"
 #include "Capsule.h"

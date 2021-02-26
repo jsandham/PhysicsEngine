@@ -1,5 +1,5 @@
-#ifndef __RENDEROBJECT_H__
-#define __RENDEROBJECT_H__
+#ifndef RENDEROBJECT_H__
+#define RENDEROBJECT_H__
 
 #define GLM_FORCE_RADIANS
 

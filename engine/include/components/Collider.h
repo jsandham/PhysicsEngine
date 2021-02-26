@@ -1,5 +1,5 @@
-#ifndef __COLLIDER_H__
-#define __COLLIDER_H__
+#ifndef COLLIDER_H__
+#define COLLIDER_H__
 
 #include "Component.h"
 

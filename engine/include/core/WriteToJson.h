@@ -1,5 +1,5 @@
-#ifndef __WRITETOJSON_H__
-#define __WRITETOJSON_H__
+#ifndef WRITETOJSON_H__
+#define WRITETOJSON_H__
 
 #include <string>
 

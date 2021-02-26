@@ -1,5 +1,5 @@
-#ifndef __FORWARDRENDERER_H__
-#define __FORWARDRENDERER_H__
+#ifndef FORWARDRENDERER_H__
+#define FORWARDRENDERER_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

@@ -1,5 +1,5 @@
-#ifndef __POLYNOMIAL_ROOTS_H__
-#define __POLYNOMIAL_ROOTS_H__
+#ifndef POLYNOMIAL_ROOTS_H__
+#define POLYNOMIAL_ROOTS_H__
 
 #include <vector>
 

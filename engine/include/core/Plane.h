@@ -1,5 +1,5 @@
-#ifndef __PLANE_H__
-#define __PLANE_H__
+#ifndef PLANE_H__
+#define PLANE_H__
 
 #define GLM_FORCE_RADIANS
 

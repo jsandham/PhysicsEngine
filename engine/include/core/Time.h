@@ -1,5 +1,5 @@
-#ifndef __TIME_H__
-#define __TIME_H__
+#ifndef TIME_H__
+#define TIME_H__
 
 namespace PhysicsEngine
 {

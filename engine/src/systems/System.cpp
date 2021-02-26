@@ -5,12 +5,12 @@ using namespace PhysicsEngine;
 
 System::System() : Object()
 {
-    mOrder = -1;
+    mOrder = 0;
 }
 
 System::System(Guid id) : Object(id)
 {
-    mOrder = -1;
+    mOrder = 0;
 }
 
 System::~System()
@@ -21,17 +21,17 @@ void System::serialize(std::ostream &out) const
 {
     Object::serialize(out);
 
-    PhysicsEngine::write<int>(out, mOrder);
+    PhysicsEngine::write<size_t>(out, mOrder);
 }
 
 void System::deserialize(std::istream &in)
 {
     Object::deserialize(in);
 
-    PhysicsEngine::read<int>(in, mOrder);
+    PhysicsEngine::read<size_t>(in, mOrder);
 }
 
-int System::getOrder() const
+size_t System::getOrder() const
 {
     return mOrder;
 }

@@ -1,5 +1,5 @@
-#ifndef __DEFERREDRENDERER_H__
-#define __DEFERREDRENDERER_H__
+#ifndef DEFERREDRENDERER_H__
+#define DEFERREDRENDERER_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

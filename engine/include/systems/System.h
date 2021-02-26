@@ -1,5 +1,5 @@
-#ifndef __SYSTEM_H__
-#define __SYSTEM_H__
+#ifndef SYSTEM_H__
+#define SYSTEM_H__
 
 #include <vector>
 
@@ -16,7 +16,7 @@ class World;
 class System : public Object
 {
   protected:
-    int mOrder;
+    size_t mOrder;
 
     World *mWorld;
 
@@ -31,7 +31,7 @@ class System : public Object
     virtual void init(World *world) = 0;
     virtual void update(const Input &input, const Time &time) = 0;
 
-    int getOrder() const;
+    size_t getOrder() const;
 
     static bool isInternal(int type);
 

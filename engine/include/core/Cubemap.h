@@ -1,5 +1,5 @@
-#ifndef __CUBEMAP_H__
-#define __CUBEMAP_H__
+#ifndef CUBEMAP_H__
+#define CUBEMAP_H__
 
 #include <vector>
 
@@ -28,7 +28,6 @@ class Cubemap : public Texture
     Cubemap(Guid id);
     Cubemap(int width);
     Cubemap(int width, TextureFormat format);
-    Cubemap(int width, int height, TextureFormat format);
     ~Cubemap();
 
     virtual void serialize(std::ostream &out) const override;

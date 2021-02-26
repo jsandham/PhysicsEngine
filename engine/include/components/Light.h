@@ -1,5 +1,5 @@
-#ifndef __LIGHT_H__
-#define __LIGHT_H__
+#ifndef LIGHT_H__
+#define LIGHT_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

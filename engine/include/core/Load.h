@@ -1,5 +1,5 @@
-#ifndef __LOAD_H__
-#define __LOAD_H__
+#ifndef LOAD_H__
+#define LOAD_H__
 
 #include <unordered_map>
 #include <vector>

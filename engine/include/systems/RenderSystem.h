@@ -1,5 +1,5 @@
-#ifndef __RENDERSYSTEM_H__
-#define __RENDERSYSTEM_H__
+#ifndef RENDERSYSTEM_H__
+#define RENDERSYSTEM_H__
 
 #include <vector>
 

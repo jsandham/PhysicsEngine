@@ -1,5 +1,5 @@
-#ifndef __CIRCLE_H__
-#define __CIRCLE_H__
+#ifndef CIRCLE_H__
+#define CIRCLE_H__
 
 #include "../glm/glm.hpp"
 #include "../glm/gtc/constants.hpp"

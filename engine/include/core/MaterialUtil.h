@@ -1,5 +1,5 @@
-#ifndef __MATERIAL_UTIL_H__
-#define __MATERIAL_UTIL_H__
+#ifndef MATERIAL_UTIL_H__
+#define MATERIAL_UTIL_H__
 
 #include "Material.h"
 #include "World.h"

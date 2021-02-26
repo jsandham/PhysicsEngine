@@ -1,5 +1,5 @@
-#ifndef __GIZMO_RENDERER_STATE_H__
-#define __GIZMO_RENDERER_STATE_H__
+#ifndef GIZMO_RENDERER_STATE_H__
+#define GIZMO_RENDERER_STATE_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

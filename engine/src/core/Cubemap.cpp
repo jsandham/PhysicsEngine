@@ -69,23 +69,6 @@ Cubemap::Cubemap(int width, TextureFormat format) : Texture()
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
 
-Cubemap::Cubemap(int width, int height, TextureFormat format) : Texture()
-{
-    mDimension = TextureDimension::Cube;
-
-    mWidth = width;
-    mFormat = format;
-    mWrapMode = TextureWrapMode::Repeat;
-    mFilterMode = TextureFilterMode::Trilinear;
-
-    mNumChannels = calcNumChannels(format);
-    mAnisoLevel = 1;
-    mCreated = false;
-    mUpdateRequired = false;
-
-    mRawTextureData.resize(6 * width * width * mNumChannels);
-}
-
 Cubemap::~Cubemap()
 {
 }
@@ -154,9 +137,14 @@ std::vector<Color32> Cubemap::getPixels(CubemapFace face) const
 
 Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
 {
-    int index = (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
+    // clamp x and y
+    x = std::max(0, std::min(mWidth, x));
+    y = std::max(0, std::min(mWidth, y));
 
-    if (index + mNumChannels >= mRawTextureData.size())
+    int index = static_cast<int>(face) * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
+
+    int size = static_cast<int>(mRawTextureData.size());
+    if (index + mNumChannels >= size)
     {
         Log::error("Cubemap: pixel index out of range\n");
     }
@@ -189,7 +177,8 @@ Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
 
 void Cubemap::setRawCubemapData(const std::vector<unsigned char> &data)
 {
-    if (6 * mWidth * mWidth * mNumChannels != data.size())
+    int size = static_cast<int>(mRawTextureData.size());
+    if (6 * mWidth * mWidth * mNumChannels != size)
     {
         Log::error("Cubemap: Raw texture data does not match size of cubemap\n");
         return;
@@ -204,9 +193,14 @@ void Cubemap::setPixels(CubemapFace face, int x, int y, const Color32 &color)
 
 void Cubemap::setPixel(CubemapFace face, int x, int y, const Color32 &color)
 {
-    int index = (int)face * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
+    // clamp x and y
+    x = std::max(0, std::min(mWidth, x));
+    y = std::max(0, std::min(mWidth, y));
 
-    if (index + mNumChannels >= mRawTextureData.size())
+    int index = static_cast<int>(face) * mWidth * mWidth * mNumChannels + mNumChannels * (x + mWidth * y);
+
+    int size = static_cast<int>(mRawTextureData.size());
+    if (index + mNumChannels >= size)
     {
         Log::error("Cubemap: pixel index out of range\n");
         return;

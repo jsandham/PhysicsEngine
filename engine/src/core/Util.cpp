@@ -4,20 +4,17 @@
 
 using namespace PhysicsEngine;
 
-bool Util::writeToBMP(const std::string &filepath, std::vector<unsigned char> &data, int width, int height,
+bool Util::writeToBMP(const std::string &filepath, const std::vector<unsigned char> &data, int width, int height,
                       int numChannels)
 {
     if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4)
     {
-        std::cout << "TextureLoader: Number of channels must be 1, 2, 3, or 4 where each channel is 8 bits"
-                  << std::endl;
         return false;
     }
 
-    if (data.size() != width * height * numChannels)
+    int size = static_cast<int>(data.size());
+    if (size != width * height * numChannels)
     {
-        std::cout << data.size() << " " << width << " " << height << " " << numChannels << std::endl;
-        std::cout << "TextureLoader: Data does not match width, height, and number of channels given" << std::endl;
         return false;
     }
 
@@ -59,7 +56,6 @@ bool Util::writeToBMP(const std::string &filepath, std::vector<unsigned char> &d
     header.colorsUsed = 0;
     header.colorsImportant = 0;
 
-    /*FILE *file = fopen(filepath.c_str(), "wb");*/
     FILE *file;
     fopen_s(&file, filepath.c_str(), "wb");
     if (file)
@@ -70,28 +66,22 @@ bool Util::writeToBMP(const std::string &filepath, std::vector<unsigned char> &d
     }
     else
     {
-        std::cout << "TextureLoader: Failed to open file " << filepath << " for writing" << std::endl;
         return false;
     }
-
-    std::cout << "TextureLoader: Screen capture successful" << std::endl;
 
     return true;
 }
 
-bool Util::writeToBMP(const std::string &filepath, std::vector<float> &data, int width, int height, int numChannels)
+bool Util::writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height, int numChannels)
 {
     if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4)
     {
-        std::cout << "TextureLoader: Number of channels must be 1, 2, 3, or 4 where each channel is 8 bits"
-                  << std::endl;
         return false;
     }
 
-    if (data.size() != width * height * numChannels)
+    int size = static_cast<int>(data.size());
+    if (size != width * height * numChannels)
     {
-        std::cout << data.size() << " " << width << " " << height << " " << numChannels << std::endl;
-        std::cout << "TextureLoader: Data does not match width, height, and number of channels given" << std::endl;
         return false;
     }
 
@@ -144,11 +134,8 @@ bool Util::writeToBMP(const std::string &filepath, std::vector<float> &data, int
     }
     else
     {
-        std::cout << "TextureLoader: Failed to open file " << filepath << " for writing" << std::endl;
         return false;
     }
-
-    std::cout << "TextureLoader: Screen capture successful" << std::endl;
 
     return true;
 }

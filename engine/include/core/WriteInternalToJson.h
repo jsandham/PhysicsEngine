@@ -1,5 +1,5 @@
-#ifndef __WRITEINTERNALTOJSON_H__
-#define __WRITEINTERNALTOJSON_H__
+#ifndef WRITEINTERNALTOJSON_H__
+#define WRITEINTERNALTOJSON_H__
 
 #include <string>
 

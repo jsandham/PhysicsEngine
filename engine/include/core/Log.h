@@ -1,5 +1,5 @@
-#ifndef __LOG_H__
-#define __LOG_H__
+#ifndef LOG_H__
+#define LOG_H__
 
 #include <cstdarg>
 #include <queue>

@@ -1,5 +1,5 @@
-#ifndef __INTERNAL_SHADERS_H__
-#define __INTERNAL_SHADERS_H__
+#ifndef INTERNAL_SHADERS_H__
+#define INTERNAL_SHADERS_H__
 
 #include <string>
 

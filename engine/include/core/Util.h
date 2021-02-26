@@ -1,5 +1,5 @@
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#ifndef UTIL_H__
+#define UTIL_H__
 
 #include <string>
 #include <vector>
@@ -28,29 +28,29 @@ struct BMPHeader
 };
 #pragma pack(pop)
 
-template <typename T, typename U, typename V> struct triple
-{
-    T first;
-    U second;
-    V third;
-};
-
-template <typename T, typename U, typename V> triple<T, U, V> make_triple(T first, U second, V third)
-{
-    triple<T, U, V> triple;
-    triple.first = first;
-    triple.second = second;
-    triple.third = third;
-
-    return triple;
-}
+//template <typename T, typename U, typename V> struct triple
+//{
+//    T first;
+//    U second;
+//    V third;
+//};
+//
+//template <typename T, typename U, typename V> triple<T, U, V> make_triple(T first, U second, V third)
+//{
+//    triple<T, U, V> triple;
+//    triple.first = first;
+//    triple.second = second;
+//    triple.third = third;
+//
+//    return triple;
+//}
 
 class Util
 {
   public:
-    static bool writeToBMP(const std::string &filepath, std::vector<unsigned char> &data, int width, int height,
+    static bool writeToBMP(const std::string &filepath, const std::vector<unsigned char> &data, int width, int height,
                            int numChannels);
-    static bool writeToBMP(const std::string &filepath, std::vector<float> &data, int width, int height,
+    static bool writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height,
                            int numChannels);
 };
 } // namespace PhysicsEngine

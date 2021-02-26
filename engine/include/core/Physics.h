@@ -1,5 +1,5 @@
-#ifndef __PHYSICS_H__
-#define __PHYSICS_H__
+#ifndef PHYSICS_H__
+#define PHYSICS_H__
 
 #define GLM_FORCE_RADIANS
 

@@ -1,5 +1,5 @@
-#ifndef __SHADER_LOADER_H__
-#define __SHADER_LOADER_H__
+#ifndef SHADER_LOADER_H__
+#define SHADER_LOADER_H__
 
 #include <fstream>
 #include <sstream>

@@ -1,5 +1,5 @@
-#ifndef __LINE_H__
-#define __LINE_H__
+#ifndef LINE_H__
+#define LINE_H__
 
 #include "../glm/glm.hpp"
 

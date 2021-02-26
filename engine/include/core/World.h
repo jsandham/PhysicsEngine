@@ -1,5 +1,5 @@
-#ifndef __WORLD_H__
-#define __WORLD_H__
+#ifndef WORLD_H__
+#define WORLD_H__
 
 #include <assert.h>
 #include <string>
@@ -130,7 +130,7 @@ class World
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), in);
     }
 
-    template <typename T> T *addSystem(int order)
+    template <typename T> T *addSystem(size_t order)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -141,7 +141,7 @@ class World
     Entity *getEntityById(const Guid &entityId);
     System *getSystemByUpdateOrder(size_t order);
 
-    template <typename T> T *getSystemByIndex(int index)
+    template <typename T> T *getSystemByIndex(size_t index)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -155,7 +155,7 @@ class World
         return getSystemById_impl<T>(getSystemAllocator_impl<T>(), systemId);
     }
 
-    template <typename T> T *getAssetByIndex(int index)
+    template <typename T> T *getAssetByIndex(size_t index)
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
@@ -169,7 +169,7 @@ class World
         return getAssetById_impl<T>(getAssetAllocator_impl<T>(), assetId);
     }
 
-    template <typename T> T *getComponentByIndex(int index)
+    template <typename T> T *getComponentByIndex(size_t index)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -507,52 +507,52 @@ class World
         return addComponent_impl(&mAllocators.mMeshColliderAllocator, in);
     }
 
-    template <> RenderSystem *addSystem<RenderSystem>(int order)
+    template <> RenderSystem *addSystem<RenderSystem>(size_t order)
     {
         return addSystem_impl(&mAllocators.mRenderSystemAllocator, order);
     }
 
-    template <> PhysicsSystem *addSystem<PhysicsSystem>(int order)
+    template <> PhysicsSystem *addSystem<PhysicsSystem>(size_t order)
     {
         return addSystem_impl(&mAllocators.mPhysicsSystemAllocator, order);
     }
 
-    template <> CleanUpSystem *addSystem<CleanUpSystem>(int order)
+    template <> CleanUpSystem *addSystem<CleanUpSystem>(size_t order)
     {
         return addSystem_impl(&mAllocators.mCleanupSystemAllocator, order);
     }
 
-    template <> DebugSystem *addSystem<DebugSystem>(int order)
+    template <> DebugSystem *addSystem<DebugSystem>(size_t order)
     {
         return addSystem_impl(&mAllocators.mDebugSystemAllocator, order);
     }
 
-    template <> GizmoSystem *addSystem<GizmoSystem>(int order)
+    template <> GizmoSystem *addSystem<GizmoSystem>(size_t order)
     {
         return addSystem_impl(&mAllocators.mGizmoSystemAllocator, order);
     }
 
-    template <> RenderSystem *getSystemByIndex<RenderSystem>(int index)
+    template <> RenderSystem *getSystemByIndex<RenderSystem>(size_t index)
     {
         return getSystemByIndex_impl(&mAllocators.mRenderSystemAllocator, index);
     }
 
-    template <> PhysicsSystem *getSystemByIndex<PhysicsSystem>(int index)
+    template <> PhysicsSystem *getSystemByIndex<PhysicsSystem>(size_t index)
     {
         return getSystemByIndex_impl(&mAllocators.mPhysicsSystemAllocator, index);
     }
 
-    template <> CleanUpSystem *getSystemByIndex<CleanUpSystem>(int index)
+    template <> CleanUpSystem *getSystemByIndex<CleanUpSystem>(size_t index)
     {
         return getSystemByIndex_impl(&mAllocators.mCleanupSystemAllocator, index);
     }
 
-    template <> DebugSystem *getSystemByIndex<DebugSystem>(int index)
+    template <> DebugSystem *getSystemByIndex<DebugSystem>(size_t index)
     {
         return getSystemByIndex_impl(&mAllocators.mDebugSystemAllocator, index);
     }
 
-    template <> GizmoSystem *getSystemByIndex<GizmoSystem>(int index)
+    template <> GizmoSystem *getSystemByIndex<GizmoSystem>(size_t index)
     {
         return getSystemByIndex_impl(&mAllocators.mGizmoSystemAllocator, index);
     }
@@ -582,37 +582,37 @@ class World
         return getSystemById_impl(&mAllocators.mGizmoSystemAllocator, systemId);
     }
 
-    template <> Mesh *getAssetByIndex<Mesh>(int index)
+    template <> Mesh *getAssetByIndex<Mesh>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mMeshAllocator, index);
     }
 
-    template <> Material *getAssetByIndex<Material>(int index)
+    template <> Material *getAssetByIndex<Material>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mMaterialAllocator, index);
     }
 
-    template <> Shader *getAssetByIndex<Shader>(int index)
+    template <> Shader *getAssetByIndex<Shader>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mShaderAllocator, index);
     }
 
-    template <> Texture2D *getAssetByIndex<Texture2D>(int index)
+    template <> Texture2D *getAssetByIndex<Texture2D>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mTexture2DAllocator, index);
     }
 
-    template <> Texture3D *getAssetByIndex<Texture3D>(int index)
+    template <> Texture3D *getAssetByIndex<Texture3D>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mTexture3DAllocator, index);
     }
 
-    template <> Cubemap *getAssetByIndex<Cubemap>(int index)
+    template <> Cubemap *getAssetByIndex<Cubemap>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mCubemapAllocator, index);
     }
 
-    template <> Font *getAssetByIndex<Font>(int index)
+    template <> Font *getAssetByIndex<Font>(size_t index)
     {
         return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
     }
@@ -652,52 +652,52 @@ class World
         return getAssetById_impl(&mAllocators.mFontAllocator, assetId);
     }
 
-    template <> Transform *getComponentByIndex<Transform>(int index)
+    template <> Transform *getComponentByIndex<Transform>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mTransformAllocator, index);
     }
 
-    template <> MeshRenderer *getComponentByIndex<MeshRenderer>(int index)
+    template <> MeshRenderer *getComponentByIndex<MeshRenderer>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mMeshRendererAllocator, index);
     }
 
-    template <> LineRenderer *getComponentByIndex<LineRenderer>(int index)
+    template <> LineRenderer *getComponentByIndex<LineRenderer>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mLineRendererAllocator, index);
     }
 
-    template <> Rigidbody *getComponentByIndex<Rigidbody>(int index)
+    template <> Rigidbody *getComponentByIndex<Rigidbody>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mRigidbodyAllocator, index);
     }
 
-    template <> Camera *getComponentByIndex<Camera>(int index)
+    template <> Camera *getComponentByIndex<Camera>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mCameraAllocator, index);
     }
 
-    template <> Light *getComponentByIndex<Light>(int index)
+    template <> Light *getComponentByIndex<Light>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mLightAllocator, index);
     }
 
-    template <> SphereCollider *getComponentByIndex<SphereCollider>(int index)
+    template <> SphereCollider *getComponentByIndex<SphereCollider>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mSphereColliderAllocator, index);
     }
 
-    template <> BoxCollider *getComponentByIndex<BoxCollider>(int index)
+    template <> BoxCollider *getComponentByIndex<BoxCollider>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mBoxColliderAllocator, index);
     }
 
-    template <> CapsuleCollider *getComponentByIndex<CapsuleCollider>(int index)
+    template <> CapsuleCollider *getComponentByIndex<CapsuleCollider>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mCapsuleColliderAllocator, index);
     }
 
-    template <> MeshCollider *getComponentByIndex<MeshCollider>(int index)
+    template <> MeshCollider *getComponentByIndex<MeshCollider>(size_t index)
     {
         return getComponentByIndex_impl(&mAllocators.mMeshColliderAllocator, index);
     }
@@ -970,7 +970,7 @@ class World
         return component;
     }
 
-    template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, int order)
+    template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, size_t order)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -1000,7 +1000,7 @@ class World
         return system;
     }
 
-    template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, int index)
+    template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -1019,7 +1019,7 @@ class World
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, systemId);
     }
 
-    template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, int index)
+    template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
@@ -1038,7 +1038,7 @@ class World
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, assetId);
     }
 
-    template <typename T> T *getComponentByIndex_impl(const PoolAllocator<T> *allocator, int index)
+    template <typename T> T *getComponentByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 

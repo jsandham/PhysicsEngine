@@ -1,5 +1,5 @@
-#ifndef __TYPES_H__
-#define __TYPES_H__
+#ifndef TYPES_H__
+#define TYPES_H__
 
 namespace PhysicsEngine
 {

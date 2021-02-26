@@ -1,5 +1,5 @@
-#ifndef __RAY_H__
-#define __RAY_H__
+#ifndef RAY_H__
+#define RAY_H__
 
 #include "../glm/glm.hpp"
 

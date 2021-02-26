@@ -1,5 +1,5 @@
-#ifndef __GUID_H__
-#define __GUID_H__
+#ifndef GUID_H__
+#define GUID_H__
 
 #include <ostream>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef __AABB_H__
-#define __AABB_H__
+#ifndef AABB_H__
+#define AABB_H__
 
 #include "../glm/glm.hpp"
 

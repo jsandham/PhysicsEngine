@@ -1,5 +1,5 @@
-#ifndef __WORLD_SERIALIZATION_H__
-#define __WORLD_SERIALIZATION_H__
+#ifndef WORLD_SERIALIZATION_H__
+#define WORLD_SERIALIZATION_H__
 
 #include "Guid.h"
 

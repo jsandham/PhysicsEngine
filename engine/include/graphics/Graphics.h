@@ -1,5 +1,5 @@
-#ifndef __GRAPHICS_H__
-#define __GRAPHICS_H__
+#ifndef GRAPHICS_H__
+#define GRAPHICS_H__
 
 #include "../glm/glm.hpp"
 

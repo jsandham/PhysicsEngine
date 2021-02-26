@@ -1,5 +1,5 @@
-#ifndef __MATERIAL_H__
-#define __MATERIAL_H__
+#ifndef MATERIAL_H__
+#define MATERIAL_H__
 
 #include "Asset.h"
 #include "Guid.h"

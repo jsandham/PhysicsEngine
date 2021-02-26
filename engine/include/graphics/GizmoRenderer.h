@@ -1,5 +1,5 @@
-#ifndef __GIZMORENDERER_H__
-#define __GIZMORENDERER_H__
+#ifndef GIZMORENDERER_H__
+#define GIZMORENDERER_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>

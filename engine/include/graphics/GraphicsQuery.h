@@ -1,5 +1,5 @@
-#ifndef __GRAPHICSQUERY_H__
-#define __GRAPHICSQUERY_H__
+#ifndef GRAPHICSQUERY_H__
+#define GRAPHICSQUERY_H__
 
 #include <GL/glew.h>
 #include <gl/gl.h>
