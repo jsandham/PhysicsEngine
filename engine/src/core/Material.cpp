@@ -56,6 +56,24 @@ void Material::deserialize(std::istream &in)
     mShaderChanged = true;
 }
 
+void Material::serialize(YAML::Node& out) const
+{
+    Asset::serialize(out);
+
+    out["shaderId"] = mShaderId;
+    out["renderQueue"] = mRenderQueue;
+}
+
+void Material::deserialize(const YAML::Node& in)
+{
+    Asset::deserialize(in);
+
+    mShaderId = in["shaderId"].as<Guid>();
+    mRenderQueue = in["renderQueue"].as<RenderQueue>();
+
+    mShaderChanged = true;
+}
+
 void Material::load(const std::string &filepath)
 {
     material_data mat;

@@ -3,6 +3,7 @@
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/stb_image/stb_image.h"
+#include "../../include/stb_image/stb_image_write.h"
 
 using namespace PhysicsEngine;
 
@@ -95,6 +96,22 @@ void Texture2D::deserialize(std::istream &in)
     PhysicsEngine::read<int>(in, mHeight);
 }
 
+void Texture2D::serialize(YAML::Node& out) const
+{
+    Texture::serialize(out);
+
+    out["width"] = mWidth;
+    out["height"] = mHeight;
+}
+
+void Texture2D::deserialize(const YAML::Node& in)
+{
+    Texture::deserialize(in);
+
+    mWidth = in["width"].as<int>();
+    mHeight = in["height"].as<int>();
+}
+
 void Texture2D::load(const std::string &filepath)
 {
     stbi_set_flip_vertically_on_load(true);
@@ -142,6 +159,36 @@ void Texture2D::load(const std::string &filepath)
     {
         std::string message = "Error: stbi_load failed to load texture " + filepath +
                               " with reported reason: " + stbi_failure_reason() + "\n";
+        Log::error(message.c_str());
+        return;
+    }
+}
+
+void Texture2D::writeToPNG(const std::string& filepath) const
+{
+    int success = stbi_write_png(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), mWidth);
+    if (!success) {
+        std::string message = "Error: stbi_write_png failed to write texture " + filepath + "\n";
+        Log::error(message.c_str());
+        return;
+    }
+}
+
+void Texture2D::writeToJPG(const std::string& filepath) const
+{
+    int success = stbi_write_jpg(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), 100);
+    if (!success) {
+        std::string message = "Error: stbi_write_jpg failed to write texture " + filepath + "\n";
+        Log::error(message.c_str());
+        return;
+    }
+}
+
+void Texture2D::writeToBMP(const std::string& filepath) const
+{
+    int success = stbi_write_bmp(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data());
+    if (!success) {
+        std::string message = "Error: stbi_write_bmp failed to write texture " + filepath + "\n";
         Log::error(message.c_str());
         return;
     }

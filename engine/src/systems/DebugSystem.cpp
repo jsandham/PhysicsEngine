@@ -39,6 +39,16 @@ void DebugSystem::deserialize(std::istream &in)
     System::deserialize(in);
 }
 
+void DebugSystem::serialize(YAML::Node& out) const
+{
+    System::serialize(out);
+}
+
+void DebugSystem::deserialize(const YAML::Node& in)
+{
+    System::deserialize(in);
+}
+
 void DebugSystem::init(World *world)
 {
     mWorld = world;

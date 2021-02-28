@@ -30,6 +30,18 @@ void Asset::deserialize(std::istream &in)
     PhysicsEngine::read<std::string>(in, mName);
 }
 
+void Asset::serialize(YAML::Node& out) const
+{
+    Object::serialize(out);
+    out["name"] = mName;
+}
+
+void Asset::deserialize(const YAML::Node& in)
+{
+    Object::deserialize(in);
+    mName = in["name"].as<std::string>();
+}
+
 std::string Asset::getName() const
 {
     return mName;

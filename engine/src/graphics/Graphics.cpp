@@ -100,16 +100,16 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
 
     switch (format)
     {
-    case Depth:
+    case TextureFormat::Depth:
         openglFormat = GL_DEPTH_COMPONENT;
         break;
-    case RG:
+    case TextureFormat::RG:
         openglFormat = GL_RG;
         break;
-    case RGB:
+    case TextureFormat::RGB:
         openglFormat = GL_RGB;
         break;
-    case RGBA:
+    case TextureFormat::RGBA:
         openglFormat = GL_RGBA;
         break;
     default:
@@ -126,10 +126,10 @@ GLint Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
 
     switch (wrapMode)
     {
-    case Repeat:
+    case TextureWrapMode::Repeat:
         openglWrapMode = GL_REPEAT;
         break;
-    case Clamp:
+    case TextureWrapMode::Clamp:
         openglWrapMode = GL_CLAMP_TO_EDGE;
         break;
     default:
@@ -146,13 +146,13 @@ GLint Graphics::getTextureFilterMode(TextureFilterMode filterMode)
 
     switch (filterMode)
     {
-    case Nearest:
+    case TextureFilterMode::Nearest:
         openglFilterMode = GL_NEAREST;
         break;
-    case Bilinear:
+    case TextureFilterMode::Bilinear:
         openglFilterMode = GL_LINEAR;
         break;
-    case Trilinear:
+    case TextureFilterMode::Trilinear:
         openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
         break;
     default:

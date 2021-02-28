@@ -31,6 +31,20 @@ void CapsuleCollider::deserialize(std::istream &in)
     PhysicsEngine::read(in, mCapsule);
 }
 
+void CapsuleCollider::serialize(YAML::Node& out) const
+{
+    Collider::serialize(out);
+
+    out["capsule"] = mCapsule;
+}
+
+void CapsuleCollider::deserialize(const YAML::Node& in)
+{
+    Collider::deserialize(in);
+
+    mCapsule = in["capsule"].as<Capsule>();
+}
+
 bool CapsuleCollider::intersect(AABB aabb) const
 {
     return Intersect::intersect(aabb, mCapsule);

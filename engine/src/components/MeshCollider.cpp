@@ -33,6 +33,20 @@ void MeshCollider::deserialize(std::istream &in)
     PhysicsEngine::read(in, mMeshId);
 }
 
+void MeshCollider::serialize(YAML::Node& out) const
+{
+    Collider::serialize(out);
+
+    out["meshId"] = mMeshId;
+}
+
+void MeshCollider::deserialize(const YAML::Node& in)
+{
+    Collider::deserialize(in);
+
+    mMeshId = in["meshId"].as<Guid>();
+}
+
 bool MeshCollider::intersect(AABB aabb) const
 {
     return false;

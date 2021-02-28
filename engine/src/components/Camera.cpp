@@ -153,6 +153,40 @@ void Camera::deserialize(std::istream &in)
     mIsViewportChanged = true;
 }
 
+void Camera::serialize(YAML::Node& out) const
+{
+    Component::serialize(out);
+
+    out["targetTextureId"] = mTargetTextureId;
+    out["renderPath"] = mRenderPath;
+    out["cameraMode"] = mMode;
+    out["cameraSSAO"] = mSSAO;
+    out["cameraGizmos"] = mGizmos;
+    out["viewport"] = mViewport;
+    out["frustum"] = mFrustum;
+    out["backgroundColor"] = mBackgroundColor;
+}
+
+void Camera::deserialize(const YAML::Node& in)
+{
+    Component::deserialize(in);
+
+    mTargetTextureId = in["targetTextureId"].as<Guid>();
+    mRenderPath = in["renderPath"].as<RenderPath>();
+    mMode = in["cameraMode"].as<CameraMode>();
+    mSSAO = in["cameraSSAO"].as<CameraSSAO>();
+    mGizmos = in["cameraGizmos"].as<CameraGizmos>();
+    mViewport = in["viewport"].as<Viewport>();
+    mFrustum = in["frustum"].as<Frustum>();
+    mBackgroundColor = in["backgroundColor"].as<Color>();
+
+    mProjMatrix =
+        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+
+    mIsViewportChanged = true;
+}
+
+
 bool Camera::isCreated() const
 {
     return mIsCreated;

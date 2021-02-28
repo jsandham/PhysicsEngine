@@ -17,7 +17,7 @@
 
 namespace PhysicsEngine
 {
-enum RenderQueue
+enum class RenderQueue
 {
     Opaque = 0,
     Transparent = 1
@@ -88,6 +88,8 @@ class Shader : public Asset
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
 
     void load(const std::string &filepath);
     void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);

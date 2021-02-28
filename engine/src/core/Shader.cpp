@@ -69,6 +69,16 @@ void Shader::deserialize(std::istream &in)
     PhysicsEngine::read<char>(in, &mFragmentShader[0], fragShaderSize);
 }
 
+void Shader::serialize(YAML::Node& out) const
+{
+    Asset::serialize(out);
+}
+
+void Shader::deserialize(const YAML::Node& in)
+{
+    Asset::deserialize(in);
+}
+
 void Shader::load(const std::string &filepath)
 {
     shader_data data;

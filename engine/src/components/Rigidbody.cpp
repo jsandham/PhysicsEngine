@@ -65,3 +65,29 @@ void Rigidbody::deserialize(std::istream &in)
     PhysicsEngine::read<glm::vec3>(in, mCentreOfMass);
     PhysicsEngine::read<glm::mat3>(in, mInertiaTensor);
 }
+
+void Rigidbody::serialize(YAML::Node& out) const
+{
+    Component::serialize(out);
+
+    out["useGravity"] = mUseGravity;
+    out["mass"] = mMass;
+    out["drag"] = mDrag;
+    out["angularDrag"] = mAngularDrag;
+    out["velocity"] = mVelocity;
+    out["angularVelocity"] = mAngularVelocity;
+    out["centreOfMass"] = mCentreOfMass;
+}
+
+void Rigidbody::deserialize(const YAML::Node& in)
+{
+    Component::deserialize(in);
+
+    mUseGravity = in["useGravity"].as<bool>();
+    mMass = in["mass"].as<float>();
+    mDrag = in["drag"].as<float>();
+    mAngularDrag = in["angularDrag"].as<float>();
+    mVelocity = in["velocity"].as<glm::vec3>();
+    mAngularVelocity = in["angularVelocity"].as<glm::vec3>();
+    mCentreOfMass = in["centreOfMass"].as<glm::vec3>();
+}

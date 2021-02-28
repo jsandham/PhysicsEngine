@@ -8,6 +8,8 @@
 #include "Guid.h"
 
 //#include "../../../yaml-cpp/include/yaml-cpp/yaml.h"
+#include "YamlExtensions.h"
+#include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine
 {
@@ -23,6 +25,8 @@ class Object
 
     virtual void serialize(std::ostream &out) const;
     virtual void deserialize(std::istream &in);
+    virtual void serialize(YAML::Node& out) const;
+    virtual void deserialize(const YAML::Node& in);
 
     Guid getId() const;
 };

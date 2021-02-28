@@ -25,8 +25,10 @@ class Entity : public Object
     Entity(Guid id);
     ~Entity();
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
+    virtual void serialize(std::ostream &out) const override;
+    virtual void deserialize(std::istream &in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
 
     void latentDestroy(World *world);
     void immediateDestroy(World *world);

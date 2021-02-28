@@ -62,6 +62,16 @@ void Mesh::deserialize(std::istream &in)
     mChanged = false;
 }
 
+void Mesh::serialize(YAML::Node& out) const
+{
+    Asset::serialize(out);
+}
+
+void Mesh::deserialize(const YAML::Node& in)
+{
+    Asset::deserialize(in);
+}
+
 void Mesh::load(const std::string &filepath)
 {
     obj_mesh mesh;

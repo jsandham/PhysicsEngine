@@ -33,6 +33,20 @@ void SphereCollider::deserialize(std::istream &in)
     PhysicsEngine::read<Sphere>(in, mSphere);
 }
 
+void SphereCollider::serialize(YAML::Node& out) const
+{
+    Collider::serialize(out);
+
+    out["sphere"] = mSphere;
+}
+
+void SphereCollider::deserialize(const YAML::Node& in)
+{
+    Collider::deserialize(in);
+
+    mSphere = in["sphere"].as<Sphere>();
+}
+
 bool SphereCollider::intersect(AABB aabb) const
 {
     return Intersect::intersect(mSphere, aabb);

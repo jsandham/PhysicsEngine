@@ -48,6 +48,33 @@ void Texture::deserialize(std::istream &in)
     mUpdateRequired = false;
 }
 
+void Texture::serialize(YAML::Node& out) const
+{
+    Asset::serialize(out);
+
+    out["dimension"] = mDimension;
+    out["format"] = mFormat;
+    out["wrapMode"] = mWrapMode;
+    out["filterMode"] = mFilterMode;
+    out["numChannels"] = mNumChannels;
+    out["anisoLevel"] = mAnisoLevel;
+}
+
+void Texture::deserialize(const YAML::Node& in)
+{
+    Asset::deserialize(in);
+
+    mDimension = in["dimension"].as<TextureDimension>();
+    mFormat = in["format"].as<TextureFormat>();
+    mWrapMode = in["wrapMode"].as<TextureWrapMode>();
+    mFilterMode = in["filterMode"].as<TextureFilterMode>();
+    mNumChannels = in["numChannels"].as<int>();
+    mAnisoLevel = in["anisoLevel"].as<int>();
+
+    mCreated = false;
+    mUpdateRequired = false;
+}
+
 bool Texture::isCreated() const
 {
     return mCreated;
@@ -117,16 +144,16 @@ int Texture::calcNumChannels(TextureFormat format) const
 
     switch (format)
     {
-    case Depth:
+    case TextureFormat::Depth:
         nChannels = 1;
         break;
-    case RG:
+    case TextureFormat::RG:
         nChannels = 2;
         break;
-    case RGB:
+    case TextureFormat::RGB:
         nChannels = 3;
         break;
-    case RGBA:
+    case TextureFormat::RGBA:
         nChannels = 4;
         break;
     default:

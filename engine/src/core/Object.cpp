@@ -26,6 +26,16 @@ void Object::deserialize(std::istream &in)
     PhysicsEngine::read<Guid>(in, mId);
 }
 
+void Object::serialize(YAML::Node& out) const
+{
+    out["id"] = mId;
+}
+
+void Object::deserialize(const YAML::Node& in)
+{
+    mId = in["id"].as<Guid>();
+}
+
 Guid Object::getId() const
 {
     return mId;

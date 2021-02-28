@@ -40,6 +40,22 @@ void Entity::deserialize(std::istream &in)
     PhysicsEngine::read<std::string>(in, mName);
 }
 
+void Entity::serialize(YAML::Node& out) const
+{
+    Object::serialize(out);
+
+    out["doNotDestroy"] = mDoNotDestroy;
+    out["name"] = mName;
+}
+
+void Entity::deserialize(const YAML::Node& in)
+{
+    Object::deserialize(in);
+
+    mDoNotDestroy = in["doNotDestroy"].as<bool>();
+    mName = in["name"].as<std::string>();
+}
+
 void Entity::latentDestroy(World *world)
 {
     world->latentDestroyEntity(mId);

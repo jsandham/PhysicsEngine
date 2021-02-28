@@ -46,6 +46,22 @@ void PhysicsSystem::deserialize(std::istream &in)
     PhysicsEngine::read<float>(in, mTimestep);
 }
 
+void PhysicsSystem::serialize(YAML::Node& out) const
+{
+    System::serialize(out);
+
+    out["gravity"] = mGravity;
+    out["timestep"] = mTimestep;
+}
+
+void PhysicsSystem::deserialize(const YAML::Node& in)
+{
+    System::deserialize(in);
+
+    mGravity = in["gravity"].as<float>();
+    mTimestep = in["timestep"].as<float>();
+}
+
 void PhysicsSystem::init(World *world)
 {
     mWorld = world;

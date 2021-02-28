@@ -27,6 +27,16 @@ void GizmoSystem::deserialize(std::istream &in)
     System::deserialize(in);
 }
 
+void GizmoSystem::serialize(YAML::Node& out) const
+{
+    System::serialize(out);
+}
+
+void GizmoSystem::deserialize(const YAML::Node& in)
+{
+    System::deserialize(in);
+}
+
 void GizmoSystem::init(World *world)
 {
     mWorld = world;

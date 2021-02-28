@@ -26,8 +26,8 @@ bool Intersect::intersect(const Ray &ray, const Plane &plane, float &dist)
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 bool Intersect::intersect(const Ray &ray, const Triangle &triangle)
 {
-    glm::vec3 v0v1 = triangle.v1 - triangle.v0;
-    glm::vec3 v0v2 = triangle.v2 - triangle.v0;
+    glm::vec3 v0v1 = triangle.mV1 - triangle.mV0;
+    glm::vec3 v0v2 = triangle.mV2 - triangle.mV0;
     glm::vec3 pvec = glm::cross(ray.mDirection, v0v2);
     float det = glm::dot(v0v1, pvec);
 #ifdef CULLING
@@ -42,7 +42,7 @@ bool Intersect::intersect(const Ray &ray, const Triangle &triangle)
 #endif
     float invDet = 1 / det;
 
-    glm::vec3 tvec = ray.mOrigin - triangle.v0;
+    glm::vec3 tvec = ray.mOrigin - triangle.mV0;
     float u = glm::dot(tvec, pvec) * invDet;
     if (u < 0 || u > 1)
         return false;

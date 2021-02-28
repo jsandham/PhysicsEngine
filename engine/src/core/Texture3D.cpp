@@ -80,6 +80,24 @@ void Texture3D::deserialize(std::istream &in)
     PhysicsEngine::read<int>(in, mDepth);
 }
 
+void Texture3D::serialize(YAML::Node& out) const
+{
+    Texture::serialize(out);
+
+    out["width"] = mWidth;
+    out["height"] = mHeight;
+    out["depth"] = mDepth;
+}
+
+void Texture3D::deserialize(const YAML::Node& in)
+{
+    Texture::deserialize(in);
+
+    mWidth = in["width"].as<int>();
+    mHeight = in["height"].as<int>();
+    mDepth = in["depth"].as<int>();
+}
+
 int Texture3D::getWidth() const
 {
     return mWidth;

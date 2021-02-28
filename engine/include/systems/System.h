@@ -27,6 +27,8 @@ class System : public Object
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
 
     virtual void init(World *world) = 0;
     virtual void update(const Input &input, const Time &time) = 0;

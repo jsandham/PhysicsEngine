@@ -9,33 +9,33 @@
 
 namespace PhysicsEngine
 {
-typedef enum TextureDimension
+enum class TextureDimension
 {
     Tex2D = 0,
     Tex3D = 1,
     Cube = 2
-} TextureDimension;
+};
 
-typedef enum TextureFormat
+enum class TextureFormat
 {
     Depth = 0,
     RG = 1,
     RGB = 2,
     RGBA = 3
-} TextureFormat;
+};
 
-typedef enum TextureWrapMode
+enum class TextureWrapMode
 {
     Repeat = 0,
     Clamp = 1
-} TextureWrapMode;
+};
 
-typedef enum TextureFilterMode
+enum class TextureFilterMode
 {
     Nearest = 0,
     Bilinear = 1,
     Trilinear = 2
-} TextureFilterMode;
+};
 
 class Texture : public Asset
 {
@@ -58,6 +58,8 @@ class Texture : public Asset
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
 
     virtual void create() = 0;
     virtual void destroy() = 0;

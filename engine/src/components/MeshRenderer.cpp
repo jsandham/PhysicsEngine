@@ -71,6 +71,37 @@ void MeshRenderer::deserialize(std::istream &in)
     mMaterialChanged = true;
 }
 
+void MeshRenderer::serialize(YAML::Node& out) const
+{
+    Component::serialize(out);
+
+    out["meshId"] = mMeshId;
+    for (int i = 0; i < 8; i++)
+    {
+        out["materialIds"].push_back(mMaterialIds[i]);
+    }
+    out["materialCount"] = mMaterialCount;
+    out["isStatic"] = mIsStatic;
+    out["enabled"] = mEnabled;
+}
+
+void MeshRenderer::deserialize(const YAML::Node& in)
+{
+    Component::deserialize(in);
+
+    mMeshId = in["meshId"].as<Guid>();
+    for (int i = 0; i < 8; i++)
+    {
+        mMaterialIds[i] = in["materialIds"][i].as<Guid>();
+    }
+    mMaterialCount = in["materialCount"].as<int>();
+    mIsStatic = in["isStatic"].as<bool>();
+    mEnabled = in["enabled"].as<bool>();
+    
+    mMeshChanged = true;
+    mMaterialChanged = true;
+}
+
 void MeshRenderer::setMesh(Guid meshId)
 {
     mMeshId = meshId;

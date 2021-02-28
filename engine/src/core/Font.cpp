@@ -39,6 +39,16 @@ void Font::deserialize(std::istream &in)
     Asset::deserialize(in);
 }
 
+void Font::serialize(YAML::Node& out) const
+{
+    Asset::serialize(out);
+}
+
+void Font::deserialize(const YAML::Node& in)
+{
+    Asset::deserialize(in);
+}
+
 void Font::load(std::string filepath)
 {
     mFilepath = filepath;

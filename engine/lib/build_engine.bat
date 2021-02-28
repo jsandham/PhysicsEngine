@@ -6,6 +6,8 @@ if not defined DevEnvDir (
 
 set GLEW="../include/glew-2.1.0"
 set FREETYPE="../include/freetype"
+set YAML="../../yaml-cpp/include"
+::set YAML="../../yaml-cpp/"
 set WARN=-W4 -wd4100 -wd4996 -wd4211
 ::set WARN=-W4 -Wno-pessimizing-move -Wno-unused-parameter
 set OPENMP=
@@ -47,10 +49,10 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
-	call cl /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
-::call cl /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
-::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+::call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 
 :: create list of .obj files
 echo [92mCompiled objects...[0m

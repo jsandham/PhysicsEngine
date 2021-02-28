@@ -126,6 +126,44 @@ void Light::deserialize(std::istream &in)
     mIsShadowMapResolutionChanged = true;
 }
 
+void Light::serialize(YAML::Node& out) const
+{
+    Component::serialize(out);
+
+    out["color"] = mColor;
+    out["intensity"] = mIntensity;
+    out["spotAngle"] = mSpotAngle;
+    out["innerSpotAngle"] = mInnerSpotAngle;
+    out["shadowNearPlane"] = mShadowNearPlane;
+    out["shadowFarPlane"] = mShadowFarPlane;
+    out["shadowAngle"] = mShadowAngle;
+    out["shadowRadius"] = mShadowRadius;
+    out["shadowStrength"] = mShadowStrength;
+    out["lightType"] = mLightType;
+    out["shadowType"] = mShadowType;
+    out["shadowMapResolution"] = mShadowMapResolution;
+}
+
+void Light::deserialize(const YAML::Node& in)
+{
+    Component::deserialize(in);
+
+    mColor = in["color"].as<glm::vec4>();
+    mIntensity = in["intensity"].as<float>();
+    mSpotAngle = in["spotAngle"].as<float>();
+    mInnerSpotAngle = in["innerSpotAngle"].as<float>();
+    mShadowNearPlane = in["shadowNearPlane"].as<float>();
+    mShadowFarPlane = in["shadowFarPlane"].as<float>();
+    mShadowAngle = in["shadowAngle"].as<float>();
+    mShadowRadius = in["shadowRadius"].as<float>();
+    mShadowStrength = in["shadowStrength"].as<float>();
+    mLightType = in["lightType"].as<LightType>();
+    mShadowType = in["shadowType"].as<ShadowType>();
+    mShadowMapResolution = in["shadowMapResolution"].as<ShadowMapResolution>();
+
+    mIsShadowMapResolutionChanged = true;
+}
+
 void Light::createTargets()
 {
     Graphics::createTargets(&mTargets, mShadowMapResolution);

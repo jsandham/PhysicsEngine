@@ -22,6 +22,7 @@
 
 #include "../core/Color.h"
 #include "../core/Frustum.h"
+#include "../core/Viewport.h"
 #include "../core/Ray.h"
 
 #include "../graphics/GraphicsQuery.h"
@@ -50,14 +51,6 @@ enum class RenderPath
 {
     Forward,
     Deferred
-};
-
-struct Viewport
-{
-    int mX;
-    int mY;
-    int mWidth;
-    int mHeight;
 };
 
 struct CameraTargets
@@ -118,6 +111,8 @@ class Camera : public Component
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
 
     void createTargets();
     void destroyTargets();

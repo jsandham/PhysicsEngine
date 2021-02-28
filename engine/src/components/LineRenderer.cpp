@@ -41,3 +41,21 @@ void LineRenderer::deserialize(std::istream &in)
     PhysicsEngine::read<glm::vec3>(in, mStart);
     PhysicsEngine::read<glm::vec3>(in, mEnd);
 }
+
+void LineRenderer::serialize(YAML::Node& out) const
+{
+    Component::serialize(out);
+
+    out["materialId"] = mMaterialId;
+    out["start"] = mStart;
+    out["end"] = mEnd;
+}
+
+void LineRenderer::deserialize(const YAML::Node& in)
+{
+    Component::deserialize(in);
+
+    mMaterialId = in["materialId"].as<Guid>();
+    mStart = in["start"].as<glm::vec3>();
+    mEnd = in["end"].as<glm::vec3>();
+}
