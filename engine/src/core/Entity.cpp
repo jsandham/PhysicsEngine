@@ -56,6 +56,16 @@ void Entity::deserialize(const YAML::Node& in)
     mName = in["name"].as<std::string>();
 }
 
+int Entity::getType() const
+{
+    return PhysicsEngine::ENTITY_TYPE;
+}
+
+std::string Entity::getObjectName() const
+{
+    return PhysicsEngine::ENTITY_NAME;
+}
+
 void Entity::latentDestroy(World *world)
 {
     world->latentDestroyEntity(mId);

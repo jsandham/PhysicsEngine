@@ -114,6 +114,9 @@ class Camera : public Component
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
+
     void createTargets();
     void destroyTargets();
     void resizeTargets();

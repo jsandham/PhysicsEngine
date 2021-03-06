@@ -14,12 +14,27 @@ Asset *PhysicsEngine::loadAsset(WorldAllocators& allocators, WorldIdState& state
     return nullptr;
 }
 
+Asset* PhysicsEngine::loadAsset(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+{
+    return nullptr;
+}
+
 Component *PhysicsEngine::loadComponent(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     return nullptr;
 }
 
+Component* PhysicsEngine::loadComponent(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+{
+    return nullptr;
+}
+
 System *PhysicsEngine::loadSystem(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
+{
+    return nullptr;
+}
+
+System* PhysicsEngine::loadSystem(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
 {
     return nullptr;
 }

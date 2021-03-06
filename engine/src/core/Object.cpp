@@ -28,6 +28,7 @@ void Object::deserialize(std::istream &in)
 
 void Object::serialize(YAML::Node& out) const
 {
+    out["type"] = getType();
     out["id"] = mId;
 }
 

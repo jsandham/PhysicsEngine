@@ -39,6 +39,16 @@ void CleanUpSystem::deserialize(const YAML::Node& in)
     System::deserialize(in);
 }
 
+int CleanUpSystem::getType() const
+{
+    return PhysicsEngine::CLEANUPSYSTEM_TYPE;
+}
+
+std::string CleanUpSystem::getObjectName() const
+{
+    return PhysicsEngine::CLEANUPSYSTEM_NAME;
+}
+
 void CleanUpSystem::init(World *world)
 {
     mWorld = world;

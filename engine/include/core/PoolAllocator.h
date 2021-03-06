@@ -10,6 +10,8 @@
 #include "Allocator.h"
 #include "Guid.h"
 
+#include "yaml-cpp/yaml.h"
+
 namespace PhysicsEngine
 {
 template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocator
@@ -75,6 +77,13 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
     T *construct(std::istream &in)
     {
         T *t = new (allocate()) T();
+        t->deserialize(in);
+        return t;
+    }
+
+    T* construct(const YAML::Node& in)
+    {
+        T* t = new (allocate()) T();
         t->deserialize(in);
         return t;
     }

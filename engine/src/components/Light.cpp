@@ -164,6 +164,16 @@ void Light::deserialize(const YAML::Node& in)
     mIsShadowMapResolutionChanged = true;
 }
 
+int Light::getType() const
+{
+    return PhysicsEngine::LIGHT_TYPE;
+}
+
+std::string Light::getObjectName() const
+{
+    return PhysicsEngine::LIGHT_NAME;
+}
+
 void Light::createTargets()
 {
     Graphics::createTargets(&mTargets, mShadowMapResolution);

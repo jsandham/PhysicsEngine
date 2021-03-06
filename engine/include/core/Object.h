@@ -28,6 +28,9 @@ class Object
     virtual void serialize(YAML::Node& out) const;
     virtual void deserialize(const YAML::Node& in);
 
+    virtual int getType() const = 0;
+    virtual std::string getObjectName() const = 0;
+
     Guid getId() const;
 };
 

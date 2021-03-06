@@ -59,3 +59,13 @@ void LineRenderer::deserialize(const YAML::Node& in)
     mStart = in["start"].as<glm::vec3>();
     mEnd = in["end"].as<glm::vec3>();
 }
+
+int LineRenderer::getType() const
+{
+    return PhysicsEngine::LINERENDERER_TYPE;
+}
+
+std::string LineRenderer::getObjectName() const
+{
+    return PhysicsEngine::LINERENDERER_NAME;
+}

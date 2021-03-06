@@ -10,13 +10,100 @@
 
 using namespace PhysicsEngine;
 
-Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
-                                          const Guid &id)
+Component* PhysicsEngine::getInternalComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type)
+{
+    if (type == ComponentType<Transform>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mTransformIdToGlobalIndex.find(id);
+        if (it != state.mTransformIdToGlobalIndex.end())
+        {
+            return allocators.mTransformAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<Rigidbody>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mRigidbodyIdToGlobalIndex.find(id);
+        if (it != state.mRigidbodyIdToGlobalIndex.end())
+        {
+            return allocators.mRigidbodyAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<Camera>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mCameraIdToGlobalIndex.find(id);
+        if (it != state.mCameraIdToGlobalIndex.end())
+        {
+            return allocators.mCameraAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<MeshRenderer>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mMeshRendererIdToGlobalIndex.find(id);
+        if (it != state.mMeshRendererIdToGlobalIndex.end())
+        {
+            return allocators.mMeshRendererAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<LineRenderer>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mLineRendererIdToGlobalIndex.find(id);
+        if (it != state.mLineRendererIdToGlobalIndex.end())
+        {
+            return allocators.mLineRendererAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<Light>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mLightIdToGlobalIndex.find(id);
+        if (it != state.mLightIdToGlobalIndex.end())
+        {
+            return allocators.mLightAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<BoxCollider>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mBoxColliderIdToGlobalIndex.find(id);
+        if (it != state.mBoxColliderIdToGlobalIndex.end())
+        {
+            return allocators.mBoxColliderAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<SphereCollider>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mSphereColliderIdToGlobalIndex.find(id);
+        if (it != state.mSphereColliderIdToGlobalIndex.end())
+        {
+            return allocators.mSphereColliderAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<MeshCollider>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mMeshColliderIdToGlobalIndex.find(id);
+        if (it != state.mMeshColliderIdToGlobalIndex.end())
+        {
+            return allocators.mMeshColliderAllocator.get(it->second);
+        }
+    }
+    else if (type == ComponentType<CapsuleCollider>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mCapsuleColliderIdToGlobalIndex.find(id);
+        if (it != state.mCapsuleColliderIdToGlobalIndex.end())
+        {
+            return allocators.mCapsuleColliderAllocator.get(it->second);
+        }
+    }
+
+    return nullptr;
+}
+
+
+template<class T>
+Entity* loadInternalEntity_Impl(WorldAllocators& allocators, WorldIdState& state, T& in, const Guid& id)
 {
     std::unordered_map<Guid, int>::iterator it = state.mEntityIdToGlobalIndex.find(id);
     if (it != state.mEntityIdToGlobalIndex.end())
     {
-        Entity *entity = allocators.mEntityAllocator.get(it->second);
+        Entity* entity = allocators.mEntityAllocator.get(it->second);
 
         if (entity != nullptr)
         {
@@ -27,7 +114,7 @@ Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdSt
     }
 
     int index = (int)allocators.mEntityAllocator.getCount();
-    Entity *entity = allocators.mEntityAllocator.construct(in);
+    Entity* entity = allocators.mEntityAllocator.construct(in);
 
     if (entity != nullptr)
     {
@@ -39,15 +126,15 @@ Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdSt
     return entity;
 }
 
-Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id,
-                                 int type)
+template<class T>
+Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState& state, T& in, const Guid& id, int type)
 {
     if (type == ComponentType<Transform>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mTransformIdToGlobalIndex.find(id);
         if (it != state.mTransformIdToGlobalIndex.end())
         {
-            Component *component = allocators.mTransformAllocator.get(it->second);
+            Component* component = allocators.mTransformAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -62,7 +149,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mRigidbodyIdToGlobalIndex.find(id);
         if (it != state.mRigidbodyIdToGlobalIndex.end())
         {
-            Component *component = allocators.mRigidbodyAllocator.get(it->second);
+            Component* component = allocators.mRigidbodyAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -77,7 +164,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mCameraIdToGlobalIndex.find(id);
         if (it != state.mCameraIdToGlobalIndex.end())
         {
-            Component *component = allocators.mCameraAllocator.get(it->second);
+            Component* component = allocators.mCameraAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -92,7 +179,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mMeshRendererIdToGlobalIndex.find(id);
         if (it != state.mMeshRendererIdToGlobalIndex.end())
         {
-            Component *component = allocators.mMeshRendererAllocator.get(it->second);
+            Component* component = allocators.mMeshRendererAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -107,7 +194,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mLineRendererIdToGlobalIndex.find(id);
         if (it != state.mLineRendererIdToGlobalIndex.end())
         {
-            Component *component = allocators.mLineRendererAllocator.get(it->second);
+            Component* component = allocators.mLineRendererAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -122,7 +209,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mLightIdToGlobalIndex.find(id);
         if (it != state.mLightIdToGlobalIndex.end())
         {
-            Component *component = allocators.mLightAllocator.get(it->second);
+            Component* component = allocators.mLightAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -137,7 +224,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mBoxColliderIdToGlobalIndex.find(id);
         if (it != state.mBoxColliderIdToGlobalIndex.end())
         {
-            Component *component = allocators.mBoxColliderAllocator.get(it->second);
+            Component* component = allocators.mBoxColliderAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -152,7 +239,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mSphereColliderIdToGlobalIndex.find(id);
         if (it != state.mSphereColliderIdToGlobalIndex.end())
         {
-            Component *component = allocators.mSphereColliderAllocator.get(it->second);
+            Component* component = allocators.mSphereColliderAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -167,7 +254,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mMeshColliderIdToGlobalIndex.find(id);
         if (it != state.mMeshColliderIdToGlobalIndex.end())
         {
-            Component *component = allocators.mMeshColliderAllocator.get(it->second);
+            Component* component = allocators.mMeshColliderAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -182,7 +269,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
         std::unordered_map<Guid, int>::iterator it = state.mCapsuleColliderIdToGlobalIndex.find(id);
         if (it != state.mCapsuleColliderIdToGlobalIndex.end())
         {
-            Component *component = allocators.mCapsuleColliderAllocator.get(it->second);
+            Component* component = allocators.mCapsuleColliderAllocator.get(it->second);
 
             if (component != nullptr)
             {
@@ -194,7 +281,7 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
     }
 
     int index = -1;
-    Component *component = nullptr;
+    Component* component = nullptr;
 
     if (type == ComponentType<Transform>::type)
     {
@@ -327,14 +414,15 @@ Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &stat
     return component;
 }
 
-System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type)
+template<class T>
+System* loadInternalSystem_Impl(WorldAllocators& allocators, WorldIdState& state, T& in, const Guid& id, int type)
 {
     if (type == SystemType<RenderSystem>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mRenderSystemIdToGlobalIndex.find(id);
         if (it != state.mRenderSystemIdToGlobalIndex.end())
         {
-            System *system = allocators.mRenderSystemAllocator.get(it->second);
+            System* system = allocators.mRenderSystemAllocator.get(it->second);
 
             if (system != nullptr)
             {
@@ -349,7 +437,7 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
         std::unordered_map<Guid, int>::iterator it = state.mPhysicsSystemIdToGlobalIndex.find(id);
         if (it != state.mPhysicsSystemIdToGlobalIndex.end())
         {
-            System *system = allocators.mPhysicsSystemAllocator.get(it->second);
+            System* system = allocators.mPhysicsSystemAllocator.get(it->second);
 
             if (system != nullptr)
             {
@@ -364,7 +452,7 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
         std::unordered_map<Guid, int>::iterator it = state.mCleanupSystemIdToGlobalIndex.find(id);
         if (it != state.mCleanupSystemIdToGlobalIndex.end())
         {
-            System *system = allocators.mCleanupSystemAllocator.get(it->second);
+            System* system = allocators.mCleanupSystemAllocator.get(it->second);
 
             if (system != nullptr)
             {
@@ -379,7 +467,7 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
         std::unordered_map<Guid, int>::iterator it = state.mDebugSystemIdToGlobalIndex.find(id);
         if (it != state.mDebugSystemIdToGlobalIndex.end())
         {
-            System *system = allocators.mDebugSystemAllocator.get(it->second);
+            System* system = allocators.mDebugSystemAllocator.get(it->second);
 
             if (system != nullptr)
             {
@@ -394,7 +482,7 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
         std::unordered_map<Guid, int>::iterator it = state.mGizmoSystemIdToGlobalIndex.find(id);
         if (it != state.mGizmoSystemIdToGlobalIndex.end())
         {
-            System *system = allocators.mGizmoSystemAllocator.get(it->second);
+            System* system = allocators.mGizmoSystemAllocator.get(it->second);
 
             if (system != nullptr)
             {
@@ -406,7 +494,7 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
     }
 
     int index = -1;
-    System *system = nullptr;
+    System* system = nullptr;
 
     if (type == SystemType<RenderSystem>::type)
     {
@@ -479,14 +567,15 @@ System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std
     return system;
 }
 
-Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type)
+template<class T>
+Asset* loadInternalAsset_Impl(WorldAllocators& allocators, WorldIdState& state, T& in, const Guid& id, int type)
 {
     if (type == AssetType<Shader>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mShaderIdToGlobalIndex.find(id);
         if (it != state.mShaderIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mShaderAllocator.get(it->second);
+            Asset* asset = allocators.mShaderAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -501,7 +590,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mTexture2DIdToGlobalIndex.find(id);
         if (it != state.mTexture2DIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mTexture2DAllocator.get(it->second);
+            Asset* asset = allocators.mTexture2DAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -516,7 +605,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mTexture3DIdToGlobalIndex.find(id);
         if (it != state.mTexture3DIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mTexture3DAllocator.get(it->second);
+            Asset* asset = allocators.mTexture3DAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -531,7 +620,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mCubemapIdToGlobalIndex.find(id);
         if (it != state.mCubemapIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mCubemapAllocator.get(it->second);
+            Asset* asset = allocators.mCubemapAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -546,7 +635,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mMaterialIdToGlobalIndex.find(id);
         if (it != state.mMaterialIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mMaterialAllocator.get(it->second);
+            Asset* asset = allocators.mMaterialAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -561,7 +650,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mMeshIdToGlobalIndex.find(id);
         if (it != state.mMeshIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mMeshAllocator.get(it->second);
+            Asset* asset = allocators.mMeshAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -576,7 +665,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
         std::unordered_map<Guid, int>::iterator it = state.mFontIdToGlobalIndex.find(id);
         if (it != state.mFontIdToGlobalIndex.end())
         {
-            Asset *asset = allocators.mFontAllocator.get(it->second);
+            Asset* asset = allocators.mFontAllocator.get(it->second);
 
             if (asset != nullptr)
             {
@@ -588,7 +677,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
     }
 
     int index = -1;
-    Asset *asset = nullptr;
+    Asset* asset = nullptr;
 
     if (type == AssetType<Shader>::type)
     {
@@ -683,6 +772,51 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::
     }
 
     return asset;
+}
+
+
+Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
+                                          const Guid &id)
+{
+    return loadInternalEntity_Impl<std::istream>(allocators, state, in, id);
+}
+
+Entity* PhysicsEngine::loadInternalEntity(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in,
+    const Guid& id)
+{
+    return loadInternalEntity_Impl<const YAML::Node>(allocators, state, in, id);
+}
+
+Component *PhysicsEngine::loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id,
+                                 int type)
+{
+    return loadInternalComponent_Impl<std::istream>(allocators, state, in, id, type);
+}
+
+Component* PhysicsEngine::loadInternalComponent(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id,
+    int type)
+{
+    return loadInternalComponent_Impl<const YAML::Node>(allocators, state, in, id, type);
+}
+
+System *PhysicsEngine::loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type)
+{
+    return loadInternalSystem_Impl<std::istream>(allocators, state, in, id, type);
+}
+
+System* PhysicsEngine::loadInternalSystem(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+{
+    return loadInternalSystem_Impl<const YAML::Node>(allocators, state, in, id, type);
+}
+
+Asset *PhysicsEngine::loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type)
+{
+    return loadInternalAsset_Impl<std::istream>(allocators, state, in, id, type);
+}
+
+Asset* PhysicsEngine::loadInternalAsset(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+{
+    return loadInternalAsset_Impl<const YAML::Node>(allocators, state, in, id, type);
 }
 
 Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id,

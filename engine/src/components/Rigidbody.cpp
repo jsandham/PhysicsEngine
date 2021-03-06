@@ -91,3 +91,13 @@ void Rigidbody::deserialize(const YAML::Node& in)
     mAngularVelocity = in["angularVelocity"].as<glm::vec3>();
     mCentreOfMass = in["centreOfMass"].as<glm::vec3>();
 }
+
+int Rigidbody::getType() const
+{
+    return PhysicsEngine::RIGIDBODY_TYPE;
+}
+
+std::string Rigidbody::getObjectName() const
+{
+    return PhysicsEngine::RIGIDBODY_NAME;
+}

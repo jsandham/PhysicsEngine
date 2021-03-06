@@ -186,6 +186,15 @@ void Camera::deserialize(const YAML::Node& in)
     mIsViewportChanged = true;
 }
 
+int Camera::getType() const
+{
+    return PhysicsEngine::CAMERA_TYPE;
+}
+
+std::string Camera::getObjectName() const
+{
+    return PhysicsEngine::CAMERA_NAME;
+}
 
 bool Camera::isCreated() const
 {

@@ -72,9 +72,12 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
-    bool loadAsset(const std::string &filePath);
-    bool loadScene(const std::string &filePath, bool ignoreSystems = false);
-    bool loadSceneFromEditor(const std::string &filePath);
+    bool loadAssetFromBinary(const std::string &filePath);
+    bool loadSceneFromBinary(const std::string &filePath);
+    bool writeSceneToBinary(const std::string &filePath);
+
+    bool loadSceneFromYAML(const std::string &filePath);
+    bool writeSceneToYAML(const std::string &filePath);
 
     void latentDestroyEntitiesInWorld();
 
@@ -849,10 +852,15 @@ class World
     Guid getOverdrawShaderId() const;
 
   private:
-    void loadAsset(std::ifstream &in, const ObjectHeader &header);
-    void loadEntity(std::ifstream &in, const ObjectHeader &header);
-    void loadComponent(std::ifstream &in, const ObjectHeader &header);
-    void loadSystem(std::ifstream &in, const ObjectHeader &header);
+    void loadAssetFromBinary(std::ifstream &in, const ObjectHeader &header);
+    void loadEntityFromBinary(std::ifstream &in, const ObjectHeader &header);
+    void loadComponentFromBinary(std::ifstream &in, const ObjectHeader &header);
+    void loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header);
+
+    bool loadYAML(const YAML::Node& in);
+    void loadEntityFromYAML(const YAML::Node& in, const Guid id);
+    void loadComponentFromYAML(const YAML::Node& in, const Guid id, int type);
+    void loadSystemFromYAML(const YAML::Node& in, const Guid id, int type);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
@@ -890,6 +898,8 @@ class World
         {
             return nullptr;
         }
+
+        // Probably just call getComponentsOnEntity(entityId); ??
 
         auto it1 = mIdState.mEntityIdToComponentIds.find(entityId);
 

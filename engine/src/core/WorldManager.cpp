@@ -15,14 +15,14 @@ bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> asse
 {
     for (size_t i = 0; i < assetFilePaths.size(); i++)
     {
-        if (!world.loadAsset(assetFilePaths[i]))
+        if (!world.loadAssetFromBinary(assetFilePaths[i]))
         {
             Log::error("Could not load asset file\n");
             return false;
         }
     }
 
-    if (!world.loadScene(sceneFilePath))
+    if (!world.loadSceneFromBinary(sceneFilePath))
     {
         Log::error("Could not load scene file\n");
         return false;

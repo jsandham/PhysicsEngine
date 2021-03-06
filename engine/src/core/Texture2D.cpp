@@ -112,6 +112,16 @@ void Texture2D::deserialize(const YAML::Node& in)
     mHeight = in["height"].as<int>();
 }
 
+int Texture2D::getType() const
+{
+    return PhysicsEngine::TEXTURE2D_TYPE;
+}
+
+std::string Texture2D::getObjectName() const
+{
+    return PhysicsEngine::TEXTURE2D_NAME;
+}
+
 void Texture2D::load(const std::string &filepath)
 {
     stbi_set_flip_vertically_on_load(true);

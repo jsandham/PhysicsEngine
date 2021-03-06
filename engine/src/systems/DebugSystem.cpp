@@ -49,6 +49,16 @@ void DebugSystem::deserialize(const YAML::Node& in)
     System::deserialize(in);
 }
 
+int DebugSystem::getType() const
+{
+    return PhysicsEngine::DEBUGSYSTEM_TYPE;
+}
+
+std::string DebugSystem::getObjectName() const
+{
+    return PhysicsEngine::DEBUGSYSTEM_NAME;
+}
+
 void DebugSystem::init(World *world)
 {
     mWorld = world;

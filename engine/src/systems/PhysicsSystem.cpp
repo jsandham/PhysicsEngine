@@ -62,6 +62,16 @@ void PhysicsSystem::deserialize(const YAML::Node& in)
     mTimestep = in["timestep"].as<float>();
 }
 
+int PhysicsSystem::getType() const
+{
+    return PhysicsEngine::PHYSICSSYSTEM_TYPE;
+}
+
+std::string PhysicsSystem::getObjectName() const
+{
+    return PhysicsEngine::PHYSICSSYSTEM_NAME;
+}
+
 void PhysicsSystem::init(World *world)
 {
     mWorld = world;

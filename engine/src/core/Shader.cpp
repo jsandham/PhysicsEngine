@@ -79,6 +79,16 @@ void Shader::deserialize(const YAML::Node& in)
     Asset::deserialize(in);
 }
 
+int Shader::getType() const
+{
+    return PhysicsEngine::SHADER_TYPE;
+}
+
+std::string Shader::getObjectName() const
+{
+    return PhysicsEngine::SHADER_NAME;
+}
+
 void Shader::load(const std::string &filepath)
 {
     shader_data data;

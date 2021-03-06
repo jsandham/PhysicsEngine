@@ -37,6 +37,9 @@ class Mesh : public Asset
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
+
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
               std::vector<int> subMeshStartIndices);

@@ -101,6 +101,16 @@ void Cubemap::deserialize(const YAML::Node& in)
     mWidth = in["width"].as<int>();
 }
 
+int Cubemap::getType() const
+{
+    return PhysicsEngine::CUBEMAP_TYPE;
+}
+
+std::string Cubemap::getObjectName() const
+{
+    return PhysicsEngine::CUBEMAP_NAME;
+}
+
 int Cubemap::getWidth() const
 {
     return mWidth;

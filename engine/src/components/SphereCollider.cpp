@@ -47,6 +47,16 @@ void SphereCollider::deserialize(const YAML::Node& in)
     mSphere = in["sphere"].as<Sphere>();
 }
 
+int SphereCollider::getType() const
+{
+    return PhysicsEngine::SPHERECOLLIDER_TYPE;
+}
+
+std::string SphereCollider::getObjectName() const
+{
+    return PhysicsEngine::SPHERECOLLIDER_NAME;
+}
+
 bool SphereCollider::intersect(AABB aabb) const
 {
     return Intersect::intersect(mSphere, aabb);

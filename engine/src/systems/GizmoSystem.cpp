@@ -37,6 +37,16 @@ void GizmoSystem::deserialize(const YAML::Node& in)
     System::deserialize(in);
 }
 
+int GizmoSystem::getType() const
+{
+    return PhysicsEngine::GIZMOSYSTEM_TYPE;
+}
+
+std::string GizmoSystem::getObjectName() const
+{
+    return PhysicsEngine::GIZMOSYSTEM_NAME;
+}
+
 void GizmoSystem::init(World *world)
 {
     mWorld = world;

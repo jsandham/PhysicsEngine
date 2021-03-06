@@ -102,6 +102,16 @@ void MeshRenderer::deserialize(const YAML::Node& in)
     mMaterialChanged = true;
 }
 
+int MeshRenderer::getType() const
+{
+    return PhysicsEngine::MESHRENDERER_TYPE;
+}
+
+std::string MeshRenderer::getObjectName() const
+{
+    return PhysicsEngine::MESHRENDERER_NAME;
+}
+
 void MeshRenderer::setMesh(Guid meshId)
 {
     mMeshId = meshId;

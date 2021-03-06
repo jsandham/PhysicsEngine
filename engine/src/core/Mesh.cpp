@@ -72,6 +72,16 @@ void Mesh::deserialize(const YAML::Node& in)
     Asset::deserialize(in);
 }
 
+int Mesh::getType() const
+{
+    return PhysicsEngine::MESH_TYPE;
+}
+
+std::string Mesh::getObjectName() const
+{
+    return PhysicsEngine::MESH_NAME;
+}
+
 void Mesh::load(const std::string &filepath)
 {
     obj_mesh mesh;

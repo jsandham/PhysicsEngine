@@ -26,6 +26,9 @@ class Texture2D : public Texture
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
+
     void load(const std::string &filepath);
     void writeToPNG(const std::string& filepath) const;
     void writeToJPG(const std::string& filepath) const;

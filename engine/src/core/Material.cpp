@@ -74,6 +74,16 @@ void Material::deserialize(const YAML::Node& in)
     mShaderChanged = true;
 }
 
+int Material::getType() const
+{
+    return PhysicsEngine::MATERIAL_TYPE;
+}
+
+std::string Material::getObjectName() const
+{
+    return PhysicsEngine::MATERIAL_NAME;
+}
+
 void Material::load(const std::string &filepath)
 {
     material_data mat;

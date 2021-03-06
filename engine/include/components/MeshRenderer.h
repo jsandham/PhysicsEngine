@@ -30,6 +30,9 @@ class MeshRenderer : public Component
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
+
     void setMesh(Guid meshId);
     void setMaterial(Guid materialId);
     void setMaterial(Guid materialId, int index);

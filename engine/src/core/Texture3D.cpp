@@ -98,6 +98,16 @@ void Texture3D::deserialize(const YAML::Node& in)
     mDepth = in["depth"].as<int>();
 }
 
+int Texture3D::getType() const
+{
+    return PhysicsEngine::TEXTURE3D_TYPE;
+}
+
+std::string Texture3D::getObjectName() const
+{
+    return PhysicsEngine::TEXTURE3D_NAME;
+}
+
 int Texture3D::getWidth() const
 {
     return mWidth;

@@ -45,6 +45,16 @@ void CapsuleCollider::deserialize(const YAML::Node& in)
     mCapsule = in["capsule"].as<Capsule>();
 }
 
+int CapsuleCollider::getType() const
+{
+    return PhysicsEngine::CAPSULECOLLIDER_TYPE;
+}
+
+std::string CapsuleCollider::getObjectName() const
+{
+    return PhysicsEngine::CAPSULECOLLIDER_NAME;
+}
+
 bool CapsuleCollider::intersect(AABB aabb) const
 {
     return Intersect::intersect(aabb, mCapsule);

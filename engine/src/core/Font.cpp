@@ -49,6 +49,16 @@ void Font::deserialize(const YAML::Node& in)
     Asset::deserialize(in);
 }
 
+int Font::getType() const
+{
+    return PhysicsEngine::FONT_TYPE;
+}
+
+std::string Font::getObjectName() const
+{
+    return PhysicsEngine::FONT_NAME;
+}
+
 void Font::load(std::string filepath)
 {
     mFilepath = filepath;

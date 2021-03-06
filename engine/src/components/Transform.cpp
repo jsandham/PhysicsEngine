@@ -64,6 +64,16 @@ void Transform::deserialize(const YAML::Node& in)
     mScale = in["scale"].as<glm::vec3>();
 }
 
+int Transform::getType() const
+{
+    return PhysicsEngine::TRANSFORM_TYPE;
+}
+
+std::string Transform::getObjectName() const
+{
+    return PhysicsEngine::TRANSFORM_NAME;
+}
+
 glm::mat4 Transform::getModelMatrix() const
 {
     glm::mat4 modelMatrix = glm::translate(glm::mat4(), mPosition);

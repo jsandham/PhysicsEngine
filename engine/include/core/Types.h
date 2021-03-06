@@ -3,6 +3,7 @@
 
 namespace PhysicsEngine
 {
+// Types
 constexpr int INVALID_TYPE = -1;
 constexpr int MIN_INTERNAL_ASSET = 1000;
 constexpr int MAX_INTERNAL_ASSET = 1999;
@@ -37,6 +38,54 @@ constexpr int PHYSICSSYSTEM_TYPE = 3001;
 constexpr int CLEANUPSYSTEM_TYPE = 3002;
 constexpr int DEBUGSYSTEM_TYPE = 3003;
 constexpr int GIZMOSYSTEM_TYPE = 3004;
+
+// Names
+constexpr char ENTITY_NAME[] = "Entity";
+
+constexpr char SHADER_NAME[] = "Shader";
+constexpr char TEXTURE2D_NAME[] = "Texture2D";
+constexpr char TEXTURE3D_NAME[] = "Texture3D";
+constexpr char CUBEMAP_NAME[] = "Cubemap";
+constexpr char MATERIAL_NAME[] = "Material";
+constexpr char MESH_NAME[] = "Mesh";
+constexpr char FONT_NAME[] = "Font";
+
+constexpr char TRANSFORM_NAME[] = "Transform";
+constexpr char RIGIDBODY_NAME[] = "Rigidbody";
+constexpr char CAMERA_NAME[] = "Camera";
+constexpr char MESHRENDERER_NAME[] = "MeshRenderer";
+constexpr char LINERENDERER_NAME[] = "LineRenderer";
+constexpr char LIGHT_NAME[] = "Light";
+constexpr char BOXCOLLIDER_NAME[] = "BoxCollider";
+constexpr char SPHERECOLLIDER_NAME[] = "SphereCollider";
+constexpr char CAPSULECOLLIDER_NAME[] = "CapsuleCollider";
+constexpr char MESHCOLLIDER_NAME[] = "MeshCollider";
+
+constexpr char RENDERSYSTEM_NAME[] = "RenderSystem";
+constexpr char PHYSICSSYSTEM_NAME[] = "PhysicsSystem";
+constexpr char CLEANUPSYSTEM_NAME[] = "CleanUpSystem";
+constexpr char DEBUGSYSTEM_NAME[] = "DebugSystem";
+constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
+
+constexpr int isEntity(int type)
+{
+	return type == ENTITY_TYPE;
+}
+
+constexpr int isAsset(int type)
+{
+	return type >= MIN_INTERNAL_ASSET && type <= MAX_INTERNAL_ASSET;
+}
+
+constexpr int isComponent(int type)
+{
+	return type >= MIN_INTERNAL_COMPONENT && type <= MAX_INTERNAL_COMPONENT;
+}
+
+constexpr int isSystem(int type)
+{
+	return type >= MIN_INTERNAL_SYSTEM && type <= MAX_INTERNAL_SYSTEM;
+}
 } // namespace PhysicsEngine
 
 #endif

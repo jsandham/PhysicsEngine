@@ -47,6 +47,17 @@ void MeshCollider::deserialize(const YAML::Node& in)
     mMeshId = in["meshId"].as<Guid>();
 }
 
+int MeshCollider::getType() const
+{
+    return PhysicsEngine::MESHCOLLIDER_TYPE;
+}
+
+std::string MeshCollider::getObjectName() const
+{
+    return PhysicsEngine::MESHCOLLIDER_NAME;
+}
+
+
 bool MeshCollider::intersect(AABB aabb) const
 {
     return false;

@@ -43,6 +43,16 @@ void BoxCollider::deserialize(const YAML::Node& in)
     mAABB = in["AABB"].as<AABB>();
 }
 
+int BoxCollider::getType() const
+{
+    return PhysicsEngine::BOXCOLLIDER_TYPE;
+}
+
+std::string BoxCollider::getObjectName() const
+{
+    return PhysicsEngine::BOXCOLLIDER_NAME;
+}
+
 bool BoxCollider::intersect(AABB aabb) const
 {
     return Intersect::intersect(mAABB, aabb);

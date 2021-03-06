@@ -56,6 +56,16 @@ void RenderSystem::deserialize(const YAML::Node& in)
     System::deserialize(in);
 }
 
+int RenderSystem::getType() const
+{
+    return PhysicsEngine::RENDERSYSTEM_TYPE;
+}
+
+std::string RenderSystem::getObjectName() const
+{
+    return PhysicsEngine::RENDERSYSTEM_NAME;
+}
+
 void RenderSystem::init(World *world)
 {
     mWorld = world;
