@@ -41,7 +41,7 @@ public:
 	{
 		if (mRedo)
 		{
-			mWorld->createEntity(mData);
+			//mWorld->createEntity(mData);
 		}
 	}
 

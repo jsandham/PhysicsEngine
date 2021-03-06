@@ -103,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\engine\include\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\engine\include\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;$(SolutionDir)..\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

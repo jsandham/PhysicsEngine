@@ -49,9 +49,17 @@ class EditorCameraSystem : public System
     EditorCameraSystem(Guid id);
     ~EditorCameraSystem();
 
-    std::vector<char> serialize() const;
+    virtual void serialize(std::ostream& out) const override;
+    virtual void deserialize(std::istream& in) override;
+    virtual void serialize(YAML::Node& out) const override;
+    virtual void deserialize(const YAML::Node& in) override;
+
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
+
+    /*std::vector<char> serialize() const;
     std::vector<char> serialize(const Guid &systemId) const;
-    void deserialize(const std::vector<char> &data);
+    void deserialize(const std::vector<char> &data);*/
 
     void init(World *world);
     void update(const Input &input, const Time &time);

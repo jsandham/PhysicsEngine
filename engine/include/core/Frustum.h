@@ -3,6 +3,11 @@
 
 #define GLM_FORCE_RADIANS
 
+#undef NEAR
+#undef FAR
+#undef near
+#undef far
+
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"

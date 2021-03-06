@@ -24,13 +24,13 @@ void CreateEntityCommand::execute()
     {
         Entity *entity = world->createEntity();
         Transform *transform = entity->addComponent<Transform>(world);
-        entityData = entity->serialize();
-        transformData = transform->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
     }
 
     *saveStatePtr = true;
@@ -38,12 +38,12 @@ void CreateEntityCommand::execute()
 
 void CreateEntityCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
-    *saveStatePtr = oldSaveState;
+    //*saveStatePtr = oldSaveState;
 }
 
 CreateCameraCommand::CreateCameraCommand(World *world, bool *saveStatePtr)
@@ -60,15 +60,15 @@ void CreateCameraCommand::execute()
         Entity *entity = world->createEntity();
         Transform *transform = entity->addComponent<Transform>(world);
         Camera *camera = entity->addComponent<Camera>(world);
-        entityData = entity->serialize();
-        transformData = transform->serialize();
-        cameraData = camera->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
+        //cameraData = camera->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
-        Camera *camera = entity->addComponent<Camera>(world, cameraData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //Camera *camera = entity->addComponent<Camera>(world, cameraData);
     }
 
     *saveStatePtr = true;
@@ -76,10 +76,10 @@ void CreateCameraCommand::execute()
 
 void CreateCameraCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
     *saveStatePtr = oldSaveState;
 }
@@ -98,15 +98,15 @@ void CreateLightCommand::execute()
         Entity *entity = world->createEntity();
         Transform *transform = entity->addComponent<Transform>(world);
         Light *light = entity->addComponent<Light>(world);
-        entityData = entity->serialize();
-        transformData = transform->serialize();
-        lightData = light->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
+        //lightData = light->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
-        Camera *camera = entity->addComponent<Camera>(world, lightData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //Camera *camera = entity->addComponent<Camera>(world, lightData);
     }
 
     *saveStatePtr = true;
@@ -114,10 +114,10 @@ void CreateLightCommand::execute()
 
 void CreateLightCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
     *saveStatePtr = oldSaveState;
 }
@@ -139,15 +139,15 @@ void CreatePlaneCommand::execute()
         meshRenderer->setMesh(world->getPlaneMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
-        entityData = entity->serialize();
-        transformData = transform->serialize();
-        meshRendererData = meshRenderer->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
+        //meshRendererData = meshRenderer->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
     }
 
     *saveStatePtr = true;
@@ -155,10 +155,10 @@ void CreatePlaneCommand::execute()
 
 void CreatePlaneCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
     *saveStatePtr = oldSaveState;
 }
@@ -181,17 +181,17 @@ void CreateCubeCommand::execute()
         meshRenderer->setMesh(world->getCubeMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
-        entityData = entity->serialize();
-        transformData = transform->serialize();
-        boxColliderData = collider->serialize();
-        meshRendererData = meshRenderer->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
+        //boxColliderData = collider->serialize();
+        //meshRendererData = meshRenderer->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
-        BoxCollider *collider = entity->addComponent<BoxCollider>(world, boxColliderData);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //BoxCollider *collider = entity->addComponent<BoxCollider>(world, boxColliderData);
+        //MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
     }
 
     *saveStatePtr = true;
@@ -199,10 +199,10 @@ void CreateCubeCommand::execute()
 
 void CreateCubeCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
     *saveStatePtr = oldSaveState;
 }
@@ -225,17 +225,17 @@ void CreateSphereCommand::execute()
         meshRenderer->setMesh(world->getSphereMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
-        entityData = entity->serialize();
-        transformData = transform->serialize();
-        sphereColliderData = collider->serialize();
-        meshRendererData = meshRenderer->serialize();
+        //entityData = entity->serialize();
+        //transformData = transform->serialize();
+        //sphereColliderData = collider->serialize();
+        //meshRendererData = meshRenderer->serialize();
     }
     else
     {
-        Entity *entity = world->createEntity(entityData);
-        Transform *transform = entity->addComponent<Transform>(world, transformData);
-        SphereCollider *collider = entity->addComponent<SphereCollider>(world, sphereColliderData);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
+        //Entity *entity = world->createEntity(entityData);
+        //Transform *transform = entity->addComponent<Transform>(world, transformData);
+        //SphereCollider *collider = entity->addComponent<SphereCollider>(world, sphereColliderData);
+        //MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world, meshRendererData);
     }
 
     *saveStatePtr = true;
@@ -243,10 +243,10 @@ void CreateSphereCommand::execute()
 
 void CreateSphereCommand::undo()
 {
-    Entity temp;
-    temp.deserialize(entityData);
+    //Entity temp;
+    //temp.deserialize(entityData);
 
-    world->latentDestroyEntity(temp.getId());
+    //world->latentDestroyEntity(temp.getId());
 
     *saveStatePtr = oldSaveState;
 }
@@ -273,11 +273,11 @@ DestroyEntityCommand::DestroyEntityCommand(World *world, PhysicsEngine::Guid ent
             // component = getComponent(world, componentType);
         }
 
-        std::vector<char> componentData = component->serialize();
+        //std::vector<char> componentData = component->serialize();
 
-        std::pair<int, std::vector<char>> pair = std::make_pair(componentType, componentData);
+        //std::pair<int, std::vector<char>> pair = std::make_pair(componentType, componentData);
 
-        components.push_back(pair);
+        //components.push_back(pair);
     }
 }
 

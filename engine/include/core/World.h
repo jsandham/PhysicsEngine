@@ -1106,8 +1106,8 @@ class World
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        std::unordered_map<int, Allocator *>::iterator it = mComponentAllocatorMap.find(ComponentType<T>::type);
-        if (it != mComponentAllocatorMap.end())
+        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mComponentAllocatorMap.find(ComponentType<T>::type);
+        if (it != mAllocators.mComponentAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
         }
@@ -1123,7 +1123,7 @@ class World
         if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
-            mComponentAllocatorMap[ComponentType<T>::type] = allocator;
+            mAllocators.mComponentAllocatorMap[ComponentType<T>::type] = allocator;
         }
 
         return allocator;
@@ -1133,8 +1133,8 @@ class World
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
-        std::unordered_map<int, Allocator *>::iterator it = mSystemAllocatorMap.find(SystemType<T>::type);
-        if (it != mSystemAllocatorMap.end())
+        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mSystemAllocatorMap.find(SystemType<T>::type);
+        if (it != mAllocators.mSystemAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
         }
@@ -1150,7 +1150,7 @@ class World
         if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
-            mSystemAllocatorMap[SystemType<T>::type] = allocator;
+            mAllocators.mSystemAllocatorMap[SystemType<T>::type] = allocator;
         }
 
         return allocator;
@@ -1160,8 +1160,8 @@ class World
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
-        std::unordered_map<int, Allocator *>::iterator it = mAssetAllocatorMap.find(AssetType<T>::type);
-        if (it != mAssetAllocatorMap.end())
+        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mAssetAllocatorMap.find(AssetType<T>::type);
+        if (it != mAllocators.mAssetAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
         }
@@ -1177,7 +1177,7 @@ class World
         if (allocator == nullptr)
         {
             allocator = new PoolAllocator<T>();
-            mAssetAllocatorMap[AssetType<T>::type] = allocator;
+            mAllocators.mAssetAllocatorMap[AssetType<T>::type] = allocator;
         }
 
         return allocator;

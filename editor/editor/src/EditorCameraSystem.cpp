@@ -40,30 +40,34 @@ EditorCameraSystem::~EditorCameraSystem()
 {
 }
 
-std::vector<char> EditorCameraSystem::serialize() const
+void EditorCameraSystem::serialize(std::ostream& out) const
 {
-    return serialize(mId);
+    System::serialize(out);
 }
 
-std::vector<char> EditorCameraSystem::serialize(const Guid &systemId) const
+void EditorCameraSystem::deserialize(std::istream& in)
 {
-    EditorCameraSystemHeader header;
-    header.mSystemId = systemId;
-    header.mUpdateOrder = static_cast<int32_t>(mOrder);
-
-    std::vector<char> data(sizeof(EditorCameraSystemHeader));
-
-    memcpy(&data[0], &header, sizeof(EditorCameraSystemHeader));
-
-    return data;
+    System::deserialize(in);
 }
 
-void EditorCameraSystem::deserialize(const std::vector<char> &data)
+void EditorCameraSystem::serialize(YAML::Node& out) const
 {
-    const EditorCameraSystemHeader *header = reinterpret_cast<const EditorCameraSystemHeader *>(&data[0]);
+    System::serialize(out);
+}
 
-    mId = header->mSystemId;
-    mOrder = static_cast<int>(header->mUpdateOrder);
+void EditorCameraSystem::deserialize(const YAML::Node& in)
+{
+    System::deserialize(in);
+}
+
+int EditorCameraSystem::getType() const
+{
+    return 4000;
+}
+
+std::string EditorCameraSystem::getObjectName() const
+{
+    return "EditorCameraSystem";
 }
 
 void EditorCameraSystem::init(World *world)
