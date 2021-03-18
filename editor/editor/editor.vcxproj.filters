@@ -72,9 +72,6 @@
     <ClCompile Include="src\EditorClipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\WriteToJson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EditorOnlyEntityCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

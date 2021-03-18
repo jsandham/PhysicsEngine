@@ -7,8 +7,7 @@
 
 #include "Guid.h"
 
-//#include "../../../yaml-cpp/include/yaml-cpp/yaml.h"
-#include "YamlExtensions.h"
+#include "GLM.h"
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine

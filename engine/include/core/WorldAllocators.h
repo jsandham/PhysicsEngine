@@ -18,6 +18,8 @@
 #include "../components/SphereCollider.h"
 #include "../components/Transform.h"
 
+#include "../core/Entity.h"
+
 #include "../core/Cubemap.h"
 #include "../core/Font.h"
 #include "../core/Material.h"

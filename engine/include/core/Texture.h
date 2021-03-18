@@ -7,6 +7,8 @@
 #include "Asset.h"
 #include "Guid.h"
 
+#include "yaml-cpp/yaml.h"
+
 namespace PhysicsEngine
 {
 enum class TextureDimension
@@ -90,5 +92,70 @@ template <> struct IsAssetInternal<Texture>
     static constexpr bool value = true;
 };
 } // namespace PhysicsEngine
+
+
+
+namespace YAML
+{
+    // TextureDimension
+    template<>
+    struct convert<PhysicsEngine::TextureDimension> {
+        static Node encode(const PhysicsEngine::TextureDimension& rhs) {
+            Node node;
+            node = static_cast<int>(rhs);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::TextureDimension& rhs) {
+            rhs = static_cast<PhysicsEngine::TextureDimension>(node.as<int>());
+            return true;
+        }
+    };
+
+    // TextureFormat
+    template<>
+    struct convert<PhysicsEngine::TextureFormat> {
+        static Node encode(const PhysicsEngine::TextureFormat& rhs) {
+            Node node;
+            node = static_cast<int>(rhs);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::TextureFormat& rhs) {
+            rhs = static_cast<PhysicsEngine::TextureFormat>(node.as<int>());
+            return true;
+        }
+    };
+
+    // TextureWrapMode
+    template<>
+    struct convert<PhysicsEngine::TextureWrapMode> {
+        static Node encode(const PhysicsEngine::TextureWrapMode& rhs) {
+            Node node;
+            node = static_cast<int>(rhs);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::TextureWrapMode& rhs) {
+            rhs = static_cast<PhysicsEngine::TextureWrapMode>(node.as<int>());
+            return true;
+        }
+    };
+
+    // TextureFilterMode
+    template<>
+    struct convert<PhysicsEngine::TextureFilterMode> {
+        static Node encode(const PhysicsEngine::TextureFilterMode& rhs) {
+            Node node;
+            node = static_cast<int>(rhs);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::TextureFilterMode& rhs) {
+            rhs = static_cast<PhysicsEngine::TextureFilterMode>(node.as<int>());
+            return true;
+        }
+    };
+}
 
 #endif

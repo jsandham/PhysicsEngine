@@ -6,6 +6,8 @@
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
+#include "yaml-cpp/yaml.h"
+#include "GLM.h"
 
 namespace PhysicsEngine
 {
@@ -24,5 +26,26 @@ class Plane
     float signedDistance(glm::vec3 point) const;
 };
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // Plane
+    template<>
+    struct convert<PhysicsEngine::Plane> {
+        static Node encode(const PhysicsEngine::Plane& rhs) {
+            Node node;
+            node["normal"] = rhs.mNormal;
+            node["x0"] = rhs.mX0;
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Plane& rhs) {
+            rhs.mNormal = node["normal"].as<glm::vec3>();
+            rhs.mX0 = node["x0"].as<glm::vec3>();
+
+            return true;
+        }
+    };
+}
 
 #endif

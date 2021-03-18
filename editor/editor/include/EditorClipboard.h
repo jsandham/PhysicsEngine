@@ -30,8 +30,8 @@ struct EditorScene
 {
     std::string name;
     std::string path;
-    std::string metaPath;
-    std::string libraryPath;
+    //std::string metaPath;
+    //std::string libraryPath;
     PhysicsEngine::Guid sceneId;
     bool isDirty;
 };
@@ -87,8 +87,9 @@ class EditorClipboard
 
     void init();
     void openScene(const std::string &name, const std::string &path);
-    void openScene(const std::string &name, const std::string &path, const std::string &metaPath,
-                   const std::string &libraryPath, const PhysicsEngine::Guid &sceneId);
+    //void openScene(const std::string& name, const std::string& path);
+    /*void openScene(const std::string &name, const std::string &path, const std::string &metaPath,
+                   const std::string &libraryPath, const PhysicsEngine::Guid &sceneId);*/
     void openProject(const std::string &name, const std::string &path);
 };
 } // namespace PhysicsEditor

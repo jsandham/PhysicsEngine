@@ -4,6 +4,8 @@
 #define GLM_FORCE_RADIANS
 
 #include "../glm/glm.hpp"
+#include "yaml-cpp/yaml.h"
+#include "GLM.h"
 
 namespace PhysicsEngine
 {
@@ -58,5 +60,58 @@ class Color32
     ~Color32();
 };
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // Color
+    template<>
+    struct convert<PhysicsEngine::Color> {
+        static Node encode(const PhysicsEngine::Color& rhs) {
+            Node node;
+            node.push_back(rhs.r);
+            node.push_back(rhs.g);
+            node.push_back(rhs.b);
+            node.push_back(rhs.a);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Color& rhs) {
+            if (!node.IsSequence() || node.size() != 4) {
+                return false;
+            }
+
+            rhs.r = node[0].as<float>();
+            rhs.g = node[1].as<float>();
+            rhs.b = node[2].as<float>();
+            rhs.a = node[3].as<float>();
+            return true;
+        }
+    };
+
+    // Color32
+    template<>
+    struct convert<PhysicsEngine::Color32> {
+        static Node encode(const PhysicsEngine::Color32& rhs) {
+            Node node;
+            node.push_back(rhs.r);
+            node.push_back(rhs.g);
+            node.push_back(rhs.b);
+            node.push_back(rhs.a);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Color32& rhs) {
+            if (!node.IsSequence() || node.size() != 4) {
+                return false;
+            }
+
+            rhs.r = node[0].as<unsigned char>();
+            rhs.g = node[1].as<unsigned char>();
+            rhs.b = node[2].as<unsigned char>();
+            rhs.a = node[3].as<unsigned char>();
+            return true;
+        }
+    };
+}
 
 #endif

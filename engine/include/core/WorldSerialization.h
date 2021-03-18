@@ -34,9 +34,7 @@ struct SceneHeader
     uint64_t mSignature;
     Guid mSceneId;
     size_t mSize;
-    int32_t mEntityCount;
-    int32_t mComponentCount;
-    int32_t mSystemCount;
+    int32_t mObjectCount;
     uint8_t mMajor;
     uint8_t mMinor;
 };

@@ -2,6 +2,8 @@
 #define SPHERE_H__
 
 #include "../glm/glm.hpp"
+#include "yaml-cpp/yaml.h"
+#include "GLM.h"
 
 namespace PhysicsEngine
 {
@@ -19,4 +21,25 @@ class Sphere
     float getVolume() const;
 };
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // Sphere
+    template<>
+    struct convert<PhysicsEngine::Sphere> {
+        static Node encode(const PhysicsEngine::Sphere& rhs) {
+            Node node;
+            node["centre"] = rhs.mCentre;
+            node["radius"] = rhs.mRadius;
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Sphere& rhs) {
+            rhs.mCentre = node["centre"].as<glm::vec3>();
+            rhs.mRadius = node["radius"].as<float>();
+            return true;
+        }
+    };
+}
+
 #endif

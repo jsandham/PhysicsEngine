@@ -65,11 +65,16 @@ void Mesh::deserialize(std::istream &in)
 void Mesh::serialize(YAML::Node& out) const
 {
     Asset::serialize(out);
+
+    out["source"] = "";
 }
 
 void Mesh::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
+
+    std::string source = in["source"].as<std::string>();
+    load(source);
 }
 
 int Mesh::getType() const
@@ -84,6 +89,10 @@ std::string Mesh::getObjectName() const
 
 void Mesh::load(const std::string &filepath)
 {
+    if (filepath.empty()) {
+        return;
+    }
+
     obj_mesh mesh;
 
     if (obj_load(filepath, mesh))

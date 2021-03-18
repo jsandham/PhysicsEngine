@@ -50,6 +50,9 @@ namespace PhysicsEngine
 class World
 {
   private:
+    // scene id
+    Guid  mSceneId;
+
     // allocators for assets, entities, components, and systems
     WorldAllocators mAllocators;
 
@@ -72,17 +75,19 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
-    bool loadAssetFromBinary(const std::string &filePath);
+    bool loadAssetFromYAML(const std::string& filePath);
+    bool loadSceneFromYAML(const std::string& filePath);
+    bool writeSceneToYAML(const std::string& filePath);
+
     bool loadSceneFromBinary(const std::string &filePath);
     bool writeSceneToBinary(const std::string &filePath);
-
-    bool loadSceneFromYAML(const std::string &filePath);
-    bool writeSceneToYAML(const std::string &filePath);
 
     void latentDestroyEntitiesInWorld();
 
     size_t getNumberOfEntities() const;
     size_t getNumberOfUpdatingSystems() const;
+
+    Guid getSceneId() const;
 
     template <typename T> size_t getNumberOfSystems() const
     {
@@ -852,12 +857,13 @@ class World
     Guid getOverdrawShaderId() const;
 
   private:
-    void loadAssetFromBinary(std::ifstream &in, const ObjectHeader &header);
+    bool loadBinary(std::ifstream &in, const ObjectHeader &header);
     void loadEntityFromBinary(std::ifstream &in, const ObjectHeader &header);
     void loadComponentFromBinary(std::ifstream &in, const ObjectHeader &header);
     void loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header);
 
     bool loadYAML(const YAML::Node& in);
+    void loadAssetFromYAML(const YAML::Node& in, const Guid id, int type);
     void loadEntityFromYAML(const YAML::Node& in, const Guid id);
     void loadComponentFromYAML(const YAML::Node& in, const Guid id, int type);
     void loadSystemFromYAML(const YAML::Node& in, const Guid id, int type);
@@ -899,27 +905,20 @@ class World
             return nullptr;
         }
 
-        // Probably just call getComponentsOnEntity(entityId); ??
+        std::vector<std::pair<Guid, int>> componentsOnEntity = getComponentsOnEntity(entityId);
 
-        auto it1 = mIdState.mEntityIdToComponentIds.find(entityId);
-
-        if (it1 != mIdState.mEntityIdToComponentIds.end())
+        for (size_t i = 0; i < componentsOnEntity.size(); i++)
         {
-            std::vector<std::pair<Guid, int>> &componentsOnEntity = it1->second;
-
-            for (size_t i = 0; i < componentsOnEntity.size(); i++)
+            if (ComponentType<T>::type == componentsOnEntity[i].second)
             {
-                if (ComponentType<T>::type == componentsOnEntity[i].second)
+                std::unordered_map<Guid, int>::const_iterator it =
+                    mIdState.mIdToGlobalIndex.find(componentsOnEntity[i].first);
+                if (it != mIdState.mIdToGlobalIndex.end())
                 {
-                    std::unordered_map<Guid, int>::const_iterator it2 =
-                        mIdState.mIdToGlobalIndex.find(componentsOnEntity[i].first);
-                    if (it2 != mIdState.mIdToGlobalIndex.end())
-                    {
-                        return allocator->get(it2->second);
-                    }
-
-                    break;
+                    return allocator->get(it->second);
                 }
+
+                break;
             }
         }
 
@@ -1208,11 +1207,6 @@ class World
     {
         mIdState.mIdToGlobalIndex.erase(id);
         mIdState.mIdToType.erase(id);
-    }
-
-    template <typename T> bool verifyData_impl(const std::vector<T> &data) const
-    {
-        return true;
     }
 
     // Explicit specializations

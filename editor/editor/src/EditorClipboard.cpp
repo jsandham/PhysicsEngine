@@ -101,20 +101,26 @@ std::set<PhysicsEngine::Guid> &EditorClipboard::getEditorOnlyIds()
     return editorOnlyEntityIds;
 }
 
-void EditorClipboard::openScene(const std::string &name, const std::string &path)
-{
-    scene.name = name;
-    scene.path = path;
-}
+//void EditorClipboard::openScene(const std::string &name, const std::string &path)
+//{
+//    scene.name = name;
+//    scene.path = path;
+//}
 
-void EditorClipboard::openScene(const std::string &name, const std::string &path, const std::string &metaPath,
-                                const std::string &libraryPath, const PhysicsEngine::Guid &sceneId)
+//void EditorClipboard::openScene(const std::string &name, const std::string &path, const std::string &metaPath,
+//                                const std::string &libraryPath, const PhysicsEngine::Guid &sceneId)
+//{
+//    scene.name = name;
+//    scene.path = path;
+//    scene.metaPath = metaPath;
+//    scene.libraryPath = libraryPath;
+//    scene.sceneId = sceneId;
+//}
+void EditorClipboard::openScene(const std::string& name, const std::string& path)
 {
     scene.name = name;
     scene.path = path;
-    scene.metaPath = metaPath;
-    scene.libraryPath = libraryPath;
-    scene.sceneId = sceneId;
+    scene.sceneId = getWorld()->getSceneId();// sceneId;
 }
 
 void EditorClipboard::openProject(const std::string &name, const std::string &path)

@@ -1,10 +1,10 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include "../../include/core/Material.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
-#include "../../include/core/mat_load.h"
 
 #include "../../include/graphics/Graphics.h"
 
@@ -62,6 +62,10 @@ void Material::serialize(YAML::Node& out) const
 
     out["shaderId"] = mShaderId;
     out["renderQueue"] = mRenderQueue;
+    out["uniformCount"] = mUniforms.size();
+    for (size_t i = 0; i < mUniforms.size(); i++) {
+        out[std::to_string(i)] = mUniforms[i];
+    }
 }
 
 void Material::deserialize(const YAML::Node& in)
@@ -70,6 +74,12 @@ void Material::deserialize(const YAML::Node& in)
 
     mShaderId = in["shaderId"].as<Guid>();
     mRenderQueue = in["renderQueue"].as<RenderQueue>();
+    size_t uniformCount = in["uniformCount"].as<size_t>();
+    
+    mUniforms.resize(uniformCount);
+    for (size_t i = 0; i < mUniforms.size(); i++) {
+        mUniforms[i] = in[std::to_string(i)].as<ShaderUniform>();
+    }
 
     mShaderChanged = true;
 }
@@ -84,26 +94,45 @@ std::string Material::getObjectName() const
     return PhysicsEngine::MATERIAL_NAME;
 }
 
-void Material::load(const std::string &filepath)
+void Material::writeToYAML(const std::string& filepath)
 {
-    material_data mat;
+    std::ofstream out;
+    out.open(filepath);
 
-    if (mat_load(filepath, mat))
-    {
-        mUniforms = mat.mUniforms;
-        mShaderId = mat.mShaderId;
-        mRenderQueue = mat.mRenderQueue;
+    if (!out.is_open()) {
+        return;
+    }
 
-        mShaderChanged = true;
-    }
-    else
-    {
-        std::string message = "Error: Could not load material " + filepath + "\n";
-        Log::error(message.c_str());
-    }
+    YAML::Node n;
+    serialize(n);
+
+    YAML::Node materialNode;
+    materialNode[getObjectName()] = n;
+
+    out << materialNode;
+    out << "\n";
+
+    out.close();
 }
 
-void Material::load(Guid shaderId)
+void Material::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap()) {
+        return;
+    }
+   
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
+        if (it->first.IsScalar() && it->second.IsMap()) {
+            deserialize(it->second);
+        }
+    }
+
+    mShaderChanged = true;
+}
+
+void Material::changeShader(Guid shaderId)
 {
     mShaderId = shaderId;
 

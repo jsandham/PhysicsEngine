@@ -2,6 +2,8 @@
 #define LINE_H__
 
 #include "../glm/glm.hpp"
+#include "yaml-cpp/yaml.h"
+#include "GLM.h"
 
 namespace PhysicsEngine
 {
@@ -19,5 +21,26 @@ class Line
     float getLength() const;
 };
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // Line
+    template<>
+    struct convert<PhysicsEngine::Line> {
+        static Node encode(const PhysicsEngine::Line& rhs) {
+            Node node;
+            node["start"] = rhs.mStart;
+            node["end"] = rhs.mEnd;
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Line& rhs) {
+            rhs.mStart = node["start"].as<glm::vec3>();
+            rhs.mEnd = node["end"].as<glm::vec3>();
+
+            return true;
+        }
+    };
+}
 
 #endif

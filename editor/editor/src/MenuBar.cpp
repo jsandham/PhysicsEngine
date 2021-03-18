@@ -343,28 +343,62 @@ void MenuBar::newScene(EditorClipboard &clipboard)
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
-    clipboard.openScene("default.scene", "", "", "", Guid::newGuid());
+    /*clipboard.openScene("default.scene", "", "", "", Guid::newGuid());*/
+    clipboard.openScene("default.scene", "");
 }
 
-void MenuBar::openScene(EditorClipboard &clipboard, std::string name, std::string path)
+//void MenuBar::openScene(EditorClipboard &clipboard, std::string name, std::string path)
+//{
+//    // check to make sure the scene is part of the current project
+//    if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
+//    {
+//        std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " +
+//                                   clipboard.getProjectPath() + "\n";
+//        Log::error(&errorMessage[0]);
+//        return;
+//    }
+//
+//    // meta scene file path
+//    std::string sceneMetaFilePath = path.substr(0, path.find(".")) + ".json";
+//
+//    // get guid from scene meta file
+//    Guid sceneId = PhysicsEditor::findGuidFromMetaFilePath(sceneMetaFilePath);
+//
+//    // binary scene file path
+//    std::string binarySceneFilePath = clipboard.getProjectPath() + "\\library\\" + sceneId.toString() + ".sdata";
+//
+//    // mark any (non-editor) entities in currently opened scene to be latent destroyed
+//    // TODO: Need todestroy assets too!
+//    clipboard.getWorld()->latentDestroyEntitiesInWorld();
+//
+//    // reset editor camera to default position
+//    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
+//
+//    // clear any dragged and selected items on clipboard
+//    clipboard.clearDraggedItem();
+//    clipboard.clearSelectedItem();
+//
+//    // load binary version of scene into world (ignoring systems and cameras)
+//    if (clipboard.getWorld()->loadSceneFromEditor(binarySceneFilePath))
+//    {
+//        clipboard.openScene(name, path, sceneMetaFilePath, binarySceneFilePath, sceneId);
+//    }
+//    else
+//    {
+//        std::string errorMessage = "Failed to load scene " + binarySceneFilePath + " into world\n";
+//        Log::error(&errorMessage[0]);
+//    }
+//}
+void MenuBar::openScene(EditorClipboard& clipboard, std::string name, std::string path)
 {
     // check to make sure the scene is part of the current project
     if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
     {
         std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " +
-                                   clipboard.getProjectPath() + "\n";
+            clipboard.getProjectPath() + "\n";
         Log::error(&errorMessage[0]);
         return;
     }
-
-    // meta scene file path
-    std::string sceneMetaFilePath = path.substr(0, path.find(".")) + ".json";
-
-    // get guid from scene meta file
-    Guid sceneId = PhysicsEditor::findGuidFromMetaFilePath(sceneMetaFilePath);
-
-    // binary scene file path
-    std::string binarySceneFilePath = clipboard.getProjectPath() + "\\library\\" + sceneId.toString() + ".sdata";
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
     // TODO: Need todestroy assets too!
@@ -377,21 +411,34 @@ void MenuBar::openScene(EditorClipboard &clipboard, std::string name, std::strin
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
-    // load binary version of scene into world (ignoring systems and cameras)
-    if (clipboard.getWorld()->loadSceneFromEditor(binarySceneFilePath))
+    // load scene into world (ignoring systems and cameras)
+    if (clipboard.getWorld()->loadSceneFromYAML(path)) // from editor?
     {
-        clipboard.openScene(name, path, sceneMetaFilePath, binarySceneFilePath, sceneId);
+        clipboard.openScene(name, path);
     }
     else
     {
-        std::string errorMessage = "Failed to load scene " + binarySceneFilePath + " into world\n";
+        std::string errorMessage = "Failed to load scene " + path + " into world\n";
         Log::error(&errorMessage[0]);
     }
 }
 
-void MenuBar::saveScene(EditorClipboard &clipboard, std::string name, std::string path)
+//void MenuBar::saveScene(EditorClipboard &clipboard, std::string name, std::string path)
+//{
+//    if (PhysicsEditor::writeSceneToJson(clipboard.getWorld(), path, clipboard.getEditorOnlyIds()))
+//    {
+//        clipboard.openScene(name, path);
+//    }
+//    else
+//    {
+//        std::string message = "Could not save world to scene file " + path + "\n";
+//        Log::error(message.c_str());
+//        return;
+//    }
+//}
+void MenuBar::saveScene(EditorClipboard& clipboard, std::string name, std::string path)
 {
-    if (PhysicsEditor::writeSceneToJson(clipboard.getWorld(), path, clipboard.getEditorOnlyIds()))
+    if (clipboard.getWorld()->writeSceneToYAML(path)) // pass  clipboard.getEditorOnlyIds()???
     {
         clipboard.openScene(name, path);
     }

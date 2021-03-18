@@ -27,8 +27,8 @@ void Hierarchy::init(EditorClipboard &clipboard)
 
 void Hierarchy::update(EditorClipboard &clipboard)
 {
-    rebuildRequired = entries.size() != std::max(0, clipboard.getWorld()->getNumberOfEntities() -
-        (int)clipboard.getEditorOnlyIds().size());
+    rebuildRequired = entries.size() != std::max((size_t)0, clipboard.getWorld()->getNumberOfEntities() -
+        clipboard.getEditorOnlyIds().size());
 
     // If number of entities has changed, update cached entity ids and names
     if (rebuildRequired)
@@ -152,7 +152,7 @@ void Hierarchy::update(EditorClipboard &clipboard)
 
 void Hierarchy::rebuildEntityLists(World *world, const std::set<Guid> &editorOnlyEntityIds)
 {
-    int numberOfEntities = std::max(0, world->getNumberOfEntities() - (int)editorOnlyEntityIds.size());
+    int numberOfEntities = std::max((size_t)0, world->getNumberOfEntities() - editorOnlyEntityIds.size());
 
     entries.resize(numberOfEntities);
 

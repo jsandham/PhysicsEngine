@@ -61,7 +61,7 @@ class LibraryDirectory
     void watch(std::string projectPath);
     void update();
     void loadQueuedAssetsIntoWorld(PhysicsEngine::World *world);
-    void generateBinaryLibraryFile(std::string filePath);
+    //void generateBinaryLibraryFile(std::string filePath);
 
     PhysicsEngine::Guid getFileId(const std::string &filePath) const;
 };

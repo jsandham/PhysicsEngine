@@ -44,7 +44,7 @@ Transform *PhysicsEditor::createEditorTransformGizmo(World *world, std::set<Guid
     shader->load(InternalShaders::colorVertexShader, InternalShaders::colorFragmentShader, "");
     shader->compile();
 
-    material->load(shader->getId());
+    material->changeShader(shader->getId());
     material->onShaderChanged(world);
     material->setColor("color", Color::red);
 
@@ -79,7 +79,7 @@ Transform *PhysicsEditor::createEditorLightGizmo(PhysicsEngine::World *world,
     shader->load(InternalShaders::colorVertexShader, InternalShaders::colorFragmentShader, "");
     shader->compile();
 
-    material->load(shader->getId());
+    material->changeShader(shader->getId());
     material->onShaderChanged(world);
     material->setColor("color", Color::red);
 

@@ -6,19 +6,19 @@
 #include "core/Entity.h"
 #include "core/Log.h"
 #include "core/WorldSerialization.h"
-#include "core/WriteInternalToJson.h"
-#include "core/WriteToJson.h"
+//#include "core/WriteInternalToJson.h"
+//#include "core/WriteToJson.h"
 
 #include "components/BoxCollider.h"
 #include "components/Light.h"
 #include "components/MeshRenderer.h"
 #include "components/SphereCollider.h"
 
-#include "json/json.hpp"
+//#include "json/json.hpp"
 
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;
-using namespace json;
+//using namespace json;
 
 //bool PhysicsEditor::writeAssetToBinary(std::string filePath, std::string fileExtension, Guid id,
 //                                       std::string outFilePath)
@@ -680,47 +680,32 @@ using namespace json;
 //    return true;
 //}
 
-bool PhysicsEditor::createMetaFile(std::string metaFilePath)
-{
-    std::fstream metaFile;
+//bool PhysicsEditor::createMetaFile(std::string metaFilePath)
+//{
+//    std::fstream metaFile;
+//
+//    metaFile.open(metaFilePath, std::fstream::out);
+//
+//    if (metaFile.is_open())
+//    {
+//        YAML::Node node;
+//        node["id"] = PhysicsEngine::Guid::newGuid();
+//
+//        metaFile.close();
+//
+//        return true;
+//    }
+//
+//    return false;
+//}
 
-    metaFile.open(metaFilePath, std::fstream::out);
-
-    if (metaFile.is_open())
-    {
-        metaFile << "{\n";
-        metaFile << "\t\"id\" : \"" + PhysicsEngine::Guid::newGuid().toString() + "\"\n";
-        metaFile << "}\n";
-        metaFile.close();
-
-        return true;
-    }
-
-    return false;
-}
-
-PhysicsEngine::Guid PhysicsEditor::findGuidFromMetaFilePath(std::string metaFilePath)
-{
-    // get guid from meta file
-    std::fstream metaFile;
-    metaFile.open(metaFilePath, std::fstream::in);
-
-    if (metaFile.is_open())
-    {
-        std::ostringstream contents;
-        contents << metaFile.rdbuf();
-
-        metaFile.close();
-
-        std::string jsonContentString = contents.str();
-        json::JSON object = json::JSON::Load(contents.str());
-
-        return object["id"].ToString();
-    }
-    else
-    {
-        std::string errorMessage = "An error occured when trying to open meta file: " + metaFilePath + "\n";
-        PhysicsEngine::Log::error(&errorMessage[0]);
-        return PhysicsEngine::Guid::INVALID;
-    }
-}
+//PhysicsEngine::Guid PhysicsEditor::findGuidFromFilePath(std::string filePath)
+//{
+//    YAML::Node in = YAML::LoadFile(filePath);
+//
+//    if (in["id"]) {
+//        return in["id"].as<PhysicsEngine::Guid>();
+//    }
+//
+//    return PhysicsEngine::Guid::INVALID;
+//}

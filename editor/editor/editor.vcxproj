@@ -109,8 +109,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\imgui\lib\debug;$(SolutionDir)..\simplefilewatcher\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\imgui\lib\debug;$(SolutionDir)..\simplefilewatcher\lib\debug;$(SolutionDir)..\yaml-cpp\build\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -209,7 +209,6 @@
     <ClCompile Include="src\views\ProjectWindow.cpp" />
     <ClCompile Include="src\views\SceneView.cpp" />
     <ClCompile Include="src\views\Window.cpp" />
-    <ClCompile Include="src\WriteToJson.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Command.h" />

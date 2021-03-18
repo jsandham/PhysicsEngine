@@ -12,6 +12,8 @@
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
+#include "yaml-cpp/yaml.h"
+
 #include "Plane.h"
 
 namespace PhysicsEngine
@@ -58,5 +60,29 @@ class Frustum
     bool containsPoint(const glm::vec3 &point) const;
 };
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // Frustum
+    template<>
+    struct convert<PhysicsEngine::Frustum> {
+        static Node encode(const PhysicsEngine::Frustum& rhs) {
+            Node node;
+            node["fov"] = rhs.mFov;
+            node["aspectRatio"] = rhs.mAspectRatio;
+            node["nearPlane"] = rhs.mNearPlane;
+            node["farPlane"] = rhs.mFarPlane;
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::Frustum& rhs) {
+            rhs.mFov = node["fov"].as<float>();
+            rhs.mAspectRatio = node["aspectRatio"].as<float>();
+            rhs.mNearPlane = node["nearPlane"].as<float>();
+            rhs.mFarPlane = node["farPlane"].as<float>();
+            return true;
+        }
+    };
+}
 
 #endif

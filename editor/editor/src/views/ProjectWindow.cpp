@@ -94,7 +94,8 @@ void ProjectWindow::renderNewMode(EditorClipboard& clipboard)
             if (success)
             {
                 clipboard.openProject(name, path);
-                clipboard.openScene("", "", "", "", Guid::INVALID);
+                /*clipboard.openScene("", "", "", "", Guid::INVALID);*/
+                clipboard.openScene("", "");
             }
             else
             {
@@ -147,7 +148,8 @@ void ProjectWindow::renderOpenMode(EditorClipboard& clipboard)
     if (ImGui::Button("Open Project"))
     {
         clipboard.openProject(getProjectName(), getSelectedFolderPath());
-        clipboard.openScene("", "", "", "", Guid::INVALID);
+        /*clipboard.openScene("", "", "", "", Guid::INVALID);*/
+        clipboard.openScene("", "");
 
         // mark any (non-editor) entities in currently opened scene to be latent destroyed
         clipboard.getWorld()->latentDestroyEntitiesInWorld();

@@ -293,6 +293,10 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mTransformIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            //state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(componentId, componentType));
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
+
+            std::cout << "loading transform with id: " << component->getId().toString() << " and entity id: " << component->getEntityId().toString() << " to index: " << index << std::endl;
         }
     }
     else if (type == ComponentType<Rigidbody>::type)
@@ -305,6 +309,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mRigidbodyIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<Camera>::type)
@@ -317,6 +322,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mCameraIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<MeshRenderer>::type)
@@ -329,6 +335,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mMeshRendererIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<LineRenderer>::type)
@@ -341,6 +348,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mLineRendererIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<Light>::type)
@@ -353,6 +361,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mLightIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<BoxCollider>::type)
@@ -365,6 +374,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mBoxColliderIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<SphereCollider>::type)
@@ -377,6 +387,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mSphereColliderIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<MeshCollider>::type)
@@ -389,6 +400,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mMeshColliderIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else if (type == ComponentType<CapsuleCollider>::type)
@@ -401,6 +413,7 @@ Component* loadInternalComponent_Impl(WorldAllocators& allocators, WorldIdState&
             state.mCapsuleColliderIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
         }
     }
     else

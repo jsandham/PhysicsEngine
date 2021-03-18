@@ -102,6 +102,7 @@ void Texture2D::serialize(YAML::Node& out) const
 
     out["width"] = mWidth;
     out["height"] = mHeight;
+    out["source"] = "";
 }
 
 void Texture2D::deserialize(const YAML::Node& in)
@@ -110,6 +111,9 @@ void Texture2D::deserialize(const YAML::Node& in)
 
     mWidth = in["width"].as<int>();
     mHeight = in["height"].as<int>();
+
+    std::string source = in["source"].as<std::string>();
+    load(source);
 }
 
 int Texture2D::getType() const
@@ -124,6 +128,10 @@ std::string Texture2D::getObjectName() const
 
 void Texture2D::load(const std::string &filepath)
 {
+    if (filepath.empty()) {
+        return;
+    }
+
     stbi_set_flip_vertically_on_load(true);
 
     int width, height, numChannels;

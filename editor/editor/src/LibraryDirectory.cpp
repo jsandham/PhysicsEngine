@@ -13,7 +13,7 @@
 #include "components/Transform.h"
 #include "core/Entity.h"
 
-#include "json/json.hpp"
+//#include "json/json.hpp"
 
 #include <fstream>
 #include <set>
@@ -21,7 +21,7 @@
 
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;
-using namespace json;
+//using namespace json;
 
 LibraryDirectoryListener::LibraryDirectoryListener()
 {
@@ -41,7 +41,7 @@ void LibraryDirectoryListener::handleFileAction(FW::WatchID watchid, const FW::S
 
     if (FW::Action::Add || FW::Action::Modified)
     {
-        directory->generateBinaryLibraryFile(dir + "\\" + filename);
+        //directory->generateBinaryLibraryFile(dir + "\\" + filename);
     }
 }
 
@@ -82,7 +82,7 @@ void LibraryDirectory::watch(std::string projectPath)
     // generate binary library file from project data file
     for (auto file : filesInProject)
     {
-        generateBinaryLibraryFile(file);
+        //generateBinaryLibraryFile(file);
     }
 
     // remove old watch
@@ -97,69 +97,87 @@ void LibraryDirectory::update()
     mFileWatcher.update();
 }
 
-void LibraryDirectory::generateBinaryLibraryFile(std::string filePath)
-{
-    std::string extension = getFileExtension(filePath);
-
-    if (extension != "json")
-    {
-        std::string metaFilePath = filePath.substr(0, filePath.find_last_of(".")) + ".json";
-
-        if (!doesFileExist(metaFilePath))
-        {
-            if (!createMetaFile(metaFilePath))
-            {
-                std::string errorMessage = "Could not create meta file " + metaFilePath + "\n";
-                PhysicsEngine::Log::error(errorMessage.c_str());
-                return;
-            }
-        }
-
-        PhysicsEngine::Guid id = findGuidFromMetaFilePath(metaFilePath);
-
-        filePathToId[filePath] = id;
-
-        // create binary version of scene or asset in library directory
-        std::string binaryFilePath = mLibraryPath + "\\" + id.toString();
-
-        bool success = false;
-
-        if (extension == "scene")
-        {
-            binaryFilePath += ".sdata";
-            success = PhysicsEditor::writeSceneToBinary(filePath, id, binaryFilePath);
-        }
-        else if (extension == "material" || extension == "obj" || extension == "shader" || extension == "png")
-        {
-            binaryFilePath += ".data";
-            success = PhysicsEditor::writeAssetToBinary(filePath, extension, id, binaryFilePath);
-        }
-
-        if (!success)
-        {
-            std::string errorMessage =
-                "An error occured when trying to create binary library version of data: " + filePath + "\n";
-            PhysicsEngine::Log::error(errorMessage.c_str());
-            return;
-        }
-
-        mBuffer.push_back(binaryFilePath);
-    }
-}
+//void LibraryDirectory::generateBinaryLibraryFile(std::string filePath)
+//{
+//    std::string extension = getFileExtension(filePath);
+//
+//    if (extension != "meta")
+//    {
+//        std::string metaFilePath = filePath.substr(0, filePath.find_last_of(".")) + ".meta";
+//
+//        if (!doesFileExist(metaFilePath))
+//        {
+//            if (!createMetaFile(metaFilePath))
+//            {
+//                std::string errorMessage = "Could not create meta file " + metaFilePath + "\n";
+//                PhysicsEngine::Log::error(errorMessage.c_str());
+//                return;
+//            }
+//        }
+//
+//        PhysicsEngine::Guid id = findGuidFromMetaFilePath(metaFilePath);
+//
+//        filePathToId[filePath] = id;
+//
+//        // create binary version of scene or asset in library directory
+//        std::string binaryFilePath = mLibraryPath + "\\" + id.toString();
+//
+//        bool success = false;
+//
+//        if (extension == "scene")
+//        {
+//            binaryFilePath += ".sdata";
+//            success = PhysicsEditor::writeSceneToBinary(filePath, id, binaryFilePath);
+//        }
+//        else if (extension == "material" || extension == "obj" || extension == "shader" || extension == "png")
+//        {
+//            binaryFilePath += ".data";
+//            success = PhysicsEditor::writeAssetToBinary(filePath, extension, id, binaryFilePath);
+//        }
+//
+//        if (!success)
+//        {
+//            std::string errorMessage =
+//                "An error occured when trying to create binary library version of data: " + filePath + "\n";
+//            PhysicsEngine::Log::error(errorMessage.c_str());
+//            return;
+//        }
+//
+//        mBuffer.push_back(binaryFilePath);
+//    }
+//}
 
 void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World *world)
 {
     // load any assets queued up in buffer into world
     for (size_t i = 0; i < mBuffer.size(); i++)
     {
-        if (getFileExtension(mBuffer[i]) == "data")
+        std::string extension = getFileExtension(mBuffer[i]);
+
+        bool success = false;
+        if (extension == "texture") {
+            success = world->loadAssetFromYAML(mBuffer[i]);
+        }
+        else if (extension == "mesh")
         {
-            if (!world->loadAsset(mBuffer[i]))
+            success = world->loadAssetFromYAML(mBuffer[i]);
+        }
+        else if (extension == "shader")
+        {
+            success = world->loadAssetFromYAML(mBuffer[i]);
+        }
+        else if (extension == "material")
+        {
+            success = world->loadAssetFromYAML(mBuffer[i]);
+        }
+        /*if (extension == "data")
+        {
+            if (!world->loadAssetFromBinary(mBuffer[i]))
             {
                 std::string errorMessage = "Could not load asset: " + mBuffer[i] + "\n";
                 Log::error(errorMessage.c_str());
             }
-        }
+        }*/
     }
 
     // clear buffer

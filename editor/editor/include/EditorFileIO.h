@@ -15,8 +15,8 @@ namespace PhysicsEditor
 //bool writeSceneToJson(PhysicsEngine::World *world, std::string outfilePath,
 //                      std::set<PhysicsEngine::Guid> editorOnlyEntityIds);
 
-bool createMetaFile(std::string metaFilePath);
-PhysicsEngine::Guid findGuidFromMetaFilePath(std::string metaFilePath);
+//bool createMetaFile(std::string metaFilePath);
+//PhysicsEngine::Guid findGuidFromFilePath(std::string filePath);
 } // namespace PhysicsEditor
 
 #endif

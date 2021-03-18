@@ -17,6 +17,8 @@ using namespace PhysicsEngine;
 
 World::World()
 {
+    mSceneId = Guid::INVALID;
+
     // load default included meshes
     mDefaultAssets.mSphereMeshId = InternalMeshes::loadSphereMesh(this);
     mDefaultAssets.mCubeMeshId = InternalMeshes::loadCubeMesh(this);
@@ -53,140 +55,28 @@ World::~World()
 {
 }
 
-bool World::loadAssetFromBinary(const std::string &filePath)
+Guid World::getSceneId() const
 {
-    std::ifstream file;
-    file.open(filePath, std::ios::binary);
-
-    if (!file.is_open())
-    {
-        std::string errorMessage = "Failed to open asset bundle " + filePath + "\n";
-        Log::error(&errorMessage[0]);
-        return false;
-    }
-
-    AssetHeader header;
-    PhysicsEngine::read<AssetHeader>(file, header);
-
-    assert(header.mSignature == ASSET_FILE_SIGNATURE && "Trying to load an invalid binary asset file\n");
-
-    std::vector<ObjectHeader> assets(header.mAssetCount);
-
-    for (size_t i = 0; i < assets.size(); i++)
-    {
-        PhysicsEngine::read<ObjectHeader>(file, assets[i]);
-    }
-
-    for (size_t i = 0; i < assets.size(); i++)
-    {
-        loadAssetFromBinary(file, assets[i]);
-    }
-
-    file.close();
-
-    return true;
+    return mSceneId;
 }
 
-bool World::loadSceneFromBinary(const std::string &filePath)
+bool World::loadAssetFromYAML(const std::string& filePath)
 {
-    std::ifstream file;
-    file.open(filePath, std::ios::binary);
+    YAML::Node in = YAML::LoadFile(filePath);
 
-    if (!file.is_open())
-    {
-        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-        Log::error(&errorMessage[0]);
+    if (!in.IsMap()) {
         return false;
     }
 
-    SceneHeader sceneHeader;
-    PhysicsEngine::read<SceneHeader>(file, sceneHeader);
-
-    assert(sceneHeader.mSignature == SCENE_FILE_SIGNATURE && "Trying to load an invalid binary scene file\n");
-
-    std::vector<ObjectHeader> entities(sceneHeader.mEntityCount);
-    std::vector<ObjectHeader> components(sceneHeader.mComponentCount);
-    std::vector<ObjectHeader> systems(sceneHeader.mSystemCount);
-
-    for (size_t i = 0; i < entities.size(); i++)
-    {
-        PhysicsEngine::read<ObjectHeader>(file, entities[i]);
-    }
-
-    for (size_t i = 0; i < components.size(); i++)
-    {
-        PhysicsEngine::read<ObjectHeader>(file, components[i]);
-    }
-
-    for (size_t i = 0; i < systems.size(); i++)
-    {
-        PhysicsEngine::read<ObjectHeader>(file, systems[i]);
-    }
-
-    for (size_t i = 0; i < entities.size(); i++)
-    {
-        loadEntityFromBinary(file, entities[i]);
-    }
-
-    for (size_t i = 0; i < components.size(); i++)
-    {
-        loadComponentFromBinary(file, components[i]);
-    }
-
-    for (size_t i = 0; i < systems.size(); i++)
-    {
-        loadSystemFromBinary(file, systems[i]);
-    }
-
-    file.close();
-
-    return true;
-}
-
-bool World::writeSceneToBinary(const std::string& filePath)
-{
-    std::ofstream file;
-    file.open(filePath, std::ios::binary);
-
-    if (!file.is_open())
-    {
-        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-        Log::error(&errorMessage[0]);
-        return false;
-    }
-
-    /*SceneHeader sceneHeader;
-    sceneHeader.mSignature = SCENE_FILE_SIGNATURE;
-    sceneHeader.mEntityCount = getNumberOfEntities();
-    sceneHeader.mComponentCount = getNumberOfComponents();
-    sceneHeader.mSystemCount = getNumberOfSystems();
-
-    PhysicsEngine::write<SceneHeader>(file, sceneHeader);
-
-    for (size_t i = 0; i < getNumberOfEntities(); i++) {
-        Entity* entity = getEntityByIndex(i);
-
-        entity->serialize(file);
-
-        std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
-        for (size_t j = 0; j < temp.size(); j++)
-        {
-            Component* component = nullptr;
-
-            if (Component::isInternal(temp[j].second))
-            {
-                component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
+        if (it->first.IsScalar() && it->second.IsMap()) {
+            if (!loadYAML(it->second)) {
+                return false;
             }
-            else
-            {
-                component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-            }
-
-            component->serialize(file);
         }
-    }*/
+    }
 
-    return false;
+    return true;
 }
 
 bool World::loadSceneFromYAML(const std::string& filePath)
@@ -197,16 +87,20 @@ bool World::loadSceneFromYAML(const std::string& filePath)
         return false;
     }
 
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar()) {
+    if (in["id"])
+    {
+        mSceneId = in["id"].as<Guid>();
+    }
 
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
+        if (it->first.IsScalar() && it->second.IsMap()) {
             if (!loadYAML(it->second)) {
                 return false;
             }
         }
     }
 
-    return false;
+    return true;
 }
 
 bool World::writeSceneToYAML(const std::string& filePath)
@@ -235,12 +129,12 @@ bool World::writeSceneToYAML(const std::string& filePath)
         std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
         for (size_t j = 0; j < temp.size(); j++) {
             Component* component = nullptr;
-            
+
             if (Component::isInternal(temp[j].second))
             {
                 component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
             }
-            else 
+            else
             {
                 component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
             }
@@ -261,16 +155,113 @@ bool World::writeSceneToYAML(const std::string& filePath)
     return true;
 }
 
-void World::loadAssetFromBinary(std::ifstream &in, const ObjectHeader &header)
+bool World::loadSceneFromBinary(const std::string &filePath)
 {
-    if (header.mIsTnternal)
+    std::ifstream file;
+    file.open(filePath, std::ios::binary);
+
+    if (!file.is_open())
     {
-        PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, header.mId, header.mType);
+        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
+        Log::error(&errorMessage[0]);
+        return false;
     }
-    else
+
+    SceneHeader sceneHeader;
+    PhysicsEngine::read<SceneHeader>(file, sceneHeader);
+
+    assert(sceneHeader.mSignature == SCENE_FILE_SIGNATURE && "Trying to load an invalid binary scene file\n");
+
+    while(file.peek() != EOF)
     {
-        PhysicsEngine::loadAsset(mAllocators, mIdState, in, header.mId, header.mType);
+        ObjectHeader header;
+        PhysicsEngine::read<ObjectHeader>(file, header);
+
+        if (!loadBinary(file, header))
+        {
+            break;
+        }
     }
+
+    file.close();
+
+    return true;
+}
+
+bool World::writeSceneToBinary(const std::string& filePath)
+{
+    std::ofstream file;
+    file.open(filePath, std::ios::binary);
+
+    if (!file.is_open())
+    {
+        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
+        Log::error(&errorMessage[0]);
+        return false;
+    }
+
+    SceneHeader sceneHeader;
+    sceneHeader.mSignature = SCENE_FILE_SIGNATURE;
+
+    PhysicsEngine::write<SceneHeader>(file, sceneHeader);
+
+    ObjectHeader header;
+    for (size_t i = 0; i < getNumberOfEntities(); i++) {
+        Entity* entity = getEntityByIndex(i);
+        
+        header.mId = entity->getId();
+        header.mType = entity->getType();
+        header.mIsTnternal = true;
+
+        PhysicsEngine::write<ObjectHeader>(file, header);
+        entity->serialize(file);
+
+        std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
+        for (size_t j = 0; j < temp.size(); j++)
+        {
+            Component* component = nullptr;
+
+            if (Component::isInternal(temp[j].second))
+            {
+                component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+            }
+            else
+            {
+                component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+            }
+
+            header.mId = component->getId();
+            header.mType = component->getType();
+            header.mIsTnternal = Component::isInternal(temp[j].second);
+
+            PhysicsEngine::write<ObjectHeader>(file, header);
+
+            component->serialize(file);
+        }
+    }
+
+    return false;
+}
+
+bool World::loadBinary(std::ifstream& in, const ObjectHeader& header)
+{
+    if (PhysicsEngine::isEntity(header.mType))
+    {
+        loadEntityFromBinary(in, header);
+    }
+    else if (PhysicsEngine::isComponent(header.mType))
+    {
+        loadComponentFromBinary(in, header);
+    }
+    else if (PhysicsEngine::isSystem(header.mType))
+    {
+        loadSystemFromBinary(in, header);
+    }
+    else {
+        return false;
+    }
+
+    return true;
 }
 
 void World::loadEntityFromBinary(std::ifstream &in, const ObjectHeader &header)
@@ -307,8 +298,8 @@ void World::loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header)
 
 bool World::loadYAML(const YAML::Node& in)
 {
-    if (in["type"] && in["id"]) {
-        int type = in["type"].as<int>();
+    if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
+        int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
         Guid id = in["id"].as<Guid>();
 
         if (PhysicsEngine::isEntity(type))
@@ -323,6 +314,10 @@ bool World::loadYAML(const YAML::Node& in)
         {
             loadSystemFromYAML(in, id, type);
         }
+        else if (PhysicsEngine::isAsset(type))
+        {
+            loadAssetFromYAML(in, id, type);
+        }
         else {
             return false;
         }
@@ -332,6 +327,18 @@ bool World::loadYAML(const YAML::Node& in)
     }
 
     return true;
+}
+
+void World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
+{
+    if(Asset::isInternal(type))
+    {
+        PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, id, type);
+    }
+    else
+    {
+        PhysicsEngine::loadAsset(mAllocators, mIdState, in, id, type);
+    }
 }
 
 void World::loadEntityFromYAML(const YAML::Node& in, const Guid id)

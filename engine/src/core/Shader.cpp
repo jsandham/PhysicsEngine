@@ -72,11 +72,16 @@ void Shader::deserialize(std::istream &in)
 void Shader::serialize(YAML::Node& out) const
 {
     Asset::serialize(out);
+
+    out["source"] = "";
 }
 
 void Shader::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
+
+    std::string source = in["source"].as<std::string>();
+    load(source);
 }
 
 int Shader::getType() const
@@ -91,6 +96,10 @@ std::string Shader::getObjectName() const
 
 void Shader::load(const std::string &filepath)
 {
+    if (filepath.empty()) {
+        return;
+    }
+
     shader_data data;
 
     if (shader_load(filepath, data))

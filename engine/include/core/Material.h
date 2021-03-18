@@ -36,12 +36,12 @@ class Material : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void load(const std::string &filepath);
-    void load(Guid shaderId);
+    void writeToYAML(const std::string &filepath);
+    void loadFromYAML(const std::string &filepath);
+    void changeShader(Guid shaderId);
     void apply(World *world);
     void onShaderChanged(World *world);
     bool hasShaderChanged() const;
-
     void setShaderId(Guid shaderId);
     Guid getShaderId() const;
     std::vector<ShaderUniform> getUniforms() const;

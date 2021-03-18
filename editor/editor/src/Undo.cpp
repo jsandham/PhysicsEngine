@@ -29,22 +29,22 @@ void Undo::updateUndoStack(EditorClipboard& clipboard)
 
 	for (size_t i = 0; i < mEntityRecords.size(); i++)
 	{
-		std::vector<char> temp = mEntityRecords[i].first->serialize();
+		/*std::vector<char> temp = mEntityRecords[i].first->serialize();
 
 		if (mEntityRecords[i].second != temp)
 		{
 			Undo::addCommand(new RecordObjectCommand(mEntityRecords[i].first, mEntityRecords[i].second, temp));
-		}
+		}*/
 	}
 
 	for (size_t i = 0; i < mComponentRecords.size(); i++)
 	{
-		std::vector<char> temp = mComponentRecords[i].first->serialize();
+		/*std::vector<char> temp = mComponentRecords[i].first->serialize();
 
 		if (mComponentRecords[i].second != temp)
 		{
 			Undo::addCommand(new RecordObjectCommand(mComponentRecords[i].first, mComponentRecords[i].second, temp));
-		}
+		}*/
 	}
 
 	mCreatedEntityRecords.clear();
@@ -97,17 +97,17 @@ void Undo::clearUndoStack()
 
 void Undo::recordEntityCreation(PhysicsEngine::Entity* entity)
 {
-	Undo::mCreatedEntityRecords.push_back(std::make_pair(entity, entity->serialize()));
+	//Undo::mCreatedEntityRecords.push_back(std::make_pair(entity, entity->serialize()));
 }
 
 void Undo::recordEntity(PhysicsEngine::Entity* entity)
 {
-	Undo::mEntityRecords.push_back(std::make_pair(entity, entity->serialize()));
+	//Undo::mEntityRecords.push_back(std::make_pair(entity, entity->serialize()));
 }
 
 void Undo::recordComponent(PhysicsEngine::Component* component)
 {
-	Undo::mComponentRecords.push_back(std::make_pair(component, component->serialize()));
+	//Undo::mComponentRecords.push_back(std::make_pair(component, component->serialize()));
 }
 
 void Undo::addCommand(Command* command)

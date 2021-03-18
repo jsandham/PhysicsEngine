@@ -9,6 +9,11 @@
 
 using namespace PhysicsEngine;
 
+Component* PhysicsEngine::getComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type)
+{
+    return nullptr;
+}
+
 Asset *PhysicsEngine::loadAsset(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     return nullptr;
