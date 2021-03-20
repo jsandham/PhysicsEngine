@@ -75,7 +75,7 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
-    bool loadAssetFromYAML(const std::string& filePath);
+    Asset* loadAssetFromYAML(const std::string& filePath);
     bool loadSceneFromYAML(const std::string& filePath);
     bool writeSceneToYAML(const std::string& filePath);
 
@@ -862,11 +862,12 @@ class World
     void loadComponentFromBinary(std::ifstream &in, const ObjectHeader &header);
     void loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header);
 
-    bool loadYAML(const YAML::Node& in);
-    void loadAssetFromYAML(const YAML::Node& in, const Guid id, int type);
-    void loadEntityFromYAML(const YAML::Node& in, const Guid id);
-    void loadComponentFromYAML(const YAML::Node& in, const Guid id, int type);
-    void loadSystemFromYAML(const YAML::Node& in, const Guid id, int type);
+    Asset* loadAssetFromYAML(const YAML::Node& in);
+    Asset* loadAssetFromYAML(const YAML::Node& in, const Guid id, int type);
+    Object* loadSceneObjectFromYAML(const YAML::Node& in);
+    Entity* loadEntityFromYAML(const YAML::Node& in, const Guid id);
+    Component* loadComponentFromYAML(const YAML::Node& in, const Guid id, int type);
+    System* loadSystemFromYAML(const YAML::Node& in, const Guid id, int type);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {

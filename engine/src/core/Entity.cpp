@@ -52,8 +52,8 @@ void Entity::deserialize(const YAML::Node& in)
 {
     Object::deserialize(in);
 
-    mDoNotDestroy = in["doNotDestroy"].as<bool>();
-    mName = in["name"].as<std::string>();
+    mDoNotDestroy = YAML::getValue<bool>(in, "doNotDestroy");
+    mName = YAML::getValue<std::string>(in, "name");
 }
 
 int Entity::getType() const

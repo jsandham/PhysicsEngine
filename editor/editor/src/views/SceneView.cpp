@@ -362,18 +362,18 @@ void SceneView::updateWorld(World *world)
     }
 
     // call update on all systems in world
-    /*auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
         System *system = world->getSystemByUpdateOrder(i);
 
         system->update(input, time);
     }
-    auto end = std::chrono::steady_clock::now();*/
+    auto end = std::chrono::steady_clock::now();
 
-    /*std::chrono::duration<double> elapsed_seconds = end - start;
+    std::chrono::duration<double> elapsed_seconds = end - start;
     time.deltaTime = elapsed_seconds.count();
-    time.frameCount++;*/
+    time.frameCount++;
 }
 
 void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem)

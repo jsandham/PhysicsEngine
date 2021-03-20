@@ -13,15 +13,12 @@
 #include "components/Transform.h"
 #include "core/Entity.h"
 
-//#include "json/json.hpp"
-
 #include <fstream>
 #include <set>
 #include <sstream>
 
 using namespace PhysicsEditor;
 using namespace PhysicsEngine;
-//using namespace json;
 
 LibraryDirectoryListener::LibraryDirectoryListener()
 {
@@ -41,14 +38,13 @@ void LibraryDirectoryListener::handleFileAction(FW::WatchID watchid, const FW::S
 
     if (FW::Action::Add || FW::Action::Modified)
     {
-        //directory->generateBinaryLibraryFile(dir + "\\" + filename);
+        directory->addToBuffer(dir + "\\" + filename);
     }
 }
 
 LibraryDirectory::LibraryDirectory()
 {
     mDataPath = "";
-    mLibraryPath = "";
     mWatchID = 0;
 }
 
@@ -56,34 +52,17 @@ LibraryDirectory::~LibraryDirectory()
 {
 }
 
-void LibraryDirectory::watch(std::string projectPath)
+void LibraryDirectory::watch(const std::string& projectPath)
 {
     mBuffer.clear();
 
     mDataPath = projectPath + "\\data";
-    mLibraryPath = projectPath + "\\library";
 
     // register listener with library directory
     mListener.registerDirectory(this);
 
-    // if library directory doesnt exist then create it
-    if (!doesDirectoryExist(mLibraryPath))
-    {
-        if (!createDirectory(mLibraryPath))
-        {
-            Log::error("Could not create library cache directory\n");
-            return;
-        }
-    }
-
     // get all data files in project
-    std::vector<std::string> &filesInProject = getFilesInDirectoryRecursive(mDataPath, true);
-
-    // generate binary library file from project data file
-    for (auto file : filesInProject)
-    {
-        //generateBinaryLibraryFile(file);
-    }
+    mBuffer = getFilesInDirectoryRecursive(mDataPath, true);
 
     // remove old watch
     mFileWatcher.removeWatch(mWatchID);
@@ -97,55 +76,10 @@ void LibraryDirectory::update()
     mFileWatcher.update();
 }
 
-//void LibraryDirectory::generateBinaryLibraryFile(std::string filePath)
-//{
-//    std::string extension = getFileExtension(filePath);
-//
-//    if (extension != "meta")
-//    {
-//        std::string metaFilePath = filePath.substr(0, filePath.find_last_of(".")) + ".meta";
-//
-//        if (!doesFileExist(metaFilePath))
-//        {
-//            if (!createMetaFile(metaFilePath))
-//            {
-//                std::string errorMessage = "Could not create meta file " + metaFilePath + "\n";
-//                PhysicsEngine::Log::error(errorMessage.c_str());
-//                return;
-//            }
-//        }
-//
-//        PhysicsEngine::Guid id = findGuidFromMetaFilePath(metaFilePath);
-//
-//        filePathToId[filePath] = id;
-//
-//        // create binary version of scene or asset in library directory
-//        std::string binaryFilePath = mLibraryPath + "\\" + id.toString();
-//
-//        bool success = false;
-//
-//        if (extension == "scene")
-//        {
-//            binaryFilePath += ".sdata";
-//            success = PhysicsEditor::writeSceneToBinary(filePath, id, binaryFilePath);
-//        }
-//        else if (extension == "material" || extension == "obj" || extension == "shader" || extension == "png")
-//        {
-//            binaryFilePath += ".data";
-//            success = PhysicsEditor::writeAssetToBinary(filePath, extension, id, binaryFilePath);
-//        }
-//
-//        if (!success)
-//        {
-//            std::string errorMessage =
-//                "An error occured when trying to create binary library version of data: " + filePath + "\n";
-//            PhysicsEngine::Log::error(errorMessage.c_str());
-//            return;
-//        }
-//
-//        mBuffer.push_back(binaryFilePath);
-//    }
-//}
+void LibraryDirectory::addToBuffer(const std::string& filePath)
+{
+    mBuffer.push_back(filePath);
+}
 
 void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World *world)
 {
@@ -154,30 +88,27 @@ void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World *world)
     {
         std::string extension = getFileExtension(mBuffer[i]);
 
-        bool success = false;
+        Asset* asset = nullptr;
         if (extension == "texture") {
-            success = world->loadAssetFromYAML(mBuffer[i]);
+            asset = world->loadAssetFromYAML(mBuffer[i]);
         }
         else if (extension == "mesh")
         {
-            success = world->loadAssetFromYAML(mBuffer[i]);
+            asset = world->loadAssetFromYAML(mBuffer[i]);
         }
         else if (extension == "shader")
         {
-            success = world->loadAssetFromYAML(mBuffer[i]);
+            asset = world->loadAssetFromYAML(mBuffer[i]);
         }
         else if (extension == "material")
         {
-            success = world->loadAssetFromYAML(mBuffer[i]);
+            asset = world->loadAssetFromYAML(mBuffer[i]);
         }
-        /*if (extension == "data")
+
+        if (asset != nullptr)
         {
-            if (!world->loadAssetFromBinary(mBuffer[i]))
-            {
-                std::string errorMessage = "Could not load asset: " + mBuffer[i] + "\n";
-                Log::error(errorMessage.c_str());
-            }
-        }*/
+            filePathToId[mBuffer[i]] = asset->getId();
+        }
     }
 
     // clear buffer

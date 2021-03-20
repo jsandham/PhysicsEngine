@@ -42,7 +42,7 @@ void System::deserialize(const YAML::Node& in)
 {
     Object::deserialize(in);
 
-    mOrder = in["order"].as<size_t>();
+    mOrder = YAML::getValue<size_t>(in, "order");
 }
 
 size_t System::getOrder() const

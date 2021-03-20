@@ -83,13 +83,13 @@ void Rigidbody::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mUseGravity = in["useGravity"].as<bool>();
-    mMass = in["mass"].as<float>();
-    mDrag = in["drag"].as<float>();
-    mAngularDrag = in["angularDrag"].as<float>();
-    mVelocity = in["velocity"].as<glm::vec3>();
-    mAngularVelocity = in["angularVelocity"].as<glm::vec3>();
-    mCentreOfMass = in["centreOfMass"].as<glm::vec3>();
+    mUseGravity = YAML::getValue<bool>(in, "useGravity");
+    mMass = YAML::getValue<float>(in, "mass");
+    mDrag = YAML::getValue<float>(in, "drag");
+    mAngularDrag = YAML::getValue<float>(in, "angularDrag");
+    mVelocity = YAML::getValue<glm::vec3>(in, "velocity");
+    mAngularVelocity = YAML::getValue<glm::vec3>(in, "angularVelocity");
+    mCentreOfMass = YAML::getValue<glm::vec3>(in, "centreOfMass");
 }
 
 int Rigidbody::getType() const

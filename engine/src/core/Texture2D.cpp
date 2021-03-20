@@ -11,6 +11,7 @@ Texture2D::Texture2D() : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
+    mSource = "";
     mWidth = 0;
     mHeight = 0;
     mFormat = TextureFormat::RGB;
@@ -27,6 +28,7 @@ Texture2D::Texture2D(Guid id) : Texture(id)
 {
     mDimension = TextureDimension::Tex2D;
 
+    mSource = "";
     mWidth = 0;
     mHeight = 0;
     mFormat = TextureFormat::RGB;
@@ -43,6 +45,7 @@ Texture2D::Texture2D(int width, int height) : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
+    mSource = "";
     mWidth = width;
     mHeight = height;
     mFormat = TextureFormat::RGB;
@@ -61,6 +64,7 @@ Texture2D::Texture2D(int width, int height, TextureFormat format) : Texture()
 {
     mDimension = TextureDimension::Tex2D;
 
+    mSource = "";
     mWidth = width;
     mHeight = height;
     mFormat = format;
@@ -102,18 +106,18 @@ void Texture2D::serialize(YAML::Node& out) const
 
     out["width"] = mWidth;
     out["height"] = mHeight;
-    out["source"] = "";
+    out["source"] = mSource;
 }
 
 void Texture2D::deserialize(const YAML::Node& in)
 {
     Texture::deserialize(in);
 
-    mWidth = in["width"].as<int>();
-    mHeight = in["height"].as<int>();
+    mWidth = YAML::getValue<int>(in, "width");
+    mHeight = YAML::getValue<int>(in, "height");
 
-    std::string source = in["source"].as<std::string>();
-    load(source);
+    mSource = YAML::getValue<std::string>(in, "source");
+    load(mSource);
 }
 
 int Texture2D::getType() const
@@ -180,6 +184,8 @@ void Texture2D::load(const std::string &filepath)
         Log::error(message.c_str());
         return;
     }
+
+    mSource = filepath;
 }
 
 void Texture2D::writeToPNG(const std::string& filepath) const

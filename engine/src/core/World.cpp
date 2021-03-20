@@ -60,23 +60,21 @@ Guid World::getSceneId() const
     return mSceneId;
 }
 
-bool World::loadAssetFromYAML(const std::string& filePath)
+Asset* World::loadAssetFromYAML(const std::string& filePath)
 {
     YAML::Node in = YAML::LoadFile(filePath);
 
     if (!in.IsMap()) {
-        return false;
+        return nullptr;
     }
 
     for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
         if (it->first.IsScalar() && it->second.IsMap()) {
-            if (!loadYAML(it->second)) {
-                return false;
-            }
+            return loadAssetFromYAML(it->second);
         }
     }
 
-    return true;
+    return nullptr;
 }
 
 bool World::loadSceneFromYAML(const std::string& filePath)
@@ -94,7 +92,7 @@ bool World::loadSceneFromYAML(const std::string& filePath)
 
     for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
         if (it->first.IsScalar() && it->second.IsMap()) {
-            if (!loadYAML(it->second)) {
+            if (loadSceneObjectFromYAML(it->second) == nullptr) {
                 return false;
             }
         }
@@ -296,7 +294,22 @@ void World::loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header)
     }
 }
 
-bool World::loadYAML(const YAML::Node& in)
+Asset* World::loadAssetFromYAML(const YAML::Node& in)
+{
+    if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
+        int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
+        Guid id = in["id"].as<Guid>();
+
+        if (PhysicsEngine::isAsset(type))
+        {
+            return loadAssetFromYAML(in, id, type);
+        }
+    }
+
+    return nullptr;
+}
+
+Object* World::loadSceneObjectFromYAML(const YAML::Node& in)
 {
     if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
         int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
@@ -304,69 +317,59 @@ bool World::loadYAML(const YAML::Node& in)
 
         if (PhysicsEngine::isEntity(type))
         {
-            loadEntityFromYAML(in, id);
+            return loadEntityFromYAML(in, id);
         }
         else if (PhysicsEngine::isComponent(type))
         {
-            loadComponentFromYAML(in, id, type);
+            return loadComponentFromYAML(in, id, type);
         }
         else if (PhysicsEngine::isSystem(type))
         {
-            loadSystemFromYAML(in, id, type);
+            return loadSystemFromYAML(in, id, type);
         }
-        else if (PhysicsEngine::isAsset(type))
-        {
-            loadAssetFromYAML(in, id, type);
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
     }
 
-    return true;
+    return nullptr;
 }
 
-void World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
+Asset* World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
 {
     if(Asset::isInternal(type))
     {
-        PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, id, type);
     }
     else
     {
-        PhysicsEngine::loadAsset(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadAsset(mAllocators, mIdState, in, id, type);
     }
 }
 
-void World::loadEntityFromYAML(const YAML::Node& in, const Guid id)
+Entity* World::loadEntityFromYAML(const YAML::Node& in, const Guid id)
 {
-    PhysicsEngine::loadInternalEntity(mAllocators, mIdState, in, id);
+    return PhysicsEngine::loadInternalEntity(mAllocators, mIdState, in, id);
 }
 
-void World::loadComponentFromYAML(const YAML::Node& in, const Guid id, int type)
+Component* World::loadComponentFromYAML(const YAML::Node& in, const Guid id, int type)
 {
     if (Component::isInternal(type)) 
     {
-        PhysicsEngine::loadInternalComponent(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadInternalComponent(mAllocators, mIdState, in, id, type);
     }
     else
     {
-        PhysicsEngine::loadComponent(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadComponent(mAllocators, mIdState, in, id, type);
     }
 }
 
-void World::loadSystemFromYAML(const YAML::Node& in, const Guid id, int type)
+System* World::loadSystemFromYAML(const YAML::Node& in, const Guid id, int type)
 {
     if (System::isInternal(type)) 
     {
-        PhysicsEngine::loadInternalSystem(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadInternalSystem(mAllocators, mIdState, in, id, type);
     }
     else
     {
-        PhysicsEngine::loadSystem(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadSystem(mAllocators, mIdState, in, id, type);
     }
 }
 

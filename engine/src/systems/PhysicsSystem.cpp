@@ -58,8 +58,8 @@ void PhysicsSystem::deserialize(const YAML::Node& in)
 {
     System::deserialize(in);
 
-    mGravity = in["gravity"].as<float>();
-    mTimestep = in["timestep"].as<float>();
+    mGravity = YAML::getValue<float>(in, "gravity");
+    mTimestep = YAML::getValue<float>(in, "timestep");
 }
 
 int PhysicsSystem::getType() const

@@ -57,11 +57,11 @@ void Transform::serialize(YAML::Node& out) const
 void Transform::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
-
-    mParentId = in["parentId"].as<Guid>();
-    mPosition = in["position"].as<glm::vec3>();
-    mRotation = in["rotation"].as<glm::quat>();
-    mScale = in["scale"].as<glm::vec3>();
+    
+    mParentId = YAML::getValue<Guid>(in, "parentId");
+    mPosition = YAML::getValue<glm::vec3>(in, "position");
+    mRotation = YAML::getValue<glm::quat>(in, "rotation");
+    mScale = YAML::getValue<glm::vec3>(in, "scale");
 }
 
 int Transform::getType() const

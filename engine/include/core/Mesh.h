@@ -2,6 +2,7 @@
 #define MESH_H__
 
 #include <vector>
+#include <string>
 
 #include <GL/glew.h>
 #include <gl/gl.h>
@@ -17,6 +18,7 @@ namespace PhysicsEngine
 class Mesh : public Asset
 {
   private:
+    std::string mSource;
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;

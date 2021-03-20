@@ -98,7 +98,7 @@ void Cubemap::deserialize(const YAML::Node& in)
 {
     Texture::deserialize(in);
 
-    mWidth = in["width"].as<int>();
+    mWidth = YAML::getValue<int>(in, "width");
 }
 
 int Cubemap::getType() const

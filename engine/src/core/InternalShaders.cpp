@@ -825,7 +825,9 @@ Guid InternalShaders::loadInternalShader(World *world, const Guid shaderId, cons
     Shader *shader = world->createAsset<Shader>();
     if (shader != NULL)
     {
-        shader->load(vertex, fragment, geometry);
+        shader->setVertexShader(vertex);
+        shader->setFragmentShader(fragment);
+        shader->setGeometryShader(geometry);
         shader->setName(name);
         return shader->getId();
     }

@@ -55,9 +55,9 @@ void LineRenderer::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mMaterialId = in["materialId"].as<Guid>();
-    mStart = in["start"].as<glm::vec3>();
-    mEnd = in["end"].as<glm::vec3>();
+    mMaterialId = YAML::getValue<Guid>(in, "materialId");
+    mStart = YAML::getValue<glm::vec3>(in, "start");
+    mEnd = YAML::getValue<glm::vec3>(in, "end");
 }
 
 int LineRenderer::getType() const

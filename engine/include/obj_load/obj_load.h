@@ -40,8 +40,8 @@ bool obj_load(const std::string& filepath, obj_mesh& mesh)
 	std::ifstream file;
 	file.open(filepath, std::ios::in);
 
-	if (!file.is_open()) {
-		std::cout << "Error: Could not open file " << filepath << std::endl;
+	if (!file.is_open()) 
+	{
 		return false;
 	}
 

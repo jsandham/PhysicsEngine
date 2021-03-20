@@ -17,6 +17,9 @@ using namespace PhysicsEngine;
 
 Shader::Shader() : Asset()
 {
+    mVertexSource = "";
+    mFragmentSource = "";
+    mGeometrySource = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -27,6 +30,9 @@ Shader::Shader() : Asset()
 
 Shader::Shader(Guid id) : Asset(id)
 {
+    mVertexSource = "";
+    mFragmentSource = "";
+    mGeometrySource = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -73,15 +79,20 @@ void Shader::serialize(YAML::Node& out) const
 {
     Asset::serialize(out);
 
-    out["source"] = "";
+    out["vertexSource"] = mVertexSource;
+    out["fragmentSource"] = mFragmentSource;
+    out["geometrySource"] = mGeometrySource;
 }
 
 void Shader::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
 
-    std::string source = in["source"].as<std::string>();
-    load(source);
+    mVertexSource = YAML::getValue<std::string>(in, "vertexSource");
+    mFragmentSource = YAML::getValue<std::string>(in, "fragmentSource");
+    mGeometrySource = YAML::getValue<std::string>(in, "GeometrySource");
+
+    load(mVertexSource, mFragmentSource, mGeometrySource);
 }
 
 int Shader::getType() const
@@ -94,15 +105,15 @@ std::string Shader::getObjectName() const
     return PhysicsEngine::SHADER_NAME;
 }
 
-void Shader::load(const std::string &filepath)
+void Shader::load(const std::string& vsFilepath, const std::string& fsFilepath, const std::string& gsFilepath)
 {
-    if (filepath.empty()) {
+    if (vsFilepath.empty() || fsFilepath.empty()) {
         return;
     }
 
     shader_data data;
 
-    if (shader_load(filepath, data))
+    if (shader_load(vsFilepath, fsFilepath, gsFilepath, data))
     {
         this->setVertexShader(data.mVertexShader);
         this->setGeometryShader(data.mGeometryShader);
@@ -110,16 +121,12 @@ void Shader::load(const std::string &filepath)
     }
     else
     {
-        std::string message = "Error: Could not load shader " + filepath + "\n";
-        Log::error(message.c_str());
+        Log::error("Error: Could not load shader\n");
     }
-}
 
-void Shader::load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader)
-{
-    this->setVertexShader(vertexShader);
-    this->setGeometryShader(geometryShader);
-    this->setFragmentShader(fragmentShader);
+    mVertexSource = vsFilepath;
+    mFragmentSource = fsFilepath;
+    mGeometrySource = gsFilepath;
 }
 
 bool Shader::isCompiled() const

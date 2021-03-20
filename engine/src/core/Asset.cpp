@@ -1,3 +1,7 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #include "../../include/core/Asset.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
@@ -39,7 +43,43 @@ void Asset::serialize(YAML::Node& out) const
 void Asset::deserialize(const YAML::Node& in)
 {
     Object::deserialize(in);
-    mName = in["name"].as<std::string>();
+    mName = YAML::getValue<std::string>(in, "name");
+}
+
+void Asset::writeToYAML(const std::string& filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open()) {
+        return;
+    }
+
+    YAML::Node n;
+    serialize(n);
+
+    YAML::Node assetNode;
+    assetNode[getObjectName()] = n;
+
+    out << assetNode;
+    out << "\n";
+
+    out.close();
+}
+
+void Asset::loadFromYAML(const std::string& filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap()) {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
+        if (it->first.IsScalar() && it->second.IsMap()) {
+            deserialize(it->second);
+        }
+    }
 }
 
 std::string Asset::getName() const

@@ -2,6 +2,7 @@
 #define TEXTURE2D_H__
 
 #include <vector>
+#include <string>
 
 #include "Color.h"
 #include "Texture.h"
@@ -11,6 +12,7 @@ namespace PhysicsEngine
 class Texture2D : public Texture
 {
   private:
+    std::string mSource;
     int mWidth;
     int mHeight;
 

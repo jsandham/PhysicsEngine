@@ -36,8 +36,6 @@ class Material : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void writeToYAML(const std::string &filepath);
-    void loadFromYAML(const std::string &filepath);
     void changeShader(Guid shaderId);
     void apply(World *world);
     void onShaderChanged(World *world);

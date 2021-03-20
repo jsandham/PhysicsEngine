@@ -36,13 +36,10 @@ class LibraryDirectory
     // data directory path
     std::string mDataPath;
 
-    // library directory path
-    std::string mLibraryPath;
-
     // filepath to id map
     std::map<const std::string, PhysicsEngine::Guid> filePathToId;
 
-    // buffer of added/modified library file paths
+    // buffer of added/modified project file paths
     std::vector<std::string> mBuffer;
 
     // file watcher listener object
@@ -58,10 +55,10 @@ class LibraryDirectory
     LibraryDirectory();
     ~LibraryDirectory();
 
-    void watch(std::string projectPath);
+    void watch(const std::string& projectPath);
     void update();
+    void addToBuffer(const std::string& filePath);
     void loadQueuedAssetsIntoWorld(PhysicsEngine::World *world);
-    //void generateBinaryLibraryFile(std::string filePath);
 
     PhysicsEngine::Guid getFileId(const std::string &filePath) const;
 };

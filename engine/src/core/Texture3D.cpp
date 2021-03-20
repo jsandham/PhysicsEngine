@@ -93,9 +93,9 @@ void Texture3D::deserialize(const YAML::Node& in)
 {
     Texture::deserialize(in);
 
-    mWidth = in["width"].as<int>();
-    mHeight = in["height"].as<int>();
-    mDepth = in["depth"].as<int>();
+    mWidth = YAML::getValue<int>(in, "width");
+    mHeight = YAML::getValue<int>(in, "height");
+    mDepth = YAML::getValue<int>(in, "depth");
 }
 
 int Texture3D::getType() const

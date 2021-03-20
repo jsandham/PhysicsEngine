@@ -44,7 +44,7 @@ void SphereCollider::deserialize(const YAML::Node& in)
 {
     Collider::deserialize(in);
 
-    mSphere = in["sphere"].as<Sphere>();
+    mSphere = YAML::getValue<Sphere>(in, "sphere");
 }
 
 int SphereCollider::getType() const

@@ -148,18 +148,18 @@ void Light::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mColor = in["color"].as<glm::vec4>();
-    mIntensity = in["intensity"].as<float>();
-    mSpotAngle = in["spotAngle"].as<float>();
-    mInnerSpotAngle = in["innerSpotAngle"].as<float>();
-    mShadowNearPlane = in["shadowNearPlane"].as<float>();
-    mShadowFarPlane = in["shadowFarPlane"].as<float>();
-    mShadowAngle = in["shadowAngle"].as<float>();
-    mShadowRadius = in["shadowRadius"].as<float>();
-    mShadowStrength = in["shadowStrength"].as<float>();
-    mLightType = in["lightType"].as<LightType>();
-    mShadowType = in["shadowType"].as<ShadowType>();
-    mShadowMapResolution = in["shadowMapResolution"].as<ShadowMapResolution>();
+    mColor = YAML::getValue<glm::vec4>(in, "color");
+    mIntensity = YAML::getValue<float>(in, "intensity");
+    mSpotAngle = YAML::getValue<float>(in, "spotAngle");
+    mInnerSpotAngle = YAML::getValue<float>(in, "innerSpotAngle");
+    mShadowNearPlane = YAML::getValue<float>(in, "shadowNearPlane");
+    mShadowFarPlane = YAML::getValue<float>(in, "shadowFarPlane");
+    mShadowAngle = YAML::getValue<float>(in, "shadowAngle");
+    mShadowRadius = YAML::getValue<float>(in, "shadowRadius");
+    mShadowStrength = YAML::getValue<float>(in, "shadowStrength");
+    mLightType = YAML::getValue<LightType>(in, "lightType");
+    mShadowType = YAML::getValue<ShadowType>(in, "shadowType");
+    mShadowMapResolution = YAML::getValue<ShadowMapResolution>(in, "shadowMapResolution");
 
     mIsShadowMapResolutionChanged = true;
 }

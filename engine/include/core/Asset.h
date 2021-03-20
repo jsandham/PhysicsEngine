@@ -26,6 +26,9 @@ class Asset : public Object
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
+    void writeToYAML(const std::string& filepath) const;
+    void loadFromYAML(const std::string& filepath);
+
     std::string getName() const;
     void setName(const std::string &name);
 

@@ -171,14 +171,14 @@ void Camera::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mTargetTextureId = in["targetTextureId"].as<Guid>();
-    mRenderPath = in["renderPath"].as<RenderPath>();
-    mMode = in["cameraMode"].as<CameraMode>();
-    mSSAO = in["cameraSSAO"].as<CameraSSAO>();
-    mGizmos = in["cameraGizmos"].as<CameraGizmos>();
-    mViewport = in["viewport"].as<Viewport>();
-    mFrustum = in["frustum"].as<Frustum>();
-    mBackgroundColor = in["backgroundColor"].as<Color>();
+    mTargetTextureId = YAML::getValue<Guid>(in, "targetTextureId");
+    mRenderPath = YAML::getValue<RenderPath>(in, "renderPath");
+    mMode = YAML::getValue<CameraMode>(in, "cameraMode");
+    mSSAO = YAML::getValue<CameraSSAO>(in, "cameraSSAO");
+    mGizmos = YAML::getValue<CameraGizmos>(in, "cameraGizmos");
+    mViewport = YAML::getValue<Viewport>(in, "viewport");
+    mFrustum = YAML::getValue<Frustum>(in, "frustum");
+    mBackgroundColor = YAML::getValue<Color>(in, "backgroundColor");
 
     mProjMatrix =
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);

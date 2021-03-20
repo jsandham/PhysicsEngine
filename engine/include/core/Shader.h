@@ -73,6 +73,9 @@ struct ShaderAttribute
 class Shader : public Asset
 {
   private:
+    std::string mVertexSource;
+    std::string mFragmentSource;
+    std::string mGeometrySource;
     std::string mVertexShader;
     std::string mFragmentShader;
     std::string mGeometryShader;
@@ -96,8 +99,7 @@ class Shader : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void load(const std::string &filepath);
-    void load(const std::string &vertexShader, const std::string &fragmentShader, const std::string &geometryShader);
+    void load(const std::string &vertFilepath, const std::string& fragFilepath, const std::string& geoFilepath);
 
     bool isCompiled() const;
     bool contains(int variant) const;

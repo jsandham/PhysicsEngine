@@ -34,7 +34,7 @@ void Object::serialize(YAML::Node& out) const
 
 void Object::deserialize(const YAML::Node& in)
 {
-    mId = in["id"].as<Guid>();
+    mId = YAML::getValue<Guid>(in, "id");
 }
 
 Guid Object::getId() const

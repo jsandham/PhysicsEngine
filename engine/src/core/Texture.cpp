@@ -64,12 +64,12 @@ void Texture::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
 
-    mDimension = in["dimension"].as<TextureDimension>();
-    mFormat = in["format"].as<TextureFormat>();
-    mWrapMode = in["wrapMode"].as<TextureWrapMode>();
-    mFilterMode = in["filterMode"].as<TextureFilterMode>();
-    mNumChannels = in["numChannels"].as<int>();
-    mAnisoLevel = in["anisoLevel"].as<int>();
+    mDimension = YAML::getValue<TextureDimension>(in, "dimension");
+    mFormat = YAML::getValue<TextureFormat>(in, "format");
+    mWrapMode = YAML::getValue<TextureWrapMode>(in, "wrapMode");
+    mFilterMode = YAML::getValue<TextureFilterMode>(in, "filterMode");
+    mNumChannels = YAML::getValue<int>(in, "numChannels");
+    mAnisoLevel = YAML::getValue<int>(in, "anisoLevel");
 
     mCreated = false;
     mUpdateRequired = false;

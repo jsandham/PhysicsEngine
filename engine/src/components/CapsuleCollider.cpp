@@ -42,7 +42,7 @@ void CapsuleCollider::deserialize(const YAML::Node& in)
 {
     Collider::deserialize(in);
 
-    mCapsule = in["capsule"].as<Capsule>();
+    mCapsule = YAML::getValue<Capsule>(in, "capsule");
 }
 
 int CapsuleCollider::getType() const

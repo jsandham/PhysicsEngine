@@ -40,7 +40,7 @@ void BoxCollider::deserialize(const YAML::Node& in)
 {
     Collider::deserialize(in);
 
-    mAABB = in["AABB"].as<AABB>();
+    mAABB = YAML::getValue<AABB>(in, "AABB");
 }
 
 int BoxCollider::getType() const

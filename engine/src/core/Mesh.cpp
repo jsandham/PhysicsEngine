@@ -8,12 +8,14 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh() : Asset()
 {
+    mSource = "";
     mCreated = false;
     mChanged = false;
 }
 
 Mesh::Mesh(Guid id) : Asset(id)
 {
+    mSource = "";
     mCreated = false;
     mChanged = false;
 }
@@ -66,15 +68,15 @@ void Mesh::serialize(YAML::Node& out) const
 {
     Asset::serialize(out);
 
-    out["source"] = "";
+    out["source"] = mSource;
 }
 
 void Mesh::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
 
-    std::string source = in["source"].as<std::string>();
-    load(source);
+    mSource = YAML::getValue<std::string>(in, "source");
+    load(mSource);
 }
 
 int Mesh::getType() const
@@ -110,6 +112,8 @@ void Mesh::load(const std::string &filepath)
     {
         Log::error(("Could not load obj mesh " + filepath + "\n").c_str());
     }
+
+    mSource = filepath;
 }
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,

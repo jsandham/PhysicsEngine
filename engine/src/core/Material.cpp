@@ -72,13 +72,13 @@ void Material::deserialize(const YAML::Node& in)
 {
     Asset::deserialize(in);
 
-    mShaderId = in["shaderId"].as<Guid>();
-    mRenderQueue = in["renderQueue"].as<RenderQueue>();
-    size_t uniformCount = in["uniformCount"].as<size_t>();
+    mShaderId = YAML::getValue<Guid>(in, "shaderId");
+    mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
+    size_t uniformCount = YAML::getValue<size_t>(in, "uniformCount");
     
     mUniforms.resize(uniformCount);
     for (size_t i = 0; i < mUniforms.size(); i++) {
-        mUniforms[i] = in[std::to_string(i)].as<ShaderUniform>();
+        mUniforms[i] = YAML::getValue<ShaderUniform>(in, std::to_string(i));
     }
 
     mShaderChanged = true;
@@ -92,44 +92,6 @@ int Material::getType() const
 std::string Material::getObjectName() const
 {
     return PhysicsEngine::MATERIAL_NAME;
-}
-
-void Material::writeToYAML(const std::string& filepath)
-{
-    std::ofstream out;
-    out.open(filepath);
-
-    if (!out.is_open()) {
-        return;
-    }
-
-    YAML::Node n;
-    serialize(n);
-
-    YAML::Node materialNode;
-    materialNode[getObjectName()] = n;
-
-    out << materialNode;
-    out << "\n";
-
-    out.close();
-}
-
-void Material::loadFromYAML(const std::string &filepath)
-{
-    YAML::Node in = YAML::LoadFile(filepath);
-
-    if (!in.IsMap()) {
-        return;
-    }
-   
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar() && it->second.IsMap()) {
-            deserialize(it->second);
-        }
-    }
-
-    mShaderChanged = true;
 }
 
 void Material::changeShader(Guid shaderId)

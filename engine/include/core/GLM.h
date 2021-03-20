@@ -7,6 +7,28 @@
 #include "../glm/gtx/quaternion.hpp"
 
 namespace YAML {
+    template<typename T>
+    T getValue(const Node& node, const std::string &key)
+    {
+        if (node[key])
+        {
+            return node[key].as<T>();
+        }
+
+        return T();
+    }
+
+    template<typename T>
+    T getValue(const Node& node, const std::string& key, int index)
+    {
+        if (node[key][index])
+        {
+            return node[key][index].as<T>();
+        }
+
+        return T();
+    }
+
     // vec2
     template<>
     struct convert<glm::vec2> {

@@ -44,7 +44,7 @@ void MeshCollider::deserialize(const YAML::Node& in)
 {
     Collider::deserialize(in);
 
-    mMeshId = in["meshId"].as<Guid>();
+    mMeshId = YAML::getValue<Guid>(in, "meshId");
 }
 
 int MeshCollider::getType() const

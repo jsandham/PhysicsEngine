@@ -89,14 +89,14 @@ void MeshRenderer::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mMeshId = in["meshId"].as<Guid>();
-    mMaterialCount = in["materialCount"].as<int>();
+    mMeshId = YAML::getValue<Guid>(in, "meshId");
+    mMaterialCount = YAML::getValue<int>(in, "materialCount");
     for (int i = 0; i < mMaterialCount; i++)
     {
-        mMaterialIds[i] = in["materialIds"][i].as<Guid>();
+        mMaterialIds[i] = YAML::getValue<Guid>(in, "materialIds", i);
     }
-    mIsStatic = in["isStatic"].as<bool>();
-    mEnabled = in["enabled"].as<bool>();
+    mIsStatic = YAML::getValue<bool>(in, "isStatic");
+    mEnabled = YAML::getValue<bool>(in, "enabled");
     
     mMeshChanged = true;
     mMaterialChanged = true;

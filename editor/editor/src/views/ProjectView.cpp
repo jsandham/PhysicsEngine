@@ -145,10 +145,6 @@ void ProjectView::drawRightPane(EditorClipboard &clipboard)
         std::string extension = getFileExtension(files[i]);
         std::string icon = std::string(ICON_FA_FILE);
         std::string label = icon + " " + fileName;
-        if (extension == "json")
-        {
-            continue;
-        }
 
         ImGui::Selectable(label.c_str());
 
@@ -297,7 +293,7 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 
 InteractionType ProjectView::getInteractionTypeFromFileExtension(const std::string extension)
 {
-    if (extension == "obj")
+    if (extension == "mesh")
     {
         return InteractionType::Mesh;
     }
@@ -305,7 +301,7 @@ InteractionType ProjectView::getInteractionTypeFromFileExtension(const std::stri
     {
         return InteractionType::Material;
     }
-    else if (extension == "png")
+    else if (extension == "texture")
     {
         return InteractionType::Texture2D;
     }
