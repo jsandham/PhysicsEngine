@@ -12,7 +12,7 @@ class SphereColliderDrawer : public InspectorDrawer
     SphereColliderDrawer();
     ~SphereColliderDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

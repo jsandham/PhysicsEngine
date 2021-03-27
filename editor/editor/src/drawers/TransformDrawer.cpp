@@ -22,7 +22,7 @@ TransformDrawer::~TransformDrawer()
 {
 }
 
-void TransformDrawer::render(EditorClipboard &clipboard, Guid id)
+void TransformDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {

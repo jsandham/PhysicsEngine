@@ -12,7 +12,7 @@ class Texture3DDrawer : public InspectorDrawer
     Texture3DDrawer();
     ~Texture3DDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

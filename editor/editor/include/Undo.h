@@ -29,7 +29,7 @@ namespace PhysicsEditor
 		Undo() = delete;
 		~Undo() = delete;
 
-		static void updateUndoStack(EditorClipboard& clipboard);
+		static void updateUndoStack(Clipboard& clipboard);
 		static void clearUndoStack();
 
 		static void recordEntityCreation(PhysicsEngine::Entity* entity);

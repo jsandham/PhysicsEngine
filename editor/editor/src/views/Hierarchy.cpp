@@ -21,22 +21,23 @@ Hierarchy::~Hierarchy()
 {
 }
 
-void Hierarchy::init(EditorClipboard &clipboard)
+void Hierarchy::init(Clipboard &clipboard)
 {
 }
 
-void Hierarchy::update(EditorClipboard &clipboard)
+void Hierarchy::update(Clipboard &clipboard)
 {
-    rebuildRequired = entries.size() != std::max((size_t)0, clipboard.getWorld()->getNumberOfEntities() -
-        clipboard.getEditorOnlyIds().size());
+    /*rebuildRequired = entries.size() != std::max((size_t)0, clipboard.getWorld()->getNumberOfEntities() -
+        clipboard.getEditorOnlyIds().size());*/
+    rebuildRequired = entries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities();
 
     // If number of entities has changed, update cached entity ids and names
     if (rebuildRequired)
     {
-        rebuildEntityLists(clipboard.getWorld(), clipboard.getEditorOnlyIds());
+        rebuildEntityLists(clipboard.getWorld());
     }
 
-    if (clipboard.getScene().length() > 0)
+    if (clipboard.getSceneId().isValid())
     {
         // Set selected entity in hierarchy
         int selectedIndex;
@@ -50,13 +51,13 @@ void Hierarchy::update(EditorClipboard &clipboard)
         }
 
         // Check if scene is dirty and mark accordingly
-        if (clipboard.isDirty)
+        if (clipboard.mSceneDirty)
         {
-            ImGui::Text((clipboard.getScene() + "*").c_str());
+            ImGui::Text((clipboard.getSceneName() + "*").c_str());
         }
         else
         {
-            ImGui::Text(clipboard.getScene().c_str());
+            ImGui::Text(clipboard.getSceneName().c_str());
         }
         ImGui::Separator();
 
@@ -80,7 +81,7 @@ void Hierarchy::update(EditorClipboard &clipboard)
 
             if (edited)
             {
-                clipboard.isDirty = true;
+                clipboard.mSceneDirty = true;
             }
         }
 
@@ -107,15 +108,15 @@ void Hierarchy::update(EditorClipboard &clipboard)
             {
                 if (ImGui::MenuItem("Empty"))
                 {
-                    Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.isDirty));
+                    Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
-                    Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.isDirty));
+                    Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
                 if (ImGui::MenuItem("Light"))
                 {
-                    Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.isDirty));
+                    Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
 
                 if (ImGui::BeginMenu("2D"))
@@ -123,7 +124,7 @@ void Hierarchy::update(EditorClipboard &clipboard)
                     if (ImGui::MenuItem("Plane"))
                     {
                         Undo::addCommand(
-                            new CreatePlaneCommand(clipboard.getWorld(), &clipboard.isDirty));
+                            new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     ImGui::EndMenu();
                 }
@@ -132,12 +133,12 @@ void Hierarchy::update(EditorClipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Cube"))
                     {
-                        Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.isDirty));
+                        Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     if (ImGui::MenuItem("Sphere"))
                     {
                         Undo::addCommand(
-                            new CreateSphereCommand(clipboard.getWorld(), &clipboard.isDirty));
+                            new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     ImGui::EndMenu();
                 }
@@ -150,9 +151,25 @@ void Hierarchy::update(EditorClipboard &clipboard)
     }
 }
 
-void Hierarchy::rebuildEntityLists(World *world, const std::set<Guid> &editorOnlyEntityIds)
+void Hierarchy::rebuildEntityLists(World *world)
 {
-    int numberOfEntities = std::max((size_t)0, world->getNumberOfEntities() - editorOnlyEntityIds.size());
+    entries.resize(world->getNumberOfNonHiddenEntities());
+
+    size_t index = 0;
+    for (size_t i = 0; i < world->getNumberOfEntities(); i++)
+    {
+        Entity* entity = world->getEntityByIndex(i);
+        if (!entity->mHide)
+        {
+            entries[index].entity = entity;
+            entries[index].label = entity->getId().toString();
+            entries[index].indentLevel = 0;
+            idToEntryIndex[entity->getId()] = index;
+            index++;
+        }
+    }
+
+    /*int numberOfEntities = std::max((size_t)0, world->getNumberOfEntities() - editorOnlyEntityIds.size());
 
     entries.resize(numberOfEntities);
 
@@ -170,5 +187,5 @@ void Hierarchy::rebuildEntityLists(World *world, const std::set<Guid> &editorOnl
             idToEntryIndex[entity->getId()] = index;
             index++;
         }
-    }
+    }*/
 }

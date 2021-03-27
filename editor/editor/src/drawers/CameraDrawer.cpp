@@ -19,7 +19,7 @@ CameraDrawer::~CameraDrawer()
 {
 }
 
-void CameraDrawer::render(EditorClipboard &clipboard, Guid id)
+void CameraDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {

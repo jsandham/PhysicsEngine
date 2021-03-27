@@ -19,7 +19,7 @@ SphereColliderDrawer::~SphereColliderDrawer()
 {
 }
 
-void SphereColliderDrawer::render(EditorClipboard &clipboard, Guid id)
+void SphereColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {

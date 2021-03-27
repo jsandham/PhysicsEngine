@@ -28,7 +28,7 @@ class MeshDrawer : public InspectorDrawer
     MeshDrawer();
     ~MeshDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

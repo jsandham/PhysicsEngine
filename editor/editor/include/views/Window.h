@@ -18,10 +18,10 @@ class Window
     Window(const std::string name);
     virtual ~Window() = 0;
 
-    void draw(EditorClipboard& clipboard, bool isOpenedThisFrame);
+    void draw(Clipboard& clipboard, bool isOpenedThisFrame);
 
-    virtual void init(EditorClipboard &clipboard) = 0;
-    virtual void update(EditorClipboard &clipboard) = 0;
+    virtual void init(Clipboard &clipboard) = 0;
+    virtual void update(Clipboard &clipboard) = 0;
 };
 } // namespace PhysicsEditor
 

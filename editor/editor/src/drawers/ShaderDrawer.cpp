@@ -23,7 +23,7 @@ ShaderDrawer::~ShaderDrawer()
 {
 }
 
-void ShaderDrawer::render(EditorClipboard &clipboard, Guid id)
+void ShaderDrawer::render(Clipboard &clipboard, Guid id)
 {
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(id);
 

@@ -50,7 +50,7 @@ MaterialDrawer::~MaterialDrawer()
     Graphics::destroyFramebuffer(&mFBO, &mColor, &mDepth);
 }
 
-void MaterialDrawer::render(EditorClipboard &clipboard, Guid id)
+void MaterialDrawer::render(Clipboard &clipboard, Guid id)
 {
     Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 

@@ -15,11 +15,11 @@ AboutPopup::~AboutPopup()
 {
 }
 
-void AboutPopup::init(EditorClipboard &clipboard)
+void AboutPopup::init(Clipboard &clipboard)
 {
 }
 
-void AboutPopup::update(EditorClipboard &clipboard)
+void AboutPopup::update(Clipboard &clipboard)
 {
     ImGui::Text("About PhysicsEngine");
     ImGui::TextWrapped("About engine text goes here");

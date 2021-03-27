@@ -16,11 +16,11 @@ PreferencesWindow::~PreferencesWindow()
 {
 }
 
-void PreferencesWindow::init(EditorClipboard &clipboard)
+void PreferencesWindow::init(Clipboard &clipboard)
 {
 }
 
-void PreferencesWindow::update(EditorClipboard &clipboard)
+void PreferencesWindow::update(Clipboard &clipboard)
 {
     float windowWidth = ImGui::GetWindowWidth();
 

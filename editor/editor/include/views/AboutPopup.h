@@ -13,8 +13,8 @@ class AboutPopup : public PopupWindow
     AboutPopup(const AboutPopup &other) = delete;
     AboutPopup &operator=(const AboutPopup &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 };
 } // namespace PhysicsEditor
 

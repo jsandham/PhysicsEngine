@@ -12,7 +12,7 @@ class MeshColliderDrawer : public InspectorDrawer
     MeshColliderDrawer();
     ~MeshColliderDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

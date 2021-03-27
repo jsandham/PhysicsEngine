@@ -12,7 +12,7 @@ class ShaderDrawer : public InspectorDrawer
     ShaderDrawer();
     ~ShaderDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard& clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

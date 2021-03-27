@@ -11,6 +11,9 @@ namespace PhysicsEngine
 // Simple structs used for grouping world id to global index maps when passing to functions
 struct WorldIdState
 {
+    // internal world scene id state
+    std::unordered_map<Guid, int> mSceneIdToGlobalIndex;
+
     // internal world entity id state
     std::unordered_map<Guid, int> mEntityIdToGlobalIndex;
 
@@ -58,6 +61,14 @@ struct WorldIdState
     std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedCreated;
     std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
     std::vector<std::tuple<Guid, int, int>> mComponentIdsMarkedMoved;
+
+    // asset and scene id to filepath
+    std::unordered_map<Guid, std::string> mAssetIdToFilepath;
+    std::unordered_map<Guid, std::string> mSceneIdToFilepath;
+
+    // asset and scene filepath to id
+    std::unordered_map<std::string, Guid> mAssetFilepathToId;
+    std::unordered_map<std::string, Guid> mSceneFilepathToId;
 };
 } // namespace PhysicsEngine
 

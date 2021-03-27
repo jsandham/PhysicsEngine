@@ -15,7 +15,7 @@ namespace PhysicsEditor
     class Editor
     {
     private:
-        EditorClipboard mClipboard;
+        Clipboard mClipboard;
 
         //CommandManager mCommand;
         //Undo mUndo;

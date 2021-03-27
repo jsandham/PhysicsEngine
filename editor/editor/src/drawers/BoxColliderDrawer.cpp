@@ -19,7 +19,7 @@ BoxColliderDrawer::~BoxColliderDrawer()
 {
 }
 
-void BoxColliderDrawer::render(EditorClipboard &clipboard, Guid id)
+void BoxColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {

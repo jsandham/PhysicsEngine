@@ -31,11 +31,11 @@ ProjectView::~ProjectView()
     deleteProjectTree();
 }
 
-void ProjectView::init(EditorClipboard &clipboard)
+void ProjectView::init(Clipboard &clipboard)
 {
 }
 
-void ProjectView::update(EditorClipboard &clipboard)
+void ProjectView::update(Clipboard &clipboard)
 {
     if (clipboard.getProjectPath() != "")
     {
@@ -85,7 +85,7 @@ void ProjectView::drawLeftPane()
     drawProjectTree();
 }
 
-void ProjectView::drawRightPane(EditorClipboard &clipboard)
+void ProjectView::drawRightPane(Clipboard &clipboard)
 {
     std::vector<ProjectNode *> directories;
     std::vector<std::string> files;

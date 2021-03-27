@@ -36,21 +36,21 @@ class MaterialDrawer : public InspectorDrawer
     MaterialDrawer();
     ~MaterialDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 
 template <GLenum T> struct UniformDrawer
 {
-    static void draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform);
+    static void draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform);
 };
 
 template <GLenum T>
-inline void UniformDrawer<T>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<T>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
 }
 
 template <>
-inline void UniformDrawer<GL_INT>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_INT>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     int temp = material->getInt(uniform->mName);
 
@@ -62,7 +62,7 @@ inline void UniformDrawer<GL_INT>::draw(EditorClipboard &clipboard, Material *ma
 }
 
 template <>
-inline void UniformDrawer<GL_FLOAT>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_FLOAT>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     float temp = material->getFloat(uniform->mName);
 
@@ -74,7 +74,7 @@ inline void UniformDrawer<GL_FLOAT>::draw(EditorClipboard &clipboard, Material *
 }
 
 template <>
-inline void UniformDrawer<GL_FLOAT_VEC2>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_FLOAT_VEC2>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     glm::vec2 temp = material->getVec2(uniform->mName);
 
@@ -86,7 +86,7 @@ inline void UniformDrawer<GL_FLOAT_VEC2>::draw(EditorClipboard &clipboard, Mater
 }
 
 template <>
-inline void UniformDrawer<GL_FLOAT_VEC3>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_FLOAT_VEC3>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     glm::vec3 temp = material->getVec3(uniform->mName);
 
@@ -98,7 +98,7 @@ inline void UniformDrawer<GL_FLOAT_VEC3>::draw(EditorClipboard &clipboard, Mater
 }
 
 template <>
-inline void UniformDrawer<GL_FLOAT_VEC4>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_FLOAT_VEC4>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     glm::vec4 temp = material->getVec4(uniform->mName);
 
@@ -110,7 +110,7 @@ inline void UniformDrawer<GL_FLOAT_VEC4>::draw(EditorClipboard &clipboard, Mater
 }
 
 template <>
-inline void UniformDrawer<GL_SAMPLER_2D>::draw(EditorClipboard &clipboard, Material *material, ShaderUniform *uniform)
+inline void UniformDrawer<GL_SAMPLER_2D>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
     Guid textureId = material->getTexture(uniform->mName);
 

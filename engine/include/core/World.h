@@ -5,54 +5,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "Allocator.h"
-#include "Asset.h"
-#include "Cubemap.h"
-#include "Entity.h"
-#include "Font.h"
-#include "Guid.h"
-#include "Input.h"
-#include "LoadInternal.h"
-#include "Log.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "PoolAllocator.h"
-#include "Serialization.h"
-#include "Shader.h"
-#include "Texture2D.h"
-#include "Texture3D.h"
-#include "Util.h"
 #include "WorldAllocators.h"
 #include "WorldDefaultAssets.h"
 #include "WorldIdState.h"
-#include "WorldSerialization.h"
-
-#include "../components/BoxCollider.h"
-#include "../components/Camera.h"
-#include "../components/CapsuleCollider.h"
-#include "../components/Light.h"
-#include "../components/LineRenderer.h"
-#include "../components/MeshCollider.h"
-#include "../components/MeshRenderer.h"
-#include "../components/Rigidbody.h"
-#include "../components/SphereCollider.h"
-#include "../components/Transform.h"
-
-#include "../systems/CleanUpSystem.h"
-#include "../systems/DebugSystem.h"
-#include "../systems/GizmoSystem.h"
-#include "../systems/PhysicsSystem.h"
-#include "../systems/RenderSystem.h"
-#include "../systems/System.h"
 
 namespace PhysicsEngine
 {
 class World
 {
   private:
-    // scene id
-    Guid  mSceneId;
-
     // allocators for assets, entities, components, and systems
     WorldAllocators mAllocators;
 
@@ -65,10 +26,6 @@ class World
     // all systems in world listed in order they should be updated
     std::vector<System *> mSystems;
 
-    // asset and scene id to filepath
-    std::unordered_map<Guid, std::string> mAssetIdToFilepath;
-    std::unordered_map<Guid, std::string> mSceneIdToFilepath;
-
   public:
     World();
     ~World();
@@ -76,18 +33,15 @@ class World
     World &operator=(const World &other) = delete;
 
     Asset* loadAssetFromYAML(const std::string& filePath);
-    bool loadSceneFromYAML(const std::string& filePath);
-    bool writeSceneToYAML(const std::string& filePath);
-
-    bool loadSceneFromBinary(const std::string &filePath);
-    bool writeSceneToBinary(const std::string &filePath);
+    Scene* loadSceneFromYAML(const std::string& filePath);
+    bool writeSceneToYAML(const std::string& filePath, const Guid& sceneId) const;
 
     void latentDestroyEntitiesInWorld();
 
+    size_t getNumberOfScenes() const;
     size_t getNumberOfEntities() const;
+    size_t getNumberOfNonHiddenEntities() const;
     size_t getNumberOfUpdatingSystems() const;
-
-    Guid getSceneId() const;
 
     template <typename T> size_t getNumberOfSystems() const
     {
@@ -110,14 +64,14 @@ class World
         return getNumberOfAssets_impl(getAssetAllocator_impl<T>());
     }
 
-    template <typename T> T *getSystem()
+    template <typename T> T *getSystem() const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystem_impl(getSystemAllocator_impl<T>());
     }
 
-    template <typename T> T *getComponent(const Guid &entityId)
+    template <typename T> T *getComponent(const Guid &entityId) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -145,46 +99,48 @@ class World
         return addSystem_impl<T>(getSystemOrAddAllocator_impl<T>(), order);
     }
 
-    Entity *getEntityByIndex(size_t index);
-    Entity *getEntityById(const Guid &entityId);
-    System *getSystemByUpdateOrder(size_t order);
+    Scene* getSceneByIndex(size_t index) const;
+    Scene* getSceneById(const Guid& sceneId) const;
+    Entity* getEntityByIndex(size_t index) const;
+    Entity *getEntityById(const Guid &entityId) const;
+    System *getSystemByUpdateOrder(size_t order) const;
 
-    template <typename T> T *getSystemByIndex(size_t index)
+    template <typename T> T *getSystemByIndex(size_t index) const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystemByIndex_impl(getSystemAllocator_impl<T>(), index);
     }
 
-    template <typename T> T *getSystemById(const Guid &systemId)
+    template <typename T> T *getSystemById(const Guid &systemId) const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return getSystemById_impl<T>(getSystemAllocator_impl<T>(), systemId);
     }
 
-    template <typename T> T *getAssetByIndex(size_t index)
+    template <typename T> T *getAssetByIndex(size_t index) const
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return getAssetByIndex_impl(getAssetAllocator_impl<T>(), index);
     }
 
-    template <typename T> T *getAssetById(const Guid &assetId)
+    template <typename T> T *getAssetById(const Guid &assetId) const
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return getAssetById_impl<T>(getAssetAllocator_impl<T>(), assetId);
     }
 
-    template <typename T> T *getComponentByIndex(size_t index)
+    template <typename T> T *getComponentByIndex(size_t index) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return getComponentByIndex_impl(getComponentAllocator_impl<T>(), index);
     }
 
-    template <typename T> T *getComponentById(const Guid &componentId)
+    template <typename T> T *getComponentById(const Guid &componentId) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -208,6 +164,7 @@ class World
     int getIndexOf(const Guid &id) const;
     int getTypeOf(const Guid &id) const;
 
+    Scene* createScene();
     Entity *createEntity();
     Entity *createEntity(std::istream &in);
 
@@ -218,7 +175,7 @@ class World
     bool isMarkedForLatentDestroy(const Guid &id);
     void clearIdsMarkedCreatedOrDestroyed();
 
-    std::vector<std::pair<Guid, int>> getComponentsOnEntity(const Guid &entityId);
+    std::vector<std::pair<Guid, int>> getComponentsOnEntity(const Guid &entityId) const;
 
     std::vector<Guid> getEntityIdsMarkedCreated() const;
     std::vector<Guid> getEntityIdsMarkedLatentDestroy() const;
@@ -340,77 +297,77 @@ class World
         return mAllocators.mFontAllocator.getCount();
     }
 
-    template <> RenderSystem *getSystem<RenderSystem>()
+    template <> RenderSystem *getSystem<RenderSystem>() const
     {
         return getSystem_impl(&mAllocators.mRenderSystemAllocator);
     }
 
-    template <> PhysicsSystem *getSystem<PhysicsSystem>()
+    template <> PhysicsSystem *getSystem<PhysicsSystem>() const
     {
         return getSystem_impl(&mAllocators.mPhysicsSystemAllocator);
     }
 
-    template <> CleanUpSystem *getSystem<CleanUpSystem>()
+    template <> CleanUpSystem *getSystem<CleanUpSystem>() const
     {
         return getSystem_impl(&mAllocators.mCleanupSystemAllocator);
     }
 
-    template <> DebugSystem *getSystem<DebugSystem>()
+    template <> DebugSystem *getSystem<DebugSystem>() const
     {
         return getSystem_impl(&mAllocators.mDebugSystemAllocator);
     }
 
-    template <> GizmoSystem *getSystem<GizmoSystem>()
+    template <> GizmoSystem *getSystem<GizmoSystem>() const
     {
         return getSystem_impl(&mAllocators.mGizmoSystemAllocator);
     }
 
-    template <> Transform *getComponent<Transform>(const Guid &entityId)
+    template <> Transform *getComponent<Transform>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mTransformAllocator, entityId);
     }
 
-    template <> MeshRenderer *getComponent<MeshRenderer>(const Guid &entityId)
+    template <> MeshRenderer *getComponent<MeshRenderer>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
     }
 
-    template <> LineRenderer *getComponent<LineRenderer>(const Guid &entityId)
+    template <> LineRenderer *getComponent<LineRenderer>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
     }
 
-    template <> Rigidbody *getComponent<Rigidbody>(const Guid &entityId)
+    template <> Rigidbody *getComponent<Rigidbody>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mRigidbodyAllocator, entityId);
     }
 
-    template <> Camera *getComponent<Camera>(const Guid &entityId)
+    template <> Camera *getComponent<Camera>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mCameraAllocator, entityId);
     }
 
-    template <> Light *getComponent<Light>(const Guid &entityId)
+    template <> Light *getComponent<Light>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mLightAllocator, entityId);
     }
 
-    template <> SphereCollider *getComponent<SphereCollider>(const Guid &entityId)
+    template <> SphereCollider *getComponent<SphereCollider>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mSphereColliderAllocator, entityId);
     }
 
-    template <> BoxCollider *getComponent<BoxCollider>(const Guid &entityId)
+    template <> BoxCollider *getComponent<BoxCollider>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mBoxColliderAllocator, entityId);
     }
 
-    template <> CapsuleCollider *getComponent<CapsuleCollider>(const Guid &entityId)
+    template <> CapsuleCollider *getComponent<CapsuleCollider>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityId);
     }
 
-    template <> MeshCollider *getComponent<MeshCollider>(const Guid &entityId)
+    template <> MeshCollider *getComponent<MeshCollider>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
     }
@@ -540,222 +497,222 @@ class World
         return addSystem_impl(&mAllocators.mGizmoSystemAllocator, order);
     }
 
-    template <> RenderSystem *getSystemByIndex<RenderSystem>(size_t index)
+    template <> RenderSystem *getSystemByIndex<RenderSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mRenderSystemAllocator, index);
     }
 
-    template <> PhysicsSystem *getSystemByIndex<PhysicsSystem>(size_t index)
+    template <> PhysicsSystem *getSystemByIndex<PhysicsSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mPhysicsSystemAllocator, index);
     }
 
-    template <> CleanUpSystem *getSystemByIndex<CleanUpSystem>(size_t index)
+    template <> CleanUpSystem *getSystemByIndex<CleanUpSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mCleanupSystemAllocator, index);
     }
 
-    template <> DebugSystem *getSystemByIndex<DebugSystem>(size_t index)
+    template <> DebugSystem *getSystemByIndex<DebugSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mDebugSystemAllocator, index);
     }
 
-    template <> GizmoSystem *getSystemByIndex<GizmoSystem>(size_t index)
+    template <> GizmoSystem *getSystemByIndex<GizmoSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mGizmoSystemAllocator, index);
     }
 
-    template <> RenderSystem *getSystemById<RenderSystem>(const Guid &systemId)
+    template <> RenderSystem *getSystemById<RenderSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mRenderSystemAllocator, systemId);
     }
 
-    template <> PhysicsSystem *getSystemById<PhysicsSystem>(const Guid &systemId)
+    template <> PhysicsSystem *getSystemById<PhysicsSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mPhysicsSystemAllocator, systemId);
     }
 
-    template <> CleanUpSystem *getSystemById<CleanUpSystem>(const Guid &systemId)
+    template <> CleanUpSystem *getSystemById<CleanUpSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mCleanupSystemAllocator, systemId);
     }
 
-    template <> DebugSystem *getSystemById<DebugSystem>(const Guid &systemId)
+    template <> DebugSystem *getSystemById<DebugSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mDebugSystemAllocator, systemId);
     }
 
-    template <> GizmoSystem *getSystemById<GizmoSystem>(const Guid &systemId)
+    template <> GizmoSystem *getSystemById<GizmoSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mGizmoSystemAllocator, systemId);
     }
 
-    template <> Mesh *getAssetByIndex<Mesh>(size_t index)
+    template <> Mesh *getAssetByIndex<Mesh>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mMeshAllocator, index);
     }
 
-    template <> Material *getAssetByIndex<Material>(size_t index)
+    template <> Material *getAssetByIndex<Material>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mMaterialAllocator, index);
     }
 
-    template <> Shader *getAssetByIndex<Shader>(size_t index)
+    template <> Shader *getAssetByIndex<Shader>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mShaderAllocator, index);
     }
 
-    template <> Texture2D *getAssetByIndex<Texture2D>(size_t index)
+    template <> Texture2D *getAssetByIndex<Texture2D>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mTexture2DAllocator, index);
     }
 
-    template <> Texture3D *getAssetByIndex<Texture3D>(size_t index)
+    template <> Texture3D *getAssetByIndex<Texture3D>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mTexture3DAllocator, index);
     }
 
-    template <> Cubemap *getAssetByIndex<Cubemap>(size_t index)
+    template <> Cubemap *getAssetByIndex<Cubemap>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mCubemapAllocator, index);
     }
 
-    template <> Font *getAssetByIndex<Font>(size_t index)
+    template <> Font *getAssetByIndex<Font>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
     }
 
-    template <> Mesh *getAssetById<Mesh>(const Guid &assetId)
+    template <> Mesh *getAssetById<Mesh>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mMeshAllocator, assetId);
     }
 
-    template <> Material *getAssetById<Material>(const Guid &assetId)
+    template <> Material *getAssetById<Material>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mMaterialAllocator, assetId);
     }
 
-    template <> Shader *getAssetById<Shader>(const Guid &assetId)
+    template <> Shader *getAssetById<Shader>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mShaderAllocator, assetId);
     }
 
-    template <> Texture2D *getAssetById<Texture2D>(const Guid &assetId)
+    template <> Texture2D *getAssetById<Texture2D>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mTexture2DAllocator, assetId);
     }
 
-    template <> Texture3D *getAssetById<Texture3D>(const Guid &assetId)
+    template <> Texture3D *getAssetById<Texture3D>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mTexture3DAllocator, assetId);
     }
 
-    template <> Cubemap *getAssetById<Cubemap>(const Guid &assetId)
+    template <> Cubemap *getAssetById<Cubemap>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mCubemapAllocator, assetId);
     }
 
-    template <> Font *getAssetById<Font>(const Guid &assetId)
+    template <> Font *getAssetById<Font>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mFontAllocator, assetId);
     }
 
-    template <> Transform *getComponentByIndex<Transform>(size_t index)
+    template <> Transform *getComponentByIndex<Transform>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mTransformAllocator, index);
     }
 
-    template <> MeshRenderer *getComponentByIndex<MeshRenderer>(size_t index)
+    template <> MeshRenderer *getComponentByIndex<MeshRenderer>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mMeshRendererAllocator, index);
     }
 
-    template <> LineRenderer *getComponentByIndex<LineRenderer>(size_t index)
+    template <> LineRenderer *getComponentByIndex<LineRenderer>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mLineRendererAllocator, index);
     }
 
-    template <> Rigidbody *getComponentByIndex<Rigidbody>(size_t index)
+    template <> Rigidbody *getComponentByIndex<Rigidbody>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mRigidbodyAllocator, index);
     }
 
-    template <> Camera *getComponentByIndex<Camera>(size_t index)
+    template <> Camera *getComponentByIndex<Camera>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mCameraAllocator, index);
     }
 
-    template <> Light *getComponentByIndex<Light>(size_t index)
+    template <> Light *getComponentByIndex<Light>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mLightAllocator, index);
     }
 
-    template <> SphereCollider *getComponentByIndex<SphereCollider>(size_t index)
+    template <> SphereCollider *getComponentByIndex<SphereCollider>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mSphereColliderAllocator, index);
     }
 
-    template <> BoxCollider *getComponentByIndex<BoxCollider>(size_t index)
+    template <> BoxCollider *getComponentByIndex<BoxCollider>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mBoxColliderAllocator, index);
     }
 
-    template <> CapsuleCollider *getComponentByIndex<CapsuleCollider>(size_t index)
+    template <> CapsuleCollider *getComponentByIndex<CapsuleCollider>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mCapsuleColliderAllocator, index);
     }
 
-    template <> MeshCollider *getComponentByIndex<MeshCollider>(size_t index)
+    template <> MeshCollider *getComponentByIndex<MeshCollider>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mMeshColliderAllocator, index);
     }
 
-    template <> Transform *getComponentById<Transform>(const Guid &componentId)
+    template <> Transform *getComponentById<Transform>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mTransformAllocator, componentId);
     }
 
-    template <> MeshRenderer *getComponentById<MeshRenderer>(const Guid &componentId)
+    template <> MeshRenderer *getComponentById<MeshRenderer>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mMeshRendererAllocator, componentId);
     }
 
-    template <> LineRenderer *getComponentById<LineRenderer>(const Guid &componentId)
+    template <> LineRenderer *getComponentById<LineRenderer>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mLineRendererAllocator, componentId);
     }
 
-    template <> Rigidbody *getComponentById<Rigidbody>(const Guid &componentId)
+    template <> Rigidbody *getComponentById<Rigidbody>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mRigidbodyAllocator, componentId);
     }
 
-    template <> Camera *getComponentById<Camera>(const Guid &componentId)
+    template <> Camera *getComponentById<Camera>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mCameraAllocator, componentId);
     }
 
-    template <> Light *getComponentById<Light>(const Guid &componentId)
+    template <> Light *getComponentById<Light>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mLightAllocator, componentId);
     }
 
-    template <> SphereCollider *getComponentById<SphereCollider>(const Guid &componentId)
+    template <> SphereCollider *getComponentById<SphereCollider>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mSphereColliderAllocator, componentId);
     }
 
-    template <> BoxCollider *getComponentById<BoxCollider>(const Guid &componentId)
+    template <> BoxCollider *getComponentById<BoxCollider>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mBoxColliderAllocator, componentId);
     }
 
-    template <> CapsuleCollider *getComponentById<CapsuleCollider>(const Guid &componentId)
+    template <> CapsuleCollider *getComponentById<CapsuleCollider>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mCapsuleColliderAllocator, componentId);
     }
 
-    template <> MeshCollider *getComponentById<MeshCollider>(const Guid &componentId)
+    template <> MeshCollider *getComponentById<MeshCollider>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mMeshColliderAllocator, componentId);
     }
@@ -857,17 +814,10 @@ class World
     Guid getOverdrawShaderId() const;
 
   private:
-    bool loadBinary(std::ifstream &in, const ObjectHeader &header);
-    void loadEntityFromBinary(std::ifstream &in, const ObjectHeader &header);
-    void loadComponentFromBinary(std::ifstream &in, const ObjectHeader &header);
-    void loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header);
-
     Asset* loadAssetFromYAML(const YAML::Node& in);
     Asset* loadAssetFromYAML(const YAML::Node& in, const Guid id, int type);
-    Object* loadSceneObjectFromYAML(const YAML::Node& in);
-    Entity* loadEntityFromYAML(const YAML::Node& in, const Guid id);
-    Component* loadComponentFromYAML(const YAML::Node& in, const Guid id, int type);
-    System* loadSystemFromYAML(const YAML::Node& in, const Guid id, int type);
+    Scene* loadSceneFromYAML(const YAML::Node& in);
+    Scene* loadSceneFromYAML(const YAML::Node& in, const Guid id);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
@@ -890,14 +840,14 @@ class World
         return allocator != nullptr ? allocator->getCount() : 0;
     }
 
-    template <typename T> T *getSystem_impl(const PoolAllocator<T> *allocator)
+    template <typename T> T *getSystem_impl(const PoolAllocator<T> *allocator) const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return allocator != nullptr ? allocator->get(0) : nullptr;
     }
 
-    template <typename T> T *getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityId)
+    template <typename T> T *getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityId) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -1010,14 +960,14 @@ class World
         return system;
     }
 
-    template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
+    template <typename T> T *getSystemByIndex_impl(const PoolAllocator<T> *allocator, size_t index) const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
         return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
-    template <typename T> T *getSystemById_impl(const PoolAllocator<T> *allocator, const Guid &systemId)
+    template <typename T> T *getSystemById_impl(const PoolAllocator<T> *allocator, const Guid &systemId) const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -1029,14 +979,14 @@ class World
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, systemId);
     }
 
-    template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
+    template <typename T> T *getAssetByIndex_impl(const PoolAllocator<T> *allocator, size_t index) const
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
-    template <typename T> T *getAssetById_impl(const PoolAllocator<T> *allocator, const Guid &assetId)
+    template <typename T> T *getAssetById_impl(const PoolAllocator<T> *allocator, const Guid &assetId) const
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
@@ -1048,14 +998,14 @@ class World
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, assetId);
     }
 
-    template <typename T> T *getComponentByIndex_impl(const PoolAllocator<T> *allocator, size_t index)
+    template <typename T> T *getComponentByIndex_impl(const PoolAllocator<T> *allocator, size_t index) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
         return allocator != nullptr ? allocator->get(index) : nullptr;
     }
 
-    template <typename T> T *getComponentById_impl(const PoolAllocator<T> *allocator, const Guid &componentId)
+    template <typename T> T *getComponentById_impl(const PoolAllocator<T> *allocator, const Guid &componentId) const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
@@ -1102,11 +1052,11 @@ class World
         return asset;
     }
 
-    template <typename T> PoolAllocator<T> *getComponentAllocator_impl()
+    template <typename T> PoolAllocator<T> *getComponentAllocator_impl() const
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mComponentAllocatorMap.find(ComponentType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mComponentAllocatorMap.find(ComponentType<T>::type);
         if (it != mAllocators.mComponentAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1129,11 +1079,11 @@ class World
         return allocator;
     }
 
-    template <typename T> PoolAllocator<T> *getSystemAllocator_impl()
+    template <typename T> PoolAllocator<T> *getSystemAllocator_impl() const
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
-        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mSystemAllocatorMap.find(SystemType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mSystemAllocatorMap.find(SystemType<T>::type);
         if (it != mAllocators.mSystemAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1156,11 +1106,11 @@ class World
         return allocator;
     }
 
-    template <typename T> PoolAllocator<T> *getAssetAllocator_impl()
+    template <typename T> PoolAllocator<T> *getAssetAllocator_impl() const
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
-        std::unordered_map<int, Allocator *>::iterator it = mAllocators.mAssetAllocatorMap.find(AssetType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mAssetAllocatorMap.find(AssetType<T>::type);
         if (it != mAllocators.mAssetAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1185,7 +1135,7 @@ class World
 
     template <typename T>
     T *getById_impl(const std::unordered_map<Guid, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                    const Guid &id)
+                    const Guid &id) const
     {
         std::unordered_map<Guid, int>::const_iterator it = idToIndexMap.find(id);
         if (it != idToIndexMap.end())
@@ -1213,131 +1163,138 @@ class World
     // Explicit specializations
 
     template <>
-    Transform *getComponentById_impl<Transform>(const PoolAllocator<Transform> *allocator, const Guid &componentId)
+    Transform *getComponentById_impl<Transform>(const PoolAllocator<Transform> *allocator, const Guid &componentId) const
     {
         return getById_impl<Transform>(mIdState.mTransformIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     MeshRenderer *getComponentById_impl<MeshRenderer>(const PoolAllocator<MeshRenderer> *allocator,
-                                                      const Guid &componentId)
+                                                      const Guid &componentId) const
     {
         return getById_impl<MeshRenderer>(mIdState.mMeshRendererIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     LineRenderer *getComponentById_impl<LineRenderer>(const PoolAllocator<LineRenderer> *allocator,
-                                                      const Guid &componentId)
+                                                      const Guid &componentId) const
     {
         return getById_impl<LineRenderer>(mIdState.mLineRendererIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
-    Rigidbody *getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody> *allocator, const Guid &componentId)
+    Rigidbody *getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody> *allocator, const Guid &componentId) const
     {
         return getById_impl<Rigidbody>(mIdState.mRigidbodyIdToGlobalIndex, allocator, componentId);
     }
 
-    template <> Camera *getComponentById_impl<Camera>(const PoolAllocator<Camera> *allocator, const Guid &componentId)
+    template <> Camera *getComponentById_impl<Camera>(const PoolAllocator<Camera> *allocator, const Guid &componentId) const
     {
         return getById_impl<Camera>(mIdState.mCameraIdToGlobalIndex, allocator, componentId);
     }
 
-    template <> Light *getComponentById_impl<Light>(const PoolAllocator<Light> *allocator, const Guid &componentId)
+    template <> Light *getComponentById_impl<Light>(const PoolAllocator<Light> *allocator, const Guid &componentId) const
     {
         return getById_impl<Light>(mIdState.mLightIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     SphereCollider *getComponentById_impl<SphereCollider>(const PoolAllocator<SphereCollider> *allocator,
-                                                          const Guid &componentId)
+                                                          const Guid &componentId) const
     {
         return getById_impl<SphereCollider>(mIdState.mSphereColliderIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     BoxCollider *getComponentById_impl<BoxCollider>(const PoolAllocator<BoxCollider> *allocator,
-                                                    const Guid &componentId)
+                                                    const Guid &componentId) const
     {
         return getById_impl<BoxCollider>(mIdState.mBoxColliderIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     CapsuleCollider *getComponentById_impl<CapsuleCollider>(const PoolAllocator<CapsuleCollider> *allocator,
-                                                            const Guid &componentId)
+                                                            const Guid &componentId) const
     {
         return getById_impl<CapsuleCollider>(mIdState.mCapsuleColliderIdToGlobalIndex, allocator, componentId);
     }
 
     template <>
     MeshCollider *getComponentById_impl<MeshCollider>(const PoolAllocator<MeshCollider> *allocator,
-                                                      const Guid &componentId)
+                                                      const Guid &componentId) const
     {
         return getById_impl<MeshCollider>(mIdState.mMeshColliderIdToGlobalIndex, allocator, componentId);
     }
 
-    template <> Mesh *getAssetById_impl<Mesh>(const PoolAllocator<Mesh> *allocator, const Guid &assetId)
+    template <> Mesh *getAssetById_impl<Mesh>(const PoolAllocator<Mesh> *allocator, const Guid &assetId) const
     {
         return getById_impl<Mesh>(mIdState.mMeshIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Material *getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId)
+    template <> Material *getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId) const
     {
         return getById_impl<Material>(mIdState.mMaterialIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Shader *getAssetById_impl<Shader>(const PoolAllocator<Shader> *allocator, const Guid &assetId)
+    template <> Shader *getAssetById_impl<Shader>(const PoolAllocator<Shader> *allocator, const Guid &assetId) const
     {
         return getById_impl<Shader>(mIdState.mShaderIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Texture2D *getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D> *allocator, const Guid &assetId)
+    template <> Texture2D *getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D> *allocator, const Guid &assetId) const
     {
         return getById_impl<Texture2D>(mIdState.mTexture2DIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Texture3D *getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D> *allocator, const Guid &assetId)
+    template <> Texture3D *getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D> *allocator, const Guid &assetId) const
     {
         return getById_impl<Texture3D>(mIdState.mTexture3DIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Cubemap *getAssetById_impl<Cubemap>(const PoolAllocator<Cubemap> *allocator, const Guid &assetId)
+    template <> Cubemap *getAssetById_impl<Cubemap>(const PoolAllocator<Cubemap> *allocator, const Guid &assetId) const
     {
         return getById_impl<Cubemap>(mIdState.mCubemapIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Font *getAssetById_impl<Font>(const PoolAllocator<Font> *allocator, const Guid &assetId)
+    template <> Font *getAssetById_impl<Font>(const PoolAllocator<Font> *allocator, const Guid &assetId) const
     {
         return getById_impl<Font>(mIdState.mFontIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    RenderSystem *getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator, const Guid &assetId)
+    RenderSystem *getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<RenderSystem>(mIdState.mRenderSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    PhysicsSystem *getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem> *allocator, const Guid &assetId)
+    PhysicsSystem *getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<PhysicsSystem>(mIdState.mPhysicsSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    CleanUpSystem *getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem> *allocator, const Guid &assetId)
+    CleanUpSystem *getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<CleanUpSystem>(mIdState.mCleanupSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    DebugSystem *getSystemById_impl<DebugSystem>(const PoolAllocator<DebugSystem> *allocator, const Guid &assetId)
+    DebugSystem *getSystemById_impl<DebugSystem>(const PoolAllocator<DebugSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<DebugSystem>(mIdState.mDebugSystemIdToGlobalIndex, allocator, assetId);
     }
     template <>
-    GizmoSystem *getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem> *allocator, const Guid &assetId)
+    GizmoSystem *getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<GizmoSystem>(mIdState.mGizmoSystemIdToGlobalIndex, allocator, assetId);
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<Scene>(const Guid& id, int index, int type)
+    {
+        mIdState.mSceneIdToGlobalIndex[id] = index;
+        mIdState.mIdToGlobalIndex[id] = index;
+        mIdState.mIdToType[id] = type;
     }
 
     template <> void addIdToGlobalIndexMap_impl<Entity>(const Guid &id, int index, int type)

@@ -41,12 +41,12 @@ SceneView::~SceneView()
 {
 }
 
-void SceneView::init(EditorClipboard &clipboard)
+void SceneView::init(Clipboard &clipboard)
 {
     initWorld(clipboard.getWorld());
 }
 
-void SceneView::update(EditorClipboard &clipboard)
+void SceneView::update(Clipboard &clipboard)
 {
     focused = false;
     hovered = false;
@@ -195,7 +195,7 @@ void SceneView::update(EditorClipboard &clipboard)
     // performance overlay
     if (overlayChecked)
     {
-        drawPerformanceOverlay(cameraSystem);
+        drawPerformanceOverlay(clipboard, cameraSystem);
     }
 
     ImGuiIO& io = ImGui::GetIO();
@@ -376,7 +376,7 @@ void SceneView::updateWorld(World *world)
     time.frameCount++;
 }
 
-void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem)
+void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem)
 {
     static bool overlayOpened = false;
     static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar |
@@ -418,6 +418,21 @@ void SceneView::drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *camera
         std::vector<float> perfData = perfQueue.getData();
         ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
         // ImGui::PlotLines("Curve", &perfData[0], perfData.size());
+
+        ImGui::Text("Active project name: %s\n", clipboard.getProjectName().c_str());
+        ImGui::Text("Active project path: %s\n", clipboard.getProjectPath().c_str());
+        ImGui::Text("Active scene name: %s\n", clipboard.getSceneName().c_str());
+        ImGui::Text("Active scene path: %s\n", clipboard.getScenePath().c_str());
+        ImGui::Text("Active scene id: %s\n", clipboard.getSceneId().toString().c_str());
+        ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());
+        ImGui::Text("Entity count in world: %d\n", clipboard.getWorld()->getNumberOfEntities());
+        ImGui::Text("Transform count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Transform>());
+        ImGui::Text("MeshRenderer count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<MeshRenderer>());
+        ImGui::Text("Light count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Light>());
+        ImGui::Text("Camera count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Camera>());
+        ImGui::Text("Mesh count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Mesh>());
+        ImGui::Text("Material count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Material>());
+        ImGui::Text("Texture2D count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Texture2D>());
     }
     ImGui::End();
 }

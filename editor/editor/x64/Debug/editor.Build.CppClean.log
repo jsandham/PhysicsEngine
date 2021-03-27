@@ -20,6 +20,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\capsulecolliderdr
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\cameradrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\boxcolliderdrawer.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\command.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\aboutpopup.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\undo.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\transformgizmo.obj
@@ -35,7 +36,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filebrowser.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorwin32.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editortoolbar.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editoronlyentitycreation.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorfileio.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcommands.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorclipboard.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorcamerasystem.obj
@@ -49,7 +49,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\popupwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\inspector.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\hierarchy.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb

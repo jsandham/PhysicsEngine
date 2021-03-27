@@ -19,7 +19,7 @@ Window::~Window()
 {
 }
 
-void Window::draw(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame)
 {
     if (isOpenedThisFrame)
     {

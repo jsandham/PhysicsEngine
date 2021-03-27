@@ -25,7 +25,7 @@ class Component : public Object
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
-    Entity *getEntity(World *world) const;
+    Entity *getEntity(const World *world) const;
 
     template <typename T> void latentDestroy(World *world)
     {
@@ -37,9 +37,9 @@ class Component : public Object
         world->immediateDestroyComponent(entityId, componentId, getInstanceType<T>());
     }
 
-    template <typename T> T *getComponent(World *world)
+    template <typename T> T *getComponent(const World *world) const
     {
-        Entity *entity = getEntity(world);
+        const Entity *entity = getEntity(world);
 
         return entity->getComponent<T>(world);
     }

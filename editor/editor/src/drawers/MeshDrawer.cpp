@@ -30,7 +30,7 @@ MeshDrawer::~MeshDrawer()
 {
 }
 
-void MeshDrawer::render(EditorClipboard &clipboard, Guid id)
+void MeshDrawer::render(Clipboard &clipboard, Guid id)
 {
     Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
 

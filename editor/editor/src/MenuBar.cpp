@@ -35,13 +35,13 @@ MenuBar::~MenuBar()
 {
 }
 
-void MenuBar::init(EditorClipboard &clipboard)
+void MenuBar::init(Clipboard &clipboard)
 {
     aboutPopup.init(clipboard);
     preferencesWindow.init(clipboard);
 }
 
-void MenuBar::update(EditorClipboard &clipboard)
+void MenuBar::update(Clipboard &clipboard)
 {
     newSceneClicked = false;
     openSceneClicked = false;
@@ -97,7 +97,7 @@ void MenuBar::update(EditorClipboard &clipboard)
     }
     else if (isSaveClicked() && !clipboard.getScenePath().empty())
     {
-        saveScene(clipboard, clipboard.getScene(), clipboard.getScenePath());
+        saveScene(clipboard, clipboard.getSceneName(), clipboard.getScenePath());
     }
     else if (isSaveAsClicked() || isSaveClicked() && clipboard.getScenePath().empty())
     {
@@ -220,7 +220,7 @@ bool MenuBar::isRunTestsClicked() const
     return runTestsClicked;
 }
 
-void MenuBar::showMenuFile(EditorClipboard &clipboard)
+void MenuBar::showMenuFile(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("New Scene", NULL, false, !clipboard.getProjectPath().empty()))
     {
@@ -237,7 +237,11 @@ void MenuBar::showMenuFile(EditorClipboard &clipboard)
     {
         saveClicked = true;
     }
-    if (ImGui::MenuItem("Save As..", NULL, false, !clipboard.getScenePath().empty()))
+    /*if (ImGui::MenuItem("Save As..", NULL, false, !clipboard.getScenePath().empty()))
+    {
+        saveAsClicked = true;
+    }*/
+    if (ImGui::MenuItem("Save As..", NULL, false, clipboard.getSceneId().isValid()))
     {
         saveAsClicked = true;
     }
@@ -267,7 +271,7 @@ void MenuBar::showMenuFile(EditorClipboard &clipboard)
     }
 }
 
-void MenuBar::showMenuEdit(EditorClipboard &clipboard)
+void MenuBar::showMenuEdit(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("Undo", "CTRL+Z", false, Undo::canUndo()))
     {
@@ -299,7 +303,7 @@ void MenuBar::showMenuEdit(EditorClipboard &clipboard)
     }
 }
 
-void MenuBar::showMenuWindow(EditorClipboard &clipboard)
+void MenuBar::showMenuWindow(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("Heirarchy"))
     {
@@ -323,7 +327,7 @@ void MenuBar::showMenuWindow(EditorClipboard &clipboard)
     }
 }
 
-void MenuBar::showMenuHelp(EditorClipboard &clipboard)
+void MenuBar::showMenuHelp(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("About PhysicsEngine"))
     {
@@ -331,10 +335,10 @@ void MenuBar::showMenuHelp(EditorClipboard &clipboard)
     }
 }
 
-void MenuBar::newScene(EditorClipboard &clipboard)
+void MenuBar::newScene(Clipboard &clipboard)
 {
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    clipboard.getWorld()->latentDestroyEntitiesInWorld(); // need to destroy assets too!
+    clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // re-centre editor camera to default position
     clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
@@ -343,65 +347,22 @@ void MenuBar::newScene(EditorClipboard &clipboard)
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
-    /*clipboard.openScene("default.scene", "", "", "", Guid::newGuid());*/
-    clipboard.openScene("default.scene", "");
+    Scene* scene = clipboard.getWorld()->createScene();
+    if (scene != nullptr)
+    {
+        clipboard.setActiveScene("default.scene", "", scene->getId());
+    }
 }
 
-//void MenuBar::openScene(EditorClipboard &clipboard, std::string name, std::string path)
-//{
-//    // check to make sure the scene is part of the current project
-//    if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
-//    {
-//        std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " +
-//                                   clipboard.getProjectPath() + "\n";
-//        Log::error(&errorMessage[0]);
-//        return;
-//    }
-//
-//    // meta scene file path
-//    std::string sceneMetaFilePath = path.substr(0, path.find(".")) + ".json";
-//
-//    // get guid from scene meta file
-//    Guid sceneId = PhysicsEditor::findGuidFromMetaFilePath(sceneMetaFilePath);
-//
-//    // binary scene file path
-//    std::string binarySceneFilePath = clipboard.getProjectPath() + "\\library\\" + sceneId.toString() + ".sdata";
-//
-//    // mark any (non-editor) entities in currently opened scene to be latent destroyed
-//    // TODO: Need todestroy assets too!
-//    clipboard.getWorld()->latentDestroyEntitiesInWorld();
-//
-//    // reset editor camera to default position
-//    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
-//
-//    // clear any dragged and selected items on clipboard
-//    clipboard.clearDraggedItem();
-//    clipboard.clearSelectedItem();
-//
-//    // load binary version of scene into world (ignoring systems and cameras)
-//    if (clipboard.getWorld()->loadSceneFromEditor(binarySceneFilePath))
-//    {
-//        clipboard.openScene(name, path, sceneMetaFilePath, binarySceneFilePath, sceneId);
-//    }
-//    else
-//    {
-//        std::string errorMessage = "Failed to load scene " + binarySceneFilePath + " into world\n";
-//        Log::error(&errorMessage[0]);
-//    }
-//}
-void MenuBar::openScene(EditorClipboard& clipboard, std::string name, std::string path)
+void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std::string& path)
 {
     // check to make sure the scene is part of the current project
     if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
     {
-        std::string errorMessage = "Could not open scene " + path + " because it is not part of current project " +
-            clipboard.getProjectPath() + "\n";
-        Log::error(&errorMessage[0]);
         return;
     }
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    // TODO: Need todestroy assets too!
     clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
     // reset editor camera to default position
@@ -412,56 +373,30 @@ void MenuBar::openScene(EditorClipboard& clipboard, std::string name, std::strin
     clipboard.clearSelectedItem();
 
     // load scene into world (ignoring systems and cameras)
-    if (clipboard.getWorld()->loadSceneFromYAML(path)) // from editor?
+    Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path);
+    if (scene != nullptr)
     {
-        clipboard.openScene(name, path);
-    }
-    else
-    {
-        std::string errorMessage = "Failed to load scene " + path + " into world\n";
-        Log::error(&errorMessage[0]);
+        clipboard.setActiveScene(name, path, scene->getId());
     }
 }
 
-//void MenuBar::saveScene(EditorClipboard &clipboard, std::string name, std::string path)
-//{
-//    if (PhysicsEditor::writeSceneToJson(clipboard.getWorld(), path, clipboard.getEditorOnlyIds()))
-//    {
-//        clipboard.openScene(name, path);
-//    }
-//    else
-//    {
-//        std::string message = "Could not save world to scene file " + path + "\n";
-//        Log::error(message.c_str());
-//        return;
-//    }
-//}
-void MenuBar::saveScene(EditorClipboard& clipboard, std::string name, std::string path)
+void MenuBar::saveScene(Clipboard& clipboard, const std::string& name, const std::string& path)
 {
-    if (clipboard.getWorld()->writeSceneToYAML(path)) // pass  clipboard.getEditorOnlyIds()???
-    {
-        clipboard.openScene(name, path);
-    }
-    else
-    {
-        std::string message = "Could not save world to scene file " + path + "\n";
-        Log::error(message.c_str());
-        return;
-    }
+    clipboard.getWorld()->writeSceneToYAML(path, clipboard.getSceneId());
 }
 
-void MenuBar::newProject(EditorClipboard &clipboard)
+void MenuBar::newProject(Clipboard &clipboard)
 {
 }
 
-void MenuBar::openProject(EditorClipboard &clipboard)
+void MenuBar::openProject(Clipboard &clipboard)
 {
 }
 
-void MenuBar::saveProject(EditorClipboard &clipboard)
+void MenuBar::saveProject(Clipboard &clipboard)
 {
 }
 
-void MenuBar::build(EditorClipboard &clipboard)
+void MenuBar::build(Clipboard &clipboard)
 {
 }

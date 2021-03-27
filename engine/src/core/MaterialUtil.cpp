@@ -1,5 +1,7 @@
 #include <vector>
 
+#include "../../include/core/World.h"
+#include "../../include/core/Material.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/MaterialUtil.h"
 

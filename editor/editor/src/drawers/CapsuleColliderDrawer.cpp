@@ -17,7 +17,7 @@ CapsuleColliderDrawer::~CapsuleColliderDrawer()
 {
 }
 
-void CapsuleColliderDrawer::render(EditorClipboard &clipboard, Guid id)
+void CapsuleColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {

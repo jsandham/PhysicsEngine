@@ -22,11 +22,11 @@ bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> asse
         }
     }*/
 
-    if (!world.loadSceneFromBinary(sceneFilePath))
-    {
-        Log::error("Could not load scene file\n");
-        return false;
-    }
+    //if (!world.loadSceneFromBinary(sceneFilePath))
+    //{
+    //    Log::error("Could not load scene file\n");
+    //    return false;
+    //}
 
     return true;
 }

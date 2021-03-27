@@ -26,8 +26,8 @@ class ProjectWindow : public PopupWindow
     ProjectWindow(const ProjectWindow &other) = delete;
     ProjectWindow &operator=(const ProjectWindow &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 
     void setMode(ProjectWindowMode mode);
 
@@ -35,8 +35,8 @@ class ProjectWindow : public PopupWindow
     std::string getSelectedFolderPath() const;
 
   private:
-    void renderOpenMode(EditorClipboard& clipboard);
-    void renderNewMode(EditorClipboard& clipboard);
+    void renderOpenMode(Clipboard& clipboard);
+    void renderNewMode(Clipboard& clipboard);
 };
 } // namespace PhysicsEditor
 #endif

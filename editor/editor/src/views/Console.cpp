@@ -192,11 +192,11 @@ Console::~Console()
 {
 }
 
-void Console::init(EditorClipboard &clipboard)
+void Console::init(Clipboard &clipboard)
 {
 }
 
-void Console::update(EditorClipboard &clipboard)
+void Console::update(Clipboard &clipboard)
 {
     static AppLog log;
 

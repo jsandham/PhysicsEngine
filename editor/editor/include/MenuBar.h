@@ -52,8 +52,8 @@ class MenuBar
     MenuBar();
     ~MenuBar();
 
-    void init(EditorClipboard& clipboard);
-    void update(EditorClipboard &clipboard);
+    void init(Clipboard& clipboard);
+    void update(Clipboard &clipboard);
 
     bool isNewSceneClicked() const;
     bool isOpenSceneClicked() const;
@@ -74,18 +74,18 @@ class MenuBar
     bool isRunTestsClicked() const;
 
   private:
-    void showMenuFile(EditorClipboard& clipboard);
-    void showMenuEdit(EditorClipboard& clipboard);
-    void showMenuWindow(EditorClipboard& clipboard);
-    void showMenuHelp(EditorClipboard& clipboard);
+    void showMenuFile(const Clipboard& clipboard);
+    void showMenuEdit(const Clipboard& clipboard);
+    void showMenuWindow(const Clipboard& clipboard);
+    void showMenuHelp(const Clipboard& clipboard);
 
-    void newScene(EditorClipboard& clipboard);
-    void openScene(EditorClipboard& clipboard, std::string name, std::string path);
-    void saveScene(EditorClipboard& clipboard, std::string name, std::string path);
-    void newProject(EditorClipboard& clipboard);
-    void openProject(EditorClipboard& clipboard);
-    void saveProject(EditorClipboard& clipboard);
-    void build(EditorClipboard& clipboard);
+    void newScene(Clipboard& clipboard);
+    void openScene(Clipboard& clipboard, const std::string& name, const std::string& path);
+    void saveScene(Clipboard& clipboard, const std::string& name, const std::string& path);
+    void newProject(Clipboard& clipboard);
+    void openProject(Clipboard& clipboard);
+    void saveProject(Clipboard& clipboard);
+    void build(Clipboard& clipboard);
 };
 } // namespace PhysicsEditor
 

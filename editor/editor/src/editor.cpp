@@ -39,8 +39,6 @@ void Editor::init()
     io.Fonts->AddFontFromFileTTF("C:\\Users\\jsand\\Downloads\\fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
     io.Fonts->Build();
 
-    mClipboard.init();
-
     mMenuBar.init(mClipboard);
     mInspector.init(mClipboard);
     mHierarchy.init(mClipboard);
@@ -72,13 +70,6 @@ void Editor::update()
     // ImGui::ShowDemoWindow();
     // ImGui::ShowMetricsWindow();
     // ImGui::ShowStyleEditor();
-
-    size_t meshCount = mClipboard.getWorld()->getNumberOfAssets<Mesh>();
-    size_t textureCount = mClipboard.getWorld()->getNumberOfAssets<Texture2D>();
-    size_t shaderCount = mClipboard.getWorld()->getNumberOfAssets<Shader>();
-    
-    std::string test = "Mesh count: " + std::to_string(meshCount) + " texture count: " + std::to_string(textureCount) + " shader count: " + std::to_string(shaderCount) + " \n";
-    Log::info(test.c_str());
 
     mMenuBar.update(mClipboard);
     mHierarchy.draw(mClipboard, mMenuBar.isOpenHierarchyCalled());

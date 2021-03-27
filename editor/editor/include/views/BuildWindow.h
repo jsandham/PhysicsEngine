@@ -13,8 +13,8 @@ class BuildWindow
     BuildWindow(const BuildWindow &other) = delete;
     BuildWindow &operator=(const BuildWindow &other) = delete;
 
-    void init(EditorClipboard &clipboard);
-    void update(EditorClipboard &clipboard, bool isOpenedThisFrame);
+    void init(Clipboard &clipboard);
+    void update(Clipboard &clipboard, bool isOpenedThisFrame);
 };
 } // namespace PhysicsEditor
 

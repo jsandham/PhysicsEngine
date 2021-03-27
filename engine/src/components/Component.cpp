@@ -48,7 +48,7 @@ void Component::deserialize(const YAML::Node& in)
     mEntityId = YAML::getValue<Guid>(in, "entityId");
 }
 
-Entity *Component::getEntity(World *world) const
+Entity *Component::getEntity(const World *world) const
 {
     return world->getEntityById(mEntityId);
 }

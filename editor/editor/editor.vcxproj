@@ -183,7 +183,6 @@
     <ClCompile Include="src\EditorCameraSystem.cpp" />
     <ClCompile Include="src\EditorClipboard.cpp" />
     <ClCompile Include="src\EditorCommands.cpp" />
-    <ClCompile Include="src\EditorFileIO.cpp" />
     <ClCompile Include="src\EditorOnlyEntityCreation.cpp" />
     <ClCompile Include="src\EditorToolbar.cpp" />
     <ClCompile Include="src\EditorWin32.cpp" />
@@ -234,7 +233,6 @@
     <ClInclude Include="include\Editor.h" />
     <ClInclude Include="include\EditorCameraSystem.h" />
     <ClInclude Include="include\EditorCommands.h" />
-    <ClInclude Include="include\EditorFileIO.h" />
     <ClInclude Include="include\EditorOnlyEntityCreation.h" />
     <ClInclude Include="include\EditorToolbar.h" />
     <ClInclude Include="include\EditorClipboard.h" />

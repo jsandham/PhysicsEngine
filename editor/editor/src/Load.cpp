@@ -9,7 +9,7 @@
 
 using namespace PhysicsEngine;
 
-Component* PhysicsEngine::getComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type)
+Component* PhysicsEngine::getComponent(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type)
 {
     return nullptr;
 }

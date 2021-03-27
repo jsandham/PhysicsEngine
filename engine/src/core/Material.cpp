@@ -5,6 +5,7 @@
 #include "../../include/core/Material.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Log.h"
 
 #include "../../include/graphics/Graphics.h"
 

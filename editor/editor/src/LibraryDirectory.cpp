@@ -1,24 +1,11 @@
-#include "../include/LibraryDirectory.h"
-#include "../include/EditorFileIO.h"
-#include "../include/FileSystemUtil.h"
-
-#include "core/Material.h"
-#include "core/Mesh.h"
-#include "core/Shader.h"
-#include "core/Texture2D.h"
-
-#include "components/Camera.h"
-#include "components/Light.h"
-#include "components/MeshRenderer.h"
-#include "components/Transform.h"
-#include "core/Entity.h"
-
 #include <fstream>
 #include <set>
 #include <sstream>
 
+#include "../include/LibraryDirectory.h"
+#include "../include/FileSystemUtil.h"
+
 using namespace PhysicsEditor;
-using namespace PhysicsEngine;
 
 LibraryDirectoryListener::LibraryDirectoryListener()
 {
@@ -88,7 +75,7 @@ void LibraryDirectory::loadQueuedAssetsIntoWorld(PhysicsEngine::World *world)
     {
         std::string extension = getFileExtension(mBuffer[i]);
 
-        Asset* asset = nullptr;
+        PhysicsEngine::Asset* asset = nullptr;
         if (extension == "texture") {
             asset = world->loadAssetFromYAML(mBuffer[i]);
         }

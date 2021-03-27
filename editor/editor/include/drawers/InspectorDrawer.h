@@ -16,7 +16,7 @@ class InspectorDrawer
     InspectorDrawer();
     virtual ~InspectorDrawer() = 0;
 
-    virtual void render(EditorClipboard &clipboard, Guid id) = 0;
+    virtual void render(Clipboard &clipboard, Guid id) = 0;
 };
 } // namespace PhysicsEditor
 

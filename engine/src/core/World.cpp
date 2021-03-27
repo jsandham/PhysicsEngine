@@ -17,8 +17,6 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-    mSceneId = Guid::INVALID;
-
     // load default included meshes
     mDefaultAssets.mSphereMeshId = InternalMeshes::loadSphereMesh(this);
     mDefaultAssets.mCubeMeshId = InternalMeshes::loadCubeMesh(this);
@@ -55,53 +53,42 @@ World::~World()
 {
 }
 
-Guid World::getSceneId() const
-{
-    return mSceneId;
-}
-
 Asset* World::loadAssetFromYAML(const std::string& filePath)
 {
     YAML::Node in = YAML::LoadFile(filePath);
 
-    if (!in.IsMap()) {
+    if (!in.IsMap() || in.begin() == in.end()) {
         return nullptr;
     }
 
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar() && it->second.IsMap()) {
-            return loadAssetFromYAML(it->second);
+    if (in.begin()->first.IsScalar() && in.begin()->second.IsMap())
+    {
+        Asset* asset = loadAssetFromYAML(in.begin()->second);
+        if (asset != nullptr)
+        {
+            mIdState.mAssetIdToFilepath[asset->getId()] = filePath;
         }
+
+        return asset;
     }
 
     return nullptr;
 }
 
-bool World::loadSceneFromYAML(const std::string& filePath)
+Scene* World::loadSceneFromYAML(const std::string& filePath)
 {
     YAML::Node in = YAML::LoadFile(filePath);
 
-    if (!in.IsMap()) {
-        return false;
-    }
-
-    if (in["id"])
+    Scene* scene = loadSceneFromYAML(in);
+    if (scene != nullptr)
     {
-        mSceneId = in["id"].as<Guid>();
+        mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
     }
 
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar() && it->second.IsMap()) {
-            if (loadSceneObjectFromYAML(it->second) == nullptr) {
-                return false;
-            }
-        }
-    }
-
-    return true;
+    return scene;
 }
 
-bool World::writeSceneToYAML(const std::string& filePath)
+bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) const
 {
     std::ofstream out;
     out.open(filePath);
@@ -112,39 +99,54 @@ bool World::writeSceneToYAML(const std::string& filePath)
         return false;
     }
 
+    Scene* scene = getSceneById(sceneId);
+    if (scene == nullptr) {
+        return false;
+    }
+
+    YAML::Node sceneNode;
+    sceneNode["type"] = scene->getType();
+    sceneNode["id"] = scene->getId();
+
+    out << sceneNode;
+    out << "\n";
+
     for (size_t i = 0; i < getNumberOfEntities(); i++) {
-        Entity* entity = getEntityByIndex(i);
+        const Entity* entity = getEntityByIndex(i);
+        
+        if (!entity->mHide)
+        {
+            YAML::Node en;
+            entity->serialize(en);
 
-        YAML::Node en;
-        entity->serialize(en);
+            YAML::Node entityNode;
+            entityNode[entity->getObjectName()] = en;
 
-        YAML::Node entityNode;
-        entityNode[entity->getObjectName()] = en;
-
-        out << entityNode;
-        out << "\n";
-
-        std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
-        for (size_t j = 0; j < temp.size(); j++) {
-            Component* component = nullptr;
-
-            if (Component::isInternal(temp[j].second))
-            {
-                component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-            }
-            else
-            {
-                component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-            }
-
-            YAML::Node cn;
-            component->serialize(cn);
-
-            YAML::Node componentNode;
-            componentNode[component->getObjectName()] = cn;
-
-            out << componentNode;
+            out << entityNode;
             out << "\n";
+
+            std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
+            for (size_t j = 0; j < temp.size(); j++) {
+                Component* component = nullptr;
+
+                if (Component::isInternal(temp[j].second))
+                {
+                    component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+                }
+                else
+                {
+                    component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+                }
+
+                YAML::Node cn;
+                component->serialize(cn);
+
+                YAML::Node componentNode;
+                componentNode[component->getObjectName()] = cn;
+
+                out << componentNode;
+                out << "\n";
+            }
         }
     }
 
@@ -153,180 +155,27 @@ bool World::writeSceneToYAML(const std::string& filePath)
     return true;
 }
 
-bool World::loadSceneFromBinary(const std::string &filePath)
-{
-    std::ifstream file;
-    file.open(filePath, std::ios::binary);
-
-    if (!file.is_open())
-    {
-        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-        Log::error(&errorMessage[0]);
-        return false;
-    }
-
-    SceneHeader sceneHeader;
-    PhysicsEngine::read<SceneHeader>(file, sceneHeader);
-
-    assert(sceneHeader.mSignature == SCENE_FILE_SIGNATURE && "Trying to load an invalid binary scene file\n");
-
-    while(file.peek() != EOF)
-    {
-        ObjectHeader header;
-        PhysicsEngine::read<ObjectHeader>(file, header);
-
-        if (!loadBinary(file, header))
-        {
-            break;
-        }
-    }
-
-    file.close();
-
-    return true;
-}
-
-bool World::writeSceneToBinary(const std::string& filePath)
-{
-    std::ofstream file;
-    file.open(filePath, std::ios::binary);
-
-    if (!file.is_open())
-    {
-        std::string errorMessage = "Failed to open scene file " + filePath + "\n";
-        Log::error(&errorMessage[0]);
-        return false;
-    }
-
-    SceneHeader sceneHeader;
-    sceneHeader.mSignature = SCENE_FILE_SIGNATURE;
-
-    PhysicsEngine::write<SceneHeader>(file, sceneHeader);
-
-    ObjectHeader header;
-    for (size_t i = 0; i < getNumberOfEntities(); i++) {
-        Entity* entity = getEntityByIndex(i);
-        
-        header.mId = entity->getId();
-        header.mType = entity->getType();
-        header.mIsTnternal = true;
-
-        PhysicsEngine::write<ObjectHeader>(file, header);
-        entity->serialize(file);
-
-        std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
-        for (size_t j = 0; j < temp.size(); j++)
-        {
-            Component* component = nullptr;
-
-            if (Component::isInternal(temp[j].second))
-            {
-                component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-            }
-            else
-            {
-                component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-            }
-
-            header.mId = component->getId();
-            header.mType = component->getType();
-            header.mIsTnternal = Component::isInternal(temp[j].second);
-
-            PhysicsEngine::write<ObjectHeader>(file, header);
-
-            component->serialize(file);
-        }
-    }
-
-    return false;
-}
-
-bool World::loadBinary(std::ifstream& in, const ObjectHeader& header)
-{
-    if (PhysicsEngine::isEntity(header.mType))
-    {
-        loadEntityFromBinary(in, header);
-    }
-    else if (PhysicsEngine::isComponent(header.mType))
-    {
-        loadComponentFromBinary(in, header);
-    }
-    else if (PhysicsEngine::isSystem(header.mType))
-    {
-        loadSystemFromBinary(in, header);
-    }
-    else {
-        return false;
-    }
-
-    return true;
-}
-
-void World::loadEntityFromBinary(std::ifstream &in, const ObjectHeader &header)
-{
-    if (header.mIsTnternal)
-    {
-        PhysicsEngine::loadInternalEntity(mAllocators, mIdState, in, header.mId);
-    }
-}
-
-void World::loadComponentFromBinary(std::ifstream &in, const ObjectHeader &header)
-{
-    if (header.mIsTnternal)
-    {
-        PhysicsEngine::loadInternalComponent(mAllocators, mIdState, in, header.mId, header.mType);
-    }
-    else
-    {
-        PhysicsEngine::loadComponent(mAllocators, mIdState, in, header.mId, header.mType);
-    }
-}
-
-void World::loadSystemFromBinary(std::ifstream &in, const ObjectHeader &header)
-{
-    if (header.mIsTnternal)
-    {
-        PhysicsEngine::loadInternalSystem(mAllocators, mIdState, in, header.mId, header.mType);
-    }
-    else
-    {
-        PhysicsEngine::loadSystem(mAllocators, mIdState, in, header.mId, header.mType);
-    }
-}
-
 Asset* World::loadAssetFromYAML(const YAML::Node& in)
 {
-    if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
-        int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
-        Guid id = in["id"].as<Guid>();
+    int type = YAML::getValue<int>(in, "type");
+    Guid id = YAML::getValue<Guid>(in, "id");
 
-        if (PhysicsEngine::isAsset(type))
-        {
-            return loadAssetFromYAML(in, id, type);
-        }
+    if (PhysicsEngine::isAsset(type) && id.isValid())
+    {
+        return loadAssetFromYAML(in, id, type);
     }
 
     return nullptr;
 }
 
-Object* World::loadSceneObjectFromYAML(const YAML::Node& in)
+Scene* World::loadSceneFromYAML(const YAML::Node& in)
 {
-    if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
-        int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
-        Guid id = in["id"].as<Guid>();
+    int type = YAML::getValue<int>(in, "type");
+    Guid id = YAML::getValue<Guid>(in, "id");
 
-        if (PhysicsEngine::isEntity(type))
-        {
-            return loadEntityFromYAML(in, id);
-        }
-        else if (PhysicsEngine::isComponent(type))
-        {
-            return loadComponentFromYAML(in, id, type);
-        }
-        else if (PhysicsEngine::isSystem(type))
-        {
-            return loadSystemFromYAML(in, id, type);
-        }
+    if (PhysicsEngine::isScene(type) && id.isValid())
+    {
+        return loadSceneFromYAML(in, id);
     }
 
     return nullptr;
@@ -344,33 +193,9 @@ Asset* World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
     }
 }
 
-Entity* World::loadEntityFromYAML(const YAML::Node& in, const Guid id)
+Scene* World::loadSceneFromYAML(const YAML::Node& in, const Guid id)
 {
-    return PhysicsEngine::loadInternalEntity(mAllocators, mIdState, in, id);
-}
-
-Component* World::loadComponentFromYAML(const YAML::Node& in, const Guid id, int type)
-{
-    if (Component::isInternal(type)) 
-    {
-        return PhysicsEngine::loadInternalComponent(mAllocators, mIdState, in, id, type);
-    }
-    else
-    {
-        return PhysicsEngine::loadComponent(mAllocators, mIdState, in, id, type);
-    }
-}
-
-System* World::loadSystemFromYAML(const YAML::Node& in, const Guid id, int type)
-{
-    if (System::isInternal(type)) 
-    {
-        return PhysicsEngine::loadInternalSystem(mAllocators, mIdState, in, id, type);
-    }
-    else
-    {
-        return PhysicsEngine::loadSystem(mAllocators, mIdState, in, id, type);
-    }
+    return PhysicsEngine::loadInternalScene(mAllocators, mIdState, in, id);
 }
 
 void World::latentDestroyEntitiesInWorld()
@@ -387,9 +212,29 @@ void World::latentDestroyEntitiesInWorld()
     }
 }
 
+size_t World::getNumberOfScenes() const
+{
+    return mAllocators.mSceneAllocator.getCount();
+}
+
 size_t World::getNumberOfEntities() const
 {
     return mAllocators.mEntityAllocator.getCount();
+}
+
+size_t World::getNumberOfNonHiddenEntities() const
+{
+    size_t count = 0;
+    for (size_t i = 0; i < getNumberOfEntities(); i++)
+    {
+        const Entity* entity = getEntityByIndex(i);
+        if (!(entity->mHide))
+        {
+            count++;
+        }
+    }
+
+    return count;
 }
 
 size_t World::getNumberOfUpdatingSystems() const
@@ -397,17 +242,27 @@ size_t World::getNumberOfUpdatingSystems() const
     return mSystems.size();
 }
 
-Entity *World::getEntityById(const Guid &entityId)
+Scene* World::getSceneById(const Guid& sceneId) const
+{
+    return getById_impl<Scene>(mIdState.mSceneIdToGlobalIndex, &mAllocators.mSceneAllocator, sceneId);
+}
+
+Scene* World::getSceneByIndex(size_t index) const
+{
+    return mAllocators.mSceneAllocator.get(index);
+}
+
+Entity *World::getEntityById(const Guid &entityId) const
 {
     return getById_impl<Entity>(mIdState.mEntityIdToGlobalIndex, &mAllocators.mEntityAllocator, entityId);
 }
 
-Entity *World::getEntityByIndex(size_t index)
+Entity *World::getEntityByIndex(size_t index) const
 {
     return mAllocators.mEntityAllocator.get(index);
 }
 
-System *World::getSystemByUpdateOrder(size_t order)
+System *World::getSystemByUpdateOrder(size_t order) const
 {
     if (order >= mSystems.size())
     {
@@ -439,6 +294,22 @@ int World::getTypeOf(const Guid &id) const
     return -1;
 }
 
+Scene* World::createScene()
+{
+    int globalIndex = (int)mAllocators.mSceneAllocator.getCount();
+    int type = SceneType<Scene>::type;
+    Guid sceneId = Guid::newGuid();
+
+    Scene* scene = mAllocators.mSceneAllocator.construct(sceneId);
+
+    if (scene != nullptr)
+    {
+        addIdToGlobalIndexMap_impl<Scene>(scene->getId(), globalIndex, type);
+    }
+
+    return scene;
+}
+
 Entity *World::createEntity()
 {
     int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
@@ -449,8 +320,6 @@ Entity *World::createEntity()
 
     if (entity != nullptr)
     {
-        entity->mDoNotDestroy = false;
-
         addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
 
         mIdState.mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
@@ -581,7 +450,7 @@ void World::clearIdsMarkedCreatedOrDestroyed()
     mIdState.mComponentIdsMarkedLatentDestroy.clear();
 }
 
-std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid &entityId)
+std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid &entityId) const
 {
     std::vector<std::pair<Guid, int>> componentsOnEntity;
 
@@ -617,8 +486,8 @@ std::vector<std::tuple<Guid, Guid, int>> World::getComponentIdsMarkedLatentDestr
 
 std::string World::getAssetFilepath(const Guid &assetId) const
 {
-    std::unordered_map<Guid, std::string>::const_iterator it = mAssetIdToFilepath.find(assetId);
-    if (it != mAssetIdToFilepath.end())
+    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mAssetIdToFilepath.find(assetId);
+    if (it != mIdState.mAssetIdToFilepath.end())
     {
         return it->second;
     }
@@ -628,8 +497,8 @@ std::string World::getAssetFilepath(const Guid &assetId) const
 
 std::string World::getSceneFilepath(const Guid &sceneId) const
 {
-    std::unordered_map<Guid, std::string>::const_iterator it = mSceneIdToFilepath.find(sceneId);
-    if (it != mSceneIdToFilepath.end())
+    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mSceneIdToFilepath.find(sceneId);
+    if (it != mIdState.mSceneIdToFilepath.end())
     {
         return it->second;
     }

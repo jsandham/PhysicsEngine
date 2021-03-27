@@ -19,7 +19,7 @@ RigidbodyDrawer::~RigidbodyDrawer()
 {
 }
 
-void RigidbodyDrawer::render(EditorClipboard &clipboard, Guid id)
+void RigidbodyDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
     {

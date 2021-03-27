@@ -10,10 +10,10 @@ BuildWindow::~BuildWindow()
 {
 }
 
-void BuildWindow::init(EditorClipboard &clipboard)
+void BuildWindow::init(Clipboard &clipboard)
 {
 }
 
-void BuildWindow::update(EditorClipboard &clipboard, bool isOpenedThisFrame)
+void BuildWindow::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
 }

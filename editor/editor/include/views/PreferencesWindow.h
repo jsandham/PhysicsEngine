@@ -13,8 +13,8 @@ class PreferencesWindow : public PopupWindow
     PreferencesWindow(const PreferencesWindow &other) = delete;
     PreferencesWindow &operator=(const PreferencesWindow &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 };
 } // namespace PhysicsEditor
 

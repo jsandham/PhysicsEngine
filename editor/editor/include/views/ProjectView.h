@@ -39,11 +39,11 @@ class ProjectView : public Window
     ProjectView(const ProjectView &other) = delete;
     ProjectView &operator=(const ProjectView &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 
     void drawLeftPane();
-    void drawRightPane(EditorClipboard &clipboard);
+    void drawRightPane(Clipboard &clipboard);
 
     void deleteProjectTree();
     void buildProjectTree(const std::string &currentProjectPath);

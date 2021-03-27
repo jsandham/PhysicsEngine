@@ -15,7 +15,7 @@ int Undo::counter = 0;
 std::vector<Command*> Undo::commandHistory;
 std::queue<Command*> Undo::commandQueue;
 
-void Undo::updateUndoStack(EditorClipboard& clipboard)
+void Undo::updateUndoStack(Clipboard& clipboard)
 {
 	for (size_t i = 0; i < mCreatedEntityRecords.size(); i++)
 	{

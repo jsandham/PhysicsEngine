@@ -20,6 +20,6 @@ Texture3DDrawer::~Texture3DDrawer()
 {
 }
 
-void Texture3DDrawer::render(EditorClipboard &clipboard, Guid id)
+void Texture3DDrawer::render(Clipboard &clipboard, Guid id)
 {
 }

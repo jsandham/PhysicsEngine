@@ -83,7 +83,7 @@ Texture2DDrawer::~Texture2DDrawer()
 {
 }
 
-void Texture2DDrawer::render(EditorClipboard &clipboard, Guid id)
+void Texture2DDrawer::render(Clipboard &clipboard, Guid id)
 {
     Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(id);
 

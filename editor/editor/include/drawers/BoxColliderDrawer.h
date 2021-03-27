@@ -12,7 +12,7 @@ class BoxColliderDrawer : public InspectorDrawer
     BoxColliderDrawer();
     ~BoxColliderDrawer();
 
-    void render(EditorClipboard &clipboard, Guid id);
+    void render(Clipboard &clipboard, Guid id);
 };
 } // namespace PhysicsEditor
 

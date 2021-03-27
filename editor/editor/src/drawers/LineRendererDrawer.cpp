@@ -19,7 +19,7 @@ LineRendererDrawer::~LineRendererDrawer()
 {
 }
 
-void LineRendererDrawer::render(EditorClipboard &clipboard, Guid id)
+void LineRendererDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {

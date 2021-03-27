@@ -21,7 +21,7 @@ MeshRendererDrawer::~MeshRendererDrawer()
 {
 }
 
-void MeshRendererDrawer::render(EditorClipboard &clipboard, Guid id)
+void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {

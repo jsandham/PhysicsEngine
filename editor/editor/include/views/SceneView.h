@@ -38,8 +38,8 @@ class SceneView : public Window
     SceneView(const SceneView &other) = delete;
     SceneView &operator=(const SceneView &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 
     bool isFocused() const;
     bool isHovered() const;
@@ -51,7 +51,7 @@ class SceneView : public Window
   private:
     void initWorld(PhysicsEngine::World *world);
     void updateWorld(PhysicsEngine::World *world);
-    void drawPerformanceOverlay(PhysicsEngine::EditorCameraSystem *cameraSystem);
+    void drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem);
     void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *cameraSystem, bool *cameraSettingsActive);
 };
 } // namespace PhysicsEditor

@@ -33,11 +33,11 @@ class Hierarchy : public Window
     Hierarchy(const Hierarchy &other) = delete;
     Hierarchy &operator=(const Hierarchy &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 
   private:
-    void rebuildEntityLists(PhysicsEngine::World *world, const std::set<PhysicsEngine::Guid> &editorOnlyEntityIds);
+    void rebuildEntityLists(PhysicsEngine::World *world);
 };
 } // namespace PhysicsEditor
 

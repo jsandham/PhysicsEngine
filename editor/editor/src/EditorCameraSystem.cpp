@@ -74,8 +74,16 @@ void EditorCameraSystem::init(World *world)
 {
     mWorld = world;
 
-    mCamera = world->getComponentByIndex<Camera>(0);
-    mTransform = mCamera->getComponent<Transform>(world);
+    Entity* entity = world->createEntity();
+    entity->mDoNotDestroy = true;
+    entity->mHide = true;
+
+    mTransform = entity->addComponent<Transform>(world);
+    mCamera = entity->addComponent<Camera>(world);
+
+
+    //mCamera = world->getComponentByIndex<Camera>(0);
+    //mTransform = mCamera->getComponent<Transform>(world);
 
     mTransform->mPosition = glm::vec3(0, 2, -10);
 }

@@ -23,11 +23,11 @@ ProjectWindow::~ProjectWindow()
 {
 }
 
-void ProjectWindow::init(EditorClipboard &clipboard)
+void ProjectWindow::init(Clipboard &clipboard)
 {
 }
 
-void ProjectWindow::update(EditorClipboard &clipboard)
+void ProjectWindow::update(Clipboard &clipboard)
 {
     float windowWidth = ImGui::GetWindowWidth();
 
@@ -51,7 +51,7 @@ std::string ProjectWindow::getSelectedFolderPath() const
     return filebrowser.getSelectedFolderPath();
 }
 
-void ProjectWindow::renderNewMode(EditorClipboard& clipboard)
+void ProjectWindow::renderNewMode(Clipboard& clipboard)
 {
     float projectNameTitleWidth = 100.0f;
     float inputTextWidth = 400.0f;
@@ -93,9 +93,10 @@ void ProjectWindow::renderNewMode(EditorClipboard& clipboard)
 
             if (success)
             {
-                clipboard.openProject(name, path);
+                clipboard.setActiveProject(name, path);// openProject(name, path);
+                clipboard.setActiveScene("", "", Guid::INVALID);
                 /*clipboard.openScene("", "", "", "", Guid::INVALID);*/
-                clipboard.openScene("", "");
+                //clipboard.openScene("", "");
             }
             else
             {
@@ -122,7 +123,7 @@ void ProjectWindow::renderNewMode(EditorClipboard& clipboard)
     }
 }
 
-void ProjectWindow::renderOpenMode(EditorClipboard& clipboard)
+void ProjectWindow::renderOpenMode(Clipboard& clipboard)
 {
     bool openSelectFolderBrowser = false;
     if (ImGui::Button("Select Folder"))
@@ -147,9 +148,8 @@ void ProjectWindow::renderOpenMode(EditorClipboard& clipboard)
 
     if (ImGui::Button("Open Project"))
     {
-        clipboard.openProject(getProjectName(), getSelectedFolderPath());
-        /*clipboard.openScene("", "", "", "", Guid::INVALID);*/
-        clipboard.openScene("", "");
+        clipboard.setActiveProject(getProjectName(), getSelectedFolderPath());
+        clipboard.setActiveScene("", "", Guid::INVALID);
 
         // mark any (non-editor) entities in currently opened scene to be latent destroyed
         clipboard.getWorld()->latentDestroyEntitiesInWorld();

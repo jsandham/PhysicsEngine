@@ -19,6 +19,7 @@ class Entity : public Object
 
   public:
     bool mDoNotDestroy;
+    bool mHide;
 
   public:
     Entity();
@@ -46,12 +47,12 @@ class Entity : public Object
         return world->addComponent<T>(data);
     }
 
-    template <typename T> T *getComponent(World *world)
+    template <typename T> T *getComponent(const World *world) const
     {
         return world->getComponent<T>(mId);
     }
 
-    std::vector<std::pair<Guid, int>> getComponentsOnEntity(World *world);
+    std::vector<std::pair<Guid, int>> getComponentsOnEntity(const World *world) const;
 
     std::string getName() const;
     void setName(const std::string &name);

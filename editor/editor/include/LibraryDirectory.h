@@ -1,17 +1,15 @@
 #ifndef __LIBRARY_DIRECTORY_H__
 #define __LIBRARY_DIRECTORY_H__
 
-#include <fstream>
 #include <map>
-#include <sstream>
 #include <string>
 #include <vector>
 
-#include "EditorFileIO.h"
 #include "FileSystemUtil.h"
 
 #include "FileWatcher.h"
 
+#include "core/World.h"
 #include "core/Guid.h"
 #include "core/Log.h"
 
@@ -54,6 +52,8 @@ class LibraryDirectory
   public:
     LibraryDirectory();
     ~LibraryDirectory();
+    LibraryDirectory(const LibraryDirectory& other) = delete;
+    LibraryDirectory& operator=(const LibraryDirectory& other) = delete;
 
     void watch(const std::string& projectPath);
     void update();

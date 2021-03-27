@@ -19,7 +19,7 @@ LightDrawer::~LightDrawer()
 {
 }
 
-void LightDrawer::render(EditorClipboard &clipboard, Guid id)
+void LightDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
     {

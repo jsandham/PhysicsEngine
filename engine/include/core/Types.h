@@ -12,6 +12,7 @@ constexpr int MAX_INTERNAL_COMPONENT = 2999;
 constexpr int MIN_INTERNAL_SYSTEM = 3000;
 constexpr int MAX_INTERNAL_SYSTEM = 3999;
 
+constexpr int SCENE_TYPE = 1;
 constexpr int ENTITY_TYPE = 0;
 
 constexpr int SHADER_TYPE = 1000;
@@ -40,6 +41,7 @@ constexpr int DEBUGSYSTEM_TYPE = 3003;
 constexpr int GIZMOSYSTEM_TYPE = 3004;
 
 // Names
+constexpr char SCENE_NAME[] = "Scene";
 constexpr char ENTITY_NAME[] = "Entity";
 
 constexpr char SHADER_NAME[] = "Shader";
@@ -66,6 +68,11 @@ constexpr char PHYSICSSYSTEM_NAME[] = "PhysicsSystem";
 constexpr char CLEANUPSYSTEM_NAME[] = "CleanUpSystem";
 constexpr char DEBUGSYSTEM_NAME[] = "DebugSystem";
 constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
+
+constexpr int isScene(int type)
+{
+	return type == SCENE_TYPE;
+}
 
 constexpr int isEntity(int type)
 {

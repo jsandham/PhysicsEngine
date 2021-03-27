@@ -17,7 +17,7 @@ MeshColliderDrawer::~MeshColliderDrawer()
 {
 }
 
-void MeshColliderDrawer::render(EditorClipboard &clipboard, Guid id)
+void MeshColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
     if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {

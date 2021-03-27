@@ -66,9 +66,6 @@
     <ClCompile Include="src\EditorToolbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EditorFileIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EditorClipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorToolbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorFileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EditorClipboard.h">

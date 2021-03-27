@@ -19,7 +19,7 @@ PopupWindow::~PopupWindow()
 {
 }
 
-void PopupWindow::draw(EditorClipboard& clipboard, bool isOpenedThisFrame)
+void PopupWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
 {
     if (isOpenedThisFrame)
     {

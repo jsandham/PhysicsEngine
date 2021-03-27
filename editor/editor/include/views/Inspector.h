@@ -27,11 +27,11 @@ class Inspector : public Window
     Inspector(const Inspector &other) = delete;
     Inspector &operator=(const Inspector &other) = delete;
 
-    void init(EditorClipboard &clipboard) override;
-    void update(EditorClipboard &clipboard) override;
+    void init(Clipboard &clipboard) override;
+    void update(Clipboard &clipboard) override;
 
   private:
-    void drawEntity(EditorClipboard &clipboard);
+    void drawEntity(Clipboard &clipboard);
 };
 } // namespace PhysicsEditor
 

@@ -22,10 +22,10 @@ namespace PhysicsEditor
         PopupWindow(const std::string name, float x, float y, float width, float height);
         virtual ~PopupWindow() = 0;
 
-        void draw(EditorClipboard& clipboard, bool isOpenedThisFrame);
+        void draw(Clipboard& clipboard, bool isOpenedThisFrame);
 
-        virtual void init(EditorClipboard& clipboard) = 0;
-        virtual void update(EditorClipboard& clipboard) = 0;
+        virtual void init(Clipboard& clipboard) = 0;
+        virtual void update(Clipboard& clipboard) = 0;
     };
 } // namespace PhysicsEditor
 

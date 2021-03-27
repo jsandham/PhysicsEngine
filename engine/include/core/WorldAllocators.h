@@ -3,9 +3,8 @@
 
 #include <unordered_map>
 
-#include "Allocator.h"
-#include "Guid.h"
 #include "PoolAllocator.h"
+#include "Guid.h"
 
 #include "../components/BoxCollider.h"
 #include "../components/Camera.h"
@@ -18,6 +17,7 @@
 #include "../components/SphereCollider.h"
 #include "../components/Transform.h"
 
+#include "../core/Scene.h"
 #include "../core/Entity.h"
 
 #include "../core/Cubemap.h"
@@ -38,6 +38,9 @@ namespace PhysicsEngine
 // Simple structs used for grouping world allocators when passing to functions
 struct WorldAllocators
 {
+    // internal scene allocator
+    PoolAllocator<Scene> mSceneAllocator;
+
     // internal entity allocator
     PoolAllocator<Entity> mEntityAllocator;
 

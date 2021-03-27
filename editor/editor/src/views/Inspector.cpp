@@ -22,11 +22,11 @@ Inspector::~Inspector()
 {
 }
 
-void Inspector::init(EditorClipboard &clipboard)
+void Inspector::init(Clipboard &clipboard)
 {
 }
 
-void Inspector::update(EditorClipboard &clipboard)
+void Inspector::update(Clipboard &clipboard)
 {
     // draw selected entity
     if (clipboard.getSelectedType() == InteractionType::Entity)
@@ -55,7 +55,7 @@ void Inspector::update(EditorClipboard &clipboard)
     ImGui::Separator();
 }
 
-void Inspector::drawEntity(EditorClipboard &clipboard)
+void Inspector::drawEntity(Clipboard &clipboard)
 {
     Entity *entity = clipboard.getWorld()->getEntityById(clipboard.getSelectedId());
 
@@ -97,27 +97,27 @@ void Inspector::drawEntity(EditorClipboard &clipboard)
         if (componentToAdd == "Transform")
         {
             Undo::addCommand(
-                new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+                new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
         else if (componentToAdd == "Rigidbody")
         {
             Undo::addCommand(
-                new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+                new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
         else if (componentToAdd == "Camera")
         {
             Undo::addCommand(
-                new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+                new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
         else if (componentToAdd == "MeshRenderer")
         {
             Undo::addCommand(
-                new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+                new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
         else if (componentToAdd == "Light")
         {
             Undo::addCommand(
-                new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.isDirty));
+                new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
 
         ImGui::EndDropdownWindow();
