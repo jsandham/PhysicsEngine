@@ -46,12 +46,12 @@ void RenderSystem::deserialize(std::istream &in)
     System::deserialize(in);
 }
 
-void RenderSystem::serialize(YAML::Node& out) const
+void RenderSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);
 }
 
-void RenderSystem::deserialize(const YAML::Node& in)
+void RenderSystem::deserialize(const YAML::Node &in)
 {
     System::deserialize(in);
 }

@@ -29,14 +29,14 @@ void BoxCollider::deserialize(std::istream &in)
     PhysicsEngine::read<AABB>(in, mAABB);
 }
 
-void BoxCollider::serialize(YAML::Node& out) const
+void BoxCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);
 
     out["AABB"] = mAABB;
 }
 
-void BoxCollider::deserialize(const YAML::Node& in)
+void BoxCollider::deserialize(const YAML::Node &in)
 {
     Collider::deserialize(in);
 

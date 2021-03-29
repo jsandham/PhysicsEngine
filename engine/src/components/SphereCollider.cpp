@@ -33,14 +33,14 @@ void SphereCollider::deserialize(std::istream &in)
     PhysicsEngine::read<Sphere>(in, mSphere);
 }
 
-void SphereCollider::serialize(YAML::Node& out) const
+void SphereCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);
 
     out["sphere"] = mSphere;
 }
 
-void SphereCollider::deserialize(const YAML::Node& in)
+void SphereCollider::deserialize(const YAML::Node &in)
 {
     Collider::deserialize(in);
 

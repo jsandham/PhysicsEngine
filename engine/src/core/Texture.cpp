@@ -48,7 +48,7 @@ void Texture::deserialize(std::istream &in)
     mUpdateRequired = false;
 }
 
-void Texture::serialize(YAML::Node& out) const
+void Texture::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
@@ -60,7 +60,7 @@ void Texture::serialize(YAML::Node& out) const
     out["anisoLevel"] = mAnisoLevel;
 }
 
-void Texture::deserialize(const YAML::Node& in)
+void Texture::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 

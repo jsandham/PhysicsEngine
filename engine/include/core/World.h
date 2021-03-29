@@ -32,9 +32,9 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
-    Asset* loadAssetFromYAML(const std::string& filePath);
-    Scene* loadSceneFromYAML(const std::string& filePath);
-    bool writeSceneToYAML(const std::string& filePath, const Guid& sceneId) const;
+    Asset *loadAssetFromYAML(const std::string &filePath);
+    Scene *loadSceneFromYAML(const std::string &filePath);
+    bool writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const;
 
     void latentDestroyEntitiesInWorld();
     void immediateDestroyEntitiesInWorld();
@@ -100,9 +100,9 @@ class World
         return addSystem_impl<T>(getSystemOrAddAllocator_impl<T>(), order);
     }
 
-    Scene* getSceneByIndex(size_t index) const;
-    Scene* getSceneById(const Guid& sceneId) const;
-    Entity* getEntityByIndex(size_t index) const;
+    Scene *getSceneByIndex(size_t index) const;
+    Scene *getSceneById(const Guid &sceneId) const;
+    Entity *getEntityByIndex(size_t index) const;
     Entity *getEntityById(const Guid &entityId) const;
     System *getSystemByUpdateOrder(size_t order) const;
 
@@ -165,7 +165,7 @@ class World
     int getIndexOf(const Guid &id) const;
     int getTypeOf(const Guid &id) const;
 
-    Scene* createScene();
+    Scene *createScene();
     Entity *createEntity();
     Entity *createEntity(std::istream &in);
 
@@ -815,10 +815,10 @@ class World
     Guid getOverdrawShaderId() const;
 
   private:
-    Asset* loadAssetFromYAML(const YAML::Node& in);
-    Asset* loadAssetFromYAML(const YAML::Node& in, const Guid id, int type);
-    Scene* loadSceneFromYAML(const YAML::Node& in);
-    Scene* loadSceneFromYAML(const YAML::Node& in, const Guid id);
+    Asset *loadAssetFromYAML(const YAML::Node &in);
+    Asset *loadAssetFromYAML(const YAML::Node &in, const Guid id, int type);
+    Scene *loadSceneFromYAML(const YAML::Node &in);
+    Scene *loadSceneFromYAML(const YAML::Node &in, const Guid id);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
@@ -1057,7 +1057,8 @@ class World
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mComponentAllocatorMap.find(ComponentType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it =
+            mAllocators.mComponentAllocatorMap.find(ComponentType<T>::type);
         if (it != mAllocators.mComponentAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1084,7 +1085,8 @@ class World
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
-        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mSystemAllocatorMap.find(SystemType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it =
+            mAllocators.mSystemAllocatorMap.find(SystemType<T>::type);
         if (it != mAllocators.mSystemAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1111,7 +1113,8 @@ class World
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
-        std::unordered_map<int, Allocator *>::const_iterator it = mAllocators.mAssetAllocatorMap.find(AssetType<T>::type);
+        std::unordered_map<int, Allocator *>::const_iterator it =
+            mAllocators.mAssetAllocatorMap.find(AssetType<T>::type);
         if (it != mAllocators.mAssetAllocatorMap.end())
         {
             return static_cast<PoolAllocator<T> *>(it->second);
@@ -1164,7 +1167,8 @@ class World
     // Explicit specializations
 
     template <>
-    Transform *getComponentById_impl<Transform>(const PoolAllocator<Transform> *allocator, const Guid &componentId) const
+    Transform *getComponentById_impl<Transform>(const PoolAllocator<Transform> *allocator,
+                                                const Guid &componentId) const
     {
         return getById_impl<Transform>(mIdState.mTransformIdToGlobalIndex, allocator, componentId);
     }
@@ -1184,17 +1188,20 @@ class World
     }
 
     template <>
-    Rigidbody *getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody> *allocator, const Guid &componentId) const
+    Rigidbody *getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody> *allocator,
+                                                const Guid &componentId) const
     {
         return getById_impl<Rigidbody>(mIdState.mRigidbodyIdToGlobalIndex, allocator, componentId);
     }
 
-    template <> Camera *getComponentById_impl<Camera>(const PoolAllocator<Camera> *allocator, const Guid &componentId) const
+    template <>
+    Camera *getComponentById_impl<Camera>(const PoolAllocator<Camera> *allocator, const Guid &componentId) const
     {
         return getById_impl<Camera>(mIdState.mCameraIdToGlobalIndex, allocator, componentId);
     }
 
-    template <> Light *getComponentById_impl<Light>(const PoolAllocator<Light> *allocator, const Guid &componentId) const
+    template <>
+    Light *getComponentById_impl<Light>(const PoolAllocator<Light> *allocator, const Guid &componentId) const
     {
         return getById_impl<Light>(mIdState.mLightIdToGlobalIndex, allocator, componentId);
     }
@@ -1232,7 +1239,8 @@ class World
         return getById_impl<Mesh>(mIdState.mMeshIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Material *getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId) const
+    template <>
+    Material *getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId) const
     {
         return getById_impl<Material>(mIdState.mMaterialIdToGlobalIndex, allocator, assetId);
     }
@@ -1242,12 +1250,14 @@ class World
         return getById_impl<Shader>(mIdState.mShaderIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Texture2D *getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D> *allocator, const Guid &assetId) const
+    template <>
+    Texture2D *getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D> *allocator, const Guid &assetId) const
     {
         return getById_impl<Texture2D>(mIdState.mTexture2DIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Texture3D *getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D> *allocator, const Guid &assetId) const
+    template <>
+    Texture3D *getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D> *allocator, const Guid &assetId) const
     {
         return getById_impl<Texture3D>(mIdState.mTexture3DIdToGlobalIndex, allocator, assetId);
     }
@@ -1263,19 +1273,22 @@ class World
     }
 
     template <>
-    RenderSystem *getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator, const Guid &assetId) const
+    RenderSystem *getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator,
+                                                   const Guid &assetId) const
     {
         return getById_impl<RenderSystem>(mIdState.mRenderSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    PhysicsSystem *getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem> *allocator, const Guid &assetId) const
+    PhysicsSystem *getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem> *allocator,
+                                                     const Guid &assetId) const
     {
         return getById_impl<PhysicsSystem>(mIdState.mPhysicsSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <>
-    CleanUpSystem *getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem> *allocator, const Guid &assetId) const
+    CleanUpSystem *getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem> *allocator,
+                                                     const Guid &assetId) const
     {
         return getById_impl<CleanUpSystem>(mIdState.mCleanupSystemIdToGlobalIndex, allocator, assetId);
     }
@@ -1291,7 +1304,7 @@ class World
         return getById_impl<GizmoSystem>(mIdState.mGizmoSystemIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> void addIdToGlobalIndexMap_impl<Scene>(const Guid& id, int index, int type)
+    template <> void addIdToGlobalIndexMap_impl<Scene>(const Guid &id, int index, int type)
     {
         mIdState.mSceneIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;

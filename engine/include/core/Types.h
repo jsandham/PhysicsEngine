@@ -71,27 +71,27 @@ constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
 
 constexpr int isScene(int type)
 {
-	return type == SCENE_TYPE;
+    return type == SCENE_TYPE;
 }
 
 constexpr int isEntity(int type)
 {
-	return type == ENTITY_TYPE;
+    return type == ENTITY_TYPE;
 }
 
 constexpr int isAsset(int type)
 {
-	return type >= MIN_INTERNAL_ASSET && type <= MAX_INTERNAL_ASSET;
+    return type >= MIN_INTERNAL_ASSET && type <= MAX_INTERNAL_ASSET;
 }
 
 constexpr int isComponent(int type)
 {
-	return type >= MIN_INTERNAL_COMPONENT && type <= MAX_INTERNAL_COMPONENT;
+    return type >= MIN_INTERNAL_COMPONENT && type <= MAX_INTERNAL_COMPONENT;
 }
 
 constexpr int isSystem(int type)
 {
-	return type >= MIN_INTERNAL_SYSTEM && type <= MAX_INTERNAL_SYSTEM;
+    return type >= MIN_INTERNAL_SYSTEM && type <= MAX_INTERNAL_SYSTEM;
 }
 } // namespace PhysicsEngine
 

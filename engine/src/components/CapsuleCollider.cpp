@@ -31,14 +31,14 @@ void CapsuleCollider::deserialize(std::istream &in)
     PhysicsEngine::read(in, mCapsule);
 }
 
-void CapsuleCollider::serialize(YAML::Node& out) const
+void CapsuleCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);
 
     out["capsule"] = mCapsule;
 }
 
-void CapsuleCollider::deserialize(const YAML::Node& in)
+void CapsuleCollider::deserialize(const YAML::Node &in)
 {
     Collider::deserialize(in);
 

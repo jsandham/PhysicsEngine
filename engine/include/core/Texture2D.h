@@ -1,8 +1,8 @@
 #ifndef TEXTURE2D_H__
 #define TEXTURE2D_H__
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Color.h"
 #include "Texture.h"
@@ -25,16 +25,16 @@ class Texture2D : public Texture
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
-    virtual void serialize(YAML::Node& out) const override;
-    virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
     void load(const std::string &filepath);
-    void writeToPNG(const std::string& filepath) const;
-    void writeToJPG(const std::string& filepath) const;
-    void writeToBMP(const std::string& filepath) const;
+    void writeToPNG(const std::string &filepath) const;
+    void writeToJPG(const std::string &filepath) const;
+    void writeToBMP(const std::string &filepath) const;
 
     int getWidth() const;
     int getHeight() const;

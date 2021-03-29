@@ -22,8 +22,8 @@
 
 #include "../core/Color.h"
 #include "../core/Frustum.h"
-#include "../core/Viewport.h"
 #include "../core/Ray.h"
+#include "../core/Viewport.h"
 
 #include "../graphics/GraphicsQuery.h"
 
@@ -111,8 +111,8 @@ class Camera : public Component
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
-    virtual void serialize(YAML::Node& out) const override;
-    virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
@@ -170,68 +170,75 @@ template <> struct IsComponentInternal<Camera>
 };
 } // namespace PhysicsEngine
 
-
 namespace YAML
 {
-    // CameraMode
-    template<>
-    struct convert<PhysicsEngine::CameraMode> {
-        static Node encode(const PhysicsEngine::CameraMode& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// CameraMode
+template <> struct convert<PhysicsEngine::CameraMode>
+{
+    static Node encode(const PhysicsEngine::CameraMode &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::CameraMode& rhs) {
-            rhs = static_cast<PhysicsEngine::CameraMode>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::CameraMode &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::CameraMode>(node.as<int>());
+        return true;
+    }
+};
 
-    // CameraSSAO
-    template<>
-    struct convert<PhysicsEngine::CameraSSAO> {
-        static Node encode(const PhysicsEngine::CameraSSAO& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// CameraSSAO
+template <> struct convert<PhysicsEngine::CameraSSAO>
+{
+    static Node encode(const PhysicsEngine::CameraSSAO &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::CameraSSAO& rhs) {
-            rhs = static_cast<PhysicsEngine::CameraSSAO>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::CameraSSAO &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::CameraSSAO>(node.as<int>());
+        return true;
+    }
+};
 
-    // CameraGizmos
-    template<>
-    struct convert<PhysicsEngine::CameraGizmos> {
-        static Node encode(const PhysicsEngine::CameraGizmos& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// CameraGizmos
+template <> struct convert<PhysicsEngine::CameraGizmos>
+{
+    static Node encode(const PhysicsEngine::CameraGizmos &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::CameraGizmos& rhs) {
-            rhs = static_cast<PhysicsEngine::CameraGizmos>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::CameraGizmos &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::CameraGizmos>(node.as<int>());
+        return true;
+    }
+};
 
-    // RenderPath
-    template<>
-    struct convert<PhysicsEngine::RenderPath> {
-        static Node encode(const PhysicsEngine::RenderPath& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// RenderPath
+template <> struct convert<PhysicsEngine::RenderPath>
+{
+    static Node encode(const PhysicsEngine::RenderPath &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::RenderPath& rhs) {
-            rhs = static_cast<PhysicsEngine::RenderPath>(node.as<int>());
-            return true;
-        }
-    };
-}
+    static bool decode(const Node &node, PhysicsEngine::RenderPath &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::RenderPath>(node.as<int>());
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

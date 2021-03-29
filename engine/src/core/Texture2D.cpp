@@ -100,7 +100,7 @@ void Texture2D::deserialize(std::istream &in)
     PhysicsEngine::read<int>(in, mHeight);
 }
 
-void Texture2D::serialize(YAML::Node& out) const
+void Texture2D::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);
 
@@ -109,7 +109,7 @@ void Texture2D::serialize(YAML::Node& out) const
     out["source"] = mSource;
 }
 
-void Texture2D::deserialize(const YAML::Node& in)
+void Texture2D::deserialize(const YAML::Node &in)
 {
     Texture::deserialize(in);
 
@@ -132,7 +132,8 @@ std::string Texture2D::getObjectName() const
 
 void Texture2D::load(const std::string &filepath)
 {
-    if (filepath.empty()) {
+    if (filepath.empty())
+    {
         return;
     }
 
@@ -188,30 +189,33 @@ void Texture2D::load(const std::string &filepath)
     mSource = filepath;
 }
 
-void Texture2D::writeToPNG(const std::string& filepath) const
+void Texture2D::writeToPNG(const std::string &filepath) const
 {
     int success = stbi_write_png(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), mWidth);
-    if (!success) {
+    if (!success)
+    {
         std::string message = "Error: stbi_write_png failed to write texture " + filepath + "\n";
         Log::error(message.c_str());
         return;
     }
 }
 
-void Texture2D::writeToJPG(const std::string& filepath) const
+void Texture2D::writeToJPG(const std::string &filepath) const
 {
     int success = stbi_write_jpg(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), 100);
-    if (!success) {
+    if (!success)
+    {
         std::string message = "Error: stbi_write_jpg failed to write texture " + filepath + "\n";
         Log::error(message.c_str());
         return;
     }
 }
 
-void Texture2D::writeToBMP(const std::string& filepath) const
+void Texture2D::writeToBMP(const std::string &filepath) const
 {
     int success = stbi_write_bmp(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data());
-    if (!success) {
+    if (!success)
+    {
         std::string message = "Error: stbi_write_bmp failed to write texture " + filepath + "\n";
         Log::error(message.c_str());
         return;

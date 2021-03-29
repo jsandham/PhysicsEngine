@@ -800,8 +800,8 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, const std::vector<unsigned char> &data,
-                               GLuint *tex)
+void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                               int height, const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
@@ -815,7 +815,8 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
 
@@ -823,7 +824,7 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
 
     // to set aniso
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
 
     Log::info(("Aniso: " + std::to_string(aniso) + "\n").c_str());
 
@@ -844,11 +845,12 @@ void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filte
 
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
-    //float aniso = 0.0f;
-    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    // float aniso = 0.0f;
+    // glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -882,8 +884,8 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height, int depth,
-                               const std::vector<unsigned char> &data, GLuint *tex)
+void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                               int height, int depth, const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
@@ -895,7 +897,8 @@ void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, T
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
@@ -917,12 +920,13 @@ void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filte
 
     glBindTexture(GL_TEXTURE_3D, tex);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
     // to set aniso
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -956,7 +960,8 @@ void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height,
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, const std::vector<unsigned char> &data, GLuint *tex)
+void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                             const std::vector<unsigned char> &data, GLuint *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
@@ -972,7 +977,8 @@ void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, Tex
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode);
@@ -994,12 +1000,13 @@ void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterM
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
+                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode);
     // to set aniso
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1445,7 +1452,8 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
 
 void Graphics::render(int start, int count, GLuint vao, bool wireframe)
 {
-    if (wireframe) {
+    if (wireframe)
+    {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 

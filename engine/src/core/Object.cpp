@@ -28,14 +28,14 @@ void Object::deserialize(std::istream &in)
     PhysicsEngine::read<Guid>(in, mId);
 }
 
-void Object::serialize(YAML::Node& out) const
+void Object::serialize(YAML::Node &out) const
 {
     out["type"] = getType();
     out["hide"] = mHide;
     out["id"] = mId;
 }
 
-void Object::deserialize(const YAML::Node& in)
+void Object::deserialize(const YAML::Node &in)
 {
     mHide = YAML::getValue<HideFlag>(in, "hide");
     mId = YAML::getValue<Guid>(in, "id");

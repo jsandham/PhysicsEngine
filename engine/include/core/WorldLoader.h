@@ -3,7 +3,7 @@
 //
 //#include <string>
 //
-//namespace PhysicaEngine
+// namespace PhysicaEngine
 //{
 //	class World;
 //

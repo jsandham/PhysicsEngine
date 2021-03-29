@@ -75,7 +75,7 @@ void Shader::deserialize(std::istream &in)
     PhysicsEngine::read<char>(in, &mFragmentShader[0], fragShaderSize);
 }
 
-void Shader::serialize(YAML::Node& out) const
+void Shader::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
@@ -84,7 +84,7 @@ void Shader::serialize(YAML::Node& out) const
     out["geometrySource"] = mGeometrySource;
 }
 
-void Shader::deserialize(const YAML::Node& in)
+void Shader::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
@@ -105,9 +105,10 @@ std::string Shader::getObjectName() const
     return PhysicsEngine::SHADER_NAME;
 }
 
-void Shader::load(const std::string& vsFilepath, const std::string& fsFilepath, const std::string& gsFilepath)
+void Shader::load(const std::string &vsFilepath, const std::string &fsFilepath, const std::string &gsFilepath)
 {
-    if (vsFilepath.empty() || fsFilepath.empty()) {
+    if (vsFilepath.empty() || fsFilepath.empty())
+    {
         return;
     }
 

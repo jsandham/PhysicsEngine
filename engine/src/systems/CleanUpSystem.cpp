@@ -29,12 +29,12 @@ void CleanUpSystem::deserialize(std::istream &in)
     System::deserialize(in);
 }
 
-void CleanUpSystem::serialize(YAML::Node& out) const
+void CleanUpSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);
 }
 
-void CleanUpSystem::deserialize(const YAML::Node& in)
+void CleanUpSystem::deserialize(const YAML::Node &in)
 {
     System::deserialize(in);
 }

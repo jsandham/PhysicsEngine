@@ -71,7 +71,7 @@ void MeshRenderer::deserialize(std::istream &in)
     mMaterialChanged = true;
 }
 
-void MeshRenderer::serialize(YAML::Node& out) const
+void MeshRenderer::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -85,7 +85,7 @@ void MeshRenderer::serialize(YAML::Node& out) const
     out["enabled"] = mEnabled;
 }
 
-void MeshRenderer::deserialize(const YAML::Node& in)
+void MeshRenderer::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 
@@ -97,7 +97,7 @@ void MeshRenderer::deserialize(const YAML::Node& in)
     }
     mIsStatic = YAML::getValue<bool>(in, "isStatic");
     mEnabled = YAML::getValue<bool>(in, "enabled");
-    
+
     mMeshChanged = true;
     mMaterialChanged = true;
 }

@@ -1,18 +1,18 @@
 //#include "WorldLoader"
 //
-//using namespace PhysicsEngine;
+// using namespace PhysicsEngine;
 //
-//WorldLoader::WorldLoader()
+// WorldLoader::WorldLoader()
 //{
 //
 //}
 //
-//WorldLoader::~WorldLoader()
+// WorldLoader::~WorldLoader()
 //{
 //
 //}
 //
-//bool WorldLoader::loadAssetFromBinary(WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::loadAssetFromBinary(WorldAllocators* world, const std::string& filepath) const
 //{
 //    std::ifstream file;
 //    file.open(filePath, std::ios::binary);
@@ -39,7 +39,7 @@
 //    return true;
 //}
 //
-//bool WorldLoader::loadSceneFromBinary(WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::loadSceneFromBinary(WorldAllocators* world, const std::string& filepath) const
 //{
 //    std::ifstream file;
 //    file.open(filePath, std::ios::binary);
@@ -79,7 +79,7 @@
 //    return true;
 //}
 //
-//bool WorldLoader::loadSceneFromYAML(WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::loadSceneFromYAML(WorldAllocators* world, const std::string& filepath) const
 //{
 //    YAML::Node in = YAML::LoadFile(filePath);
 //
@@ -99,17 +99,17 @@
 //    return false;
 //}
 //
-//bool WorldLoader::writeAssetToBinary(const WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::writeAssetToBinary(const WorldAllocators* world, const std::string& filepath) const
 //{
 //
 //}
 //
-//bool WorldLoader::writeSceneToBinary(const WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::writeSceneToBinary(const WorldAllocators* world, const std::string& filepath) const
 //{
 //
 //}
 //
-//bool WorldLoader::writeSceneToYAML(const WorldAllocators* world, const std::string& filepath) const
+// bool WorldLoader::writeSceneToYAML(const WorldAllocators* world, const std::string& filepath) const
 //{
 //    std::ofstream out;
 //    out.open(filePath);
@@ -161,12 +161,12 @@
 //    return true;
 //}
 //
-//bool WorldLoader::isAssetHeaderValid() const
+// bool WorldLoader::isAssetHeaderValid() const
 //{
 //
 //}
 //
-//bool WorldLoader::isSceneHeaderValid() const
+// bool WorldLoader::isSceneHeaderValid() const
 //{
 //
 //}

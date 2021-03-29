@@ -74,8 +74,8 @@ class Light : public Component
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
-    virtual void serialize(YAML::Node& out) const override;
-    virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
@@ -111,53 +111,58 @@ template <> struct IsComponentInternal<Light>
 };
 } // namespace PhysicsEngine
 
-
 namespace YAML
 {
-    // LightType
-    template<>
-    struct convert<PhysicsEngine::LightType> {
-        static Node encode(const PhysicsEngine::LightType& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// LightType
+template <> struct convert<PhysicsEngine::LightType>
+{
+    static Node encode(const PhysicsEngine::LightType &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::LightType& rhs) {
-            rhs = static_cast<PhysicsEngine::LightType>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::LightType &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::LightType>(node.as<int>());
+        return true;
+    }
+};
 
-    // ShadowType
-    template<>
-    struct convert<PhysicsEngine::ShadowType> {
-        static Node encode(const PhysicsEngine::ShadowType& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// ShadowType
+template <> struct convert<PhysicsEngine::ShadowType>
+{
+    static Node encode(const PhysicsEngine::ShadowType &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::ShadowType& rhs) {
-            rhs = static_cast<PhysicsEngine::ShadowType>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::ShadowType &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::ShadowType>(node.as<int>());
+        return true;
+    }
+};
 
-    // ShadowMapResolution
-    template<>
-    struct convert<PhysicsEngine::ShadowMapResolution> {
-        static Node encode(const PhysicsEngine::ShadowMapResolution& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// ShadowMapResolution
+template <> struct convert<PhysicsEngine::ShadowMapResolution>
+{
+    static Node encode(const PhysicsEngine::ShadowMapResolution &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::ShadowMapResolution& rhs) {
-            rhs = static_cast<PhysicsEngine::ShadowMapResolution>(node.as<int>());
-            return true;
-        }
-    };
-}
+    static bool decode(const Node &node, PhysicsEngine::ShadowMapResolution &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::ShadowMapResolution>(node.as<int>());
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

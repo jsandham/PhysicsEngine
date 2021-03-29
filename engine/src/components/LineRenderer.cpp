@@ -42,7 +42,7 @@ void LineRenderer::deserialize(std::istream &in)
     PhysicsEngine::read<glm::vec3>(in, mEnd);
 }
 
-void LineRenderer::serialize(YAML::Node& out) const
+void LineRenderer::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -51,7 +51,7 @@ void LineRenderer::serialize(YAML::Node& out) const
     out["end"] = mEnd;
 }
 
-void LineRenderer::deserialize(const YAML::Node& in)
+void LineRenderer::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 

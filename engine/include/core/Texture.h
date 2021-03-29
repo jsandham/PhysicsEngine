@@ -60,8 +60,8 @@ class Texture : public Asset
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
-    virtual void serialize(YAML::Node& out) const override;
-    virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
     virtual void create() = 0;
     virtual void destroy() = 0;
@@ -93,69 +93,75 @@ template <> struct IsAssetInternal<Texture>
 };
 } // namespace PhysicsEngine
 
-
-
 namespace YAML
 {
-    // TextureDimension
-    template<>
-    struct convert<PhysicsEngine::TextureDimension> {
-        static Node encode(const PhysicsEngine::TextureDimension& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// TextureDimension
+template <> struct convert<PhysicsEngine::TextureDimension>
+{
+    static Node encode(const PhysicsEngine::TextureDimension &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::TextureDimension& rhs) {
-            rhs = static_cast<PhysicsEngine::TextureDimension>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::TextureDimension &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::TextureDimension>(node.as<int>());
+        return true;
+    }
+};
 
-    // TextureFormat
-    template<>
-    struct convert<PhysicsEngine::TextureFormat> {
-        static Node encode(const PhysicsEngine::TextureFormat& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// TextureFormat
+template <> struct convert<PhysicsEngine::TextureFormat>
+{
+    static Node encode(const PhysicsEngine::TextureFormat &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::TextureFormat& rhs) {
-            rhs = static_cast<PhysicsEngine::TextureFormat>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::TextureFormat &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::TextureFormat>(node.as<int>());
+        return true;
+    }
+};
 
-    // TextureWrapMode
-    template<>
-    struct convert<PhysicsEngine::TextureWrapMode> {
-        static Node encode(const PhysicsEngine::TextureWrapMode& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// TextureWrapMode
+template <> struct convert<PhysicsEngine::TextureWrapMode>
+{
+    static Node encode(const PhysicsEngine::TextureWrapMode &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::TextureWrapMode& rhs) {
-            rhs = static_cast<PhysicsEngine::TextureWrapMode>(node.as<int>());
-            return true;
-        }
-    };
+    static bool decode(const Node &node, PhysicsEngine::TextureWrapMode &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::TextureWrapMode>(node.as<int>());
+        return true;
+    }
+};
 
-    // TextureFilterMode
-    template<>
-    struct convert<PhysicsEngine::TextureFilterMode> {
-        static Node encode(const PhysicsEngine::TextureFilterMode& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// TextureFilterMode
+template <> struct convert<PhysicsEngine::TextureFilterMode>
+{
+    static Node encode(const PhysicsEngine::TextureFilterMode &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::TextureFilterMode& rhs) {
-            rhs = static_cast<PhysicsEngine::TextureFilterMode>(node.as<int>());
-            return true;
-        }
-    };
-}
+    static bool decode(const Node &node, PhysicsEngine::TextureFilterMode &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::TextureFilterMode>(node.as<int>());
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

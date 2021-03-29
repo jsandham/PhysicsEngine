@@ -864,7 +864,8 @@ int Octtree::nextNode(float tx, int i, float ty, int j, float tz, int k)
 // glm::vec3(extents.x, -extents.y, extents.z); 			nodes[8 * index + 4].bounds.centre =
 // nodes[index].bounds.centre + 0.5f * glm::vec3(-extents.x, extents.y, extents.z); 			nodes[8 * index +
 // 5].bounds.centre = nodes[index].bounds.centre + 0.5f *
-// glm::vec3(extents.x, -extents.y, -extents.z); 			nodes[8 * index + 6].bounds.centre = nodes[index].bounds.centre
+// glm::vec3(extents.x, -extents.y, -extents.z); 			nodes[8 * index + 6].bounds.centre =
+// nodes[index].bounds.centre
 // + 0.5f
 // * glm::vec3(-extents.x, -extents.y, extents.z); 			nodes[8 * index + 7].bounds.centre =
 // nodes[index].bounds.centre

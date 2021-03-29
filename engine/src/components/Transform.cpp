@@ -44,7 +44,7 @@ void Transform::deserialize(std::istream &in)
     PhysicsEngine::read<glm::vec3>(in, mScale);
 }
 
-void Transform::serialize(YAML::Node& out) const
+void Transform::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -54,10 +54,10 @@ void Transform::serialize(YAML::Node& out) const
     out["scale"] = mScale;
 }
 
-void Transform::deserialize(const YAML::Node& in)
+void Transform::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
-    
+
     mParentId = YAML::getValue<Guid>(in, "parentId");
     mPosition = YAML::getValue<glm::vec3>(in, "position");
     mRotation = YAML::getValue<glm::quat>(in, "rotation");

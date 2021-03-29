@@ -2,8 +2,8 @@
 #define CAPSULE_H__
 
 #include "../glm/glm.hpp"
-#include "yaml-cpp/yaml.h"
 #include "GLM.h"
+#include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine
 {
@@ -23,24 +23,26 @@ class Capsule
 
 namespace YAML
 {
-    // Capsule
-    template<>
-    struct convert<PhysicsEngine::Capsule> {
-        static Node encode(const PhysicsEngine::Capsule& rhs) {
-            Node node;
-            node["centre"] = rhs.mCentre;
-            node["radius"] = rhs.mRadius;
-            node["height"] = rhs.mHeight;
-            return node;
-        }
+// Capsule
+template <> struct convert<PhysicsEngine::Capsule>
+{
+    static Node encode(const PhysicsEngine::Capsule &rhs)
+    {
+        Node node;
+        node["centre"] = rhs.mCentre;
+        node["radius"] = rhs.mRadius;
+        node["height"] = rhs.mHeight;
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::Capsule& rhs) {
-            rhs.mCentre = node["centre"].as<glm::vec3>();
-            rhs.mRadius = node["radius"].as<float>();
-            rhs.mHeight = node["height"].as<float>();
-            return true;
-        }
-    };
-}
+    static bool decode(const Node &node, PhysicsEngine::Capsule &rhs)
+    {
+        rhs.mCentre = node["centre"].as<glm::vec3>();
+        rhs.mRadius = node["radius"].as<float>();
+        rhs.mHeight = node["height"].as<float>();
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

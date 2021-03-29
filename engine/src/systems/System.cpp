@@ -31,14 +31,14 @@ void System::deserialize(std::istream &in)
     PhysicsEngine::read<size_t>(in, mOrder);
 }
 
-void System::serialize(YAML::Node& out) const
+void System::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
     out["order"] = mOrder;
 }
 
-void System::deserialize(const YAML::Node& in)
+void System::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 

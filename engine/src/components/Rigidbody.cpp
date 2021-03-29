@@ -66,7 +66,7 @@ void Rigidbody::deserialize(std::istream &in)
     PhysicsEngine::read<glm::mat3>(in, mInertiaTensor);
 }
 
-void Rigidbody::serialize(YAML::Node& out) const
+void Rigidbody::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -79,7 +79,7 @@ void Rigidbody::serialize(YAML::Node& out) const
     out["centreOfMass"] = mCentreOfMass;
 }
 
-void Rigidbody::deserialize(const YAML::Node& in)
+void Rigidbody::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 

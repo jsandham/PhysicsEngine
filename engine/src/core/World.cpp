@@ -53,17 +53,18 @@ World::~World()
 {
 }
 
-Asset* World::loadAssetFromYAML(const std::string& filePath)
+Asset *World::loadAssetFromYAML(const std::string &filePath)
 {
     YAML::Node in = YAML::LoadFile(filePath);
 
-    if (!in.IsMap() || in.begin() == in.end()) {
+    if (!in.IsMap() || in.begin() == in.end())
+    {
         return nullptr;
     }
 
     if (in.begin()->first.IsScalar() && in.begin()->second.IsMap())
     {
-        Asset* asset = loadAssetFromYAML(in.begin()->second);
+        Asset *asset = loadAssetFromYAML(in.begin()->second);
         if (asset != nullptr)
         {
             mIdState.mAssetIdToFilepath[asset->getId()] = filePath;
@@ -75,11 +76,11 @@ Asset* World::loadAssetFromYAML(const std::string& filePath)
     return nullptr;
 }
 
-Scene* World::loadSceneFromYAML(const std::string& filePath)
+Scene *World::loadSceneFromYAML(const std::string &filePath)
 {
     YAML::Node in = YAML::LoadFile(filePath);
 
-    Scene* scene = loadSceneFromYAML(in);
+    Scene *scene = loadSceneFromYAML(in);
     if (scene != nullptr)
     {
         mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
@@ -88,19 +89,21 @@ Scene* World::loadSceneFromYAML(const std::string& filePath)
     return scene;
 }
 
-bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) const
+bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const
 {
     std::ofstream out;
     out.open(filePath);
 
-    if (!out.is_open()) {
+    if (!out.is_open())
+    {
         std::string errorMessage = "Failed to open scene file " + filePath + "\n";
         Log::error(&errorMessage[0]);
         return false;
     }
 
-    Scene* scene = getSceneById(sceneId);
-    if (scene == nullptr) {
+    Scene *scene = getSceneById(sceneId);
+    if (scene == nullptr)
+    {
         return false;
     }
 
@@ -111,9 +114,10 @@ bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) c
     out << sceneNode;
     out << "\n";
 
-    for (size_t i = 0; i < getNumberOfEntities(); i++) {
-        const Entity* entity = getEntityByIndex(i);
-        
+    for (size_t i = 0; i < getNumberOfEntities(); i++)
+    {
+        const Entity *entity = getEntityByIndex(i);
+
         if (entity->mHide == HideFlag::None)
         {
             YAML::Node en;
@@ -126,12 +130,14 @@ bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) c
             out << "\n";
 
             std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
-            for (size_t j = 0; j < temp.size(); j++) {
-                Component* component = nullptr;
+            for (size_t j = 0; j < temp.size(); j++)
+            {
+                Component *component = nullptr;
 
                 if (Component::isInternal(temp[j].second))
                 {
-                    component = PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
+                    component =
+                        PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
                 }
                 else
                 {
@@ -158,7 +164,7 @@ bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) c
     return true;
 }
 
-Asset* World::loadAssetFromYAML(const YAML::Node& in)
+Asset *World::loadAssetFromYAML(const YAML::Node &in)
 {
     int type = YAML::getValue<int>(in, "type");
     Guid id = YAML::getValue<Guid>(in, "id");
@@ -171,7 +177,7 @@ Asset* World::loadAssetFromYAML(const YAML::Node& in)
     return nullptr;
 }
 
-Scene* World::loadSceneFromYAML(const YAML::Node& in)
+Scene *World::loadSceneFromYAML(const YAML::Node &in)
 {
     int type = YAML::getValue<int>(in, "type");
     Guid id = YAML::getValue<Guid>(in, "id");
@@ -184,9 +190,9 @@ Scene* World::loadSceneFromYAML(const YAML::Node& in)
     return nullptr;
 }
 
-Asset* World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
+Asset *World::loadAssetFromYAML(const YAML::Node &in, const Guid id, int type)
 {
-    if(Asset::isInternal(type))
+    if (Asset::isInternal(type))
     {
         return PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, id, type);
     }
@@ -196,7 +202,7 @@ Asset* World::loadAssetFromYAML(const YAML::Node& in, const Guid id, int type)
     }
 }
 
-Scene* World::loadSceneFromYAML(const YAML::Node& in, const Guid id)
+Scene *World::loadSceneFromYAML(const YAML::Node &in, const Guid id)
 {
     return PhysicsEngine::loadInternalScene(mAllocators, mIdState, in, id);
 }
@@ -221,7 +227,7 @@ void World::immediateDestroyEntitiesInWorld()
     std::vector<Guid> entitiesToDestroy;
     for (size_t i = 0; i < getNumberOfEntities(); i++)
     {
-        Entity* entity = getEntityByIndex(i);
+        Entity *entity = getEntityByIndex(i);
 
         if (!entity->mDoNotDestroy)
         {
@@ -251,7 +257,7 @@ size_t World::getNumberOfNonHiddenEntities() const
     size_t count = 0;
     for (size_t i = 0; i < getNumberOfEntities(); i++)
     {
-        const Entity* entity = getEntityByIndex(i);
+        const Entity *entity = getEntityByIndex(i);
         if (entity->mHide == HideFlag::None)
         {
             count++;
@@ -266,12 +272,12 @@ size_t World::getNumberOfUpdatingSystems() const
     return mSystems.size();
 }
 
-Scene* World::getSceneById(const Guid& sceneId) const
+Scene *World::getSceneById(const Guid &sceneId) const
 {
     return getById_impl<Scene>(mIdState.mSceneIdToGlobalIndex, &mAllocators.mSceneAllocator, sceneId);
 }
 
-Scene* World::getSceneByIndex(size_t index) const
+Scene *World::getSceneByIndex(size_t index) const
 {
     return mAllocators.mSceneAllocator.get(index);
 }
@@ -318,13 +324,13 @@ int World::getTypeOf(const Guid &id) const
     return -1;
 }
 
-Scene* World::createScene()
+Scene *World::createScene()
 {
     int globalIndex = (int)mAllocators.mSceneAllocator.getCount();
     int type = SceneType<Scene>::type;
     Guid sceneId = Guid::newGuid();
 
-    Scene* scene = mAllocators.mSceneAllocator.construct(sceneId);
+    Scene *scene = mAllocators.mSceneAllocator.construct(sceneId);
 
     if (scene != nullptr)
     {

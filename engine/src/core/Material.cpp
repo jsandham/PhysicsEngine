@@ -1,11 +1,11 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 
+#include "../../include/core/Log.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Log.h"
 
 #include "../../include/graphics/Graphics.h"
 
@@ -57,28 +57,30 @@ void Material::deserialize(std::istream &in)
     mShaderChanged = true;
 }
 
-void Material::serialize(YAML::Node& out) const
+void Material::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
     out["shaderId"] = mShaderId;
     out["renderQueue"] = mRenderQueue;
     out["uniformCount"] = mUniforms.size();
-    for (size_t i = 0; i < mUniforms.size(); i++) {
+    for (size_t i = 0; i < mUniforms.size(); i++)
+    {
         out[std::to_string(i)] = mUniforms[i];
     }
 }
 
-void Material::deserialize(const YAML::Node& in)
+void Material::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
     mShaderId = YAML::getValue<Guid>(in, "shaderId");
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
     size_t uniformCount = YAML::getValue<size_t>(in, "uniformCount");
-    
+
     mUniforms.resize(uniformCount);
-    for (size_t i = 0; i < mUniforms.size(); i++) {
+    for (size_t i = 0; i < mUniforms.size(); i++)
+    {
         mUniforms[i] = YAML::getValue<ShaderUniform>(in, std::to_string(i));
     }
 

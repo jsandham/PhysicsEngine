@@ -87,14 +87,14 @@ void Cubemap::deserialize(std::istream &in)
     PhysicsEngine::read<int>(in, mWidth);
 }
 
-void Cubemap::serialize(YAML::Node& out) const
+void Cubemap::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);
 
     out["width"] = mWidth;
 }
 
-void Cubemap::deserialize(const YAML::Node& in)
+void Cubemap::deserialize(const YAML::Node &in)
 {
     Texture::deserialize(in);
 

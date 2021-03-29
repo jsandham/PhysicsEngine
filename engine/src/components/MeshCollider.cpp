@@ -33,14 +33,14 @@ void MeshCollider::deserialize(std::istream &in)
     PhysicsEngine::read(in, mMeshId);
 }
 
-void MeshCollider::serialize(YAML::Node& out) const
+void MeshCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);
 
     out["meshId"] = mMeshId;
 }
 
-void MeshCollider::deserialize(const YAML::Node& in)
+void MeshCollider::deserialize(const YAML::Node &in)
 {
     Collider::deserialize(in);
 
@@ -56,7 +56,6 @@ std::string MeshCollider::getObjectName() const
 {
     return PhysicsEngine::MESHCOLLIDER_NAME;
 }
-
 
 bool MeshCollider::intersect(AABB aabb) const
 {

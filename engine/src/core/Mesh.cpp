@@ -64,14 +64,14 @@ void Mesh::deserialize(std::istream &in)
     mChanged = false;
 }
 
-void Mesh::serialize(YAML::Node& out) const
+void Mesh::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
     out["source"] = mSource;
 }
 
-void Mesh::deserialize(const YAML::Node& in)
+void Mesh::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
@@ -91,7 +91,8 @@ std::string Mesh::getObjectName() const
 
 void Mesh::load(const std::string &filepath)
 {
-    if (filepath.empty()) {
+    if (filepath.empty())
+    {
         return;
     }
 

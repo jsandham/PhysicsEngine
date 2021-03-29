@@ -39,7 +39,7 @@ void Entity::deserialize(std::istream &in)
     PhysicsEngine::read<std::string>(in, mName);
 }
 
-void Entity::serialize(YAML::Node& out) const
+void Entity::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
@@ -47,7 +47,7 @@ void Entity::serialize(YAML::Node& out) const
     out["name"] = mName;
 }
 
-void Entity::deserialize(const YAML::Node& in)
+void Entity::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 

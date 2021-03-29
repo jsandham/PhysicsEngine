@@ -93,13 +93,13 @@ class Shader : public Asset
 
     virtual void serialize(std::ostream &out) const override;
     virtual void deserialize(std::istream &in) override;
-    virtual void serialize(YAML::Node& out) const override;
-    virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void load(const std::string &vertFilepath, const std::string& fragFilepath, const std::string& geoFilepath);
+    void load(const std::string &vertFilepath, const std::string &fragFilepath, const std::string &geoFilepath);
 
     bool isCompiled() const;
     bool contains(int variant) const;
@@ -183,120 +183,123 @@ template <> struct IsAssetInternal<Shader>
 };
 } // namespace PhysicsEngine
 
-
 namespace YAML
 {
-    // RenderQueue
-    template<>
-    struct convert<PhysicsEngine::RenderQueue> {
-        static Node encode(const PhysicsEngine::RenderQueue& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
+// RenderQueue
+template <> struct convert<PhysicsEngine::RenderQueue>
+{
+    static Node encode(const PhysicsEngine::RenderQueue &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
+
+    static bool decode(const Node &node, PhysicsEngine::RenderQueue &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::RenderQueue>(node.as<int>());
+        return true;
+    }
+};
+
+// ShaderUniform
+template <> struct convert<PhysicsEngine::ShaderUniform>
+{
+    static Node encode(const PhysicsEngine::ShaderUniform &rhs)
+    {
+        Node node;
+
+        node["shortName"] = rhs.mShortName;
+        node["blockName"] = rhs.mBlockName;
+        node["nameLength"] = rhs.mNameLength;
+        node["size"] = rhs.mSize;
+        node["type"] = rhs.mType;
+        node["variant"] = rhs.mVariant;
+        node["location"] = rhs.mLocation;
+        node["index"] = rhs.mIndex;
+
+        /*if (rhs.mType == GL_INT)
+        {
+            node["data"] = *reinterpret_cast<const int*>(rhs.mData);
+        }
+        else if (rhs.mType == GL_FLOAT)
+        {
+            node["data"] = *reinterpret_cast<const float*>(rhs.mData);
+        }
+        else if (rhs.mType == GL_FLOAT_VEC2)
+        {
+            node["data"] = *reinterpret_cast<const glm::vec2*>(rhs.mData);
+        }
+        else if (rhs.mType == GL_FLOAT_VEC3)
+        {
+            node["data"] = *reinterpret_cast<const glm::vec3*>(rhs.mData);
+        }
+        else if (rhs.mType == GL_FLOAT_VEC4)
+        {
+            node["data"] = *reinterpret_cast<const glm::vec4*>(rhs.mData);
         }
 
-        static bool decode(const Node& node, PhysicsEngine::RenderQueue& rhs) {
-            rhs = static_cast<PhysicsEngine::RenderQueue>(node.as<int>());
-            return true;
+        if (rhs.mType == GL_SAMPLER_2D)
+        {
+            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
+        }*/
+
+        return node;
+    }
+
+    static bool decode(const Node &node, PhysicsEngine::ShaderUniform &rhs)
+    {
+        std::string shortName = node["shortName"].as<std::string>();
+        std::string blockName = node["blockName"].as<std::string>();
+
+        memset(rhs.mShortName, '\0', 32);
+        memset(rhs.mBlockName, '\0', 32);
+
+        memcpy(rhs.mShortName, shortName.data(), std::min((size_t)32, shortName.length()));
+        memcpy(rhs.mBlockName, blockName.data(), std::min((size_t)32, blockName.length()));
+
+        rhs.mNameLength = node["nameLength"].as<size_t>();
+        rhs.mSize = node["size"].as<size_t>();
+        rhs.mType = node["type"].as<int>();
+        rhs.mVariant = node["variant"].as<int>();
+        rhs.mLocation = node["location"].as<int>();
+        rhs.mIndex = node["index"].as<size_t>();
+
+        /*if (rhs.mType == GL_INT)
+        {
+            int data = node["data"].as<int>();
+            memcpy(rhs.mData, &data, sizeof(int));
         }
-    };
-
-    // ShaderUniform
-    template<>
-    struct convert<PhysicsEngine::ShaderUniform> {
-        static Node encode(const PhysicsEngine::ShaderUniform& rhs) {
-            Node node;
-
-            node["shortName"] = rhs.mShortName;
-            node["blockName"] = rhs.mBlockName;
-            node["nameLength"] = rhs.mNameLength;
-            node["size"] = rhs.mSize;
-            node["type"] = rhs.mType;
-            node["variant"] = rhs.mVariant;
-            node["location"] = rhs.mLocation;
-            node["index"] = rhs.mIndex;
-
-            /*if (rhs.mType == GL_INT)
-            {
-                node["data"] = *reinterpret_cast<const int*>(rhs.mData);
-            }
-            else if (rhs.mType == GL_FLOAT)
-            {
-                node["data"] = *reinterpret_cast<const float*>(rhs.mData);
-            }
-            else if (rhs.mType == GL_FLOAT_VEC2)
-            {
-                node["data"] = *reinterpret_cast<const glm::vec2*>(rhs.mData);
-            }
-            else if (rhs.mType == GL_FLOAT_VEC3)
-            {
-                node["data"] = *reinterpret_cast<const glm::vec3*>(rhs.mData);
-            }
-            else if (rhs.mType == GL_FLOAT_VEC4)
-            {
-                node["data"] = *reinterpret_cast<const glm::vec4*>(rhs.mData);
-            }
-
-            if (rhs.mType == GL_SAMPLER_2D)
-            {
-                node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
-            }*/
-
-            return node;
+        else if (rhs.mType == GL_FLOAT)
+        {
+            float data = node["data"].as<float>();
+            memcpy(rhs.mData, &data, sizeof(float));
+        }
+        else if (rhs.mType == GL_FLOAT_VEC2)
+        {
+            glm::vec2 data = node["data"].as<glm::vec2>();
+            memcpy(rhs.mData, &data, sizeof(glm::vec2));
+        }
+        else if (rhs.mType == GL_FLOAT_VEC3)
+        {
+            glm::vec3 data = node["data"].as<glm::vec3>();
+            memcpy(rhs.mData, &data, sizeof(glm::vec3));
+        }
+        else if (rhs.mType == GL_FLOAT_VEC4)
+        {
+            glm::vec4 data = node["data"].as<glm::vec4>();
+            memcpy(rhs.mData, &data, sizeof(glm::vec4));
         }
 
-        static bool decode(const Node& node, PhysicsEngine::ShaderUniform& rhs) {
-            std::string shortName = node["shortName"].as<std::string>();
-            std::string blockName = node["blockName"].as<std::string>();
+        if (rhs.mType == GL_SAMPLER_2D)
+        {
+            PhysicsEngine::Guid data = node["data"].as<PhysicsEngine::Guid>();
+            memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
+        }*/
 
-            memset(rhs.mShortName, '\0', 32);
-            memset(rhs.mBlockName, '\0', 32);
-
-            memcpy(rhs.mShortName, shortName.data(), std::min((size_t)32, shortName.length()));
-            memcpy(rhs.mBlockName, blockName.data(), std::min((size_t)32, blockName.length()));
-
-            rhs.mNameLength = node["nameLength"].as<size_t>();
-            rhs.mSize = node["size"].as<size_t>();
-            rhs.mType = node["type"].as<int>();
-            rhs.mVariant = node["variant"].as<int>();
-            rhs.mLocation = node["location"].as<int>();
-            rhs.mIndex = node["index"].as<size_t>();
-
-            /*if (rhs.mType == GL_INT)
-            {
-                int data = node["data"].as<int>();
-                memcpy(rhs.mData, &data, sizeof(int));
-            }
-            else if (rhs.mType == GL_FLOAT)
-            {
-                float data = node["data"].as<float>();
-                memcpy(rhs.mData, &data, sizeof(float));
-            }
-            else if (rhs.mType == GL_FLOAT_VEC2)
-            {
-                glm::vec2 data = node["data"].as<glm::vec2>();
-                memcpy(rhs.mData, &data, sizeof(glm::vec2));
-            }
-            else if (rhs.mType == GL_FLOAT_VEC3)
-            {
-                glm::vec3 data = node["data"].as<glm::vec3>();
-                memcpy(rhs.mData, &data, sizeof(glm::vec3));
-            }
-            else if (rhs.mType == GL_FLOAT_VEC4)
-            {
-                glm::vec4 data = node["data"].as<glm::vec4>();
-                memcpy(rhs.mData, &data, sizeof(glm::vec4));
-            }
-
-            if (rhs.mType == GL_SAMPLER_2D)
-            {
-                PhysicsEngine::Guid data = node["data"].as<PhysicsEngine::Guid>();
-                memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
-            }*/
-
-            return true;
-        }
-    };
-}
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

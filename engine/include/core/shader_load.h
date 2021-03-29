@@ -14,7 +14,8 @@ typedef struct shader_data
     std::string mFragmentShader;
 } shader_data;
 
-bool shader_load(const std::string& vsFilepath, const std::string& fsFilepath, const std::string& gsFilepath, shader_data& data)
+bool shader_load(const std::string &vsFilepath, const std::string &fsFilepath, const std::string &gsFilepath,
+                 shader_data &data)
 {
     // vertex shader
     std::ifstream vsFile(vsFilepath, std::ios::in);
@@ -64,11 +65,7 @@ bool shader_load(const std::string& vsFilepath, const std::string& fsFilepath, c
     return true;
 }
 
-
-
-
-
-//bool shader_load(const std::string &filepath, shader_data &data)
+// bool shader_load(const std::string &filepath, shader_data &data)
 //{
 //    std::ifstream file(filepath, std::ios::in);
 //    std::ostringstream contents;
@@ -111,7 +108,8 @@ bool shader_load(const std::string& vsFilepath, const std::string& fsFilepath, c
 //        vertexShader =
 //            shaderContent.substr(startOfVertexTag + vertexTag.length(), startOfGeometryTag - vertexTag.length());
 //        geometryShader =
-//            shaderContent.substr(startOfGeometryTag + geometryTag.length(), startOfFragmentTag - geometryTag.length());
+//            shaderContent.substr(startOfGeometryTag + geometryTag.length(), startOfFragmentTag -
+//            geometryTag.length());
 //        fragmentShader = shaderContent.substr(startOfFragmentTag + fragmentTag.length(), shaderContent.length());
 //    }
 //

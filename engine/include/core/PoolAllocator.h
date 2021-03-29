@@ -81,9 +81,9 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return t;
     }
 
-    T* construct(const YAML::Node& in)
+    T *construct(const YAML::Node &in)
     {
-        T* t = new (allocate()) T();
+        T *t = new (allocate()) T();
         t->deserialize(in);
         return t;
     }

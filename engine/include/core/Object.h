@@ -12,11 +12,11 @@
 
 namespace PhysicsEngine
 {
-    enum class HideFlag
-    {
-        None = 0,
-        DontSave = 1
-    };
+enum class HideFlag
+{
+    None = 0,
+    DontSave = 1
+};
 
 class Object
 {
@@ -33,8 +33,8 @@ class Object
 
     virtual void serialize(std::ostream &out) const;
     virtual void deserialize(std::istream &in);
-    virtual void serialize(YAML::Node& out) const;
-    virtual void deserialize(const YAML::Node& in);
+    virtual void serialize(YAML::Node &out) const;
+    virtual void deserialize(const YAML::Node &in);
 
     virtual int getType() const = 0;
     virtual std::string getObjectName() const = 0;
@@ -46,20 +46,22 @@ class Object
 
 namespace YAML
 {
-    // HideFlag
-    template<>
-    struct convert<PhysicsEngine::HideFlag> {
-        static Node encode(const PhysicsEngine::HideFlag& rhs) {
-            Node node;
-            node = static_cast<int>(rhs);
-            return node;
-        }
+// HideFlag
+template <> struct convert<PhysicsEngine::HideFlag>
+{
+    static Node encode(const PhysicsEngine::HideFlag &rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
 
-        static bool decode(const Node& node, PhysicsEngine::HideFlag& rhs) {
-            rhs = static_cast<PhysicsEngine::HideFlag>(node.as<int>());
-            return true;
-        }
-    };
-}
+    static bool decode(const Node &node, PhysicsEngine::HideFlag &rhs)
+    {
+        rhs = static_cast<PhysicsEngine::HideFlag>(node.as<int>());
+        return true;
+    }
+};
+} // namespace YAML
 
 #endif

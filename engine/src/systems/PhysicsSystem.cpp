@@ -46,7 +46,7 @@ void PhysicsSystem::deserialize(std::istream &in)
     PhysicsEngine::read<float>(in, mTimestep);
 }
 
-void PhysicsSystem::serialize(YAML::Node& out) const
+void PhysicsSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);
 
@@ -54,7 +54,7 @@ void PhysicsSystem::serialize(YAML::Node& out) const
     out["timestep"] = mTimestep;
 }
 
-void PhysicsSystem::deserialize(const YAML::Node& in)
+void PhysicsSystem::deserialize(const YAML::Node &in)
 {
     System::deserialize(in);
 

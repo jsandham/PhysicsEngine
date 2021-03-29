@@ -126,7 +126,7 @@ void Light::deserialize(std::istream &in)
     mIsShadowMapResolutionChanged = true;
 }
 
-void Light::serialize(YAML::Node& out) const
+void Light::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -144,7 +144,7 @@ void Light::serialize(YAML::Node& out) const
     out["shadowMapResolution"] = mShadowMapResolution;
 }
 
-void Light::deserialize(const YAML::Node& in)
+void Light::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 

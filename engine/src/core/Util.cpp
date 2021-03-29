@@ -72,7 +72,8 @@ bool Util::writeToBMP(const std::string &filepath, const std::vector<unsigned ch
     return true;
 }
 
-bool Util::writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height, int numChannels)
+bool Util::writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height,
+                      int numChannels)
 {
     if (numChannels != 1 && numChannels != 2 && numChannels != 3 && numChannels != 4)
     {

@@ -13,16 +13,16 @@ WorldManager::~WorldManager()
 
 bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> assetFilePaths)
 {
-   /* for (size_t i = 0; i < assetFilePaths.size(); i++)
-    {
-        if (!world.loadAssetFromBinary(assetFilePaths[i]))
-        {
-            Log::error("Could not load asset file\n");
-            return false;
-        }
-    }*/
+    /* for (size_t i = 0; i < assetFilePaths.size(); i++)
+     {
+         if (!world.loadAssetFromBinary(assetFilePaths[i]))
+         {
+             Log::error("Could not load asset file\n");
+             return false;
+         }
+     }*/
 
-    //if (!world.loadSceneFromBinary(sceneFilePath))
+    // if (!world.loadSceneFromBinary(sceneFilePath))
     //{
     //    Log::error("Could not load scene file\n");
     //    return false;

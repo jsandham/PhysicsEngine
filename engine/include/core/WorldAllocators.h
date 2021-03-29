@@ -3,8 +3,8 @@
 
 #include <unordered_map>
 
-#include "PoolAllocator.h"
 #include "Guid.h"
+#include "PoolAllocator.h"
 
 #include "../components/BoxCollider.h"
 #include "../components/Camera.h"
@@ -17,8 +17,8 @@
 #include "../components/SphereCollider.h"
 #include "../components/Transform.h"
 
-#include "../core/Scene.h"
 #include "../core/Entity.h"
+#include "../core/Scene.h"
 
 #include "../core/Cubemap.h"
 #include "../core/Font.h"

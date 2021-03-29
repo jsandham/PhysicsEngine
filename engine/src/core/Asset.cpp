@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #include "../../include/core/Asset.h"
@@ -34,24 +34,25 @@ void Asset::deserialize(std::istream &in)
     PhysicsEngine::read<std::string>(in, mName);
 }
 
-void Asset::serialize(YAML::Node& out) const
+void Asset::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
     out["name"] = mName;
 }
 
-void Asset::deserialize(const YAML::Node& in)
+void Asset::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
     mName = YAML::getValue<std::string>(in, "name");
 }
 
-void Asset::writeToYAML(const std::string& filepath) const
+void Asset::writeToYAML(const std::string &filepath) const
 {
     std::ofstream out;
     out.open(filepath);
 
-    if (!out.is_open()) {
+    if (!out.is_open())
+    {
         return;
     }
 
@@ -67,16 +68,19 @@ void Asset::writeToYAML(const std::string& filepath) const
     out.close();
 }
 
-void Asset::loadFromYAML(const std::string& filepath)
+void Asset::loadFromYAML(const std::string &filepath)
 {
     YAML::Node in = YAML::LoadFile(filepath);
 
-    if (!in.IsMap()) {
+    if (!in.IsMap())
+    {
         return;
     }
 
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar() && it->second.IsMap()) {
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
             deserialize(it->second);
         }
     }

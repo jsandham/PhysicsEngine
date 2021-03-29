@@ -153,7 +153,7 @@ void Camera::deserialize(std::istream &in)
     mIsViewportChanged = true;
 }
 
-void Camera::serialize(YAML::Node& out) const
+void Camera::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -167,7 +167,7 @@ void Camera::serialize(YAML::Node& out) const
     out["backgroundColor"] = mBackgroundColor;
 }
 
-void Camera::deserialize(const YAML::Node& in)
+void Camera::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 

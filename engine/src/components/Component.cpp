@@ -34,14 +34,14 @@ void Component::deserialize(std::istream &in)
     PhysicsEngine::read<Guid>(in, mEntityId);
 }
 
-void Component::serialize(YAML::Node& out) const
+void Component::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
     out["entityId"] = mEntityId;
 }
 
-void Component::deserialize(const YAML::Node& in)
+void Component::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 
