@@ -76,16 +76,14 @@ void EditorCameraSystem::init(World *world)
 
     Entity* entity = world->createEntity();
     entity->mDoNotDestroy = true;
-    entity->mHide = true;
+    entity->mHide = HideFlag::DontSave;
 
     mTransform = entity->addComponent<Transform>(world);
-    mCamera = entity->addComponent<Camera>(world);
-
-
-    //mCamera = world->getComponentByIndex<Camera>(0);
-    //mTransform = mCamera->getComponent<Transform>(world);
-
     mTransform->mPosition = glm::vec3(0, 2, -10);
+    mHide = HideFlag::DontSave;
+
+    mCamera = entity->addComponent<Camera>(world);
+    mCamera->mHide == HideFlag::DontSave;
 }
 
 void EditorCameraSystem::update(const Input &input, const Time &time)

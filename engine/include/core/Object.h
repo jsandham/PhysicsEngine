@@ -12,10 +12,19 @@
 
 namespace PhysicsEngine
 {
+    enum class HideFlag
+    {
+        None = 0,
+        DontSave = 1
+    };
+
 class Object
 {
-  protected:
+  private:
     Guid mId;
+
+  public:
+    HideFlag mHide;
 
   public:
     Object();
@@ -34,5 +43,23 @@ class Object
 };
 
 } // namespace PhysicsEngine
+
+namespace YAML
+{
+    // HideFlag
+    template<>
+    struct convert<PhysicsEngine::HideFlag> {
+        static Node encode(const PhysicsEngine::HideFlag& rhs) {
+            Node node;
+            node = static_cast<int>(rhs);
+            return node;
+        }
+
+        static bool decode(const Node& node, PhysicsEngine::HideFlag& rhs) {
+            rhs = static_cast<PhysicsEngine::HideFlag>(node.as<int>());
+            return true;
+        }
+    };
+}
 
 #endif

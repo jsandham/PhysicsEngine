@@ -237,10 +237,6 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
     {
         saveClicked = true;
     }
-    /*if (ImGui::MenuItem("Save As..", NULL, false, !clipboard.getScenePath().empty()))
-    {
-        saveAsClicked = true;
-    }*/
     if (ImGui::MenuItem("Save As..", NULL, false, clipboard.getSceneId().isValid()))
     {
         saveAsClicked = true;
@@ -363,7 +359,8 @@ void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std
     }
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    clipboard.getWorld()->latentDestroyEntitiesInWorld();
+    /*clipboard.getWorld()->latentDestroyEntitiesInWorld();*/
+    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
 
     // reset editor camera to default position
     clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
@@ -372,7 +369,7 @@ void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
-    // load scene into world (ignoring systems and cameras)
+    // load scene into world
     Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path);
     if (scene != nullptr)
     {

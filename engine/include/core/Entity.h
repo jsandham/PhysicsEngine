@@ -19,7 +19,6 @@ class Entity : public Object
 
   public:
     bool mDoNotDestroy;
-    bool mHide;
 
   public:
     Entity();
@@ -39,7 +38,7 @@ class Entity : public Object
 
     template <typename T> T *addComponent(World *world)
     {
-        return world->addComponent<T>(mId);
+        return world->addComponent<T>(getId());
     }
 
     template <typename T> T *addComponent(World *world, std::vector<char> data)
@@ -49,7 +48,7 @@ class Entity : public Object
 
     template <typename T> T *getComponent(const World *world) const
     {
-        return world->getComponent<T>(mId);
+        return world->getComponent<T>(getId());
     }
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity(const World *world) const;

@@ -125,9 +125,14 @@ System* loadSystemFromYAML(WorldAllocators& allocators, WorldIdState& state, con
 
 Object* loadSceneObjectFromYAML(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in)
 {
-    if (in["type"] && in["id"]) { //hasKey(const std::string& key)??
-        int type = in["type"].as<int>(); //getValue<int>(const std::string& key)?? 
-        Guid id = in["id"].as<Guid>();
+    if (in["type"] && in["id"] && in["hide"]) {
+        int type = YAML::getValue<int>(in, "type");
+        Guid id = YAML::getValue<Guid>(in, "id");
+        HideFlag hide = YAML::getValue<HideFlag>(in, "hide");
+
+        if (hide == HideFlag::DontSave) {
+            return nullptr;
+        }
 
         std::string test = "Loading type: " + std::to_string(type) + " with id: " + id.toString() + " \n";
         Log::info(test.c_str());
@@ -149,8 +154,6 @@ Object* loadSceneObjectFromYAML(WorldAllocators& allocators, WorldIdState& state
     return nullptr;
 }
 
-
-
 template<class T>
 void loadSceneObjects(WorldAllocators& allocators, WorldIdState& state, T& in)
 {
@@ -165,9 +168,14 @@ void loadSceneObjects(WorldAllocators& allocators, WorldIdState& state, T& in)
         
     for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
         if (it->first.IsScalar() && it->second.IsMap()) {
-            if (loadSceneObjectFromYAML(allocators, state, it->second) == nullptr) {
-                return;// false;
+            const Object* object = loadSceneObjectFromYAML(allocators, state, it->second);
+
+            if (object == nullptr) {
+                Log::warn("A scene object could not be loaded from scene file. Skipping it.\n");
             }
+            //if (loadSceneObjectFromYAML(allocators, state, it->second) == nullptr) {
+            //    return;// false;
+            //}
         }
     }
 }

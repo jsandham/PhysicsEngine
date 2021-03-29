@@ -35,6 +35,11 @@ Clipboard::Clipboard()
 
     mRenderSystem->mRenderToScreen = false;
 
+    mEditorCameraSystem->mHide = PhysicsEngine::HideFlag::DontSave;
+    mRenderSystem->mHide = PhysicsEngine::HideFlag::DontSave;
+    mGizmoSystem->mHide = PhysicsEngine::HideFlag::DontSave;
+    mCleanUpSystem->mHide = PhysicsEngine::HideFlag::DontSave;
+
     mProjectDirty = false;
     mSceneDirty = false;
 }

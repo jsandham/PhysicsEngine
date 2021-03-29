@@ -114,7 +114,7 @@ bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) c
     for (size_t i = 0; i < getNumberOfEntities(); i++) {
         const Entity* entity = getEntityByIndex(i);
         
-        if (!entity->mHide)
+        if (entity->mHide == HideFlag::None)
         {
             YAML::Node en;
             entity->serialize(en);
@@ -138,14 +138,17 @@ bool World::writeSceneToYAML(const std::string& filePath, const Guid& sceneId) c
                     component = PhysicsEngine::getComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
                 }
 
-                YAML::Node cn;
-                component->serialize(cn);
+                if (component->mHide == HideFlag::None)
+                {
+                    YAML::Node cn;
+                    component->serialize(cn);
 
-                YAML::Node componentNode;
-                componentNode[component->getObjectName()] = cn;
+                    YAML::Node componentNode;
+                    componentNode[component->getObjectName()] = cn;
 
-                out << componentNode;
-                out << "\n";
+                    out << componentNode;
+                    out << "\n";
+                }
             }
         }
     }
@@ -212,6 +215,27 @@ void World::latentDestroyEntitiesInWorld()
     }
 }
 
+void World::immediateDestroyEntitiesInWorld()
+{
+    // immediate destroy all entities (and thereby also all components)
+    std::vector<Guid> entitiesToDestroy;
+    for (size_t i = 0; i < getNumberOfEntities(); i++)
+    {
+        Entity* entity = getEntityByIndex(i);
+
+        if (!entity->mDoNotDestroy)
+        {
+            entitiesToDestroy.push_back(entity->getId());
+        }
+    }
+
+    for (size_t i = 0; i < entitiesToDestroy.size(); i++)
+    {
+        Log::info(("Immediate destroy entity with id: " + entitiesToDestroy[i].toString() + "\n").c_str());
+        immediateDestroyEntity(entitiesToDestroy[i]);
+    }
+}
+
 size_t World::getNumberOfScenes() const
 {
     return mAllocators.mSceneAllocator.getCount();
@@ -228,7 +252,7 @@ size_t World::getNumberOfNonHiddenEntities() const
     for (size_t i = 0; i < getNumberOfEntities(); i++)
     {
         const Entity* entity = getEntityByIndex(i);
-        if (!(entity->mHide))
+        if (entity->mHide == HideFlag::None)
         {
             count++;
         }
@@ -379,11 +403,7 @@ void World::immediateDestroyEntity(const Guid &entityId)
 
     mIdState.mEntityIdToComponentIds.erase(it);
 
-    int index = getIndexOf(entityId);
-
-    assert(index != -1);
-
-    destroyInternalEntity(mAllocators, mIdState, entityId, index);
+    destroyInternalEntity(mAllocators, mIdState, entityId, getIndexOf(entityId));
 }
 
 void World::latentDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType)
@@ -393,31 +413,13 @@ void World::latentDestroyComponent(const Guid &entityId, const Guid &componentId
 
 void World::immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType)
 {
-    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::iterator it =
-        mIdState.mEntityIdToComponentIds.find(entityId);
-
-    assert(it != mIdState.mEntityIdToComponentIds.end());
-
-    for (size_t i = 0; i < it->second.size(); i++)
-    {
-        if (it->second[i].first == componentId)
-        {
-            it->second.erase(it->second.begin() + i);
-            break;
-        }
-    }
-
-    int index = getIndexOf(componentId);
-
-    assert(index != -1);
-
     if (Component::isInternal(componentType))
     {
-        destroyInternalComponent(mAllocators, mIdState, componentId, componentType, index);
+        destroyInternalComponent(mAllocators, mIdState, componentId, componentType, getIndexOf(componentId));
     }
     else
     {
-        destroyComponent(mAllocators, mIdState, componentId, componentType, index);
+        destroyComponent(mAllocators, mIdState, componentId, componentType, getIndexOf(componentId));
     }
 }
 

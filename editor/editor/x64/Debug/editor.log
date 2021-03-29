@@ -1,4 +1,20 @@
 ﻿  Command.cpp
+  Editor.cpp
+  EditorCameraSystem.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(86,20): warning C4553: '==': result of expression not used; did you intend '='?
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(277,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(278,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+  EditorClipboard.cpp
+  EditorCommands.cpp
+  EditorOnlyEntityCreation.cpp
+  EditorWin32.cpp
+  LibraryDirectory.cpp
+  Load.cpp
+  MenuBar.cpp
+  TransformGizmo.cpp
+  GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
+  Undo.cpp
   BoxColliderDrawer.cpp
   CameraDrawer.cpp
   CapsuleColliderDrawer.cpp
@@ -7,6 +23,8 @@
   InspectorDrawer.cpp
   LightDrawer.cpp
   LineRendererDrawer.cpp
+  Generating Code...
+  Compiling...
   LoadInspectorDrawerInternal.cpp
   MaterialDrawer.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
@@ -25,34 +43,9 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(
   GLM: pitch function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
   GLM: yaw function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
   GLM: roll function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
-  Generating Code...
-  Compiling...
-  Editor.cpp
-  EditorCameraSystem.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(279,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(280,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-  GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
-  EditorClipboard.cpp
-  EditorCommands.cpp
-  EditorOnlyEntityCreation.cpp
-  EditorToolbar.cpp
-  EditorWin32.cpp
-  Filebrowser.cpp
-  FileSystemUtil.cpp
-  imgui_extensions.cpp
-  imgui_styles.cpp
-  LibraryDirectory.cpp
-  Load.cpp
   main.cpp
-  MenuBar.cpp
-  PerformanceQueue.cpp
-  TransformGizmo.cpp
-  GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
-  Undo.cpp
   AboutPopup.cpp
   BuildWindow.cpp
-  Generating Code...
-  Compiling...
   Console.cpp
   Hierarchy.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(70,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
@@ -61,11 +54,13 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(167
   PopupWindow.cpp
   PreferencesWindow.cpp
   ProjectView.cpp
+  Generating Code...
+  Compiling...
   ProjectWindow.cpp
   SceneView.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(86,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(87,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(375,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(378,43): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
           with
           [
               _Rep=double

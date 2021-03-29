@@ -27,8 +27,6 @@ void Hierarchy::init(Clipboard &clipboard)
 
 void Hierarchy::update(Clipboard &clipboard)
 {
-    /*rebuildRequired = entries.size() != std::max((size_t)0, clipboard.getWorld()->getNumberOfEntities() -
-        clipboard.getEditorOnlyIds().size());*/
     rebuildRequired = entries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities();
 
     // If number of entities has changed, update cached entity ids and names
@@ -159,7 +157,7 @@ void Hierarchy::rebuildEntityLists(World *world)
     for (size_t i = 0; i < world->getNumberOfEntities(); i++)
     {
         Entity* entity = world->getEntityByIndex(i);
-        if (!entity->mHide)
+        if (entity->mHide == HideFlag::None)
         {
             entries[index].entity = entity;
             entries[index].label = entity->getId().toString();
@@ -168,24 +166,4 @@ void Hierarchy::rebuildEntityLists(World *world)
             index++;
         }
     }
-
-    /*int numberOfEntities = std::max((size_t)0, world->getNumberOfEntities() - editorOnlyEntityIds.size());
-
-    entries.resize(numberOfEntities);
-
-    int index = 0;
-    for (int i = 0; i < world->getNumberOfEntities(); i++)
-    {
-        Entity *entity = world->getEntityByIndex(i);
-
-        std::set<Guid>::iterator it = editorOnlyEntityIds.find(entity->getId());
-        if (it == editorOnlyEntityIds.end())
-        {
-            entries[index].entity = entity;
-            entries[index].label = entity->getId().toString();
-            entries[index].indentLevel = 0;
-            idToEntryIndex[entity->getId()] = index;
-            index++;
-        }
-    }*/
 }

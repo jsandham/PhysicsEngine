@@ -37,6 +37,7 @@ class World
     bool writeSceneToYAML(const std::string& filePath, const Guid& sceneId) const;
 
     void latentDestroyEntitiesInWorld();
+    void immediateDestroyEntitiesInWorld();
 
     size_t getNumberOfScenes() const;
     size_t getNumberOfEntities() const;

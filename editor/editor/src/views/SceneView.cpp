@@ -234,8 +234,11 @@ void SceneView::update(Clipboard &clipboard)
     {
         Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
 
-        transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
-            sceneContentHeight);
+        if(transform != nullptr)
+        {
+            transformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
+                sceneContentHeight);
+        }
     }
 
     // Finally draw scene
@@ -433,6 +436,9 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         ImGui::Text("Mesh count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Mesh>());
         ImGui::Text("Material count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Material>());
         ImGui::Text("Texture2D count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Texture2D>());
+        ImGui::Text("RenderSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<RenderSystem>());
+        ImGui::Text("PhysicsSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsSystem>());
+        ImGui::Text("CleanUpSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<CleanUpSystem>());
     }
     ImGui::End();
 }
