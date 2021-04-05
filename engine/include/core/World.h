@@ -34,6 +34,7 @@ class World
 
     Asset *loadAssetFromYAML(const std::string &filePath);
     Scene *loadSceneFromYAML(const std::string &filePath);
+    bool writeAssetToYAML(const std::string &filePath, const Guid &assetId) const;
     bool writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const;
 
     void latentDestroyEntitiesInWorld();

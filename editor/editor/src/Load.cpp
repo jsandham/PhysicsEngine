@@ -14,6 +14,11 @@ Component* PhysicsEngine::getComponent(const WorldAllocators& allocators, const 
     return nullptr;
 }
 
+Asset* PhysicsEngine::getAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type)
+{
+    return nullptr;
+}
+
 Asset *PhysicsEngine::loadAsset(WorldAllocators& allocators, WorldIdState& state, std::istream& in, const Guid& id, int type)
 {
     return nullptr;

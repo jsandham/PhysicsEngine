@@ -12,7 +12,7 @@ set WARN=-W4 -wd4100 -wd4996 -wd4211
 ::set WARN=-W4 -Wno-pessimizing-move -Wno-unused-parameter
 set OPENMP=
 set OPT=/Od
-set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+set MODEFLAGS=/FS /MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
 set MODE=debug
 set FLAGS=-nologo /EHsc
 
@@ -29,11 +29,11 @@ for %%x in (%*) do (
 	)
 	if "%%x"=="/debug" (
 		set MODE=debug
-		set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+		set MODEFLAGS=/FS /MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
 	)
 	if "%%x"=="/release" (
 		set MODE=release
-		set MODEFLAGS=/MD /Fo"release/obj"\ /Fd"release/obj"\ 
+		set MODEFLAGS=/FS /MD /Fo"release/obj"\ /Fd"release/obj"\ 
 	)
 )
 

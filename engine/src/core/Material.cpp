@@ -145,20 +145,16 @@ void Material::onShaderChanged(World *world)
         return;
     }
 
-    // the uniform data serialized may not be in the same order as the uniforms returned from the
-    // shader (the serialized uniforms are in alphabetical order by name while the uniforms reported
-    // by the shader are in the order in which they are declared in the shader). Therefore need to
-    // correct for this by updating shader reported uniforms with the serialized uniforms
     std::vector<ShaderUniform> shaderUniforms = shader->getUniforms();
-    for (size_t i = 0; i < shaderUniforms.size(); i++)
+    
+    // Attempt to copy any existing uniform data
+    if (shaderUniforms.size() == mUniforms.size())
     {
-        for (size_t j = 0; j < mUniforms.size(); j++)
+        for (size_t i = 0; i < shaderUniforms.size(); i++)
         {
-            if (memcmp(shaderUniforms[i].mName, mUniforms[j].mName, 32) == 0)
+            if (memcmp(shaderUniforms[i].mName, mUniforms[i].mName, 32) == 0)
             {
-                memcpy(shaderUniforms[i].mData, mUniforms[j].mData, 64);
-
-                break;
+                memcpy(shaderUniforms[i].mData, mUniforms[i].mData, 64);
             }
         }
     }

@@ -89,6 +89,48 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
     return scene;
 }
 
+bool World::writeAssetToYAML(const std::string& filePath, const Guid& assetId) const
+{
+    std::ofstream out;
+    out.open(filePath);
+
+    if (!out.is_open())
+    {
+        std::string errorMessage = "Failed to open asset file " + filePath + "\n";
+        Log::error(&errorMessage[0]);
+        return false;
+    }
+
+    int type = getTypeOf(assetId);
+
+    Asset* asset = nullptr;
+
+    if (Asset::isInternal(type))
+    {
+        asset = PhysicsEngine::getInternalAsset(mAllocators, mIdState, assetId, type);
+    }
+    else
+    {
+        asset = PhysicsEngine::getAsset(mAllocators, mIdState, assetId, type);
+    }
+
+    if (asset->mHide == HideFlag::None)
+    {
+        YAML::Node an;
+        asset->serialize(an);
+
+        YAML::Node assetNode;
+        assetNode[asset->getObjectName()] = an;
+
+        out << assetNode;
+        out << "\n";
+    }
+
+    out.close();
+
+    return true;
+}
+
 bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const
 {
     std::ofstream out;

@@ -9,6 +9,9 @@ namespace PhysicsEngine
 // Get internal component
 Component *getInternalComponent(const WorldAllocators &allocators, const WorldIdState &state, const Guid &id, int type);
 
+// Get internal asset
+Asset* getInternalAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type);
+
 // Load internal scene from YAML
 Scene *loadInternalScene(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id);
 

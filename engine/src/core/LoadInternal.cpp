@@ -93,6 +93,68 @@ Component *PhysicsEngine::getInternalComponent(const WorldAllocators &allocators
     return nullptr;
 }
 
+Asset* PhysicsEngine::getInternalAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type)
+{
+    if (type == AssetType<Shader>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mShaderIdToGlobalIndex.find(id);
+        if (it != state.mShaderIdToGlobalIndex.end())
+        {
+            return allocators.mShaderAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Mesh>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mMeshIdToGlobalIndex.find(id);
+        if (it != state.mMeshIdToGlobalIndex.end())
+        {
+            return allocators.mMeshAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Material>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mMaterialIdToGlobalIndex.find(id);
+        if (it != state.mMaterialIdToGlobalIndex.end())
+        {
+            return allocators.mMaterialAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Texture2D>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mTexture2DIdToGlobalIndex.find(id);
+        if (it != state.mTexture2DIdToGlobalIndex.end())
+        {
+            return allocators.mTexture2DAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Texture3D>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mTexture3DIdToGlobalIndex.find(id);
+        if (it != state.mTexture3DIdToGlobalIndex.end())
+        {
+            return allocators.mTexture3DAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Cubemap>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mCubemapIdToGlobalIndex.find(id);
+        if (it != state.mCubemapIdToGlobalIndex.end())
+        {
+            return allocators.mCubemapAllocator.get(it->second);
+        }
+    }
+    else if (type == AssetType<Font>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mFontIdToGlobalIndex.find(id);
+        if (it != state.mFontIdToGlobalIndex.end())
+        {
+            return allocators.mFontAllocator.get(it->second);
+        }
+    }
+
+    return nullptr;
+}
+
 Entity *loadEntityFromYAML(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id)
 {
     return PhysicsEngine::loadInternalEntity(allocators, state, in, id);

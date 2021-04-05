@@ -127,8 +127,10 @@ void MenuBar::update(Clipboard &clipboard)
     }
     else if (isSaveProjectClicked())
     {
-        // saveProject(clipboard, clipboard.getProject(), clipboard.getProjectPath());
+        saveProject(clipboard);
     }
+
+    //Log::info(("save project clicked: " + std::to_string(saveProjectClicked) + "\n").c_str());
 
     projectWindow.draw(clipboard, isOpenProjectClicked() | isNewProjectClicked());
     aboutPopup.draw(clipboard, isAboutClicked());
@@ -237,7 +239,7 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
     {
         saveClicked = true;
     }
-    if (ImGui::MenuItem("Save As..", NULL, false, clipboard.getSceneId().isValid()))
+    if (ImGui::MenuItem("Save As..", nullptr, false, clipboard.getSceneId().isValid()))
     {
         saveAsClicked = true;
     }
@@ -252,11 +254,11 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
     {
         openProjectClicked = true;
     }
-    if (ImGui::MenuItem("Save Project", NULL, false, !clipboard.getProjectPath().empty()))
+    if (ImGui::MenuItem("Save Project", nullptr, false, !clipboard.getProjectPath().empty()))
     {
         saveProjectClicked = true;
     }
-    if (ImGui::MenuItem("Build", NULL, false, !clipboard.getProjectPath().empty()))
+    if (ImGui::MenuItem("Build", nullptr, false, !clipboard.getProjectPath().empty()))
     {
         buildClicked = true;
     }
@@ -392,6 +394,17 @@ void MenuBar::openProject(Clipboard &clipboard)
 
 void MenuBar::saveProject(Clipboard &clipboard)
 {
+    Log::info(("saving project: " + clipboard.getProjectName() + " path: " + clipboard.getProjectPath()).c_str());
+
+    // save materials
+    for (size_t i = 0; i < clipboard.getWorld()->getNumberOfAssets<Material>(); i++)
+    {
+        Material* material = clipboard.getWorld()->getAssetByIndex<Material>(i);
+        std::string path = clipboard.getWorld()->getAssetFilepath(material->getId());
+        if (!path.empty()) {
+            clipboard.getWorld()->writeAssetToYAML(path, material->getId());
+        }
+    }
 }
 
 void MenuBar::build(Clipboard &clipboard)

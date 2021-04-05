@@ -54,6 +54,11 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
 {
     Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 
+    if (material == nullptr)
+    {
+        std::string test = id.toString();
+    }
+
     Guid currentShaderId = material->getShaderId();
 
     Shader *ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);

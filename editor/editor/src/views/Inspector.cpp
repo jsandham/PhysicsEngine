@@ -28,12 +28,6 @@ void Inspector::init(Clipboard &clipboard)
 
 void Inspector::update(Clipboard &clipboard)
 {
-    // draw selected entity
-    if (clipboard.getSelectedType() == InteractionType::Entity)
-    {
-        drawEntity(clipboard);
-    }
-
     // draw selected asset
     if (clipboard.getSelectedType() == InteractionType::Mesh)
     {
@@ -50,6 +44,12 @@ void Inspector::update(Clipboard &clipboard)
     else if (clipboard.getSelectedType() == InteractionType::Texture2D)
     {
         texture2DDrawer.render(clipboard, clipboard.getSelectedId());
+    }
+
+    // draw selected entity
+    if (clipboard.getSelectedType() == InteractionType::Entity)
+    {
+        drawEntity(clipboard);
     }
 
     ImGui::Separator();

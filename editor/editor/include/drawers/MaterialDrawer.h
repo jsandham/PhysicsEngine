@@ -57,7 +57,6 @@ inline void UniformDrawer<GL_INT>::draw(Clipboard &clipboard, Material *material
     if (ImGui::InputInt(uniform->mShortName, &temp))
     {
         material->setInt(uniform->mName, temp);
-        // project.isDirty = true;
     }
 }
 
@@ -69,7 +68,6 @@ inline void UniformDrawer<GL_FLOAT>::draw(Clipboard &clipboard, Material *materi
     if (ImGui::InputFloat(uniform->mShortName, &temp))
     {
         material->setFloat(uniform->mName, temp);
-        // project.isDirty = true;
     }
 }
 
@@ -81,7 +79,6 @@ inline void UniformDrawer<GL_FLOAT_VEC2>::draw(Clipboard &clipboard, Material *m
     if (ImGui::InputFloat2(uniform->mShortName, &temp[0]))
     {
         material->setVec2(uniform->mName, temp);
-        // project.isDirty = true;
     }
 }
 
@@ -93,7 +90,6 @@ inline void UniformDrawer<GL_FLOAT_VEC3>::draw(Clipboard &clipboard, Material *m
     if (ImGui::InputFloat3(uniform->mShortName, &temp[0]))
     {
         material->setVec3(uniform->mName, temp);
-        // project.isDirty = true;
     }
 }
 
@@ -105,28 +101,35 @@ inline void UniformDrawer<GL_FLOAT_VEC4>::draw(Clipboard &clipboard, Material *m
     if (ImGui::InputFloat4(uniform->mShortName, &temp[0]))
     {
         material->setVec4(uniform->mName, temp);
-        // project.isDirty = true;
     }
 }
 
 template <>
 inline void UniformDrawer<GL_SAMPLER_2D>::draw(Clipboard &clipboard, Material *material, ShaderUniform *uniform)
 {
-    Guid textureId = material->getTexture(uniform->mName);
+    Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(material->getTexture(uniform->mName));
 
-    Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(textureId);
-
-    bool slotFilled = false;
-    bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == nullptr ? 0 : texture->getNativeGraphics(),
-                                      clipboard.getDraggedType() == InteractionType::Texture2D, &slotFilled);
-    if (slotFilled)
+    bool releaseTriggered = false;
+    bool clearClicked = false;
+    bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
+    
+    if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
     {
-        textureId = clipboard.getDraggedId();
+        material->setTexture(uniform->mName, clipboard.getDraggedId());
         clipboard.clearDraggedItem();
+    }
+    
+    if (clearClicked)
+    {
+        material->setTexture(uniform->mName, Guid::INVALID);
+    }
 
-        material->setTexture(uniform->mName, textureId);
-
-        // project.isDirty = true;
+    if (isClicked)
+    {
+        if (material->getTexture(uniform->mName).isValid())
+        {
+            clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
+        }
     }
 }
 } // namespace PhysicsEditor

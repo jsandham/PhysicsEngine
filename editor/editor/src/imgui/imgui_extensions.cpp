@@ -268,13 +268,12 @@ bool ImGui::Combo(const char *label, int *currIndex, std::vector<std::string> &v
     return Combo(label, currIndex, vector_getter, static_cast<void *>(&values), (int)values.size());
 }
 
-bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool slotFillable, bool *slotFilled)
+bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool* releaseTriggered, bool* clearClicked)
 {
     ImVec2 windowSize = ImGui::GetWindowSize();
     windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
     ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
-    // ImGui::ButtonEx(slotText.c_str(), windowSize, ImGuiButtonFlags_Disabled);
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 position = ImGui::GetItemRectMin();
 
@@ -299,26 +298,32 @@ bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool s
         ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
     }
 
-    if (isHovered && slotFillable)
+    if (isHovered)
     {
         ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
 
         if (ImGui::IsMouseReleased(0))
         {
-            *slotFilled = true;
+            *releaseTriggered = true;
         }
     }
 
     ImGui::SameLine();
     ImGui::Text(slotLabel.c_str());
+
+    SameLine(GetWindowWidth() - 60);
+    if (ImGui::Button(("clear##" + slotLabel).c_str()))
+    {
+        *clearClicked = true;
+    }
 
     return isClicked;
 }
 
-bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool slotFillable, bool *slotFilled)
+bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool* releaseTriggered, bool* clearClicked)
 {
-    ImGui::ImageButton((void *)(intptr_t)texture, ImVec2(80, 80), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(1, 1, 1, 1),
-                       ImVec4(1, 1, 1, 0.5));
+    ImGui::ImageButton((void*)(intptr_t)texture, ImVec2(80, 80), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(1, 1, 1, 1),
+        ImVec4(1, 1, 1, 0.5));
 
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 position = ImGui::GetItemRectMin();
@@ -344,18 +349,24 @@ bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool slotFill
         ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
     }
 
-    if (isHovered && slotFillable)
+    if (isHovered)
     {
         ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
 
         if (ImGui::IsMouseReleased(0))
         {
-            *slotFilled = true;
+            *releaseTriggered = true;
         }
     }
 
     ImGui::SameLine();
     ImGui::Text(slotLabel.c_str());
+
+    SameLine(GetWindowWidth() - 60);
+    if (ImGui::Button(("clear##"+ slotLabel).c_str()))
+    {
+        *clearClicked = true;
+    }
 
     return isClicked;
 }

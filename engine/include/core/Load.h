@@ -16,6 +16,9 @@ namespace PhysicsEngine
 // get external component defined by the user
 Component *getComponent(const WorldAllocators &allocators, const WorldIdState &state, const Guid &id, int type);
 
+// get external asset defined by the user
+Asset* getAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type);
+
 // load external asset defined by the user from binary
 Asset *loadAsset(WorldAllocators &allocators, WorldIdState &state, std::istream &in, const Guid &id, int type);
 

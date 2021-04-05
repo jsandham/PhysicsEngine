@@ -14,6 +14,7 @@
 #include "Asset.h"
 #include "Color.h"
 #include "Guid.h"
+#include "GLM.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -218,7 +219,7 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
         node["location"] = rhs.mLocation;
         node["index"] = rhs.mIndex;
 
-        /*if (rhs.mType == GL_INT)
+        if (rhs.mType == GL_INT)
         {
             node["data"] = *reinterpret_cast<const int*>(rhs.mData);
         }
@@ -242,60 +243,72 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
         if (rhs.mType == GL_SAMPLER_2D)
         {
             node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
-        }*/
+        }
 
         return node;
     }
 
     static bool decode(const Node &node, PhysicsEngine::ShaderUniform &rhs)
     {
-        std::string shortName = node["shortName"].as<std::string>();
-        std::string blockName = node["blockName"].as<std::string>();
+        std::string shortName = YAML::getValue<std::string>(node, "shortName");
+        std::string blockName = YAML::getValue<std::string>(node, "blockName");
 
+        std::string name;
+        if (blockName.empty())
+        {
+            name = shortName;
+        }
+        else
+        {
+            name = blockName + "." + shortName;
+        }
+
+        memset(rhs.mName, '\0', 32);
         memset(rhs.mShortName, '\0', 32);
         memset(rhs.mBlockName, '\0', 32);
 
+        memcpy(rhs.mName, name.data(), std::min((size_t)32, name.length()));
         memcpy(rhs.mShortName, shortName.data(), std::min((size_t)32, shortName.length()));
         memcpy(rhs.mBlockName, blockName.data(), std::min((size_t)32, blockName.length()));
 
-        rhs.mNameLength = node["nameLength"].as<size_t>();
-        rhs.mSize = node["size"].as<size_t>();
-        rhs.mType = node["type"].as<int>();
-        rhs.mVariant = node["variant"].as<int>();
-        rhs.mLocation = node["location"].as<int>();
-        rhs.mIndex = node["index"].as<size_t>();
+        rhs.mNameLength = YAML::getValue<size_t>(node, "nameLength");
+        rhs.mSize = YAML::getValue<size_t>(node, "size");
+        rhs.mType = YAML::getValue<int>(node, "type");
+        rhs.mVariant = YAML::getValue<int>(node, "variant");
+        rhs.mLocation = YAML::getValue<int>(node, "location");
+        rhs.mIndex = YAML::getValue<size_t>(node, "index");
 
-        /*if (rhs.mType == GL_INT)
+        if (rhs.mType == GL_INT)
         {
-            int data = node["data"].as<int>();
+            int data = YAML::getValue<int>(node, "data");
             memcpy(rhs.mData, &data, sizeof(int));
         }
         else if (rhs.mType == GL_FLOAT)
         {
-            float data = node["data"].as<float>();
+            float data = YAML::getValue<float>(node, "data");
             memcpy(rhs.mData, &data, sizeof(float));
         }
         else if (rhs.mType == GL_FLOAT_VEC2)
         {
-            glm::vec2 data = node["data"].as<glm::vec2>();
+            glm::vec2 data = YAML::getValue<glm::vec2>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec2));
         }
         else if (rhs.mType == GL_FLOAT_VEC3)
         {
-            glm::vec3 data = node["data"].as<glm::vec3>();
+            glm::vec3 data = YAML::getValue<glm::vec3>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec3));
         }
         else if (rhs.mType == GL_FLOAT_VEC4)
         {
-            glm::vec4 data = node["data"].as<glm::vec4>();
+            glm::vec4 data = YAML::getValue<glm::vec4>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec4));
         }
 
         if (rhs.mType == GL_SAMPLER_2D)
         {
-            PhysicsEngine::Guid data = node["data"].as<PhysicsEngine::Guid>();
+            PhysicsEngine::Guid data = YAML::getValue<PhysicsEngine::Guid>(node, "data");
             memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
-        }*/
+        }
 
         return true;
     }

@@ -34,16 +34,16 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
         Guid meshId = meshRenderer->getMesh();
 
         std::string meshName = "None (Mesh)";
-        if (meshId != Guid::INVALID)
+        if (meshId.isValid())
         {
             meshName = meshId.toString();
         }
 
-        bool slotFilled = false;
-        bool isClicked =
-            ImGui::Slot("Mesh", meshName, clipboard.getDraggedType() == InteractionType::Mesh, &slotFilled);
+        bool releaseTriggered = false;
+        bool clearClicked = false;
+        bool isClicked = ImGui::Slot("Mesh", meshName, &releaseTriggered, &clearClicked);
 
-        if (slotFilled)
+        if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
         {
             meshId = clipboard.getDraggedId();
             clipboard.clearDraggedItem();
@@ -92,16 +92,16 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
             materialIds[i] = meshRenderer->getMaterial(i);
 
             std::string materialName = "None (Material)";
-            if (materialIds[i] != PhysicsEngine::Guid::INVALID)
+            if (materialIds[i].isValid())
             {
                 materialName = materialIds[i].toString();
             }
 
-            bool materialSlotFillable = clipboard.getDraggedType() == InteractionType::Material;
-            bool materialSlotFilled = false;
-            bool materialIsClicked = ImGui::Slot("Material", materialName, materialSlotFillable, &materialSlotFilled);
+            bool releaseTriggered = false;
+            bool clearClicked = false;
+            bool isClicked = ImGui::Slot("Material", materialName, &releaseTriggered, &clearClicked);
 
-            if (materialSlotFilled)
+            if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
             {
                 materialIds[i] = clipboard.getDraggedId();
                 clipboard.clearDraggedItem();
@@ -109,17 +109,10 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
                 meshRenderer->setMaterial(materialIds[i], i);
             }
 
-            if (materialIsClicked)
+            if (isClicked)
             {
-                Log::info((materialName + "\n").c_str());
-
                 clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
             }
-
-            // this current is always getting called when you click on an entity in the hierarchy causing the scene to
-            // be dirtied
-            // CommandManager::addCommand(new ChangePropertyCommand<Guid>(&meshRenderer->materialIds[i], materialIds[i],
-            // &scene.isDirty));
         }
 
         ImGui::TreePop();

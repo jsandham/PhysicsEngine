@@ -156,6 +156,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
         {
+            std::string test = clipboard.getLibrary().getFileId(files[i]).toString();
             clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension),
                                       clipboard.getLibrary().getFileId(files[i]));
         }
@@ -169,6 +170,23 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     if (newSelection != NULL)
     {
         selected = newSelection;
+    }
+
+    // Right click popup menu
+    if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+    {
+        if (ImGui::BeginMenu("Create..."))
+        {
+            if (ImGui::MenuItem("Material"))
+            {
+                //Material* material = clipboard.getWorld()->createAsset<Material>();
+                //Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndPopup();
     }
 }
 
