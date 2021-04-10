@@ -22,6 +22,8 @@ struct ProjectNode
     ProjectNode() : id(-1), parent(nullptr), directoryName(""), directoryPath("")
     {
     }
+
+
 };
 
 class ProjectView : public Window

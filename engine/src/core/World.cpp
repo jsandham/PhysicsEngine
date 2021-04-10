@@ -471,6 +471,23 @@ void World::immediateDestroyComponent(const Guid &entityId, const Guid &componen
     }
 }
 
+void World::latentDestroyAsset(const Guid& assetId, int assetType)
+{
+    mIdState.mAssetIdsMarkedLatentDestroy.push_back(std::make_pair(assetId, assetType));
+}
+
+void World::immediateDestroyAsset(const Guid& assetId, int assetType)
+{
+    if (Asset::isInternal(assetType))
+    {
+        destroyInternalAsset(mAllocators, mIdState, assetId, assetType, getIndexOf(assetId));
+    }
+    else
+    {
+        destroyAsset(mAllocators, mIdState, assetId, assetType, getIndexOf(assetId));
+    }
+}
+
 bool World::isMarkedForLatentDestroy(const Guid &id)
 {
     for (size_t i = 0; i < mIdState.mEntityIdsMarkedLatentDestroy.size(); i++)

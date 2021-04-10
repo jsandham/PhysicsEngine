@@ -40,6 +40,7 @@ Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, const
 Entity *destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int index);
 Component *destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type,
                                     int index);
+Asset* destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index);
 } // namespace PhysicsEngine
 
 #endif

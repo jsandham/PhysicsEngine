@@ -134,6 +134,17 @@ bool PhysicsEditor::deleteDirectory(std::string path)
     return true;
 }
 
+bool PhysicsEditor::deleteFile(std::string path)
+{
+    BOOL result = ::DeleteFileA(path.c_str());
+    if (result == FALSE)
+    {
+        return false;
+        // throw std::runtime_error("Could not delete file");
+    }
+    return true;
+}
+
 bool PhysicsEditor::getFileTime(std::string path, std::string &createTime, std::string &accessTime,
                                 std::string &writeTime)
 {

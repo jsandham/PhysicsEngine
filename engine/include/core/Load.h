@@ -40,6 +40,9 @@ System *loadSystem(WorldAllocators &allocators, WorldIdState &state, const YAML:
 
 // destroy external components defined by the user
 Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type, int index);
+
+// destroy external assets defined by the user
+Asset* destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index);
 } // namespace PhysicsEngine
 
 #endif

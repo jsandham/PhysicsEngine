@@ -49,8 +49,7 @@ void Editor::init()
 
 void Editor::update()
 {
-    mClipboard.getLibrary().update();
-    mClipboard.getLibrary().loadQueuedAssetsIntoWorld(mClipboard.getWorld());
+    mClipboard.getLibrary().update(mClipboard.getWorld());
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |

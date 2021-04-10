@@ -35,10 +35,16 @@ class LibraryDirectory
     std::string mDataPath;
 
     // filepath to id map
-    std::map<const std::string, PhysicsEngine::Guid> filePathToId;
+    std::map<const std::string, PhysicsEngine::Guid> mFilePathToId;
+
+    // filepath to id map
+    std::map<const PhysicsEngine::Guid, std::string> mIdToFilePath;
 
     // buffer of added/modified project file paths
-    std::vector<std::string> mBuffer;
+    std::vector<std::string> mAddBuffer;
+
+    // buffer of deleted project file paths
+    std::vector<std::string> mDeleteBuffer;
 
     // file watcher listener object
     LibraryDirectoryListener mListener;
@@ -56,11 +62,12 @@ class LibraryDirectory
     LibraryDirectory& operator=(const LibraryDirectory& other) = delete;
 
     void watch(const std::string& projectPath);
-    void update();
-    void addToBuffer(const std::string& filePath);
-    void loadQueuedAssetsIntoWorld(PhysicsEngine::World *world);
+    void update(PhysicsEngine::World* world);
+    void fileAddedToProject(const std::string& filePath);
+    void fileDeletedFromProject(const std::string& filePath);
 
-    PhysicsEngine::Guid getFileId(const std::string &filePath) const;
+    PhysicsEngine::Guid getId(const std::string &filePath) const;
+    std::string getFile(const PhysicsEngine::Guid& id) const;
 };
 } // namespace PhysicsEditor
 

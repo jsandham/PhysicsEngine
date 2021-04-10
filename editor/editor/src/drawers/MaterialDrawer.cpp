@@ -54,16 +54,11 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
 {
     Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 
-    if (material == nullptr)
-    {
-        std::string test = id.toString();
-    }
-
     Guid currentShaderId = material->getShaderId();
 
     Shader *ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
 
-    if (ImGui::BeginCombo("Shader", ss->getName().c_str(), ImGuiComboFlags_None))
+    if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
     {
         for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<Shader>(); i++)
         {
@@ -86,6 +81,11 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
             }
         }
         ImGui::EndCombo();
+    }
+
+    if (currentShaderId.isInvalid()) {
+        // material has no shader assigned to it
+        return;
     }
 
     // draw material uniforms
@@ -131,10 +131,11 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     ImGui::Text("Preview");
 
     Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getSphereMesh());
-    assert(mesh != NULL);
-
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
-    assert(shader != NULL);
+
+    if (mesh == nullptr || shader == nullptr) {
+        return;
+    }
 
     Graphics::setGlobalCameraUniforms(cameraUniform);
     Graphics::setGlobalLightUniforms(lightUniform);

@@ -174,6 +174,9 @@ class World
     void immediateDestroyEntity(const Guid &entityId);
     void latentDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType);
     void immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType);
+    void latentDestroyAsset(const Guid& assetId, int assetType);
+    void immediateDestroyAsset(const Guid& assetId, int assetType);
+
     bool isMarkedForLatentDestroy(const Guid &id);
     void clearIdsMarkedCreatedOrDestroyed();
 

@@ -5,10 +5,11 @@ using namespace PhysicsEngine;
 
 Object::Object()
 {
+    mHide = HideFlag::None;
     mId = Guid::INVALID;
 }
 
-Object::Object(Guid id) : mId(id)
+Object::Object(Guid id) : mId(id), mHide(HideFlag::None)
 {
 }
 

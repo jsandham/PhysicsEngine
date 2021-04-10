@@ -62,6 +62,11 @@ struct WorldIdState
     std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
     std::vector<std::tuple<Guid, int, int>> mComponentIdsMarkedMoved;
 
+    // asset create/deletion state
+    std::vector<std::pair<Guid, int>> mAssetIdsMarkedCreated;
+    std::vector<std::pair<Guid, int>> mAssetIdsMarkedLatentDestroy;
+    std::vector<std::pair<Guid, int>> mAssetIdsMarkedMoved;
+
     // asset and scene id to filepath
     std::unordered_map<Guid, std::string> mAssetIdToFilepath;
     std::unordered_map<Guid, std::string> mSceneIdToFilepath;

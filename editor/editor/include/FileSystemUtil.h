@@ -10,6 +10,7 @@ bool doesFileExist(std::string filePath);
 bool doesDirectoryExist(std::string directoryPath);
 bool createDirectory(std::string path);
 bool deleteDirectory(std::string path);
+bool deleteFile(std::string path);
 bool getFileTime(std::string path, std::string &createTime, std::string &accessTime, std::string &writeTime);
 std::string getDirectoryName(std::string path);
 std::string getFileName(std::string path);

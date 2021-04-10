@@ -419,7 +419,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         perfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
 
         std::vector<float> perfData = perfQueue.getData();
-        ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size());
+        ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size(), 0, nullptr, 0, 1.0f);
         // ImGui::PlotLines("Curve", &perfData[0], perfData.size());
 
         ImGui::Text("Active project name: %s\n", clipboard.getProjectName().c_str());

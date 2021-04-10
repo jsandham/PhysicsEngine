@@ -53,3 +53,8 @@ Component *PhysicsEngine::destroyComponent(WorldAllocators& allocators, WorldIdS
 {
     return nullptr;
 }
+
+Asset* PhysicsEngine::destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index)
+{
+    return nullptr;
+}

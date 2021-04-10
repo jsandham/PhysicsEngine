@@ -1211,3 +1211,124 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
 
     return swap;
 }
+
+Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id,
+    int type, int index)
+{
+    Asset* swap = nullptr;
+
+    if (type == AssetType<Material>::type)
+    {
+        swap = allocators.mMaterialAllocator.destruct(index);
+
+        state.mMaterialIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mMaterialIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Mesh>::type)
+    {
+        swap = allocators.mMeshAllocator.destruct(index);
+
+        state.mMeshIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mMeshIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Shader>::type)
+    {
+        swap = allocators.mShaderAllocator.destruct(index);
+
+        state.mShaderIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mShaderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Texture2D>::type)
+    {
+        swap = allocators.mTexture2DAllocator.destruct(index);
+
+        state.mTexture2DIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mTexture2DIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Texture3D>::type)
+    {
+        swap = allocators.mTexture3DAllocator.destruct(index);
+
+        state.mTexture3DIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mTexture3DIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Cubemap>::type)
+    {
+        swap = allocators.mCubemapAllocator.destruct(index);
+
+        state.mCubemapIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mCubemapIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Font>::type)
+    {
+        swap = allocators.mFontAllocator.destruct(index);
+
+        state.mFontIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mFontIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else
+    {
+        std::string message = "Error: Invalid component instance type (" + std::to_string(type) +
+            ") when trying to destroy internal component\n";
+        Log::error(message.c_str());
+        return nullptr;
+    }
+
+    return swap;
+}

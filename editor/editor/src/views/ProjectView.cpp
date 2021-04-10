@@ -18,12 +18,11 @@
 #include "../../include/IconsFontAwesome4.h"
 
 using namespace PhysicsEditor;
-using namespace PhysicsEngine;
 
 ProjectView::ProjectView() : Window("Project View")
 {
-    root = NULL;
-    selected = NULL;
+    root = nullptr;
+    selected = nullptr;
 }
 
 ProjectView::~ProjectView()
@@ -37,16 +36,16 @@ void ProjectView::init(Clipboard &clipboard)
 
 void ProjectView::update(Clipboard &clipboard)
 {
-    if (clipboard.getProjectPath() != "")
+    if (!clipboard.getProjectPath().empty())
     {
-        if (root != NULL && root->directoryPath != (clipboard.getProjectPath() + "\\data") || root == NULL /*||
+        if (root != nullptr && root->directoryPath != (clipboard.getProjectPath() + "\\data") || root == nullptr /*||
             editorBecameActiveThisFrame*/)
         {
             buildProjectTree(clipboard.getProjectPath());
         }
     }
 
-    if (clipboard.getProjectPath() != "")
+    if (!clipboard.getProjectPath().empty())
     {
         filter.Draw("Filter", -100.0f);
 
@@ -114,16 +113,16 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     }
     else
     {
-        if (selected != NULL)
+        if (selected != nullptr)
         {
             directories = selected->children;
             files = selected->filePaths;
         }
     }
 
-    ProjectNode *newSelection = NULL;
+    ProjectNode *newSelection = nullptr;
 
-    // draw directories and files in right pane
+    // draw directories in right pane
     for (size_t i = 0; i < directories.size(); i++)
     {
         std::string icon = std::string(ICON_FA_FOLDER);
@@ -139,6 +138,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         }
     }
 
+    // draw files in right pane
     for (size_t i = 0; i < files.size(); i++)
     {
         std::string fileName = getFileName(files[i]);
@@ -151,14 +151,13 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0))
         {
             clipboard.setDraggedItem(getInteractionTypeFromFileExtension(extension),
-                                     clipboard.getLibrary().getFileId(files[i]));
+                                     clipboard.getLibrary().getId(files[i]));
         }
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
         {
-            std::string test = clipboard.getLibrary().getFileId(files[i]).toString();
             clipboard.setSelectedItem(getInteractionTypeFromFileExtension(extension),
-                                      clipboard.getLibrary().getFileId(files[i]));
+                                      clipboard.getLibrary().getId(files[i]));
         }
 
         if (!ImGui::IsMouseDown(0))
@@ -167,7 +166,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         }
     }
 
-    if (newSelection != NULL)
+    if (newSelection != nullptr)
     {
         selected = newSelection;
     }
@@ -179,11 +178,32 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         {
             if (ImGui::MenuItem("Material"))
             {
-                //Material* material = clipboard.getWorld()->createAsset<Material>();
-                //Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>();
+                std::string filepath = selected->directoryPath + "\\NewMaterial" + "(" + std::to_string(count) + ")" + ".material";
+
+                PhysicsEngine::Material* material = clipboard.getWorld()->createAsset<PhysicsEngine::Material>();
+                material->writeToYAML(filepath);
+
+                selected->filePaths.push_back(filepath);
             }
 
             ImGui::EndMenu();
+        }
+        if (ImGui::MenuItem("Delete", nullptr, false, clipboard.getSelectedId().isValid()))
+        {
+            std::string filepath = clipboard.getLibrary().getFile(clipboard.getSelectedId());
+            if (PhysicsEditor::deleteFile(filepath))
+            {
+                clipboard.clearSelectedItem();
+
+                for (size_t i = 0; i < selected->filePaths.size(); i++)
+                {
+                    if (selected->filePaths[i] == filepath) {
+                        selected->filePaths.erase(selected->filePaths.begin() + i);
+                        break;
+                    }
+                }
+            }
         }
 
         ImGui::EndPopup();
@@ -192,12 +212,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
 void ProjectView::deleteProjectTree()
 {
-    if (root == NULL)
+    if (root == nullptr)
     {
         return;
     }
 
-    selected = NULL;
+    selected = nullptr;
 
     nodes.clear();
 
@@ -225,7 +245,7 @@ void ProjectView::buildProjectTree(const std::string &currentProjectPath)
 
     root = new ProjectNode();
     root->id = ++id;
-    root->parent = NULL;
+    root->parent = nullptr;
     root->directoryName = "data";
     root->directoryPath = currentProjectPath + "\\data";
     root->filePaths = getFilesInDirectory(root->directoryPath, true);
@@ -271,7 +291,7 @@ void ProjectView::drawProjectTree()
 
 void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 {
-    if (node == NULL)
+    if (node == nullptr)
     {
         return;
     }

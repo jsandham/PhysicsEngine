@@ -1,4 +1,6 @@
-﻿  imgui_extensions.cpp
-  Inspector.cpp
+﻿  Editor.cpp
+  EditorWin32.cpp
+  main.cpp
+  ProjectView.cpp
   Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
