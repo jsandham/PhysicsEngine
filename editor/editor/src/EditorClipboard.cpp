@@ -12,11 +12,15 @@ using namespace PhysicsEditor;
 
 Clipboard::Clipboard()
 {
-    mSelected.first = InteractionType::None;
-    mSelected.second = PhysicsEngine::Guid::INVALID;
+    mSelectedType = InteractionType::None;
+    //mSelectedFileType = FileType::None;
+    mSelectedId = PhysicsEngine::Guid::INVALID;
+    mSelectedPath = "";
 
-    mDragged.first = InteractionType::None;
-    mDragged.second = PhysicsEngine::Guid::INVALID;
+    mDraggedType = InteractionType::None;
+    //mDraggedFileType = FileType::None;
+    mDraggedId = PhysicsEngine::Guid::INVALID;
+    mDraggedPath = "";
 
     mProjectName = "";
     mProjectPath = "";
@@ -108,46 +112,61 @@ LibraryDirectory& Clipboard::getLibrary()
 
 InteractionType Clipboard::getDraggedType() const
 {
-    return mDragged.first;
+    return mDraggedType;
 }
 
 InteractionType Clipboard::getSelectedType() const
 {
-    return mSelected.first;
+    return mSelectedType;
 }
 
 PhysicsEngine::Guid Clipboard::getDraggedId() const
 {
-    return mDragged.second;
+    return mDraggedId;
 }
 
 PhysicsEngine::Guid Clipboard::getSelectedId() const
 {
-    return mSelected.second;
+    return mSelectedId;
+}
+
+std::string Clipboard::getSelectedPath() const
+{
+    return mSelectedPath;
 }
 
 void Clipboard::setDraggedItem(InteractionType type, PhysicsEngine::Guid id)
 {
-    mDragged.first = type;
-    mDragged.second = id;
+    mDraggedType = type;
+    mDraggedId = id;
 }
 
 void Clipboard::setSelectedItem(InteractionType type, PhysicsEngine::Guid id)
 {
-    mSelected.first = type;
-    mSelected.second = id;
+    mSelectedType = type;
+    mSelectedId = id;
+}
+
+void Clipboard::setSelectedItem(InteractionType type, std::string path)
+{
+    mSelectedType = type;
+    mSelectedPath = path;
 }
 
 void Clipboard::clearDraggedItem()
 {
-    mDragged.first = InteractionType::None;
-    mDragged.second = PhysicsEngine::Guid::INVALID;
+    mDraggedType = InteractionType::None;
+    //mDraggedFileType = FileType::None;
+    mDraggedId = PhysicsEngine::Guid::INVALID;
+    mDraggedPath = "";
 }
 
 void Clipboard::clearSelectedItem()
 {
-    mSelected.first = InteractionType::None;
-    mSelected.second = PhysicsEngine::Guid::INVALID;
+    mSelectedType = InteractionType::None;
+    //mSelectedFileType = FileType::None;
+    mSelectedId = PhysicsEngine::Guid::INVALID;
+    mSelectedPath = "";
 }
 
 

@@ -195,6 +195,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MenuBar.cpp" />
     <ClCompile Include="src\PerformanceQueue.cpp" />
+    <ClCompile Include="src\ProjectTree.cpp" />
     <ClCompile Include="src\TransformGizmo.cpp" />
     <ClCompile Include="src\Undo.cpp" />
     <ClCompile Include="src\views\AboutPopup.cpp" />
@@ -242,9 +243,11 @@
     <ClInclude Include="include\IconsFontAwesome4.h" />
     <ClInclude Include="include\imgui\imgui_extensions.h" />
     <ClInclude Include="include\imgui\imgui_styles.h" />
+    <ClInclude Include="include\InteractionType.h" />
     <ClInclude Include="include\LibraryDirectory.h" />
     <ClInclude Include="include\MenuBar.h" />
     <ClInclude Include="include\PerformanceQueue.h" />
+    <ClInclude Include="include\ProjectTree.h" />
     <ClInclude Include="include\TransformGizmo.h" />
     <ClInclude Include="include\Undo.h" />
     <ClInclude Include="include\views\AboutPopup.h" />

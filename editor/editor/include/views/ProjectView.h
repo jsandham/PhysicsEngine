@@ -6,32 +6,18 @@
 
 #include "Window.h"
 
+#include "../ProjectTree.h"
+#include "../EditorClipboard.h"
+
 #include "imgui.h"
 
 namespace PhysicsEditor
 {
-struct ProjectNode
-{
-    ProjectNode *parent;
-    std::vector<ProjectNode *> children;
-    std::string directoryName;
-    std::string directoryPath;
-    std::vector<std::string> filePaths;
-    int id;
-
-    ProjectNode() : id(-1), parent(nullptr), directoryName(""), directoryPath("")
-    {
-    }
-
-
-};
-
 class ProjectView : public Window
 {
   private:
-    ProjectNode *root;
+    ProjectTree projectTree;
     ProjectNode *selected;
-    std::vector<ProjectNode *> nodes;
 
     ImGuiTextFilter filter;
 
@@ -47,12 +33,8 @@ class ProjectView : public Window
     void drawLeftPane();
     void drawRightPane(Clipboard &clipboard);
 
-    void deleteProjectTree();
-    void buildProjectTree(const std::string &currentProjectPath);
     void drawProjectTree();
     void drawProjectNodeRecursive(ProjectNode *node);
-
-    InteractionType getInteractionTypeFromFileExtension(const std::string extension);
 };
 } // namespace PhysicsEditor
 

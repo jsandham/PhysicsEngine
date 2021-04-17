@@ -10,23 +10,11 @@
 #include "LibraryDirectory.h"
 #include "EditorCameraSystem.h"
 
+#include "ProjectTree.h"
+#include "InteractionType.h"
+
 namespace PhysicsEditor
 {
-enum class InteractionType
-{
-    None,
-    Entity,
-    Texture2D,
-    Texture3D,
-    Cubemap,
-    Shader,
-    Material,
-    Mesh,
-    Font,
-    CodeFile,
-    Other
-};
-
 class Clipboard
 {
     private:
@@ -48,10 +36,18 @@ class Clipboard
         PhysicsEngine::GizmoSystem* mGizmoSystem;
         PhysicsEngine::CleanUpSystem* mCleanUpSystem;
 
-        std::pair<InteractionType, PhysicsEngine::Guid> mDragged;
-        std::pair<InteractionType, PhysicsEngine::Guid> mSelected;
-
         LibraryDirectory mLibrary;
+
+    public:
+        InteractionType mSelectedType;
+        //InteractionType mSelectedFileType;
+        PhysicsEngine::Guid mSelectedId;
+        std::string mSelectedPath;
+
+        InteractionType mDraggedType;
+        //InteractionType mDraggedFileType;
+        PhysicsEngine::Guid mDraggedId;
+        std::string mDraggedPath;
 
     public:
         bool mProjectDirty;
@@ -82,9 +78,11 @@ class Clipboard
         InteractionType getSelectedType() const;
         PhysicsEngine::Guid getDraggedId() const;
         PhysicsEngine::Guid getSelectedId() const;
+        std::string getSelectedPath() const;
 
         void setDraggedItem(InteractionType type, PhysicsEngine::Guid id);
         void setSelectedItem(InteractionType type, PhysicsEngine::Guid id);
+        void setSelectedItem(InteractionType type, std::string path);
         void clearDraggedItem();
         void clearSelectedItem();
 

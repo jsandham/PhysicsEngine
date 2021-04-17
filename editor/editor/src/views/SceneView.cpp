@@ -409,6 +409,10 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
 
         ImGui::Text("Is heirarchy hovered? %d\n", isHovered());
 
+        ImGui::Text("Selected interaction type %d\n", clipboard.getSelectedType());
+        ImGui::Text("Selected id %s\n", clipboard.getSelectedId().toString().c_str());
+        ImGui::Text("Selected path %s\n", clipboard.getSelectedPath().c_str());
+
         float width = (float)(sceneContentMax.x - sceneContentMin.x);
         float height = (float)(sceneContentMax.y - sceneContentMin.y);
         ImGui::Text("NDC: %f %f\n", 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width,

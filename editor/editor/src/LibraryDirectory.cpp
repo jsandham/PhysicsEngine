@@ -96,6 +96,12 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
             mFilePathToId[mAddBuffer[i]] = asset->getId();
             mIdToFilePath[asset->getId()] = mAddBuffer[i];
         }
+        else
+        {
+            PhysicsEngine::Guid fileId = PhysicsEngine::Guid::newGuid();
+            mFilePathToId[mAddBuffer[i]] = fileId;
+            mIdToFilePath[fileId] = mAddBuffer[i];
+        }
     }
 
     // clear buffer
