@@ -1,2 +1,8 @@
-﻿  ProjectView.cpp
+﻿  AboutPopup.cpp
+  Console.cpp
+  Inspector.cpp
+  PopupWindow.cpp
+  PreferencesWindow.cpp
+  ProjectWindow.cpp
+  Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

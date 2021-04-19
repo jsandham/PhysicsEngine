@@ -11,10 +11,10 @@
 #include "imgui_internal.h"
 
 using namespace PhysicsEditor;
-using namespace PhysicsEngine;
 
 Hierarchy::Hierarchy() : Window("Hierarchy")
 {
+   
 }
 
 Hierarchy::~Hierarchy()
@@ -27,10 +27,8 @@ void Hierarchy::init(Clipboard &clipboard)
 
 void Hierarchy::update(Clipboard &clipboard)
 {
-    rebuildRequired = entries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities();
-
     // If number of entities has changed, update cached entity ids and names
-    if (rebuildRequired)
+    if (mEntries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities())
     {
         rebuildEntityLists(clipboard.getWorld());
     }
@@ -41,7 +39,7 @@ void Hierarchy::update(Clipboard &clipboard)
         int selectedIndex;
         if (clipboard.getSelectedType() == InteractionType::Entity)
         {
-            selectedIndex = idToEntryIndex[clipboard.getSelectedId()];
+            selectedIndex = mIdToEntryIndex[clipboard.getSelectedId()];
         }
         else
         {
@@ -60,21 +58,21 @@ void Hierarchy::update(Clipboard &clipboard)
         ImGui::Separator();
 
         // Display entities in hierarchy
-        for (size_t i = 0; i < entries.size(); i++)
+        for (size_t i = 0; i < mEntries.size(); i++)
         {
             static bool selected = false;
             char buf1[64];
-            std::size_t len = std::min(size_t(64 - 1), entries[i].entity->getName().length());
-            strncpy(buf1, entries[i].entity->getName().c_str(), len);
+            std::size_t len = std::min(size_t(64 - 1), mEntries[i].entity->getName().length());
+            strncpy(buf1, mEntries[i].entity->getName().c_str(), len);
             buf1[len] = '\0';
 
             bool edited = false;
-            if (ImGui::SelectableInput(entries[i].label.c_str(), selectedIndex == i, &edited,
+            if (ImGui::SelectableInput(mEntries[i].label.c_str(), selectedIndex == i, &edited,
                 ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
             {
-                entries[i].entity->setName(std::string(buf1));
+                mEntries[i].entity->setName(std::string(buf1));
 
-                clipboard.setSelectedItem(InteractionType::Entity, entries[i].entity->getId());
+                clipboard.setSelectedItem(InteractionType::Entity, mEntries[i].entity->getId());
             }
 
             if (edited)
@@ -146,23 +144,38 @@ void Hierarchy::update(Clipboard &clipboard)
 
             ImGui::EndPopup();
         }
+
+        // dropping mesh into hierarchy
+        if (ImGui::IsMouseReleased(0) && isHovered())
+        {
+            if (clipboard.getDraggedType() == InteractionType::Mesh)
+            {
+                PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>(clipboard.getWorld());
+                PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>(clipboard.getWorld());
+                meshRenderer->setMesh(clipboard.getDraggedId());
+                meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
+
+                clipboard.clearDraggedItem();
+            }
+        }
     }
 }
 
-void Hierarchy::rebuildEntityLists(World *world)
+void Hierarchy::rebuildEntityLists(PhysicsEngine::World *world)
 {
-    entries.resize(world->getNumberOfNonHiddenEntities());
+    mEntries.resize(world->getNumberOfNonHiddenEntities());
 
     size_t index = 0;
     for (size_t i = 0; i < world->getNumberOfEntities(); i++)
     {
-        Entity* entity = world->getEntityByIndex(i);
-        if (entity->mHide == HideFlag::None)
+        PhysicsEngine::Entity* entity = world->getEntityByIndex(i);
+        if (entity->mHide == PhysicsEngine::HideFlag::None)
         {
-            entries[index].entity = entity;
-            entries[index].label = entity->getId().toString();
-            entries[index].indentLevel = 0;
-            idToEntryIndex[entity->getId()] = index;
+            mEntries[index].entity = entity;
+            mEntries[index].label = entity->getId().toString();
+            mEntries[index].indentLevel = 0;
+            mIdToEntryIndex[entity->getId()] = index;
             index++;
         }
     }

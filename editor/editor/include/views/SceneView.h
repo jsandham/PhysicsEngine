@@ -19,18 +19,15 @@ namespace PhysicsEditor
 class SceneView : public Window
 {
   private:
-    bool focused;
-    bool hovered;
-    int activeTextureIndex;
-    PerformanceQueue perfQueue;
-    TransformGizmo transformGizmo;
+    int mActiveTextureIndex;
+    PerformanceQueue mPerfQueue;
+    TransformGizmo mTransformGizmo;
 
-    ImVec2 windowPos;
-    ImVec2 sceneContentMin;
-    ImVec2 sceneContentMax;
+    ImVec2 mSceneContentMin;
+    ImVec2 mSceneContentMax;
 
-    PhysicsEngine::Input input;
-    PhysicsEngine::Time time;
+    PhysicsEngine::Input mInput;
+    PhysicsEngine::Time mTime;
 
   public:
     SceneView();
@@ -41,12 +38,8 @@ class SceneView : public Window
     void init(Clipboard &clipboard) override;
     void update(Clipboard &clipboard) override;
 
-    bool isFocused() const;
-    bool isHovered() const;
-
     ImVec2 getSceneContentMin() const;
     ImVec2 getSceneContentMax() const;
-    ImVec2 getWindowPos() const;
 
   private:
     void initWorld(PhysicsEngine::World *world);

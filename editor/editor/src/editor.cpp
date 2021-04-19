@@ -77,6 +77,12 @@ void Editor::update()
     mProjectView.draw(mClipboard, mMenuBar.isOpenProjectViewCalled());
     mSceneView.draw(mClipboard, mMenuBar.isOpenSceneViewCalled());
 
+    mClipboard.mHierarchyHovered = mHierarchy.isHovered();
+    mClipboard.mInspectorHovered = mInspector.isHovered();
+    mClipboard.mConsoleHovered = mConsole.isHovered();
+    mClipboard.mProjectViewHovered = mProjectView.isHovered();
+    mClipboard.mSceneViewHovered = mSceneView.isHovered();
+
     if (mClipboard.getDraggedType() != InteractionType::None)
     {
         ImVec2 size = ImVec2(5, 5);

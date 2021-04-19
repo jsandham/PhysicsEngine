@@ -91,6 +91,34 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
             asset = world->loadAssetFromYAML(mAddBuffer[i]);
         }
 
+        // ensure each png file has a generated yaml texture file and if not then create one
+        if (extension == "png")
+        {
+            std::string texturePath = mAddBuffer[i].substr(0, mAddBuffer[i].find_last_of(".")) + ".texture";
+            if(!doesFileExist(texturePath))
+            {
+                PhysicsEngine::Texture2D* texture = world->createAsset<PhysicsEngine::Texture2D>();
+                texture->load(mAddBuffer[i]);
+                texture->writeToYAML(texturePath);
+
+                asset = texture;
+            }
+        }
+
+        // ensure each obj file has a generated yaml mesh file and if not then create one
+        if (extension == "obj")
+        {
+            std::string meshPath = mAddBuffer[i].substr(0, mAddBuffer[i].find_last_of(".")) + ".mesh";
+            if (!doesFileExist(meshPath))
+            {
+                PhysicsEngine::Mesh* mesh = world->createAsset<PhysicsEngine::Mesh>();
+                mesh->load(mAddBuffer[i]);
+                mesh->writeToYAML(meshPath);
+
+                asset = mesh;
+            }
+        }
+
         if (asset != nullptr)
         {
             mFilePathToId[mAddBuffer[i]] = asset->getId();

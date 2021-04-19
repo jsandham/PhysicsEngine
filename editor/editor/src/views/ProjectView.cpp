@@ -1,27 +1,19 @@
 #include "../../include/views/ProjectView.h"
 
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_win32.h"
-#include "imgui_internal.h"
-
-#include "../../include/imgui/imgui_extensions.h"
-
-#include "../../include/FileSystemUtil.h"
-
 #include <algorithm>
 #include <stack>
 
+#include "../../include/imgui/imgui_extensions.h"
+
 #include "core/Guid.h"
 #include "core/Log.h"
-
-#include "../../include/IconsFontAwesome4.h"
 
 using namespace PhysicsEditor;
 
 ProjectView::ProjectView() : Window("Project View")
 {
-    selected = nullptr;
+    mSelected = nullptr;
+    mRightPanelSelectedPath = "";
 }
 
 ProjectView::~ProjectView()
@@ -37,15 +29,15 @@ void ProjectView::update(Clipboard &clipboard)
 {
     if (!clipboard.getProjectPath().empty())
     {
-        if (!projectTree.isEmpty() && projectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() + "\\data") || projectTree.isEmpty())
+        if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() + "\\data") || mProjectTree.isEmpty())
         {
-            projectTree.buildProjectTree(clipboard.getProjectPath());
+            mProjectTree.buildProjectTree(clipboard.getProjectPath());
         }
     }
 
     if (!clipboard.getProjectPath().empty())
     {
-        filter.Draw("Filter", -100.0f);
+        mFilter.Draw("Filter", -100.0f);
 
         ImVec2 WindowSize = ImGui::GetWindowSize();
 
@@ -93,25 +85,25 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     std::vector<InteractionType> fileTypes;
 
     // Determine directories and files to be drawn in right pane
-    if (filter.IsActive())
+    if (mFilter.IsActive())
     {
         std::stack<ProjectNode*> stack;
 
-        stack.push(projectTree.getRoot());
+        stack.push(mProjectTree.getRoot());
 
         while (!stack.empty())
         {
             ProjectNode* current = stack.top();
             stack.pop();
 
-            if (filter.PassFilter(current->getDirectoryName().c_str()))
+            if (mFilter.PassFilter(current->getDirectoryName().c_str()))
             {
                 directories.push_back(current);
             }
 
             for (size_t j = 0; j < current->getFileCount(); j++)
             {
-                if (filter.PassFilter(current->getFilename(j).c_str()))
+                if (mFilter.PassFilter(current->getFilename(j).c_str()))
                 {
                     fileLabels.push_back(current->getFileLabel(j));
                     filenames.push_back(current->getFilename(j));
@@ -129,15 +121,15 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     }
     else
     {
-        if (selected != nullptr)
+        if (mSelected != nullptr)
         {
-            directories = selected->getChildren();
+            directories = mSelected->getChildren();
            
-            fileLabels = selected->getFileLabels();
-            filenames = selected->getFilenames();
-            filePaths = selected->getFilePaths();
-            fileExtensions = selected->getFileExtensions();
-            fileTypes = selected->getFileTypes();
+            fileLabels = mSelected->getFileLabels();
+            filenames = mSelected->getFilenames();
+            filePaths = mSelected->getFilePaths();
+            fileExtensions = mSelected->getFileExtensions();
+            fileTypes = mSelected->getFileTypes();
         }
     }
 
@@ -146,12 +138,14 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     // draw directories in right pane
     for (size_t i = 0; i < directories.size(); i++)
     {
-        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), directories[i]->getDirectoryPath() == mRightPanelSelectedPath, ImGuiSelectableFlags_AllowDoubleClick))
         {
+            mRightPanelSelectedPath = directories[i]->getDirectoryPath();
+
             if (ImGui::IsMouseDoubleClicked(0))
             {
                 newSelection = directories[i];
-                filter.Clear();
+                mFilter.Clear();
             }
         }
 
@@ -165,7 +159,10 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     // draw files in right pane
     for (size_t i = 0; i < filePaths.size(); i++)
     {
-        ImGui::Selectable(fileLabels[i].c_str());
+        if (ImGui::Selectable(fileLabels[i].c_str(), filePaths[i] == mRightPanelSelectedPath))
+        {
+            mRightPanelSelectedPath = filePaths[i];
+        }
 
         if (ImGui::IsItemHovered())
         {
@@ -192,10 +189,10 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
     if (newSelection != nullptr)
     {
-        selected = newSelection;
+        mSelected = newSelection;
     }
 
-    if (selected == nullptr)
+    if (mSelected == nullptr)
     {
         return;
     }
@@ -207,12 +204,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         {
             if (ImGui::MenuItem("Folder"))
             {
-                size_t count = selected->getChildCount();
+                size_t count = mSelected->getChildCount();
                 std::string foldername = "Folder" + (count > 0 ? "(" + std::to_string(count) + ")" : "");
-                std::string folderPath = selected->getDirectoryPath() + "\\" + foldername;
+                std::string folderPath = mSelected->getDirectoryPath() + "\\" + foldername;
                 if (PhysicsEditor::createDirectory(folderPath))
                 {
-                    selected->addDirectory(foldername);
+                    mSelected->addDirectory(foldername);
                 }
             }
 
@@ -222,12 +219,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             {
                 size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>();
                 std::string filename = ("NewMaterial(" + std::to_string(count) + ").material");
-                std::string filepath = selected->getDirectoryPath() + "\\" + filename;
+                std::string filepath = mSelected->getDirectoryPath() + "\\" + filename;
 
                 PhysicsEngine::Material* material = clipboard.getWorld()->createAsset<PhysicsEngine::Material>();
                 material->writeToYAML(filepath);
 
-                selected->addFile(filename);
+                mSelected->addFile(filename);
             }
 
             ImGui::EndMenu();
@@ -242,7 +239,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 {
                     clipboard.clearSelectedItem();
 
-                    selected->removeDirectory(folderpath.substr(folderpath.find_last_of("\\") + 1));
+                    mSelected->removeDirectory(folderpath.substr(folderpath.find_last_of("\\") + 1));
+
+                    if (folderpath == mRightPanelSelectedPath)
+                    {
+                        mRightPanelSelectedPath = "";
+                    }
                 }
             }
             else
@@ -252,18 +254,28 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 {
                     clipboard.clearSelectedItem();
 
-                    selected->removeFile(filepath.substr(filepath.find_last_of("\\") + 1));
+                    mSelected->removeFile(filepath.substr(filepath.find_last_of("\\") + 1));
+                    
+                    if (filepath == mRightPanelSelectedPath)
+                    {
+                        mRightPanelSelectedPath = "";
+                    }
                 }
             }
         }
 
+        if (ImGui::MenuItem("Refresh", nullptr, false, true))
+        {
+            mSelected->rebuild();
+        }
+      
         ImGui::EndPopup();
     }
 }
 
 void ProjectView::drawProjectTree()
 {
-    drawProjectNodeRecursive(projectTree.getRoot());
+    drawProjectNodeRecursive(mProjectTree.getRoot());
 }
 
 void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
@@ -279,7 +291,7 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
         node_flags |= ImGuiTreeNodeFlags_Leaf;
     }
 
-    if (selected == node)
+    if (mSelected == node)
     {
         node_flags |= ImGuiTreeNodeFlags_Selected;
     }
@@ -288,8 +300,8 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 
     if (ImGui::IsItemClicked())
     {
-        selected = node;
-        filter.Clear();
+        mSelected = node;
+        mFilter.Clear();
     }
 
     if (open)

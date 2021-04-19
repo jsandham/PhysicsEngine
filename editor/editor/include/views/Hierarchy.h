@@ -22,10 +22,8 @@ class Hierarchy : public Window
         int indentLevel;
     };
 
-    std::vector<HierarchyEntry> entries;
-    std::unordered_map<PhysicsEngine::Guid, int> idToEntryIndex;
-
-    bool rebuildRequired;
+    std::vector<HierarchyEntry> mEntries;
+    std::unordered_map<PhysicsEngine::Guid, int> mIdToEntryIndex;
 
   public:
     Hierarchy();

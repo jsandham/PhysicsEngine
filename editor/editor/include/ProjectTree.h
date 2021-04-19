@@ -49,6 +49,8 @@ namespace PhysicsEditor
         void addFile(const std::string& name);
         void removeDirectory(const std::string& name);
         void removeFile(const std::string& name);
+        void removeAllFiles();
+        void rebuild();
 
         size_t getChildCount() const;
         ProjectNode* getChild(size_t index);
@@ -59,7 +61,6 @@ namespace PhysicsEditor
     {
     private:
         ProjectNode* mRoot;
-        std::vector<ProjectNode*> mNodes;
 
     public:
         ProjectTree();
@@ -67,7 +68,6 @@ namespace PhysicsEditor
 
         bool isEmpty() const;
         ProjectNode* getRoot();
-        std::vector<ProjectNode*> getNodes();
 
         void buildProjectTree(const std::string& projectPath);
         void deleteProjectTree();

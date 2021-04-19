@@ -39,6 +39,13 @@ class Clipboard
         LibraryDirectory mLibrary;
 
     public:
+        bool mInspectorHovered;
+        bool mSceneViewHovered;
+        bool mHierarchyHovered;
+        bool mProjectViewHovered;
+        bool mConsoleHovered;
+
+    public:
         InteractionType mSelectedType;
         //InteractionType mSelectedFileType;
         PhysicsEngine::Guid mSelectedId;

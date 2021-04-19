@@ -212,25 +212,82 @@ void ProjectNode::removeFile(const std::string& name)
         return;
     }
 
+    mFileLabels.erase(mFileLabels.begin() + index);
     mFilenames.erase(mFilenames.begin() + index);
     mFilePaths.erase(mFilePaths.begin() + index);
     mFileExtensions.erase(mFileExtensions.begin() + index);
+    mFileTypes.erase(mFileTypes.begin() + index);
 }
 
 
+void ProjectNode::removeAllFiles()
+{
+    mFileLabels.clear();
+    mFilenames.clear();
+    mFilePaths.clear();
+    mFileExtensions.clear();
+    mFileTypes.clear();
+}
 
+void ProjectNode::rebuild()
+{
+    std::stack<ProjectNode*> stack;
 
+    // delete all node children
+    for (size_t i = 0; i < this->getChildCount(); i++)
+    {
+        stack.push(this->getChild(i));
+    }
 
+    while (!stack.empty())
+    {
+        ProjectNode* current = stack.top();
+        stack.pop();
 
+        for (size_t i = 0; i < current->getChildCount(); i++)
+        {
+            stack.push(current->getChild(i));
+        }
 
+        delete current;
+    }
 
+    // delete all node files
+    this->removeAllFiles();
 
+    // rebuild node
+    std::vector<std::string> filenames = getFilesInDirectory(this->getDirectoryPath(), false);
+    for (size_t i = 0; i < filenames.size(); i++)
+    {
+        this->addFile(filenames[i]);
+    }
 
+    stack.push(this);
 
+    while (!stack.empty())
+    {
+        ProjectNode* current = stack.top();
+        stack.pop();
 
+        // find directories that exist in the current directory
+        std::vector<std::string> subDirectoryNames =
+            PhysicsEditor::getDirectoriesInDirectory(current->getDirectoryPath(), false);
 
+        // recurse for each sub directory
+        for (size_t i = 0; i < subDirectoryNames.size(); i++)
+        {
+            ProjectNode* child = current->addDirectory(subDirectoryNames[i]);
 
+            std::vector<std::string> filenames = PhysicsEditor::getFilesInDirectory(child->getDirectoryPath(), false);
+            for (size_t j = 0; j < filenames.size(); j++)
+            {
+                child->addFile(filenames[j]);
+            }
 
+            stack.push(child);
+        }
+    }
+}
 
 ProjectNode* ProjectNode::getChild(size_t index)
 {
@@ -247,8 +304,6 @@ size_t ProjectNode::getChildCount() const
 {
     return mChildren.size();
 }
-
-
 
 ProjectTree::ProjectTree()
 {
@@ -270,11 +325,6 @@ ProjectNode* ProjectTree::getRoot()
     return mRoot;
 }
 
-std::vector<ProjectNode*> ProjectTree::getNodes()
-{
-    return mNodes;
-}
-
 void ProjectTree::buildProjectTree(const std::string& projectPath)
 {
     deleteProjectTree();
@@ -286,8 +336,6 @@ void ProjectTree::buildProjectTree(const std::string& projectPath)
     {
         mRoot->addFile(filenames[i]);
     }
-
-    mNodes.push_back(mRoot);
 
     std::stack<ProjectNode*> stack;
     stack.push(mRoot);
@@ -313,7 +361,6 @@ void ProjectTree::buildProjectTree(const std::string& projectPath)
             }
 
             stack.push(child);
-            mNodes.push_back(child);
         }
     }
 }
@@ -324,8 +371,6 @@ void ProjectTree::deleteProjectTree()
     {
         return;
     }
-
-    mNodes.clear();
 
     std::stack<ProjectNode*> stack;
     stack.push(mRoot);

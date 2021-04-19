@@ -16,10 +16,11 @@ namespace PhysicsEditor
 class ProjectView : public Window
 {
   private:
-    ProjectTree projectTree;
-    ProjectNode *selected;
+    ProjectTree mProjectTree;
+    ProjectNode *mSelected;
+    std::string mRightPanelSelectedPath;
 
-    ImGuiTextFilter filter;
+    ImGuiTextFilter mFilter;
 
   public:
     ProjectView();

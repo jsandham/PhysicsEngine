@@ -46,6 +46,12 @@ Clipboard::Clipboard()
 
     mProjectDirty = false;
     mSceneDirty = false;
+
+    mInspectorHovered = false;
+    mSceneViewHovered = false;
+    mHierarchyHovered = false;
+    mProjectViewHovered = false;
+    mConsoleHovered = false;
 }
 
 Clipboard::~Clipboard()
