@@ -24,13 +24,13 @@ class MaterialDrawer : public InspectorDrawer
     GLuint mColor;
     GLuint mDepth;
 
-    CameraUniform cameraUniform;
-    LightUniform lightUniform;
+    CameraUniform mCameraUniform;
+    LightUniform mLightUniform;
 
-    glm::vec3 cameraPos;
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 projection;
+    glm::vec3 mCameraPos;
+    glm::mat4 mModel;
+    glm::mat4 mView;
+    glm::mat4 mProjection;
 
   public:
     MaterialDrawer();

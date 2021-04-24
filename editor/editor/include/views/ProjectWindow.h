@@ -16,9 +16,9 @@ enum class ProjectWindowMode
 class ProjectWindow : public PopupWindow
 {
   private:
-    ProjectWindowMode mode;
-    Filebrowser filebrowser;
-    std::vector<char> inputBuffer;
+    ProjectWindowMode mMode;
+    Filebrowser mFilebrowser;
+    std::vector<char> mInputBuffer;
 
   public:
     ProjectWindow();

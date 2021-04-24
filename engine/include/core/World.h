@@ -800,9 +800,9 @@ class World
     Guid getSimpleLitMaterial() const;
 
     Guid getColorLitShaderId() const;
-    Guid getNormalLitShaderId() const;
-    Guid getTangentLitShaderId() const;
-    Guid getFontShaderId() const;
+    Guid getNormalShaderId() const;
+    Guid getTangentShaderId() const;
+    Guid getBinormalShaderId() const;
     Guid getGizmoShaderId() const;
     Guid getLineShaderId() const;
     Guid getColorShaderId() const;
@@ -814,9 +814,7 @@ class World
     Guid getShadowDepthMapShaderId() const;
     Guid getShadowDepthCubemapShaderId() const;
     Guid getGbufferShaderId() const;
-    Guid getSimpleLitShaderId() const;
-    Guid getSimpleLitDeferredShaderId() const;
-    Guid getOverdrawShaderId() const;
+    Guid getStandardDeferredShaderId() const;
 
   private:
     Asset *loadAssetFromYAML(const YAML::Node &in);

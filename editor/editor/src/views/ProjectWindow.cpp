@@ -10,11 +10,11 @@ using namespace PhysicsEngine;
 
 ProjectWindow::ProjectWindow() : PopupWindow("##ProjectWindow", 500.0f, 200.0f, 1920.0f, 1080.0f)
 {
-    mode = ProjectWindowMode::OpenProject;
+    mMode = ProjectWindowMode::OpenProject;
 
-    inputBuffer.resize(256);
+    mInputBuffer.resize(256);
 
-    filebrowser.setMode(FilebrowserMode::SelectFolder);
+    mFilebrowser.setMode(FilebrowserMode::SelectFolder);
 }
 
 ProjectWindow::~ProjectWindow()
@@ -29,11 +29,11 @@ void ProjectWindow::update(Clipboard &clipboard)
 {
     float windowWidth = ImGui::GetWindowWidth();
 
-    if (mode == ProjectWindowMode::NewProject)
+    if (mMode == ProjectWindowMode::NewProject)
     {
         renderNewMode(clipboard);
     }
-    else if (mode == ProjectWindowMode::OpenProject)
+    else if (mMode == ProjectWindowMode::OpenProject)
     {
         renderOpenMode(clipboard);
     }
@@ -41,12 +41,12 @@ void ProjectWindow::update(Clipboard &clipboard)
 
 std::string ProjectWindow::getProjectName() const
 {
-    return std::string(inputBuffer.data());
+    return std::string(mInputBuffer.data());
 }
 
 std::string ProjectWindow::getSelectedFolderPath() const
 {
-    return filebrowser.getSelectedFolderPath();
+    return mFilebrowser.getSelectedFolderPath();
 }
 
 void ProjectWindow::renderNewMode(Clipboard& clipboard)
@@ -58,7 +58,7 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
     ImGui::Text("Project Name");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(inputTextWidth);
-    if (ImGui::InputText("##Project Name", &inputBuffer[0], (int)inputBuffer.size(),
+    if (ImGui::InputText("##Project Name", &mInputBuffer[0], (int)mInputBuffer.size(),
                          ImGuiInputTextFlags_EnterReturnsTrue))
     {
     }
@@ -70,9 +70,9 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
     }
 
     ImGui::SameLine();
-    ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
+    ImGui::Text(mFilebrowser.getSelectedFolderPath().c_str());
 
-    filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
+    mFilebrowser.render(mFilebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
     if (ImGui::Button("Create Project"))
     {
@@ -130,13 +130,13 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
     }
 
     ImGui::SameLine();
-    ImGui::Text(filebrowser.getSelectedFolderPath().c_str());
+    ImGui::Text(mFilebrowser.getSelectedFolderPath().c_str());
 
-    filebrowser.render(filebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
+    mFilebrowser.render(mFilebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
     // only allow the open button to be clicked if the selected folder path meets basic criteria for it being a legit
     // project folder
-    bool meetsProjectCriteria = doesDirectoryExist(filebrowser.getSelectedFolderPath() + "\\data");
+    bool meetsProjectCriteria = doesDirectoryExist(mFilebrowser.getSelectedFolderPath() + "\\data");
 
     if (!meetsProjectCriteria)
     {
@@ -170,5 +170,5 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
 
 void ProjectWindow::setMode(ProjectWindowMode mode)
 {
-    this->mode = mode;
+    this->mMode = mode;
 }

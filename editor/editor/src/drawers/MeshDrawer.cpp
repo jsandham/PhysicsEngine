@@ -15,15 +15,15 @@ using namespace PhysicsEditor;
 
 MeshDrawer::MeshDrawer()
 {
-    activeDrawModeIndex = 0;
-    wireframeOn = false;
-    resetModelMatrix = false;
+    mActiveDrawModeIndex = 0;
+    mWireframeOn = false;
+    mResetModelMatrix = false;
 
     Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
 
-    Graphics::createGlobalCameraUniforms(cameraUniform);
+    Graphics::createGlobalCameraUniforms(mCameraUniform);
 
-    model = glm::mat4(1.0f);
+    mModel = glm::mat4(1.0f);
 }
 
 MeshDrawer::~MeshDrawer()
@@ -34,21 +34,21 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
 {
     Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
 
-    const int count = 3;
-    const char *drawMode[] = {"Color", "Normals", "Tangents"};
+    const int count = 4;
+    const char *drawMode[] = {"Color", "Normals", "Tangents", "Binormal"};
 
-    const Guid shaders[] = {clipboard.getWorld()->getColorLitShaderId(), clipboard.getWorld()->getNormalLitShaderId(),
-                            clipboard.getWorld()->getTangentLitShaderId()};
+    const Guid shaders[] = {clipboard.getWorld()->getColorLitShaderId(), clipboard.getWorld()->getNormalShaderId(),
+                            clipboard.getWorld()->getTangentShaderId(), clipboard.getWorld()->getBinormalShaderId() };
 
     // select draw mode for mesh
-    if (ImGui::BeginCombo("##DrawMode", drawMode[activeDrawModeIndex]))
+    if (ImGui::BeginCombo("##DrawMode", drawMode[mActiveDrawModeIndex]))
     {
         for (int n = 0; n < count; n++)
         {
-            bool is_selected = (drawMode[activeDrawModeIndex] == drawMode[n]);
+            bool is_selected = (drawMode[mActiveDrawModeIndex] == drawMode[n]);
             if (ImGui::Selectable(drawMode[n], is_selected))
             {
-                activeDrawModeIndex = n;
+                mActiveDrawModeIndex = n;
 
                 if (is_selected)
                 {
@@ -62,11 +62,11 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
 
     if (ImGui::Button("Reset"))
     {
-        resetModelMatrix = true;
+        mResetModelMatrix = true;
     }
     ImGui::SameLine();
 
-    if (ImGui::Checkbox("Wireframe", &wireframeOn))
+    if (ImGui::Checkbox("Wireframe", &mWireframeOn))
     {
     }
 
@@ -105,36 +105,36 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
     // Draw mesh preview child window
     ImGui::Text("Preview");
 
-    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(shaders[activeDrawModeIndex]);
+    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(shaders[mActiveDrawModeIndex]);
     int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
 
     float meshRadius = mesh->getBounds().mRadius;
 
-    cameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
-    cameraUniform.mView = glm::lookAt(cameraUniform.mCameraPos, cameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
+    mCameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
+    mCameraUniform.mView = glm::lookAt(mCameraUniform.mCameraPos, mCameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
                                       glm::vec3(0.0, 1.0f, 0.0f));
-    cameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-    Graphics::setGlobalCameraUniforms(cameraUniform);
+    mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
+    Graphics::setGlobalCameraUniforms(mCameraUniform);
 
     shader->use(shaderProgram);
-    shader->setMat4("model", model);
-    shader->setVec3("lightDirection", glm::vec3(-1.0f, -1.0f, -1.0f));
+    shader->setMat4("model", mModel);
 
-    if (activeDrawModeIndex == 0)
+    if (mActiveDrawModeIndex == 0)
     {
+        shader->setVec3("lightDirection", glm::vec3(-1.0f, -1.0f, -1.0f));
         shader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     Graphics::bindFramebuffer(mFBO);
     Graphics::setViewport(0, 0, 1000, 1000);
-    Graphics::clearFrambufferColor(Color(0.0f, 0.0, 0.0, 1.0f));
+    Graphics::clearFrambufferColor(Color(0.15f, 0.15, 0.15, 1.0f));
     Graphics::clearFramebufferDepth(1.0f);
 
     shader->setInt("wireframe", 1);
 
     Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
 
-    if (wireframeOn)
+    if (mWireframeOn)
     {
         shader->setInt("wireframe", 0);
 
@@ -168,20 +168,20 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
         // Update selected entity
         if (ImGui::IsWindowHovered() && io.MouseClicked[0])
         {
-            mouseX = nx;
-            mouseY = ny;
+            mMouseX = nx;
+            mMouseY = ny;
         }
 
         if (ImGui::IsWindowHovered() && io.MouseDown[0])
         {
-            float diffX = mouseX - nx;
-            float diffY = mouseY - ny;
+            float diffX = mMouseX - nx;
+            float diffY = mMouseY - ny;
 
-            model = glm::rotate(model, 2 * diffX, glm::vec3(0, 1, 0));
-            model = glm::rotate(model, 2 * diffY, glm::vec3(1, 0, 0));
+            mModel = glm::rotate(mModel, 2 * diffX, glm::vec3(0, 1, 0));
+            mModel = glm::rotate(mModel, 2 * diffY, glm::vec3(1, 0, 0));
 
-            mouseX = nx;
-            mouseY = ny;
+            mMouseX = nx;
+            mMouseY = ny;
         }
 
         // ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
@@ -191,10 +191,10 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
                      ImVec2(0, 0));
     }
 
-    if (resetModelMatrix)
+    if (mResetModelMatrix)
     {
-        model = glm::mat4(1.0f);
-        resetModelMatrix = false;
+        mModel = glm::mat4(1.0f);
+        mResetModelMatrix = false;
     }
 
     ImGui::EndChild();

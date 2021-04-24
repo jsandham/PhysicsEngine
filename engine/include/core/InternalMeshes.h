@@ -3,8 +3,7 @@
 
 #include <vector>
 
-#include "Guid.h"
-#include "Mesh.h"
+#include "World.h"
 
 namespace PhysicsEngine
 {
@@ -28,20 +27,46 @@ class InternalMeshes
     static const std::vector<float> planeTexCoords;
     static const std::vector<int> planeSubMeshStartIndicies;
 
-    static const Guid sphereMeshId;
-    static const Guid cubeMeshId;
-    static const Guid planeMeshId;
-
     static const std::string sphereMeshName;
     static const std::string cubeMeshName;
     static const std::string planeMeshName;
 
-    static Guid loadSphereMesh(World *world);
-    static Guid loadCubeMesh(World *world);
-    static Guid loadPlaneMesh(World *world);
+    enum class Mesh
+    {
+        Sphere,
+        Cube,
+        Plane
+    };
+
+    template<Mesh M>
+    static Guid loadMesh(World* world)
+    {
+        return Guid::INVALID;
+    }
+
+    template<>
+    static Guid loadMesh<Mesh::Sphere>(World* world)
+    {
+        return loadInternalMesh(world, sphereMeshName, sphereVertices,
+            sphereNormals, sphereTexCoords, sphereSubMeshStartIndicies);
+    }
+
+    template<>
+    static Guid loadMesh<Mesh::Cube>(World* world)
+    {
+        return loadInternalMesh(world, cubeMeshName, cubeVertices,
+            cubeNormals, cubeTexCoords, cubeSubMeshStartIndicies);
+    }
+
+    template<>
+    static Guid loadMesh<Mesh::Plane>(World* world)
+    {
+        return loadInternalMesh(world, planeMeshName, planeVertices,
+            planeNormals, planeTexCoords, planeSubMeshStartIndicies);
+    }
 
   private:
-    static Guid loadInternalMesh(World *world, const Guid meshId, const std::string &name,
+    static Guid loadInternalMesh(World *world, const std::string &name,
                                  const std::vector<float> &vertices, const std::vector<float> &normals,
                                  const std::vector<float> &texCoords, const std::vector<int> &startIndices);
 };

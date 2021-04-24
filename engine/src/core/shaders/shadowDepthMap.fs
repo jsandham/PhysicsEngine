@@ -1,0 +1,5 @@
+STRINGIFY(
+void main()
+{
+}
+)

@@ -306,6 +306,8 @@ void Shader::compile()
         const std::string geom = version + defines + mGeometryShader;
         const std::string frag = version + defines + mFragmentShader;
 
+        std::string name = mName;
+
         if (mGeometryShader.empty())
         {
             Graphics::compile(vert, frag, "", &(mPrograms[i].mHandle));

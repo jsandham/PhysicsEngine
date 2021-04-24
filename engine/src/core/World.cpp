@@ -4,9 +4,6 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "../../include/core/InternalMaterials.h"
-#include "../../include/core/InternalMeshes.h"
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Load.h"
 #include "../../include/core/LoadInternal.h"
 #include "../../include/core/Log.h"
@@ -17,36 +14,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-    // load default included meshes
-    mDefaultAssets.mSphereMeshId = InternalMeshes::loadSphereMesh(this);
-    mDefaultAssets.mCubeMeshId = InternalMeshes::loadCubeMesh(this);
-    mDefaultAssets.mPlaneMeshId = InternalMeshes::loadPlaneMesh(this);
-
-    // load default included shaders
-    mDefaultAssets.mColorLitShaderId = InternalShaders::loadColorLitShader(this);
-    mDefaultAssets.mNormalLitShaderId = InternalShaders::loadNormalLitShader(this);
-    mDefaultAssets.mTangentLitShaderId = InternalShaders::loadTangentLitShader(this);
-
-    mDefaultAssets.mFontShaderId = InternalShaders::loadFontShader(this);
-    mDefaultAssets.mGizmoShaderId = InternalShaders::loadGizmoShader(this);
-    mDefaultAssets.mLineShaderId = InternalShaders::loadLineShader(this);
-    mDefaultAssets.mColorShaderId = InternalShaders::loadColorShader(this);
-    mDefaultAssets.mPositionAndNormalsShaderId = InternalShaders::loadPositionAndNormalsShader(this);
-    mDefaultAssets.mSsaoShaderId = InternalShaders::loadSsaoShader(this);
-    mDefaultAssets.mScreenQuadShaderId = InternalShaders::loadScreenQuadShader(this);
-    mDefaultAssets.mNormalMapShaderId = InternalShaders::loadNormalMapShader(this);
-    mDefaultAssets.mDepthMapShaderId = InternalShaders::loadDepthMapShader(this);
-    mDefaultAssets.mShadowDepthMapShaderId = InternalShaders::loadShadowDepthMapShader(this);
-    mDefaultAssets.mShadowDepthCubemapShaderId = InternalShaders::loadShadowDepthCubemapShader(this);
-    mDefaultAssets.mGbufferShaderId = InternalShaders::loadGBufferShader(this);
-    mDefaultAssets.mSimpleLitShaderId = InternalShaders::loadSimpleLitShader(this);
-    mDefaultAssets.mSimpleLitDeferedShaderId = InternalShaders::loadSimpleLitDeferredShader(this);
-    mDefaultAssets.mOverdrawShaderId = InternalShaders::loadOverdrawShader(this);
-
-    // load default included materials
-    mDefaultAssets.mSimpleLitMaterialId =
-        InternalMaterials::loadSimpleLitMaterial(this, mDefaultAssets.mSimpleLitShaderId);
-    mDefaultAssets.mColorMaterialId = InternalMaterials::loadColorMaterial(this, mDefaultAssets.mColorShaderId);
+    mDefaultAssets.loadInternalAssets(this);
 }
 
 World::~World()
@@ -603,19 +571,19 @@ Guid World::getColorLitShaderId() const
     return mDefaultAssets.mColorLitShaderId;
 }
 
-Guid World::getNormalLitShaderId() const
+Guid World::getNormalShaderId() const
 {
-    return mDefaultAssets.mNormalLitShaderId;
+    return mDefaultAssets.mNormalShaderId;
 }
 
-Guid World::getTangentLitShaderId() const
+Guid World::getTangentShaderId() const
 {
-    return mDefaultAssets.mTangentLitShaderId;
+    return mDefaultAssets.mTangentShaderId;
 }
 
-Guid World::getFontShaderId() const
+Guid World::getBinormalShaderId() const
 {
-    return mDefaultAssets.mFontShaderId;
+    return mDefaultAssets.mBinormalShaderId;
 }
 
 Guid World::getGizmoShaderId() const
@@ -673,19 +641,9 @@ Guid World::getGbufferShaderId() const
     return mDefaultAssets.mGbufferShaderId;
 }
 
-Guid World::getSimpleLitShaderId() const
+Guid World::getStandardDeferredShaderId() const
 {
-    return mDefaultAssets.mSimpleLitShaderId;
-}
-
-Guid World::getSimpleLitDeferredShaderId() const
-{
-    return mDefaultAssets.mSimpleLitDeferedShaderId;
-}
-
-Guid World::getOverdrawShaderId() const
-{
-    return mDefaultAssets.mOverdrawShaderId;
+    return mDefaultAssets.mStandardDeferedShaderId;
 }
 
 // bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

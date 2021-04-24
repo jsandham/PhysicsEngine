@@ -23,26 +23,26 @@ using namespace PhysicsEditor;
 
 MaterialDrawer::MaterialDrawer()
 {
-    cameraPos = glm::vec3(0.0f, 0.0f, -2.0);
-    model = glm::mat4(1.0f);
-    view = glm::lookAt(cameraPos, cameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
-    projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
+    mCameraPos = glm::vec3(0.0f, 0.0f, -2.0);
+    mModel = glm::mat4(1.0f);
+    mView = glm::lookAt(mCameraPos, mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
+    mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
 
     Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
 
-    Graphics::createGlobalCameraUniforms(cameraUniform);
-    Graphics::createGlobalLightUniforms(lightUniform);
+    Graphics::createGlobalCameraUniforms(mCameraUniform);
+    Graphics::createGlobalLightUniforms(mLightUniform);
 
-    cameraUniform.mView = view;
-    cameraUniform.mProjection = projection;
-    cameraUniform.mCameraPos = cameraPos;
+    mCameraUniform.mView = mView;
+    mCameraUniform.mProjection = mProjection;
+    mCameraUniform.mCameraPos = mCameraPos;
 
-    lightUniform.mIntensity = 1.0f;
-    lightUniform.mShadowNearPlane = 0.1f;
-    lightUniform.mShadowFarPlane = 10.0f;
-    lightUniform.mShadowAngle = 0.0f;
-    lightUniform.mShadowRadius = 0.0f;
-    lightUniform.mShadowStrength = 1.0f;
+    mLightUniform.mIntensity = 1.0f;
+    mLightUniform.mShadowNearPlane = 0.1f;
+    mLightUniform.mShadowFarPlane = 10.0f;
+    mLightUniform.mShadowAngle = 0.0f;
+    mLightUniform.mShadowRadius = 0.0f;
+    mLightUniform.mShadowStrength = 1.0f;
 }
 
 MaterialDrawer::~MaterialDrawer()
@@ -137,13 +137,13 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
         return;
     }
 
-    Graphics::setGlobalCameraUniforms(cameraUniform);
-    Graphics::setGlobalLightUniforms(lightUniform);
+    Graphics::setGlobalCameraUniforms(mCameraUniform);
+    Graphics::setGlobalLightUniforms(mLightUniform);
 
     int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
 
     shader->use(shaderProgram);
-    shader->setMat4("model", model);
+    shader->setMat4("model", mModel);
 
     material->apply(clipboard.getWorld());
 

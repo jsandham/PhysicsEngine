@@ -28,19 +28,19 @@ void Inspector::update(Clipboard &clipboard)
     // draw selected asset
     if (clipboard.getSelectedType() == InteractionType::Mesh)
     {
-        meshDrawer.render(clipboard, clipboard.getSelectedId());
+        mMeshDrawer.render(clipboard, clipboard.getSelectedId());
     }
     else if (clipboard.getSelectedType() == InteractionType::Material)
     {
-        materialDrawer.render(clipboard, clipboard.getSelectedId());
+        mMaterialDrawer.render(clipboard, clipboard.getSelectedId());
     }
     else if (clipboard.getSelectedType() == InteractionType::Shader)
     {
-        shaderDrawer.render(clipboard, clipboard.getSelectedId());
+        mShaderDrawer.render(clipboard, clipboard.getSelectedId());
     }
     else if (clipboard.getSelectedType() == InteractionType::Texture2D)
     {
-        texture2DDrawer.render(clipboard, clipboard.getSelectedId());
+        mTexture2DDrawer.render(clipboard, clipboard.getSelectedId());
     }
 
     // draw selected entity
@@ -57,7 +57,7 @@ void Inspector::drawEntity(Clipboard &clipboard)
     Entity *entity = clipboard.getWorld()->getEntityById(clipboard.getSelectedId());
 
     // entity may have been recently deleted
-    if (entity == NULL)
+    if (entity == nullptr)
     {
         return;
     }
@@ -68,20 +68,53 @@ void Inspector::drawEntity(Clipboard &clipboard)
         Guid componentId = componentsOnEntity[i].first;
         int componentType = componentsOnEntity[i].second;
 
-        InspectorDrawer *drawer = NULL;
+        InspectorDrawer *drawer = nullptr;
         if (Component::isInternal(componentType))
         {
-            drawer = loadInternalInspectorComponentDrawer(componentType);
-        }
-        else
-        {
-            // drawer = loadInspectorDrawer(componentType);
+            if (componentType == ComponentType<Transform>::type)
+            {
+                drawer = &mTransformDrawer;
+            }
+            else if (componentType == ComponentType<Rigidbody>::type)
+            {
+                drawer = &mRigidbodyDrawer;
+            }
+            else if (componentType == ComponentType<Camera>::type)
+            {
+                drawer = &mCameraDrawer;
+            }
+            else if (componentType == ComponentType<MeshRenderer>::type)
+            {
+                drawer = &mMeshRendererDrawer;
+            }
+            else if (componentType == ComponentType<LineRenderer>::type)
+            {
+                drawer = &mLineRendererDrawer;
+            }
+            else if (componentType == ComponentType<Light>::type)
+            {
+                drawer = &mLightDrawer;
+            }
+            else if (componentType == ComponentType<BoxCollider>::type)
+            {
+                drawer = &mBoxColliderDrawer;
+            }
+            else if (componentType == ComponentType<SphereCollider>::type)
+            {
+                drawer = &mSphereColliderDrawer;
+            }
+            else if (componentType == ComponentType<CapsuleCollider>::type)
+            {
+                drawer = &mCapsuleColliderDrawer;
+            }
+            else if (componentType == ComponentType<MeshCollider>::type)
+            {
+                drawer = &mMeshColliderDrawer;
+            }
         }
 
         drawer->render(clipboard, componentId);
         ImGui::Separator();
-
-        delete drawer;
     }
 
     std::string componentToAdd = "";
@@ -90,7 +123,6 @@ void Inspector::drawEntity(Clipboard &clipboard)
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
-
         if (componentToAdd == "Transform")
         {
             Undo::addCommand(

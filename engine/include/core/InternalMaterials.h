@@ -3,25 +3,42 @@
 
 #include <string>
 
-#include "Guid.h"
-#include "Material.h"
+#include "World.h"
 
 namespace PhysicsEngine
 {
 class InternalMaterials
 {
   public:
-    static const Guid simpleLitMaterialId;
-    static const Guid colorMaterialId;
-
     static const std::string simpleLitMaterialName;
     static const std::string colorMaterialName;
 
-    static Guid loadSimpleLitMaterial(World *world, const Guid shaderId);
-    static Guid loadColorMaterial(World *world, const Guid shaderId);
+    enum class Material
+    {
+        SimpleLit,
+        Color
+    };
+
+    template<Material M>
+    static Guid loadMaterial(World* world, const Guid& shaderId)
+    {
+        return Guid::INVALID;
+    }
+
+    template<>
+    static Guid loadMaterial<Material::SimpleLit>(World* world, const Guid& shaderId)
+    {
+        return loadInternalMaterial(world, simpleLitMaterialName, shaderId);
+    }
+
+    template<>
+    static Guid loadMaterial<Material::Color>(World* world, const Guid& shaderId)
+    {
+        return loadInternalMaterial(world, colorMaterialName, shaderId);
+    }
 
   private:
-    static Guid loadInternalMaterial(World *world, const Guid materialId, const std::string &name, const Guid shaderId);
+    static Guid loadInternalMaterial(World *world, const std::string &name, const Guid shaderId);
 };
 } // namespace PhysicsEngine
 

@@ -13,16 +13,16 @@ class MeshDrawer : public InspectorDrawer
     GLuint mColor;
     GLuint mDepth;
 
-    CameraUniform cameraUniform;
+    CameraUniform mCameraUniform;
 
-    glm::mat4 model;
+    glm::mat4 mModel;
 
-    float mouseX;
-    float mouseY;
+    float mMouseX;
+    float mMouseY;
 
-    int activeDrawModeIndex;
-    bool wireframeOn;
-    bool resetModelMatrix;
+    int mActiveDrawModeIndex;
+    bool mWireframeOn;
+    bool mResetModelMatrix;
 
   public:
     MeshDrawer();

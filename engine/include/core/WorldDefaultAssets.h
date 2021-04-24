@@ -5,7 +5,9 @@
 
 namespace PhysicsEngine
 {
-// Default assets that all words have access to
+class World;
+
+// Default assets that all worlds have access to
 struct WorldDefaultAssets
 {
     // default loaded meshes
@@ -14,11 +16,12 @@ struct WorldDefaultAssets
     Guid mPlaneMeshId;
 
     // default loaded shaders
+    Guid mStandardShaderId;
     Guid mColorLitShaderId;
-    Guid mNormalLitShaderId;
-    Guid mTangentLitShaderId;
+    Guid mNormalShaderId;
+    Guid mTangentShaderId;
+    Guid mBinormalShaderId;
 
-    Guid mFontShaderId;
     Guid mGizmoShaderId;
     Guid mLineShaderId;
     Guid mColorShaderId;
@@ -30,13 +33,13 @@ struct WorldDefaultAssets
     Guid mShadowDepthMapShaderId;
     Guid mShadowDepthCubemapShaderId;
     Guid mGbufferShaderId;
-    Guid mSimpleLitShaderId;
-    Guid mSimpleLitDeferedShaderId;
-    Guid mOverdrawShaderId;
+    Guid mStandardDeferedShaderId;
 
     // default loaded materials
     Guid mSimpleLitMaterialId;
     Guid mColorMaterialId;
+
+    void loadInternalAssets(World* world);
 };
 } // namespace PhysicsEngine
 

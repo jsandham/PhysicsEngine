@@ -15,8 +15,8 @@ void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererSta
     state.mGeometryShader.setFragmentShader(InternalShaders::gbufferFragmentShader);
     state.mGeometryShader.compile();
 
-    state.mSimpleLitDeferredShader.setVertexShader(InternalShaders::simpleLitDeferredVertexShader);
-    state.mSimpleLitDeferredShader.setFragmentShader(InternalShaders::simpleLitDeferredFragmentShader);
+    state.mSimpleLitDeferredShader.setVertexShader(InternalShaders::standardDeferredVertexShader);
+    state.mSimpleLitDeferredShader.setFragmentShader(InternalShaders::standardDeferredFragmentShader);
     state.mSimpleLitDeferredShader.compile();
 
     // cache internal shader uniforms
