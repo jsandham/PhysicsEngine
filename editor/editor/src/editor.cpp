@@ -45,6 +45,7 @@ void Editor::init()
     mSceneView.init(mClipboard);
     mProjectView.init(mClipboard);
     mConsole.init(mClipboard);
+    mDebugOverlay.init(mClipboard);
 }
 
 void Editor::update()
@@ -66,33 +67,89 @@ void Editor::update()
     ImGui::Begin("Root Window", &p_open, window_flags);
     ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f), dockspace_flags);
 
-    // ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     // ImGui::ShowMetricsWindow();
     // ImGui::ShowStyleEditor();
 
     mMenuBar.update(mClipboard);
+
     mHierarchy.draw(mClipboard, mMenuBar.isOpenHierarchyCalled());
     mInspector.draw(mClipboard, mMenuBar.isOpenInspectorCalled());
     mConsole.draw(mClipboard, mMenuBar.isOpenConsoleCalled());
     mProjectView.draw(mClipboard, mMenuBar.isOpenProjectViewCalled());
     mSceneView.draw(mClipboard, mMenuBar.isOpenSceneViewCalled());
 
+    mClipboard.mHierarchyOpen = mHierarchy.isOpen();
     mClipboard.mHierarchyHovered = mHierarchy.isHovered();
-    mClipboard.mInspectorHovered = mInspector.isHovered();
-    mClipboard.mConsoleHovered = mConsole.isHovered();
-    mClipboard.mProjectViewHovered = mProjectView.isHovered();
-    mClipboard.mSceneViewHovered = mSceneView.isHovered();
+    mClipboard.mHierarchyFocused = mHierarchy.isFocused();
+    mClipboard.mHierarchyOpenedThisFrame = mHierarchy.openedThisFrame();
+    mClipboard.mHierarchyHoveredThisFrame = mHierarchy.hoveredThisFrame();
+    mClipboard.mHierarchyFocusedThisFrame = mHierarchy.focusedThisFrame();
+    mClipboard.mHierarchyClosedThisFrame = mHierarchy.closedThisFrame();
+    mClipboard.mHierarchyUnfocusedThisFrame = mHierarchy.unfocusedThisFrame();
+    mClipboard.mHierarchyUnhoveredThisFrame = mHierarchy.unhoveredThisFrame();
 
-    if (mClipboard.getDraggedType() != InteractionType::None)
+    mClipboard.mInspectorOpen = mInspector.isOpen();
+    mClipboard.mInspectorHovered = mInspector.isHovered();
+    mClipboard.mInspectorFocused = mInspector.isFocused();
+    mClipboard.mInspectorOpenedThisFrame = mInspector.openedThisFrame();
+    mClipboard.mInspectorHoveredThisFrame = mInspector.hoveredThisFrame();
+    mClipboard.mInspectorFocusedThisFrame = mInspector.focusedThisFrame();
+    mClipboard.mInspectorClosedThisFrame = mInspector.closedThisFrame();
+    mClipboard.mInspectorUnfocusedThisFrame = mInspector.unfocusedThisFrame();
+    mClipboard.mInspectorUnhoveredThisFrame = mInspector.unhoveredThisFrame();
+
+    mClipboard.mConsoleOpen = mConsole.isOpen();
+    mClipboard.mConsoleHovered = mConsole.isHovered();
+    mClipboard.mConsoleFocused = mConsole.isFocused();
+    mClipboard.mConsoleOpenedThisFrame = mConsole.openedThisFrame();
+    mClipboard.mConsoleHoveredThisFrame = mConsole.hoveredThisFrame();
+    mClipboard.mConsoleFocusedThisFrame = mConsole.focusedThisFrame();
+    mClipboard.mConsoleClosedThisFrame = mConsole.closedThisFrame();
+    mClipboard.mConsoleUnfocusedThisFrame = mConsole.unfocusedThisFrame();
+    mClipboard.mConsoleUnhoveredThisFrame = mConsole.unhoveredThisFrame();
+
+    mClipboard.mProjectViewOpen = mProjectView.isOpen();
+    mClipboard.mProjectViewHovered = mProjectView.isHovered();
+    mClipboard.mProjectViewFocused = mProjectView.isFocused();
+    mClipboard.mProjectViewOpenedThisFrame = mProjectView.openedThisFrame();
+    mClipboard.mProjectViewHoveredThisFrame = mProjectView.hoveredThisFrame();
+    mClipboard.mProjectViewFocusedThisFrame = mProjectView.focusedThisFrame();
+    mClipboard.mProjectViewClosedThisFrame = mProjectView.closedThisFrame();
+    mClipboard.mProjectViewUnfocusedThisFrame = mProjectView.unfocusedThisFrame();
+    mClipboard.mProjectViewUnhoveredThisFrame = mProjectView.unhoveredThisFrame();
+
+    mClipboard.mSceneViewOpen = mSceneView.isOpen();
+    mClipboard.mSceneViewHovered = mSceneView.isHovered();
+    mClipboard.mSceneViewFocused = mSceneView.isFocused();
+    mClipboard.mSceneViewOpenedThisFrame = mSceneView.openedThisFrame();
+    mClipboard.mSceneViewHoveredThisFrame = mSceneView.hoveredThisFrame();
+    mClipboard.mSceneViewFocusedThisFrame = mSceneView.focusedThisFrame();
+    mClipboard.mSceneViewClosedThisFrame = mSceneView.closedThisFrame();
+    mClipboard.mSceneViewUnfocusedThisFrame = mSceneView.unfocusedThisFrame();
+    mClipboard.mSceneViewUnhoveredThisFrame = mSceneView.unhoveredThisFrame();
+
+    static ImGuiWindowFlags overlay_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoResize;
+
+    static bool show_overlay = true;
+    if (ImGui::IsKeyPressed(17, false))
     {
-        ImVec2 size = ImVec2(5, 5);
-        ImVec2 cursorPos = ImGui::GetMousePos();
-        size.x += cursorPos.x;
-        size.y += cursorPos.y;
-        ImGui::GetForegroundDrawList()->AddRect(cursorPos, size, 0xFFFF0000);
+        show_overlay = !show_overlay;
+    }
+
+    if (show_overlay)
+    {
+        mDebugOverlay.draw(mClipboard, show_overlay, 0.35f, overlay_flags);
     }
 
     ImGui::End();
+
+    if (mClipboard.getDraggedType() != InteractionType::None)
+    {
+        ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.c_str());
+    }
 
     Undo::updateUndoStack(mClipboard);
 }

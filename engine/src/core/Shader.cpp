@@ -317,6 +317,11 @@ void Shader::compile()
             Graphics::compile(vert, frag, geom, &(mPrograms[i].mHandle));
         }
 
+        if (mPrograms[i].mHandle == -1)
+        {
+            Log::info("AAAAAAAAAAAAAAAAAAAAAAA");
+        }
+
         // Mark shader program compilation successful
         mPrograms[i].mCompiled = true;
     }

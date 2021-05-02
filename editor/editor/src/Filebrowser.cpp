@@ -57,7 +57,7 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
         }
     }
 
-    if (ImGui::BeginPopupModal("Filebrowser"))
+    if (ImGui::BeginPopupModal("Filebrowser", nullptr, ImGuiWindowFlags_NoResize))
     {
         float windowWidth = ImGui::GetWindowWidth();
 

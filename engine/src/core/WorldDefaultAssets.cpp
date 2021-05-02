@@ -23,7 +23,7 @@ void WorldDefaultAssets::loadInternalAssets(World* world)
     mBinormalShaderId = InternalShaders::loadShader<InternalShaders::Shader::Binormal>(world);
     mGizmoShaderId = InternalShaders::loadShader<InternalShaders::Shader::Gizmo>(world);
     mLineShaderId = InternalShaders::loadShader<InternalShaders::Shader::Line>(world);
-    mColorShaderId = InternalShaders::loadShader<InternalShaders::Shader::ColorLit>(world);
+    mColorShaderId = InternalShaders::loadShader<InternalShaders::Shader::Color>(world);
     mScreenQuadShaderId = InternalShaders::loadShader<InternalShaders::Shader::ScreenQuad>(world);
     mNormalMapShaderId = InternalShaders::loadShader<InternalShaders::Shader::NormalMap>(world);
     mDepthMapShaderId = InternalShaders::loadShader<InternalShaders::Shader::DepthMap>(world);

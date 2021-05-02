@@ -8,6 +8,7 @@
 #include "graphics/Graphics.h"
 
 #include "imgui.h"
+#include "ImGuizmo.h"
 
 #include "../../include/imgui/imgui_extensions.h"
 
@@ -22,8 +23,6 @@ SceneView::SceneView() : Window("Scene View")
 
     mSceneContentMin = ImVec2(0, 0);
     mSceneContentMax = ImVec2(0, 0);
-
-    mTransformGizmo.initialize();
 
     mInput = {};
     mTime = {};
@@ -63,7 +62,7 @@ void SceneView::update(Clipboard &clipboard)
     viewport.mWidth = size.x;
     viewport.mHeight = size.y;
 
-    EditorCameraSystem* cameraSystem = clipboard.getWorld()->getSystem<EditorCameraSystem>();
+    EditorCameraSystem* cameraSystem = clipboard.mEditorCameraSystem;
 
     cameraSystem->setViewport(viewport);
 
@@ -128,13 +127,13 @@ void SceneView::update(Clipboard &clipboard)
     ImGui::SameLine();
 
     // select transform gizmo movement mode
+    static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
     if (ImGui::StampButton("T", translationModeActive))
     {
         translationModeActive = true;
         rotationModeActive = false;
         scaleModeActive = false;
-
-        mTransformGizmo.setGizmoMode(GizmoMode::Translation);
+        operation = ImGuizmo::OPERATION::TRANSLATE;
     }
     ImGui::SameLine();
 
@@ -143,8 +142,7 @@ void SceneView::update(Clipboard &clipboard)
         translationModeActive = false;
         rotationModeActive = true;
         scaleModeActive = false;
-
-        mTransformGizmo.setGizmoMode(GizmoMode::Rotation);
+        operation = ImGuizmo::OPERATION::ROTATE;
     }
     ImGui::SameLine();
 
@@ -153,8 +151,7 @@ void SceneView::update(Clipboard &clipboard)
         translationModeActive = false;
         rotationModeActive = false;
         scaleModeActive = true;
-
-        mTransformGizmo.setGizmoMode(GizmoMode::Scale);
+        operation = ImGuizmo::OPERATION::SCALE;
     }
     ImGui::SameLine();
 
@@ -186,13 +183,13 @@ void SceneView::update(Clipboard &clipboard)
     float ny = mousePosY / sceneContentHeight;
 
     // Update selected entity
-    if (isHovered() && io.MouseClicked[0] && !mTransformGizmo.isGizmoHighlighted())
+    if (isHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
     {
         Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
         Transform* transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
 
-        if (transform != NULL)
+        if (transform != nullptr)
         {
             clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityId());
         }
@@ -202,25 +199,71 @@ void SceneView::update(Clipboard &clipboard)
         }
     }
 
-    GizmoSystem* gizmoSystem = clipboard.getWorld()->getSystem<GizmoSystem>();
+    clipboard.mGizmoSystem->clearDrawList();
 
-    gizmoSystem->clearDrawList();
-
-    // draw transform gizmo if entity is selected
-    if (clipboard.getSelectedType() == InteractionType::Entity)
+    if (clipboard.getDraggedType() == InteractionType::Mesh)
     {
-        Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
-
-        if(transform != nullptr)
+        if (clipboard.mSceneViewHoveredThisFrame)
         {
-            mTransformGizmo.update(cameraSystem, gizmoSystem, transform, mousePosX, mousePosY, sceneContentWidth,
-                sceneContentHeight);
+            Entity* entity = clipboard.getWorld()->createEntity();
+            Transform* transform = entity->addComponent<Transform>(clipboard.getWorld());
+            MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(clipboard.getWorld());
+            meshRenderer->setMesh(clipboard.getDraggedId());
+            meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
+
+            clipboard.mSceneViewTempEntityId = entity->getId();
+        }
+
+        if (clipboard.mSceneViewUnhoveredThisFrame)
+        {
+            if (clipboard.mSceneViewTempEntityId.isValid())
+            {
+                clipboard.getWorld()->immediateDestroyEntity(clipboard.mSceneViewTempEntityId);
+                clipboard.mSceneViewTempEntityId = Guid::INVALID;
+            }
         }
     }
 
     // Finally draw scene
     ImGui::Image((void*)(intptr_t)textures[mActiveTextureIndex], size, ImVec2(0, size.y / 1080.0f),
         ImVec2(size.x / 1920.0f, 0));
+
+    // draw transform gizmo if entity is selected
+    if (clipboard.getSelectedType() == InteractionType::Entity)
+    {
+        Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
+
+        if (transform != nullptr)
+        {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+            float windowWidth = ImGui::GetWindowWidth();
+            float windowHeight = ImGui::GetWindowHeight();
+            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+            glm::mat4 view = clipboard.mEditorCameraSystem->getViewMatrix();
+            glm::mat4 projection = clipboard.mEditorCameraSystem->getProjMatrix();
+            glm::mat4 model = transform->getModelMatrix();
+
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation,
+                ImGuizmo::MODE::WORLD, glm::value_ptr(model), NULL, NULL);
+
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 scale;
+                glm::quat rotation;
+                glm::vec3 translation;
+            
+                Transform::decompose(model, translation, rotation, scale);
+
+                rotation = glm::conjugate(rotation);
+
+                transform->mPosition = translation;
+                transform->mScale = scale;
+                transform->mRotation = rotation;
+            }
+        }
+    }
 }
 
 ImVec2 SceneView::getSceneContentMin() const
@@ -252,17 +295,17 @@ void SceneView::updateWorld(World *world)
     {
         for (int i = 0; i < 5; i++)
         {
-            mInput.mouseButtonWasDown[i] = mInput.mouseButtonIsDown[i];
-            mInput.mouseButtonIsDown[i] = false;
+            mInput.mMouseButtonWasDown[i] = mInput.mMouseButtonIsDown[i];
+            mInput.mMouseButtonIsDown[i] = false;
         }
 
-        mInput.mouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
-        mInput.mouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
-        mInput.mouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
-        mInput.mouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
-        mInput.mouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
+        mInput.mMouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
+        mInput.mMouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
+        mInput.mMouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
+        mInput.mMouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
+        mInput.mMouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
 
-        mInput.mouseDelta = (int)io.MouseWheel;
+        mInput.mMouseDelta = (int)io.MouseWheel;
 
         // clamp mouse position to be within the scene view content region
         ImVec2 sceneViewContentMin = getSceneContentMin();
@@ -273,8 +316,8 @@ void SceneView::updateWorld(World *world)
 
         // input->mousePosX = (int)io.MousePos.x;
         // input->mousePosY = -(int)io.MousePos.y;
-        mInput.mousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
-        mInput.mousePosY =
+        mInput.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
+        mInput.mMousePosY =
             sceneViewContentHeight -
             std::min(std::max((int)io.MousePos.y - (int)sceneViewContentMin.y, 0), sceneViewContentHeight);
     }
@@ -284,46 +327,46 @@ void SceneView::updateWorld(World *world)
     {
         for (int i = 0; i < 61; i++)
         {
-            mInput.keyWasDown[i] = mInput.keyIsDown[i];
-            mInput.keyIsDown[i] = false;
+            mInput.mKeyWasDown[i] = mInput.mKeyIsDown[i];
+            mInput.mKeyIsDown[i] = false;
         }
 
         // 0 - 9
         for (int i = 0; i < 10; i++)
         {
-            mInput.keyIsDown[0] = io.KeysDown[48 + i];
+            mInput.mKeyIsDown[static_cast<int>(KeyCode::Key0) + i] = io.KeysDown[48 + i];
         }
 
         // A - Z
         for (int i = 0; i < 26; i++)
         {
-            mInput.keyIsDown[10 + i] = io.KeysDown[65 + i];
+            mInput.mKeyIsDown[static_cast<int>(KeyCode::A) + i] = io.KeysDown[65 + i];
         }
 
-        mInput.keyIsDown[36] = io.KeysDown[13]; // Enter
-        mInput.keyIsDown[37] = io.KeysDown[38]; // Up
-        mInput.keyIsDown[38] = io.KeysDown[40]; // Down
-        mInput.keyIsDown[39] = io.KeysDown[37]; // Left
-        mInput.keyIsDown[40] = io.KeysDown[39]; // Right
-        mInput.keyIsDown[41] = io.KeysDown[32]; // Space
-        mInput.keyIsDown[42] = io.KeysDown[16]; // LShift
-        mInput.keyIsDown[43] = io.KeysDown[16]; // RShift
-        mInput.keyIsDown[44] = io.KeysDown[9];  // Tab
-        mInput.keyIsDown[45] = io.KeysDown[8];  // Backspace
-        mInput.keyIsDown[46] = io.KeysDown[20]; // CapsLock
-        mInput.keyIsDown[47] = io.KeysDown[17]; // LCtrl
-        mInput.keyIsDown[48] = io.KeysDown[17]; // RCtrl
-        mInput.keyIsDown[49] = io.KeysDown[27]; // Escape
-        mInput.keyIsDown[50] = io.KeysDown[45]; // NumPad0
-        mInput.keyIsDown[51] = io.KeysDown[35]; // NumPad1
-        mInput.keyIsDown[52] = io.KeysDown[40]; // NumPad2
-        mInput.keyIsDown[53] = io.KeysDown[34]; // NumPad3
-        mInput.keyIsDown[54] = io.KeysDown[37]; // NumPad4
-        mInput.keyIsDown[55] = io.KeysDown[12]; // NumPad5
-        mInput.keyIsDown[56] = io.KeysDown[39]; // NumPad6
-        mInput.keyIsDown[57] = io.KeysDown[36]; // NumPad7
-        mInput.keyIsDown[58] = io.KeysDown[8];  // NumPad8
-        mInput.keyIsDown[59] = io.KeysDown[33]; // NumPad9
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Enter)] = io.KeysDown[13]; // Enter
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Up)] = io.KeysDown[38]; // Up
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Down)] = io.KeysDown[40]; // Down
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Left)] = io.KeysDown[37]; // Left
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Right)] = io.KeysDown[39]; // Right
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Space)] = io.KeysDown[32]; // Space
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::LShift)] = io.KeysDown[16]; // LShift
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::RShift)] = io.KeysDown[16]; // RShift
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Tab)] = io.KeysDown[9];  // Tab
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Backspace)] = io.KeysDown[8];  // Backspace
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::CapsLock)] = io.KeysDown[20]; // CapsLock
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::LCtrl)] = io.KeysDown[17]; // LCtrl
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::RCtrl)] = io.KeysDown[17]; // RCtrl
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::Escape)] = io.KeysDown[27]; // Escape
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad0)] = io.KeysDown[45]; // NumPad0
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad1)] = io.KeysDown[35]; // NumPad1
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad2)] = io.KeysDown[40]; // NumPad2
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad3)] = io.KeysDown[34]; // NumPad3
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad4)] = io.KeysDown[37]; // NumPad4
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad5)] = io.KeysDown[12]; // NumPad5
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad6)] = io.KeysDown[39]; // NumPad6
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad7)] = io.KeysDown[36]; // NumPad7
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad8)] = io.KeysDown[8];  // NumPad8
+        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad9)] = io.KeysDown[33]; // NumPad9
     }
 
     // call update on all systems in world
@@ -359,22 +402,14 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
         ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
+        ImGui::Text("Framerate: %f", ImGui::GetIO().Framerate);
         ImGui::Text("Window position: %f %f\n", getWindowPos().x, getWindowPos().y);
-        // ImGui::Text("Window position: %f %f\n", windowPos.x, windowPos.y);
-        // ImGui::Text("Content min: %f %f\n", contentMin.x, contentMin.y);
-        // ImGui::Text("Content max: %f %f\n", contentMax.x, contentMax.y);
         ImGui::Text("Scene content min: %f %f\n", mSceneContentMin.x, mSceneContentMin.y);
         ImGui::Text("Scene content max: %f %f\n", mSceneContentMax.x, mSceneContentMax.y);
         ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
         ImGui::Text("Normalized Mouse Position: %f %f\n",
                     cameraSystem->getMousePosX() / (float)(mSceneContentMax.x - mSceneContentMin.x),
                     cameraSystem->getMousePosY() / (float)(mSceneContentMax.y - mSceneContentMin.y));
-
-        ImGui::Text("Is SceneView hovered? %d\n", clipboard.mSceneViewHovered);
-        ImGui::Text("Is Inspector hovered? %d\n", clipboard.mInspectorHovered);
-        ImGui::Text("Is Hierarchy hovered? %d\n", clipboard.mHierarchyHovered);
-        ImGui::Text("Is Console hovered? %d\n", clipboard.mConsoleHovered);
-        ImGui::Text("Is ProjectView hovered? %d\n", clipboard.mProjectViewHovered);
 
         ImGui::Text("Selected interaction type %d\n", clipboard.getSelectedType());
         ImGui::Text("Selected id %s\n", clipboard.getSelectedId().toString().c_str());
@@ -391,25 +426,6 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
 
         std::vector<float> perfData = mPerfQueue.getData();
         ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size(), 0, nullptr, 0, 1.0f);
-        // ImGui::PlotLines("Curve", &perfData[0], perfData.size());
-
-        ImGui::Text("Active project name: %s\n", clipboard.getProjectName().c_str());
-        ImGui::Text("Active project path: %s\n", clipboard.getProjectPath().c_str());
-        ImGui::Text("Active scene name: %s\n", clipboard.getSceneName().c_str());
-        ImGui::Text("Active scene path: %s\n", clipboard.getScenePath().c_str());
-        ImGui::Text("Active scene id: %s\n", clipboard.getSceneId().toString().c_str());
-        ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());
-        ImGui::Text("Entity count in world: %d\n", clipboard.getWorld()->getNumberOfEntities());
-        ImGui::Text("Transform count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Transform>());
-        ImGui::Text("MeshRenderer count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<MeshRenderer>());
-        ImGui::Text("Light count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Light>());
-        ImGui::Text("Camera count in world: %d\n", clipboard.getWorld()->getNumberOfComponents<Camera>());
-        ImGui::Text("Mesh count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Mesh>());
-        ImGui::Text("Material count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Material>());
-        ImGui::Text("Texture2D count in world: %d\n", clipboard.getWorld()->getNumberOfAssets<Texture2D>());
-        ImGui::Text("RenderSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<RenderSystem>());
-        ImGui::Text("PhysicsSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsSystem>());
-        ImGui::Text("CleanUpSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<CleanUpSystem>());
     }
     ImGui::End();
 }

@@ -19,16 +19,21 @@ class Window
       bool mOpen;
       bool mFocused;
       bool mHovered;
+      bool mOpenedLastFrame;
+      bool mFocusedLastFrame;
+      bool mHoveredLastFrame;
 
   public:
     Window();
     Window(const std::string name);
     virtual ~Window() = 0;
 
-    void draw(Clipboard& clipboard, bool isOpenedThisFrame);
+    void draw(Clipboard& clipboard, bool isOpenedThisFrame, float alpha = 1.0f, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
 
     virtual void init(Clipboard &clipboard) = 0;
     virtual void update(Clipboard &clipboard) = 0;
+
+    void close();
 
     ImVec2 getWindowPos() const;
     ImVec2 getContentMin() const;
@@ -36,6 +41,13 @@ class Window
     bool isOpen() const;
     bool isFocused() const;
     bool isHovered() const;
+    bool openedThisFrame() const;
+    bool closedThisFrame() const;
+    bool focusedThisFrame() const;
+    bool hoveredThisFrame() const;
+    bool unfocusedThisFrame() const;
+    bool unhoveredThisFrame() const;
+
 };
 } // namespace PhysicsEditor
 

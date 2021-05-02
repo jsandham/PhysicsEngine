@@ -1,6 +1,8 @@
 #pragma warning(disable : 4996)
 #define _CRTDBG_MAP_ALLOC
 
+#define GLM_FORCE_RADIANS
+
 #include <glew-2.1.0/GL/glew.h>
 
 #include <gl/gl.h>

@@ -1,5 +1,6 @@
 #include "../include/EditorWin32.h"
 #include "../include/imgui/imgui_styles.h"
+#include "ImGuizmo.h"
 
 #include "../include/IconsFontAwesome4.h"
 
@@ -43,6 +44,7 @@ void EditorWin32::update(HWND window, bool editorBecameActiveThisFrame)
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
     mEditor.update();
 

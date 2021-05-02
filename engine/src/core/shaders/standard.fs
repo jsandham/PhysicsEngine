@@ -62,11 +62,11 @@ void main(void)
 //#if defined(DIRECTIONALLIGHT)
 	FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 //#elif defined(SPOTLIGHT)
-	//FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+//	FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 //#elif defined(POINTLIGHT)
-	//FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+//	FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
 //#else 
-	//FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+//	FragColor = vec4(0.5, 0.5, 0.5, 1.0);
 //#endif
 
 //#if defined(DIRECTIONALLIGHT) && defined(CASCADE)

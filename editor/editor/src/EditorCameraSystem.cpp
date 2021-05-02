@@ -83,7 +83,7 @@ void EditorCameraSystem::init(World *world)
     mHide = HideFlag::DontSave;
 
     mCamera = entity->addComponent<Camera>(world);
-    mCamera->mHide == HideFlag::DontSave;
+    mCamera->mHide = HideFlag::DontSave;
 }
 
 void EditorCameraSystem::update(const Input &input, const Time &time)
@@ -94,7 +94,7 @@ void EditorCameraSystem::update(const Input &input, const Time &time)
     glm::vec3 right = mTransform->getRight();
 
     // D pad controls
-    if (!getMouseButton(input, RButton))
+    if (!getMouseButton(input, MouseButton::RButton))
     {
         if (getKey(input, KeyCode::Up))
         {
@@ -115,7 +115,7 @@ void EditorCameraSystem::update(const Input &input, const Time &time)
     }
 
     // WASD controls
-    if (getMouseButton(input, RButton))
+    if (getMouseButton(input, MouseButton::RButton))
     {
         if (getKey(input, KeyCode::W))
         {
@@ -136,17 +136,17 @@ void EditorCameraSystem::update(const Input &input, const Time &time)
     }
 
     // Mouse scroll wheel
-    position += EditorCameraSystem::ZOOM_SENSITIVITY * input.mouseDelta * front;
+    position += EditorCameraSystem::ZOOM_SENSITIVITY * input.mMouseDelta * front;
 
     // Mouse position
-    mMousePosX = input.mousePosX;
-    mMousePosY = input.mousePosY;
+    mMousePosX = input.mMousePosX;
+    mMousePosY = input.mMousePosY;
 
     // Mouse buttons
-    mIsLeftMouseClicked = getMouseButtonDown(input, LButton);
-    mIsRightMouseClicked = getMouseButtonDown(input, RButton);
-    mIsLeftMouseHeldDown = getMouseButton(input, LButton);
-    mIsRightMouseHeldDown = getMouseButton(input, RButton);
+    mIsLeftMouseClicked = getMouseButtonDown(input, MouseButton::LButton);
+    mIsRightMouseClicked = getMouseButtonDown(input, MouseButton::RButton);
+    mIsLeftMouseHeldDown = getMouseButton(input, MouseButton::LButton);
+    mIsRightMouseHeldDown = getMouseButton(input, MouseButton::RButton);
 
     if (mIsLeftMouseClicked)
     {

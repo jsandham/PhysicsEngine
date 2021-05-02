@@ -25,7 +25,7 @@ void PopupWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
         mOpen = true;
     }
 
-    if (ImGui::BeginPopupModal(mName.c_str(), &mOpen))
+    if (ImGui::BeginPopupModal(mName.c_str(), &mOpen, ImGuiWindowFlags_NoResize))
     {
         update(clipboard);
 

@@ -1,6 +1,8 @@
 #ifndef __EDITOR_CAMERA_SYSTEM_H__
 #define __EDITOR_CAMERA_SYSTEM_H__
 
+#define GLM_FORCE_RADIANS
+
 #include <vector>
 
 #include <systems/System.h>

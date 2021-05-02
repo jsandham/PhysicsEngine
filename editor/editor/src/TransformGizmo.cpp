@@ -1,3 +1,5 @@
+#define GLM_FORCE_RADIANS
+
 #include "core/ClosestDistance.h"
 #include "core/InternalMeshes.h"
 #include "core/Intersect.h"

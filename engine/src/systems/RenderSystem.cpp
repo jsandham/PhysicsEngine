@@ -238,6 +238,13 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 int materialIndex = world->getIndexOf(meshRenderer->getMaterial(j));
                 Material *material = world->getAssetByIndex<Material>(materialIndex);
 
+                // could be nullptr if for example we are adding a material to the renderer in the editor
+                // but we have not yet actually set the material
+                if (material == nullptr)
+                {
+                    break;
+                }
+
                 int shaderIndex = world->getIndexOf(material->getShaderId());
 
                 int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);

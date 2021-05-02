@@ -22,7 +22,7 @@ Window::~Window()
 {
 }
 
-void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame)
+void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame, float alpha, ImGuiWindowFlags flags)
 {
     mWindowPos.x = 0;
     mWindowPos.y = 0;
@@ -30,6 +30,10 @@ void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame)
     mContentMax.y = 0;
     mContentMin.x = 0;
     mContentMin.y = 0;
+
+    mOpenedLastFrame = mOpen;
+    mFocusedLastFrame = mFocused;
+    mHoveredLastFrame = mHovered;
     mFocused = false;
     mHovered = false;
 
@@ -43,7 +47,9 @@ void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame)
         return;
     }
 
-    if (ImGui::Begin(mName.c_str(), &mOpen))
+    ImGui::SetNextWindowBgAlpha(alpha);
+
+    if (ImGui::Begin(mName.c_str(), &mOpen, flags))
     {
         if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
         {
@@ -69,6 +75,11 @@ void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame)
     }
 
     ImGui::End();
+}
+
+void Window::close()
+{
+    mOpen = false;
 }
 
 ImVec2 Window::getWindowPos() const
@@ -99,4 +110,34 @@ bool Window::isFocused() const
 bool Window::isHovered() const
 {
     return mHovered;
+}
+
+bool Window::openedThisFrame() const
+{
+    return !mOpenedLastFrame && mOpen;
+}
+
+bool Window::closedThisFrame() const
+{
+    return mOpenedLastFrame && !mOpen;
+}
+
+bool Window::focusedThisFrame() const
+{
+    return !mFocusedLastFrame && mFocused;
+}
+
+bool Window::hoveredThisFrame() const
+{
+    return !mHoveredLastFrame && mHovered;
+}
+
+bool Window::unfocusedThisFrame() const
+{
+    return mFocusedLastFrame && !mFocused;
+}
+
+bool Window::unhoveredThisFrame() const
+{
+    return mHoveredLastFrame && !mHovered;
 }

@@ -1,6 +1,8 @@
 #include "../include/MenuBar.h"
 #include "../include/Undo.h"
 #include "../include/EditorCameraSystem.h"
+#include "../include/EditorSceneManager.h"
+#include "../include/EditorProjectManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
@@ -335,76 +337,32 @@ void MenuBar::showMenuHelp(const Clipboard &clipboard)
 
 void MenuBar::newScene(Clipboard &clipboard)
 {
-    // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    clipboard.getWorld()->latentDestroyEntitiesInWorld();
-
-    // re-centre editor camera to default position
-    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
-
-    // clear any dragged and selected items on clipboard
-    clipboard.clearDraggedItem();
-    clipboard.clearSelectedItem();
-
-    Scene* scene = clipboard.getWorld()->createScene();
-    if (scene != nullptr)
-    {
-        clipboard.setActiveScene("default.scene", "", scene->getId());
-    }
+    EditorSceneManager::newScene(clipboard);
 }
 
 void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std::string& path)
 {
-    // check to make sure the scene is part of the current project
-    if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
-    {
-        return;
-    }
-
-    // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    /*clipboard.getWorld()->latentDestroyEntitiesInWorld();*/
-    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
-
-    // reset editor camera to default position
-    clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
-
-    // clear any dragged and selected items on clipboard
-    clipboard.clearDraggedItem();
-    clipboard.clearSelectedItem();
-
-    // load scene into world
-    Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path);
-    if (scene != nullptr)
-    {
-        clipboard.setActiveScene(name, path, scene->getId());
-    }
+    EditorSceneManager::openScene(clipboard, name, path);
 }
 
 void MenuBar::saveScene(Clipboard& clipboard, const std::string& name, const std::string& path)
 {
-    clipboard.getWorld()->writeSceneToYAML(path, clipboard.getSceneId());
+    EditorSceneManager::saveScene(clipboard, name, path);
 }
 
 void MenuBar::newProject(Clipboard &clipboard)
 {
+    EditorProjectManager::newProject(clipboard);
 }
 
 void MenuBar::openProject(Clipboard &clipboard)
 {
+    EditorProjectManager::openProject(clipboard);
 }
 
 void MenuBar::saveProject(Clipboard &clipboard)
 {
-    Log::info(("saving project: " + clipboard.getProjectName() + " path: " + clipboard.getProjectPath()).c_str());
-
-    // save materials
-    for (size_t i = 0; i < clipboard.getWorld()->getNumberOfAssets<Material>(); i++)
-    {
-        Material* material = clipboard.getWorld()->getAssetByIndex<Material>(i);
-        std::string path = clipboard.getWorld()->getAssetFilepath(material->getId());
-        if (!path.empty()) {
-            clipboard.getWorld()->writeAssetToYAML(path, material->getId());
-        }
-    }
+    EditorProjectManager::saveProject(clipboard);
 }
 
 void MenuBar::build(Clipboard &clipboard)

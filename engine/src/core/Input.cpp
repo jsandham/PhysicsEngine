@@ -2,47 +2,47 @@
 
 using namespace PhysicsEngine;
 
-bool PhysicsEngine::getKey(Input input, KeyCode key)
+bool PhysicsEngine::getKey(const Input& input, KeyCode key)
 {
-    return input.keyIsDown[(int)key];
+    return input.mKeyIsDown[(int)key];
 }
 
-bool PhysicsEngine::getKeyDown(Input input, KeyCode key)
+bool PhysicsEngine::getKeyDown(const Input& input, KeyCode key)
 {
-    return (input.keyIsDown[(int)key] && !input.keyWasDown[(int)key]);
+    return (input.mKeyIsDown[(int)key] && !input.mKeyWasDown[(int)key]);
 }
 
-bool PhysicsEngine::getKeyUp(Input input, KeyCode key)
+bool PhysicsEngine::getKeyUp(const Input& input, KeyCode key)
 {
-    return (!input.keyIsDown[(int)key] && input.keyWasDown[(int)key]);
+    return (!input.mKeyIsDown[(int)key] && input.mKeyWasDown[(int)key]);
 }
 
-bool PhysicsEngine::getMouseButton(Input input, MouseButton button)
+bool PhysicsEngine::getMouseButton(const Input& input, MouseButton button)
 {
-    return input.mouseButtonIsDown[(int)button];
+    return input.mMouseButtonIsDown[(int)button];
 }
 
-bool PhysicsEngine::getMouseButtonDown(Input input, MouseButton button)
+bool PhysicsEngine::getMouseButtonDown(const Input& input, MouseButton button)
 {
-    return input.mouseButtonIsDown[(int)button] && !input.mouseButtonWasDown[(int)button];
+    return input.mMouseButtonIsDown[(int)button] && !input.mMouseButtonWasDown[(int)button];
 }
 
-bool PhysicsEngine::getMouseButtonUp(Input input, MouseButton button)
+bool PhysicsEngine::getMouseButtonUp(const Input& input, MouseButton button)
 {
-    return !input.mouseButtonIsDown[(int)button] && input.mouseButtonWasDown[(int)button];
+    return !input.mMouseButtonIsDown[(int)button] && input.mMouseButtonWasDown[(int)button];
 }
 
-bool PhysicsEngine::getXboxButton(Input input, XboxButton button)
+bool PhysicsEngine::getXboxButton(const Input& input, XboxButton button)
 {
-    return input.xboxButtonIsDown[(int)button];
+    return input.mXboxButtonIsDown[(int)button];
 }
 
-bool PhysicsEngine::getXboxButtonDown(Input input, XboxButton button)
+bool PhysicsEngine::getXboxButtonDown(const Input& input, XboxButton button)
 {
-    return input.xboxButtonIsDown[(int)button] && !input.xboxButtonWasDown[(int)button];
+    return input.mXboxButtonIsDown[(int)button] && !input.mXboxButtonWasDown[(int)button];
 }
 
-bool PhysicsEngine::getXboxButtonUp(Input input, XboxButton button)
+bool PhysicsEngine::getXboxButtonUp(const Input& input, XboxButton button)
 {
-    return !input.xboxButtonIsDown[(int)button] && input.xboxButtonWasDown[(int)button];
+    return !input.mXboxButtonIsDown[(int)button] && input.mXboxButtonWasDown[(int)button];
 }

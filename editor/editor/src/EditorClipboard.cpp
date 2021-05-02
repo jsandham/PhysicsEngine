@@ -13,12 +13,10 @@ using namespace PhysicsEditor;
 Clipboard::Clipboard()
 {
     mSelectedType = InteractionType::None;
-    //mSelectedFileType = FileType::None;
     mSelectedId = PhysicsEngine::Guid::INVALID;
     mSelectedPath = "";
 
     mDraggedType = InteractionType::None;
-    //mDraggedFileType = FileType::None;
     mDraggedId = PhysicsEngine::Guid::INVALID;
     mDraggedPath = "";
 
@@ -162,7 +160,6 @@ void Clipboard::setSelectedItem(InteractionType type, std::string path)
 void Clipboard::clearDraggedItem()
 {
     mDraggedType = InteractionType::None;
-    //mDraggedFileType = FileType::None;
     mDraggedId = PhysicsEngine::Guid::INVALID;
     mDraggedPath = "";
 }
@@ -170,7 +167,6 @@ void Clipboard::clearDraggedItem()
 void Clipboard::clearSelectedItem()
 {
     mSelectedType = InteractionType::None;
-    //mSelectedFileType = FileType::None;
     mSelectedId = PhysicsEngine::Guid::INVALID;
     mSelectedPath = "";
 }

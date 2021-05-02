@@ -1,6 +1,8 @@
 #ifndef __TRANSFORM_GIZMOS_H__
 #define __TRANSFORM_GIZMOS_H__
 
+#define GLM_FORCE_RADIANS
+
 #include <GL/glew.h>
 #include <gl/gl.h>
 

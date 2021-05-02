@@ -1,6 +1,8 @@
 #ifndef __SCENE_VIEW_H__
 #define __SCENE_VIEW_H__
 
+#define GLM_FORCE_RADIANS
+
 #include <queue>
 
 #include "core/Input.h"
@@ -9,7 +11,6 @@
 
 #include "../EditorCameraSystem.h"
 #include "../PerformanceQueue.h"
-#include "../TransformGizmo.h"
 #include "Window.h"
 
 #include "imgui.h"
@@ -21,7 +22,6 @@ class SceneView : public Window
   private:
     int mActiveTextureIndex;
     PerformanceQueue mPerfQueue;
-    TransformGizmo mTransformGizmo;
 
     ImVec2 mSceneContentMin;
     ImVec2 mSceneContentMax;

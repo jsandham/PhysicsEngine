@@ -183,6 +183,15 @@
     <ClCompile Include="src\ProjectTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\views\DebugOverlay.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorSceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorProjectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
@@ -333,6 +342,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\InteractionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\views\DebugOverlay.h">
+      <Filter>Header Files\views</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorSceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EditorProjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

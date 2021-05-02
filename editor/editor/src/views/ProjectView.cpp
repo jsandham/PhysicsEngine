@@ -1,4 +1,5 @@
 #include "../../include/views/ProjectView.h"
+#include "../../include/EditorSceneManager.h"
 
 #include <algorithm>
 #include <stack>
@@ -159,9 +160,17 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     // draw files in right pane
     for (size_t i = 0; i < filePaths.size(); i++)
     {
-        if (ImGui::Selectable(fileLabels[i].c_str(), filePaths[i] == mRightPanelSelectedPath))
+        if (ImGui::Selectable(fileLabels[i].c_str(), filePaths[i] == mRightPanelSelectedPath, ImGuiSelectableFlags_AllowDoubleClick))
         {
             mRightPanelSelectedPath = filePaths[i];
+
+            if (ImGui::IsMouseDoubleClicked(0))
+            {
+                if (fileExtensions[i] == "scene")
+                {
+                    EditorSceneManager::openScene(clipboard, filenames[i], filePaths[i]);
+                }
+            }
         }
 
         if (ImGui::IsItemHovered())

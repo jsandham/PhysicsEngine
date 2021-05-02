@@ -1,6 +1,8 @@
 #ifndef __TRANSFORM_DRAWER_H__
 #define __TRANSFORM_DRAWER_H__
 
+#define GLM_FORCE_RADIANS
+
 #include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 

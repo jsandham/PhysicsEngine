@@ -1,6 +1,8 @@
 #ifndef __EDITOR_UI_H__
 #define __EDITOR_UI_H__
 
+#define GLM_FORCE_RADIANS
+
 #include <set>
 #include <string>
 
@@ -17,7 +19,7 @@ namespace PhysicsEditor
 {
 class Clipboard
 {
-    private:
+    public:
         // project
         std::string mProjectName;
         std::string mProjectPath;
@@ -39,22 +41,66 @@ class Clipboard
         LibraryDirectory mLibrary;
 
     public:
+        bool mInspectorOpen;
         bool mInspectorHovered;
+        bool mInspectorFocused;
+        bool mInspectorOpenedThisFrame;
+        bool mInspectorHoveredThisFrame;
+        bool mInspectorFocusedThisFrame;
+        bool mInspectorClosedThisFrame;
+        bool mInspectorUnhoveredThisFrame;
+        bool mInspectorUnfocusedThisFrame;
+        
+        bool mSceneViewOpen;
         bool mSceneViewHovered;
+        bool mSceneViewFocused;
+        bool mSceneViewOpenedThisFrame;
+        bool mSceneViewHoveredThisFrame;
+        bool mSceneViewFocusedThisFrame;
+        bool mSceneViewClosedThisFrame;
+        bool mSceneViewUnhoveredThisFrame;
+        bool mSceneViewUnfocusedThisFrame;
+
+        bool mHierarchyOpen;
         bool mHierarchyHovered;
+        bool mHierarchyFocused;
+        bool mHierarchyOpenedThisFrame;
+        bool mHierarchyHoveredThisFrame;
+        bool mHierarchyFocusedThisFrame;
+        bool mHierarchyClosedThisFrame;
+        bool mHierarchyUnhoveredThisFrame;
+        bool mHierarchyUnfocusedThisFrame;
+
+        bool mProjectViewOpen;
         bool mProjectViewHovered;
+        bool mProjectViewFocused;
+        bool mProjectViewOpenedThisFrame;
+        bool mProjectViewHoveredThisFrame;
+        bool mProjectViewFocusedThisFrame;
+        bool mProjectViewClosedThisFrame;
+        bool mProjectViewUnhoveredThisFrame;
+        bool mProjectViewUnfocusedThisFrame;
+
+        bool mConsoleOpen;
         bool mConsoleHovered;
+        bool mConsoleFocused;
+        bool mConsoleOpenedThisFrame;
+        bool mConsoleHoveredThisFrame;
+        bool mConsoleFocusedThisFrame;
+        bool mConsoleClosedThisFrame;
+        bool mConsoleUnhoveredThisFrame;
+        bool mConsoleUnfocusedThisFrame;
 
     public:
         InteractionType mSelectedType;
-        //InteractionType mSelectedFileType;
         PhysicsEngine::Guid mSelectedId;
         std::string mSelectedPath;
 
         InteractionType mDraggedType;
-        //InteractionType mDraggedFileType;
         PhysicsEngine::Guid mDraggedId;
         std::string mDraggedPath;
+
+        PhysicsEngine::Guid mSceneViewTempEntityId;
 
     public:
         bool mProjectDirty;

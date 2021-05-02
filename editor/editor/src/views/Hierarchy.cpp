@@ -10,6 +10,10 @@
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
+#include <shlobj.h>
+#include <shlwapi.h>
+#include <objbase.h>
+
 using namespace PhysicsEditor;
 
 Hierarchy::Hierarchy() : Window("Hierarchy")

@@ -1,9 +1,10 @@
+#include "../../include/drawers/TransformDrawer.h"
+
 #include <math.h>
 
 #include "../../include/Undo.h"
 #include "../../include/EditorClipboard.h"
 #include "../../include/EditorCommands.h"
-#include "../../include/drawers/TransformDrawer.h"
 
 #include "components/Transform.h"
 

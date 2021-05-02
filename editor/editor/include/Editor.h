@@ -9,6 +9,7 @@
 #include "../include/views/SceneView.h"
 #include "../include/views/ProjectView.h"
 #include "../include/views/Console.h"
+#include "../include/views/DebugOverlay.h"
 
 namespace PhysicsEditor
 {
@@ -26,6 +27,7 @@ namespace PhysicsEditor
         SceneView mSceneView;
         ProjectView mProjectView;
         Console mConsole;
+        DebugOverlay mDebugOverlay;
 
     public:
         Editor();

@@ -1,11 +1,2 @@
-﻿  EditorOnlyEntityCreation.cpp
-  TransformGizmo.cpp
-  GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.
-  MaterialDrawer.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(154,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  MeshDrawer.cpp
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(130,66): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(135,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
+﻿  ProjectView.cpp
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

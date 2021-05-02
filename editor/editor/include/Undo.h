@@ -1,6 +1,8 @@
 #ifndef __UNDO_H__
 #define __UNDO_H__
 
+#define GLM_FORCE_RADIANS
+
 #include <vector>
 #include <queue>
 

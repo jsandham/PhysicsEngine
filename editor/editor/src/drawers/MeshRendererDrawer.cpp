@@ -106,7 +106,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
                 meshRenderer->setMaterial(materialIds[i], i);
             }
 
-            if (isClicked)
+            if (isClicked && materialIds[i].isValid())
             {
                 clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
             }

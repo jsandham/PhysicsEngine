@@ -5,6 +5,8 @@
 #include <string>
 #include <unordered_map>
 
+#define GLM_FORCE_RADIANS
+
 #include "WorldAllocators.h"
 #include "WorldDefaultAssets.h"
 #include "WorldIdState.h"
