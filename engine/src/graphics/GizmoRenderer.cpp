@@ -9,6 +9,7 @@ GizmoRenderer::GizmoRenderer()
 
 GizmoRenderer::~GizmoRenderer()
 {
+    destroyGizmoRenderer(mState);
 }
 
 void GizmoRenderer::init(World *world)
@@ -25,6 +26,11 @@ void GizmoRenderer::update(Camera *camera)
     renderAABBGizmos(mWorld, camera, mState, mAABBs);
     renderSphereGizmos(mWorld, camera, mState, mSpheres);
     renderFrustumGizmos(mWorld, camera, mState, mFrustums);
+}
+
+void GizmoRenderer::drawGrid(Camera* camera)
+{
+    renderGridGizmo(mWorld, camera, mState);
 }
 
 void GizmoRenderer::addToDrawList(const Line &line, const Color &color)

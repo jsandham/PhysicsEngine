@@ -33,6 +33,7 @@ void WorldDefaultAssets::loadInternalAssets(World* world)
     mPositionAndNormalsShaderId = InternalShaders::loadShader<InternalShaders::Shader::PositionAndNormals>(world);
     mSsaoShaderId = InternalShaders::loadShader<InternalShaders::Shader::SSAO>(world);
     //mStandardDeferedShaderId = InternalShaders::loadShader<InternalShaders::Shader::StandardDeferred>(world);
+    mGridShaderId = InternalShaders::loadShader<InternalShaders::Shader::Grid>(world);
 
     // load default included materials
     mSimpleLitMaterialId =

@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <gl/gl.h>
+#include <vector>
 
 #include "../core/Shader.h"
 
@@ -25,6 +26,17 @@ struct GizmoRendererState
     int mGizmoShaderProjLoc;
     int mGizmoShaderColorLoc;
     int mGizmoShaderLightPosLoc;
+
+    Shader* mGridShader;
+    int mGridShaderProgram;
+    int mGridShaderMVPLoc;
+    int mGridShaderColorLoc;
+
+    GLuint mGridVAO;
+    GLuint mGridVBO;
+    std::vector<glm::vec3> mVertices;
+    glm::vec3 mGridOrigin;
+    Color mGridColor;
 };
 
 struct LineGizmo
@@ -93,6 +105,22 @@ struct PlaneGizmo
     {
     }
 };
+
+
+
+//struct GridGizmo
+//{
+//    std::vector<glm::vec3> mVertices;
+//    glm::vec3 mOrigin;
+//    Color mColor;
+//
+//    GridGizmo()
+//    {
+//    }
+//    GridGizmo(const glm::vec3& origin, const Color& color) : mColor(color), mOrigin(origin)
+//    {
+//    }
+//};
 } // namespace PhysicsEngine
 
 #endif

@@ -41,6 +41,7 @@ class GizmoRenderer
 
     void init(World *world);
     void update(Camera *camera);
+    void drawGrid(Camera* camera);
 
     void addToDrawList(const Line &line, const Color &color);
     void addToDrawList(const Ray &ray, float t, const Color &color);

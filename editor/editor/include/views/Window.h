@@ -14,6 +14,8 @@ class Window
   private:
       std::string mName;
       ImVec2 mWindowPos;
+      float mWindowWidth;
+      float mWindowHeight;
       ImVec2 mContentMin;
       ImVec2 mContentMax;
       bool mOpen;
@@ -36,6 +38,8 @@ class Window
     void close();
 
     ImVec2 getWindowPos() const;
+    float getWindowWidth() const;
+    float getWindowHeight() const;
     ImVec2 getContentMin() const;
     ImVec2 getContentMax() const;
     bool isOpen() const;

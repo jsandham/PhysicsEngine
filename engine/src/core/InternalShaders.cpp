@@ -144,6 +144,14 @@ const std::string InternalShaders::standardDeferredFragmentShader =
 #include "shaders/standardDeferred.fs"
 ;
 
+const std::string InternalShaders::gridVertexShader =
+#include "shaders/grid.vs"
+;
+
+const std::string InternalShaders::gridFragmentShader =
+#include "shaders/grid.fs"
+;
+
 const std::string InternalShaders::standardShaderName = "Standard";
 const std::string InternalShaders::colorLitShaderName = "ColorLit";
 const std::string InternalShaders::normalShaderName = "Normal";
@@ -161,6 +169,7 @@ const std::string InternalShaders::gbufferShaderName = "GBuffer";
 const std::string InternalShaders::positionAndNormalShaderName = "PositionAndNormal";
 const std::string InternalShaders::ssaoShaderName = "SSAO";
 const std::string InternalShaders::standardDeferredShaderName = "StandardDeferred";
+const std::string InternalShaders::gridShaderName = "Grid";
 
 Guid InternalShaders::loadInternalShader(World *world, const std::string &name,
                                          const std::string vertex, const std::string fragment,

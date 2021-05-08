@@ -64,6 +64,8 @@ void GizmoSystem::update(const Input &input, const Time &time)
         {
             mGizmoRenderer.update(camera);
         }
+
+        mGizmoRenderer.drawGrid(camera);
     }
 }
 

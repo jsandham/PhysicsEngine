@@ -646,6 +646,11 @@ Guid World::getStandardDeferredShaderId() const
     return mDefaultAssets.mStandardDeferedShaderId;
 }
 
+Guid World::getGridShaderId() const
+{
+    return mDefaultAssets.mGridShaderId;
+}
+
 // bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)
 //{
 //	Ray ray;

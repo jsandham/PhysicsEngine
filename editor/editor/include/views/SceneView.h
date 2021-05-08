@@ -25,6 +25,7 @@ class SceneView : public Window
 
     ImVec2 mSceneContentMin;
     ImVec2 mSceneContentMax;
+    bool mIsSceneContentHovered;
 
     PhysicsEngine::Input mInput;
     PhysicsEngine::Time mTime;
@@ -40,6 +41,7 @@ class SceneView : public Window
 
     ImVec2 getSceneContentMin() const;
     ImVec2 getSceneContentMax() const;
+    bool isSceneContentHovered() const;
 
   private:
     void initWorld(PhysicsEngine::World *world);

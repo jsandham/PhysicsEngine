@@ -4,6 +4,7 @@
 
 #include "core/Intersect.h"
 #include "core/Log.h"
+#include "core/Rect.h"
 
 #include "graphics/Graphics.h"
 
@@ -23,6 +24,7 @@ SceneView::SceneView() : Window("Scene View")
 
     mSceneContentMin = ImVec2(0, 0);
     mSceneContentMax = ImVec2(0, 0);
+    mIsSceneContentHovered = false;
 
     mInput = {};
     mTime = {};
@@ -39,6 +41,11 @@ void SceneView::init(Clipboard &clipboard)
 
 void SceneView::update(Clipboard &clipboard)
 {
+    if (clipboard.mSceneId.isInvalid())
+    {
+        return;
+    }
+
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
     static bool cameraSettingsClicked = false;
@@ -61,6 +68,20 @@ void SceneView::update(Clipboard &clipboard)
     viewport.mY = 0;
     viewport.mWidth = size.x;
     viewport.mHeight = size.y;
+
+    ImGuiIO& io = ImGui::GetIO();
+    float sceneContentWidth = (mSceneContentMax.x - mSceneContentMin.x);
+    float sceneContentHeight = (mSceneContentMax.y - mSceneContentMin.y);
+    float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), sceneContentWidth);
+    float mousePosY =
+        sceneContentHeight - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), sceneContentHeight);
+
+    float nx = mousePosX / sceneContentWidth;
+    float ny = mousePosY / sceneContentHeight;
+
+    Rect sceneContentRect(mSceneContentMin.x, mSceneContentMin.y, sceneContentWidth, sceneContentHeight);
+
+    mIsSceneContentHovered = sceneContentRect.contains(io.MousePos.x, io.MousePos.y);
 
     EditorCameraSystem* cameraSystem = clipboard.mEditorCameraSystem;
 
@@ -172,18 +193,8 @@ void SceneView::update(Clipboard &clipboard)
         drawPerformanceOverlay(clipboard, cameraSystem);
     }
 
-    ImGuiIO& io = ImGui::GetIO();
-    float sceneContentWidth = (mSceneContentMax.x - mSceneContentMin.x);
-    float sceneContentHeight = (mSceneContentMax.y - mSceneContentMin.y);
-    float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), sceneContentWidth);
-    float mousePosY =
-        sceneContentHeight - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), sceneContentHeight);
-
-    float nx = mousePosX / sceneContentWidth;
-    float ny = mousePosY / sceneContentHeight;
-
     // Update selected entity
-    if (isHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
+    if (isSceneContentHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
     {
         Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
@@ -274,6 +285,11 @@ ImVec2 SceneView::getSceneContentMin() const
 ImVec2 SceneView::getSceneContentMax() const
 {
     return mSceneContentMax;
+}
+
+bool SceneView::isSceneContentHovered() const
+{
+    return mIsSceneContentHovered;
 }
 
 void SceneView::initWorld(PhysicsEngine::World *world)
@@ -398,6 +414,8 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     if (ImGui::Begin("Editor Performance Overlay", &overlayOpened, overlayFlags))
     {
+        ImGuiIO& io = ImGui::GetIO();
+      
         ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
@@ -406,7 +424,9 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         ImGui::Text("Window position: %f %f\n", getWindowPos().x, getWindowPos().y);
         ImGui::Text("Scene content min: %f %f\n", mSceneContentMin.x, mSceneContentMin.y);
         ImGui::Text("Scene content max: %f %f\n", mSceneContentMax.x, mSceneContentMax.y);
+        ImGui::Text("Is Scene content hovered: %d\n", mIsSceneContentHovered);
         ImGui::Text("Mouse Position: %d %d\n", cameraSystem->getMousePosX(), cameraSystem->getMousePosY());
+        ImGui::Text("Mouse Position: %f %f\n", io.MousePos.x, io.MousePos.y);
         ImGui::Text("Normalized Mouse Position: %f %f\n",
                     cameraSystem->getMousePosX() / (float)(mSceneContentMax.x - mSceneContentMin.x),
                     cameraSystem->getMousePosY() / (float)(mSceneContentMax.y - mSceneContentMin.y));
@@ -419,6 +439,8 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         float height = (float)(mSceneContentMax.y - mSceneContentMin.y);
         ImGui::Text("NDC: %f %f\n", 2 * (cameraSystem->getMousePosX() - 0.5f * width) / width,
                     2 * (cameraSystem->getMousePosY() - 0.5f * height) / height);
+
+        ImGui::Text("Camera Position: %f %f %f\n", cameraSystem->getCameraPosition().x, cameraSystem->getCameraPosition().y, cameraSystem->getCameraPosition().z);
 
         ImGui::GetForegroundDrawList()->AddRect(mSceneContentMin, mSceneContentMax, 0xFFFF0000);
 

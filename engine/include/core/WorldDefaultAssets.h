@@ -34,6 +34,7 @@ struct WorldDefaultAssets
     Guid mShadowDepthCubemapShaderId;
     Guid mGbufferShaderId;
     Guid mStandardDeferedShaderId;
+    Guid mGridShaderId;
 
     // default loaded materials
     Guid mSimpleLitMaterialId;

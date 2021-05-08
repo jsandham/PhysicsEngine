@@ -9,12 +9,15 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
 {
     state.mLineShader = world->getAssetById<Shader>(world->getLineShaderId());
     state.mGizmoShader = world->getAssetById<Shader>(world->getGizmoShaderId());
+    state.mGridShader = world->getAssetById<Shader>(world->getGridShaderId());
 
     assert(state.mLineShader != NULL);
     assert(state.mGizmoShader != NULL);
+    assert(state.mGridShader != NULL);
 
     state.mLineShader->compile();
     state.mGizmoShader->compile();
+    state.mGridShader->compile();
 
     // cache internal shader uniforms
     state.mLineShaderProgram = state.mLineShader->getProgramFromVariant(ShaderVariant::None);
@@ -26,6 +29,49 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
     state.mGizmoShaderModelLoc = state.mGizmoShader->findUniformLocation("model", state.mGizmoShaderProgram);
     state.mGizmoShaderViewLoc = state.mGizmoShader->findUniformLocation("view", state.mGizmoShaderProgram);
     state.mGizmoShaderProjLoc = state.mGizmoShader->findUniformLocation("projection", state.mGizmoShaderProgram);
+
+    state.mGridShaderProgram = state.mGridShader->getProgramFromVariant(ShaderVariant::None);
+    state.mGridShaderMVPLoc = state.mGridShader->findUniformLocation("mvp", state.mGridShaderProgram);
+    state.mGridShaderColorLoc = state.mGridShader->findUniformLocation("color", state.mGridShaderProgram);
+
+
+    state.mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+    for (int i = -100; i < 100; i++)
+    {
+        glm::vec3 start = glm::vec3(i, 0.0f, -100.0f);
+        glm::vec3 end = glm::vec3(i, 0.0f, 100.0f);
+
+        state.mVertices.push_back(start);
+        state.mVertices.push_back(end);
+    }
+
+    for (int i = -100; i < 100; i++)
+    {
+        glm::vec3 start = glm::vec3(-100.0f, 0.0f, i);
+        glm::vec3 end = glm::vec3(100.0f, 0.0f, i);
+
+        state.mVertices.push_back(start);
+        state.mVertices.push_back(end);
+    }
+
+    glGenVertexArrays(1, &state.mGridVAO);
+    glBindVertexArray(state.mGridVAO);
+
+    glGenBuffers(1, &state.mGridVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, state.mGridVBO);
+    glBufferData(GL_ARRAY_BUFFER, state.mVertices.size() * sizeof(glm::vec3), &state.mVertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void PhysicsEngine::destroyGizmoRenderer(GizmoRendererState& state)
+{
+    glDeleteVertexArrays(1, &state.mGridVAO);
+    glDeleteBuffers(1, &state.mGridVBO);
 }
 
 void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
@@ -393,6 +439,31 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
     glDeleteBuffers(2, &frustumVBO[0]);
 
     glDisable(GL_BLEND);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+
+void PhysicsEngine::renderGridGizmo(World* world, Camera* camera, GizmoRendererState& state)
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
+    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+        camera->getViewport().mHeight);
+
+    glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
+
+    state.mGridShader->use(state.mGridShaderProgram);
+    state.mGridShader->setMat4(state.mGridShaderMVPLoc, mvp);
+    state.mGridShader->setColor(state.mGridShaderColorLoc, state.mGridColor);
+
+    glBindVertexArray(state.mGridVAO);
+    glDrawArrays(GL_LINES, 0, (GLsizei)(state.mVertices.size()));
+    glBindVertexArray(0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }

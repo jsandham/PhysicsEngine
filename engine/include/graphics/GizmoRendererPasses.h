@@ -20,6 +20,7 @@
 namespace PhysicsEngine
 {
 void initializeGizmoRenderer(World *world, GizmoRendererState &state);
+void destroyGizmoRenderer(GizmoRendererState& state);
 void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<LineGizmo> &gizmos);
 void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<PlaneGizmo> &gizmos);
 void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<AABBGizmo> &gizmos);
@@ -27,6 +28,8 @@ void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
                         const std::vector<SphereGizmo> &gizmos);
 void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
                          const std::vector<FrustumGizmo> &gizmos);
+
+void renderGridGizmo(World* world, Camera* camera, GizmoRendererState& state);
 } // namespace PhysicsEngine
 
 #endif

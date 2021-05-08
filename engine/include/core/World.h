@@ -817,6 +817,7 @@ class World
     Guid getShadowDepthCubemapShaderId() const;
     Guid getGbufferShaderId() const;
     Guid getStandardDeferredShaderId() const;
+    Guid getGridShaderId() const;
 
   private:
     Asset *loadAssetFromYAML(const YAML::Node &in);

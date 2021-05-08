@@ -150,6 +150,7 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("RenderSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::RenderSystem>());
     ImGui::Text("PhysicsSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::PhysicsSystem>());
     ImGui::Text("CleanUpSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::CleanUpSystem>());
+    ImGui::Text("GizmoSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::GizmoSystem>());
     ImGui::Text("EditorCameraSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::EditorCameraSystem>());
 
     ImGui::EndColumns();

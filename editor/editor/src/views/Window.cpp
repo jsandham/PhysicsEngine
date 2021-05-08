@@ -7,15 +7,27 @@ using namespace PhysicsEditor;
 Window::Window() : mName("Default"), mOpen(true), mFocused(false), mHovered(false)
 {
     mWindowPos = ImVec2(0, 0);
+    mWindowWidth = 0.0f;
+    mWindowHeight = 0.0f;
     mContentMin = ImVec2(0, 0);
     mContentMax = ImVec2(0, 0);
+
+    mOpenedLastFrame = false;
+    mFocusedLastFrame = false;
+    mHoveredLastFrame = false;
 }
 
 Window::Window(const std::string name) : mName(name), mOpen(true), mFocused(false), mHovered(false)
 {
     mWindowPos = ImVec2(0, 0);
+    mWindowWidth = 0.0f;
+    mWindowHeight = 0.0f;
     mContentMin = ImVec2(0, 0);
     mContentMax = ImVec2(0, 0);
+
+    mOpenedLastFrame = false;
+    mFocusedLastFrame = false;
+    mHoveredLastFrame = false;
 }
 
 Window::~Window()
@@ -24,12 +36,11 @@ Window::~Window()
 
 void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame, float alpha, ImGuiWindowFlags flags)
 {
-    mWindowPos.x = 0;
-    mWindowPos.y = 0;
-    mContentMax.x = 0;
-    mContentMax.y = 0;
-    mContentMin.x = 0;
-    mContentMin.y = 0;
+    mWindowPos = ImVec2(0, 0);
+    mWindowWidth = 0.0f;
+    mWindowHeight = 0.0f;
+    mContentMax = ImVec2(0, 0);
+    mContentMin = ImVec2(0, 0);
 
     mOpenedLastFrame = mOpen;
     mFocusedLastFrame = mFocused;
@@ -58,6 +69,8 @@ void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame, float alpha, ImG
     }
 
     mWindowPos = ImGui::GetWindowPos();
+    mWindowWidth = ImGui::GetWindowWidth();
+    mWindowHeight = ImGui::GetWindowHeight();
     mContentMin = ImGui::GetWindowContentRegionMin();
     mContentMax = ImGui::GetWindowContentRegionMax();
 
@@ -85,6 +98,16 @@ void Window::close()
 ImVec2 Window::getWindowPos() const
 {
     return mWindowPos;
+}
+
+float Window::getWindowWidth() const
+{
+    return mWindowWidth;
+}
+
+float Window::getWindowHeight() const
+{
+    return mWindowHeight;
 }
 
 ImVec2 Window::getContentMin() const
