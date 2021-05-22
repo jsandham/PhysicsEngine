@@ -32,9 +32,16 @@ struct GizmoRendererState
     int mGridShaderMVPLoc;
     int mGridShaderColorLoc;
 
+
+
+    GLuint mFrustumVAO;
+    GLuint mFrustumVBO[2];
+    std::vector<float> mFrustumVertices;
+    std::vector<float> mFrustumNormals;
+
     GLuint mGridVAO;
     GLuint mGridVBO;
-    std::vector<glm::vec3> mVertices;
+    std::vector<glm::vec3> mGridVertices;
     glm::vec3 mGridOrigin;
     Color mGridColor;
 };
@@ -43,7 +50,7 @@ struct LineGizmo
 {
     Line mLine;
     Color mColor;
-
+   
     LineGizmo()
     {
     }
@@ -69,11 +76,12 @@ struct AABBGizmo
 {
     AABB mAABB;
     Color mColor;
+    bool mWireFrame;
 
-    AABBGizmo()
+    AABBGizmo() : mWireFrame(false)
     {
     }
-    AABBGizmo(const AABB &aabb, const Color &color) : mAABB(aabb), mColor(color)
+    AABBGizmo(const AABB &aabb, const Color &color, bool wireframe) : mAABB(aabb), mColor(color), mWireFrame(wireframe)
     {
     }
 };
@@ -82,11 +90,12 @@ struct FrustumGizmo
 {
     Frustum mFrustum;
     Color mColor;
+    bool mWireFrame;
 
-    FrustumGizmo()
+    FrustumGizmo() : mWireFrame(false)
     {
     }
-    FrustumGizmo(const Frustum &frustum, const Color &color) : mFrustum(frustum), mColor(color)
+    FrustumGizmo(const Frustum &frustum, const Color &color, bool wireframe) : mFrustum(frustum), mColor(color), mWireFrame(wireframe)
     {
     }
 };
@@ -96,31 +105,16 @@ struct PlaneGizmo
     Plane mPlane;
     Color mColor;
     glm::vec3 mExtents;
+    bool mWireFrame;
 
-    PlaneGizmo()
+    PlaneGizmo() : mWireFrame(false)
     {
     }
-    PlaneGizmo(const Plane &plane, glm::vec3 extents, const Color &color)
-        : mPlane(plane), mColor(color), mExtents(extents)
+    PlaneGizmo(const Plane &plane, glm::vec3 extents, const Color &color, bool wireframe)
+        : mPlane(plane), mColor(color), mExtents(extents), mWireFrame(wireframe)
     {
     }
 };
-
-
-
-//struct GridGizmo
-//{
-//    std::vector<glm::vec3> mVertices;
-//    glm::vec3 mOrigin;
-//    Color mColor;
-//
-//    GridGizmo()
-//    {
-//    }
-//    GridGizmo(const glm::vec3& origin, const Color& color) : mColor(color), mOrigin(origin)
-//    {
-//    }
-//};
 } // namespace PhysicsEngine
 
 #endif

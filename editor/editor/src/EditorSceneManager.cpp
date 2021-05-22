@@ -25,10 +25,10 @@ void EditorSceneManager::newScene(Clipboard& clipboard)
     }
 }
 
-void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name, const std::string& path)
+void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
 {
     // check to make sure the scene is part of the current project
-    if (path.find(clipboard.getProjectPath() + "\\data\\") != 0)
+    if (path.string().find(clipboard.getProjectPath() + "\\data\\") != 0)
     {
         return;
     }
@@ -44,14 +44,14 @@ void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name
     clipboard.clearSelectedItem();
 
     // load scene into world
-    PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path);
+    PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path.string());
     if (scene != nullptr)
     {
-        clipboard.setActiveScene(name, path, scene->getId());
+        clipboard.setActiveScene(name, path.string(), scene->getId());
     }
 }
 
-void EditorSceneManager::saveScene(Clipboard& clipboard, const std::string& name, const std::string& path)
+void EditorSceneManager::saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
 {
-    clipboard.getWorld()->writeSceneToYAML(path, clipboard.getSceneId());
+    clipboard.getWorld()->writeSceneToYAML(path.string(), clipboard.getSceneId());
 }

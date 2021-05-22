@@ -45,10 +45,10 @@ class GizmoRenderer
 
     void addToDrawList(const Line &line, const Color &color);
     void addToDrawList(const Ray &ray, float t, const Color &color);
-    void addToDrawList(const AABB &aabb, const Color &color);
-    void addToDrawList(const Sphere &sphere, const Color &color);
-    void addToDrawList(const Frustum &frustum, const Color &color);
-    void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color);
+    void addToDrawList(const Sphere& sphere, const Color& color);
+    void addToDrawList(const AABB &aabb, const Color &color, bool wireframe = false);
+    void addToDrawList(const Frustum &frustum, const Color &color, bool wireframe = false);
+    void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe = false);
     void clearDrawList();
 };
 } // namespace PhysicsEngine

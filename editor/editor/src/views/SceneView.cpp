@@ -212,6 +212,13 @@ void SceneView::update(Clipboard &clipboard)
 
     clipboard.mGizmoSystem->clearDrawList();
 
+    Frustum frustum;
+    frustum.mNearPlane = 2.0f;
+    frustum.mFarPlane = 8.0f;
+    frustum.computePlanes(glm::vec3(0,0,0), glm::vec3(0,0,1), glm::vec3(0,1,0), glm::vec3(1,0,0));
+    clipboard.mGizmoSystem->addToDrawList(frustum, Color(0,1,0,1), true);
+    //clipboard.mGizmoSystem->addToDrawList(AABB(glm::vec3(0,0,0), glm::vec3(2,2,2)), Color(0, 1, 0, 1));
+
     if (clipboard.getDraggedType() == InteractionType::Mesh)
     {
         if (clipboard.mSceneViewHoveredThisFrame)

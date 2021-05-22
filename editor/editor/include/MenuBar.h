@@ -80,8 +80,8 @@ class MenuBar
     void showMenuHelp(const Clipboard& clipboard);
 
     void newScene(Clipboard& clipboard);
-    void openScene(Clipboard& clipboard, const std::string& name, const std::string& path);
-    void saveScene(Clipboard& clipboard, const std::string& name, const std::string& path);
+    void openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path);
+    void saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path);
     void newProject(Clipboard& clipboard);
     void openProject(Clipboard& clipboard);
     void saveProject(Clipboard& clipboard);

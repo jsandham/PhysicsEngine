@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace PhysicsEditor
 {
@@ -28,34 +29,32 @@ struct FilebrowserItem
 class Filebrowser
 {
   private:
-    std::string currentDirectoryPath;            // current Path the file browser is in
-    std::vector<std::string> currentFiles;       // files located in the current directory path
-    std::vector<std::string> currentDirectories; // directories located in the current directory path
+    std::filesystem::path mCurrentDirectoryPath;            // current Path the file browser is in
+    std::vector<std::filesystem::path> mCurrentFiles;       // files located in the current directory path
+    std::vector<std::filesystem::path> mCurrentDirectories; // directories located in the current directory path
 
-    bool isVisible;
-    bool openClicked;
-    bool saveClicked;
-    bool selectFolderClicked;
-    FilebrowserMode mode;
-    std::vector<char> inputBuffer;
-    std::string currentFilter;
-    std::string openFile;
-    std::string saveFile;
-    std::string selectedFolder;
+    std::filesystem::path mOpenFile;
+    std::filesystem::path mSaveFile;
+    std::filesystem::path mSelectedFolder;
+
+    bool mIsVisible;
+    bool mOpenClicked;
+    bool mSaveClicked;
+    bool mSelectFolderClicked;
+    FilebrowserMode mMode;
+    std::vector<char> mInputBuffer;
+    std::string mCurrentFilter;
 
   public:
     Filebrowser();
     ~Filebrowser();
 
-    void render(std::string cwd, bool becomeVisibleThisFrame);
+    void render(const std::filesystem::path& cwd, bool becomeVisibleThisFrame);
     void setMode(FilebrowserMode mode);
-    std::string getOpenFile() const;
-    std::string getOpenFilePath() const;
-    std::string getSaveFile() const;
-    std::string getSaveFilePath() const;
-    std::string getSelectedFolder() const;
-    std::string getSelectedFolderPath() const;
-    std::string getCurrentDirectoryPath() const;
+    std::filesystem::path getOpenFilePath() const;
+    std::filesystem::path getSaveFilePath() const;
+    std::filesystem::path getSelectedFolderPath() const;
+    std::filesystem::path getCurrentDirectoryPath() const;
     bool isOpenClicked() const;
     bool isSaveClicked() const;
     bool isSelectFolderClicked() const;

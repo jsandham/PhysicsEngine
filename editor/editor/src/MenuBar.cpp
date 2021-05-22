@@ -10,7 +10,6 @@
 #include "imgui_internal.h"
 
 using namespace PhysicsEditor;
-using namespace PhysicsEngine;
 
 MenuBar::MenuBar()
 {
@@ -111,11 +110,11 @@ void MenuBar::update(Clipboard &clipboard)
 
     if (filebrowser.isOpenClicked())
     {
-        openScene(clipboard, filebrowser.getOpenFile(), filebrowser.getOpenFilePath());
+        openScene(clipboard, filebrowser.getOpenFilePath().filename().string(), filebrowser.getOpenFilePath());
     }
     else if (filebrowser.isSaveClicked())
     {
-        saveScene(clipboard, filebrowser.getSaveFile(), filebrowser.getSaveFilePath());
+        saveScene(clipboard, filebrowser.getSaveFilePath().filename().string(), filebrowser.getSaveFilePath());
     }
 
     // new, open, save project project
@@ -340,12 +339,12 @@ void MenuBar::newScene(Clipboard &clipboard)
     EditorSceneManager::newScene(clipboard);
 }
 
-void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std::string& path)
+void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
 {
     EditorSceneManager::openScene(clipboard, name, path);
 }
 
-void MenuBar::saveScene(Clipboard& clipboard, const std::string& name, const std::string& path)
+void MenuBar::saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
 {
     EditorSceneManager::saveScene(clipboard, name, path);
 }

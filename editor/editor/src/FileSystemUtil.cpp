@@ -145,84 +145,84 @@ bool PhysicsEditor::deleteFile(std::string path)
     return true;
 }
 
-bool PhysicsEditor::getFileTime(std::string path, std::string &createTime, std::string &accessTime,
-                                std::string &writeTime)
-{
-    HANDLE hFile;
-
-    hFile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        DWORD temp = GetLastError();
-        return false;
-    }
-
-    FILETIME ftCreate, ftAccess, ftWrite;
-    SYSTEMTIME stUTC, stCreateLocal, stAccessLocal, stWriteLocal;
-
-    // Retrieve the file times for the file.
-    bool passed = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
-
-    CloseHandle(hFile);
-
-    if (!passed)
-    {
-        return false;
-    }
-
-    // Convert the last create, access and write time to local time.
-    FileTimeToSystemTime(&ftCreate, &stUTC);
-    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
-    FileTimeToSystemTime(&ftAccess, &stUTC);
-    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stAccessLocal);
-    FileTimeToSystemTime(&ftWrite, &stUTC);
-    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
-
-    // Build a string showing the date and time.
-    int year = stCreateLocal.wYear;
-    int month = stCreateLocal.wMonth;
-    int day = stCreateLocal.wDay;
-    int hour = stCreateLocal.wHour;
-    int second = stCreateLocal.wSecond;
-    int millisecond = stCreateLocal.wMilliseconds;
-
-    char buffer[30];
-    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
-    createTime = std::string(buffer);
-
-    year = stAccessLocal.wYear;
-    month = stAccessLocal.wMonth;
-    day = stAccessLocal.wDay;
-    hour = stAccessLocal.wHour;
-    second = stAccessLocal.wSecond;
-    millisecond = stAccessLocal.wMilliseconds;
-
-    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
-    accessTime = std::string(buffer);
-
-    year = stWriteLocal.wYear;
-    month = stWriteLocal.wMonth;
-    day = stWriteLocal.wDay;
-    hour = stWriteLocal.wHour;
-    second = stWriteLocal.wSecond;
-    millisecond = stWriteLocal.wMilliseconds;
-
-    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
-    writeTime = std::string(buffer);
-
-    return true;
-}
-
-std::string PhysicsEditor::getDirectoryName(std::string path)
-{
-    return path.substr(path.find_last_of("\\") + 1);
-}
-
-std::string PhysicsEditor::getFileName(std::string path)
-{
-    return path.substr(path.find_last_of("\\") + 1);
-}
+//bool PhysicsEditor::getFileTime(std::string path, std::string &createTime, std::string &accessTime,
+//                                std::string &writeTime)
+//{
+//    HANDLE hFile;
+//
+//    hFile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+//
+//    if (hFile == INVALID_HANDLE_VALUE)
+//    {
+//        DWORD temp = GetLastError();
+//        return false;
+//    }
+//
+//    FILETIME ftCreate, ftAccess, ftWrite;
+//    SYSTEMTIME stUTC, stCreateLocal, stAccessLocal, stWriteLocal;
+//
+//    // Retrieve the file times for the file.
+//    bool passed = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
+//
+//    CloseHandle(hFile);
+//
+//    if (!passed)
+//    {
+//        return false;
+//    }
+//
+//    // Convert the last create, access and write time to local time.
+//    FileTimeToSystemTime(&ftCreate, &stUTC);
+//    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
+//    FileTimeToSystemTime(&ftAccess, &stUTC);
+//    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stAccessLocal);
+//    FileTimeToSystemTime(&ftWrite, &stUTC);
+//    SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
+//
+//    // Build a string showing the date and time.
+//    int year = stCreateLocal.wYear;
+//    int month = stCreateLocal.wMonth;
+//    int day = stCreateLocal.wDay;
+//    int hour = stCreateLocal.wHour;
+//    int second = stCreateLocal.wSecond;
+//    int millisecond = stCreateLocal.wMilliseconds;
+//
+//    char buffer[30];
+//    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+//    createTime = std::string(buffer);
+//
+//    year = stAccessLocal.wYear;
+//    month = stAccessLocal.wMonth;
+//    day = stAccessLocal.wDay;
+//    hour = stAccessLocal.wHour;
+//    second = stAccessLocal.wSecond;
+//    millisecond = stAccessLocal.wMilliseconds;
+//
+//    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+//    accessTime = std::string(buffer);
+//
+//    year = stWriteLocal.wYear;
+//    month = stWriteLocal.wMonth;
+//    day = stWriteLocal.wDay;
+//    hour = stWriteLocal.wHour;
+//    second = stWriteLocal.wSecond;
+//    millisecond = stWriteLocal.wMilliseconds;
+//
+//    sprintf_s(buffer, "%d-%d-%d-%d-%d-%d\0", year, month, day, hour, second, millisecond);
+//    writeTime = std::string(buffer);
+//
+//    return true;
+//}
+//
+//std::string PhysicsEditor::getDirectoryName(std::string path)
+//{
+//    return path.substr(path.find_last_of("\\") + 1);
+//}
+//
+//std::string PhysicsEditor::getFileName(std::string path)
+//{
+//    return path.substr(path.find_last_of("\\") + 1);
+//}
 
 std::string PhysicsEditor::getFileExtension(std::string path)
 {

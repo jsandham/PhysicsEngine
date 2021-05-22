@@ -4,8 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
-#include "FileSystemUtil.h"
+#include <filesystem>
 
 #include "FileWatcher.h"
 
@@ -20,7 +19,7 @@ class LibraryDirectory;
 class LibraryDirectoryListener : public FW::FileWatchListener
 {
   private:
-    LibraryDirectory *directory;
+    LibraryDirectory *mDirectory;
 
   public:
     LibraryDirectoryListener();
@@ -32,19 +31,19 @@ class LibraryDirectory
 {
   private:
     // data directory path
-    std::string mDataPath;
+    std::filesystem::path mDataPath;
 
     // filepath to id map
-    std::map<const std::string, PhysicsEngine::Guid> mFilePathToId;
+    std::map<const std::filesystem::path, PhysicsEngine::Guid> mFilePathToId;
 
     // filepath to id map
-    std::map<const PhysicsEngine::Guid, std::string> mIdToFilePath;
+    std::map<const PhysicsEngine::Guid, std::filesystem::path> mIdToFilePath;
 
     // buffer of added/modified project file paths
-    std::vector<std::string> mAddBuffer;
+    std::vector<std::filesystem::path> mAddBuffer;
 
     // buffer of deleted project file paths
-    std::vector<std::string> mDeleteBuffer;
+    std::vector<std::filesystem::path> mDeleteBuffer;
 
     // file watcher listener object
     LibraryDirectoryListener mListener;
@@ -61,13 +60,13 @@ class LibraryDirectory
     LibraryDirectory(const LibraryDirectory& other) = delete;
     LibraryDirectory& operator=(const LibraryDirectory& other) = delete;
 
-    void watch(const std::string& projectPath);
+    void watch(const std::filesystem::path& projectPath);
     void update(PhysicsEngine::World* world);
-    void fileAddedToProject(const std::string& filePath);
-    void fileDeletedFromProject(const std::string& filePath);
+    void fileAddedToProject(const std::filesystem::path& filePath);
+    void fileDeletedFromProject(const std::filesystem::path& filePath);
 
-    PhysicsEngine::Guid getId(const std::string &filePath) const;
-    std::string getFile(const PhysicsEngine::Guid& id) const;
+    PhysicsEngine::Guid getId(const std::filesystem::path& filePath) const;
+    std::filesystem::path getFile(const PhysicsEngine::Guid& id) const;
 };
 } // namespace PhysicsEditor
 

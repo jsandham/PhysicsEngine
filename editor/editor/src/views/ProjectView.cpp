@@ -14,7 +14,7 @@ using namespace PhysicsEditor;
 ProjectView::ProjectView() : Window("Project View")
 {
     mSelected = nullptr;
-    mRightPanelSelectedPath = "";
+    mRightPanelSelectedPath = std::filesystem::path();
 }
 
 ProjectView::~ProjectView()
@@ -216,7 +216,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 size_t count = mSelected->getChildCount();
                 std::string foldername = "Folder" + (count > 0 ? "(" + std::to_string(count) + ")" : "");
                 std::string folderPath = mSelected->getDirectoryPath() + "\\" + foldername;
-                if (PhysicsEditor::createDirectory(folderPath))
+                if (std::filesystem::create_directory(folderPath))
                 {
                     mSelected->addDirectory(foldername);
                 }
@@ -244,7 +244,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             if (clipboard.mSelectedType == InteractionType::Folder)
             {
                 std::string folderpath = clipboard.getSelectedPath();
-                if (PhysicsEditor::deleteDirectory(folderpath))
+                if (std::filesystem::remove_all(folderpath))
                 {
                     clipboard.clearSelectedItem();
 
@@ -252,14 +252,14 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
                     if (folderpath == mRightPanelSelectedPath)
                     {
-                        mRightPanelSelectedPath = "";
+                        mRightPanelSelectedPath = std::filesystem::path();
                     }
                 }
             }
             else
             {
                 std::string filepath = clipboard.getSelectedPath();
-                if (PhysicsEditor::deleteFile(filepath))
+                if (std::filesystem::remove(filepath))
                 {
                     clipboard.clearSelectedItem();
 
@@ -267,7 +267,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                     
                     if (filepath == mRightPanelSelectedPath)
                     {
-                        mRightPanelSelectedPath = "";
+                        mRightPanelSelectedPath = std::filesystem::path();
                     }
                 }
             }

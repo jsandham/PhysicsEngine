@@ -48,6 +48,8 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::SetColumnOffset(0, 0.0f);
     ImGui::SetColumnOffset(1, 300.0f);
 
+    ImGui::Text("Framerate: %f", ImGui::GetIO().Framerate);
+
     ImGui::Text("Is SceneView open? %d\n", clipboard.mSceneViewOpen);
     ImGui::Text("Is Inspector open? %d\n", clipboard.mInspectorOpen);
     ImGui::Text("Is Hierarchy open? %d\n", clipboard.mHierarchyOpen);

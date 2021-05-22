@@ -29,6 +29,9 @@ void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
 void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
                          const std::vector<FrustumGizmo> &gizmos);
 
+void renderShadedFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
+void renderWireframeFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
+
 void renderGridGizmo(World* world, Camera* camera, GizmoRendererState& state);
 } // namespace PhysicsEngine
 

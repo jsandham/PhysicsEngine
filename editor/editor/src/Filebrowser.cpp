@@ -12,45 +12,59 @@
 
 #include "../include/imgui/imgui_extensions.h"
 
+namespace fs = std::filesystem;
+
 using namespace PhysicsEditor;
 
 Filebrowser::Filebrowser()
 {
-    isVisible = false;
-    openClicked = false;
-    saveClicked = false;
-    selectFolderClicked = false;
-    mode = FilebrowserMode::Open;
+    mIsVisible = false;
+    mOpenClicked = false;
+    mSaveClicked = false;
+    mSelectFolderClicked = false;
+    mMode = FilebrowserMode::Open;
 
-    currentDirectoryPath = PhysicsEditor::currentWorkingDirectoryPath();
+    mCurrentDirectoryPath = fs::current_path();
 
-    inputBuffer.resize(256);
+    mInputBuffer.resize(256);
 
-    currentFilter = ".";
+    mCurrentFilter = ".";
 
-    openFile = "";
-    saveFile = "";
-    selectedFolder = "";
+    mOpenFile = fs::path();
+    mSaveFile = fs::path();
+    mSelectedFolder = fs::path();
 }
 
 Filebrowser::~Filebrowser()
 {
 }
 
-void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
+void Filebrowser::render(const std::filesystem::path& cwd, bool becomeVisibleThisFrame)
 {
-    openClicked = false;
-    saveClicked = false;
-    selectFolderClicked = false;
+    mOpenClicked = false;
+    mSaveClicked = false;
+    mSelectFolderClicked = false;
 
-    if (isVisible != becomeVisibleThisFrame)
+    if (mIsVisible != becomeVisibleThisFrame)
     {
-        isVisible = becomeVisibleThisFrame;
+        mIsVisible = becomeVisibleThisFrame;
         if (becomeVisibleThisFrame)
         {
-            currentDirectoryPath = cwd;
-            currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
-            currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+            mCurrentDirectoryPath = cwd;
+
+            //currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+            //currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+            for (const fs::directory_entry& entry : fs::directory_iterator(mCurrentDirectoryPath))
+            {
+                if (fs::is_directory(entry))
+                {
+                    mCurrentDirectories.push_back(entry.path());
+                }
+                else if (fs::is_regular_file(entry))
+                {
+                    mCurrentFiles.push_back(entry.path());
+                }
+            }
 
             ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 400.0f), ImVec2(1920.0f, 1080.0f));
             ImGui::OpenPopup("Filebrowser");
@@ -61,46 +75,83 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
     {
         float windowWidth = ImGui::GetWindowWidth();
 
-        ImGui::Text(currentDirectoryPath.c_str());
-        ImGui::Text(openFile.c_str());
-        ImGui::Text(saveFile.c_str());
-        ImGui::Text(selectedFolder.c_str());
+        ImGui::Text(mCurrentDirectoryPath.string().c_str());
+        ImGui::Text(mOpenFile.string().c_str());
+        ImGui::Text(mSaveFile.string().c_str());
+        ImGui::Text(mSelectedFolder.string().c_str());
 
         std::vector<std::string> directoryNamesInCurrentDirectoryPath =
-            PhysicsEditor::split(currentDirectoryPath, '\\');
+            PhysicsEditor::split(mCurrentDirectoryPath.string(), '\\');
+        //std::vector<std::string> directoryNamesInCurrentDirectoryPath;
+        //for (auto& part : fs::path(currentDirectoryPath))
+        //{
+        //    if (!part.filename().string().empty())
+        //    {
+        //        directoryNamesInCurrentDirectoryPath.push_back(part.filename().string());
+        //    }
+        //}
+
+
         std::vector<std::string> directoryPathsInCurrentDirectoryPath =
-            PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+            PhysicsEditor::getDirectoryPaths(mCurrentDirectoryPath.string());
+        //std::vector<std::string> directoryPathsInCurrentDirectoryPath;
+        //for (auto& part : fs::path(currentDirectoryPath))
+        //{
+        //    directoryPathsInCurrentDirectoryPath.push_back(part.parent_path().string());
+        //}
 
         for (size_t i = 0; i < directoryNamesInCurrentDirectoryPath.size(); i++)
         {
-
             std::string directoryPath =
                 directoryPathsInCurrentDirectoryPath[directoryPathsInCurrentDirectoryPath.size() - i - 1];
 
             if (ImGui::Button(directoryNamesInCurrentDirectoryPath[i].c_str()))
             {
-                currentDirectoryPath = directoryPath;
+                mCurrentDirectoryPath = directoryPath;
 
-                currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
-                currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
-                directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
-                directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+                //currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+                //currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+                mCurrentFiles.clear();
+                mCurrentDirectories.clear();
+                for (const fs::directory_entry& entry : fs::directory_iterator(mCurrentDirectoryPath))
+                {
+                    if (fs::is_directory(entry))
+                    {
+                        mCurrentDirectories.push_back(entry.path());
+                    }
+                    else if (fs::is_regular_file(entry))
+                    {
+                        mCurrentFiles.push_back(entry.path());
+                    }
+                }
 
-                if (mode == FilebrowserMode::SelectFolder)
+
+                directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(mCurrentDirectoryPath.string(), '\\');
+                directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(mCurrentDirectoryPath.string());
+
+                if (mMode == FilebrowserMode::SelectFolder)
                 {
                     for (int j = 0; j < std::min(256, (int)directoryNamesInCurrentDirectoryPath[i].length()); j++)
                     {
-                        inputBuffer[j] = directoryNamesInCurrentDirectoryPath[i][j];
+                        mInputBuffer[j] = directoryNamesInCurrentDirectoryPath[i][j];
                     }
                     for (int j = std::min(256, (int)directoryNamesInCurrentDirectoryPath[i].length()); j < 256; j++)
                     {
-                        inputBuffer[j] = '\0';
+                        mInputBuffer[j] = '\0';
                     }
                 }
             }
 
             std::vector<std::string> directories = PhysicsEditor::getDirectoriesInDirectory(directoryPath);
-            std::vector<std::string> directoryPaths = PhysicsEditor::getDirectoriesInDirectory(directoryPath, true);
+            //std::vector<std::string> directories;
+            //fs::path currentPath(directoryPath);
+            //for (const fs::directory_entry& entry : fs::directory_iterator(currentPath))
+            //{
+            //    if (fs::is_directory(entry))
+            //    {
+            //        directories.push_back(entry.path().filename().string());
+            //    }
+            //}
 
             if (directories.size() > 0)
             {
@@ -111,22 +162,36 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
                 {
                     if (s >= 0)
                     {
-                        currentDirectoryPath = directoryPaths[s];
+                        mCurrentDirectoryPath = directoryPath + "\\" + directories[s];
 
-                        currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
-                        currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
-                        directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
-                        directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+                        //currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+                        //currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+                        mCurrentFiles.clear();
+                        mCurrentDirectories.clear();
+                        for (const fs::directory_entry& entry : fs::directory_iterator(mCurrentDirectoryPath))
+                        {
+                            if (fs::is_directory(entry))
+                            {
+                                mCurrentDirectories.push_back(entry.path());
+                            }
+                            else if (fs::is_regular_file(entry))
+                            {
+                                mCurrentFiles.push_back(entry.path());
+                            }
+                        }
+                        
+                        directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(mCurrentDirectoryPath.string(), '\\');
+                        directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(mCurrentDirectoryPath.string());
 
-                        if (mode == FilebrowserMode::SelectFolder)
+                        if (mMode == FilebrowserMode::SelectFolder)
                         {
                             for (int j = 0; j < std::min(256, (int)directories[s].length()); j++)
                             {
-                                inputBuffer[j] = directories[s][j];
+                                mInputBuffer[j] = directories[s][j];
                             }
                             for (int j = std::min(256, (int)directories[s].length()); j < 256; j++)
                             {
-                                inputBuffer[j] = '\0';
+                                mInputBuffer[j] = '\0';
                             }
                         }
                     }
@@ -141,13 +206,13 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
             }
         }
 
-        ImGuiTextFilter textFilter(currentFilter.c_str());
+        ImGuiTextFilter textFilter(mCurrentFilter.c_str());
         std::vector<std::string> filteredCurrentFiles;
-        for (size_t i = 0; i < currentFiles.size(); i++)
+        for (size_t i = 0; i < mCurrentFiles.size(); i++)
         {
-            if (textFilter.PassFilter(currentFiles[i].c_str()))
+            if (textFilter.PassFilter(mCurrentFiles[i].filename().string().c_str()))
             {
-                filteredCurrentFiles.push_back(currentFiles[i]);
+                filteredCurrentFiles.push_back(mCurrentFiles[i].filename().string());
             }
         }
 
@@ -157,17 +222,17 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
         }
 
         std::vector<FilebrowserItem> items;
-        for (size_t i = 0; i < currentDirectories.size(); i++)
+        for (size_t i = 0; i < mCurrentDirectories.size(); i++)
         {
             FilebrowserItem item;
-            item.name = currentDirectories[i];
+            item.name = mCurrentDirectories[i].filename().string();
             item.type = 0;
             item.selected = false;
 
             items.push_back(item);
         }
 
-        if (mode != FilebrowserMode::SelectFolder)
+        if (mMode != FilebrowserMode::SelectFolder)
         {
             for (size_t i = 0; i < filteredCurrentFiles.size(); i++)
             {
@@ -198,24 +263,38 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
                 {
                     if (ImGui::IsMouseDoubleClicked(0))
                     {
-                        currentDirectoryPath = currentDirectoryPath + "\\" + items[i].name;
+                        mCurrentDirectoryPath = mCurrentDirectoryPath.string() + "\\" + items[i].name;
 
-                        currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
-                        currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
-                        directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(currentDirectoryPath, '\\');
-                        directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(currentDirectoryPath);
+                        //currentFiles = PhysicsEditor::getFilesInDirectory(currentDirectoryPath);
+                        //currentDirectories = PhysicsEditor::getDirectoriesInDirectory(currentDirectoryPath);
+                        mCurrentFiles.clear();
+                        mCurrentDirectories.clear();
+                        for (const fs::directory_entry& entry : fs::directory_iterator(mCurrentDirectoryPath))
+                        {
+                            if (fs::is_directory(entry))
+                            {
+                                mCurrentDirectories.push_back(entry.path());
+                            }
+                            else if (fs::is_regular_file(entry))
+                            {
+                                mCurrentFiles.push_back(entry.path());
+                            }
+                        }
+                        
+                        directoryNamesInCurrentDirectoryPath = PhysicsEditor::split(mCurrentDirectoryPath.string(), '\\');
+                        directoryPathsInCurrentDirectoryPath = PhysicsEditor::getDirectoryPaths(mCurrentDirectoryPath.string());
                     }
                 }
 
-                if (items[i].type == 1 || mode == FilebrowserMode::SelectFolder)
+                if (items[i].type == 1 || mMode == FilebrowserMode::SelectFolder)
                 {
                     for (int j = 0; j < std::min(256, (int)items[selection].name.length()); j++)
                     {
-                        inputBuffer[j] = items[selection].name[j];
+                        mInputBuffer[j] = items[selection].name[j];
                     }
                     for (int j = std::min(256, (int)items[selection].name.length()); j < 256; j++)
                     {
-                        inputBuffer[j] = '\0';
+                        mInputBuffer[j] = '\0';
                     }
                 }
             }
@@ -223,15 +302,15 @@ void Filebrowser::render(std::string cwd, bool becomeVisibleThisFrame)
         ImGui::ListBoxFooter();
         ImGui::PopItemWidth();
 
-        if (mode == FilebrowserMode::Open)
+        if (mMode == FilebrowserMode::Open)
         {
             renderOpenMode();
         }
-        else if (mode == FilebrowserMode::Save)
+        else if (mMode == FilebrowserMode::Save)
         {
             renderSaveMode();
         }
-        else if (mode == FilebrowserMode::SelectFolder)
+        else if (mMode == FilebrowserMode::SelectFolder)
         {
             renderSelectFolderMode();
         }
@@ -252,32 +331,32 @@ void Filebrowser::renderOpenMode()
     ImGui::Text("File Name");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(inputTextWidth);
-    if (ImGui::InputText("##File Name", &inputBuffer[0], (int)inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("##File Name", &mInputBuffer[0], (int)mInputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
     {
     }
     ImGui::SameLine();
     const char *filterNames[] = {"Text Files (.txt)",  "Obj Files (.obj)", "Scene Files (.scene)",
-                                 "JSON Files (.json)", "All Files (*)",    "IniFiles (.ini)"};
-    const char *filters[] = {".txt", ".obj", ".scene", ".json", ".", ".ini"};
+                                 "JSON Files (.yaml)", "All Files (*)",    "IniFiles (.ini)"};
+    const char *filters[] = {".txt", ".obj", ".scene", ".yaml", ".", ".ini"};
     static int filterIndex = 4;
     ImGui::SetNextItemWidth(filterDropDownWidth);
     ImGui::Combo("##Filter", &filterIndex, filterNames, IM_ARRAYSIZE(filterNames));
-    currentFilter = filters[filterIndex];
+    mCurrentFilter = filters[filterIndex];
 
     int index = 0;
-    for (size_t i = 0; i < inputBuffer.size(); i++)
+    for (size_t i = 0; i < mInputBuffer.size(); i++)
     {
-        if (inputBuffer[i] == '\0')
+        if (mInputBuffer[i] == '\0')
         {
             index = (int)i;
             break;
         }
     }
-    openFile = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+    mOpenFile = mCurrentDirectoryPath / std::string(mInputBuffer.begin(), mInputBuffer.begin() + index);
 
     if (ImGui::Button("Open"))
     {
-        openClicked = true;
+        mOpenClicked = true;
         ImGui::CloseCurrentPopup();
     }
     ImGui::SameLine();
@@ -300,7 +379,7 @@ void Filebrowser::renderSaveMode()
     ImGui::Text("File Name");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(inputTextWidth);
-    if (ImGui::InputText("##File Name", &inputBuffer[0], (int)inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("##File Name", &mInputBuffer[0], (int)mInputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
     {
     }
 
@@ -316,19 +395,19 @@ void Filebrowser::renderSaveMode()
     ImGui::Combo("##Filter", &saveAsTypeIndex, saveAsTypeNames, IM_ARRAYSIZE(saveAsTypeNames));
 
     int index = 0;
-    for (size_t i = 0; i < inputBuffer.size(); i++)
+    for (size_t i = 0; i < mInputBuffer.size(); i++)
     {
-        if (inputBuffer[i] == '\0')
+        if (mInputBuffer[i] == '\0')
         {
             index = (int)i;
             break;
         }
     }
-    saveFile = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+    mSaveFile = mCurrentDirectoryPath / std::string(mInputBuffer.begin(), mInputBuffer.begin() + index);
 
     if (ImGui::Button("Save"))
     {
-        saveClicked = true;
+        mSaveClicked = true;
         ImGui::CloseCurrentPopup();
     }
     ImGui::SameLine();
@@ -350,24 +429,24 @@ void Filebrowser::renderSelectFolderMode()
     ImGui::Text("Folder");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(inputTextWidth);
-    if (ImGui::InputText("##File Name", &inputBuffer[0], (int)inputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("##File Name", &mInputBuffer[0], (int)mInputBuffer.size(), ImGuiInputTextFlags_EnterReturnsTrue))
     {
     }
 
     int index = 0;
-    for (size_t i = 0; i < inputBuffer.size(); i++)
+    for (size_t i = 0; i < mInputBuffer.size(); i++)
     {
-        if (inputBuffer[i] == '\0')
+        if (mInputBuffer[i] == '\0')
         {
             index = (int)i;
             break;
         }
     }
-    selectedFolder = std::string(inputBuffer.begin(), inputBuffer.begin() + index);
+    mSelectedFolder = std::string(mInputBuffer.begin(), mInputBuffer.begin() + index);
 
     if (ImGui::Button("Select Folder"))
     {
-        selectFolderClicked = true;
+        mSelectFolderClicked = true;
 
         ImGui::CloseCurrentPopup();
     }
@@ -380,60 +459,45 @@ void Filebrowser::renderSelectFolderMode()
 
 void Filebrowser::setMode(FilebrowserMode mode)
 {
-    this->mode = mode;
+    mMode = mode;
 }
 
-std::string Filebrowser::getOpenFile() const
+std::filesystem::path Filebrowser::getOpenFilePath() const
 {
-    return openFile;
+    return mOpenFile;
 }
 
-std::string Filebrowser::getOpenFilePath() const
+std::filesystem::path Filebrowser::getSaveFilePath() const
 {
-    return currentDirectoryPath + "\\" + openFile;
+    return mSaveFile;
 }
 
-std::string Filebrowser::getSaveFile() const
+std::filesystem::path Filebrowser::getSelectedFolderPath() const
 {
-    return saveFile;
-}
-
-std::string Filebrowser::getSaveFilePath() const
-{
-    return currentDirectoryPath + "\\" + saveFile;
-}
-
-std::string Filebrowser::getSelectedFolder() const
-{
-    return selectedFolder;
-}
-
-std::string Filebrowser::getSelectedFolderPath() const
-{
-    if (currentDirectoryPath.substr(currentDirectoryPath.find_last_of("/\\") + 1) == selectedFolder)
+    if (mCurrentDirectoryPath.filename() == mSelectedFolder)
     {
-        return currentDirectoryPath;
+        return mCurrentDirectoryPath;
     }
 
-    return currentDirectoryPath + "\\" + selectedFolder;
+    return mCurrentDirectoryPath / mSelectedFolder;
 }
 
-std::string Filebrowser::getCurrentDirectoryPath() const
+std::filesystem::path Filebrowser::getCurrentDirectoryPath() const
 {
-    return currentDirectoryPath;
+    return mCurrentDirectoryPath;
 }
 
 bool Filebrowser::isOpenClicked() const
 {
-    return openClicked;
+    return mOpenClicked;
 }
 
 bool Filebrowser::isSaveClicked() const
 {
-    return saveClicked;
+    return mSaveClicked;
 }
 
 bool Filebrowser::isSelectFolderClicked() const
 {
-    return selectFolderClicked;
+    return mSelectFolderClicked;
 }

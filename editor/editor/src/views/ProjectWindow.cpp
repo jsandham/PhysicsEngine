@@ -1,12 +1,10 @@
 #include "../../include/views/ProjectWindow.h"
-#include "../../include/FileSystemUtil.h"
 #include "../../include/EditorCameraSystem.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
 
 using namespace PhysicsEditor;
-using namespace PhysicsEngine;
 
 ProjectWindow::ProjectWindow() : PopupWindow("##ProjectWindow", 500.0f, 200.0f, 1920.0f, 1080.0f)
 {
@@ -44,7 +42,7 @@ std::string ProjectWindow::getProjectName() const
     return std::string(mInputBuffer.data());
 }
 
-std::string ProjectWindow::getSelectedFolderPath() const
+std::filesystem::path ProjectWindow::getSelectedFolderPath() const
 {
     return mFilebrowser.getSelectedFolderPath();
 }
@@ -70,41 +68,38 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
     }
 
     ImGui::SameLine();
-    ImGui::Text(mFilebrowser.getSelectedFolderPath().c_str());
+    ImGui::Text(mFilebrowser.getSelectedFolderPath().string().c_str());
 
     mFilebrowser.render(mFilebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
     if (ImGui::Button("Create Project"))
     {
-        std::string name = getProjectName();
-        std::string path = getSelectedFolderPath() + "\\" + getProjectName();
+        std::filesystem::path path = getSelectedFolderPath() / getProjectName();
 
-        if (PhysicsEditor::createDirectory(path))
+        if (std::filesystem::create_directory(path))
         {
             bool success = true;
-            success &= createDirectory(path + "\\data");
-            success &= createDirectory(path + "\\data\\scenes");
-            success &= createDirectory(path + "\\data\\textures");
-            success &= createDirectory(path + "\\data\\meshes");
-            success &= createDirectory(path + "\\data\\materials");
-            success &= createDirectory(path + "\\data\\shaders");
+            success &= std::filesystem::create_directory(path / "data");
+            success &= std::filesystem::create_directory(path / "data/scenes");
+            success &= std::filesystem::create_directory(path / "data/textures");
+            success &= std::filesystem::create_directory(path / "data/meshes");
+            success &= std::filesystem::create_directory(path / "data/materials");
+            success &= std::filesystem::create_directory(path / "data/shaders");
 
             if (success)
             {
-                clipboard.setActiveProject(name, path);// openProject(name, path);
-                clipboard.setActiveScene("", "", Guid::INVALID);
-                /*clipboard.openScene("", "", "", "", Guid::INVALID);*/
-                //clipboard.openScene("", "");
+                clipboard.setActiveProject(getProjectName(), path.string());
+                clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
             }
             else
             {
-                Log::error("Could not create project sub directories\n");
+                PhysicsEngine::Log::error("Could not create project sub directories\n");
                 return;
             }
         }
         else
         {
-            Log::error("Could not create project root directory\n");
+            PhysicsEngine::Log::error("Could not create project root directory\n");
             return;
         }
 
@@ -112,10 +107,10 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
         clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
         // tell library directory which project to watch
-        clipboard.getLibrary().watch(path);
+        clipboard.getLibrary().watch(path.string());
 
         // reset editor camera
-        clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
+        clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
 
         ImGui::CloseCurrentPopup();
     }
@@ -130,13 +125,13 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
     }
 
     ImGui::SameLine();
-    ImGui::Text(mFilebrowser.getSelectedFolderPath().c_str());
+    ImGui::Text(mFilebrowser.getSelectedFolderPath().string().c_str());
 
     mFilebrowser.render(mFilebrowser.getSelectedFolderPath(), openSelectFolderBrowser);
 
     // only allow the open button to be clicked if the selected folder path meets basic criteria for it being a legit
     // project folder
-    bool meetsProjectCriteria = doesDirectoryExist(mFilebrowser.getSelectedFolderPath() + "\\data");
+    bool meetsProjectCriteria = std::filesystem::exists(mFilebrowser.getSelectedFolderPath() / "data");
 
     if (!meetsProjectCriteria)
     {
@@ -146,17 +141,17 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
 
     if (ImGui::Button("Open Project"))
     {
-        clipboard.setActiveProject(getProjectName(), getSelectedFolderPath());
-        clipboard.setActiveScene("", "", Guid::INVALID);
+        clipboard.setActiveProject(getProjectName(), getSelectedFolderPath().string());
+        clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
 
         // mark any (non-editor) entities in currently opened scene to be latent destroyed
         clipboard.getWorld()->latentDestroyEntitiesInWorld();
 
         // tell library directory which project to watch
-        clipboard.getLibrary().watch(getSelectedFolderPath());
+        clipboard.getLibrary().watch(getSelectedFolderPath().string());
 
         // reset editor camera
-        clipboard.getWorld()->getSystem<EditorCameraSystem>()->resetCamera();
+        clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
 
         ImGui::CloseCurrentPopup();
     }
@@ -170,5 +165,5 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
 
 void ProjectWindow::setMode(ProjectWindowMode mode)
 {
-    this->mMode = mode;
+    mMode = mode;
 }

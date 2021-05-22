@@ -32,7 +32,7 @@ class ProjectWindow : public PopupWindow
     void setMode(ProjectWindowMode mode);
 
     std::string getProjectName() const;
-    std::string getSelectedFolderPath() const;
+    std::filesystem::path getSelectedFolderPath() const;
 
   private:
     void renderOpenMode(Clipboard& clipboard);

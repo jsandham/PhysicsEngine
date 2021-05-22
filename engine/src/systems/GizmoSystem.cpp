@@ -79,24 +79,24 @@ void GizmoSystem::addToDrawList(const Ray &ray, float t, const Color &color)
     mGizmoRenderer.addToDrawList(ray, t, color);
 }
 
-void GizmoSystem::addToDrawList(const AABB &aabb, const Color &color)
-{
-    mGizmoRenderer.addToDrawList(aabb, color);
-}
-
-void GizmoSystem::addToDrawList(const Sphere &sphere, const Color &color)
+void GizmoSystem::addToDrawList(const Sphere& sphere, const Color& color)
 {
     mGizmoRenderer.addToDrawList(sphere, color);
 }
 
-void GizmoSystem::addToDrawList(const Frustum &frustum, const Color &color)
+void GizmoSystem::addToDrawList(const AABB &aabb, const Color &color, bool wireframe)
 {
-    mGizmoRenderer.addToDrawList(frustum, color);
+    mGizmoRenderer.addToDrawList(aabb, color, wireframe);
 }
 
-void GizmoSystem::addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color)
+void GizmoSystem::addToDrawList(const Frustum &frustum, const Color &color, bool wireframe)
 {
-    mGizmoRenderer.addToDrawList(plane, extents, color);
+    mGizmoRenderer.addToDrawList(frustum, color, wireframe);
+}
+
+void GizmoSystem::addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe)
+{
+    mGizmoRenderer.addToDrawList(plane, extents, color, wireframe);
 }
 
 void GizmoSystem::clearDrawList()

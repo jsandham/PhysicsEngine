@@ -47,24 +47,24 @@ void GizmoRenderer::addToDrawList(const Ray &ray, float t, const Color &color)
     mLines.push_back(LineGizmo(line, color));
 }
 
-void GizmoRenderer::addToDrawList(const AABB &aabb, const Color &color)
-{
-    mAABBs.push_back(AABBGizmo(aabb, color));
-}
-
-void GizmoRenderer::addToDrawList(const Sphere &sphere, const Color &color)
+void GizmoRenderer::addToDrawList(const Sphere& sphere, const Color& color)
 {
     mSpheres.push_back(SphereGizmo(sphere, color));
 }
 
-void GizmoRenderer::addToDrawList(const Frustum &frustum, const Color &color)
+void GizmoRenderer::addToDrawList(const AABB &aabb, const Color &color, bool wireframe)
 {
-    mFrustums.push_back(FrustumGizmo(frustum, color));
+    mAABBs.push_back(AABBGizmo(aabb, color, wireframe));
 }
 
-void GizmoRenderer::addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color)
+void GizmoRenderer::addToDrawList(const Frustum &frustum, const Color &color, bool wireframe)
 {
-    mPlanes.push_back(PlaneGizmo(plane, extents, color));
+    mFrustums.push_back(FrustumGizmo(frustum, color, wireframe));
+}
+
+void GizmoRenderer::addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe)
+{
+    mPlanes.push_back(PlaneGizmo(plane, extents, color, wireframe));
 }
 
 void GizmoRenderer::clearDrawList()
