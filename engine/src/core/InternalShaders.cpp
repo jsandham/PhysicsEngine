@@ -2,155 +2,43 @@
 
 using namespace PhysicsEngine;
 
-#define STRINGIFY(x) #x
-
-const std::string InternalShaders::standardVertexShader =
 #include "shaders/standard.vs"
-;
-
-const std::string InternalShaders::standardFragmentShader =
 #include "shaders/standard.fs"
-;
-
-const std::string InternalShaders::colorLitVertexShader =
 #include "shaders/colorLit.vs"
-;
-
-const std::string InternalShaders::colorLitFragmentShader =
 #include "shaders/colorLit.fs"
-;
-
-const std::string InternalShaders::normalVertexShader =
 #include "shaders/normal.vs"
-;
-
-const std::string InternalShaders::normalFragmentShader =
 #include "shaders/normal.fs"
-;
-
-const std::string InternalShaders::tangentVertexShader =
 #include "shaders/tangent.vs"
-;
-
-const std::string InternalShaders::tangentFragmentShader =
 #include "shaders/tangent.fs"
-;
-
-const std::string InternalShaders::binormalVertexShader =
 #include "shaders/binormal.vs"
-;
-
-const std::string InternalShaders::binormalFragmentShader =
 #include "shaders/binormal.fs"
-;
-
-const std::string InternalShaders::gizmoVertexShader =
 #include "shaders/gizmo.vs"
-;
-
-const std::string InternalShaders::gizmoFragmentShader =
 #include "shaders/gizmo.fs"
-;
-
-const std::string InternalShaders::colorVertexShader =
 #include "shaders/color.vs"
-;
-
-const std::string InternalShaders::colorFragmentShader =
 #include "shaders/color.fs"
-;
-
-const std::string InternalShaders::lineVertexShader =
 #include "shaders/line.vs"
-;
-
-const std::string InternalShaders::lineFragmentShader =
 #include "shaders/line.fs"
-;
-
-const std::string InternalShaders::screenQuadVertexShader =
 #include "shaders/screenQuad.vs"
-;
-
-const std::string InternalShaders::screenQuadFragmentShader =
 #include "shaders/screenQuad.fs"
-;
-
-const std::string InternalShaders::normalMapVertexShader =
 #include "shaders/normalMap.vs"
-;
-
-const std::string InternalShaders::normalMapFragmentShader =
 #include "shaders/normalMap.fs"
-;
-
-const std::string InternalShaders::depthMapVertexShader =
 #include "shaders/depthMap.vs"
-;
-
-const std::string InternalShaders::depthMapFragmentShader =
 #include "shaders/depthMap.fs"
-;
-
-const std::string InternalShaders::shadowDepthMapVertexShader =
 #include "shaders/shadowDepthMap.vs"
-;
-
-const std::string InternalShaders::shadowDepthMapFragmentShader =
 #include "shaders/shadowDepthMap.fs"
-;
-
-const std::string InternalShaders::shadowDepthCubemapVertexShader =
 #include "shaders/shadowDepthCubemap.vs"
-;
-
-const std::string InternalShaders::shadowDepthCubemapGeometryShader =
 #include "shaders/shadowDepthCubemap.gs"
-;
-
-const std::string InternalShaders::shadowDepthCubemapFragmentShader =
 #include "shaders/shadowDepthCubemap.fs"
-;
-
-const std::string InternalShaders::gbufferVertexShader =
 #include "shaders/gbuffer.vs"
-;
-
-const std::string InternalShaders::gbufferFragmentShader =
 #include "shaders/gbuffer.fs"
-;
-
-const std::string InternalShaders::positionAndNormalsVertexShader =
 #include "shaders/positionAndNormals.vs"
-;
-
-const std::string InternalShaders::positionAndNormalsFragmentShader =
 #include "shaders/positionAndNormals.fs"
-;
-
-const std::string InternalShaders::ssaoVertexShader =
 #include "shaders/ssao.vs"
-;
-
-const std::string InternalShaders::ssaoFragmentShader =
 #include "shaders/ssao.fs"
-;
-
-const std::string InternalShaders::standardDeferredVertexShader =
 #include "shaders/standardDeferred.vs"
-;
-
-const std::string InternalShaders::standardDeferredFragmentShader =
 #include "shaders/standardDeferred.fs"
-;
-
-const std::string InternalShaders::gridVertexShader =
 #include "shaders/grid.vs"
-;
-
-const std::string InternalShaders::gridFragmentShader =
 #include "shaders/grid.fs"
-;
 
 const std::string InternalShaders::standardShaderName = "Standard";
 const std::string InternalShaders::colorLitShaderName = "ColorLit";

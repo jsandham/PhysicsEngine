@@ -101,6 +101,7 @@ class EditorCameraSystem : public System
 
     GraphicsQuery getQuery() const;
 
+    glm::vec3 getCameraForward() const;
     glm::vec3 getCameraPosition() const;
     glm::mat4 getViewMatrix() const;
     glm::mat4 getInvViewMatrix() const;

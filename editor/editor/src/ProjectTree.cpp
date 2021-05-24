@@ -1,7 +1,5 @@
 #include "../include/ProjectTree.h"
 
-#include "../include/FileSystemUtil.h"
-
 #include <cassert>
 #include <stack>
 
@@ -12,14 +10,12 @@ using namespace PhysicsEditor;
 ProjectNode::ProjectNode()
 {
     mParent = nullptr;
-    mDirectoryName = "";
-    mDirectoryPath = "";
+    mDirectoryPath = std::filesystem::path();
 }
 
-ProjectNode::ProjectNode(const std::string& path, const std::string& name)
+ProjectNode::ProjectNode(const std::filesystem::path& path)
 {
     mParent = nullptr;
-    mDirectoryName = name;
     mDirectoryPath = path;
 }
 
@@ -44,15 +40,10 @@ std::string ProjectNode::getDirectoryLabel() const
         }
     }
 
-    return icon + " " + getDirectoryName();
+    return icon + " " + getDirectoryPath().filename().string();
 }
 
-std::string ProjectNode::getDirectoryName() const
-{
-    return mDirectoryName;
-}
-
-std::string ProjectNode::getDirectoryPath() const
+std::filesystem::path ProjectNode::getDirectoryPath() const
 {
     return mDirectoryPath;
 }
@@ -62,19 +53,9 @@ std::vector<std::string> ProjectNode::getFileLabels() const
     return mFileLabels;
 }
 
-std::vector<std::string> ProjectNode::getFilenames() const
-{
-    return mFilenames;
-}
-
-std::vector<std::string> ProjectNode::getFilePaths() const
+std::vector<std::filesystem::path> ProjectNode::getFilePaths() const
 {
     return mFilePaths;
-}
-
-std::vector<std::string> ProjectNode::getFileExtensions() const
-{
-    return mFileExtensions;
 }
 
 std::vector<InteractionType> ProjectNode::getFileTypes() const
@@ -88,22 +69,10 @@ std::string ProjectNode::getFileLabel(size_t index) const
     return mFileLabels[index];
 }
 
-std::string ProjectNode::getFilename(size_t index) const
-{
-    assert(index < mFilenames.size());
-    return mFilenames[index];
-}
-
-std::string ProjectNode::getFilePath(size_t index) const
+std::filesystem::path ProjectNode::getFilePath(size_t index) const
 {
     assert(index < mFilePaths.size());
     return mFilePaths[index];
-}
-
-std::string ProjectNode::getFileExtension(size_t index) const
-{
-    assert(index < mFileExtensions.size());
-    return mFileExtensions[index];
 }
 
 InteractionType ProjectNode::getFileType(size_t index) const
@@ -116,8 +85,7 @@ ProjectNode* ProjectNode::addDirectory(const std::string& name)
 {
     ProjectNode* node = new ProjectNode();
     node->mParent = this;
-    node->mDirectoryName = name;
-    node->mDirectoryPath = this->getDirectoryPath() + "\\" + name;
+    node->mDirectoryPath = getDirectoryPath() / name;
 
     mChildren.push_back(node);
 
@@ -151,9 +119,7 @@ void ProjectNode::addFile(const std::string& name)
     }
 
     mFileLabels.push_back(label + " " + name);
-    mFilenames.push_back(name);
-    mFilePaths.push_back(getDirectoryPath() + "\\" + name);
-    mFileExtensions.push_back(extension);
+    mFilePaths.push_back(getDirectoryPath() / name);
     mFileTypes.push_back(type);
 }
 
@@ -163,7 +129,7 @@ void ProjectNode::removeDirectory(const std::string& name)
     int index = -1;
     for (size_t i = 0; i < mChildren.size(); i++)
     {
-        if (mChildren[i]->getDirectoryName() == name)
+        if (mChildren[i]->getDirectoryPath().filename().string() == name)
         {
             nodeToDelete = mChildren[i];
             index = i;
@@ -196,7 +162,7 @@ void ProjectNode::removeDirectory(const std::string& name)
 
 void ProjectNode::removeFile(const std::string& name)
 {
-    std::string filepath = getDirectoryPath() + "\\" + name;
+    std::filesystem::path filepath = getDirectoryPath() / name;
     int index = -1;
     for (size_t i = 0; i < mFilePaths.size(); i++)
     {
@@ -213,9 +179,7 @@ void ProjectNode::removeFile(const std::string& name)
     }
 
     mFileLabels.erase(mFileLabels.begin() + index);
-    mFilenames.erase(mFilenames.begin() + index);
     mFilePaths.erase(mFilePaths.begin() + index);
-    mFileExtensions.erase(mFileExtensions.begin() + index);
     mFileTypes.erase(mFileTypes.begin() + index);
 }
 
@@ -223,9 +187,7 @@ void ProjectNode::removeFile(const std::string& name)
 void ProjectNode::removeAllFiles()
 {
     mFileLabels.clear();
-    mFilenames.clear();
     mFilePaths.clear();
-    mFileExtensions.clear();
     mFileTypes.clear();
 }
 
@@ -256,10 +218,12 @@ void ProjectNode::rebuild()
     this->removeAllFiles();
 
     // rebuild node
-    std::vector<std::string> filenames = getFilesInDirectory(this->getDirectoryPath(), false);
-    for (size_t i = 0; i < filenames.size(); i++)
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(getDirectoryPath()))
     {
-        this->addFile(filenames[i]);
+        if (std::filesystem::is_regular_file(entry))
+        {
+            this->addFile(entry.path().filename().string());
+        }
     }
 
     stack.push(this);
@@ -270,18 +234,26 @@ void ProjectNode::rebuild()
         stack.pop();
 
         // find directories that exist in the current directory
-        std::vector<std::string> subDirectoryNames =
-            PhysicsEditor::getDirectoriesInDirectory(current->getDirectoryPath(), false);
+        std::vector<std::filesystem::path> subDirectoryNames;
+        for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(current->getDirectoryPath()))
+        {
+            if (std::filesystem::is_directory(entry))
+            {
+                subDirectoryNames.push_back(entry.path().filename());
+            }
+        }
 
         // recurse for each sub directory
         for (size_t i = 0; i < subDirectoryNames.size(); i++)
         {
-            ProjectNode* child = current->addDirectory(subDirectoryNames[i]);
+            ProjectNode* child = current->addDirectory(subDirectoryNames[i].string());
 
-            std::vector<std::string> filenames = PhysicsEditor::getFilesInDirectory(child->getDirectoryPath(), false);
-            for (size_t j = 0; j < filenames.size(); j++)
+            for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(child->getDirectoryPath()))
             {
-                child->addFile(filenames[j]);
+                if (std::filesystem::is_regular_file(entry))
+                {
+                    child->addFile(entry.path().filename().string());
+                }
             }
 
             stack.push(child);
@@ -325,16 +297,18 @@ ProjectNode* ProjectTree::getRoot()
     return mRoot;
 }
 
-void ProjectTree::buildProjectTree(const std::string& projectPath)
+void ProjectTree::buildProjectTree(const std::filesystem::path& projectPath)
 {
     deleteProjectTree();
 
-    mRoot = new ProjectNode(projectPath + "\\data", "data");
+    mRoot = new ProjectNode(projectPath / "data");
 
-    std::vector<std::string> filenames = getFilesInDirectory(mRoot->getDirectoryPath(), false);
-    for (size_t i = 0; i < filenames.size(); i++)
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(mRoot->getDirectoryPath()))
     {
-        mRoot->addFile(filenames[i]);
+        if (std::filesystem::is_regular_file(entry))
+        {
+            mRoot->addFile(entry.path().filename().string());
+        }
     }
 
     std::stack<ProjectNode*> stack;
@@ -346,18 +320,26 @@ void ProjectTree::buildProjectTree(const std::string& projectPath)
         stack.pop();
 
         // find directories that exist in the current directory
-        std::vector<std::string> subDirectoryNames =
-            PhysicsEditor::getDirectoriesInDirectory(current->getDirectoryPath(), false);
+        std::vector<std::filesystem::path> subDirectoryNames;
+        for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(current->getDirectoryPath()))
+        {
+            if (std::filesystem::is_directory(entry))
+            {
+                subDirectoryNames.push_back(entry.path().filename());
+            }
+        }
 
         // recurse for each sub directory
         for (size_t i = 0; i < subDirectoryNames.size(); i++)
         {
-            ProjectNode* child = current->addDirectory(subDirectoryNames[i]);
+            ProjectNode* child = current->addDirectory(subDirectoryNames[i].string());
 
-            std::vector<std::string> filenames = PhysicsEditor::getFilesInDirectory(child->getDirectoryPath(), false);
-            for (size_t j = 0; j < filenames.size(); j++)
+            for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(child->getDirectoryPath()))
             {
-                child->addFile(filenames[j]);
+                if (std::filesystem::is_regular_file(entry))
+                {
+                    child->addFile(entry.path().filename().string());
+                }
             }
 
             stack.push(child);

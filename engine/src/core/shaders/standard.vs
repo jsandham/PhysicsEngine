@@ -1,55 +1,46 @@
-STRINGIFY(
-layout (std140) uniform CameraBlock
-{
-	mat4 projection;
-	mat4 view;
-	vec3 cameraPos;
-}Camera;
-
-layout (std140) uniform LightBlock
-{
-	mat4 lightProjection[5]; // 0    64   128  192  256
-	mat4 lightView[5];       // 320  384  448  512  576 
-	vec3 position;           // 640
-	vec3 direction;          // 656
-	vec3 color;              // 672
-	float cascadeEnds[5];    // 688  704  720  736  752
-	float intensity;         // 768
-	float spotAngle;         // 772
-	float innerSpotAngle;    // 776
-	float shadowNearPlane;   // 780
-	float shadowFarPlane;    // 784
-	float shadowAngle;       // 788
-	float shadowRadius;      // 792
-	float shadowStrength;    // 796
-}Light;
-
-uniform mat4 model;
-
-in vec3 position;
-in vec3 normal;
-in vec2 texCoord;
-
-out vec3 FragPos;
-out vec3 CameraPos;
-out vec3 Normal;
-out vec2 TexCoord;
-
-out float ClipSpaceZ;
-out vec4 FragPosLightSpace[5];
-
-void main()
-{
-    CameraPos = Camera.cameraPos;
-    FragPos = vec3(model * vec4(position, 1.0));
-    Normal = mat3(transpose(inverse(model))) * normal;  
-    TexCoord = texCoord;
-    
-    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);
-
-	ClipSpaceZ = gl_Position.z;
-	for(int i = 0; i < 5; i++){
-		FragPosLightSpace[i] = Light.lightProjection[i] * Light.lightView[i] * vec4(FragPos, 1.0f);
-	}
-}
-)
+const std::string InternalShaders::standardVertexShader =
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"layout (std140) uniform LightBlock\n"
+"{\n"
+"	mat4 lightProjection[5]; // 0    64   128  192  256\n"
+"	mat4 lightView[5];       // 320  384  448  512  576 \n"
+"	vec3 position;           // 640\n"
+"	vec3 direction;          // 656\n"
+"	vec3 color;              // 672\n"
+"	float cascadeEnds[5];    // 688  704  720  736  752\n"
+"	float intensity;         // 768\n"
+"	float spotAngle;         // 772\n"
+"	float innerSpotAngle;    // 776\n"
+"	float shadowNearPlane;   // 780\n"
+"	float shadowFarPlane;    // 784\n"
+"	float shadowAngle;       // 788\n"
+"	float shadowRadius;      // 792\n"
+"	float shadowStrength;    // 796\n"
+"}Light;\n"
+"uniform mat4 model;\n"
+"in vec3 position;\n"
+"in vec3 normal;\n"
+"in vec2 texCoord;\n"
+"out vec3 FragPos;\n"
+"out vec3 CameraPos;\n"
+"out vec3 Normal;\n"
+"out vec2 TexCoord;\n"
+"out float ClipSpaceZ;\n"
+"out vec4 FragPosLightSpace[5];\n"
+"void main()\n"
+"{\n"
+"    CameraPos = Camera.cameraPos;\n"
+"    FragPos = vec3(model * vec4(position, 1.0));\n"
+"    Normal = mat3(transpose(inverse(model))) * normal;\n"  
+"    TexCoord = texCoord;\n"
+"    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);\n"
+"	ClipSpaceZ = gl_Position.z;\n"
+"	for(int i = 0; i < 5; i++){\n"
+"		FragPosLightSpace[i] = Light.lightProjection[i] * Light.lightView[i] * vec4(FragPos, 1.0f);\n"
+"	}\n"
+"}\n";

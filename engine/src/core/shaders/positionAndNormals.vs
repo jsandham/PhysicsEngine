@@ -1,28 +1,21 @@
-STRINGIFY(
-layout (std140) uniform CameraBlock
-{
-	mat4 projection;
-	mat4 view;
-	vec3 cameraPos;
-}Camera;
-
-in vec3 position;
-in vec3 normal;
-in vec2 texCoord;
-
-out vec3 FragPos;
-out vec3 Normal;
-
-uniform mat4 model;
-
-void main()
-{
-    vec4 viewPos = Camera.view * model * vec4(position, 1.0);
-    FragPos = viewPos.xyz;
-
-    mat3 normalMatrix = transpose(inverse(mat3(Camera.view * model)));
-    Normal = normalMatrix * normal;
-
-    gl_Position = Camera.projection * viewPos;
-}
-)
+const std::string InternalShaders::positionAndNormalsVertexShader =
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"in vec3 position;\n"
+"in vec3 normal;\n"
+"in vec2 texCoord;\n"
+"out vec3 FragPos;\n"
+"out vec3 Normal;\n"
+"uniform mat4 model;\n"
+"void main()\n"
+"{\n"
+"    vec4 viewPos = Camera.view * model * vec4(position, 1.0);\n"
+"    FragPos = viewPos.xyz;\n"
+"    mat3 normalMatrix = transpose(inverse(mat3(Camera.view * model)));\n"
+"    Normal = normalMatrix * normal;\n"
+"    gl_Position = Camera.projection * viewPos;\n"
+"}\n";

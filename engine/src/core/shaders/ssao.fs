@@ -1,53 +1,45 @@
-STRINGIFY(
-out float FragColor;
-
-in vec2 TexCoord;
-
-uniform sampler2D positionTex;
-uniform sampler2D normalTex;
-uniform sampler2D noiseTex;
-
-uniform vec3 samples[64];
-
-// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
-int kernelSize = 64;
-float radius = 0.5;
-float bias = 0.025;
-
-// tile noise texture over screen based on screen dimensions divided by noise size
-const vec2 noiseScale = vec2(1024.0 / 4.0, 1024.0 / 4.0);
-
-uniform mat4 projection;
-
-void main()
-{
-	// get input for SSAO algorithm
-	vec3 fragPos = texture(positionTex, TexCoord).xyz;
-	vec3 normal = normalize(texture(normalTex, TexCoord).rgb);
-	vec3 randomVec = normalize(texture(noiseTex, TexCoord * noiseScale).xyz);
-	// create TBN change-of-basis matrix: from tangent-space to view-space
-	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
-	vec3 bitangent = cross(normal, tangent);
-	mat3 TBN = mat3(tangent, bitangent, normal);
-	// iterate over the sample kernel and calculate occlusion factor
-	float occlusion = 0.0f;
-	for (int i = 0; i < kernelSize; ++i)
-	{
-		// get sample position
-		vec3 sampleq = TBN * samples[i]; // from tangent to view-space
-		sampleq = fragPos + sampleq * radius;
-		// project sample position (to sample texture) (to get position on screen/texture)
-		vec4 offset = vec4(sampleq, 1.0);
-		offset = projection * offset; // from view to clip-space
-		offset.xyz /= offset.w; // perspective divide
-		offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
-		// get sample depth
-		float sampleDepth = texture(positionTex, offset.xy).z; // get depth value of kernel sample
-		// range check & accumulate
-		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
-		occlusion += (sampleDepth >= sampleq.z + bias ? 1.0 : 0.0) * rangeCheck;
-	}
-	occlusion = 1.0 - (occlusion / kernelSize);
-	FragColor = occlusion;
-}
-)
+const std::string InternalShaders::ssaoFragmentShader =
+"out float FragColor;\n"
+"in vec2 TexCoord;\n"
+"uniform sampler2D positionTex;\n"
+"uniform sampler2D normalTex;\n"
+"uniform sampler2D noiseTex;\n"
+"uniform vec3 samples[64];\n"
+"// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)\n"
+"int kernelSize = 64;\n"
+"float radius = 0.5;\n"
+"float bias = 0.025;\n"
+"// tile noise texture over screen based on screen dimensions divided by noise size\n"
+"const vec2 noiseScale = vec2(1024.0 / 4.0, 1024.0 / 4.0);\n"
+"uniform mat4 projection;\n"
+"void main()\n"
+"{\n"
+"	// get input for SSAO algorithm\n"
+"	vec3 fragPos = texture(positionTex, TexCoord).xyz;\n"
+"	vec3 normal = normalize(texture(normalTex, TexCoord).rgb);\n"
+"	vec3 randomVec = normalize(texture(noiseTex, TexCoord * noiseScale).xyz);\n"
+"	// create TBN change-of-basis matrix: from tangent-space to view-space\n"
+"	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));\n"
+"	vec3 bitangent = cross(normal, tangent);\n"
+"	mat3 TBN = mat3(tangent, bitangent, normal);\n"
+"	// iterate over the sample kernel and calculate occlusion factor\n"
+"	float occlusion = 0.0f;\n"
+"	for (int i = 0; i < kernelSize; ++i)\n"
+"	{\n"
+"		// get sample position\n"
+"		vec3 sampleq = TBN * samples[i]; // from tangent to view-space\n"
+"		sampleq = fragPos + sampleq * radius;\n"
+"		// project sample position (to sample texture) (to get position on screen/texture)\n"
+"		vec4 offset = vec4(sampleq, 1.0);\n"
+"		offset = projection * offset; // from view to clip-space\n"
+"		offset.xyz /= offset.w; // perspective divide\n"
+"		offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0\n"
+"		// get sample depth\n"
+"		float sampleDepth = texture(positionTex, offset.xy).z; // get depth value of kernel sample\n"
+"		// range check & accumulate\n"
+"		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));\n"
+"		occlusion += (sampleDepth >= sampleq.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
+"	}\n"
+"	occlusion = 1.0 - (occlusion / kernelSize);\n"
+"	FragColor = occlusion;\n"
+"}\n";

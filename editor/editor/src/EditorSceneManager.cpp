@@ -28,7 +28,7 @@ void EditorSceneManager::newScene(Clipboard& clipboard)
 void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
 {
     // check to make sure the scene is part of the current project
-    if (path.string().find(clipboard.getProjectPath() + "\\data\\") != 0)
+    if (path.string().find((clipboard.getProjectPath() / "data").string()) != 0)
     {
         return;
     }

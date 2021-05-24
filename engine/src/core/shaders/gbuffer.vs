@@ -1,30 +1,24 @@
-STRINGIFY(
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
+const std::string InternalShaders::gbufferVertexShader =
+"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aNormal;\n"
+"layout (location = 2) in vec2 aTexCoords;\n"
+"layout (std140) uniform CameraBlock\n"
+"{\n"
+"	mat4 projection;\n"
+"	mat4 view;\n"
+"	vec3 cameraPos;\n"
+"}Camera;\n"
+"out vec3 FragPos;\n"
+"out vec2 TexCoords;\n"
+"out vec3 Normal;\n"
+"uniform mat4 model;\n"
+"void main()\n"
+"{\n"
+"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+"    FragPos = worldPos.xyz;\n"
+"    TexCoords = aTexCoords;\n"
+"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+"    Normal = normalMatrix * aNormal;\n"
+"    gl_Position = Camera.projection * Camera.view * worldPos;\n"
+"}\n";
 
-layout (std140) uniform CameraBlock
-{
-	mat4 projection;
-	mat4 view;
-	vec3 cameraPos;
-}Camera;
-
-out vec3 FragPos;
-out vec2 TexCoords;
-out vec3 Normal;
-
-uniform mat4 model;
-
-void main()
-{
-    vec4 worldPos = model * vec4(aPos, 1.0);
-    FragPos = worldPos.xyz;
-    TexCoords = aTexCoords;
-
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    Normal = normalMatrix * aNormal;
-
-    gl_Position = Camera.projection * Camera.view * worldPos;
-}
-)

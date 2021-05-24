@@ -1,10 +1,9 @@
-STRINGIFY(
-in vec3 position;
-in vec2 texCoord;
-out vec2 TexCoord;
-void main()
-{
-	gl_Position = vec4(position, 1.0);
-   TexCoord = texCoord;
-}
-)
+const std::string InternalShaders::screenQuadVertexShader =
+"in vec3 position;\n"
+"in vec2 texCoord;\n"
+"out vec2 TexCoord;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = vec4(position, 1.0);\n"
+"   TexCoord = texCoord;\n"
+"}\n";

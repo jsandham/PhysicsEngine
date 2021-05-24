@@ -28,14 +28,20 @@ void ProjectView::init(Clipboard &clipboard)
 
 void ProjectView::update(Clipboard &clipboard)
 {
+    /*if (!clipboard.getProjectPath().empty())*/
     if (!clipboard.getProjectPath().empty())
     {
-        if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() + "\\data") || mProjectTree.isEmpty())
+        /*if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() + "\\data") || mProjectTree.isEmpty())
+        {
+            mProjectTree.buildProjectTree(clipboard.getProjectPath());
+        }*/
+        if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() / "data") || mProjectTree.isEmpty())
         {
             mProjectTree.buildProjectTree(clipboard.getProjectPath());
         }
     }
 
+    /*if (!clipboard.getProjectPath().empty())*/
     if (!clipboard.getProjectPath().empty())
     {
         mFilter.Draw("Filter", -100.0f);
@@ -80,9 +86,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     std::vector<ProjectNode *> directories;
 
     std::vector<std::string> fileLabels;
-    std::vector<std::string> filenames;
-    std::vector<std::string> filePaths;
-    std::vector<std::string> fileExtensions;
+    std::vector<std::filesystem::path> filePaths;
     std::vector<InteractionType> fileTypes;
 
     // Determine directories and files to be drawn in right pane
@@ -97,19 +101,17 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             ProjectNode* current = stack.top();
             stack.pop();
 
-            if (mFilter.PassFilter(current->getDirectoryName().c_str()))
+            if (mFilter.PassFilter(current->getDirectoryPath().filename().string().c_str()))
             {
                 directories.push_back(current);
             }
 
             for (size_t j = 0; j < current->getFileCount(); j++)
             {
-                if (mFilter.PassFilter(current->getFilename(j).c_str()))
+                if (mFilter.PassFilter(current->getFilePath(j).filename().string().c_str()))
                 {
                     fileLabels.push_back(current->getFileLabel(j));
-                    filenames.push_back(current->getFilename(j));
                     filePaths.push_back(current->getFilePath(j));
-                    fileExtensions.push_back(current->getFileExtension(j));
                     fileTypes.push_back(current->getFileType(j));
                 }
             }
@@ -127,9 +129,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             directories = mSelected->getChildren();
            
             fileLabels = mSelected->getFileLabels();
-            filenames = mSelected->getFilenames();
             filePaths = mSelected->getFilePaths();
-            fileExtensions = mSelected->getFileExtensions();
             fileTypes = mSelected->getFileTypes();
         }
     }
@@ -153,7 +153,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
         {
             clipboard.mSelectedType = InteractionType::Folder;
-            clipboard.mSelectedPath = directories[i]->getDirectoryPath();
+            clipboard.mSelectedPath = directories[i]->getDirectoryPath().string();
         }
     }
 
@@ -166,9 +166,9 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
             if (ImGui::IsMouseDoubleClicked(0))
             {
-                if (fileExtensions[i] == "scene")
+                if (filePaths[i].extension().string() == "scene")
                 {
-                    EditorSceneManager::openScene(clipboard, filenames[i], filePaths[i]);
+                    EditorSceneManager::openScene(clipboard, filePaths[i].filename().string(), filePaths[i]);
                 }
             }
         }
@@ -178,15 +178,15 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             if (ImGui::IsMouseClicked(0))
             {
                 clipboard.mDraggedType = fileTypes[i];
-                clipboard.mDraggedPath = filePaths[i];
-                clipboard.mDraggedId = clipboard.getLibrary().getId(clipboard.mDraggedPath);
+                clipboard.mDraggedPath = filePaths[i].string();
+                clipboard.mDraggedId = clipboard.mLibrary.getId(clipboard.mDraggedPath);
             }
 
             if (ImGui::IsMouseReleased(0))
             {
                 clipboard.mSelectedType = fileTypes[i];
-                clipboard.mSelectedPath = filePaths[i];
-                clipboard.mSelectedId = clipboard.getLibrary().getId(clipboard.mSelectedPath);
+                clipboard.mSelectedPath = filePaths[i].string();
+                clipboard.mSelectedId = clipboard.mLibrary.getId(clipboard.mSelectedPath);
             }
         }
 
@@ -215,7 +215,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             {
                 size_t count = mSelected->getChildCount();
                 std::string foldername = "Folder" + (count > 0 ? "(" + std::to_string(count) + ")" : "");
-                std::string folderPath = mSelected->getDirectoryPath() + "\\" + foldername;
+                std::filesystem::path folderPath = mSelected->getDirectoryPath() / foldername;
                 if (std::filesystem::create_directory(folderPath))
                 {
                     mSelected->addDirectory(foldername);
@@ -228,10 +228,10 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             {
                 size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>();
                 std::string filename = ("NewMaterial(" + std::to_string(count) + ").material");
-                std::string filepath = mSelected->getDirectoryPath() + "\\" + filename;
+                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
 
                 PhysicsEngine::Material* material = clipboard.getWorld()->createAsset<PhysicsEngine::Material>();
-                material->writeToYAML(filepath);
+                material->writeToYAML(filepath.string());
 
                 mSelected->addFile(filename);
             }
@@ -243,12 +243,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         {
             if (clipboard.mSelectedType == InteractionType::Folder)
             {
-                std::string folderpath = clipboard.getSelectedPath();
+                std::filesystem::path folderpath = clipboard.getSelectedPath();
                 if (std::filesystem::remove_all(folderpath))
                 {
                     clipboard.clearSelectedItem();
 
-                    mSelected->removeDirectory(folderpath.substr(folderpath.find_last_of("\\") + 1));
+                    mSelected->removeDirectory(folderpath.filename().string());
 
                     if (folderpath == mRightPanelSelectedPath)
                     {
@@ -258,12 +258,12 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             }
             else
             {
-                std::string filepath = clipboard.getSelectedPath();
+                std::filesystem::path filepath = clipboard.getSelectedPath();
                 if (std::filesystem::remove(filepath))
                 {
                     clipboard.clearSelectedItem();
 
-                    mSelected->removeFile(filepath.substr(filepath.find_last_of("\\") + 1));
+                    mSelected->removeFile(filepath.filename().string());
                     
                     if (filepath == mRightPanelSelectedPath)
                     {

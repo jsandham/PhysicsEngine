@@ -330,6 +330,11 @@ GraphicsQuery EditorCameraSystem::getQuery() const
     return mCamera->mQuery;
 }
 
+glm::vec3 EditorCameraSystem::getCameraForward() const
+{
+    return mTransform->getForward();
+}
+
 glm::vec3 EditorCameraSystem::getCameraPosition() const
 {
     return mCamera->getPosition();

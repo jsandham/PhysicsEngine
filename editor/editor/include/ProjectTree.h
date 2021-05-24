@@ -15,35 +15,27 @@ namespace PhysicsEditor
         ProjectNode* mParent;
         std::vector<ProjectNode*> mChildren;
         std::string mDirectoryLabel;
-        std::string mDirectoryName;
-        std::string mDirectoryPath;
+        std::filesystem::path mDirectoryPath;
         std::vector<std::string> mFileLabels;
-        std::vector<std::string> mFilenames;
-        std::vector<std::string> mFilePaths;
-        std::vector<std::string> mFileExtensions;
+        std::vector<std::filesystem::path> mFilePaths;
         std::vector<InteractionType> mFileTypes;
         
     public:
         ProjectNode();
-        ProjectNode(const std::string& path, const std::string& name);
+        ProjectNode(const std::filesystem::path& path);
         ~ProjectNode();
 
         size_t getFileCount() const;
 
         std::string getDirectoryLabel() const;
-        std::string getDirectoryName() const;
-        std::string getDirectoryPath() const;
+        std::filesystem::path getDirectoryPath() const;
 
         std::vector<std::string> getFileLabels() const;
-        std::vector<std::string> getFilenames() const;
-        std::vector<std::string> getFilePaths() const;
-        std::vector<std::string> getFileExtensions() const;
+        std::vector<std::filesystem::path> getFilePaths() const;
         std::vector<InteractionType> getFileTypes() const;
 
         std::string getFileLabel(size_t index) const;
-        std::string getFilename(size_t index) const;
-        std::string getFilePath(size_t index) const;
-        std::string getFileExtension(size_t index) const;
+        std::filesystem::path getFilePath(size_t index) const;
         InteractionType getFileType(size_t index) const;
 
         ProjectNode* addDirectory(const std::string& name);
@@ -70,7 +62,7 @@ namespace PhysicsEditor
         bool isEmpty() const;
         ProjectNode* getRoot();
 
-        void buildProjectTree(const std::string& projectPath);
+        void buildProjectTree(const std::filesystem::path& projectPath);
         void deleteProjectTree();
     };
 }

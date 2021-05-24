@@ -148,7 +148,7 @@ void Editor::update()
 
     if (mClipboard.getDraggedType() != InteractionType::None)
     {
-        ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.c_str());
+        ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.string().c_str());
     }
 
     Undo::updateUndoStack(mClipboard);

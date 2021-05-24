@@ -1,36 +1,27 @@
-STRINGIFY(
-uniform vec3 lightDirection;
-uniform vec3 color;
-uniform int wireframe;
-in vec3 FragPos;
-in vec3 CameraPos;
-in vec3 Normal;
-in vec2 TexCoord;
-
-out vec4 FragColor;
-
-vec3 CalcDirLight(vec3 normal, vec3 viewDir);
-
-void main(void)
-{
-    vec3 viewDir = normalize(CameraPos - FragPos);
-    FragColor = vec4(CalcDirLight(Normal, viewDir) * color, 1.0f);
-}
-
-vec3 CalcDirLight(vec3 normal, vec3 viewDir)
-{
-    vec3 norm = normalize(normal);
-    vec3 lightDir = normalize(lightDirection);
-
-    vec3 reflectDir = reflect(-lightDir, norm);
-
-    float diffuseStrength = max(dot(norm, lightDir), 0.0);
-    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);
-
-    vec3 ambient = vec3(0.7, 0.7, 0.7);
-    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;
-    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;
-
-    return (ambient + diffuse + specular);
-}
-)
+const std::string InternalShaders::colorLitFragmentShader =
+"uniform vec3 lightDirection;\n"
+"uniform vec3 color;\n"
+"uniform int wireframe;\n"
+"in vec3 FragPos;\n"
+"in vec3 CameraPos;\n"
+"in vec3 Normal;\n"
+"in vec2 TexCoord;\n"
+"out vec4 FragColor;\n"
+"vec3 CalcDirLight(vec3 normal, vec3 viewDir);\n"
+"void main(void)\n"
+"{\n"
+"    vec3 viewDir = normalize(CameraPos - FragPos);\n"
+"    FragColor = vec4(CalcDirLight(Normal, viewDir) * color, 1.0f);\n"
+"}\n"
+"vec3 CalcDirLight(vec3 normal, vec3 viewDir)\n"
+"{\n"
+"    vec3 norm = normalize(normal);\n"
+"    vec3 lightDir = normalize(lightDirection);\n"
+"    vec3 reflectDir = reflect(-lightDir, norm);\n"
+"    float diffuseStrength = max(dot(norm, lightDir), 0.0);\n"
+"    float specularStrength = pow(max(dot(viewDir, reflectDir), 0.0), 1.0f);\n"
+"    vec3 ambient = vec3(0.7, 0.7, 0.7);\n"
+"    vec3 diffuse = vec3(1.0, 1.0, 1.0) * diffuseStrength;\n"
+"    vec3 specular = vec3(0.7, 0.7, 0.7) * specularStrength;\n"
+"    return (ambient + diffuse + specular);\n"
+"}\n";

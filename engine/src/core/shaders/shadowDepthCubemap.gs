@@ -1,18 +1,17 @@
-STRINGIFY(
-layout (triangles) in;
-layout (triangle_strip, max_vertices=18) out;
-uniform mat4 cubeViewProjMatrices[6];
-out vec4 FragPos;
-void main()
-{
-	for(int i = 0; i < 6; i++){
-		gl_Layer = i;
-		for(int j = 0; j < 3; j++){
-			FragPos = gl_in[j].gl_Position;
-			gl_Position = cubeViewProjMatrices[i] * FragPos;
-			EmitVertex();
-		}
-		EndPrimitive();
-	}
-}
-)
+const std::string InternalShaders::shadowDepthCubemapGeometryShader =
+"layout (triangles) in;\n"
+"layout (triangle_strip, max_vertices=18) out;\n"
+"uniform mat4 cubeViewProjMatrices[6];\n"
+"out vec4 FragPos;\n"
+"void main()\n"
+"{\n"
+"	for(int i = 0; i < 6; i++){\n"
+"		gl_Layer = i;\n"
+"		for(int j = 0; j < 3; j++){\n"
+"			FragPos = gl_in[j].gl_Position;\n"
+"			gl_Position = cubeViewProjMatrices[i] * FragPos;\n"
+"			EmitVertex();\n"
+"		}\n"
+"		EndPrimitive();\n"
+"	}\n"
+"}\n";

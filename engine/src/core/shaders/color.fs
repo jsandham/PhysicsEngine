@@ -1,12 +1,17 @@
-STRINGIFY(
-struct Material
-{
-   vec4 color;
-};
-uniform Material material;
-out vec4 FragColor;
-void main()
-{
-	FragColor = material.color;
-}
-)
+const std::string InternalShaders::colorFragmentShader =
+"struct Material\n"
+"{\n"
+"   vec4 color;\n"
+"};\n"
+"uniform Material material;\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"#if defined(DIRECTIONALLIGHT)\n"
+"#if defined(SOFTSHADOWS) || defined(HARDSHADOWS)\n"
+"	FragColor = material.color;\n"
+"#endif\n"
+"#else\n"
+"	FragColor = material.color;\n"
+"#endif\n"
+"}\n";

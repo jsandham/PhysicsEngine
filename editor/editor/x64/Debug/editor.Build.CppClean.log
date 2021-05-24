@@ -30,7 +30,6 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\librarydirectory.
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_styles.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\imgui_extensions.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filesystemutil.obj
-c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filebrowser.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorwin32.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editortoolbar.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\editorscenemanager.obj
@@ -53,6 +52,7 @@ c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\console.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\buildwindow.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\aboutpopup.obj
 c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\undo.obj
+c:\users\jsand\documents\physicsengine\editor\editor\x64\debug\filebrowser.obj
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.exe
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.ilk
 c:\users\jsand\documents\physicsengine\editor\x64\debug\editor.pdb

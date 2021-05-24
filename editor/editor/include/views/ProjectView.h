@@ -19,7 +19,6 @@ class ProjectView : public Window
   private:
     ProjectTree mProjectTree;
     ProjectNode *mSelected;
-    //std::string mRightPanelSelectedPath;
     std::filesystem::path mRightPanelSelectedPath;
 
     ImGuiTextFilter mFilter;

@@ -5,6 +5,7 @@
 
 #include <set>
 #include <string>
+#include <filesystem>
 
 #include "core/Guid.h"
 #include "core/World.h"
@@ -20,19 +21,22 @@ namespace PhysicsEditor
 class Clipboard
 {
     public:
-        // project
         std::string mProjectName;
-        std::string mProjectPath;
-
-        // scene
         std::string mSceneName;
-        std::string mScenePath;
+        std::filesystem::path mProjectPath;
+        std::filesystem::path mScenePath;
+        std::filesystem::path mSelectedPath;
+        std::filesystem::path mDraggedPath;
         PhysicsEngine::Guid mSceneId;
+        PhysicsEngine::Guid mSelectedId;
+        PhysicsEngine::Guid mDraggedId;
+        InteractionType mSelectedType;
+        InteractionType mDraggedType;
+        PhysicsEngine::Guid mSceneViewTempEntityId;
+        PhysicsEngine::Entity* mSceneViewTempEntity;
+        PhysicsEngine::Transform* mSceneViewTempTransform;
 
-        // editor world
         PhysicsEngine::World mWorld;
-
-        // editor world systems
         PhysicsEngine::EditorCameraSystem* mEditorCameraSystem;
         PhysicsEngine::RenderSystem* mRenderSystem;
         PhysicsEngine::GizmoSystem* mGizmoSystem;
@@ -40,7 +44,9 @@ class Clipboard
 
         LibraryDirectory mLibrary;
 
-    public:
+        bool mProjectDirty;
+        bool mSceneDirty;
+
         bool mInspectorOpen;
         bool mInspectorHovered;
         bool mInspectorFocused;
@@ -50,7 +56,7 @@ class Clipboard
         bool mInspectorClosedThisFrame;
         bool mInspectorUnhoveredThisFrame;
         bool mInspectorUnfocusedThisFrame;
-        
+
         bool mSceneViewOpen;
         bool mSceneViewHovered;
         bool mSceneViewFocused;
@@ -92,21 +98,6 @@ class Clipboard
         bool mConsoleUnfocusedThisFrame;
 
     public:
-        InteractionType mSelectedType;
-        PhysicsEngine::Guid mSelectedId;
-        std::string mSelectedPath;
-
-        InteractionType mDraggedType;
-        PhysicsEngine::Guid mDraggedId;
-        std::string mDraggedPath;
-
-        PhysicsEngine::Guid mSceneViewTempEntityId;
-
-    public:
-        bool mProjectDirty;
-        bool mSceneDirty;
-
-    public:
         Clipboard();
         ~Clipboard();
         Clipboard(const Clipboard& other) = delete;
@@ -115,9 +106,9 @@ class Clipboard
         void setActiveProject(const std::string& name, const std::string& path);
         void setActiveScene(const std::string& name, const std::string& path, const PhysicsEngine::Guid& sceneId);
 
-        std::string getProjectPath() const;
+        std::filesystem::path getProjectPath() const;
         std::string getProjectName() const;
-        std::string getScenePath() const;
+        std::filesystem::path getScenePath() const;
         std::string getSceneName() const;
         PhysicsEngine::Guid getSceneId() const;
         bool isProjectDirty() const;
@@ -131,101 +122,15 @@ class Clipboard
         InteractionType getSelectedType() const;
         PhysicsEngine::Guid getDraggedId() const;
         PhysicsEngine::Guid getSelectedId() const;
-        std::string getSelectedPath() const;
+        std::filesystem::path getSelectedPath() const;
 
         void setDraggedItem(InteractionType type, PhysicsEngine::Guid id);
         void setSelectedItem(InteractionType type, PhysicsEngine::Guid id);
         void setSelectedItem(InteractionType type, std::string path);
         void clearDraggedItem();
         void clearSelectedItem();
-
-        //bool isEntitySelected() const;
-        //bool isMeshSelected() const;
-        //bool isMaterialSelected() const;
-        //bool isShaderSelected() const;
-        //bool isTexture2DSelected() const;
-
-
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//struct EditorScene
-//{
-//    std::string name;
-//    std::string path;
-//    PhysicsEngine::Guid sceneId;
-//    bool isDirty;
-//};
-//
-//struct EditorProject
-//{
-//    std::string name;
-//    std::string path;
-//    bool isDirty;
-//};
-//
-//class EditorClipboard
-//{
-//  private:
-//    InteractionType draggedType;
-//    InteractionType selectedType;
-//    PhysicsEngine::Guid draggedId;
-//    PhysicsEngine::Guid selectedId;
-//
-//    PhysicsEngine::World world;
-//    EditorScene scene;
-//    EditorProject project;
-//    LibraryDirectory library;
-//
-//    std::set<PhysicsEngine::Guid> editorOnlyEntityIds;
-//
-//  public:
-//    bool isDirty;
-//
-//  public:
-//    EditorClipboard();
-//    ~EditorClipboard();
-//
-//    InteractionType getDraggedType() const;
-//    InteractionType getSelectedType() const;
-//    PhysicsEngine::Guid getDraggedId() const;
-//    PhysicsEngine::Guid getSelectedId() const;
-//    void setDraggedItem(InteractionType type, PhysicsEngine::Guid id);
-//    void setSelectedItem(InteractionType type, PhysicsEngine::Guid id);
-//    void clearDraggedItem();
-//    void clearSelectedItem();
-//
-//    std::string getScene() const;
-//    std::string getProject() const;
-//    std::string getScenePath() const;
-//    std::string getProjectPath() const;
-//
-//    LibraryDirectory &getLibrary();
-//
-//    PhysicsEngine::World *getWorld();
-//
-//    std::set<PhysicsEngine::Guid> &getEditorOnlyIds();
-//
-//    void init();
-//    void openScene(const std::string &name, const std::string &path);
-//    void openProject(const std::string &name, const std::string &path);
-//};
 } // namespace PhysicsEditor
 
 #endif

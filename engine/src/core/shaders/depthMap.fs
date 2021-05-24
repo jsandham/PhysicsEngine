@@ -1,5 +1,4 @@
-STRINGIFY(
-void main()
-{
-}
-)
+const std::string InternalShaders::depthMapFragmentShader =
+"void main()\n"
+"{\n"
+"}\n";

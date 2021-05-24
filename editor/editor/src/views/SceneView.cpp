@@ -41,10 +41,10 @@ void SceneView::init(Clipboard &clipboard)
 
 void SceneView::update(Clipboard &clipboard)
 {
-    if (clipboard.mSceneId.isInvalid())
-    {
-        return;
-    }
+    //if (clipboard.mSceneId.isInvalid())
+    //{
+    //    return;
+    //}
 
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
@@ -230,6 +230,8 @@ void SceneView::update(Clipboard &clipboard)
             meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
 
             clipboard.mSceneViewTempEntityId = entity->getId();
+            clipboard.mSceneViewTempEntity = entity;
+            clipboard.mSceneViewTempTransform = transform;
         }
 
         if (clipboard.mSceneViewUnhoveredThisFrame)
@@ -238,6 +240,34 @@ void SceneView::update(Clipboard &clipboard)
             {
                 clipboard.getWorld()->immediateDestroyEntity(clipboard.mSceneViewTempEntityId);
                 clipboard.mSceneViewTempEntityId = Guid::INVALID;
+                clipboard.mSceneViewTempEntity = nullptr;
+                clipboard.mSceneViewTempTransform = nullptr;
+            }
+        }
+
+        if (clipboard.mSceneViewHovered)
+        {
+            if (clipboard.mSceneViewTempEntityId.isValid())
+            {
+                float width = mSceneContentMax.x - mSceneContentMin.x;
+                float height = mSceneContentMax.y - mSceneContentMin.y;
+
+                float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), width);
+                float mousePosY = height - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), height);
+
+                float ndc_x = 2 * (mousePosX - 0.5f * width) / width;
+                float ndc_y = 2 * (mousePosY - 0.5f * height) / height;
+
+                Ray cameraRay = cameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
+
+                Plane xz;
+                xz.mX0 = glm::vec3(0, 0, 0);
+                xz.mNormal = glm::vec3(0, 1, 0);
+
+                float dist = -1.0f;
+                bool intersects = Intersect::intersect(cameraRay, xz, dist);
+
+                clipboard.mSceneViewTempTransform->mPosition = (intersects && dist >= 0.0f) ? cameraRay.getPoint(dist) : cameraRay.getPoint(5.0f);
             }
         }
     }
