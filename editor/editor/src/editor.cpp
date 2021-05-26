@@ -50,6 +50,8 @@ void Editor::init()
 
 void Editor::update()
 {
+    auto start = std::chrono::steady_clock::now();
+
     mClipboard.getLibrary().update(mClipboard.getWorld());
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
@@ -152,4 +154,8 @@ void Editor::update()
     }
 
     Undo::updateUndoStack(mClipboard);
+
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    mClipboard.deltaTime = elapsed_seconds.count();
 }

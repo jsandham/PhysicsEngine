@@ -97,6 +97,8 @@ class Clipboard
         bool mConsoleUnhoveredThisFrame;
         bool mConsoleUnfocusedThisFrame;
 
+        double deltaTime;
+
     public:
         Clipboard();
         ~Clipboard();

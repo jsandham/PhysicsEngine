@@ -22,6 +22,7 @@ class Mesh : public Asset
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;
+    std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
     GLuint mVao;
     GLuint mVbo[3];
@@ -44,6 +45,8 @@ class Mesh : public Asset
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
+        std::vector<float> colors, std::vector<int> subMeshStartIndices);
+    void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
               std::vector<int> subMeshStartIndices);
 
     bool isCreated() const;
@@ -52,6 +55,7 @@ class Mesh : public Asset
     const std::vector<float> &getVertices() const;
     const std::vector<float> &getNormals() const;
     const std::vector<float> &getTexCoords() const;
+    const std::vector<float>& getColors() const;
     const std::vector<int> &getSubMeshStartIndices() const;
     int getSubMeshStartIndex(int subMeshIndex) const;
     int getSubMeshEndIndex(int subMeshIndex) const;
@@ -62,6 +66,7 @@ class Mesh : public Asset
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);
     void setTexCoords(const std::vector<float> &texCoords);
+    void setColors(const std::vector<float>& colors);
 
     void create();
     void destroy();

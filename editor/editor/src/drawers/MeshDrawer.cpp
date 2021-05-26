@@ -72,6 +72,11 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
 
     ImGui::Separator();
 
+    if (mesh == nullptr)
+    {
+        return;
+    }
+
     ImGui::Text("Vertices");
     ImGui::Indent();
     ImGui::Text(("Positions: " + std::to_string(mesh->getVertices().size())).c_str());

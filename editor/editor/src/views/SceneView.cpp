@@ -41,10 +41,10 @@ void SceneView::init(Clipboard &clipboard)
 
 void SceneView::update(Clipboard &clipboard)
 {
-    //if (clipboard.mSceneId.isInvalid())
-    //{
-    //    return;
-    //}
+    if (clipboard.mProjectPath.empty())
+    {
+        return;
+    }
 
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
@@ -457,6 +457,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
         ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
+        ImGui::Text("Delta time: %f", clipboard.deltaTime);
         ImGui::Text("Framerate: %f", ImGui::GetIO().Framerate);
         ImGui::Text("Window position: %f %f\n", getWindowPos().x, getWindowPos().y);
         ImGui::Text("Scene content min: %f %f\n", mSceneContentMin.x, mSceneContentMin.y);

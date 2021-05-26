@@ -810,7 +810,7 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
     GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data());
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -825,8 +825,6 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
 
     // to set aniso
     // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
-
-    Log::info(("Aniso: " + std::to_string(aniso) + "\n").c_str());
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -877,7 +875,7 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
 
     GLenum openglFormat = Graphics::getTextureFormat(format);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data());
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -973,7 +971,7 @@ void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, Tex
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, &data[0]);
+                     GL_UNSIGNED_BYTE, data.data());
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
@@ -1039,7 +1037,7 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, &data[0]);
+                     GL_UNSIGNED_BYTE, data.data());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -1058,17 +1056,17 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
 
     glBindVertexArray(*vao);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &(texCoords[0]), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
