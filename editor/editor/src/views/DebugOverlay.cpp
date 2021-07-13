@@ -138,6 +138,7 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("Texture3D count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Texture3D>());
     ImGui::Text("Cubemap count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>());
     ImGui::Text("Font count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Font>());
+    ImGui::Text("Sprite count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Sprite>());
     ImGui::Unindent(16.0f);
 
     ImGui::SliderFloat("MaxFPS", &mMaxFPS, 30.0f, 120.0f, "%.0f", 1.0f);
@@ -197,15 +198,15 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
         ImGui::Indent(16.0f);
         {
             ImGui::Text("Data: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mData);
-            ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName);
-            ImGui::Text("ShortName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mShortName);
-            ImGui::Text("BlockName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mBlockName);
-            ImGui::Text("NameLength: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mNameLength).c_str());
-            ImGui::Text("Size: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mSize).c_str());
+            ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName.c_str());
+            //ImGui::Text("ShortName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mShortName);
+            //ImGui::Text("BlockName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mBlockName);
+            //ImGui::Text("NameLength: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mNameLength).c_str());
+            //ImGui::Text("Size: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mSize).c_str());
             ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mType).c_str());
-            ImGui::Text("Variant: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mVariant).c_str());
+            //ImGui::Text("Variant: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mVariant).c_str());
             ImGui::Text("Location: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mLocation).c_str());
-            ImGui::Text("Index: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mIndex).c_str());
+            //ImGui::Text("Index: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mIndex).c_str());
         }
         ImGui::Unindent(16.0f);
     }

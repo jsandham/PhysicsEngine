@@ -29,16 +29,6 @@ DebugSystem::~DebugSystem()
 {
 }
 
-void DebugSystem::serialize(std::ostream &out) const
-{
-    System::serialize(out);
-}
-
-void DebugSystem::deserialize(std::istream &in)
-{
-    System::deserialize(in);
-}
-
 void DebugSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);

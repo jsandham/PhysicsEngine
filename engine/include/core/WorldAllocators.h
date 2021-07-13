@@ -13,6 +13,7 @@
 #include "../components/LineRenderer.h"
 #include "../components/MeshCollider.h"
 #include "../components/MeshRenderer.h"
+#include "../components/SpriteRenderer.h"
 #include "../components/Rigidbody.h"
 #include "../components/SphereCollider.h"
 #include "../components/Transform.h"
@@ -22,6 +23,7 @@
 
 #include "../core/Cubemap.h"
 #include "../core/Font.h"
+#include "../core/Sprite.h"
 #include "../core/Material.h"
 #include "../core/Mesh.h"
 #include "../core/Texture2D.h"
@@ -47,6 +49,7 @@ struct WorldAllocators
     // internal component allocators
     PoolAllocator<Transform> mTransformAllocator;
     PoolAllocator<MeshRenderer> mMeshRendererAllocator;
+    PoolAllocator<SpriteRenderer> mSpriteRendererAllocator;
     PoolAllocator<LineRenderer> mLineRendererAllocator;
     PoolAllocator<Rigidbody> mRigidbodyAllocator;
     PoolAllocator<Camera> mCameraAllocator;
@@ -64,6 +67,7 @@ struct WorldAllocators
     PoolAllocator<Texture3D> mTexture3DAllocator;
     PoolAllocator<Cubemap> mCubemapAllocator;
     PoolAllocator<Font> mFontAllocator;
+    PoolAllocator<Sprite> mSpriteAllocator;
 
     // internal system allocators
     PoolAllocator<RenderSystem> mRenderSystemAllocator;

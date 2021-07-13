@@ -370,25 +370,6 @@ Entity *World::createEntity()
     return entity;
 }
 
-Entity *World::createEntity(std::istream &in)
-{
-    int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
-    int type = EntityType<Entity>::type;
-
-    Entity *entity = mAllocators.mEntityAllocator.construct(in);
-
-    if (entity != nullptr)
-    {
-        addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
-
-        mIdState.mEntityIdToComponentIds[entity->getId()] = std::vector<std::pair<Guid, int>>();
-
-        mIdState.mEntityIdsMarkedCreated.push_back(entity->getId());
-    }
-
-    return entity;
-}
-
 void World::latentDestroyEntity(const Guid &entityId)
 {
     mIdState.mEntityIdsMarkedLatentDestroy.push_back(entityId);
@@ -649,6 +630,11 @@ Guid World::getStandardDeferredShaderId() const
 Guid World::getGridShaderId() const
 {
     return mDefaultAssets.mGridShaderId;
+}
+
+Guid World::getSpriteShaderId() const
+{
+    return mDefaultAssets.mSpriteShaderId;
 }
 
 // bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

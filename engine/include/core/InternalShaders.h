@@ -47,6 +47,8 @@ class InternalShaders
     static const std::string standardDeferredFragmentShader;
     static const std::string gridVertexShader;
     static const std::string gridFragmentShader;
+    static const std::string spriteVertexShader;
+    static const std::string spriteFragmentShader;
 
     static const std::string standardShaderName;
     static const std::string colorLitShaderName;
@@ -66,6 +68,7 @@ class InternalShaders
     static const std::string ssaoShaderName;
     static const std::string standardDeferredShaderName;
     static const std::string gridShaderName;
+    static const std::string spriteShaderName;
 
     enum class Shader
     {
@@ -86,7 +89,8 @@ class InternalShaders
         PositionAndNormals,
         SSAO,
         StandardDeferred,
-        Grid
+        Grid,
+        Sprite
     };
 
     template<Shader S>
@@ -218,6 +222,12 @@ class InternalShaders
     static Guid loadShader<Shader::Grid>(World* world)
     {
         return loadInternalShader(world, gridShaderName, gridVertexShader, gridFragmentShader, "");
+    }
+
+    template<>
+    static Guid loadShader<Shader::Sprite>(World* world)
+    {
+        return loadInternalShader(world, spriteShaderName, spriteVertexShader, spriteFragmentShader, "");
     }
 
   private:

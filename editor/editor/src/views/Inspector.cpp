@@ -42,6 +42,10 @@ void Inspector::update(Clipboard &clipboard)
     {
         mTexture2DDrawer.render(clipboard, clipboard.getSelectedId());
     }
+    else if (clipboard.getSelectedType() == InteractionType::Sprite)
+    {
+        mSpriteDrawer.render(clipboard, clipboard.getSelectedId());
+    }
 
     // draw selected entity
     if (clipboard.getSelectedType() == InteractionType::Entity)
@@ -87,6 +91,10 @@ void Inspector::drawEntity(Clipboard &clipboard)
             {
                 drawer = &mMeshRendererDrawer;
             }
+            else if (componentType == ComponentType<SpriteRenderer>::type)
+            {
+                drawer = &mSpriteRendererDrawer;
+            }
             else if (componentType == ComponentType<LineRenderer>::type)
             {
                 drawer = &mLineRendererDrawer;
@@ -119,7 +127,8 @@ void Inspector::drawEntity(Clipboard &clipboard)
 
     std::string componentToAdd = "";
     std::vector<std::string> components = {"Transform",    "Camera",       "Light",       "Rigidbody",
-                                           "MeshRenderer", "LineRenderer", "BoxCollider", "SphereCollider"};
+                                           "MeshRenderer", "SpriteRenderer", "LineRenderer", "BoxCollider", 
+                                           "SphereCollider"};
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
@@ -142,6 +151,11 @@ void Inspector::drawEntity(Clipboard &clipboard)
         {
             Undo::addCommand(
                 new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+        }
+        else if (componentToAdd == "SpriteRenderer")
+        {
+            Undo::addCommand(
+                new AddComponentCommand<SpriteRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
         }
         else if (componentToAdd == "Light")
         {

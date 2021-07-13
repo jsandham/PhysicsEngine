@@ -229,6 +229,11 @@ class World
         return mAllocators.mMeshRendererAllocator.getCount();
     }
 
+    template <> size_t getNumberOfComponents<SpriteRenderer>() const
+    {
+        return mAllocators.mSpriteRendererAllocator.getCount();
+    }
+
     template <> size_t getNumberOfComponents<LineRenderer>() const
     {
         return mAllocators.mLineRendererAllocator.getCount();
@@ -304,6 +309,11 @@ class World
         return mAllocators.mFontAllocator.getCount();
     }
 
+    template <> size_t getNumberOfAssets<Sprite>() const
+    {
+        return mAllocators.mSpriteAllocator.getCount();
+    }
+
     template <> RenderSystem *getSystem<RenderSystem>() const
     {
         return getSystem_impl(&mAllocators.mRenderSystemAllocator);
@@ -337,6 +347,11 @@ class World
     template <> MeshRenderer *getComponent<MeshRenderer>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
+    }
+
+    template <> SpriteRenderer* getComponent<SpriteRenderer>(const Guid& entityId) const
+    {
+        return getComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
     }
 
     template <> LineRenderer *getComponent<LineRenderer>(const Guid &entityId) const
@@ -389,6 +404,11 @@ class World
         return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
     }
 
+    template <> SpriteRenderer* addComponent<SpriteRenderer>(const Guid& entityId)
+    {
+        return addComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
+    }
+
     template <> LineRenderer *addComponent<LineRenderer>(const Guid &entityId)
     {
         return addComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
@@ -427,56 +447,6 @@ class World
     template <> MeshCollider *addComponent<MeshCollider>(const Guid &entityId)
     {
         return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
-    }
-
-    template <> Transform *addComponent<Transform>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mTransformAllocator, in);
-    }
-
-    template <> MeshRenderer *addComponent<MeshRenderer>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mMeshRendererAllocator, in);
-    }
-
-    template <> LineRenderer *addComponent<LineRenderer>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mLineRendererAllocator, in);
-    }
-
-    template <> Rigidbody *addComponent<Rigidbody>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mRigidbodyAllocator, in);
-    }
-
-    template <> Camera *addComponent<Camera>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mCameraAllocator, in);
-    }
-
-    template <> Light *addComponent<Light>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mLightAllocator, in);
-    }
-
-    template <> SphereCollider *addComponent<SphereCollider>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mSphereColliderAllocator, in);
-    }
-
-    template <> BoxCollider *addComponent<BoxCollider>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mBoxColliderAllocator, in);
-    }
-
-    template <> CapsuleCollider *addComponent<CapsuleCollider>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, in);
-    }
-
-    template <> MeshCollider *addComponent<MeshCollider>(std::istream &in)
-    {
-        return addComponent_impl(&mAllocators.mMeshColliderAllocator, in);
     }
 
     template <> RenderSystem *addSystem<RenderSystem>(size_t order)
@@ -589,6 +559,11 @@ class World
         return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
     }
 
+    template <> Sprite* getAssetByIndex<Sprite>(size_t index) const
+    {
+        return getAssetByIndex_impl(&mAllocators.mSpriteAllocator, index);
+    }
+
     template <> Mesh *getAssetById<Mesh>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mMeshAllocator, assetId);
@@ -624,6 +599,11 @@ class World
         return getAssetById_impl(&mAllocators.mFontAllocator, assetId);
     }
 
+    template <> Sprite* getAssetById<Sprite>(const Guid& assetId) const
+    {
+        return getAssetById_impl(&mAllocators.mSpriteAllocator, assetId);
+    }
+
     template <> Transform *getComponentByIndex<Transform>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mTransformAllocator, index);
@@ -632,6 +612,11 @@ class World
     template <> MeshRenderer *getComponentByIndex<MeshRenderer>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mMeshRendererAllocator, index);
+    }
+
+    template <> SpriteRenderer* getComponentByIndex<SpriteRenderer>(size_t index) const
+    {
+        return getComponentByIndex_impl(&mAllocators.mSpriteRendererAllocator, index);
     }
 
     template <> LineRenderer *getComponentByIndex<LineRenderer>(size_t index) const
@@ -682,6 +667,11 @@ class World
     template <> MeshRenderer *getComponentById<MeshRenderer>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mMeshRendererAllocator, componentId);
+    }
+
+    template <> SpriteRenderer* getComponentById<SpriteRenderer>(const Guid& componentId) const
+    {
+        return getComponentById_impl(&mAllocators.mSpriteRendererAllocator, componentId);
     }
 
     template <> LineRenderer *getComponentById<LineRenderer>(const Guid &componentId) const
@@ -759,39 +749,9 @@ class World
         return createAsset_impl(&mAllocators.mFontAllocator);
     }
 
-    template <> Mesh *createAsset(std::istream &in)
+    template <> Sprite* createAsset<Sprite>()
     {
-        return createAsset_impl(&mAllocators.mMeshAllocator, in);
-    }
-
-    template <> Material *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mMaterialAllocator, in);
-    }
-
-    template <> Shader *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mShaderAllocator, in);
-    }
-
-    template <> Texture2D *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mTexture2DAllocator, in);
-    }
-
-    template <> Texture3D *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mTexture3DAllocator, in);
-    }
-
-    template <> Cubemap *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mCubemapAllocator, in);
-    }
-
-    template <> Font *createAsset(std::istream &in)
-    {
-        return createAsset_impl(&mAllocators.mFontAllocator, in);
+        return createAsset_impl(&mAllocators.mSpriteAllocator);
     }
 
     // default asset getters
@@ -818,6 +778,7 @@ class World
     Guid getGbufferShaderId() const;
     Guid getStandardDeferredShaderId() const;
     Guid getGridShaderId() const;
+    Guid getSpriteShaderId() const;
 
   private:
     Asset *loadAssetFromYAML(const YAML::Node &in);
@@ -907,31 +868,6 @@ class World
 
             mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, componentId, componentType));
         }
-
-        return component;
-    }
-
-    template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, std::istream &in)
-    {
-        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
-
-        int componentGlobalIndex = (int)allocator->getCount();
-        int componentType = ComponentType<T>::type;
-
-        T *component = allocator->construct(in);
-
-        if (component->getId().isInvalid() || component->getEntityId().isInvalid())
-        {
-            return nullptr;
-        }
-
-        addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
-
-        mIdState.mEntityIdToComponentIds[component->getEntityId()].push_back(
-            std::make_pair(component->getId(), componentType));
-
-        mIdState.mComponentIdsMarkedCreated.push_back(
-            std::make_tuple(component->getEntityId(), component->getId(), componentType));
 
         return component;
     }
@@ -1036,23 +972,6 @@ class World
         if (asset != nullptr)
         {
             addIdToGlobalIndexMap_impl<T>(id, index, type);
-        }
-
-        return asset;
-    }
-
-    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, std::istream &in)
-    {
-        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
-
-        int index = (int)allocator->getCount();
-        int type = AssetType<T>::type;
-
-        T *asset = allocator->construct(in);
-
-        if (asset != nullptr)
-        {
-            addIdToGlobalIndexMap_impl<T>(asset->getId(), index, type);
         }
 
         return asset;
@@ -1186,6 +1105,13 @@ class World
     }
 
     template <>
+    SpriteRenderer* getComponentById_impl<SpriteRenderer>(const PoolAllocator<SpriteRenderer>* allocator,
+        const Guid& componentId) const
+    {
+        return getById_impl<SpriteRenderer>(mIdState.mSpriteRendererIdToGlobalIndex, allocator, componentId);
+    }
+
+    template <>
     LineRenderer *getComponentById_impl<LineRenderer>(const PoolAllocator<LineRenderer> *allocator,
                                                       const Guid &componentId) const
     {
@@ -1277,6 +1203,11 @@ class World
         return getById_impl<Font>(mIdState.mFontIdToGlobalIndex, allocator, assetId);
     }
 
+    template <> Sprite* getAssetById_impl<Sprite>(const PoolAllocator<Sprite>* allocator, const Guid& assetId) const
+    {
+        return getById_impl<Sprite>(mIdState.mSpriteIdToGlobalIndex, allocator, assetId);
+    }
+
     template <>
     RenderSystem *getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator,
                                                    const Guid &assetId) const
@@ -1333,6 +1264,13 @@ class World
     template <> void addIdToGlobalIndexMap_impl<MeshRenderer>(const Guid &id, int index, int type)
     {
         mIdState.mMeshRendererIdToGlobalIndex[id] = index;
+        mIdState.mIdToGlobalIndex[id] = index;
+        mIdState.mIdToType[id] = type;
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<SpriteRenderer>(const Guid& id, int index, int type)
+    {
+        mIdState.mSpriteRendererIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;
         mIdState.mIdToType[id] = type;
     }
@@ -1438,6 +1376,13 @@ class World
     template <> void addIdToGlobalIndexMap_impl<Font>(const Guid &id, int index, int type)
     {
         mIdState.mFontIdToGlobalIndex[id] = index;
+        mIdState.mIdToGlobalIndex[id] = index;
+        mIdState.mIdToType[id] = type;
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<Sprite>(const Guid& id, int index, int type)
+    {
+        mIdState.mSpriteIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;
         mIdState.mIdToType[id] = type;
     }

@@ -91,6 +91,10 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         {
             asset = world->loadAssetFromYAML(mAddBuffer[i].string());
         }
+        else if (extension == ".sprite")
+        {
+            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
+        }
 
         // ensure each png file has a generated yaml texture file and if not then create one
         if (extension == ".png")
@@ -156,6 +160,10 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         else if (extension == ".material")
         {
             world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Material>::type);
+        }
+        else if (extension == ".sprite")
+        {
+            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Sprite>::type);
         }
 
         mFilePathToId.erase(mDeleteBuffer[i]);

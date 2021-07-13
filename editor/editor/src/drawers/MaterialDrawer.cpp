@@ -92,12 +92,6 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     std::vector<ShaderUniform> uniforms = material->getUniforms();
     for (size_t i = 0; i < uniforms.size(); i++)
     {
-        // only expose uniforms that exist in a Material uniform struct in the shader
-        if (std::strcmp(uniforms[i].mBlockName, "material") != 0)
-        {
-            continue;
-        }
-
         // Note: matrices not supported
         switch (uniforms[i].mType)
         {

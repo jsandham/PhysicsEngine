@@ -24,8 +24,6 @@ class SphereCollider : public Collider
     SphereCollider(Guid id);
     ~SphereCollider();
 
-    virtual void serialize(std::ostream &out) const override;
-    virtual void deserialize(std::istream &in) override;
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 

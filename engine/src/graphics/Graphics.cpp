@@ -1084,6 +1084,39 @@ void Graphics::destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2
     glDeleteVertexArrays(1, vao);
 }
 
+void Graphics::createSprite(GLuint* vao)
+{
+    // configure VAO/VBO
+    unsigned int vbo;
+    float vertices[] = {
+        // pos      // tex
+        0.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+
+        0.0f, 1.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 0.0f, 1.0f, 0.0f
+    };
+
+    glGenVertexArrays(1, vao);
+    glGenBuffers(1, &vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindVertexArray(*vao);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroySprite(GLuint* vao)
+{
+    glDeleteVertexArrays(1, vao);
+}
+
 bool Graphics::compile(const std::string &vert, const std::string &frag, const std::string &geom, GLuint *program)
 {
     const GLchar *vertexShaderCharPtr = vert.c_str();
@@ -1408,39 +1441,39 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
         {
             if (textures[textureUnit] != -1)
             {
-                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit,
+                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram), textureUnit,
                                        textures[textureUnit]);
             }
             else
             {
-                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName, shaderProgram), textureUnit, 0);
+                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram), textureUnit, 0);
             }
 
             textureUnit++;
         }
         else if (uniforms[i].mType == GL_INT)
         {
-            Graphics::setInt(findUniformLocation(uniforms[i].mName, shaderProgram),
+            Graphics::setInt(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                              *reinterpret_cast<const int *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT)
         {
-            Graphics::setFloat(findUniformLocation(uniforms[i].mName, shaderProgram),
+            Graphics::setFloat(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                                *reinterpret_cast<const float *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC2)
         {
-            Graphics::setVec2(findUniformLocation(uniforms[i].mName, shaderProgram),
+            Graphics::setVec2(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC3)
         {
-            Graphics::setVec3(findUniformLocation(uniforms[i].mName, shaderProgram),
+            Graphics::setVec3(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == GL_FLOAT_VEC4)
         {
-            Graphics::setVec4(findUniformLocation(uniforms[i].mName, shaderProgram),
+            Graphics::setVec4(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
         }
     }

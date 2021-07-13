@@ -37,6 +37,8 @@ SceneView::~SceneView()
 void SceneView::init(Clipboard &clipboard)
 {
     initWorld(clipboard.getWorld());
+
+    //mSpriteRenderer.init();
 }
 
 void SceneView::update(Clipboard &clipboard)
@@ -45,6 +47,10 @@ void SceneView::update(Clipboard &clipboard)
     {
         return;
     }
+    /*if (clipboard.mScenePath.empty())
+    {
+        return;
+    }*/
 
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
@@ -86,6 +92,7 @@ void SceneView::update(Clipboard &clipboard)
     EditorCameraSystem* cameraSystem = clipboard.mEditorCameraSystem;
 
     cameraSystem->setViewport(viewport);
+    clipboard.mGizmoSystem->mEnabled = !clipboard.mScenePath.empty();
 
     updateWorld(clipboard.getWorld());
 
@@ -212,12 +219,30 @@ void SceneView::update(Clipboard &clipboard)
 
     clipboard.mGizmoSystem->clearDrawList();
 
-    Frustum frustum;
-    frustum.mNearPlane = 2.0f;
-    frustum.mFarPlane = 8.0f;
-    frustum.computePlanes(glm::vec3(0,0,0), glm::vec3(0,0,1), glm::vec3(0,1,0), glm::vec3(1,0,0));
-    clipboard.mGizmoSystem->addToDrawList(frustum, Color(0,1,0,1), true);
-    //clipboard.mGizmoSystem->addToDrawList(AABB(glm::vec3(0,0,0), glm::vec3(2,2,2)), Color(0, 1, 0, 1));
+    // draw camera gizmos
+    for (int i = 0; i < clipboard.mWorld.getNumberOfComponents<Camera>(); i++)
+    {
+        Camera* camera = clipboard.mWorld.getComponentByIndex<Camera>(i);
+
+        if (camera->mHide == HideFlag::None)
+        {
+            Entity* entity = camera->getEntity(&clipboard.mWorld);
+            Transform* transform = clipboard.mWorld.getComponent<Transform>(entity->getId());
+
+            glm::vec3 position = transform->mPosition;
+            glm::vec3 front = transform->getForward();
+            glm::vec3 up = transform->getUp();
+            glm::vec3 right = transform->getRight();
+
+            Frustum frustum;
+            frustum.mNearPlane = 1.0f;
+            frustum.mFarPlane = 4.0f;
+            frustum.computePlanes(position, front, up, right);
+            clipboard.mGizmoSystem->addToDrawList(frustum, Color::yellow, false);
+        }
+    }
+
+    //mSpriteRenderer.drawSprite(cameraSystem->getCamera(), 0, glm::vec2(200, 200), glm::vec2(100, 100));
 
     if (clipboard.getDraggedType() == InteractionType::Mesh)
     {
@@ -428,7 +453,9 @@ void SceneView::updateWorld(World *world)
     {
         System *system = world->getSystemByUpdateOrder(i);
 
-        system->update(mInput, mTime);
+        if (system->mEnabled) {
+            system->update(mInput, mTime);
+        }
     }
     auto end = std::chrono::steady_clock::now();
 

@@ -31,42 +31,16 @@ Material::~Material()
 {
 }
 
-void Material::serialize(std::ostream &out) const
-{
-    Asset::serialize(out);
-
-    PhysicsEngine::write<Guid>(out, mShaderId);
-    PhysicsEngine::write<RenderQueue>(out, mRenderQueue);
-    PhysicsEngine::write<size_t>(out, mUniforms.size());
-    PhysicsEngine::write<const ShaderUniform>(out, mUniforms.data(), mUniforms.size());
-}
-
-void Material::deserialize(std::istream &in)
-{
-    Asset::deserialize(in);
-
-    size_t uniformCount;
-    PhysicsEngine::read<Guid>(in, mShaderId);
-    PhysicsEngine::read<RenderQueue>(in, mRenderQueue);
-    PhysicsEngine::read<size_t>(in, uniformCount);
-
-    mUniforms.resize(uniformCount);
-
-    PhysicsEngine::read<ShaderUniform>(in, mUniforms.data(), uniformCount);
-
-    mShaderChanged = true;
-}
-
 void Material::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
     out["shaderId"] = mShaderId;
     out["renderQueue"] = mRenderQueue;
-    out["uniformCount"] = mUniforms.size();
+
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
-        out[std::to_string(i)] = mUniforms[i];
+        out[mUniforms[i].mName] = mUniforms[i];
     }
 }
 
@@ -76,12 +50,23 @@ void Material::deserialize(const YAML::Node &in)
 
     mShaderId = YAML::getValue<Guid>(in, "shaderId");
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
-    size_t uniformCount = YAML::getValue<size_t>(in, "uniformCount");
+   
+    mUniforms.clear();
 
-    mUniforms.resize(uniformCount);
-    for (size_t i = 0; i < mUniforms.size(); i++)
+    int index = 0;
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) 
     {
-        mUniforms[i] = YAML::getValue<ShaderUniform>(in, std::to_string(i));
+        index++;
+
+        if (index <= 6)
+        {
+            continue;
+        }
+ 
+        ShaderUniform uniform = YAML::getValue<ShaderUniform>(in, it->first.as<std::string>());
+        uniform.mName = it->first.as<std::string>();
+
+        mUniforms.push_back(uniform);
     }
 
     mShaderChanged = true;
@@ -115,7 +100,7 @@ void Material::apply(World *world)
         if (mUniforms[i].mType == GL_SAMPLER_2D)
         {
             Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
-            if (texture != NULL)
+            if (texture != nullptr)
             {
                 textures.push_back(texture->getNativeGraphics());
             }
@@ -133,7 +118,7 @@ void Material::onShaderChanged(World *world)
 {
     Shader *shader = world->getAssetById<Shader>(mShaderId);
 
-    if (shader == NULL)
+    if (shader == nullptr)
     {
         return;
     }
@@ -145,21 +130,22 @@ void Material::onShaderChanged(World *world)
         return;
     }
 
-    std::vector<ShaderUniform> shaderUniforms = shader->getUniforms();
-    
-    // Attempt to copy any existing uniform data
-    if (shaderUniforms.size() == mUniforms.size())
+    // onShaderChanged is called whenever the shader is (re-)compiled, however 
+    // the material data may or may not have changed. Attempt to copy material
+    // data from old uniforms to new ones
+    std::vector<ShaderUniform> temp = shader->getMaterialUniforms();
+
+    for (size_t i = 0; i < temp.size(); i++)
     {
-        for (size_t i = 0; i < shaderUniforms.size(); i++)
-        {
-            if (memcmp(shaderUniforms[i].mName, mUniforms[i].mName, 32) == 0)
-            {
-                memcpy(shaderUniforms[i].mData, mUniforms[i].mData, 64);
+        for (size_t j = 0; j < mUniforms.size(); j++) {
+            if (temp[i].mName == mUniforms[j].mName) {
+                memcpy(temp[i].mData, mUniforms[j].mData, 64);
+                break;
             }
         }
     }
 
-    mUniforms = shaderUniforms;
+    mUniforms = temp;
 
     mShaderChanged = false;
 }

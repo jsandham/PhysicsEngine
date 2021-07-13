@@ -16,16 +16,6 @@ Collider::~Collider()
 {
 }
 
-void Collider::serialize(std::ostream &out) const
-{
-    Component::serialize(out);
-}
-
-void Collider::deserialize(std::istream &in)
-{
-    Component::deserialize(in);
-}
-
 void Collider::serialize(YAML::Node &out) const
 {
     Component::serialize(out);

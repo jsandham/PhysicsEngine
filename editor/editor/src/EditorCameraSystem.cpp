@@ -40,16 +40,6 @@ EditorCameraSystem::~EditorCameraSystem()
 {
 }
 
-void EditorCameraSystem::serialize(std::ostream& out) const
-{
-    System::serialize(out);
-}
-
-void EditorCameraSystem::deserialize(std::istream& in)
-{
-    System::deserialize(in);
-}
-
 void EditorCameraSystem::serialize(YAML::Node& out) const
 {
     System::serialize(out);
@@ -230,6 +220,11 @@ CameraSSAO EditorCameraSystem::getSSAO() const
 CameraGizmos EditorCameraSystem::getGizmos() const
 {
     return mCamera->mGizmos;
+}
+
+Camera* EditorCameraSystem::getCamera() const
+{
+    return mCamera;
 }
 
 int EditorCameraSystem::getMousePosX() const

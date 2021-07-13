@@ -28,50 +28,6 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::serialize(std::ostream &out) const
-{
-    Asset::serialize(out);
-
-    PhysicsEngine::write<size_t>(out, mVertices.size());
-    PhysicsEngine::write<size_t>(out, mNormals.size());
-    PhysicsEngine::write<size_t>(out, mTexCoords.size());
-    PhysicsEngine::write<size_t>(out, mSubMeshVertexStartIndices.size());
-    PhysicsEngine::write<const float>(out, mVertices.data(), mVertices.size());
-    PhysicsEngine::write<const float>(out, mNormals.data(), mNormals.size());
-    PhysicsEngine::write<const float>(out, mTexCoords.data(), mTexCoords.size());
-    PhysicsEngine::write<const float>(out, mColors.data(), mColors.size());
-    PhysicsEngine::write<const int>(out, mSubMeshVertexStartIndices.data(), mSubMeshVertexStartIndices.size());
-}
-
-void Mesh::deserialize(std::istream &in)
-{
-    Asset::deserialize(in);
-
-    size_t vertexCount, normalCount, texCoordCount, colorsCount, subMeshCount;
-    PhysicsEngine::read<size_t>(in, vertexCount);
-    PhysicsEngine::read<size_t>(in, normalCount);
-    PhysicsEngine::read<size_t>(in, texCoordCount);
-    PhysicsEngine::read<size_t>(in, colorsCount);
-    PhysicsEngine::read<size_t>(in, subMeshCount);
-
-    mVertices.resize(vertexCount);
-    mNormals.resize(normalCount);
-    mTexCoords.resize(texCoordCount);
-    mTexCoords.resize(colorsCount);
-    mSubMeshVertexStartIndices.resize(subMeshCount);
-
-    PhysicsEngine::read<float>(in, mVertices.data(), vertexCount);
-    PhysicsEngine::read<float>(in, mNormals.data(), normalCount);
-    PhysicsEngine::read<float>(in, mTexCoords.data(), texCoordCount);
-    PhysicsEngine::read<float>(in, mColors.data(), colorsCount);
-    PhysicsEngine::read<int>(in, mSubMeshVertexStartIndices.data(), subMeshCount);
-
-    computeBoundingSphere();
-
-    mCreated = false;
-    mChanged = false;
-}
-
 void Mesh::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
@@ -150,7 +106,9 @@ void Mesh::load(const std::string &filepath)
 
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
-    //auto& materials = reader.GetMaterials();
+    auto& materials = reader.GetMaterials();
+
+    mSubMeshVertexStartIndices.push_back(0);
 
     // Loop over shapes
     for (size_t s = 0; s < shapes.size(); s++) {
@@ -205,10 +163,9 @@ void Mesh::load(const std::string &filepath)
             // per-face material
             //shapes[s].mesh.material_ids[f];
         }
-    }
 
-    mSubMeshVertexStartIndices.push_back(0);
-    mSubMeshVertexStartIndices.push_back((int)mVertices.size());
+        mSubMeshVertexStartIndices.push_back((int)mVertices.size());
+    }
 
     if (mNormals.size() != mVertices.size()) {
         // Ensure there are no normals loaded
@@ -269,6 +226,10 @@ void Mesh::load(const std::string &filepath)
             }
         }
     }
+
+    computeBoundingSphere();
+
+    mCreated = false;
 
     mSource = filepath;
 }

@@ -41,6 +41,14 @@ Component *PhysicsEngine::getInternalComponent(const WorldAllocators &allocators
             return allocators.mMeshRendererAllocator.get(it->second);
         }
     }
+    else if (type == ComponentType<SpriteRenderer>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mSpriteRendererIdToGlobalIndex.find(id);
+        if (it != state.mSpriteRendererIdToGlobalIndex.end())
+        {
+            return allocators.mSpriteRendererAllocator.get(it->second);
+        }
+    }
     else if (type == ComponentType<LineRenderer>::type)
     {
         std::unordered_map<Guid, int>::const_iterator it = state.mLineRendererIdToGlobalIndex.find(id);
@@ -149,6 +157,15 @@ Asset* PhysicsEngine::getInternalAsset(const WorldAllocators& allocators, const 
         if (it != state.mFontIdToGlobalIndex.end())
         {
             return allocators.mFontAllocator.get(it->second);
+        }
+    }
+
+    else if (type == AssetType<Sprite>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mSpriteIdToGlobalIndex.find(id);
+        if (it != state.mSpriteIdToGlobalIndex.end())
+        {
+            return allocators.mSpriteAllocator.get(it->second);
         }
     }
 
@@ -372,6 +389,21 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
             }
         }
     }
+    else if (type == ComponentType<SpriteRenderer>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mSpriteRendererIdToGlobalIndex.find(id);
+        if (it != state.mSpriteRendererIdToGlobalIndex.end())
+        {
+            Component* component = allocators.mSpriteRendererAllocator.get(it->second);
+
+            if (component != nullptr)
+            {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
+    }
     else if (type == ComponentType<LineRenderer>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mLineRendererIdToGlobalIndex.find(id);
@@ -519,6 +551,19 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
         if (component != nullptr)
         {
             state.mMeshRendererIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
+        }
+    }
+    else if (type == ComponentType<SpriteRenderer>::type)
+    {
+        index = (int)allocators.mSpriteRendererAllocator.getCount();
+        component = allocators.mSpriteRendererAllocator.construct(in);
+
+        if (component != nullptr)
+        {
+            state.mSpriteRendererIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
             state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
@@ -874,6 +919,21 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
             }
         }
     }
+    else if (type == AssetType<Sprite>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mSpriteIdToGlobalIndex.find(id);
+        if (it != state.mSpriteIdToGlobalIndex.end())
+        {
+            Asset* asset = allocators.mSpriteAllocator.get(it->second);
+
+            if (asset != nullptr)
+            {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
+    }
 
     int index = -1;
     Asset *asset = nullptr;
@@ -962,6 +1022,18 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
             state.mIdToType[asset->getId()] = type;
         }
     }
+    else if (type == AssetType<Sprite>::type)
+    {
+        index = (int)allocators.mSpriteAllocator.getCount();
+        asset = allocators.mSpriteAllocator.construct(in);
+
+        if (asset != nullptr)
+        {
+            state.mSpriteIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
     else
     {
         std::string message =
@@ -979,22 +1051,10 @@ Scene *PhysicsEngine::loadInternalScene(WorldAllocators &allocators, WorldIdStat
     return loadInternalScene_Impl<const YAML::Node>(allocators, state, in, id);
 }
 
-Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
-                                          const Guid &id)
-{
-    return loadInternalEntity_Impl<std::istream>(allocators, state, in, id);
-}
-
 Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                           const Guid &id)
 {
     return loadInternalEntity_Impl<const YAML::Node>(allocators, state, in, id);
-}
-
-Component *PhysicsEngine::loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
-                                                const Guid &id, int type)
-{
-    return loadInternalComponent_Impl<std::istream>(allocators, state, in, id, type);
 }
 
 Component *PhysicsEngine::loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
@@ -1003,22 +1063,10 @@ Component *PhysicsEngine::loadInternalComponent(WorldAllocators &allocators, Wor
     return loadInternalComponent_Impl<const YAML::Node>(allocators, state, in, id, type);
 }
 
-System *PhysicsEngine::loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
-                                          const Guid &id, int type)
-{
-    return loadInternalSystem_Impl<std::istream>(allocators, state, in, id, type);
-}
-
 System *PhysicsEngine::loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                           const Guid &id, int type)
 {
     return loadInternalSystem_Impl<const YAML::Node>(allocators, state, in, id, type);
-}
-
-Asset *PhysicsEngine::loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, std::istream &in,
-                                        const Guid &id, int type)
-{
-    return loadInternalAsset_Impl<std::istream>(allocators, state, in, id, type);
 }
 
 Asset *PhysicsEngine::loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
@@ -1107,6 +1155,36 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
         if (swap != nullptr)
         {
             state.mMeshRendererIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == ComponentType<SpriteRenderer>::type)
+    {
+        swap = allocators.mSpriteRendererAllocator.destruct(index);
+
+        state.mSpriteRendererIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mSpriteRendererIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == ComponentType<SpriteRenderer>::type)
+    {
+        swap = allocators.mSpriteRendererAllocator.destruct(index);
+
+        state.mSpriteRendererIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mSpriteRendererIdToGlobalIndex[swap->getId()] = index;
             state.mIdToGlobalIndex[swap->getId()] = index;
             state.mIdToType[swap->getId()] = type;
         }
@@ -1318,6 +1396,21 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
         if (swap != nullptr)
         {
             state.mFontIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<Sprite>::type)
+    {
+        swap = allocators.mSpriteAllocator.destruct(index);
+
+        state.mSpriteIdToGlobalIndex.erase(id);
+        state.mIdToGlobalIndex.erase(id);
+        state.mIdToType.erase(id);
+
+        if (swap != nullptr)
+        {
+            state.mSpriteIdToGlobalIndex[swap->getId()] = index;
             state.mIdToGlobalIndex[swap->getId()] = index;
             state.mIdToType[swap->getId()] = type;
         }

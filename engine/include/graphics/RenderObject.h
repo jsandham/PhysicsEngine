@@ -17,7 +17,6 @@ typedef struct RenderObject
     int meshRendererIndex;
     int materialIndex;
     int shaderIndex;
-    int subMeshIndex;
     int start; // start index in vbo
     int size;  // size of vbo
     int vao;

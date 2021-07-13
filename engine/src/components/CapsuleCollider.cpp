@@ -17,20 +17,6 @@ CapsuleCollider::~CapsuleCollider()
 {
 }
 
-void CapsuleCollider::serialize(std::ostream &out) const
-{
-    Collider::serialize(out);
-
-    PhysicsEngine::write<Capsule>(out, mCapsule);
-}
-
-void CapsuleCollider::deserialize(std::istream &in)
-{
-    Collider::deserialize(in);
-
-    PhysicsEngine::read(in, mCapsule);
-}
-
 void CapsuleCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);

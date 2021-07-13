@@ -29,16 +29,6 @@ Font::~Font()
 {
 }
 
-void Font::serialize(std::ostream &out) const
-{
-    Asset::serialize(out);
-}
-
-void Font::deserialize(std::istream &in)
-{
-    Asset::deserialize(in);
-}
-
 void Font::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);

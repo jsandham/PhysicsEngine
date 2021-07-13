@@ -55,15 +55,9 @@ struct ShaderProgram
 struct ShaderUniform
 {
     char mData[64];
-    char mName[32];      // variable name in GLSL (including block name if applicable)
-    char mShortName[32]; // variable name in GLSL (excluding block name if applicable)
-    char mBlockName[32]; // block name (empty string if not part of block)
-    size_t mNameLength;  // length of name
-    size_t mSize;        // size of the uniform
+    std::string mName;   // variable name in GLSL (including block name if applicable)
     GLenum mType;        // type of the uniform (float, vec3 or mat4, etc)
-    int mVariant;        // variant this uniform occurs in
     int mLocation;       // uniform location in shader program
-    size_t mIndex;       // what index in array of uniforms we are at
 };
 
 struct ShaderAttribute
@@ -85,6 +79,7 @@ class Shader : public Asset
     int mActiveProgram;
     std::vector<ShaderProgram> mPrograms;
     std::vector<ShaderUniform> mUniforms;
+    std::vector<ShaderUniform> mMaterialUniforms;
     std::vector<ShaderAttribute> mAttributes;
 
   public:
@@ -92,8 +87,6 @@ class Shader : public Asset
     Shader(Guid id);
     ~Shader();
 
-    virtual void serialize(std::ostream &out) const override;
-    virtual void deserialize(std::istream &in) override;
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 
@@ -120,6 +113,7 @@ class Shader : public Asset
 
     std::vector<ShaderProgram> getPrograms() const;
     std::vector<ShaderUniform> getUniforms() const;
+    std::vector<ShaderUniform> getMaterialUniforms() const;
     std::vector<ShaderAttribute> getAttributeNames() const;
     std::string getVertexShader() const;
     std::string getGeometryShader() const;
@@ -210,14 +204,7 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
     {
         Node node;
 
-        node["shortName"] = rhs.mShortName;
-        node["blockName"] = rhs.mBlockName;
-        node["nameLength"] = rhs.mNameLength;
-        node["size"] = rhs.mSize;
         node["type"] = rhs.mType;
-        node["variant"] = rhs.mVariant;
-        node["location"] = rhs.mLocation;
-        node["index"] = rhs.mIndex;
 
         if (rhs.mType == GL_INT)
         {
@@ -250,33 +237,7 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 
     static bool decode(const Node &node, PhysicsEngine::ShaderUniform &rhs)
     {
-        std::string shortName = YAML::getValue<std::string>(node, "shortName");
-        std::string blockName = YAML::getValue<std::string>(node, "blockName");
-
-        std::string name;
-        if (blockName.empty())
-        {
-            name = shortName;
-        }
-        else
-        {
-            name = blockName + "." + shortName;
-        }
-
-        memset(rhs.mName, '\0', 32);
-        memset(rhs.mShortName, '\0', 32);
-        memset(rhs.mBlockName, '\0', 32);
-
-        memcpy(rhs.mName, name.data(), std::min((size_t)32, name.length()));
-        memcpy(rhs.mShortName, shortName.data(), std::min((size_t)32, shortName.length()));
-        memcpy(rhs.mBlockName, blockName.data(), std::min((size_t)32, blockName.length()));
-
-        rhs.mNameLength = YAML::getValue<size_t>(node, "nameLength");
-        rhs.mSize = YAML::getValue<size_t>(node, "size");
         rhs.mType = YAML::getValue<int>(node, "type");
-        rhs.mVariant = YAML::getValue<int>(node, "variant");
-        rhs.mLocation = YAML::getValue<int>(node, "location");
-        rhs.mIndex = YAML::getValue<size_t>(node, "index");
 
         if (rhs.mType == GL_INT)
         {

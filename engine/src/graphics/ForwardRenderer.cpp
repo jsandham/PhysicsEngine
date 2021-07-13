@@ -34,7 +34,8 @@ void ForwardRenderer::init(World *world, bool renderToScreen)
 
 void ForwardRenderer::update(const Input &input, Camera *camera,
                              const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                             const std::vector<RenderObject> &renderObjects)
+                             const std::vector<RenderObject> &renderObjects,
+                             const std::vector<SpriteObject> &spriteObjects)
 {
     beginFrame(mWorld, camera, mState);
 
@@ -52,6 +53,8 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
         renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
         renderTransparents();
     }
+
+    renderSprites(mWorld, camera, mState, spriteObjects);
 
     renderColorPicking(mWorld, camera, mState, renderQueue, renderObjects);
 

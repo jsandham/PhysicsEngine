@@ -74,13 +74,6 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return new (allocate()) T(id);
     }
 
-    T *construct(std::istream &in)
-    {
-        T *t = new (allocate()) T();
-        t->deserialize(in);
-        return t;
-    }
-
     T *construct(const YAML::Node &in)
     {
         T *t = new (allocate()) T();

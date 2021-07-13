@@ -17,16 +17,6 @@ GizmoSystem::~GizmoSystem()
 {
 }
 
-void GizmoSystem::serialize(std::ostream &out) const
-{
-    System::serialize(out);
-}
-
-void GizmoSystem::deserialize(std::istream &in)
-{
-    System::deserialize(in);
-}
-
 void GizmoSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);

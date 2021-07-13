@@ -24,24 +24,6 @@ LineRenderer::~LineRenderer()
 {
 }
 
-void LineRenderer::serialize(std::ostream &out) const
-{
-    Component::serialize(out);
-
-    PhysicsEngine::write<Guid>(out, mMaterialId);
-    PhysicsEngine::write<glm::vec3>(out, mStart);
-    PhysicsEngine::write<glm::vec3>(out, mEnd);
-}
-
-void LineRenderer::deserialize(std::istream &in)
-{
-    Component::deserialize(in);
-
-    PhysicsEngine::read<Guid>(in, mMaterialId);
-    PhysicsEngine::read<glm::vec3>(in, mStart);
-    PhysicsEngine::read<glm::vec3>(in, mEnd);
-}
-
 void LineRenderer::serialize(YAML::Node &out) const
 {
     Component::serialize(out);

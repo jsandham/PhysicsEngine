@@ -36,16 +36,6 @@ RenderSystem::~RenderSystem()
 {
 }
 
-void RenderSystem::serialize(std::ostream &out) const
-{
-    System::serialize(out);
-}
-
-void RenderSystem::deserialize(std::istream &in)
-{
-    System::deserialize(in);
-}
-
 void RenderSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);
@@ -81,6 +71,7 @@ void RenderSystem::update(const Input &input, const Time &time)
     registerLights(mWorld);
 
     buildRenderObjectsList(mWorld);
+    buildSpriteObjectsList(mWorld);
 
     for (size_t i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
     {
@@ -93,7 +84,7 @@ void RenderSystem::update(const Input &input, const Time &time)
 
         if (camera->mRenderPath == RenderPath::Forward)
         {
-            mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects);
+            mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
         }
         else
         {
@@ -171,6 +162,23 @@ void RenderSystem::registerRenderAssets(World *world)
             if (!mesh->isCreated())
             {
                 std::string errorMessage = "Error: Failed to create mesh " + mesh->getId().toString() + "\n";
+                Log::error(errorMessage.c_str());
+            }
+        }
+    }
+
+    // create all sprite assets not already created
+    for (size_t i = 0; i < world->getNumberOfAssets<Sprite>(); i++)
+    {
+        Sprite* sprite = world->getAssetByIndex<Sprite>(i);
+
+        if (!sprite->isCreated())
+        {
+            sprite->create();
+
+            if (!sprite->isCreated())
+            {
+                std::string errorMessage = "Error: Failed to create sprite " + sprite->getId().toString() + "\n";
                 Log::error(errorMessage.c_str());
             }
         }
@@ -264,6 +272,54 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
                 mRenderObjects.push_back(object);
             }
+        }
+    }
+}
+
+void RenderSystem::buildSpriteObjectsList(World* world)
+{
+    mSpriteObjects.clear();
+
+    // add enabled renderers to render object list
+    for (size_t i = 0; i < world->getNumberOfComponents<SpriteRenderer>(); i++)
+    {
+        SpriteRenderer* spriteRenderer = world->getComponentByIndex<SpriteRenderer>(i);
+
+        if (spriteRenderer->mEnabled)
+        {
+            Transform* transform = spriteRenderer->getComponent<Transform>(world);
+            Sprite* sprite = world->getAssetById<Sprite>(spriteRenderer->getSprite());
+
+            if (transform == nullptr || sprite == nullptr)
+            {
+                continue;
+            }
+
+            Texture2D* texture = world->getAssetById<Texture2D>(sprite->getTextureId());
+
+            glm::vec2 size = glm::vec2(100, 100);
+            float rotate = 0.0f;
+
+            glm::mat4 model = transform->getModelMatrix();
+
+            SpriteObject object;
+            //object.transformId = transform->getId();
+            //object.spriteRendererId = spriteRenderer->getId();
+            //object.spriteRendererIndex = (int)i;
+            object.model = model;
+            object.color = spriteRenderer->mColor;
+            object.vao = sprite->getNativeGraphicsVAO();
+
+            if (texture != nullptr)
+            {
+                object.texture = texture->getNativeGraphics();
+            }
+            else
+            {
+                object.texture = -1;
+            }
+
+            mSpriteObjects.push_back(object);
         }
     }
 }

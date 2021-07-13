@@ -51,8 +51,6 @@ class EditorCameraSystem : public System
     EditorCameraSystem(Guid id);
     ~EditorCameraSystem();
 
-    virtual void serialize(std::ostream& out) const override;
-    virtual void deserialize(std::istream& in) override;
     virtual void serialize(YAML::Node& out) const override;
     virtual void deserialize(const YAML::Node& in) override;
 
@@ -78,6 +76,8 @@ class EditorCameraSystem : public System
     RenderPath getRenderPath() const;
     CameraSSAO getSSAO() const;
     CameraGizmos getGizmos() const;
+
+    Camera* getCamera() const;
 
     Guid getTransformUnderMouse(float nx, float ny) const;
     int getMousePosX() const;

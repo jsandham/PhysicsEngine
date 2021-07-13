@@ -15,16 +15,6 @@ Scene::~Scene()
 {
 }
 
-void Scene::serialize(std::ostream &out) const
-{
-    Object::serialize(out);
-}
-
-void Scene::deserialize(std::istream &in)
-{
-    Object::deserialize(in);
-}
-
 void Scene::serialize(YAML::Node &out) const
 {
     Object::serialize(out);

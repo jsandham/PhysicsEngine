@@ -176,6 +176,8 @@
     <ClCompile Include="src\drawers\RigidbodyDrawer.cpp" />
     <ClCompile Include="src\drawers\ShaderDrawer.cpp" />
     <ClCompile Include="src\drawers\SphereColliderDrawer.cpp" />
+    <ClCompile Include="src\drawers\SpriteDrawer.cpp" />
+    <ClCompile Include="src\drawers\SpriteRendererDrawer.cpp" />
     <ClCompile Include="src\drawers\Texture2DDrawer.cpp" />
     <ClCompile Include="src\drawers\Texture3DDrawer.cpp" />
     <ClCompile Include="src\drawers\TransformDrawer.cpp" />
@@ -231,6 +233,8 @@
     <ClInclude Include="include\drawers\RigidbodyDrawer.h" />
     <ClInclude Include="include\drawers\ShaderDrawer.h" />
     <ClInclude Include="include\drawers\SphereColliderDrawer.h" />
+    <ClInclude Include="include\drawers\SpriteDrawer.h" />
+    <ClInclude Include="include\drawers\SpriteRendererDrawer.h" />
     <ClInclude Include="include\drawers\Texture2DDrawer.h" />
     <ClInclude Include="include\drawers\Texture3DDrawer.h" />
     <ClInclude Include="include\drawers\TransformDrawer.h" />

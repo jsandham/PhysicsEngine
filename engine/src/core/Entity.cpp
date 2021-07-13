@@ -23,22 +23,6 @@ Entity::~Entity()
 {
 }
 
-void Entity::serialize(std::ostream &out) const
-{
-    Object::serialize(out);
-
-    PhysicsEngine::write<bool>(out, mDoNotDestroy);
-    PhysicsEngine::write<std::string>(out, mName);
-}
-
-void Entity::deserialize(std::istream &in)
-{
-    Object::deserialize(in);
-
-    PhysicsEngine::read<bool>(in, mDoNotDestroy);
-    PhysicsEngine::read<std::string>(in, mName);
-}
-
 void Entity::serialize(YAML::Node &out) const
 {
     Object::serialize(out);

@@ -20,6 +20,7 @@ struct WorldIdState
     // internal world components id state
     std::unordered_map<Guid, int> mTransformIdToGlobalIndex;
     std::unordered_map<Guid, int> mMeshRendererIdToGlobalIndex;
+    std::unordered_map<Guid, int> mSpriteRendererIdToGlobalIndex;
     std::unordered_map<Guid, int> mLineRendererIdToGlobalIndex;
     std::unordered_map<Guid, int> mRigidbodyIdToGlobalIndex;
     std::unordered_map<Guid, int> mCameraIdToGlobalIndex;
@@ -37,6 +38,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mTexture3DIdToGlobalIndex;
     std::unordered_map<Guid, int> mCubemapIdToGlobalIndex;
     std::unordered_map<Guid, int> mFontIdToGlobalIndex;
+    std::unordered_map<Guid, int> mSpriteIdToGlobalIndex;
 
     // internal world system id state
     std::unordered_map<Guid, int> mRenderSystemIdToGlobalIndex;

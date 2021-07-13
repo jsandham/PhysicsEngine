@@ -12,6 +12,7 @@
 #include "../graphics/DeferredRenderer.h"
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/RenderObject.h"
+#include "../graphics/SpriteObject.h"
 
 namespace PhysicsEngine
 {
@@ -22,6 +23,7 @@ class RenderSystem : public System
     DeferredRenderer mDeferredRenderer;
 
     std::vector<RenderObject> mRenderObjects;
+    std::vector<SpriteObject> mSpriteObjects;
     std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
   public:
@@ -32,8 +34,6 @@ class RenderSystem : public System
     RenderSystem(Guid id);
     ~RenderSystem();
 
-    virtual void serialize(std::ostream &out) const override;
-    virtual void deserialize(std::istream &in) override;
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 
@@ -48,6 +48,7 @@ class RenderSystem : public System
     void registerCameras(World *world);
     void registerLights(World *world);
     void buildRenderObjectsList(World *world);
+    void buildSpriteObjectsList(World* world);
     void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();

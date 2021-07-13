@@ -24,6 +24,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     Shader *mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
     Shader *mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
     Shader *mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
+    Shader* mSpriteShader = world->getAssetById<Shader>(world->getSpriteShaderId());
 
     assert(mGeometryShader != NULL);
     assert(mColorShader != NULL);
@@ -31,6 +32,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     assert(mDepthShader != NULL);
     assert(mDepthCubemapShader != NULL);
     assert(mQuadShader != NULL);
+    assert(mSpriteShader != NULL);
 
     mGeometryShader->compile();
     mColorShader->compile();
@@ -38,6 +40,7 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     mDepthShader->compile();
     mDepthCubemapShader->compile();
     mQuadShader->compile();
+    mSpriteShader->compile();
 
     // cache internal shader uniforms
     state.mGeometryShaderProgram = mGeometryShader->getProgramFromVariant(ShaderVariant::None);
@@ -83,6 +86,13 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     state.mColorShaderProgram = mColorShader->getProgramFromVariant(ShaderVariant::None);
     state.mColorShaderModelLoc = mColorShader->findUniformLocation("model", state.mColorShaderProgram);
     state.mColorShaderColorLoc = mColorShader->findUniformLocation("material.color", state.mColorShaderProgram);
+
+    state.mSpriteShaderProgram = mSpriteShader->getProgramFromVariant(ShaderVariant::None);
+    state.mSpriteModelLoc = mSpriteShader->findUniformLocation("model", state.mSpriteShaderProgram);
+    state.mSpriteViewLoc = mSpriteShader->findUniformLocation("view", state.mSpriteShaderProgram);
+    state.mSpriteProjectionLoc = mSpriteShader->findUniformLocation("projection", state.mSpriteShaderProgram);
+    state.mSpriteColorLoc = mSpriteShader->findUniformLocation("spriteColor", state.mSpriteShaderProgram);
+    state.mSpriteImageLoc = mSpriteShader->findUniformLocation("image", state.mSpriteShaderProgram);
 
     Graphics::createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
 
@@ -397,6 +407,36 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);
+}
+
+void PhysicsEngine::renderSprites(World* world, Camera* camera, ForwardRendererState& state, const std::vector<SpriteObject>& spriteObjects)
+{
+    Graphics::use(state.mSpriteShaderProgram);
+ 
+    float width = static_cast<float>(camera->getViewport().mWidth);
+    float height = static_cast<float>(camera->getViewport().mHeight);
+
+    //glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
+    glm::mat4 projection = camera->getProjMatrix();
+    glm::mat4 view = camera->getViewMatrix();
+
+    Graphics::setMat4(state.mSpriteProjectionLoc, projection);
+    Graphics::setMat4(state.mSpriteViewLoc, view);
+
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+        camera->getViewport().mHeight);
+
+    for (size_t i = 0; i < spriteObjects.size(); i++)
+    {
+        Graphics::setMat4(state.mSpriteModelLoc, spriteObjects[i].model);
+        Graphics::setColor(state.mSpriteColorLoc, spriteObjects[i].color);
+        Graphics::setTexture2D(state.mSpriteImageLoc, 0, spriteObjects[i].texture);
+
+        Graphics::render(0, 6, spriteObjects[i].vao);
+    }
+        
+    Graphics::unbindFramebuffer();
 }
 
 void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,

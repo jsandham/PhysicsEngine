@@ -1,8 +1,6 @@
 #ifndef OBJECT_H__
 #define OBJECT_H__
 
-#include <istream>
-#include <ostream>
 #include <vector>
 
 #include "Guid.h"
@@ -31,8 +29,6 @@ class Object
     Object(Guid id);
     virtual ~Object() = 0;
 
-    virtual void serialize(std::ostream &out) const;
-    virtual void deserialize(std::istream &in);
     virtual void serialize(YAML::Node &out) const;
     virtual void deserialize(const YAML::Node &in);
 

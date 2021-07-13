@@ -85,6 +85,7 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
             success &= std::filesystem::create_directory(path / "data/meshes");
             success &= std::filesystem::create_directory(path / "data/materials");
             success &= std::filesystem::create_directory(path / "data/shaders");
+            success &= std::filesystem::create_directory(path / "data/sprites");
 
             if (success)
             {

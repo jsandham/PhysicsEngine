@@ -192,6 +192,12 @@
     <ClCompile Include="src\EditorProjectManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\drawers\SpriteRendererDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawers\SpriteDrawer.cpp">
+      <Filter>Source Files\drawers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
@@ -352,6 +358,12 @@
     </ClInclude>
     <ClInclude Include="include\EditorProjectManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\SpriteRendererDrawer.h">
+      <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawers\SpriteDrawer.h">
+      <Filter>Header Files\drawers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

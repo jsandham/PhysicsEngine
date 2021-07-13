@@ -10,6 +10,7 @@
 #include "../drawers/MeshDrawer.h"
 #include "../drawers/ShaderDrawer.h"
 #include "../drawers/Texture2DDrawer.h"
+#include "../drawers/SpriteDrawer.h"
 
 #include "../../include/drawers/BoxColliderDrawer.h"
 #include "../../include/drawers/CameraDrawer.h"
@@ -18,6 +19,7 @@
 #include "../../include/drawers/LineRendererDrawer.h"
 #include "../../include/drawers/MeshColliderDrawer.h"
 #include "../../include/drawers/MeshRendererDrawer.h"
+#include "../../include/drawers/SpriteRendererDrawer.h"
 #include "../../include/drawers/RigidbodyDrawer.h"
 #include "../../include/drawers/SphereColliderDrawer.h"
 #include "../../include/drawers/TransformDrawer.h"
@@ -31,11 +33,13 @@ class Inspector : public Window
     MaterialDrawer mMaterialDrawer;
     ShaderDrawer mShaderDrawer;
     Texture2DDrawer mTexture2DDrawer;
+    SpriteDrawer mSpriteDrawer;
 
     TransformDrawer mTransformDrawer;
     RigidbodyDrawer mRigidbodyDrawer;
     CameraDrawer mCameraDrawer;
     MeshRendererDrawer mMeshRendererDrawer;
+    SpriteRendererDrawer mSpriteRendererDrawer;
     LineRendererDrawer mLineRendererDrawer;
     LightDrawer mLightDrawer;
     BoxColliderDrawer mBoxColliderDrawer;

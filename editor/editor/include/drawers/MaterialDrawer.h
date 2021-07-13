@@ -54,7 +54,11 @@ inline void UniformDrawer<GL_INT>::draw(Clipboard &clipboard, Material *material
 {
     int temp = material->getInt(uniform->mName);
 
-    if (ImGui::InputInt(uniform->mShortName, &temp))
+    /*if (ImGui::InputInt(uniform->mShortName, &temp))
+    {
+        material->setInt(uniform->mName, temp);
+    }*/
+    if (ImGui::InputInt(uniform->mName.c_str(), &temp))
     {
         material->setInt(uniform->mName, temp);
     }
@@ -65,7 +69,11 @@ inline void UniformDrawer<GL_FLOAT>::draw(Clipboard &clipboard, Material *materi
 {
     float temp = material->getFloat(uniform->mName);
 
-    if (ImGui::InputFloat(uniform->mShortName, &temp))
+    /*if (ImGui::InputFloat(uniform->mShortName, &temp))
+    {
+        material->setFloat(uniform->mName, temp);
+    }*/
+    if (ImGui::InputFloat(uniform->mName.c_str(), &temp))
     {
         material->setFloat(uniform->mName, temp);
     }
@@ -76,7 +84,11 @@ inline void UniformDrawer<GL_FLOAT_VEC2>::draw(Clipboard &clipboard, Material *m
 {
     glm::vec2 temp = material->getVec2(uniform->mName);
 
-    if (ImGui::InputFloat2(uniform->mShortName, &temp[0]))
+    /*if (ImGui::InputFloat2(uniform->mShortName, &temp[0]))
+    {
+        material->setVec2(uniform->mName, temp);
+    }*/
+    if (ImGui::InputFloat2(uniform->mName.c_str(), &temp[0]))
     {
         material->setVec2(uniform->mName, temp);
     }
@@ -87,7 +99,11 @@ inline void UniformDrawer<GL_FLOAT_VEC3>::draw(Clipboard &clipboard, Material *m
 {
     glm::vec3 temp = material->getVec3(uniform->mName);
 
-    if (ImGui::InputFloat3(uniform->mShortName, &temp[0]))
+    /*if (ImGui::InputFloat3(uniform->mShortName, &temp[0]))
+    {
+        material->setVec3(uniform->mName, temp);
+    }*/
+    if (ImGui::InputFloat3(uniform->mName.c_str(), &temp[0]))
     {
         material->setVec3(uniform->mName, temp);
     }
@@ -98,7 +114,11 @@ inline void UniformDrawer<GL_FLOAT_VEC4>::draw(Clipboard &clipboard, Material *m
 {
     glm::vec4 temp = material->getVec4(uniform->mName);
 
-    if (ImGui::InputFloat4(uniform->mShortName, &temp[0]))
+    /*if (ImGui::InputFloat4(uniform->mShortName, &temp[0]))
+    {
+        material->setVec4(uniform->mName, temp);
+    }*/
+    if (ImGui::InputFloat4(uniform->mName.c_str(), &temp[0]))
     {
         material->setVec4(uniform->mName, temp);
     }
@@ -111,7 +131,8 @@ inline void UniformDrawer<GL_SAMPLER_2D>::draw(Clipboard &clipboard, Material *m
 
     bool releaseTriggered = false;
     bool clearClicked = false;
-    bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
+    /*bool isClicked = ImGui::ImageSlot(uniform->mShortName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);*/
+    bool isClicked = ImGui::ImageSlot(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
     
     if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
     {

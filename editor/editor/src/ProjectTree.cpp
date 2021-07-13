@@ -117,6 +117,11 @@ void ProjectNode::addFile(const std::string& name)
         label = std::string(ICON_FA_AREA_CHART);
         type = InteractionType::Shader;
     }
+    else if (extension == "sprite")
+    {
+        label = std::string(ICON_FA_AREA_CHART);
+        type = InteractionType::Sprite;
+    }
 
     mFileLabels.push_back(label + " " + name);
     mFilePaths.push_back(getDirectoryPath() / name);

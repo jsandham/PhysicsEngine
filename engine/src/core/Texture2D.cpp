@@ -84,22 +84,6 @@ Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::serialize(std::ostream &out) const
-{
-    Texture::serialize(out);
-
-    PhysicsEngine::write<int>(out, mWidth);
-    PhysicsEngine::write<int>(out, mHeight);
-}
-
-void Texture2D::deserialize(std::istream &in)
-{
-    Texture::deserialize(in);
-
-    PhysicsEngine::read<int>(in, mWidth);
-    PhysicsEngine::read<int>(in, mHeight);
-}
-
 void Texture2D::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);

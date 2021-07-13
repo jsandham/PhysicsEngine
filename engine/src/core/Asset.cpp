@@ -22,18 +22,6 @@ Asset::~Asset()
 {
 }
 
-void Asset::serialize(std::ostream &out) const
-{
-    Object::serialize(out);
-    PhysicsEngine::write<std::string>(out, mName);
-}
-
-void Asset::deserialize(std::istream &in)
-{
-    Object::deserialize(in);
-    PhysicsEngine::read<std::string>(in, mName);
-}
-
 void Asset::serialize(YAML::Node &out) const
 {
     Object::serialize(out);

@@ -30,22 +30,6 @@ PhysicsSystem::~PhysicsSystem()
 {
 }
 
-void PhysicsSystem::serialize(std::ostream &out) const
-{
-    System::serialize(out);
-
-    PhysicsEngine::write<float>(out, mGravity);
-    PhysicsEngine::write<float>(out, mTimestep);
-}
-
-void PhysicsSystem::deserialize(std::istream &in)
-{
-    System::deserialize(in);
-
-    PhysicsEngine::read<float>(in, mGravity);
-    PhysicsEngine::read<float>(in, mTimestep);
-}
-
 void PhysicsSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);

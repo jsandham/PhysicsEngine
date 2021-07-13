@@ -17,18 +17,6 @@ Object::~Object()
 {
 }
 
-void Object::serialize(std::ostream &out) const
-{
-    PhysicsEngine::write<HideFlag>(out, mHide);
-    PhysicsEngine::write<Guid>(out, mId);
-}
-
-void Object::deserialize(std::istream &in)
-{
-    PhysicsEngine::read<HideFlag>(in, mHide);
-    PhysicsEngine::read<Guid>(in, mId);
-}
-
 void Object::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

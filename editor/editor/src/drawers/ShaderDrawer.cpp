@@ -51,23 +51,23 @@ void ShaderDrawer::render(Clipboard &clipboard, Guid id)
 
     ImGui::Columns(2, "UniformColumns", false);
 
-    for (size_t i = 0; i < uniforms.size(); i++)
-    {
-        if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
-        {
-            ImGui::Text(uniforms[i].mShortName);
-        }
-    }
+    //for (size_t i = 0; i < uniforms.size(); i++)
+    //{
+    //    if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
+    //    {
+    //        ImGui::Text(uniforms[i].mShortName);
+    //    }
+    //}
 
     ImGui::NextColumn();
 
-    for (size_t i = 0; i < uniforms.size(); i++)
-    {
-        if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
-        {
-            ImGui::Text(std::to_string(uniforms[i].mType).c_str());
-        }
-    }
+    //for (size_t i = 0; i < uniforms.size(); i++)
+    //{
+    //    if (std::strcmp(uniforms[i].mBlockName, "material") == 0)
+    //    {
+    //        ImGui::Text(std::to_string(uniforms[i].mType).c_str());
+    //    }
+    //}
 
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
     ImGui::Columns(1);

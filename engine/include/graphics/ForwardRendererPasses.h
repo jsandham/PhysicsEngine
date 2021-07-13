@@ -31,6 +31,8 @@ void renderOpaques(World *world, Camera *camera, Light *light, Transform *lightT
                    const std::vector<std::pair<uint64_t, int>> &renderQueue,
                    const std::vector<RenderObject> &renderObjects);
 
+void renderSprites(World* world, Camera* camera, ForwardRendererState& state, const std::vector<SpriteObject>& spriteObjects);
+
 void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
                         const std::vector<std::pair<uint64_t, int>> &renderQueue,
                         const std::vector<RenderObject> &renderObjects);

@@ -19,16 +19,6 @@ CleanUpSystem::~CleanUpSystem()
 {
 }
 
-void CleanUpSystem::serialize(std::ostream &out) const
-{
-    System::serialize(out);
-}
-
-void CleanUpSystem::deserialize(std::istream &in)
-{
-    System::deserialize(in);
-}
-
 void CleanUpSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);

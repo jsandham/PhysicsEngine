@@ -22,6 +22,7 @@ constexpr int CUBEMAP_TYPE = 1003;
 constexpr int MATERIAL_TYPE = 1004;
 constexpr int MESH_TYPE = 1005;
 constexpr int FONT_TYPE = 1006;
+constexpr int SPRITE_TYPE = 1007;
 
 constexpr int TRANSFORM_TYPE = 2000;
 constexpr int RIGIDBODY_TYPE = 2001;
@@ -33,6 +34,8 @@ constexpr int BOXCOLLIDER_TYPE = 2006;
 constexpr int SPHERECOLLIDER_TYPE = 2009;
 constexpr int CAPSULECOLLIDER_TYPE = 2010;
 constexpr int MESHCOLLIDER_TYPE = 2011;
+constexpr int TERRAIN_TYPE = 2012;
+constexpr int SPRITERENDERER_TYPE = 2013;
 
 constexpr int RENDERSYSTEM_TYPE = 3000;
 constexpr int PHYSICSSYSTEM_TYPE = 3001;
@@ -51,6 +54,7 @@ constexpr char CUBEMAP_NAME[] = "Cubemap";
 constexpr char MATERIAL_NAME[] = "Material";
 constexpr char MESH_NAME[] = "Mesh";
 constexpr char FONT_NAME[] = "Font";
+constexpr char SPRITE_NAME[] = "Sprite";
 
 constexpr char TRANSFORM_NAME[] = "Transform";
 constexpr char RIGIDBODY_NAME[] = "Rigidbody";
@@ -62,6 +66,8 @@ constexpr char BOXCOLLIDER_NAME[] = "BoxCollider";
 constexpr char SPHERECOLLIDER_NAME[] = "SphereCollider";
 constexpr char CAPSULECOLLIDER_NAME[] = "CapsuleCollider";
 constexpr char MESHCOLLIDER_NAME[] = "MeshCollider";
+constexpr char TERRAIN_NAME[] = "Terrain";
+constexpr char SPRITERENDERER_NAME[] = "SpriteRenderer";
 
 constexpr char RENDERSYSTEM_NAME[] = "RenderSystem";
 constexpr char PHYSICSSYSTEM_NAME[] = "PhysicsSystem";

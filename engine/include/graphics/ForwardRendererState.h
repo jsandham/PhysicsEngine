@@ -67,6 +67,14 @@ struct ForwardRendererState
     int mSsaoShaderNoiseTexLoc;
     int mSsaoShaderSamplesLoc[64];
 
+    // sprite
+    int mSpriteShaderProgram;
+    int mSpriteModelLoc;
+    int mSpriteViewLoc;
+    int mSpriteProjectionLoc;
+    int mSpriteColorLoc;
+    int mSpriteImageLoc;
+
     // quad
     GLuint mQuadVAO;
     GLuint mQuadVBO;

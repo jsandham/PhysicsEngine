@@ -16,38 +16,6 @@ Texture::~Texture()
 {
 }
 
-void Texture::serialize(std::ostream &out) const
-{
-    Asset::serialize(out);
-
-    PhysicsEngine::write<TextureDimension>(out, mDimension);
-    PhysicsEngine::write<TextureFormat>(out, mFormat);
-    PhysicsEngine::write<TextureWrapMode>(out, mWrapMode);
-    PhysicsEngine::write<TextureFilterMode>(out, mFilterMode);
-    PhysicsEngine::write<int>(out, mNumChannels);
-    PhysicsEngine::write<int>(out, mAnisoLevel);
-    PhysicsEngine::write<size_t>(out, mRawTextureData.size());
-    PhysicsEngine::write<const unsigned char>(out, mRawTextureData.data(), mRawTextureData.size());
-}
-
-void Texture::deserialize(std::istream &in)
-{
-    Asset::deserialize(in);
-
-    size_t dataSize;
-    PhysicsEngine::read<TextureDimension>(in, mDimension);
-    PhysicsEngine::read<TextureFormat>(in, mFormat);
-    PhysicsEngine::read<TextureWrapMode>(in, mWrapMode);
-    PhysicsEngine::read<TextureFilterMode>(in, mFilterMode);
-    PhysicsEngine::read<int>(in, mNumChannels);
-    PhysicsEngine::read<int>(in, mAnisoLevel);
-    PhysicsEngine::read<size_t>(in, dataSize);
-    PhysicsEngine::read<unsigned char>(in, mRawTextureData.data(), dataSize);
-
-    mCreated = false;
-    mUpdateRequired = false;
-}
-
 void Texture::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);

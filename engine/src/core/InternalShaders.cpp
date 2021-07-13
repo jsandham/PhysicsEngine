@@ -39,6 +39,8 @@ using namespace PhysicsEngine;
 #include "shaders/standardDeferred.fs"
 #include "shaders/grid.vs"
 #include "shaders/grid.fs"
+#include "shaders/sprite.vs"
+#include "shaders/sprite.fs"
 
 const std::string InternalShaders::standardShaderName = "Standard";
 const std::string InternalShaders::colorLitShaderName = "ColorLit";
@@ -58,6 +60,7 @@ const std::string InternalShaders::positionAndNormalShaderName = "PositionAndNor
 const std::string InternalShaders::ssaoShaderName = "SSAO";
 const std::string InternalShaders::standardDeferredShaderName = "StandardDeferred";
 const std::string InternalShaders::gridShaderName = "Grid";
+const std::string InternalShaders::spriteShaderName = "Sprite";
 
 Guid InternalShaders::loadInternalShader(World *world, const std::string &name,
                                          const std::string vertex, const std::string fragment,

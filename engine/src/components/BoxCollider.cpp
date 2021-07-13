@@ -17,18 +17,6 @@ BoxCollider::~BoxCollider()
 {
 }
 
-void BoxCollider::serialize(std::ostream &out) const
-{
-    Collider::serialize(out);
-    PhysicsEngine::write<AABB>(out, mAABB);
-}
-
-void BoxCollider::deserialize(std::istream &in)
-{
-    Collider::deserialize(in);
-    PhysicsEngine::read<AABB>(in, mAABB);
-}
-
 void BoxCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);

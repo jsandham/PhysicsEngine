@@ -128,6 +128,9 @@ class Graphics
                            const std::vector<float> &texCoords, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2);
     static void destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2);
 
+    static void createSprite(GLuint *vao);
+    static void destroySprite(GLuint *vao);
+
     static bool compile(const std::string &vert, const std::string &frag, const std::string &geom, GLuint *program);
     static int findUniformLocation(const char *name, int program);
     static int getUniformCount(int program);

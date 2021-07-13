@@ -35,6 +35,7 @@ struct WorldDefaultAssets
     Guid mGbufferShaderId;
     Guid mStandardDeferedShaderId;
     Guid mGridShaderId;
+    Guid mSpriteShaderId;
 
     // default loaded materials
     Guid mSimpleLitMaterialId;

@@ -45,36 +45,6 @@ Shader::~Shader()
 {
 }
 
-void Shader::serialize(std::ostream &out) const
-{
-    Asset::serialize(out);
-
-    PhysicsEngine::write<size_t>(out, mVertexShader.length());
-    PhysicsEngine::write<size_t>(out, mGeometryShader.length());
-    PhysicsEngine::write<size_t>(out, mFragmentShader.length());
-    PhysicsEngine::write<const char>(out, mVertexShader.c_str(), mVertexShader.length());
-    PhysicsEngine::write<const char>(out, mGeometryShader.c_str(), mGeometryShader.length());
-    PhysicsEngine::write<const char>(out, mFragmentShader.c_str(), mFragmentShader.length());
-}
-
-void Shader::deserialize(std::istream &in)
-{
-    Asset::deserialize(in);
-
-    size_t vertShaderSize, geoShaderSize, fragShaderSize;
-    PhysicsEngine::read<size_t>(in, vertShaderSize);
-    PhysicsEngine::read<size_t>(in, geoShaderSize);
-    PhysicsEngine::read<size_t>(in, fragShaderSize);
-
-    mVertexShader.resize(vertShaderSize);
-    mGeometryShader.resize(geoShaderSize);
-    mFragmentShader.resize(fragShaderSize);
-
-    PhysicsEngine::read<char>(in, &mVertexShader[0], vertShaderSize);
-    PhysicsEngine::read<char>(in, &mGeometryShader[0], geoShaderSize);
-    PhysicsEngine::read<char>(in, &mFragmentShader[0], fragShaderSize);
-}
-
 void Shader::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
@@ -324,15 +294,18 @@ void Shader::compile()
 
     // find all uniforms and attributes in shader across all variants
     std::set<std::string> uniformNames;
-    for (size_t i = 0; i < mUniforms.size(); i++)
-    {
-        uniformNames.insert(std::string(mUniforms[i].mName));
-    }
+    //for (size_t i = 0; i < mUniforms.size(); i++)
+    //{
+    //    uniformNames.insert(std::string(mUniforms[i].mName));
+    //}
     std::set<std::string> attributeNames;
-    for (size_t i = 0; i < mAttributes.size(); i++)
-    {
-        attributeNames.insert(std::string(mAttributes[i].mName));
-    }
+    //for (size_t i = 0; i < mAttributes.size(); i++)
+    //{
+    //    attributeNames.insert(std::string(mAttributes[i].mName));
+    //}
+
+    mUniforms.clear();
+    mMaterialUniforms.clear();
 
     // run through all variants and find all uniforms/attributes (and add to sets of known uniforms/attributes if new)
     for (size_t i = 0; i < mPrograms.size(); i++)
@@ -343,53 +316,85 @@ void Shader::compile()
 
         for (size_t j = 0; j < uniforms.size(); j++)
         {
-            ShaderUniform uniform;
-            uniform.mNameLength = (size_t)uniforms[j].nameLength;
-            uniform.mSize = (size_t)uniforms[j].size;
+            std::string name = std::string(uniforms[j].name);
 
-            memset(uniform.mData, '\0', 64);
-            memset(uniform.mName, '\0', 32);
-            memset(uniform.mShortName, '\0', 32);
-            memset(uniform.mBlockName, '\0', 32);
-
-            int indexOfBlockChar = -1;
-            for (int k = 0; k < uniforms[j].nameLength; k++)
+            std::set<std::string>::iterator it = uniformNames.find(name);
+            if (it == uniformNames.end())
             {
-                uniform.mName[k] = uniforms[j].name[k];
-                if (uniforms[j].name[k] == '.')
+                ShaderUniform uniform;
+                uniform.mName = name;
+                uniform.mType = uniforms[j].type;
+                uniform.mLocation = findUniformLocation(uniform.mName, program);
+                memset(uniform.mData, '\0', 64);
+
+                mUniforms.push_back(uniform);
+                uniformNames.insert(uniform.mName);
+
+                if (name.find("material") != std::string::npos) 
                 {
-                    indexOfBlockChar = k;
+                    mMaterialUniforms.push_back(uniform);
                 }
             }
 
-            uniform.mShortName[0] = '\0';
-            for (int k = indexOfBlockChar + 1; k < uniforms[j].nameLength; k++)
-            {
-                uniform.mShortName[k - indexOfBlockChar - 1] = uniforms[j].name[k];
-            }
+            //ShaderUniform uniform;
+            //uniform.mName = std::string(uniforms[j].name);
+            //uniform.mType = uniforms[j].type;
+            //uniform.mLocation = findUniformLocation(uniform.mName, program);
+            //memset(uniform.mData, '\0', 64);
+            //
+            //// only add uniform if it wasnt already in array
+            //std::set<std::string>::iterator it = uniformNames.find(uniform.mName);
+            //if (it == uniformNames.end())
+            //{
+            //    mUniforms.push_back(uniform);
+            //    uniformNames.insert(uniform.mName);
+            //}
+            
+            //uniform.mNameLength = (size_t)uniforms[j].nameLength;
+            //uniform.mSize = (size_t)uniforms[j].size;
 
-            uniform.mBlockName[0] = '\0';
-            for (int k = 0; k < indexOfBlockChar; k++)
-            {
-                uniform.mBlockName[k] = uniforms[j].name[k];
-            }
+            //memset(uniform.mData, '\0', 64);
+            //memset(uniform.mName, '\0', 32);
+            //memset(uniform.mShortName, '\0', 32);
+            //memset(uniform.mBlockName, '\0', 32);
 
-            uniform.mType = uniforms[j].type;
-            uniform.mVariant = mPrograms[i].mVariant;
-            uniform.mLocation = findUniformLocation(std::string(uniform.mName), program);
+            //int indexOfBlockChar = -1;
+            //for (int k = 0; k < uniforms[j].nameLength; k++)
+            //{
+            //    uniform.mName[k] = uniforms[j].name[k];
+            //    if (uniforms[j].name[k] == '.')
+            //    {
+            //        indexOfBlockChar = k;
+            //    }
+            //}
+
+            //uniform.mShortName[0] = '\0';
+            //for (int k = indexOfBlockChar + 1; k < uniforms[j].nameLength; k++)
+            //{
+            //    uniform.mShortName[k - indexOfBlockChar - 1] = uniforms[j].name[k];
+            //}
+
+            //uniform.mBlockName[0] = '\0';
+            //for (int k = 0; k < indexOfBlockChar; k++)
+            //{
+            //    uniform.mBlockName[k] = uniforms[j].name[k];
+            //}
+
+            //uniform.mType = uniforms[j].type;
+            //uniform.mVariant = mPrograms[i].mVariant;
+            //uniform.mLocation = findUniformLocation(std::string(uniform.mName), program);
 
             // only add uniform if it wasnt already in array
-            std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.mName));
-            if (it == uniformNames.end())
-            {
-                uniform.mIndex = mUniforms.size();
-
-                mUniforms.push_back(uniform);
-                uniformNames.insert(std::string(uniform.mName));
-            }
+            //std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.mName));
+            //if (it == uniformNames.end())
+            //{
+            //    uniform.mIndex = mUniforms.size();
+            //    mUniforms.push_back(uniform);
+            //    uniformNames.insert(std::string(uniform.mName));
+            //}
         }
 
-        std::vector<Attribute> attributes = Graphics::getAttributes(program);
+        /*std::vector<Attribute> attributes = Graphics::getAttributes(program);
         for (size_t j = 0; j < attributes.size(); j++)
         {
             ShaderAttribute attribute;
@@ -404,7 +409,7 @@ void Shader::compile()
                 mAttributes.push_back(attribute);
                 attributeNames.insert(std::string(attribute.mName));
             }
-        }
+        }*/
     }
 
     // Finally set camera and light uniform block binding points
@@ -488,6 +493,11 @@ std::vector<ShaderProgram> Shader::getPrograms() const
 std::vector<ShaderUniform> Shader::getUniforms() const
 {
     return mUniforms;
+}
+
+std::vector<ShaderUniform> Shader::getMaterialUniforms() const
+{
+    return mMaterialUniforms;
 }
 
 std::vector<ShaderAttribute> Shader::getAttributeNames() const

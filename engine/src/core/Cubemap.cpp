@@ -73,20 +73,6 @@ Cubemap::~Cubemap()
 {
 }
 
-void Cubemap::serialize(std::ostream &out) const
-{
-    Texture::serialize(out);
-
-    PhysicsEngine::write<int>(out, mWidth);
-}
-
-void Cubemap::deserialize(std::istream &in)
-{
-    Texture::deserialize(in);
-
-    PhysicsEngine::read<int>(in, mWidth);
-}
-
 void Cubemap::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);

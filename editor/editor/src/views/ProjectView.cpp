@@ -236,6 +236,18 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 mSelected->addFile(filename);
             }
 
+            if (ImGui::MenuItem("Sprite"))
+            {
+                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Sprite>();
+                std::string filename = ("NewSprite(" + std::to_string(count) + ").sprite");
+                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
+
+                PhysicsEngine::Sprite* sprite = clipboard.getWorld()->createAsset<PhysicsEngine::Sprite>();
+                sprite->writeToYAML(filepath.string());
+
+                mSelected->addFile(filename);
+            }
+
             ImGui::EndMenu();
         }
         

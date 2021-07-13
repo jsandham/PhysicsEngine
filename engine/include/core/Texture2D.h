@@ -23,8 +23,6 @@ class Texture2D : public Texture
     Texture2D(int width, int height, TextureFormat format);
     ~Texture2D();
 
-    virtual void serialize(std::ostream &out) const override;
-    virtual void deserialize(std::istream &in) override;
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 
