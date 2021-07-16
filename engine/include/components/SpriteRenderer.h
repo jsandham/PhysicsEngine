@@ -16,6 +16,8 @@ namespace PhysicsEngine
 
 	public:
 		Color mColor;
+		bool mFlipX;
+		bool mFlipY;
 		bool mSpriteChanged;
 		bool mIsStatic;
 		bool mEnabled;
@@ -33,9 +35,6 @@ namespace PhysicsEngine
 
 		void setSprite(Guid id);
 		Guid getSprite() const;
-
-		//void init();
-		//void drawSprite(Camera* camera, GLint texture, const glm::vec2& position, const glm::vec2& size, float rotate = 0.0f);
 	};
 
 	template <> struct ComponentType<SpriteRenderer>

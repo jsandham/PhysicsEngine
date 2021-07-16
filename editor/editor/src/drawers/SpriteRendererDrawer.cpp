@@ -65,6 +65,17 @@ void SpriteRendererDrawer::render(Clipboard& clipboard, Guid id)
             spriteRenderer->mColor.a = color[3];
         }
 
+        bool flipX = spriteRenderer->mFlipX;
+        if (ImGui::Checkbox("Flip X?", &flipX))
+        {
+            spriteRenderer->mFlipX = flipX;
+        }
+
+        bool flipY = spriteRenderer->mFlipY;
+        if (ImGui::Checkbox("Flip Y?", &flipY))
+        {
+            spriteRenderer->mFlipY = flipY;
+        }
 
         bool isStatic = spriteRenderer->mIsStatic;
         if (ImGui::Checkbox("Is Static?", &isStatic))

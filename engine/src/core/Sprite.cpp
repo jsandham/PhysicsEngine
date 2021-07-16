@@ -8,12 +8,16 @@ Sprite::Sprite() : Asset()
 {
     mCreated = false;
     mChanged = false;
+
+    mPixelsPerUnit = 100;
 }
 
 Sprite::Sprite(Guid id) : Asset(id)
 {
     mCreated = false;
     mChanged = false;
+
+    mPixelsPerUnit = 100;
 }
 
 Sprite::~Sprite()
@@ -26,6 +30,7 @@ void Sprite::serialize(YAML::Node& out) const
     Asset::serialize(out);
 
     out["textureId"] = mTextureId;
+    out["pixelsPerUnit"] = mPixelsPerUnit;
 }
 
 void Sprite::deserialize(const YAML::Node& in)
@@ -33,6 +38,7 @@ void Sprite::deserialize(const YAML::Node& in)
     Asset::deserialize(in);
 
     mTextureId = YAML::getValue<Guid>(in, "textureId");
+    mPixelsPerUnit = YAML::getValue<int>(in, "pixelsPerUnit");
 }
 
 int Sprite::getType() const

@@ -5,6 +5,10 @@
 #include <random>
 #include <unordered_set>
 
+#define GLM_FORCE_RADIANS
+
+#include "../../include/glm/gtc/matrix_transform.hpp"
+
 #include "../../include/core/InternalShaders.h"
 #include "../../include/core/Intersect.h"
 #include "../../include/core/Shader.h"
@@ -302,10 +306,17 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
             glm::mat4 model = transform->getModelMatrix();
 
+            if (spriteRenderer->mFlipX)
+            {
+                model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 1, 0));
+            }
+
+            if (spriteRenderer->mFlipY)
+            {
+                model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1, 0, 0));
+            }
+
             SpriteObject object;
-            //object.transformId = transform->getId();
-            //object.spriteRendererId = spriteRenderer->getId();
-            //object.spriteRendererIndex = (int)i;
             object.model = model;
             object.color = spriteRenderer->mColor;
             object.vao = sprite->getNativeGraphicsVAO();

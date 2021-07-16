@@ -19,8 +19,13 @@ namespace PhysicsEngine
 		private:
 			Guid mTextureId;
 			GLuint mVao;
+			//int mWidth;
+			//int mHeight;
 			bool mCreated;
 			bool mChanged;
+
+		public:
+			int mPixelsPerUnit;
 
 		public:
 			Sprite();

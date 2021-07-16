@@ -64,10 +64,10 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return *this;
     }
 
-    T *construct()
-    {
-        return new (allocate()) T();
-    }
+    //T *construct()
+    //{
+    //    return new (allocate()) T();
+    //}
 
     T *construct(Guid id)
     {
