@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-Camera::Camera() : Component()
+Camera::Camera(World* world) : Component(world)
 {
     mEntityId = Guid::INVALID;
     mTargetTextureId = Guid::INVALID;
@@ -55,7 +55,7 @@ Camera::Camera() : Component()
     mIsViewportChanged = false;
 }
 
-Camera::Camera(Guid id) : Component(id)
+Camera::Camera(World* world, Guid id) : Component(world, id)
 {
     mEntityId = Guid::INVALID;
     mTargetTextureId = Guid::INVALID;

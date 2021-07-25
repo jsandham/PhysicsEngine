@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-LineRenderer::LineRenderer() : Component()
+LineRenderer::LineRenderer(World* world) : Component(world)
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -12,7 +12,7 @@ LineRenderer::LineRenderer() : Component()
     mMaterialId = Guid::INVALID;
 }
 
-LineRenderer::LineRenderer(Guid id) : Component(id)
+LineRenderer::LineRenderer(World* world, Guid id) : Component(world, id)
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);

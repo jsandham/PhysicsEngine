@@ -28,8 +28,8 @@ namespace PhysicsEngine
 			int mPixelsPerUnit;
 
 		public:
-			Sprite();
-			Sprite(Guid id);
+			Sprite(World* world);
+			Sprite(World* world, Guid id);
 			~Sprite();
 
 			virtual void serialize(YAML::Node& out) const override;

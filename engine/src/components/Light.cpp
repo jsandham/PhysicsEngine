@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-Light::Light() : Component()
+Light::Light(World* world) : Component(world)
 {
     mEntityId = Guid::INVALID;
 
@@ -45,7 +45,7 @@ Light::Light() : Component()
     mTargets.mShadowCubemapDepthTex = 0;
 }
 
-Light::Light(Guid id) : Component(id)
+Light::Light(World* world, Guid id) : Component(world, id)
 {
     mEntityId = Guid::INVALID;
 

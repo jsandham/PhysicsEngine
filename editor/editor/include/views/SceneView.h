@@ -30,7 +30,7 @@ class SceneView : public Window
     PhysicsEngine::Input mInput;
     PhysicsEngine::Time mTime;
 
-    PhysicsEngine::SpriteRenderer mSpriteRenderer;
+    //PhysicsEngine::SpriteRenderer mSpriteRenderer;
 
   public:
     SceneView();

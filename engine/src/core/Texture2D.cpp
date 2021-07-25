@@ -7,7 +7,7 @@
 
 using namespace PhysicsEngine;
 
-Texture2D::Texture2D() : Texture()
+Texture2D::Texture2D(World* world) : Texture(world)
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -24,7 +24,7 @@ Texture2D::Texture2D() : Texture()
     mUpdateRequired = false;
 }
 
-Texture2D::Texture2D(Guid id) : Texture(id)
+Texture2D::Texture2D(World* world, Guid id) : Texture(world, id)
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -41,7 +41,7 @@ Texture2D::Texture2D(Guid id) : Texture(id)
     mUpdateRequired = false;
 }
 
-Texture2D::Texture2D(int width, int height) : Texture()
+Texture2D::Texture2D(World* world, int width, int height) : Texture(world)
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -60,7 +60,7 @@ Texture2D::Texture2D(int width, int height) : Texture()
     mRawTextureData.resize(width * height * mNumChannels);
 }
 
-Texture2D::Texture2D(int width, int height, TextureFormat format) : Texture()
+Texture2D::Texture2D(World* world, int width, int height, TextureFormat format) : Texture(world)
 {
     mDimension = TextureDimension::Tex2D;
 

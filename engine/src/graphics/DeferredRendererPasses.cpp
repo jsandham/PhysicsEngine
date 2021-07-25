@@ -11,30 +11,30 @@ using namespace PhysicsEngine;
 void PhysicsEngine::initializeDeferredRenderer(World *world, DeferredRendererState &state)
 {
     // generate all internal shader programs
-    state.mGeometryShader.setVertexShader(InternalShaders::gbufferVertexShader);
-    state.mGeometryShader.setFragmentShader(InternalShaders::gbufferFragmentShader);
-    state.mGeometryShader.compile();
+    //state.mGeometryShader.setVertexShader(InternalShaders::gbufferVertexShader);
+    //state.mGeometryShader.setFragmentShader(InternalShaders::gbufferFragmentShader);
+    //state.mGeometryShader.compile();
 
-    state.mSimpleLitDeferredShader.setVertexShader(InternalShaders::standardDeferredVertexShader);
-    state.mSimpleLitDeferredShader.setFragmentShader(InternalShaders::standardDeferredFragmentShader);
-    state.mSimpleLitDeferredShader.compile();
+    //state.mSimpleLitDeferredShader.setVertexShader(InternalShaders::standardDeferredVertexShader);
+    //state.mSimpleLitDeferredShader.setFragmentShader(InternalShaders::standardDeferredFragmentShader);
+    //state.mSimpleLitDeferredShader.compile();
 
     // cache internal shader uniforms
-    state.mGeometryShaderProgram = state.mGeometryShader.getProgramFromVariant(ShaderVariant::None);
-    state.mGeometryShaderModelLoc = state.mGeometryShader.findUniformLocation("model", state.mGeometryShaderProgram);
-    state.mGeometryShaderDiffuseTexLoc =
-        state.mGeometryShader.findUniformLocation("texture_diffuse1", state.mGeometryShaderProgram);
-    state.mGeometryShaderSpecTexLoc =
-        state.mGeometryShader.findUniformLocation("texture_specular1", state.mGeometryShaderProgram);
+    //state.mGeometryShaderProgram = state.mGeometryShader.getProgramFromVariant(ShaderVariant::None);
+    //state.mGeometryShaderModelLoc = state.mGeometryShader.findUniformLocation("model", state.mGeometryShaderProgram);
+    //state.mGeometryShaderDiffuseTexLoc =
+    //    state.mGeometryShader.findUniformLocation("texture_diffuse1", state.mGeometryShaderProgram);
+    //state.mGeometryShaderSpecTexLoc =
+    //    state.mGeometryShader.findUniformLocation("texture_specular1", state.mGeometryShaderProgram);
 
-    state.mSimpleLitDeferredShaderProgram = state.mSimpleLitDeferredShader.getProgramFromVariant(ShaderVariant::None);
-    state.mSimpleLitDeferredShaderViewPosLoc =
-        state.mSimpleLitDeferredShader.findUniformLocation("viewPos", state.mSimpleLitDeferredShaderProgram);
-    for (int i = 0; i < 32; i++)
-    {
-        state.mSimpleLitDeferredShaderLightLocs[i] = state.mSimpleLitDeferredShader.findUniformLocation(
-            "lights [" + std::to_string(i) + "]", state.mSimpleLitDeferredShaderProgram);
-    }
+    //state.mSimpleLitDeferredShaderProgram = state.mSimpleLitDeferredShader.getProgramFromVariant(ShaderVariant::None);
+    //state.mSimpleLitDeferredShaderViewPosLoc =
+    //    state.mSimpleLitDeferredShader.findUniformLocation("viewPos", state.mSimpleLitDeferredShaderProgram);
+    //for (int i = 0; i < 32; i++)
+    //{
+    //    state.mSimpleLitDeferredShaderLightLocs[i] = state.mSimpleLitDeferredShader.findUniformLocation(
+    //        "lights [" + std::to_string(i) + "]", state.mSimpleLitDeferredShaderProgram);
+    //}
 
     // generate screen quad for final rendering
     constexpr float quadVertices[] = {
@@ -73,7 +73,7 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
 
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
 
     // set camera state binding point and update camera state data
     glBindBuffer(GL_UNIFORM_BUFFER, state.mCameraState.mBuffer);
@@ -102,15 +102,15 @@ void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererS
                                  const std::vector<RenderObject> &renderObjects)
 {
     // fill geometry framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
-    state.mGeometryShader.use(state.mGeometryShaderProgram);
-    for (size_t i = 0; i < renderObjects.size(); i++)
-    {
-        state.mGeometryShader.setMat4(state.mGeometryShaderModelLoc, renderObjects[i].model);
-
-        Graphics::render(renderObjects[i], camera->mQuery);
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsGeometryFBO());
+    //state.mGeometryShader.use(state.mGeometryShaderProgram);
+    //for (size_t i = 0; i < renderObjects.size(); i++)
+    //{
+    //    state.mGeometryShader.setMat4(state.mGeometryShaderModelLoc, renderObjects[i].model);
+    //
+    //    Graphics::render(renderObjects[i], camera->mQuery);
+    //}
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -120,7 +120,7 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
 {
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
 
-    state.mSimpleLitDeferredShader.use(state.mSimpleLitDeferredShaderProgram);
+    //state.mSimpleLitDeferredShader.use(state.mSimpleLitDeferredShaderProgram);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsPositionTex());
@@ -157,7 +157,7 @@ void PhysicsEngine::endDeferredFrame(World *world, Camera *camera, DeferredRende
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        state.mQuadShader.use(ShaderVariant::None);
+        //state.mQuadShader.use(ShaderVariant::None);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, camera->getNativeGraphicsColorTex());

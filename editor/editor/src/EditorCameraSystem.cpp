@@ -16,7 +16,7 @@ const float EditorCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
 const float EditorCameraSystem::ZOOM_SENSITIVITY = 1.0f;      // 125.0f;
 const float EditorCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
-EditorCameraSystem::EditorCameraSystem() : System()
+EditorCameraSystem::EditorCameraSystem(World* world) : System(world)
 {
     mTransform = NULL;
     mCamera = NULL;
@@ -28,7 +28,7 @@ EditorCameraSystem::EditorCameraSystem() : System()
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-EditorCameraSystem::EditorCameraSystem(Guid id) : System(id)
+EditorCameraSystem::EditorCameraSystem(World* world, Guid id) : System(world, id)
 {
     mMousePosX = 0;
     mMousePosY = 0;
@@ -68,11 +68,11 @@ void EditorCameraSystem::init(World *world)
     entity->mDoNotDestroy = true;
     entity->mHide = HideFlag::DontSave;
 
-    mTransform = entity->addComponent<Transform>(world);
+    mTransform = entity->addComponent<Transform>();
     mTransform->mPosition = glm::vec3(0, 2, -10);
     mHide = HideFlag::DontSave;
 
-    mCamera = entity->addComponent<Camera>(world);
+    mCamera = entity->addComponent<Camera>();
     mCamera->mHide = HideFlag::DontSave;
 }
 

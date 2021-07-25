@@ -226,7 +226,7 @@ void SceneView::update(Clipboard &clipboard)
 
         if (camera->mHide == HideFlag::None)
         {
-            Entity* entity = camera->getEntity(&clipboard.mWorld);
+            Entity* entity = camera->getEntity();
             Transform* transform = clipboard.mWorld.getComponent<Transform>(entity->getId());
 
             glm::vec3 position = transform->mPosition;
@@ -249,8 +249,8 @@ void SceneView::update(Clipboard &clipboard)
         if (clipboard.mSceneViewHoveredThisFrame)
         {
             Entity* entity = clipboard.getWorld()->createEntity();
-            Transform* transform = entity->addComponent<Transform>(clipboard.getWorld());
-            MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>(clipboard.getWorld());
+            Transform* transform = entity->addComponent<Transform>();
+            MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>();
             meshRenderer->setMesh(clipboard.getDraggedId());
             meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
 

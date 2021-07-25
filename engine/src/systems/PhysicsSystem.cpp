@@ -18,11 +18,11 @@
 
 using namespace PhysicsEngine;
 
-PhysicsSystem::PhysicsSystem() : System()
+PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 }
 
-PhysicsSystem::PhysicsSystem(Guid id) : System(id)
+PhysicsSystem::PhysicsSystem(World* world, Guid id) : System(world, id)
 {
 }
 

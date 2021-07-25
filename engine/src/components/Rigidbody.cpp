@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-Rigidbody::Rigidbody() : Component()
+Rigidbody::Rigidbody(World* world) : Component(world)
 {
     mUseGravity = true;
     mMass = 1.0f;
@@ -19,7 +19,7 @@ Rigidbody::Rigidbody() : Component()
     mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(Guid id) : Component(id)
+Rigidbody::Rigidbody(World* world, Guid id) : Component(world, id)
 {
     mUseGravity = true;
     mMass = 1.0f;

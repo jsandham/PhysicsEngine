@@ -13,21 +13,21 @@ Component *getInternalComponent(const WorldAllocators &allocators, const WorldId
 Asset* getInternalAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type);
 
 // Load internal scene from YAML
-Scene *loadInternalScene(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id);
+Scene *loadInternalScene(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id);
 
 // Load internal entity either from binary or YAML
-Entity *loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id);
+Entity *loadInternalEntity(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id);
 
 // Load internal component either from binary or YAML
-Component *loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+Component *loadInternalComponent(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
                                  int type);
 
 // Load internal system from either binary or YAML
-System *loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+System *loadInternalSystem(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
                            int type);
 
 // Load internal asset from either binary YAML
-Asset *loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+Asset *loadInternalAsset(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
                          int type);
 
 // Destroy internal entity, component, system or asset

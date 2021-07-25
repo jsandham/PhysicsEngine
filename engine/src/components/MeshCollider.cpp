@@ -5,12 +5,12 @@
 
 using namespace PhysicsEngine;
 
-MeshCollider::MeshCollider() : Collider()
+MeshCollider::MeshCollider(World* world) : Collider(world)
 {
     mMeshId = Guid::INVALID;
 }
 
-MeshCollider::MeshCollider(Guid id) : Collider(id)
+MeshCollider::MeshCollider(World* world, Guid id) : Collider(world, id)
 {
     mMeshId = Guid::INVALID;
 }

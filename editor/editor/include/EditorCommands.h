@@ -197,7 +197,7 @@ template <class T> class AddComponentCommand : public Command
     void execute()
     {
         Entity *entity = world->getEntityById(entityId);
-        T *component = entity->addComponent<T>(world);
+        T *component = entity->addComponent<T>();
         componentId = component->getId();
 
         *saveStatePtr = true;

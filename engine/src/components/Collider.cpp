@@ -4,11 +4,11 @@
 
 using namespace PhysicsEngine;
 
-Collider::Collider() : Component()
+Collider::Collider(World* world) : Component(world)
 {
 }
 
-Collider::Collider(Guid id) : Component(id)
+Collider::Collider(World* world, Guid id) : Component(world, id)
 {
 }
 

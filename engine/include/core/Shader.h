@@ -83,8 +83,8 @@ class Shader : public Asset
     std::vector<ShaderAttribute> mAttributes;
 
   public:
-    Shader();
-    Shader(Guid id);
+    Shader(World* world);
+    Shader(World* world, Guid id);
     ~Shader();
 
     virtual void serialize(YAML::Node &out) const override;

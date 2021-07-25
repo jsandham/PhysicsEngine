@@ -6,7 +6,7 @@ using namespace PhysicsEngine;
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-Transform::Transform() : Component()
+Transform::Transform(World* world) : Component(world)
 {
     mParentId = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -14,7 +14,7 @@ Transform::Transform() : Component()
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-Transform::Transform(Guid id) : Component(id)
+Transform::Transform(World* world, Guid id) : Component(world, id)
 {
     mParentId = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);

@@ -172,38 +172,38 @@ Asset* PhysicsEngine::getInternalAsset(const WorldAllocators& allocators, const 
     return nullptr;
 }
 
-Entity *loadEntityFromYAML(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id)
+Entity *loadEntityFromYAML(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id)
 {
-    return PhysicsEngine::loadInternalEntity(allocators, state, in, id);
+    return PhysicsEngine::loadInternalEntity(world, allocators, state, in, id);
 }
 
-Component *loadComponentFromYAML(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id,
+Component *loadComponentFromYAML(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id,
                                  int type)
 {
     if (Component::isInternal(type))
     {
-        return PhysicsEngine::loadInternalComponent(allocators, state, in, id, type);
+        return PhysicsEngine::loadInternalComponent(world, allocators, state, in, id, type);
     }
     else
     {
-        return PhysicsEngine::loadComponent(allocators, state, in, id, type);
+        return PhysicsEngine::loadComponent(world, allocators, state, in, id, type);
     }
 }
 
-System *loadSystemFromYAML(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id,
+System *loadSystemFromYAML(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid id,
                            int type)
 {
     if (System::isInternal(type))
     {
-        return PhysicsEngine::loadInternalSystem(allocators, state, in, id, type);
+        return PhysicsEngine::loadInternalSystem(world, allocators, state, in, id, type);
     }
     else
     {
-        return PhysicsEngine::loadSystem(allocators, state, in, id, type);
+        return PhysicsEngine::loadSystem(world, allocators, state, in, id, type);
     }
 }
 
-Object *loadSceneObjectFromYAML(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in)
+Object *loadSceneObjectFromYAML(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in)
 {
     if (in["type"] && in["id"] && in["hide"])
     {
@@ -221,22 +221,22 @@ Object *loadSceneObjectFromYAML(WorldAllocators &allocators, WorldIdState &state
 
         if (PhysicsEngine::isEntity(type))
         {
-            return loadEntityFromYAML(allocators, state, in, id);
+            return loadEntityFromYAML(world, allocators, state, in, id);
         }
         else if (PhysicsEngine::isComponent(type))
         {
-            return loadComponentFromYAML(allocators, state, in, id, type);
+            return loadComponentFromYAML(world, allocators, state, in, id, type);
         }
         else if (PhysicsEngine::isSystem(type))
         {
-            return loadSystemFromYAML(allocators, state, in, id, type);
+            return loadSystemFromYAML(world, allocators, state, in, id, type);
         }
     }
 
     return nullptr;
 }
 
-template <class T> void loadSceneObjects(WorldAllocators &allocators, WorldIdState &state, T &in)
+template <class T> void loadSceneObjects(World& world, WorldAllocators &allocators, WorldIdState &state, T &in)
 {
     // if (!in.IsMap()) {
     //    return;// false;
@@ -251,7 +251,7 @@ template <class T> void loadSceneObjects(WorldAllocators &allocators, WorldIdSta
     {
         if (it->first.IsScalar() && it->second.IsMap())
         {
-            const Object *object = loadSceneObjectFromYAML(allocators, state, it->second);
+            const Object *object = loadSceneObjectFromYAML(world, allocators, state, it->second);
 
             if (object == nullptr)
             {
@@ -265,7 +265,7 @@ template <class T> void loadSceneObjects(WorldAllocators &allocators, WorldIdSta
 }
 
 template <class T>
-Scene *loadInternalScene_Impl(WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id)
+Scene *loadInternalScene_Impl(World& world, WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id)
 {
     std::unordered_map<Guid, int>::iterator it = state.mSceneIdToGlobalIndex.find(id);
     if (it != state.mSceneIdToGlobalIndex.end())
@@ -276,14 +276,14 @@ Scene *loadInternalScene_Impl(WorldAllocators &allocators, WorldIdState &state, 
         {
             scene->deserialize(in);
 
-            loadSceneObjects<T>(allocators, state, in);
+            loadSceneObjects<T>(world, allocators, state, in);
 
             return scene;
         }
     }
 
     int index = (int)allocators.mSceneAllocator.getCount();
-    Scene *scene = allocators.mSceneAllocator.construct(in);
+    Scene *scene = allocators.mSceneAllocator.construct(&world, in);
 
     if (scene != nullptr)
     {
@@ -291,14 +291,14 @@ Scene *loadInternalScene_Impl(WorldAllocators &allocators, WorldIdState &state, 
         state.mIdToGlobalIndex[scene->getId()] = index;
         state.mIdToType[scene->getId()] = SceneType<Scene>::type;
 
-        loadSceneObjects<T>(allocators, state, in);
+        loadSceneObjects<T>(world, allocators, state, in);
     }
 
     return scene;
 }
 
 template <class T>
-Entity *loadInternalEntity_Impl(WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id)
+Entity *loadInternalEntity_Impl(World& world, WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id)
 {
     std::unordered_map<Guid, int>::iterator it = state.mEntityIdToGlobalIndex.find(id);
     if (it != state.mEntityIdToGlobalIndex.end())
@@ -314,7 +314,7 @@ Entity *loadInternalEntity_Impl(WorldAllocators &allocators, WorldIdState &state
     }
 
     int index = (int)allocators.mEntityAllocator.getCount();
-    Entity *entity = allocators.mEntityAllocator.construct(in);
+    Entity *entity = allocators.mEntityAllocator.construct(&world, in);
 
     if (entity != nullptr)
     {
@@ -327,7 +327,7 @@ Entity *loadInternalEntity_Impl(WorldAllocators &allocators, WorldIdState &state
 }
 
 template <class T>
-Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
+Component *loadInternalComponent_Impl(World& world, WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
 {
     if (type == ComponentType<Transform>::type)
     {
@@ -501,7 +501,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     if (type == ComponentType<Transform>::type)
     {
         index = (int)allocators.mTransformAllocator.getCount();
-        component = allocators.mTransformAllocator.construct(in);
+        component = allocators.mTransformAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -520,7 +520,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<Rigidbody>::type)
     {
         index = (int)allocators.mRigidbodyAllocator.getCount();
-        component = allocators.mRigidbodyAllocator.construct(in);
+        component = allocators.mRigidbodyAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -533,7 +533,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<Camera>::type)
     {
         index = (int)allocators.mCameraAllocator.getCount();
-        component = allocators.mCameraAllocator.construct(in);
+        component = allocators.mCameraAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -546,7 +546,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<MeshRenderer>::type)
     {
         index = (int)allocators.mMeshRendererAllocator.getCount();
-        component = allocators.mMeshRendererAllocator.construct(in);
+        component = allocators.mMeshRendererAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -559,7 +559,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<SpriteRenderer>::type)
     {
         index = (int)allocators.mSpriteRendererAllocator.getCount();
-        component = allocators.mSpriteRendererAllocator.construct(in);
+        component = allocators.mSpriteRendererAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -572,7 +572,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<LineRenderer>::type)
     {
         index = (int)allocators.mLineRendererAllocator.getCount();
-        component = allocators.mLineRendererAllocator.construct(in);
+        component = allocators.mLineRendererAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -585,7 +585,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<Light>::type)
     {
         index = (int)allocators.mLightAllocator.getCount();
-        component = allocators.mLightAllocator.construct(in);
+        component = allocators.mLightAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -598,7 +598,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<BoxCollider>::type)
     {
         index = (int)allocators.mBoxColliderAllocator.getCount();
-        component = allocators.mBoxColliderAllocator.construct(in);
+        component = allocators.mBoxColliderAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -611,7 +611,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<SphereCollider>::type)
     {
         index = (int)allocators.mSphereColliderAllocator.getCount();
-        component = allocators.mSphereColliderAllocator.construct(in);
+        component = allocators.mSphereColliderAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -624,7 +624,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<MeshCollider>::type)
     {
         index = (int)allocators.mMeshColliderAllocator.getCount();
-        component = allocators.mMeshColliderAllocator.construct(in);
+        component = allocators.mMeshColliderAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -637,7 +637,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
     else if (type == ComponentType<CapsuleCollider>::type)
     {
         index = (int)allocators.mCapsuleColliderAllocator.getCount();
-        component = allocators.mCapsuleColliderAllocator.construct(in);
+        component = allocators.mCapsuleColliderAllocator.construct(&world, in);
 
         if (component != nullptr)
         {
@@ -659,7 +659,7 @@ Component *loadInternalComponent_Impl(WorldAllocators &allocators, WorldIdState 
 }
 
 template <class T>
-System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
+System *loadInternalSystem_Impl(World& world, WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
 {
     if (type == SystemType<RenderSystem>::type)
     {
@@ -743,7 +743,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
     if (type == SystemType<RenderSystem>::type)
     {
         index = (int)allocators.mRenderSystemAllocator.getCount();
-        system = allocators.mRenderSystemAllocator.construct(in);
+        system = allocators.mRenderSystemAllocator.construct(&world, in);
 
         if (system != nullptr)
         {
@@ -755,7 +755,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
     else if (type == SystemType<PhysicsSystem>::type)
     {
         index = (int)allocators.mPhysicsSystemAllocator.getCount();
-        system = allocators.mPhysicsSystemAllocator.construct(in);
+        system = allocators.mPhysicsSystemAllocator.construct(&world, in);
 
         if (system != nullptr)
         {
@@ -767,7 +767,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
     else if (type == SystemType<CleanUpSystem>::type)
     {
         index = (int)allocators.mCleanupSystemAllocator.getCount();
-        system = allocators.mCleanupSystemAllocator.construct(in);
+        system = allocators.mCleanupSystemAllocator.construct(&world, in);
 
         if (system != nullptr)
         {
@@ -779,7 +779,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
     else if (type == SystemType<DebugSystem>::type)
     {
         index = (int)allocators.mDebugSystemAllocator.getCount();
-        system = allocators.mDebugSystemAllocator.construct(in);
+        system = allocators.mDebugSystemAllocator.construct(&world, in);
 
         if (system != nullptr)
         {
@@ -791,7 +791,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
     else if (type == SystemType<GizmoSystem>::type)
     {
         index = (int)allocators.mGizmoSystemAllocator.getCount();
-        system = allocators.mGizmoSystemAllocator.construct(in);
+        system = allocators.mGizmoSystemAllocator.construct(&world, in);
 
         if (system != nullptr)
         {
@@ -812,7 +812,7 @@ System *loadInternalSystem_Impl(WorldAllocators &allocators, WorldIdState &state
 }
 
 template <class T>
-Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
+Asset *loadInternalAsset_Impl(World& world, WorldAllocators &allocators, WorldIdState &state, T &in, const Guid &id, int type)
 {
     if (type == AssetType<Shader>::type)
     {
@@ -941,7 +941,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     if (type == AssetType<Shader>::type)
     {
         index = (int)allocators.mShaderAllocator.getCount();
-        asset = allocators.mShaderAllocator.construct(in);
+        asset = allocators.mShaderAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -953,7 +953,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Texture2D>::type)
     {
         index = (int)allocators.mTexture2DAllocator.getCount();
-        asset = allocators.mTexture2DAllocator.construct(in);
+        asset = allocators.mTexture2DAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -965,7 +965,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Texture3D>::type)
     {
         index = (int)allocators.mTexture3DAllocator.getCount();
-        asset = allocators.mTexture3DAllocator.construct(in);
+        asset = allocators.mTexture3DAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -977,7 +977,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Cubemap>::type)
     {
         index = (int)allocators.mCubemapAllocator.getCount();
-        asset = allocators.mCubemapAllocator.construct(in);
+        asset = allocators.mCubemapAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -989,7 +989,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Material>::type)
     {
         index = (int)allocators.mMaterialAllocator.getCount();
-        asset = allocators.mMaterialAllocator.construct(in);
+        asset = allocators.mMaterialAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -1001,7 +1001,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Mesh>::type)
     {
         index = (int)allocators.mMeshAllocator.getCount();
-        asset = allocators.mMeshAllocator.construct(in);
+        asset = allocators.mMeshAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -1013,7 +1013,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Font>::type)
     {
         index = (int)allocators.mFontAllocator.getCount();
-        asset = allocators.mFontAllocator.construct(in);
+        asset = allocators.mFontAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -1025,7 +1025,7 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     else if (type == AssetType<Sprite>::type)
     {
         index = (int)allocators.mSpriteAllocator.getCount();
-        asset = allocators.mSpriteAllocator.construct(in);
+        asset = allocators.mSpriteAllocator.construct(&world, in);
 
         if (asset != nullptr)
         {
@@ -1045,34 +1045,34 @@ Asset *loadInternalAsset_Impl(WorldAllocators &allocators, WorldIdState &state, 
     return asset;
 }
 
-Scene *PhysicsEngine::loadInternalScene(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+Scene *PhysicsEngine::loadInternalScene(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                         const Guid &id)
 {
-    return loadInternalScene_Impl<const YAML::Node>(allocators, state, in, id);
+    return loadInternalScene_Impl<const YAML::Node>(world, allocators, state, in, id);
 }
 
-Entity *PhysicsEngine::loadInternalEntity(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+Entity *PhysicsEngine::loadInternalEntity(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                           const Guid &id)
 {
-    return loadInternalEntity_Impl<const YAML::Node>(allocators, state, in, id);
+    return loadInternalEntity_Impl<const YAML::Node>(world, allocators, state, in, id);
 }
 
-Component *PhysicsEngine::loadInternalComponent(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+Component *PhysicsEngine::loadInternalComponent(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                                 const Guid &id, int type)
 {
-    return loadInternalComponent_Impl<const YAML::Node>(allocators, state, in, id, type);
+    return loadInternalComponent_Impl<const YAML::Node>(world, allocators, state, in, id, type);
 }
 
-System *PhysicsEngine::loadInternalSystem(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+System *PhysicsEngine::loadInternalSystem(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                           const Guid &id, int type)
 {
-    return loadInternalSystem_Impl<const YAML::Node>(allocators, state, in, id, type);
+    return loadInternalSystem_Impl<const YAML::Node>(world, allocators, state, in, id, type);
 }
 
-Asset *PhysicsEngine::loadInternalAsset(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+Asset *PhysicsEngine::loadInternalAsset(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
                                         const Guid &id, int type)
 {
-    return loadInternalAsset_Impl<const YAML::Node>(allocators, state, in, id, type);
+    return loadInternalAsset_Impl<const YAML::Node>(world, allocators, state, in, id, type);
 }
 
 Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id,

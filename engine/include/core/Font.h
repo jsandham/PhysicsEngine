@@ -27,14 +27,14 @@ class Font : public Asset
     std::map<char, Character> mCharacters;
 
   public:
-    Shader mShader;
+    //Shader mShader;
     GLuint mVao;
     GLuint mVbo;
 
   public:
-    Font();
-    Font(Guid id);
-    Font(const std::string &filepath);
+    Font(World* world);
+    Font(World* world, Guid id);
+    Font(World* world, const std::string &filepath);
     ~Font();
 
     virtual void serialize(YAML::Node &out) const override;

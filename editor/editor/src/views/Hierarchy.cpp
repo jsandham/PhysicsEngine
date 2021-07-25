@@ -155,8 +155,8 @@ void Hierarchy::update(Clipboard &clipboard)
             if (clipboard.getDraggedType() == InteractionType::Mesh)
             {
                 PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>(clipboard.getWorld());
-                PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>(clipboard.getWorld());
+                PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                 meshRenderer->setMesh(clipboard.getDraggedId());
                 meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
 

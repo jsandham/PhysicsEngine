@@ -30,8 +30,8 @@ class RenderSystem : public System
     bool mRenderToScreen;
 
   public:
-    RenderSystem();
-    RenderSystem(Guid id);
+    RenderSystem(World* world);
+    RenderSystem(World* world, Guid id);
     ~RenderSystem();
 
     virtual void serialize(YAML::Node &out) const override;

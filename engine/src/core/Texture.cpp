@@ -4,11 +4,11 @@
 
 using namespace PhysicsEngine;
 
-Texture::Texture() : Asset()
+Texture::Texture(World* world) : Asset(world)
 {
 }
 
-Texture::Texture(Guid id) : Asset(id)
+Texture::Texture(World* world, Guid id) : Asset(world, id)
 {
 }
 

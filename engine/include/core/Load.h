@@ -20,14 +20,14 @@ Component *getComponent(const WorldAllocators &allocators, const WorldIdState &s
 Asset* getAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type);
 
 // load external asset defined by the user from YAML
-Asset *loadAsset(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
+Asset *loadAsset(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
 
 // load external components defined by the user from YAML
-Component *loadComponent(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+Component *loadComponent(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
                          int type);
 
 // load external systems defined by the user from YAML
-System *loadSystem(WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
+System *loadSystem(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
 
 // destroy external components defined by the user
 Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type, int index);

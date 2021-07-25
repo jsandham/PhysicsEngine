@@ -21,13 +21,13 @@ struct DeferredRendererState
 
     bool mRenderToScreen;
 
-    Shader mGeometryShader;
+    //Shader mGeometryShader;
     int mGeometryShaderProgram;
     int mGeometryShaderModelLoc;
     int mGeometryShaderDiffuseTexLoc;
     int mGeometryShaderSpecTexLoc;
 
-    Shader mSimpleLitDeferredShader;
+    //Shader mSimpleLitDeferredShader;
     int mSimpleLitDeferredShaderProgram;
     int mSimpleLitDeferredShaderViewPosLoc;
     int mSimpleLitDeferredShaderLightLocs[32];
@@ -35,7 +35,7 @@ struct DeferredRendererState
     // quad
     GLuint mQuadVAO;
     GLuint mQuadVBO;
-    Shader mQuadShader;
+    //Shader mQuadShader;
 };
 } // namespace PhysicsEngine
 

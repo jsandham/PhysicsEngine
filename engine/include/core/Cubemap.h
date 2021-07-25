@@ -24,10 +24,10 @@ class Cubemap : public Texture
     int mWidth;
 
   public:
-    Cubemap();
-    Cubemap(Guid id);
-    Cubemap(int width);
-    Cubemap(int width, TextureFormat format);
+    Cubemap(World* world);
+    Cubemap(World* world, Guid id);
+    Cubemap(World* world, int width);
+    Cubemap(World* world, int width, TextureFormat format);
     ~Cubemap();
 
     virtual void serialize(YAML::Node &out) const override;

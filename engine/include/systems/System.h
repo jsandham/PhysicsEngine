@@ -11,8 +11,6 @@
 
 namespace PhysicsEngine
 {
-class World;
-
 class System : public Object
 {
   protected:
@@ -24,8 +22,8 @@ class System : public Object
     bool mEnabled;
 
   public:
-    System();
-    System(Guid id);
+    System(World* world);
+    System(World* world, Guid id);
     ~System();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -16,30 +16,30 @@ class Component : public Object
     Guid mEntityId;
 
   public:
-    Component();
-    Component(Guid id);
+    Component(World* world);
+    Component(World* world, Guid id);
     ~Component();
 
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 
-    Entity *getEntity(const World *world) const;
+    Entity* getEntity() const;
 
-    template <typename T> void latentDestroy(World *world)
+    template <typename T> void latentDestroy()
     {
-        world->latentDestroyComponent(entityId, componentId, getInstanceType<T>());
+        mWorld->latentDestroyComponent(mEntityId, mId, getInstanceType<T>());
     }
 
-    template <typename T> void immediateDestroy(World *world)
+    template <typename T> void immediateDestroy()
     {
-        world->immediateDestroyComponent(entityId, componentId, getInstanceType<T>());
+        mWorld->immediateDestroyComponent(mEntityId, mId, getInstanceType<T>());
     }
 
-    template <typename T> T *getComponent(const World *world) const
+    template <typename T> T* getComponent() const
     {
-        const Entity *entity = getEntity(world);
+        const Entity* entity = getEntity();
 
-        return entity->getComponent<T>(world);
+        return entity->getComponent<T>();
     }
 
     Guid getEntityId() const;

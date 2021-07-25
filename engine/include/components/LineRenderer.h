@@ -20,8 +20,8 @@ class LineRenderer : public Component
     Guid mMaterialId;
 
   public:
-    LineRenderer();
-    LineRenderer(Guid id);
+    LineRenderer(World* world);
+    LineRenderer(World* world, Guid id);
     ~LineRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

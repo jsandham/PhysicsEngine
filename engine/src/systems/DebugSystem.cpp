@@ -17,11 +17,11 @@
 
 using namespace PhysicsEngine;
 
-DebugSystem::DebugSystem() : System()
+DebugSystem::DebugSystem(World* world) : System(world)
 {
 }
 
-DebugSystem::DebugSystem(Guid id) : System(id)
+DebugSystem::DebugSystem(World* world, Guid id) : System(world, id)
 {
 }
 

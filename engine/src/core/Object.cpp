@@ -3,14 +3,16 @@
 
 using namespace PhysicsEngine;
 
-Object::Object()
+Object::Object(World* world)
 {
+    mWorld = world;
     mHide = HideFlag::None;
     mId = Guid::INVALID;
 }
 
-Object::Object(Guid id) : mId(id), mHide(HideFlag::None)
+Object::Object(World* world, Guid id) : mId(id), mHide(HideFlag::None)
 {
+    mWorld = world;
 }
 
 Object::~Object()

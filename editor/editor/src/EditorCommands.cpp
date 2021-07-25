@@ -23,7 +23,7 @@ void CreateEntityCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
+        Transform *transform = entity->addComponent<Transform>();
         //entityData = entity->serialize();
         //transformData = transform->serialize();
     }
@@ -58,8 +58,8 @@ void CreateCameraCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
-        Camera *camera = entity->addComponent<Camera>(world);
+        Transform *transform = entity->addComponent<Transform>();
+        Camera *camera = entity->addComponent<Camera>();
         //entityData = entity->serialize();
         //transformData = transform->serialize();
         //cameraData = camera->serialize();
@@ -96,8 +96,8 @@ void CreateLightCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
-        Light *light = entity->addComponent<Light>(world);
+        Transform *transform = entity->addComponent<Transform>();
+        Light *light = entity->addComponent<Light>();
         //entityData = entity->serialize();
         //transformData = transform->serialize();
         //lightData = light->serialize();
@@ -134,8 +134,8 @@ void CreatePlaneCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
+        Transform *transform = entity->addComponent<Transform>();
+        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
         meshRenderer->setMesh(world->getPlaneMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
@@ -175,9 +175,9 @@ void CreateCubeCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
-        BoxCollider *collider = entity->addComponent<BoxCollider>(world);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
+        Transform *transform = entity->addComponent<Transform>();
+        BoxCollider *collider = entity->addComponent<BoxCollider>();
+        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
         meshRenderer->setMesh(world->getCubeMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 
@@ -219,9 +219,9 @@ void CreateSphereCommand::execute()
     if (entityData.size() == 0)
     {
         Entity *entity = world->createEntity();
-        Transform *transform = entity->addComponent<Transform>(world);
-        SphereCollider *collider = entity->addComponent<SphereCollider>(world);
-        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
+        Transform *transform = entity->addComponent<Transform>();
+        SphereCollider *collider = entity->addComponent<SphereCollider>();
+        MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
         meshRenderer->setMesh(world->getSphereMesh());
         meshRenderer->setMaterial(world->getColorMaterial());
 

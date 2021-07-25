@@ -26,12 +26,12 @@
 
 using namespace PhysicsEngine;
 
-RenderSystem::RenderSystem() : System()
+RenderSystem::RenderSystem(World* world) : System(world)
 {
     mRenderToScreen = true;
 }
 
-RenderSystem::RenderSystem(Guid id) : System(id)
+RenderSystem::RenderSystem(World* world, Guid id) : System(world, id)
 {
     mRenderToScreen = true;
 }
@@ -235,7 +235,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
         if (meshRenderer->mEnabled)
         {
-            Transform *transform = meshRenderer->getComponent<Transform>(world);
+            Transform *transform = meshRenderer->getComponent<Transform>();
             Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
             if (transform == NULL)
@@ -291,7 +291,7 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
         if (spriteRenderer->mEnabled)
         {
-            Transform* transform = spriteRenderer->getComponent<Transform>(world);
+            Transform* transform = spriteRenderer->getComponent<Transform>();
             Sprite* sprite = world->getAssetById<Sprite>(spriteRenderer->getSprite());
 
             if (transform == nullptr || sprite == nullptr)

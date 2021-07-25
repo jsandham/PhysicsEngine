@@ -19,17 +19,17 @@ Asset* PhysicsEngine::getAsset(const WorldAllocators& allocators, const WorldIdS
     return nullptr;
 }
 
-Asset* PhysicsEngine::loadAsset(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+Asset* PhysicsEngine::loadAsset(World& world, WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
 {
     return nullptr;
 }
 
-Component* PhysicsEngine::loadComponent(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+Component* PhysicsEngine::loadComponent(World& world, WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
 {
     return nullptr;
 }
 
-System* PhysicsEngine::loadSystem(WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
+System* PhysicsEngine::loadSystem(World& world, WorldAllocators& allocators, WorldIdState& state, const YAML::Node& in, const Guid& id, int type)
 {
     return nullptr;
 }

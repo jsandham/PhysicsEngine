@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-Sprite::Sprite() : Asset()
+Sprite::Sprite(World* world) : Asset(world)
 {
     mCreated = false;
     mChanged = false;
@@ -12,7 +12,7 @@ Sprite::Sprite() : Asset()
     mPixelsPerUnit = 100;
 }
 
-Sprite::Sprite(Guid id) : Asset(id)
+Sprite::Sprite(World* world, Guid id) : Asset(world, id)
 {
     mCreated = false;
     mChanged = false;

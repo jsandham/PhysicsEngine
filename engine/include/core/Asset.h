@@ -17,8 +17,8 @@ class Asset : public Object
     std::string mName;
 
   public:
-    Asset();
-    Asset(Guid id);
+    Asset(World* world);
+    Asset(World* world, Guid id);
     ~Asset();
 
     virtual void serialize(YAML::Node &out) const override;

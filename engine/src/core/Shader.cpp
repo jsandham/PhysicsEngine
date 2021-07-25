@@ -15,7 +15,7 @@
 
 using namespace PhysicsEngine;
 
-Shader::Shader() : Asset()
+Shader::Shader(World* world) : Asset(world)
 {
     mVertexSource = "";
     mFragmentSource = "";
@@ -28,7 +28,7 @@ Shader::Shader() : Asset()
     mActiveProgram = -1;
 }
 
-Shader::Shader(Guid id) : Asset(id)
+Shader::Shader(World* world, Guid id) : Asset(world, id)
 {
     mVertexSource = "";
     mFragmentSource = "";

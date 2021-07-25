@@ -16,17 +16,22 @@ enum class HideFlag
     DontSave = 1
 };
 
+class World;
+
 class Object
 {
   private:
     Guid mId;
 
+  protected:
+    World* mWorld;
+
   public:
     HideFlag mHide;
 
   public:
-    Object();
-    Object(Guid id);
+    Object(World* world);
+    Object(World* world, Guid id);
     virtual ~Object() = 0;
 
     virtual void serialize(YAML::Node &out) const;

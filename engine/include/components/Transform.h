@@ -20,7 +20,6 @@
 
 namespace PhysicsEngine
 {
-
 class Transform : public Component
 {
   public:
@@ -30,8 +29,8 @@ class Transform : public Component
     glm::vec3 mScale;
 
   public:
-    Transform();
-    Transform(Guid id);
+    Transform(World * world);
+    Transform(World* world, Guid id);
     ~Transform();
 
     virtual void serialize(YAML::Node &out) const override;

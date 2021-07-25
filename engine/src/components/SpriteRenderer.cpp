@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-SpriteRenderer::SpriteRenderer() : Component()
+SpriteRenderer::SpriteRenderer(World* world) : Component(world)
 {
     mSpriteId = Guid::INVALID;
     mColor = Color::white;
@@ -16,7 +16,7 @@ SpriteRenderer::SpriteRenderer() : Component()
     mEnabled = true;
 }
 
-SpriteRenderer::SpriteRenderer(Guid id) : Component(id)
+SpriteRenderer::SpriteRenderer(World* world, Guid id) : Component(world, id)
 {
     mSpriteId = Guid::INVALID;
     mColor = Color::white;

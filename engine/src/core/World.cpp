@@ -139,7 +139,7 @@ bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) c
             out << entityNode;
             out << "\n";
 
-            std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity(this);
+            std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity();
             for (size_t j = 0; j < temp.size(); j++)
             {
                 Component *component = nullptr;
@@ -204,17 +204,17 @@ Asset *World::loadAssetFromYAML(const YAML::Node &in, const Guid id, int type)
 {
     if (Asset::isInternal(type))
     {
-        return PhysicsEngine::loadInternalAsset(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadInternalAsset(*this, mAllocators, mIdState, in, id, type);
     }
     else
     {
-        return PhysicsEngine::loadAsset(mAllocators, mIdState, in, id, type);
+        return PhysicsEngine::loadAsset(*this, mAllocators, mIdState, in, id, type);
     }
 }
 
 Scene *World::loadSceneFromYAML(const YAML::Node &in, const Guid id)
 {
-    return PhysicsEngine::loadInternalScene(mAllocators, mIdState, in, id);
+    return PhysicsEngine::loadInternalScene(*this, mAllocators, mIdState, in, id);
 }
 
 void World::latentDestroyEntitiesInWorld()
@@ -340,7 +340,7 @@ Scene *World::createScene()
     int type = SceneType<Scene>::type;
     Guid sceneId = Guid::newGuid();
 
-    Scene *scene = mAllocators.mSceneAllocator.construct(sceneId);
+    Scene *scene = mAllocators.mSceneAllocator.construct(this, sceneId);
 
     if (scene != nullptr)
     {
@@ -356,7 +356,7 @@ Entity *World::createEntity()
     int type = EntityType<Entity>::type;
     Guid entityId = Guid::newGuid();
 
-    Entity *entity = mAllocators.mEntityAllocator.construct(entityId);
+    Entity *entity = mAllocators.mEntityAllocator.construct(this, entityId);
 
     if (entity != nullptr)
     {

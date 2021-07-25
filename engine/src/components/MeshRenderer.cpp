@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-MeshRenderer::MeshRenderer() : Component()
+MeshRenderer::MeshRenderer(World* world) : Component(world)
 {
     mMeshId = Guid::INVALID;
 
@@ -20,7 +20,7 @@ MeshRenderer::MeshRenderer() : Component()
     mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(Guid id) : Component(id)
+MeshRenderer::MeshRenderer(World* world, Guid id) : Component(world, id)
 {
     mMeshId = Guid::INVALID;
 

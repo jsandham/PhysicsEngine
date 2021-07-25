@@ -14,8 +14,8 @@ Camera *PhysicsEditor::createEditorCamera(World *world, std::set<Guid> &editorOn
     Entity *entity = world->createEntity();
     entity->mDoNotDestroy = true;
 
-    Transform *transform = entity->addComponent<Transform>(world);
-    Camera *camera = entity->addComponent<Camera>(world);
+    Transform *transform = entity->addComponent<Transform>();
+    Camera *camera = entity->addComponent<Camera>();
 
     // add entity id to editor only id list
     editorOnlyIds.insert(entity->getId());
@@ -28,10 +28,10 @@ Transform *PhysicsEditor::createEditorTransformGizmo(World *world, std::set<Guid
     Entity *entity = world->createEntity();
     entity->mDoNotDestroy = true;
 
-    Transform *transform = entity->addComponent<Transform>(world);
+    Transform *transform = entity->addComponent<Transform>();
     transform->mPosition = glm::vec3(4, 4, 4);
     transform->mScale = glm::vec3(1, 1, 1);
-    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
     meshRenderer->mEnabled = false;
 
     Material *material = world->createAsset<Material>();
@@ -63,10 +63,10 @@ Transform *PhysicsEditor::createEditorLightGizmo(PhysicsEngine::World *world,
     Entity *entity = world->createEntity();
     entity->mDoNotDestroy = true;
 
-    Transform *transform = entity->addComponent<Transform>(world);
+    Transform *transform = entity->addComponent<Transform>();
     transform->mPosition = glm::vec3(4, 4, 4);
     transform->mScale = glm::vec3(1, 1, 1);
-    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>(world);
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
     meshRenderer->mEnabled = false;
 
     Material *material = world->createAsset<Material>();

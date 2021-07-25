@@ -7,11 +7,11 @@
 
 using namespace PhysicsEngine;
 
-CleanUpSystem::CleanUpSystem() : System()
+CleanUpSystem::CleanUpSystem(World* world) : System(world)
 {
 }
 
-CleanUpSystem::CleanUpSystem(Guid id) : System(id)
+CleanUpSystem::CleanUpSystem(World* world, Guid id) : System(world, id)
 {
 }
 

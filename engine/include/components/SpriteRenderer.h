@@ -23,8 +23,8 @@ namespace PhysicsEngine
 		bool mEnabled;
 
 	public:
-		SpriteRenderer();
-		SpriteRenderer(Guid id);
+		SpriteRenderer(World* world);
+		SpriteRenderer(World* world, Guid id);
 		~SpriteRenderer();
 
 		virtual void serialize(YAML::Node& out) const override;

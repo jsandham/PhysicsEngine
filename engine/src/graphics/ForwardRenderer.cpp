@@ -47,7 +47,7 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
     for (size_t j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
     {
         Light *light = mWorld->getComponentByIndex<Light>(j);
-        Transform *lightTransform = light->getComponent<Transform>(mWorld);
+        Transform *lightTransform = light->getComponent<Transform>();
 
         renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
         renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);

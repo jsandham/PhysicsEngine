@@ -66,7 +66,7 @@ void Inspector::drawEntity(Clipboard &clipboard)
         return;
     }
 
-    std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity(clipboard.getWorld());
+    std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity();
     for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
         Guid componentId = componentsOnEntity[i].first;

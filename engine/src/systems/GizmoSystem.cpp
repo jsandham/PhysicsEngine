@@ -5,11 +5,11 @@
 
 using namespace PhysicsEngine;
 
-GizmoSystem::GizmoSystem() : System()
+GizmoSystem::GizmoSystem(World* world) : System(world)
 {
 }
 
-GizmoSystem::GizmoSystem(Guid id) : System(id)
+GizmoSystem::GizmoSystem(World* world, Guid id) : System(world, id)
 {
 }
 

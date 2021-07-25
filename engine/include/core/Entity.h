@@ -10,8 +10,6 @@
 
 namespace PhysicsEngine
 {
-class World;
-
 class Entity : public Object
 {
   private:
@@ -21,8 +19,8 @@ class Entity : public Object
     bool mDoNotDestroy;
 
   public:
-    Entity();
-    Entity(Guid id);
+    Entity(World* world);
+    Entity(World* world, Guid id);
     ~Entity();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -31,25 +29,20 @@ class Entity : public Object
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void latentDestroy(World *world);
-    void immediateDestroy(World *world);
+    void latentDestroy();
+    void immediateDestroy();
 
-    template <typename T> T *addComponent(World *world)
+    template <typename T> T* addComponent()
     {
-        return world->addComponent<T>(getId());
+        return mWorld->addComponent<T>(getId());
     }
 
-    template <typename T> T *addComponent(World *world, std::vector<char> data)
+    template <typename T> T* getComponent() const
     {
-        return world->addComponent<T>(data);
+        return mWorld->getComponent<T>(getId());
     }
 
-    template <typename T> T *getComponent(const World *world) const
-    {
-        return world->getComponent<T>(getId());
-    }
-
-    std::vector<std::pair<Guid, int>> getComponentsOnEntity(const World *world) const;
+    std::vector<std::pair<Guid, int>> getComponentsOnEntity() const;
 
     std::string getName() const;
     void setName(const std::string &name);

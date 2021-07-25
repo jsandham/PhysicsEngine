@@ -5,11 +5,11 @@
 
 using namespace PhysicsEngine;
 
-BoxCollider::BoxCollider() : Collider()
+BoxCollider::BoxCollider(World* world) : Collider(world)
 {
 }
 
-BoxCollider::BoxCollider(Guid id) : Collider(id)
+BoxCollider::BoxCollider(World* world, Guid id) : Collider(world, id)
 {
 }
 

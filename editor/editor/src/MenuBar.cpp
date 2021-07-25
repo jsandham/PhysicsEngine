@@ -40,6 +40,7 @@ void MenuBar::init(Clipboard &clipboard)
 {
     aboutPopup.init(clipboard);
     preferencesWindow.init(clipboard);
+    buildWindow.init(clipboard);
 }
 
 void MenuBar::update(Clipboard &clipboard)
@@ -136,6 +137,7 @@ void MenuBar::update(Clipboard &clipboard)
     projectWindow.draw(clipboard, isOpenProjectClicked() | isNewProjectClicked());
     aboutPopup.draw(clipboard, isAboutClicked());
     preferencesWindow.draw(clipboard, isPreferencesClicked());
+    buildWindow.draw(clipboard, isBuildClicked());
 }
 
 bool MenuBar::isNewSceneClicked() const

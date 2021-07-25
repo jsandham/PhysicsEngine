@@ -14,8 +14,8 @@ namespace PhysicsEngine
 class DebugSystem : public System
 {
   public:
-    DebugSystem();
-    DebugSystem(Guid id);
+    DebugSystem(World* world);
+    DebugSystem(World* world, Guid id);
     ~DebugSystem();
 
     virtual void serialize(YAML::Node &out) const override;

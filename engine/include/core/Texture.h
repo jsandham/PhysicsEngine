@@ -54,8 +54,8 @@ class Texture : public Asset
     bool mUpdateRequired;
 
   public:
-    Texture();
-    Texture(Guid id);
+    Texture(World* world);
+    Texture(World* world, Guid id);
     ~Texture();
 
     virtual void serialize(YAML::Node &out) const override;

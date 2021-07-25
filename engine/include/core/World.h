@@ -89,13 +89,6 @@ class World
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), entityId);
     }
 
-    template <typename T> T *addComponent(std::istream &in)
-    {
-        static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
-
-        return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), in);
-    }
-
     template <typename T> T *addSystem(size_t order)
     {
         static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
@@ -158,19 +151,11 @@ class World
         return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>());
     }
 
-    template <typename T> T *createAsset(std::istream &in)
-    {
-        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
-
-        return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>(), in);
-    }
-
     int getIndexOf(const Guid &id) const;
     int getTypeOf(const Guid &id) const;
 
     Scene *createScene();
     Entity *createEntity();
-    Entity *createEntity(std::istream &in);
 
     void latentDestroyEntity(const Guid &entityId);
     void immediateDestroyEntity(const Guid &entityId);
@@ -856,7 +841,7 @@ class World
         int componentType = ComponentType<T>::type;
         Guid componentId = Guid::newGuid();
 
-        T *component = allocator->construct(componentId);
+        T *component = allocator->construct(this, componentId);
 
         if (component != nullptr)
         {
@@ -880,7 +865,7 @@ class World
         int systemType = SystemType<T>::type;
         Guid systemId = Guid::newGuid();
 
-        T *system = allocator->construct(systemId);
+        T *system = allocator->construct(this, systemId);
 
         if (system != nullptr)
         {
@@ -967,7 +952,7 @@ class World
         int type = AssetType<T>::type;
         Guid id = Guid::newGuid();
 
-        T *asset = allocator->construct(id);
+        T *asset = allocator->construct(this, id);
 
         if (asset != nullptr)
         {

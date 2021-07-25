@@ -47,8 +47,8 @@ class EditorCameraSystem : public System
     glm::quat rotationOnClick;
 
   public:
-    EditorCameraSystem();
-    EditorCameraSystem(Guid id);
+    EditorCameraSystem(World* world);
+    EditorCameraSystem(World* world, Guid id);
     ~EditorCameraSystem();
 
     virtual void serialize(YAML::Node& out) const override;

@@ -186,7 +186,7 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform* transform = camera->getComponent<Transform>();
 
     Mesh* mesh = world->getAssetById<Mesh>(world->getSphereMesh());
 
@@ -233,7 +233,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform *transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getAssetById<Mesh>(world->getCubeMesh());
 
@@ -279,7 +279,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Transform *transform = camera->getComponent<Transform>(world);
+    Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getAssetById<Mesh>(world->getPlaneMesh());
 
@@ -393,7 +393,7 @@ void PhysicsEngine::renderShadedFrustumGizmo(World* world, Camera* camera, Gizmo
         }
     }
 
-    Transform* transform = camera->getComponent<Transform>(world);
+    Transform* transform = camera->getComponent<Transform>();
 
     state.mGizmoShader->use(state.mGizmoShaderProgram);
     state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);

@@ -21,7 +21,7 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
     if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
         Camera *camera = clipboard.getWorld()->getComponentById<Camera>(id);
-        Transform *transform = camera->getComponent<Transform>(clipboard.getWorld());
+        Transform *transform = camera->getComponent<Transform>();
 
         ImGui::Text(("EntityId: " + camera->getEntityId().toString()).c_str());
         ImGui::Text(("ComponentId: " + id.toString()).c_str());

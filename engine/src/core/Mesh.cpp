@@ -4,20 +4,19 @@
 #include "../../include/graphics/Graphics.h"
 #include "../../include/obj_load/obj_load.h"
 
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "../../include/obj_load/tiny_obj_loader.h"
 
 using namespace PhysicsEngine;
 
-Mesh::Mesh() : Asset()
+Mesh::Mesh(World* world) : Asset(world)
 {
     mSource = "";
     mCreated = false;
     mChanged = false;
 }
 
-Mesh::Mesh(Guid id) : Asset(id)
+Mesh::Mesh(World* world, Guid id) : Asset(world, id)
 {
     mSource = "";
     mCreated = false;

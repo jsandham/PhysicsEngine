@@ -12,8 +12,8 @@ namespace PhysicsEngine
 class CleanUpSystem : public System
 {
   public:
-    CleanUpSystem();
-    CleanUpSystem(Guid id);
+    CleanUpSystem(World* world);
+    CleanUpSystem(World* world, Guid id);
     ~CleanUpSystem();
 
     virtual void serialize(YAML::Node &out) const override;

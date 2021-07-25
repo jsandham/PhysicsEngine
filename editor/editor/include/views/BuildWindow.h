@@ -1,11 +1,11 @@
 #ifndef __BUILD_WINDOW_H__
 #define __BUILD_WINDOW_H__
 
-#include "Window.h"
+#include "PopupWindow.h"
 
 namespace PhysicsEditor
 {
-class BuildWindow
+class BuildWindow : public PopupWindow
 {
   public:
     BuildWindow();
@@ -14,7 +14,7 @@ class BuildWindow
     BuildWindow &operator=(const BuildWindow &other) = delete;
 
     void init(Clipboard &clipboard);
-    void update(Clipboard &clipboard, bool isOpenedThisFrame);
+    void update(Clipboard &clipboard);
 };
 } // namespace PhysicsEditor
 

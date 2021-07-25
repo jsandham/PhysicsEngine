@@ -11,7 +11,7 @@
 
 using namespace PhysicsEngine;
 
-Material::Material() : Asset()
+Material::Material(World* world) : Asset(world)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -19,7 +19,7 @@ Material::Material() : Asset()
     mShaderChanged = true;
 }
 
-Material::Material(Guid id) : Asset(id)
+Material::Material(World* world, Guid id) : Asset(world, id)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;

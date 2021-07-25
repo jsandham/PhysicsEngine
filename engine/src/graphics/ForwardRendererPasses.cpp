@@ -112,7 +112,7 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
 
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>(world)->mPosition;
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
 
     // update camera state data
     Graphics::setGlobalCameraUniforms(state.mCameraState);

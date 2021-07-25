@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-Cubemap::Cubemap() : Texture()
+Cubemap::Cubemap(World* world) : Texture(world)
 {
     mDimension = TextureDimension::Cube;
 
@@ -20,7 +20,7 @@ Cubemap::Cubemap() : Texture()
     mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(Guid id) : Texture(id)
+Cubemap::Cubemap(World* world, Guid id) : Texture(world, id)
 {
     mDimension = TextureDimension::Cube;
 
@@ -35,7 +35,7 @@ Cubemap::Cubemap(Guid id) : Texture(id)
     mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(int width) : Texture()
+Cubemap::Cubemap(World* world, int width) : Texture(world)
 {
     mDimension = TextureDimension::Cube;
 
@@ -52,7 +52,7 @@ Cubemap::Cubemap(int width) : Texture()
     mRawTextureData.resize(6 * width * width * mNumChannels);
 }
 
-Cubemap::Cubemap(int width, TextureFormat format) : Texture()
+Cubemap::Cubemap(World* world, int width, TextureFormat format) : Texture(world)
 {
     mDimension = TextureDimension::Cube;
 
