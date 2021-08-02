@@ -2,8 +2,8 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
-#include "../../include/stb_image/stb_image.h"
-#include "../../include/stb_image/stb_image_write.h"
+#include "stb_image.h"
+#include "stb_image_write.h"
 
 using namespace PhysicsEngine;
 

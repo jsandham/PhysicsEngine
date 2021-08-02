@@ -1,7 +1,7 @@
 #include "../../include/graphics/GizmoRendererPasses.h"
 #include "../../include/graphics/Graphics.h"
 
-#include "../../include/glm/gtx/rotate_vector.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 using namespace PhysicsEngine;
 

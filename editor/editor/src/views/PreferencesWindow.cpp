@@ -5,7 +5,7 @@
 
 using namespace PhysicsEditor;
 
-PreferencesWindow::PreferencesWindow() : PopupWindow("##Preferences...", 500.0f, 200.0f, 1920.0f, 1080.0f)
+PreferencesWindow::PreferencesWindow() : PopupWindow("##Preferences...", 600.0f, 300.0f, 400.0f, 400.0f)
 {
 }
 

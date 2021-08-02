@@ -10,7 +10,8 @@
 #include "Asset.h"
 #include "Guid.h"
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

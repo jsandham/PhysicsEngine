@@ -6,7 +6,6 @@
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
-// #include "../../include/freetype/ft2build.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

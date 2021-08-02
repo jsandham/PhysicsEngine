@@ -1,7 +1,8 @@
 #ifndef CAPSULE_H__
 #define CAPSULE_H__
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
 #include "GLM.h"
 #include "yaml-cpp/yaml.h"
 

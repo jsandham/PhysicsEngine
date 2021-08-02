@@ -1,8 +1,9 @@
 #ifndef CIRCLE_H__
 #define CIRCLE_H__
 
-#include "../glm/glm.hpp"
-#include "../glm/gtc/constants.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
+#include "glm/gtc/constants.hpp"
 #include "GLM.h"
 #include "yaml-cpp/yaml.h"
 

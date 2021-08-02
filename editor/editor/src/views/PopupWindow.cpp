@@ -20,7 +20,9 @@ void PopupWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
 {
     if (isOpenedThisFrame)
     {
-        ImGui::SetNextWindowSizeConstraints(ImVec2(mX, mY), ImVec2(mWidth, mHeight));
+        ImGui::SetNextWindowPos(ImVec2(mX, mY));
+        ImGui::SetNextWindowSize(ImVec2(mWidth, mHeight));
+
         ImGui::OpenPopup(mName.c_str());
         mOpen = true;
     }

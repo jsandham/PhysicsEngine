@@ -2,10 +2,9 @@
 
 #include <algorithm>
 
-#include "../../include/glm/glm.hpp"
-
-#include "../../include/glm/detail/func_trigonometric.hpp"
-#include "../../include/glm/gtc/constants.hpp"
+#include "glm/glm.hpp"
+//#include "glm/detail/func_trigonometric.hpp"
+#include "glm/gtc/constants.hpp"
 
 using namespace PhysicsEngine;
 

@@ -8,7 +8,8 @@
 #include "Asset.h"
 #include "Shader.h"
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

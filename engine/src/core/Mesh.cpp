@@ -2,10 +2,9 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
-#include "../../include/obj_load/obj_load.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "../../include/obj_load/tiny_obj_loader.h"
+#include "tiny_obj_loader.h"
 
 using namespace PhysicsEngine;
 

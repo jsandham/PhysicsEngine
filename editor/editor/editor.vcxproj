@@ -103,14 +103,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\engine\include\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;$(SolutionDir)..\yaml-cpp\include;$(SolutionDir)..\imguizmo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\external\glew-2.1.0;$(SolutionDir)..\external\imgui\include;$(SolutionDir)..\external\simplefilewatcher\include;$(SolutionDir)..\external\yaml-cpp\include;$(SolutionDir)..\external\imguizmo\include;$(SolutionDir)..\external\glm</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cppd.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\imgui\lib\debug;$(SolutionDir)..\simplefilewatcher\lib\debug;$(SolutionDir)..\yaml-cpp\build\Debug;$(SolutionDir)..\imguizmo\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\external\imgui\lib\debug;$(SolutionDir)..\external\simplefilewatcher\lib\debug;$(SolutionDir)..\external\yaml-cpp\build\Debug;$(SolutionDir)..\external\imguizmo\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -145,7 +145,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\engine\include\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;$(SolutionDir)..\yaml-cpp\include;$(SolutionDir)..\imguizmo\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;$(SolutionDir)..\external\yaml-cpp\include;$(SolutionDir)..\imguizmo\include;$(SolutionDir)..\external\glm</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

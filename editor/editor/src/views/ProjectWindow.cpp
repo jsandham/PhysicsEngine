@@ -6,7 +6,7 @@
 
 using namespace PhysicsEditor;
 
-ProjectWindow::ProjectWindow() : PopupWindow("##ProjectWindow", 500.0f, 200.0f, 1920.0f, 1080.0f)
+ProjectWindow::ProjectWindow() : PopupWindow("##ProjectWindow", 600.0f, 300.0f, 500.0f, 200.0f)
 {
     mMode = ProjectWindowMode::OpenProject;
 

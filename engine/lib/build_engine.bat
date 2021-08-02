@@ -4,11 +4,13 @@ if not defined DevEnvDir (
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 )
 
-set GLEW="../include/glew-2.1.0"
-set FREETYPE="../include/freetype"
-set YAML="../../yaml-cpp/include"
-::set YAML="../../yaml-cpp/"
-set WARN=-W4 -wd4100 -wd4996 -wd4211
+set GLEW="../../external/glew-2.1.0"
+set FREETYPE="../../external/freetype"
+set YAML="../../external/yaml-cpp/include"
+set GLM="../../external/glm"
+set TINY_OBJ="../../external/tinyobjloader"
+set STB="../../external/stb"
+set WARN=-W4 -wd4100 -wd4996 -wd4211 -wd4201
 ::set WARN=-W4 -Wno-pessimizing-move -Wno-unused-parameter
 set OPENMP=
 set OPT=/Od
@@ -49,10 +51,10 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
-	call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
-::call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
-::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% /I%YAML% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+::call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 
 :: create list of .obj files
 echo [92mCompiled objects...[0m

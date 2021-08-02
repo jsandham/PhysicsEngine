@@ -9,7 +9,9 @@
 #include <GL/glew.h>
 #include <gl/gl.h>
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

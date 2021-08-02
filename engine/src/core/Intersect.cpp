@@ -3,7 +3,7 @@
 
 #include "../../include/core/Intersect.h"
 
-#include "../../include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
 using namespace PhysicsEngine;
 

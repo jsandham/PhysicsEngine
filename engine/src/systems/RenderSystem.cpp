@@ -7,7 +7,7 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "../../include/glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "../../include/core/InternalShaders.h"
 #include "../../include/core/Intersect.h"

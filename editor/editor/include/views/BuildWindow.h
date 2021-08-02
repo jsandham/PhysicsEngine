@@ -5,8 +5,17 @@
 
 namespace PhysicsEditor
 {
+    enum class TargetPlatform
+    {
+        Windows = 0,
+        Linux = 1
+    };
+
 class BuildWindow : public PopupWindow
 {
+private:
+    TargetPlatform mTargetPlatform;
+
   public:
     BuildWindow();
     ~BuildWindow();

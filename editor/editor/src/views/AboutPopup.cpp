@@ -4,7 +4,7 @@
 
 using namespace PhysicsEditor;
 
-AboutPopup::AboutPopup() : PopupWindow("About", 0.0f, 0.0f, 500.0f, 500.0f)
+AboutPopup::AboutPopup() : PopupWindow("About", 600.0f, 300.0f, 300.0f, 300.0f)
 {
 }
 

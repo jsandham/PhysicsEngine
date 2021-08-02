@@ -1,7 +1,9 @@
 #ifndef GRAPHICS_H__
 #define GRAPHICS_H__
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+
+#include "glm/glm.hpp"
 
 #include "../components/Camera.h"
 #include "../components/Light.h"

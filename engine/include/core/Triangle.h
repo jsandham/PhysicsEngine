@@ -1,7 +1,9 @@
 #ifndef TRIANGLE_H__
 #define TRIANGLE_H__
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+
+#include "glm/glm.hpp"
 #include "GLM.h"
 #include "yaml-cpp/yaml.h"
 

@@ -4,7 +4,7 @@
 #define GLM_FORCE_RADIANS
 
 #include "../core/Sphere.h"
-#include "../glm/glm.hpp"
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

@@ -1,7 +1,8 @@
 #ifndef RECT_H__
 #define RECT_H__
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine

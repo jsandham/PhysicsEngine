@@ -11,7 +11,9 @@
 #include "Guid.h"
 #include "Sphere.h"
 
-#include "../glm/glm.hpp"
+#define GLM_FORCE_RADIANS
+
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

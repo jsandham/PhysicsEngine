@@ -28,20 +28,14 @@ void ProjectView::init(Clipboard &clipboard)
 
 void ProjectView::update(Clipboard &clipboard)
 {
-    /*if (!clipboard.getProjectPath().empty())*/
     if (!clipboard.getProjectPath().empty())
     {
-        /*if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() + "\\data") || mProjectTree.isEmpty())
-        {
-            mProjectTree.buildProjectTree(clipboard.getProjectPath());
-        }*/
         if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() / "data") || mProjectTree.isEmpty())
         {
             mProjectTree.buildProjectTree(clipboard.getProjectPath());
         }
     }
 
-    /*if (!clipboard.getProjectPath().empty())*/
     if (!clipboard.getProjectPath().empty())
     {
         mFilter.Draw("Filter", -100.0f);

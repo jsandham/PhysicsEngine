@@ -3,8 +3,9 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include "../glm/glm.hpp"
-#include "../glm/gtx/quaternion.hpp"
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 namespace YAML
 {
