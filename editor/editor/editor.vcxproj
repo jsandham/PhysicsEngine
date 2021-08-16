@@ -200,7 +200,6 @@
     <ClCompile Include="src\MenuBar.cpp" />
     <ClCompile Include="src\PerformanceQueue.cpp" />
     <ClCompile Include="src\ProjectTree.cpp" />
-    <ClCompile Include="src\TransformGizmo.cpp" />
     <ClCompile Include="src\Undo.cpp" />
     <ClCompile Include="src\views\AboutPopup.cpp" />
     <ClCompile Include="src\views\BuildWindow.cpp" />
@@ -257,7 +256,6 @@
     <ClInclude Include="include\MenuBar.h" />
     <ClInclude Include="include\PerformanceQueue.h" />
     <ClInclude Include="include\ProjectTree.h" />
-    <ClInclude Include="include\TransformGizmo.h" />
     <ClInclude Include="include\Undo.h" />
     <ClInclude Include="include\views\AboutPopup.h" />
     <ClInclude Include="include\views\BuildWindow.h" />

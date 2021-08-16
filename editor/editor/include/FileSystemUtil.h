@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace PhysicsEditor
 {
@@ -24,6 +25,11 @@ std::vector<std::string> getDirectoriesInDirectory(const std::string &path, bool
 //std::vector<std::string> getFilesInDirectory(const std::string &path, std::string extension,
 //                                             bool returnFullPaths = false);
 //std::vector<std::string> getFilesInDirectoryRecursive(const std::string &path, bool returnFullPaths = false);
+
+
+std::vector<std::string> split(const std::filesystem::path path, char delim);
+std::vector<std::filesystem::path> getDirectoryPaths(const std::filesystem::path path);
+
 } // namespace PhysicsEditor
 
 #endif
