@@ -145,7 +145,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\glew-2.1.0;$(SolutionDir)..\imgui\include;$(SolutionDir)..\simplefilewatcher\include;$(SolutionDir)..\external\yaml-cpp\include;$(SolutionDir)..\imguizmo\include;$(SolutionDir)..\external\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\external\glew-2.1.0;$(SolutionDir)..\external\imgui\include;$(SolutionDir)..\external\simplefilewatcher\include;$(SolutionDir)..\external\yaml-cpp\include;$(SolutionDir)..\external\imguizmo\include;$(SolutionDir)..\external\glm</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -153,8 +153,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\imgui\lib\release;$(SolutionDir)..\simplefilewatcher\lib\release;$(SolutionDir)..\imguizmo\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cpp.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\external\imgui\lib\release;$(SolutionDir)..\external\simplefilewatcher\lib\release;$(SolutionDir)..\external\yaml-cpp\build\Release;$(SolutionDir)..\external\imguizmo\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>

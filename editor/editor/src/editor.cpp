@@ -36,7 +36,7 @@ void Editor::init()
     config.MergeMode = true;
     config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
     static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    io.Fonts->AddFontFromFileTTF("C:\\Users\\jsand\\Downloads\\fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
     io.Fonts->Build();
 
     mMenuBar.init(mClipboard);

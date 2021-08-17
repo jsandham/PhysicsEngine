@@ -126,7 +126,12 @@ void Filebrowser::render(const std::filesystem::path& cwd, bool becomeVisibleThi
                 }
             }
 
-            std::vector<std::string> directories = PhysicsEditor::getDirectoriesInDirectory(directoryPath.string());
+            std::vector<std::string> directories;
+            std::error_code error_code;
+            for (const auto& dir : fs::directory_iterator(directoryPath, error_code))
+            {
+                directories.push_back(dir.path().filename().string());
+            }
 
             if (directories.size() > 0)
             {
