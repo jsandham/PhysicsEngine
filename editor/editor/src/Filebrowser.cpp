@@ -363,16 +363,16 @@ void Filebrowser::renderSaveMode()
     {
     }
 
-    const char *saveAsTypeNames[] = {"Scene Files (.scene)", "All Files (*)"};
-    const char *saveAsTypes[] = {".scene", "."};
-
-    static int saveAsTypeIndex = 4;
+    const char* filterNames[] = { "Scene Files (.scene)", "All Files (*)" };
+    const char* filters[] = { ".scene", "."};
+    static int filterIndex = 1;
 
     ImGui::SetNextItemWidth(saveAsTypeTitleWidth);
     ImGui::Text("Save As Type");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(saveAsTypeDropDownWidth);
-    ImGui::Combo("##Filter", &saveAsTypeIndex, saveAsTypeNames, IM_ARRAYSIZE(saveAsTypeNames));
+    ImGui::Combo("##Filter", &filterIndex, filterNames, IM_ARRAYSIZE(filterNames));
+    mCurrentFilter = filters[filterIndex];
 
     int index = 0;
     for (size_t i = 0; i < mInputBuffer.size(); i++)
@@ -383,7 +383,16 @@ void Filebrowser::renderSaveMode()
             break;
         }
     }
-    mSaveFile = mCurrentDirectoryPath / std::string(mInputBuffer.begin(), mInputBuffer.begin() + index);
+
+    switch (filterIndex)
+    {
+    case 0:
+        mSaveFile = mCurrentDirectoryPath / (std::string(mInputBuffer.begin(), mInputBuffer.begin() + index) + ".scene");
+        break;
+    default:
+        mSaveFile = mCurrentDirectoryPath / std::string(mInputBuffer.begin(), mInputBuffer.begin() + index);
+        break;
+    }
 
     if (ImGui::Button("Save"))
     {

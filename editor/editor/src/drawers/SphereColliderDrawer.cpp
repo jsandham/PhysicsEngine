@@ -18,34 +18,44 @@ SphereColliderDrawer::~SphereColliderDrawer()
 
 void SphereColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
         SphereCollider *sphereCollider = clipboard.getWorld()->getComponentById<SphereCollider>(id);
 
-        ImGui::Text(("EntityId: " + sphereCollider->getEntityId().toString()).c_str());
-        ImGui::Text(("ComponentId: " + id.toString()).c_str());
-
-        if (ImGui::TreeNode("Sphere"))
+        if (sphereCollider != nullptr)
         {
-            glm::vec3 centre = sphereCollider->mSphere.mCentre;
-            float radius = sphereCollider->mSphere.mRadius;
+            ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
+            if (ImGui::TreeNode("Sphere"))
             {
-                Undo::recordComponent(sphereCollider);
+                glm::vec3 centre = sphereCollider->mSphere.mCentre;
+                float radius = sphereCollider->mSphere.mRadius;
 
-                sphereCollider->mSphere.mCentre = centre;
+                if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
+                {
+                    Undo::recordComponent(sphereCollider);
+
+                    sphereCollider->mSphere.mCentre = centre;
+                }
+                if (ImGui::InputFloat("Radius", &radius))
+                {
+                    Undo::recordComponent(sphereCollider);
+
+                    sphereCollider->mSphere.mRadius = radius;
+                }
+
+                ImGui::TreePop();
             }
-            if (ImGui::InputFloat("Radius", &radius))
-            {
-                Undo::recordComponent(sphereCollider);
-
-                sphereCollider->mSphere.mRadius = radius;
-            }
-
-            ImGui::TreePop();
         }
 
         ImGui::TreePop();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

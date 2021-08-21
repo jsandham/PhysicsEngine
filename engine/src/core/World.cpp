@@ -388,17 +388,13 @@ void World::latentDestroyEntity(const Guid &entityId)
 
 void World::immediateDestroyEntity(const Guid &entityId)
 {
-    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it =
-        mIdState.mEntityIdToComponentIds.find(entityId);
-
-    assert(it != mIdState.mEntityIdToComponentIds.end());
-
-    for (size_t i = 0; i < it->second.size(); i++)
+    std::vector<std::pair<Guid, int>> componentsOnEntity = mIdState.mEntityIdToComponentIds[entityId];
+    for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
-        immediateDestroyComponent(entityId, it->second[i].first, it->second[i].second);
+        immediateDestroyComponent(entityId, componentsOnEntity[i].first, componentsOnEntity[i].second);
     }
 
-    mIdState.mEntityIdToComponentIds.erase(it);
+    mIdState.mEntityIdToComponentIds.erase(entityId);
 
     destroyInternalEntity(mAllocators, mIdState, entityId, getIndexOf(entityId));
 }
@@ -410,13 +406,32 @@ void World::latentDestroyComponent(const Guid &entityId, const Guid &componentId
 
 void World::immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType)
 {
+    // remove from entity component list
+    std::vector<std::pair<Guid, int>>& componentsOnEntity = mIdState.mEntityIdToComponentIds[entityId];
+
+    std::vector<std::pair<Guid, int>>::iterator it = componentsOnEntity.begin();
+    while (it < componentsOnEntity.end())
+    {
+        if (it->second == componentType && it->first == componentId)
+        {
+            break;
+        }
+
+        it++;
+    }
+
+    if (it < componentsOnEntity.end())
+    {
+        componentsOnEntity.erase(it);
+    }
+    
     if (Component::isInternal(componentType))
     {
-        destroyInternalComponent(mAllocators, mIdState, componentId, componentType, getIndexOf(componentId));
+        destroyInternalComponent(mAllocators, mIdState, entityId, componentId, componentType, getIndexOf(componentId));
     }
     else
     {
-        destroyComponent(mAllocators, mIdState, componentId, componentType, getIndexOf(componentId));
+        destroyComponent(mAllocators, mIdState, entityId, componentId, componentType, getIndexOf(componentId));
     }
 }
 

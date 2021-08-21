@@ -508,13 +508,7 @@ Component *loadInternalComponent_Impl(World& world, WorldAllocators &allocators,
             state.mTransformIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
-            // state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(componentId,
-            // componentType));
             state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
-
-            std::cout << "loading transform with id: " << component->getId().toString()
-                      << " and entity id: " << component->getEntityId().toString() << " to index: " << index
-                      << std::endl;
         }
     }
     else if (type == ComponentType<Rigidbody>::type)
@@ -1075,14 +1069,14 @@ Asset *PhysicsEngine::loadInternalAsset(World& world, WorldAllocators &allocator
     return loadInternalAsset_Impl<const YAML::Node>(world, allocators, state, in, id, type);
 }
 
-Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id,
+Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId,
                                              int index)
 {
     Entity *swap = allocators.mEntityAllocator.destruct(index);
 
-    state.mEntityIdToGlobalIndex.erase(id);
-    state.mIdToGlobalIndex.erase(id);
-    state.mIdToType.erase(id);
+    state.mEntityIdToGlobalIndex.erase(entityId);
+    state.mIdToGlobalIndex.erase(entityId);
+    state.mIdToType.erase(entityId);
 
     if (swap != nullptr)
     {
@@ -1094,8 +1088,8 @@ Entity *PhysicsEngine::destroyInternalEntity(WorldAllocators &allocators, WorldI
     return swap;
 }
 
-Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id,
-                                                   int type, int index)
+Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId,
+                        const Guid& componentId, int type, int index)
 {
     Component *swap = nullptr;
 
@@ -1103,9 +1097,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mTransformAllocator.destruct(index);
 
-        state.mTransformIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mTransformIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1118,9 +1112,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mRigidbodyAllocator.destruct(index);
 
-        state.mRigidbodyIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mRigidbodyIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1133,9 +1127,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mCameraAllocator.destruct(index);
 
-        state.mCameraIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mCameraIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1148,9 +1142,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mMeshRendererAllocator.destruct(index);
 
-        state.mMeshRendererIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mMeshRendererIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1163,9 +1157,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mSpriteRendererAllocator.destruct(index);
 
-        state.mSpriteRendererIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mSpriteRendererIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1178,9 +1172,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mSpriteRendererAllocator.destruct(index);
 
-        state.mSpriteRendererIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mSpriteRendererIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1193,9 +1187,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mLineRendererAllocator.destruct(index);
 
-        state.mLineRendererIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mLineRendererIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1208,9 +1202,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mLightAllocator.destruct(index);
 
-        state.mLightIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mLightIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1223,9 +1217,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mBoxColliderAllocator.destruct(index);
 
-        state.mBoxColliderIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mBoxColliderIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1238,9 +1232,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mSphereColliderAllocator.destruct(index);
 
-        state.mSphereColliderIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mSphereColliderIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1253,9 +1247,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mMeshColliderAllocator.destruct(index);
 
-        state.mMeshColliderIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mMeshColliderIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1268,9 +1262,9 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     {
         swap = allocators.mCapsuleColliderAllocator.destruct(index);
 
-        state.mCapsuleColliderIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mCapsuleColliderIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
 
         if (swap != nullptr)
         {
@@ -1290,7 +1284,7 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
     return swap;
 }
 
-Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id,
+Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& assetId,
     int type, int index)
 {
     Asset* swap = nullptr;
@@ -1299,9 +1293,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mMaterialAllocator.destruct(index);
 
-        state.mMaterialIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mMaterialIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1314,9 +1308,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mMeshAllocator.destruct(index);
 
-        state.mMeshIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mMeshIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1329,9 +1323,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mShaderAllocator.destruct(index);
 
-        state.mShaderIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mShaderIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1344,9 +1338,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mTexture2DAllocator.destruct(index);
 
-        state.mTexture2DIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mTexture2DIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1359,9 +1353,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mTexture3DAllocator.destruct(index);
 
-        state.mTexture3DIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mTexture3DIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1374,9 +1368,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mCubemapAllocator.destruct(index);
 
-        state.mCubemapIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mCubemapIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1389,9 +1383,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mFontAllocator.destruct(index);
 
-        state.mFontIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mFontIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {
@@ -1404,9 +1398,9 @@ Asset* PhysicsEngine::destroyInternalAsset(WorldAllocators& allocators, WorldIdS
     {
         swap = allocators.mSpriteAllocator.destruct(index);
 
-        state.mSpriteIdToGlobalIndex.erase(id);
-        state.mIdToGlobalIndex.erase(id);
-        state.mIdToType.erase(id);
+        state.mSpriteIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
 
         if (swap != nullptr)
         {

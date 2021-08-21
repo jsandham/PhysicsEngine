@@ -221,11 +221,6 @@ bool ImGui::BeginDropdownWindow(const std::string &name, const std::vector<std::
             }
         }
 
-        if (filteredComponents.size() == 0)
-        {
-            filteredComponents.push_back("");
-        }
-
         std::vector<const char *> cStrFilteredComponents;
         for (size_t i = 0; i < filteredComponents.size(); ++i)
         {
@@ -233,7 +228,7 @@ bool ImGui::BeginDropdownWindow(const std::string &name, const std::vector<std::
         }
 
         int s = 0;
-        if (ImGui::ListBox("##Filter", &s, &cStrFilteredComponents[0], (int)cStrFilteredComponents.size(), 4))
+        if (ImGui::ListBox("##Filter", &s, cStrFilteredComponents.data(), (int)cStrFilteredComponents.size(), 4))
         {
             selection = filteredComponents[s];
             ImGui::CloseCurrentPopup();

@@ -17,6 +17,11 @@ SpriteDrawer::~SpriteDrawer()
 
 void SpriteDrawer::render(Clipboard& clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     Sprite* sprite = clipboard.getWorld()->getAssetById<Sprite>(id);
 
     Guid textureId = sprite->getTextureId();
@@ -43,4 +48,7 @@ void SpriteDrawer::render(Clipboard& clipboard, Guid id)
     {
         clipboard.setSelectedItem(InteractionType::Texture2D, textureId);
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

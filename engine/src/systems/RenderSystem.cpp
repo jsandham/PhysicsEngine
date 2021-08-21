@@ -233,12 +233,12 @@ void RenderSystem::buildRenderObjectsList(World *world)
     {
         MeshRenderer *meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
 
-        if (meshRenderer->mEnabled)
+        if (meshRenderer != nullptr && meshRenderer->mEnabled)
         {
             Transform *transform = meshRenderer->getComponent<Transform>();
             Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
-            if (transform == NULL)
+            if (transform == nullptr)
             {
                 continue;
             }

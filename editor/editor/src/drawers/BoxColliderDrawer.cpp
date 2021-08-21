@@ -18,34 +18,44 @@ BoxColliderDrawer::~BoxColliderDrawer()
 
 void BoxColliderDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
         BoxCollider *boxCollider = clipboard.getWorld()->getComponentById<BoxCollider>(id);
 
-        ImGui::Text(("EntityId: " + boxCollider->getEntityId().toString()).c_str());
-        ImGui::Text(("ComponentId: " + id.toString()).c_str());
-
-        if (ImGui::TreeNode("Bounds"))
+        if (boxCollider != nullptr)
         {
-            glm::vec3 centre = boxCollider->mAABB.mCentre;
-            glm::vec3 size = boxCollider->mAABB.mSize;
+            ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
+            if (ImGui::TreeNode("Bounds"))
             {
-                Undo::recordComponent(boxCollider);
+                glm::vec3 centre = boxCollider->mAABB.mCentre;
+                glm::vec3 size = boxCollider->mAABB.mSize;
 
-                boxCollider->mAABB.mCentre = centre;
+                if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
+                {
+                    Undo::recordComponent(boxCollider);
+
+                    boxCollider->mAABB.mCentre = centre;
+                }
+                if (ImGui::InputFloat3("Size", glm::value_ptr(size)))
+                {
+                    Undo::recordComponent(boxCollider);
+
+                    boxCollider->mAABB.mSize = size;
+                }
+
+                ImGui::TreePop();
             }
-            if (ImGui::InputFloat3("Size", glm::value_ptr(size)))
-            {
-                Undo::recordComponent(boxCollider);
-
-                boxCollider->mAABB.mSize = size;
-            }
-
-            ImGui::TreePop();
         }
 
         ImGui::TreePop();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

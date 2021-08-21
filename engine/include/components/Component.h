@@ -27,19 +27,24 @@ class Component : public Object
 
     template <typename T> void latentDestroy()
     {
-        mWorld->latentDestroyComponent(mEntityId, mId, getInstanceType<T>());
+        mWorld->latentDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
     }
 
     template <typename T> void immediateDestroy()
     {
-        mWorld->immediateDestroyComponent(mEntityId, mId, getInstanceType<T>());
+        mWorld->immediateDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
     }
 
     template <typename T> T* getComponent() const
     {
         const Entity* entity = getEntity();
 
-        return entity->getComponent<T>();
+        if (entity != nullptr)
+        {
+            return entity->getComponent<T>();
+        }
+
+        return nullptr;
     }
 
     Guid getEntityId() const;

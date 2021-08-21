@@ -19,4 +19,11 @@ Texture3DDrawer::~Texture3DDrawer()
 
 void Texture3DDrawer::render(Clipboard &clipboard, Guid id)
 {
+	InspectorDrawer::render(clipboard, id);
+
+	ImGui::Separator();
+	mContentMin = ImGui::GetItemRectMin();
+
+	ImGui::Separator();
+	mContentMax = ImGui::GetItemRectMax();
 }

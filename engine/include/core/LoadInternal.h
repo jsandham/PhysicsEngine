@@ -31,10 +31,10 @@ Asset *loadInternalAsset(World& world, WorldAllocators &allocators, WorldIdState
                          int type);
 
 // Destroy internal entity, component, system or asset
-Entity *destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int index);
-Component *destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type,
-                                    int index);
-Asset* destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index);
+Entity *destroyInternalEntity(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId, int index);
+Component *destroyInternalComponent(WorldAllocators &allocators, WorldIdState &state, const Guid& entityId, const Guid &componentId, 
+                                    int type, int index);
+Asset* destroyInternalAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& assetId, int type, int index);
 } // namespace PhysicsEngine
 
 #endif

@@ -22,6 +22,11 @@ ShaderDrawer::~ShaderDrawer()
 
 void ShaderDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(id);
 
     std::vector<ShaderProgram> programs = shader->getPrograms();
@@ -71,4 +76,7 @@ void ShaderDrawer::render(Clipboard &clipboard, Guid id)
 
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
     ImGui::Columns(1);
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

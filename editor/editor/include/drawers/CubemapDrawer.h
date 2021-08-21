@@ -12,7 +12,7 @@ class CubemapDrawer : public InspectorDrawer
     CubemapDrawer();
     ~CubemapDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

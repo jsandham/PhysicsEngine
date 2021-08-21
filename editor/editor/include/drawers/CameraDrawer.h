@@ -12,7 +12,7 @@ class CameraDrawer : public InspectorDrawer
     CameraDrawer();
     ~CameraDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

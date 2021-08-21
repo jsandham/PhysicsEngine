@@ -18,46 +18,56 @@ RigidbodyDrawer::~RigidbodyDrawer()
 
 void RigidbodyDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
     {
         Rigidbody *rigidbody = clipboard.getWorld()->getComponentById<Rigidbody>(id);
 
-        ImGui::Text(("EntityId: " + rigidbody->getEntityId().toString()).c_str());
-        ImGui::Text(("ComponentId: " + id.toString()).c_str());
-
-        bool useGravity = rigidbody->mUseGravity;
-        float mass = rigidbody->mMass;
-        float drag = rigidbody->mDrag;
-        float angularDrag = rigidbody->mAngularDrag;
-
-        if (ImGui::Checkbox("Use Gravity", &useGravity))
+        if (rigidbody != nullptr)
         {
-            Undo::recordComponent(rigidbody);
+            ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            rigidbody->mUseGravity = useGravity;
+            bool useGravity = rigidbody->mUseGravity;
+            float mass = rigidbody->mMass;
+            float drag = rigidbody->mDrag;
+            float angularDrag = rigidbody->mAngularDrag;
+
+            if (ImGui::Checkbox("Use Gravity", &useGravity))
+            {
+                Undo::recordComponent(rigidbody);
+
+                rigidbody->mUseGravity = useGravity;
+            }
+
+            if (ImGui::InputFloat("Mass", &mass))
+            {
+                Undo::recordComponent(rigidbody);
+
+                rigidbody->mMass = mass;
+            }
+
+            if (ImGui::InputFloat("Drag", &drag))
+            {
+                Undo::recordComponent(rigidbody);
+
+                rigidbody->mDrag = drag;
+            }
+
+            if (ImGui::InputFloat("Angular Drag", &angularDrag))
+            {
+                Undo::recordComponent(rigidbody);
+
+                rigidbody->mAngularDrag = angularDrag;
+            }
         }
-
-        if (ImGui::InputFloat("Mass", &mass))
-        {
-            Undo::recordComponent(rigidbody);
-
-            rigidbody->mMass = mass;
-        }
-
-        if (ImGui::InputFloat("Drag", &drag))
-        {
-            Undo::recordComponent(rigidbody);
-
-            rigidbody->mDrag = drag;
-        }
-
-        if (ImGui::InputFloat("Angular Drag", &angularDrag))
-        {
-            Undo::recordComponent(rigidbody);
-
-            rigidbody->mAngularDrag = angularDrag;
-        }
-
+        
         ImGui::TreePop();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

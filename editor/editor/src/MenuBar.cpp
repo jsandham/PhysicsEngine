@@ -132,9 +132,7 @@ void MenuBar::update(Clipboard &clipboard)
         saveProject(clipboard);
     }
 
-    //Log::info(("save project clicked: " + std::to_string(saveProjectClicked) + "\n").c_str());
-
-    projectWindow.draw(clipboard, isOpenProjectClicked() | isNewProjectClicked());
+    projectWindow.draw(clipboard, isOpenProjectClicked() || isNewProjectClicked());
     aboutPopup.draw(clipboard, isAboutClicked());
     preferencesWindow.draw(clipboard, isPreferencesClicked());
     buildWindow.draw(clipboard, isBuildClicked());
@@ -238,7 +236,7 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
 
     ImGui::Separator();
 
-    if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, !clipboard.getScenePath().empty()))
+    if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, clipboard.getSceneId().isValid()))
     {
         saveClicked = true;
     }

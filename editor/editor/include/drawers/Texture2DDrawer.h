@@ -32,7 +32,7 @@ class Texture2DDrawer : public InspectorDrawer
     Texture2DDrawer();
     ~Texture2DDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

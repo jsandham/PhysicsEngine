@@ -12,7 +12,7 @@ class MeshRendererDrawer : public InspectorDrawer
     MeshRendererDrawer();
     ~MeshRendererDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

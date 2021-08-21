@@ -32,6 +32,11 @@ MeshDrawer::~MeshDrawer()
 
 void MeshDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
 
     const int count = 4;
@@ -203,4 +208,7 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
     }
 
     ImGui::EndChild();
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

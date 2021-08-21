@@ -1,5 +1,76 @@
-﻿  Generating code
+﻿  Command.cpp
+  BoxColliderDrawer.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  CubemapDrawer.cpp
+  FontDrawer.cpp
+  InspectorDrawer.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  MaterialDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(135,66): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(140,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(146,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshRendererDrawer.cpp
+  RigidbodyDrawer.cpp
+  ShaderDrawer.cpp
+  SphereColliderDrawer.cpp
+  SpriteDrawer.cpp
+  SpriteRendererDrawer.cpp
+  Texture2DDrawer.cpp
+  Texture3DDrawer.cpp
+  Compiling...
+  TransformDrawer.cpp
+  Editor.cpp
+  EditorCameraSystem.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(272,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\EditorCameraSystem.cpp(273,11): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  EditorClipboard.cpp
+  EditorCommands.cpp
+  EditorOnlyEntityCreation.cpp
+  EditorProjectManager.cpp
+  EditorSceneManager.cpp
+  EditorToolbar.cpp
+  EditorWin32.cpp
+  Filebrowser.cpp
+  FileSystemUtil.cpp
+  imgui_extensions.cpp
+  imgui_styles.cpp
+  LibraryDirectory.cpp
+  Load.cpp
+  main.cpp
+  MenuBar.cpp
+  PerformanceQueue.cpp
+  ProjectTree.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\ProjectTree.cpp(140,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Compiling...
+  Undo.cpp
+  AboutPopup.cpp
+  BuildWindow.cpp
+  Console.cpp
+  DebugOverlay.cpp
+  Hierarchy.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(70,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(182,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Inspector.cpp
+  PopupWindow.cpp
+  PreferencesWindow.cpp
+  ProjectView.cpp
+  ProjectWindow.cpp
+  SceneView.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(75,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(76,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(463,44): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=double
+          ]
+  Window.cpp
+  Generating code
   Previous IPDB not found, fall back to full compilation.
-  All 3786 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 3807 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Release\editor.exe

@@ -18,77 +18,87 @@ SpriteRendererDrawer::~SpriteRendererDrawer()
 
 void SpriteRendererDrawer::render(Clipboard& clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     if (ImGui::TreeNodeEx("SpriteRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
         SpriteRenderer* spriteRenderer = clipboard.getWorld()->getComponentById<SpriteRenderer>(id);
 
-        ImGui::Text(("EntityId: " + spriteRenderer->getEntityId().toString()).c_str());
-        ImGui::Text(("ComponentId: " + id.toString()).c_str());
-
-        // Sprite
-        Guid spriteId = spriteRenderer->getSprite();
-
-        std::string spriteName = "None (Sprite)";
-        if (spriteId.isValid())
+        if (spriteRenderer != nullptr)
         {
-            spriteName = spriteId.toString();
-        }
+            ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-        bool releaseTriggered = false;
-        bool clearClicked = false;
-        bool isClicked = ImGui::Slot("Sprite", spriteName, &releaseTriggered, &clearClicked);
+            // Sprite
+            Guid spriteId = spriteRenderer->getSprite();
 
-        if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Sprite)
-        {
-            spriteId = clipboard.getDraggedId();
-            clipboard.clearDraggedItem();
+            std::string spriteName = "None (Sprite)";
+            if (spriteId.isValid())
+            {
+                spriteName = spriteId.toString();
+            }
 
-            spriteRenderer->setSprite(spriteId);
-        }
+            bool releaseTriggered = false;
+            bool clearClicked = false;
+            bool isClicked = ImGui::Slot("Sprite", spriteName, &releaseTriggered, &clearClicked);
 
-        if (isClicked)
-        {
-            clipboard.setSelectedItem(InteractionType::Sprite, spriteId);
-        }
+            if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Sprite)
+            {
+                spriteId = clipboard.getDraggedId();
+                clipboard.clearDraggedItem();
 
-        float color[4];
-        color[0] = spriteRenderer->mColor.r;
-        color[1] = spriteRenderer->mColor.g;
-        color[2] = spriteRenderer->mColor.b;
-        color[3] = spriteRenderer->mColor.a;
+                spriteRenderer->setSprite(spriteId);
+            }
 
-        if (ImGui::ColorEdit4("color", &color[0]))
-        {
-            spriteRenderer->mColor.r = color[0];
-            spriteRenderer->mColor.g = color[1];
-            spriteRenderer->mColor.b = color[2];
-            spriteRenderer->mColor.a = color[3];
-        }
+            if (isClicked)
+            {
+                clipboard.setSelectedItem(InteractionType::Sprite, spriteId);
+            }
 
-        bool flipX = spriteRenderer->mFlipX;
-        if (ImGui::Checkbox("Flip X?", &flipX))
-        {
-            spriteRenderer->mFlipX = flipX;
-        }
+            float color[4];
+            color[0] = spriteRenderer->mColor.r;
+            color[1] = spriteRenderer->mColor.g;
+            color[2] = spriteRenderer->mColor.b;
+            color[3] = spriteRenderer->mColor.a;
 
-        bool flipY = spriteRenderer->mFlipY;
-        if (ImGui::Checkbox("Flip Y?", &flipY))
-        {
-            spriteRenderer->mFlipY = flipY;
-        }
+            if (ImGui::ColorEdit4("color", &color[0]))
+            {
+                spriteRenderer->mColor.r = color[0];
+                spriteRenderer->mColor.g = color[1];
+                spriteRenderer->mColor.b = color[2];
+                spriteRenderer->mColor.a = color[3];
+            }
 
-        bool isStatic = spriteRenderer->mIsStatic;
-        if (ImGui::Checkbox("Is Static?", &isStatic))
-        {
-            spriteRenderer->mIsStatic = isStatic;
-        }
+            bool flipX = spriteRenderer->mFlipX;
+            if (ImGui::Checkbox("Flip X?", &flipX))
+            {
+                spriteRenderer->mFlipX = flipX;
+            }
 
-        bool enabled = spriteRenderer->mEnabled;
-        if (ImGui::Checkbox("Enabled?", &enabled))
-        {
-            spriteRenderer->mEnabled = enabled;
+            bool flipY = spriteRenderer->mFlipY;
+            if (ImGui::Checkbox("Flip Y?", &flipY))
+            {
+                spriteRenderer->mFlipY = flipY;
+            }
+
+            bool isStatic = spriteRenderer->mIsStatic;
+            if (ImGui::Checkbox("Is Static?", &isStatic))
+            {
+                spriteRenderer->mIsStatic = isStatic;
+            }
+
+            bool enabled = spriteRenderer->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                spriteRenderer->mEnabled = enabled;
+            }
         }
 
         ImGui::TreePop();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

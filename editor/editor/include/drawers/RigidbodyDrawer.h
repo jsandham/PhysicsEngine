@@ -12,7 +12,7 @@ class RigidbodyDrawer : public InspectorDrawer
     RigidbodyDrawer();
     ~RigidbodyDrawer();
 
-    void render(Clipboard& clipboard, Guid id);
+    virtual void render(Clipboard& clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

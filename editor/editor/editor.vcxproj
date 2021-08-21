@@ -168,7 +168,6 @@
     <ClCompile Include="src\drawers\InspectorDrawer.cpp" />
     <ClCompile Include="src\drawers\LightDrawer.cpp" />
     <ClCompile Include="src\drawers\LineRendererDrawer.cpp" />
-    <ClCompile Include="src\drawers\LoadInspectorDrawerInternal.cpp" />
     <ClCompile Include="src\drawers\MaterialDrawer.cpp" />
     <ClCompile Include="src\drawers\MeshColliderDrawer.cpp" />
     <ClCompile Include="src\drawers\MeshDrawer.cpp" />
@@ -224,7 +223,6 @@
     <ClInclude Include="include\drawers\InspectorDrawer.h" />
     <ClInclude Include="include\drawers\LightDrawer.h" />
     <ClInclude Include="include\drawers\LineRendererDrawer.h" />
-    <ClInclude Include="include\drawers\LoadInspectorDrawerInternal.h" />
     <ClInclude Include="include\drawers\MaterialDrawer.h" />
     <ClInclude Include="include\drawers\MeshColliderDrawer.h" />
     <ClInclude Include="include\drawers\MeshDrawer.h" />

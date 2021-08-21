@@ -82,6 +82,11 @@ Texture2DDrawer::~Texture2DDrawer()
 
 void Texture2DDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(id);
 
     ImGui::Separator();
@@ -333,4 +338,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, Guid id)
 
         ImGui::EndChild();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

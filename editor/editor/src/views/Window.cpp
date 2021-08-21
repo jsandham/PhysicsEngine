@@ -87,6 +87,10 @@ void Window::draw(Clipboard& clipboard, bool isOpenedThisFrame, float alpha, ImG
         update(clipboard);
     }
 
+    if (ImGui::IsWindowHovered()) {
+        ImGui::GetForegroundDrawList()->AddRect(mContentMin, mContentMax, 0xFFFF0000);
+    }
+
     ImGui::End();
 }
 

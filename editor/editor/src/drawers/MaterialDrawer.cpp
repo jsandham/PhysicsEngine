@@ -52,6 +52,11 @@ MaterialDrawer::~MaterialDrawer()
 
 void MaterialDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 
     Guid currentShaderId = material->getShaderId();
@@ -158,4 +163,7 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
                  ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                  ImVec2(0, 0));
     ImGui::EndChild();
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

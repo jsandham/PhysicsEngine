@@ -12,7 +12,7 @@ class FontDrawer : public InspectorDrawer
     FontDrawer();
     ~FontDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 

@@ -2,7 +2,6 @@
 #include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
 #include "../../include/FileSystemUtil.h"
-#include "../../include/drawers/LoadInspectorDrawerInternal.h"
 
 #include "imgui.h"
 
@@ -13,6 +12,7 @@ using namespace PhysicsEditor;
 
 Inspector::Inspector() : Window("Inspector")
 {
+    
 }
 
 Inspector::~Inspector()
@@ -52,8 +52,6 @@ void Inspector::update(Clipboard &clipboard)
     {
         drawEntity(clipboard);
     }
-
-    ImGui::Separator();
 }
 
 void Inspector::drawEntity(Clipboard &clipboard)
@@ -66,11 +64,35 @@ void Inspector::drawEntity(Clipboard &clipboard)
         return;
     }
 
+    static bool flag = true;
+    ImGui::Checkbox("##Entity Enabled", &flag);
+    
+    ImGui::SameLine();
+    ImGui::Text("Entity");
+    ImGui::SameLine();
+
+    std::string name = entity->getName();
+
+    std::vector<char> inputBuffer(256, '\0');
+    std::copy(name.begin(), name.end(), inputBuffer.begin());
+
+    ImGuiInputTextFlags options = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
+    if (ImGui::InputText("##Entity Header", &inputBuffer[0], inputBuffer.size(), options))
+    {
+        entity->setName(std::string(inputBuffer.begin(), inputBuffer.end()));
+    }
+
+    ImGui::Text(("EntityId: " + entity->getId().toString()).c_str());
+
+    ImGui::Separator();
+
     std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity();
     for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
         Guid componentId = componentsOnEntity[i].first;
         int componentType = componentsOnEntity[i].second;
+
+        ImGui::PushID(componentId.toString().c_str());
 
         InspectorDrawer *drawer = nullptr;
         if (Component::isInternal(componentType))
@@ -121,8 +143,24 @@ void Inspector::drawEntity(Clipboard &clipboard)
             }
         }
 
-        drawer->render(clipboard, componentId);
-        ImGui::Separator();
+        if (drawer != nullptr) {
+            drawer->render(clipboard, componentId);
+
+            if (drawer->isHovered())
+            {
+                if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+                {
+                    if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+                    {
+                        clipboard.getWorld()->immediateDestroyComponent(entity->getId(), componentId, componentType);
+                    }
+
+                    ImGui::EndPopup();
+                }
+            }
+        }
+      
+        ImGui::PopID();
     }
 
     std::string componentToAdd = "";
@@ -132,35 +170,46 @@ void Inspector::drawEntity(Clipboard &clipboard)
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
+        Component* component = nullptr;
         if (componentToAdd == "Transform")
         {
-            Undo::addCommand(
-                new AddComponentCommand<Transform>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<Transform>();
         }
         else if (componentToAdd == "Rigidbody")
         {
-            Undo::addCommand(
-                new AddComponentCommand<Rigidbody>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<Rigidbody>();
         }
         else if (componentToAdd == "Camera")
         {
-            Undo::addCommand(
-                new AddComponentCommand<Camera>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<Camera>();
         }
         else if (componentToAdd == "MeshRenderer")
         {
-            Undo::addCommand(
-                new AddComponentCommand<MeshRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<MeshRenderer>();
+        }
+        else if (componentToAdd == "LineRenderer")
+        {
+            component = entity->addComponent<LineRenderer>();
         }
         else if (componentToAdd == "SpriteRenderer")
         {
-            Undo::addCommand(
-                new AddComponentCommand<SpriteRenderer>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<SpriteRenderer>();
         }
         else if (componentToAdd == "Light")
         {
-            Undo::addCommand(
-                new AddComponentCommand<Light>(clipboard.getWorld(), entity->getId(), &clipboard.mSceneDirty));
+            component = entity->addComponent<Light>();
+        }
+        else if (componentToAdd == "SphereCollider")
+        {
+            component = entity->addComponent<SphereCollider>();
+        }
+        else if (componentToAdd == "BoxCollider")
+        {
+            component = entity->addComponent<BoxCollider>();
+        }
+
+        if (component != nullptr) {
+            clipboard.mSceneDirty = true;
         }
 
         ImGui::EndDropdownWindow();

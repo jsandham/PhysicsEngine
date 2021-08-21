@@ -36,7 +36,7 @@ class MaterialDrawer : public InspectorDrawer
     MaterialDrawer();
     ~MaterialDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 
 template <GLenum T> struct UniformDrawer

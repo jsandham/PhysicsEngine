@@ -18,29 +18,39 @@ LineRendererDrawer::~LineRendererDrawer()
 
 void LineRendererDrawer::render(Clipboard &clipboard, Guid id)
 {
+    InspectorDrawer::render(clipboard, id);
+
+    ImGui::Separator();
+    mContentMin = ImGui::GetItemRectMin();
+
     if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
         LineRenderer *lineRenderer = clipboard.getWorld()->getComponentById<LineRenderer>(id);
 
-        ImGui::Text(("EntityId: " + lineRenderer->getEntityId().toString()).c_str());
-        ImGui::Text(("ComponentId: " + id.toString()).c_str());
-
-        glm::vec3 start = lineRenderer->mStart;
-        glm::vec3 end = lineRenderer->mEnd;
-
-        if (ImGui::InputFloat3("Start", glm::value_ptr(start)))
+        if (lineRenderer != nullptr)
         {
-            Undo::recordComponent(lineRenderer);
+            ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            lineRenderer->mStart = start;
-        }
-        if (ImGui::InputFloat3("End", glm::value_ptr(end)))
-        {
-            Undo::recordComponent(lineRenderer);
+            glm::vec3 start = lineRenderer->mStart;
+            glm::vec3 end = lineRenderer->mEnd;
 
-            lineRenderer->mEnd = end;
+            if (ImGui::InputFloat3("Start", glm::value_ptr(start)))
+            {
+                Undo::recordComponent(lineRenderer);
+
+                lineRenderer->mStart = start;
+            }
+            if (ImGui::InputFloat3("End", glm::value_ptr(end)))
+            {
+                Undo::recordComponent(lineRenderer);
+
+                lineRenderer->mEnd = end;
+            }
         }
 
         ImGui::TreePop();
     }
+
+    ImGui::Separator();
+    mContentMax = ImGui::GetItemRectMax();
 }

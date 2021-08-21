@@ -34,12 +34,12 @@ System* PhysicsEngine::loadSystem(World& world, WorldAllocators& allocators, Wor
     return nullptr;
 }
 
-Component *PhysicsEngine::destroyComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index)
+Component *PhysicsEngine::destroyComponent(WorldAllocators& allocators, WorldIdState& state, const Guid& entityId, const Guid& componentId, int type, int index)
 {
     return nullptr;
 }
 
-Asset* PhysicsEngine::destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index)
+Asset* PhysicsEngine::destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& assetId, int type, int index)
 {
     return nullptr;
 }

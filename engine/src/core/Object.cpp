@@ -1,18 +1,15 @@
 #include "../../include/core/Object.h"
-#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 
-Object::Object(World* world)
+Object::Object(World* world) : mWorld(world), mId(Guid::INVALID), mHide(HideFlag::None)
 {
-    mWorld = world;
-    mHide = HideFlag::None;
-    mId = Guid::INVALID;
+ 
 }
 
-Object::Object(World* world, Guid id) : mId(id), mHide(HideFlag::None)
+Object::Object(World* world, Guid id) : mWorld(world), mId(id), mHide(HideFlag::None)
 {
-    mWorld = world;
+
 }
 
 Object::~Object()

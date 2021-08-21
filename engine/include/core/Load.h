@@ -30,10 +30,10 @@ Component *loadComponent(World& world, WorldAllocators &allocators, WorldIdState
 System *loadSystem(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
 
 // destroy external components defined by the user
-Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &id, int type, int index);
+Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId, const Guid& componentId, int type, int index);
 
 // destroy external assets defined by the user
-Asset* destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& id, int type, int index);
+Asset* destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& assetId, int type, int index);
 } // namespace PhysicsEngine
 
 #endif

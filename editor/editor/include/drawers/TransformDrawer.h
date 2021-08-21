@@ -14,7 +14,7 @@ class TransformDrawer : public InspectorDrawer
     TransformDrawer();
     ~TransformDrawer();
 
-    void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, Guid id) override;
 };
 } // namespace PhysicsEditor
 
