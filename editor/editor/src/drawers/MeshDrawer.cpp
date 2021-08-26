@@ -3,7 +3,6 @@
 #include "../../include/EditorCommands.h"
 #include "../../include/imgui/imgui_extensions.h"
 
-#include "core/InternalShaders.h"
 #include "core/Mesh.h"
 
 #include "imgui.h"
@@ -42,8 +41,12 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
     const int count = 4;
     const char *drawMode[] = {"Color", "Normals", "Tangents", "Binormal"};
 
-    const Guid shaders[] = {clipboard.getWorld()->getColorLitShaderId(), clipboard.getWorld()->getNormalShaderId(),
-                            clipboard.getWorld()->getTangentShaderId(), clipboard.getWorld()->getBinormalShaderId() };
+    /*const Guid shaders[] = {clipboard.getWorld()->getColorLitShaderId(), clipboard.getWorld()->getNormalShaderId(),
+                            clipboard.getWorld()->getTangentShaderId(), clipboard.getWorld()->getBinormalShaderId() };*/
+    const Guid shaders[] = { clipboard.getWorld()->getAssetId("data\\shaders\\opengl\\colorLit.shader"), 
+                             clipboard.getWorld()->getAssetId("data\\shaders\\opengl\\normal.shader"),
+                             clipboard.getWorld()->getAssetId("data\\shaders\\opengl\\tangent.shader"),
+                             clipboard.getWorld()->getAssetId("data\\shaders\\opengl\\binormal.shader") };
 
     // select draw mode for mesh
     if (ImGui::BeginCombo("##DrawMode", drawMode[mActiveDrawModeIndex]))

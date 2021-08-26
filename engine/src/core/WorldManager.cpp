@@ -1,5 +1,7 @@
-#include "../../include/core/WorldManager.h"
+#include <iostream>
+
 #include "../../include/core/Log.h"
+#include "../../include/core/WorldManager.h"
 
 using namespace PhysicsEngine;
 
@@ -33,6 +35,7 @@ bool WorldManager::load(std::string sceneFilePath, std::vector<std::string> asse
 
 void WorldManager::init()
 {
+    std::cout << "World manager init" << std::endl;
     for (size_t i = 0; i < world.getNumberOfUpdatingSystems(); i++)
     {
         System *system = world.getSystemByUpdateOrder(i);

@@ -15,8 +15,8 @@
 
 #include "Asset.h"
 #include "Color.h"
-#include "Guid.h"
 #include "GLM.h"
+#include "Guid.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -46,6 +46,12 @@ enum ShaderVersion
     GL430
 };
 
+enum ShaderAPI
+{
+    GLSL,
+    HLSL
+};
+
 struct ShaderProgram
 {
     ShaderVersion mVersion;
@@ -57,9 +63,9 @@ struct ShaderProgram
 struct ShaderUniform
 {
     char mData[64];
-    std::string mName;   // variable name in GLSL (including block name if applicable)
-    GLenum mType;        // type of the uniform (float, vec3 or mat4, etc)
-    int mLocation;       // uniform location in shader program
+    std::string mName; // variable name in GLSL (including block name if applicable)
+    GLenum mType;      // type of the uniform (float, vec3 or mat4, etc)
+    int mLocation;     // uniform location in shader program
 };
 
 struct ShaderAttribute
@@ -84,9 +90,11 @@ class Shader : public Asset
     std::vector<ShaderUniform> mMaterialUniforms;
     std::vector<ShaderAttribute> mAttributes;
 
+    ShaderAPI mShaderAPI;
+
   public:
-    Shader(World* world);
-    Shader(World* world, Guid id);
+    Shader(World *world);
+    Shader(World *world, Guid id);
     ~Shader();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -199,6 +207,23 @@ template <> struct convert<PhysicsEngine::RenderQueue>
     }
 };
 
+// ShaderAPI
+template <> struct convert<PhysicsEngine::ShaderAPI>
+{
+    static Node encode(const PhysicsEngine::ShaderAPI& rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
+
+    static bool decode(const Node& node, PhysicsEngine::ShaderAPI& rhs)
+    {
+        rhs = static_cast<PhysicsEngine::ShaderAPI>(node.as<int>());
+        return true;
+    }
+};
+
 // ShaderUniform
 template <> struct convert<PhysicsEngine::ShaderUniform>
 {
@@ -210,28 +235,28 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 
         if (rhs.mType == GL_INT)
         {
-            node["data"] = *reinterpret_cast<const int*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const int *>(rhs.mData);
         }
         else if (rhs.mType == GL_FLOAT)
         {
-            node["data"] = *reinterpret_cast<const float*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const float *>(rhs.mData);
         }
         else if (rhs.mType == GL_FLOAT_VEC2)
         {
-            node["data"] = *reinterpret_cast<const glm::vec2*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const glm::vec2 *>(rhs.mData);
         }
         else if (rhs.mType == GL_FLOAT_VEC3)
         {
-            node["data"] = *reinterpret_cast<const glm::vec3*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const glm::vec3 *>(rhs.mData);
         }
         else if (rhs.mType == GL_FLOAT_VEC4)
         {
-            node["data"] = *reinterpret_cast<const glm::vec4*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const glm::vec4 *>(rhs.mData);
         }
 
         if (rhs.mType == GL_SAMPLER_2D)
         {
-            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
+            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid *>(rhs.mData);
         }
 
         return node;

@@ -7,13 +7,13 @@
 
 using namespace PhysicsEngine;
 
-Entity::Entity(World* world) : Object(world)
+Entity::Entity(World *world) : Object(world)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
 }
 
-Entity::Entity(World* world, Guid id) : Object(world, id)
+Entity::Entity(World *world, Guid id) : Object(world, id)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
@@ -63,7 +63,6 @@ std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity() const
 {
     return mWorld->getComponentsOnEntity(getId());
 }
-
 
 std::string Entity::getName() const
 {

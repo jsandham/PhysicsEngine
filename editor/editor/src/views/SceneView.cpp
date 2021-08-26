@@ -37,8 +37,6 @@ SceneView::~SceneView()
 void SceneView::init(Clipboard &clipboard)
 {
     initWorld(clipboard.getWorld());
-
-    //mSpriteRenderer.init();
 }
 
 void SceneView::update(Clipboard &clipboard)
@@ -242,8 +240,6 @@ void SceneView::update(Clipboard &clipboard)
         }
     }
 
-    //mSpriteRenderer.drawSprite(cameraSystem->getCamera(), 0, glm::vec2(200, 200), glm::vec2(100, 100));
-
     if (clipboard.getDraggedType() == InteractionType::Mesh)
     {
         if (clipboard.mSceneViewHoveredThisFrame)
@@ -252,7 +248,7 @@ void SceneView::update(Clipboard &clipboard)
             Transform* transform = entity->addComponent<Transform>();
             MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>();
             meshRenderer->setMesh(clipboard.getDraggedId());
-            meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
+            meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\default.material"));
 
             clipboard.mSceneViewTempEntityId = entity->getId();
             clipboard.mSceneViewTempEntity = entity;
@@ -392,8 +388,6 @@ void SceneView::updateWorld(World *world)
         int sceneViewContentWidth = (int)(sceneViewContentMax.x - sceneViewContentMin.x);
         int sceneViewContentHeight = (int)(sceneViewContentMax.y - sceneViewContentMin.y);
 
-        // input->mousePosX = (int)io.MousePos.x;
-        // input->mousePosY = -(int)io.MousePos.y;
         mInput.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
         mInput.mMousePosY =
             sceneViewContentHeight -

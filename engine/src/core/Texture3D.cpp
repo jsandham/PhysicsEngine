@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-Texture3D::Texture3D(World* world) : Texture(world)
+Texture3D::Texture3D(World *world) : Texture(world)
 {
     mDimension = TextureDimension::Tex2D;
 
@@ -22,7 +22,7 @@ Texture3D::Texture3D(World* world) : Texture(world)
     mUpdateRequired = false;
 }
 
-Texture3D::Texture3D(World* world, Guid id) : Texture(world, id)
+Texture3D::Texture3D(World *world, Guid id) : Texture(world, id)
 {
     mDimension = TextureDimension::Tex3D;
 
@@ -39,7 +39,7 @@ Texture3D::Texture3D(World* world, Guid id) : Texture(world, id)
     mUpdateRequired = false;
 }
 
-Texture3D::Texture3D(World* world, int width, int height, int depth, int numChannels) : Texture(world)
+Texture3D::Texture3D(World *world, int width, int height, int depth, int numChannels) : Texture(world)
 {
     mDimension = TextureDimension::Tex3D;
 

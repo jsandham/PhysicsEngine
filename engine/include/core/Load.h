@@ -17,23 +17,26 @@ namespace PhysicsEngine
 Component *getComponent(const WorldAllocators &allocators, const WorldIdState &state, const Guid &id, int type);
 
 // get external asset defined by the user
-Asset* getAsset(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type);
+Asset *getAsset(const WorldAllocators &allocators, const WorldIdState &state, const Guid &id, int type);
 
 // load external asset defined by the user from YAML
-Asset *loadAsset(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
+Asset *loadAsset(World &world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+                 int type);
 
 // load external components defined by the user from YAML
-Component *loadComponent(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
-                         int type);
+Component *loadComponent(World &world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in,
+                         const Guid &id, int type);
 
 // load external systems defined by the user from YAML
-System *loadSystem(World& world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id, int type);
+System *loadSystem(World &world, WorldAllocators &allocators, WorldIdState &state, const YAML::Node &in, const Guid &id,
+                   int type);
 
 // destroy external components defined by the user
-Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId, const Guid& componentId, int type, int index);
+Component *destroyComponent(WorldAllocators &allocators, WorldIdState &state, const Guid &entityId,
+                            const Guid &componentId, int type, int index);
 
 // destroy external assets defined by the user
-Asset* destroyAsset(WorldAllocators& allocators, WorldIdState& state, const Guid& assetId, int type, int index);
+Asset *destroyAsset(WorldAllocators &allocators, WorldIdState &state, const Guid &assetId, int type, int index);
 } // namespace PhysicsEngine
 
 #endif

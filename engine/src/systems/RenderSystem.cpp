@@ -9,7 +9,6 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Intersect.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/World.h"

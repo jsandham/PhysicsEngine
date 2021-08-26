@@ -2,14 +2,12 @@
 
 using namespace PhysicsEngine;
 
-Object::Object(World* world) : mWorld(world), mId(Guid::INVALID), mHide(HideFlag::None)
+Object::Object(World *world) : mWorld(world), mId(Guid::INVALID), mHide(HideFlag::None)
 {
- 
 }
 
-Object::Object(World* world, Guid id) : mWorld(world), mId(id), mHide(HideFlag::None)
+Object::Object(World *world, Guid id) : mWorld(world), mId(id), mHide(HideFlag::None)
 {
-
 }
 
 Object::~Object()

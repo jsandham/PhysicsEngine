@@ -8,7 +8,6 @@
 #define GLM_FORCE_RADIANS
 
 #include "WorldAllocators.h"
-#include "WorldDefaultAssets.h"
 #include "WorldIdState.h"
 
 namespace PhysicsEngine
@@ -21,9 +20,6 @@ class World
 
     // id state for assets, entities, components, and systems
     WorldIdState mIdState;
-
-    // default assets
-    WorldDefaultAssets mDefaultAssets;
 
     // all systems in world listed in order they should be updated
     std::vector<System *> mSystems;
@@ -161,8 +157,8 @@ class World
     void immediateDestroyEntity(const Guid &entityId);
     void latentDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType);
     void immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType);
-    void latentDestroyAsset(const Guid& assetId, int assetType);
-    void immediateDestroyAsset(const Guid& assetId, int assetType);
+    void latentDestroyAsset(const Guid &assetId, int assetType);
+    void immediateDestroyAsset(const Guid &assetId, int assetType);
 
     bool isMarkedForLatentDestroy(const Guid &id);
     void clearIdsMarkedCreatedOrDestroyed();
@@ -176,6 +172,9 @@ class World
 
     std::string getAssetFilepath(const Guid &assetId) const;
     std::string getSceneFilepath(const Guid &sceneId) const;
+
+    Guid getAssetId(const std::string& filepath) const;
+    Guid getSceneId(const std::string& filepath) const;
 
     // Explicit template specializations
 
@@ -334,7 +333,7 @@ class World
         return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
     }
 
-    template <> SpriteRenderer* getComponent<SpriteRenderer>(const Guid& entityId) const
+    template <> SpriteRenderer *getComponent<SpriteRenderer>(const Guid &entityId) const
     {
         return getComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
     }
@@ -389,7 +388,7 @@ class World
         return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
     }
 
-    template <> SpriteRenderer* addComponent<SpriteRenderer>(const Guid& entityId)
+    template <> SpriteRenderer *addComponent<SpriteRenderer>(const Guid &entityId)
     {
         return addComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
     }
@@ -544,7 +543,7 @@ class World
         return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
     }
 
-    template <> Sprite* getAssetByIndex<Sprite>(size_t index) const
+    template <> Sprite *getAssetByIndex<Sprite>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mSpriteAllocator, index);
     }
@@ -584,7 +583,7 @@ class World
         return getAssetById_impl(&mAllocators.mFontAllocator, assetId);
     }
 
-    template <> Sprite* getAssetById<Sprite>(const Guid& assetId) const
+    template <> Sprite *getAssetById<Sprite>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mSpriteAllocator, assetId);
     }
@@ -599,7 +598,7 @@ class World
         return getComponentByIndex_impl(&mAllocators.mMeshRendererAllocator, index);
     }
 
-    template <> SpriteRenderer* getComponentByIndex<SpriteRenderer>(size_t index) const
+    template <> SpriteRenderer *getComponentByIndex<SpriteRenderer>(size_t index) const
     {
         return getComponentByIndex_impl(&mAllocators.mSpriteRendererAllocator, index);
     }
@@ -654,7 +653,7 @@ class World
         return getComponentById_impl(&mAllocators.mMeshRendererAllocator, componentId);
     }
 
-    template <> SpriteRenderer* getComponentById<SpriteRenderer>(const Guid& componentId) const
+    template <> SpriteRenderer *getComponentById<SpriteRenderer>(const Guid &componentId) const
     {
         return getComponentById_impl(&mAllocators.mSpriteRendererAllocator, componentId);
     }
@@ -734,36 +733,10 @@ class World
         return createAsset_impl(&mAllocators.mFontAllocator);
     }
 
-    template <> Sprite* createAsset<Sprite>()
+    template <> Sprite *createAsset<Sprite>()
     {
         return createAsset_impl(&mAllocators.mSpriteAllocator);
     }
-
-    // default asset getters
-    Guid getSphereMesh() const;
-    Guid getCubeMesh() const;
-    Guid getPlaneMesh() const;
-    Guid getColorMaterial() const;
-    Guid getSimpleLitMaterial() const;
-
-    Guid getColorLitShaderId() const;
-    Guid getNormalShaderId() const;
-    Guid getTangentShaderId() const;
-    Guid getBinormalShaderId() const;
-    Guid getGizmoShaderId() const;
-    Guid getLineShaderId() const;
-    Guid getColorShaderId() const;
-    Guid getPositionAndNormalsShaderId() const;
-    Guid getSsaoShaderId() const;
-    Guid getScreenQuadShaderId() const;
-    Guid getNormalMapShaderId() const;
-    Guid getDepthMapShaderId() const;
-    Guid getShadowDepthMapShaderId() const;
-    Guid getShadowDepthCubemapShaderId() const;
-    Guid getGbufferShaderId() const;
-    Guid getStandardDeferredShaderId() const;
-    Guid getGridShaderId() const;
-    Guid getSpriteShaderId() const;
 
   private:
     Asset *loadAssetFromYAML(const YAML::Node &in);
@@ -1090,8 +1063,8 @@ class World
     }
 
     template <>
-    SpriteRenderer* getComponentById_impl<SpriteRenderer>(const PoolAllocator<SpriteRenderer>* allocator,
-        const Guid& componentId) const
+    SpriteRenderer *getComponentById_impl<SpriteRenderer>(const PoolAllocator<SpriteRenderer> *allocator,
+                                                          const Guid &componentId) const
     {
         return getById_impl<SpriteRenderer>(mIdState.mSpriteRendererIdToGlobalIndex, allocator, componentId);
     }
@@ -1188,7 +1161,7 @@ class World
         return getById_impl<Font>(mIdState.mFontIdToGlobalIndex, allocator, assetId);
     }
 
-    template <> Sprite* getAssetById_impl<Sprite>(const PoolAllocator<Sprite>* allocator, const Guid& assetId) const
+    template <> Sprite *getAssetById_impl<Sprite>(const PoolAllocator<Sprite> *allocator, const Guid &assetId) const
     {
         return getById_impl<Sprite>(mIdState.mSpriteIdToGlobalIndex, allocator, assetId);
     }
@@ -1253,7 +1226,7 @@ class World
         mIdState.mIdToType[id] = type;
     }
 
-    template <> void addIdToGlobalIndexMap_impl<SpriteRenderer>(const Guid& id, int index, int type)
+    template <> void addIdToGlobalIndexMap_impl<SpriteRenderer>(const Guid &id, int index, int type)
     {
         mIdState.mSpriteRendererIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;
@@ -1365,7 +1338,7 @@ class World
         mIdState.mIdToType[id] = type;
     }
 
-    template <> void addIdToGlobalIndexMap_impl<Sprite>(const Guid& id, int index, int type)
+    template <> void addIdToGlobalIndexMap_impl<Sprite>(const Guid &id, int index, int type)
     {
         mIdState.mSpriteIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;

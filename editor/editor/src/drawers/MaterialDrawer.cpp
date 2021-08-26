@@ -6,7 +6,6 @@
 #include "components/Light.h"
 #include "components/Transform.h"
 
-#include "core/InternalMeshes.h"
 #include "core/MaterialUtil.h"
 #include "core/Mesh.h"
 #include "core/Shader.h"
@@ -129,7 +128,7 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     // Draw material preview child window
     ImGui::Text("Preview");
 
-    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getSphereMesh());
+    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getAssetId("data\\meshes\\sphere.mesh"));
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
 
     if (mesh == nullptr || shader == nullptr) {

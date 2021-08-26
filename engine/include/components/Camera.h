@@ -105,8 +105,8 @@ class Camera : public Component
     std::unordered_map<int, Guid> mColoringMap;
 
   public:
-    Camera(World* world);
-    Camera(World* world, Guid id);
+    Camera(World *world);
+    Camera(World *world, Guid id);
     ~Camera();
 
     virtual void serialize(YAML::Node &out) const override;

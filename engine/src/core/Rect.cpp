@@ -10,7 +10,7 @@ Rect::Rect(float x, float y, float width, float height) : mX(x), mY(y), mWidth(w
 {
 }
 
-Rect::Rect(const glm::vec2& min, const glm::vec2& max)
+Rect::Rect(const glm::vec2 &min, const glm::vec2 &max)
 {
     mX = min.x;
     mY = min.y;

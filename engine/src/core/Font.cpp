@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "../../include/core/Font.h"
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
@@ -11,15 +10,15 @@
 
 using namespace PhysicsEngine;
 
-Font::Font(World* world) : Asset(world)
+Font::Font(World *world) : Asset(world)
 {
 }
 
-Font::Font(World* world, Guid id) : Asset(world, id)
+Font::Font(World *world, Guid id) : Asset(world, id)
 {
 }
 
-Font::Font(World* world, const std::string &filepath) : Asset(world)
+Font::Font(World *world, const std::string &filepath) : Asset(world)
 {
     mFilepath = filepath;
 }

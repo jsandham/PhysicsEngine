@@ -15,51 +15,51 @@
 
 namespace PhysicsEngine
 {
-	class Sprite : public Asset
-	{
-		private:
-			Guid mTextureId;
-			GLuint mVao;
-			//int mWidth;
-			//int mHeight;
-			bool mCreated;
-			bool mChanged;
+class Sprite : public Asset
+{
+  private:
+    Guid mTextureId;
+    GLuint mVao;
+    // int mWidth;
+    // int mHeight;
+    bool mCreated;
+    bool mChanged;
 
-		public:
-			int mPixelsPerUnit;
+  public:
+    int mPixelsPerUnit;
 
-		public:
-			Sprite(World* world);
-			Sprite(World* world, Guid id);
-			~Sprite();
+  public:
+    Sprite(World *world);
+    Sprite(World *world, Guid id);
+    ~Sprite();
 
-			virtual void serialize(YAML::Node& out) const override;
-			virtual void deserialize(const YAML::Node& in) override;
+    virtual void serialize(YAML::Node &out) const override;
+    virtual void deserialize(const YAML::Node &in) override;
 
-			virtual int getType() const override;
-			virtual std::string getObjectName() const override;
+    virtual int getType() const override;
+    virtual std::string getObjectName() const override;
 
-			bool isCreated() const;
-			bool isChanged() const;
+    bool isCreated() const;
+    bool isChanged() const;
 
-			GLuint getNativeGraphicsVAO() const;
+    GLuint getNativeGraphicsVAO() const;
 
-			Guid getTextureId() const;
-			void setTextureId(Guid textureId);
+    Guid getTextureId() const;
+    void setTextureId(Guid textureId);
 
-			void create();
-			void destroy();
-	};
+    void create();
+    void destroy();
+};
 
-	template <> struct AssetType<Sprite>
-	{
-		static constexpr int type = PhysicsEngine::SPRITE_TYPE;
-	};
+template <> struct AssetType<Sprite>
+{
+    static constexpr int type = PhysicsEngine::SPRITE_TYPE;
+};
 
-	template <> struct IsAssetInternal<Sprite>
-	{
-		static constexpr bool value = true;
-	};
-}
+template <> struct IsAssetInternal<Sprite>
+{
+    static constexpr bool value = true;
+};
+} // namespace PhysicsEngine
 
 #endif

@@ -136,8 +136,8 @@ void CreatePlaneCommand::execute()
         Entity *entity = world->createEntity();
         Transform *transform = entity->addComponent<Transform>();
         MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
-        meshRenderer->setMesh(world->getPlaneMesh());
-        meshRenderer->setMaterial(world->getColorMaterial());
+        meshRenderer->setMesh(world->getAssetId("data\\meshes\\plane.mesh"));
+        meshRenderer->setMaterial(world->getAssetId("data\\materials\\color.material"));
 
         //entityData = entity->serialize();
         //transformData = transform->serialize();
@@ -178,8 +178,8 @@ void CreateCubeCommand::execute()
         Transform *transform = entity->addComponent<Transform>();
         BoxCollider *collider = entity->addComponent<BoxCollider>();
         MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
-        meshRenderer->setMesh(world->getCubeMesh());
-        meshRenderer->setMaterial(world->getColorMaterial());
+        meshRenderer->setMesh(world->getAssetId("data\\meshes\\cube.mesh"));
+        meshRenderer->setMaterial(world->getAssetId("data\\materials\\color.material"));
 
         //entityData = entity->serialize();
         //transformData = transform->serialize();
@@ -222,8 +222,9 @@ void CreateSphereCommand::execute()
         Transform *transform = entity->addComponent<Transform>();
         SphereCollider *collider = entity->addComponent<SphereCollider>();
         MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
-        meshRenderer->setMesh(world->getSphereMesh());
-        meshRenderer->setMaterial(world->getColorMaterial());
+        meshRenderer->setMesh(world->getAssetId("data\\meshes\\sphere.mesh"));
+        /*meshRenderer->setMaterial(world->getAssetId("data\\materials\\color.material"));*/
+        meshRenderer->setMaterial(world->getAssetId("data\\materials\\default.material"));
 
         //entityData = entity->serialize();
         //transformData = transform->serialize();

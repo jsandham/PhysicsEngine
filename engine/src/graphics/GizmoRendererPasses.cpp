@@ -7,9 +7,9 @@ using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &state)
 {
-    state.mLineShader = world->getAssetById<Shader>(world->getLineShaderId());
-    state.mGizmoShader = world->getAssetById<Shader>(world->getGizmoShaderId());
-    state.mGridShader = world->getAssetById<Shader>(world->getGridShaderId());
+    state.mLineShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\line.shader"));
+    state.mGizmoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\gizmo.shader"));
+    state.mGridShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\grid.shader"));
 
     assert(state.mLineShader != NULL);
     assert(state.mGizmoShader != NULL);
@@ -188,7 +188,7 @@ void PhysicsEngine::renderSphereGizmos(World* world, Camera* camera, GizmoRender
 
     Transform* transform = camera->getComponent<Transform>();
 
-    Mesh* mesh = world->getAssetById<Mesh>(world->getSphereMesh());
+    Mesh* mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\sphere.mesh"));
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -235,7 +235,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getAssetById<Mesh>(world->getCubeMesh());
+    Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\cube.mesh"));
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -281,7 +281,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getAssetById<Mesh>(world->getPlaneMesh());
+    Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\plane.mesh"));
 
     glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
     glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,

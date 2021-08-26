@@ -3,11 +3,11 @@
 
 using namespace PhysicsEngine;
 
-Scene::Scene(World* world) : Object(world)
+Scene::Scene(World *world) : Object(world)
 {
 }
 
-Scene::Scene(World* world, Guid id) : Object(world, id)
+Scene::Scene(World *world, Guid id) : Object(world, id)
 {
 }
 

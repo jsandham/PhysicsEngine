@@ -24,8 +24,8 @@ class Material : public Asset
     RenderQueue mRenderQueue;
 
   public:
-    Material(World* world);
-    Material(World* world, Guid id);
+    Material(World *world);
+    Material(World *world, Guid id);
     ~Material();
 
     virtual void serialize(YAML::Node &out) const override;

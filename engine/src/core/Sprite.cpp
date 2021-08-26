@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-Sprite::Sprite(World* world) : Asset(world)
+Sprite::Sprite(World *world) : Asset(world)
 {
     mCreated = false;
     mChanged = false;
@@ -12,7 +12,7 @@ Sprite::Sprite(World* world) : Asset(world)
     mPixelsPerUnit = 100;
 }
 
-Sprite::Sprite(World* world, Guid id) : Asset(world, id)
+Sprite::Sprite(World *world, Guid id) : Asset(world, id)
 {
     mCreated = false;
     mChanged = false;
@@ -22,10 +22,9 @@ Sprite::Sprite(World* world, Guid id) : Asset(world, id)
 
 Sprite::~Sprite()
 {
-
 }
 
-void Sprite::serialize(YAML::Node& out) const
+void Sprite::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
@@ -33,7 +32,7 @@ void Sprite::serialize(YAML::Node& out) const
     out["pixelsPerUnit"] = mPixelsPerUnit;
 }
 
-void Sprite::deserialize(const YAML::Node& in)
+void Sprite::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
@@ -43,12 +42,12 @@ void Sprite::deserialize(const YAML::Node& in)
 
 int Sprite::getType() const
 {
-	return PhysicsEngine::SPRITE_TYPE;
+    return PhysicsEngine::SPRITE_TYPE;
 }
 
 std::string Sprite::getObjectName() const
 {
-	return PhysicsEngine::SPRITE_NAME;
+    return PhysicsEngine::SPRITE_NAME;
 }
 
 bool Sprite::isCreated() const
@@ -63,7 +62,7 @@ bool Sprite::isChanged() const
 
 GLuint Sprite::getNativeGraphicsVAO() const
 {
-	return mVao;
+    return mVao;
 }
 
 Guid Sprite::getTextureId() const

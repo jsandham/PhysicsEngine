@@ -11,7 +11,7 @@
 
 using namespace PhysicsEngine;
 
-Material::Material(World* world) : Asset(world)
+Material::Material(World *world) : Asset(world)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -19,7 +19,7 @@ Material::Material(World* world) : Asset(world)
     mShaderChanged = true;
 }
 
-Material::Material(World* world, Guid id) : Asset(world, id)
+Material::Material(World *world, Guid id) : Asset(world, id)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -50,11 +50,11 @@ void Material::deserialize(const YAML::Node &in)
 
     mShaderId = YAML::getValue<Guid>(in, "shaderId");
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
-   
+
     mUniforms.clear();
 
     int index = 0;
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) 
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
     {
         index++;
 
@@ -62,7 +62,7 @@ void Material::deserialize(const YAML::Node &in)
         {
             continue;
         }
- 
+
         ShaderUniform uniform = YAML::getValue<ShaderUniform>(in, it->first.as<std::string>());
         uniform.mName = it->first.as<std::string>();
 
@@ -130,15 +130,17 @@ void Material::onShaderChanged(World *world)
         return;
     }
 
-    // onShaderChanged is called whenever the shader is (re-)compiled, however 
+    // onShaderChanged is called whenever the shader is (re-)compiled, however
     // the material data may or may not have changed. Attempt to copy material
     // data from old uniforms to new ones
     std::vector<ShaderUniform> temp = shader->getMaterialUniforms();
 
     for (size_t i = 0; i < temp.size(); i++)
     {
-        for (size_t j = 0; j < mUniforms.size(); j++) {
-            if (temp[i].mName == mUniforms[j].mName) {
+        for (size_t j = 0; j < mUniforms.size(); j++)
+        {
+            if (temp[i].mName == mUniforms[j].mName)
+            {
                 memcpy(temp[i].mData, mUniforms[j].mData, 64);
                 break;
             }

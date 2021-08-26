@@ -1,6 +1,5 @@
 #include "../../include/components/SpriteRenderer.h"
 
-#include "../../include/core/InternalShaders.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;

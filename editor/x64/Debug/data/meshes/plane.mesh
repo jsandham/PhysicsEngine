@@ -1,0 +1,5 @@
+Mesh:
+  type: 1005
+  id : a6b5fb7d-1374-4efa-ab52-a96d00ea51aa
+  name : plane
+  source : data\meshes\plane.obj

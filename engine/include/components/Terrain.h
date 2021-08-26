@@ -1,8 +1,8 @@
 #ifndef TERRAIN_H__
 #define TERRAIN_H__
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Component.h"
 
@@ -15,80 +15,80 @@
 
 namespace PhysicsEngine
 {
-	/*enum class TerrainMode
-	{
-		Triangular = 0,
-		Voxel = 1
-	};
+/*enum class TerrainMode
+{
+    Triangular = 0,
+    Voxel = 1
+};
 
-	enum class VoxelFace
-	{
-		Left = 0,
-		Right = 1,
-		Near = 2,
-		Far = 3,
-		Top = 4,
-		Bottom = 5
-	};
+enum class VoxelFace
+{
+    Left = 0,
+    Right = 1,
+    Near = 2,
+    Far = 3,
+    Top = 4,
+    Bottom = 5
+};
 
-	struct Voxel
-	{
-		char faces[6];
+struct Voxel
+{
+    char faces[6];
 
-	};
+};
 
-	struct Chunk
-	{
-		Voxel voxels[128*128*128];
-		glm::ivec2 position;
-	};
+struct Chunk
+{
+    Voxel voxels[128*128*128];
+    glm::ivec2 position;
+};
 
-	class Terrain : public Component
-	{
-		private:
-			TerrainMode mMode;
-			glm::ivec2 mSize;
-			std::vector<float> mHeightMap;
+class Terrain : public Component
+{
+    private:
+        TerrainMode mMode;
+        glm::ivec2 mSize;
+        std::vector<float> mHeightMap;
 
-			std::vector<glm::vec3> mVertices;
-			std::vector<glm::vec3> mNormals;
+        std::vector<glm::vec3> mVertices;
+        std::vector<glm::vec3> mNormals;
 
-			GLuint mVao;
-			GLuint mVbo[3];
-			bool mCreated;
-			bool mChanged;
-	
-		public:
-			Terrain();
-			~Terrain();
+        GLuint mVao;
+        GLuint mVbo[3];
+        bool mCreated;
+        bool mChanged;
 
-			virtual void serialize(std::ostream& out) const override;
-			virtual void deserialize(std::istream& in) override;
-			virtual void serialize(YAML::Node& out) const override;
-			virtual void deserialize(const YAML::Node& in) override;
+    public:
+        Terrain();
+        ~Terrain();
 
-			virtual int getType() const override;
-			virtual std::string getObjectName() const override;
+        virtual void serialize(std::ostream& out) const override;
+        virtual void deserialize(std::istream& in) override;
+        virtual void serialize(YAML::Node& out) const override;
+        virtual void deserialize(const YAML::Node& in) override;
 
-			void regenerateTerrain();
-			void refine(int level);
+        virtual int getType() const override;
+        virtual std::string getObjectName() const override;
 
-			GLuint getNativeGraphicsVAO() const;
+        void regenerateTerrain();
+        void refine(int level);
 
-			void create();
-			void destroy();
-	};
+        GLuint getNativeGraphicsVAO() const;
+
+        void create();
+        void destroy();
+};
 
 
-	template <> struct ComponentType<Terrain>
-	{
-		static constexpr int type = PhysicsEngine::TERRAIN_TYPE;
-	};
+template <> struct ComponentType<Terrain>
+{
+    static constexpr int type = PhysicsEngine::TERRAIN_TYPE;
+};
 
-	template <> struct IsComponentInternal<Terrain>
-	{
-		static constexpr bool value = true;
-	};*/
+template <> struct IsComponentInternal<Terrain>
+{
+    static constexpr bool value = true;
+};*/
 }
 
 #endif

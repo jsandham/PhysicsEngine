@@ -8,15 +8,15 @@
 #include "Component.h"
 
 #include "glm/glm.hpp"
+#include "glm/gtc/constants.hpp"
+#include "glm/gtc/epsilon.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "glm/gtc/epsilon.hpp"
-#include "glm/gtc/constants.hpp"
 
+#include "glm/geometric.hpp"
 #include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
-#include "glm/geometric.hpp"
 
 namespace PhysicsEngine
 {
@@ -29,8 +29,8 @@ class Transform : public Component
     glm::vec3 mScale;
 
   public:
-    Transform(World * world);
-    Transform(World* world, Guid id);
+    Transform(World *world);
+    Transform(World *world, Guid id);
     ~Transform();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -44,10 +44,10 @@ class Transform : public Component
     glm::vec3 getUp() const;
     glm::vec3 getRight() const;
 
-    static bool decompose(const glm::mat4& model, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale);
+    static bool decompose(const glm::mat4 &model, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);
 
-private:
-    static void v3Scale(glm::vec3& v, float desiredLength);
+  private:
+    static void v3Scale(glm::vec3 &v, float desiredLength);
 };
 
 template <> struct ComponentType<Transform>

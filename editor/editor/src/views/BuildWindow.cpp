@@ -4,11 +4,14 @@
 
 #include "imgui.h"
 
+#include <thread>
+
 using namespace PhysicsEditor;
 
 BuildWindow::BuildWindow() : PopupWindow("##BuildWindow", 600.0f, 300.0f, 500.0f, 200.0f)
 {
 	mTargetPlatform = TargetPlatform::Windows;
+	mFilebrowser.setMode(FilebrowserMode::SelectFolder);
 }
 
 BuildWindow::~BuildWindow()
@@ -29,46 +32,65 @@ void BuildWindow::update(Clipboard &clipboard)
 		mTargetPlatform = static_cast<TargetPlatform>(targetPlatformIndex);
 	}
 
+	static bool buildClicked = false;
 	if (ImGui::Button("Build"))
 	{
-		std::filesystem::path buildPath = clipboard.getProjectPath() / "build";
-
-		if (std::filesystem::create_directory(buildPath))
-		{
-			bool success = std::filesystem::create_directory(buildPath / "data");
-
-			if (!success)
-			{
-				PhysicsEngine::Log::error("Could not create build directory\n");
-				return;
-			}
-		}
-
-		std::filesystem::copy_options copy_options = std::filesystem::copy_options::overwrite_existing;
-		std::filesystem::copy(std::filesystem::current_path() / "..\\x64\\Debug\\glew32.dll", buildPath, copy_options);
-		std::filesystem::copy(std::filesystem::current_path() / "..\\x64\\Debug\\freetype.dll", buildPath, copy_options);
-
-		std::filesystem::path sourcePath = std::filesystem::current_path() / "..\\..\\engine\\src\\core\\platform\\main_win32.cpp";
-		std::filesystem::path executablePath = buildPath / "main.exe";
-		std::filesystem::path compilerPath("C:\\Program Files\\LLVM\\bin\\clang-cl");
-		std::filesystem::path buildScriptFilePath(std::filesystem::current_path() / "..\\build.bat");
-
-		std::string command = buildScriptFilePath.string() + " " + sourcePath.string() + " " + executablePath.string();
-
-		int test = system(command.c_str());
-
-
-
-
-
-
-
-		PhysicsEngine::Log::info(("test " + std::to_string(test) + "\n").c_str());
-		PhysicsEngine::Log::info(("buildPath " + buildPath.string() + "\n").c_str());
-		PhysicsEngine::Log::info(("compilerPath " + compilerPath.string() + "\n").c_str());
-		PhysicsEngine::Log::info(("sourcePath " + sourcePath.string() + "\n").c_str());
-		PhysicsEngine::Log::info(("executablePath " + executablePath.string() + "\n").c_str());
-		PhysicsEngine::Log::info(("command " + command + "\n").c_str());
-		PhysicsEngine::Log::info(("cwd " + std::filesystem::current_path().string() + "\n").c_str());
+		buildClicked = true;
 	}
+
+	std::filesystem::path projectPath = clipboard.getProjectPath();
+	std::filesystem::path buildPath = projectPath / "build";
+
+	mFilebrowser.render(buildPath, buildClicked);
+
+	if (mFilebrowser.isSelectFolderClicked())
+	{
+		build(mFilebrowser.getSelectedFolderPath());
+
+		//std::thread t1(&BuildWindow::build, this, mFilebrowser.getSelectedFolderPath());
+		//t1.join();
+	}
+}
+
+void BuildWindow::build(const std::filesystem::path& path)
+{
+	std::filesystem::path buildPath = path / "build";
+	std::filesystem::path buildDataPath = buildPath / "data";
+	std::filesystem::path buildIncludePath = buildPath / "include";
+	std::filesystem::path buildSrcPath = buildPath / "src";
+
+	std::filesystem::create_directory(buildPath);
+	std::filesystem::create_directory(buildDataPath);
+	std::filesystem::create_directory(buildIncludePath);
+	std::filesystem::create_directory(buildSrcPath);
+
+	std::filesystem::copy_options copy_options = std::filesystem::copy_options::none;
+
+	// Copy dll's to build path
+	copy_options = std::filesystem::copy_options::overwrite_existing;
+	std::filesystem::copy(std::filesystem::current_path() / "glew32.dll", buildPath, copy_options);
+	std::filesystem::copy(std::filesystem::current_path() / "freetype.dll", buildPath, copy_options);
+
+	// Copy data folder to build data path
+	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
+	std::filesystem::copy(path / "data", buildDataPath, copy_options);
+
+	// Copy include folder to build data path
+	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
+
+	// Copy src folder to build data path
+	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
+	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\main_win32.cpp", buildSrcPath, copy_options);
+	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\editor\\src\\Load.cpp", buildSrcPath, copy_options);
+
+	std::filesystem::path executablePath = buildPath / "main.exe";
+	std::filesystem::path compilerPath("C:\\Program Files\\LLVM\\bin\\clang-cl");
+	std::filesystem::path buildScriptFilePath(std::filesystem::current_path() / "..\\..\\build.bat");
+
+	std::string command = buildScriptFilePath.string() + " " +
+		buildIncludePath.string() + " " +
+		buildSrcPath.string() + " " +
+		executablePath.string();
+
+	system(command.c_str());
 }

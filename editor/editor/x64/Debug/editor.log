@@ -1,1 +1,9 @@
-﻿  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
+﻿  SceneView.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(75,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(76,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(463,44): warning C4244: '=': conversion from '_Rep' to 'float', possible loss of data
+          with
+          [
+              _Rep=double
+          ]
+  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

@@ -2,6 +2,7 @@
 #define __BUILD_WINDOW_H__
 
 #include "PopupWindow.h"
+#include "../Filebrowser.h"
 
 namespace PhysicsEditor
 {
@@ -15,6 +16,7 @@ class BuildWindow : public PopupWindow
 {
 private:
     TargetPlatform mTargetPlatform;
+    Filebrowser mFilebrowser;
 
   public:
     BuildWindow();
@@ -24,6 +26,8 @@ private:
 
     void init(Clipboard &clipboard);
     void update(Clipboard &clipboard);
+
+    void build(const std::filesystem::path& path);
 };
 } // namespace PhysicsEditor
 

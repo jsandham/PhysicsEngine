@@ -39,6 +39,38 @@ void Editor::init()
     io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
     io.Fonts->Build();
 
+    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\capsule.mesh");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\cube.mesh");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\spoon.mesh");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\teacup.mesh");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\teapot.mesh");
+
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\binormal.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\color.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\colorLit.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\depthMap.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gbuffer.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gizmo.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\grid.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\line.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gbuffer.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\normal.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\normalMap.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\positionAndNormals.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\screenQuad.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\shadowDepthMap.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\shadowDepthCubemap.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\sprite.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\ssao.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\standard.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\standardDeferred.shader");
+    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\tangent.shader");
+
+    mClipboard.getWorld()->loadAssetFromYAML("data\\textures\\default_texture.texture");
+
+    mClipboard.getWorld()->loadAssetFromYAML("data\\materials\\default.material");
+
+
     mMenuBar.init(mClipboard);
     mInspector.init(mClipboard);
     mHierarchy.init(mClipboard);

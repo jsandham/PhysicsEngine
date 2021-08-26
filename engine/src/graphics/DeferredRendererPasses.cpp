@@ -3,7 +3,6 @@
 
 #include "../../include/components/Light.h"
 
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Shader.h"
 
 using namespace PhysicsEngine;

@@ -19,8 +19,8 @@ class BoxCollider : public Collider
     AABB mAABB;
 
   public:
-    BoxCollider(World* world);
-    BoxCollider(World* world, Guid id);
+    BoxCollider(World *world);
+    BoxCollider(World *world, Guid id);
     ~BoxCollider();
 
     virtual void serialize(YAML::Node &out) const override;

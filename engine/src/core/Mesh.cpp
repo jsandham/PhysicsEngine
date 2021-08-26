@@ -8,14 +8,14 @@
 
 using namespace PhysicsEngine;
 
-Mesh::Mesh(World* world) : Asset(world)
+Mesh::Mesh(World *world) : Asset(world)
 {
     mSource = "";
     mCreated = false;
     mChanged = false;
 }
 
-Mesh::Mesh(World* world, Guid id) : Asset(world, id)
+Mesh::Mesh(World *world, Guid id) : Asset(world, id)
 {
     mSource = "";
     mCreated = false;
@@ -58,65 +58,43 @@ void Mesh::load(const std::string &filepath)
         return;
     }
 
-    /*obj_mesh mesh;
-
-    if (obj_load(filepath, mesh))
-    {
-        mVertices = mesh.mVertices;
-        mNormals = mesh.mNormals;
-        mTexCoords = mesh.mTexCoords;
-        mSubMeshVertexStartIndices = mesh.mSubMeshVertexStartIndices;
-
-        if (mVertices.size() != mNormals.size())
-        {
-            mNormals.resize(mVertices.size());
-        }
-
-        if (2 * mVertices.size() != 3 * mTexCoords.size())
-        {
-            mTexCoords.resize(2 * mVertices.size() / 3);
-        }
-
-        computeBoundingSphere();
-
-        mCreated = false;
-    }
-    else
-    {
-        Log::error(("Could not load obj mesh " + filepath + "\n").c_str());
-    }*/
-
     tinyobj::ObjReaderConfig reader_config;
     reader_config.mtl_search_path = "./"; // Path to material files
 
     tinyobj::ObjReader reader;
 
-    if (!reader.ParseFromFile(filepath, reader_config)) {
-        if (!reader.Error().empty()) {
+    if (!reader.ParseFromFile(filepath, reader_config))
+    {
+        if (!reader.Error().empty())
+        {
             Log::error(reader.Error().c_str());
             return;
         }
     }
 
-    if (!reader.Warning().empty()) {
+    if (!reader.Warning().empty())
+    {
         Log::warn(reader.Warning().c_str());
     }
 
-    auto& attrib = reader.GetAttrib();
-    auto& shapes = reader.GetShapes();
-    auto& materials = reader.GetMaterials();
+    auto &attrib = reader.GetAttrib();
+    auto &shapes = reader.GetShapes();
+    auto &materials = reader.GetMaterials();
 
     mSubMeshVertexStartIndices.push_back(0);
 
     // Loop over shapes
-    for (size_t s = 0; s < shapes.size(); s++) {
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
         // Loop over faces(polygon)
         size_t index_offset = 0;
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        {
             size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
 
             // Loop over vertices in the face.
-            for (size_t v = 0; v < fv; v++) {
+            for (size_t v = 0; v < fv; v++)
+            {
                 // access to vertex
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
@@ -129,7 +107,8 @@ void Mesh::load(const std::string &filepath)
                 mVertices.push_back(vz);
 
                 // Check if `normal_index` is zero or positive. negative = no normal data
-                if (idx.normal_index >= 0) {
+                if (idx.normal_index >= 0)
+                {
                     tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
                     tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
                     tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
@@ -140,7 +119,8 @@ void Mesh::load(const std::string &filepath)
                 }
 
                 // Check if `texcoord_index` is zero or positive. negative = no texcoord data
-                if (idx.texcoord_index >= 0) {
+                if (idx.texcoord_index >= 0)
+                {
                     tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
                     tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
 
@@ -148,10 +128,10 @@ void Mesh::load(const std::string &filepath)
                     mTexCoords.push_back(ty);
                 }
                 // Optional: vertex colors
-                tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
-                tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
-                tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
-            
+                tinyobj::real_t red = attrib.colors[3 * size_t(idx.vertex_index) + 0];
+                tinyobj::real_t green = attrib.colors[3 * size_t(idx.vertex_index) + 1];
+                tinyobj::real_t blue = attrib.colors[3 * size_t(idx.vertex_index) + 2];
+
                 mColors.push_back(red);
                 mColors.push_back(green);
                 mColors.push_back(blue);
@@ -159,24 +139,27 @@ void Mesh::load(const std::string &filepath)
             index_offset += fv;
 
             // per-face material
-            //shapes[s].mesh.material_ids[f];
+            // shapes[s].mesh.material_ids[f];
         }
 
         mSubMeshVertexStartIndices.push_back((int)mVertices.size());
     }
 
-    if (mNormals.size() != mVertices.size()) {
+    if (mNormals.size() != mVertices.size())
+    {
         // Ensure there are no normals loaded
         mNormals.clear();
-        float nx = 0.f, ny = 0.f, nz = 0.0f; // normal for current triangle
+        float nx = 0.f, ny = 0.f, nz = 0.0f;   // normal for current triangle
         float vx1 = 0.f, vx2 = 0.f, vx3 = 0.f; // vertex 1
         float vy1 = 0.f, vy2 = 0.f, vy3 = 0.f; // vertex 2
         float vz1 = 0.f, vz2 = 0.f, vz3 = 0.f; // vertex 3
-        for (size_t v = 0; v < mVertices.size() / 3; v++) {
+        for (size_t v = 0; v < mVertices.size() / 3; v++)
+        {
             float x = mVertices[3 * v];
             float y = mVertices[3 * v + 1];
             float z = mVertices[3 * v + 2];
-            switch (v % 3) {
+            switch (v % 3)
+            {
             case 0:
                 // Defining first point in triangle
                 vx1 = x;
@@ -215,7 +198,8 @@ void Mesh::load(const std::string &filepath)
                 ny /= s;
                 nz /= s;
                 // Add the normal 3 times (once for each vertex)
-                for (int j = 0; j < 3; j++) {
+                for (int j = 0; j < 3; j++)
+                {
                     mNormals.push_back(nx);
                     mNormals.push_back(ny);
                     mNormals.push_back(nz);
@@ -233,7 +217,7 @@ void Mesh::load(const std::string &filepath)
 }
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
-    std::vector<float> colors, std::vector<int> subMeshStartIndices)
+                std::vector<float> colors, std::vector<int> subMeshStartIndices)
 {
     mColors = colors;
     load(vertices, normals, texCoords, subMeshStartIndices);
@@ -287,7 +271,7 @@ const std::vector<float> &Mesh::getTexCoords() const
     return mTexCoords;
 }
 
-const std::vector<float>& Mesh::getColors() const
+const std::vector<float> &Mesh::getColors() const
 {
     return mColors;
 }
@@ -354,7 +338,7 @@ void Mesh::setTexCoords(const std::vector<float> &texCoords)
     mChanged = true;
 }
 
-void Mesh::setColors(const std::vector<float>& colors)
+void Mesh::setColors(const std::vector<float> &colors)
 {
     mColors = colors;
 

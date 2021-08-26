@@ -44,6 +44,7 @@ Source: "C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\freetype.dll"; 
 Source: "C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\glew32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\imgui.ini"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\fontawesome-webfont.ttf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

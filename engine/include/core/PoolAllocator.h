@@ -14,7 +14,7 @@
 
 namespace PhysicsEngine
 {
-    class World;
+class World;
 
 template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocator
 {
@@ -66,29 +66,29 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return *this;
     }
 
-    //T *construct()
+    // T *construct()
     //{
     //    return new (allocate()) T();
     //}
 
-    T* construct(World* world, Guid id)
+    T *construct(World *world, Guid id)
     {
         return new (allocate()) T(world, id);
     }
 
-    T* construct(World* world, const YAML::Node& in)
+    T *construct(World *world, const YAML::Node &in)
     {
-        T* t = new (allocate()) T(world);
+        T *t = new (allocate()) T(world);
         t->deserialize(in);
         return t;
     }
 
-    //T *construct(Guid id)
+    // T *construct(Guid id)
     //{
     //    return new (allocate()) T(id);
     //}
 
-    //T *construct(const YAML::Node &in)
+    // T *construct(const YAML::Node &in)
     //{
     //    T *t = new (allocate()) T();
     //    t->deserialize(in);

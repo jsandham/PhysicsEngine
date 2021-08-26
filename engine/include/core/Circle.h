@@ -2,9 +2,9 @@
 #define CIRCLE_H__
 
 #define GLM_FORCE_RADIANS
+#include "GLM.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
-#include "GLM.h"
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine

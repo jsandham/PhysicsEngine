@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../../include/components/Component.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"

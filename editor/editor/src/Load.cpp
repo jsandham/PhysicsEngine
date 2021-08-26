@@ -5,8 +5,6 @@
 #include <core/Load.h>
 #include <core/PoolAllocator.h>
 
-#include "../include/EditorCameraSystem.h"
-
 using namespace PhysicsEngine;
 
 Component* PhysicsEngine::getComponent(const WorldAllocators& allocators, const WorldIdState& state, const Guid& id, int type)

@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide : 0
+  id : 9b940582-2f36-4317-83b9-e5c4c844cbbf
+  name : Spoon
+  source : data\meshes\spoon.obj

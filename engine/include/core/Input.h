@@ -112,15 +112,15 @@ struct Input
     int mRightStickY;
 };
 
-bool getKey(const Input& input, KeyCode key);
-bool getKeyDown(const Input& input, KeyCode key);
-bool getKeyUp(const Input& input, KeyCode key);
-bool getMouseButton(const Input& input, MouseButton button);
-bool getMouseButtonDown(const Input& input, MouseButton button);
-bool getMouseButtonUp(const Input& input, MouseButton button);
-bool getXboxButton(const Input& input, XboxButton button);
-bool getXboxButtonDown(const Input& input, XboxButton button);
-bool getXboxButtonUp(const Input& input, XboxButton button);
+bool getKey(const Input &input, KeyCode key);
+bool getKeyDown(const Input &input, KeyCode key);
+bool getKeyUp(const Input &input, KeyCode key);
+bool getMouseButton(const Input &input, MouseButton button);
+bool getMouseButtonDown(const Input &input, MouseButton button);
+bool getMouseButtonUp(const Input &input, MouseButton button);
+bool getXboxButton(const Input &input, XboxButton button);
+bool getXboxButtonDown(const Input &input, XboxButton button);
+bool getXboxButtonUp(const Input &input, XboxButton button);
 } // namespace PhysicsEngine
 
 #endif

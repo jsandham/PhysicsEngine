@@ -2,8 +2,8 @@
 #define RAY_H__
 
 #define GLM_FORCE_RADIANS
-#include "glm/glm.hpp"
 #include "GLM.h"
+#include "glm/glm.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine

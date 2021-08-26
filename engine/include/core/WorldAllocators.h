@@ -13,9 +13,9 @@
 #include "../components/LineRenderer.h"
 #include "../components/MeshCollider.h"
 #include "../components/MeshRenderer.h"
-#include "../components/SpriteRenderer.h"
 #include "../components/Rigidbody.h"
 #include "../components/SphereCollider.h"
+#include "../components/SpriteRenderer.h"
 #include "../components/Transform.h"
 
 #include "../core/Entity.h"
@@ -23,9 +23,9 @@
 
 #include "../core/Cubemap.h"
 #include "../core/Font.h"
-#include "../core/Sprite.h"
 #include "../core/Material.h"
 #include "../core/Mesh.h"
+#include "../core/Sprite.h"
 #include "../core/Texture2D.h"
 #include "../core/Texture3D.h"
 

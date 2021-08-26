@@ -3,7 +3,6 @@
 #include <iostream>
 #include <random>
 
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
 

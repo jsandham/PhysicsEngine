@@ -1,7 +1,6 @@
 #include <random>
 #include <unordered_set>
 
-#include "../../include/core/InternalShaders.h"
 #include "../../include/core/Shader.h"
 
 #include "../../include/graphics/ForwardRendererPasses.h"
@@ -18,13 +17,13 @@ using namespace PhysicsEngine;
 void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
 {
     // compile internal shader programs
-    Shader *mGeometryShader = world->getAssetById<Shader>(world->getPositionAndNormalsShaderId());
-    Shader *mColorShader = world->getAssetById<Shader>(world->getColorShaderId());
-    Shader *mSsaoShader = world->getAssetById<Shader>(world->getSsaoShaderId());
-    Shader *mDepthShader = world->getAssetById<Shader>(world->getShadowDepthMapShaderId());
-    Shader *mDepthCubemapShader = world->getAssetById<Shader>(world->getShadowDepthCubemapShaderId());
-    Shader *mQuadShader = world->getAssetById<Shader>(world->getScreenQuadShaderId());
-    Shader* mSpriteShader = world->getAssetById<Shader>(world->getSpriteShaderId());
+    Shader* mGeometryShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\positionAndNormals.shader"));
+    Shader* mColorShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\color.shader"));
+    Shader* mSsaoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\ssao.shader"));
+    Shader* mDepthShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\shadowDepthMap.shader"));
+    Shader* mDepthCubemapShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\shadowDepthCubemap.shader"));
+    Shader* mQuadShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\screenQuad.shader"));
+    Shader* mSpriteShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\sprite.shader"));
 
     assert(mGeometryShader != NULL);
     assert(mColorShader != NULL);

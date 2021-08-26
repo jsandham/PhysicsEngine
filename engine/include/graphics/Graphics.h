@@ -15,6 +15,12 @@
 
 namespace PhysicsEngine
 {
+enum API
+{
+    OpenGL,
+    DirectX
+};
+
 struct Uniform
 {
     GLsizei nameLength;

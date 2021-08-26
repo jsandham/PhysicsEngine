@@ -13,8 +13,8 @@ class Scene : public Object
     std::string mName;
 
   public:
-    Scene(World* world);
-    Scene(World* world, Guid id);
+    Scene(World *world);
+    Scene(World *world, Guid id);
     ~Scene();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -19,8 +19,8 @@ class Entity : public Object
     bool mDoNotDestroy;
 
   public:
-    Entity(World* world);
-    Entity(World* world, Guid id);
+    Entity(World *world);
+    Entity(World *world, Guid id);
     ~Entity();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -32,12 +32,12 @@ class Entity : public Object
     void latentDestroy();
     void immediateDestroy();
 
-    template <typename T> T* addComponent()
+    template <typename T> T *addComponent()
     {
         return mWorld->addComponent<T>(getId());
     }
 
-    template <typename T> T* getComponent() const
+    template <typename T> T *getComponent() const
     {
         return mWorld->getComponent<T>(getId());
     }

@@ -14,7 +14,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-    mDefaultAssets.loadInternalAssets(this);
+ 
 }
 
 World::~World()
@@ -23,7 +23,17 @@ World::~World()
 
 Asset *World::loadAssetFromYAML(const std::string &filePath)
 {
-    YAML::Node in = YAML::LoadFile(filePath);
+    //YAML::Node in = YAML::LoadFile(filePath);
+    YAML::Node in;
+    try
+    {
+        in = YAML::LoadFile(filePath);
+    }
+    catch (YAML::BadFile e)
+    {
+        Log::error("Bad file exception hit");
+        return nullptr;
+    }
 
     if (!in.IsMap() || in.begin() == in.end())
     {
@@ -36,6 +46,7 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
         if (asset != nullptr)
         {
             mIdState.mAssetIdToFilepath[asset->getId()] = filePath;
+            mIdState.mAssetFilepathToId[filePath] = asset->getId();
         }
 
         return asset;
@@ -46,18 +57,28 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
 
 Scene *World::loadSceneFromYAML(const std::string &filePath)
 {
-    YAML::Node in = YAML::LoadFile(filePath);
+    YAML::Node in;
+    try
+    {
+        in = YAML::LoadFile(filePath);
+    }
+    catch (YAML::BadFile e)
+    {
+        Log::error("Bad file exception hit");
+        return nullptr;
+    }
 
     Scene *scene = loadSceneFromYAML(in);
     if (scene != nullptr)
     {
         mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
+        mIdState.mSceneFilepathToId[filePath] = scene->getId();
     }
 
     return scene;
 }
 
-bool World::writeAssetToYAML(const std::string& filePath, const Guid& assetId) const
+bool World::writeAssetToYAML(const std::string &filePath, const Guid &assetId) const
 {
     std::ofstream out;
     out.open(filePath);
@@ -71,7 +92,7 @@ bool World::writeAssetToYAML(const std::string& filePath, const Guid& assetId) c
 
     int type = getTypeOf(assetId);
 
-    Asset* asset = nullptr;
+    Asset *asset = nullptr;
 
     if (Asset::isInternal(type))
     {
@@ -394,6 +415,8 @@ void World::immediateDestroyEntity(const Guid &entityId)
         immediateDestroyComponent(entityId, componentsOnEntity[i].first, componentsOnEntity[i].second);
     }
 
+    assert(mIdState.mEntityIdToComponentIds[entityId].size() == 0);
+
     mIdState.mEntityIdToComponentIds.erase(entityId);
 
     destroyInternalEntity(mAllocators, mIdState, entityId, getIndexOf(entityId));
@@ -407,7 +430,7 @@ void World::latentDestroyComponent(const Guid &entityId, const Guid &componentId
 void World::immediateDestroyComponent(const Guid &entityId, const Guid &componentId, int componentType)
 {
     // remove from entity component list
-    std::vector<std::pair<Guid, int>>& componentsOnEntity = mIdState.mEntityIdToComponentIds[entityId];
+    std::vector<std::pair<Guid, int>> &componentsOnEntity = mIdState.mEntityIdToComponentIds[entityId];
 
     std::vector<std::pair<Guid, int>>::iterator it = componentsOnEntity.begin();
     while (it < componentsOnEntity.end())
@@ -424,7 +447,7 @@ void World::immediateDestroyComponent(const Guid &entityId, const Guid &componen
     {
         componentsOnEntity.erase(it);
     }
-    
+
     if (Component::isInternal(componentType))
     {
         destroyInternalComponent(mAllocators, mIdState, entityId, componentId, componentType, getIndexOf(componentId));
@@ -435,12 +458,12 @@ void World::immediateDestroyComponent(const Guid &entityId, const Guid &componen
     }
 }
 
-void World::latentDestroyAsset(const Guid& assetId, int assetType)
+void World::latentDestroyAsset(const Guid &assetId, int assetType)
 {
     mIdState.mAssetIdsMarkedLatentDestroy.push_back(std::make_pair(assetId, assetType));
 }
 
-void World::immediateDestroyAsset(const Guid& assetId, int assetType)
+void World::immediateDestroyAsset(const Guid &assetId, int assetType)
 {
     if (Asset::isInternal(assetType))
     {
@@ -537,119 +560,26 @@ std::string World::getSceneFilepath(const Guid &sceneId) const
     return std::string();
 }
 
-Guid World::getSphereMesh() const
+Guid World::getAssetId(const std::string& filepath) const
 {
-    return mDefaultAssets.mSphereMeshId;
+    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mAssetFilepathToId.find(filepath);
+    if (it != mIdState.mAssetFilepathToId.end())
+    {
+        return it->second;
+    }
+
+    return Guid::INVALID;
 }
 
-Guid World::getCubeMesh() const
+Guid World::getSceneId(const std::string& filepath) const
 {
-    return mDefaultAssets.mCubeMeshId;
-}
+    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mSceneFilepathToId.find(filepath);
+    if (it != mIdState.mSceneFilepathToId.end())
+    {
+        return it->second;
+    }
 
-Guid World::getPlaneMesh() const
-{
-    return mDefaultAssets.mPlaneMeshId;
-}
-
-Guid World::getColorMaterial() const
-{
-    return mDefaultAssets.mColorMaterialId;
-}
-
-Guid World::getSimpleLitMaterial() const
-{
-    return mDefaultAssets.mSimpleLitMaterialId;
-}
-
-Guid World::getColorLitShaderId() const
-{
-    return mDefaultAssets.mColorLitShaderId;
-}
-
-Guid World::getNormalShaderId() const
-{
-    return mDefaultAssets.mNormalShaderId;
-}
-
-Guid World::getTangentShaderId() const
-{
-    return mDefaultAssets.mTangentShaderId;
-}
-
-Guid World::getBinormalShaderId() const
-{
-    return mDefaultAssets.mBinormalShaderId;
-}
-
-Guid World::getGizmoShaderId() const
-{
-    return mDefaultAssets.mGizmoShaderId;
-}
-
-Guid World::getLineShaderId() const
-{
-    return mDefaultAssets.mLineShaderId;
-}
-
-Guid World::getColorShaderId() const
-{
-    return mDefaultAssets.mColorShaderId;
-}
-
-Guid World::getPositionAndNormalsShaderId() const
-{
-    return mDefaultAssets.mPositionAndNormalsShaderId;
-}
-
-Guid World::getSsaoShaderId() const
-{
-    return mDefaultAssets.mSsaoShaderId;
-}
-
-Guid World::getScreenQuadShaderId() const
-{
-    return mDefaultAssets.mScreenQuadShaderId;
-}
-
-Guid World::getNormalMapShaderId() const
-{
-    return mDefaultAssets.mNormalMapShaderId;
-}
-
-Guid World::getDepthMapShaderId() const
-{
-    return mDefaultAssets.mDepthMapShaderId;
-}
-
-Guid World::getShadowDepthMapShaderId() const
-{
-    return mDefaultAssets.mShadowDepthMapShaderId;
-}
-
-Guid World::getShadowDepthCubemapShaderId() const
-{
-    return mDefaultAssets.mShadowDepthCubemapShaderId;
-}
-
-Guid World::getGbufferShaderId() const
-{
-    return mDefaultAssets.mGbufferShaderId;
-}
-
-Guid World::getStandardDeferredShaderId() const
-{
-    return mDefaultAssets.mStandardDeferedShaderId;
-}
-
-Guid World::getGridShaderId() const
-{
-    return mDefaultAssets.mGridShaderId;
-}
-
-Guid World::getSpriteShaderId() const
-{
-    return mDefaultAssets.mSpriteShaderId;
+    return Guid::INVALID;
 }
 
 // bool World::raycast(glm::vec3 origin, glm::vec3 direction, float maxDistance)

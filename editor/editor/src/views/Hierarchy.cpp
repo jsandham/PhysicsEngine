@@ -158,7 +158,8 @@ void Hierarchy::update(Clipboard &clipboard)
                 PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
                 PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                 meshRenderer->setMesh(clipboard.getDraggedId());
-                meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());
+                /*meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());*/
+                meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\default.material"));
 
                 clipboard.clearDraggedItem();
             }
