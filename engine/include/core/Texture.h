@@ -1,9 +1,6 @@
 #ifndef TEXTURE_H__
 #define TEXTURE_H__
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #include "Asset.h"
 #include "Guid.h"
 
@@ -49,7 +46,7 @@ class Texture : public Asset
     TextureFormat mFormat;
     TextureWrapMode mWrapMode;
     TextureFilterMode mFilterMode;
-    GLuint mTex;
+    unsigned int mTex;
     bool mCreated;
     bool mUpdateRequired;
 
@@ -75,7 +72,7 @@ class Texture : public Asset
     TextureFormat getFormat() const;
     TextureWrapMode getWrapMode() const;
     TextureFilterMode getFilterMode() const;
-    GLuint getNativeGraphics() const;
+    unsigned int getNativeGraphics() const;
 
     void setAnisoLevel(int anisoLevel);
     void setWrapMode(TextureWrapMode wrapMode);

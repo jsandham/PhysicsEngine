@@ -1,9 +1,6 @@
 #ifndef LIGHT_H__
 #define LIGHT_H__
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
@@ -38,12 +35,12 @@ enum class ShadowMapResolution
 
 struct LightTargets
 {
-    GLuint mShadowCascadeFBO[5];
-    GLuint mShadowCascadeDepthTex[5];
-    GLuint mShadowSpotlightFBO;
-    GLuint mShadowSpotlightDepthTex;
-    GLuint mShadowCubemapFBO;
-    GLuint mShadowCubemapDepthTex;
+    unsigned int mShadowCascadeFBO[5];
+    unsigned int mShadowCascadeDepthTex[5];
+    unsigned int mShadowSpotlightFBO;
+    unsigned int mShadowSpotlightDepthTex;
+    unsigned int mShadowCubemapFBO;
+    unsigned int mShadowCubemapDepthTex;
 };
 
 class Light : public Component
@@ -89,13 +86,13 @@ class Light : public Component
 
     glm::mat4 getProjMatrix() const;
 
-    GLuint getNativeGraphicsShadowCascadeFBO(int index) const;
-    GLuint getNativeGraphicsShadowSpotlightFBO() const;
-    GLuint getNativeGraphicsShadowCubemapFBO() const;
+    unsigned int getNativeGraphicsShadowCascadeFBO(int index) const;
+    unsigned int getNativeGraphicsShadowSpotlightFBO() const;
+    unsigned int getNativeGraphicsShadowCubemapFBO() const;
 
-    GLuint getNativeGraphicsShadowCascadeDepthTex(int index) const;
-    GLuint getNativeGrpahicsShadowSpotlightDepthTex() const;
-    GLuint getNativeGraphicsShadowCubemapDepthTex() const;
+    unsigned int getNativeGraphicsShadowCascadeDepthTex(int index) const;
+    unsigned int getNativeGrpahicsShadowSpotlightDepthTex() const;
+    unsigned int getNativeGraphicsShadowCubemapDepthTex() const;
 };
 
 template <> struct ComponentType<Light>

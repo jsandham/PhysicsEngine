@@ -10,14 +10,14 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh(World *world) : Asset(world)
 {
-    mSource = "";
+    mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
 }
 
 Mesh::Mesh(World *world, Guid id) : Asset(world, id)
 {
-    mSource = "";
+    mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
 }
@@ -30,15 +30,15 @@ void Mesh::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["source"] = mSource;
+    out["source"] = mSourceFilepath;
 }
 
 void Mesh::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mSource = YAML::getValue<std::string>(in, "source");
-    load(mSource);
+    mSourceFilepath = YAML::getValue<std::string>(in, "source");
+    load(mSourceFilepath);
 }
 
 int Mesh::getType() const
@@ -213,7 +213,7 @@ void Mesh::load(const std::string &filepath)
 
     mCreated = false;
 
-    mSource = filepath;
+    mSourceFilepath = filepath;
 }
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
@@ -311,7 +311,7 @@ Sphere Mesh::getBounds() const
     return mBounds;
 }
 
-GLuint Mesh::getNativeGraphicsVAO() const
+unsigned int Mesh::getNativeGraphicsVAO() const
 {
     return mVao;
 }

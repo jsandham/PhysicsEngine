@@ -6,9 +6,6 @@
 #include "core/Mesh.h"
 
 #include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_win32.h"
-#include "imgui_internal.h"
 
 using namespace PhysicsEditor;
 
@@ -119,7 +116,7 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
     ImGui::Text("Preview");
 
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(shaders[mActiveDrawModeIndex]);
-    int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
+    int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
 
     float meshRadius = mesh->getBounds().mRadius;
 

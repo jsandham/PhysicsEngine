@@ -1,3 +1,4 @@
+#version 430 core
 uniform vec3 lightDirection;
 uniform vec3 color;
 uniform int wireframe;

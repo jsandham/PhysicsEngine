@@ -194,7 +194,7 @@ void Camera::beginQuery()
 
 void Camera::endQuery()
 {
-    GLuint64 elapsedTime; // in nanoseconds
+    unsigned long long elapsedTime; // in nanoseconds
     Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
 
     mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
@@ -219,9 +219,9 @@ void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forwa
     mInvViewMatrix = glm::inverse(mViewMatrix);
 }
 
-void Camera::assignColoring(int color, const Guid &transformId)
+void Camera::assignColoring(Color32 color, const Guid& transformId)
 {
-    mColoringMap.insert(std::pair<int, Guid>(color, transformId));
+    mColoringMap.insert(std::pair<Color32, Guid>(color, transformId));
 }
 
 void Camera::clearColoring()
@@ -260,9 +260,7 @@ Guid Camera::getTransformIdAtScreenPos(int x, int y) const
     Color32 color;
     Graphics::readColorPickingPixel(&mTargets, x, y, &color);
 
-    int temp = color.r + color.g * 256 + color.b * 256 * 256;
-
-    std::unordered_map<int, Guid>::const_iterator it = mColoringMap.find(temp);
+    std::unordered_map<Color32, Guid>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())
     {
         return it->second;
@@ -348,62 +346,62 @@ Ray Camera::screenSpaceToRay(int x, int y) const
     return normalizedDeviceSpaceToRay(ndcX, ndcY);
 }
 
-GLuint Camera::getNativeGraphicsMainFBO() const
+unsigned int Camera::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;
 }
 
-GLuint Camera::getNativeGraphicsColorPickingFBO() const
+unsigned int Camera::getNativeGraphicsColorPickingFBO() const
 {
     return mTargets.mColorPickingFBO;
 }
 
-GLuint Camera::getNativeGraphicsGeometryFBO() const
+unsigned int Camera::getNativeGraphicsGeometryFBO() const
 {
     return mTargets.mGeometryFBO;
 }
 
-GLuint Camera::getNativeGraphicsSSAOFBO() const
+unsigned int Camera::getNativeGraphicsSSAOFBO() const
 {
     return mTargets.mSsaoFBO;
 }
 
-GLuint Camera::getNativeGraphicsColorTex() const
+unsigned int Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mColorTex;
 }
 
-GLuint Camera::getNativeGraphicsDepthTex() const
+unsigned int Camera::getNativeGraphicsDepthTex() const
 {
     return mTargets.mDepthTex;
 }
 
-GLuint Camera::getNativeGraphicsColorPickingTex() const
+unsigned int Camera::getNativeGraphicsColorPickingTex() const
 {
     return mTargets.mColorPickingTex;
 }
 
-GLuint Camera::getNativeGraphicsPositionTex() const
+unsigned int Camera::getNativeGraphicsPositionTex() const
 {
     return mTargets.mPositionTex;
 }
 
-GLuint Camera::getNativeGraphicsNormalTex() const
+unsigned int Camera::getNativeGraphicsNormalTex() const
 {
     return mTargets.mNormalTex;
 }
 
-GLuint Camera::getNativeGraphicsAlbedoSpecTex() const
+unsigned int Camera::getNativeGraphicsAlbedoSpecTex() const
 {
     return mTargets.mAlbedoSpecTex;
 }
 
-GLuint Camera::getNativeGraphicsSSAOColorTex() const
+unsigned int Camera::getNativeGraphicsSSAOColorTex() const
 {
     return mTargets.mSsaoColorTex;
 }
 
-GLuint Camera::getNativeGraphicsSSAONoiseTex() const
+unsigned int Camera::getNativeGraphicsSSAONoiseTex() const
 {
     return mTargets.mSsaoNoiseTex;
 }

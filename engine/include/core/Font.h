@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+//#include <GL/glew.h>
+//#include <gl/gl.h>
+
 #include "Asset.h"
 #include "Shader.h"
 
@@ -15,7 +18,7 @@ namespace PhysicsEngine
 {
 struct Character
 {
-    GLuint mGlyphId;     // ID handle of the glyph texture
+    unsigned int mGlyphId;     // ID handle of the glyph texture
     glm::ivec2 mSize;    // Size of glyph
     glm::ivec2 mBearing; // Offset from baseline to left/top of glyph
     unsigned int mAdvance;
@@ -29,8 +32,8 @@ class Font : public Asset
 
   public:
     // Shader mShader;
-    GLuint mVao;
-    GLuint mVbo;
+    unsigned int mVao;
+    unsigned int mVbo;
 
   public:
     Font(World *world);

@@ -83,7 +83,7 @@ TextureFilterMode Texture::getFilterMode() const
     return mFilterMode;
 }
 
-GLuint Texture::getNativeGraphics() const
+unsigned int Texture::getNativeGraphics() const
 {
     return mTex;
 }

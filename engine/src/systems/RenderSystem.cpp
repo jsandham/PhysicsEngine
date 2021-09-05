@@ -127,11 +127,12 @@ void RenderSystem::registerRenderAssets(World *world)
 
         if (!shader->isCompiled())
         {
+            shader->preprocess();
             shader->compile();
 
             if (!shader->isCompiled())
             {
-                std::string errorMessage = "Shader failed to compile " + shader->getId().toString() + "\n";
+                std::string errorMessage = "Shader failed to compile " + shader->getName() + " " + shader->getId().toString() + "\n";
                 Log::error(&errorMessage[0]);
             }
 

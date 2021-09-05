@@ -1,9 +1,6 @@
 #ifndef GRAPHICSQUERY_H__
 #define GRAPHICSQUERY_H__
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 namespace PhysicsEngine
 {
 struct GraphicsQuery
@@ -17,7 +14,7 @@ struct GraphicsQuery
 
     unsigned int mQueryBack;
     unsigned int mQueryFront;
-    GLuint mQueryId[2];
+    unsigned int mQueryId[2];
     float mTotalElapsedTime;
 
     GraphicsQuery()

@@ -4,9 +4,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #undef NEAR
 #undef FAR
 #undef near
@@ -55,22 +52,22 @@ enum class RenderPath
 
 struct CameraTargets
 {
-    GLuint mMainFBO;
-    GLuint mColorTex;
-    GLuint mDepthTex;
+    unsigned int mMainFBO;
+    unsigned int mColorTex;
+    unsigned int mDepthTex;
 
-    GLuint mColorPickingFBO;
-    GLuint mColorPickingTex;
-    GLuint mColorPickingDepthTex;
+    unsigned int mColorPickingFBO;
+    unsigned int mColorPickingTex;
+    unsigned int mColorPickingDepthTex;
 
-    GLuint mGeometryFBO;
-    GLuint mPositionTex;
-    GLuint mNormalTex;
-    GLuint mAlbedoSpecTex;
+    unsigned int mGeometryFBO;
+    unsigned int mPositionTex;
+    unsigned int mNormalTex;
+    unsigned int mAlbedoSpecTex;
 
-    GLuint mSsaoFBO;
-    GLuint mSsaoColorTex;
-    GLuint mSsaoNoiseTex;
+    unsigned int mSsaoFBO;
+    unsigned int mSsaoColorTex;
+    unsigned int mSsaoNoiseTex;
 };
 
 class Camera : public Component
@@ -102,7 +99,7 @@ class Camera : public Component
     bool mIsCreated;
     bool mIsViewportChanged;
 
-    std::unordered_map<int, Guid> mColoringMap;
+    std::unordered_map<Color32, Guid> mColoringMap;
 
   public:
     Camera(World *world);
@@ -122,7 +119,7 @@ class Camera : public Component
     void endQuery();
 
     void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up);
-    void assignColoring(int color, const Guid &transformId);
+    void assignColoring(Color32 color, const Guid& transformId);
     void clearColoring();
 
     bool isCreated() const;
@@ -142,19 +139,19 @@ class Camera : public Component
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
     Ray screenSpaceToRay(int x, int y) const;
 
-    GLuint getNativeGraphicsMainFBO() const;
-    GLuint getNativeGraphicsColorPickingFBO() const;
-    GLuint getNativeGraphicsGeometryFBO() const;
-    GLuint getNativeGraphicsSSAOFBO() const;
+    unsigned int getNativeGraphicsMainFBO() const;
+    unsigned int getNativeGraphicsColorPickingFBO() const;
+    unsigned int getNativeGraphicsGeometryFBO() const;
+    unsigned int getNativeGraphicsSSAOFBO() const;
 
-    GLuint getNativeGraphicsColorTex() const;
-    GLuint getNativeGraphicsDepthTex() const;
-    GLuint getNativeGraphicsColorPickingTex() const;
-    GLuint getNativeGraphicsPositionTex() const;
-    GLuint getNativeGraphicsNormalTex() const;
-    GLuint getNativeGraphicsAlbedoSpecTex() const;
-    GLuint getNativeGraphicsSSAOColorTex() const;
-    GLuint getNativeGraphicsSSAONoiseTex() const;
+    unsigned int getNativeGraphicsColorTex() const;
+    unsigned int getNativeGraphicsDepthTex() const;
+    unsigned int getNativeGraphicsColorPickingTex() const;
+    unsigned int getNativeGraphicsPositionTex() const;
+    unsigned int getNativeGraphicsNormalTex() const;
+    unsigned int getNativeGraphicsAlbedoSpecTex() const;
+    unsigned int getNativeGraphicsSSAOColorTex() const;
+    unsigned int getNativeGraphicsSSAONoiseTex() const;
 };
 
 template <> struct ComponentType<Camera>

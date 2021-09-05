@@ -22,7 +22,8 @@ Texture2DDrawer::Texture2DDrawer()
     Graphics::clearFramebufferDepth(1.0f);
     Graphics::unbindFramebuffer();
 
-    std::string vertexShader = "in vec3 position;\n"
+    std::string vertexShader = "#version 430 core\n"
+                               "in vec3 position;\n"
                                "in vec2 texCoord;\n"
                                "out vec2 TexCoord;\n"
                                "void main()\n"
@@ -31,28 +32,32 @@ Texture2DDrawer::Texture2DDrawer()
                                "   TexCoord = texCoord;\n"
                                "}";
 
-    std::string fragmentShaderR = "uniform sampler2D texture0;\n"
+    std::string fragmentShaderR = "#version 430 core\n"
+                                  "uniform sampler2D texture0;\n"
                                   "in vec2 TexCoord;\n"
                                   "out vec4 FragColor;\n"
                                   "void main()\n"
                                   "{\n"
                                   "    FragColor = vec4(texture(texture0, TexCoord).r, 0, 0, 1);\n"
                                   "}";
-    std::string fragmentShaderG = "uniform sampler2D texture0;\n"
+    std::string fragmentShaderG = "#version 430 core\n"
+                                  "uniform sampler2D texture0;\n"
                                   "in vec2 TexCoord;\n"
                                   "out vec4 FragColor;\n"
                                   "void main()\n"
                                   "{\n"
                                   "    FragColor = vec4(0, texture(texture0, TexCoord).g, 0, 1);\n"
                                   "}";
-    std::string fragmentShaderB = "uniform sampler2D texture0;\n"
+    std::string fragmentShaderB = "#version 430 core\n"
+                                  "uniform sampler2D texture0;\n"
                                   "in vec2 TexCoord;\n"
                                   "out vec4 FragColor;\n"
                                   "void main()\n"
                                   "{\n"
                                   "    FragColor = vec4(0, 0, texture(texture0, TexCoord).b, 1);\n"
                                   "}";
-    std::string fragmentShaderA = "uniform sampler2D texture0;\n"
+    std::string fragmentShaderA = "#version 430 core\n"
+                                  "uniform sampler2D texture0;\n"
                                   "in vec2 TexCoord;\n"
                                   "out vec4 FragColor;\n"
                                   "void main()\n"
@@ -62,10 +67,10 @@ Texture2DDrawer::Texture2DDrawer()
                                   "                     texture(texture0, TexCoord).a, 1);\n"
                                   "}";
 
-    Graphics::compile(vertexShader, fragmentShaderR, "", &mProgramR);
-    Graphics::compile(vertexShader, fragmentShaderG, "", &mProgramG);
-    Graphics::compile(vertexShader, fragmentShaderB, "", &mProgramB);
-    Graphics::compile(vertexShader, fragmentShaderA, "", &mProgramA);
+    Graphics::compile("Texture2DDrawer0", vertexShader, fragmentShaderR, "", &mProgramR);
+    Graphics::compile("Texture2DDrawer1", vertexShader, fragmentShaderG, "", &mProgramG);
+    Graphics::compile("Texture2DDrawer2", vertexShader, fragmentShaderB, "", &mProgramB);
+    Graphics::compile("Texture2DDrawer3", vertexShader, fragmentShaderA, "", &mProgramA);
 
     mTexLocR = Graphics::findUniformLocation("texture0", mProgramR);
     mTexLocG = Graphics::findUniformLocation("texture0", mProgramG);

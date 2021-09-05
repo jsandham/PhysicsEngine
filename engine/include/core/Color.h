@@ -58,8 +58,36 @@ class Color32
     Color32();
     Color32(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
     ~Color32();
+
+    // Allows use of Color32 as key in unordered_map
+    bool operator==(const Color32& other) const
+    {
+        return ((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a));
+    }
 };
 } // namespace PhysicsEngine
+
+namespace std 
+{
+    // Allows use of Color32 as key in unordered_map
+    template <>
+    struct hash<PhysicsEngine::Color32>
+    {
+        std::size_t operator()(const PhysicsEngine::Color32& color) const
+        {
+            using std::size_t;
+            using std::hash;
+            using std::string;
+
+            size_t r = color.r;
+            size_t g = color.g;
+            size_t b = color.b;
+            size_t a = color.a;
+
+            return r + 255 * g + 255 * 255 * b + 255 * 255 * 255 * a;
+        }
+    };
+}
 
 namespace YAML
 {

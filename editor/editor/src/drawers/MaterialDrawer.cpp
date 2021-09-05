@@ -99,26 +99,26 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
         // Note: matrices not supported
         switch (uniforms[i].mType)
         {
-        case GL_INT:
-            UniformDrawer<GL_INT>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Int:
+            UniformDrawer<ShaderUniformType::Int>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_FLOAT:
-            UniformDrawer<GL_FLOAT>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Float:
+            UniformDrawer<ShaderUniformType::Float>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_FLOAT_VEC2:
-            UniformDrawer<GL_FLOAT_VEC2>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Vec2:
+            UniformDrawer<ShaderUniformType::Vec2>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_FLOAT_VEC3:
-            UniformDrawer<GL_FLOAT_VEC3>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Vec3:
+            UniformDrawer<ShaderUniformType::Vec3>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_FLOAT_VEC4:
-            UniformDrawer<GL_FLOAT_VEC4>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Vec4:
+            UniformDrawer<ShaderUniformType::Vec4>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_SAMPLER_2D:
-            UniformDrawer<GL_SAMPLER_2D>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::Sampler2D:
+            UniformDrawer<ShaderUniformType::Sampler2D>::draw(clipboard, material, &uniforms[i]);
             break;
-        case GL_SAMPLER_CUBE:
-            UniformDrawer<GL_SAMPLER_CUBE>::draw(clipboard, material, &uniforms[i]);
+        case ShaderUniformType::SamplerCube:
+            UniformDrawer<ShaderUniformType::SamplerCube>::draw(clipboard, material, &uniforms[i]);
             break;
         }
     }
@@ -138,7 +138,7 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     Graphics::setGlobalCameraUniforms(mCameraUniform);
     Graphics::setGlobalLightUniforms(mLightUniform);
 
-    int shaderProgram = shader->getProgramFromVariant(ShaderVariant::None);
+    int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
 
     shader->use(shaderProgram);
     shader->setMat4("model", mModel);

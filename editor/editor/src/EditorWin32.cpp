@@ -2,6 +2,9 @@
 #include "../include/imgui/imgui_styles.h"
 #include "ImGuizmo.h"
 
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_win32.h"
+
 #include "../include/IconsFontAwesome4.h"
 
 using namespace PhysicsEditor;

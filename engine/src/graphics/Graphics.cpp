@@ -119,9 +119,9 @@ GLenum Graphics::getTextureFormat(TextureFormat format)
     return openglFormat;
 }
 
-GLint Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
+int Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
 {
-    GLint openglWrapMode = GL_REPEAT;
+    int openglWrapMode = GL_REPEAT;
 
     switch (wrapMode)
     {
@@ -139,9 +139,9 @@ GLint Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
     return openglWrapMode;
 }
 
-GLint Graphics::getTextureFilterMode(TextureFilterMode filterMode)
+int Graphics::getTextureFilterMode(TextureFilterMode filterMode)
 {
-    GLint openglFilterMode = GL_NEAREST;
+    int openglFilterMode = GL_NEAREST;
 
     switch (filterMode)
     {
@@ -162,12 +162,12 @@ GLint Graphics::getTextureFilterMode(TextureFilterMode filterMode)
     return openglFilterMode;
 }
 
-void Graphics::beginQuery(GLuint queryId)
+void Graphics::beginQuery(unsigned int queryId)
 {
     glBeginQuery(GL_TIME_ELAPSED, queryId);
 }
 
-void Graphics::endQuery(GLuint queryId, GLuint64 *elapsedTime)
+void Graphics::endQuery(unsigned int queryId, unsigned long long *elapsedTime)
 {
     glEndQuery(GL_TIME_ELAPSED);
     glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime);
@@ -233,7 +233,7 @@ void Graphics::setGlobalLightUniforms(const LightUniform &uniform)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::createScreenQuad(GLuint *vao, GLuint *vbo)
+void Graphics::createScreenQuad(unsigned int* vao, unsigned int* vbo)
 {
     // generate screen quad for final rendering
     constexpr float quadVertices[] = {
@@ -249,9 +249,9 @@ void Graphics::createScreenQuad(GLuint *vao, GLuint *vbo)
     glBindBuffer(GL_ARRAY_BUFFER, *vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -259,14 +259,14 @@ void Graphics::createScreenQuad(GLuint *vao, GLuint *vbo)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::renderScreenQuad(GLuint vao)
+void Graphics::renderScreenQuad(unsigned int vao)
 {
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 }
 
-void Graphics::createFramebuffer(int width, int height, GLuint *fbo, GLuint *color, GLuint *depth)
+void Graphics::createFramebuffer(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth)
 {
     // generate fbo (color + depth)
     glGenFramebuffers(1, fbo);
@@ -288,7 +288,7 @@ void Graphics::createFramebuffer(int width, int height, GLuint *fbo, GLuint *col
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depth, 0);
 
     // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+    unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, mainAttachments);
 
     Graphics::checkFrambufferError(__LINE__, __FILE__);
@@ -296,7 +296,7 @@ void Graphics::createFramebuffer(int width, int height, GLuint *fbo, GLuint *col
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Graphics::destroyFramebuffer(GLuint *fbo, GLuint *color, GLuint *depth)
+void Graphics::destroyFramebuffer(unsigned int* fbo, unsigned int* color, unsigned int* depth)
 {
     // detach textures from their framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
@@ -312,7 +312,7 @@ void Graphics::destroyFramebuffer(GLuint *fbo, GLuint *color, GLuint *depth)
     glDeleteTextures(1, depth);
 }
 
-void Graphics::bindFramebuffer(GLuint fbo)
+void Graphics::bindFramebuffer(unsigned int fbo)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
@@ -345,8 +345,8 @@ void Graphics::setViewport(int x, int y, int width, int height)
     glViewport(x, y, width, height);
 }
 
-void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, GLuint *queryId0,
-                             GLuint *queryId1)
+void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
+                             unsigned int *queryId1)
 {
     // generate timing queries
     glGenQueries(1, queryId0);
@@ -501,7 +501,7 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyTargets(CameraTargets *targets, GLuint *queryId0, GLuint *queryId1)
+void Graphics::destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1)
 {
     // detach textures from their framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
@@ -800,7 +800,7 @@ void Graphics::resizeTargets(LightTargets *targets, ShadowMapResolution resoluti
 }
 
 void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                               int height, const std::vector<unsigned char> &data, GLuint *tex)
+                               int height, const std::vector<unsigned char> &data, unsigned int *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
@@ -830,12 +830,12 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyTexture2D(GLuint *tex)
+void Graphics::destroyTexture2D(unsigned int *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
     GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
     GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
@@ -854,7 +854,7 @@ void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filte
 }
 
 void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
-                                   std::vector<unsigned char> &data, GLuint tex)
+                                   std::vector<unsigned char> &data, unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -868,7 +868,7 @@ void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, 
 }
 
 void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
-                                    GLuint tex)
+                                    unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
@@ -882,7 +882,7 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
 }
 
 void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                               int height, int depth, const std::vector<unsigned char> &data, GLuint *tex)
+                               int height, int depth, const std::vector<unsigned char> &data, unsigned int *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
@@ -905,12 +905,12 @@ void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, T
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyTexture3D(GLuint *tex)
+void Graphics::destroyTexture3D(unsigned int *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
     GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
     GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
@@ -930,7 +930,7 @@ void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filte
 }
 
 void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
-                                   std::vector<unsigned char> &data, GLuint tex)
+                                   std::vector<unsigned char> &data, unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
@@ -944,7 +944,7 @@ void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, 
 }
 
 void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
-                                    const std::vector<unsigned char> &data, GLuint tex)
+                                    const std::vector<unsigned char> &data, unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
@@ -958,7 +958,7 @@ void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height,
 }
 
 void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                             const std::vector<unsigned char> &data, GLuint *tex)
+                             const std::vector<unsigned char> &data, unsigned int *tex)
 {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
@@ -985,12 +985,12 @@ void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, Tex
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyCubemap(GLuint *tex)
+void Graphics::destroyCubemap(unsigned int *tex)
 {
     glDeleteTextures(1, tex);
 }
 
-void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex)
+void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
     GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
     GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
@@ -1010,7 +1010,7 @@ void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterM
 }
 
 void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
-                                 GLuint tex)
+                                 unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
@@ -1027,7 +1027,7 @@ void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannel
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, GLuint tex)
+void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, unsigned int tex)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
@@ -1045,7 +1045,7 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
 }
 
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                          const std::vector<float> &texCoords, GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2)
+                          const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
@@ -1074,7 +1074,7 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2)
+void Graphics::destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
 {
     glDeleteBuffers(1, vbo0);
     glDeleteBuffers(1, vbo1);
@@ -1083,7 +1083,7 @@ void Graphics::destroyMesh(GLuint *vao, GLuint *vbo0, GLuint *vbo1, GLuint *vbo2
     glDeleteVertexArrays(1, vao);
 }
 
-void Graphics::createSprite(GLuint* vao)
+void Graphics::createSprite(unsigned int* vao)
 {
     // configure VAO/VBO
     unsigned int vbo;
@@ -1111,12 +1111,66 @@ void Graphics::createSprite(GLuint* vao)
     glBindVertexArray(0);
 }
 
-void Graphics::destroySprite(GLuint* vao)
+void Graphics::destroySprite(unsigned int* vao)
 {
     glDeleteVertexArrays(1, vao);
 }
 
-bool Graphics::compile(const std::string &vert, const std::string &frag, const std::string &geom, GLuint *program)
+void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant)
+{
+    std::string version;
+    std::string defines;
+    std::string shader;
+
+    if (variant & static_cast<int64_t>(ShaderMacro::Directional))
+    {
+        defines += "#define DIRECTIONALLIGHT\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::Spot))
+    {
+        defines += "#define SPOTLIGHT\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::Point))
+    {
+        defines += "#define POINTLIGHT\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::HardShadows))
+    {
+        defines += "#define HARDSHADOWS\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::SoftShadows))
+    {
+        defines += "#define SOFTSHADOWS\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::SSAO))
+    {
+        defines += "#define SSAO\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::Cascade))
+    {
+        defines += "#define CASCADE\n";
+    }
+
+    size_t pos = vert.find('\n');
+    if (pos != std::string::npos)
+    {
+        version = vert.substr(0, pos + 1);
+        shader = vert.substr(pos + 1);
+    }
+
+    vert = version + defines + shader;
+
+    pos = frag.find('\n');
+    if (pos != std::string::npos)
+    {
+        version = frag.substr(0, pos + 1);
+        shader = frag.substr(pos + 1);
+    }
+
+    frag = version + defines + shader;
+}
+
+bool Graphics::compile(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom, unsigned int *program)
 {
     const GLchar *vertexShaderCharPtr = vert.c_str();
     const GLchar *geometryShaderCharPtr = geom.c_str();
@@ -1136,7 +1190,7 @@ bool Graphics::compile(const std::string &vert, const std::string &frag, const s
     if (!success)
     {
         glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
-        std::string message = "Shader: Vertex shader compilation failed\n";
+        std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
         Log::error(message.c_str());
     }
 
@@ -1148,7 +1202,7 @@ bool Graphics::compile(const std::string &vert, const std::string &frag, const s
     if (!success)
     {
         glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
-        std::string message = "Shader: Fragment shader compilation failed\n";
+        std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
         Log::error(message.c_str());
     }
 
@@ -1162,7 +1216,7 @@ bool Graphics::compile(const std::string &vert, const std::string &frag, const s
         if (!success)
         {
             glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
-            std::string message = "Shader: Geometry shader compilation failed\n";
+            std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
             Log::error(message.c_str());
         }
     }
@@ -1184,7 +1238,7 @@ bool Graphics::compile(const std::string &vert, const std::string &frag, const s
     if (!success)
     {
         glGetProgramInfoLog(*program, 512, NULL, infoLog);
-        std::string message = "Shader: Shader program linking failed\n";
+        std::string message = "Shader: " + name + " program linking failed\n";
         Log::error(message.c_str());
     }
 
@@ -1228,33 +1282,72 @@ int Graphics::getAttributeCount(int program)
     return attributeCount;
 }
 
-std::vector<Uniform> Graphics::getUniforms(int program)
+std::vector<ShaderUniform> Graphics::getShaderUniforms(int program)
 {
     GLint uniformCount;
     glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-    std::vector<Uniform> uniforms(uniformCount);
+    std::vector<ShaderUniform> uniforms(uniformCount);
 
     for (int j = 0; j < uniformCount; j++)
     {
-        glGetActiveUniform(program, (GLuint)j, 32, &uniforms[j].nameLength, &uniforms[j].size, &uniforms[j].type,
-                           &uniforms[j].name[0]);
+        Uniform uniform;
+        glGetActiveUniform(program, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
+            &uniform.name[0]);
+
+        uniforms[j].mName = std::string(uniform.name);
+        switch (uniform.type)
+        {
+        case GL_INT:
+            uniforms[j].mType = ShaderUniformType::Int;
+            break;
+        case GL_FLOAT:
+            uniforms[j].mType = ShaderUniformType::Float;
+            break;
+        case GL_FLOAT_VEC2:
+            uniforms[j].mType = ShaderUniformType::Vec2;
+            break;
+        case GL_FLOAT_VEC3:
+            uniforms[j].mType = ShaderUniformType::Vec3;
+            break;
+        case GL_FLOAT_VEC4:
+            uniforms[j].mType = ShaderUniformType::Vec4;
+            break;
+        case GL_FLOAT_MAT2:
+            uniforms[j].mType = ShaderUniformType::Mat2;
+            break;
+        case GL_FLOAT_MAT3:
+            uniforms[j].mType = ShaderUniformType::Mat3;
+            break;
+        case GL_FLOAT_MAT4:
+            uniforms[j].mType = ShaderUniformType::Mat4;
+            break;
+        case GL_SAMPLER_2D:
+            uniforms[j].mType = ShaderUniformType::Sampler2D;
+            break;
+        case GL_SAMPLER_CUBE:
+            uniforms[j].mType = ShaderUniformType::SamplerCube;
+            break;
+        }
     }
 
     return uniforms;
 }
 
-std::vector<Attribute> Graphics::getAttributes(int program)
+std::vector<ShaderAttribute> Graphics::getShaderAttributes(int program)
 {
     GLint attributeCount;
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount);
 
-    std::vector<Attribute> attributes(attributeCount);
+    std::vector<ShaderAttribute> attributes(attributeCount);
 
     for (int j = 0; j < attributeCount; j++)
     {
-        glGetActiveAttrib(program, (GLuint)j, 32, &attributes[j].nameLength, &attributes[j].size, &attributes[j].type,
-                          &attributes[j].name[0]);
+        Attribute attrib;
+        glGetActiveAttrib(program, (GLuint)j, 32, &attrib.nameLength, &attrib.size, &attrib.type,
+                          &attrib.name[0]);
+
+        attributes[j].mName = std::string(attrib.name);
     }
 
     return attributes;
@@ -1301,6 +1394,12 @@ void Graphics::setFloat(int nameLocation, float value)
 void Graphics::setColor(int nameLocation, const Color &color)
 {
     glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.r));
+}
+
+void Graphics::setColor32(int nameLocation, const Color32& color)
+{
+    glUniform4ui(nameLocation, static_cast<GLuint>(color.r), 
+        static_cast<GLuint>(color.g), static_cast<GLuint>(color.b), static_cast<GLuint>(color.a));
 }
 
 void Graphics::setVec2(int nameLocation, const glm::vec2 &vec)
@@ -1373,6 +1472,24 @@ Color Graphics::getColor(int nameLocation, int program)
     return color;
 }
 
+Color32 Graphics::getColor32(int nameLocation, int program)
+{
+    Color32 color = Color32(0, 0, 0, 255);
+    
+    GLuint c[4];
+    glGetnUniformuiv(program,
+        nameLocation,
+        4 * sizeof(GLuint),
+        &c[0]);
+
+    color.r = static_cast<unsigned char>(c[0]);
+    color.g = static_cast<unsigned char>(c[1]);
+    color.b = static_cast<unsigned char>(c[2]);
+    color.a = static_cast<unsigned char>(c[3]);
+    
+    return color;
+}
+
 glm::vec2 Graphics::getVec2(int nameLocation, int program)
 {
     glm::vec2 value = glm::vec2(0.0f);
@@ -1430,13 +1547,13 @@ int Graphics::getTexture2D(int nameLocation, int texUnit, int program)
     return tex;
 }
 
-void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<GLint> &textures,
+void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<int> &textures,
                              int shaderProgram)
 {
     int textureUnit = 0;
     for (size_t i = 0; i < uniforms.size(); i++)
     {
-        if (uniforms[i].mType == GL_SAMPLER_2D)
+        if (uniforms[i].mType == ShaderUniformType::Sampler2D)
         {
             if (textures[textureUnit] != -1)
             {
@@ -1450,27 +1567,27 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
 
             textureUnit++;
         }
-        else if (uniforms[i].mType == GL_INT)
+        else if (uniforms[i].mType == ShaderUniformType::Int)
         {
             Graphics::setInt(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                              *reinterpret_cast<const int *>(uniforms[i].mData));
         }
-        else if (uniforms[i].mType == GL_FLOAT)
+        else if (uniforms[i].mType == ShaderUniformType::Float)
         {
             Graphics::setFloat(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                                *reinterpret_cast<const float *>(uniforms[i].mData));
         }
-        else if (uniforms[i].mType == GL_FLOAT_VEC2)
+        else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
             Graphics::setVec2(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
         }
-        else if (uniforms[i].mType == GL_FLOAT_VEC3)
+        else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
             Graphics::setVec3(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
         }
-        else if (uniforms[i].mType == GL_FLOAT_VEC4)
+        else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
             Graphics::setVec4(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
@@ -1480,7 +1597,7 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::render(int start, int count, GLuint vao, bool wireframe)
+void Graphics::render(int start, int count, int vao, bool wireframe)
 {
     if (wireframe)
     {

@@ -8,7 +8,8 @@
 
 namespace PhysicsEngine
 {
-typedef enum CubemapFace
+//typedef enum CubemapFace
+enum class CubemapFace
 {
     PositiveX,
     NegativeX,
@@ -16,7 +17,7 @@ typedef enum CubemapFace
     NegativeY,
     PositiveZ,
     NegativeZ
-} CubemapFace;
+};
 
 class Cubemap : public Texture
 {

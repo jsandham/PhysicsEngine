@@ -5,9 +5,9 @@
 
 #include <string>
 #include <vector>
-
-#include <GL/glew.h>
-#include <gl/gl.h>
+#include <unordered_map>
+#include <set>
+#include <cstdint>
 
 #define GLM_FORCE_RADIANS
 
@@ -28,7 +28,22 @@ enum class RenderQueue
     Transparent = 1
 };
 
-enum ShaderVariant
+enum class ShaderUniformType
+{
+    Int = 0,
+    Float = 1,
+    Vec2 = 2,
+    Vec3 = 3,
+    Vec4 = 4,
+    Mat2 = 5,
+    Mat3 = 6,
+    Mat4 = 7,
+    Sampler2D = 8,
+    SamplerCube = 9,
+    Invalid = 10
+};
+
+enum class ShaderMacro
 {
     None = 0,
     Directional = 1,
@@ -40,23 +55,30 @@ enum ShaderVariant
     Cascade = 64
 };
 
-enum ShaderVersion
+enum class ShaderSourceLanguage
 {
-    GL330,
-    GL430
+    GLSL = 0,
+    HLSL = 1
 };
 
-enum ShaderAPI
+struct ShaderCreationAttrib
 {
-    GLSL,
-    HLSL
+    std::string mName;
+    std::string mVertexSourceFilepath;
+    std::string mFragmentSourceFilepath;
+    std::string mGeometrySourceFilepath;
+    ShaderSourceLanguage mSourceLanguage;
+    std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 };
 
 struct ShaderProgram
 {
-    ShaderVersion mVersion;
-    int mVariant;
-    GLuint mHandle;
+    std::string mVertexShader;
+    std::string mFragmentShader;
+    std::string mGeometryShader;
+
+    int64_t mVariant;
+    unsigned int mHandle;
     bool mCompiled;
 };
 
@@ -64,33 +86,37 @@ struct ShaderUniform
 {
     char mData[64];
     std::string mName; // variable name in GLSL (including block name if applicable)
-    GLenum mType;      // type of the uniform (float, vec3 or mat4, etc)
-    int mLocation;     // uniform location in shader program
+    ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
+    int mLocation;     // uniform location in shader program   rename to cacheLocation?
 };
 
 struct ShaderAttribute
 {
-    char mName[32];
+    std::string mName;
 };
+
 
 class Shader : public Asset
 {
   private:
-    std::string mVertexSource;
-    std::string mFragmentSource;
-    std::string mGeometrySource;
+    std::string mVertexSourceFilepath;
+    std::string mFragmentSourceFilepath;
+    std::string mGeometrySourceFilepath;
     std::string mVertexShader;
     std::string mFragmentShader;
     std::string mGeometryShader;
 
-    bool mAllProgramsCompiled;
-    int mActiveProgram;
+    std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
+
     std::vector<ShaderProgram> mPrograms;
     std::vector<ShaderUniform> mUniforms;
     std::vector<ShaderUniform> mMaterialUniforms;
     std::vector<ShaderAttribute> mAttributes;
 
-    ShaderAPI mShaderAPI;
+    ShaderSourceLanguage mShaderSourceLanguage;
+
+    bool mAllProgramsCompiled;
+    int mActiveProgram;
 
   public:
     Shader(World *world);
@@ -103,13 +129,11 @@ class Shader : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void load(const std::string &vertFilepath, const std::string &fragFilepath, const std::string &geoFilepath);
+    void load(const ShaderCreationAttrib& attrib);
 
     bool isCompiled() const;
-    bool contains(int variant) const;
-    void add(int variant);
-    void remove(int variant);
 
+    void preprocess();
     void compile();
     void use(int program);
     void unuse();
@@ -118,7 +142,7 @@ class Shader : public Asset
     void setFragmentShader(const std::string &fragmentShader);
     void setUniformBlock(const std::string &blockName, int bindingPoint) const;
     int findUniformLocation(const std::string &name, int program) const;
-    int getProgramFromVariant(int variant) const;
+    int getProgramFromVariant(int64_t variant) const;
     int getActiveProgram() const;
 
     std::vector<ShaderProgram> getPrograms() const;
@@ -207,19 +231,177 @@ template <> struct convert<PhysicsEngine::RenderQueue>
     }
 };
 
-// ShaderAPI
-template <> struct convert<PhysicsEngine::ShaderAPI>
+// ShaderSourceLanguage
+template <> struct convert<PhysicsEngine::ShaderSourceLanguage>
 {
-    static Node encode(const PhysicsEngine::ShaderAPI& rhs)
+    static Node encode(const PhysicsEngine::ShaderSourceLanguage& rhs)
     {
         Node node;
         node = static_cast<int>(rhs);
         return node;
     }
 
-    static bool decode(const Node& node, PhysicsEngine::ShaderAPI& rhs)
+    static bool decode(const Node& node, PhysicsEngine::ShaderSourceLanguage& rhs)
     {
-        rhs = static_cast<PhysicsEngine::ShaderAPI>(node.as<int>());
+        rhs = static_cast<PhysicsEngine::ShaderSourceLanguage>(node.as<int>());
+        return true;
+    }
+};
+
+// ShaderUniformType
+template <> struct convert<PhysicsEngine::ShaderUniformType>
+{
+    static Node encode(const PhysicsEngine::ShaderUniformType& rhs)
+    {
+        Node node;
+
+        switch (rhs)
+        {
+        case PhysicsEngine::ShaderUniformType::Int:
+            node = "Int";
+            break;
+        case PhysicsEngine::ShaderUniformType::Float:
+            node = "Float";
+            break;
+        case PhysicsEngine::ShaderUniformType::Vec2:
+            node = "Vec2";
+            break;
+        case PhysicsEngine::ShaderUniformType::Vec3:
+            node = "Vec3";
+            break;
+        case PhysicsEngine::ShaderUniformType::Vec4:
+            node = "Vec4";
+            break;
+        case PhysicsEngine::ShaderUniformType::Mat2:
+            node = "Mat2";
+            break;
+        case PhysicsEngine::ShaderUniformType::Mat3:
+            node = "Mat3";
+            break;
+        case PhysicsEngine::ShaderUniformType::Mat4:
+            node = "Mat4";
+            break;
+        case PhysicsEngine::ShaderUniformType::Sampler2D:
+            node = "Sampler2D";
+            break;
+        case PhysicsEngine::ShaderUniformType::SamplerCube:
+            node = "SamplerCube";
+            break;
+        default:
+            node = "Invalid";
+            break;
+        }
+      
+        return node;
+    }
+
+    static bool decode(const Node& node, PhysicsEngine::ShaderUniformType& rhs)
+    {
+        std::string type = node.as<std::string>();
+        if (type == "Int") {
+            rhs = PhysicsEngine::ShaderUniformType::Int;
+        }
+        else if (type == "Float"){
+            rhs = PhysicsEngine::ShaderUniformType::Float;
+        }
+        else if (type == "Vec2"){
+            rhs = PhysicsEngine::ShaderUniformType::Vec2;
+        }
+        else if (type == "Vec3"){
+            rhs = PhysicsEngine::ShaderUniformType::Vec3;
+        }
+        else if (type == "Vec4"){
+            rhs = PhysicsEngine::ShaderUniformType::Vec4;
+        }
+        else if (type == "Mat2"){
+            rhs = PhysicsEngine::ShaderUniformType::Mat2;
+        }
+        else if (type == "Mat3"){
+            rhs = PhysicsEngine::ShaderUniformType::Mat3;
+        }
+        else if (type == "Mat4"){
+            rhs = PhysicsEngine::ShaderUniformType::Mat4;
+        }
+        else if (type == "Sampler2D"){
+            rhs = PhysicsEngine::ShaderUniformType::Sampler2D;
+        }
+        else if (type == "SamplerCube"){
+            rhs = PhysicsEngine::ShaderUniformType::SamplerCube;
+        }
+        else {
+            rhs = PhysicsEngine::ShaderUniformType::Invalid;
+        }
+        
+        return true;
+    }
+};
+
+// ShaderMacro
+template <> struct convert<PhysicsEngine::ShaderMacro>
+{
+    static Node encode(const PhysicsEngine::ShaderMacro& rhs)
+    {
+        Node node;
+
+        switch (rhs)
+        {
+        case PhysicsEngine::ShaderMacro::Directional:
+            node = "Directional";
+            break;
+        case PhysicsEngine::ShaderMacro::Spot:
+            node = "Spot";
+            break;
+        case PhysicsEngine::ShaderMacro::Point:
+            node = "Point";
+            break;
+        case PhysicsEngine::ShaderMacro::HardShadows:
+            node = "HardShadows";
+            break;
+        case PhysicsEngine::ShaderMacro::SoftShadows:
+            node = "SoftShadows";
+            break;
+        case PhysicsEngine::ShaderMacro::SSAO:
+            node = "SSAO";
+            break;
+        case PhysicsEngine::ShaderMacro::Cascade:
+            node = "Cascade";
+            break;
+        default:
+            node = "None";
+            break;
+        }
+
+        return node;
+    }
+
+    static bool decode(const Node& node, PhysicsEngine::ShaderMacro& rhs)
+    {
+        std::string type = node.as<std::string>();
+        if (type == "Directional") {
+            rhs = PhysicsEngine::ShaderMacro::Directional;
+        }
+        else if (type == "Spot") {
+            rhs = PhysicsEngine::ShaderMacro::Spot;
+        }
+        else if (type == "Point") {
+            rhs = PhysicsEngine::ShaderMacro::Point;
+        }
+        else if (type == "HardShadows") {
+            rhs = PhysicsEngine::ShaderMacro::HardShadows;
+        }
+        else if (type == "SoftShadows") {
+            rhs = PhysicsEngine::ShaderMacro::SoftShadows;
+        }
+        else if (type == "SSAO") {
+            rhs = PhysicsEngine::ShaderMacro::SSAO;
+        }
+        else if (type == "Cascade") {
+            rhs = PhysicsEngine::ShaderMacro::Cascade;
+        }
+        else {
+            rhs = PhysicsEngine::ShaderMacro::None;
+        }
+
         return true;
     }
 };
@@ -233,30 +415,33 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 
         node["type"] = rhs.mType;
 
-        if (rhs.mType == GL_INT)
+        if (rhs.mType == PhysicsEngine::ShaderUniformType::Int)
         {
             node["data"] = *reinterpret_cast<const int *>(rhs.mData);
         }
-        else if (rhs.mType == GL_FLOAT)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Float)
         {
             node["data"] = *reinterpret_cast<const float *>(rhs.mData);
         }
-        else if (rhs.mType == GL_FLOAT_VEC2)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
         {
             node["data"] = *reinterpret_cast<const glm::vec2 *>(rhs.mData);
         }
-        else if (rhs.mType == GL_FLOAT_VEC3)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec3)
         {
             node["data"] = *reinterpret_cast<const glm::vec3 *>(rhs.mData);
         }
-        else if (rhs.mType == GL_FLOAT_VEC4)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec4)
         {
             node["data"] = *reinterpret_cast<const glm::vec4 *>(rhs.mData);
         }
-
-        if (rhs.mType == GL_SAMPLER_2D)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Sampler2D)
         {
             node["data"] = *reinterpret_cast<const PhysicsEngine::Guid *>(rhs.mData);
+        }
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::SamplerCube)
+        {
+            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
         }
 
         return node;
@@ -264,38 +449,104 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 
     static bool decode(const Node &node, PhysicsEngine::ShaderUniform &rhs)
     {
-        rhs.mType = YAML::getValue<int>(node, "type");
+        rhs.mType = YAML::getValue<PhysicsEngine::ShaderUniformType>(node, "type");
 
-        if (rhs.mType == GL_INT)
+        if (rhs.mType == PhysicsEngine::ShaderUniformType::Int)
         {
             int data = YAML::getValue<int>(node, "data");
             memcpy(rhs.mData, &data, sizeof(int));
         }
-        else if (rhs.mType == GL_FLOAT)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Float)
         {
             float data = YAML::getValue<float>(node, "data");
             memcpy(rhs.mData, &data, sizeof(float));
         }
-        else if (rhs.mType == GL_FLOAT_VEC2)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
         {
             glm::vec2 data = YAML::getValue<glm::vec2>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec2));
         }
-        else if (rhs.mType == GL_FLOAT_VEC3)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec3)
         {
             glm::vec3 data = YAML::getValue<glm::vec3>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec3));
         }
-        else if (rhs.mType == GL_FLOAT_VEC4)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec4)
         {
             glm::vec4 data = YAML::getValue<glm::vec4>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec4));
         }
-
-        if (rhs.mType == GL_SAMPLER_2D)
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Sampler2D)
         {
             PhysicsEngine::Guid data = YAML::getValue<PhysicsEngine::Guid>(node, "data");
             memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
+        }
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::SamplerCube)
+        {
+            PhysicsEngine::Guid data = YAML::getValue<PhysicsEngine::Guid>(node, "data");
+            memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
+        }
+
+        return true;
+    }
+};
+
+// std::set<ShaderMacro>
+template <> struct convert<std::set<PhysicsEngine::ShaderMacro>>
+{
+    static Node encode(const std::set<PhysicsEngine::ShaderMacro>& rhs)
+    {
+        Node node;
+
+        for (auto it = rhs.begin(); it != rhs.end(); it++)
+        {
+            node.push_back(*it);
+        }
+
+        return node;
+    }
+
+    static bool decode(const Node& node, std::set<PhysicsEngine::ShaderMacro>& rhs)
+    {
+        if (!node.IsSequence())
+        {
+            return false;
+        }
+
+        for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+        {
+            rhs.insert(it->as<PhysicsEngine::ShaderMacro>());
+        }
+
+        return true;
+    }
+};
+
+// std::unordered_map<int, std::set<ShaderMacro>>
+template <> struct convert<std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>>
+{
+    static Node encode(const std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>& rhs)
+    {
+        Node node;
+
+        for (auto it = rhs.begin(); it != rhs.end(); it++)
+        {
+            node[it->first] = it->second;
+        }
+
+        return node;
+    }
+
+    static bool decode(const Node& node, std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>& rhs)
+    {
+        if (!node.IsMap())
+        {
+            return false;
+        }
+
+        for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+        {
+            rhs[it->first.as<int>()] = it->second.as<std::set<PhysicsEngine::ShaderMacro>>();
         }
 
         return true;

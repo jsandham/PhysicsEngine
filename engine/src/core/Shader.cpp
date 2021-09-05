@@ -17,9 +17,9 @@ using namespace PhysicsEngine;
 
 Shader::Shader(World *world) : Asset(world)
 {
-    mVertexSource = "";
-    mFragmentSource = "";
-    mGeometrySource = "";
+    mVertexSourceFilepath = "";
+    mFragmentSourceFilepath = "";
+    mGeometrySourceFilepath = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -27,14 +27,14 @@ Shader::Shader(World *world) : Asset(world)
     mAllProgramsCompiled = false;
     mActiveProgram = -1;
 
-    mShaderAPI = ShaderAPI::GLSL;
+    mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
 Shader::Shader(World *world, Guid id) : Asset(world, id)
 {
-    mVertexSource = "";
-    mFragmentSource = "";
-    mGeometrySource = "";
+    mVertexSourceFilepath = "";
+    mFragmentSourceFilepath = "";
+    mGeometrySourceFilepath= "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -42,7 +42,7 @@ Shader::Shader(World *world, Guid id) : Asset(world, id)
     mAllProgramsCompiled = false;
     mActiveProgram = -1;
 
-    mShaderAPI = ShaderAPI::HLSL;
+    mShaderSourceLanguage = ShaderSourceLanguage::HLSL;
 }
 
 Shader::~Shader()
@@ -53,22 +53,32 @@ void Shader::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["shaderAPI"] = mShaderAPI;
-    out["vertexSource"] = mVertexSource;
-    out["fragmentSource"] = mFragmentSource;
-    out["geometrySource"] = mGeometrySource;
+    out["shaderSourceLanguage"] = mShaderSourceLanguage;
+    out["vertexSource"] = mVertexSourceFilepath;
+    out["fragmentSource"] = mFragmentSourceFilepath;
+    out["geometrySource"] = mGeometrySourceFilepath;
+    out["variants"] = mVariantMacroMap;
 }
 
 void Shader::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mShaderAPI = YAML::getValue<ShaderAPI>(in, "shaderAPI");
-    mVertexSource = YAML::getValue<std::string>(in, "vertexSource");
-    mFragmentSource = YAML::getValue<std::string>(in, "fragmentSource");
-    mGeometrySource = YAML::getValue<std::string>(in, "geometrySource");
+    mShaderSourceLanguage = YAML::getValue<ShaderSourceLanguage>(in, "shaderSourceLanguage");
+    mVertexSourceFilepath = YAML::getValue<std::string>(in, "vertexSource");
+    mFragmentSourceFilepath = YAML::getValue<std::string>(in, "fragmentSource");
+    mGeometrySourceFilepath = YAML::getValue<std::string>(in, "geometrySource");
+    mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
 
-    load(mVertexSource, mFragmentSource, mGeometrySource);
+    ShaderCreationAttrib attrib;
+    attrib.mName = mName;
+    attrib.mVertexSourceFilepath = mVertexSourceFilepath;
+    attrib.mFragmentSourceFilepath = mFragmentSourceFilepath;
+    attrib.mGeometrySourceFilepath = mGeometrySourceFilepath;
+    attrib.mSourceLanguage = mShaderSourceLanguage;
+    attrib.mVariantMacroMap = mVariantMacroMap;
+
+    load(attrib);
 }
 
 int Shader::getType() const
@@ -81,16 +91,16 @@ std::string Shader::getObjectName() const
     return PhysicsEngine::SHADER_NAME;
 }
 
-void Shader::load(const std::string &vsFilepath, const std::string &fsFilepath, const std::string &gsFilepath)
+void Shader::load(const ShaderCreationAttrib& attrib)
 {
-    if (vsFilepath.empty() || fsFilepath.empty())
+    if (attrib.mVertexSourceFilepath.empty() || attrib.mFragmentSourceFilepath.empty())
     {
         return;
     }
 
     shader_data data;
 
-    if (shader_load(vsFilepath, fsFilepath, gsFilepath, data))
+    if (shader_load(attrib.mVertexSourceFilepath, attrib.mFragmentSourceFilepath, attrib.mGeometrySourceFilepath, data))
     {
         this->setVertexShader(data.mVertexShader);
         this->setGeometryShader(data.mGeometryShader);
@@ -98,12 +108,25 @@ void Shader::load(const std::string &vsFilepath, const std::string &fsFilepath, 
     }
     else
     {
-        Log::error("Error: Could not load shader\n");
+        std::string message = "Error: Could not load shader " + attrib.mName + " \n";
+        Log::error(message.c_str());
     }
 
-    mVertexSource = vsFilepath;
-    mFragmentSource = fsFilepath;
-    mGeometrySource = gsFilepath;
+    mName = attrib.mName;
+    mVertexSourceFilepath = attrib.mVertexSourceFilepath;
+    mFragmentSourceFilepath = attrib.mFragmentSourceFilepath;
+    mGeometrySourceFilepath = attrib.mGeometrySourceFilepath;
+    mShaderSourceLanguage = attrib.mSourceLanguage;
+    mVariantMacroMap = attrib.mVariantMacroMap;
+
+    mPrograms.resize(attrib.mVariantMacroMap.size() + 1);
+
+    mPrograms[0].mVertexShader = mVertexShader;
+    mPrograms[0].mFragmentShader = mFragmentShader;
+    mPrograms[0].mGeometryShader = mGeometryShader;
+    mPrograms[0].mVariant = 0;
+    mPrograms[0].mHandle = 0;
+    mPrograms[0].mCompiled = false;
 }
 
 bool Shader::isCompiled() const
@@ -111,204 +134,59 @@ bool Shader::isCompiled() const
     return mAllProgramsCompiled;
 }
 
-bool Shader::contains(int variant) const
+void Shader::preprocess()
 {
-    for (size_t i = 0; i < mPrograms.size(); i++)
+    int i = 1;
+    for (auto it = mVariantMacroMap.begin(); it != mVariantMacroMap.end(); it++)
     {
-        if (mPrograms[i].mVariant == variant)
+        mPrograms[i].mVertexShader = mVertexShader;
+        mPrograms[i].mFragmentShader = mFragmentShader;
+        mPrograms[i].mGeometryShader = mGeometryShader;
+
+        int64_t variant = 0;
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
         {
-            return true;
+            variant |= static_cast<int64_t>(*it2);
         }
-    }
 
-    return false;
-}
+        mPrograms[i].mVariant = variant;
+        mPrograms[i].mHandle = 0;
+        mPrograms[i].mCompiled = false;
 
-void Shader::add(int variant)
-{
-    if (!contains(variant))
-    {
-        ShaderProgram program;
-        program.mVersion = ShaderVersion::GL430;
-        program.mCompiled = false;
-        program.mVariant = variant;
-        program.mHandle = 0;
+        Graphics::preprocess(mPrograms[i].mVertexShader,
+                             mPrograms[i].mFragmentShader,
+                             mPrograms[i].mGeometryShader,
+                             mPrograms[i].mVariant);
 
-        mPrograms.push_back(program);
-
-        mAllProgramsCompiled = false;
-    }
-}
-
-void Shader::remove(int variant)
-{
-    int index = -1;
-    for (size_t i = 0; i < mPrograms.size(); i++)
-    {
-        if (mPrograms[i].mVariant == variant)
-        {
-            index = (int)i;
-            break;
-        }
-    }
-
-    if (index != -1)
-    {
-        mPrograms.erase(mPrograms.begin() + index);
+        i++;
     }
 }
 
 void Shader::compile()
 {
-    // Delete existing shader programs
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        this->unuse();
         Graphics::destroy(mPrograms[i].mHandle);
     }
 
-    // ensure that all shader programs have the default 'None' program variant
-    if (!contains(ShaderVariant::None))
-    {
-        this->add(static_cast<int>(ShaderVariant::None));
-    }
-
-    // determine which variants are possible based on keywords found in shader
-    const std::vector<std::string> keywords{"DIRECTIONALLIGHT", "SPOTLIGHT", "POINTLIGHT", "HARDSHADOWS",
-                                            "SOFTSHADOWS",      "SSAO",      "CASCADE"};
-
-    const std::map<const std::string, ShaderVariant> keywordToVariantMap{
-        {"DIRECTIONALLIGHT", ShaderVariant::Directional},
-        {"SPOTLIGHT", ShaderVariant::Spot},
-        {"POINTLIGHT", ShaderVariant::Point},
-        {"HARDSHADOWS", ShaderVariant::HardShadows},
-        {"SOFTSHADOWS", ShaderVariant::SoftShadows},
-        {"SSAO", ShaderVariant::SSAO},
-        {"CASCADE", ShaderVariant::Cascade}};
-
-    std::vector<ShaderVariant> temp;
-    for (size_t i = 0; i < keywords.size(); i++)
-    {
-        if (mVertexShader.find(keywords[i]) != std::string::npos ||
-            mGeometryShader.find(keywords[i]) != std::string::npos ||
-            mFragmentShader.find(keywords[i]) != std::string::npos)
-        {
-
-            std::map<std::string, ShaderVariant>::const_iterator it = keywordToVariantMap.find(keywords[i]);
-            if (it != keywordToVariantMap.end())
-            {
-                temp.push_back(it->second);
-            }
-        }
-    }
-
-    std::set<int> variantsToAdd;
-    std::stack<int> stack;
-    for (size_t i = 0; i < temp.size(); i++)
-    {
-        stack.push(temp[i]);
-    }
-
-    while (!stack.empty())
-    {
-        int current = stack.top();
-        stack.pop();
-
-        std::set<int>::iterator it = variantsToAdd.find(current);
-        if (it == variantsToAdd.end())
-        {
-            variantsToAdd.insert(current);
-        }
-
-        for (size_t i = 0; i < temp.size(); i++)
-        {
-            if (!(temp[i] & current))
-            {
-                stack.push(current | temp[i]);
-            }
-        }
-    }
-
-    // add variants from keywords found in shader strings in addition to any variants manually added using 'add' method
-    for (std::set<int>::iterator it = variantsToAdd.begin(); it != variantsToAdd.end(); it++)
-    {
-        this->add(*it);
-    }
-
-    // Compile all shader variants
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        std::string version;
-        if (mPrograms[i].mVersion == ShaderVersion::GL330)
-        {
-            version = "#version 330 core\n";
-        }
-        else
-        {
-            version = "#version 430 core\n";
-        }
-
-        std::string defines;
-        if (mPrograms[i].mVariant & ShaderVariant::Directional)
-        {
-            defines += "#define DIRECTIONALLIGHT\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::Spot)
-        {
-            defines += "#define SPOTLIGHT\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::Point)
-        {
-            defines += "#define POINTLIGHT\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::HardShadows)
-        {
-            defines += "#define HARDSHADOWS\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::SoftShadows)
-        {
-            defines += "#define SOFTSHADOWS\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::SSAO)
-        {
-            defines += "#define SSAO\n";
-        }
-        if (mPrograms[i].mVariant & ShaderVariant::Cascade)
-        {
-            defines += "#define CASCADE\n";
-        }
-
-        const std::string vert = version + defines + mVertexShader;
-        const std::string geom = version + defines + mGeometryShader;
-        const std::string frag = version + defines + mFragmentShader;
-
-        if (mGeometryShader.empty())
-        {
-            Graphics::compile(vert, frag, "", &(mPrograms[i].mHandle));
-        }
-        else
-        {
-            Graphics::compile(vert, frag, geom, &(mPrograms[i].mHandle));
-        }
-
-        // Mark shader program compilation successful
-        mPrograms[i].mCompiled = true;
+        Graphics::compile(mName,
+                          mPrograms[i].mVertexShader, 
+                          mPrograms[i].mFragmentShader, 
+                          mPrograms[i].mGeometryShader,
+                          &mPrograms[i].mHandle);
     }
 
-    // Mark all shader programs compiled successful
     mAllProgramsCompiled = true;
+
+    // Finally set camera and light uniform block binding points
+    this->setUniformBlock("CamerBlock", 0);
+    this->setUniformBlock("LightBlock", 1);
 
     // find all uniforms and attributes in shader across all variants
     std::set<std::string> uniformNames;
-    // for (size_t i = 0; i < mUniforms.size(); i++)
-    //{
-    //    uniformNames.insert(std::string(mUniforms[i].mName));
-    //}
     std::set<std::string> attributeNames;
-    // for (size_t i = 0; i < mAttributes.size(); i++)
-    //{
-    //    attributeNames.insert(std::string(mAttributes[i].mName));
-    //}
 
     mUniforms.clear();
     mMaterialUniforms.clear();
@@ -316,21 +194,22 @@ void Shader::compile()
     // run through all variants and find all uniforms/attributes (and add to sets of known uniforms/attributes if new)
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        GLuint program = mPrograms[i].mHandle;
+        unsigned int program = mPrograms[i].mHandle;
 
-        std::vector<Uniform> uniforms = Graphics::getUniforms(program);
+        std::vector<ShaderUniform> uniforms = Graphics::getShaderUniforms(program);
 
         for (size_t j = 0; j < uniforms.size(); j++)
         {
-            std::string name = std::string(uniforms[j].name);
+            std::string name = uniforms[j].mName;
+            ShaderUniformType type = uniforms[j].mType;
 
             std::set<std::string>::iterator it = uniformNames.find(name);
             if (it == uniformNames.end())
             {
                 ShaderUniform uniform;
                 uniform.mName = name;
-                uniform.mType = uniforms[j].type;
-                uniform.mLocation = findUniformLocation(uniform.mName, program);
+                uniform.mType = type;
+                uniform.mLocation = findUniformLocation(name, program);
                 memset(uniform.mData, '\0', 64);
 
                 mUniforms.push_back(uniform);
@@ -341,86 +220,8 @@ void Shader::compile()
                     mMaterialUniforms.push_back(uniform);
                 }
             }
-
-            // ShaderUniform uniform;
-            // uniform.mName = std::string(uniforms[j].name);
-            // uniform.mType = uniforms[j].type;
-            // uniform.mLocation = findUniformLocation(uniform.mName, program);
-            // memset(uniform.mData, '\0', 64);
-            //
-            //// only add uniform if it wasnt already in array
-            // std::set<std::string>::iterator it = uniformNames.find(uniform.mName);
-            // if (it == uniformNames.end())
-            //{
-            //    mUniforms.push_back(uniform);
-            //    uniformNames.insert(uniform.mName);
-            //}
-
-            // uniform.mNameLength = (size_t)uniforms[j].nameLength;
-            // uniform.mSize = (size_t)uniforms[j].size;
-
-            // memset(uniform.mData, '\0', 64);
-            // memset(uniform.mName, '\0', 32);
-            // memset(uniform.mShortName, '\0', 32);
-            // memset(uniform.mBlockName, '\0', 32);
-
-            // int indexOfBlockChar = -1;
-            // for (int k = 0; k < uniforms[j].nameLength; k++)
-            //{
-            //    uniform.mName[k] = uniforms[j].name[k];
-            //    if (uniforms[j].name[k] == '.')
-            //    {
-            //        indexOfBlockChar = k;
-            //    }
-            //}
-
-            // uniform.mShortName[0] = '\0';
-            // for (int k = indexOfBlockChar + 1; k < uniforms[j].nameLength; k++)
-            //{
-            //    uniform.mShortName[k - indexOfBlockChar - 1] = uniforms[j].name[k];
-            //}
-
-            // uniform.mBlockName[0] = '\0';
-            // for (int k = 0; k < indexOfBlockChar; k++)
-            //{
-            //    uniform.mBlockName[k] = uniforms[j].name[k];
-            //}
-
-            // uniform.mType = uniforms[j].type;
-            // uniform.mVariant = mPrograms[i].mVariant;
-            // uniform.mLocation = findUniformLocation(std::string(uniform.mName), program);
-
-            // only add uniform if it wasnt already in array
-            // std::set<std::string>::iterator it = uniformNames.find(std::string(uniform.mName));
-            // if (it == uniformNames.end())
-            //{
-            //    uniform.mIndex = mUniforms.size();
-            //    mUniforms.push_back(uniform);
-            //    uniformNames.insert(std::string(uniform.mName));
-            //}
         }
-
-        /*std::vector<Attribute> attributes = Graphics::getAttributes(program);
-        for (size_t j = 0; j < attributes.size(); j++)
-        {
-            ShaderAttribute attribute;
-            for (int k = 0; k < 32; k++)
-            {
-                attribute.mName[k] = attributes[j].name[k];
-            }
-
-            std::set<std::string>::iterator it = attributeNames.find(std::string(attribute.mName));
-            if (it == attributeNames.end())
-            {
-                mAttributes.push_back(attribute);
-                attributeNames.insert(std::string(attribute.mName));
-            }
-        }*/
     }
-
-    // Finally set camera and light uniform block binding points
-    this->setUniformBlock("CamerBlock", 0);
-    this->setUniformBlock("LightBlock", 1);
 }
 
 void Shader::use(int program)
@@ -472,7 +273,7 @@ int Shader::findUniformLocation(const std::string &name, int program) const
     return Graphics::findUniformLocation(name.c_str(), program);
 }
 
-int Shader::getProgramFromVariant(int variant) const
+int Shader::getProgramFromVariant(int64_t variant) const
 {
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
@@ -482,7 +283,6 @@ int Shader::getProgramFromVariant(int variant) const
         }
     }
 
-    // return mPrograms[0].mHandle;
     return -1;
 }
 

@@ -8,7 +8,6 @@
 #include "../../include/core/LoadInternal.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
-#include "../../include/core/WorldSerialization.h"
 
 using namespace PhysicsEngine;
 
@@ -23,7 +22,6 @@ World::~World()
 
 Asset *World::loadAssetFromYAML(const std::string &filePath)
 {
-    //YAML::Node in = YAML::LoadFile(filePath);
     YAML::Node in;
     try
     {

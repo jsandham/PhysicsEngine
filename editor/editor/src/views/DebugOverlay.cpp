@@ -203,7 +203,7 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
             //ImGui::Text("BlockName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mBlockName);
             //ImGui::Text("NameLength: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mNameLength).c_str());
             //ImGui::Text("Size: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mSize).c_str());
-            ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mType).c_str());
+            ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(static_cast<int>(uniforms[i].mType)).c_str());
             //ImGui::Text("Variant: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mVariant).c_str());
             ImGui::Text("Location: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mLocation).c_str());
             //ImGui::Text("Index: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mIndex).c_str());

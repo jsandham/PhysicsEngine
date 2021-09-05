@@ -89,15 +89,15 @@ class EditorCameraSystem : public System
     glm::vec2 distanceTraveledSinceLeftMouseClick() const;
     glm::vec2 distanceTraveledSinceRightMouseClick() const;
 
-    GLuint getNativeGraphicsMainFBO() const;
-    GLuint getNativeGraphicsColorTex() const;
-    GLuint getNativeGraphicsDepthTex() const;
-    GLuint getNativeGraphicsColorPickingTex() const;
-    GLuint getNativeGraphicsPositionTex() const;
-    GLuint getNativeGraphicsNormalTex() const;
-    GLuint getNativeGraphicsAlbedoSpecTex() const;
-    GLuint getNativeGraphicsSSAOColorTex() const;
-    GLuint getNativeGraphicsSSAONoiseTex() const;
+    unsigned int getNativeGraphicsMainFBO() const;
+    unsigned int getNativeGraphicsColorTex() const;
+    unsigned int getNativeGraphicsDepthTex() const;
+    unsigned int getNativeGraphicsColorPickingTex() const;
+    unsigned int getNativeGraphicsPositionTex() const;
+    unsigned int getNativeGraphicsNormalTex() const;
+    unsigned int getNativeGraphicsAlbedoSpecTex() const;
+    unsigned int getNativeGraphicsSSAOColorTex() const;
+    unsigned int getNativeGraphicsSSAONoiseTex() const;
 
     GraphicsQuery getQuery() const;
 

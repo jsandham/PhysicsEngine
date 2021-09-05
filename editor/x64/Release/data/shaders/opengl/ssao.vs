@@ -1,3 +1,4 @@
+#version 430 core
 in vec3 position;
 in vec2 texCoord;
 out vec2 TexCoord;

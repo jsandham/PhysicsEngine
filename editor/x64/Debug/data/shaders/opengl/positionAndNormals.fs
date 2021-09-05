@@ -1,3 +1,4 @@
+#version 430 core
 layout (location = 0) out vec3 positionTex;
 layout (location = 1) out vec3 normalTex;
 in vec3 FragPos;

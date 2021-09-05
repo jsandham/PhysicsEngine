@@ -9,24 +9,25 @@ namespace PhysicsEditor
 class Texture2DDrawer : public InspectorDrawer
 {
   private:
-    GLuint mFBO;
-    GLuint mColor;
-    GLuint mDepth;
+    unsigned int mFBO;
+    unsigned int mColor;
+    unsigned int mDepth;
 
-    GLuint mVAO;
-    GLuint mVBO;
+    unsigned int mVAO;
+    unsigned int mVBO;
 
-    GLuint mProgramR;
-    GLuint mProgramG;
-    GLuint mProgramB;
-    GLuint mProgramA;
+    unsigned int mProgramR;
+    unsigned int mProgramG;
+    unsigned int mProgramB;
+    unsigned int mProgramA;
+
     int mTexLocR;
     int mTexLocG;
     int mTexLocB;
     int mTexLocA;
 
     Guid mCurrentTexId;
-    GLint mDrawTex;
+    int mDrawTex;
 
   public:
     Texture2DDrawer();

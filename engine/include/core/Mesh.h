@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #include "Asset.h"
 #include "Guid.h"
 #include "Sphere.h"
@@ -20,14 +17,14 @@ namespace PhysicsEngine
 class Mesh : public Asset
 {
   private:
-    std::string mSource;
+    std::string mSourceFilepath;
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
-    GLuint mVao;
-    GLuint mVbo[3];
+    unsigned int mVao;
+    unsigned int mVbo[3];
     Sphere mBounds;
     bool mCreated;
     bool mChanged;
@@ -61,7 +58,7 @@ class Mesh : public Asset
     int getSubMeshEndIndex(int subMeshIndex) const;
     int getSubMeshCount() const;
     Sphere getBounds() const;
-    GLuint getNativeGraphicsVAO() const;
+    unsigned int getNativeGraphicsVAO() const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

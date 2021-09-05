@@ -1,3 +1,4 @@
+#version 430 core
 layout(std140) uniform LightBlock
 {
 	mat4 lightProjection[5]; // 0    64   128  192  256

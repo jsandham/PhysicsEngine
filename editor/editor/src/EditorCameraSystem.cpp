@@ -275,47 +275,47 @@ Guid EditorCameraSystem::getTransformUnderMouse(float nx, float ny) const
     return mCamera->getTransformIdAtScreenPos(x, y);
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsMainFBO() const
+unsigned int EditorCameraSystem::getNativeGraphicsMainFBO() const
 {
     return mCamera->getNativeGraphicsMainFBO();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsColorTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsColorTex() const
 {
     return mCamera->getNativeGraphicsColorTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsDepthTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsDepthTex() const
 {
     return mCamera->getNativeGraphicsDepthTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsColorPickingTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsColorPickingTex() const
 {
     return mCamera->getNativeGraphicsColorPickingTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsPositionTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsPositionTex() const
 {
     return mCamera->getNativeGraphicsPositionTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsNormalTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsNormalTex() const
 {
     return mCamera->getNativeGraphicsNormalTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsAlbedoSpecTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsAlbedoSpecTex() const
 {
     return mCamera->getNativeGraphicsAlbedoSpecTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsSSAOColorTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsSSAOColorTex() const
 {
     return mCamera->getNativeGraphicsSSAOColorTex();
 }
 
-GLuint EditorCameraSystem::getNativeGraphicsSSAONoiseTex() const
+unsigned int EditorCameraSystem::getNativeGraphicsSSAONoiseTex() const
 {
     return mCamera->getNativeGraphicsSSAONoiseTex();
 }

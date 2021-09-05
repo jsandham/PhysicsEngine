@@ -134,6 +134,7 @@ template <> struct convert<glm::quat>
         return true;
     }
 };
+
 } // namespace YAML
 
 #endif

@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <iostream>
 
+#include <GL/glew.h>
+#include <gl/gl.h>
+
 #include "../../include/core/Font.h"
 #include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"

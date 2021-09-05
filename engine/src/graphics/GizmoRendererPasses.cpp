@@ -20,17 +20,17 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
     state.mGridShader->compile();
 
     // cache internal shader uniforms
-    state.mLineShaderProgram = state.mLineShader->getProgramFromVariant(ShaderVariant::None);
+    state.mLineShaderProgram = state.mLineShader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
     state.mLineShaderMVPLoc = state.mLineShader->findUniformLocation("mvp", state.mLineShaderProgram);
 
-    state.mGizmoShaderProgram = state.mGizmoShader->getProgramFromVariant(ShaderVariant::None);
+    state.mGizmoShaderProgram = state.mGizmoShader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
     state.mGizmoShaderColorLoc = state.mGizmoShader->findUniformLocation("color", state.mGizmoShaderProgram);
     state.mGizmoShaderLightPosLoc = state.mGizmoShader->findUniformLocation("lightPos", state.mGizmoShaderProgram);
     state.mGizmoShaderModelLoc = state.mGizmoShader->findUniformLocation("model", state.mGizmoShaderProgram);
     state.mGizmoShaderViewLoc = state.mGizmoShader->findUniformLocation("view", state.mGizmoShaderProgram);
     state.mGizmoShaderProjLoc = state.mGizmoShader->findUniformLocation("projection", state.mGizmoShaderProgram);
 
-    state.mGridShaderProgram = state.mGridShader->getProgramFromVariant(ShaderVariant::None);
+    state.mGridShaderProgram = state.mGridShader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
     state.mGridShaderMVPLoc = state.mGridShader->findUniformLocation("mvp", state.mGridShaderProgram);
     state.mGridShaderColorLoc = state.mGridShader->findUniformLocation("color", state.mGridShaderProgram);
 

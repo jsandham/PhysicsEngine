@@ -28,22 +28,22 @@ void MaterialUtil::copyMaterialTo(World *srcWorld, Material *srcMat, World *dest
         // Note: matrices not supported
         switch (uniforms[i].mType)
         {
-        case GL_INT:
+        case ShaderUniformType::Int/*GL_INT*/:
             destMat->setInt(uniforms[i].mName, srcMat->getInt(uniforms[i].mName));
             break;
-        case GL_FLOAT:
+        case ShaderUniformType::Float/*GL_FLOAT*/:
             destMat->setFloat(uniforms[i].mName, srcMat->getFloat(uniforms[i].mName));
             break;
-        case GL_FLOAT_VEC2:
+        case ShaderUniformType::Vec2/*GL_FLOAT_VEC2*/:
             destMat->setVec2(uniforms[i].mName, srcMat->getVec2(uniforms[i].mName));
             break;
-        case GL_FLOAT_VEC3:
+        case ShaderUniformType::Vec3/*GL_FLOAT_VEC3*/:
             destMat->setVec3(uniforms[i].mName, srcMat->getVec3(uniforms[i].mName));
             break;
-        case GL_FLOAT_VEC4:
+        case ShaderUniformType::Vec4/*GL_FLOAT_VEC4*/:
             destMat->setVec4(uniforms[i].mName, srcMat->getVec4(uniforms[i].mName));
             break;
-        case GL_SAMPLER_2D:
+        case ShaderUniformType::Sampler2D/*GL_SAMPLER_2D*/:
             destMat->setTexture(uniforms[i].mName, srcMat->getTexture(uniforms[i].mName));
             break;
         }

@@ -184,32 +184,32 @@ glm::mat4 Light::getProjMatrix() const
     return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, 0.1f, 12.0f);
 }
 
-GLuint Light::getNativeGraphicsShadowCascadeFBO(int index) const
+unsigned int Light::getNativeGraphicsShadowCascadeFBO(int index) const
 {
     return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))];
 }
 
-GLuint Light::getNativeGraphicsShadowSpotlightFBO() const
+unsigned int Light::getNativeGraphicsShadowSpotlightFBO() const
 {
     return mTargets.mShadowSpotlightFBO;
 }
 
-GLuint Light::getNativeGraphicsShadowCubemapFBO() const
+unsigned int Light::getNativeGraphicsShadowCubemapFBO() const
 {
     return mTargets.mShadowCubemapFBO;
 }
 
-GLuint Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
+unsigned int Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
 {
     return mTargets.mShadowCascadeDepthTex[std::min(4, std::max(0, index))];
 }
 
-GLuint Light::getNativeGrpahicsShadowSpotlightDepthTex() const
+unsigned int Light::getNativeGrpahicsShadowSpotlightDepthTex() const
 {
     return mTargets.mShadowSpotlightDepthTex;
 }
 
-GLuint Light::getNativeGraphicsShadowCubemapDepthTex() const
+unsigned int Light::getNativeGraphicsShadowCubemapDepthTex() const
 {
     return mTargets.mShadowCubemapDepthTex;
 }

@@ -1,3 +1,4 @@
+#version 430 core
 uniform int wireframe;
 in vec3 FragPos;
 in vec3 Normal;

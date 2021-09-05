@@ -1,6 +1,8 @@
 #ifndef MATERIAL_H__
 #define MATERIAL_H__
 
+#include <string>
+
 #include "Asset.h"
 #include "Guid.h"
 #include "Shader.h"

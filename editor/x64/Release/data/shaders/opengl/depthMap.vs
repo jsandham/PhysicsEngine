@@ -1,3 +1,4 @@
+#version 430 core
 layout (std140) uniform CameraBlock
 {
 	mat4 projection;
