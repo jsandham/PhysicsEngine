@@ -48,40 +48,40 @@ float CalcShadow(int index, vec4 fragPosLightSpace);
 void main(void)
 {
 	vec3 viewDir = normalize(CameraPos - FragPos);
-//#if defined(DIRECTIONALLIGHT)
+#if defined(DIRECTIONALLIGHT)
 	FragColor = vec4(CalcDirLight(material, Normal, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
-//#elif defined(SPOTLIGHT)
-//	FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
-//#elif defined(POINTLIGHT)
-//	FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
-//#else
-//	FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-//#endif
-//#if defined(DIRECTIONALLIGHT) && defined(CASCADE)
-//	if (ClipSpaceZ <= Light.cascadeEnds[0]) {
-//		FragColor = FragColor * vec4(1.0f, 0.0f, 0.0f, 1.0f);
-//	}
-//	else if (ClipSpaceZ <= Light.cascadeEnds[1]) {
-//		FragColor = FragColor * vec4(0.0f, 1.0f, 0.0f, 1.0f);
-//	}
-//	else if (ClipSpaceZ <= Light.cascadeEnds[2]) {
-//		FragColor = FragColor * vec4(0.0f, 0.0f, 1.0f, 1.0f);
-//	}
-//	else if (ClipSpaceZ <= Light.cascadeEnds[3]) {
-//		FragColor = FragColor * vec4(0.0f, 1.0f, 1.0f, 1.0f);
-//	}
-//	else if (ClipSpaceZ <= Light.cascadeEnds[4]) {
-//		FragColor = FragColor * vec4(0.6f, 0.0f, 0.6f, 1.0f);
-//	}
-//	else {
-//		FragColor = vec4(0.5, 0.5, 0.5, 1.0);
-//	}
-//#endif\n"
+#elif defined(SPOTLIGHT)
+	FragColor = vec4(CalcSpotLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+#elif defined(POINTLIGHT)
+	FragColor = vec4(CalcPointLight(material, Normal, FragPos, viewDir), 1.0f) * texture(material.mainTexture, TexCoord);
+#else
+	FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+#endif
+#if defined(DIRECTIONALLIGHT) && defined(CASCADE)
+	if (ClipSpaceZ <= Light.cascadeEnds[0]) {
+		FragColor = FragColor * vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else if (ClipSpaceZ <= Light.cascadeEnds[1]) {
+		FragColor = FragColor * vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	}
+	else if (ClipSpaceZ <= Light.cascadeEnds[2]) {
+		FragColor = FragColor * vec4(0.0f, 0.0f, 1.0f, 1.0f);
+	}
+	else if (ClipSpaceZ <= Light.cascadeEnds[3]) {
+		FragColor = FragColor * vec4(0.0f, 1.0f, 1.0f, 1.0f);
+	}
+	else if (ClipSpaceZ <= Light.cascadeEnds[4]) {
+		FragColor = FragColor * vec4(0.6f, 0.0f, 0.6f, 1.0f);
+	}
+	else {
+		FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+	}
+#endif
 }
 vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir)
 {
 	vec3 norm = normalize(normal);
-	vec3 lightDir = normalize(Light.direction);
+	vec3 lightDir = normalize(-Light.direction);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float ambientStrength = 1.0f;
 	float diffuseStrength = max(dot(norm, lightDir), 0.0);

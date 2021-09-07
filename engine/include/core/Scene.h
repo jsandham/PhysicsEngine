@@ -11,6 +11,7 @@ class Scene : public Object
 {
   private:
     std::string mName;
+    std::string mVersion;
 
   public:
     Scene(World *world);

@@ -16,6 +16,7 @@ class LineRenderer : public Component
   public:
     glm::vec3 mStart;
     glm::vec3 mEnd;
+    bool mEnabled;
 
     Guid mMaterialId;
 

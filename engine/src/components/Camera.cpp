@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "../../include/components/Camera.h"
-#include "../../include/core/Serialization.h"
+//#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;
@@ -38,8 +38,8 @@ Camera::Camera(World* world) : Component(world)
 
     mViewport.mX = 0;
     mViewport.mY = 0;
-    mViewport.mWidth = 1024;
-    mViewport.mHeight = 1024;
+    mViewport.mWidth = 1920;
+    mViewport.mHeight = 1080;
 
     mBackgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
 
@@ -51,6 +51,7 @@ Camera::Camera(World* world) : Component(world)
     mProjMatrix =
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
+    mEnabled = true;
     mIsCreated = false;
     mIsViewportChanged = false;
 }
@@ -87,8 +88,8 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
 
     mViewport.mX = 0;
     mViewport.mY = 0;
-    mViewport.mWidth = 1024;
-    mViewport.mHeight = 1024;
+    mViewport.mWidth = 1920;
+    mViewport.mHeight = 1080;
 
     mBackgroundColor = glm::vec4(0.15f, 0.15f, 0.15f, 1.0f);
 
@@ -100,6 +101,7 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
     mProjMatrix =
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
+    mEnabled = true;
     mIsCreated = false;
     mIsViewportChanged = false;
 }
@@ -120,6 +122,7 @@ void Camera::serialize(YAML::Node &out) const
     out["viewport"] = mViewport;
     out["frustum"] = mFrustum;
     out["backgroundColor"] = mBackgroundColor;
+    out["enabled"] = mEnabled;
 }
 
 void Camera::deserialize(const YAML::Node &in)
@@ -134,6 +137,7 @@ void Camera::deserialize(const YAML::Node &in)
     mViewport = YAML::getValue<Viewport>(in, "viewport");
     mFrustum = YAML::getValue<Frustum>(in, "frustum");
     mBackgroundColor = YAML::getValue<Color>(in, "backgroundColor");
+    mEnabled = YAML::getValue<bool>(in, "enabled");
 
     mProjMatrix =
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);

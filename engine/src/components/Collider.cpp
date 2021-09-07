@@ -6,10 +6,12 @@ using namespace PhysicsEngine;
 
 Collider::Collider(World* world) : Component(world)
 {
+    mEnabled = true;
 }
 
 Collider::Collider(World* world, Guid id) : Component(world, id)
 {
+    mEnabled = true;
 }
 
 Collider::~Collider()
@@ -19,9 +21,13 @@ Collider::~Collider()
 void Collider::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
+
+    out["enabled"] = mEnabled;
 }
 
 void Collider::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
+
+    mEnabled = YAML::getValue<bool>(in, "enabled");
 }

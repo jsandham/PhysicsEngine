@@ -1,14 +1,17 @@
 #include "../../include/core/Scene.h"
 #include "../../include/core/Types.h"
+#include "../../include/core/Version.h"
 
 using namespace PhysicsEngine;
 
 Scene::Scene(World *world) : Object(world)
 {
+    mVersion = SCENE_VERSION;
 }
 
 Scene::Scene(World *world, Guid id) : Object(world, id)
 {
+    mVersion = SCENE_VERSION;
 }
 
 Scene::~Scene()
@@ -18,11 +21,15 @@ Scene::~Scene()
 void Scene::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
+
+    out["version"] = mVersion;
 }
 
 void Scene::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
+
+    mVersion = YAML::getValue<std::string>(in, "version");
 }
 
 int Scene::getType() const

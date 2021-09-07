@@ -14,10 +14,11 @@ namespace PhysicsEngine
 class Rigidbody : public Component
 {
   public:
-    bool mUseGravity;
     float mMass;
     float mDrag;
     float mAngularDrag;
+    bool mUseGravity;
+    bool mEnabled;
 
     glm::vec3 mVelocity;
     glm::vec3 mAngularVelocity;

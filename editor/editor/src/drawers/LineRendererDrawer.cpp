@@ -46,6 +46,12 @@ void LineRendererDrawer::render(Clipboard &clipboard, Guid id)
 
                 lineRenderer->mEnd = end;
             }
+
+            bool enabled = lineRenderer->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                lineRenderer->mEnabled = enabled;
+            }
         }
 
         ImGui::TreePop();

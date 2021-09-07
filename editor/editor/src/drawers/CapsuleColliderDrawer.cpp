@@ -46,6 +46,12 @@ void CapsuleColliderDrawer::render(Clipboard &clipboard, Guid id)
 
                 ImGui::TreePop();
             }
+
+            bool enabled = capsuleCollider->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                capsuleCollider->mEnabled = enabled;
+            }
         }
 
         ImGui::TreePop();

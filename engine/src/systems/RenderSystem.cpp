@@ -80,18 +80,21 @@ void RenderSystem::update(const Input &input, const Time &time)
     {
         Camera *camera = mWorld->getComponentByIndex<Camera>(i);
 
-        cullRenderObjects(camera);
-
-        buildRenderQueue();
-        sortRenderQueue();
-
-        if (camera->mRenderPath == RenderPath::Forward)
+        if (camera->mEnabled)
         {
-            mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
-        }
-        else
-        {
-            mDeferredRenderer.update(input, camera, mRenderObjects);
+            cullRenderObjects(camera);
+
+            buildRenderQueue();
+            sortRenderQueue();
+
+            if (camera->mRenderPath == RenderPath::Forward)
+            {
+                mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
+            }
+            else
+            {
+                mDeferredRenderer.update(input, camera, mRenderObjects);
+            }
         }
     }
 }
@@ -238,7 +241,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
             Transform *transform = meshRenderer->getComponent<Transform>();
             Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
-            if (transform == nullptr)
+            if (transform == nullptr || mesh == nullptr)
             {
                 continue;
             }

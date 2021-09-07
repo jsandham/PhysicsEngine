@@ -57,6 +57,7 @@ class Light : public Component
     float mShadowStrength;
     LightType mLightType;
     ShadowType mShadowType;
+    bool mEnabled;
 
   private:
     bool mIsShadowMapResolutionChanged;

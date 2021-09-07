@@ -1,9 +1,6 @@
 #ifndef FORWARD_RENDERER_STATE_H__
 #define FORWARD_RENDERER_STATE_H__
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #include "../core/Shader.h"
 
 #include "Graphics.h"
@@ -76,8 +73,8 @@ struct ForwardRendererState
     int mSpriteImageLoc;
 
     // quad
-    GLuint mQuadVAO;
-    GLuint mQuadVBO;
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
 };
 } // namespace PhysicsEngine
 

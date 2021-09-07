@@ -50,12 +50,15 @@ void GizmoSystem::update(const Input &input, const Time &time)
     {
         Camera *camera = mWorld->getComponentByIndex<Camera>(i);
 
-        if (camera->mGizmos == CameraGizmos::Gizmos_On)
+        if (camera->mEnabled)
         {
-            mGizmoRenderer.update(camera);
-        }
+            if (camera->mGizmos == CameraGizmos::Gizmos_On)
+            {
+                mGizmoRenderer.update(camera);
+            }
 
-        mGizmoRenderer.drawGrid(camera);
+            mGizmoRenderer.drawGrid(camera);
+        }
     }
 }
 

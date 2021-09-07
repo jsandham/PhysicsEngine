@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "../../include/core/Log.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
 #include "../../include/graphics/Graphics.h"

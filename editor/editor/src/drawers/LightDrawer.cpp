@@ -98,6 +98,12 @@ void LightDrawer::render(Clipboard &clipboard, Guid id)
                 light->mShadowStrength = shadowStrength;
             }
 
+            bool enabled = light->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                light->mEnabled = enabled;
+            }
+
             const char* lightTypes[] = { "Directional", "Spot", "Point" };
             int lightTypeIndex = static_cast<int>(light->mLightType);
             if (ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes)))

@@ -51,6 +51,12 @@ void SphereColliderDrawer::render(Clipboard &clipboard, Guid id)
 
                 ImGui::TreePop();
             }
+
+            bool enabled = sphereCollider->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                sphereCollider->mEnabled = enabled;
+            }
         }
 
         ImGui::TreePop();

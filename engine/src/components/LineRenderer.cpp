@@ -8,6 +8,7 @@ LineRenderer::LineRenderer(World* world) : Component(world)
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
+    mEnabled = true;
 
     mMaterialId = Guid::INVALID;
 }
@@ -16,6 +17,7 @@ LineRenderer::LineRenderer(World* world, Guid id) : Component(world, id)
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);
+    mEnabled = true;
 
     mMaterialId = Guid::INVALID;
 }
@@ -31,6 +33,8 @@ void LineRenderer::serialize(YAML::Node &out) const
     out["materialId"] = mMaterialId;
     out["start"] = mStart;
     out["end"] = mEnd;
+    out["enabled"] = mEnabled;
+
 }
 
 void LineRenderer::deserialize(const YAML::Node &in)
@@ -40,6 +44,7 @@ void LineRenderer::deserialize(const YAML::Node &in)
     mMaterialId = YAML::getValue<Guid>(in, "materialId");
     mStart = YAML::getValue<glm::vec3>(in, "start");
     mEnd = YAML::getValue<glm::vec3>(in, "end");
+    mEnabled = YAML::getValue<bool>(in, "enabled");
 }
 
 int LineRenderer::getType() const

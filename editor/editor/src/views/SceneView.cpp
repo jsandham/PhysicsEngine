@@ -98,14 +98,16 @@ void SceneView::update(Clipboard &clipboard)
     const char* textureNames[] = { "Color",    "Color Picking",   "Depth", "Normals",
                                     "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
 
-    const GLint textures[] = { static_cast<GLint>(cameraSystem->getNativeGraphicsColorTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsColorPickingTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsDepthTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsNormalTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsPositionTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsAlbedoSpecTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsSSAOColorTex()),
-                                static_cast<GLint>(cameraSystem->getNativeGraphicsSSAONoiseTex()) };
+    const unsigned int textures[] = { cameraSystem->getNativeGraphicsColorTex(),
+                                      cameraSystem->getNativeGraphicsColorPickingTex(),
+                                      cameraSystem->getNativeGraphicsDepthTex(),
+                                      cameraSystem->getNativeGraphicsNormalTex(),
+                                      cameraSystem->getNativeGraphicsPositionTex(),
+                                      cameraSystem->getNativeGraphicsAlbedoSpecTex(),
+                                      cameraSystem->getNativeGraphicsSSAOColorTex(),
+                                      cameraSystem->getNativeGraphicsSSAONoiseTex() };
+
+    ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
 
     // select draw texture dropdown
     if (ImGui::BeginCombo("##DrawTexture", textureNames[mActiveTextureIndex]))
@@ -137,6 +139,7 @@ void SceneView::update(Clipboard &clipboard)
         }
         ImGui::EndCombo();
     }
+    ImGui::PopItemWidth();
     ImGui::SameLine();
 
     // whether to render gizmos or not
@@ -179,6 +182,18 @@ void SceneView::update(Clipboard &clipboard)
         scaleModeActive = true;
         operation = ImGuizmo::OPERATION::SCALE;
     }
+    ImGui::SameLine();
+
+    std::vector<std::string> worldLocalNames = {"Local", "World"};
+    ImGui::PushItemWidth(0.1f * ImGui::GetWindowSize().x);
+
+    static int gizmoMode = static_cast<int>(ImGuizmo::MODE::LOCAL);
+    if (ImGui::Combo("##world/local", &gizmoMode, worldLocalNames))
+    {
+
+    }
+
+    ImGui::PopItemWidth();
     ImGui::SameLine();
 
     // editor camera settings
@@ -314,22 +329,36 @@ void SceneView::update(Clipboard &clipboard)
             glm::mat4 projection = clipboard.mEditorCameraSystem->getProjMatrix();
             glm::mat4 model = transform->getModelMatrix();
 
+            ImGuizmo::AllowAxisFlip(false);
+
             ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation,
-                ImGuizmo::MODE::WORLD, glm::value_ptr(model), NULL, NULL);
+                static_cast<ImGuizmo::MODE>(gizmoMode), glm::value_ptr(model), NULL, NULL);
 
             if (ImGuizmo::IsUsing())
             {
                 glm::vec3 scale;
                 glm::quat rotation;
                 glm::vec3 translation;
-            
-                Transform::decompose(model, translation, rotation, scale);
 
-                rotation = glm::conjugate(rotation);
+                Transform::decompose(model, translation, rotation, scale);
 
                 transform->mPosition = translation;
                 transform->mScale = scale;
                 transform->mRotation = rotation;
+            }
+
+            Camera* camera = clipboard.getWorld()->getComponent<Camera>(clipboard.getSelectedId());
+            if (camera != nullptr && camera->mEnabled)
+            {
+                camera->computeViewMatrix(transform->mPosition, transform->getForward(), transform->getUp());
+
+                ImVec2 min = mSceneContentMin;
+                ImVec2 max = mSceneContentMax;
+
+                min.x += 0.6f * getWindowWidth();
+                min.y += 0.6f * getWindowHeight();
+
+                ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camera->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
             }
         }
     }

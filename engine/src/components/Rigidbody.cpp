@@ -7,6 +7,7 @@ using namespace PhysicsEngine;
 Rigidbody::Rigidbody(World* world) : Component(world)
 {
     mUseGravity = true;
+    mEnabled = true;
     mMass = 1.0f;
     mDrag = 0.0f;
     mAngularDrag = 0.05f;
@@ -22,6 +23,7 @@ Rigidbody::Rigidbody(World* world) : Component(world)
 Rigidbody::Rigidbody(World* world, Guid id) : Component(world, id)
 {
     mUseGravity = true;
+    mEnabled = true;
     mMass = 1.0f;
     mDrag = 0.0f;
     mAngularDrag = 0.05f;
@@ -43,6 +45,7 @@ void Rigidbody::serialize(YAML::Node &out) const
     Component::serialize(out);
 
     out["useGravity"] = mUseGravity;
+    out["enabled"] = mEnabled;
     out["mass"] = mMass;
     out["drag"] = mDrag;
     out["angularDrag"] = mAngularDrag;
@@ -56,6 +59,7 @@ void Rigidbody::deserialize(const YAML::Node &in)
     Component::deserialize(in);
 
     mUseGravity = YAML::getValue<bool>(in, "useGravity");
+    mEnabled = YAML::getValue<bool>(in, "enabled");
     mMass = YAML::getValue<float>(in, "mass");
     mDrag = YAML::getValue<float>(in, "drag");
     mAngularDrag = YAML::getValue<float>(in, "angularDrag");

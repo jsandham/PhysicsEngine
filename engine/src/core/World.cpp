@@ -137,8 +137,7 @@ bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) c
     }
 
     YAML::Node sceneNode;
-    sceneNode["type"] = scene->getType();
-    sceneNode["id"] = scene->getId();
+    scene->serialize(sceneNode);
 
     out << sceneNode;
     out << "\n";

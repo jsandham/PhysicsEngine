@@ -28,6 +28,12 @@ void MeshColliderDrawer::render(Clipboard &clipboard, Guid id)
         if (meshCollider != nullptr)
         {
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
+
+            bool enabled = meshCollider->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                meshCollider->mEnabled = enabled;
+            }
         }
 
         ImGui::TreePop();

@@ -84,6 +84,8 @@ class Camera : public Component
 
     GraphicsQuery mQuery;
 
+    bool mEnabled;
+
   private:
     Frustum mFrustum;
     Viewport mViewport;

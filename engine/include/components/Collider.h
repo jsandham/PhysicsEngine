@@ -15,6 +15,9 @@ namespace PhysicsEngine
 class Collider : public Component
 {
   public:
+    bool mEnabled;
+
+  public:
     Collider(World *world);
     Collider(World *world, Guid id);
     ~Collider();

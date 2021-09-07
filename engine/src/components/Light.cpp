@@ -24,6 +24,7 @@ Light::Light(World* world) : Component(world)
     mShadowType = ShadowType::Hard;
 
     mIsCreated = false;
+    mEnabled = true;
     mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
@@ -63,6 +64,7 @@ Light::Light(World* world, Guid id) : Component(world, id)
     mShadowType = ShadowType::Hard;
 
     mIsCreated = false;
+    mEnabled = true;
     mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
@@ -104,6 +106,7 @@ void Light::serialize(YAML::Node &out) const
     out["lightType"] = mLightType;
     out["shadowType"] = mShadowType;
     out["shadowMapResolution"] = mShadowMapResolution;
+    out["enabled"] = mEnabled;
 }
 
 void Light::deserialize(const YAML::Node &in)
@@ -122,7 +125,7 @@ void Light::deserialize(const YAML::Node &in)
     mLightType = YAML::getValue<LightType>(in, "lightType");
     mShadowType = YAML::getValue<ShadowType>(in, "shadowType");
     mShadowMapResolution = YAML::getValue<ShadowMapResolution>(in, "shadowMapResolution");
-
+    mEnabled = YAML::getValue<bool>(in, "enabled");
     mIsShadowMapResolutionChanged = true;
 }
 

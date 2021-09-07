@@ -17,6 +17,7 @@ class Entity : public Object
 
   public:
     bool mDoNotDestroy;
+    bool mEnabled;
 
   public:
     Entity(World *world);

@@ -47,11 +47,15 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
     for (size_t j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
     {
         Light *light = mWorld->getComponentByIndex<Light>(j);
-        Transform *lightTransform = light->getComponent<Transform>();
+        
+        if (light->mEnabled)
+        {
+            Transform* lightTransform = light->getComponent<Transform>();
 
-        renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
-        renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
-        renderTransparents();
+            renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+            renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+            renderTransparents();
+        }
     }
 
     renderSprites(mWorld, camera, mState, spriteObjects);

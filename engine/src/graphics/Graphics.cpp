@@ -1168,6 +1168,15 @@ void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geo
     }
 
     frag = version + defines + shader;
+
+    //pos = geom.find('\n');
+    //if (pos != std::string::npos)
+    //{
+    //    version = geom.substr(0, pos + 1);
+    //    shader = geom.substr(pos + 1);
+    //}
+
+    //geom = version + defines + shader;
 }
 
 bool Graphics::compile(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom, unsigned int *program)

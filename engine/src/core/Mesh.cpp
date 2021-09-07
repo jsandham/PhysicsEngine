@@ -178,17 +178,21 @@ void Mesh::load(const std::string &filepath)
                 vy3 = y;
                 vz3 = z;
 
-                float qx = 0.0f, qy = 0.0f, qz = 0.0f;
                 float px = 0.0f, py = 0.0f, pz = 0.0f;
-                // Calculate q vector
-                qx = vx2 - vx1;
-                qy = vy2 - vy1;
-                qz = vz2 - vz1;
+                float qx = 0.0f, qy = 0.0f, qz = 0.0f;
                 // Calculate p vector
-                px = vx3 - vx1;
-                py = vy3 - vy1;
-                pz = vz3 - vz1;
-                // Calculate normal
+                px = vx2 - vx1;
+                py = vy2 - vy1;
+                pz = vz2 - vz1;
+                // Calculate q vector
+                qx = vx3 - vx1;
+                qy = vy3 - vy1;
+                qz = vz3 - vz1;
+
+                // Calculate normal (p x q)
+                // i  j  k 
+                // px py pz
+                // qx qy qz
                 nx = py * qz - pz * qy;
                 ny = pz * qx - px * qz;
                 nz = px * qy - py * qx;

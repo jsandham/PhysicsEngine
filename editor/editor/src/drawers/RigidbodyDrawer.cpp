@@ -63,6 +63,12 @@ void RigidbodyDrawer::render(Clipboard &clipboard, Guid id)
 
                 rigidbody->mAngularDrag = angularDrag;
             }
+
+            bool enabled = rigidbody->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                rigidbody->mEnabled = enabled;
+            }
         }
         
         ImGui::TreePop();
