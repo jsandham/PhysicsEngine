@@ -50,10 +50,6 @@ class Light : public Component
     float mIntensity;
     float mSpotAngle;
     float mInnerSpotAngle;
-    float mShadowNearPlane;
-    float mShadowFarPlane;
-    float mShadowAngle;
-    float mShadowRadius;
     float mShadowStrength;
     LightType mLightType;
     ShadowType mShadowType;

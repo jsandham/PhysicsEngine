@@ -70,12 +70,6 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
                 camera->mBackgroundColor = Color(backgroundColor);
             }
 
-            bool enabled = camera->mEnabled;
-            if (ImGui::Checkbox("Enabled?", &enabled))
-            {
-                camera->mEnabled = enabled;
-            }
-
             if (ImGui::TreeNode("Viewport"))
             {
                 int x = camera->getViewport().mX;
@@ -134,6 +128,13 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
 
                 ImGui::TreePop();
             }
+
+            bool enabled = camera->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                camera->mEnabled = enabled;
+            }
+
         }
 
         ImGui::TreePop();

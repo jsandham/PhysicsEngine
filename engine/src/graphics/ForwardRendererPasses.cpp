@@ -302,10 +302,6 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     state.mLightState.mIntensity = light->mIntensity;
     state.mLightState.mSpotAngle = light->mSpotAngle;
     state.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
-    state.mLightState.mShadowNearPlane = light->mShadowNearPlane;
-    state.mLightState.mShadowFarPlane = light->mShadowFarPlane;
-    state.mLightState.mShadowAngle = light->mShadowAngle;
-    state.mLightState.mShadowRadius = light->mShadowRadius;
     state.mLightState.mShadowStrength = light->mShadowStrength;
 
     if (light->mLightType == LightType::Directional)

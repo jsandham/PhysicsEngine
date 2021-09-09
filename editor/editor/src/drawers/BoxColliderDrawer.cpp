@@ -31,12 +31,6 @@ void BoxColliderDrawer::render(Clipboard &clipboard, Guid id)
         {
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            bool enabled = boxCollider->mEnabled;
-            if (ImGui::Checkbox("Enabled?", &enabled))
-            {
-                boxCollider->mEnabled = enabled;
-            }
-
             if (ImGui::TreeNode("Bounds"))
             {
                 glm::vec3 centre = boxCollider->mAABB.mCentre;
@@ -56,6 +50,12 @@ void BoxColliderDrawer::render(Clipboard &clipboard, Guid id)
                 }
 
                 ImGui::TreePop();
+            }
+
+            bool enabled = boxCollider->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                boxCollider->mEnabled = enabled;
             }
         }
 

@@ -59,22 +59,6 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
                 clipboard.setSelectedItem(InteractionType::Mesh, meshId);
             }
 
-            bool isStatic = meshRenderer->mIsStatic;
-            if (ImGui::Checkbox("Is Static?", &isStatic))
-            {
-                Undo::recordComponent(meshRenderer);
-
-                meshRenderer->mIsStatic = isStatic;
-            }
-
-            bool enabled = meshRenderer->mEnabled;
-            if (ImGui::Checkbox("Enabled?", &enabled))
-            {
-                Undo::recordComponent(meshRenderer);
-
-                meshRenderer->mEnabled = enabled;
-            }
-
             // Materials
             int materialCount = meshRenderer->mMaterialCount;
             const int increment = 1;
@@ -116,6 +100,22 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
                 {
                     clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
                 }
+            }
+
+            bool isStatic = meshRenderer->mIsStatic;
+            if (ImGui::Checkbox("Is Static?", &isStatic))
+            {
+                Undo::recordComponent(meshRenderer);
+
+                meshRenderer->mIsStatic = isStatic;
+            }
+
+            bool enabled = meshRenderer->mEnabled;
+            if (ImGui::Checkbox("Enabled?", &enabled))
+            {
+                Undo::recordComponent(meshRenderer);
+
+                meshRenderer->mEnabled = enabled;
             }
         }
 

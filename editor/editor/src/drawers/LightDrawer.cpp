@@ -31,134 +31,99 @@ void LightDrawer::render(Clipboard &clipboard, Guid id)
         {
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            glm::vec4 color = light->mColor;
-
-            if (ImGui::InputFloat4("Color", glm::value_ptr(color)))
+            const char* lightTypes[] = { "Directional", "Spot", "Point" };
+            int lightTypeIndex = static_cast<int>(light->mLightType);
+            if (ImGui::Combo("Light Type", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes)))
             {
-                Undo::recordComponent(light);
+                light->mLightType = static_cast<LightType>(lightTypeIndex);
+            }
 
+            glm::vec4 color = light->mColor;
+            if (ImGui::ColorEdit4("Light Color", glm::value_ptr(color)))
+            {
                 light->mColor = color;
             }
 
             float intensity = light->mIntensity;
-            float spotAngle = light->mSpotAngle;
-            float innerSpotAngle = light->mInnerSpotAngle;
-            float shadowNearPlane = light->mShadowNearPlane;
-            float shadowFarPlane = light->mShadowFarPlane;
-            float shadowAngle = light->mShadowAngle;
-            float shadowRadius = light->mShadowRadius;
-            float shadowStrength = light->mShadowStrength;
-
             if (ImGui::InputFloat("Intensity", &intensity))
             {
-                Undo::recordComponent(light);
-
-                light->mIntensity = intensity;
+                light->mIntensity = std::max(0.0f, intensity);
             }
-            if (ImGui::InputFloat("Spot Angle", &spotAngle))
-            {
-                Undo::recordComponent(light);
 
-                light->mSpotAngle = spotAngle;
+            if (light->mLightType == LightType::Spot)
+            {
+                float spotAngleRad = glm::radians(light->mSpotAngle);
+                float innerSpotAngleRad = glm::radians(light->mInnerSpotAngle);
+
+                if (ImGui::SliderAngle("Spot Angle", &spotAngleRad, 0.0f, 179.0f))
+                {
+                    light->mSpotAngle = glm::degrees(spotAngleRad);
+                }
+                if (ImGui::SliderAngle("Inner Spot Angle", &innerSpotAngleRad, 0.0f, 179.0f))
+                {
+                    light->mInnerSpotAngle = glm::degrees(innerSpotAngleRad);
+                }
             }
-            if (ImGui::InputFloat("Inner Spot Angle", &innerSpotAngle))
-            {
-                Undo::recordComponent(light);
 
-                light->mInnerSpotAngle = innerSpotAngle;
+            const char* shadowTypes[] = { "Hard Shadows", "Soft Shadows", "No Shadows" };
+            int shadowTypeIndex = static_cast<int>(light->mShadowType);
+            if (ImGui::Combo("Shadow Type", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes)))
+            {
+                light->mShadowType = static_cast<ShadowType>(shadowTypeIndex);
             }
-            if (ImGui::InputFloat("Shadow Near Plane", &shadowNearPlane))
-            {
-                Undo::recordComponent(light);
 
-                light->mShadowNearPlane = shadowNearPlane;
-            }
-            if (ImGui::InputFloat("Shadow Far Plane", &shadowFarPlane))
+            if (light->mShadowType != ShadowType::None)
             {
-                Undo::recordComponent(light);
+                float shadowStrength = light->mShadowStrength;
+                if (ImGui::SliderFloat("Shadow Strength", &shadowStrength, 0.0f, 1.0f))
+                {
+                    light->mShadowStrength = shadowStrength;
+                }
 
-                light->mShadowFarPlane = shadowFarPlane;
-            }
-            if (ImGui::InputFloat("Shadow Angle", &shadowAngle))
-            {
-                Undo::recordComponent(light);
-
-                light->mShadowAngle = shadowAngle;
-            }
-            if (ImGui::InputFloat("Shadow Radius", &shadowRadius))
-            {
-                Undo::recordComponent(light);
-
-                light->mShadowRadius = shadowRadius;
-            }
-            if (ImGui::InputFloat("Shadow Strength", &shadowStrength))
-            {
-                Undo::recordComponent(light);
-
-                light->mShadowStrength = shadowStrength;
+                const char* shadowMapResolutions[] = { "Low (512x512)", "Medium (1024x1024)", "High (2048x2048)",
+                                                  "Very High (4096x4096)" };
+                ShadowMapResolution shadowMapRes = light->getShadowMapResolution();
+                int shadowMapResIndex = 0;
+                switch (shadowMapRes)
+                {
+                case ShadowMapResolution::Low512x512:
+                    shadowMapResIndex = 0;
+                    break;
+                case ShadowMapResolution::Medium1024x1024:
+                    shadowMapResIndex = 1;
+                    break;
+                case ShadowMapResolution::High2048x2048:
+                    shadowMapResIndex = 2;
+                    break;
+                case ShadowMapResolution::VeryHigh4096x4096:
+                    shadowMapResIndex = 3;
+                    break;
+                }
+                if (ImGui::Combo("Shadow Map Resolution", &shadowMapResIndex, shadowMapResolutions,
+                    IM_ARRAYSIZE(shadowMapResolutions)))
+                {
+                    switch (shadowMapResIndex)
+                    {
+                    case 0:
+                        light->setShadowMapResolution(ShadowMapResolution::Low512x512);
+                        break;
+                    case 1:
+                        light->setShadowMapResolution(ShadowMapResolution::Medium1024x1024);
+                        break;
+                    case 2:
+                        light->setShadowMapResolution(ShadowMapResolution::High2048x2048);
+                        break;
+                    case 3:
+                        light->setShadowMapResolution(ShadowMapResolution::VeryHigh4096x4096);
+                        break;
+                    }
+                }
             }
 
             bool enabled = light->mEnabled;
             if (ImGui::Checkbox("Enabled?", &enabled))
             {
                 light->mEnabled = enabled;
-            }
-
-            const char* lightTypes[] = { "Directional", "Spot", "Point" };
-            int lightTypeIndex = static_cast<int>(light->mLightType);
-            if (ImGui::Combo("##LightType", &lightTypeIndex, lightTypes, IM_ARRAYSIZE(lightTypes)))
-            {
-                Undo::recordComponent(light);
-
-                light->mLightType = static_cast<LightType>(lightTypeIndex);
-            }
-
-            const char* shadowTypes[] = { "Hard", "Soft" };
-            int shadowTypeIndex = static_cast<int>(light->mShadowType);
-            if (ImGui::Combo("##ShadowType", &shadowTypeIndex, shadowTypes, IM_ARRAYSIZE(shadowTypes)))
-            {
-                Undo::recordComponent(light);
-
-                light->mShadowType = static_cast<ShadowType>(shadowTypeIndex);
-            }
-
-            const char* shadowMapResolutions[] = { "Low (512x512)", "Medium (1024x1024)", "High (2048x2048)",
-                                                  "Very High (4096x4096)" };
-            ShadowMapResolution shadowMapRes = light->getShadowMapResolution();
-            int shadowMapResIndex = 0;
-            switch (shadowMapRes)
-            {
-            case ShadowMapResolution::Low512x512:
-                shadowMapResIndex = 0;
-                break;
-            case ShadowMapResolution::Medium1024x1024:
-                shadowMapResIndex = 1;
-                break;
-            case ShadowMapResolution::High2048x2048:
-                shadowMapResIndex = 2;
-                break;
-            case ShadowMapResolution::VeryHigh4096x4096:
-                shadowMapResIndex = 3;
-                break;
-            }
-            if (ImGui::Combo("##ShadowMapResolution", &shadowMapResIndex, shadowMapResolutions,
-                IM_ARRAYSIZE(shadowMapResolutions)))
-            {
-                switch (shadowMapResIndex)
-                {
-                case 0:
-                    light->setShadowMapResolution(ShadowMapResolution::Low512x512);
-                    break;
-                case 1:
-                    light->setShadowMapResolution(ShadowMapResolution::Medium1024x1024);
-                    break;
-                case 2:
-                    light->setShadowMapResolution(ShadowMapResolution::High2048x2048);
-                    break;
-                case 3:
-                    light->setShadowMapResolution(ShadowMapResolution::VeryHigh4096x4096);
-                    break;
-                }
             }
         }
 

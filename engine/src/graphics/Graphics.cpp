@@ -221,8 +221,11 @@ void Graphics::setGlobalLightUniforms(const LightUniform &uniform)
     glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &uniform.mCascadeEnds[3]);
     glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &uniform.mCascadeEnds[4]);
     glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &uniform.mIntensity);
-    glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(uniform.mSpotAngle));
-    glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(uniform.mInnerSpotAngle));
+
+    float spotAngle = glm::cos(glm::radians(uniform.mSpotAngle));
+    float innerSpotAngle = glm::cos(glm::radians(uniform.mInnerSpotAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(spotAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(innerSpotAngle));
     glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(uniform.mShadowNearPlane));
     glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(uniform.mShadowFarPlane));
     glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowAngle));

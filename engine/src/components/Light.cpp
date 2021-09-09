@@ -12,13 +12,9 @@ Light::Light(World* world) : Component(world)
 
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
-    mSpotAngle = glm::cos(glm::radians(15.0f));
+    mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));
 
-    mInnerSpotAngle = glm::cos(glm::radians(12.5f));
-    mShadowNearPlane = 0.1f;
-    mShadowFarPlane = 100.0f;
-    mShadowAngle = 0.0f;
-    mShadowRadius = 0.0f;
+    mInnerSpotAngle = 12.5f;// glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
@@ -52,13 +48,9 @@ Light::Light(World* world, Guid id) : Component(world, id)
 
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
-    mSpotAngle = glm::cos(glm::radians(15.0f));
+    mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));
 
-    mInnerSpotAngle = glm::cos(glm::radians(12.5f));
-    mShadowNearPlane = 0.1f;
-    mShadowFarPlane = 100.0f;
-    mShadowAngle = 0.0f;
-    mShadowRadius = 0.0f;
+    mInnerSpotAngle = 12.5f;//glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
@@ -98,10 +90,6 @@ void Light::serialize(YAML::Node &out) const
     out["intensity"] = mIntensity;
     out["spotAngle"] = mSpotAngle;
     out["innerSpotAngle"] = mInnerSpotAngle;
-    out["shadowNearPlane"] = mShadowNearPlane;
-    out["shadowFarPlane"] = mShadowFarPlane;
-    out["shadowAngle"] = mShadowAngle;
-    out["shadowRadius"] = mShadowRadius;
     out["shadowStrength"] = mShadowStrength;
     out["lightType"] = mLightType;
     out["shadowType"] = mShadowType;
@@ -117,10 +105,6 @@ void Light::deserialize(const YAML::Node &in)
     mIntensity = YAML::getValue<float>(in, "intensity");
     mSpotAngle = YAML::getValue<float>(in, "spotAngle");
     mInnerSpotAngle = YAML::getValue<float>(in, "innerSpotAngle");
-    mShadowNearPlane = YAML::getValue<float>(in, "shadowNearPlane");
-    mShadowFarPlane = YAML::getValue<float>(in, "shadowFarPlane");
-    mShadowAngle = YAML::getValue<float>(in, "shadowAngle");
-    mShadowRadius = YAML::getValue<float>(in, "shadowRadius");
     mShadowStrength = YAML::getValue<float>(in, "shadowStrength");
     mLightType = YAML::getValue<LightType>(in, "lightType");
     mShadowType = YAML::getValue<ShadowType>(in, "shadowType");
@@ -184,7 +168,7 @@ ShadowMapResolution Light::getShadowMapResolution() const
 
 glm::mat4 Light::getProjMatrix() const
 {
-    return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, 0.1f, 12.0f);
+    return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, 0.1f, 25.0f);
 }
 
 unsigned int Light::getNativeGraphicsShadowCascadeFBO(int index) const
