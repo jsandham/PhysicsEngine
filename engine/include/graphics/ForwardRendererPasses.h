@@ -43,8 +43,6 @@ void postProcessing();
 
 void endFrame(World *world, Camera *camera, ForwardRendererState &state);
 
-void calcShadowmapCascades(Camera *camera, ForwardRendererState &state);
-
 void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state);
 } // namespace PhysicsEngine
 

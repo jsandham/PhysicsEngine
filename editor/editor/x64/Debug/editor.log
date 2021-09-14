@@ -1,5 +1,2 @@
-﻿  BoxColliderDrawer.cpp
-  CameraDrawer.cpp
-  MeshRendererDrawer.cpp
-  Generating Code...
+﻿  LightDrawer.cpp
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

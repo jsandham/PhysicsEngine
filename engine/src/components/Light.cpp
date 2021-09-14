@@ -16,6 +16,9 @@ Light::Light(World* world) : Component(world)
 
     mInnerSpotAngle = 12.5f;// glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
+    mShadowNearPlane = 1.0f;
+    mShadowFarPlane = 100.0f;
+    mShadowBias = 0.005f;
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
 
@@ -52,6 +55,9 @@ Light::Light(World* world, Guid id) : Component(world, id)
 
     mInnerSpotAngle = 12.5f;//glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
+    mShadowNearPlane = 1.0f;
+    mShadowFarPlane = 100.0f;
+    mShadowBias = 0.005f;
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
 
@@ -91,6 +97,9 @@ void Light::serialize(YAML::Node &out) const
     out["spotAngle"] = mSpotAngle;
     out["innerSpotAngle"] = mInnerSpotAngle;
     out["shadowStrength"] = mShadowStrength;
+    out["shadowNearPlane"] = mShadowNearPlane;
+    out["shadowFarPlane"] = mShadowFarPlane;
+    out["shadowBias"] = mShadowBias;
     out["lightType"] = mLightType;
     out["shadowType"] = mShadowType;
     out["shadowMapResolution"] = mShadowMapResolution;
@@ -106,6 +115,9 @@ void Light::deserialize(const YAML::Node &in)
     mSpotAngle = YAML::getValue<float>(in, "spotAngle");
     mInnerSpotAngle = YAML::getValue<float>(in, "innerSpotAngle");
     mShadowStrength = YAML::getValue<float>(in, "shadowStrength");
+    mShadowNearPlane = YAML::getValue<float>(in, "shadowNearPlane");
+    mShadowFarPlane = YAML::getValue<float>(in, "shadowFarPlane");
+    mShadowBias = YAML::getValue<float>(in, "shadowBias");
     mLightType = YAML::getValue<LightType>(in, "lightType");
     mShadowType = YAML::getValue<ShadowType>(in, "shadowType");
     mShadowMapResolution = YAML::getValue<ShadowMapResolution>(in, "shadowMapResolution");
@@ -168,7 +180,16 @@ ShadowMapResolution Light::getShadowMapResolution() const
 
 glm::mat4 Light::getProjMatrix() const
 {
-    return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, 0.1f, 25.0f);
+    if (mLightType == LightType::Spot)
+    {
+        return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, mShadowNearPlane, mShadowFarPlane);
+    }
+    else if (mLightType == LightType::Point) 
+    {
+        return glm::perspective(glm::radians(90.0f), 1.0f, mShadowNearPlane, mShadowFarPlane);
+    }
+
+    return glm::mat4(1.0f);
 }
 
 unsigned int Light::getNativeGraphicsShadowCascadeFBO(int index) const

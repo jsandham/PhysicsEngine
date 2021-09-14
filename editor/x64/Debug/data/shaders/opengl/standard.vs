@@ -18,7 +18,7 @@ layout (std140) uniform LightBlock
 	float innerSpotAngle;    // 776
 	float shadowNearPlane;   // 780
 	float shadowFarPlane;    // 784
-	float shadowAngle;       // 788
+	float shadowBias;       // 788
 	float shadowRadius;      // 792
 	float shadowStrength;    // 796
 }Light;

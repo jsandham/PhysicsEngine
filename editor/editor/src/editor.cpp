@@ -98,7 +98,7 @@ void Editor::update()
     ImGui::Begin("Root Window", &p_open, window_flags);
     ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f), dockspace_flags);
 
-    ImGui::ShowDemoWindow();
+    // ImGui::ShowDemoWindow();
     // ImGui::ShowMetricsWindow();
     // ImGui::ShowStyleEditor();
 

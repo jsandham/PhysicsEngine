@@ -5,6 +5,7 @@
 #include "components/Light.h"
 
 #include "imgui.h"
+#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 
@@ -55,11 +56,11 @@ void LightDrawer::render(Clipboard &clipboard, Guid id)
                 float spotAngleRad = glm::radians(light->mSpotAngle);
                 float innerSpotAngleRad = glm::radians(light->mInnerSpotAngle);
 
-                if (ImGui::SliderAngle("Spot Angle", &spotAngleRad, 0.0f, 179.0f))
+                if (ImGui::SliderAngle("Spot Angle", &spotAngleRad, 0.0f, 90.0f))
                 {
                     light->mSpotAngle = glm::degrees(spotAngleRad);
                 }
-                if (ImGui::SliderAngle("Inner Spot Angle", &innerSpotAngleRad, 0.0f, 179.0f))
+                if (ImGui::SliderAngle("Inner Spot Angle", &innerSpotAngleRad, 0.0f, 90.0f))
                 {
                     light->mInnerSpotAngle = glm::degrees(innerSpotAngleRad);
                 }
@@ -78,6 +79,27 @@ void LightDrawer::render(Clipboard &clipboard, Guid id)
                 if (ImGui::SliderFloat("Shadow Strength", &shadowStrength, 0.0f, 1.0f))
                 {
                     light->mShadowStrength = shadowStrength;
+                }
+
+                float shadowBias = light->mShadowBias;
+                if (ImGui::SliderFloat("Shadow Bias", &shadowBias, 0.0f, 0.1f))
+                {
+                    light->mShadowBias = shadowBias;
+                }
+
+                if (light->mLightType == LightType::Spot || light->mLightType == LightType::Point) 
+                {
+                    float shadowNearPlane = light->mShadowNearPlane;
+                    if (ImGui::SliderFloat("Shadow Near Plane", &shadowNearPlane, 0.1f, 10.0f))
+                    {
+                        light->mShadowNearPlane = shadowNearPlane;
+                    }
+
+                    float shadowFarPlane = light->mShadowFarPlane;
+                    if (ImGui::SliderFloat("Shadow Far Plane", &shadowFarPlane, 10.0f, 250.0f))
+                    {
+                        light->mShadowFarPlane = shadowFarPlane;
+                    }
                 }
 
                 const char* shadowMapResolutions[] = { "Low (512x512)", "Medium (1024x1024)", "High (2048x2048)",

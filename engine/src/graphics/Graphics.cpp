@@ -228,7 +228,7 @@ void Graphics::setGlobalLightUniforms(const LightUniform &uniform)
     glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(innerSpotAngle));
     glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(uniform.mShadowNearPlane));
     glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(uniform.mShadowFarPlane));
-    glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowAngle));
+    glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowBias));
     glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(uniform.mShadowRadius));
     glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(uniform.mShadowStrength));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -658,8 +658,10 @@ void Graphics::createTargets(LightTargets *targets, ShadowMapResolution resoluti
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
@@ -1149,9 +1151,9 @@ void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geo
     {
         defines += "#define SSAO\n";
     }
-    if (variant & static_cast<int64_t>(ShaderMacro::Cascade))
+    if (variant & static_cast<int64_t>(ShaderMacro::ShowCascades))
     {
-        defines += "#define CASCADE\n";
+        defines += "#define SHOWCASCADES\n";
     }
 
     size_t pos = vert.find('\n');

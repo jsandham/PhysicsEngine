@@ -50,6 +50,15 @@ enum class RenderPath
     Deferred
 };
 
+enum class ShadowCascades
+{
+    NoCascades = 0,
+    TwoCascades = 1,
+    ThreeCascades = 2,
+    FourCascades = 3,
+    FiveCascades = 4,
+};
+
 struct CameraTargets
 {
     unsigned int mMainFBO;
@@ -79,6 +88,7 @@ class Camera : public Component
     CameraMode mMode;
     CameraSSAO mSSAO;
     CameraGizmos mGizmos;
+    ShadowCascades mShadowCascades;
 
     Color mBackgroundColor;
 
@@ -92,16 +102,17 @@ class Camera : public Component
     CameraTargets mTargets;
 
     glm::vec3 mSsaoSamples[64];
+    std::array<int, 5> mCascadeSplits;
 
-    glm::vec3 mPosition;
     glm::mat4 mViewMatrix;
     glm::mat4 mInvViewMatrix;
     glm::mat4 mProjMatrix;
+    glm::vec3 mPosition;
+
+    std::unordered_map<Color32, Guid> mColoringMap;
 
     bool mIsCreated;
     bool mIsViewportChanged;
-
-    std::unordered_map<Color32, Guid> mColoringMap;
 
   public:
     Camera(World *world);
@@ -137,6 +148,11 @@ class Camera : public Component
     Viewport getViewport() const;
     void setFrustum(float fov, float aspectRatio, float nearPlane, float farPlane);
     void setViewport(int x, int y, int width, int height);
+
+    std::array<int, 5> getCascadeSplits() const;
+    void setCascadeSplit(size_t splitIndex, int splitValue);
+    std::array<float, 6> calcViewSpaceCascadeEnds() const;
+    std::array<Frustum, 5> calcCascadeFrustums(const std::array<float, 6>& cascadeEnds) const;
 
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
     Ray screenSpaceToRay(int x, int y) const;
@@ -233,6 +249,23 @@ template <> struct convert<PhysicsEngine::RenderPath>
     static bool decode(const Node &node, PhysicsEngine::RenderPath &rhs)
     {
         rhs = static_cast<PhysicsEngine::RenderPath>(node.as<int>());
+        return true;
+    }
+};
+
+// ShadowCascades
+template <> struct convert<PhysicsEngine::ShadowCascades>
+{
+    static Node encode(const PhysicsEngine::ShadowCascades& rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
+
+    static bool decode(const Node& node, PhysicsEngine::ShadowCascades& rhs)
+    {
+        rhs = static_cast<PhysicsEngine::ShadowCascades>(node.as<int>());
         return true;
     }
 };

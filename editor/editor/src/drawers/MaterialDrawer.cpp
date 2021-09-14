@@ -39,7 +39,7 @@ MaterialDrawer::MaterialDrawer()
     mLightUniform.mIntensity = 1.0f;
     mLightUniform.mShadowNearPlane = 0.1f;
     mLightUniform.mShadowFarPlane = 10.0f;
-    mLightUniform.mShadowAngle = 0.0f;
+    mLightUniform.mShadowBias = 0.005f;
     mLightUniform.mShadowRadius = 0.0f;
     mLightUniform.mShadowStrength = 1.0f;
 }

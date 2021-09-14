@@ -34,6 +34,13 @@ Camera::Camera(World* world) : Component(world)
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
+    mShadowCascades = ShadowCascades::FiveCascades;
+
+    mCascadeSplits[0] = 2;
+    mCascadeSplits[1] = 4;
+    mCascadeSplits[2] = 8;
+    mCascadeSplits[3] = 16;
+    mCascadeSplits[4] = 100;
 
     mViewport.mX = 0;
     mViewport.mY = 0;
@@ -84,6 +91,13 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
+    mShadowCascades = ShadowCascades::FiveCascades;
+
+    mCascadeSplits[0] = 2;
+    mCascadeSplits[1] = 4;
+    mCascadeSplits[2] = 8;
+    mCascadeSplits[3] = 16;
+    mCascadeSplits[4] = 100;
 
     mViewport.mX = 0;
     mViewport.mY = 0;
@@ -118,9 +132,11 @@ void Camera::serialize(YAML::Node &out) const
     out["cameraMode"] = mMode;
     out["cameraSSAO"] = mSSAO;
     out["cameraGizmos"] = mGizmos;
+    out["shadowCascades"] = mShadowCascades;
     out["viewport"] = mViewport;
     out["frustum"] = mFrustum;
     out["backgroundColor"] = mBackgroundColor;
+    out["cascade splits"] = mCascadeSplits;
     out["enabled"] = mEnabled;
 }
 
@@ -133,9 +149,11 @@ void Camera::deserialize(const YAML::Node &in)
     mMode = YAML::getValue<CameraMode>(in, "cameraMode");
     mSSAO = YAML::getValue<CameraSSAO>(in, "cameraSSAO");
     mGizmos = YAML::getValue<CameraGizmos>(in, "cameraGizmos");
+    mShadowCascades = YAML::getValue<ShadowCascades>(in, "shadowCascades");
     mViewport = YAML::getValue<Viewport>(in, "viewport");
     mFrustum = YAML::getValue<Frustum>(in, "frustum");
     mBackgroundColor = YAML::getValue<Color>(in, "backgroundColor");
+    mCascadeSplits = YAML::getValue<std::array<int, 5>>(in, "cascade splits");
     mEnabled = YAML::getValue<bool>(in, "enabled");
 
     mProjMatrix =
@@ -302,6 +320,58 @@ void Camera::setViewport(int x, int y, int width, int height)
     mViewport.mY = y;
     mViewport.mWidth = width;
     mViewport.mHeight = height;
+}
+
+std::array<int, 5> Camera::getCascadeSplits() const
+{
+    return mCascadeSplits;
+}
+
+std::array<float, 6> Camera::calcViewSpaceCascadeEnds() const
+{
+    float nearDist = mFrustum.mNearPlane;
+    float farDist = mFrustum.mFarPlane;
+
+    std::array<float, 6> cascadeEnds;
+
+    cascadeEnds[0] = -1 * nearDist;
+    cascadeEnds[1] = -1 * (nearDist + (farDist - nearDist) * (mCascadeSplits[0] / 100.0f));
+    cascadeEnds[2] = -1 * (nearDist + (farDist - nearDist) * (mCascadeSplits[1] / 100.0f));
+    cascadeEnds[3] = -1 * (nearDist + (farDist - nearDist) * (mCascadeSplits[2] / 100.0f));
+    cascadeEnds[4] = -1 * (nearDist + (farDist - nearDist) * (mCascadeSplits[3] / 100.0f));
+    cascadeEnds[5] = -1 * (nearDist + (farDist - nearDist) * (mCascadeSplits[4] / 100.0f));
+
+    return cascadeEnds;
+}
+
+std::array<Frustum, 5> Camera::calcCascadeFrustums(const std::array<float, 6>& cascadeEnds) const
+{
+    float fov = mFrustum.mFov;
+    float aspect = mFrustum.mAspectRatio;
+
+    std::array<Frustum, 5> frustums;
+    for (size_t i = 0; i < frustums.size(); i++)
+    {
+        frustums[i] = Frustum(fov, aspect, -cascadeEnds[i], -cascadeEnds[i + 1]);
+    }
+
+    return frustums;
+}
+
+void Camera::setCascadeSplit(size_t splitIndex, int splitValue)
+{
+    if (splitIndex < 0 || splitIndex >= mCascadeSplits.size())
+    {
+        return;
+    }
+
+    mCascadeSplits[splitIndex] = splitValue;
+
+    mCascadeSplits[0] = std::min(std::max(mCascadeSplits[0], 0), 100);
+    for (size_t i = 1; i < mCascadeSplits.size(); i++)
+    {
+        mCascadeSplits[i] = std::min(std::max(mCascadeSplits[i], mCascadeSplits[i - 1]), 100);
+    }
 }
 
 Ray Camera::normalizedDeviceSpaceToRay(float x, float y) const

@@ -52,7 +52,7 @@ enum class ShaderMacro
     HardShadows = 8,
     SoftShadows = 16,
     SSAO = 32,
-    Cascade = 64
+    ShowCascades = 64
 };
 
 enum class ShaderSourceLanguage
@@ -363,8 +363,8 @@ template <> struct convert<PhysicsEngine::ShaderMacro>
         case PhysicsEngine::ShaderMacro::SSAO:
             node = "SSAO";
             break;
-        case PhysicsEngine::ShaderMacro::Cascade:
-            node = "Cascade";
+        case PhysicsEngine::ShaderMacro::ShowCascades:
+            node = "ShowCascades";
             break;
         default:
             node = "None";
@@ -395,8 +395,8 @@ template <> struct convert<PhysicsEngine::ShaderMacro>
         else if (type == "SSAO") {
             rhs = PhysicsEngine::ShaderMacro::SSAO;
         }
-        else if (type == "Cascade") {
-            rhs = PhysicsEngine::ShaderMacro::Cascade;
+        else if (type == "ShowCascades") {
+            rhs = PhysicsEngine::ShaderMacro::ShowCascades;
         }
         else {
             rhs = PhysicsEngine::ShaderMacro::None;

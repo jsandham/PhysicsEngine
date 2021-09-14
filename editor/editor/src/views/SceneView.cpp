@@ -247,11 +247,14 @@ void SceneView::update(Clipboard &clipboard)
             glm::vec3 up = transform->getUp();
             glm::vec3 right = transform->getRight();
 
-            Frustum frustum;
-            frustum.mNearPlane = 1.0f;
-            frustum.mFarPlane = 4.0f;
-            frustum.computePlanes(position, front, up, right);
-            clipboard.mGizmoSystem->addToDrawList(frustum, Color::yellow, false);
+            std::array<Color, 5> cascadeColors = { Color::red, Color::green, Color::blue, Color::yellow, Color::magenta};
+
+            std::array<Frustum, 5> cascadeFrustums = camera->calcCascadeFrustums(camera->calcViewSpaceCascadeEnds());
+            for (size_t j = 0; j < cascadeFrustums.size(); j++)
+            {
+                cascadeFrustums[j].computePlanes(position, front, up, right);
+                clipboard.mGizmoSystem->addToDrawList(cascadeFrustums[j], cascadeColors[j], false);
+            }
         }
     }
 
@@ -597,6 +600,58 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *camer
         if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
         {
             cameraSystem->setSSAO(static_cast<CameraSSAO>(ssao));
+        }
+
+        // Directional light cascade splits
+        int cascadeType = static_cast<int>(cameraSystem->getCamera()->mShadowCascades);
+
+        const char* cascadeTypeNames[] = { "No Cascades", "Two Cascades", "Three Cascades", "Four Cascades", "Five Cascades" };
+
+        if (ImGui::Combo("Shadow Cascades", &cascadeType, cascadeTypeNames, 5))
+        {
+            cameraSystem->getCamera()->mShadowCascades = static_cast<ShadowCascades>(cascadeType);
+        }
+
+        if (cameraSystem->getCamera()->mShadowCascades != ShadowCascades::NoCascades)
+        {
+            ImColor colors[5] = { ImColor(1.0f, 0.0f, 0.0f),
+                              ImColor(0.0f, 1.0f, 0.0f),
+                              ImColor(0.0f, 0.0f, 1.0f),
+                              ImColor(0.0f, 1.0f, 1.0f),
+                              ImColor(0.6f, 0.0f, 0.6f) };
+
+            std::array<int, 5> splits = cameraSystem->getCamera()->getCascadeSplits();
+            for (size_t i = 0; i < splits.size(); i++)
+            {
+                ImGui::PushItemWidth(0.125f * ImGui::GetWindowSize().x);
+
+                ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
+
+                if (i <= static_cast<int>(cameraSystem->getCamera()->mShadowCascades))
+                {
+                    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)colors[i]);
+                    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)colors[i]);
+                    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, (ImVec4)colors[i]);
+                }
+                else
+                {
+                    ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+                    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+                    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+
+                    flags |= ImGuiInputTextFlags_ReadOnly;
+                }
+
+                if (ImGui::InputInt(("##Cascade Splits" + std::to_string(i)).c_str(), &splits[i], 0, 100, flags))
+                {
+                    cameraSystem->getCamera()->setCascadeSplit(i, splits[i]);
+                }
+
+                ImGui::PopStyleColor(3);
+                ImGui::PopItemWidth();
+                ImGui::SameLine();
+            }
+            ImGui::Text("Cascade Splits");
         }
     }
 

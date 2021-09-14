@@ -93,7 +93,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\imgui\lib\debug;$(SolutionDir)..\simplefilewatcher\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,7 +111,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cppd.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\external\imgui\lib\debug;$(SolutionDir)..\external\simplefilewatcher\lib\debug;$(SolutionDir)..\external\yaml-cpp\build\Debug;$(SolutionDir)..\external\imguizmo\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,7 +133,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\imgui\lib\release;$(SolutionDir)..\simplefilewatcher\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,7 +155,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cpp.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\external\imgui\lib\release;$(SolutionDir)..\external\simplefilewatcher\lib\release;$(SolutionDir)..\external\yaml-cpp\build\Release;$(SolutionDir)..\external\imguizmo\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

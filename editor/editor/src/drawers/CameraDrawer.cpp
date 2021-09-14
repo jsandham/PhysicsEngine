@@ -41,22 +41,16 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
 
             if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2))
             {
-                Undo::recordComponent(camera);
-
                 camera->mRenderPath = static_cast<RenderPath>(renderPath);
             }
 
             if (ImGui::Combo("Mode", &mode, modeNames, 2))
             {
-                Undo::recordComponent(camera);
-
                 camera->mMode = static_cast<CameraMode>(mode);
             }
 
             if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
             {
-                Undo::recordComponent(camera);
-
                 camera->mSSAO = static_cast<CameraSSAO>(ssao);
             }
 
@@ -65,8 +59,6 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
 
             if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor)))
             {
-                Undo::recordComponent(camera);
-
                 camera->mBackgroundColor = Color(backgroundColor);
             }
 
@@ -109,32 +101,77 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
 
                 if (ImGui::InputFloat("Field of View", &fov))
                 {
-                    Undo::recordComponent(camera);
-
                     camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
                 }
                 if (ImGui::InputFloat("Near Plane", &nearPlane))
                 {
-                    Undo::recordComponent(camera);
-
                     camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
                 }
                 if (ImGui::InputFloat("Far Plane", &farPlane))
                 {
-                    Undo::recordComponent(camera);
-
                     camera->setFrustum(fov, 1.0f, nearPlane, farPlane);
                 }
 
                 ImGui::TreePop();
             }
 
+            // Directional light cascade splits
+            int cascadeType = static_cast<int>(camera->mShadowCascades);
+
+            const char* cascadeTypeNames[] = { "No Cascades", "Two Cascades", "Three Cascades", "Four Cascades", "Five Cascades" };
+
+            if (ImGui::Combo("Shadow Cascades", &cascadeType, cascadeTypeNames, 5))
+            {
+                camera->mShadowCascades = static_cast<ShadowCascades>(cascadeType);
+            }
+
+            if (camera->mShadowCascades != ShadowCascades::NoCascades)
+            {
+                ImColor colors[5] = { ImColor(1.0f, 0.0f, 0.0f),
+                                      ImColor(0.0f, 1.0f, 0.0f),
+                                      ImColor(0.0f, 0.0f, 1.0f),
+                                      ImColor(0.0f, 1.0f, 1.0f),
+                                      ImColor(0.6f, 0.0f, 0.6f) };
+
+                std::array<int, 5> splits = camera->getCascadeSplits();
+                for (size_t i = 0; i < splits.size(); i++)
+                {
+                    ImGui::PushItemWidth(0.125f * ImGui::GetWindowSize().x);
+                    
+                    ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
+
+                    if (i <= static_cast<int>(camera->mShadowCascades))
+                    {
+                        ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)colors[i]);
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)colors[i]);
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, (ImVec4)colors[i]);
+                    }
+                    else
+                    {
+                        ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+                        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, (ImVec4)ImColor(0.5f, 0.5f, 0.5f));
+
+                        flags |= ImGuiInputTextFlags_ReadOnly;
+                    }
+
+                    if (ImGui::InputInt(("##Cascade Splits" + std::to_string(i)).c_str(), &splits[i], 0, 100, flags))
+                    {
+                        camera->setCascadeSplit(i, splits[i]);
+                    }
+
+                    ImGui::PopStyleColor(3);
+                    ImGui::PopItemWidth();
+                    ImGui::SameLine();
+                }
+                ImGui::Text("Cascade Splits");
+            }
+            
             bool enabled = camera->mEnabled;
             if (ImGui::Checkbox("Enabled?", &enabled))
             {
                 camera->mEnabled = enabled;
             }
-
         }
 
         ImGui::TreePop();

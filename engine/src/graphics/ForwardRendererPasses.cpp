@@ -188,7 +188,12 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 {
     if (light->mLightType == LightType::Directional)
     {
-        calcShadowmapCascades(camera, state);
+        std::array<float, 6> cascadeEnds = camera->calcViewSpaceCascadeEnds();
+        for (size_t i = 0; i < cascadeEnds.size(); i++)
+        {
+            state.mCascadeEnds[i] = cascadeEnds[i];
+        }
+
         calcCascadeOrthoProj(camera, lightTransform->getForward(), state);
 
         for (int i = 0; i < 5; i++)
@@ -273,7 +278,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 
         Graphics::use(state.mDepthCubemapShaderProgram);
         Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
-        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->getFrustum().mFarPlane);
+        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->getFrustum().mFarPlane); //shadow map far plane?
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1, state.mCubeViewProjMatrices[1]);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2, state.mCubeViewProjMatrices[2]);
@@ -303,6 +308,7 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     state.mLightState.mSpotAngle = light->mSpotAngle;
     state.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
     state.mLightState.mShadowStrength = light->mShadowStrength;
+    state.mLightState.mShadowBias = light->mShadowBias;
 
     if (light->mLightType == LightType::Directional)
     {
@@ -319,11 +325,8 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     }
     else if (light->mLightType == LightType::Spot)
     {
-        for (int i = 0; i < 5; i++)
-        {
-            state.mLightState.mLightProjection[i] = state.mShadowProjMatrix;
-            state.mLightState.mLightView[i] = state.mShadowViewMatrix;
-        }
+        state.mLightState.mLightProjection[0] = state.mShadowProjMatrix;
+        state.mLightState.mLightView[0] = state.mShadowViewMatrix;
     }
 
     Graphics::setGlobalLightUniforms(state.mLightState);
@@ -332,6 +335,10 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     if (light->mLightType == LightType::Directional)
     {
         variant = static_cast<int64_t>(ShaderMacro::Directional);
+        if (camera->mShadowCascades != ShadowCascades::NoCascades)
+        {
+            variant |= static_cast<int64_t>(ShaderMacro::ShowCascades);
+        }
     }
     else if (light->mLightType == LightType::Spot)
     {
@@ -494,23 +501,6 @@ void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState 
     camera->endQuery();
 }
 
-void PhysicsEngine::calcShadowmapCascades(Camera *camera, ForwardRendererState &state)
-{
-    float nearDist = camera->getFrustum().mNearPlane;
-    float farDist = camera->getFrustum().mFarPlane;
-
-    const float splitWeight = 0.95f;
-    const float ratio = farDist / nearDist;
-
-    for (int i = 0; i < 6; i++)
-    {
-        const float si = i / 5.0f;
-
-        state.mCascadeEnds[i] = -1.0f * (splitWeight * (nearDist * powf(ratio, si)) +
-                                         (1 - splitWeight) * (nearDist + (farDist - nearDist) * si));
-    }
-}
-
 void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
 {
     glm::mat4 viewInv = camera->getInvViewMatrix();
@@ -557,9 +547,12 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
         glm::vec4 frustrumCentreWorldSpace = viewInv * frustumCentre;
         float d = 40.0f; // cascadeEnds[i + 1] - cascadeEnds[i];
 
-        glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * lightDirection.x,
+        /*glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * lightDirection.x,
                                 frustrumCentreWorldSpace.y + d * lightDirection.y,
-                                frustrumCentreWorldSpace.z + d * lightDirection.z);
+                                frustrumCentreWorldSpace.z + d * lightDirection.z);*/
+        glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x - d * lightDirection.x,
+                                frustrumCentreWorldSpace.y - d * lightDirection.y,
+                                frustrumCentreWorldSpace.z - d * lightDirection.z);
 
         state.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
 

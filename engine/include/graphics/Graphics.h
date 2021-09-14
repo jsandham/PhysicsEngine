@@ -63,7 +63,7 @@ struct LightUniform
     float mInnerSpotAngle;         // 776
     float mShadowNearPlane;        // 780
     float mShadowFarPlane;         // 784
-    float mShadowAngle;            // 788
+    float mShadowBias;            // 788
     float mShadowRadius;           // 792
     float mShadowStrength;         // 796
 

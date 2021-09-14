@@ -397,7 +397,7 @@ void PhysicsEngine::renderShadedFrustumGizmo(World* world, Camera* camera, Gizmo
 
     state.mGizmoShader->use(state.mGizmoShaderProgram);
     state.mGizmoShader->setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
-    state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, glm::mat4());
+    state.mGizmoShader->setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
     state.mGizmoShader->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     state.mGizmoShader->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
     state.mGizmoShader->setColor(state.mGizmoShaderColorLoc, gizmo.mColor);
