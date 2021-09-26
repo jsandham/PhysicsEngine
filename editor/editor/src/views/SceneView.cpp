@@ -237,7 +237,7 @@ void SceneView::update(Clipboard &clipboard)
     {
         Camera* camera = clipboard.mWorld.getComponentByIndex<Camera>(i);
 
-        if (camera->mHide == HideFlag::None)
+        if (camera->mHide == HideFlag::None && camera->mEnabled)
         {
             Entity* entity = camera->getEntity();
             Transform* transform = clipboard.mWorld.getComponent<Transform>(entity->getId());
@@ -247,7 +247,7 @@ void SceneView::update(Clipboard &clipboard)
             glm::vec3 up = transform->getUp();
             glm::vec3 right = transform->getRight();
 
-            std::array<Color, 5> cascadeColors = { Color::red, Color::green, Color::blue, Color::yellow, Color::magenta};
+            std::array<Color, 5> cascadeColors = { Color::red, Color::green, Color::blue, Color::cyan, Color::magenta};
 
             std::array<Frustum, 5> cascadeFrustums = camera->calcCascadeFrustums(camera->calcViewSpaceCascadeEnds());
             for (size_t j = 0; j < cascadeFrustums.size(); j++)
@@ -361,7 +361,15 @@ void SceneView::update(Clipboard &clipboard)
                 min.x += 0.6f * getWindowWidth();
                 min.y += 0.6f * getWindowHeight();
 
-                ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camera->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                if (camera->mRenderTextureId.isValid())
+                {
+                    RenderTexture* renderTexture = clipboard.getWorld()->getAssetById<RenderTexture>(camera->mRenderTextureId);
+                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)renderTexture->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                }
+                else
+                {
+                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camera->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                }
             }
         }
     }
@@ -550,6 +558,31 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *camer
     ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Editor Camera Settings", cameraSettingsActive, ImGuiWindowFlags_NoResize))
     {
+        // Editor camera transform
+        Transform* transform = cameraSystem->getCamera()->getComponent<Transform>();
+        glm::vec3 position = transform->mPosition;
+        glm::quat rotation = transform->mRotation;
+        glm::vec3 scale = transform->mScale;
+        glm::vec3 eulerAngles = glm::degrees(glm::eulerAngles(rotation));
+
+        if (ImGui::InputFloat3("Position", glm::value_ptr(position)))
+        {
+            transform->mPosition = position;
+        }
+
+        if (ImGui::InputFloat3("Rotation", glm::value_ptr(eulerAngles)))
+        {
+            glm::quat x = glm::angleAxis(glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::quat z = glm::angleAxis(glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            transform->mRotation = z * y * x;
+        }
+        if (ImGui::InputFloat3("Scale", glm::value_ptr(scale)))
+        {
+            transform->mScale = scale;
+        }
+
         // Viewport viewport = cameraSystem->getViewport();
         Frustum frustum = cameraSystem->getFrustum();
 

@@ -242,6 +242,18 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 mSelected->addFile(filename);
             }
 
+            if (ImGui::MenuItem("RenderTexture"))
+            {
+                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::RenderTexture>();
+                std::string filename = ("NewRenderTexture(" + std::to_string(count) + ").rendertexture");
+                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
+
+                PhysicsEngine::RenderTexture* renderTexture = clipboard.getWorld()->createAsset<PhysicsEngine::RenderTexture>();
+                renderTexture->writeToYAML(filepath.string());
+
+                mSelected->addFile(filename);
+            }
+
             ImGui::EndMenu();
         }
         

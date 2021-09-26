@@ -1049,6 +1049,109 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
     Graphics::checkError(__LINE__, __FILE__);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Graphics::createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height)
+{
+    // generate fbo (color + depth)
+    glGenFramebuffers(1, &(targets->mMainFBO));
+    glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
+
+    glGenTextures(1, &(targets->mColorTex));
+    glBindTexture(GL_TEXTURE_2D, targets->mColorTex);
+    
+    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    //glGenerateMipmap(GL_TEXTURE_2D);
+
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    //    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
+
+    //float aniso = 0.0f;
+    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+
+    glGenTextures(1, &(targets->mDepthTex));
+    glBindTexture(GL_TEXTURE_2D, targets->mDepthTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    //    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0);
+
+    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+    unsigned int mainAttachments[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, mainAttachments);
+
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
+{
+    // detach textures from their framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // delete frambuffers
+    glDeleteFramebuffers(1, &(targets->mMainFBO));
+
+    // delete textures
+    glDeleteTextures(1, &(targets->mColorTex));
+    glDeleteTextures(1, &(targets->mDepthTex));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
 {

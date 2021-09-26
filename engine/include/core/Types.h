@@ -23,6 +23,7 @@ constexpr int MATERIAL_TYPE = 1004;
 constexpr int MESH_TYPE = 1005;
 constexpr int FONT_TYPE = 1006;
 constexpr int SPRITE_TYPE = 1007;
+constexpr int RENDER_TEXTURE_TYPE = 1008;
 
 constexpr int TRANSFORM_TYPE = 2000;
 constexpr int RIGIDBODY_TYPE = 2001;
@@ -55,6 +56,7 @@ constexpr char MATERIAL_NAME[] = "Material";
 constexpr char MESH_NAME[] = "Mesh";
 constexpr char FONT_NAME[] = "Font";
 constexpr char SPRITE_NAME[] = "Sprite";
+constexpr char RENDER_TEXTURE_NAME[] = "RenderTexture";
 
 constexpr char TRANSFORM_NAME[] = "Transform";
 constexpr char RIGIDBODY_NAME[] = "Rigidbody";

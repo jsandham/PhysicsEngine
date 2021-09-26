@@ -13,6 +13,7 @@
 #include "../components/Light.h"
 #include "../core/Shader.h"
 #include "../core/Texture.h"
+#include "../core/RenderTexture.h"
 
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
@@ -125,6 +126,13 @@ class Graphics
     static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
                                 unsigned int tex);
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, unsigned int tex);
+
+
+
+    static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
+    static void destroyRenderTextureTargets(RenderTextureTargets* targets);
+
+
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                            const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);
     static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);

@@ -15,6 +15,7 @@ namespace PhysicsEditor
         Mesh,
         Font,
         Sprite,
+        RenderTexture,
         CodeFile,
         File,
         Folder

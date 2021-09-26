@@ -152,6 +152,14 @@ Asset *PhysicsEngine::getInternalAsset(const WorldAllocators &allocators, const 
             return allocators.mCubemapAllocator.get(it->second);
         }
     }
+    else if (type == AssetType<RenderTexture>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mRenderTextureIdToGlobalIndex.find(id);
+        if (it != state.mRenderTextureIdToGlobalIndex.end())
+        {
+            return allocators.mRenderTextureAllocator.get(it->second);
+        }
+    }
     else if (type == AssetType<Font>::type)
     {
         std::unordered_map<Guid, int>::const_iterator it = state.mFontIdToGlobalIndex.find(id);
@@ -873,6 +881,21 @@ Asset *loadInternalAsset_Impl(World &world, WorldAllocators &allocators, WorldId
             }
         }
     }
+    else if (type == AssetType<RenderTexture>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mRenderTextureIdToGlobalIndex.find(id);
+        if (it != state.mRenderTextureIdToGlobalIndex.end())
+        {
+            Asset* asset = allocators.mRenderTextureAllocator.get(it->second);
+
+            if (asset != nullptr)
+            {
+                asset->deserialize(in);
+
+                return asset;
+            }
+        }
+    }
     else if (type == AssetType<Material>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mMaterialIdToGlobalIndex.find(id);
@@ -981,6 +1004,18 @@ Asset *loadInternalAsset_Impl(World &world, WorldAllocators &allocators, WorldId
         if (asset != nullptr)
         {
             state.mCubemapIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToGlobalIndex[asset->getId()] = index;
+            state.mIdToType[asset->getId()] = type;
+        }
+    }
+    else if (type == AssetType<RenderTexture>::type)
+    {
+        index = (int)allocators.mRenderTextureAllocator.getCount();
+        asset = allocators.mRenderTextureAllocator.construct(&world, in);
+
+        if (asset != nullptr)
+        {
+            state.mRenderTextureIdToGlobalIndex[asset->getId()] = index;
             state.mIdToGlobalIndex[asset->getId()] = index;
             state.mIdToType[asset->getId()] = type;
         }
@@ -1380,6 +1415,21 @@ Asset *PhysicsEngine::destroyInternalAsset(WorldAllocators &allocators, WorldIdS
         if (swap != nullptr)
         {
             state.mCubemapIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == AssetType<RenderTexture>::type)
+    {
+        swap = allocators.mRenderTextureAllocator.destruct(index);
+
+        state.mRenderTextureIdToGlobalIndex.erase(assetId);
+        state.mIdToGlobalIndex.erase(assetId);
+        state.mIdToType.erase(assetId);
+
+        if (swap != nullptr)
+        {
+            state.mRenderTextureIdToGlobalIndex[swap->getId()] = index;
             state.mIdToGlobalIndex[swap->getId()] = index;
             state.mIdToType[swap->getId()] = type;
         }

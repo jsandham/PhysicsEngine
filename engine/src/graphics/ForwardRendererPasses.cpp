@@ -119,7 +119,15 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    if (camera->mRenderTextureId.isValid())
+    {
+        RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
+        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+    }
+    else
+    {
+        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    }
     Graphics::clearFrambufferColor(camera->mBackgroundColor);
     Graphics::clearFramebufferDepth(1.0f);
     Graphics::unbindFramebuffer();
@@ -361,7 +369,16 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     const char *const shaderShadowMapNames[] = {"shadowMap[0]", "shadowMap[1]", "shadowMap[2]", "shadowMap[3]",
                                                 "shadowMap[4]"};
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    if (camera->mRenderTextureId.isValid())
+    {
+        RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
+        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+    }
+    else
+    {
+        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    }
+    
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -425,7 +442,16 @@ void PhysicsEngine::renderSprites(World* world, Camera* camera, ForwardRendererS
     Graphics::setMat4(state.mSpriteProjectionLoc, projection);
     Graphics::setMat4(state.mSpriteViewLoc, view);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    if (camera->mRenderTextureId.isValid())
+    {
+        RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
+        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+    }
+    else
+    {
+        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    }
+    
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
         camera->getViewport().mHeight);
 
@@ -507,7 +533,7 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
     float fov = camera->getFrustum().mFov;
     float aspect = camera->getFrustum().mAspectRatio;
     float tanHalfHFOV = glm::tan(glm::radians(0.5f * fov));
-    float tanHalfVFOV = glm::tan(glm::radians(0.5f * fov * aspect));
+    float tanHalfVFOV = aspect * glm::tan(glm::radians(0.5f * fov));
 
     for (int i = 0; i < 5; i++)
     {
@@ -545,16 +571,15 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
 
         // Transform the frustum centre from view to world space
         glm::vec4 frustrumCentreWorldSpace = viewInv * frustumCentre;
-        float d = 40.0f; // cascadeEnds[i + 1] - cascadeEnds[i];
 
-        /*glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x + d * lightDirection.x,
-                                frustrumCentreWorldSpace.y + d * lightDirection.y,
-                                frustrumCentreWorldSpace.z + d * lightDirection.z);*/
+        // need to set p such that it is far enough out to have the light projection capture all objects that
+        // might cast shadows
+        float d = std::max(80.0f, -(state.mCascadeEnds[i + 1] - state.mCascadeEnds[i]));
         glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x - d * lightDirection.x,
                                 frustrumCentreWorldSpace.y - d * lightDirection.y,
                                 frustrumCentreWorldSpace.z - d * lightDirection.z);
 
-        state.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(1.0f, 0.0f, 0.0f));
+        state.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::lowest();
@@ -566,71 +591,20 @@ void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirectio
         glm::mat4 cascadeLightView = state.mCascadeLightView[i];
 
         // Transform the frustum coordinates from view to world space and then world to light space
-        glm::vec4 vL0 = cascadeLightView * (viewInv * frustumCorners[0]);
-        glm::vec4 vL1 = cascadeLightView * (viewInv * frustumCorners[1]);
-        glm::vec4 vL2 = cascadeLightView * (viewInv * frustumCorners[2]);
-        glm::vec4 vL3 = cascadeLightView * (viewInv * frustumCorners[3]);
-        glm::vec4 vL4 = cascadeLightView * (viewInv * frustumCorners[4]);
-        glm::vec4 vL5 = cascadeLightView * (viewInv * frustumCorners[5]);
-        glm::vec4 vL6 = cascadeLightView * (viewInv * frustumCorners[6]);
-        glm::vec4 vL7 = cascadeLightView * (viewInv * frustumCorners[7]);
+        glm::vec4 vL[8];
+        for (int j = 0; j < 8; j++)
+        {
+            vL[j] = cascadeLightView * (viewInv * frustumCorners[j]);
 
-        minX = glm::min(minX, vL0.x);
-        maxX = glm::max(maxX, vL0.x);
-        minY = glm::min(minY, vL0.y);
-        maxY = glm::max(maxY, vL0.y);
-        minZ = glm::min(minZ, vL0.z);
-        maxZ = glm::max(maxZ, vL0.z);
-
-        minX = glm::min(minX, vL1.x);
-        maxX = glm::max(maxX, vL1.x);
-        minY = glm::min(minY, vL1.y);
-        maxY = glm::max(maxY, vL1.y);
-        minZ = glm::min(minZ, vL1.z);
-        maxZ = glm::max(maxZ, vL1.z);
-
-        minX = glm::min(minX, vL2.x);
-        maxX = glm::max(maxX, vL2.x);
-        minY = glm::min(minY, vL2.y);
-        maxY = glm::max(maxY, vL2.y);
-        minZ = glm::min(minZ, vL2.z);
-        maxZ = glm::max(maxZ, vL2.z);
-
-        minX = glm::min(minX, vL3.x);
-        maxX = glm::max(maxX, vL3.x);
-        minY = glm::min(minY, vL3.y);
-        maxY = glm::max(maxY, vL3.y);
-        minZ = glm::min(minZ, vL3.z);
-        maxZ = glm::max(maxZ, vL3.z);
-
-        minX = glm::min(minX, vL4.x);
-        maxX = glm::max(maxX, vL4.x);
-        minY = glm::min(minY, vL4.y);
-        maxY = glm::max(maxY, vL4.y);
-        minZ = glm::min(minZ, vL4.z);
-        maxZ = glm::max(maxZ, vL4.z);
-
-        minX = glm::min(minX, vL5.x);
-        maxX = glm::max(maxX, vL5.x);
-        minY = glm::min(minY, vL5.y);
-        maxY = glm::max(maxY, vL5.y);
-        minZ = glm::min(minZ, vL5.z);
-        maxZ = glm::max(maxZ, vL5.z);
-
-        minX = glm::min(minX, vL6.x);
-        maxX = glm::max(maxX, vL6.x);
-        minY = glm::min(minY, vL6.y);
-        maxY = glm::max(maxY, vL6.y);
-        minZ = glm::min(minZ, vL6.z);
-        maxZ = glm::max(maxZ, vL6.z);
-
-        minX = glm::min(minX, vL7.x);
-        maxX = glm::max(maxX, vL7.x);
-        minY = glm::min(minY, vL7.y);
-        maxY = glm::max(maxY, vL7.y);
-        minZ = glm::min(minZ, vL7.z);
-        maxZ = glm::max(maxZ, vL7.z);
-
+            minX = glm::min(minX, vL[j].x);
+            maxX = glm::max(maxX, vL[j].x);
+            minY = glm::min(minY, vL[j].y);
+            maxY = glm::max(maxY, vL[j].y);
+            minZ = glm::min(minZ, vL[j].z);
+            maxZ = glm::max(maxZ, vL[j].z);
+        }
+        // Should be glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ) but need to decrease/increase minZ and maxZ
+        // respectively to capture all objects that can cast a show
         state.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
     }
 }

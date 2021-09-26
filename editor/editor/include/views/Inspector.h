@@ -11,6 +11,7 @@
 #include "../drawers/ShaderDrawer.h"
 #include "../drawers/Texture2DDrawer.h"
 #include "../drawers/SpriteDrawer.h"
+#include "../drawers/RenderTextureDrawer.h"
 
 #include "../../include/drawers/BoxColliderDrawer.h"
 #include "../../include/drawers/CameraDrawer.h"
@@ -34,6 +35,7 @@ class Inspector : public Window
     ShaderDrawer mShaderDrawer;
     Texture2DDrawer mTexture2DDrawer;
     SpriteDrawer mSpriteDrawer;
+    RenderTextureDrawer mRenderTextureDrawer;
 
     TransformDrawer mTransformDrawer;
     RigidbodyDrawer mRigidbodyDrawer;

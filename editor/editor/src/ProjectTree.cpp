@@ -122,6 +122,11 @@ void ProjectNode::addFile(const std::string& name)
         label = std::string(ICON_FA_AREA_CHART);
         type = InteractionType::Sprite;
     }
+    else if (extension == "rendertexture")
+    {
+        label = std::string(ICON_FA_AREA_CHART);
+        type = InteractionType::RenderTexture;
+    }
 
     mFileLabels.push_back(label + " " + name);
     mFilePaths.push_back(getDirectoryPath() / name);

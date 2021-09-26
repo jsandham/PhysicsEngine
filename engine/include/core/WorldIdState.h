@@ -37,6 +37,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mTexture2DIdToGlobalIndex;
     std::unordered_map<Guid, int> mTexture3DIdToGlobalIndex;
     std::unordered_map<Guid, int> mCubemapIdToGlobalIndex;
+    std::unordered_map<Guid, int> mRenderTextureIdToGlobalIndex;
     std::unordered_map<Guid, int> mFontIdToGlobalIndex;
     std::unordered_map<Guid, int> mSpriteIdToGlobalIndex;
 

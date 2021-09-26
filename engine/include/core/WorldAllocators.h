@@ -66,6 +66,7 @@ struct WorldAllocators
     PoolAllocator<Texture2D> mTexture2DAllocator;
     PoolAllocator<Texture3D> mTexture3DAllocator;
     PoolAllocator<Cubemap> mCubemapAllocator;
+    PoolAllocator<RenderTexture> mRenderTextureAllocator;
     PoolAllocator<Font> mFontAllocator;
     PoolAllocator<Sprite> mSpriteAllocator;
 

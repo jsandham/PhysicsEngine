@@ -46,6 +46,10 @@ void Inspector::update(Clipboard &clipboard)
     {
         mSpriteDrawer.render(clipboard, clipboard.getSelectedId());
     }
+    else if (clipboard.getSelectedType() == InteractionType::RenderTexture)
+    {
+        mRenderTextureDrawer.render(clipboard, clipboard.getSelectedId());
+    }
 
     // draw selected entity
     if (clipboard.getSelectedType() == InteractionType::Entity)

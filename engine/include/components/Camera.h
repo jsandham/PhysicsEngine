@@ -21,6 +21,7 @@
 #include "../core/Frustum.h"
 #include "../core/Ray.h"
 #include "../core/Viewport.h"
+#include "../core/RenderTexture.h"
 
 #include "../graphics/GraphicsQuery.h"
 
@@ -48,6 +49,18 @@ enum class RenderPath
 {
     Forward,
     Deferred
+};
+
+enum class RenderMode
+{
+    Color,
+    Depth,
+    Normal,
+    ColorPicking,
+    Position,
+    AlbedoSpecular,
+    SSAO,
+    CascadeShadowMap
 };
 
 enum class ShadowCascades
@@ -82,9 +95,10 @@ struct CameraTargets
 class Camera : public Component
 {
   public:
-    Guid mTargetTextureId;
+    Guid mRenderTextureId;
 
     RenderPath mRenderPath;
+    RenderMode mRenderMode;
     CameraMode mMode;
     CameraSSAO mSSAO;
     CameraGizmos mGizmos;
@@ -249,6 +263,23 @@ template <> struct convert<PhysicsEngine::RenderPath>
     static bool decode(const Node &node, PhysicsEngine::RenderPath &rhs)
     {
         rhs = static_cast<PhysicsEngine::RenderPath>(node.as<int>());
+        return true;
+    }
+};
+
+// RenderMode
+template <> struct convert<PhysicsEngine::RenderMode>
+{
+    static Node encode(const PhysicsEngine::RenderMode& rhs)
+    {
+        Node node;
+        node = static_cast<int>(rhs);
+        return node;
+    }
+
+    static bool decode(const Node& node, PhysicsEngine::RenderMode& rhs)
+    {
+        rhs = static_cast<PhysicsEngine::RenderMode>(node.as<int>());
         return true;
     }
 };

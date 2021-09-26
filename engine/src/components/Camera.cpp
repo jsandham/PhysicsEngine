@@ -8,7 +8,7 @@ using namespace PhysicsEngine;
 Camera::Camera(World* world) : Component(world)
 {
     mEntityId = Guid::INVALID;
-    mTargetTextureId = Guid::INVALID;
+    mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
@@ -31,6 +31,7 @@ Camera::Camera(World* world) : Component(world)
     mTargets.mSsaoNoiseTex = 0;
 
     mRenderPath = RenderPath::Forward;
+    mRenderMode = RenderMode::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
@@ -65,7 +66,7 @@ Camera::Camera(World* world) : Component(world)
 Camera::Camera(World* world, Guid id) : Component(world, id)
 {
     mEntityId = Guid::INVALID;
-    mTargetTextureId = Guid::INVALID;
+    mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
@@ -88,6 +89,7 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
     mTargets.mSsaoNoiseTex = 0;
 
     mRenderPath = RenderPath::Forward;
+    mRenderMode = RenderMode::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
@@ -127,8 +129,9 @@ void Camera::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
-    out["targetTextureId"] = mTargetTextureId;
+    out["renderTextureId"] = mRenderTextureId;
     out["renderPath"] = mRenderPath;
+    out["renderMode"] = mRenderMode;
     out["cameraMode"] = mMode;
     out["cameraSSAO"] = mSSAO;
     out["cameraGizmos"] = mGizmos;
@@ -144,8 +147,9 @@ void Camera::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 
-    mTargetTextureId = YAML::getValue<Guid>(in, "targetTextureId");
+    mRenderTextureId = YAML::getValue<Guid>(in, "renderTextureId");
     mRenderPath = YAML::getValue<RenderPath>(in, "renderPath");
+    mRenderMode = YAML::getValue<RenderMode>(in, "renderMode");
     mMode = YAML::getValue<CameraMode>(in, "cameraMode");
     mSSAO = YAML::getValue<CameraSSAO>(in, "cameraSSAO");
     mGizmos = YAML::getValue<CameraGizmos>(in, "cameraGizmos");

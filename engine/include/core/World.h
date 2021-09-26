@@ -288,6 +288,11 @@ class World
         return mAllocators.mCubemapAllocator.getCount();
     }
 
+    template <> size_t getNumberOfAssets<RenderTexture>() const
+    {
+        return mAllocators.mRenderTextureAllocator.getCount();
+    }
+
     template <> size_t getNumberOfAssets<Font>() const
     {
         return mAllocators.mFontAllocator.getCount();
@@ -538,6 +543,11 @@ class World
         return getAssetByIndex_impl(&mAllocators.mCubemapAllocator, index);
     }
 
+    template <> RenderTexture* getAssetByIndex<RenderTexture>(size_t index) const
+    {
+        return getAssetByIndex_impl(&mAllocators.mRenderTextureAllocator, index);
+    }
+
     template <> Font *getAssetByIndex<Font>(size_t index) const
     {
         return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
@@ -576,6 +586,11 @@ class World
     template <> Cubemap *getAssetById<Cubemap>(const Guid &assetId) const
     {
         return getAssetById_impl(&mAllocators.mCubemapAllocator, assetId);
+    }
+
+    template <> RenderTexture* getAssetById<RenderTexture>(const Guid& assetId) const
+    {
+        return getAssetById_impl(&mAllocators.mRenderTextureAllocator, assetId);
     }
 
     template <> Font *getAssetById<Font>(const Guid &assetId) const
@@ -726,6 +741,11 @@ class World
     template <> Cubemap *createAsset<Cubemap>()
     {
         return createAsset_impl(&mAllocators.mCubemapAllocator);
+    }
+
+    template <> RenderTexture* createAsset<RenderTexture>()
+    {
+        return createAsset_impl(&mAllocators.mRenderTextureAllocator);
     }
 
     template <> Font *createAsset<Font>()
@@ -1156,6 +1176,11 @@ class World
         return getById_impl<Cubemap>(mIdState.mCubemapIdToGlobalIndex, allocator, assetId);
     }
 
+    template <> RenderTexture* getAssetById_impl<RenderTexture>(const PoolAllocator<RenderTexture>* allocator, const Guid& assetId) const
+    {
+        return getById_impl<RenderTexture>(mIdState.mRenderTextureIdToGlobalIndex, allocator, assetId);
+    }
+
     template <> Font *getAssetById_impl<Font>(const PoolAllocator<Font> *allocator, const Guid &assetId) const
     {
         return getById_impl<Font>(mIdState.mFontIdToGlobalIndex, allocator, assetId);
@@ -1327,6 +1352,13 @@ class World
     template <> void addIdToGlobalIndexMap_impl<Cubemap>(const Guid &id, int index, int type)
     {
         mIdState.mCubemapIdToGlobalIndex[id] = index;
+        mIdState.mIdToGlobalIndex[id] = index;
+        mIdState.mIdToType[id] = type;
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<RenderTexture>(const Guid& id, int index, int type)
+    {
+        mIdState.mRenderTextureIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;
         mIdState.mIdToType[id] = type;
     }

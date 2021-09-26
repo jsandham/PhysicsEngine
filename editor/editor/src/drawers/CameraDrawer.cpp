@@ -1,6 +1,7 @@
 #include "../../include/drawers/CameraDrawer.h"
 #include "../../include/Undo.h"
 #include "../../include/EditorCommands.h"
+#include "../../include/imgui/imgui_extensions.h"
 
 #include "components/Camera.h"
 
@@ -32,16 +33,23 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
             int renderPath = static_cast<int>(camera->mRenderPath);
+            int renderMode = static_cast<int>(camera->mRenderMode);
             int mode = static_cast<int>(camera->mMode);
             int ssao = static_cast<int>(camera->mSSAO);
 
             const char* renderPathNames[] = { "Forward", "Deferred" };
+            const char* renderModeNames[] = { "Color", "Depth", "Normals" };
             const char* modeNames[] = { "Main", "Secondary" };
             const char* ssaoNames[] = { "On", "Off" };
 
             if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2))
             {
                 camera->mRenderPath = static_cast<RenderPath>(renderPath);
+            }
+
+            if (ImGui::Combo("Render Mode", &renderMode, renderModeNames, 3))
+            {
+                camera->mRenderMode = static_cast<RenderMode>(renderMode);
             }
 
             if (ImGui::Combo("Mode", &mode, modeNames, 2))
@@ -53,6 +61,48 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
             {
                 camera->mSSAO = static_cast<CameraSSAO>(ssao);
             }
+
+
+
+
+
+
+            Guid renderTargetId = camera->mRenderTextureId;
+
+            std::string renderTargetName = "None (Render Texture)";
+            if (renderTargetId.isValid())
+            {
+                renderTargetName = renderTargetId.toString();
+            }
+
+            bool releaseTriggered = false;
+            bool clearClicked = false;
+            bool isClicked = ImGui::Slot("Render Target", renderTargetName, &releaseTriggered, &clearClicked);
+
+            if (releaseTriggered && clipboard.getDraggedType() == InteractionType::RenderTexture)
+            {
+                renderTargetId = clipboard.getDraggedId();
+                clipboard.clearDraggedItem();
+
+                camera->mRenderTextureId = renderTargetId;
+            }
+
+            if (isClicked)
+            {
+                clipboard.setSelectedItem(InteractionType::RenderTexture, renderTargetId);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
 
             glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.r, camera->mBackgroundColor.g,
                 camera->mBackgroundColor.b, camera->mBackgroundColor.a);

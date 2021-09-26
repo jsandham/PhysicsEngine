@@ -172,6 +172,7 @@
     <ClCompile Include="src\drawers\MeshColliderDrawer.cpp" />
     <ClCompile Include="src\drawers\MeshDrawer.cpp" />
     <ClCompile Include="src\drawers\MeshRendererDrawer.cpp" />
+    <ClCompile Include="src\drawers\RenderTextureDrawer.cpp" />
     <ClCompile Include="src\drawers\RigidbodyDrawer.cpp" />
     <ClCompile Include="src\drawers\ShaderDrawer.cpp" />
     <ClCompile Include="src\drawers\SphereColliderDrawer.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="include\drawers\MeshColliderDrawer.h" />
     <ClInclude Include="include\drawers\MeshDrawer.h" />
     <ClInclude Include="include\drawers\MeshRendererDrawer.h" />
+    <ClInclude Include="include\drawers\RenderTextureDrawer.h" />
     <ClInclude Include="include\drawers\RigidbodyDrawer.h" />
     <ClInclude Include="include\drawers\ShaderDrawer.h" />
     <ClInclude Include="include\drawers\SphereColliderDrawer.h" />

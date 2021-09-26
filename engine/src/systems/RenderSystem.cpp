@@ -122,6 +122,27 @@ void RenderSystem::registerRenderAssets(World *world)
         }
     }
 
+    // create all render texture assets not already created
+    for (size_t i = 0; i < world->getNumberOfAssets<RenderTexture>(); i++)
+    {
+        RenderTexture* texture = world->getAssetByIndex<RenderTexture>(i);
+        if (!texture->isCreated())
+        {
+            texture->create();
+
+            if (!texture->isCreated())
+            {
+                std::string errorMessage = "Error: Failed to create render texture " + texture->getId().toString() + "\n";
+                Log::error(errorMessage.c_str());
+            }
+        }
+
+        if (texture->updateRequired())
+        {
+            texture->update();
+        }
+    }
+
     // compile all shader assets and configure uniform blocks not already compiled
     std::unordered_set<Guid> shadersCompiledThisFrame;
     for (size_t i = 0; i < world->getNumberOfAssets<Shader>(); i++)
