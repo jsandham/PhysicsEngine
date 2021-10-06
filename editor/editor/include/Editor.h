@@ -1,6 +1,8 @@
 #ifndef __EDITOR_H__
 #define __EDITOR_H__
 
+#include <core/Layer.h>
+
 #include "EditorClipboard.h"
 
 #include "MenuBar.h"
@@ -13,7 +15,7 @@
 
 namespace PhysicsEditor
 {
-    class Editor
+    class Editor : public Layer
     {
     private:
         Clipboard mClipboard;
@@ -35,8 +37,8 @@ namespace PhysicsEditor
         Editor(const Editor& other) = delete;
         Editor& operator=(const Editor& other) = delete;
 
-        void init();
-        void update();
+        void init() override;
+        void update() override;
     };
 } // namespace PhysicsEditor
 

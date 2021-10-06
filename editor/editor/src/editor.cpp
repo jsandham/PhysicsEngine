@@ -9,7 +9,7 @@
 
 using namespace PhysicsEditor;
 
-Editor::Editor()
+Editor::Editor() : Layer("Editor")
 {
 }
 

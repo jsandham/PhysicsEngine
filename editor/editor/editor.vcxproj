@@ -94,6 +94,7 @@
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\imgui\lib\debug;$(SolutionDir)..\simplefilewatcher\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,6 +106,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\engine\include;$(SolutionDir)..\external\glew-2.1.0;$(SolutionDir)..\external\imgui\include;$(SolutionDir)..\external\simplefilewatcher\include;$(SolutionDir)..\external\yaml-cpp\include;$(SolutionDir)..\external\imguizmo\include;$(SolutionDir)..\external\glm</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -112,6 +114,7 @@
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cppd.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\debug;$(SolutionDir)..\external\imgui\lib\debug;$(SolutionDir)..\external\simplefilewatcher\lib\debug;$(SolutionDir)..\external\yaml-cpp\build\Debug;$(SolutionDir)..\external\imguizmo\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -134,6 +137,7 @@
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\imgui\lib\release;$(SolutionDir)..\simplefilewatcher\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,6 +160,7 @@
       <AdditionalDependencies>engine.lib;imgui.lib;simplefilewatcher.lib;glew32.lib;xinput.lib;opengl32.lib;cudart.lib;freetype.lib;yaml-cpp.lib;%(AdditionalDependencies);imguizmo.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\engine\lib\release;$(SolutionDir)..\external\imgui\lib\release;$(SolutionDir)..\external\simplefilewatcher\lib\release;$(SolutionDir)..\external\yaml-cpp\build\Release;$(SolutionDir)..\external\imguizmo\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -182,6 +187,7 @@
     <ClCompile Include="src\drawers\Texture3DDrawer.cpp" />
     <ClCompile Include="src\drawers\TransformDrawer.cpp" />
     <ClCompile Include="src\Editor.cpp" />
+    <ClCompile Include="src\EditorApplication.cpp" />
     <ClCompile Include="src\EditorCameraSystem.cpp" />
     <ClCompile Include="src\EditorClipboard.cpp" />
     <ClCompile Include="src\EditorCommands.cpp" />

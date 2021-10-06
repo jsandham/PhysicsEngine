@@ -195,6 +195,9 @@
     <ClCompile Include="src\drawers\RenderTextureDrawer.cpp">
       <Filter>Source Files\drawers</Filter>
     </ClCompile>
+    <ClCompile Include="src\EditorApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">

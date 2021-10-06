@@ -1,1 +1,9 @@
-﻿  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
+﻿  EditorApplication.cpp
+imgui.lib(imgui.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'imgui.lib(imgui.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+imgui.lib(imgui_draw.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'imgui.lib(imgui_draw.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+imgui.lib(imgui_impl_opengl3.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'imgui.lib(imgui_impl_opengl3.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+imgui.lib(imgui_impl_win32.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'imgui.lib(imgui_impl_win32.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+imgui.lib(imgui_widgets.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'imgui.lib(imgui_widgets.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+simplefilewatcher.lib(FileWatcher.obj) : warning LNK4099: PDB 'vc140.pdb' was not found with 'simplefilewatcher.lib(FileWatcher.obj)' or at 'C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\vc140.pdb'; linking object as if no debug info
+simplefilewatcher.lib(FileWatcherWin32.obj) : warning LNK4099: PDB '' was not found with 'simplefilewatcher.lib(FileWatcherWin32.obj)' or at ''; linking object as if no debug info
+  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
