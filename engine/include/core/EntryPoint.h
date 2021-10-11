@@ -1,11 +1,8 @@
 #pragma once
+#include "PlatformDetection.h"
 #include "Application.h"
 
 extern PhysicsEngine::Application* PhysicsEngine::createApplication();
-
-#ifdef PHYSICSENGINE_PLATFORM_WINDOWS
-
-#include <windows.h>
 
 int main(int argc, char** argv)
 {
@@ -17,5 +14,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-
-#endif

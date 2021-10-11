@@ -188,3 +188,13 @@ void Editor::update()
     std::chrono::duration<double> elapsed_seconds = end - start;
     mClipboard.deltaTime = elapsed_seconds.count();
 }
+
+void Editor::begin()
+{
+
+}
+
+void Editor::end()
+{
+
+}

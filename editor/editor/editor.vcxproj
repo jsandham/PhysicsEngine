@@ -198,6 +198,7 @@
     <ClCompile Include="src\EditorWin32.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
+    <ClCompile Include="src\ImGuiLayer.cpp" />
     <ClCompile Include="src\imgui\imgui_extensions.cpp" />
     <ClCompile Include="src\imgui\imgui_styles.cpp" />
     <ClCompile Include="src\LibraryDirectory.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />
     <ClInclude Include="include\IconsFontAwesome4.h" />
+    <ClInclude Include="include\ImGuiLayer.h" />
     <ClInclude Include="include\imgui\imgui_extensions.h" />
     <ClInclude Include="include\imgui\imgui_styles.h" />
     <ClInclude Include="include\InteractionType.h" />

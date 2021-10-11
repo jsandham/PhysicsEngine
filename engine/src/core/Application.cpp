@@ -26,7 +26,20 @@ void Application::run()
 {
 	while (mRunning)
 	{
-		mLayer->update();
+		for (Layer* layer : mLayers)
+		{
+			layer->begin();
+		}
+
+		for (Layer* layer : mLayers)
+		{
+			layer->update();
+		}
+
+		for (Layer* layer : mLayers)
+		{
+			layer->end();
+		}
 
 		mWindow->update();
 	}
@@ -39,7 +52,12 @@ void Application::close()
 
 void Application::pushLayer(Layer* layer)
 {
-	mLayer = layer;
+	mLayers.push_back(layer);
 
-	mLayer->init();
+	layer->init();
+}
+
+ApplicationWindow& Application::getWindow()
+{ 
+	return *mWindow; 
 }

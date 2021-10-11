@@ -20,9 +20,6 @@ namespace PhysicsEditor
     private:
         Clipboard mClipboard;
 
-        //CommandManager mCommand;
-        //Undo mUndo;
-
         MenuBar mMenuBar;
         Inspector mInspector;
         Hierarchy mHierarchy;
@@ -38,7 +35,9 @@ namespace PhysicsEditor
         Editor& operator=(const Editor& other) = delete;
 
         void init() override;
+        void begin() override;
         void update() override;
+        void end() override;
     };
 } // namespace PhysicsEditor
 

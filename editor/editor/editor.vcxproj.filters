@@ -198,6 +198,9 @@
     <ClCompile Include="src\EditorApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ImGuiLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Editor.h">
@@ -361,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="include\drawers\RenderTextureDrawer.h">
       <Filter>Header Files\drawers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGuiLayer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

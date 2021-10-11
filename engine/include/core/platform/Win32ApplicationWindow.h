@@ -7,24 +7,21 @@
 #include <windows.h>
 
 #include "../ApplicationWindow.h"
-#include "../ApplicationGraphicsContext.h"
+#include "../RendererAPI.h"
 
 namespace PhysicsEngine
 {
 	class Win32ApplicationWindow : public ApplicationWindow
 	{
 	private:
-		WNDCLASS wc;
-		HWND g_hwnd;
-		HWND prevActiveWindow;
-		HWND activeWindow;
-		MSG msg;
+		WNDCLASS mWC;
+		HWND mWindow;
 
 		std::string mTitle;
 		int mWidth;
 		int mHeight;
 
-		ApplicationGraphicsContext* mContext;
+		RendererAPI* mRendererAPI;
 
 	public:
 		Win32ApplicationWindow(const std::string& title, int width, int height);
@@ -34,6 +31,8 @@ namespace PhysicsEngine
 
 		int getWidth() const override;
 		int getHeight() const override;
+
+		void* getNativeWindow() const override;
 
 	private:
 		void init(const std::string& title, int width, int height);

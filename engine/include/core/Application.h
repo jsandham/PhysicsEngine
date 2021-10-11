@@ -2,9 +2,9 @@
 #define APPLICATION_H__
 
 #include <string>
+#include <vector>
 
 #include "ApplicationWindow.h"
-#include "ApplicationGraphicsContext.h"
 #include "Layer.h"
 
 namespace PhysicsEngine
@@ -14,18 +14,23 @@ namespace PhysicsEngine
 	private:
 		ApplicationWindow* mWindow;
 
-		Layer* mLayer;
+		std::vector<Layer*> mLayers;
 		std::string mName;
 		bool mRunning;
 
 	public:
 		Application(const std::string& name = "App");
+		Application(const Application& other) = delete;
+		Application& operator=(const Application& other) = delete;
 		virtual ~Application();
 
 		void run();
 		void close();
 
 		void pushLayer(Layer* layer);
+
+		ApplicationWindow& getWindow();
+		static Application& get() { return *mInstance; }
 
 	private:
 		static Application* mInstance;

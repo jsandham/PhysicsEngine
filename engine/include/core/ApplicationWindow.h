@@ -16,7 +16,8 @@ namespace PhysicsEngine
 		virtual int getWidth() const = 0;
 		virtual int getHeight() const = 0;
 
-		//virtual void* getNativeWindow() const = 0;
+		virtual void* getNativeWindow() const = 0;
+
 		static ApplicationWindow* createApplicationWindow(const std::string& title, int width, int height);
 	};
 }

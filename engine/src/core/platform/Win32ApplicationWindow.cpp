@@ -36,35 +36,30 @@ Win32ApplicationWindow::Win32ApplicationWindow(const std::string& title, int wid
 {
 	init(title, width, height);
 
-    mContext = ApplicationGraphicsContext::createApplicationGraphicsContext(static_cast<void*>(g_hwnd));
+    mRendererAPI = RendererAPI::createRendererAPI();
+
+    mRendererAPI->init(static_cast<void*>(mWindow));
 }
 
 Win32ApplicationWindow::~Win32ApplicationWindow()
 {
 	cleanup();
 
-    delete mContext;
+    mRendererAPI->cleanup();
+    delete mRendererAPI;
 }
 
 void Win32ApplicationWindow::update()
 {
-    prevActiveWindow = activeWindow;
-    activeWindow = GetActiveWindow();
-
     // Poll and handle messages (inputs, window resize, etc.)
-    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your
-    // inputs.
-    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-    // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those
-    // two flags.
-    while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0)
+    MSG message;
+    while (PeekMessage(&message, NULL, 0U, 0U, PM_REMOVE) != 0)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        TranslateMessage(&message);
+        DispatchMessage(&message);
     }
 
-    mContext->update();
+    mRendererAPI->update();
 }
 
 int Win32ApplicationWindow::getWidth() const
@@ -77,35 +72,35 @@ int Win32ApplicationWindow::getHeight() const
 	return mHeight;
 }
 
+void* Win32ApplicationWindow::getNativeWindow() const
+{
+    return static_cast<void*>(mWindow);
+}
+
 void Win32ApplicationWindow::init(const std::string& title, int width, int height)
 {
     mTitle = title;
     mWidth = width;
     mHeight = height;
 
-    wc = { 0 };
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = GetModuleHandle(0);
-    wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
-    wc.lpszClassName = _T("NCUI");
-    wc.style = CS_OWNDC;
-    if (!RegisterClass(&wc))
+    mWC = { 0 };
+    mWC.lpfnWndProc = WndProc;
+    mWC.hInstance = GetModuleHandle(0);
+    mWC.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
+    mWC.lpszClassName = _T("NCUI");
+    mWC.style = CS_OWNDC;
+    if (!RegisterClass(&mWC))
         return;
-    g_hwnd = CreateWindowEx(0, wc.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
-        CW_USEDEFAULT, mWidth, mHeight, 0, 0, wc.hInstance, 0);
+    mWindow = CreateWindowEx(0, mWC.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
+        CW_USEDEFAULT, mWidth, mHeight, 0, 0, mWC.hInstance, 0);
 
     // Show the window
-    ShowWindow(g_hwnd, SW_SHOWDEFAULT);
-    UpdateWindow(g_hwnd);
-
-    prevActiveWindow = NULL;
-    activeWindow = NULL;
-
-    ZeroMemory(&msg, sizeof(msg));
+    ShowWindow(mWindow, SW_SHOWDEFAULT);
+    UpdateWindow(mWindow);
 }
 
 void Win32ApplicationWindow::cleanup()
 {
-    DestroyWindow(g_hwnd);
-    UnregisterClass(_T("NCUI"), wc.hInstance);
+    DestroyWindow(mWindow);
+    UnregisterClass(_T("NCUI"), mWC.hInstance);
 }
