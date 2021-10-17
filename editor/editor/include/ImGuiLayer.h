@@ -2,6 +2,7 @@
 #define IMGUI_LAYER_H__
 
 #include <core/Layer.h>
+#include <core/Time.h>
 
 namespace PhysicsEditor
 {
@@ -15,7 +16,7 @@ namespace PhysicsEditor
 
         void init() override;
         void begin() override;
-        void update() override;
+        void update(const PhysicsEngine::Time& time) override;
         void end() override;
 	};
 }

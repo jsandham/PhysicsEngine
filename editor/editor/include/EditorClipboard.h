@@ -9,6 +9,7 @@
 
 #include "core/Guid.h"
 #include "core/World.h"
+#include <core/Time.h>
 
 #include "LibraryDirectory.h"
 #include "EditorCameraSystem.h"
@@ -97,7 +98,7 @@ class Clipboard
         bool mConsoleUnhoveredThisFrame;
         bool mConsoleUnfocusedThisFrame;
 
-        double deltaTime;
+        PhysicsEngine::Time mTime;
 
     public:
         Clipboard();

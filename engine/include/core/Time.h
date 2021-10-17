@@ -5,13 +5,13 @@ namespace PhysicsEngine
 {
 struct Time
 {
-    size_t frameCount;
-    float time;
-    float deltaTime;
-    size_t deltaCycles;
+    size_t mFrameCount; // frame count since application started
+    double mStartTime; // start time at beginning of frame (seconds)
+    double mEndTime; // end time at end of frame (seconds)
+    double mDeltaTime; // elapsed time of frame (seconds)
 };
 
-float getFPS(Time time);
+float getFPS(const Time& time);
 } // namespace PhysicsEngine
 
 #endif

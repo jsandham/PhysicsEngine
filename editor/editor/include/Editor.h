@@ -2,6 +2,7 @@
 #define __EDITOR_H__
 
 #include <core/Layer.h>
+#include <core/Time.h>
 
 #include "EditorClipboard.h"
 
@@ -15,7 +16,7 @@
 
 namespace PhysicsEditor
 {
-    class Editor : public Layer
+    class Editor : public PhysicsEngine::Layer
     {
     private:
         Clipboard mClipboard;
@@ -36,7 +37,7 @@ namespace PhysicsEditor
 
         void init() override;
         void begin() override;
-        void update() override;
+        void update(const PhysicsEngine::Time& time) override;
         void end() override;
     };
 } // namespace PhysicsEditor

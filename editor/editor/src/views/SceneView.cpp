@@ -482,7 +482,7 @@ void SceneView::updateWorld(World *world)
     }
 
     // call update on all systems in world
-    auto start = std::chrono::steady_clock::now();
+    //auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
         System *system = world->getSystemByUpdateOrder(i);
@@ -491,11 +491,11 @@ void SceneView::updateWorld(World *world)
             system->update(mInput, mTime);
         }
     }
-    auto end = std::chrono::steady_clock::now();
+    //auto end = std::chrono::steady_clock::now();
 
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    mTime.deltaTime = elapsed_seconds.count();
-    mTime.frameCount++;
+    //std::chrono::duration<double> elapsed_seconds = end - start;
+    //mTime.deltaTime = elapsed_seconds.count();
+    //mTime.frameCount++;
 }
 
 void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem)
@@ -518,8 +518,9 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
         ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
-        ImGui::Text("Delta time: %f", clipboard.deltaTime);
-        ImGui::Text("Framerate: %f", ImGui::GetIO().Framerate);
+        ImGui::Text("Delta time: %f", clipboard.mTime.mDeltaTime);
+        ImGui::Text("ImGui::GetIO().Framerate: %f", ImGui::GetIO().Framerate);
+        ImGui::Text("getFPS: %f", PhysicsEngine::getFPS(clipboard.mTime));
         ImGui::Text("Window position: %f %f\n", getWindowPos().x, getWindowPos().y);
         ImGui::Text("Scene content min: %f %f\n", mSceneContentMin.x, mSceneContentMin.y);
         ImGui::Text("Scene content max: %f %f\n", mSceneContentMax.x, mSceneContentMax.y);

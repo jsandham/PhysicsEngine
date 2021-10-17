@@ -1,13 +1,14 @@
+#include <filesystem>
+#include <stack>
+
 #include "../include/Editor.h"
-#include "../include/Undo.h"
-#include "../include/imgui/imgui_styles.h"
-#include "../include/IconsFontAwesome4.h"
 
 #include "imgui.h"
 
 #include "core/Guid.h"
 
 using namespace PhysicsEditor;
+namespace fs = std::filesystem;
 
 Editor::Editor() : Layer("Editor")
 {
@@ -19,54 +20,41 @@ Editor::~Editor()
 
 void Editor::init()
 {
-    // enable docking
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    fs::path cwd = fs::current_path();
+    fs::path dataPath = cwd / "data";
 
-    // Setup style
-    ImGui::StyleColorsCorporate();
+    if (fs::is_directory(dataPath))
+    {
+        std::stack<fs::path> stack;
+        stack.push(dataPath);
 
-    io.Fonts->AddFontDefault();
+        while (!stack.empty())
+        {
+            fs::path currentPath = stack.top();
+            stack.pop();
 
-    ImFontConfig config;
-    config.MergeMode = true;
-    config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
-    io.Fonts->Build();
-
-    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\capsule.mesh");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\cube.mesh");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\spoon.mesh");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\teacup.mesh");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\meshes\\teapot.mesh");
-
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\binormal.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\color.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\colorLit.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\depthMap.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gbuffer.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gizmo.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\grid.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\line.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\gbuffer.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\normal.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\normalMap.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\positionAndNormals.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\screenQuad.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\shadowDepthMap.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\shadowDepthCubemap.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\sprite.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\ssao.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\standard.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\standardDeferred.shader");
-    mClipboard.getWorld()->loadAssetFromYAML("data\\shaders\\opengl\\tangent.shader");
-
-    mClipboard.getWorld()->loadAssetFromYAML("data\\textures\\default_texture.texture");
-
-    mClipboard.getWorld()->loadAssetFromYAML("data\\materials\\default.material");
-
+            std::error_code error_code;
+            for (const fs::directory_entry& entry : fs::directory_iterator(currentPath, error_code))
+            {
+                if (fs::is_directory(entry, error_code))
+                {
+                    stack.push(entry.path());
+                }
+                else if (fs::is_regular_file(entry, error_code))
+                {
+                    std::string extension = entry.path().extension().string();
+                    if (extension == ".mesh" || 
+                        extension == ".shader" ||
+                        extension == ".material" ||
+                        extension == ".texture")
+                    {
+                        fs::path relativeDataPath = entry.path().lexically_relative(fs::current_path());
+                        mClipboard.getWorld()->loadAssetFromYAML(relativeDataPath.string());
+                    }
+                }
+            }
+        }
+    }
 
     mMenuBar.init(mClipboard);
     mInspector.init(mClipboard);
@@ -77,30 +65,9 @@ void Editor::init()
     mDebugOverlay.init(mClipboard);
 }
 
-void Editor::update()
+void Editor::update(const PhysicsEngine::Time& time)
 {
-    auto start = std::chrono::steady_clock::now();
-
     mClipboard.getLibrary().update(mClipboard.getWorld());
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    static bool p_open = true;
-    ImGui::Begin("Root Window", &p_open, window_flags);
-    ImGui::DockSpace(ImGui::GetID("Dockspace"), ImVec2(0.0f, 0.0f), dockspace_flags);
-
-    // ImGui::ShowDemoWindow();
-    // ImGui::ShowMetricsWindow();
-    // ImGui::ShowStyleEditor();
 
     mMenuBar.update(mClipboard);
 
@@ -175,18 +142,12 @@ void Editor::update()
         mDebugOverlay.draw(mClipboard, show_overlay, 0.35f, overlay_flags);
     }
 
-    ImGui::End();
-
     if (mClipboard.getDraggedType() != InteractionType::None)
     {
         ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.string().c_str());
     }
 
-    Undo::updateUndoStack(mClipboard);
-
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    mClipboard.deltaTime = elapsed_seconds.count();
+    mClipboard.mTime = time;
 }
 
 void Editor::begin()

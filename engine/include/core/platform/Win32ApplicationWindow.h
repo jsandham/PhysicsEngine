@@ -23,6 +23,8 @@ namespace PhysicsEngine
 
 		RendererAPI* mRendererAPI;
 
+		bool mRunning;
+
 	public:
 		Win32ApplicationWindow(const std::string& title, int width, int height);
 		~Win32ApplicationWindow();
@@ -31,6 +33,9 @@ namespace PhysicsEngine
 
 		int getWidth() const override;
 		int getHeight() const override;
+
+		bool isRunning() const override;
+		bool isMinimized() const override;
 
 		void* getNativeWindow() const override;
 

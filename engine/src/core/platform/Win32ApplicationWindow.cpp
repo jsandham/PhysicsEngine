@@ -4,27 +4,35 @@
 
 using namespace PhysicsEngine;
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static bool mIsMinimized = false;
+
+// define in application
+extern LRESULT PhysicsEngine_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    if (PhysicsEngine_WndProcHandler(hWnd, msg, wParam, lParam))
         return 0;
 
     switch (msg)
     {
-        /*case WM_SIZE:
-            if (wParam != SIZE_MINIMIZED)
-            {
-                g_display_w = (UINT)LOWORD(lParam);
-                g_display_h = (UINT)HIWORD(lParam);
-            }
-            return 0;*/
+    case WM_SIZE:
+        if (wParam == SIZE_MINIMIZED)
+        {
+            mIsMinimized = true;
+            return 0;
+        }
+        else if (wParam == SIZE_MAXIMIZED)
+        {
+            mIsMinimized = false;
+            return 0;
+        }
+        break;
     case WM_SYSCOMMAND:
         if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
             return 0;
         break;
     case WM_DESTROY:
-        //application_quit = true;
         PostQuitMessage(0);
         return 0;
     }
@@ -55,6 +63,11 @@ void Win32ApplicationWindow::update()
     MSG message;
     while (PeekMessage(&message, NULL, 0U, 0U, PM_REMOVE) != 0)
     {
+        if (message.message == WM_QUIT)
+        {
+            mRunning = false;
+        }
+
         TranslateMessage(&message);
         DispatchMessage(&message);
     }
@@ -77,18 +90,30 @@ void* Win32ApplicationWindow::getNativeWindow() const
     return static_cast<void*>(mWindow);
 }
 
+bool Win32ApplicationWindow::isRunning() const
+{
+    return mRunning;
+}
+
+bool Win32ApplicationWindow::isMinimized() const
+{
+    return mIsMinimized;
+}
+
 void Win32ApplicationWindow::init(const std::string& title, int width, int height)
 {
     mTitle = title;
     mWidth = width;
     mHeight = height;
 
+    mRunning = true;
+
     mWC = { 0 };
     mWC.lpfnWndProc = WndProc;
     mWC.hInstance = GetModuleHandle(0);
     mWC.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
-    mWC.lpszClassName = _T("NCUI");
-    mWC.style = CS_OWNDC;
+    mWC.lpszClassName = _T("PHYSICS_ENGINE_WINDOW_CLASS");
+    mWC.style = CS_OWNDC;// CS_HREDRAW | CS_VREDRAW;
     if (!RegisterClass(&mWC))
         return;
     mWindow = CreateWindowEx(0, mWC.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
@@ -102,5 +127,5 @@ void Win32ApplicationWindow::init(const std::string& title, int width, int heigh
 void Win32ApplicationWindow::cleanup()
 {
     DestroyWindow(mWindow);
-    UnregisterClass(_T("NCUI"), mWC.hInstance);
+    UnregisterClass(_T("PHYSICS_ENGINE_WINDOW_CLASS"), mWC.hInstance);
 }

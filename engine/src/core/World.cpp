@@ -27,7 +27,7 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
     {
         in = YAML::LoadFile(filePath);
     }
-    catch (YAML::BadFile e)
+    catch (YAML::Exception e /*YAML::BadFile e*/)
     {
         Log::error("Bad file exception hit");
         return nullptr;

@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Time.h"
+
 namespace PhysicsEngine
 {
 	class Layer
@@ -16,7 +18,7 @@ namespace PhysicsEngine
 
 		virtual void init() = 0;
 		virtual void begin() = 0;
-		virtual void update() = 0;
+		virtual void update(const Time& time) = 0;
 		virtual void end() = 0;
 	};
 }

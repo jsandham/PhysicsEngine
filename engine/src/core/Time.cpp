@@ -2,7 +2,7 @@
 
 using namespace PhysicsEngine;
 
-float PhysicsEngine::getFPS(Time time)
+float PhysicsEngine::getFPS(const Time& time)
 {
-    return 1000 / time.deltaTime;
+    return static_cast<float>(1 / time.mDeltaTime);
 }

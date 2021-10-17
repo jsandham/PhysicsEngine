@@ -3,9 +3,11 @@
 
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "ApplicationWindow.h"
 #include "Layer.h"
+#include "Time.h"
 
 namespace PhysicsEngine
 {
@@ -16,7 +18,9 @@ namespace PhysicsEngine
 
 		std::vector<Layer*> mLayers;
 		std::string mName;
+		Time mTime;
 		bool mRunning;
+		bool mMinimized;
 
 	public:
 		Application(const std::string& name = "App");
