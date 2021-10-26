@@ -55,17 +55,41 @@ enum class KeyCode
     LCtrl = 47,
     RCtrl = 48,
     Escape = 49,
-    NumPad0 = 50,
-    NumPad1 = 51,
-    NumPad2 = 52,
-    NumPad3 = 53,
-    NumPad4 = 54,
-    NumPad5 = 55,
-    NumPad6 = 56,
-    NumPad7 = 57,
-    NumPad8 = 58,
-    NumPad9 = 59,
-    Invalid = 60
+    Clear = 50,
+    Menu = 51,
+    Pause = 52,
+    PrintScreen = 53,
+    Insert = 54,
+    Delete = 55,
+    Help = 56,
+    NumPad0 = 57,
+    NumPad1 = 58,
+    NumPad2 = 59,
+    NumPad3 = 60,
+    NumPad4 = 61,
+    NumPad5 = 62,
+    NumPad6 = 63,
+    NumPad7 = 64,
+    NumPad8 = 65,
+    NumPad9 = 66,
+    NumPadMultiply = 67,
+    NumPadAdd = 68,
+    NumPadSubtract = 69,
+    NumPadDivide = 70,
+    F1 = 71,
+    F2 = 72,
+    F3 = 73,
+    F4 = 74,
+    F5 = 75,
+    F6 = 76,
+    F7 = 77,
+    F8 = 78,
+    F9 = 79,
+    F10 = 80,
+    F11 = 81,
+    F12 = 82,
+    Invalid = 83,
+    Count = 84
 };
 
 enum class MouseButton
@@ -74,7 +98,8 @@ enum class MouseButton
     MButton = 1,
     RButton = 2,
     Alt0Button = 3,
-    Alt1Button = 4
+    Alt1Button = 4,
+    Count = 5
 };
 
 enum class XboxButton
@@ -92,25 +117,29 @@ enum class XboxButton
     AButton = 10,
     BButton = 11,
     XButton = 12,
-    YButton = 13
+    YButton = 13,
+    Count = 14
 };
 
 struct Input
 {
-    bool mKeyIsDown[61];
-    bool mKeyWasDown[61];
+    bool mKeyIsDown[84];
+    bool mKeyWasDown[84];
     bool mMouseButtonIsDown[5];
     bool mMouseButtonWasDown[5];
     bool mXboxButtonIsDown[14];
     bool mXboxButtonWasDown[14];
     int mMousePosX;
     int mMousePosY;
-    int mMouseDelta;
+    float mMouseDelta;
+    float mMouseDeltaH; // horizontal scroll
     int mLeftStickX;
     int mLeftStickY;
     int mRightStickX;
     int mRightStickY;
 };
+
+Input& getInput();
 
 bool getKey(const Input &input, KeyCode key);
 bool getKeyDown(const Input &input, KeyCode key);
@@ -121,6 +150,7 @@ bool getMouseButtonUp(const Input &input, MouseButton button);
 bool getXboxButton(const Input &input, XboxButton button);
 bool getXboxButtonDown(const Input &input, XboxButton button);
 bool getXboxButtonUp(const Input &input, XboxButton button);
+
 } // namespace PhysicsEngine
 
 #endif

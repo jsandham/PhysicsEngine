@@ -6,9 +6,9 @@ namespace PhysicsEngine
 struct Time
 {
     size_t mFrameCount; // frame count since application started
-    double mStartTime; // start time at beginning of frame (seconds)
-    double mEndTime; // end time at end of frame (seconds)
-    double mDeltaTime; // elapsed time of frame (seconds)
+    double mStartTime;  // start time at beginning of frame (seconds)
+    double mEndTime;    // end time at end of frame (seconds)
+    double mDeltaTime;  // elapsed time of frame (seconds)
 };
 
 float getFPS(const Time& time);

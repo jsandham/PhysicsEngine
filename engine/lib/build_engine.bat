@@ -1,8 +1,8 @@
 @echo off
 
-::if not defined DevEnvDir (
+if not defined DevEnvDir (
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-::)
+)
 
 set GLEW="../../external/glew-2.1.0"
 set FREETYPE="../../external/freetype"

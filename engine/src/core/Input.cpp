@@ -2,6 +2,13 @@
 
 using namespace PhysicsEngine;
 
+Input global_input = {};
+
+Input& PhysicsEngine::getInput()
+{
+    return global_input;
+}
+
 bool PhysicsEngine::getKey(const Input &input, KeyCode key)
 {
     return input.mKeyIsDown[(int)key];

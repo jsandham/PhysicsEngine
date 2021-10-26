@@ -83,6 +83,22 @@ void Mesh::load(const std::string &filepath)
 
     mSubMeshVertexStartIndices.push_back(0);
 
+    size_t vertexCount = 0;
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
+        vertexCount += shapes[s].mesh.indices.size();
+    }
+
+    mVertices.resize(3 * vertexCount);
+    mNormals.resize(3 * vertexCount);
+    mTexCoords.resize(2 * vertexCount);
+    mColors.resize(3 * vertexCount);
+
+    size_t vIndex = 0;
+    size_t nIndex = 0;
+    size_t tIndex = 0;
+    size_t cIndex = 0;
+
     // Loop over shapes
     for (size_t s = 0; s < shapes.size(); s++)
     {
@@ -102,9 +118,10 @@ void Mesh::load(const std::string &filepath)
                 tinyobj::real_t vy = attrib.vertices[3 * size_t(idx.vertex_index) + 1];
                 tinyobj::real_t vz = attrib.vertices[3 * size_t(idx.vertex_index) + 2];
 
-                mVertices.push_back(vx);
-                mVertices.push_back(vy);
-                mVertices.push_back(vz);
+                mVertices[3 * vIndex + 0] = vx;
+                mVertices[3 * vIndex + 1] = vy;
+                mVertices[3 * vIndex + 2] = vz;
+                vIndex++;
 
                 // Check if `normal_index` is zero or positive. negative = no normal data
                 if (idx.normal_index >= 0)
@@ -113,9 +130,10 @@ void Mesh::load(const std::string &filepath)
                     tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
                     tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
 
-                    mNormals.push_back(nx);
-                    mNormals.push_back(ny);
-                    mNormals.push_back(nz);
+                    mNormals[3 * nIndex + 0] = nx;
+                    mNormals[3 * nIndex + 1] = ny;
+                    mNormals[3 * nIndex + 2] = nz;
+                    nIndex++;
                 }
 
                 // Check if `texcoord_index` is zero or positive. negative = no texcoord data
@@ -124,17 +142,20 @@ void Mesh::load(const std::string &filepath)
                     tinyobj::real_t tx = attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
                     tinyobj::real_t ty = attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
 
-                    mTexCoords.push_back(tx);
-                    mTexCoords.push_back(ty);
+                    mTexCoords[2 * tIndex + 0] = tx;
+                    mTexCoords[2 * tIndex + 1] = ty;
+                    tIndex++;
                 }
                 // Optional: vertex colors
                 tinyobj::real_t red = attrib.colors[3 * size_t(idx.vertex_index) + 0];
                 tinyobj::real_t green = attrib.colors[3 * size_t(idx.vertex_index) + 1];
                 tinyobj::real_t blue = attrib.colors[3 * size_t(idx.vertex_index) + 2];
 
-                mColors.push_back(red);
-                mColors.push_back(green);
-                mColors.push_back(blue);
+                mColors[3 * cIndex + 0] = red;
+                mColors[3 * cIndex + 1] = green;
+                mColors[3 * cIndex + 2] = blue;
+                cIndex++;
+
             }
             index_offset += fv;
 
@@ -145,10 +166,10 @@ void Mesh::load(const std::string &filepath)
         mSubMeshVertexStartIndices.push_back((int)mVertices.size());
     }
 
-    if (mNormals.size() != mVertices.size())
+    if(vIndex != nIndex)
     {
-        // Ensure there are no normals loaded
-        mNormals.clear();
+        nIndex = 0;
+
         float nx = 0.f, ny = 0.f, nz = 0.0f;   // normal for current triangle
         float vx1 = 0.f, vx2 = 0.f, vx3 = 0.f; // vertex 1
         float vy1 = 0.f, vy2 = 0.f, vy3 = 0.f; // vertex 2
@@ -204,9 +225,11 @@ void Mesh::load(const std::string &filepath)
                 // Add the normal 3 times (once for each vertex)
                 for (int j = 0; j < 3; j++)
                 {
-                    mNormals.push_back(nx);
-                    mNormals.push_back(ny);
-                    mNormals.push_back(nz);
+                    mNormals[3 * nIndex + 0] = nx;
+                    mNormals[3 * nIndex + 1] = ny;
+                    mNormals[3 * nIndex + 2] = nz;
+
+                    nIndex++;
                 }
                 break;
             }
@@ -397,7 +420,6 @@ void Mesh::computeBoundingSphere()
     float maxDistance = 0.0f;
     for (size_t i = 1; i < numVertices; i++)
     {
-
         glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
         float distance = glm::distance(x, temp);
         if (distance > maxDistance)
@@ -412,7 +434,6 @@ void Mesh::computeBoundingSphere()
     maxDistance = 0.0f;
     for (size_t i = 0; i < numVertices; i++)
     {
-
         glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
         float distance = glm::distance(y, temp);
         if (distance > maxDistance)

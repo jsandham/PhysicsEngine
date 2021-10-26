@@ -404,23 +404,11 @@ void SceneView::updateWorld(World *world)
 {
     ImGuiIO &io = ImGui::GetIO();
 
+    Input input = isFocused() ? getInput() : Input();
+
     // Mouse
     if (isFocused())
     {
-        for (int i = 0; i < 5; i++)
-        {
-            mInput.mMouseButtonWasDown[i] = mInput.mMouseButtonIsDown[i];
-            mInput.mMouseButtonIsDown[i] = false;
-        }
-
-        mInput.mMouseButtonIsDown[0] = io.MouseDown[0]; // Left Mouse Button
-        mInput.mMouseButtonIsDown[1] = io.MouseDown[2]; // Middle Mouse Button
-        mInput.mMouseButtonIsDown[2] = io.MouseDown[1]; // Right Mouse Button
-        mInput.mMouseButtonIsDown[3] = io.MouseDown[3]; // Alt0 Mouse Button
-        mInput.mMouseButtonIsDown[4] = io.MouseDown[4]; // Alt1 Mouse Button
-
-        mInput.mMouseDelta = (int)io.MouseWheel;
-
         // clamp mouse position to be within the scene view content region
         ImVec2 sceneViewContentMin = getSceneContentMin();
         ImVec2 sceneViewContentMax = getSceneContentMax();
@@ -428,74 +416,21 @@ void SceneView::updateWorld(World *world)
         int sceneViewContentWidth = (int)(sceneViewContentMax.x - sceneViewContentMin.x);
         int sceneViewContentHeight = (int)(sceneViewContentMax.y - sceneViewContentMin.y);
 
-        mInput.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
-        mInput.mMousePosY =
+        input.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
+        input.mMousePosY =
             sceneViewContentHeight -
             std::min(std::max((int)io.MousePos.y - (int)sceneViewContentMin.y, 0), sceneViewContentHeight);
     }
 
-    // Keyboard
-    if (isFocused())
-    {
-        for (int i = 0; i < 61; i++)
-        {
-            mInput.mKeyWasDown[i] = mInput.mKeyIsDown[i];
-            mInput.mKeyIsDown[i] = false;
-        }
-
-        // 0 - 9
-        for (int i = 0; i < 10; i++)
-        {
-            mInput.mKeyIsDown[static_cast<int>(KeyCode::Key0) + i] = io.KeysDown[48 + i];
-        }
-
-        // A - Z
-        for (int i = 0; i < 26; i++)
-        {
-            mInput.mKeyIsDown[static_cast<int>(KeyCode::A) + i] = io.KeysDown[65 + i];
-        }
-
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Enter)] = io.KeysDown[13]; // Enter
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Up)] = io.KeysDown[38]; // Up
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Down)] = io.KeysDown[40]; // Down
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Left)] = io.KeysDown[37]; // Left
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Right)] = io.KeysDown[39]; // Right
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Space)] = io.KeysDown[32]; // Space
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::LShift)] = io.KeysDown[16]; // LShift
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::RShift)] = io.KeysDown[16]; // RShift
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Tab)] = io.KeysDown[9];  // Tab
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Backspace)] = io.KeysDown[8];  // Backspace
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::CapsLock)] = io.KeysDown[20]; // CapsLock
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::LCtrl)] = io.KeysDown[17]; // LCtrl
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::RCtrl)] = io.KeysDown[17]; // RCtrl
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::Escape)] = io.KeysDown[27]; // Escape
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad0)] = io.KeysDown[45]; // NumPad0
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad1)] = io.KeysDown[35]; // NumPad1
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad2)] = io.KeysDown[40]; // NumPad2
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad3)] = io.KeysDown[34]; // NumPad3
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad4)] = io.KeysDown[37]; // NumPad4
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad5)] = io.KeysDown[12]; // NumPad5
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad6)] = io.KeysDown[39]; // NumPad6
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad7)] = io.KeysDown[36]; // NumPad7
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad8)] = io.KeysDown[8];  // NumPad8
-        mInput.mKeyIsDown[static_cast<int>(KeyCode::NumPad9)] = io.KeysDown[33]; // NumPad9
-    }
-
     // call update on all systems in world
-    //auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
         System *system = world->getSystemByUpdateOrder(i);
 
         if (system->mEnabled) {
-            system->update(mInput, mTime);
+            system->update(input, mTime);
         }
     }
-    //auto end = std::chrono::steady_clock::now();
-
-    //std::chrono::duration<double> elapsed_seconds = end - start;
-    //mTime.deltaTime = elapsed_seconds.count();
-    //mTime.frameCount++;
 }
 
 void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem)

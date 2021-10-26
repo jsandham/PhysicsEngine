@@ -10,8 +10,8 @@ namespace PhysicsEngine
 	class RendererAPI_win32_opengl : public RendererAPI
 	{
 	private:
-		HGLRC g_GLRenderContext;
-		HDC g_HDCDeviceContext;
+		HGLRC mOpenGLRC;
+		HDC mWindowDC;
 
 	public:
 		RendererAPI_win32_opengl();
@@ -23,8 +23,7 @@ namespace PhysicsEngine
 
 	private:
 		void CreateGlContext(void* window);
-		bool SetSwapInterval(int interval);
-		bool WGLExtensionSupported(const char* extension_name);
+		void SetSwapInterval(int interval);
 	};
 }
 
