@@ -33,9 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,28 +45,13 @@
     <ClCompile Include="src\FileSystemUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EditorCameraSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\LibraryDirectory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\PerformanceQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EditorCommands.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EditorToolbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EditorClipboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EditorOnlyEntityCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\drawers\BoxColliderDrawer.cpp">
@@ -165,13 +147,7 @@
     <ClCompile Include="src\views\PopupWindow.cpp">
       <Filter>Source Files\views</Filter>
     </ClCompile>
-    <ClCompile Include="src\EditorWin32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MenuBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Undo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ProjectTree.cpp">
@@ -212,28 +188,13 @@
     <ClInclude Include="include\FileSystemUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EditorCameraSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\LibraryDirectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PerformanceQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorToolbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\EditorClipboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EditorOnlyEntityCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\IconsFontAwesome4.h">
@@ -332,13 +293,7 @@
     <ClInclude Include="include\views\PopupWindow.h">
       <Filter>Header Files\views</Filter>
     </ClInclude>
-    <ClInclude Include="include\EditorWin32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\MenuBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Undo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ProjectTree.h">

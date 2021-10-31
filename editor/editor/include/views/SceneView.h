@@ -8,8 +8,8 @@
 #include "core/Input.h"
 #include "core/Time.h"
 #include "core/World.h"
+#include "systems/FreeLookCameraSystem.h"
 
-#include "../EditorCameraSystem.h"
 #include "../PerformanceQueue.h"
 #include "Window.h"
 
@@ -48,8 +48,8 @@ class SceneView : public Window
   private:
     void initWorld(PhysicsEngine::World *world);
     void updateWorld(PhysicsEngine::World *world);
-    void drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem);
-    void drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *cameraSystem, bool *cameraSettingsActive);
+    void drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::FreeLookCameraSystem*cameraSystem);
+    void drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*cameraSystem, bool *cameraSettingsActive);
 };
 } // namespace PhysicsEditor
 

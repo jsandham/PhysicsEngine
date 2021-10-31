@@ -1,7 +1,5 @@
 #include "../../include/drawers/Texture3DDrawer.h"
-#include "../../include/Undo.h"
 #include "../../include/EditorClipboard.h"
-#include "../../include/EditorCommands.h"
 
 #include "core/Texture3D.h"
 

@@ -47,6 +47,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mCleanupSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mDebugSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mGizmoSystemIdToGlobalIndex;
+    std::unordered_map<Guid, int> mFreeLookCameraSystemIdToGlobalIndex;
 
     // world id state for all entity, components, systems, and assets
     std::unordered_map<Guid, int> mIdToGlobalIndex;

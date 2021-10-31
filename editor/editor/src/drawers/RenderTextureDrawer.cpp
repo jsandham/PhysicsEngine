@@ -1,6 +1,5 @@
 #include "../../include/drawers/RenderTextureDrawer.h"
 #include "../../include/EditorClipboard.h"
-#include "../../include/EditorCommands.h"
 
 #include "core/RenderTexture.h"
 

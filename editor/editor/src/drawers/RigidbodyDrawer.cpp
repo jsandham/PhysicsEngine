@@ -1,6 +1,4 @@
 #include "../../include/drawers/RigidbodyDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/Rigidbody.h"
 
@@ -38,29 +36,21 @@ void RigidbodyDrawer::render(Clipboard &clipboard, Guid id)
 
             if (ImGui::Checkbox("Use Gravity", &useGravity))
             {
-                Undo::recordComponent(rigidbody);
-
                 rigidbody->mUseGravity = useGravity;
             }
 
             if (ImGui::InputFloat("Mass", &mass))
             {
-                Undo::recordComponent(rigidbody);
-
                 rigidbody->mMass = mass;
             }
 
             if (ImGui::InputFloat("Drag", &drag))
             {
-                Undo::recordComponent(rigidbody);
-
                 rigidbody->mDrag = drag;
             }
 
             if (ImGui::InputFloat("Angular Drag", &angularDrag))
             {
-                Undo::recordComponent(rigidbody);
-
                 rigidbody->mAngularDrag = angularDrag;
             }
 

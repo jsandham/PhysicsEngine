@@ -34,6 +34,7 @@
 #include "../systems/GizmoSystem.h"
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
+#include "../systems/FreeLookCameraSystem.h"
 
 namespace PhysicsEngine
 {
@@ -76,6 +77,7 @@ struct WorldAllocators
     PoolAllocator<CleanUpSystem> mCleanupSystemAllocator;
     PoolAllocator<DebugSystem> mDebugSystemAllocator;
     PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
+    PoolAllocator<FreeLookCameraSystem> mFreeLookCameraSystemAllocator;
 
     // non-internal allocators for user defined components, systems and assets
     std::unordered_map<int, Allocator *> mComponentAllocatorMap;

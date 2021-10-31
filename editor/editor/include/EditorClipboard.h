@@ -10,9 +10,9 @@
 #include "core/Guid.h"
 #include "core/World.h"
 #include <core/Time.h>
+#include <systems/FreeLookCameraSystem.h>
 
 #include "LibraryDirectory.h"
-#include "EditorCameraSystem.h"
 
 #include "ProjectTree.h"
 #include "InteractionType.h"
@@ -38,7 +38,8 @@ class Clipboard
         PhysicsEngine::Transform* mSceneViewTempTransform;
 
         PhysicsEngine::World mWorld;
-        PhysicsEngine::EditorCameraSystem* mEditorCameraSystem;
+        //PhysicsEngine::EditorCameraSystem* mEditorCameraSystem;
+        PhysicsEngine::FreeLookCameraSystem* mCameraSystem;
         PhysicsEngine::RenderSystem* mRenderSystem;
         PhysicsEngine::GizmoSystem* mGizmoSystem;
         PhysicsEngine::CleanUpSystem* mCleanUpSystem;

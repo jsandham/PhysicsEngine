@@ -92,6 +92,11 @@ struct CameraTargets
     unsigned int mSsaoNoiseTex;
 };
 
+struct CameraSettings
+{
+    bool mRenderToScreen;
+};
+
 class Camera : public Component
 {
   public:
@@ -109,6 +114,7 @@ class Camera : public Component
     GraphicsQuery mQuery;
 
     bool mEnabled;
+    bool mRenderToScreen;
 
   private:
     Frustum mFrustum;

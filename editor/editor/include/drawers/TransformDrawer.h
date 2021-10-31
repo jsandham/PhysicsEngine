@@ -3,7 +3,6 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 namespace PhysicsEditor

@@ -1,7 +1,6 @@
 #ifndef __SPRITE_DRAWER_H__
 #define __SPRITE_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 #include "components/SpriteRenderer.h"

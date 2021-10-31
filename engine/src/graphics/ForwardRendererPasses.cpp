@@ -86,6 +86,9 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     state.mColorShaderModelLoc = mColorShader->findUniformLocation("model", state.mColorShaderProgram);
     state.mColorShaderColorLoc = mColorShader->findUniformLocation("material.color", state.mColorShaderProgram);
 
+    state.mQuadShaderProgram = mQuadShader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
+    state.mQuadShaderTexLoc = mQuadShader->findUniformLocation("screenTexture", state.mQuadShaderProgram);
+
     state.mSpriteShaderProgram = mSpriteShader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
     state.mSpriteModelLoc = mSpriteShader->findUniformLocation("model", state.mSpriteShaderProgram);
     state.mSpriteViewLoc = mSpriteShader->findUniformLocation("view", state.mSpriteShaderProgram);
@@ -122,7 +125,14 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
-        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        if (renderTexture != nullptr) 
+        {
+            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        }
+        else 
+        {
+            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        }
     }
     else
     {
@@ -372,7 +382,14 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
-        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        if (renderTexture != nullptr)
+        {
+            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        }
+        else
+        {
+            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        }
     }
     else
     {
@@ -445,7 +462,14 @@ void PhysicsEngine::renderSprites(World* world, Camera* camera, ForwardRendererS
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture* renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
-        Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        if (renderTexture != nullptr)
+        {
+            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+        }
+        else
+        {
+            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        }
     }
     else
     {
@@ -524,6 +548,19 @@ void PhysicsEngine::postProcessing()
 
 void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState &state)
 {
+    if (camera->mRenderToScreen)
+    {
+        Graphics::bindFramebuffer(0);
+        Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+            camera->getViewport().mHeight);
+
+        Graphics::use(state.mQuadShaderProgram);
+        Graphics::setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+
+        Graphics::renderScreenQuad(state.mQuadVAO);
+        Graphics::unbindFramebuffer();
+    }
+
     camera->endQuery();
 }
 

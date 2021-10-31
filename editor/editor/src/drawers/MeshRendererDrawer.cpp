@@ -1,6 +1,4 @@
 #include "../../include/drawers/MeshRendererDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/MeshRenderer.h"
 
@@ -67,8 +65,6 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
             {
                 materialCount = std::max(0, std::min(materialCount, 8));
 
-                Undo::recordComponent(meshRenderer);
-
                 meshRenderer->mMaterialCount = materialCount;
             }
             ImGui::PopItemWidth();
@@ -105,16 +101,12 @@ void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
             bool isStatic = meshRenderer->mIsStatic;
             if (ImGui::Checkbox("Is Static?", &isStatic))
             {
-                Undo::recordComponent(meshRenderer);
-
                 meshRenderer->mIsStatic = isStatic;
             }
 
             bool enabled = meshRenderer->mEnabled;
             if (ImGui::Checkbox("Enabled?", &enabled))
             {
-                Undo::recordComponent(meshRenderer);
-
                 meshRenderer->mEnabled = enabled;
             }
         }

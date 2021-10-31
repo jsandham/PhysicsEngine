@@ -46,7 +46,6 @@ void BuildWindow::update(Clipboard &clipboard)
 	if (mFilebrowser.isSelectFolderClicked())
 	{
 		build(mFilebrowser.getSelectedFolderPath());
-
 		//std::thread t1(&BuildWindow::build, this, mFilebrowser.getSelectedFolderPath());
 		//t1.join();
 	}
@@ -55,12 +54,12 @@ void BuildWindow::update(Clipboard &clipboard)
 void BuildWindow::build(const std::filesystem::path& path)
 {
 	std::filesystem::path buildPath = path / "build";
-	std::filesystem::path buildDataPath = buildPath / "data";
+	std::filesystem::path buildGameDataPath = buildPath / "game_data";
 	std::filesystem::path buildIncludePath = buildPath / "include";
 	std::filesystem::path buildSrcPath = buildPath / "src";
 
 	std::filesystem::create_directory(buildPath);
-	std::filesystem::create_directory(buildDataPath);
+	std::filesystem::create_directory(buildGameDataPath);
 	std::filesystem::create_directory(buildIncludePath);
 	std::filesystem::create_directory(buildSrcPath);
 
@@ -73,14 +72,17 @@ void BuildWindow::build(const std::filesystem::path& path)
 
 	// Copy data folder to build data path
 	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
-	std::filesystem::copy(path / "data", buildDataPath, copy_options);
+	std::filesystem::copy(path / "data", buildGameDataPath, copy_options);
+
+	// Copy internal assets to build path
+	std::filesystem::copy(std::filesystem::current_path() / "data", buildPath / "data", copy_options);
 
 	// Copy include folder to build data path
 	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
 
 	// Copy src folder to build data path
 	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
-	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\main_win32.cpp", buildSrcPath, copy_options);
+	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\GameApplication.cpp", buildSrcPath, copy_options);
 	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\editor\\src\\Load.cpp", buildSrcPath, copy_options);
 
 	std::filesystem::path executablePath = buildPath / "main.exe";

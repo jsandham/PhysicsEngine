@@ -1,18 +1,5 @@
 #include "../../include/graphics/ForwardRenderer.h"
 #include "../../include/graphics/ForwardRendererPasses.h"
-#include "../../include/graphics/Graphics.h"
-
-#include "../../include/components/Camera.h"
-#include "../../include/components/MeshRenderer.h"
-#include "../../include/components/Transform.h"
-
-#include "../../include/core/Cubemap.h"
-#include "../../include/core/Input.h"
-#include "../../include/core/Log.h"
-#include "../../include/core/Shader.h"
-#include "../../include/core/Texture2D.h"
-#include "../../include/core/Time.h"
-#include "../../include/core/Util.h"
 
 using namespace PhysicsEngine;
 
@@ -52,9 +39,12 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
         {
             Transform* lightTransform = light->getComponent<Transform>();
 
-            renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
-            renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
-            renderTransparents();
+            if (lightTransform != nullptr)
+            {
+                renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                renderTransparents();
+            }
         }
     }
 

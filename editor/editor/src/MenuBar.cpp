@@ -1,6 +1,4 @@
 #include "../include/MenuBar.h"
-#include "../include/Undo.h"
-#include "../include/EditorCameraSystem.h"
 #include "../include/EditorSceneManager.h"
 #include "../include/EditorProjectManager.h"
 
@@ -269,14 +267,14 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
 
 void MenuBar::showMenuEdit(const Clipboard &clipboard)
 {
-    if (ImGui::MenuItem("Undo", "CTRL+Z", false, Undo::canUndo()))
-    {
-        Undo::undoCommand();
-    }
-    if (ImGui::MenuItem("Redo", "CTRL+Y", false, Undo::canRedo()))
-    {
-        Undo::executeCommand();
-    }
+    //if (ImGui::MenuItem("Undo", "CTRL+Z", false, Undo::canUndo()))
+    //{
+    //    Undo::undoCommand();
+    //}
+    //if (ImGui::MenuItem("Redo", "CTRL+Y", false, Undo::canRedo()))
+    //{
+    //    Undo::executeCommand();
+    //}
     ImGui::Separator();
     if (ImGui::MenuItem("Cut", "CTRL+X"))
     {

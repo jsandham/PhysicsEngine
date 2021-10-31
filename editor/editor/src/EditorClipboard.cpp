@@ -1,7 +1,5 @@
 #include "../include/EditorClipboard.h"
 
-#include "../include/EditorCameraSystem.h"
-
 #include "systems/CleanUpSystem.h"
 #include "systems/GizmoSystem.h"
 #include "systems/RenderSystem.h"
@@ -25,7 +23,7 @@ Clipboard::Clipboard()
     mSceneId = PhysicsEngine::Guid::INVALID;
 
     // add camera, render, and cleanup system to world
-    mEditorCameraSystem = mWorld.addSystem<PhysicsEngine::EditorCameraSystem>(0);
+    mCameraSystem = mWorld.addSystem<PhysicsEngine::FreeLookCameraSystem>(0);
     // add simple editor render pass system to render line floor and default skymap
     mRenderSystem = mWorld.addSystem<PhysicsEngine::RenderSystem>(1);
     // add gizmo system
@@ -35,7 +33,7 @@ Clipboard::Clipboard()
 
     mRenderSystem->mRenderToScreen = false;
 
-    mEditorCameraSystem->mHide = PhysicsEngine::HideFlag::DontSave;
+    mCameraSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mRenderSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mGizmoSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mCleanUpSystem->mHide = PhysicsEngine::HideFlag::DontSave;

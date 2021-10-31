@@ -61,6 +61,7 @@ Camera::Camera(World* world) : Component(world)
     mEnabled = true;
     mIsCreated = false;
     mIsViewportChanged = false;
+    mRenderToScreen = false;
 }
 
 Camera::Camera(World* world, Guid id) : Component(world, id)
@@ -119,6 +120,7 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
     mEnabled = true;
     mIsCreated = false;
     mIsViewportChanged = false;
+    mRenderToScreen = false;
 }
 
 Camera::~Camera()

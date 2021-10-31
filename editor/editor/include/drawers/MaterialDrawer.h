@@ -1,7 +1,6 @@
 #ifndef __MATERIAL_DRAWER_H__
 #define __MATERIAL_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 #include "components/MeshRenderer.h"

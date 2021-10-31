@@ -87,7 +87,7 @@ void SceneView::update(Clipboard &clipboard)
 
     mIsSceneContentHovered = sceneContentRect.contains(io.MousePos.x, io.MousePos.y);
 
-    EditorCameraSystem* cameraSystem = clipboard.mEditorCameraSystem;
+    FreeLookCameraSystem* cameraSystem = clipboard.mCameraSystem;
 
     cameraSystem->setViewport(viewport);
     clipboard.mGizmoSystem->mEnabled = !clipboard.mScenePath.empty();
@@ -328,8 +328,8 @@ void SceneView::update(Clipboard &clipboard)
             float windowHeight = ImGui::GetWindowHeight();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-            glm::mat4 view = clipboard.mEditorCameraSystem->getViewMatrix();
-            glm::mat4 projection = clipboard.mEditorCameraSystem->getProjMatrix();
+            glm::mat4 view = clipboard.mCameraSystem->getViewMatrix();
+            glm::mat4 projection = clipboard.mCameraSystem->getProjMatrix();
             glm::mat4 model = transform->getModelMatrix();
 
             ImGuizmo::AllowAxisFlip(false);
@@ -433,7 +433,7 @@ void SceneView::updateWorld(World *world)
     }
 }
 
-void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::EditorCameraSystem *cameraSystem)
+void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::FreeLookCameraSystem*cameraSystem)
 {
     static bool overlayOpened = false;
     static ImGuiWindowFlags overlayFlags = ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoTitleBar |
@@ -487,7 +487,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Edit
     ImGui::End();
 }
 
-void SceneView::drawCameraSettingsPopup(PhysicsEngine::EditorCameraSystem *cameraSystem, bool *cameraSettingsActive)
+void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*cameraSystem, bool *cameraSettingsActive)
 {
     static bool cameraSettingsWindowOpen = false;
 

@@ -1,7 +1,6 @@
 #ifndef __RENDER_TEXTURE_DRAWER_H__
 #define __RENDER_TEXTURE_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 namespace PhysicsEditor

@@ -10,18 +10,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "../../include/core/Intersect.h"
-#include "../../include/core/Shader.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Log.h"
 
 #include "../../include/systems/RenderSystem.h"
 
 #include "../../include/graphics/DeferredRenderer.h"
 #include "../../include/graphics/ForwardRenderer.h"
-#include "../../include/graphics/Graphics.h"
-
-#include "../../include/core/Input.h"
-#include "../../include/core/Log.h"
-#include "../../include/core/Time.h"
 
 using namespace PhysicsEngine;
 
@@ -326,7 +321,7 @@ void RenderSystem::buildSpriteObjectsList(World* world)
             Texture2D* texture = world->getAssetById<Texture2D>(sprite->getTextureId());
 
             glm::vec2 size = glm::vec2(100, 100);
-            float rotate = 0.0f;
+            //float rotate = 0.0f;
 
             glm::mat4 model = transform->getModelMatrix();
 

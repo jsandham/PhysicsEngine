@@ -164,7 +164,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Command.cpp" />
     <ClCompile Include="src\drawers\BoxColliderDrawer.cpp" />
     <ClCompile Include="src\drawers\CameraDrawer.cpp" />
     <ClCompile Include="src\drawers\CapsuleColliderDrawer.cpp" />
@@ -188,14 +187,9 @@
     <ClCompile Include="src\drawers\TransformDrawer.cpp" />
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\EditorApplication.cpp" />
-    <ClCompile Include="src\EditorCameraSystem.cpp" />
     <ClCompile Include="src\EditorClipboard.cpp" />
-    <ClCompile Include="src\EditorCommands.cpp" />
-    <ClCompile Include="src\EditorOnlyEntityCreation.cpp" />
     <ClCompile Include="src\EditorProjectManager.cpp" />
     <ClCompile Include="src\EditorSceneManager.cpp" />
-    <ClCompile Include="src\EditorToolbar.cpp" />
-    <ClCompile Include="src\EditorWin32.cpp" />
     <ClCompile Include="src\Filebrowser.cpp" />
     <ClCompile Include="src\FileSystemUtil.cpp" />
     <ClCompile Include="src\ImGuiLayer.cpp" />
@@ -203,11 +197,9 @@
     <ClCompile Include="src\imgui\imgui_styles.cpp" />
     <ClCompile Include="src\LibraryDirectory.cpp" />
     <ClCompile Include="src\Load.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MenuBar.cpp" />
     <ClCompile Include="src\PerformanceQueue.cpp" />
     <ClCompile Include="src\ProjectTree.cpp" />
-    <ClCompile Include="src\Undo.cpp" />
     <ClCompile Include="src\views\AboutPopup.cpp" />
     <ClCompile Include="src\views\BuildWindow.cpp" />
     <ClCompile Include="src\views\Console.cpp" />
@@ -222,7 +214,6 @@
     <ClCompile Include="src\views\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Command.h" />
     <ClInclude Include="include\drawers\BoxColliderDrawer.h" />
     <ClInclude Include="include\drawers\CameraDrawer.h" />
     <ClInclude Include="include\drawers\CapsuleColliderDrawer.h" />
@@ -245,14 +236,9 @@
     <ClInclude Include="include\drawers\Texture3DDrawer.h" />
     <ClInclude Include="include\drawers\TransformDrawer.h" />
     <ClInclude Include="include\Editor.h" />
-    <ClInclude Include="include\EditorCameraSystem.h" />
-    <ClInclude Include="include\EditorCommands.h" />
-    <ClInclude Include="include\EditorOnlyEntityCreation.h" />
     <ClInclude Include="include\EditorProjectManager.h" />
     <ClInclude Include="include\EditorSceneManager.h" />
-    <ClInclude Include="include\EditorToolbar.h" />
     <ClInclude Include="include\EditorClipboard.h" />
-    <ClInclude Include="include\EditorWin32.h" />
     <ClInclude Include="include\Filebrowser.h" />
     <ClInclude Include="include\FileSystemUtil.h" />
     <ClInclude Include="include\IconsFontAwesome4.h" />
@@ -264,7 +250,6 @@
     <ClInclude Include="include\MenuBar.h" />
     <ClInclude Include="include\PerformanceQueue.h" />
     <ClInclude Include="include\ProjectTree.h" />
-    <ClInclude Include="include\Undo.h" />
     <ClInclude Include="include\views\AboutPopup.h" />
     <ClInclude Include="include\views\BuildWindow.h" />
     <ClInclude Include="include\views\Console.h" />

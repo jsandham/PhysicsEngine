@@ -1,6 +1,4 @@
 #include "../../include/drawers/MaterialDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/Camera.h"
 #include "components/Light.h"
@@ -15,8 +13,6 @@
 #include "systems/RenderSystem.h"
 
 #include "graphics/Graphics.h"
-
-#include "../../include/EditorCameraSystem.h"
 
 using namespace PhysicsEditor;
 

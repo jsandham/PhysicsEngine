@@ -83,7 +83,7 @@ void RendererAPI_win32_opengl::CreateGlContext(void* window)
     mOpenGLRC = wglCreateContext(mWindowDC);
     if (wglMakeCurrent(mWindowDC, mOpenGLRC))
     {
-        SetSwapInterval(2);
+        SetSwapInterval(1);
     }
     else
     {

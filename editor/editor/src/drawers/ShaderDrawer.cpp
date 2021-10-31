@@ -2,8 +2,6 @@
 #include <string>
 #include <vector>
 
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/drawers/ShaderDrawer.h"
 
 #include "core/Shader.h"

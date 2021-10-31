@@ -1,6 +1,4 @@
 #include "../../include/drawers/SphereColliderDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/SphereCollider.h"
 
@@ -38,14 +36,10 @@ void SphereColliderDrawer::render(Clipboard &clipboard, Guid id)
 
                 if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
                 {
-                    Undo::recordComponent(sphereCollider);
-
                     sphereCollider->mSphere.mCentre = centre;
                 }
                 if (ImGui::InputFloat("Radius", &radius))
                 {
-                    Undo::recordComponent(sphereCollider);
-
                     sphereCollider->mSphere.mRadius = radius;
                 }
 

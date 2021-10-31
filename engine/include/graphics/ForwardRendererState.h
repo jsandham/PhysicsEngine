@@ -75,6 +75,8 @@ struct ForwardRendererState
     // quad
     unsigned int mQuadVAO;
     unsigned int mQuadVBO;
+    int mQuadShaderProgram;
+    int mQuadShaderTexLoc;
 };
 } // namespace PhysicsEngine
 

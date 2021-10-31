@@ -1,6 +1,4 @@
 #include "../../include/drawers/CameraDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/imgui/imgui_extensions.h"
 
 #include "components/Camera.h"
@@ -62,11 +60,6 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
                 camera->mSSAO = static_cast<CameraSSAO>(ssao);
             }
 
-
-
-
-
-
             Guid renderTargetId = camera->mRenderTextureId;
 
             std::string renderTargetName = "None (Render Texture)";
@@ -91,18 +84,6 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
             {
                 clipboard.setSelectedItem(InteractionType::RenderTexture, renderTargetId);
             }
-
-
-
-
-
-
-
-
-
-
-
-
 
             glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.r, camera->mBackgroundColor.g,
                 camera->mBackgroundColor.b, camera->mBackgroundColor.a);

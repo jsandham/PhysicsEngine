@@ -6,7 +6,7 @@ extern PhysicsEngine::Application* PhysicsEngine::createApplication();
 
 int main(int argc, char** argv)
 {
-	auto application = PhysicsEngine::createApplication();
+	PhysicsEngine::Application* application = PhysicsEngine::createApplication();
 
 	application->run();
 

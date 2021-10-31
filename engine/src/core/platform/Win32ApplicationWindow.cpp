@@ -219,6 +219,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEHWHEEL:
         getInput().mMouseDeltaH += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
         break;
+    case WM_MOUSEMOVE:
+        POINT point;
+        if (GetCursorPos(&point))
+        {
+            // Top left hand corner is (0, 0) on windows
+            getInput().mMousePosX = point.x;
+            getInput().mMousePosY = point.y;
+        }
+        break;
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
         if (wParam < 256) 
@@ -249,6 +258,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     // Window resize and quit messages
     switch (msg)
     {
+    //case WM_PAINT:
+    //    {
+    //        PAINTSTRUCT ps;
+    //        HDC hdc = BeginPaint(hWnd, &ps);
+    //        // All painting occurs here, between BeginPaint and EndPaint.
+    //        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+    //        EndPaint(hWnd, &ps);
+    //        return 0;
+    //    }
     case WM_SIZE:
         if (wParam == SIZE_MINIMIZED)
         {

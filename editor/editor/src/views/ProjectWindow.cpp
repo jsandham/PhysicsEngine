@@ -1,5 +1,4 @@
 #include "../../include/views/ProjectWindow.h"
-#include "../../include/EditorCameraSystem.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -111,7 +110,7 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
         clipboard.getLibrary().watch(path.string());
 
         // reset editor camera
-        clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
+        clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
 
         ImGui::CloseCurrentPopup();
     }
@@ -152,7 +151,7 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
         clipboard.getLibrary().watch(getSelectedFolderPath().string());
 
         // reset editor camera
-        clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
+        clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
 
         ImGui::CloseCurrentPopup();
     }

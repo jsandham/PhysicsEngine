@@ -1,6 +1,4 @@
 #include "../../include/drawers/CubemapDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "core/Cubemap.h"
 

@@ -1,6 +1,4 @@
 #include "../../include/drawers/LineRendererDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/LineRenderer.h"
 
@@ -36,14 +34,10 @@ void LineRendererDrawer::render(Clipboard &clipboard, Guid id)
 
             if (ImGui::InputFloat3("Start", glm::value_ptr(start)))
             {
-                Undo::recordComponent(lineRenderer);
-
                 lineRenderer->mStart = start;
             }
             if (ImGui::InputFloat3("End", glm::value_ptr(end)))
             {
-                Undo::recordComponent(lineRenderer);
-
                 lineRenderer->mEnd = end;
             }
 

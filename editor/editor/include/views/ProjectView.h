@@ -8,7 +8,6 @@
 #include "Window.h"
 
 #include "../ProjectTree.h"
-#include "../EditorClipboard.h"
 
 #include "imgui.h"
 

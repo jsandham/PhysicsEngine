@@ -203,6 +203,11 @@ class World
         return mAllocators.mGizmoSystemAllocator.getCount();
     }
 
+    template <> size_t getNumberOfSystems<FreeLookCameraSystem>() const
+    {
+        return mAllocators.mFreeLookCameraSystemAllocator.getCount();
+    }
+
     template <> size_t getNumberOfComponents<Transform>() const
     {
         return mAllocators.mTransformAllocator.getCount();
@@ -326,6 +331,11 @@ class World
     template <> GizmoSystem *getSystem<GizmoSystem>() const
     {
         return getSystem_impl(&mAllocators.mGizmoSystemAllocator);
+    }
+
+    template <> FreeLookCameraSystem* getSystem<FreeLookCameraSystem>() const
+    {
+        return getSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator);
     }
 
     template <> Transform *getComponent<Transform>(const Guid &entityId) const
@@ -463,6 +473,11 @@ class World
         return addSystem_impl(&mAllocators.mGizmoSystemAllocator, order);
     }
 
+    template <> FreeLookCameraSystem* addSystem<FreeLookCameraSystem>(size_t order)
+    {
+        return addSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator, order);
+    }
+
     template <> RenderSystem *getSystemByIndex<RenderSystem>(size_t index) const
     {
         return getSystemByIndex_impl(&mAllocators.mRenderSystemAllocator, index);
@@ -488,6 +503,11 @@ class World
         return getSystemByIndex_impl(&mAllocators.mGizmoSystemAllocator, index);
     }
 
+    template <> FreeLookCameraSystem* getSystemByIndex<FreeLookCameraSystem>(size_t index) const
+    {
+        return getSystemByIndex_impl(&mAllocators.mFreeLookCameraSystemAllocator, index);
+    }
+
     template <> RenderSystem *getSystemById<RenderSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mRenderSystemAllocator, systemId);
@@ -511,6 +531,11 @@ class World
     template <> GizmoSystem *getSystemById<GizmoSystem>(const Guid &systemId) const
     {
         return getSystemById_impl(&mAllocators.mGizmoSystemAllocator, systemId);
+    }
+
+    template <> FreeLookCameraSystem* getSystemById<FreeLookCameraSystem>(const Guid& systemId) const
+    {
+        return getSystemById_impl(&mAllocators.mFreeLookCameraSystemAllocator, systemId);
     }
 
     template <> Mesh *getAssetByIndex<Mesh>(size_t index) const
@@ -1217,10 +1242,17 @@ class World
     {
         return getById_impl<DebugSystem>(mIdState.mDebugSystemIdToGlobalIndex, allocator, assetId);
     }
+
     template <>
     GizmoSystem *getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem> *allocator, const Guid &assetId) const
     {
         return getById_impl<GizmoSystem>(mIdState.mGizmoSystemIdToGlobalIndex, allocator, assetId);
+    }
+
+    template <>
+    FreeLookCameraSystem* getSystemById_impl<FreeLookCameraSystem>(const PoolAllocator<FreeLookCameraSystem>* allocator, const Guid& assetId) const
+    {
+        return getById_impl<FreeLookCameraSystem>(mIdState.mFreeLookCameraSystemIdToGlobalIndex, allocator, assetId);
     }
 
     template <> void addIdToGlobalIndexMap_impl<Scene>(const Guid &id, int index, int type)
@@ -1408,6 +1440,13 @@ class World
     template <> void addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid &id, int index, int type)
     {
         mIdState.mGizmoSystemIdToGlobalIndex[id] = index;
+        mIdState.mIdToGlobalIndex[id] = index;
+        mIdState.mIdToType[id] = type;
+    }
+
+    template <> void addIdToGlobalIndexMap_impl<FreeLookCameraSystem>(const Guid& id, int index, int type)
+    {
+        mIdState.mFreeLookCameraSystemIdToGlobalIndex[id] = index;
         mIdState.mIdToGlobalIndex[id] = index;
         mIdState.mIdToType[id] = type;
     }

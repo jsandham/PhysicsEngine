@@ -51,7 +51,7 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
-	call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /std:c++17 /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
 ::call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 ::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f

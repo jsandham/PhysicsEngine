@@ -1,7 +1,5 @@
 #include <algorithm>
 
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/views/Hierarchy.h"
 
 #include "../../include/imgui/imgui_extensions.h"
@@ -104,23 +102,23 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 if (ImGui::MenuItem("Empty"))
                 {
-                    Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    //Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
-                    Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    //Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
                 if (ImGui::MenuItem("Light"))
                 {
-                    Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    //Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                 }
 
                 if (ImGui::BeginMenu("2D"))
                 {
                     if (ImGui::MenuItem("Plane"))
                     {
-                        Undo::addCommand(
-                            new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        //Undo::addCommand(
+                        //    new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     ImGui::EndMenu();
                 }
@@ -129,12 +127,12 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Cube"))
                     {
-                        Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        //Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     if (ImGui::MenuItem("Sphere"))
                     {
-                        Undo::addCommand(
-                            new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        //Undo::addCommand(
+                        //    new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     }
                     ImGui::EndMenu();
                 }

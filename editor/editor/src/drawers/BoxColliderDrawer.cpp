@@ -1,6 +1,4 @@
 #include "../../include/drawers/BoxColliderDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/BoxCollider.h"
 
@@ -38,14 +36,10 @@ void BoxColliderDrawer::render(Clipboard &clipboard, Guid id)
 
                 if (ImGui::InputFloat3("Centre", glm::value_ptr(centre)))
                 {
-                    Undo::recordComponent(boxCollider);
-
                     boxCollider->mAABB.mCentre = centre;
                 }
                 if (ImGui::InputFloat3("Size", glm::value_ptr(size)))
                 {
-                    Undo::recordComponent(boxCollider);
-
                     boxCollider->mAABB.mSize = size;
                 }
 

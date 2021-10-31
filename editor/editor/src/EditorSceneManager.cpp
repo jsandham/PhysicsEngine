@@ -1,7 +1,7 @@
 #include "../include/EditorSceneManager.h"
-#include "../include/EditorCameraSystem.h"
 
 #include "core/World.h"
+#include "systems/FreeLookCameraSystem.h"
 
 using namespace PhysicsEditor;
 
@@ -12,7 +12,7 @@ void EditorSceneManager::newScene(Clipboard& clipboard)
     clipboard.getWorld()->immediateDestroyEntitiesInWorld();
 
     // re-centre editor camera to default position
-    clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
+    clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();
@@ -43,7 +43,7 @@ void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name
     size_t lightCountAfter = clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Light>();
 
     // reset editor camera to default position
-    clipboard.getWorld()->getSystem<PhysicsEngine::EditorCameraSystem>()->resetCamera();
+    clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();

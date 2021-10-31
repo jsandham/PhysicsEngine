@@ -43,6 +43,7 @@ constexpr int PHYSICSSYSTEM_TYPE = 3001;
 constexpr int CLEANUPSYSTEM_TYPE = 3002;
 constexpr int DEBUGSYSTEM_TYPE = 3003;
 constexpr int GIZMOSYSTEM_TYPE = 3004;
+constexpr int FREELOOKCAMERASYSTEM_TYPE = 3005;
 
 // Names
 constexpr char SCENE_NAME[] = "Scene";
@@ -76,6 +77,7 @@ constexpr char PHYSICSSYSTEM_NAME[] = "PhysicsSystem";
 constexpr char CLEANUPSYSTEM_NAME[] = "CleanUpSystem";
 constexpr char DEBUGSYSTEM_NAME[] = "DebugSystem";
 constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
+constexpr char FREELOOKCAMERASYSTEM_NAME[] = "FreeLookCameraSystem";
 
 constexpr int isScene(int type)
 {

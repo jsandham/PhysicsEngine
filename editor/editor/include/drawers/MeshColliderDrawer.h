@@ -1,7 +1,6 @@
 #ifndef __MESHCOLLIDER_DRAWER_H__
 #define __MESHCOLLIDER_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 namespace PhysicsEditor

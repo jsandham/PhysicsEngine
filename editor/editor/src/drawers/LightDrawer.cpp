@@ -1,6 +1,4 @@
 #include "../../include/drawers/LightDrawer.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 
 #include "components/Light.h"
 

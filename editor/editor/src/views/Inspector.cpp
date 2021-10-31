@@ -1,6 +1,4 @@
 #include "../../include/views/Inspector.h"
-#include "../../include/Undo.h"
-#include "../../include/EditorCommands.h"
 #include "../../include/FileSystemUtil.h"
 
 #include "imgui.h"

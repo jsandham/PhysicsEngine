@@ -1,7 +1,6 @@
 #ifndef __LINERENDERER_DRAWER_H__
 #define __LINERENDERER_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 namespace PhysicsEditor

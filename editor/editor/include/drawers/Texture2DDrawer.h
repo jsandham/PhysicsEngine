@@ -1,7 +1,6 @@
 #ifndef __TEXTURE2D_DRAWER_H__
 #define __TEXTURE2D_DRAWER_H__
 
-#include "../EditorClipboard.h"
 #include "InspectorDrawer.h"
 
 namespace PhysicsEditor
