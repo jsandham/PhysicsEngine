@@ -1,18 +1,5 @@
 # Visual Studio 2015 cache/options directory
 .vs/
-*.data
-*.obj
-*.bmp
-*.png
-*.scene
-*.ttf
-*.gmesh
-*.geo
-*.msh
-*.material
-*.mtx
-*.shader
-*.json
 *.log
 *.tlog
 *.idb

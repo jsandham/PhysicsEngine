@@ -1,1 +1,63 @@
-﻿  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe
+﻿  BoxColliderDrawer.cpp
+  CameraDrawer.cpp
+  CapsuleColliderDrawer.cpp
+  CubemapDrawer.cpp
+  FontDrawer.cpp
+  InspectorDrawer.cpp
+  LightDrawer.cpp
+  LineRendererDrawer.cpp
+  MaterialDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MaterialDrawer.cpp(148,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshColliderDrawer.cpp
+  MeshDrawer.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(136,66): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(147,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  MeshRendererDrawer.cpp
+  RenderTextureDrawer.cpp
+  RigidbodyDrawer.cpp
+  ShaderDrawer.cpp
+  SphereColliderDrawer.cpp
+  SpriteDrawer.cpp
+  SpriteRendererDrawer.cpp
+  Texture2DDrawer.cpp
+  Texture3DDrawer.cpp
+  Generating Code...
+  Compiling...
+  TransformDrawer.cpp
+  Editor.cpp
+  EditorApplication.cpp
+  EditorClipboard.cpp
+  EditorProjectManager.cpp
+  EditorSceneManager.cpp
+  Filebrowser.cpp
+  FileSystemUtil.cpp
+  ImGuiLayer.cpp
+  imgui_extensions.cpp
+  imgui_styles.cpp
+  LibraryDirectory.cpp
+  Load.cpp
+  MenuBar.cpp
+  PerformanceQueue.cpp
+  ProjectTree.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\ProjectTree.cpp(145,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  AboutPopup.cpp
+  BuildWindow.cpp
+  Console.cpp
+  DebugOverlay.cpp
+  Generating Code...
+  Compiling...
+  Hierarchy.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(64,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(177,53): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Inspector.cpp
+  PopupWindow.cpp
+  PreferencesWindow.cpp
+  ProjectView.cpp
+  ProjectWindow.cpp
+  SceneView.cpp
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(73,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(74,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Window.cpp
+  Generating Code...
+  editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

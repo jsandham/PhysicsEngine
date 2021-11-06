@@ -1,9 +1,7 @@
 #include "../../include/core/Mesh.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
-#define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 using namespace PhysicsEngine;
