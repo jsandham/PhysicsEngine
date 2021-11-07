@@ -23,38 +23,7 @@ void Editor::init()
     fs::path cwd = fs::current_path();
     fs::path dataPath = cwd / "data";
 
-    if (fs::is_directory(dataPath))
-    {
-        std::stack<fs::path> stack;
-        stack.push(dataPath);
-
-        while (!stack.empty())
-        {
-            fs::path currentPath = stack.top();
-            stack.pop();
-
-            std::error_code error_code;
-            for (const fs::directory_entry& entry : fs::directory_iterator(currentPath, error_code))
-            {
-                if (fs::is_directory(entry, error_code))
-                {
-                    stack.push(entry.path());
-                }
-                else if (fs::is_regular_file(entry, error_code))
-                {
-                    std::string extension = entry.path().extension().string();
-                    if (extension == ".mesh" || 
-                        extension == ".shader" ||
-                        extension == ".material" ||
-                        extension == ".texture")
-                    {
-                        fs::path relativeDataPath = entry.path().lexically_relative(fs::current_path());
-                        mClipboard.getWorld()->loadAssetFromYAML(relativeDataPath.string());
-                    }
-                }
-            }
-        }
-    }
+    mClipboard.getWorld()->loadAssetsInPath(dataPath);
 
     mMenuBar.init(mClipboard);
     mInspector.init(mClipboard);

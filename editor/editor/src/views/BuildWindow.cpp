@@ -86,7 +86,7 @@ void BuildWindow::build(const std::filesystem::path& path)
 	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\editor\\src\\Load.cpp", buildSrcPath, copy_options);
 
 	std::filesystem::path executablePath = buildPath / "main.exe";
-	std::filesystem::path compilerPath("C:\\Program Files\\LLVM\\bin\\clang-cl");
+	std::filesystem::path shellScriptFilePath(std::filesystem::current_path() / "..\\..\\..\\shell.bat");
 	std::filesystem::path buildScriptFilePath(std::filesystem::current_path() / "..\\..\\build.bat");
 
 	std::string command = buildScriptFilePath.string() + " " +

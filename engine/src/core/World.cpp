@@ -3,6 +3,7 @@
 #include <map>
 #include <sstream>
 #include <unordered_set>
+#include <stack>
 
 #include "../../include/core/Load.h"
 #include "../../include/core/LoadInternal.h"
@@ -18,6 +19,42 @@ World::World()
 
 World::~World()
 {
+}
+
+void World::loadAssetsInPath(const std::filesystem::path &filePath)
+{
+    if (std::filesystem::is_directory(filePath))
+    {
+        std::stack<std::filesystem::path> stack;
+        stack.push(filePath);
+
+        while (!stack.empty())
+        {
+            std::filesystem::path currentPath = stack.top();
+            stack.pop();
+
+            std::error_code error_code;
+            for (const std::filesystem::directory_entry &entry :
+                 std::filesystem::directory_iterator(currentPath, error_code))
+            {
+                if (std::filesystem::is_directory(entry, error_code))
+                {
+                    stack.push(entry.path());
+                }
+                else if (std::filesystem::is_regular_file(entry, error_code))
+                {
+                    std::string extension = entry.path().extension().string();
+                    if (extension == ".mesh" || extension == ".shader" || extension == ".material" ||
+                        extension == ".texture")
+                    {
+                        std::filesystem::path relativeDataPath =
+                            entry.path().lexically_relative(std::filesystem::current_path());
+                        loadAssetFromYAML(relativeDataPath.string());
+                    }
+                }
+            }
+        }
+    }
 }
 
 Asset *World::loadAssetFromYAML(const std::string &filePath)

@@ -103,14 +103,22 @@ void Hierarchy::update(Clipboard &clipboard)
                 if (ImGui::MenuItem("Empty"))
                 {
                     //Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                    entity->addComponent<PhysicsEngine::Transform>();
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
                     //Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                    entity->addComponent<PhysicsEngine::Transform>();
+                    entity->addComponent<PhysicsEngine::Camera>();
                 }
                 if (ImGui::MenuItem("Light"))
                 {
                     //Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                    PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                    entity->addComponent<PhysicsEngine::Transform>();
+                    entity->addComponent<PhysicsEngine::Light>();
                 }
 
                 if (ImGui::BeginMenu("2D"))
@@ -119,6 +127,11 @@ void Hierarchy::update(Clipboard &clipboard)
                     {
                         //Undo::addCommand(
                         //    new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\plane.mesh"));
+                        //meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\color.material"));
                     }
                     ImGui::EndMenu();
                 }
@@ -128,11 +141,19 @@ void Hierarchy::update(Clipboard &clipboard)
                     if (ImGui::MenuItem("Cube"))
                     {
                         //Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\cube.mesh"));
                     }
                     if (ImGui::MenuItem("Sphere"))
                     {
                         //Undo::addCommand(
                         //    new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
+                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\sphere.mesh"));
                     }
                     ImGui::EndMenu();
                 }

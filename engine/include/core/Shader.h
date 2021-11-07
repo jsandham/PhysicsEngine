@@ -220,14 +220,39 @@ template <> struct convert<PhysicsEngine::RenderQueue>
     static Node encode(const PhysicsEngine::RenderQueue &rhs)
     {
         Node node;
-        node = static_cast<int>(rhs);
+        switch (rhs)
+        {
+        case PhysicsEngine::RenderQueue::Opaque:
+            node = "Opaque";
+            break;
+        case PhysicsEngine::RenderQueue::Transparent:
+            node = "Transparent";
+            break;
+        }
+
         return node;
+
+        //Node node;
+        //node = static_cast<int>(rhs);
+        //return node;
     }
 
     static bool decode(const Node &node, PhysicsEngine::RenderQueue &rhs)
     {
-        rhs = static_cast<PhysicsEngine::RenderQueue>(node.as<int>());
+        std::string type = node.as<std::string>();
+        if (type == "Opaque")
+        {
+            rhs = PhysicsEngine::RenderQueue::Opaque;
+        }
+        else if (type == "Transparent")
+        {
+            rhs = PhysicsEngine::RenderQueue::Transparent;
+        }
+
         return true;
+
+        //rhs = static_cast<PhysicsEngine::RenderQueue>(node.as<int>());
+        //return true;
     }
 };
 

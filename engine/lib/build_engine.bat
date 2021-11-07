@@ -1,9 +1,5 @@
 @echo off
 
-if not defined DevEnvDir (
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-)
-
 set GLEW="../../external/glew-2.1.0"
 set FREETYPE="../../external/freetype"
 set YAML="../../external/yaml-cpp/include"
@@ -53,8 +49,6 @@ echo [92mCompiling C++ engine code...[0m
 for /R "../src/" %%f in (*.cpp) do (
 	call cl /c /std:c++17 /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
-::call cl /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
-::call "C:\Program Files\LLVM\bin\clang-cl" /c /I%GLEW% /I%FREETYPE% /I%YAML% /I%GLM% /I%TINY_OBJ% /I%STB% %OPT% %OPENMP% %WARN% %MODEFLAGS% %FLAGS% %%f
 
 :: create list of .obj files
 echo [92mCompiled objects...[0m

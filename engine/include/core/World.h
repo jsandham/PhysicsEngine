@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 #define GLM_FORCE_RADIANS
 
@@ -30,6 +31,7 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
+    void loadAssetsInPath(const std::filesystem::path &filePath);
     Asset *loadAssetFromYAML(const std::string &filePath);
     Scene *loadSceneFromYAML(const std::string &filePath);
     bool writeAssetToYAML(const std::string &filePath, const Guid &assetId) const;
