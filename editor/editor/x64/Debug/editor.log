@@ -4,6 +4,7 @@
   EditorProjectManager.cpp
   EditorSceneManager.cpp
   LibraryDirectory.cpp
+  Load.cpp
   MenuBar.cpp
   BoxColliderDrawer.cpp
   CameraDrawer.cpp
@@ -21,9 +22,9 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(141,85): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\drawers\MeshDrawer.cpp(147,95): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   MeshRendererDrawer.cpp
-  RenderTextureDrawer.cpp
   Generating Code...
   Compiling...
+  RenderTextureDrawer.cpp
   RigidbodyDrawer.cpp
   ShaderDrawer.cpp
   SphereColliderDrawer.cpp
@@ -47,6 +48,8 @@ C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\Hierarchy.cpp(198
   SceneView.cpp
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(73,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\jsand\Documents\PhysicsEngine\editor\editor\src\views\SceneView.cpp(74,28): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+  Compiling...
   Window.cpp
   Generating Code...
   editor.vcxproj -> C:\Users\jsand\Documents\PhysicsEngine\editor\x64\Debug\editor.exe

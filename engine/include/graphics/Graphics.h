@@ -71,6 +71,123 @@ struct LightUniform
     unsigned int mBuffer;
 };
 
+struct ForwardRendererState
+{
+    // internal graphics camera state
+    CameraUniform mCameraState;
+
+    // internal graphics light state
+    LightUniform mLightState;
+
+    bool mRenderToScreen;
+
+    // directional light cascade shadow map data
+    float mCascadeEnds[6];
+    glm::mat4 mCascadeOrthoProj[5];
+    glm::mat4 mCascadeLightView[5];
+
+    int mDepthShaderProgram;
+    int mDepthShaderModelLoc;
+    int mDepthShaderViewLoc;
+    int mDepthShaderProjectionLoc;
+
+    // spotlight shadow map data
+    glm::mat4 mShadowViewMatrix;
+    glm::mat4 mShadowProjMatrix;
+
+    // pointlight cubemap shadow map data
+    glm::mat4 mCubeViewProjMatrices[6];
+
+    int mDepthCubemapShaderProgram;
+    int mDepthCubemapShaderLightPosLoc;
+    int mDepthCubemapShaderFarPlaneLoc;
+    int mDepthCubemapShaderModelLoc;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc0;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc1;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc2;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc3;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc4;
+    int mDepthCubemapShaderCubeViewProjMatricesLoc5;
+
+    int mGeometryShaderProgram;
+    int mGeometryShaderModelLoc;
+
+    int mColorShaderProgram;
+    int mColorShaderModelLoc;
+    int mColorShaderColorLoc;
+
+    // ssao
+    int mSsaoShaderProgram;
+    int mSsaoShaderProjectionLoc;
+    int mSsaoShaderPositionTexLoc;
+    int mSsaoShaderNormalTexLoc;
+    int mSsaoShaderNoiseTexLoc;
+    int mSsaoShaderSamplesLoc[64];
+
+    // sprite
+    int mSpriteShaderProgram;
+    int mSpriteModelLoc;
+    int mSpriteViewLoc;
+    int mSpriteProjectionLoc;
+    int mSpriteColorLoc;
+    int mSpriteImageLoc;
+
+    // quad
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
+    int mQuadShaderProgram;
+    int mQuadShaderTexLoc;
+};
+
+struct DeferredRendererState
+{
+    // internal graphics camera state
+    CameraUniform mCameraState;
+
+    bool mRenderToScreen;
+
+    int mGeometryShaderProgram;
+    int mGeometryShaderModelLoc;
+    int mGeometryShaderDiffuseTexLoc;
+    int mGeometryShaderSpecTexLoc;
+
+    int mSimpleLitDeferredShaderProgram;
+    int mSimpleLitDeferredShaderViewPosLoc;
+    int mSimpleLitDeferredShaderLightLocs[32];
+
+    // quad
+    GLuint mQuadVAO;
+    GLuint mQuadVBO;
+};
+
+struct GizmoRendererState
+{
+    int mLineShaderProgram;
+    int mLineShaderMVPLoc;
+
+    int mGizmoShaderProgram;
+    int mGizmoShaderModelLoc;
+    int mGizmoShaderViewLoc;
+    int mGizmoShaderProjLoc;
+    int mGizmoShaderColorLoc;
+    int mGizmoShaderLightPosLoc;
+
+    int mGridShaderProgram;
+    int mGridShaderMVPLoc;
+    int mGridShaderColorLoc;
+
+    GLuint mFrustumVAO;
+    GLuint mFrustumVBO[2];
+    std::vector<float> mFrustumVertices;
+    std::vector<float> mFrustumNormals;
+
+    GLuint mGridVAO;
+    GLuint mGridVBO;
+    std::vector<glm::vec3> mGridVertices;
+    glm::vec3 mGridOrigin;
+    Color mGridColor;
+};
+
 class Graphics
 {
   public:
@@ -177,127 +294,19 @@ class Graphics
                               int shaderProgram);
     static void render(int start, int count, int vao, bool wireframe = false);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
+
+
+    static void compileSSAOShader(ForwardRendererState &state);
+    static void compileShadowDepthMapShader(ForwardRendererState &state);
+    static void compileShadowDepthCubemapShader(ForwardRendererState &state);
+    static void compileColorShader(ForwardRendererState &state);
+    static void compileScreenQuadShader(ForwardRendererState &state);
+    static void compileSpriteShader(ForwardRendererState &state);
+
+    static void compileLineShader(GizmoRendererState &state);
+    static void compileGizmoShader(GizmoRendererState &state);
+    static void compileGridShader(GizmoRendererState &state);
 };
 } // namespace PhysicsEngine
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//static void (*checkError)(long, const char*);
-//static void (*checkFrambufferError)(long, const char*);
-//static GLenum(*getTextureFormat)(TextureFormat);
-//static GLint(*getTextureWrapMode)(TextureWrapMode);
-//static GLint(*getTextureFilterMode)(TextureFilterMode);
-//static void (*beginQuery)(GLuint);
-//static void (*endQuery)(GLuint, GLuint64*);
-//static void (*createGlobalCameraUniforms)(CameraUniform&);
-//static void (*createGlobalLightUniforms)(LightUniform&);
-//static void (*setGlobalCameraUniforms)(const CameraUniform&);
-//static void (*setGlobalLightUniforms)(const LightUniform&);
-//static void (*createScreenQuad)(GLuint*, GLuint*);
-//static void (*renderScreenQuad)(GLuint);
-//static void (*createFramebuffer)(int, int, GLuint*, GLuint*, GLuint*);
-//static void (*destroyFramebuffer)(GLuint*, GLuint*, GLuint*);
-//static void (*bindFramebuffer)(GLuint);
-//static void (*unbindFramebuffer)();
-//static void (*clearFrambufferColor)(const Color&);
-//static void (*clearFrambufferColor)(float, float, float, float);
-//static void (*clearFramebufferDepth)(float);
-//static void (*setViewport)(int, int, int, int);
-//static void (*createTargets)(CameraTargets*, Viewport, glm::vec3*, GLuint*, GLuint*);
-//static void (*destroyTargets)(CameraTargets*, GLuint*, GLuint*);
-//static void (*resizeTargets)(CameraTargets*, Viewport, bool*);
-//static void (*readColorPickingPixel)(const CameraTargets*, int, int, Color32*);
-//static void (*createTargets)(LightTargets*, ShadowMapResolution);
-//static void (*destroyTargets)(LightTargets*);
-//static void (*resizeTargets)(LightTargets*, ShadowMapResolution);
-//static void (*createTexture2D)(TextureFormat, TextureWrapMode, TextureFilterMode, int, int, const std::vector<unsigned char>&, GLuint*);
-//static void (*destroyTexture2D)(GLuint*);
-//static void (*updateTexture2D)(TextureWrapMode, TextureFilterMode, int, GLuint);
-//static void (*readPixelsTexture2D)(TextureFormat, int, int, int, std::vector<unsigned char>&, GLuint);
-//static void (*writePixelsTexture2D)(TextureFormat, int, int, const std::vector<unsigned char>&, GLuint);
-//static void (*createTexture3D)(TextureFormat, TextureWrapMode, TextureFilterMode, int, int, int, const std::vector<unsigned char>&, GLuint*);
-//static void (*destroyTexture3D)(GLuint*);
-//static void (*updateTexture3D)(TextureWrapMode, TextureFilterMode, int, GLuint);
-//static void (*readPixelsTexture3D)(TextureFormat, int, int, int, int,
-//    std::vector<unsigned char>& data, GLuint);
-//static void (*writePixelsTexture3D)(TextureFormat format, int width, int height, int depth,
-//    const std::vector<unsigned char>& data, GLuint tex);
-//static void (*createCubemap)(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-//    const std::vector<unsigned char>& data, GLuint* tex);
-//static void (*destroyCubemap)(GLuint* tex);
-//static void (*updateCubemap)(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, GLuint tex);
-//static void (*readPixelsCubemap)(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data,
-//    GLuint tex);
-//static void (*writePixelsCubemap)(TextureFormat format, int width, const std::vector<unsigned char>& data, GLuint tex);
-//static void (*createMesh)(const std::vector<float>& vertices, const std::vector<float>& normals,
-//    const std::vector<float>& texCoords, GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2);
-//static void (*destroyMesh)(GLuint* vao, GLuint* vbo0, GLuint* vbo1, GLuint* vbo2);
-//static void (*createSprite)(GLuint* vao);
-//static void (*destroySprite)(GLuint* vao);
-//static bool (*compile)(const std::string& vert, const std::string& frag, const std::string& geom, GLuint* program);
-//static int (*findUniformLocation)(const char* name, int program);
-//static int (*getUniformCount)(int program);
-//static int (*getAttributeCount)(int program);
-//static std::vector<Uniform>(*getUniforms)(int program);
-//static std::vector<Attribute>(*getAttributes)(int program);
-//static void (*setUniformBlock)(const char* blockName, int bindingPoint, int program);
-//static void (*use)(int program);
-//static void (*unuse)();
-//static void (*destroy)(int program);
-//static void (*setBool)(int nameLocation, bool value);
-//static void (*setInt)(int nameLocation, int value);
-//static void (*setFloat)(int nameLocation, float value);
-//static void (*setColor)(int nameLocation, const Color& color);
-//static void (*setVec2)(int nameLocation, const glm::vec2& vec);
-//static void (*setVec3)(int nameLocation, const glm::vec3& vec);
-//static void (*setVec4)(int nameLocation, const glm::vec4& vec);
-//static void (*setMat2)(int nameLocation, const glm::mat2& mat);
-//static void (*setMat3)(int nameLocation, const glm::mat3& mat);
-//static void (*setMat4)(int nameLocation, const glm::mat4& mat);
-//static void (*setTexture2D)(int nameLocation, int texUnit, int tex);
-//static bool (*getBool)(int nameLocation, int program);
-//static int (*getInt)(int nameLocation, int program);
-//static float (*getFloat)(int nameLocation, int program);
-//static Color(*getColor)(int nameLocation, int program);
-//static glm::vec2(*getVec2)(int nameLocation, int program);
-//static glm::vec3(*getVec3)(int nameLocation, int program);
-//static glm::vec4(*getVec4)(int nameLocation, int program);
-//static glm::mat2(*getMat2)(int nameLocation, int program);
-//static glm::mat3(*getMat3)(int nameLocation, int program);
-//static glm::mat4(*getMat4)(int nameLocation, int program);
-//static int (*getTexture2D)(int nameLocation, int texUnit, int program);
-//static void (*applyMaterial)(const std::vector<ShaderUniform>& uniforms, const std::vector<GLint>& textures,
-//    int shaderProgram);
-//static void (*render)(int start, int count, GLuint vao, bool wireframe = false);
-//static void (*render)(const RenderObject& renderObject, GraphicsQuery& query);
-// function pointer idea
-//void (*checkError)(long, const char*);
-//void (*checkFrambufferError)(long, const char*);
-//checkError = &checkError_opengl;
-//checkFrambufferError = &checkFrambufferError_opengl;
-// or
-//checkError = &checkError_directx;
-//checkFrambufferError = &checkFrambufferError_directx;

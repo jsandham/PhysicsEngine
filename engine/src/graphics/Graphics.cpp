@@ -1750,3 +1750,468 @@ void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
     query.mVerts += numVertices;
     query.mTris += numVertices / 3;
 }
+
+void Graphics::compileSSAOShader(ForwardRendererState &state)
+{
+    std::string vertexShader0 = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "in vec3 position;\n"
+                               "in vec3 normal;\n"
+                               "in vec2 texCoord;\n"
+                               "out vec3 FragPos;\n"
+                               "out vec3 Normal;\n"
+                               "uniform mat4 model;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    vec4 viewPos = Camera.view * model * vec4(position, 1.0);\n"
+                               "    FragPos = viewPos.xyz;\n"
+                               "    mat3 normalMatrix = transpose(inverse(mat3(Camera.view * model)));\n"
+                               "    Normal = normalMatrix * normal;\n"
+                               "    gl_Position = Camera.projection * viewPos;\n"
+                               "}\n";
+
+    std::string fragmentShader0 = "#version 430 core\n"
+                                 "layout(location = 0) out vec3 positionTex;\n"
+                                 "layout(location = 1) out vec3 normalTex;\n"
+                                 "in vec3 FragPos;\n"
+                                 "in vec3 Normal;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "   // store the fragment position vector in the first gbuffer texture\n"
+                                 "   positionTex = FragPos.xyz;\n"
+                                 "   // also store the per-fragment normals into the gbuffer\n"
+                                 "   normalTex = normalize(Normal);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Geometry", vertexShader0, fragmentShader0, "", &program))
+    {
+        state.mGeometryShaderProgram = program;
+        state.mGeometryShaderModelLoc = Graphics::findUniformLocation("model", state.mGeometryShaderProgram);
+    }
+    else
+    {
+        state.mGeometryShaderProgram = -1;
+    }
+
+    std::string vertexShader1 = "#version 430 core\n"
+                                "in vec3 position;\n"
+                                "in vec2 texCoord;\n"
+                                "out vec2 TexCoord;\n"
+                                "void main()\n"
+                                "{\n"
+                                "   gl_Position = vec4(position, 1.0);\n"
+                                "   TexCoord = texCoord;\n"
+                                "}\n";
+
+    std::string fragmentShader1 =
+        "#version 430 core\n"
+        "out float FragColor;\n"
+        "in vec2 TexCoord;\n"
+        "uniform sampler2D positionTex;\n"
+        "uniform sampler2D normalTex;\n"
+        "uniform sampler2D noiseTex;\n"
+        "uniform vec3 samples[64];\n"
+        "// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)\n"
+        "int kernelSize = 64;\n"
+        "float radius = 0.5;\n"
+        "float bias = 0.025;\n"
+        "// tile noise texture over screen based on screen dimensions divided by noise size\n"
+        "const vec2 noiseScale = vec2(1024.0 / 4.0, 1024.0 / 4.0);\n"
+        "uniform mat4 projection;\n"
+        "void main()\n"
+        "{\n"
+        "   // get input for SSAO algorithm\n"
+        "   vec3 fragPos = texture(positionTex, TexCoord).xyz;\n"
+        "   vec3 normal = normalize(texture(normalTex, TexCoord).rgb);\n"
+        "   vec3 randomVec = normalize(texture(noiseTex, TexCoord * noiseScale).xyz);\n"
+        "   // create TBN change-of-basis matrix: from tangent-space to view-space\n"
+        "   vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));\n"
+        "   vec3 bitangent = cross(normal, tangent);\n"
+        "   mat3 TBN = mat3(tangent, bitangent, normal);\n"
+        "   // iterate over the sample kernel and calculate occlusion factor\n"
+        "   float occlusion = 0.0f;\n"
+        "   for (int i = 0; i < kernelSize; ++i)\n"
+        "   {\n"
+        "       // get sample position\n"
+        "       vec3 sampleq = TBN * samples[i]; // from tangent to view-space\n"
+        "       sampleq = fragPos + sampleq * radius;\n"
+        "       // project sample position (to sample texture) (to get position on screen/texture)\n"
+        "       vec4 offset = vec4(sampleq, 1.0);\n"
+        "       offset = projection * offset; // from view to clip-space\n"
+        "       offset.xyz /= offset.w;       // perspective divide\n"
+        "       offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0\n"
+        "       // get sample depth\n"
+        "       float sampleDepth = texture(positionTex, offset.xy).z; // get depth value of kernel sample\n"
+        "       // range check & accumulate\n"
+        "       float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));\n"
+        "       occlusion += (sampleDepth >= sampleq.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
+        "   }\n"
+        "   occlusion = 1.0 - (occlusion / kernelSize);\n"
+        "   FragColor = occlusion;\n"
+        "}\n";
+
+    program = 0;
+    if (Graphics::compile("SSAO", vertexShader1, fragmentShader1, "", &program))
+    {
+        state.mSsaoShaderProgram = program;
+        state.mSsaoShaderProjectionLoc = Graphics::findUniformLocation("projection", state.mSsaoShaderProgram);
+        state.mSsaoShaderPositionTexLoc = Graphics::findUniformLocation("positionTex", state.mSsaoShaderProgram);
+        state.mSsaoShaderNormalTexLoc = Graphics::findUniformLocation("normalTex", state.mSsaoShaderProgram);
+        state.mSsaoShaderNoiseTexLoc = Graphics::findUniformLocation("noiseTex", state.mSsaoShaderProgram);
+
+        for (int i = 0; i < 64; i++)
+        {
+            std::string sample = "samples[" + std::to_string(i) + "]";
+            state.mSsaoShaderSamplesLoc[i] = Graphics::findUniformLocation(sample.c_str(), state.mSsaoShaderProgram);
+        }
+    }
+    else
+    {
+        state.mSsaoShaderProgram = -1;
+    }
+}
+
+void Graphics::compileShadowDepthMapShader(ForwardRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "uniform mat4 projection;\n"
+                               "uniform mat4 view;\n"
+                               "uniform mat4 model;\n"
+                               "in vec3 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = projection * view * model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Shadow Depth Map", vertexShader, fragmentShader, "", &program))
+    {
+        state.mDepthShaderProgram = program;
+        state.mDepthShaderModelLoc = Graphics::findUniformLocation("model", state.mDepthShaderProgram);
+        state.mDepthShaderViewLoc = Graphics::findUniformLocation("view", state.mDepthShaderProgram);
+        state.mDepthShaderProjectionLoc = Graphics::findUniformLocation("projection", state.mDepthShaderProgram);
+    }
+    else
+    {
+        state.mDepthShaderProgram = -1;
+    }
+}
+
+void Graphics::compileShadowDepthCubemapShader(ForwardRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "in vec3 position;\n"
+                               "uniform mat4 model;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec4 FragPos;\n"
+                                 "uniform vec3 lightPos;\n"
+                                 "uniform float farPlane;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  float lightDistance = length(FragPos.xyz - lightPos);\n"
+                                 "  lightDistance = lightDistance / farPlane;\n"
+                                 "  gl_FragDepth = lightDistance;\n"
+                                 "}\n";
+
+    std::string geometryShader = "#version 430 core\n"
+                                 "layout(triangles) in;\n"
+                                 "layout(triangle_strip, max_vertices = 18) out;\n"
+                                 "uniform mat4 cubeViewProjMatrices[6];\n"
+                                 "out vec4 FragPos;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  for (int i = 0; i < 6; i++)\n"
+                                 "  {\n"
+                                 "      gl_Layer = i;\n"
+                                 "      for (int j = 0; j < 3; j++)\n"
+                                 "      {\n"
+                                 "          FragPos = gl_in[j].gl_Position;\n"
+                                 "          gl_Position = cubeViewProjMatrices[i] * FragPos;\n"
+                                 "          EmitVertex();\n"
+                                 "      }\n"
+                                 "      EndPrimitive();\n"
+                                 "  }\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Shadow Depth Cubemap", vertexShader, fragmentShader, geometryShader, &program))
+    {
+        state.mDepthCubemapShaderProgram = program;
+        state.mDepthCubemapShaderLightPosLoc =
+            Graphics::findUniformLocation("lightPos", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderFarPlaneLoc =
+            Graphics::findUniformLocation("farPlane", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderModelLoc = Graphics::findUniformLocation("model", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc0 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[0]", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc1 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[1]", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc2 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[2]", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc3 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[3]", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc4 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[4]", state.mDepthCubemapShaderProgram);
+        state.mDepthCubemapShaderCubeViewProjMatricesLoc5 =
+            Graphics::findUniformLocation("cubeViewProjMatrices[5]", state.mDepthCubemapShaderProgram);
+    }
+    else
+    {
+        state.mDepthCubemapShaderProgram = -1;
+    }
+}
+
+void Graphics::compileColorShader(ForwardRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "uniform mat4 model;\n"
+                               "in vec3 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "struct Material\n"
+                                 "{\n"
+                                 "    uvec4 color;\n"
+                                 "};\n"
+                                 "uniform Material material;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "    FragColor = vec4(material.color.r / 255.0f, material.color.g / 255.0f,\n"
+                                 "                      material.color.b / 255.0f, material.color.a / 255.0f);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Color", vertexShader, fragmentShader, "", &program))
+    {
+        state.mColorShaderProgram = program;
+        state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
+        state.mColorShaderColorLoc = Graphics::findUniformLocation("material.color", state.mColorShaderProgram);
+    }
+    else
+    {
+        state.mColorShaderProgram = -1;
+    }
+}
+
+void Graphics::compileScreenQuadShader(ForwardRendererState &state)
+{
+    std::string vertexShader = "#version 330 core\n"
+                               "layout(location = 0) in vec2 aPos;\n"
+                               "layout(location = 1) in vec2 aTexCoords;\n"
+                               "out vec2 TexCoords;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    TexCoords = aTexCoords;\n"
+                               "    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 330 core\n"
+                                 "out vec4 FragColor;\n"
+                                 "in vec2 TexCoords;\n"
+                                 "uniform sampler2D screenTexture;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  vec3 col = texture(screenTexture, TexCoords).rgb;\n"
+                                 "  FragColor = vec4(col, 1.0);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Screen Quad", vertexShader, fragmentShader, "", &program))
+    {
+        state.mQuadShaderProgram = program;
+        state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
+    }
+    else
+    {
+        state.mQuadShaderProgram = -1;
+    }
+}
+
+void Graphics::compileSpriteShader(ForwardRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec4 vertex; // <vec2 position, vec2 texCoords>\n"
+                               "out vec2 TexCoords;\n"
+                               "uniform mat4 model;\n"
+                               "uniform mat4 view;\n"
+                               "uniform mat4 projection;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    TexCoords = vertex.zw;\n"
+                               "    gl_Position = projection * view * model * vec4(vertex.xy, 0.0, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec2 TexCoords;\n"
+                                 "out vec4 color;\n"
+                                 "uniform sampler2D image;\n"
+                                 "uniform vec4 spriteColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  color = spriteColor * texture(image, TexCoords);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Sprite", vertexShader, fragmentShader, "", &program))
+    {
+        state.mSpriteShaderProgram = program;
+        state.mSpriteModelLoc = Graphics::findUniformLocation("model", state.mSpriteShaderProgram);
+        state.mSpriteViewLoc = Graphics::findUniformLocation("view", state.mSpriteShaderProgram);
+        state.mSpriteProjectionLoc = Graphics::findUniformLocation("projection", state.mSpriteShaderProgram);
+        state.mSpriteColorLoc = Graphics::findUniformLocation("spriteColor", state.mSpriteShaderProgram);
+        state.mSpriteImageLoc = Graphics::findUniformLocation("image", state.mSpriteShaderProgram);
+    }
+    else
+    {
+        state.mSpriteShaderProgram = -1;
+    }
+}
+
+void Graphics::compileLineShader(GizmoRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec3 position;\n"
+                               "layout(location = 1) in vec4 color;\n"
+                               "uniform mat4 mvp;\n"
+                               "out vec4 Color;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    Color = color;\n"
+                               "    gl_Position = mvp * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec4 Color;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  FragColor = Color;\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Line", vertexShader, fragmentShader, "", &program))
+    {
+        state.mLineShaderProgram = program;
+        state.mLineShaderMVPLoc = Graphics::findUniformLocation("mvp", state.mLineShaderProgram);
+    }
+    else
+    {
+        state.mLineShaderProgram = -1;
+    }
+}
+
+void Graphics::compileGizmoShader(GizmoRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec3 position;\n"
+                               "layout(location = 1) in vec3 normal;\n"
+                               "out vec3 FragPos;\n"
+                               "out vec3 Normal;\n"
+                               "uniform mat4 model;\n"
+                               "uniform mat4 view;\n"
+                               "uniform mat4 projection;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    FragPos = vec3(model * vec4(position, 1.0));\n"
+                               "    Normal = mat3(transpose(inverse(model))) * normal;\n"
+                               "    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
+                               "}\n";
+
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "out vec4 FragColor;\n"
+                                 "in vec3 Normal;\n"
+                                 "in vec3 FragPos;\n"
+                                 "uniform vec3 lightPos;\n"
+                                 "uniform vec4 color;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  vec3 norm = normalize(Normal);\n"
+                                 "  vec3 lightDir = normalize(lightPos - FragPos);\n"
+                                 "  float diff = max(abs(dot(norm, lightDir)), 0.1);\n"
+                                 "  vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
+                                 "  FragColor = diffuse * color;\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Gizmo", vertexShader, fragmentShader, "", &program))
+    {
+        state.mGizmoShaderProgram = program;
+        state.mGizmoShaderColorLoc = Graphics::findUniformLocation("color", state.mGizmoShaderProgram);
+        state.mGizmoShaderLightPosLoc = Graphics::findUniformLocation("lightPos", state.mGizmoShaderProgram);
+        state.mGizmoShaderModelLoc = Graphics::findUniformLocation("model", state.mGizmoShaderProgram);
+        state.mGizmoShaderViewLoc = Graphics::findUniformLocation("view", state.mGizmoShaderProgram);
+        state.mGizmoShaderProjLoc = Graphics::findUniformLocation("projection", state.mGizmoShaderProgram);
+    }
+    else
+    {
+        state.mGizmoShaderProgram = -1;
+    }
+}
+
+void Graphics::compileGridShader(GizmoRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "uniform mat4 mvp;\n"
+                               "uniform vec4 color;\n"
+                               "in vec3 position;\n"
+                               "out vec4 Color;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = mvp * vec4(position, 1.0);\n"
+                               "    Color = color;\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec4 Color;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  float depth = 0.2f * gl_FragCoord.z / gl_FragCoord.w;\n"
+                                 "  FragColor = vec4(Color.x, Color.y, Color.z, clamp(1.0f / depth, 0.0f, 0.8f));\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Grid", vertexShader, fragmentShader, "", &program))
+    {
+        state.mGridShaderProgram = program;
+        state.mGridShaderMVPLoc = Graphics::findUniformLocation("mvp", state.mGridShaderProgram);
+        state.mGridShaderColorLoc = Graphics::findUniformLocation("color", state.mGridShaderProgram);
+    }
+    else
+    {
+        state.mGridShaderProgram = -1;
+    }
+}
