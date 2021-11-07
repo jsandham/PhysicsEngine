@@ -7,13 +7,17 @@ using namespace PhysicsEngine;
 
 void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &state)
 {
-    state.mLineShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\line.shader"));
-    state.mGizmoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\gizmo.shader"));
-    state.mGridShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\grid.shader"));
+    state.mLineShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\line.shader"));
+    state.mGizmoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\gizmo.shader"));
+    state.mGridShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\grid.shader"));
 
     assert(state.mLineShader != NULL);
     assert(state.mGizmoShader != NULL);
     assert(state.mGridShader != NULL);
+
+    state.mLineShader->preprocess();
+    state.mGizmoShader->preprocess();
+    state.mGridShader->preprocess();
 
     state.mLineShader->compile();
     state.mGizmoShader->compile();

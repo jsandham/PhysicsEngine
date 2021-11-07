@@ -237,13 +237,31 @@ template <> struct convert<PhysicsEngine::ShaderSourceLanguage>
     static Node encode(const PhysicsEngine::ShaderSourceLanguage& rhs)
     {
         Node node;
-        node = static_cast<int>(rhs);
+        switch (rhs)
+        {
+        case PhysicsEngine::ShaderSourceLanguage::GLSL:
+            node = "GLSL";
+            break;
+        case PhysicsEngine::ShaderSourceLanguage::HLSL:
+            node = "HLSL";
+            break;
+        }
+
         return node;
     }
 
     static bool decode(const Node& node, PhysicsEngine::ShaderSourceLanguage& rhs)
     {
-        rhs = static_cast<PhysicsEngine::ShaderSourceLanguage>(node.as<int>());
+        std::string type = node.as<std::string>();
+        if (type == "GLSL")
+        {
+            rhs = PhysicsEngine::ShaderSourceLanguage::GLSL;
+        }
+        else if (type == "HLSL")
+        {
+            rhs = PhysicsEngine::ShaderSourceLanguage::HLSL;
+        }
+
         return true;
     }
 };

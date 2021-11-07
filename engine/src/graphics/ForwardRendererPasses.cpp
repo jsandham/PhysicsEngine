@@ -17,13 +17,13 @@ using namespace PhysicsEngine;
 void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
 {
     // compile internal shader programs
-    Shader* mGeometryShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\positionAndNormals.shader"));
-    Shader* mColorShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\color.shader"));
-    Shader* mSsaoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\ssao.shader"));
-    Shader* mDepthShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\shadowDepthMap.shader"));
-    Shader* mDepthCubemapShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\shadowDepthCubemap.shader"));
-    Shader* mQuadShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\screenQuad.shader"));
-    Shader* mSpriteShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\opengl\\sprite.shader"));
+    Shader* mGeometryShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\positionAndNormals.shader"));
+    Shader* mColorShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\color.shader"));
+    Shader* mSsaoShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\ssao.shader"));
+    Shader* mDepthShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\shadowDepthMap.shader"));
+    Shader* mDepthCubemapShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\shadowDepthCubemap.shader"));
+    Shader* mQuadShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\screenQuad.shader"));
+    Shader* mSpriteShader = world->getAssetById<Shader>(world->getAssetId("data\\shaders\\sprite.shader"));
 
     assert(mGeometryShader != NULL);
     assert(mColorShader != NULL);
@@ -32,6 +32,14 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     assert(mDepthCubemapShader != NULL);
     assert(mQuadShader != NULL);
     assert(mSpriteShader != NULL);
+
+    mGeometryShader->preprocess();
+    mColorShader->preprocess();
+    mSsaoShader->preprocess();
+    mDepthShader->preprocess();
+    mDepthCubemapShader->preprocess();
+    mQuadShader->preprocess();
+    mSpriteShader->preprocess();
 
     mGeometryShader->compile();
     mColorShader->compile();

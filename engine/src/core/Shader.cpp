@@ -69,6 +69,21 @@ void Shader::deserialize(const YAML::Node &in)
     mGeometrySourceFilepath = YAML::getValue<std::string>(in, "geometrySource");
     mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
 
+    if (mVertexSourceFilepath.compare("null") == 0)
+    {
+        mVertexSourceFilepath = "";
+    }
+
+    if (mFragmentSourceFilepath.compare("null") == 0)
+    {
+        mFragmentSourceFilepath = "";
+    }
+
+    if (mGeometrySourceFilepath.compare("null") == 0)
+    {
+        mGeometrySourceFilepath = "";
+    }
+
     ShaderCreationAttrib attrib;
     attrib.mName = mName;
     attrib.mVertexSourceFilepath = mVertexSourceFilepath;
