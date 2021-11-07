@@ -26,6 +26,12 @@ enum API
     DirectX
 };
 
+enum Capability
+{
+    Depth_Testing,
+    Blending
+};
+
 struct Uniform
 {
     GLsizei nameLength;
@@ -193,6 +199,8 @@ class Graphics
   public:
     static void checkError(long line, const char *file);
     static void checkFrambufferError(long line, const char *file);
+    static void turnOn(Capability capability);
+    static void turnOff(Capability capability);
     static GLenum getTextureFormat(TextureFormat format);
     static int getTextureWrapMode(TextureWrapMode wrapMode);
     static int getTextureFilterMode(TextureFilterMode filterMode);
@@ -243,13 +251,8 @@ class Graphics
     static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
                                 unsigned int tex);
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, unsigned int tex);
-
-
-
     static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
     static void destroyRenderTextureTargets(RenderTextureTargets* targets);
-
-
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                            const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);
     static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);
@@ -306,6 +309,17 @@ class Graphics
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
     static void compileGridShader(GizmoRendererState &state);
+
+
+
+    static void createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals,
+                           unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
+    static void destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
+    static void createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0);
+    static void destroyGrid(unsigned int *vao, unsigned int *vbo0);
+    static void createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
+                           unsigned int *vbo0, unsigned int *vbo1);
+    static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
 };
 } // namespace PhysicsEngine
 

@@ -91,25 +91,8 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
     state.mFrustumVertices.resize(108, 0.0f);
     state.mFrustumNormals.resize(108, 0.0f);
 
-    glGenVertexArrays(1, &state.mFrustumVAO);
-    glBindVertexArray(state.mFrustumVAO);
-
-    glGenBuffers(2, &state.mFrustumVBO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, state.mFrustumVertices.size() * sizeof(float), &state.mFrustumVertices[0],
-                 GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-
-    glGenBuffers(1, &state.mFrustumVBO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, state.mFrustumNormals.size() * sizeof(float), &state.mFrustumNormals[0],
-                 GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    Graphics::createFrustum(state.mFrustumVertices, state.mFrustumNormals, &state.mFrustumVAO, &state.mFrustumVBO[0],
+                            &state.mFrustumVBO[1]);
 
     for (int i = -100; i < 100; i++)
     {
@@ -129,27 +112,13 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
         state.mGridVertices.push_back(end);
     }
 
-    glGenVertexArrays(1, &state.mGridVAO);
-    glBindVertexArray(state.mGridVAO);
-
-    glGenBuffers(1, &state.mGridVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, state.mGridVBO);
-    glBufferData(GL_ARRAY_BUFFER, state.mGridVertices.size() * sizeof(glm::vec3), &state.mGridVertices[0],
-                 GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    Graphics::createGrid(state.mGridVertices, &state.mGridVAO, &state.mGridVBO);
 }
 
 void PhysicsEngine::destroyGizmoRenderer(GizmoRendererState &state)
 {
-    glDeleteVertexArrays(1, &state.mFrustumVAO);
-    glDeleteBuffers(2, &state.mFrustumVBO[0]);
-
-    glDeleteVertexArrays(1, &state.mGridVAO);
-    glDeleteBuffers(1, &state.mGridVBO);
+    Graphics::destroyFrustum(&state.mFrustumVAO, &state.mFrustumVBO[0], &state.mFrustumVBO[1]);
+    Graphics::destroyGrid(&state.mGridVAO, &state.mGridVBO);
 }
 
 void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
@@ -188,30 +157,14 @@ void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRenderer
         colors[8 * i + 7] = gizmos[i].mColor.a;
     }
 
-    GLuint lineVAO;
-    GLuint lineVBO[2];
+    unsigned int lineVAO;
+    unsigned int lineVBO[2];
 
-    glGenVertexArrays(1, &lineVAO);
-    glBindVertexArray(lineVAO);
+    Graphics::createLine(vertices, colors, &lineVAO, &lineVBO[0], &lineVBO[1]);
 
-    glGenBuffers(2, &lineVBO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, lineVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-
-    glGenBuffers(1, &lineVBO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, lineVBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), &colors[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
@@ -222,10 +175,9 @@ void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRenderer
     glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
     glBindVertexArray(0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::unbindFramebuffer();
 
-    glDeleteVertexArrays(1, &lineVAO);
-    glDeleteBuffers(2, &lineVBO[0]);
+    Graphics::destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -238,16 +190,16 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
         return;
     }
 
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\sphere.mesh"));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
@@ -270,9 +222,9 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
     }
 
     glBindVertexArray(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::unbindFramebuffer();
 
-    glDisable(GL_BLEND);
+    Graphics::turnOff(Capability::Blending);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -285,17 +237,17 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
         return;
     }
 
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\cube.mesh"));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
-
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
+ 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
     Graphics::use(state.mGizmoShaderProgram);
@@ -316,9 +268,10 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
     }
 
     glBindVertexArray(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   
+    Graphics::unbindFramebuffer();
 
-    glDisable(GL_BLEND);
+    Graphics::turnOff(Capability::Blending);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -331,16 +284,16 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
         return;
     }
 
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\plane.mesh"));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     glBindVertexArray(mesh->getNativeGraphicsVAO());
 
@@ -368,9 +321,10 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
     }
 
     glBindVertexArray(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    Graphics::unbindFramebuffer();
 
-    glDisable(GL_BLEND);
+    Graphics::turnOff(Capability::Blending);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -527,12 +481,12 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
         return;
     }
 
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     glBindVertexArray(state.mFrustumVAO);
 
@@ -549,21 +503,21 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
     }
 
     glBindVertexArray(0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    Graphics::unbindFramebuffer();
 
-    glDisable(GL_BLEND);
-
+    Graphics::turnOff(Capability::Blending);
     Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state)
 {
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, camera->getNativeGraphicsMainFBO());
-    glViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-               camera->getViewport().mHeight);
+    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+                          camera->getViewport().mHeight);
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
@@ -575,9 +529,8 @@ void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererS
     glDrawArrays(GL_LINES, 0, (GLsizei)(state.mGridVertices.size()));
     glBindVertexArray(0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    Graphics::unbindFramebuffer();
 
-    glDisable(GL_BLEND);
-
+    Graphics::turnOff(Capability::Blending);
     Graphics::checkError(__LINE__, __FILE__);
 }

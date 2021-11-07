@@ -1,9 +1,6 @@
 #include "../../include/graphics/ForwardRenderer.h"
 #include "../../include/core/World.h"
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 using namespace PhysicsEngine;
 
 ForwardRenderer::ForwardRenderer()
@@ -74,8 +71,8 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     Graphics::createGlobalCameraUniforms(state.mCameraState);
     Graphics::createGlobalLightUniforms(state.mLightState);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
+    Graphics::turnOn(Capability::Depth_Testing);
+    Graphics::turnOn(Capability::Blending);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBlendEquation(GL_FUNC_ADD);

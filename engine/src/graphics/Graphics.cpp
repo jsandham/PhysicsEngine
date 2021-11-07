@@ -93,6 +93,32 @@ void Graphics::checkFrambufferError(long line, const char *file)
     }
 }
 
+void Graphics::turnOn(Capability capability)
+{
+    switch(capability)
+    {
+    case Capability::Depth_Testing:
+        glEnable(GL_DEPTH_TEST);
+        break;
+    case Capability::Blending:
+        glEnable(GL_BLEND);
+        break;
+    }
+}
+
+void Graphics::turnOff(Capability capability)
+{
+    switch (capability)
+    {
+    case Capability::Depth_Testing:
+        glDisable(GL_DEPTH_TEST);
+        break;
+    case Capability::Blending:
+        glDisable(GL_BLEND);
+        break;
+    }
+}
+
 GLenum Graphics::getTextureFormat(TextureFormat format)
 {
     GLenum openglFormat = GL_DEPTH_COMPONENT;
@@ -1056,30 +1082,6 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Graphics::createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height)
 {
     // generate fbo (color + depth)
@@ -1742,7 +1744,7 @@ void Graphics::render(int start, int count, int vao, bool wireframe)
 
 void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
 {
-    GLsizei numVertices = renderObject.size / 3;
+    int numVertices = renderObject.size / 3;
 
     Graphics::render(renderObject.start / 3, numVertices, renderObject.vao);
 
@@ -2214,4 +2216,83 @@ void Graphics::compileGridShader(GizmoRendererState &state)
     {
         state.mGridShaderProgram = -1;
     }
+}
+
+void Graphics::createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int *vao,
+                          unsigned int *vbo0, unsigned int *vbo1)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(2, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glGenBuffers(1, vbo1);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(2, vbo0);
+    glDeleteBuffers(2, vbo1);
+}
+
+void Graphics::createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(1, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyGrid(unsigned int *vao, unsigned int *vbo0)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(1, vbo0);
+}
+
+void Graphics::createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
+                          unsigned int *vbo0, unsigned int *vbo1)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(2, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glGenBuffers(1, vbo1);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), &colors[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(1, vbo0);
+    glDeleteBuffers(1, vbo1);
 }
