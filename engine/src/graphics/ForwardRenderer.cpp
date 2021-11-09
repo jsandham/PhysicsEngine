@@ -11,10 +11,9 @@ ForwardRenderer::~ForwardRenderer()
 {
 }
 
-void ForwardRenderer::init(World *world, bool renderToScreen)
+void ForwardRenderer::init(World *world)
 {
     mWorld = world;
-    mState.mRenderToScreen = renderToScreen;
 
     initializeRenderer(mWorld, mState);
 }

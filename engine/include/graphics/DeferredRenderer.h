@@ -8,7 +8,6 @@
 #include "../components/Camera.h"
 #include "../core/Input.h"
 
-//#include "DeferredRendererState.h"
 #include "Graphics.h"
 #include "RenderObject.h"
 
@@ -27,8 +26,9 @@ class DeferredRenderer
     DeferredRenderer();
     ~DeferredRenderer();
 
-    void init(World *world, bool renderToScreen);
-    void update(const Input &input, Camera *camera, std::vector<RenderObject> &renderObjects);
+    void init(World *world);
+    void update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
+                const std::vector<RenderObject> &renderObjects);
 };
 
 void initializeDeferredRenderer(World *world, DeferredRendererState &state);
@@ -40,6 +40,10 @@ void geometryPass(World *world, Camera *camera, DeferredRendererState &state,
 
 void lightingPass(World *world, Camera *camera, DeferredRendererState &state,
                   const std::vector<RenderObject> &renderObjects);
+
+void renderColorPickingDeferred(World *world, Camera *camera, DeferredRendererState &state,
+                                const std::vector<std::pair<uint64_t, int>> &renderQueue,
+                                const std::vector<RenderObject> &renderObjects);
 
 void endDeferredFrame(World *world, Camera *camera, DeferredRendererState &state);
 } // namespace PhysicsEngine

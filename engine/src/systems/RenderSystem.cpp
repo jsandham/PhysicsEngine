@@ -22,12 +22,10 @@ using namespace PhysicsEngine;
 
 RenderSystem::RenderSystem(World* world) : System(world)
 {
-    mRenderToScreen = true;
 }
 
 RenderSystem::RenderSystem(World* world, Guid id) : System(world, id)
 {
-    mRenderToScreen = true;
 }
 
 RenderSystem::~RenderSystem()
@@ -58,8 +56,8 @@ void RenderSystem::init(World *world)
 {
     mWorld = world;
 
-    mForwardRenderer.init(mWorld, mRenderToScreen);
-    mDeferredRenderer.init(mWorld, mRenderToScreen);
+    mForwardRenderer.init(mWorld);
+    mDeferredRenderer.init(mWorld);
 }
 
 void RenderSystem::update(const Input &input, const Time &time)
@@ -88,7 +86,7 @@ void RenderSystem::update(const Input &input, const Time &time)
             }
             else
             {
-                mDeferredRenderer.update(input, camera, mRenderObjects);
+                mDeferredRenderer.update(input, camera, mRenderQueue, mRenderObjects);
             }
         }
     }

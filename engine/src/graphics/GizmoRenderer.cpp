@@ -201,7 +201,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    glBindVertexArray(mesh->getNativeGraphicsVAO());
+    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
 
     Graphics::use(state.mGizmoShaderProgram);
 
@@ -221,7 +221,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
     }
 
-    glBindVertexArray(0);
+    Graphics::unbindVertexArray();
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);
@@ -248,7 +248,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
  
-    glBindVertexArray(mesh->getNativeGraphicsVAO());
+    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
 
     Graphics::use(state.mGizmoShaderProgram);
 
@@ -267,8 +267,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
     }
 
-    glBindVertexArray(0);
-   
+    Graphics::unbindVertexArray();   
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);
@@ -295,7 +294,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    glBindVertexArray(mesh->getNativeGraphicsVAO());
+    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
 
     Graphics::use(state.mGizmoShaderProgram);
 
@@ -320,8 +319,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
     }
 
-    glBindVertexArray(0);
-    
+    Graphics::unbindVertexArray();    
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);
@@ -488,7 +486,7 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    glBindVertexArray(state.mFrustumVAO);
+    Graphics::bindVertexArray(state.mFrustumVAO);
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
@@ -502,8 +500,7 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
         }
     }
 
-    glBindVertexArray(0);
-    
+    Graphics::unbindVertexArray();
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);

@@ -376,6 +376,16 @@ void Graphics::clearFramebufferDepth(float depth)
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
+void Graphics::bindVertexArray(unsigned int vao)
+{
+    glBindVertexArray(vao);
+}
+
+void Graphics::unbindVertexArray()
+{
+    glBindVertexArray(0);
+}
+
 void Graphics::setViewport(int x, int y, int width, int height)
 {
     glViewport(x, y, width, height);
@@ -470,6 +480,19 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
 
     unsigned int geometryAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, geometryAttachments);
+
+
+
+
+    // create and attach depth buffer (renderbuffer)
+    unsigned int rboDepth;
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+
+
 
     Graphics::checkFrambufferError(__LINE__, __FILE__);
 
@@ -1149,18 +1172,6 @@ void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
     glDeleteTextures(1, &(targets->mDepthTex));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
 {
@@ -1795,6 +1806,8 @@ void Graphics::compileSSAOShader(ForwardRendererState &state)
     {
         state.mGeometryShaderProgram = program;
         state.mGeometryShaderModelLoc = Graphics::findUniformLocation("model", state.mGeometryShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mGeometryShaderProgram);
     }
     else
     {
@@ -2014,6 +2027,8 @@ void Graphics::compileColorShader(ForwardRendererState &state)
         state.mColorShaderProgram = program;
         state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
         state.mColorShaderColorLoc = Graphics::findUniformLocation("material.color", state.mColorShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorShaderProgram);
     }
     else
     {
@@ -2092,6 +2107,147 @@ void Graphics::compileSpriteShader(ForwardRendererState &state)
     else
     {
         state.mSpriteShaderProgram = -1;
+    }
+}
+
+void Graphics::compileGBufferShader(DeferredRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec3 aPos;\n"
+                               "layout(location = 1) in vec3 aNormal;\n"
+                               "layout(location = 2) in vec2 aTexCoords;\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "out vec3 FragPos;\n"
+                               "out vec2 TexCoords;\n"
+                               "out vec3 Normal;\n"
+                               "uniform mat4 model;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+                               "    FragPos = worldPos.xyz;\n"
+                               "    TexCoords = aTexCoords;\n"
+                               "    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+                               "    Normal = normalMatrix * aNormal;\n"
+                               "    gl_Position = Camera.projection * Camera.view * worldPos;\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "layout(location = 0) out vec3 gPosition;\n"
+                                 "layout(location = 1) out vec3 gNormal;\n"
+                                 "layout(location = 2) out vec4 gAlbedoSpec;\n"
+                                 "in vec2 TexCoords;\n"
+                                 "in vec3 FragPos;\n"
+                                 "in vec3 Normal;\n"
+                                 "uniform sampler2D texture_diffuse1;\n"
+                                 "uniform sampler2D texture_specular1;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  // store the fragment position vector in the first gbuffer texture\n"
+                                 "  gPosition = FragPos;\n"
+                                 "  // also store the per-fragment normals into the gbuffer\n"
+                                 "  gNormal = normalize(Normal);\n"
+                                 "  // and the diffuse per-fragment color\n"
+                                 "  gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;\n"
+                                 "  // store specular intensity in gAlbedoSpec's alpha component\n"
+                                 "  gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("GBuffer", vertexShader, fragmentShader, "", &program))
+    {
+        state.mGBufferShaderProgram = program;
+        state.mGBufferShaderModelLoc = Graphics::findUniformLocation("model", state.mGBufferShaderProgram);
+        state.mGBufferShaderDiffuseTexLoc = Graphics::findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
+        state.mGBufferShaderSpecTexLoc = Graphics::findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mGBufferShaderProgram);
+    }
+    else
+    {
+        state.mGBufferShaderProgram = -1;
+    }
+}
+
+void Graphics::compileScreenQuadShader(DeferredRendererState &state)
+{
+    std::string vertexShader = "#version 330 core\n"
+                               "layout(location = 0) in vec2 aPos;\n"
+                               "layout(location = 1) in vec2 aTexCoords;\n"
+                               "out vec2 TexCoords;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    TexCoords = aTexCoords;\n"
+                               "    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 330 core\n"
+                                 "out vec4 FragColor;\n"
+                                 "in vec2 TexCoords;\n"
+                                 "uniform sampler2D screenTexture;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  vec3 col = texture(screenTexture, TexCoords).rgb;\n"
+                                 "  FragColor = vec4(col, 1.0);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Screen Quad", vertexShader, fragmentShader, "", &program))
+    {
+        state.mQuadShaderProgram = program;
+        state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
+    }
+    else
+    {
+        state.mQuadShaderProgram = -1;
+    }
+}
+
+void Graphics::compileColorShader(DeferredRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "uniform mat4 model;\n"
+                               "in vec3 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "struct Material\n"
+                                 "{\n"
+                                 "    uvec4 color;\n"
+                                 "};\n"
+                                 "uniform Material material;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "    FragColor = vec4(material.color.r / 255.0f, material.color.g / 255.0f,\n"
+                                 "                      material.color.b / 255.0f, material.color.a / 255.0f);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Color", vertexShader, fragmentShader, "", &program))
+    {
+        state.mColorShaderProgram = program;
+        state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
+        state.mColorShaderColorLoc = Graphics::findUniformLocation("material.color", state.mColorShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorShaderProgram);
+    }
+    else
+    {
+        state.mColorShaderProgram = -1;
     }
 }
 
@@ -2211,6 +2367,8 @@ void Graphics::compileGridShader(GizmoRendererState &state)
         state.mGridShaderProgram = program;
         state.mGridShaderMVPLoc = Graphics::findUniformLocation("mvp", state.mGridShaderProgram);
         state.mGridShaderColorLoc = Graphics::findUniformLocation("color", state.mGridShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mGridShaderProgram);
     }
     else
     {

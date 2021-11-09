@@ -26,7 +26,7 @@ class ForwardRenderer
     ForwardRenderer();
     ~ForwardRenderer();
 
-    void init(World *world, bool renderToScreen);
+    void init(World *world);
     void update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
                 const std::vector<RenderObject> &renderObjects, const std::vector<SpriteObject> &spriteObjects);
 };

@@ -70,7 +70,7 @@ struct LightUniform
     float mInnerSpotAngle;         // 776
     float mShadowNearPlane;        // 780
     float mShadowFarPlane;         // 784
-    float mShadowBias;            // 788
+    float mShadowBias;             // 788
     float mShadowRadius;           // 792
     float mShadowStrength;         // 796
 
@@ -84,8 +84,6 @@ struct ForwardRendererState
 
     // internal graphics light state
     LightUniform mLightState;
-
-    bool mRenderToScreen;
 
     // directional light cascade shadow map data
     float mCascadeEnds[6];
@@ -118,6 +116,7 @@ struct ForwardRendererState
     int mGeometryShaderProgram;
     int mGeometryShaderModelLoc;
 
+    // color picking
     int mColorShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
@@ -150,20 +149,25 @@ struct DeferredRendererState
     // internal graphics camera state
     CameraUniform mCameraState;
 
-    bool mRenderToScreen;
-
-    int mGeometryShaderProgram;
-    int mGeometryShaderModelLoc;
-    int mGeometryShaderDiffuseTexLoc;
-    int mGeometryShaderSpecTexLoc;
+    int mGBufferShaderProgram;
+    int mGBufferShaderModelLoc;
+    int mGBufferShaderDiffuseTexLoc;
+    int mGBufferShaderSpecTexLoc;
 
     int mSimpleLitDeferredShaderProgram;
     int mSimpleLitDeferredShaderViewPosLoc;
     int mSimpleLitDeferredShaderLightLocs[32];
 
+    // color picking
+    int mColorShaderProgram;
+    int mColorShaderModelLoc;
+    int mColorShaderColorLoc;
+
     // quad
-    GLuint mQuadVAO;
-    GLuint mQuadVBO;
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
+    int mQuadShaderProgram;
+    int mQuadShaderTexLoc;
 };
 
 struct GizmoRendererState
@@ -219,6 +223,8 @@ class Graphics
     static void clearFrambufferColor(const Color &color);
     static void clearFrambufferColor(float r, float g, float b, float a);
     static void clearFramebufferDepth(float depth);
+    static void bindVertexArray(unsigned int vao);
+    static void unbindVertexArray();
     static void setViewport(int x, int y, int width, int height);
     static void createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
                               unsigned int *queryId1);
@@ -298,7 +304,6 @@ class Graphics
     static void render(int start, int count, int vao, bool wireframe = false);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
 
-
     static void compileSSAOShader(ForwardRendererState &state);
     static void compileShadowDepthMapShader(ForwardRendererState &state);
     static void compileShadowDepthCubemapShader(ForwardRendererState &state);
@@ -306,11 +311,13 @@ class Graphics
     static void compileScreenQuadShader(ForwardRendererState &state);
     static void compileSpriteShader(ForwardRendererState &state);
 
+    static void compileGBufferShader(DeferredRendererState &state);
+    static void compileScreenQuadShader(DeferredRendererState &state);
+    static void compileColorShader(DeferredRendererState &state);
+
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
     static void compileGridShader(GizmoRendererState &state);
-
-
 
     static void createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals,
                            unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);

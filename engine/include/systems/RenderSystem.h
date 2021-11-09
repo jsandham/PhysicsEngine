@@ -27,9 +27,6 @@ class RenderSystem : public System
     std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
   public:
-    bool mRenderToScreen;
-
-  public:
     RenderSystem(World* world);
     RenderSystem(World* world, Guid id);
     ~RenderSystem();

@@ -31,8 +31,6 @@ Clipboard::Clipboard()
     // add simple editor render system to render gizmo's
     mCleanUpSystem = mWorld.addSystem<PhysicsEngine::CleanUpSystem>(3);
 
-    mRenderSystem->mRenderToScreen = false;
-
     mCameraSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mRenderSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mGizmoSystem->mHide = PhysicsEngine::HideFlag::DontSave;
