@@ -59,7 +59,14 @@ for /r "%MODE%/obj" %%v in (*.obj) do (
 
 :: create static engine library
 echo [92mCreating static engine library...[0m
-lib /out:%MODE%/engine.lib %OBJ_FILES%
+lib /nologo /out:%MODE%/engine.lib %OBJ_FILES%
+
+:: delete .obj fles
+::echo [92mDeleting objects...[0m
+::set OBJ_FILES=
+::for /r "%MODE%/obj" %%v in (*.obj) do (
+::	del /s %%v
+::)
 
 goto :eof
 :concat_obj

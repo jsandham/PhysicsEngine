@@ -44,11 +44,18 @@ for /r "%MODE%/obj" %%v in (*.obj) do (
 :: create static yaml-cpp library
 echo [92mCreating static yaml-cpp library...[0m
 if %MODE%==debug (
-	lib /out:%MODE%/yaml-cppd.lib %OBJ_FILES%
+	lib /nologo /out:%MODE%/yaml-cppd.lib %OBJ_FILES%
 )
 if %MODE%==release (
-	lib /out:%MODE%/yaml-cpp.lib %OBJ_FILES%
+	lib /nologo /out:%MODE%/yaml-cpp.lib %OBJ_FILES%
 )
+
+:: delete .obj fles
+::echo [92mDeleting objects...[0m
+::set OBJ_FILES=
+::for /r "%MODE%/obj" %%v in (*.obj) do (
+::	del /s %%v
+::)
 
 goto :eof
 :concat_obj

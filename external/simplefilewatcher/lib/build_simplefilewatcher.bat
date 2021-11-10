@@ -1,9 +1,5 @@
 @echo off
 
-if not defined DevEnvDir (
-	call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-)
-
 set INCL="../include"
 set WARN=-W4
 set OPT=/Od
@@ -45,19 +41,18 @@ echo [92mCompiled objects...[0m
 set OBJ_FILES=
 for /r "%MODE%/obj" %%v in (*.obj) do (
 	call :concat_obj %%v
-	echo %%v
 )
 
 :: create static simplefilewatcher library
 echo [92mCreating static simplefilewatcher library...[0m
-lib /out:%MODE%/simplefilewatcher.lib %OBJ_FILES%
+lib /nologo /out:%MODE%/simplefilewatcher.lib %OBJ_FILES%
 
 :: delete .obj fles
-echo [92mDeleting objects...[0m
-set OBJ_FILES=
-for /r "%MODE%/obj" %%v in (*.obj) do (
-	del /s %%v
-)
+::echo [92mDeleting objects...[0m
+::set OBJ_FILES=
+::for /r "%MODE%/obj" %%v in (*.obj) do (
+::	del /s %%v
+::)
 
 goto :eof
 :concat_obj
