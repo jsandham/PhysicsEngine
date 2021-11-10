@@ -7,7 +7,6 @@ set GLM="../../external/glm"
 set TINY_OBJ="../../external/tinyobjloader"
 set STB="../../external/stb"
 set WARN=-W4 -wd4100 -wd4996 -wd4211 -wd4201
-::set WARN=-W4 -Wno-pessimizing-move -Wno-unused-parameter
 set OPENMP=
 set OPT=/Od
 set MODEFLAGS=/FS /MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
