@@ -145,7 +145,7 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     Graphics::setViewport(0, 0, 1000, 1000);
     Graphics::clearFrambufferColor(Color(0.0f, 0.0, 0.0, 1.0f));
     Graphics::clearFramebufferDepth(1.0f);
-    Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+    Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
     Graphics::unbindFramebuffer();
 
     ImGuiWindowFlags window_flags =

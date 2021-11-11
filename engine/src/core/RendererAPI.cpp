@@ -31,7 +31,7 @@ RendererAPI* RendererAPI::createRendererAPI()
 #elif PHYSICSENGINE_RENDERER_API_DIRECTX
 	return new RendererAPI_win32_directx();
 #endif
-#endif
-
+#elif
 	return nullptr;
+#endif
 }

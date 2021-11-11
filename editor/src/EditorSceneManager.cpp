@@ -35,12 +35,8 @@ void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name
 
     // mark any (non-editor) entities in currently opened scene to be latent destroyed
     
-    size_t lightCountBefore = clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Light>();
-    
     //clipboard.getWorld()->latentDestroyEntitiesInWorld();
     clipboard.getWorld()->immediateDestroyEntitiesInWorld();
-
-    size_t lightCountAfter = clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Light>();
 
     // reset editor camera to default position
     clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();

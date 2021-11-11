@@ -8,10 +8,10 @@ namespace PhysicsEditor
 class PerformanceQueue
 {
   private:
-    int numberOfSamples;
-    int index;
-    std::vector<float> queue;
-    std::vector<float> data;
+    int mNumberOfSamples;
+    int mIndex;
+    std::vector<float> mQueue;
+    std::vector<float> mData;
 
   public:
     PerformanceQueue();

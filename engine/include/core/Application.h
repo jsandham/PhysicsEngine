@@ -23,7 +23,7 @@ namespace PhysicsEngine
 		bool mMinimized;
 
 	public:
-		Application(const std::string& name = "App");
+		Application(const std::string& name = "App", int width = 1920, int height = 1080);
 		Application(const Application& other) = delete;
 		Application& operator=(const Application& other) = delete;
 		virtual ~Application();

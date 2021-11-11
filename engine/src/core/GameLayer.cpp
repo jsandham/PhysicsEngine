@@ -6,7 +6,6 @@
 #include <stack>
 
 using namespace PhysicsEngine;
-namespace fs = std::filesystem;
 
 GameLayer::GameLayer() : Layer("Game Layer")
 {
@@ -18,8 +17,8 @@ GameLayer::~GameLayer()
 
 void GameLayer::init()
 {
-    fs::path cwd = fs::current_path();
-    fs::path dataPath[2] = { cwd / "data", cwd / "game_data"};
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path dataPath[2] = {cwd / "data", cwd / "game_data"};
 
     for (int i = 0; i < 2; i++)
     {
@@ -34,14 +33,14 @@ void GameLayer::init()
     std::cout << "material count: " << mWorld.getNumberOfAssets<Material>() << std::endl;
     std::cout << "texture count: " << mWorld.getNumberOfAssets<Texture2D>() << std::endl;
 
-    fs::path scenePath = cwd / "game_data\\scenes\\simple.scene";
+    std::filesystem::path scenePath = cwd / "game_data\\scenes\\simple.scene";
     std::cout << "scenePath: " << scenePath.string() << std::endl;
 
     mWorld.loadSceneFromYAML(scenePath.string());
 
     FreeLookCameraSystem* cameraSystem = mWorld.addSystem<FreeLookCameraSystem>(0);
-    RenderSystem* renderSystem = mWorld.addSystem<RenderSystem>(1);
-    CleanUpSystem* cleanupSystem = mWorld.addSystem<CleanUpSystem>(2);
+    mWorld.addSystem<RenderSystem>(1);
+    mWorld.addSystem<CleanUpSystem>(2);
 
     std::cout << "camerasystem count: " << mWorld.getNumberOfSystems<FreeLookCameraSystem>() << std::endl;
     std::cout << "rendersystem count: " << mWorld.getNumberOfSystems<RenderSystem>() << std::endl;

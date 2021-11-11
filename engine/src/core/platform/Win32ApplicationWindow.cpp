@@ -2,10 +2,13 @@
 #include "../../../include/core/Input.h"
 
 #include <tchar.h>
+#include <algorithm>
 
 using namespace PhysicsEngine;
 
-static bool mIsMinimized = false;
+static bool sIsMinimized = false;
+static int sWidth = 1920;
+static int sHeight = 1080;
 
 KeyCode getKeyCode(WPARAM wParam, LPARAM lParam)
 {
@@ -183,6 +186,8 @@ extern LRESULT Application_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LP
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    Input &input = getInput();
+
     // Update input (but do not consume messages to allow application to also see and use them)
     switch (msg)
     {
@@ -196,7 +201,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) { button = MouseButton::RButton; }
         if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { button = MouseButton::MButton; }
         if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) { button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button; }
-        getInput().mMouseButtonIsDown[static_cast<int>(button)] = 1;
+        input.mMouseButtonIsDown[static_cast<int>(button)] = 1;
 
         break;
     }
@@ -210,36 +215,46 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if (msg == WM_RBUTTONUP) { button = MouseButton::RButton; }
         if (msg == WM_MBUTTONUP) { button = MouseButton::MButton; }
         if (msg == WM_XBUTTONUP) { button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button; }
-        getInput().mMouseButtonIsDown[static_cast<int>(button)] = 0;
+        input.mMouseButtonIsDown[static_cast<int>(button)] = 0;
         break;
     }
     case WM_MOUSEWHEEL:
-        getInput().mMouseDelta += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
+        input.mMouseDelta += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
         break;
     case WM_MOUSEHWHEEL:
-        getInput().mMouseDeltaH += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
+        input.mMouseDeltaH += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
         break;
     case WM_MOUSEMOVE:
         POINT point;
         if (GetCursorPos(&point))
         {
             // Top left hand corner is (0, 0) on windows
-            getInput().mMousePosX = point.x;
-            getInput().mMousePosY = point.y;
+            POINT tl;
+            tl.x = 0;
+            tl.y = 0;
+            ClientToScreen(hWnd, &tl);
+            POINT br;
+            br.x = sWidth;
+            br.y = sHeight;
+            ClientToScreen(hWnd, &br);
+
+            // Mouse position stored with (0, 0) at bottom left and (width, height) at top right
+            input.mMousePosX = std::min(std::max(point.x - tl.x, (LONG)0), (LONG)sWidth);
+            input.mMousePosY = sHeight - std::min(std::max(point.y - tl.y, (LONG)0), (LONG)sHeight);
         }
         break;
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
         if (wParam < 256) 
         {
-            getInput().mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 1;
+            input.mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 1;
         }
         break;
     case WM_KEYUP:
     case WM_SYSKEYUP:
         if (wParam < 256) 
         {
-            getInput().mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 0;
+            input.mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 0;
         }
         break;
     //case WM_CHAR:
@@ -258,24 +273,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     // Window resize and quit messages
     switch (msg)
     {
-    //case WM_PAINT:
-    //    {
-    //        PAINTSTRUCT ps;
-    //        HDC hdc = BeginPaint(hWnd, &ps);
-    //        // All painting occurs here, between BeginPaint and EndPaint.
-    //        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-    //        EndPaint(hWnd, &ps);
-    //        return 0;
-    //    }
+    case WM_SIZING: 
+        {
+        RECT rect;
+        if (GetClientRect(hWnd, &rect))
+        {
+            sWidth = rect.right - rect.left;
+            sHeight = rect.bottom - rect.top;
+        }
+        return true;
+        }
     case WM_SIZE:
+        RECT rect;
+        if (GetClientRect(hWnd, &rect))
+        {
+            sWidth = rect.right - rect.left;
+            sHeight = rect.bottom - rect.top;
+        }
         if (wParam == SIZE_MINIMIZED)
         {
-            mIsMinimized = true;
+            sIsMinimized = true;
             return 0;
         }
         else if (wParam == SIZE_MAXIMIZED)
         {
-            mIsMinimized = false;
+            sIsMinimized = false;
             return 0;
         }
         break;
@@ -311,18 +333,19 @@ Win32ApplicationWindow::~Win32ApplicationWindow()
 
 void Win32ApplicationWindow::update()
 {
+    Input &input = getInput();
     for (int i = 0; i < static_cast<int>(KeyCode::Count); i++)
     {
-        getInput().mKeyWasDown[i] = getInput().mKeyIsDown[i];
+        input.mKeyWasDown[i] = input.mKeyIsDown[i];
     }
 
     for (int i = 0; i < static_cast<int>(MouseButton::Count); i++)
     {
-        getInput().mMouseButtonWasDown[i] = getInput().mMouseButtonIsDown[i];
+        input.mMouseButtonWasDown[i] = input.mMouseButtonIsDown[i];
     }
 
-    getInput().mMouseDelta = 0.0f;
-    getInput().mMouseDeltaH = 0.0f;
+    input.mMouseDelta = 0.0f;
+    input.mMouseDeltaH = 0.0f;
 
     // Poll and handle messages (inputs, window resize, etc.)
     MSG message;
@@ -342,12 +365,12 @@ void Win32ApplicationWindow::update()
 
 int Win32ApplicationWindow::getWidth() const
 {
-	return mWidth;
+    return sWidth;
 }
 
 int Win32ApplicationWindow::getHeight() const
 {
-	return mHeight;
+    return sHeight;
 }
 
 void* Win32ApplicationWindow::getNativeWindow() const
@@ -362,14 +385,14 @@ bool Win32ApplicationWindow::isRunning() const
 
 bool Win32ApplicationWindow::isMinimized() const
 {
-    return mIsMinimized;
+    return sIsMinimized;
 }
 
 void Win32ApplicationWindow::init(const std::string& title, int width, int height)
 {
     mTitle = title;
-    mWidth = width;
-    mHeight = height;
+    sWidth = width;
+    sHeight = height;
 
     mRunning = true;
 
@@ -382,7 +405,7 @@ void Win32ApplicationWindow::init(const std::string& title, int width, int heigh
     if (!RegisterClass(&mWC))
         return;
     mWindow = CreateWindowEx(0, mWC.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
-        CW_USEDEFAULT, mWidth, mHeight, 0, 0, mWC.hInstance, 0);
+        CW_USEDEFAULT, sWidth, sHeight, 0, 0, mWC.hInstance, 0);
 
     // Show the window
     ShowWindow(mWindow, SW_SHOWDEFAULT);

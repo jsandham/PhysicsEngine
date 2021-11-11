@@ -13,42 +13,42 @@ PerformanceQueue::~PerformanceQueue()
 
 void PerformanceQueue::setNumberOfSamples(int numberOfSamples)
 {
-    this->numberOfSamples = numberOfSamples;
-    index = 0;
-    queue.resize(numberOfSamples, 0.0f);
-    data.resize(numberOfSamples, 0.0f);
+    mNumberOfSamples = numberOfSamples;
+    mIndex = 0;
+    mQueue.resize(numberOfSamples, 0.0f);
+    mData.resize(numberOfSamples, 0.0f);
 }
 
 void PerformanceQueue::addSample(float value)
 {
-    queue[index] = value;
-    index = (index + 1) % numberOfSamples;
+    mQueue[mIndex] = value;
+    mIndex = (mIndex + 1) % mNumberOfSamples;
 }
 
 void PerformanceQueue::clear()
 {
-    index = 0;
-    for (size_t i = 0; i < queue.size(); i++)
+    mIndex = 0;
+    for (size_t i = 0; i < mQueue.size(); i++)
     {
-        queue[i] = 0.0f;
-        data[i] = 0.0f;
+        mQueue[i] = 0.0f;
+        mData[i] = 0.0f;
     }
 }
 
 std::vector<float> PerformanceQueue::getData()
 {
     int j = 0;
-    for (size_t i = index; i < queue.size(); i++)
+    for (size_t i = mIndex; i < mQueue.size(); i++)
     {
-        data[j] = queue[i];
+        mData[j] = mQueue[i];
         j++;
     }
 
-    for (size_t i = 0; i < index; i++)
+    for (size_t i = 0; i < mIndex; i++)
     {
-        data[j] = queue[i];
+        mData[j] = mQueue[i];
         j++;
     }
 
-    return data;
+    return mData;
 }

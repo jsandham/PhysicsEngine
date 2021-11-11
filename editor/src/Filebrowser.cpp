@@ -69,8 +69,6 @@ void Filebrowser::render(const std::filesystem::path& cwd, bool becomeVisibleThi
 
     if (ImGui::BeginPopupModal("Filebrowser", nullptr, ImGuiWindowFlags_NoResize))
     {
-        float windowWidth = ImGui::GetWindowWidth();
-
         ImGui::Text(mCurrentDirectoryPath.string().c_str());
         ImGui::Text(mOpenFile.string().c_str());
         ImGui::Text(mSaveFile.string().c_str());
@@ -409,7 +407,7 @@ void Filebrowser::renderSelectFolderMode()
 
     float folderTitleWidth = 120.0f;
     float inputTextWidth = windowWidth - folderTitleWidth - 10.0f;
-    float saveAsTypeDropDownWidth = windowWidth - folderTitleWidth - 10.0f;
+    //float saveAsTypeDropDownWidth = windowWidth - folderTitleWidth - 10.0f;
 
     ImGui::SetNextItemWidth(folderTitleWidth);
     ImGui::Text("Folder");

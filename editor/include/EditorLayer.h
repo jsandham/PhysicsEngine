@@ -16,7 +16,7 @@
 
 namespace PhysicsEditor
 {
-    class Editor : public PhysicsEngine::Layer
+    class EditorLayer : public PhysicsEngine::Layer
     {
     private:
         Clipboard mClipboard;
@@ -30,10 +30,10 @@ namespace PhysicsEditor
         DebugOverlay mDebugOverlay;
 
     public:
-        Editor();
-        ~Editor();
-        Editor(const Editor& other) = delete;
-        Editor& operator=(const Editor& other) = delete;
+        EditorLayer();
+        ~EditorLayer();
+        EditorLayer(const EditorLayer& other) = delete;
+        EditorLayer& operator=(const EditorLayer& other) = delete;
 
         void init() override;
         void begin() override;

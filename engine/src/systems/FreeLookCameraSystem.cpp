@@ -267,8 +267,8 @@ glm::vec2 FreeLookCameraSystem::distanceTraveledSinceRightMouseClick() const
 
 Guid FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
-    int x = mCamera->getViewport().mX + mCamera->getViewport().mWidth * nx;
-    int y = mCamera->getViewport().mY + mCamera->getViewport().mHeight * ny;
+    int x = (int)(mCamera->getViewport().mX + mCamera->getViewport().mWidth * nx);
+    int y = (int)(mCamera->getViewport().mY + mCamera->getViewport().mHeight * ny);
 
     return mCamera->getTransformIdAtScreenPos(x, y);
 }

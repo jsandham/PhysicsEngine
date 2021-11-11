@@ -49,7 +49,7 @@ class Font : public Asset
 
     void load(std::string filepath);
 
-    Character getCharacter(char c) const;
+    //Character getCharacter(char c) const;
 };
 
 template <> struct AssetType<Font>

@@ -1,7 +1,7 @@
 #include <core/Application.h>
 #define PHYSICSENGINE_PLATFORM_WINDOWS 1
 #include <core/EntryPoint.h>
-#include "include/Editor.h"
+#include "include/EditorLayer.h"
 #include "include/ImGuiLayer.h"
 
 namespace PhysicsEditor
@@ -10,13 +10,13 @@ namespace PhysicsEditor
 	{
 	private:
 		ImGuiLayer mImguiLayer;
-		Editor mEditor;
+		EditorLayer mEditorLayer;
 
 	public:
-		EditorApplication() : Application("PhysicsEditor")
+		EditorApplication() : Application("PhysicsEditor", 1536, 864)
 		{
 			pushLayer(&mImguiLayer);
-			pushLayer(&mEditor);
+			pushLayer(&mEditorLayer);
 		}
 
 		~EditorApplication()

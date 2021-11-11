@@ -1,8 +1,7 @@
 #ifndef WIN32_APPLICATION_WINDOW_H__
 #define WIN32_APPLICATION_WINDOW_H__
 
-#pragma warning(disable : 4996)
-#define _CRTDBG_MAP_ALLOC
+#define NOMINMAX
 
 #include <windows.h>
 
@@ -18,8 +17,6 @@ namespace PhysicsEngine
 		HWND mWindow;
 
 		std::string mTitle;
-		int mWidth;
-		int mHeight;
 
 		RendererAPI* mRendererAPI;
 

@@ -3,7 +3,7 @@
 set GLEW="../include/glew-2.1.0"
 set IMGUI="../../imgui/include"
 set ROOT_INCLUDE="../include"
-set WARN=-W4 
+set WARN=-W4 -wd4389 -wd4505
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
 set MODE=debug

@@ -142,7 +142,7 @@ void ProjectNode::removeDirectory(const std::string& name)
         if (mChildren[i]->getDirectoryPath().filename().string() == name)
         {
             nodeToDelete = mChildren[i];
-            index = i;
+            index = (int)i;
         }
     }
 

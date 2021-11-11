@@ -21,7 +21,7 @@ ApplicationWindow* ApplicationWindow::createApplicationWindow(const std::string&
 {
 #ifdef PHYSICSENGINE_PLATFORM_WIN32
 	return new Win32ApplicationWindow(title, width, height);
-#endif
-
+#elif
 	return nullptr;
+#endif
 }

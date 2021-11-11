@@ -133,18 +133,18 @@ void MeshDrawer::render(Clipboard &clipboard, Guid id)
 
     Graphics::bindFramebuffer(mFBO);
     Graphics::setViewport(0, 0, 1000, 1000);
-    Graphics::clearFrambufferColor(Color(0.15f, 0.15, 0.15, 1.0f));
+    Graphics::clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
     Graphics::clearFramebufferDepth(1.0f);
 
     shader->setInt("wireframe", 1);
 
-    Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+    Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
 
     if (mWireframeOn)
     {
         shader->setInt("wireframe", 0);
 
-        Graphics::render(0, mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
+        Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
     }
 
     Graphics::unbindFramebuffer();

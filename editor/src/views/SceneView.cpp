@@ -70,8 +70,8 @@ void SceneView::update(Clipboard &clipboard)
     Viewport viewport;
     viewport.mX = 0;
     viewport.mY = 0;
-    viewport.mWidth = size.x;
-    viewport.mHeight = size.y;
+    viewport.mWidth = (int)size.x;
+    viewport.mHeight = (int)size.y;
 
     ImGuiIO& io = ImGui::GetIO();
     float sceneContentWidth = (mSceneContentMax.x - mSceneContentMin.x);

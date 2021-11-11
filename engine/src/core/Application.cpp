@@ -1,12 +1,15 @@
 #include "../../include/core/Application.h"
+#include "../../include/core/Log.h"
+#include "../../include/core/Input.h"
 
 #include<assert.h>
+#include <iostream>
 
 using namespace PhysicsEngine;
 
 Application* Application::mInstance = nullptr;
 
-Application::Application(const std::string& name)
+Application::Application(const std::string& name, int width, int height)
 {
 	assert(mInstance == nullptr);
 	mInstance = this;
@@ -20,7 +23,7 @@ Application::Application(const std::string& name)
 	mTime.mDeltaTime = 0;
 	mTime.mFrameCount = 0;
 
-	mWindow = ApplicationWindow::createApplicationWindow(name, 1920, 1080);
+	mWindow = ApplicationWindow::createApplicationWindow(name, width, height);
 }
 
 Application::~Application()

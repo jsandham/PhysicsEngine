@@ -24,8 +24,6 @@ void ProjectWindow::init(Clipboard &clipboard)
 
 void ProjectWindow::update(Clipboard &clipboard)
 {
-    float windowWidth = ImGui::GetWindowWidth();
-
     if (mMode == ProjectWindowMode::NewProject)
     {
         renderNewMode(clipboard);

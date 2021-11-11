@@ -420,8 +420,8 @@ void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererS
 {
     Graphics::use(state.mSpriteShaderProgram);
 
-    float width = static_cast<float>(camera->getViewport().mWidth);
-    float height = static_cast<float>(camera->getViewport().mHeight);
+    //float width = static_cast<float>(camera->getViewport().mWidth);
+    //float height = static_cast<float>(camera->getViewport().mHeight);
 
     // glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     glm::mat4 projection = camera->getProjMatrix();
@@ -472,10 +472,10 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
     uint32_t color = 1;
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        unsigned char r = 255 - ((color & 0x000000FF) >> 0);
-        unsigned char g = 255 - ((color & 0x0000FF00) >> 8);
-        unsigned char b = 255 - ((color & 0x00FF0000) >> 16);
-        unsigned char a = 255;
+        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+        unsigned char a = static_cast<unsigned char>(255);
 
         camera->assignColoring(Color32(r, g, b, a), renderObjects[renderQueue[i].second].transformId);
 
@@ -491,10 +491,10 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
     color = 1;
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        unsigned char r = 255 - ((color & 0x000000FF) >> 0);
-        unsigned char g = 255 - ((color & 0x0000FF00) >> 8);
-        unsigned char b = 255 - ((color & 0x00FF0000) >> 16);
-        unsigned char a = 255;
+        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+        unsigned char a = static_cast<unsigned char>(255);
 
         color++;
 

@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <stack>
 
-#include "../include/Editor.h"
+#include "../include/EditorLayer.h"
 
 #include "imgui.h"
 
@@ -10,15 +10,15 @@
 using namespace PhysicsEditor;
 namespace fs = std::filesystem;
 
-Editor::Editor() : Layer("Editor")
+EditorLayer::EditorLayer() : Layer("Editor")
 {
 }
 
-Editor::~Editor()
+EditorLayer::~EditorLayer()
 {
 }
 
-void Editor::init()
+void EditorLayer::init()
 {
     fs::path cwd = fs::current_path();
     fs::path dataPath = cwd / "data";
@@ -34,7 +34,7 @@ void Editor::init()
     mDebugOverlay.init(mClipboard);
 }
 
-void Editor::update(const PhysicsEngine::Time& time)
+void EditorLayer::update(const PhysicsEngine::Time& time)
 {
     mClipboard.getLibrary().update(mClipboard.getWorld());
 
@@ -119,12 +119,12 @@ void Editor::update(const PhysicsEngine::Time& time)
     mClipboard.mTime = time;
 }
 
-void Editor::begin()
+void EditorLayer::begin()
 {
 
 }
 
-void Editor::end()
+void EditorLayer::end()
 {
 
 }

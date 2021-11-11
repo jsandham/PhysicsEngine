@@ -1,7 +1,7 @@
 @echo off
 
 set INCL="../include"
-set WARN=-W4
+set WARN=-W4 -wd4701
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
 set MODE=debug

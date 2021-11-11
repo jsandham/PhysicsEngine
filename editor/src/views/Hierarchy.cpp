@@ -128,7 +128,7 @@ void Hierarchy::update(Clipboard &clipboard)
                         //Undo::addCommand(
                         //    new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                         PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                         meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\plane.mesh"));
                         //meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\color.material"));
@@ -142,7 +142,7 @@ void Hierarchy::update(Clipboard &clipboard)
                     {
                         //Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                         PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                         meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\cube.mesh"));
                     }
@@ -151,7 +151,7 @@ void Hierarchy::update(Clipboard &clipboard)
                         //Undo::addCommand(
                         //    new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                         PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                        PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                        entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                         meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\sphere.mesh"));
                     }
@@ -170,7 +170,7 @@ void Hierarchy::update(Clipboard &clipboard)
             if (clipboard.getDraggedType() == InteractionType::Mesh)
             {
                 PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                PhysicsEngine::Transform* transform = entity->addComponent<PhysicsEngine::Transform>();
+                entity->addComponent<PhysicsEngine::Transform>();
                 PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
                 meshRenderer->setMesh(clipboard.getDraggedId());
                 /*meshRenderer->setMaterial(clipboard.getWorld()->getColorMaterial());*/
@@ -186,7 +186,7 @@ void Hierarchy::rebuildEntityLists(PhysicsEngine::World *world)
 {
     mEntries.resize(world->getNumberOfNonHiddenEntities());
 
-    size_t index = 0;
+    int index = 0;
     for (size_t i = 0; i < world->getNumberOfEntities(); i++)
     {
         PhysicsEngine::Entity* entity = world->getEntityByIndex(i);

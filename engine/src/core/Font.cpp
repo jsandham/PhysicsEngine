@@ -128,17 +128,17 @@ void Font::load(std::string filepath)
     glBindVertexArray(0);*/
 }
 
-Character Font::getCharacter(char c) const
-{
-    std::map<char, Character>::const_iterator it = mCharacters.find(c);
-    if (it != mCharacters.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        std::cout << "Error: Character " << c << " does not exist in font" << std::endl;
-        Character character;
-        return character;
-    }
-}
+//Character Font::getCharacter(char c) const
+//{
+//    std::map<char, Character>::const_iterator it = mCharacters.find(c);
+//    if (it != mCharacters.end())
+//    {
+//        return it->second;
+//    }
+//    else
+//    {
+//        std::cout << "Error: Character " << c << " does not exist in font" << std::endl;
+//        Character character;
+//        return character;
+//    }
+//}

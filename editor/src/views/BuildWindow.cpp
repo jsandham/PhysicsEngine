@@ -83,10 +83,9 @@ void BuildWindow::build(const std::filesystem::path& path)
 	// Copy src folder to build data path
 	copy_options = std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing;
 	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\GameApplication.cpp", buildSrcPath, copy_options);
-	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\editor\\src\\Load.cpp", buildSrcPath, copy_options);
+	std::filesystem::copy(std::filesystem::current_path() / "..\\..\\src\\Load.cpp", buildSrcPath, copy_options);
 
 	std::filesystem::path executablePath = buildPath / "main.exe";
-	std::filesystem::path shellScriptFilePath(std::filesystem::current_path() / "..\\..\\..\\shell.bat");
 	std::filesystem::path buildScriptFilePath(std::filesystem::current_path() / "..\\..\\build.bat");
 
 	std::string command = buildScriptFilePath.string() + " " +

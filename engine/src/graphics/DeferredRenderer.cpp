@@ -152,10 +152,10 @@ void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, Def
     uint32_t color = 1;
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        unsigned char r = 255 - ((color & 0x000000FF) >> 0);
-        unsigned char g = 255 - ((color & 0x0000FF00) >> 8);
-        unsigned char b = 255 - ((color & 0x00FF0000) >> 16);
-        unsigned char a = 255;
+        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+        unsigned char a = static_cast<unsigned char>(255);
 
         camera->assignColoring(Color32(r, g, b, a), renderObjects[renderQueue[i].second].transformId);
 
@@ -171,10 +171,10 @@ void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, Def
     color = 1;
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        unsigned char r = 255 - ((color & 0x000000FF) >> 0);
-        unsigned char g = 255 - ((color & 0x0000FF00) >> 8);
-        unsigned char b = 255 - ((color & 0x00FF0000) >> 16);
-        unsigned char a = 255;
+        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+        unsigned char a = static_cast<unsigned char>(255);
 
         color++;
 
