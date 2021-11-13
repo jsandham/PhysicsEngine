@@ -133,14 +133,7 @@ void Shader::load(const ShaderCreationAttrib& attrib)
     mShaderSourceLanguage = attrib.mSourceLanguage;
     mVariantMacroMap = attrib.mVariantMacroMap;
 
-    mPrograms.resize(attrib.mVariantMacroMap.size() + 1);
-
-    mPrograms[0].mVertexShader = mVertexShader;
-    mPrograms[0].mFragmentShader = mFragmentShader;
-    mPrograms[0].mGeometryShader = mGeometryShader;
-    mPrograms[0].mVariant = 0;
-    mPrograms[0].mHandle = 0;
-    mPrograms[0].mCompiled = false;
+    mPrograms.resize(attrib.mVariantMacroMap.size());
 }
 
 bool Shader::isCompiled() const
@@ -148,9 +141,16 @@ bool Shader::isCompiled() const
     return mAllProgramsCompiled;
 }
 
+void Shader::addVariant(int variantId, const std::set<ShaderMacro> &macros)
+{
+    mVariantMacroMap[variantId] = macros;
+
+    mPrograms.resize(mVariantMacroMap.size());
+}
+
 void Shader::preprocess()
 {
-    int i = 1;
+    int i = 0;
     for (auto it = mVariantMacroMap.begin(); it != mVariantMacroMap.end(); it++)
     {
         mPrograms[i].mVertexShader = mVertexShader;

@@ -102,20 +102,17 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 if (ImGui::MenuItem("Empty"))
                 {
-                    //Undo::addCommand(new CreateEntityCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                     entity->addComponent<PhysicsEngine::Transform>();
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
-                    //Undo::addCommand(new CreateCameraCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                     entity->addComponent<PhysicsEngine::Transform>();
                     entity->addComponent<PhysicsEngine::Camera>();
                 }
                 if (ImGui::MenuItem("Light"))
                 {
-                    //Undo::addCommand(new CreateLightCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
                     PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                     entity->addComponent<PhysicsEngine::Transform>();
                     entity->addComponent<PhysicsEngine::Light>();
@@ -125,13 +122,23 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Plane"))
                     {
-                        //Undo::addCommand(
-                        //    new CreatePlaneCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
-                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                         entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
-                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\plane.mesh"));
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Plane)->getId());*/
                         //meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\color.material"));
+
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
+                    }
+                    if (ImGui::MenuItem("Disc"))
+                    {
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Disc)->getId());*/
+                        //meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\color.material"));
+
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Disc);
                     }
                     ImGui::EndMenu();
                 }
@@ -140,20 +147,35 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Cube"))
                     {
-                        //Undo::addCommand(new CreateCubeCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
-                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                         entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
-                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\cube.mesh"));
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Cube)->getId());*/
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
                     }
                     if (ImGui::MenuItem("Sphere"))
                     {
-                        //Undo::addCommand(
-                        //    new CreateSphereCommand(clipboard.getWorld(), &clipboard.mSceneDirty));
-                        PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
                         entity->addComponent<PhysicsEngine::Transform>();
                         PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
-                        meshRenderer->setMesh(clipboard.getWorld()->getAssetId("data\\meshes\\sphere.mesh"));
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere)->getId());*/
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Sphere);
+                    }
+                    if (ImGui::MenuItem("Cylinder"))
+                    {
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cylinder);
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Cylinder)->getId());*/
+                    }
+                    if (ImGui::MenuItem("Cone"))
+                    {
+                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cone);
+                        /*PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
+                        entity->addComponent<PhysicsEngine::Transform>();
+                        PhysicsEngine::MeshRenderer* meshRenderer = entity->addComponent<PhysicsEngine::MeshRenderer>();
+                        meshRenderer->setMesh(clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Cylinder)->getId());*/
                     }
                     ImGui::EndMenu();
                 }

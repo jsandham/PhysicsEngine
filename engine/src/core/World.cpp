@@ -14,7 +14,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
- 
+    mPrimitives.createPrimitiveMeshes(this, 10, 10);
 }
 
 World::~World()
@@ -66,7 +66,7 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
     }
     catch (YAML::Exception e /*YAML::BadFile e*/)
     {
-        Log::error("Bad file exception hit");
+        Log::error("YAML exception hit when trying to load file");
         return nullptr;
     }
 
@@ -99,7 +99,7 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
     }
     catch (YAML::BadFile e)
     {
-        Log::error("Bad file exception hit");
+        Log::error("YAML exception hit when trying to load file");
         return nullptr;
     }
 
@@ -335,6 +335,68 @@ size_t World::getNumberOfNonHiddenEntities() const
 size_t World::getNumberOfUpdatingSystems() const
 {
     return mSystems.size();
+}
+
+Mesh *World::getPrimtiveMesh(PrimitiveType type)
+{
+    switch (type)
+    {
+    case PrimitiveType::Plane:
+        return getAssetById<Mesh>(mPrimitives.mPlaneMeshId);
+    case PrimitiveType::Disc:
+        return getAssetById<Mesh>(mPrimitives.mDiscMeshId);
+    case PrimitiveType::Cube:
+        return getAssetById<Mesh>(mPrimitives.mCubeMeshId);
+    case PrimitiveType::Sphere:
+        return getAssetById<Mesh>(mPrimitives.mSphereMeshId);
+    case PrimitiveType::Cylinder:
+        return getAssetById<Mesh>(mPrimitives.mCylinderMeshId);
+    case PrimitiveType::Cone:
+        return getAssetById<Mesh>(mPrimitives.mConeMeshId);
+    default:
+        return nullptr;
+    }
+}
+
+Entity *World::createPrimitive(PrimitiveType type)
+{
+    Entity *entity = createEntity();
+    Transform* transform = entity->addComponent<Transform>();
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
+    
+    assert(entity != nullptr);
+    assert(transform != nullptr);
+    assert(meshRenderer != nullptr);
+
+    switch (type)
+    {
+    case PrimitiveType::Plane:
+        entity->setName("Plane");
+        break;
+    case PrimitiveType::Disc:
+        entity->setName("Disc");
+        break;
+    case PrimitiveType::Cube:
+        entity->setName("Cube");
+        break;
+    case PrimitiveType::Sphere:
+        entity->setName("Sphere");
+        break;
+    case PrimitiveType::Cylinder:
+        entity->setName("Cylinder");
+        break;
+    case PrimitiveType::Cone:
+        entity->setName("Cone");
+        break;
+    }
+
+    transform->mPosition = glm::vec3(0, 0, 0);
+    transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    transform->mScale = glm::vec3(1, 1, 1);
+    meshRenderer->setMesh(getPrimtiveMesh(type)->getId());
+    meshRenderer->setMaterial(mPrimitives.mStandardMaterialId);
+
+    return entity;
 }
 
 Scene *World::getSceneById(const Guid &sceneId) const

@@ -133,6 +133,7 @@ class Shader : public Asset
 
     bool isCompiled() const;
 
+    void addVariant(int variantId, const std::set<ShaderMacro>& macros);
     void preprocess();
     void compile();
     void use(int program);

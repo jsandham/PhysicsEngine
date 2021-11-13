@@ -195,7 +195,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\sphere.mesh"));
+    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Sphere);
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -242,7 +242,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\cube.mesh"));
+    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Cube);
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -288,7 +288,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getAssetById<Mesh>(world->getAssetId("data\\meshes\\plane.mesh"));
+    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Plane);
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,

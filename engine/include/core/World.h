@@ -10,6 +10,7 @@
 
 #include "WorldAllocators.h"
 #include "WorldIdState.h"
+#include "WorldPrimitives.h"
 
 namespace PhysicsEngine
 {
@@ -21,6 +22,9 @@ class World
 
     // id state for assets, entities, components, and systems
     WorldIdState mIdState;
+
+    // Primitive meshes all worlds have access to
+    WorldPrimitives mPrimitives;
 
     // all systems in world listed in order they should be updated
     std::vector<System *> mSystems;
@@ -44,6 +48,8 @@ class World
     size_t getNumberOfEntities() const;
     size_t getNumberOfNonHiddenEntities() const;
     size_t getNumberOfUpdatingSystems() const;
+    Mesh *getPrimtiveMesh(PrimitiveType type);
+    Entity *createPrimitive(PrimitiveType type);
 
     template <typename T> size_t getNumberOfSystems() const
     {
@@ -146,7 +152,14 @@ class World
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
-        return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>());
+        return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>(), Guid::newGuid());
+    }
+
+    template <typename T> T *createAsset(const Guid& id)
+    {
+        static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+
+        return createAsset_impl<T>(getAssetOrAddAllocator_impl<T>(), id);
     }
 
     int getIndexOf(const Guid &id) const;
@@ -742,47 +755,92 @@ class World
 
     template <> Mesh *createAsset<Mesh>()
     {
-        return createAsset_impl(&mAllocators.mMeshAllocator);
+        return createAsset_impl(&mAllocators.mMeshAllocator, Guid::newGuid());
+    }
+
+    template <> Mesh *createAsset<Mesh>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mMeshAllocator, id);
     }
 
     template <> Material *createAsset<Material>()
     {
-        return createAsset_impl(&mAllocators.mMaterialAllocator);
+        return createAsset_impl(&mAllocators.mMaterialAllocator, Guid::newGuid());
+    }
+
+    template <> Material *createAsset<Material>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mMaterialAllocator, id);
     }
 
     template <> Shader *createAsset<Shader>()
     {
-        return createAsset_impl(&mAllocators.mShaderAllocator);
+        return createAsset_impl(&mAllocators.mShaderAllocator, Guid::newGuid());
+    }
+
+    template <> Shader *createAsset<Shader>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mShaderAllocator, id);
     }
 
     template <> Texture2D *createAsset<Texture2D>()
     {
-        return createAsset_impl(&mAllocators.mTexture2DAllocator);
+        return createAsset_impl(&mAllocators.mTexture2DAllocator, Guid::newGuid());
+    }
+
+    template <> Texture2D *createAsset<Texture2D>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mTexture2DAllocator, id);
     }
 
     template <> Texture3D *createAsset<Texture3D>()
     {
-        return createAsset_impl(&mAllocators.mTexture3DAllocator);
+        return createAsset_impl(&mAllocators.mTexture3DAllocator, Guid::newGuid());
+    }
+
+    template <> Texture3D *createAsset<Texture3D>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mTexture3DAllocator, id);
     }
 
     template <> Cubemap *createAsset<Cubemap>()
     {
-        return createAsset_impl(&mAllocators.mCubemapAllocator);
+        return createAsset_impl(&mAllocators.mCubemapAllocator, Guid::newGuid());
+    }
+
+    template <> Cubemap *createAsset<Cubemap>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mCubemapAllocator, id);
     }
 
     template <> RenderTexture* createAsset<RenderTexture>()
     {
-        return createAsset_impl(&mAllocators.mRenderTextureAllocator);
+        return createAsset_impl(&mAllocators.mRenderTextureAllocator, Guid::newGuid());
+    }
+
+    template <> RenderTexture *createAsset<RenderTexture>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mRenderTextureAllocator, id);
     }
 
     template <> Font *createAsset<Font>()
     {
-        return createAsset_impl(&mAllocators.mFontAllocator);
+        return createAsset_impl(&mAllocators.mFontAllocator, Guid::newGuid());
+    }
+
+    template <> Font *createAsset<Font>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mFontAllocator, id);
     }
 
     template <> Sprite *createAsset<Sprite>()
     {
-        return createAsset_impl(&mAllocators.mSpriteAllocator);
+        return createAsset_impl(&mAllocators.mSpriteAllocator, Guid::newGuid());
+    }
+
+    template <> Sprite *createAsset<Sprite>(const Guid& id)
+    {
+        return createAsset_impl(&mAllocators.mSpriteAllocator, id);
     }
 
   private:
@@ -790,6 +848,8 @@ class World
     Asset *loadAssetFromYAML(const YAML::Node &in, const Guid id, int type);
     Scene *loadSceneFromYAML(const YAML::Node &in);
     Scene *loadSceneFromYAML(const YAML::Node &in, const Guid id);
+
+    void createPrimitiveMeshes();
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {
@@ -964,13 +1024,12 @@ class World
         return getById_impl<T>(mIdState.mIdToGlobalIndex, allocator, componentId);
     }
 
-    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator)
+    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const Guid& id)
     {
         static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
         int index = (int)allocator->getCount();
         int type = AssetType<T>::type;
-        Guid id = Guid::newGuid();
 
         T *asset = allocator->construct(this, id);
 
