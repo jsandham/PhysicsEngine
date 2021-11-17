@@ -19,8 +19,7 @@ void PreferencesWindow::init(Clipboard &clipboard)
 
 void PreferencesWindow::update(Clipboard &clipboard)
 {
-    float windowWidth = ImGui::GetWindowWidth();
-
+    // Order matters here
     const char* themeNames[] = { "Classic",    "Light",  "Dark", "Dracula",  "Cherry",
                                 "LightGreen", "Yellow", "Grey", "Charcoal", "Corporate" };
 
@@ -32,43 +31,43 @@ void PreferencesWindow::update(Clipboard &clipboard)
                                       // however you want, outside or inside your objects
             if (ImGui::Selectable(themeNames[n], is_selected))
             {
-                if (themeNames[n] == "Classic")
+                if (n == 0)
                 {
                     ImGui::StyleColorsClassic();
                 }
-                else if (themeNames[n] == "Light")
+                else if (n == 1)
                 {
                     ImGui::StyleColorsLight();
                 }
-                else if (themeNames[n] == "Dark")
+                else if (n == 2)
                 {
                     ImGui::StyleColorsDark();
                 }
-                else if (themeNames[n] == "Dracula")
+                else if (n == 3)
                 {
                     ImGui::StyleColorsDracula();
                 }
-                else if (themeNames[n] == "Cherry")
+                else if (n == 4)
                 {
                     ImGui::StyleColorsCherry();
                 }
-                else if (themeNames[n] == "LightGreen")
+                else if (n == 5)
                 {
                     ImGui::StyleColorsLightGreen();
                 }
-                else if (themeNames[n] == "Yellow")
+                else if (n == 6)
                 {
                     ImGui::StyleColorsYellow();
                 }
-                else if (themeNames[n] == "Grey")
+                else if (n == 7)
                 {
                     ImGui::StyleColorsGrey();
                 }
-                else if (themeNames[n] == "Charcoal")
+                else if (n == 8)
                 {
                     ImGui::StyleColorsCharcoal();
                 }
-                else if (themeNames[n] == "Corporate")
+                else if (n == 9)
                 {
                     ImGui::StyleColorsCorporate();
                 }

@@ -1,4 +1,5 @@
 #include "../../include/views/ProjectWindow.h"
+#include "../../include/EditorProjectManager.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -71,44 +72,7 @@ void ProjectWindow::renderNewMode(Clipboard& clipboard)
 
     if (ImGui::Button("Create Project"))
     {
-        std::filesystem::path path = getSelectedFolderPath() / getProjectName();
-
-        if (std::filesystem::create_directory(path))
-        {
-            bool success = true;
-            success &= std::filesystem::create_directory(path / "data");
-            success &= std::filesystem::create_directory(path / "data/scenes");
-            success &= std::filesystem::create_directory(path / "data/textures");
-            success &= std::filesystem::create_directory(path / "data/meshes");
-            success &= std::filesystem::create_directory(path / "data/materials");
-            success &= std::filesystem::create_directory(path / "data/shaders");
-            success &= std::filesystem::create_directory(path / "data/sprites");
-
-            if (success)
-            {
-                clipboard.setActiveProject(getProjectName(), path.string());
-                clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
-            }
-            else
-            {
-                PhysicsEngine::Log::error("Could not create project sub directories\n");
-                return;
-            }
-        }
-        else
-        {
-            PhysicsEngine::Log::error("Could not create project root directory\n");
-            return;
-        }
-
-        // mark any (non-editor) entities in currently opened scene to be latent destroyed
-        clipboard.getWorld()->latentDestroyEntitiesInWorld();
-
-        // tell library directory which project to watch
-        clipboard.getLibrary().watch(path.string());
-
-        // reset editor camera
-        clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
+        EditorProjectManager::newProject(clipboard, getSelectedFolderPath() / getProjectName());
 
         ImGui::CloseCurrentPopup();
     }
@@ -139,17 +103,7 @@ void ProjectWindow::renderOpenMode(Clipboard& clipboard)
 
     if (ImGui::Button("Open Project"))
     {
-        clipboard.setActiveProject(getProjectName(), getSelectedFolderPath().string());
-        clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
-
-        // mark any (non-editor) entities in currently opened scene to be latent destroyed
-        clipboard.getWorld()->latentDestroyEntitiesInWorld();
-
-        // tell library directory which project to watch
-        clipboard.getLibrary().watch(getSelectedFolderPath().string());
-
-        // reset editor camera
-        clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
+        EditorProjectManager::openProject(clipboard, getSelectedFolderPath() / getProjectName());
 
         ImGui::CloseCurrentPopup();
     }

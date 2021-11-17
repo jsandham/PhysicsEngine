@@ -78,14 +78,6 @@ class MenuBar
     void showMenuEdit(const Clipboard& clipboard);
     void showMenuWindow(const Clipboard& clipboard);
     void showMenuHelp(const Clipboard& clipboard);
-
-    void newScene(Clipboard& clipboard);
-    void openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path);
-    void saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path);
-    void newProject(Clipboard& clipboard);
-    void openProject(Clipboard& clipboard);
-    void saveProject(Clipboard& clipboard);
-    void build(Clipboard& clipboard);
 };
 } // namespace PhysicsEditor
 

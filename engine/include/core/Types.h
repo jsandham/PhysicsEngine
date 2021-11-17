@@ -79,6 +79,18 @@ constexpr char DEBUGSYSTEM_NAME[] = "DebugSystem";
 constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
 constexpr char FREELOOKCAMERASYSTEM_NAME[] = "FreeLookCameraSystem";
 
+// extensions
+constexpr char SCENE_EXT[] = ".scene";
+constexpr char SHADER_EXT[] = ".shader";
+constexpr char TEXTURE2D_EXT[] = ".texture";
+constexpr char TEXTURE3D_EXT[] = ".texture3d";
+constexpr char CUBEMAP_EXT[] = ".cubemap";
+constexpr char MATERIAL_EXT[] = ".material";
+constexpr char MESH_EXT[] = ".mesh";
+constexpr char FONT_EXT[] = ".font";
+constexpr char SPRITE_EXT[] = ".sprite";
+constexpr char RENDERTEXTURE_EXT[] = ".rendertexture";
+
 constexpr int isScene(int type)
 {
     return type == SCENE_TYPE;

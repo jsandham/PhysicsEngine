@@ -46,6 +46,7 @@ void BuildWindow::update(Clipboard &clipboard)
 	if (mFilebrowser.isSelectFolderClicked())
 	{
 		build(mFilebrowser.getSelectedFolderPath());
+		buildClicked = false;
 		//std::thread t1(&BuildWindow::build, this, mFilebrowser.getSelectedFolderPath());
 		//t1.join();
 	}
@@ -93,5 +94,5 @@ void BuildWindow::build(const std::filesystem::path& path)
 		buildSrcPath.string() + " " +
 		executablePath.string();
 
-	system(command.c_str());
+	//system(command.c_str());
 }

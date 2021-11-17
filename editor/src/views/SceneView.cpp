@@ -262,12 +262,9 @@ void SceneView::update(Clipboard &clipboard)
     {
         if (clipboard.mSceneViewHoveredThisFrame)
         {
-            Entity* entity = clipboard.getWorld()->createEntity();
-            Transform* transform = entity->addComponent<Transform>();
-            MeshRenderer* meshRenderer = entity->addComponent<MeshRenderer>();
-            meshRenderer->setMesh(clipboard.getDraggedId());
-            meshRenderer->setMaterial(clipboard.getWorld()->getAssetId("data\\materials\\default.material"));
-
+            Entity* entity = clipboard.getWorld()->createNonPrimitive(clipboard.getDraggedId());
+            Transform* transform = entity->getComponent<Transform>();
+           
             clipboard.mSceneViewTempEntityId = entity->getId();
             clipboard.mSceneViewTempEntity = entity;
             clipboard.mSceneViewTempTransform = transform;
@@ -288,14 +285,8 @@ void SceneView::update(Clipboard &clipboard)
         {
             if (clipboard.mSceneViewTempEntityId.isValid())
             {
-                float width = mSceneContentMax.x - mSceneContentMin.x;
-                float height = mSceneContentMax.y - mSceneContentMin.y;
-
-                float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), width);
-                float mousePosY = height - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), height);
-
-                float ndc_x = 2 * (mousePosX - 0.5f * width) / width;
-                float ndc_y = 2 * (mousePosY - 0.5f * height) / height;
+                float ndc_x = 2 * (mousePosX - 0.5f * sceneContentWidth) / sceneContentWidth;
+                float ndc_y = 2 * (mousePosY - 0.5f * sceneContentHeight) / sceneContentHeight;
 
                 Ray cameraRay = cameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
 
@@ -449,6 +440,11 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Free
     {
         ImGuiIO& io = ImGui::GetIO();
       
+        ImGui::Text("Project name: %s\n", clipboard.getProjectName().c_str());
+        ImGui::Text("Project path: %s\n", clipboard.getProjectPath().string().c_str());
+        ImGui::Text("Scene name: %s\n", clipboard.getSceneName().c_str());
+        ImGui::Text("Scene path: %s\n", clipboard.getScenePath().string().c_str());
+
         ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);

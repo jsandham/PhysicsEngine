@@ -1,18 +1,26 @@
 #include "../include/EditorSceneManager.h"
 
 #include "core/World.h"
-#include "systems/FreeLookCameraSystem.h"
+#include "core/Log.h"
 
 using namespace PhysicsEditor;
 
-void EditorSceneManager::newScene(Clipboard& clipboard)
+void EditorSceneManager::newScene(Clipboard& clipboard, const std::string& sceneName)
 {
-    // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    //clipboard.getWorld()->latentDestroyEntitiesInWorld();
+    std::string message = "newScene scene name: " + sceneName + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    // check that we have an open project
+    if (clipboard.getProjectPath().empty())
+    {
+        return;
+    }
+
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
     clipboard.getWorld()->immediateDestroyEntitiesInWorld();
 
     // re-centre editor camera to default position
-    clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
+    clipboard.mCameraSystem->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();
@@ -21,39 +29,56 @@ void EditorSceneManager::newScene(Clipboard& clipboard)
     PhysicsEngine::Scene* scene = clipboard.getWorld()->createScene();
     if (scene != nullptr)
     {
-        clipboard.setActiveScene("default.scene", "", scene->getId());
+        clipboard.setActiveScene(sceneName, "", scene->getId());
     }
 }
 
-void EditorSceneManager::openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
+void EditorSceneManager::openScene(Clipboard& clipboard, const std::filesystem::path& scenePath)
 {
-    // check to make sure the scene is part of the current project
-    if (path.string().find((clipboard.getProjectPath() / "data").string()) != 0)
+    std::string message = "openScene scene name: " + scenePath.filename().string() + " scene path: " + scenePath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    // check that we have an open project
+    if (clipboard.getProjectPath().empty())
     {
         return;
     }
 
-    // mark any (non-editor) entities in currently opened scene to be latent destroyed
-    
-    //clipboard.getWorld()->latentDestroyEntitiesInWorld();
+    // check to make sure the scene is part of the current project
+    if (scenePath.string().find(clipboard.getProjectPath().string()) != 0)
+    {
+        return;
+    }
+
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
     clipboard.getWorld()->immediateDestroyEntitiesInWorld();
 
     // reset editor camera to default position
-    clipboard.getWorld()->getSystem<PhysicsEngine::FreeLookCameraSystem>()->resetCamera();
+    clipboard.mCameraSystem->resetCamera();
 
     // clear any dragged and selected items on clipboard
     clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
     // load scene into world
-    PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(path.string());
+    PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(scenePath.string());
     if (scene != nullptr)
     {
-        clipboard.setActiveScene(name, path.string(), scene->getId());
+        clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), scene->getId());
     }
 }
 
-void EditorSceneManager::saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
+void EditorSceneManager::saveScene(Clipboard& clipboard, const std::filesystem::path& scenePath)
 {
-    clipboard.getWorld()->writeSceneToYAML(path.string(), clipboard.getSceneId());
+    std::string message = "saveScene scene name: " + scenePath.filename().string() + " scene path: " + scenePath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    if (scenePath.empty())
+    {
+        return;
+    }
+
+    clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), clipboard.getSceneId());
+
+    clipboard.getWorld()->writeSceneToYAML(scenePath.string(), clipboard.getSceneId());
 }

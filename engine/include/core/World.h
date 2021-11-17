@@ -48,8 +48,11 @@ class World
     size_t getNumberOfEntities() const;
     size_t getNumberOfNonHiddenEntities() const;
     size_t getNumberOfUpdatingSystems() const;
-    Mesh *getPrimtiveMesh(PrimitiveType type);
+    Mesh *getPrimtiveMesh(PrimitiveType type) const;
     Entity *createPrimitive(PrimitiveType type);
+    Entity *createNonPrimitive(const Guid &meshId);
+    Entity *createLight(LightType type);
+    Entity *createCamera();
 
     template <typename T> size_t getNumberOfSystems() const
     {

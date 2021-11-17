@@ -327,6 +327,9 @@ class Graphics
     static void createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
                            unsigned int *vbo0, unsigned int *vbo1);
     static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
+
+    static std::string getStandardVertexShader();
+    static std::string getStandardFragmentShader();
 };
 } // namespace PhysicsEngine
 

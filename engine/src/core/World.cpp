@@ -1,8 +1,4 @@
 #include <fstream>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <unordered_set>
 #include <stack>
 
 #include "../../include/core/Load.h"
@@ -337,7 +333,7 @@ size_t World::getNumberOfUpdatingSystems() const
     return mSystems.size();
 }
 
-Mesh *World::getPrimtiveMesh(PrimitiveType type)
+Mesh *World::getPrimtiveMesh(PrimitiveType type) const
 {
     switch (type)
     {
@@ -360,41 +356,81 @@ Mesh *World::getPrimtiveMesh(PrimitiveType type)
 
 Entity *World::createPrimitive(PrimitiveType type)
 {
+    Mesh *mesh = getPrimtiveMesh(type);
     Entity *entity = createEntity();
     Transform* transform = entity->addComponent<Transform>();
     MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
     
+    assert(mesh != nullptr);
     assert(entity != nullptr);
     assert(transform != nullptr);
     assert(meshRenderer != nullptr);
 
-    switch (type)
-    {
-    case PrimitiveType::Plane:
-        entity->setName("Plane");
-        break;
-    case PrimitiveType::Disc:
-        entity->setName("Disc");
-        break;
-    case PrimitiveType::Cube:
-        entity->setName("Cube");
-        break;
-    case PrimitiveType::Sphere:
-        entity->setName("Sphere");
-        break;
-    case PrimitiveType::Cylinder:
-        entity->setName("Cylinder");
-        break;
-    case PrimitiveType::Cone:
-        entity->setName("Cone");
-        break;
-    }
-
+    entity->setName(mesh->getName());
+    
     transform->mPosition = glm::vec3(0, 0, 0);
     transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     transform->mScale = glm::vec3(1, 1, 1);
-    meshRenderer->setMesh(getPrimtiveMesh(type)->getId());
+    meshRenderer->setMesh(mesh->getId());
     meshRenderer->setMaterial(mPrimitives.mStandardMaterialId);
+
+    return entity;
+}
+
+Entity *World::createNonPrimitive(const Guid &meshId)
+{
+    Mesh *mesh = getAssetById<Mesh>(meshId);
+    if (mesh == nullptr)
+    {
+        return nullptr;
+    }
+
+    Entity *entity = createEntity();
+    Transform *transform = entity->addComponent<Transform>();
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
+
+    assert(entity != nullptr);
+    assert(transform != nullptr);
+    assert(meshRenderer != nullptr);
+
+    entity->setName(mesh->getName());
+   
+    transform->mPosition = glm::vec3(0, 0, 0);
+    transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    transform->mScale = glm::vec3(1, 1, 1);
+    meshRenderer->setMesh(meshId);
+    meshRenderer->setMaterial(mPrimitives.mStandardMaterialId);
+
+    return entity;
+}
+
+Entity *World::createLight(LightType type)
+{
+    Entity *entity = createEntity();
+    entity->addComponent<Transform>();
+    Light* light = entity->addComponent<Light>();
+
+    switch (type)
+    {
+    case LightType::Directional:
+        light->mLightType = LightType::Directional;
+        break;
+    case LightType::Spot:
+        light->mLightType = LightType::Spot;
+        break;
+    case LightType::Point:
+        light->mLightType = LightType::Point;
+        break;
+    }
+
+    return entity;
+}
+
+Entity *World::createCamera()
+{
+    Entity *entity = createEntity();
+    entity->addComponent<Transform>();
+    entity->addComponent<Camera>();
 
     return entity;
 }

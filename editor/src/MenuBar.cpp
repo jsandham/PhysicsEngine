@@ -86,31 +86,30 @@ void MenuBar::update(Clipboard &clipboard)
     // new, open and save scene
     if (isNewSceneClicked())
     {
-        newScene(clipboard);
+        EditorSceneManager::newScene(clipboard, "default.scene");
     }
     if (isOpenSceneClicked())
     {
         filebrowser.setMode(FilebrowserMode::Open);
     }
-    else if (isSaveClicked() && !clipboard.getScenePath().empty())
+    else if (isSaveClicked())
     {
-        saveScene(clipboard, clipboard.getSceneName(), clipboard.getScenePath());
+        EditorSceneManager::saveScene(clipboard, clipboard.getScenePath());
     }
-    else if (isSaveAsClicked() || isSaveClicked() && clipboard.getScenePath().empty())
+    else if (isSaveAsClicked())
     {
         filebrowser.setMode(FilebrowserMode::Save);
     }
 
-    filebrowser.render(clipboard.getProjectPath(),
-                       isOpenSceneClicked() || isSaveAsClicked() || isSaveClicked() && clipboard.getScenePath().empty());
+    filebrowser.render(clipboard.getProjectPath(), isOpenSceneClicked() || isSaveAsClicked());
 
     if (filebrowser.isOpenClicked())
     {
-        openScene(clipboard, filebrowser.getOpenFilePath().filename().string(), filebrowser.getOpenFilePath());
+        EditorSceneManager::openScene(clipboard, filebrowser.getOpenFilePath());
     }
     else if (filebrowser.isSaveClicked())
     {
-        saveScene(clipboard, filebrowser.getSaveFilePath().filename().string(), filebrowser.getSaveFilePath());
+        EditorSceneManager::saveScene(clipboard, filebrowser.getSaveFilePath());
     }
 
     // new, open, save project project
@@ -124,7 +123,7 @@ void MenuBar::update(Clipboard &clipboard)
     }
     else if (isSaveProjectClicked())
     {
-        saveProject(clipboard);
+        EditorProjectManager::saveProject(clipboard);
     }
 
     projectWindow.draw(clipboard, isOpenProjectClicked() || isNewProjectClicked());
@@ -233,7 +232,15 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
 
     if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, clipboard.getSceneId().isValid()))
     {
-        saveClicked = true;
+        // if we dont have a scene path then it must be a new unsaved scene, call save as instead
+        if (clipboard.getScenePath().empty())
+        {
+            saveAsClicked = true;
+        }
+        else
+        {
+            saveClicked = true;
+        }
     }
     if (ImGui::MenuItem("Save As..", nullptr, false, clipboard.getSceneId().isValid()))
     {
@@ -327,38 +334,4 @@ void MenuBar::showMenuHelp(const Clipboard &clipboard)
     {
         aboutClicked = true;
     }
-}
-
-void MenuBar::newScene(Clipboard &clipboard)
-{
-    EditorSceneManager::newScene(clipboard);
-}
-
-void MenuBar::openScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
-{
-    EditorSceneManager::openScene(clipboard, name, path);
-}
-
-void MenuBar::saveScene(Clipboard& clipboard, const std::string& name, const std::filesystem::path& path)
-{
-    EditorSceneManager::saveScene(clipboard, name, path);
-}
-
-void MenuBar::newProject(Clipboard &clipboard)
-{
-    EditorProjectManager::newProject(clipboard);
-}
-
-void MenuBar::openProject(Clipboard &clipboard)
-{
-    EditorProjectManager::openProject(clipboard);
-}
-
-void MenuBar::saveProject(Clipboard &clipboard)
-{
-    EditorProjectManager::saveProject(clipboard);
-}
-
-void MenuBar::build(Clipboard &clipboard)
-{
 }

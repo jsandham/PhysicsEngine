@@ -160,9 +160,9 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
             if (ImGui::IsMouseDoubleClicked(0))
             {
-                if (filePaths[i].extension().string() == "scene")
+                if (filePaths[i].extension().string() == ".scene")
                 {
-                    EditorSceneManager::openScene(clipboard, filePaths[i].filename().string(), filePaths[i]);
+                    EditorSceneManager::openScene(clipboard, filePaths[i]);
                 }
             }
         }
