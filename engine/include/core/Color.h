@@ -23,15 +23,15 @@ class Color
     static const Color cyan;
     static const Color magenta;
 
-    float r;
-    float g;
-    float b;
-    float a;
+    float mR;
+    float mG;
+    float mB;
+    float mA;
 
   public:
     Color();
     Color(float r, float g, float b, float a);
-    Color(glm::vec4 rgba);
+    Color(const glm::vec4& rgba);
     ~Color();
 };
 
@@ -49,10 +49,10 @@ class Color32
     static const Color32 cyan;
     static const Color32 magenta;
 
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
+    unsigned char mR;
+    unsigned char mG;
+    unsigned char mB;
+    unsigned char mA;
 
   public:
     Color32();
@@ -62,7 +62,7 @@ class Color32
     // Allows use of Color32 as key in unordered_map
     bool operator==(const Color32& other) const
     {
-        return ((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a));
+        return ((mR == other.mR) && (mG == other.mG) && (mB == other.mB) && (mA == other.mA));
     }
 };
 } // namespace PhysicsEngine
@@ -79,10 +79,10 @@ namespace std
             using std::hash;
             using std::string;
 
-            size_t r = color.r;
-            size_t g = color.g;
-            size_t b = color.b;
-            size_t a = color.a;
+            size_t r = color.mR;
+            size_t g = color.mG;
+            size_t b = color.mB;
+            size_t a = color.mA;
 
             return r + 255 * g + 255 * 255 * b + 255 * 255 * 255 * a;
         }
@@ -97,10 +97,10 @@ template <> struct convert<PhysicsEngine::Color>
     static Node encode(const PhysicsEngine::Color &rhs)
     {
         Node node;
-        node.push_back(rhs.r);
-        node.push_back(rhs.g);
-        node.push_back(rhs.b);
-        node.push_back(rhs.a);
+        node.push_back(rhs.mR);
+        node.push_back(rhs.mG);
+        node.push_back(rhs.mB);
+        node.push_back(rhs.mA);
         return node;
     }
 
@@ -111,10 +111,10 @@ template <> struct convert<PhysicsEngine::Color>
             return false;
         }
 
-        rhs.r = node[0].as<float>();
-        rhs.g = node[1].as<float>();
-        rhs.b = node[2].as<float>();
-        rhs.a = node[3].as<float>();
+        rhs.mR = node[0].as<float>();
+        rhs.mG = node[1].as<float>();
+        rhs.mB = node[2].as<float>();
+        rhs.mA = node[3].as<float>();
         return true;
     }
 };
@@ -125,10 +125,10 @@ template <> struct convert<PhysicsEngine::Color32>
     static Node encode(const PhysicsEngine::Color32 &rhs)
     {
         Node node;
-        node.push_back(rhs.r);
-        node.push_back(rhs.g);
-        node.push_back(rhs.b);
-        node.push_back(rhs.a);
+        node.push_back(rhs.mR);
+        node.push_back(rhs.mG);
+        node.push_back(rhs.mB);
+        node.push_back(rhs.mA);
         return node;
     }
 
@@ -139,10 +139,10 @@ template <> struct convert<PhysicsEngine::Color32>
             return false;
         }
 
-        rhs.r = node[0].as<unsigned char>();
-        rhs.g = node[1].as<unsigned char>();
-        rhs.b = node[2].as<unsigned char>();
-        rhs.a = node[3].as<unsigned char>();
+        rhs.mR = node[0].as<unsigned char>();
+        rhs.mG = node[1].as<unsigned char>();
+        rhs.mB = node[2].as<unsigned char>();
+        rhs.mA = node[3].as<unsigned char>();
         return true;
     }
 };

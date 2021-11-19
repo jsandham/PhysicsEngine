@@ -146,15 +146,15 @@ void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRenderer
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
-        colors[8 * i + 0] = gizmos[i].mColor.r;
-        colors[8 * i + 1] = gizmos[i].mColor.g;
-        colors[8 * i + 2] = gizmos[i].mColor.b;
-        colors[8 * i + 3] = gizmos[i].mColor.a;
+        colors[8 * i + 0] = gizmos[i].mColor.mR;
+        colors[8 * i + 1] = gizmos[i].mColor.mG;
+        colors[8 * i + 2] = gizmos[i].mColor.mB;
+        colors[8 * i + 3] = gizmos[i].mColor.mA;
 
-        colors[8 * i + 4] = gizmos[i].mColor.r;
-        colors[8 * i + 5] = gizmos[i].mColor.g;
-        colors[8 * i + 6] = gizmos[i].mColor.b;
-        colors[8 * i + 7] = gizmos[i].mColor.a;
+        colors[8 * i + 4] = gizmos[i].mColor.mR;
+        colors[8 * i + 5] = gizmos[i].mColor.mG;
+        colors[8 * i + 6] = gizmos[i].mColor.mB;
+        colors[8 * i + 7] = gizmos[i].mColor.mA;
     }
 
     unsigned int lineVAO;

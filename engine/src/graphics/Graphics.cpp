@@ -360,7 +360,7 @@ void Graphics::unbindFramebuffer()
 
 void Graphics::clearFrambufferColor(const Color &color)
 {
-    glClearColor(color.r, color.g, color.b, color.a);
+    glClearColor(color.mR, color.mG, color.mB, color.mA);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -646,9 +646,9 @@ void Graphics::resizeTargets(CameraTargets *targets, Viewport viewport, bool *vi
     *viewportChanged = false;*/
 }
 
-void Graphics::readColorPickingPixel(const CameraTargets *targets, int x, int y, Color32 *color)
+void Graphics::readColorAtPixel(const unsigned int *fbo, int x, int y, Color32 *color)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1530,13 +1530,13 @@ void Graphics::setFloat(int nameLocation, float value)
 
 void Graphics::setColor(int nameLocation, const Color &color)
 {
-    glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.r));
+    glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.mR));
 }
 
 void Graphics::setColor32(int nameLocation, const Color32& color)
 {
-    glUniform4ui(nameLocation, static_cast<GLuint>(color.r), 
-        static_cast<GLuint>(color.g), static_cast<GLuint>(color.b), static_cast<GLuint>(color.a));
+    glUniform4ui(nameLocation, static_cast<GLuint>(color.mR), 
+        static_cast<GLuint>(color.mG), static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA));
 }
 
 void Graphics::setVec2(int nameLocation, const glm::vec2 &vec)
@@ -1604,7 +1604,7 @@ float Graphics::getFloat(int nameLocation, int program)
 Color Graphics::getColor(int nameLocation, int program)
 {
     Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
-    glGetnUniformfv(program, nameLocation, sizeof(Color), &color.r);
+    glGetnUniformfv(program, nameLocation, sizeof(Color), &color.mR);
 
     return color;
 }
@@ -1619,10 +1619,10 @@ Color32 Graphics::getColor32(int nameLocation, int program)
         4 * sizeof(GLuint),
         &c[0]);
 
-    color.r = static_cast<unsigned char>(c[0]);
-    color.g = static_cast<unsigned char>(c[1]);
-    color.b = static_cast<unsigned char>(c[2]);
-    color.a = static_cast<unsigned char>(c[3]);
+    color.mR = static_cast<unsigned char>(c[0]);
+    color.mG = static_cast<unsigned char>(c[1]);
+    color.mB = static_cast<unsigned char>(c[2]);
+    color.mA = static_cast<unsigned char>(c[3]);
     
     return color;
 }
@@ -1702,32 +1702,39 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const s
                 Graphics::setTexture2D(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram), textureUnit, 0);
             }
 
+            Graphics::checkError(__LINE__, __FILE__);
+
             textureUnit++;
         }
         else if (uniforms[i].mType == ShaderUniformType::Int)
         {
             Graphics::setInt(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                              *reinterpret_cast<const int *>(uniforms[i].mData));
+            Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Float)
         {
             Graphics::setFloat(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                                *reinterpret_cast<const float *>(uniforms[i].mData));
+            Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
             Graphics::setVec2(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
+            Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
             Graphics::setVec3(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
+            Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
             Graphics::setVec4(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
                               *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
+            Graphics::checkError(__LINE__, __FILE__);
         }
     }
 
@@ -2250,6 +2257,263 @@ void Graphics::compileColorShader(DeferredRendererState &state)
         state.mColorShaderProgram = -1;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Graphics::compileNormalShader(DebugRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec3 aPos;\n"
+                               "layout(location = 1) in vec3 aNormal;\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "out vec3 Normal;\n"
+                               "uniform mat4 model;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+                               "    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+                               "    Normal = normalMatrix * aNormal;\n"
+                               "    gl_Position = Camera.projection * Camera.view * worldPos;\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec3 Normal;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  FragColor = vec4(normalize(Normal), 1);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Normal", vertexShader, fragmentShader, "", &program))
+    {
+        state.mNormalsShaderProgram = program;
+        state.mNormalsShaderModelLoc = Graphics::findUniformLocation("model", state.mNormalsShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mNormalsShaderProgram);
+    }
+    else
+    {
+        state.mNormalsShaderProgram = -1;
+    }
+}
+
+void Graphics::compilePositionShader(DebugRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(location = 0) in vec3 aPos;\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "out vec3 FragPos;\n"
+                               "uniform mat4 model;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+                               "    FragPos = worldPos.xyz;\n"
+                               "    gl_Position = Camera.projection * Camera.view * worldPos;\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "in vec3 FragPos;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  FragColor = vec4(FragPos, 1);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Position", vertexShader, fragmentShader, "", &program))
+    {
+        state.mPositionShaderProgram = program;
+        state.mPositionShaderModelLoc = Graphics::findUniformLocation("model", state.mPositionShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mPositionShaderProgram);
+    }
+    else
+    {
+        state.mPositionShaderProgram = -1;
+    }
+}
+
+void Graphics::compileLinearDepthShader(DebugRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "uniform mat4 model;\n"
+                               "in vec3 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader =
+        "#version 430 core\n"
+        "out vec4 FragColor;\n"
+        "float near = 0.1;\n"
+        "float far = 100.0;\n"
+        "float LinearizeDepth(float depth)\n"
+        "{\n"
+        "  float z = depth * 2.0 - 1.0; // back to NDC\n"
+        "  return (2.0 * near * far) / (far + near - z * (far - near));\n"
+        "}\n"
+        "void main()\n"
+        "{\n"
+        "  float depth = LinearizeDepth(gl_FragCoord.z) / far;\n"
+        "  FragColor = vec4(vec3(depth), 1.0);\n"
+        "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Linear Depth", vertexShader, fragmentShader, "", &program))
+    {
+        state.mLinearDepthShaderProgram = program;
+        state.mLinearDepthShaderModelLoc = Graphics::findUniformLocation("model", state.mLinearDepthShaderProgram);
+    
+        Graphics::setUniformBlock("CameraBlock", 0, state.mLinearDepthShaderProgram);
+    }
+    else
+    {
+        state.mLinearDepthShaderProgram = -1;
+    }
+}
+
+void Graphics::compileColorShader(DebugRendererState &state)
+{
+    std::string vertexShader = "#version 430 core\n"
+                               "layout(std140) uniform CameraBlock\n"
+                               "{\n"
+                               "    mat4 projection;\n"
+                               "    mat4 view;\n"
+                               "    vec3 cameraPos;\n"
+                               "}Camera;\n"
+                               "uniform mat4 model;\n"
+                               "in vec3 position;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 430 core\n"
+                                 "struct Material\n"
+                                 "{\n"
+                                 "    uvec4 color;\n"
+                                 "};\n"
+                                 "uniform Material material;\n"
+                                 "out vec4 FragColor;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "    FragColor = vec4(material.color.r / 255.0f, material.color.g / 255.0f,\n"
+                                 "                      material.color.b / 255.0f, material.color.a / 255.0f);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Color", vertexShader, fragmentShader, "", &program))
+    {
+        state.mColorShaderProgram = program;
+        state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
+        state.mColorShaderColorLoc = Graphics::findUniformLocation("material.color", state.mColorShaderProgram);
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorShaderProgram);
+    }
+    else
+    {
+        state.mColorShaderProgram = -1;
+    }
+}
+
+void Graphics::compileScreenQuadShader(DebugRendererState &state)
+{
+    std::string vertexShader = "#version 330 core\n"
+                               "layout(location = 0) in vec2 aPos;\n"
+                               "layout(location = 1) in vec2 aTexCoords;\n"
+                               "out vec2 TexCoords;\n"
+                               "void main()\n"
+                               "{\n"
+                               "    TexCoords = aTexCoords;\n"
+                               "    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
+                               "}\n";
+
+    std::string fragmentShader = "#version 330 core\n"
+                                 "out vec4 FragColor;\n"
+                                 "in vec2 TexCoords;\n"
+                                 "uniform sampler2D screenTexture;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  vec3 col = texture(screenTexture, TexCoords).rgb;\n"
+                                 "  FragColor = vec4(col, 1.0);\n"
+                                 "}\n";
+
+    unsigned int program = 0;
+    if (Graphics::compile("Screen Quad", vertexShader, fragmentShader, "", &program))
+    {
+        state.mQuadShaderProgram = program;
+        state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
+    }
+    else
+    {
+        state.mQuadShaderProgram = -1;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Graphics::compileLineShader(GizmoRendererState &state)
 {

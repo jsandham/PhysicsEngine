@@ -16,7 +16,7 @@ MeshRendererDrawer::~MeshRendererDrawer()
 {
 }
 
-void MeshRendererDrawer::render(Clipboard &clipboard, Guid id)
+void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

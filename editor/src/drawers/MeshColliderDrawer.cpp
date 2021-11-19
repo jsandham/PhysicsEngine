@@ -14,7 +14,7 @@ MeshColliderDrawer::~MeshColliderDrawer()
 {
 }
 
-void MeshColliderDrawer::render(Clipboard &clipboard, Guid id)
+void MeshColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

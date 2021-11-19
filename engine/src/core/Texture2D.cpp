@@ -240,9 +240,9 @@ std::vector<Color32> Texture2D::getPixels() const
 
     for (unsigned int i = 0; i < colors.size(); i++)
     {
-        colors[i].r = mRawTextureData[mNumChannels * i];
-        colors[i].g = mRawTextureData[mNumChannels * i + 1];
-        colors[i].b = mRawTextureData[mNumChannels * i + 2];
+        colors[i].mR = mRawTextureData[mNumChannels * i];
+        colors[i].mG = mRawTextureData[mNumChannels * i + 1];
+        colors[i].mB = mRawTextureData[mNumChannels * i + 2];
     }
 
     return colors;
@@ -267,24 +267,24 @@ Color32 Texture2D::getPixel(int x, int y) const
 
     if (mNumChannels == 1)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index];
-        color.b = mRawTextureData[index];
-        color.a = 0;
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index];
+        color.mB = mRawTextureData[index];
+        color.mA = 0;
     }
     else if (mNumChannels == 3)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index + 1];
-        color.b = mRawTextureData[index + 2];
-        color.a = 0;
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index + 1];
+        color.mB = mRawTextureData[index + 2];
+        color.mA = 0;
     }
     else if (mNumChannels == 4)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index + 1];
-        color.b = mRawTextureData[index + 2];
-        color.a = mRawTextureData[index + 3];
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index + 1];
+        color.mB = mRawTextureData[index + 2];
+        color.mA = mRawTextureData[index + 3];
     }
 
     return color;
@@ -331,20 +331,20 @@ void Texture2D::setPixels(const std::vector<Color32> &colors)
     {
         if (mNumChannels == 1)
         {
-            mRawTextureData[i] = colors[i].r;
+            mRawTextureData[i] = colors[i].mR;
         }
         else if (mNumChannels == 3)
         {
-            mRawTextureData[i] = colors[i].r;
-            mRawTextureData[i + 1] = colors[i].g;
-            mRawTextureData[i + 2] = colors[i].b;
+            mRawTextureData[i] = colors[i].mR;
+            mRawTextureData[i + 1] = colors[i].mG;
+            mRawTextureData[i + 2] = colors[i].mB;
         }
         else if (mNumChannels == 4)
         {
-            mRawTextureData[i] = colors[i].r;
-            mRawTextureData[i + 1] = colors[i].g;
-            mRawTextureData[i + 2] = colors[i].b;
-            mRawTextureData[i + 3] = colors[i].a;
+            mRawTextureData[i] = colors[i].mR;
+            mRawTextureData[i + 1] = colors[i].mG;
+            mRawTextureData[i + 2] = colors[i].mB;
+            mRawTextureData[i + 3] = colors[i].mA;
         }
     }
 }
@@ -366,20 +366,20 @@ void Texture2D::setPixel(int x, int y, const Color32 &color)
 
     if (mNumChannels == 1)
     {
-        mRawTextureData[index] = color.r;
+        mRawTextureData[index] = color.mR;
     }
     else if (mNumChannels == 3)
     {
-        mRawTextureData[index] = color.r;
-        mRawTextureData[index + 1] = color.g;
-        mRawTextureData[index + 2] = color.b;
+        mRawTextureData[index] = color.mR;
+        mRawTextureData[index + 1] = color.mG;
+        mRawTextureData[index + 2] = color.mB;
     }
     else if (mNumChannels == 4)
     {
-        mRawTextureData[index] = color.r;
-        mRawTextureData[index + 1] = color.g;
-        mRawTextureData[index + 2] = color.b;
-        mRawTextureData[index + 3] = color.a;
+        mRawTextureData[index] = color.mR;
+        mRawTextureData[index + 1] = color.mG;
+        mRawTextureData[index + 2] = color.mB;
+        mRawTextureData[index + 3] = color.mA;
     }
 }
 

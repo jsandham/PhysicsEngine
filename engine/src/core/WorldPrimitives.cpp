@@ -43,28 +43,36 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     std::set<ShaderMacro> variant1;
     variant1.insert(ShaderMacro::Directional);
     variant1.insert(ShaderMacro::HardShadows);
-    variant1.insert(ShaderMacro::ShowCascades);
 
     std::set<ShaderMacro> variant2;
     variant2.insert(ShaderMacro::Directional);
     variant2.insert(ShaderMacro::SoftShadows);
-    variant2.insert(ShaderMacro::ShowCascades);
 
     std::set<ShaderMacro> variant3;
-    variant3.insert(ShaderMacro::Spot);
+    variant3.insert(ShaderMacro::Directional);
     variant3.insert(ShaderMacro::HardShadows);
+    variant3.insert(ShaderMacro::ShowCascades);
 
     std::set<ShaderMacro> variant4;
-    variant4.insert(ShaderMacro::Spot);
+    variant4.insert(ShaderMacro::Directional);
     variant4.insert(ShaderMacro::SoftShadows);
+    variant4.insert(ShaderMacro::ShowCascades);
 
     std::set<ShaderMacro> variant5;
-    variant5.insert(ShaderMacro::Point);
+    variant5.insert(ShaderMacro::Spot);
     variant5.insert(ShaderMacro::HardShadows);
 
     std::set<ShaderMacro> variant6;
-    variant6.insert(ShaderMacro::Point);
+    variant6.insert(ShaderMacro::Spot);
     variant6.insert(ShaderMacro::SoftShadows);
+
+    std::set<ShaderMacro> variant7;
+    variant7.insert(ShaderMacro::Point);
+    variant7.insert(ShaderMacro::HardShadows);
+
+    std::set<ShaderMacro> variant8;
+    variant8.insert(ShaderMacro::Point);
+    variant8.insert(ShaderMacro::SoftShadows);
 
     standardShader->addVariant(0, variant0);
     standardShader->addVariant(1, variant1);
@@ -73,6 +81,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     standardShader->addVariant(4, variant4);
     standardShader->addVariant(5, variant5);
     standardShader->addVariant(6, variant6);
+    standardShader->addVariant(7, variant7);
+    standardShader->addVariant(8, variant8);
 
     Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
     

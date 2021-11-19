@@ -1,5 +1,7 @@
 #include "../../include/drawers/MaterialDrawer.h"
 
+#define GLM_FORCE_RADIANS
+
 #include "components/Camera.h"
 #include "components/Light.h"
 #include "components/Transform.h"
@@ -14,11 +16,107 @@
 
 #include "graphics/Graphics.h"
 
+#include "Windows.h"
+
 using namespace PhysicsEditor;
+
+template <ShaderUniformType T> struct UniformDrawer
+{
+    static void draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+};
+
+template <ShaderUniformType T>
+inline void UniformDrawer<T>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Int>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    int temp = material->getInt(uniform->mName);
+
+    if (ImGui::InputInt(uniform->mName.c_str(), &temp))
+    {
+        material->setInt(uniform->mName, temp);
+    }
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    float temp = material->getFloat(uniform->mName);
+
+    if (ImGui::InputFloat(uniform->mName.c_str(), &temp))
+    {
+        material->setFloat(uniform->mName, temp);
+    }
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec2 temp = material->getVec2(uniform->mName);
+
+    if (ImGui::InputFloat2(uniform->mName.c_str(), &temp[0]))
+    {
+        material->setVec2(uniform->mName, temp);
+    }
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec3 temp = material->getVec3(uniform->mName);
+
+    if (ImGui::InputFloat3(uniform->mName.c_str(), &temp[0]))
+    {
+        material->setVec3(uniform->mName, temp);
+    }
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec4 temp = material->getVec4(uniform->mName);
+
+    if (ImGui::InputFloat4(uniform->mName.c_str(), &temp[0]))
+    {
+        material->setVec4(uniform->mName, temp);
+    }
+}
+
+template <>
+inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    Texture2D* texture = clipboard.getWorld()->getAssetById<Texture2D>(material->getTexture(uniform->mName));
+
+    bool releaseTriggered = false;
+    bool clearClicked = false;
+    bool isClicked = ImGui::ImageSlot(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
+
+    if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
+    {
+        material->setTexture(uniform->mName, clipboard.getDraggedId());
+        clipboard.clearDraggedItem();
+    }
+
+    if (clearClicked)
+    {
+        material->setTexture(uniform->mName, Guid::INVALID);
+    }
+
+    if (isClicked)
+    {
+        if (material->getTexture(uniform->mName).isValid())
+        {
+            clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
+        }
+    }
+}
 
 MaterialDrawer::MaterialDrawer()
 {
-    mCameraPos = glm::vec3(0.0f, 0.0f, -2.0);
+    mCameraPos = glm::vec3(0.0f, 0.0f, -4.0);
     mModel = glm::mat4(1.0f);
     mView = glm::lookAt(mCameraPos, mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
     mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
@@ -45,7 +143,7 @@ MaterialDrawer::~MaterialDrawer()
     Graphics::destroyFramebuffer(&mFBO, &mColor, &mDepth);
 }
 
-void MaterialDrawer::render(Clipboard &clipboard, Guid id)
+void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 
@@ -124,7 +222,7 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     // Draw material preview child window
     ImGui::Text("Preview");
 
-    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(clipboard.getWorld()->getAssetId("data\\meshes\\sphere.mesh"));
+    Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
     Shader *shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
 
     if (mesh == nullptr || shader == nullptr) {
@@ -134,7 +232,11 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
     Graphics::setGlobalCameraUniforms(mCameraUniform);
     Graphics::setGlobalLightUniforms(mLightUniform);
 
-    int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
+    int64_t variant = 0;
+    variant |= static_cast<int64_t>(ShaderMacro::Directional);
+    variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
+
+    int shaderProgram = shader->getProgramFromVariant(variant);
 
     shader->use(shaderProgram);
     shader->setMat4("model", mModel);
@@ -143,14 +245,12 @@ void MaterialDrawer::render(Clipboard &clipboard, Guid id)
 
     Graphics::bindFramebuffer(mFBO);
     Graphics::setViewport(0, 0, 1000, 1000);
-    Graphics::clearFrambufferColor(Color(0.0f, 0.0, 0.0, 1.0f));
+    Graphics::clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
     Graphics::clearFramebufferDepth(1.0f);
     Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
     Graphics::unbindFramebuffer();
 
-    ImGuiWindowFlags window_flags =
-        ImGuiWindowFlags_None; // ImGuiWindowFlags_HorizontalScrollbar | (disable_mouse_wheel ?
-                               // ImGuiWindowFlags_NoScrollWithMouse : 0);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
     ImGui::BeginChild("MaterialPreviewWindow",
                       ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
                       window_flags);

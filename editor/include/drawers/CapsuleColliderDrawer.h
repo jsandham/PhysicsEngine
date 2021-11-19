@@ -11,7 +11,7 @@ class CapsuleColliderDrawer : public InspectorDrawer
     CapsuleColliderDrawer();
     ~CapsuleColliderDrawer();
 
-    virtual void render(Clipboard &clipboard, Guid id) override;
+    virtual void render(Clipboard &clipboard, const Guid& id) override;
 };
 } // namespace PhysicsEditor
 

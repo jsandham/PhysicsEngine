@@ -13,28 +13,16 @@ const Color Color::gray(0.5f, 0.5f, 0.5f, 1.0f);
 const Color Color::cyan(0.0f, 1.0f, 1.0f, 1.0f);
 const Color Color::magenta(1.0f, 0.0f, 1.0f, 1.0f);
 
-Color::Color()
+Color::Color() : mR(0.0f), mG(0.0f), mB(0.0f), mA(0.0f)
 {
-    r = 0.0f;
-    g = 0.0f;
-    b = 0.0f;
-    a = 0.0f;
 }
 
-Color::Color(float r, float g, float b, float a)
+Color::Color(float r, float g, float b, float a) : mR(r), mG(g), mB(b), mA(a)
 {
-    this->r = r;
-    this->g = g;
-    this->b = b;
-    this->a = a;
 }
 
-Color::Color(glm::vec4 rgba)
+Color::Color(const glm::vec4 &rgba) : mR(rgba.x), mG(rgba.y), mB(rgba.z), mA(rgba.w)
 {
-    this->r = rgba.x;
-    this->g = rgba.y;
-    this->b = rgba.z;
-    this->a = rgba.w;
 }
 
 Color::~Color()
@@ -52,20 +40,12 @@ const Color32 Color32::gray(127, 127, 127, 255);
 const Color32 Color32::cyan(0, 255, 255, 255);
 const Color32 Color32::magenta(255, 0, 255, 255);
 
-Color32::Color32()
+Color32::Color32() : mR(0), mG(0), mB(0), mA(0)
 {
-    r = 0;
-    g = 0;
-    b = 0;
-    a = 0;
 }
 
-Color32::Color32(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+Color32::Color32(unsigned char r, unsigned char g, unsigned char b, unsigned char a) : mR(r), mG(g), mB(b), mA(a)
 {
-    this->r = r;
-    this->g = g;
-    this->b = b;
-    this->a = a;
 }
 
 Color32::~Color32()

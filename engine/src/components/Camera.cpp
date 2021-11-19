@@ -31,7 +31,7 @@ Camera::Camera(World* world) : Component(world)
     mTargets.mSsaoNoiseTex = 0;
 
     mRenderPath = RenderPath::Forward;
-    mRenderMode = RenderMode::Color;
+    mColorTarget = ColorTarget::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
@@ -90,7 +90,7 @@ Camera::Camera(World* world, Guid id) : Component(world, id)
     mTargets.mSsaoNoiseTex = 0;
 
     mRenderPath = RenderPath::Forward;
-    mRenderMode = RenderMode::Color;
+    mColorTarget = ColorTarget::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
     mGizmos = CameraGizmos::Gizmos_Off;
@@ -133,7 +133,7 @@ void Camera::serialize(YAML::Node &out) const
 
     out["renderTextureId"] = mRenderTextureId;
     out["renderPath"] = mRenderPath;
-    out["renderMode"] = mRenderMode;
+    out["colorTarget"] = mColorTarget;
     out["cameraMode"] = mMode;
     out["cameraSSAO"] = mSSAO;
     out["cameraGizmos"] = mGizmos;
@@ -151,7 +151,7 @@ void Camera::deserialize(const YAML::Node &in)
 
     mRenderTextureId = YAML::getValue<Guid>(in, "renderTextureId");
     mRenderPath = YAML::getValue<RenderPath>(in, "renderPath");
-    mRenderMode = YAML::getValue<RenderMode>(in, "renderMode");
+    mColorTarget = YAML::getValue<ColorTarget>(in, "colorTarget");
     mMode = YAML::getValue<CameraMode>(in, "cameraMode");
     mSSAO = YAML::getValue<CameraSSAO>(in, "cameraSSAO");
     mGizmos = YAML::getValue<CameraGizmos>(in, "cameraGizmos");
@@ -285,7 +285,7 @@ Guid Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
-    Graphics::readColorPickingPixel(&mTargets, x, y, &color);
+    Graphics::readColorAtPixel(&mTargets.mColorPickingFBO, x, y, &color);
 
     std::unordered_map<Color32, Guid>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())

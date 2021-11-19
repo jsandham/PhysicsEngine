@@ -18,7 +18,7 @@ ShaderDrawer::~ShaderDrawer()
 {
 }
 
-void ShaderDrawer::render(Clipboard &clipboard, Guid id)
+void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

@@ -53,10 +53,7 @@ void GameLayer::init()
         system->init(&mWorld);
     }
 
-    CameraSettings settings;
-    settings.mRenderToScreen = true;
-
-    cameraSystem->configureCamera(settings);
+    cameraSystem->configureCamera();
 }
 
 void GameLayer::begin()

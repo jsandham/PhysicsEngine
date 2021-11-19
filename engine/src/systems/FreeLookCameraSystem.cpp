@@ -165,9 +165,9 @@ void FreeLookCameraSystem::resetCamera()
     mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 }
 
-void FreeLookCameraSystem::configureCamera(CameraSettings settings)
+void FreeLookCameraSystem::configureCamera()
 {
-    mCamera->mRenderToScreen = settings.mRenderToScreen;
+    mCamera->mRenderToScreen = true;
 }
 
 void FreeLookCameraSystem::setViewport(Viewport viewport)

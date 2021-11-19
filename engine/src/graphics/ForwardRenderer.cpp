@@ -85,11 +85,11 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     state.mCameraState.mView = camera->getViewMatrix();
     state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
 
-    // update camera state data
-    Graphics::setGlobalCameraUniforms(state.mCameraState);
-
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
+
+    // update camera state data
+    Graphics::setGlobalCameraUniforms(state.mCameraState);
 
     if (camera->mRenderTextureId.isValid())
     {
@@ -325,7 +325,10 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         variant = static_cast<int64_t>(ShaderMacro::Directional);
         if (camera->mShadowCascades != ShadowCascades::NoCascades)
         {
-            variant |= static_cast<int64_t>(ShaderMacro::ShowCascades);
+            if (camera->mColorTarget == ColorTarget::ShadowCascades)
+            {
+                variant |= static_cast<int64_t>(ShaderMacro::ShowCascades);
+            }
         }
     }
     else if (light->mLightType == LightType::Spot)
@@ -372,8 +375,8 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     int currentMaterialIndex = -1;
     int currentShaderIndex = -1;
 
-    Shader *shader = NULL;
-    Material *material = NULL;
+    Shader *shader = nullptr;
+    Material *material = nullptr;
 
     for (size_t i = 0; i < renderQueue.size(); i++)
     {

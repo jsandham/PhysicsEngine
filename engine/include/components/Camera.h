@@ -51,16 +51,13 @@ enum class RenderPath
     Deferred
 };
 
-enum class RenderMode
+enum class ColorTarget
 {
     Color,
-    Depth,
     Normal,
-    ColorPicking,
     Position,
-    AlbedoSpecular,
-    SSAO,
-    CascadeShadowMap
+    LinearDepth,
+    ShadowCascades
 };
 
 enum class ShadowCascades
@@ -92,18 +89,13 @@ struct CameraTargets
     unsigned int mSsaoNoiseTex;
 };
 
-struct CameraSettings
-{
-    bool mRenderToScreen;
-};
-
 class Camera : public Component
 {
   public:
     Guid mRenderTextureId;
 
     RenderPath mRenderPath;
-    RenderMode mRenderMode;
+    ColorTarget mColorTarget;
     CameraMode mMode;
     CameraSSAO mSSAO;
     CameraGizmos mGizmos;
@@ -273,19 +265,19 @@ template <> struct convert<PhysicsEngine::RenderPath>
     }
 };
 
-// RenderMode
-template <> struct convert<PhysicsEngine::RenderMode>
+// ColorTarget
+template <> struct convert<PhysicsEngine::ColorTarget>
 {
-    static Node encode(const PhysicsEngine::RenderMode& rhs)
+    static Node encode(const PhysicsEngine::ColorTarget& rhs)
     {
         Node node;
         node = static_cast<int>(rhs);
         return node;
     }
 
-    static bool decode(const Node& node, PhysicsEngine::RenderMode& rhs)
+    static bool decode(const Node &node, PhysicsEngine::ColorTarget &rhs)
     {
-        rhs = static_cast<PhysicsEngine::RenderMode>(node.as<int>());
+        rhs = static_cast<PhysicsEngine::ColorTarget>(node.as<int>());
         return true;
     }
 };

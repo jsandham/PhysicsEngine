@@ -15,7 +15,7 @@ Texture3DDrawer::~Texture3DDrawer()
 {
 }
 
-void Texture3DDrawer::render(Clipboard &clipboard, Guid id)
+void Texture3DDrawer::render(Clipboard &clipboard, const Guid& id)
 {
 	InspectorDrawer::render(clipboard, id);
 

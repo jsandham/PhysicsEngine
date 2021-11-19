@@ -83,7 +83,7 @@ Texture2DDrawer::~Texture2DDrawer()
 {
 }
 
-void Texture2DDrawer::render(Clipboard &clipboard, Guid id)
+void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

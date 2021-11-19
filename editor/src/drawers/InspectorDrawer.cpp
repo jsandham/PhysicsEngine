@@ -14,7 +14,7 @@ InspectorDrawer::~InspectorDrawer()
 {
 }
 
-void InspectorDrawer::render(Clipboard& clipboard, Guid id)
+void InspectorDrawer::render(Clipboard& clipboard, const Guid& id)
 {
 	if (isHovered())
 	{

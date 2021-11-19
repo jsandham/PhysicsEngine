@@ -22,7 +22,7 @@ class InspectorDrawer
     InspectorDrawer();
     virtual ~InspectorDrawer() = 0;
 
-    virtual void render(Clipboard &clipboard, Guid id);
+    virtual void render(Clipboard &clipboard, const Guid& id);
 
     ImVec2 getContentMin() const;
     ImVec2 getContentMax() const;

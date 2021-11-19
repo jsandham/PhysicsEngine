@@ -170,6 +170,63 @@ struct DeferredRendererState
     int mQuadShaderTexLoc;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+struct DebugRendererState
+{
+    // internal graphics camera state
+    CameraUniform mCameraState;
+
+    // normals
+    int mNormalsShaderProgram;
+    int mNormalsShaderModelLoc;
+
+    // position
+    int mPositionShaderProgram;
+    int mPositionShaderModelLoc;
+
+    // linear depth
+    int mLinearDepthShaderProgram;
+    int mLinearDepthShaderModelLoc;
+
+    // color picking
+    int mColorShaderProgram;
+    int mColorShaderModelLoc;
+    int mColorShaderColorLoc;
+
+    // quad
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
+    int mQuadShaderProgram;
+    int mQuadShaderTexLoc;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct GizmoRendererState
 {
     int mLineShaderProgram;
@@ -230,7 +287,7 @@ class Graphics
                               unsigned int *queryId1);
     static void destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1);
     static void resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged);
-    static void readColorPickingPixel(const CameraTargets *targets, int x, int y, Color32 *color);
+    static void readColorAtPixel(const unsigned int *fbo, int x, int y, Color32 *color);
     static void createTargets(LightTargets *targets, ShadowMapResolution resolution);
     static void destroyTargets(LightTargets *targets);
     static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
@@ -315,6 +372,12 @@ class Graphics
     static void compileScreenQuadShader(DeferredRendererState &state);
     static void compileColorShader(DeferredRendererState &state);
 
+    static void compileNormalShader(DebugRendererState &state);
+    static void compilePositionShader(DebugRendererState &state);
+    static void compileLinearDepthShader(DebugRendererState &state);
+    static void compileColorShader(DebugRendererState &state);
+    static void compileScreenQuadShader(DebugRendererState &state);
+
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
     static void compileGridShader(GizmoRendererState &state);
@@ -330,6 +393,7 @@ class Graphics
 
     static std::string getStandardVertexShader();
     static std::string getStandardFragmentShader();
+    
 };
 } // namespace PhysicsEngine
 

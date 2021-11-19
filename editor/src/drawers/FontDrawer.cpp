@@ -14,7 +14,7 @@ FontDrawer::~FontDrawer()
 {
 }
 
-void FontDrawer::render(Clipboard &clipboard, Guid id)
+void FontDrawer::render(Clipboard &clipboard, const Guid& id)
 {
 	InspectorDrawer::render(clipboard, id);
 

@@ -119,24 +119,24 @@ std::vector<Color32> Cubemap::getPixels(CubemapFace face) const
         Color32 color;
         if (mNumChannels == 1)
         {
-            color.r = mRawTextureData[i];
-            color.g = mRawTextureData[i];
-            color.b = mRawTextureData[i];
-            color.a = 0;
+            color.mR = mRawTextureData[i];
+            color.mG = mRawTextureData[i];
+            color.mB = mRawTextureData[i];
+            color.mA = 0;
         }
         else if (mNumChannels == 3)
         {
-            color.r = mRawTextureData[i];
-            color.g = mRawTextureData[i + 1];
-            color.b = mRawTextureData[i + 2];
-            color.a = 0;
+            color.mR = mRawTextureData[i];
+            color.mG = mRawTextureData[i + 1];
+            color.mB = mRawTextureData[i + 2];
+            color.mA = 0;
         }
         else if (mNumChannels == 4)
         {
-            color.r = mRawTextureData[i];
-            color.g = mRawTextureData[i + 1];
-            color.b = mRawTextureData[i + 2];
-            color.a = mRawTextureData[i + 3];
+            color.mR = mRawTextureData[i];
+            color.mG = mRawTextureData[i + 1];
+            color.mB = mRawTextureData[i + 2];
+            color.mA = mRawTextureData[i + 3];
         }
 
         colors.push_back(color);
@@ -162,24 +162,24 @@ Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
     Color32 color;
     if (mNumChannels == 1)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index];
-        color.b = mRawTextureData[index];
-        color.a = 0;
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index];
+        color.mB = mRawTextureData[index];
+        color.mA = 0;
     }
     else if (mNumChannels == 3)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index + 1];
-        color.b = mRawTextureData[index + 2];
-        color.a = 0;
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index + 1];
+        color.mB = mRawTextureData[index + 2];
+        color.mA = 0;
     }
     else if (mNumChannels == 4)
     {
-        color.r = mRawTextureData[index];
-        color.g = mRawTextureData[index + 1];
-        color.b = mRawTextureData[index + 2];
-        color.a = mRawTextureData[index + 3];
+        color.mR = mRawTextureData[index];
+        color.mG = mRawTextureData[index + 1];
+        color.mB = mRawTextureData[index + 2];
+        color.mA = mRawTextureData[index + 3];
     }
 
     return color;
@@ -218,20 +218,20 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, const Color32 &color)
 
     if (mNumChannels == 1)
     {
-        mRawTextureData[index] = color.r;
+        mRawTextureData[index] = color.mR;
     }
     else if (mNumChannels == 3)
     {
-        mRawTextureData[index] = color.r;
-        mRawTextureData[index + 1] = color.g;
-        mRawTextureData[index + 2] = color.b;
+        mRawTextureData[index] = color.mR;
+        mRawTextureData[index + 1] = color.mG;
+        mRawTextureData[index + 2] = color.mB;
     }
     else if (mNumChannels == 4)
     {
-        mRawTextureData[index] = color.r;
-        mRawTextureData[index + 1] = color.g;
-        mRawTextureData[index + 2] = color.b;
-        mRawTextureData[index + 3] = color.a;
+        mRawTextureData[index] = color.mR;
+        mRawTextureData[index + 1] = color.mG;
+        mRawTextureData[index + 2] = color.mB;
+        mRawTextureData[index + 3] = color.mA;
     }
 }
 

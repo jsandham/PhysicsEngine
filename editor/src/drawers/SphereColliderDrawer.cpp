@@ -14,7 +14,7 @@ SphereColliderDrawer::~SphereColliderDrawer()
 {
 }
 
-void SphereColliderDrawer::render(Clipboard &clipboard, Guid id)
+void SphereColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

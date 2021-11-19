@@ -15,7 +15,7 @@ SpriteDrawer::~SpriteDrawer()
   
 }
 
-void SpriteDrawer::render(Clipboard& clipboard, Guid id)
+void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

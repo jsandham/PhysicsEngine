@@ -8,9 +8,9 @@ namespace PhysicsEditor
 class MeshDrawer : public InspectorDrawer
 {
   private:
-    GLuint mFBO;
-    GLuint mColor;
-    GLuint mDepth;
+    unsigned int mFBO;
+    unsigned int mColor;
+    unsigned int mDepth;
 
     CameraUniform mCameraUniform;
 
@@ -27,7 +27,7 @@ class MeshDrawer : public InspectorDrawer
     MeshDrawer();
     ~MeshDrawer();
 
-    virtual void render(Clipboard &clipboard, Guid id) override;
+    virtual void render(Clipboard &clipboard, const Guid& id) override;
 };
 } // namespace PhysicsEditor
 

@@ -14,7 +14,7 @@ LineRendererDrawer::~LineRendererDrawer()
 {
 }
 
-void LineRendererDrawer::render(Clipboard &clipboard, Guid id)
+void LineRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

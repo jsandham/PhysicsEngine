@@ -9,9 +9,11 @@ Shader:
   geometrySource : 
   variants:
     0 : [None]
-    1 : [Directional, HardShadows, ShowCascades]
-    2 : [Directional, SoftShadows, ShowCascades]
-    3 : [Spot, HardShadows]
-    4 : [Spot, SoftShadows]
-    5 : [Point, HardShadows]
-    6 : [Point, SoftShadows]
+    1 : [Directional, HardShadows]
+    2 : [Directional, SoftShadows]
+    3 : [Directional, HardShadows, ShowCascades]
+    4 : [Directional, SoftShadows, ShowCascades]
+    5 : [Spot, HardShadows]
+    6 : [Spot, SoftShadows]
+    7 : [Point, HardShadows]
+    8 : [Point, SoftShadows]

@@ -58,6 +58,7 @@ void RenderSystem::init(World *world)
 
     mForwardRenderer.init(mWorld);
     mDeferredRenderer.init(mWorld);
+    mDebugRenderer.init(mWorld);
 }
 
 void RenderSystem::update(const Input &input, const Time &time)
@@ -80,13 +81,20 @@ void RenderSystem::update(const Input &input, const Time &time)
             buildRenderQueue();
             sortRenderQueue();
 
-            if (camera->mRenderPath == RenderPath::Forward)
+            if (camera->mColorTarget == ColorTarget::Color || camera->mColorTarget == ColorTarget::ShadowCascades)
             {
-                mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
+                if (camera->mRenderPath == RenderPath::Forward)
+                {
+                    mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
+                }
+                else
+                {
+                    mDeferredRenderer.update(input, camera, mRenderQueue, mRenderObjects);
+                }
             }
             else
             {
-                mDeferredRenderer.update(input, camera, mRenderQueue, mRenderObjects);
+                mDebugRenderer.update(input, camera, mRenderQueue, mRenderObjects);
             }
         }
     }

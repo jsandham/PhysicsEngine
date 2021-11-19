@@ -5,6 +5,8 @@
 
 #include "imgui.h"
 
+#include <Windows.h>
+
 using namespace PhysicsEditor;
 
 CameraDrawer::CameraDrawer()
@@ -15,7 +17,7 @@ CameraDrawer::~CameraDrawer()
 {
 }
 
-void CameraDrawer::render(Clipboard &clipboard, Guid id)
+void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 
@@ -31,12 +33,12 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
             int renderPath = static_cast<int>(camera->mRenderPath);
-            int renderMode = static_cast<int>(camera->mRenderMode);
+            int colorTarget = static_cast<int>(camera->mColorTarget);
             int mode = static_cast<int>(camera->mMode);
             int ssao = static_cast<int>(camera->mSSAO);
 
             const char* renderPathNames[] = { "Forward", "Deferred" };
-            const char* renderModeNames[] = { "Color", "Depth", "Normals" };
+            const char* colorTargetNames[] = { "Color", "Normal", "Position", "Linear Depth", "Shadow Cascades" };
             const char* modeNames[] = { "Main", "Secondary" };
             const char* ssaoNames[] = { "On", "Off" };
 
@@ -45,9 +47,9 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
                 camera->mRenderPath = static_cast<RenderPath>(renderPath);
             }
 
-            if (ImGui::Combo("Render Mode", &renderMode, renderModeNames, 3))
+            if (ImGui::Combo("Color Target", &colorTarget, colorTargetNames, 5))
             {
-                camera->mRenderMode = static_cast<RenderMode>(renderMode);
+                camera->mColorTarget = static_cast<ColorTarget>(colorTarget);
             }
 
             if (ImGui::Combo("Mode", &mode, modeNames, 2))
@@ -60,7 +62,7 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
                 camera->mSSAO = static_cast<CameraSSAO>(ssao);
             }
 
-            Guid renderTargetId = camera->mRenderTextureId;
+            /*Guid renderTargetId = camera->mRenderTextureId;
 
             std::string renderTargetName = "None (Render Texture)";
             if (renderTargetId.isValid())
@@ -83,10 +85,10 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
             if (isClicked)
             {
                 clipboard.setSelectedItem(InteractionType::RenderTexture, renderTargetId);
-            }
+            }*/
 
-            glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.r, camera->mBackgroundColor.g,
-                camera->mBackgroundColor.b, camera->mBackgroundColor.a);
+            glm::vec4 backgroundColor = glm::vec4(camera->mBackgroundColor.mR, camera->mBackgroundColor.mG,
+                camera->mBackgroundColor.mB, camera->mBackgroundColor.mA);
 
             if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor)))
             {
@@ -102,24 +104,20 @@ void CameraDrawer::render(Clipboard &clipboard, Guid id)
 
                 if (ImGui::InputInt("x", &x))
                 {
-                    // CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mX, x, &scene.isDirty));
+                    camera->setViewport(x, y, width, height);
                 }
                 if (ImGui::InputInt("y", &y))
                 {
-                    // CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mY, y, &scene.isDirty));
+                    camera->setViewport(x, y, width, height);
                 }
                 if (ImGui::InputInt("Width", &width))
                 {
-                    // CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mWidth, width,
-                    // &scene.isDirty));
+                    camera->setViewport(x, y, width, height);
                 }
                 if (ImGui::InputInt("Height", &height))
                 {
-                    // CommandManager::addCommand(new ChangePropertyCommand<int>(&camera->mViewport.mHeight, height,
-                    // &scene.isDirty));
+                    camera->setViewport(x, y, width, height);
                 }
-
-                camera->setViewport(x, y, width, height);
 
                 ImGui::TreePop();
             }

@@ -53,7 +53,7 @@ namespace PhysicsEngine
         void update(const Input& input, const Time& time) override;
 
         void resetCamera();
-        void configureCamera(CameraSettings settings);
+        void configureCamera();
         void setViewport(Viewport viewport);
         void setFrustum(Frustum frustum);
         void setRenderPath(RenderPath path);

@@ -14,7 +14,7 @@ RigidbodyDrawer::~RigidbodyDrawer()
 {
 }
 
-void RigidbodyDrawer::render(Clipboard &clipboard, Guid id)
+void RigidbodyDrawer::render(Clipboard &clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 

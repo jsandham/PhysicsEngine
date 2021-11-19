@@ -11,7 +11,7 @@ class ShaderDrawer : public InspectorDrawer
     ShaderDrawer();
     ~ShaderDrawer();
 
-    virtual void render(Clipboard& clipboard, Guid id) override;
+    virtual void render(Clipboard& clipboard, const Guid& id) override;
 };
 } // namespace PhysicsEditor
 

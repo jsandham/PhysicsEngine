@@ -9,6 +9,7 @@
 
 #include "../components/Camera.h"
 
+#include "../graphics/DebugRenderer.h"
 #include "../graphics/DeferredRenderer.h"
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/RenderObject.h"
@@ -21,6 +22,7 @@ class RenderSystem : public System
   private:
     ForwardRenderer mForwardRenderer;
     DeferredRenderer mDeferredRenderer;
+    DebugRenderer mDebugRenderer;
 
     std::vector<RenderObject> mRenderObjects;
     std::vector<SpriteObject> mSpriteObjects;

@@ -11,7 +11,7 @@ class LineRendererDrawer : public InspectorDrawer
     LineRendererDrawer();
     ~LineRendererDrawer();
 
-    virtual void render(Clipboard &clipboard, Guid id) override;
+    virtual void render(Clipboard &clipboard, const Guid& id) override;
 };
 } // namespace PhysicsEditor
 

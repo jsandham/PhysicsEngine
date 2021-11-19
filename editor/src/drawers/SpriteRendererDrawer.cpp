@@ -16,7 +16,7 @@ SpriteRendererDrawer::~SpriteRendererDrawer()
 {
 }
 
-void SpriteRendererDrawer::render(Clipboard& clipboard, Guid id)
+void SpriteRendererDrawer::render(Clipboard& clipboard, const Guid& id)
 {
     InspectorDrawer::render(clipboard, id);
 
@@ -58,17 +58,17 @@ void SpriteRendererDrawer::render(Clipboard& clipboard, Guid id)
             }
 
             float color[4];
-            color[0] = spriteRenderer->mColor.r;
-            color[1] = spriteRenderer->mColor.g;
-            color[2] = spriteRenderer->mColor.b;
-            color[3] = spriteRenderer->mColor.a;
+            color[0] = spriteRenderer->mColor.mR;
+            color[1] = spriteRenderer->mColor.mG;
+            color[2] = spriteRenderer->mColor.mB;
+            color[3] = spriteRenderer->mColor.mA;
 
             if (ImGui::ColorEdit4("color", &color[0]))
             {
-                spriteRenderer->mColor.r = color[0];
-                spriteRenderer->mColor.g = color[1];
-                spriteRenderer->mColor.b = color[2];
-                spriteRenderer->mColor.a = color[3];
+                spriteRenderer->mColor.mR = color[0];
+                spriteRenderer->mColor.mG = color[1];
+                spriteRenderer->mColor.mB = color[2];
+                spriteRenderer->mColor.mA = color[3];
             }
 
             bool flipX = spriteRenderer->mFlipX;

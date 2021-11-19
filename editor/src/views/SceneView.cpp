@@ -13,8 +13,24 @@
 
 #include "../../include/imgui/imgui_extensions.h"
 
+#include <Windows.h>
+
 using namespace PhysicsEngine;
 using namespace PhysicsEditor;
+
+enum class DebugTargets
+{
+    Color,
+    ColorPicking,
+    Depth,
+    LinearDepth,
+    Normals,
+    ShadowCascades,
+    Position,
+    AlbedoSpecular,
+    SSAO,
+    SSAONoise
+};
 
 SceneView::SceneView() : Window("Scene View")
 {
@@ -94,33 +110,29 @@ void SceneView::update(Clipboard &clipboard)
 
     updateWorld(clipboard.getWorld());
 
-    const int count = 8;
-    const char* textureNames[] = { "Color",    "Color Picking",   "Depth", "Normals",
-                                    "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
+    const int count = 10;
+    const char* targetNames[] = { "Color", "Color Picking", "Depth", "Linear Depth", "Normals",
+                                    "Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
 
-    const unsigned int textures[] = { cameraSystem->getNativeGraphicsColorTex(),
-                                      cameraSystem->getNativeGraphicsColorPickingTex(),
-                                      cameraSystem->getNativeGraphicsDepthTex(),
-                                      cameraSystem->getNativeGraphicsNormalTex(),
-                                      cameraSystem->getNativeGraphicsPositionTex(),
-                                      cameraSystem->getNativeGraphicsAlbedoSpecTex(),
-                                      cameraSystem->getNativeGraphicsSSAOColorTex(),
-                                      cameraSystem->getNativeGraphicsSSAONoiseTex() };
+    const DebugTargets targets[] = {DebugTargets::Color, DebugTargets::ColorPicking, DebugTargets::Depth, 
+                                    DebugTargets::LinearDepth, DebugTargets::Normals, DebugTargets::ShadowCascades, 
+                                    DebugTargets::Position, DebugTargets::AlbedoSpecular, DebugTargets::SSAO,
+                                    DebugTargets::SSAONoise};
 
     ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
 
     // select draw texture dropdown
-    if (ImGui::BeginCombo("##DrawTexture", textureNames[mActiveTextureIndex]))
+    if (ImGui::BeginCombo("##DrawTexture", targetNames[mActiveTextureIndex]))
     {
         for (int n = 0; n < count; n++)
         {
-            if (textures[n] == -1)
+            /*if (textures[n] == -1)
             {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-            }
+            }*/
 
-            bool is_selected = (textureNames[mActiveTextureIndex] == textureNames[n]);
+            /*bool is_selected = (textureNames[mActiveTextureIndex] == textureNames[n]);
             if (ImGui::Selectable(textureNames[n], is_selected))
             {
                 mActiveTextureIndex = n;
@@ -129,13 +141,46 @@ void SceneView::update(Clipboard &clipboard)
                 {
                     ImGui::SetItemDefaultFocus();
                 }
+            }*/
+            bool is_selected = (targets[mActiveTextureIndex] == targets[n]);
+            if (ImGui::Selectable(targetNames[n], is_selected))
+            {
+                mActiveTextureIndex = n;
+
+                if (targets[mActiveTextureIndex] == DebugTargets::Color)
+                {
+                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
+                }
+                else if (targets[mActiveTextureIndex] == DebugTargets::Normals)
+                {
+                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Normal;
+                }
+                else if (targets[mActiveTextureIndex] == DebugTargets::Position)
+                {
+                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Position;
+                }
+                else if (targets[mActiveTextureIndex] == DebugTargets::LinearDepth) 
+                {
+                    cameraSystem->getCamera()->mColorTarget = ColorTarget::LinearDepth;
+                }
+                else if (targets[mActiveTextureIndex] == DebugTargets::ShadowCascades)
+                {
+                    cameraSystem->getCamera()->mColorTarget = ColorTarget::ShadowCascades;
+                }
+
+                //DebugBreak();
+
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
             }
 
-            if (textures[n] == -1)
+            /*if (textures[n] == -1)
             {
                 ImGui::PopItemFlag();
                 ImGui::PopStyleVar();
-            }
+            }*/
         }
         ImGui::EndCombo();
     }
@@ -303,8 +348,28 @@ void SceneView::update(Clipboard &clipboard)
     }
 
     // Finally draw scene
-    ImGui::Image((void*)(intptr_t)textures[mActiveTextureIndex], size, ImVec2(0, size.y / 1080.0f),
-        ImVec2(size.x / 1920.0f, 0));
+    unsigned int tex = cameraSystem->getNativeGraphicsColorTex();
+    
+    switch (targets[mActiveTextureIndex])
+    {
+    case DebugTargets::Depth:
+        tex = cameraSystem->getNativeGraphicsDepthTex();
+        break;
+    case DebugTargets::ColorPicking:
+        tex = cameraSystem->getNativeGraphicsColorPickingTex();
+        break;
+    case DebugTargets::AlbedoSpecular:
+        tex = cameraSystem->getNativeGraphicsAlbedoSpecTex();
+        break;
+    case DebugTargets::SSAO:
+        tex = cameraSystem->getNativeGraphicsSSAOColorTex();
+        break;
+    case DebugTargets::SSAONoise:
+        tex = cameraSystem->getNativeGraphicsSSAONoiseTex();
+        break;
+    }
+
+    ImGui::Image((void*)(intptr_t)tex, size, ImVec2(0, size.y / 1080.0f), ImVec2(size.x / 1920.0f, 0));
 
     // draw transform gizmo if entity is selected
     if (clipboard.getSelectedType() == InteractionType::Entity)
