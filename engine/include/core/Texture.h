@@ -52,7 +52,7 @@ class Texture : public Asset
 
   public:
     Texture(World *world);
-    Texture(World *world, Guid id);
+    Texture(World *world, const Guid& id);
     ~Texture();
 
     virtual void serialize(YAML::Node &out) const override;

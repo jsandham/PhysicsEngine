@@ -147,11 +147,8 @@ void SceneView::update(Clipboard &clipboard)
             {
                 mActiveTextureIndex = n;
 
-                if (targets[mActiveTextureIndex] == DebugTargets::Color)
-                {
-                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
-                }
-                else if (targets[mActiveTextureIndex] == DebugTargets::Normals)
+                cameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
+                if (targets[mActiveTextureIndex] == DebugTargets::Normals)
                 {
                     cameraSystem->getCamera()->mColorTarget = ColorTarget::Normal;
                 }
@@ -167,8 +164,6 @@ void SceneView::update(Clipboard &clipboard)
                 {
                     cameraSystem->getCamera()->mColorTarget = ColorTarget::ShadowCascades;
                 }
-
-                //DebugBreak();
 
                 if (is_selected)
                 {

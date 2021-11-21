@@ -128,7 +128,7 @@ class Camera : public Component
 
   public:
     Camera(World *world);
-    Camera(World *world, Guid id);
+    Camera(World *world, const Guid& id);
     ~Camera();
 
     virtual void serialize(YAML::Node &out) const override;

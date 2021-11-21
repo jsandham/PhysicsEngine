@@ -31,7 +31,7 @@ class Object
 
   public:
     Object(World *world);
-    Object(World *world, Guid id);
+    Object(World *world, const Guid& id);
     virtual ~Object() = 0;
 
     virtual void serialize(YAML::Node &out) const;

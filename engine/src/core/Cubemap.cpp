@@ -20,7 +20,7 @@ Cubemap::Cubemap(World *world) : Texture(world)
     mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(World *world, Guid id) : Texture(world, id)
+Cubemap::Cubemap(World *world, const Guid& id) : Texture(world, id)
 {
     mDimension = TextureDimension::Cube;
 

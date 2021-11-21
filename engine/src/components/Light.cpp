@@ -45,7 +45,7 @@ Light::Light(World* world) : Component(world)
     mTargets.mShadowCubemapDepthTex = 0;
 }
 
-Light::Light(World* world, Guid id) : Component(world, id)
+Light::Light(World* world, const Guid& id) : Component(world, id)
 {
     mEntityId = Guid::INVALID;
 

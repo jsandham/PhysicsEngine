@@ -30,7 +30,7 @@ class Transform : public Component
 
   public:
     Transform(World *world);
-    Transform(World *world, Guid id);
+    Transform(World *world, const Guid& id);
     ~Transform();
 
     virtual void serialize(YAML::Node &out) const override;

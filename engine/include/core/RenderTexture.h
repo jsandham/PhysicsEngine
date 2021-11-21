@@ -21,7 +21,7 @@ namespace PhysicsEngine
 
     public:
         RenderTexture(World* world);
-        RenderTexture(World* world, Guid id);
+        RenderTexture(World* world, const Guid& id);
         RenderTexture(World* world, int width, int height);
         RenderTexture(World* world, int width, int height, TextureFormat format);
         ~RenderTexture();

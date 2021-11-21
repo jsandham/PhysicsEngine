@@ -94,5 +94,5 @@ void BuildWindow::build(const std::filesystem::path& path)
 		buildSrcPath.string() + " " +
 		executablePath.string();
 
-	//system(command.c_str());
+	system(command.c_str());
 }

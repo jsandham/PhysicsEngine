@@ -87,7 +87,8 @@ struct ShaderUniform
     char mData[64];
     std::string mName; // variable name in GLSL (including block name if applicable)
     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-    int mLocation;     // uniform location in shader program   rename to cacheLocation?
+    int mCachedHandle; // if data stores a texture id, this is the cached handle
+    int mCachedLocation;     // uniform location in shader program   rename to cacheLocation?
 };
 
 struct ShaderAttribute
@@ -120,7 +121,7 @@ class Shader : public Asset
 
   public:
     Shader(World *world);
-    Shader(World *world, Guid id);
+    Shader(World *world, const Guid& id);
     ~Shader();
 
     virtual void serialize(YAML::Node &out) const override;

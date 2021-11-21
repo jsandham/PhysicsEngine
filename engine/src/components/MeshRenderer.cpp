@@ -20,7 +20,7 @@ MeshRenderer::MeshRenderer(World* world) : Component(world)
     mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(World* world, Guid id) : Component(world, id)
+MeshRenderer::MeshRenderer(World* world, const Guid& id) : Component(world, id)
 {
     mMeshId = Guid::INVALID;
 

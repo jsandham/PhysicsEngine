@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <assert.h>
 
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Graphics.h"
@@ -481,18 +482,12 @@ void Graphics::createTargets(CameraTargets *targets, Viewport viewport, glm::vec
     unsigned int geometryAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, geometryAttachments);
 
-
-
-
     // create and attach depth buffer (renderbuffer)
     unsigned int rboDepth;
     glGenRenderbuffers(1, &rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
-
-
 
     Graphics::checkFrambufferError(__LINE__, __FILE__);
 
@@ -1684,57 +1679,45 @@ int Graphics::getTexture2D(int nameLocation, int texUnit, int program)
     return tex;
 }
 
-void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<int> &textures,
-                             int shaderProgram)
+void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms)
 {
     int textureUnit = 0;
     for (size_t i = 0; i < uniforms.size(); i++)
     {
+        assert(uniforms[i].mCachedLocation != -1);
+
         if (uniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            if (textures[textureUnit] != -1)
+            if (uniforms[i].mCachedHandle != -1)
             {
-                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram), textureUnit,
-                                       textures[textureUnit]);
+                Graphics::setTexture2D(uniforms[i].mCachedLocation, textureUnit, uniforms[i].mCachedHandle);
             }
             else
             {
-                Graphics::setTexture2D(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram), textureUnit, 0);
+                Graphics::setTexture2D(uniforms[i].mCachedLocation, textureUnit, 0);
             }
-
-            Graphics::checkError(__LINE__, __FILE__);
 
             textureUnit++;
         }
         else if (uniforms[i].mType == ShaderUniformType::Int)
         {
-            Graphics::setInt(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
-                             *reinterpret_cast<const int *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            Graphics::setInt(uniforms[i].mCachedLocation, *reinterpret_cast<const int *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Float)
         {
-            Graphics::setFloat(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
-                               *reinterpret_cast<const float *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            Graphics::setFloat(uniforms[i].mCachedLocation, *reinterpret_cast<const float *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
-            Graphics::setVec2(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
-                              *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            Graphics::setVec2(uniforms[i].mCachedLocation, *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
-            Graphics::setVec3(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
-                              *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            Graphics::setVec3(uniforms[i].mCachedLocation, *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
-            Graphics::setVec4(findUniformLocation(uniforms[i].mName.c_str(), shaderProgram),
-                              *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            Graphics::setVec4(uniforms[i].mCachedLocation, *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
         }
     }
 
@@ -2143,7 +2126,7 @@ void Graphics::compileGBufferShader(DeferredRendererState &state)
                                "    gl_Position = Camera.projection * Camera.view * worldPos;\n"
                                "}\n";
 
-    std::string fragmentShader = "#version 430 core\n"
+    /*std::string fragmentShader = "#version 430 core\n"
                                  "layout(location = 0) out vec3 gPosition;\n"
                                  "layout(location = 1) out vec3 gNormal;\n"
                                  "layout(location = 2) out vec4 gAlbedoSpec;\n"
@@ -2162,6 +2145,35 @@ void Graphics::compileGBufferShader(DeferredRendererState &state)
                                  "  gAlbedoSpec.rgb = texture(texture_diffuse1, TexCoords).rgb;\n"
                                  "  // store specular intensity in gAlbedoSpec's alpha component\n"
                                  "  gAlbedoSpec.a = texture(texture_specular1, TexCoords).r;\n"
+                                 "}\n";*/
+    std::string fragmentShader = "#version 430 core\n"
+                                 "layout(location = 0) out vec3 gPosition;\n"
+                                 "layout(location = 1) out vec3 gNormal;\n"
+                                 "layout(location = 2) out vec4 gAlbedoSpec;\n"
+                                 "in vec2 TexCoords;\n"
+                                 "in vec3 FragPos;\n"
+                                 "in vec3 Normal;\n"
+                                 "struct Material\n"
+                                 "{\n"
+                                 "    float shininess;\n"
+                                 "    vec3 ambient;\n"
+                                 "    vec3 diffuse;\n"
+                                 "    vec3 specular;\n"
+                                 "    sampler2D mainTexture;\n"
+                                 "    sampler2D normalMap;\n"
+                                 "    sampler2D specularMap;\n"
+                                 "};\n"
+                                 "uniform Material material;\n"
+                                 "void main()\n"
+                                 "{\n"
+                                 "  // store the fragment position vector in the first gbuffer texture\n"
+                                 "  gPosition = FragPos;\n"
+                                 "  // also store the per-fragment normals into the gbuffer\n"
+                                 "  gNormal = normalize(Normal);\n"
+                                 "  // and the diffuse per-fragment color\n"
+                                 "  gAlbedoSpec.rgb = texture(material.mainTexture, TexCoords).rgb;\n"
+                                 "  // store specular intensity in gAlbedoSpec's alpha component\n"
+                                 "  gAlbedoSpec.a = 1.0;//texture(texture_specular1, TexCoords).r;\n"
                                  "}\n";
 
     unsigned int program = 0;

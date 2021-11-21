@@ -30,7 +30,7 @@ class Rigidbody : public Component
 
   public:
     Rigidbody(World *world);
-    Rigidbody(World *world, Guid id);
+    Rigidbody(World *world, const Guid& id);
     ~Rigidbody();
 
     virtual void serialize(YAML::Node &out) const override;

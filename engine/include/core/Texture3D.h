@@ -17,7 +17,7 @@ class Texture3D : public Texture
 
   public:
     Texture3D(World *world);
-    Texture3D(World *world, Guid id);
+    Texture3D(World *world, const Guid& id);
     Texture3D(World *world, int width, int height, int depth, int numChannels);
     ~Texture3D();
 

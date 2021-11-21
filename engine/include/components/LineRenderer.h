@@ -22,7 +22,7 @@ class LineRenderer : public Component
 
   public:
     LineRenderer(World *world);
-    LineRenderer(World *world, Guid id);
+    LineRenderer(World *world, const Guid& id);
     ~LineRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

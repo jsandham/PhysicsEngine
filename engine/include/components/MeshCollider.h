@@ -18,7 +18,7 @@ class MeshCollider : public Collider
 
   public:
     MeshCollider(World *world);
-    MeshCollider(World *world, Guid id);
+    MeshCollider(World *world, const Guid& id);
     ~MeshCollider();
 
     virtual void serialize(YAML::Node &out) const override;

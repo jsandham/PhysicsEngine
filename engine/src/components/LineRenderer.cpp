@@ -13,7 +13,7 @@ LineRenderer::LineRenderer(World* world) : Component(world)
     mMaterialId = Guid::INVALID;
 }
 
-LineRenderer::LineRenderer(World* world, Guid id) : Component(world, id)
+LineRenderer::LineRenderer(World* world, const Guid& id) : Component(world, id)
 {
     mStart = glm::vec3(0.0f, 0.0f, 0.0f);
     mEnd = glm::vec3(1.0f, 0.0f, 0.0f);

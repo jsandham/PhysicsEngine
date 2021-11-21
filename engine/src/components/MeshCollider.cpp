@@ -10,7 +10,7 @@ MeshCollider::MeshCollider(World* world) : Collider(world)
     mMeshId = Guid::INVALID;
 }
 
-MeshCollider::MeshCollider(World* world, Guid id) : Collider(world, id)
+MeshCollider::MeshCollider(World* world, const Guid& id) : Collider(world, id)
 {
     mMeshId = Guid::INVALID;
 }

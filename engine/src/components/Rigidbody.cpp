@@ -20,7 +20,7 @@ Rigidbody::Rigidbody(World* world) : Component(world)
     mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(World* world, Guid id) : Component(world, id)
+Rigidbody::Rigidbody(World* world, const Guid& id) : Component(world, id)
 {
     mUseGravity = true;
     mEnabled = true;

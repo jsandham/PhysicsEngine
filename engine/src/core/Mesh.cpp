@@ -13,7 +13,7 @@ Mesh::Mesh(World *world) : Asset(world)
     mChanged = false;
 }
 
-Mesh::Mesh(World *world, Guid id) : Asset(world, id)
+Mesh::Mesh(World *world, const Guid& id) : Asset(world, id)
 {
     mSourceFilepath = "";
     mCreated = false;

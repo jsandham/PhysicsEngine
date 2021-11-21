@@ -17,7 +17,7 @@ Font::Font(World *world) : Asset(world)
 {
 }
 
-Font::Font(World *world, Guid id) : Asset(world, id)
+Font::Font(World *world, const Guid& id) : Asset(world, id)
 {
 }
 

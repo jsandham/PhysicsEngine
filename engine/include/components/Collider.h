@@ -19,7 +19,7 @@ class Collider : public Component
 
   public:
     Collider(World *world);
-    Collider(World *world, Guid id);
+    Collider(World *world, const Guid& id);
     ~Collider();
 
     virtual void serialize(YAML::Node &out) const override;

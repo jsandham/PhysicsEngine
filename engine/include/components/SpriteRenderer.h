@@ -24,7 +24,7 @@ class SpriteRenderer : public Component
 
   public:
     SpriteRenderer(World *world);
-    SpriteRenderer(World *world, Guid id);
+    SpriteRenderer(World *world, const Guid& id);
     ~SpriteRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

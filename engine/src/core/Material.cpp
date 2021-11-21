@@ -11,14 +11,16 @@ Material::Material(World *world) : Asset(world)
     mRenderQueue = RenderQueue::Opaque;
 
     mShaderChanged = true;
+    mTextureChanged = true;
 }
 
-Material::Material(World *world, Guid id) : Asset(world, id)
+Material::Material(World *world, const Guid& id) : Asset(world, id)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
 
     mShaderChanged = true;
+    mTextureChanged = true;
 }
 
 Material::~Material()
@@ -64,6 +66,7 @@ void Material::deserialize(const YAML::Node &in)
     }
 
     mShaderChanged = true;
+    mTextureChanged = true;
 }
 
 int Material::getType() const
@@ -76,36 +79,9 @@ std::string Material::getObjectName() const
     return PhysicsEngine::MATERIAL_NAME;
 }
 
-void Material::changeShader(Guid shaderId)
+void Material::apply()
 {
-    mShaderId = shaderId;
-
-    mShaderChanged = true;
-}
-
-void Material::apply(World *world)
-{
-    Shader *shader = world->getAssetById<Shader>(mShaderId);
-
-    // Find all texture handles
-    std::vector<int> textures;
-    for (size_t i = 0; i < mUniforms.size(); i++)
-    {
-        if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
-        {
-            Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
-            if (texture != nullptr)
-            {
-                textures.push_back(texture->getNativeGraphics());
-            }
-            else
-            {
-                textures.push_back(-1);
-            }
-        }
-    }
-
-    Graphics::applyMaterial(mUniforms, textures, shader->getActiveProgram());
+    Graphics::applyMaterial(mUniforms);
 }
 
 void Material::onShaderChanged(World *world)
@@ -127,23 +103,48 @@ void Material::onShaderChanged(World *world)
     // onShaderChanged is called whenever the shader is (re-)compiled, however
     // the material data may or may not have changed. Attempt to copy material
     // data from old uniforms to new ones
-    std::vector<ShaderUniform> temp = shader->getMaterialUniforms();
+    std::vector<ShaderUniform> newUniforms = shader->getMaterialUniforms();
 
-    for (size_t i = 0; i < temp.size(); i++)
+    std::string message = "new uniforms size: " + std::to_string(newUniforms.size()) + "\n";
+    Log::info(message.c_str());
+
+    for (size_t i = 0; i < newUniforms.size(); i++)
     {
         for (size_t j = 0; j < mUniforms.size(); j++)
         {
-            if (temp[i].mName == mUniforms[j].mName)
+            if (newUniforms[i].mName == mUniforms[j].mName)
             {
-                memcpy(temp[i].mData, mUniforms[j].mData, 64);
+                memcpy(newUniforms[i].mData, mUniforms[j].mData, 64);
                 break;
             }
         }
     }
 
-    mUniforms = temp;
+    mUniforms = newUniforms;
 
     mShaderChanged = false;
+}
+
+void Material::onTextureChanged(World *world)
+{
+    // Find all texture handles
+    for (size_t i = 0; i < mUniforms.size(); i++)
+    {
+        if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
+        {
+            Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
+            if (texture != nullptr)
+            {
+                mUniforms[i].mCachedHandle = texture->getNativeGraphics();
+            }
+            else
+            {
+                mUniforms[i].mCachedHandle = -1;
+            }
+        }
+    }
+
+    mTextureChanged = false;
 }
 
 bool Material::hasShaderChanged() const
@@ -151,7 +152,12 @@ bool Material::hasShaderChanged() const
     return mShaderChanged;
 }
 
-void Material::setShaderId(Guid shaderId)
+bool Material::hasTextureChanged() const
+{
+    return mTextureChanged;
+}
+
+void Material::setShaderId(const Guid& shaderId)
 {
     mShaderId = shaderId;
     mShaderChanged = true;
@@ -264,6 +270,8 @@ void Material::setTexture(const std::string &name, const Guid &textureId)
     {
         memcpy((void *)mUniforms[index].mData, &textureId, sizeof(Guid));
     }
+
+    mTextureChanged = true;
 }
 
 void Material::setBool(int nameLocation, bool value)
@@ -363,6 +371,8 @@ void Material::setTexture(int nameLocation, const Guid &textureId)
     {
         memcpy((void *)mUniforms[index].mData, &textureId, sizeof(textureId));
     }
+
+    mTextureChanged = true;
 }
 
 bool Material::getBool(const std::string &name) const
@@ -663,7 +673,7 @@ int Material::findIndexOfUniform(int nameLocation) const
 {
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
-        if (nameLocation == mUniforms[i].mLocation)
+        if (nameLocation == mUniforms[i].mCachedLocation)
         {
             return (int)i;
         }

@@ -9,7 +9,7 @@ Component::Component(World* world) : Object(world)
     mEntityId = Guid::INVALID;
 }
 
-Component::Component(World* world, Guid id) : Object(world, id)
+Component::Component(World* world, const Guid& id) : Object(world, id)
 {
     mEntityId = Guid::INVALID;
 }

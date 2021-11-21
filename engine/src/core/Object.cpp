@@ -6,7 +6,7 @@ Object::Object(World *world) : mWorld(world), mId(Guid::INVALID), mHide(HideFlag
 {
 }
 
-Object::Object(World *world, Guid id) : mWorld(world), mId(id), mHide(HideFlag::None)
+Object::Object(World *world, const Guid& id) : mWorld(world), mId(id), mHide(HideFlag::None)
 {
 }
 

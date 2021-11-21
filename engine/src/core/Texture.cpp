@@ -8,7 +8,7 @@ Texture::Texture(World *world) : Asset(world)
 {
 }
 
-Texture::Texture(World *world, Guid id) : Asset(world, id)
+Texture::Texture(World *world, const Guid& id) : Asset(world, id)
 {
 }
 

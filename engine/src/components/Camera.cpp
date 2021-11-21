@@ -64,7 +64,7 @@ Camera::Camera(World* world) : Component(world)
     mRenderToScreen = false;
 }
 
-Camera::Camera(World* world, Guid id) : Component(world, id)
+Camera::Camera(World* world, const Guid& id) : Component(world, id)
 {
     mEntityId = Guid::INVALID;
     mRenderTextureId = Guid::INVALID;

@@ -22,7 +22,7 @@ Texture3D::Texture3D(World *world) : Texture(world)
     mUpdateRequired = false;
 }
 
-Texture3D::Texture3D(World *world, Guid id) : Texture(world, id)
+Texture3D::Texture3D(World *world, const Guid& id) : Texture(world, id)
 {
     mDimension = TextureDimension::Tex3D;
 

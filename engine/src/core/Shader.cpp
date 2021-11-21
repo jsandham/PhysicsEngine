@@ -29,7 +29,7 @@ Shader::Shader(World *world) : Asset(world)
     mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
-Shader::Shader(World *world, Guid id) : Asset(world, id)
+Shader::Shader(World *world, const Guid& id) : Asset(world, id)
 {
     mVertexSourceFilepath = "";
     mFragmentSourceFilepath = "";
@@ -223,7 +223,8 @@ void Shader::compile()
                 ShaderUniform uniform;
                 uniform.mName = name;
                 uniform.mType = type;
-                uniform.mLocation = findUniformLocation(name, program);
+                uniform.mCachedLocation = findUniformLocation(name, program);
+                uniform.mCachedHandle = -1;
                 memset(uniform.mData, '\0', 64);
 
                 mUniforms.push_back(uniform);

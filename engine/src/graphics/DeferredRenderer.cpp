@@ -1,6 +1,8 @@
 #include "../../include/graphics/DeferredRenderer.h"
 #include "../../include/core/World.h"
 
+#include "../../include/core/Log.h"
+
 using namespace PhysicsEngine;
 
 DeferredRenderer::DeferredRenderer()
@@ -24,7 +26,7 @@ void DeferredRenderer::update(const Input &input, Camera *camera,
 {
     beginDeferredFrame(mWorld, camera, mState);
 
-    geometryPass(mWorld, camera, mState, renderObjects);
+    geometryPass(mWorld, camera, mState, renderQueue, renderObjects);
     lightingPass(mWorld, camera, mState, renderObjects);
 
     renderColorPickingDeferred(mWorld, camera, mState, renderQueue, renderObjects);
@@ -93,6 +95,7 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
 }
 
 void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererState &state,
+                                 const std::vector<std::pair<uint64_t, int>> &renderQueue,
                                  const std::vector<RenderObject> &renderObjects)
 {
     // fill geometry framebuffer
@@ -101,10 +104,35 @@ void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererS
                           camera->getViewport().mHeight);
     
     Graphics::use(state.mGBufferShaderProgram);
-    for (size_t i = 0; i < renderObjects.size(); i++)
+
+    int mGBufferShaderDiffuseTexLoc = Graphics::findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
+    int mGBufferShaderSpecTexLoc = Graphics::findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
+
+    std::string message = "mGBufferShaderDiffuseTexLoc: " + std::to_string(mGBufferShaderDiffuseTexLoc) +
+                          " mGBufferShaderSpecTexLoc: " + std::to_string(mGBufferShaderSpecTexLoc) + "\n";
+    Log::info(message.c_str());
+
+    //for (size_t i = 0; i < renderObjects.size(); i++)
+    //{
+    //    Graphics::setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
+    //    Graphics::render(renderObjects[i], camera->mQuery);
+    //}
+    //int currentMaterialIndex = -1;
+    //Material *material = nullptr;
+
+    for (size_t i = 0; i < renderQueue.size(); i++)
     {
         Graphics::setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
-        Graphics::render(renderObjects[i], camera->mQuery);
+
+        //if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
+        //{
+        //    material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
+        //    material->apply(world);
+        //
+        //    currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
+        //}
+
+        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
     }
     Graphics::unbindFramebuffer();
 

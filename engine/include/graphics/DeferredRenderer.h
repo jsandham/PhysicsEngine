@@ -36,6 +36,7 @@ void initializeDeferredRenderer(World *world, DeferredRendererState &state);
 void beginDeferredFrame(World *world, Camera *camera, DeferredRendererState &state);
 
 void geometryPass(World *world, Camera *camera, DeferredRendererState &state,
+                  const std::vector<std::pair<uint64_t, int>> &renderQueue,
                   const std::vector<RenderObject> &renderObjects);
 
 void lightingPass(World *world, Camera *camera, DeferredRendererState &state,

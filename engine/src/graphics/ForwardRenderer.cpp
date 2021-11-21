@@ -390,10 +390,12 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
 
         shader->setMat4("model", renderObjects[renderQueue[i].second].model);
 
+        Graphics::checkError(__LINE__, __FILE__);
+
         if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
         {
             material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
-            material->apply(world);
+            material->apply();
 
             currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
         }

@@ -30,7 +30,7 @@ class Sprite : public Asset
 
   public:
     Sprite(World *world);
-    Sprite(World *world, Guid id);
+    Sprite(World *world, const Guid& id);
     ~Sprite();
 
     virtual void serialize(YAML::Node &out) const override;

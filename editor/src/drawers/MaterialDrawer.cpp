@@ -97,12 +97,16 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
     if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
     {
         material->setTexture(uniform->mName, clipboard.getDraggedId());
+        material->onTextureChanged(clipboard.getWorld());
+        
+        Log::info("texture set on material\n");
         clipboard.clearDraggedItem();
     }
 
     if (clearClicked)
     {
         material->setTexture(uniform->mName, Guid::INVALID);
+        material->onTextureChanged(clipboard.getWorld());
     }
 
     if (isClicked)
@@ -241,7 +245,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     shader->use(shaderProgram);
     shader->setMat4("model", mModel);
 
-    material->apply(clipboard.getWorld());
+    material->apply();
 
     Graphics::bindFramebuffer(mFBO);
     Graphics::setViewport(0, 0, 1000, 1000);

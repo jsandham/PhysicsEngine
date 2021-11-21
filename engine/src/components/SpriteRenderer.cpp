@@ -15,7 +15,7 @@ SpriteRenderer::SpriteRenderer(World* world) : Component(world)
     mEnabled = true;
 }
 
-SpriteRenderer::SpriteRenderer(World* world, Guid id) : Component(world, id)
+SpriteRenderer::SpriteRenderer(World* world, const Guid& id) : Component(world, id)
 {
     mSpriteId = Guid::INVALID;
     mColor = Color::white;

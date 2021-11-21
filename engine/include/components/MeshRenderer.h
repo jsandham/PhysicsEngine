@@ -22,7 +22,7 @@ class MeshRenderer : public Component
 
   public:
     MeshRenderer(World *world);
-    MeshRenderer(World *world, Guid id);
+    MeshRenderer(World *world, const Guid& id);
     ~MeshRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

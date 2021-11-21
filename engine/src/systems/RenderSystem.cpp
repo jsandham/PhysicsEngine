@@ -177,6 +177,11 @@ void RenderSystem::registerRenderAssets(World *world)
             material->onShaderChanged(world); // need to also do this if the shader code changed but the assigned shader
                                               // on the material remained the same!
         }
+
+        if (material->hasTextureChanged())
+        {
+            material->onTextureChanged(world);
+        }
     }
 
     // create all mesh assets not already created

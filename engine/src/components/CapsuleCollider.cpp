@@ -9,7 +9,7 @@ CapsuleCollider::CapsuleCollider(World* world) : Collider(world)
 {
 }
 
-CapsuleCollider::CapsuleCollider(World* world, Guid id) : Collider(world, id)
+CapsuleCollider::CapsuleCollider(World* world, const Guid& id) : Collider(world, id)
 {
 }
 

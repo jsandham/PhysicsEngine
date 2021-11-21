@@ -19,15 +19,15 @@ class Material : public Asset
   private:
     Guid mShaderId;
     bool mShaderChanged;
-    std::vector<ShaderUniform>
-        mUniforms; // current storing all uniforms but maybe we should just hold the material uniforms herre?
+    bool mTextureChanged;
+    std::vector<ShaderUniform> mUniforms; 
 
   public:
     RenderQueue mRenderQueue;
 
   public:
     Material(World *world);
-    Material(World *world, Guid id);
+    Material(World *world, const Guid& id);
     ~Material();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -36,11 +36,12 @@ class Material : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void changeShader(Guid shaderId);
-    void apply(World *world);
+    void apply();
     void onShaderChanged(World *world);
+    void onTextureChanged(World* world);
     bool hasShaderChanged() const;
-    void setShaderId(Guid shaderId);
+    bool hasTextureChanged() const;
+    void setShaderId(const Guid& shaderId);
     Guid getShaderId() const;
     std::vector<ShaderUniform> getUniforms() const;
 

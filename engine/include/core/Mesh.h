@@ -31,7 +31,7 @@ class Mesh : public Asset
 
   public:
     Mesh(World *world);
-    Mesh(World *world, Guid id);
+    Mesh(World *world, const Guid& id);
     ~Mesh();
 
     virtual void serialize(YAML::Node &out) const override;

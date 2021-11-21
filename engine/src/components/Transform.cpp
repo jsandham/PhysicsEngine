@@ -14,7 +14,7 @@ Transform::Transform(World* world) : Component(world)
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-Transform::Transform(World* world, Guid id) : Component(world, id)
+Transform::Transform(World* world, const Guid& id) : Component(world, id)
 {
     mParentId = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);

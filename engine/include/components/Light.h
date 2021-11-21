@@ -66,7 +66,7 @@ class Light : public Component
 
   public:
     Light(World *world);
-    Light(World *world, Guid id);
+    Light(World *world, const Guid& id);
     ~Light();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -356,8 +356,7 @@ class Graphics
     static glm::mat3 getMat3(int nameLocation, int program);
     static glm::mat4 getMat4(int nameLocation, int program);
     static int getTexture2D(int nameLocation, int texUnit, int program);
-    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, const std::vector<int> &textures,
-                              int shaderProgram);
+    static void applyMaterial(const std::vector<ShaderUniform> &uniforms);
     static void render(int start, int count, int vao, bool wireframe = false);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
 

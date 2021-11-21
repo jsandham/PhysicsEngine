@@ -12,7 +12,7 @@ Sprite::Sprite(World *world) : Asset(world)
     mPixelsPerUnit = 100;
 }
 
-Sprite::Sprite(World *world, Guid id) : Asset(world, id)
+Sprite::Sprite(World *world, const Guid& id) : Asset(world, id)
 {
     mCreated = false;
     mChanged = false;
