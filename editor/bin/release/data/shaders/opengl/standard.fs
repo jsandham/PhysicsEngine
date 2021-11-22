@@ -19,6 +19,7 @@ layout(std140) uniform LightBlock
 struct Material
 {
 	float shininess;
+	vec4 color;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;

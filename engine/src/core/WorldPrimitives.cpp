@@ -1,5 +1,6 @@
 #include "../../include/core/WorldPrimitives.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Log.h"
 
 #include <set>
 #include <glm/glm.hpp>
@@ -84,12 +85,22 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     standardShader->addVariant(7, variant7);
     standardShader->addVariant(8, variant8);
 
+    standardShader->preprocess();
+    standardShader->compile();
+
     Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
     
     assert(standardMaterial != nullptr);
 
     standardMaterial->setName("Standard");
     standardMaterial->setShaderId(standardShader->getId());
+    standardMaterial->onShaderChanged(world);
+
+    standardMaterial->setFloat("material.shininess", 1.0f);
+    standardMaterial->setColor("material.color", Color(1, 0, 0, 1));
+    standardMaterial->setVec3("material.ambient", glm::vec3(1, 1, 1));
+    standardMaterial->setVec3("material.diffuse", glm::vec3(1, 1, 1));
+    standardMaterial->setVec3("material.specular", glm::vec3(1, 1, 1));
 
     //.  .  .  .  .  .  .  .  .  .
     //.  .  .  .  .  .  .  .  .  .

@@ -24,7 +24,6 @@ namespace Game
 
 PhysicsEngine::Application* PhysicsEngine::createApplication()
 {
-	std::cout << "hello" << std::endl;
 	return new Game::GameApplication();
 }
 

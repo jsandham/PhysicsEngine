@@ -229,10 +229,6 @@ void RenderSystem::registerCameras(World *world)
         {
             camera->createTargets();
         }
-
-        /*if (camera->isViewportChanged()) {
-            camera->resize();
-        }*/
     }
 }
 

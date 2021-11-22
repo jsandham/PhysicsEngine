@@ -8,23 +8,23 @@ using namespace PhysicsEditor;
 
 MenuBar::MenuBar()
 {
-    newSceneClicked = false;
-    openSceneClicked = false;
-    saveClicked = false;
-    saveAsClicked = false;
-    newProjectClicked = false;
-    openProjectClicked = false;
-    saveProjectClicked = false;
-    buildClicked = false;
-    quitClicked = false;
-    openInspectorClicked = false;
-    openHierarchyClicked = false;
-    openConsoleClicked = false;
-    openSceneViewClicked = false;
-    openProjectViewClicked = false;
-    aboutClicked = false;
-    preferencesClicked = false;
-    runTestsClicked = false;
+    mNewSceneClicked = false;
+    mOpenSceneClicked = false;
+    mSaveClicked = false;
+    mSaveAsClicked = false;
+    mNewProjectClicked = false;
+    mOpenProjectClicked = false;
+    mSaveProjectClicked = false;
+    mBuildClicked = false;
+    mQuitClicked = false;
+    mOpenInspectorClicked = false;
+    mOpenHierarchyClicked = false;
+    mOpenConsoleClicked = false;
+    mOpenSceneViewClicked = false;
+    mOpenProjectViewClicked = false;
+    mAboutClicked = false;
+    mPreferencesClicked = false;
+    mPopulateTestScene = false;
 }
 
 MenuBar::~MenuBar()
@@ -33,30 +33,30 @@ MenuBar::~MenuBar()
 
 void MenuBar::init(Clipboard &clipboard)
 {
-    aboutPopup.init(clipboard);
-    preferencesWindow.init(clipboard);
-    buildWindow.init(clipboard);
+    mAboutPopup.init(clipboard);
+    mPreferencesWindow.init(clipboard);
+    mBuildWindow.init(clipboard);
 }
 
 void MenuBar::update(Clipboard &clipboard)
 {
-    newSceneClicked = false;
-    openSceneClicked = false;
-    saveClicked = false;
-    saveAsClicked = false;
-    newProjectClicked = false;
-    openProjectClicked = false;
-    saveProjectClicked = false;
-    buildClicked = false;
-    quitClicked = false;
-    openInspectorClicked = false;
-    openHierarchyClicked = false;
-    openConsoleClicked = false;
-    openSceneViewClicked = false;
-    openProjectViewClicked = false;
-    aboutClicked = false;
-    preferencesClicked = false;
-    runTestsClicked = false;
+    mNewSceneClicked = false;
+    mOpenSceneClicked = false;
+    mSaveClicked = false;
+    mSaveAsClicked = false;
+    mNewProjectClicked = false;
+    mOpenProjectClicked = false;
+    mSaveProjectClicked = false;
+    mBuildClicked = false;
+    mQuitClicked = false;
+    mOpenInspectorClicked = false;
+    mOpenHierarchyClicked = false;
+    mOpenConsoleClicked = false;
+    mOpenSceneViewClicked = false;
+    mOpenProjectViewClicked = false;
+    mAboutClicked = false;
+    mPreferencesClicked = false;
+    mPopulateTestScene = false;
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -90,7 +90,7 @@ void MenuBar::update(Clipboard &clipboard)
     }
     if (isOpenSceneClicked())
     {
-        filebrowser.setMode(FilebrowserMode::Open);
+        mFilebrowser.setMode(FilebrowserMode::Open);
     }
     else if (isSaveClicked())
     {
@@ -98,134 +98,139 @@ void MenuBar::update(Clipboard &clipboard)
     }
     else if (isSaveAsClicked())
     {
-        filebrowser.setMode(FilebrowserMode::Save);
+        mFilebrowser.setMode(FilebrowserMode::Save);
     }
 
-    filebrowser.render(clipboard.getProjectPath(), isOpenSceneClicked() || isSaveAsClicked());
+    mFilebrowser.render(clipboard.getProjectPath(), isOpenSceneClicked() || isSaveAsClicked());
 
-    if (filebrowser.isOpenClicked())
+    if (mFilebrowser.isOpenClicked())
     {
-        EditorSceneManager::openScene(clipboard, filebrowser.getOpenFilePath());
+        EditorSceneManager::openScene(clipboard, mFilebrowser.getOpenFilePath());
     }
-    else if (filebrowser.isSaveClicked())
+    else if (mFilebrowser.isSaveClicked())
     {
-        EditorSceneManager::saveScene(clipboard, filebrowser.getSaveFilePath());
+        EditorSceneManager::saveScene(clipboard, mFilebrowser.getSaveFilePath());
     }
 
     // new, open, save project project
     if (isOpenProjectClicked())
     {
-        projectWindow.setMode(ProjectWindowMode::OpenProject);
+        mProjectWindow.setMode(ProjectWindowMode::OpenProject);
     }
     else if (isNewProjectClicked())
     {
-        projectWindow.setMode(ProjectWindowMode::NewProject);
+        mProjectWindow.setMode(ProjectWindowMode::NewProject);
     }
     else if (isSaveProjectClicked())
     {
         EditorProjectManager::saveProject(clipboard);
     }
 
-    projectWindow.draw(clipboard, isOpenProjectClicked() || isNewProjectClicked());
-    aboutPopup.draw(clipboard, isAboutClicked());
-    preferencesWindow.draw(clipboard, isPreferencesClicked());
-    buildWindow.draw(clipboard, isBuildClicked());
+    if (isPopulateTestSceneClicked())
+    {
+        EditorSceneManager::populateScene(clipboard);
+    }
+
+    mProjectWindow.draw(clipboard, isOpenProjectClicked() || isNewProjectClicked());
+    mAboutPopup.draw(clipboard, isAboutClicked());
+    mPreferencesWindow.draw(clipboard, isPreferencesClicked());
+    mBuildWindow.draw(clipboard, isBuildClicked());
 }
 
 bool MenuBar::isNewSceneClicked() const
 {
-    return newSceneClicked;
+    return mNewSceneClicked;
 }
 
 bool MenuBar::isOpenSceneClicked() const
 {
-    return openSceneClicked;
+    return mOpenSceneClicked;
 }
 
 bool MenuBar::isSaveClicked() const
 {
-    return saveClicked;
+    return mSaveClicked;
 }
 
 bool MenuBar::isSaveAsClicked() const
 {
-    return saveAsClicked;
+    return mSaveAsClicked;
 }
 
 bool MenuBar::isBuildClicked() const
 {
-    return buildClicked;
+    return mBuildClicked;
 }
 
 bool MenuBar::isQuitClicked() const
 {
-    return quitClicked;
+    return mQuitClicked;
 }
 
 bool MenuBar::isNewProjectClicked() const
 {
-    return newProjectClicked;
+    return mNewProjectClicked;
 }
 
 bool MenuBar::isOpenProjectClicked() const
 {
-    return openProjectClicked;
+    return mOpenProjectClicked;
 }
 
 bool MenuBar::isSaveProjectClicked() const
 {
-    return saveProjectClicked;
+    return mSaveProjectClicked;
 }
 
 bool MenuBar::isOpenInspectorCalled() const
 {
-    return openInspectorClicked;
+    return mOpenInspectorClicked;
 }
 
 bool MenuBar::isOpenHierarchyCalled() const
 {
-    return openHierarchyClicked;
+    return mOpenHierarchyClicked;
 }
 
 bool MenuBar::isOpenConsoleCalled() const
 {
-    return openConsoleClicked;
+    return mOpenConsoleClicked;
 }
 
 bool MenuBar::isOpenSceneViewCalled() const
 {
-    return openSceneViewClicked;
+    return mOpenSceneViewClicked;
 }
 
 bool MenuBar::isOpenProjectViewCalled() const
 {
-    return openProjectViewClicked;
+    return mOpenProjectViewClicked;
 }
 
 bool MenuBar::isAboutClicked() const
 {
-    return aboutClicked;
+    return mAboutClicked;
 }
 
 bool MenuBar::isPreferencesClicked() const
 {
-    return preferencesClicked;
+    return mPreferencesClicked;
 }
 
-bool MenuBar::isRunTestsClicked() const
+bool MenuBar::isPopulateTestSceneClicked() const
 {
-    return runTestsClicked;
+    return mPopulateTestScene;
 }
 
 void MenuBar::showMenuFile(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("New Scene", NULL, false, !clipboard.getProjectPath().empty()))
     {
-        newSceneClicked = true;
+        mNewSceneClicked = true;
     }
     if (ImGui::MenuItem("Open Scene", "Ctrl+O", false, !clipboard.getProjectPath().empty()))
     {
-        openSceneClicked = true;
+        mOpenSceneClicked = true;
     }
 
     ImGui::Separator();
@@ -235,40 +240,40 @@ void MenuBar::showMenuFile(const Clipboard &clipboard)
         // if we dont have a scene path then it must be a new unsaved scene, call save as instead
         if (clipboard.getScenePath().empty())
         {
-            saveAsClicked = true;
+            mSaveAsClicked = true;
         }
         else
         {
-            saveClicked = true;
+            mSaveClicked = true;
         }
     }
     if (ImGui::MenuItem("Save As..", nullptr, false, clipboard.getSceneId().isValid()))
     {
-        saveAsClicked = true;
+        mSaveAsClicked = true;
     }
 
     ImGui::Separator();
 
     if (ImGui::MenuItem("New Project"))
     {
-        newProjectClicked = true;
+        mNewProjectClicked = true;
     }
     if (ImGui::MenuItem("Open Project"))
     {
-        openProjectClicked = true;
+        mOpenProjectClicked = true;
     }
     if (ImGui::MenuItem("Save Project", nullptr, false, !clipboard.getProjectPath().empty()))
     {
-        saveProjectClicked = true;
+        mSaveProjectClicked = true;
     }
     if (ImGui::MenuItem("Build", nullptr, false, !clipboard.getProjectPath().empty()))
     {
-        buildClicked = true;
+        mBuildClicked = true;
     }
 
     if (ImGui::MenuItem("Quit", "Alt+F4"))
     {
-        quitClicked = true;
+        mQuitClicked = true;
     }
 }
 
@@ -295,12 +300,12 @@ void MenuBar::showMenuEdit(const Clipboard &clipboard)
     ImGui::Separator();
     if (ImGui::MenuItem("Preferences..."))
     {
-        preferencesClicked = true;
+        mPreferencesClicked = true;
     }
     ImGui::Separator();
-    if (ImGui::MenuItem("Run Tests"))
+    if (ImGui::MenuItem("Populate Scene", nullptr, false, clipboard.getSceneId().isValid()))
     {
-        runTestsClicked = true;
+        mPopulateTestScene = true;
     }
 }
 
@@ -308,23 +313,23 @@ void MenuBar::showMenuWindow(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("Heirarchy"))
     {
-        openHierarchyClicked = true;
+        mOpenHierarchyClicked = true;
     }
     if (ImGui::MenuItem("Inspector"))
     {
-        openInspectorClicked = true;
+        mOpenInspectorClicked = true;
     }
     if (ImGui::MenuItem("Console"))
     {
-        openConsoleClicked = true;
+        mOpenConsoleClicked = true;
     }
     if (ImGui::MenuItem("Scene View"))
     {
-        openSceneViewClicked = true;
+        mOpenSceneViewClicked = true;
     }
     if (ImGui::MenuItem("Project View"))
     {
-        openProjectViewClicked = true;
+        mOpenProjectViewClicked = true;
     }
 }
 
@@ -332,6 +337,6 @@ void MenuBar::showMenuHelp(const Clipboard &clipboard)
 {
     if (ImGui::MenuItem("About PhysicsEngine"))
     {
-        aboutClicked = true;
+        mAboutClicked = true;
     }
 }

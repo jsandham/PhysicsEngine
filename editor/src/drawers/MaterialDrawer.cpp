@@ -53,6 +53,17 @@ inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, 
 }
 
 template <>
+inline void UniformDrawer<ShaderUniformType::Color>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    Color temp = material->getColor(uniform->mName);
+
+    if (ImGui::ColorEdit4(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.mR)))
+    {
+        material->setColor(uniform->mName, temp);
+    }
+}
+
+template <>
 inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
 {
     glm::vec2 temp = material->getVec2(uniform->mName);
@@ -156,6 +167,9 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
     Material *material = clipboard.getWorld()->getAssetById<Material>(id);
 
+    ImGui::Text(("Material id: " + material->getId().toString()).c_str());
+    ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
+
     Guid currentShaderId = material->getShaderId();
 
     Shader *ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
@@ -167,6 +181,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
             Shader *s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
 
             std::string label = s->getName() + "##" + s->getId().toString();
+
+            Log::info((label + "\n").c_str());
 
             bool is_selected = (currentShaderId == s->getId());
             if (ImGui::Selectable(label.c_str(), is_selected))
@@ -202,6 +218,9 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
             break;
         case ShaderUniformType::Float:
             UniformDrawer<ShaderUniformType::Float>::draw(clipboard, material, &uniforms[i]);
+            break;
+        case ShaderUniformType::Color:
+            UniformDrawer<ShaderUniformType::Color>::draw(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Vec2:
             UniformDrawer<ShaderUniformType::Vec2>::draw(clipboard, material, &uniforms[i]);

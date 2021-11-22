@@ -17,36 +17,36 @@ class MenuBar
 {
   private:
     // File
-    bool newSceneClicked;
-    bool openSceneClicked;
-    bool saveClicked;
-    bool saveAsClicked;
-    bool newProjectClicked;
-    bool openProjectClicked;
-    bool saveProjectClicked;
-    bool buildClicked;
-    bool quitClicked;
+    bool mNewSceneClicked;
+    bool mOpenSceneClicked;
+    bool mSaveClicked;
+    bool mSaveAsClicked;
+    bool mNewProjectClicked;
+    bool mOpenProjectClicked;
+    bool mSaveProjectClicked;
+    bool mBuildClicked;
+    bool mQuitClicked;
 
     // Edit
-    bool preferencesClicked;
-    bool runTestsClicked;
+    bool mPreferencesClicked;
+    bool mPopulateTestScene;
 
     // Windows
-    bool openInspectorClicked;
-    bool openHierarchyClicked;
-    bool openConsoleClicked;
-    bool openSceneViewClicked;
-    bool openProjectViewClicked;
+    bool mOpenInspectorClicked;
+    bool mOpenHierarchyClicked;
+    bool mOpenConsoleClicked;
+    bool mOpenSceneViewClicked;
+    bool mOpenProjectViewClicked;
 
     // About
-    bool aboutClicked;
+    bool mAboutClicked;
 
-    Filebrowser filebrowser;
+    Filebrowser mFilebrowser;
     
-    ProjectWindow projectWindow;
-    BuildWindow buildWindow;
-    PreferencesWindow preferencesWindow;
-    AboutPopup aboutPopup;
+    ProjectWindow mProjectWindow;
+    BuildWindow mBuildWindow;
+    PreferencesWindow mPreferencesWindow;
+    AboutPopup mAboutPopup;
 
   public:
     MenuBar();
@@ -71,7 +71,7 @@ class MenuBar
     bool isOpenProjectViewCalled() const;
     bool isAboutClicked() const;
     bool isPreferencesClicked() const;
-    bool isRunTestsClicked() const;
+    bool isPopulateTestSceneClicked() const;
 
   private:
     void showMenuFile(const Clipboard& clipboard);

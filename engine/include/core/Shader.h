@@ -32,15 +32,16 @@ enum class ShaderUniformType
 {
     Int = 0,
     Float = 1,
-    Vec2 = 2,
-    Vec3 = 3,
-    Vec4 = 4,
-    Mat2 = 5,
-    Mat3 = 6,
-    Mat4 = 7,
-    Sampler2D = 8,
-    SamplerCube = 9,
-    Invalid = 10
+    Color = 2,
+    Vec2 = 3,
+    Vec3 = 4,
+    Vec4 = 5,
+    Mat2 = 6,
+    Mat3 = 7,
+    Mat4 = 8,
+    Sampler2D = 9,
+    SamplerCube = 10,
+    Invalid = 11
 };
 
 enum class ShaderMacro
@@ -88,7 +89,7 @@ struct ShaderUniform
     std::string mName; // variable name in GLSL (including block name if applicable)
     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
     int mCachedHandle; // if data stores a texture id, this is the cached handle
-    int mCachedLocation;     // uniform location in shader program   rename to cacheLocation?
+    int mCachedLocation; // cached uniform location in shader program
 };
 
 struct ShaderAttribute
@@ -233,10 +234,6 @@ template <> struct convert<PhysicsEngine::RenderQueue>
         }
 
         return node;
-
-        //Node node;
-        //node = static_cast<int>(rhs);
-        //return node;
     }
 
     static bool decode(const Node &node, PhysicsEngine::RenderQueue &rhs)
@@ -252,9 +249,6 @@ template <> struct convert<PhysicsEngine::RenderQueue>
         }
 
         return true;
-
-        //rhs = static_cast<PhysicsEngine::RenderQueue>(node.as<int>());
-        //return true;
     }
 };
 
@@ -308,6 +302,9 @@ template <> struct convert<PhysicsEngine::ShaderUniformType>
         case PhysicsEngine::ShaderUniformType::Float:
             node = "Float";
             break;
+        case PhysicsEngine::ShaderUniformType::Color:
+            node = "Color";
+            break;
         case PhysicsEngine::ShaderUniformType::Vec2:
             node = "Vec2";
             break;
@@ -348,6 +345,10 @@ template <> struct convert<PhysicsEngine::ShaderUniformType>
         }
         else if (type == "Float"){
             rhs = PhysicsEngine::ShaderUniformType::Float;
+        }
+        else if (type == "Color")
+        {
+            rhs = PhysicsEngine::ShaderUniformType::Color;
         }
         else if (type == "Vec2"){
             rhs = PhysicsEngine::ShaderUniformType::Vec2;
@@ -468,6 +469,10 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
         {
             node["data"] = *reinterpret_cast<const float *>(rhs.mData);
         }
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Color)
+        {
+            node["data"] = *reinterpret_cast<const PhysicsEngine::Color *>(rhs.mData);
+        }
         else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
         {
             node["data"] = *reinterpret_cast<const glm::vec2 *>(rhs.mData);
@@ -505,6 +510,11 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
         {
             float data = YAML::getValue<float>(node, "data");
             memcpy(rhs.mData, &data, sizeof(float));
+        }
+        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Color)
+        {
+            PhysicsEngine::Color data = YAML::getValue<PhysicsEngine::Color>(node, "data");
+            memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Color));
         }
         else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
         {

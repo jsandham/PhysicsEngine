@@ -11,5 +11,7 @@ namespace PhysicsEditor
 		static void newScene(Clipboard& clipboard, const std::string& sceneName);
 		static void openScene(Clipboard& clipboard, const std::filesystem::path& scenePath);
 		static void saveScene(Clipboard& clipboard, const std::filesystem::path& scenePath);
+
+		static void populateScene(Clipboard& clipboard);
 	};
 }

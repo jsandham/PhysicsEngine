@@ -90,13 +90,13 @@ void Material::onShaderChanged(World *world)
 
     if (shader == nullptr)
     {
+        Log::error("No shader attached to material\n");
         return;
     }
 
     if (!shader->isCompiled())
     {
-        std::string message = "Must compile shader before calling onShaderChanged\n";
-        Log::error(message.c_str());
+        Log::error("Must compile shader before calling onShaderChanged\n");
         return;
     }
 
@@ -105,16 +105,15 @@ void Material::onShaderChanged(World *world)
     // data from old uniforms to new ones
     std::vector<ShaderUniform> newUniforms = shader->getMaterialUniforms();
 
-    std::string message = "new uniforms size: " + std::to_string(newUniforms.size()) + "\n";
-    Log::info(message.c_str());
-
     for (size_t i = 0; i < newUniforms.size(); i++)
     {
         for (size_t j = 0; j < mUniforms.size(); j++)
         {
-            if (newUniforms[i].mName == mUniforms[j].mName)
+            if (newUniforms[i].mType == mUniforms[j].mType && newUniforms[i].mName == mUniforms[j].mName)
             {
+                newUniforms[i].mCachedHandle = mUniforms[j].mCachedHandle;
                 memcpy(newUniforms[i].mData, mUniforms[j].mData, 64);
+
                 break;
             }
         }
@@ -203,7 +202,7 @@ void Material::setFloat(const std::string &name, float value)
 void Material::setColor(const std::string &name, const Color &color)
 {
     int index = findIndexOfUniform(name);
-    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
+    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
         memcpy((void *)mUniforms[index].mData, &color, sizeof(Color));
     }
@@ -304,7 +303,7 @@ void Material::setFloat(int nameLocation, float value)
 void Material::setColor(int nameLocation, const Color &color)
 {
     int index = findIndexOfUniform(nameLocation);
-    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
+    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
         memcpy((void *)mUniforms[index].mData, &color, sizeof(Color));
     }
@@ -415,7 +414,7 @@ Color Material::getColor(const std::string &name) const
 {
     int index = findIndexOfUniform(name);
     Color color = Color(0, 0, 0, 255);
-    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
+    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
         memcpy(&color, mUniforms[index].mData, sizeof(Color));
     }
@@ -547,7 +546,7 @@ Color Material::getColor(int nameLocation) const
 {
     int index = findIndexOfUniform(nameLocation);
     Color color = Color(0, 0, 0, 255);
-    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
+    if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
         memcpy(&color, mUniforms[index].mData, sizeof(Color));
     }

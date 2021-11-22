@@ -116,13 +116,12 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     Graphics::clearFramebufferDepth(1.0f);
     Graphics::unbindFramebuffer();
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
-    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Graphics::unbindFramebuffer();
-
-    Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
-    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Graphics::unbindFramebuffer();
+    if(camera->mSSAO == CameraSSAO::SSAO_On)
+    {
+        Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+        Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Graphics::unbindFramebuffer();
+    }
 }
 
 void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererState &state,

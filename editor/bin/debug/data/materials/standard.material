@@ -2,12 +2,15 @@ Material:
   type: 1004
   hide : 0
   id : 03badea3-a684-40b6-a183-0119c7cde590
-  name : Standard
+  name : Editor loaded Standard
   shaderId : 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
   renderQueue : Opaque
   shininess : 
     type : Float
     data : 1.0
+  color : 
+    type : Color
+    data : [1.0, 0.0, 0.0, 1.0]
   ambient : 
     type : Vec3
     data : [0.5, 0.5, 0.5]

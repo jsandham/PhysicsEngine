@@ -34,6 +34,9 @@ void MaterialUtil::copyMaterialTo(World *srcWorld, Material *srcMat, World *dest
         case ShaderUniformType::Float/*GL_FLOAT*/:
             destMat->setFloat(uniforms[i].mName, srcMat->getFloat(uniforms[i].mName));
             break;
+        case ShaderUniformType::Color /*GL_FLOAT*/:
+            destMat->setColor(uniforms[i].mName, srcMat->getColor(uniforms[i].mName));
+            break;
         case ShaderUniformType::Vec2/*GL_FLOAT_VEC2*/:
             destMat->setVec2(uniforms[i].mName, srcMat->getVec2(uniforms[i].mName));
             break;

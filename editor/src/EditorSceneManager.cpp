@@ -82,3 +82,37 @@ void EditorSceneManager::saveScene(Clipboard& clipboard, const std::filesystem::
 
     clipboard.getWorld()->writeSceneToYAML(scenePath.string(), clipboard.getSceneId());
 }
+
+void EditorSceneManager::populateScene(Clipboard& clipboard)
+{
+    int m = 4;
+    int n = 4;
+    std::vector<int> layout = {1, 1, 1, 1, 1, 0, 0, 2, 3, 0, 0, 3, 2, 1, 1, 1};
+
+    PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->createLight(PhysicsEngine::LightType::Directional);
+    lightEntity->setName("Light");
+
+    PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
+    planeEntity->setName("Plane");
+    PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
+    planeTransform->mPosition = glm::vec3(0, 0, 0);
+    planeTransform->mScale = glm::vec3(20, 1, 20);
+
+    int index = 0;
+    for (int i = 0; i < m; i++) 
+    {
+        for (int j = 0; j < n; j++)
+        {
+            int l = layout[n * i + j];
+            for (int k = 0; k < l; k++)
+            {
+                std::string name = "Cube" + std::to_string(index++);
+
+                PhysicsEngine::Entity* entity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
+                entity->setName(name);
+                PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
+                transform->mPosition = glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f);
+            }
+        }
+    }
+}
