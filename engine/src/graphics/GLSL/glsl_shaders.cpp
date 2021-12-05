@@ -1,3 +1,6 @@
+//***************************************
+// THIS IS A GENERATED FILE. DO NOT EDIT.
+//***************************************
 #include <string>
 #include "glsl_shaders.h"
 using namespace PhysicsEngine;
@@ -539,6 +542,7 @@ return "#version 430 core\n"
 "    float shadowRadius; // 792\n"
 "    float shadowStrength; // 796\n"
 "}Light;\n"
+"\n"
 "uniform mat4 model;\n"
 "in vec3 position;\n"
 "in vec3 normal;\n"
@@ -584,6 +588,7 @@ return "#version 430 core\n"
 "    float shadowRadius; // 792\n"
 "    float shadowStrength; // 796\n"
 "}Light;\n"
+"\n"
 "struct Material\n"
 "{\n"
 "    float shininess;\n"

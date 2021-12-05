@@ -16,6 +16,7 @@ layout(std140) uniform LightBlock
     float shadowRadius; // 792
     float shadowStrength; // 796
 }Light;
+
 struct Material
 {
     float shininess;

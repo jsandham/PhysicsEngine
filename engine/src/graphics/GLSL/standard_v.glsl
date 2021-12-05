@@ -22,6 +22,7 @@ layout(std140) uniform LightBlock
     float shadowRadius; // 792
     float shadowStrength; // 796
 }Light;
+
 uniform mat4 model;
 in vec3 position;
 in vec3 normal;

@@ -4,8 +4,8 @@ Shader:
   id : 6e11628b-f727-4b30-bf40-33834060dee1
   name : Editor Loaded Tangent
   shaderSourceLanguage : GLSL
-  vertexSource : data\shaders\opengl\tangent.vs
-  fragmentSource : data\shaders\opengl\tangent.fs
+  vertexSource : data\shaders\glsl\tangent_v.glsl
+  fragmentSource : data\shaders\glsl\tangent_f.glsl
   geometrySource : 
   variants:
     0 : [None]

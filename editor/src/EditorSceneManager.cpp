@@ -3,6 +3,8 @@
 #include "core/World.h"
 #include "core/Log.h"
 
+#include <random>
+
 using namespace PhysicsEditor;
 
 void EditorSceneManager::newScene(Clipboard& clipboard, const std::string& sceneName)
@@ -85,9 +87,18 @@ void EditorSceneManager::saveScene(Clipboard& clipboard, const std::filesystem::
 
 void EditorSceneManager::populateScene(Clipboard& clipboard)
 {
-    int m = 4;
-    int n = 4;
-    std::vector<int> layout = {1, 1, 1, 1, 1, 0, 0, 2, 3, 0, 0, 3, 2, 1, 1, 1};
+    int m = 20;
+    int n = 20;
+    std::vector<int> layout(m * n, 0);
+
+    std::random_device                  rand_dev;
+    std::mt19937                        generator(rand_dev());
+    std::uniform_int_distribution<int>  distr(0, 10);
+
+    for (size_t i = 0; i < layout.size(); i++)
+    {
+        layout[i] = distr(generator);
+    }
 
     PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->createLight(PhysicsEngine::LightType::Directional);
     lightEntity->setName("Light");
@@ -96,7 +107,7 @@ void EditorSceneManager::populateScene(Clipboard& clipboard)
     planeEntity->setName("Plane");
     PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
     planeTransform->mPosition = glm::vec3(0, 0, 0);
-    planeTransform->mScale = glm::vec3(20, 1, 20);
+    planeTransform->mScale = glm::vec3(50, 1, 50);
 
     int index = 0;
     for (int i = 0; i < m; i++) 

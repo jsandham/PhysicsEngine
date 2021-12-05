@@ -33,7 +33,8 @@ void GameLayer::init()
     std::cout << "material count: " << mWorld.getNumberOfAssets<Material>() << std::endl;
     std::cout << "texture count: " << mWorld.getNumberOfAssets<Texture2D>() << std::endl;
 
-    std::filesystem::path scenePath = cwd / "game_data\\scenes\\simple.scene";
+    /*std::filesystem::path scenePath = cwd / "game_data\\scenes\\simple.scene";*/
+    std::filesystem::path scenePath = cwd / "game_data\\scenes\\demo.scene";
     std::cout << "scenePath: " << scenePath.string() << std::endl;
 
     mWorld.loadSceneFromYAML(scenePath.string());

@@ -4,8 +4,8 @@ Shader:
   id : 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
   name : Editor Loaded Standard
   shaderSourceLanguage : GLSL
-  vertexSource : data\shaders\opengl\standard.vs
-  fragmentSource : data\shaders\opengl\standard.fs
+  vertexSource : data\shaders\glsl\standard_v.glsl
+  fragmentSource : data\shaders\glsl\standard_f.glsl
   geometrySource : 
   variants:
     0 : [None]
