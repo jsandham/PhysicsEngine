@@ -29,6 +29,8 @@ class World
     // all systems in world listed in order they should be updated
     std::vector<System *> mSystems;
 
+    std::unordered_map<Guid, std::unordered_map<Guid, std::vector<ShaderUniform>>> mMaterialUniformCache;
+
   public:
     World();
     ~World();
@@ -43,6 +45,9 @@ class World
 
     void latentDestroyEntitiesInWorld();
     void immediateDestroyEntitiesInWorld();
+
+    std::vector<ShaderUniform> getCachedMaterialUniforms(const Guid &materialId, const Guid &shaderId);
+    void cacheMaterialUniforms(const Guid &materialId, const Guid &shaderId, const std::vector<ShaderUniform>& uniforms);
 
     size_t getNumberOfScenes() const;
     size_t getNumberOfEntities() const;

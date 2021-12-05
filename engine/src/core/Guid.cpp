@@ -222,6 +222,11 @@ std::string Guid::toString() const
     return std::string(buffer);
 }
 
+const char* Guid::c_str() const
+{
+    return reinterpret_cast<const char*>(&bytes[0]);
+}
+
 Guid Guid::newGuid()
 {
     GUID newId;

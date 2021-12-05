@@ -89,14 +89,13 @@ struct ShaderUniform
     std::string mName; // variable name in GLSL (including block name if applicable)
     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
     int mCachedHandle; // if data stores a texture id, this is the cached handle
-    int mCachedLocation; // cached uniform location in shader program
+    unsigned int mUniformId; // integer hash of uniform name
 };
 
 struct ShaderAttribute
 {
     std::string mName;
 };
-
 
 class Shader : public Asset
 {
@@ -203,6 +202,8 @@ class Shader : public Asset
     glm::mat3 getMat3(int nameLocation) const;
     glm::mat4 getMat4(int nameLocation) const;
     int getTexture2D(int nameLocation, int texUnit) const;
+
+    static unsigned int uniformToId(const char* property);
 };
 
 template <> struct AssetType<Shader>

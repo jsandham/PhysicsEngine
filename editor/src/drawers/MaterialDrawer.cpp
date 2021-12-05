@@ -79,9 +79,20 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
 {
     glm::vec3 temp = material->getVec3(uniform->mName);
 
-    if (ImGui::InputFloat3(uniform->mName.c_str(), &temp[0]))
+    if (uniform->mName.find("color") != std::string::npos ||
+        uniform->mName.find("colour") != std::string::npos)
     {
-        material->setVec3(uniform->mName, temp);
+        if (ImGui::ColorEdit3(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.x)))
+        {
+            material->setVec3(uniform->mName, temp);
+        }
+    }
+    else
+    {
+        if (ImGui::InputFloat3(uniform->mName.c_str(), &temp[0]))
+        {
+            material->setVec3(uniform->mName, temp);
+        }
     }
 }
 
@@ -90,9 +101,20 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
 {
     glm::vec4 temp = material->getVec4(uniform->mName);
 
-    if (ImGui::InputFloat4(uniform->mName.c_str(), &temp[0]))
+    if (uniform->mName.find("color") != std::string::npos ||
+        uniform->mName.find("colour") != std::string::npos)
     {
-        material->setVec4(uniform->mName, temp);
+        if (ImGui::ColorEdit4(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.x)))
+        {
+            material->setVec4(uniform->mName, temp);
+        }
+    }
+    else
+    {
+        if (ImGui::InputFloat4(uniform->mName.c_str(), &temp[0]))
+        {
+            material->setVec4(uniform->mName, temp);
+        }
     }
 }
 
@@ -108,16 +130,15 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
     if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
     {
         material->setTexture(uniform->mName, clipboard.getDraggedId());
-        material->onTextureChanged(clipboard.getWorld());
+        material->onTextureChanged();
         
-        Log::info("texture set on material\n");
         clipboard.clearDraggedItem();
     }
 
     if (clearClicked)
     {
         material->setTexture(uniform->mName, Guid::INVALID);
-        material->onTextureChanged(clipboard.getWorld());
+        material->onTextureChanged();
     }
 
     if (isClicked)
@@ -182,8 +203,6 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
             std::string label = s->getName() + "##" + s->getId().toString();
 
-            Log::info((label + "\n").c_str());
-
             bool is_selected = (currentShaderId == s->getId());
             if (ImGui::Selectable(label.c_str(), is_selected))
             {
@@ -191,7 +210,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 material->setShaderId(currentShaderId);
 
-                material->onShaderChanged(clipboard.getWorld());
+                material->onShaderChanged();
             }
             if (is_selected)
             {
@@ -260,6 +279,11 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
 
     int shaderProgram = shader->getProgramFromVariant(variant);
+    if (shaderProgram == -1)
+    {
+        // If we dont have the directional light + shadow variant, revert to default variant
+        shaderProgram = shader->getProgramFromVariant(0);
+    }
 
     shader->use(shaderProgram);
     shader->setMat4("model", mModel);

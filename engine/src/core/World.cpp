@@ -303,6 +303,19 @@ void World::immediateDestroyEntitiesInWorld()
     }
 }
 
+std::vector<ShaderUniform> World::getCachedMaterialUniforms(const Guid &materialId, const Guid &shaderId)
+{
+    return mMaterialUniformCache[materialId][shaderId];
+}
+
+void World::cacheMaterialUniforms(const Guid &materialId, const Guid &shaderId, const std::vector<ShaderUniform> &uniforms)
+{
+    assert(materialId != Guid::INVALID);
+    assert(shaderId != Guid::INVALID);
+
+    mMaterialUniformCache[materialId][shaderId] = uniforms;
+}
+
 size_t World::getNumberOfScenes() const
 {
     return mAllocators.mSceneAllocator.getCount();

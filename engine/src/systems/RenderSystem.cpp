@@ -174,13 +174,13 @@ void RenderSystem::registerRenderAssets(World *world)
 
         if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end())
         {
-            material->onShaderChanged(world); // need to also do this if the shader code changed but the assigned shader
+            material->onShaderChanged(); // need to also do this if the shader code changed but the assigned shader
                                               // on the material remained the same!
         }
 
         if (material->hasTextureChanged())
         {
-            material->onTextureChanged(world);
+            material->onTextureChanged();
         }
     }
 

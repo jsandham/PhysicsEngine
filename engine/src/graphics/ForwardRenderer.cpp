@@ -23,12 +23,18 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
                              const std::vector<RenderObject> &renderObjects,
                              const std::vector<SpriteObject> &spriteObjects)
 {
+    Graphics::checkError(__LINE__, __FILE__);
+
     beginFrame(mWorld, camera, mState);
+
+    Graphics::checkError(__LINE__, __FILE__);
 
     if (camera->mSSAO == CameraSSAO::SSAO_On)
     {
         computeSSAO(mWorld, camera, mState, renderQueue, renderObjects);
     }
+
+    Graphics::checkError(__LINE__, __FILE__);
 
     for (size_t j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
     {
@@ -40,20 +46,37 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
 
             if (lightTransform != nullptr)
             {
+                Graphics::checkError(__LINE__, __FILE__);
                 renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                
+                Graphics::checkError(__LINE__, __FILE__);
                 renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                
+                Graphics::checkError(__LINE__, __FILE__);
                 renderTransparents();
+
+                Graphics::checkError(__LINE__, __FILE__);
             }
         }
     }
 
+    Graphics::checkError(__LINE__, __FILE__);
+
     renderSprites(mWorld, camera, mState, spriteObjects);
+
+    Graphics::checkError(__LINE__, __FILE__);
 
     renderColorPicking(mWorld, camera, mState, renderQueue, renderObjects);
 
+    Graphics::checkError(__LINE__, __FILE__);
+
     postProcessing();
 
+    Graphics::checkError(__LINE__, __FILE__);
+
     endFrame(mWorld, camera, mState);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
@@ -382,7 +405,17 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         if (currentShaderIndex != renderObjects[renderQueue[i].second].shaderIndex)
         {
             shader = world->getAssetByIndex<Shader>(renderObjects[renderQueue[i].second].shaderIndex);
-            shader->use(shader->getProgramFromVariant(variant));
+            
+            
+            int programVariant = shader->getProgramFromVariant(variant);
+            if (programVariant >= 0)
+            {
+                shader->use(shader->getProgramFromVariant(variant));   
+            }
+            else
+            {
+                shader->use(shader->getProgramFromVariant(0));
+            }
 
             currentShaderIndex = renderObjects[renderQueue[i].second].shaderIndex;
         }
@@ -525,18 +558,31 @@ void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState 
 {
     if (camera->mRenderToScreen)
     {
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::bindFramebuffer(0);
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::use(state.mQuadShaderProgram);
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
 
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::renderScreenQuad(state.mQuadVAO);
+
+        Graphics::checkError(__LINE__, __FILE__);
         Graphics::unbindFramebuffer();
+
+        Graphics::checkError(__LINE__, __FILE__);
     }
 
+    Graphics::checkError(__LINE__, __FILE__);
+
     camera->endQuery();
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)

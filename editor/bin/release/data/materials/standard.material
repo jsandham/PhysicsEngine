@@ -1,31 +1,44 @@
 Material:
   type: 1004
-  hide : 0
-  id : 03badea3-a684-40b6-a183-0119c7cde590
-  name : Editor loaded Standard
-  shaderId : 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
-  renderQueue : Opaque
-  shininess : 
-    type : Float
-    data : 1.0
-  color : 
-    type : Color
-    data : [1.0, 0.0, 0.0, 1.0]
-  ambient : 
-    type : Vec3
-    data : [0.5, 0.5, 0.5]
-  diffuse : 
-    type : Vec3
-    data : [0.5, 0.5, 0.5]
-  specular :
-    type : Vec3
-    data : [0.5, 0.5, 0.5]
-  mainTexture : 
-    type : Sampler2D
-    data : 285299d3-8be5-4b3a-90cf-9fa77df5e54a
-  normalMap :
-    type : Sampler2D
-    data : 00000000-0000-0000-0000-000000000000
-  specularMap : 
-    type : Sampler2D
-    data : 00000000-0000-0000-0000-000000000000
+  hide: 0
+  id: 03badea3-a684-40b6-a183-0119c7cde590
+  name: Editor loaded Standard
+  shaderId: 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
+  renderQueue: Opaque
+  material.shininess:
+    type: Float
+    data: 0
+  material.color:
+    type: Vec4
+    data:
+      - 0
+      - 0
+      - 0
+      - 0
+  material.ambient:
+    type: Vec3
+    data:
+      - 0
+      - 0
+      - 0
+  material.diffuse:
+    type: Vec3
+    data:
+      - 0
+      - 0
+      - 0
+  material.specular:
+    type: Vec3
+    data:
+      - 0
+      - 0
+      - 0
+  material.mainTexture:
+    type: Sampler2D
+    data: 00000000-0000-0000-0000-000000000000
+  material.normalMap:
+    type: Sampler2D
+    data: 00000000-0000-0000-0000-000000000000
+  material.specularMap:
+    type: Sampler2D
+    data: 00000000-0000-0000-0000-000000000000

@@ -216,26 +216,33 @@ void Camera::beginQuery()
     mQuery.mLines = 0;
     mQuery.mPoints = 0;
 
-    Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+    if (mIsCreated)
+    {
+        Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+    }
 }
 
 void Camera::endQuery()
 {
-    unsigned long long elapsedTime; // in nanoseconds
-    Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+    unsigned long long elapsedTime = 0; // in nanoseconds
 
-    mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
+    if (mIsCreated)
+    {
+        Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+    
+        mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
-    // swap which query is active
-    if (mQuery.mQueryBack)
-    {
-        mQuery.mQueryBack = 0;
-        mQuery.mQueryFront = 1;
-    }
-    else
-    {
-        mQuery.mQueryBack = 1;
-        mQuery.mQueryFront = 0;
+        // swap which query is active
+        if (mQuery.mQueryBack)
+        {
+            mQuery.mQueryBack = 0;
+            mQuery.mQueryFront = 1;
+        }
+        else
+        {
+            mQuery.mQueryBack = 1;
+            mQuery.mQueryFront = 0;
+        }
     }
 }
 

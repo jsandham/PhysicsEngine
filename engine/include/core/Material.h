@@ -18,9 +18,9 @@ class Material : public Asset
 {
   private:
     Guid mShaderId;
+    std::vector<ShaderUniform> mUniforms;
     bool mShaderChanged;
     bool mTextureChanged;
-    std::vector<ShaderUniform> mUniforms; 
 
   public:
     RenderQueue mRenderQueue;
@@ -37,8 +37,8 @@ class Material : public Asset
     virtual std::string getObjectName() const override;
 
     void apply();
-    void onShaderChanged(World *world);
-    void onTextureChanged(World* world);
+    void onShaderChanged();
+    void onTextureChanged();
     bool hasShaderChanged() const;
     bool hasTextureChanged() const;
     void setShaderId(const Guid& shaderId);
@@ -57,17 +57,17 @@ class Material : public Asset
     void setMat4(const std::string &name, const glm::mat4 &mat);
     void setTexture(const std::string &name, const Guid &textureId);
 
-    void setBool(int nameLocation, bool value);
-    void setInt(int nameLocation, int value);
-    void setFloat(int nameLocation, float value);
-    void setColor(int nameLocation, const Color &color);
-    void setVec2(int nameLocation, const glm::vec2 &vec);
-    void setVec3(int nameLocation, const glm::vec3 &vec);
-    void setVec4(int nameLocation, const glm::vec4 &vec);
-    void setMat2(int nameLocation, const glm::mat2 &mat);
-    void setMat3(int nameLocation, const glm::mat3 &mat);
-    void setMat4(int nameLocation, const glm::mat4 &mat);
-    void setTexture(int nameLocation, const Guid &textureId);
+    void setBool(int uniformId, bool value);
+    void setInt(int uniformId, int value);
+    void setFloat(int uniformId, float value);
+    void setColor(int uniformId, const Color &color);
+    void setVec2(int uniformId, const glm::vec2 &vec);
+    void setVec3(int uniformId, const glm::vec3 &vec);
+    void setVec4(int uniformId, const glm::vec4 &vec);
+    void setMat2(int uniformId, const glm::mat2 &mat);
+    void setMat3(int uniformId, const glm::mat3 &mat);
+    void setMat4(int uniformId, const glm::mat4 &mat);
+    void setTexture(int uniformId, const Guid &textureId);
 
     bool getBool(const std::string &name) const;
     int getInt(const std::string &name) const;
@@ -81,23 +81,23 @@ class Material : public Asset
     glm::mat4 getMat4(const std::string &name) const;
     Guid getTexture(const std::string &name) const;
 
-    bool getBool(int nameLocation) const;
-    int getInt(int nameLocation) const;
-    float getFloat(int nameLocation) const;
-    Color getColor(int nameLocation) const;
-    glm::vec2 getVec2(int nameLocation) const;
-    glm::vec3 getVec3(int nameLocation) const;
-    glm::vec4 getVec4(int nameLocation) const;
-    glm::mat2 getMat2(int nameLocation) const;
-    glm::mat3 getMat3(int nameLocation) const;
-    glm::mat4 getMat4(int nameLocation) const;
-    Guid getTexture(int nameLocation) const;
+    bool getBool(int uniformId) const;
+    int getInt(int uniformId) const;
+    float getFloat(int uniformId) const;
+    Color getColor(int uniformId) const;
+    glm::vec2 getVec2(int uniformId) const;
+    glm::vec3 getVec3(int uniformId) const;
+    glm::vec4 getVec4(int uniformId) const;
+    glm::mat2 getMat2(int uniformId) const;
+    glm::mat3 getMat3(int uniformId) const;
+    glm::mat4 getMat4(int uniformId) const;
+    Guid getTexture(int uniformId) const;
 
     std::vector<Guid> getTextures() const;
 
   private:
     int findIndexOfUniform(const std::string &name) const;
-    int findIndexOfUniform(int nameLocation) const;
+    int findIndexOfUniform(unsigned int uniformId) const;
 };
 
 template <> struct AssetType<Material>

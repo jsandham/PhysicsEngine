@@ -170,18 +170,6 @@ struct DeferredRendererState
     int mQuadShaderTexLoc;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 struct DebugRendererState
 {
     // internal graphics camera state
@@ -210,22 +198,6 @@ struct DebugRendererState
     int mQuadShaderProgram;
     int mQuadShaderTexLoc;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 struct GizmoRendererState
 {
@@ -356,7 +328,7 @@ class Graphics
     static glm::mat3 getMat3(int nameLocation, int program);
     static glm::mat4 getMat4(int nameLocation, int program);
     static int getTexture2D(int nameLocation, int texUnit, int program);
-    static void applyMaterial(const std::vector<ShaderUniform> &uniforms);
+    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram);
     static void render(int start, int count, int vao, bool wireframe = false);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
 
@@ -366,17 +338,14 @@ class Graphics
     static void compileColorShader(ForwardRendererState &state);
     static void compileScreenQuadShader(ForwardRendererState &state);
     static void compileSpriteShader(ForwardRendererState &state);
-
     static void compileGBufferShader(DeferredRendererState &state);
     static void compileScreenQuadShader(DeferredRendererState &state);
     static void compileColorShader(DeferredRendererState &state);
-
     static void compileNormalShader(DebugRendererState &state);
     static void compilePositionShader(DebugRendererState &state);
     static void compileLinearDepthShader(DebugRendererState &state);
     static void compileColorShader(DebugRendererState &state);
     static void compileScreenQuadShader(DebugRendererState &state);
-
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
     static void compileGridShader(GizmoRendererState &state);
@@ -390,6 +359,35 @@ class Graphics
                            unsigned int *vbo0, unsigned int *vbo1);
     static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
 
+    static std::string getGeometryVertexShader();
+    static std::string getGeometryFragmentShader();
+    static std::string getSSAOVertexShader();
+    static std::string getSSAOFragmentShader();
+    static std::string getShadowDepthMapVertexShader();
+    static std::string getShadowDepthMapFragmentShader();
+    static std::string getShadowDepthCubemapVertexShader();
+    static std::string getShadowDepthCubemapFragmentShader();
+    static std::string getShadowDepthCubemapGeometryShader();
+    static std::string getColorVertexShader();
+    static std::string getColorFragmentShader();
+    static std::string getScreenQuadVertexShader();
+    static std::string getScreenQuadFragmentShader();
+    static std::string getSpriteVertexShader();
+    static std::string getSpriteFragmentShader();
+    static std::string getGBufferVertexShader();
+    static std::string getGBufferFragmentShader();
+    static std::string getNormalVertexShader();
+    static std::string getNormalFragmentShader();
+    static std::string getPositionVertexShader();
+    static std::string getPositionFragmentShader();
+    static std::string getLinearDepthVertexShader();
+    static std::string getLinearDepthFragmentShader();
+    static std::string getLineVertexShader();
+    static std::string getLineFragmentShader();
+    static std::string getGizmoVertexShader();
+    static std::string getGizmoFragmentShader();
+    static std::string getGridVertexShader();
+    static std::string getGridFragmentShader();
     static std::string getStandardVertexShader();
     static std::string getStandardFragmentShader();
     

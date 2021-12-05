@@ -1,12 +1,3 @@
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <stdlib.h>
-#include <vector>
-
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
@@ -41,7 +32,7 @@ Shader::Shader(World *world, const Guid& id) : Asset(world, id)
     mAllProgramsCompiled = false;
     mActiveProgram = -1;
 
-    mShaderSourceLanguage = ShaderSourceLanguage::HLSL;
+    mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
 Shader::~Shader()
@@ -223,8 +214,8 @@ void Shader::compile()
                 ShaderUniform uniform;
                 uniform.mName = name;
                 uniform.mType = type;
-                uniform.mCachedLocation = findUniformLocation(name, program);
                 uniform.mCachedHandle = -1;
+                uniform.mUniformId = Shader::uniformToId(name.c_str());
                 memset(uniform.mData, '\0', 64);
 
                 mUniforms.push_back(uniform);
@@ -647,4 +638,19 @@ int Shader::getTexture2D(int nameLocation, int texUnit) const
     }
 
     return -1;
+}
+
+unsigned int Shader::uniformToId(const char *uniform)
+{
+    unsigned int hash = 5381;
+    int c;
+
+    c = *uniform++;
+    while (c != 0)
+    {
+        hash = ((hash << 5) + hash) + c;
+        c = *uniform++;
+    }
+    
+    return hash;
 }

@@ -509,23 +509,28 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
 
 void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state)
 {
+    Graphics::checkError(__LINE__, __FILE__);
     Graphics::turnOn(Capability::Blending);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    Graphics::checkError(__LINE__, __FILE__);
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
+    Graphics::checkError(__LINE__, __FILE__);
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
     Graphics::use(state.mGridShaderProgram);
     Graphics::setMat4(state.mGridShaderMVPLoc, mvp);
     Graphics::setColor(state.mGridShaderColorLoc, state.mGridColor);
 
+    Graphics::checkError(__LINE__, __FILE__);
     glBindVertexArray(state.mGridVAO);
     glDrawArrays(GL_LINES, 0, (GLsizei)(state.mGridVertices.size()));
     glBindVertexArray(0);
 
+    Graphics::checkError(__LINE__, __FILE__);
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);

@@ -2,7 +2,7 @@ Shader:
   type: 1000
   hide : 0
   id : 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
-  name : Standard
+  name : Editor Loaded Standard
   shaderSourceLanguage : GLSL
   vertexSource : data\shaders\opengl\standard.vs
   fragmentSource : data\shaders\opengl\standard.fs

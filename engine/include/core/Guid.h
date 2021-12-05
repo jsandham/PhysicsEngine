@@ -32,6 +32,7 @@ class Guid
     bool isValid() const;
     bool isInvalid() const;
     std::string toString() const;
+    const char* c_str() const;
 
     static Guid newGuid();
 

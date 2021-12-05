@@ -94,13 +94,13 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
 
     standardMaterial->setName("Standard");
     standardMaterial->setShaderId(standardShader->getId());
-    standardMaterial->onShaderChanged(world);
+    standardMaterial->onShaderChanged();
 
-    standardMaterial->setFloat("material.shininess", 1.0f);
-    standardMaterial->setColor("material.color", Color(1, 0, 0, 1));
-    standardMaterial->setVec3("material.ambient", glm::vec3(1, 1, 1));
+    standardMaterial->setFloat("material.shininess", 0.5f);
+    standardMaterial->setVec3("material.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
     standardMaterial->setVec3("material.diffuse", glm::vec3(1, 1, 1));
-    standardMaterial->setVec3("material.specular", glm::vec3(1, 1, 1));
+    standardMaterial->setVec3("material.specular", glm::vec3(0.2, 0.2, 0.2));
+    standardMaterial->setVec3("material.colour", glm::vec3(0.0f, 1.0f, 1.0f));
 
     //.  .  .  .  .  .  .  .  .  .
     //.  .  .  .  .  .  .  .  .  .

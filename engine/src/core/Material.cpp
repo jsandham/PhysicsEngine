@@ -65,6 +65,8 @@ void Material::deserialize(const YAML::Node &in)
         mUniforms.push_back(uniform);
     }
 
+    mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+
     mShaderChanged = true;
     mTextureChanged = true;
 }
@@ -81,12 +83,16 @@ std::string Material::getObjectName() const
 
 void Material::apply()
 {
-    Graphics::applyMaterial(mUniforms);
+    Shader *shader = mWorld->getAssetById<Shader>(mShaderId);
+
+    assert(shader != nullptr);
+
+    Graphics::applyMaterial(mUniforms, shader->getActiveProgram());
 }
 
-void Material::onShaderChanged(World *world)
+void Material::onShaderChanged()
 {
-    Shader *shader = world->getAssetById<Shader>(mShaderId);
+    Shader *shader = mWorld->getAssetById<Shader>(mShaderId);
 
     if (shader == nullptr)
     {
@@ -100,21 +106,19 @@ void Material::onShaderChanged(World *world)
         return;
     }
 
-    // onShaderChanged is called whenever the shader is (re-)compiled, however
-    // the material data may or may not have changed. Attempt to copy material
-    // data from old uniforms to new ones
     std::vector<ShaderUniform> newUniforms = shader->getMaterialUniforms();
 
-    for (size_t i = 0; i < newUniforms.size(); i++)
+    // Attempt to copy cached uniform data to new uniforms
+    std::vector<ShaderUniform> cachedUniforms = mWorld->getCachedMaterialUniforms(getId(), mShaderId);
+    if (newUniforms.size() == cachedUniforms.size())
     {
-        for (size_t j = 0; j < mUniforms.size(); j++)
+        for (size_t i = 0; i < newUniforms.size(); i++)
         {
-            if (newUniforms[i].mType == mUniforms[j].mType && newUniforms[i].mName == mUniforms[j].mName)
+            if (newUniforms[i].mType == cachedUniforms[i].mType && newUniforms[i].mName == cachedUniforms[i].mName)
             {
-                newUniforms[i].mCachedHandle = mUniforms[j].mCachedHandle;
-                memcpy(newUniforms[i].mData, mUniforms[j].mData, 64);
-
-                break;
+                newUniforms[i].mUniformId = cachedUniforms[i].mUniformId;
+                newUniforms[i].mCachedHandle = cachedUniforms[i].mCachedHandle;
+                memcpy(newUniforms[i].mData, cachedUniforms[i].mData, 64);
             }
         }
     }
@@ -124,14 +128,14 @@ void Material::onShaderChanged(World *world)
     mShaderChanged = false;
 }
 
-void Material::onTextureChanged(World *world)
+void Material::onTextureChanged()
 {
     // Find all texture handles
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
         if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            Texture2D *texture = world->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
+            Texture2D *texture = mWorld->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
                 mUniforms[i].mCachedHandle = texture->getNativeGraphics();
@@ -158,6 +162,12 @@ bool Material::hasTextureChanged() const
 
 void Material::setShaderId(const Guid& shaderId)
 {
+    // If current shader on material was valid, cache its uniforms before setting new shader
+    if (mShaderId.isValid())
+    {
+        mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+    }
+
     mShaderId = shaderId;
     mShaderChanged = true;
 }
@@ -273,99 +283,99 @@ void Material::setTexture(const std::string &name, const Guid &textureId)
     mTextureChanged = true;
 }
 
-void Material::setBool(int nameLocation, bool value)
+void Material::setBool(int uniformId, bool value)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Int)
     {
         memcpy((void *)mUniforms[index].mData, &value, sizeof(bool));
     }
 }
 
-void Material::setInt(int nameLocation, int value)
+void Material::setInt(int uniformId, int value)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Int)
     {
         memcpy((void *)mUniforms[index].mData, &value, sizeof(int));
     }
 }
 
-void Material::setFloat(int nameLocation, float value)
+void Material::setFloat(int uniformId, float value)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Float)
     {
         memcpy((void *)mUniforms[index].mData, &value, sizeof(float));
     }
 }
 
-void Material::setColor(int nameLocation, const Color &color)
+void Material::setColor(int uniformId, const Color &color)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
         memcpy((void *)mUniforms[index].mData, &color, sizeof(Color));
     }
 }
 
-void Material::setVec2(int nameLocation, const glm::vec2 &vec)
+void Material::setVec2(int uniformId, const glm::vec2 &vec)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec2)
     {
         memcpy((void *)mUniforms[index].mData, &vec, sizeof(glm::vec2));
     }
 }
 
-void Material::setVec3(int nameLocation, const glm::vec3 &vec)
+void Material::setVec3(int uniformId, const glm::vec3 &vec)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec3)
     {
         memcpy((void *)mUniforms[index].mData, &vec, sizeof(glm::vec3));
     }
 }
 
-void Material::setVec4(int nameLocation, const glm::vec4 &vec)
+void Material::setVec4(int uniformId, const glm::vec4 &vec)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
     {
         memcpy((void *)mUniforms[index].mData, &vec, sizeof(glm::vec4));
     }
 }
 
-void Material::setMat2(int nameLocation, const glm::mat2 &mat)
+void Material::setMat2(int uniformId, const glm::mat2 &mat)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat2)
     {
         memcpy((void *)mUniforms[index].mData, &mat, sizeof(glm::mat2));
     }
 }
 
-void Material::setMat3(int nameLocation, const glm::mat3 &mat)
+void Material::setMat3(int uniformId, const glm::mat3 &mat)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat3)
     {
         memcpy((void *)mUniforms[index].mData, &mat, sizeof(glm::mat3));
     }
 }
 
-void Material::setMat4(int nameLocation, const glm::mat4 &mat)
+void Material::setMat4(int uniformId, const glm::mat4 &mat)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat4)
     {
         memcpy((void *)mUniforms[index].mData, &mat, sizeof(glm::mat4));
     }
 }
 
-void Material::setTexture(int nameLocation, const Guid &textureId)
+void Material::setTexture(int uniformId, const Guid &textureId)
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Sampler2D)
     {
         memcpy((void *)mUniforms[index].mData, &textureId, sizeof(textureId));
@@ -506,9 +516,9 @@ Guid Material::getTexture(const std::string &name) const
     return textureId;
 }
 
-bool Material::getBool(int nameLocation) const
+bool Material::getBool(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     bool value = false;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Int)
     {
@@ -518,9 +528,9 @@ bool Material::getBool(int nameLocation) const
     return value;
 }
 
-int Material::getInt(int nameLocation) const
+int Material::getInt(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     int value = 0;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Int)
     {
@@ -530,9 +540,9 @@ int Material::getInt(int nameLocation) const
     return value;
 }
 
-float Material::getFloat(int nameLocation) const
+float Material::getFloat(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     float value = 0.0f;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Float)
     {
@@ -542,9 +552,9 @@ float Material::getFloat(int nameLocation) const
     return value;
 }
 
-Color Material::getColor(int nameLocation) const
+Color Material::getColor(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     Color color = Color(0, 0, 0, 255);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Color)
     {
@@ -554,9 +564,9 @@ Color Material::getColor(int nameLocation) const
     return color;
 }
 
-glm::vec2 Material::getVec2(int nameLocation) const
+glm::vec2 Material::getVec2(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::vec2 vec = glm::vec2(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec2)
     {
@@ -566,9 +576,9 @@ glm::vec2 Material::getVec2(int nameLocation) const
     return vec;
 }
 
-glm::vec3 Material::getVec3(int nameLocation) const
+glm::vec3 Material::getVec3(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::vec3 vec = glm::vec3(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec3)
     {
@@ -578,9 +588,9 @@ glm::vec3 Material::getVec3(int nameLocation) const
     return vec;
 }
 
-glm::vec4 Material::getVec4(int nameLocation) const
+glm::vec4 Material::getVec4(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::vec4 vec = glm::vec4(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Vec4)
     {
@@ -590,9 +600,9 @@ glm::vec4 Material::getVec4(int nameLocation) const
     return vec;
 }
 
-glm::mat2 Material::getMat2(int nameLocation) const
+glm::mat2 Material::getMat2(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::mat2 mat = glm::mat2(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat2)
     {
@@ -602,9 +612,9 @@ glm::mat2 Material::getMat2(int nameLocation) const
     return mat;
 }
 
-glm::mat3 Material::getMat3(int nameLocation) const
+glm::mat3 Material::getMat3(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::mat3 mat = glm::mat3(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat3)
     {
@@ -614,9 +624,9 @@ glm::mat3 Material::getMat3(int nameLocation) const
     return mat;
 }
 
-glm::mat4 Material::getMat4(int nameLocation) const
+glm::mat4 Material::getMat4(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     glm::mat4 mat = glm::mat4(0.0f);
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Mat4)
     {
@@ -626,9 +636,9 @@ glm::mat4 Material::getMat4(int nameLocation) const
     return mat;
 }
 
-Guid Material::getTexture(int nameLocation) const
+Guid Material::getTexture(int uniformId) const
 {
-    int index = findIndexOfUniform(nameLocation);
+    int index = findIndexOfUniform(uniformId);
     Guid textureId = Guid::INVALID;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Sampler2D)
     {
@@ -668,11 +678,11 @@ int Material::findIndexOfUniform(const std::string &name) const
     return -1;
 }
 
-int Material::findIndexOfUniform(int nameLocation) const
+int Material::findIndexOfUniform(unsigned int uniformId) const
 {
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
-        if (nameLocation == mUniforms[i].mCachedLocation)
+        if (uniformId == mUniforms[i].mUniformId)
         {
             return (int)i;
         }
