@@ -1,10 +1,6 @@
 #version 430 core
-layout(std140) uniform CameraBlock
-{
-    mat4 projection;
-    mat4 view;
-    vec3 cameraPos;
-}Camera;
+#include "camera.glsl"
+
 in vec3 position;
 in vec3 normal;
 in vec2 texCoord;

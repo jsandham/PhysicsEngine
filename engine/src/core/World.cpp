@@ -774,3 +774,1020 @@ Guid World::getSceneId(const std::string& filepath) const
 //
 //	return false;
 //}
+
+// Explicit template specializations
+
+template <> size_t World::getNumberOfSystems<RenderSystem>() const
+{
+    return mAllocators.mRenderSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfSystems<PhysicsSystem>() const
+{
+    return mAllocators.mPhysicsSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfSystems<CleanUpSystem>() const
+{
+    return mAllocators.mCleanupSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfSystems<DebugSystem>() const
+{
+    return mAllocators.mDebugSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfSystems<GizmoSystem>() const
+{
+    return mAllocators.mGizmoSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfSystems<FreeLookCameraSystem>() const
+{
+    return mAllocators.mFreeLookCameraSystemAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<Transform>() const
+{
+    return mAllocators.mTransformAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<MeshRenderer>() const
+{
+    return mAllocators.mMeshRendererAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<SpriteRenderer>() const
+{
+    return mAllocators.mSpriteRendererAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<LineRenderer>() const
+{
+    return mAllocators.mLineRendererAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<Rigidbody>() const
+{
+    return mAllocators.mRigidbodyAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<Camera>() const
+{
+    return mAllocators.mCameraAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<Light>() const
+{
+    return mAllocators.mLightAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<SphereCollider>() const
+{
+    return mAllocators.mSphereColliderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<BoxCollider>() const
+{
+    return mAllocators.mBoxColliderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<CapsuleCollider>() const
+{
+    return mAllocators.mCapsuleColliderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<MeshCollider>() const
+{
+    return mAllocators.mMeshColliderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Mesh>() const
+{
+    return mAllocators.mMeshAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Material>() const
+{
+    return mAllocators.mMaterialAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Shader>() const
+{
+    return mAllocators.mShaderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Texture2D>() const
+{
+    return mAllocators.mTexture2DAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Texture3D>() const
+{
+    return mAllocators.mTexture3DAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Cubemap>() const
+{
+    return mAllocators.mCubemapAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<RenderTexture>() const
+{
+    return mAllocators.mRenderTextureAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Font>() const
+{
+    return mAllocators.mFontAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfAssets<Sprite>() const
+{
+    return mAllocators.mSpriteAllocator.getCount();
+}
+
+template <> RenderSystem *World::getSystem<RenderSystem>() const
+{
+    return getSystem_impl(&mAllocators.mRenderSystemAllocator);
+}
+
+template <> PhysicsSystem *World::getSystem<PhysicsSystem>() const
+{
+    return getSystem_impl(&mAllocators.mPhysicsSystemAllocator);
+}
+
+template <> CleanUpSystem *World::getSystem<CleanUpSystem>() const
+{
+    return getSystem_impl(&mAllocators.mCleanupSystemAllocator);
+}
+
+template <> DebugSystem *World::getSystem<DebugSystem>() const
+{
+    return getSystem_impl(&mAllocators.mDebugSystemAllocator);
+}
+
+template <> GizmoSystem *World::getSystem<GizmoSystem>() const
+{
+    return getSystem_impl(&mAllocators.mGizmoSystemAllocator);
+}
+
+template <> FreeLookCameraSystem *World::getSystem<FreeLookCameraSystem>() const
+{
+    return getSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator);
+}
+
+template <> Transform *World::getComponent<Transform>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mTransformAllocator, entityId);
+}
+
+template <> MeshRenderer *World::getComponent<MeshRenderer>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
+}
+
+template <> SpriteRenderer *World::getComponent<SpriteRenderer>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
+}
+
+template <> LineRenderer *World::getComponent<LineRenderer>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
+}
+
+template <> Rigidbody *World::getComponent<Rigidbody>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mRigidbodyAllocator, entityId);
+}
+
+template <> Camera *World::getComponent<Camera>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mCameraAllocator, entityId);
+}
+
+template <> Light *World::getComponent<Light>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mLightAllocator, entityId);
+}
+
+template <> SphereCollider *World::getComponent<SphereCollider>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mSphereColliderAllocator, entityId);
+}
+
+template <> BoxCollider *World::getComponent<BoxCollider>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mBoxColliderAllocator, entityId);
+}
+
+template <> CapsuleCollider *World::getComponent<CapsuleCollider>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityId);
+}
+
+template <> MeshCollider *World::getComponent<MeshCollider>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
+}
+
+template <> Transform *World::addComponent<Transform>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mTransformAllocator, entityId);
+}
+
+template <> MeshRenderer *World::addComponent<MeshRenderer>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
+}
+
+template <> SpriteRenderer *World::addComponent<SpriteRenderer>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
+}
+
+template <> LineRenderer *World::addComponent<LineRenderer>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
+}
+
+template <> Rigidbody *World::addComponent<Rigidbody>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mRigidbodyAllocator, entityId);
+}
+
+template <> Camera *World::addComponent<Camera>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mCameraAllocator, entityId);
+}
+
+template <> Light *World::addComponent<Light>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mLightAllocator, entityId);
+}
+
+template <> SphereCollider *World::addComponent<SphereCollider>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mSphereColliderAllocator, entityId);
+}
+
+template <> BoxCollider *World::addComponent<BoxCollider>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mBoxColliderAllocator, entityId);
+}
+
+template <> CapsuleCollider *World::addComponent<CapsuleCollider>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityId);
+}
+
+template <> MeshCollider *World::addComponent<MeshCollider>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
+}
+
+template <> RenderSystem *World::addSystem<RenderSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mRenderSystemAllocator, order);
+}
+
+template <> PhysicsSystem *World::addSystem<PhysicsSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mPhysicsSystemAllocator, order);
+}
+
+template <> CleanUpSystem *World::addSystem<CleanUpSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mCleanupSystemAllocator, order);
+}
+
+template <> DebugSystem *World::addSystem<DebugSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mDebugSystemAllocator, order);
+}
+
+template <> GizmoSystem *World::addSystem<GizmoSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mGizmoSystemAllocator, order);
+}
+
+template <> FreeLookCameraSystem *World::addSystem<FreeLookCameraSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator, order);
+}
+
+template <> RenderSystem *World::getSystemByIndex<RenderSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mRenderSystemAllocator, index);
+}
+
+template <> PhysicsSystem *World::getSystemByIndex<PhysicsSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mPhysicsSystemAllocator, index);
+}
+
+template <> CleanUpSystem *World::getSystemByIndex<CleanUpSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mCleanupSystemAllocator, index);
+}
+
+template <> DebugSystem *World::getSystemByIndex<DebugSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mDebugSystemAllocator, index);
+}
+
+template <> GizmoSystem *World::getSystemByIndex<GizmoSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mGizmoSystemAllocator, index);
+}
+
+template <> FreeLookCameraSystem *World::getSystemByIndex<FreeLookCameraSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mFreeLookCameraSystemAllocator, index);
+}
+
+template <> RenderSystem *World::getSystemById<RenderSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mRenderSystemAllocator, systemId);
+}
+
+template <> PhysicsSystem *World::getSystemById<PhysicsSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mPhysicsSystemAllocator, systemId);
+}
+
+template <> CleanUpSystem *World::getSystemById<CleanUpSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mCleanupSystemAllocator, systemId);
+}
+
+template <> DebugSystem *World::getSystemById<DebugSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mDebugSystemAllocator, systemId);
+}
+
+template <> GizmoSystem *World::getSystemById<GizmoSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mGizmoSystemAllocator, systemId);
+}
+
+template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mFreeLookCameraSystemAllocator, systemId);
+}
+
+template <> Mesh *World::getAssetByIndex<Mesh>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mMeshAllocator, index);
+}
+
+template <> Material *World::getAssetByIndex<Material>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mMaterialAllocator, index);
+}
+
+template <> Shader *World::getAssetByIndex<Shader>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mShaderAllocator, index);
+}
+
+template <> Texture2D *World::getAssetByIndex<Texture2D>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mTexture2DAllocator, index);
+}
+
+template <> Texture3D *World::getAssetByIndex<Texture3D>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mTexture3DAllocator, index);
+}
+
+template <> Cubemap *World::getAssetByIndex<Cubemap>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mCubemapAllocator, index);
+}
+
+template <> RenderTexture *World::getAssetByIndex<RenderTexture>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mRenderTextureAllocator, index);
+}
+
+template <> Font *World::getAssetByIndex<Font>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mFontAllocator, index);
+}
+
+template <> Sprite *World::getAssetByIndex<Sprite>(size_t index) const
+{
+    return getAssetByIndex_impl(&mAllocators.mSpriteAllocator, index);
+}
+
+template <> Mesh *World::getAssetById<Mesh>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mMeshAllocator, assetId);
+}
+
+template <> Material *World::getAssetById<Material>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mMaterialAllocator, assetId);
+}
+
+template <> Shader *World::getAssetById<Shader>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mShaderAllocator, assetId);
+}
+
+template <> Texture2D *World::getAssetById<Texture2D>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mTexture2DAllocator, assetId);
+}
+
+template <> Texture3D *World::getAssetById<Texture3D>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mTexture3DAllocator, assetId);
+}
+
+template <> Cubemap *World::getAssetById<Cubemap>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mCubemapAllocator, assetId);
+}
+
+template <> RenderTexture *World::getAssetById<RenderTexture>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mRenderTextureAllocator, assetId);
+}
+
+template <> Font *World::getAssetById<Font>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mFontAllocator, assetId);
+}
+
+template <> Sprite *World::getAssetById<Sprite>(const Guid &assetId) const
+{
+    return getAssetById_impl(&mAllocators.mSpriteAllocator, assetId);
+}
+
+template <> Transform *World::getComponentByIndex<Transform>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mTransformAllocator, index);
+}
+
+template <> MeshRenderer *World::getComponentByIndex<MeshRenderer>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mMeshRendererAllocator, index);
+}
+
+template <> SpriteRenderer *World::getComponentByIndex<SpriteRenderer>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mSpriteRendererAllocator, index);
+}
+
+template <> LineRenderer *World::getComponentByIndex<LineRenderer>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mLineRendererAllocator, index);
+}
+
+template <> Rigidbody *World::getComponentByIndex<Rigidbody>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mRigidbodyAllocator, index);
+}
+
+template <> Camera *World::getComponentByIndex<Camera>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mCameraAllocator, index);
+}
+
+template <> Light *World::getComponentByIndex<Light>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mLightAllocator, index);
+}
+
+template <> SphereCollider *World::getComponentByIndex<SphereCollider>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mSphereColliderAllocator, index);
+}
+
+template <> BoxCollider *World::getComponentByIndex<BoxCollider>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mBoxColliderAllocator, index);
+}
+
+template <> CapsuleCollider *World::getComponentByIndex<CapsuleCollider>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mCapsuleColliderAllocator, index);
+}
+
+template <> MeshCollider *World::getComponentByIndex<MeshCollider>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mMeshColliderAllocator, index);
+}
+
+template <> Transform *World::getComponentById<Transform>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mTransformAllocator, componentId);
+}
+
+template <> MeshRenderer *World::getComponentById<MeshRenderer>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mMeshRendererAllocator, componentId);
+}
+
+template <> SpriteRenderer *World::getComponentById<SpriteRenderer>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mSpriteRendererAllocator, componentId);
+}
+
+template <> LineRenderer *World::getComponentById<LineRenderer>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mLineRendererAllocator, componentId);
+}
+
+template <> Rigidbody *World::getComponentById<Rigidbody>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mRigidbodyAllocator, componentId);
+}
+
+template <> Camera *World::getComponentById<Camera>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mCameraAllocator, componentId);
+}
+
+template <> Light *World::getComponentById<Light>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mLightAllocator, componentId);
+}
+
+template <> SphereCollider *World::getComponentById<SphereCollider>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mSphereColliderAllocator, componentId);
+}
+
+template <> BoxCollider *World::getComponentById<BoxCollider>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mBoxColliderAllocator, componentId);
+}
+
+template <> CapsuleCollider *World::getComponentById<CapsuleCollider>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mCapsuleColliderAllocator, componentId);
+}
+
+template <> MeshCollider *World::getComponentById<MeshCollider>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mMeshColliderAllocator, componentId);
+}
+
+template <> Mesh *World::createAsset<Mesh>()
+{
+    return createAsset_impl(&mAllocators.mMeshAllocator, Guid::newGuid());
+}
+
+template <> Mesh *World::createAsset<Mesh>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mMeshAllocator, id);
+}
+
+template <> Material *World::createAsset<Material>()
+{
+    return createAsset_impl(&mAllocators.mMaterialAllocator, Guid::newGuid());
+}
+
+template <> Material *World::createAsset<Material>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mMaterialAllocator, id);
+}
+
+template <> Shader *World::createAsset<Shader>()
+{
+    return createAsset_impl(&mAllocators.mShaderAllocator, Guid::newGuid());
+}
+
+template <> Shader *World::createAsset<Shader>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mShaderAllocator, id);
+}
+
+template <> Texture2D *World::createAsset<Texture2D>()
+{
+    return createAsset_impl(&mAllocators.mTexture2DAllocator, Guid::newGuid());
+}
+
+template <> Texture2D *World::createAsset<Texture2D>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mTexture2DAllocator, id);
+}
+
+template <> Texture3D *World::createAsset<Texture3D>()
+{
+    return createAsset_impl(&mAllocators.mTexture3DAllocator, Guid::newGuid());
+}
+
+template <> Texture3D *World::createAsset<Texture3D>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mTexture3DAllocator, id);
+}
+
+template <> Cubemap *World::createAsset<Cubemap>()
+{
+    return createAsset_impl(&mAllocators.mCubemapAllocator, Guid::newGuid());
+}
+
+template <> Cubemap *World::createAsset<Cubemap>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mCubemapAllocator, id);
+}
+
+template <> RenderTexture *World::createAsset<RenderTexture>()
+{
+    return createAsset_impl(&mAllocators.mRenderTextureAllocator, Guid::newGuid());
+}
+
+template <> RenderTexture *World::createAsset<RenderTexture>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mRenderTextureAllocator, id);
+}
+
+template <> Font *World::createAsset<Font>()
+{
+    return createAsset_impl(&mAllocators.mFontAllocator, Guid::newGuid());
+}
+
+template <> Font *World::createAsset<Font>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mFontAllocator, id);
+}
+
+template <> Sprite *World::createAsset<Sprite>()
+{
+    return createAsset_impl(&mAllocators.mSpriteAllocator, Guid::newGuid());
+}
+
+template <> Sprite *World::createAsset<Sprite>(const Guid &id)
+{
+    return createAsset_impl(&mAllocators.mSpriteAllocator, id);
+}
+
+template <>
+Transform *World::getComponentById_impl<Transform>(const PoolAllocator<Transform> *allocator,
+                                                   const Guid &componentId) const
+{
+    return getById_impl<Transform>(mIdState.mTransformIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+MeshRenderer *World::getComponentById_impl<MeshRenderer>(const PoolAllocator<MeshRenderer> *allocator,
+                                                  const Guid &componentId) const
+{
+    return getById_impl<MeshRenderer>(mIdState.mMeshRendererIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+SpriteRenderer *World::getComponentById_impl<SpriteRenderer>(const PoolAllocator<SpriteRenderer> *allocator,
+                                                      const Guid &componentId) const
+{
+    return getById_impl<SpriteRenderer>(mIdState.mSpriteRendererIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+LineRenderer *World::getComponentById_impl<LineRenderer>(const PoolAllocator<LineRenderer> *allocator,
+                                                  const Guid &componentId) const
+{
+    return getById_impl<LineRenderer>(mIdState.mLineRendererIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+Rigidbody *World::getComponentById_impl<Rigidbody>(const PoolAllocator<Rigidbody> *allocator,
+                                                   const Guid &componentId) const
+{
+    return getById_impl<Rigidbody>(mIdState.mRigidbodyIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+Camera *World::getComponentById_impl<Camera>(const PoolAllocator<Camera> *allocator, const Guid &componentId) const
+{
+    return getById_impl<Camera>(mIdState.mCameraIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+Light *World::getComponentById_impl<Light>(const PoolAllocator<Light> *allocator, const Guid &componentId) const
+{
+    return getById_impl<Light>(mIdState.mLightIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+SphereCollider *World::getComponentById_impl<SphereCollider>(const PoolAllocator<SphereCollider> *allocator,
+                                                      const Guid &componentId) const
+{
+    return getById_impl<SphereCollider>(mIdState.mSphereColliderIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+BoxCollider *World::getComponentById_impl<BoxCollider>(const PoolAllocator<BoxCollider> *allocator,
+                                                const Guid &componentId) const
+{
+    return getById_impl<BoxCollider>(mIdState.mBoxColliderIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+CapsuleCollider *World::getComponentById_impl<CapsuleCollider>(const PoolAllocator<CapsuleCollider> *allocator,
+                                                        const Guid &componentId) const
+{
+    return getById_impl<CapsuleCollider>(mIdState.mCapsuleColliderIdToGlobalIndex, allocator, componentId);
+}
+
+template <>
+MeshCollider *World::getComponentById_impl<MeshCollider>(const PoolAllocator<MeshCollider> *allocator,
+                                                  const Guid &componentId) const
+{
+    return getById_impl<MeshCollider>(mIdState.mMeshColliderIdToGlobalIndex, allocator, componentId);
+}
+
+template <> Mesh *World::getAssetById_impl<Mesh>(const PoolAllocator<Mesh> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Mesh>(mIdState.mMeshIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+Material *World::getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Material>(mIdState.mMaterialIdToGlobalIndex, allocator, assetId);
+}
+
+template <> Shader *World::getAssetById_impl<Shader>(const PoolAllocator<Shader> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Shader>(mIdState.mShaderIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+Texture2D *World::getAssetById_impl<Texture2D>(const PoolAllocator<Texture2D> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Texture2D>(mIdState.mTexture2DIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+Texture3D *World::getAssetById_impl<Texture3D>(const PoolAllocator<Texture3D> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Texture3D>(mIdState.mTexture3DIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+Cubemap *World::getAssetById_impl<Cubemap>(const PoolAllocator<Cubemap> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Cubemap>(mIdState.mCubemapIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+RenderTexture *World::getAssetById_impl<RenderTexture>(const PoolAllocator<RenderTexture> *allocator,
+                                                const Guid &assetId) const
+{
+    return getById_impl<RenderTexture>(mIdState.mRenderTextureIdToGlobalIndex, allocator, assetId);
+}
+
+template <> Font *World::getAssetById_impl<Font>(const PoolAllocator<Font> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Font>(mIdState.mFontIdToGlobalIndex, allocator, assetId);
+}
+
+template <> Sprite *World::getAssetById_impl<Sprite>(const PoolAllocator<Sprite> *allocator, const Guid &assetId) const
+{
+    return getById_impl<Sprite>(mIdState.mSpriteIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+RenderSystem *World::getSystemById_impl<RenderSystem>(const PoolAllocator<RenderSystem> *allocator,
+                                                      const Guid &assetId) const
+{
+    return getById_impl<RenderSystem>(mIdState.mRenderSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+PhysicsSystem *World::getSystemById_impl<PhysicsSystem>(const PoolAllocator<PhysicsSystem> *allocator,
+                                                 const Guid &assetId) const
+{
+    return getById_impl<PhysicsSystem>(mIdState.mPhysicsSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+CleanUpSystem *World::getSystemById_impl<CleanUpSystem>(const PoolAllocator<CleanUpSystem> *allocator,
+                                                 const Guid &assetId) const
+{
+    return getById_impl<CleanUpSystem>(mIdState.mCleanupSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+DebugSystem *World::getSystemById_impl<DebugSystem>(const PoolAllocator<DebugSystem> *allocator,
+                                                    const Guid &assetId) const
+{
+    return getById_impl<DebugSystem>(mIdState.mDebugSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+GizmoSystem *World::getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSystem> *allocator,
+                                                    const Guid &assetId) const
+{
+    return getById_impl<GizmoSystem>(mIdState.mGizmoSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <>
+FreeLookCameraSystem *World::getSystemById_impl<FreeLookCameraSystem>(
+    const PoolAllocator<FreeLookCameraSystem> *allocator,
+                                                               const Guid &assetId) const
+{
+    return getById_impl<FreeLookCameraSystem>(mIdState.mFreeLookCameraSystemIdToGlobalIndex, allocator, assetId);
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Scene>(const Guid &id, int index, int type)
+{
+    mIdState.mSceneIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Entity>(const Guid &id, int index, int type)
+{
+    mIdState.mEntityIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Transform>(const Guid &id, int index, int type)
+{
+    mIdState.mTransformIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<MeshRenderer>(const Guid &id, int index, int type)
+{
+    mIdState.mMeshRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<SpriteRenderer>(const Guid &id, int index, int type)
+{
+    mIdState.mSpriteRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<LineRenderer>(const Guid &id, int index, int type)
+{
+    mIdState.mLineRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Rigidbody>(const Guid &id, int index, int type)
+{
+    mIdState.mRigidbodyIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Camera>(const Guid &id, int index, int type)
+{
+    mIdState.mCameraIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Light>(const Guid &id, int index, int type)
+{
+    mIdState.mLightIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<SphereCollider>(const Guid &id, int index, int type)
+{
+    mIdState.mSphereColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<BoxCollider>(const Guid &id, int index, int type)
+{
+    mIdState.mBoxColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<CapsuleCollider>(const Guid &id, int index, int type)
+{
+    mIdState.mCapsuleColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<MeshCollider>(const Guid &id, int index, int type)
+{
+    mIdState.mMeshColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Mesh>(const Guid &id, int index, int type)
+{
+    mIdState.mMeshIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Material>(const Guid &id, int index, int type)
+{
+    mIdState.mMaterialIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Shader>(const Guid &id, int index, int type)
+{
+    mIdState.mShaderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Texture2D>(const Guid &id, int index, int type)
+{
+    mIdState.mTexture2DIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Texture3D>(const Guid &id, int index, int type)
+{
+    mIdState.mTexture3DIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Cubemap>(const Guid &id, int index, int type)
+{
+    mIdState.mCubemapIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<RenderTexture>(const Guid &id, int index, int type)
+{
+    mIdState.mRenderTextureIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Font>(const Guid &id, int index, int type)
+{
+    mIdState.mFontIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Sprite>(const Guid &id, int index, int type)
+{
+    mIdState.mSpriteIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<RenderSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mRenderSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<PhysicsSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mPhysicsSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<CleanUpSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mCleanupSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<DebugSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mDebugSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mGizmoSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<FreeLookCameraSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mFreeLookCameraSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}

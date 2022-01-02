@@ -7,265 +7,6 @@
 #include <unordered_map>
 #include <filesystem>
 
-void write_header(const std::string& name, std::ofstream& out)
-{
-    out << "//***************************************\n";
-    out << "// THIS IS A GENERATED FILE. DO NOT EDIT.\n";
-    out << "//***************************************\n";
-    out << "#include <string>\n";
-    out << "#include \"glsl_shaders.h\"\n";
-    out << ("using namespace " + name + ";\n");
-}
-
-void write_scope_start(std::ofstream &out)
-{
-    out << "{\n";
-}
-
-void write_scope_end(std::ofstream &out)
-{
-    out << "}\n";
-}
-
-void write_function_declaration(const std::string& functionNamespace, const std::string& functionName, std::ofstream& out)
-{
-    std::string declaration = "std::string " + functionNamespace + "::" + functionName + "()\n";
-    out << declaration;
-}
-
-void write_function_body(const std::string& shaderFilepath, std::ofstream& out)
-{
-    std::ifstream in;
-    in.open(shaderFilepath, std::ifstream::in);
-
-    if (!in.is_open())
-    {
-        return;
-    }
-
-    std::stringstream buffer;
-    buffer << in.rdbuf();
-    in.close();
-
-    out << "return ";
-
-    std::string line;
-    while (std::getline(buffer, line))
-    {
-        out << ("\"" + line + "\\n\"\n");
-    }
-    out << ";\n";
-
-    //out << buffer.str();
-}
-
-void generate_shader_cpp_file()
-{
-    std::ofstream out;
-    out.open("../../src/graphics/GLSL/glsl_shaders.cpp");
-
-    if (!out.is_open())
-    {
-        return;
-    }
-
-    write_header("PhysicsEngine", out);
-  
-    std::cout << "Generating shader cpp file..." << std::endl;
-    
-    std::cout << "Reading geometry_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGeometryVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/geometry_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading geometry_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGeometryFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/geometry_f.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading ssao_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getSSAOVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/ssao_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading ssao_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getSSAOFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/ssao_f.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading shadow_depth_map_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getShadowDepthMapVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/shadow_depth_map_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading shadow_depth_map_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getShadowDepthMapFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/shadow_depth_map_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading shadow_depth_cubemap_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getShadowDepthCubemapVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/shadow_depth_cubemap_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading shadow_depth_cubemap_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getShadowDepthCubemapFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/shadow_depth_cubemap_f.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading shadow_depth_cubemap_g.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getShadowDepthCubemapGeometryShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/shadow_depth_cubemap_g.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading color_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getColorVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/color_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading color_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getColorFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/color_f.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading screen_quad_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getScreenQuadVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/screen_quad_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading screen_quad_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getScreenQuadFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/screen_quad_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading sprite_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getSpriteVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/sprite_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading sprite_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getSpriteFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/sprite_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading gbuffer_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGBufferVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/gbuffer_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading gbuffer_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGBufferFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/gbuffer_f.glsl", out);
-    write_scope_end(out);
-   
-    std::cout << "Reading normal_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getNormalVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/normal_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading normal_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getNormalFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/normal_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading position_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getPositionVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/position_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading position_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getPositionFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/position_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading linear_depth_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getLinearDepthVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/linear_depth_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading linear_depth_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getLinearDepthFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/linear_depth_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading line_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getLineVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/line_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading line_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getLineFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/line_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading gizmo_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGizmoVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/gizmo_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading gizmo_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGizmoFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/gizmo_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading grid_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGridVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/grid_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading grid_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getGridFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/grid_f.glsl", out);
-    write_scope_end(out);
-    
-    std::cout << "Reading standard_v.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getStandardVertexShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/standard_v.glsl", out);
-    write_scope_end(out);
-
-    std::cout << "Reading standard_f.glsl" << std::endl;
-    write_function_declaration("PhysicsEngine", "getStandardFragmentShader", out);
-    write_scope_start(out);
-    write_function_body("../../src/graphics/glsl/standard_f.glsl", out);
-    write_scope_end(out);
-
-    out.close();
-}
-
-
-
-
-
 enum class TokenType
 {
     Add,
@@ -752,15 +493,14 @@ bool fileContainsInclude(const File& file)
     return false;
 }
 
-void preprocess(const std::string& directoryPath)
+std::vector<File> loadFilesInDirectory(const std::string& directoryPath)
 {
     if (!std::filesystem::exists(directoryPath))
     {
-        return;
+        return std::vector<File>();
     }
 
     std::vector<File> files;
-    std::unordered_map<std::string, File*> filePathToFileMap;
 
     std::error_code error_code;
     for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(directoryPath, error_code))
@@ -778,11 +518,17 @@ void preprocess(const std::string& directoryPath)
 
                 files.push_back(file);
 
-                std::cout << "File path: " <<  file.path << std::endl;
+                std::cout << "File path: " << file.path << std::endl;
             }
         }
     }
 
+    return files;
+}
+
+void preprocess(const std::string& directoryPath, std::vector<File>& files)
+{
+    std::unordered_map<std::string, File *> filePathToFileMap;
     for (size_t i = 0; i < files.size(); i++)
     {
         filePathToFileMap[files[i].path] = &files[i];
@@ -820,7 +566,7 @@ void preprocess(const std::string& directoryPath)
                             directoryPath +
                             std::string(fileStringToken->text, fileStringToken->text + fileStringToken->length - 1);
 
-                        std::cout << "AAAAAAAAAAAAAAA " << includePath << std::endl;
+                        std::cout << "include path " << includePath << std::endl;
                         std::unordered_map<std::string, File *>::iterator it = filePathToFileMap.find(includePath);
                         if (it != filePathToFileMap.end())
                         {
@@ -849,66 +595,6 @@ void preprocess(const std::string& directoryPath)
                                    postIncludeSize * sizeof(char));
                             start += postIncludeSize;
 
-                            std::cout << "start: " << start << std::endl;
-
-                            std::string test = std::string(newBuffer, newBuffer + start);
-                            std::cout << "test: " << test << std::endl;
-
-                            //// skip include, string, and end of stream
-                            //std::vector<Token> newTokens(current->tokens.size() + src->tokens.size() - 3);
-                            //
-                            //size_t index = 0;
-                            //size_t base_offset = 0;
-                            //for (size_t j = 0; j < i; j++)
-                            //{
-                            //    size_t offset = base_offset + current->tokens[j].text - current->buffer;
-
-                            //    newTokens[index].type = current->tokens[j].type;
-                            //    newTokens[index].length = current->tokens[j].length;
-                            //    newTokens[index].text = newBuffer + offset;
-
-                            //    index++;
-                            //}
-
-                            //base_offset += current->tokens[i].text - current->buffer;
-                            //std::cout << "base_offset: " << base_offset << std::endl;
-
-                            //// skip end of stream token
-                            //for (size_t j = 0; j < src->tokens.size() - 1; j++)
-                            //{
-                            //    size_t offset = base_offset + src->tokens[j].text - src->buffer;
-
-                            //    newTokens[index].type = src->tokens[j].type;
-                            //    newTokens[index].length = src->tokens[j].length;
-                            //    newTokens[index].text = newBuffer + offset;
-
-                            //    index++;
-                            //}
-
-                            //base_offset += src->tokens[src->tokens.size() - 1].text - src->buffer;
-
-                            //std::cout << "base_offset: " << base_offset << std::endl;
-
-                            //for (size_t j = i + 2; j < current->tokens.size(); j++)
-                            //{
-                            //    size_t offset = base_offset + current->tokens[j].text - current->tokens[i + 2].text;
-
-
-                            //    newTokens[index].type = current->tokens[j].type;
-                            //    newTokens[index].length = current->tokens[j].length;
-                            //    newTokens[index].text = newBuffer + offset;
-
-                            //    index++;
-                            //}
-
-                            //std::cout << "new tokens size: " << newTokens.size() << " index: " << index << std::endl;
-
-
-
-
-
-
-
                             free(current->buffer);
                             current->buffer = newBuffer;
                             current->bufferLength = newBufferLength;
@@ -925,34 +611,139 @@ void preprocess(const std::string& directoryPath)
             }
         }
 
-        for (size_t i = 0; i < current->tokens.size(); i++)
-        {
-            std::cout << "current->tokens[i]: " << tokenTypeToString(current->tokens[i].type) << " "
-                      << std::string(current->tokens[i].text, current->tokens[i].text + current->tokens[i].length)
-                      << std::endl;
-        }
-
         if (fileContainsInclude(*current))
         {
             filesWithIncludes.push(current);
         }
     }
+}
+
+void write_header(const std::string &name, std::ofstream &out)
+{
+    out << "//***************************************\n";
+    out << "// THIS IS A GENERATED FILE. DO NOT EDIT.\n";
+    out << "//***************************************\n";
+    out << "#include <string>\n";
+    out << "#include \"glsl_shaders.h\"\n";
+    out << ("using namespace " + name + ";\n");
+}
+
+void write_scope_start(std::ofstream &out)
+{
+    out << "{\n";
+}
+
+void write_scope_end(std::ofstream &out)
+{
+    out << "}\n";
+}
+
+void write_function_declaration(const std::string &functionNamespace, const std::string &functionName,
+                                std::ofstream &out)
+{
+    std::string declaration = "std::string " + functionNamespace + "::" + functionName + "()\n";
+    out << declaration;
+}
+
+void write_function_body(char *buffer, std::ofstream &out)
+{
+    out << "return ";
+    out << "\"";
+    char *c = buffer;
+    while (c[0] != '\0')
+    {
+        if (c[0] == '\n')
+        {
+            out << "\\n\"\n";
+            out << "\"";
+        }
+        else
+        {
+            out << c[0];
+        }
+
+        c++;
+    }
+    out << "\\n\";\n";
+}
+
+void generate_cpp_file(std::vector<File>& files)
+{
+    std::ofstream out;
+    out.open("../../src/graphics/GLSL/glsl_shaders.cpp");
+
+    if (!out.is_open())
+    {
+        return;
+    }
+
+    std::unordered_map<std::string, std::string> filePathToFunctionNameMap;
+    filePathToFunctionNameMap["../../src/graphics/glsl/geometry_v.glsl"] = "getGeometryVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/geometry_f.glsl"] = "getGeometryFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/ssao_v.glsl"] = "getSSAOVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/ssao_f.glsl"] = "getSSAOFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_map_v.glsl"] = "getShadowDepthMapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_map_f.glsl"] = "getShadowDepthMapFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_v.glsl"] = "getShadowDepthCubemapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_f.glsl"] = "getShadowDepthCubemapFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_g.glsl"] = "getShadowDepthCubemapGeometryShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/color_v.glsl"] = "getColorVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/color_f.glsl"] = "getColorFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_v.glsl"] = "getScreenQuadVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_f.glsl"] = "getScreenQuadFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/sprite_v.glsl"] = "getSpriteVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/sprite_f.glsl"] = "getSpriteFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/gbuffer_v.glsl"] = "getGBufferVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/gbuffer_f.glsl"] = "getGBufferFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/normal_v.glsl"] = "getNormalVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/normal_f.glsl"] = "getNormalFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/position_v.glsl"] = "getPositionVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/position_f.glsl"] = "getPositionFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_v.glsl"] = "getLinearDepthVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_f.glsl"] = "getLinearDepthFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/line_v.glsl"] = "getLineVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/line_f.glsl"] = "getLineFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/gizmo_v.glsl"] = "getGizmoVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/gizmo_f.glsl"] = "getGizmoFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/grid_v.glsl"] = "getGridVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/grid_f.glsl"] = "getGridFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/standard_v.glsl"] = "getStandardVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/standard_f.glsl"] = "getStandardFragmentShader";
+
+    write_header("PhysicsEngine", out);
+
+    std::cout << "Generating shader cpp file..." << std::endl;
+    for (size_t i = 0; i < files.size(); i++)
+    {
+        auto it = filePathToFunctionNameMap.find(files[i].path);
+        if (it != filePathToFunctionNameMap.end())
+        {
+            std::string functionName = filePathToFunctionNameMap[files[i].path];
+         
+            std::cout << "functionName: " << functionName << " path: " << files[i].path << std::endl;
+
+            write_function_declaration("PhysicsEngine", functionName, out);
+            write_scope_start(out);
+            write_function_body(files[i].buffer, out);
+            write_scope_end(out);   
+        }
+    }
+
+    out.close();
+}
+
+int main()
+{
+    std::vector<File> files = loadFilesInDirectory("../../src/graphics/glsl/");
+
+    preprocess("../../src/graphics/glsl/", files);
+
+    generate_cpp_file(files);
 
     for (size_t i = 0; i < files.size(); i++)
     {
         free(files[i].buffer);
     }
-}
 
-
-
-
-int main()
-{
-    preprocess("../../src/graphics/glsl/");
-
-    //preprocessor("../../src/graphics/glsl/grid_v.glsl");
-
-    generate_shader_cpp_file();
 	return 0;
 }
