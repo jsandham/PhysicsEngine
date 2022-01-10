@@ -27,8 +27,11 @@ class ForwardRenderer
     ~ForwardRenderer();
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                const std::vector<RenderObject> &renderObjects, const std::vector<SpriteObject> &spriteObjects);
+    void update(const Input &input, Camera *camera,
+                const std::vector<RenderObject> &renderObjects,
+                const std::vector<glm::mat4> &models, 
+                const std::vector<Guid> &transformIds,
+                const std::vector<SpriteObject> &spriteObjects);
 };
 
 
@@ -37,23 +40,20 @@ void initializeRenderer(World *world, ForwardRendererState &state);
 void beginFrame(World *world, Camera *camera, ForwardRendererState &state);
 
 void computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
-                 const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                 const std::vector<RenderObject> &renderObjects);
+                 const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
 
 void renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform, ForwardRendererState &state,
-                   const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                   const std::vector<RenderObject> &renderObjects);
+                   const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
 
-void renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform, ForwardRendererState &state,
-                   const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                   const std::vector<RenderObject> &renderObjects);
+void renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform, ForwardRendererState &state, 
+                   const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
 
 void renderSprites(World *world, Camera *camera, ForwardRendererState &state,
                    const std::vector<SpriteObject> &spriteObjects);
 
 void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
-                        const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                        const std::vector<RenderObject> &renderObjects);
+                        const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models,
+                        const std::vector<Guid> &transformIds);
 
 void renderTransparents();
 

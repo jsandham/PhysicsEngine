@@ -508,6 +508,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Free
         ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
         ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
         ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
+        ImGui::Text("Batch Draw calls: %d\n", cameraSystem->getQuery().mNumBatchDrawCalls);
         ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
         ImGui::Text("Delta time: %f", clipboard.mTime.mDeltaTime);
         ImGui::Text("ImGui::GetIO().Framerate: %f", ImGui::GetIO().Framerate);

@@ -14,6 +14,14 @@
 
 namespace PhysicsEngine
 {
+enum class MeshVBO
+{
+    Vertices,
+    Normals,
+    TexCoords,
+    Instance
+};
+
 class Mesh : public Asset
 {
   private:
@@ -24,7 +32,7 @@ class Mesh : public Asset
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
     unsigned int mVao;
-    unsigned int mVbo[3];
+    unsigned int mVbo[4];
     Sphere mBounds;
     bool mCreated;
     bool mChanged;
@@ -59,6 +67,7 @@ class Mesh : public Asset
     int getSubMeshCount() const;
     Sphere getBounds() const;
     unsigned int getNativeGraphicsVAO() const;
+    unsigned int getNativeGraphicsVBO(MeshVBO meshVBO) const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

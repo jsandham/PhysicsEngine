@@ -22,10 +22,16 @@ namespace PhysicsEngine
     std::string getGBufferFragmentShader();
     std::string getNormalVertexShader();
     std::string getNormalFragmentShader();
+    std::string getNormalInstancedVertexShader();
+    std::string getNormalInstancedFragmentShader();
     std::string getPositionVertexShader();
     std::string getPositionFragmentShader();
+    std::string getPositionInstancedVertexShader();
+    std::string getPositionInstancedFragmentShader();
     std::string getLinearDepthVertexShader();
     std::string getLinearDepthFragmentShader();
+    std::string getLinearDepthInstancedVertexShader();
+    std::string getLinearDepthInstancedFragmentShader();
     std::string getLineVertexShader();
     std::string getLineFragmentShader();
     std::string getGizmoVertexShader();

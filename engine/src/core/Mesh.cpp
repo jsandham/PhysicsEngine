@@ -341,6 +341,11 @@ unsigned int Mesh::getNativeGraphicsVAO() const
     return mVao;
 }
 
+unsigned int Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
+{
+    return mVbo[static_cast<int>(meshVBO)];
+}
+
 void Mesh::setVertices(const std::vector<float> &vertices)
 {
     mVertices = vertices;
@@ -377,7 +382,7 @@ void Mesh::create()
         return;
     }
 
-    Graphics::createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2]);
+    Graphics::createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3]);
 
     mCreated = true;
 }
@@ -389,7 +394,7 @@ void Mesh::destroy()
         return;
     }
 
-    Graphics::destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2]);
+    Graphics::destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3]);
 
     mCreated = false;
 }

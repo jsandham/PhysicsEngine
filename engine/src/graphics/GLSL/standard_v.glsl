@@ -2,10 +2,15 @@
 #include "camera.glsl"
 #include "light.glsl"
 
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in vec2 texCoord;
+#if defined (INSTANCING)
+layout (location = 3) in mat4 model;
+#else
 uniform mat4 model;
-in vec3 position;
-in vec3 normal;
-in vec2 texCoord;
+#endif
+
 out vec3 FragPos;
 out vec3 CameraPos;
 out vec3 Normal;

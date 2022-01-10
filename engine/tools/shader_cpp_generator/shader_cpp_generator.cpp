@@ -697,10 +697,16 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/glsl/gbuffer_f.glsl"] = "getGBufferFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/normal_v.glsl"] = "getNormalVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/normal_f.glsl"] = "getNormalFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/normal_instanced_v.glsl"] = "getNormalInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/normal_instanced_f.glsl"] = "getNormalInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/position_v.glsl"] = "getPositionVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/position_f.glsl"] = "getPositionFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/position_instanced_v.glsl"] = "getPositionInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/position_instanced_f.glsl"] = "getPositionInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_v.glsl"] = "getLinearDepthVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_f.glsl"] = "getLinearDepthFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_instanced_v.glsl"] = "getLinearDepthInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_instanced_f.glsl"] = "getLinearDepthInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/line_v.glsl"] = "getLineVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/line_f.glsl"] = "getLineFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/gizmo_v.glsl"] = "getGizmoVertexShader";

@@ -1176,13 +1176,15 @@ void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
 }
 
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                          const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
+                          const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, 
+                          unsigned int*vbo2, unsigned int*instance_vbo)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
-    glGenBuffers(1, vbo0);
-    glGenBuffers(1, vbo1);
-    glGenBuffers(1, vbo2);
+    glGenBuffers(1, vbo0); // vertex vbo
+    glGenBuffers(1, vbo1); // normals vbo
+    glGenBuffers(1, vbo2); // texcoords vbo
+    glGenBuffers(1, instance_vbo); // instancing vbo
 
     glBindVertexArray(*vao);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
@@ -1200,18 +1202,48 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
+    // allow instancing on all meshes
+    glBindBuffer(GL_ARRAY_BUFFER, *instance_vbo);
+    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+    // set attribute pointers for matrix (4 times vec4)
+    glEnableVertexAttribArray(3); 
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4)));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeof(glm::vec4)));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+
     glBindVertexArray(0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2)
+void Graphics::destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo)
 {
     glDeleteBuffers(1, vbo0);
     glDeleteBuffers(1, vbo1);
     glDeleteBuffers(1, vbo2);
+    glDeleteBuffers(1, instance_vbo);
 
     glDeleteVertexArrays(1, vao);
+}
+
+void Graphics::updateInstanceBuffer(unsigned int vbo, const glm::mat4* models, size_t instanceCount)
+{
+    assert(instanceCount <= 100);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, instanceCount * sizeof(glm::mat4), models);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::createSprite(unsigned int* vao)
@@ -1280,6 +1312,10 @@ void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geo
     if (variant & static_cast<int64_t>(ShaderMacro::ShowCascades))
     {
         defines += "#define SHOWCASCADES\n";
+    }
+    if (variant & static_cast<int64_t>(ShaderMacro::Instancing))
+    {
+        defines += "#define INSTANCING\n";
     }
 
     size_t pos = vert.find('\n');
@@ -1797,13 +1833,38 @@ void Graphics::render(int start, int count, int vao, bool wireframe)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
+void Graphics::renderInstanced(int start, int count, int instanceCount, int vao)
+{
+    glBindVertexArray(vao);
+    glDrawArraysInstanced(GL_TRIANGLES, start, count, instanceCount);
+    glBindVertexArray(0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
 void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
 {
+    assert(renderObject.instanced == false);
+
     int numVertices = renderObject.size / 3;
 
     Graphics::render(renderObject.start / 3, numVertices, renderObject.vao);
 
     query.mNumDrawCalls++;
+    query.mVerts += numVertices;
+    query.mTris += numVertices / 3;
+}
+
+void Graphics::renderInstanced(const RenderObject &renderObject, GraphicsQuery &query)
+{
+    assert(renderObject.instanced == true);
+
+    int numVertices = renderObject.size / 3;
+
+    Graphics::renderInstanced(renderObject.start / 3, numVertices, renderObject.instanceCount,
+                              renderObject.vao);
+
+    query.mNumBatchDrawCalls++;
     query.mVerts += numVertices;
     query.mTris += numVertices / 3;
 }
@@ -2006,6 +2067,22 @@ void Graphics::compileNormalShader(DebugRendererState &state)
     }
 }
 
+void Graphics::compileNormalInstancedShader(DebugRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Normal Instanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader(), "", &program))
+    {
+        state.mNormalsInstancedShaderProgram = program;
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mNormalsInstancedShaderProgram);
+    }
+    else
+    {
+        state.mNormalsInstancedShaderProgram = -1;
+    }
+}
+
+
 void Graphics::compilePositionShader(DebugRendererState &state)
 {
     unsigned int program = 0;
@@ -2022,6 +2099,21 @@ void Graphics::compilePositionShader(DebugRendererState &state)
     }
 }
 
+void Graphics::compilePositionInstancedShader(DebugRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Position Instanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader(), "", &program))
+    {
+        state.mPositionInstancedShaderProgram = program;
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mPositionInstancedShaderProgram);
+    }
+    else
+    {
+        state.mPositionInstancedShaderProgram = -1;
+    }
+}
+
 void Graphics::compileLinearDepthShader(DebugRendererState &state)
 {
     unsigned int program = 0;
@@ -2035,6 +2127,20 @@ void Graphics::compileLinearDepthShader(DebugRendererState &state)
     else
     {
         state.mLinearDepthShaderProgram = -1;
+    }
+}
+
+void Graphics::compileLinearDepthInstancedShader(DebugRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Linear Depth Instanced", getLinearDepthInstancedVertexShader(), getLinearDepthInstancedFragmentShader(), "", &program))
+    {
+        state.mLinearDepthInstancedShaderProgram = program;
+        Graphics::setUniformBlock("CameraBlock", 0, state.mLinearDepthInstancedShaderProgram);
+    }
+    else
+    {
+        state.mLinearDepthInstancedShaderProgram = -1;
     }
 }
 
@@ -2292,6 +2398,16 @@ std::string Graphics::getNormalFragmentShader()
     return PhysicsEngine::getNormalFragmentShader();
 }
 
+std::string Graphics::getNormalInstancedVertexShader()
+{
+    return PhysicsEngine::getNormalInstancedVertexShader();
+}
+
+std::string Graphics::getNormalInstancedFragmentShader()
+{
+    return PhysicsEngine::getNormalInstancedFragmentShader();
+}
+
 std::string Graphics::getPositionVertexShader()
 {
     return PhysicsEngine::getPositionVertexShader();
@@ -2302,6 +2418,16 @@ std::string Graphics::getPositionFragmentShader()
     return PhysicsEngine::getPositionFragmentShader();
 }
 
+std::string Graphics::getPositionInstancedVertexShader()
+{
+    return PhysicsEngine::getPositionInstancedVertexShader();
+}
+
+std::string Graphics::getPositionInstancedFragmentShader()
+{
+    return PhysicsEngine::getPositionInstancedFragmentShader();
+}
+
 std::string Graphics::getLinearDepthVertexShader()
 {
     return PhysicsEngine::getLinearDepthVertexShader();
@@ -2310,6 +2436,16 @@ std::string Graphics::getLinearDepthVertexShader()
 std::string Graphics::getLinearDepthFragmentShader()
 {
     return PhysicsEngine::getLinearDepthFragmentShader();
+}
+
+std::string Graphics::getLinearDepthInstancedVertexShader()
+{
+    return PhysicsEngine::getLinearDepthInstancedVertexShader();
+}
+
+std::string Graphics::getLinearDepthInstancedFragmentShader()
+{
+    return PhysicsEngine::getLinearDepthInstancedFragmentShader();
 }
 
 std::string Graphics::getLineVertexShader()

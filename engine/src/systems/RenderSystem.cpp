@@ -85,16 +85,16 @@ void RenderSystem::update(const Input &input, const Time &time)
             {
                 if (camera->mRenderPath == RenderPath::Forward)
                 {
-                    mForwardRenderer.update(input, camera, mRenderQueue, mRenderObjects, mSpriteObjects);
+                    mForwardRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds, mSpriteObjects);
                 }
                 else
                 {
-                    mDeferredRenderer.update(input, camera, mRenderQueue, mRenderObjects);
+                    mDeferredRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
                 }
             }
             else
             {
-                mDebugRenderer.update(input, camera, mRenderQueue, mRenderObjects);
+                mDebugRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
             }
         }
     }
@@ -253,6 +253,11 @@ void RenderSystem::registerLights(World *world)
 void RenderSystem::buildRenderObjectsList(World *world)
 {
     mRenderObjects.clear();
+    mModels.clear();
+    mTransformIds.clear();
+    mBoundingSpheres.clear();
+
+    InstanceMap instanceMap;
 
     // add enabled renderers to render object list
     for (size_t i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++)
@@ -288,22 +293,91 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);
                 int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
 
-                RenderObject object;
-                object.transformId = transform->getId();
-                object.meshRendererId = meshRenderer->getId();
-                object.meshRendererIndex = (int)i;
-                object.materialIndex = materialIndex;
-                object.shaderIndex = shaderIndex;
-                object.model = model;
-                object.start = subMeshVertexStartIndex;
-                object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-                object.vao = mesh->getNativeGraphicsVAO();
-                object.culled = false;
+                if (material->mEnableInstancing)
+                {
+                    RenderObject object;
+                    object.instanceStart = 0;
+                    object.instanceCount = 0;
+                    object.materialIndex = materialIndex;
+                    object.shaderIndex = shaderIndex;
+                    object.start = subMeshVertexStartIndex;
+                    object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
+                    object.vao = mesh->getNativeGraphicsVAO();
+                    object.vbo = mesh->getNativeGraphicsVBO(MeshVBO::Instance);
+                    object.culled = false;
+                    object.instanced = true;
 
-                mRenderObjects.push_back(object);
+                    std::pair<Guid, RenderObject> key = std::make_pair(material->getId(), object);
+
+                    auto it = instanceMap.find(key);
+                    if(it != instanceMap.end())
+                    {
+                        it->second.models.push_back(model);
+                        it->second.transformIds.push_back(transform->getId());
+                        it->second.boundingSpheres.push_back(Sphere());
+                    }
+                    else
+                    {
+                        instanceMap[key].models = std::vector<glm::mat4>();
+                        instanceMap[key].transformIds = std::vector<Guid>();
+                        instanceMap[key].boundingSpheres = std::vector<Sphere>();
+                        
+                        instanceMap[key].models.push_back(model);
+                        instanceMap[key].transformIds.push_back(transform->getId());
+                        instanceMap[key].boundingSpheres.push_back(Sphere());
+
+                    }
+                }
+                else
+                {
+                    RenderObject object;
+                    object.instanceStart = 0;
+                    object.instanceCount = 0;
+                    object.materialIndex = materialIndex;
+                    object.shaderIndex = shaderIndex;
+                    object.start = subMeshVertexStartIndex;
+                    object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
+                    object.vao = mesh->getNativeGraphicsVAO();
+                    object.vbo = -1;
+                    object.culled = false;
+                    object.instanced = false;
+
+                    mRenderObjects.push_back(object);
+                    mModels.push_back(model);
+                    mTransformIds.push_back(transform->getId());
+                    mBoundingSpheres.push_back(Sphere());
+                }
             }
         }
     }
+
+    for (auto it = instanceMap.begin(); it != instanceMap.end(); it++)
+    {
+        std::vector<glm::mat4> &models = it->second.models;
+        std::vector<Guid> &transformIds = it->second.transformIds;
+        std::vector<Sphere> &boundingSpheres = it->second.boundingSpheres;
+
+        size_t count = 0;
+        while (count < models.size())
+        {
+            RenderObject renderObject = it->first.second;
+            renderObject.instanceStart = count;
+            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(100));
+            
+            mRenderObjects.push_back(renderObject);
+            for (size_t i = 0; i < renderObject.instanceCount; i++)
+            {
+                mModels.push_back(models[renderObject.instanceStart + i]);
+                mTransformIds.push_back(transformIds[renderObject.instanceStart + i]);
+                mBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
+            }
+       
+            count += 100;
+        }
+    }
+
+    assert(mModels.size() == mTransformIds.size());
+    assert(mModels.size() == mBoundingSpheres.size());
 }
 
 void RenderSystem::buildSpriteObjectsList(World* world)
@@ -364,62 +438,94 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 void RenderSystem::cullRenderObjects(Camera *camera)
 {
     int count = 0;
+    int index = 0;
     for (size_t i = 0; i < mRenderObjects.size(); i++)
     {
-        glm::vec3 centre = mRenderObjects[i].boundingSphere.mCentre;
-        float radius = mRenderObjects[i].boundingSphere.mRadius;
-
-        glm::vec4 temp = mRenderObjects[i].model * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-
-        Sphere cullingSphere;
-        cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
-        cullingSphere.mRadius = radius;
-
-        if (Intersect::intersect(cullingSphere, camera->getFrustum()))
+        if (mRenderObjects[i].instanced)
         {
-            count++;
+            for (size_t j = 0; j < mRenderObjects[i].instanceCount; j++)
+            {
+                glm::vec3 centre = mBoundingSpheres[index].mCentre;
+                float radius = mBoundingSpheres[index].mRadius;
+
+                glm::vec4 temp = mModels[index] * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
+
+                Sphere cullingSphere;
+                cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
+                cullingSphere.mRadius = radius;
+
+                if (Intersect::intersect(cullingSphere, camera->getFrustum()))
+                {
+                    count++;
+                }
+
+                index++;
+            }
+        }
+        else
+        {
+            glm::vec3 centre = mBoundingSpheres[index].mCentre;
+            float radius = mBoundingSpheres[index].mRadius;
+
+            glm::vec4 temp = mModels[index] * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
+
+            Sphere cullingSphere;
+            cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
+            cullingSphere.mRadius = radius;
+
+            if (Intersect::intersect(cullingSphere, camera->getFrustum()))
+            {
+                count++;
+            }
+
+            index++;
         }
     }
 }
 
 void RenderSystem::buildRenderQueue()
 {
-    mRenderQueue.clear();
+    //mRenderQueue.clear();
 
-    for (size_t i = 0; i < mRenderObjects.size(); i++)
-    {
-        if (!mRenderObjects[i].culled)
-        {
-            uint64_t key = 0;
+    //for (size_t i = 0; i < mRenderObjects.size(); i++)
+    //{
+    //    // for now dont sort
+    //    uint64_t key = i;
 
-            uint32_t matIndex = mRenderObjects[i].materialIndex;
-            uint32_t depth = 2342;
-            uint32_t reserved = 112;
+    //    mRenderQueue.push_back(std::make_pair(key, (int)i));
 
-            // [ reserved ][  depth  ][ material index]
-            // [  8-bits  ][ 24-bits ][    32-bits    ]
-            // 64                                     0
-            constexpr uint32_t matMask = 0xFFFFFFFF; // 32 least significant bits mask
-            constexpr uint32_t depthMask = 0xFFFFFF; // 24 least significant bits mask
-            constexpr uint32_t reservedMask = 0xFF;  // 8 least significant bits mask
+    //    //if (!mRenderObjects[i].culled)
+    //    //{
+    //    //    uint64_t key = 0;
 
-            matIndex = matMask & matIndex;
-            depth = depthMask & depth;
-            reserved = reservedMask & reserved;
+    //    //    uint32_t matIndex = mRenderObjects[i].materialIndex;
+    //    //    uint32_t depth = 2342;
+    //    //    uint32_t reserved = 112;
 
-            uint64_t temp = 0;
-            key |= ((reserved | temp) << 56);
-            key |= ((depth | temp) << 32); // depth back to front
-            key |= ((matIndex | temp) << 0);
+    //    //    // [ reserved ][  depth  ][ material index]
+    //    //    // [  8-bits  ][ 24-bits ][    32-bits    ]
+    //    //    // 64                                     0
+    //    //    constexpr uint32_t matMask = 0xFFFFFFFF; // 32 least significant bits mask
+    //    //    constexpr uint32_t depthMask = 0xFFFFFF; // 24 least significant bits mask
+    //    //    constexpr uint32_t reservedMask = 0xFF;  // 8 least significant bits mask
 
-            mRenderQueue.push_back(std::make_pair(key, (int)i));
-        }
-    }
+    //    //    matIndex = matMask & matIndex;
+    //    //    depth = depthMask & depth;
+    //    //    reserved = reservedMask & reserved;
+
+    //    //    uint64_t temp = 0;
+    //    //    key |= ((reserved | temp) << 56);
+    //    //    key |= ((depth | temp) << 32); // depth back to front
+    //    //    key |= ((matIndex | temp) << 0);
+
+    //    //    mRenderQueue.push_back(std::make_pair(key, (int)i));
+    //    //}
+    //}
 }
 
 void RenderSystem::sortRenderQueue()
 {
     // sort render queue from highest priority key to lowest
-    std::sort(mRenderQueue.begin(), mRenderQueue.end(),
-              [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
+    //std::sort(mRenderQueue.begin(), mRenderQueue.end(),
+    //          [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
 }

@@ -19,14 +19,15 @@ void DebugRenderer::init(World *world)
 }
 
 void DebugRenderer::update(const Input &input, Camera *camera,
-    const std::vector<std::pair<uint64_t, int>>& renderQueue,
-    const std::vector<RenderObject>& renderObjects)
+    const std::vector<RenderObject>& renderObjects,
+    const std::vector<glm::mat4> &models,
+    const std::vector<Guid> &transformIds)
 {
     beginDebugFrame(mWorld, camera, mState);
 
-    renderDebug(mWorld, camera, mState, renderQueue, renderObjects);
+    renderDebug(mWorld, camera, mState, renderObjects, models);
 
-    renderDebugColorPicking(mWorld, camera, mState, renderQueue, renderObjects);
+    renderDebugColorPicking(mWorld, camera, mState, renderObjects, models, transformIds);
 
     endDebugFrame(mWorld, camera, mState);
 }
@@ -34,8 +35,11 @@ void DebugRenderer::update(const Input &input, Camera *camera,
 void PhysicsEngine::initializeDebugRenderer(World *world, DebugRendererState &state)
 {
     Graphics::compileNormalShader(state);
+    Graphics::compileNormalInstancedShader(state);
     Graphics::compilePositionShader(state);
+    Graphics::compilePositionInstancedShader(state);
     Graphics::compileLinearDepthShader(state);
+    Graphics::compileLinearDepthInstancedShader(state);
     Graphics::compileColorShader(state);
     Graphics::compileScreenQuadShader(state);
 
@@ -87,8 +91,7 @@ void PhysicsEngine::beginDebugFrame(World *world, Camera *camera, DebugRendererS
 }
 
 void PhysicsEngine::renderDebug(World* world, Camera* camera, DebugRendererState& state,
-    const std::vector<std::pair<uint64_t, int>>& renderQueue,
-    const std::vector<RenderObject>& renderObjects)
+    const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4> &models)
 {
     if (camera->mRenderTextureId.isValid())
     {
@@ -110,54 +113,96 @@ void PhysicsEngine::renderDebug(World* world, Camera* camera, DebugRendererState
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    int modelLoc = -1;
-
-    switch (camera->mColorTarget)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-    case ColorTarget::Normal:
-        Graphics::use(state.mNormalsShaderProgram);
-        modelLoc = state.mNormalsShaderModelLoc;
-        break;
-    case ColorTarget::Position:
-        Graphics::use(state.mPositionShaderProgram);
-        modelLoc = state.mPositionShaderModelLoc;
-        break;
-    case ColorTarget::LinearDepth:
-        Graphics::use(state.mLinearDepthShaderProgram);
-        modelLoc = state.mLinearDepthShaderModelLoc;
-        break;
-    }
+        if (renderObjects[i].instanced)
+        {
+            switch (camera->mColorTarget)
+            {
+            case ColorTarget::Normal:
+                Graphics::use(state.mNormalsInstancedShaderProgram);
+                break;
+            case ColorTarget::Position:
+                Graphics::use(state.mPositionInstancedShaderProgram);
+                break;
+            case ColorTarget::LinearDepth:
+                Graphics::use(state.mLinearDepthInstancedShaderProgram);
+                break;
+            }
 
-    assert(modelLoc != -1);
+            Graphics::updateInstanceBuffer(renderObjects[i].vbo, &models[modelIndex], renderObjects[i].instanceCount);
+            Graphics::renderInstanced(renderObjects[i], camera->mQuery);
+            modelIndex += renderObjects[i].instanceCount;
+        }
+        else
+        {
+            int modelLoc = -1;
+            switch (camera->mColorTarget)
+            {
+            case ColorTarget::Normal:
+                Graphics::use(state.mNormalsShaderProgram);
+                modelLoc = state.mNormalsShaderModelLoc;
+                break;
+            case ColorTarget::Position:
+                Graphics::use(state.mPositionShaderProgram);
+                modelLoc = state.mPositionShaderModelLoc;
+                break;
+            case ColorTarget::LinearDepth:
+                Graphics::use(state.mLinearDepthShaderProgram);
+                modelLoc = state.mLinearDepthShaderModelLoc;
+                break;
+            }
 
-    for (size_t i = 0; i < renderQueue.size(); i++)
-    {
-        Graphics::setMat4(modelLoc, renderObjects[renderQueue[i].second].model);
+            assert(modelLoc != -1);
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            Graphics::setMat4(modelLoc, models[modelIndex]);
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
 
     Graphics::unbindFramebuffer();
 }
 
 void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
-                                       const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                       const std::vector<RenderObject> &renderObjects)
+                                       const std::vector<RenderObject> &renderObjects,
+                                       const std::vector<glm::mat4> &models,
+                                       const std::vector<Guid> &transformIds)
 {
     camera->clearColoring();
 
     // assign colors to render objects.
     uint32_t color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    
+    int transformIdIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        camera->assignColoring(Color32(r, g, b, a), renderObjects[renderQueue[i].second].transformId);
+                camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+                color++;
+                transformIdIndex++;
+            }
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+            camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+            color++;
+            transformIdIndex++;
+        }
     }
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
@@ -167,19 +212,39 @@ void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugR
     Graphics::use(state.mColorShaderProgram);
 
     color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+                color++;
+                modelIndex++;
 
-        Graphics::setMat4(state.mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
-        Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+                // TODO draw the instanced version with colors
+            }
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            color++;
+
+            Graphics::setMat4(state.mColorShaderModelLoc, models[modelIndex]);
+            Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
 
     Graphics::unbindFramebuffer();

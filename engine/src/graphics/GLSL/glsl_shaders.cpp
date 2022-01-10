@@ -224,6 +224,40 @@ return "#version 430 core\n"
 "  FragColor = vec4(vec3(depth), 1.0);\n"
 "}\n";
 }
+std::string PhysicsEngine::getLinearDepthInstancedFragmentShader()
+{
+return "#version 430 core\n"
+"out vec4 FragColor;\n"
+"float near = 0.1;\n"
+"float far = 100.0;\n"
+"float LinearizeDepth(float depth)\n"
+"{\n"
+"  float z = depth * 2.0 - 1.0; // back to NDC\n"
+"  return (2.0 * near * far) / (far + near - z * (far - near));\n"
+"}\n"
+"void main()\n"
+"{\n"
+"  float depth = LinearizeDepth(gl_FragCoord.z) / far;\n"
+"  FragColor = vec4(vec3(depth), 1.0);\n"
+"}\n";
+}
+std::string PhysicsEngine::getLinearDepthInstancedVertexShader()
+{
+return "#version 430 core\n"
+"layout(std140) uniform CameraBlock\n"
+"{\n"
+"    mat4 projection;\n"
+"    mat4 view;\n"
+"    vec3 cameraPos;\n"
+"}Camera;\n"
+"layout(location = 3) in mat4 model;\n"
+"\n"
+"in vec3 position;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = Camera.projection * Camera.view * model * vec4(position, 1.0);\n"
+"}\n";
+}
 std::string PhysicsEngine::getLinearDepthVertexShader()
 {
 return "#version 430 core\n"
@@ -274,6 +308,39 @@ return "#version 430 core\n"
 "  FragColor = vec4(normalize(Normal), 1);\n"
 "}\n";
 }
+std::string PhysicsEngine::getNormalInstancedFragmentShader()
+{
+return "#version 430 core\n"
+"in vec3 Normal;\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"  FragColor = vec4(normalize(Normal), 1);\n"
+"}\n";
+}
+std::string PhysicsEngine::getNormalInstancedVertexShader()
+{
+return "#version 430 core\n"
+"layout(std140) uniform CameraBlock\n"
+"{\n"
+"    mat4 projection;\n"
+"    mat4 view;\n"
+"    vec3 cameraPos;\n"
+"}Camera;\n"
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 1) in vec3 aNormal;\n"
+"layout(location = 3) in mat4 model;\n"
+"\n"
+"out vec3 Normal;\n"
+"void main()\n"
+"{\n"
+"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+"    mat3 normalMatrix = transpose(inverse(mat3(model)));\n"
+"    Normal = normalMatrix * aNormal;\n"
+"    gl_Position = Camera.projection * Camera.view * worldPos;\n"
+"}\n"
+"\n";
+}
 std::string PhysicsEngine::getNormalVertexShader()
 {
 return "#version 430 core\n"
@@ -305,6 +372,36 @@ return "#version 430 core\n"
 "void main()\n"
 "{\n"
 "  FragColor = vec4(FragPos, 1);\n"
+"}\n";
+}
+std::string PhysicsEngine::getPositionInstancedFragmentShader()
+{
+return "#version 430 core\n"
+"in vec3 FragPos;\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"  FragColor = vec4(FragPos, 1);\n"
+"}\n";
+}
+std::string PhysicsEngine::getPositionInstancedVertexShader()
+{
+return "#version 430 core\n"
+"layout(std140) uniform CameraBlock\n"
+"{\n"
+"    mat4 projection;\n"
+"    mat4 view;\n"
+"    vec3 cameraPos;\n"
+"}Camera;\n"
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 3) in mat4 model;\n"
+"\n"
+"out vec3 FragPos;\n"
+"void main()\n"
+"{\n"
+"    vec4 worldPos = model * vec4(aPos, 1.0);\n"
+"    FragPos = worldPos.xyz;\n"
+"    gl_Position = Camera.projection * Camera.view * worldPos;\n"
 "}\n";
 }
 std::string PhysicsEngine::getPositionVertexShader()
@@ -710,10 +807,15 @@ return "#version 430 core\n"
 "    float shadowStrength; // 796\n"
 "}Light;\n"
 "\n"
+"layout (location = 0) in vec3 position;\n"
+"layout (location = 1) in vec3 normal;\n"
+"layout (location = 2) in vec2 texCoord;\n"
+"#if defined (INSTANCING)\n"
+"layout (location = 3) in mat4 model;\n"
+"#else\n"
 "uniform mat4 model;\n"
-"in vec3 position;\n"
-"in vec3 normal;\n"
-"in vec2 texCoord;\n"
+"#endif\n"
+"\n"
 "out vec3 FragPos;\n"
 "out vec3 CameraPos;\n"
 "out vec3 Normal;\n"

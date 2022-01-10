@@ -19,8 +19,9 @@ void ForwardRenderer::init(World *world)
 }
 
 void ForwardRenderer::update(const Input &input, Camera *camera,
-                             const std::vector<std::pair<uint64_t, int>> &renderQueue,
                              const std::vector<RenderObject> &renderObjects,
+                             const std::vector<glm::mat4> &models,
+                             const std::vector<Guid> &transformIds,
                              const std::vector<SpriteObject> &spriteObjects)
 {
     Graphics::checkError(__LINE__, __FILE__);
@@ -31,7 +32,7 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
 
     if (camera->mSSAO == CameraSSAO::SSAO_On)
     {
-        computeSSAO(mWorld, camera, mState, renderQueue, renderObjects);
+        computeSSAO(mWorld, camera, mState, renderObjects, models);
     }
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -47,10 +48,10 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
             if (lightTransform != nullptr)
             {
                 Graphics::checkError(__LINE__, __FILE__);
-                renderShadows(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                renderShadows(mWorld, camera, light, lightTransform, mState, renderObjects, models);
                 
                 Graphics::checkError(__LINE__, __FILE__);
-                renderOpaques(mWorld, camera, light, lightTransform, mState, renderQueue, renderObjects);
+                renderOpaques(mWorld, camera, light, lightTransform, mState, renderObjects, models);
                 
                 Graphics::checkError(__LINE__, __FILE__);
                 renderTransparents();
@@ -66,7 +67,7 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
 
     Graphics::checkError(__LINE__, __FILE__);
 
-    renderColorPicking(mWorld, camera, mState, renderQueue, renderObjects);
+    renderColorPicking(mWorld, camera, mState, renderObjects, models, transformIds);
 
     Graphics::checkError(__LINE__, __FILE__);
 
@@ -148,8 +149,7 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
 }
 
 void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
-                                const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                const std::vector<RenderObject> &renderObjects)
+                                const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
     Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
@@ -158,11 +158,19 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
 
     Graphics::use(state.mGeometryShaderProgram);
 
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        Graphics::setMat4(state.mGeometryShaderModelLoc, renderObjects[renderQueue[i].second].model);
-
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+        if (renderObjects[i].instanced)
+        {
+            modelIndex += renderObjects[i].instanceCount;
+        }
+        else
+        {
+            Graphics::setMat4(state.mGeometryShaderModelLoc, models[modelIndex]);
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
 
     Graphics::unbindFramebuffer();
@@ -192,8 +200,8 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
 }
 
 void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState &state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                  const std::vector<RenderObject> &renderObjects)
+                                  ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
+                                  const std::vector<glm::mat4> &models)
 {
     if (light->mLightType == LightType::Directional)
     {
@@ -217,10 +225,19 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
             Graphics::setMat4(state.mDepthShaderViewLoc, state.mCascadeLightView[i]);
             Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mCascadeOrthoProj[i]);
 
-            for (size_t j = 0; j < renderQueue.size(); j++)
+            int modelIndex = 0;
+            for (size_t j = 0; j < renderObjects.size(); j++)
             {
-                Graphics::setMat4(state.mDepthShaderModelLoc, renderObjects[renderQueue[j].second].model);
-                Graphics::render(renderObjects[renderQueue[j].second], camera->mQuery);
+                if (renderObjects[j].instanced)
+                {
+                    modelIndex += renderObjects[j].instanceCount;                    
+                }
+                else
+                {
+                    Graphics::setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                    Graphics::render(renderObjects[j], camera->mQuery);
+                    modelIndex++;
+                }
             }
 
             Graphics::unbindFramebuffer();
@@ -243,10 +260,19 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mShadowProjMatrix);
         Graphics::setMat4(state.mDepthShaderViewLoc, state.mShadowViewMatrix);
 
-        for (size_t i = 0; i < renderQueue.size(); i++)
+        int modelIndex = 0;
+        for (size_t i = 0; i < renderObjects.size(); i++)
         {
-            Graphics::setMat4(state.mDepthShaderModelLoc, renderObjects[renderQueue[i].second].model);
-            Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            if (renderObjects[i].instanced)
+            {
+                modelIndex += renderObjects[i].instanceCount;
+            }
+            else
+            {
+                Graphics::setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                Graphics::render(renderObjects[i], camera->mQuery);
+                modelIndex++;
+            }
         }
 
         Graphics::unbindFramebuffer();
@@ -296,10 +322,19 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc4, state.mCubeViewProjMatrices[4]);
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc5, state.mCubeViewProjMatrices[5]);
 
-        for (size_t i = 0; i < renderQueue.size(); i++)
+        int modelIndex = 0;
+        for (size_t i = 0; i < renderObjects.size(); i++)
         {
-            Graphics::setMat4(state.mDepthCubemapShaderModelLoc, renderObjects[renderQueue[i].second].model);
-            Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            if (renderObjects[i].instanced)
+            {
+                modelIndex += renderObjects[i].instanceCount;              
+            }
+            else
+            {
+                Graphics::setMat4(state.mDepthCubemapShaderModelLoc, models[modelIndex]);
+                Graphics::render(renderObjects[i], camera->mQuery);
+                modelIndex++;
+            }
         }
 
         Graphics::unbindFramebuffer();
@@ -307,8 +342,8 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 }
 
 void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState &state, const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                  const std::vector<RenderObject> &renderObjects)
+                                  ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
+                                  const std::vector<glm::mat4> &models)
 {
     state.mLightState.mPosition = lightTransform->mPosition;
     state.mLightState.mDirection = lightTransform->getForward();
@@ -400,36 +435,44 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
     Shader *shader = nullptr;
     Material *material = nullptr;
 
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        if (currentShaderIndex != renderObjects[renderQueue[i].second].shaderIndex)
+        if (currentShaderIndex != renderObjects[i].shaderIndex)
         {
-            shader = world->getAssetByIndex<Shader>(renderObjects[renderQueue[i].second].shaderIndex);
-            
-            
-            int programVariant = shader->getProgramFromVariant(variant);
-            if (programVariant >= 0)
+            shader = world->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
+          
+            if (renderObjects[i].instanced)
             {
-                shader->use(shader->getProgramFromVariant(variant));   
+                shader->use(shader->getProgramFromVariant(variant | static_cast<int64_t>(ShaderMacro::Instancing))); 
             }
             else
             {
-                shader->use(shader->getProgramFromVariant(0));
-            }
+                shader->use(shader->getProgramFromVariant(variant)); 
+            }  
 
-            currentShaderIndex = renderObjects[renderQueue[i].second].shaderIndex;
+            currentShaderIndex = renderObjects[i].shaderIndex;
         }
 
-        shader->setMat4("model", renderObjects[renderQueue[i].second].model);
+        if (renderObjects[i].instanced)
+        {
+            Graphics::updateInstanceBuffer(renderObjects[i].vbo, &models[modelIndex], renderObjects[i].instanceCount);
+            modelIndex += renderObjects[i].instanceCount;
+        }
+        else
+        {
+            shader->setMat4("model", models[modelIndex]);
+            modelIndex++;
+        }
 
         Graphics::checkError(__LINE__, __FILE__);
 
-        if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
+        if (currentMaterialIndex != renderObjects[i].materialIndex)
         {
-            material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
+            material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
             material->apply();
 
-            currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
+            currentMaterialIndex = renderObjects[i].materialIndex;
         }
 
         if (light->mLightType == LightType::Directional)
@@ -444,7 +487,14 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
             shader->setTexture2D(shaderShadowMapNames[0], 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
         }
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+        if (renderObjects[i].instanced)
+        {
+            Graphics::renderInstanced(renderObjects[i], camera->mQuery);
+        }
+        else
+        {
+            Graphics::render(renderObjects[i], camera->mQuery);
+        }
     }
 
     Graphics::unbindFramebuffer();
@@ -500,23 +550,42 @@ void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererS
 }
 
 void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
-                                       const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                       const std::vector<RenderObject> &renderObjects)
+                                       const std::vector<RenderObject> &renderObjects,
+                                       const std::vector<glm::mat4> &models, const std::vector<Guid> &transformIds)
 {
     camera->clearColoring();
 
     // assign colors to render objects.
     uint32_t color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+
+    int transformIdIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        camera->assignColoring(Color32(r, g, b, a), renderObjects[renderQueue[i].second].transformId);
+                camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+                color++;
+                transformIdIndex++;
+            }
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+            camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+            color++;
+            transformIdIndex++;
+        }
     }
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
@@ -526,21 +595,44 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
     Graphics::use(state.mColorShaderProgram);
 
     color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+                color++;
+                modelIndex++;
 
-        Graphics::setMat4(state.mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
-        Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+                // TODO draw the instanced version with colors
+            }
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            //Graphics::updateInstanceBuffer(renderObjects[i].vbo, );
+            //Graphics::updateInstanceColorBuffer();
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
+
+            color++;
+
+            Graphics::setMat4(state.mColorShaderModelLoc, models[modelIndex]);
+            Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
-
+   
     Graphics::unbindFramebuffer();
 
     Graphics::checkError(__LINE__, __FILE__);

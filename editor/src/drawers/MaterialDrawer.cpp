@@ -259,6 +259,11 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         }
     }
 
+    if (ImGui::Checkbox("Enable Instancing", &material->mEnableInstancing))
+    {
+
+    }
+
     ImGui::Separator();
 
     // Draw material preview child window

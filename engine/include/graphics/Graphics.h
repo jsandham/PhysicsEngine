@@ -177,14 +177,17 @@ struct DebugRendererState
 
     // normals
     int mNormalsShaderProgram;
+    int mNormalsInstancedShaderProgram;
     int mNormalsShaderModelLoc;
 
     // position
     int mPositionShaderProgram;
+    int mPositionInstancedShaderProgram;
     int mPositionShaderModelLoc;
 
     // linear depth
     int mLinearDepthShaderProgram;
+    int mLinearDepthInstancedShaderProgram;
     int mLinearDepthShaderModelLoc;
 
     // color picking
@@ -215,13 +218,13 @@ struct GizmoRendererState
     int mGridShaderMVPLoc;
     int mGridShaderColorLoc;
 
-    GLuint mFrustumVAO;
-    GLuint mFrustumVBO[2];
+    unsigned int mFrustumVAO;
+    unsigned int mFrustumVBO[2];
     std::vector<float> mFrustumVertices;
     std::vector<float> mFrustumNormals;
 
-    GLuint mGridVAO;
-    GLuint mGridVBO;
+    unsigned int mGridVAO;
+    unsigned int mGridVBO;
     std::vector<glm::vec3> mGridVertices;
     glm::vec3 mGridOrigin;
     Color mGridColor;
@@ -289,8 +292,9 @@ class Graphics
     static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
     static void destroyRenderTextureTargets(RenderTextureTargets* targets);
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);
-    static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2);
+                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo);
+    static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo);
+    static void updateInstanceBuffer(unsigned int vbo, const glm::mat4* models, size_t instanceCount);
     static void createSprite(unsigned int*vao);
     static void destroySprite(unsigned int*vao);
     static void preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant);
@@ -330,7 +334,9 @@ class Graphics
     static int getTexture2D(int nameLocation, int texUnit, int program);
     static void applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram);
     static void render(int start, int count, int vao, bool wireframe = false);
+    static void renderInstanced(int start, int count, int instanceCount, int vao);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
+    static void renderInstanced(const RenderObject &renderObject, GraphicsQuery &query);
 
     static void compileSSAOShader(ForwardRendererState &state);
     static void compileShadowDepthMapShader(ForwardRendererState &state);
@@ -342,8 +348,11 @@ class Graphics
     static void compileScreenQuadShader(DeferredRendererState &state);
     static void compileColorShader(DeferredRendererState &state);
     static void compileNormalShader(DebugRendererState &state);
+    static void compileNormalInstancedShader(DebugRendererState &state);
     static void compilePositionShader(DebugRendererState &state);
+    static void compilePositionInstancedShader(DebugRendererState &state);
     static void compileLinearDepthShader(DebugRendererState &state);
+    static void compileLinearDepthInstancedShader(DebugRendererState &state);
     static void compileColorShader(DebugRendererState &state);
     static void compileScreenQuadShader(DebugRendererState &state);
     static void compileLineShader(GizmoRendererState &state);
@@ -378,10 +387,16 @@ class Graphics
     static std::string getGBufferFragmentShader();
     static std::string getNormalVertexShader();
     static std::string getNormalFragmentShader();
+    static std::string getNormalInstancedVertexShader();
+    static std::string getNormalInstancedFragmentShader();
     static std::string getPositionVertexShader();
     static std::string getPositionFragmentShader();
+    static std::string getPositionInstancedVertexShader();
+    static std::string getPositionInstancedFragmentShader();
     static std::string getLinearDepthVertexShader();
     static std::string getLinearDepthFragmentShader();
+    static std::string getLinearDepthInstancedVertexShader();
+    static std::string getLinearDepthInstancedFragmentShader();
     static std::string getLineVertexShader();
     static std::string getLineFragmentShader();
     static std::string getGizmoVertexShader();

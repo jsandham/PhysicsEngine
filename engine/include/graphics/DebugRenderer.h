@@ -26,8 +26,10 @@ class DebugRenderer
     ~DebugRenderer();
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                const std::vector<RenderObject> &renderObjects);
+    void update(const Input &input, Camera *camera,
+                const std::vector<RenderObject> &renderObjects,
+                const std::vector<glm::mat4> &models,
+                const std::vector<Guid> &transformIds);
 };
 
 void initializeDebugRenderer(World *world, DebugRendererState &state);
@@ -35,12 +37,13 @@ void initializeDebugRenderer(World *world, DebugRendererState &state);
 void beginDebugFrame(World *world, Camera *camera, DebugRendererState &state);
 
 void renderDebug(World *world, Camera *camera, DebugRendererState &state,
-                   const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                   const std::vector<RenderObject> &renderObjects);
+                   const std::vector<RenderObject> &renderObjects,
+                   const std::vector<glm::mat4> &models);
 
 void renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
-                                            const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                            const std::vector<RenderObject> &renderObjects);
+                             const std::vector<RenderObject> &renderObjects,
+                             const std::vector<glm::mat4> &models,
+                             const std::vector<Guid> &transformIds);
 
 void endDebugFrame(World *world, Camera *camera, DebugRendererState &state);
 } // namespace PhysicsEngine

@@ -21,15 +21,16 @@ void DeferredRenderer::init(World *world)
 }
 
 void DeferredRenderer::update(const Input &input, Camera *camera,
-                              const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                              const std::vector<RenderObject> &renderObjects)
+                              const std::vector<RenderObject> &renderObjects,
+                              const std::vector<glm::mat4> &models,
+                              const std::vector<Guid> &transformIds)
 {
     beginDeferredFrame(mWorld, camera, mState);
 
-    geometryPass(mWorld, camera, mState, renderQueue, renderObjects);
+    geometryPass(mWorld, camera, mState, renderObjects, models);
     lightingPass(mWorld, camera, mState, renderObjects);
 
-    renderColorPickingDeferred(mWorld, camera, mState, renderQueue, renderObjects);
+    renderColorPickingDeferred(mWorld, camera, mState, renderObjects, models, transformIds);
 
     endDeferredFrame(mWorld, camera, mState);
 }
@@ -95,8 +96,8 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
 }
 
 void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererState &state,
-                                 const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                 const std::vector<RenderObject> &renderObjects)
+                                 const std::vector<RenderObject> &renderObjects,
+                                 const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
     Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
@@ -120,19 +121,28 @@ void PhysicsEngine::geometryPass(World *world, Camera *camera, DeferredRendererS
     //int currentMaterialIndex = -1;
     //Material *material = nullptr;
 
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        Graphics::setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
+        if (renderObjects[i].instanced)
+        {
+            modelIndex += renderObjects[i].instanceCount;
+        }
+        else
+        {
+            Graphics::setMat4(state.mGBufferShaderModelLoc, models[modelIndex]);
 
-        //if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
-        //{
-        //    material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
-        //    material->apply(world);
-        //
-        //    currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
-        //}
+            // if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
+            //{
+            //    material = world->getAssetByIndex<Material>(renderObjects[renderQueue[i].second].materialIndex);
+            //    material->apply(world);
+            //
+            //    currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
+            //}
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
     Graphics::unbindFramebuffer();
 
@@ -171,23 +181,43 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
 }
 
 void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, DeferredRendererState &state,
-                                       const std::vector<std::pair<uint64_t, int>> &renderQueue,
-                                       const std::vector<RenderObject> &renderObjects)
+                                       const std::vector<RenderObject> &renderObjects,
+                                       const std::vector<glm::mat4> &models,
+                                       const std::vector<Guid> &transformIds)
 {
     camera->clearColoring();
 
     // assign colors to render objects.
     uint32_t color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+
+    int transformIdIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        camera->assignColoring(Color32(r, g, b, a), renderObjects[renderQueue[i].second].transformId);
+                camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+                color++;
+                transformIdIndex++;
+            }
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+            camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
+            color++;
+            transformIdIndex++;
+        }
     }
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
@@ -197,19 +227,39 @@ void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, Def
     Graphics::use(state.mColorShaderProgram);
 
     color = 1;
-    for (size_t i = 0; i < renderQueue.size(); i++)
+    int modelIndex = 0;
+    for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-        unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-        unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-        unsigned char a = static_cast<unsigned char>(255);
+        if (renderObjects[i].instanced)
+        {
+            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            {
+                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+                unsigned char a = static_cast<unsigned char>(255);
 
-        color++;
+                color++;
+                modelIndex++;
 
-        Graphics::setMat4(state.mColorShaderModelLoc, renderObjects[renderQueue[i].second].model);
-        Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+                // TODO draw the instanced version with colors
+            }
+        }
+        else
+        {
+            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
+            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
+            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
+            unsigned char a = static_cast<unsigned char>(255);
 
-        Graphics::render(renderObjects[renderQueue[i].second], camera->mQuery);
+            color++;
+
+            Graphics::setMat4(state.mColorShaderModelLoc, models[modelIndex]);
+            Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+
+            Graphics::render(renderObjects[i], camera->mQuery);
+            modelIndex++;
+        }
     }
 
     Graphics::unbindFramebuffer();

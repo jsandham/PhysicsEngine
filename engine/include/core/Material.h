@@ -24,6 +24,7 @@ class Material : public Asset
 
   public:
     RenderQueue mRenderQueue;
+    bool mEnableInstancing;
 
   public:
     Material(World *world);

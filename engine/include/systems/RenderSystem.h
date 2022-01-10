@@ -24,9 +24,11 @@ class RenderSystem : public System
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
 
+    std::vector<glm::mat4> mModels;
+    std::vector<Guid> mTransformIds;
+    std::vector<Sphere> mBoundingSpheres;
     std::vector<RenderObject> mRenderObjects;
     std::vector<SpriteObject> mSpriteObjects;
-    std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
   public:
     RenderSystem(World* world);

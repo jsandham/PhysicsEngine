@@ -12,6 +12,7 @@ Material::Material(World *world) : Asset(world)
 
     mShaderChanged = true;
     mTextureChanged = true;
+    mEnableInstancing = false;
 }
 
 Material::Material(World *world, const Guid& id) : Asset(world, id)
@@ -21,6 +22,7 @@ Material::Material(World *world, const Guid& id) : Asset(world, id)
 
     mShaderChanged = true;
     mTextureChanged = true;
+    mEnableInstancing = false;
 }
 
 Material::~Material()
@@ -33,6 +35,7 @@ void Material::serialize(YAML::Node &out) const
 
     out["shaderId"] = mShaderId;
     out["renderQueue"] = mRenderQueue;
+    out["enableInstancing"] = mEnableInstancing;
 
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
@@ -46,6 +49,7 @@ void Material::deserialize(const YAML::Node &in)
 
     mShaderId = YAML::getValue<Guid>(in, "shaderId");
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
+    mEnableInstancing = YAML::getValue<bool>(in, "enableInstancing");
 
     mUniforms.clear();
 

@@ -4,6 +4,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <assert.h>
 
 #include "yaml-cpp/yaml.h"
 
@@ -69,6 +70,8 @@ template <> struct hash<PhysicsEngine::Guid>
 {
     size_t operator()(const PhysicsEngine::Guid &guid) const noexcept
     {
+        static_assert(sizeof(PhysicsEngine::Guid) == 2 * sizeof(uint64_t));
+
         const std::uint64_t *p = reinterpret_cast<const std::uint64_t *>(&guid);
         std::hash<std::uint64_t> hash;
         return hash(p[0]) ^ hash(p[1]);
