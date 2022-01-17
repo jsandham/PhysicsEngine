@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "GL/glew.h"
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
@@ -20,39 +18,24 @@
 
 namespace PhysicsEngine
 {
-enum API
+enum class API
 {
     OpenGL,
     DirectX
 };
 
-enum Capability
+enum class Capability
 {
     Depth_Testing,
     Blending
 };
 
-struct Uniform
-{
-    GLsizei nameLength;
-    GLint size;
-    GLenum type;
-    GLchar name[32];
-};
-
-struct Attribute
-{
-    GLsizei nameLength;
-    GLint size;
-    GLenum type;
-    GLchar name[32];
-};
-
 struct CameraUniform
 {
-    glm::mat4 mProjection; // 0
-    glm::mat4 mView;       // 64
-    glm::vec3 mCameraPos;  // 128
+    glm::mat4 mProjection;     // 0
+    glm::mat4 mView;           // 64
+    glm::mat4 mViewProjection; // 128
+    glm::vec3 mCameraPos;      // 192
 
     unsigned int mBuffer;
 };
@@ -118,6 +101,7 @@ struct ForwardRendererState
 
     // color picking
     int mColorShaderProgram;
+    int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
@@ -160,6 +144,7 @@ struct DeferredRendererState
 
     // color picking
     int mColorShaderProgram;
+    int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
@@ -192,6 +177,7 @@ struct DebugRendererState
 
     // color picking
     int mColorShaderProgram;
+    int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
@@ -233,13 +219,12 @@ struct GizmoRendererState
 class Graphics
 {
   public:
+    static int INSTANCE_BATCH_SIZE;
+
     static void checkError(long line, const char *file);
     static void checkFrambufferError(long line, const char *file);
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
-    static GLenum getTextureFormat(TextureFormat format);
-    static int getTextureWrapMode(TextureWrapMode wrapMode);
-    static int getTextureFilterMode(TextureFilterMode filterMode);
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long*elapsedTime);
     static void createGlobalCameraUniforms(CameraUniform &uniform);
@@ -292,9 +277,10 @@ class Graphics
     static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
     static void destroyRenderTextureTargets(RenderTextureTargets* targets);
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo);
-    static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo);
+                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);
+    static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);
     static void updateInstanceBuffer(unsigned int vbo, const glm::mat4* models, size_t instanceCount);
+    static void updateInstanceColorBuffer(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount);
     static void createSprite(unsigned int*vao);
     static void destroySprite(unsigned int*vao);
     static void preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant);
@@ -338,15 +324,20 @@ class Graphics
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
     static void renderInstanced(const RenderObject &renderObject, GraphicsQuery &query);
 
+    //static void compileShader()
+
+
     static void compileSSAOShader(ForwardRendererState &state);
     static void compileShadowDepthMapShader(ForwardRendererState &state);
     static void compileShadowDepthCubemapShader(ForwardRendererState &state);
     static void compileColorShader(ForwardRendererState &state);
+    static void compileColorInstancedShader(ForwardRendererState &state);
     static void compileScreenQuadShader(ForwardRendererState &state);
     static void compileSpriteShader(ForwardRendererState &state);
     static void compileGBufferShader(DeferredRendererState &state);
     static void compileScreenQuadShader(DeferredRendererState &state);
     static void compileColorShader(DeferredRendererState &state);
+    static void compileColorInstancedShader(DeferredRendererState &state);
     static void compileNormalShader(DebugRendererState &state);
     static void compileNormalInstancedShader(DebugRendererState &state);
     static void compilePositionShader(DebugRendererState &state);
@@ -354,6 +345,7 @@ class Graphics
     static void compileLinearDepthShader(DebugRendererState &state);
     static void compileLinearDepthInstancedShader(DebugRendererState &state);
     static void compileColorShader(DebugRendererState &state);
+    static void compileColorInstancedShader(DebugRendererState &state);
     static void compileScreenQuadShader(DebugRendererState &state);
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
@@ -379,6 +371,8 @@ class Graphics
     static std::string getShadowDepthCubemapGeometryShader();
     static std::string getColorVertexShader();
     static std::string getColorFragmentShader();
+    static std::string getColorInstancedVertexShader();
+    static std::string getColorInstancedFragmentShader();
     static std::string getScreenQuadVertexShader();
     static std::string getScreenQuadFragmentShader();
     static std::string getSpriteVertexShader();

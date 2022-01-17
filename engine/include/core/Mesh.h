@@ -19,7 +19,8 @@ enum class MeshVBO
     Vertices,
     Normals,
     TexCoords,
-    Instance
+    Instance,
+    InstanceColor
 };
 
 class Mesh : public Asset
@@ -32,7 +33,7 @@ class Mesh : public Asset
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
     unsigned int mVao;
-    unsigned int mVbo[4];
+    unsigned int mVbo[5];
     Sphere mBounds;
     bool mCreated;
     bool mChanged;

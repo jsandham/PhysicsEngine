@@ -304,6 +304,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
                     object.vao = mesh->getNativeGraphicsVAO();
                     object.vbo = mesh->getNativeGraphicsVBO(MeshVBO::Instance);
+                    object.vbo2 = mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor);
                     object.culled = false;
                     object.instanced = true;
 
@@ -321,11 +322,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
                         instanceMap[key].models = std::vector<glm::mat4>();
                         instanceMap[key].transformIds = std::vector<Guid>();
                         instanceMap[key].boundingSpheres = std::vector<Sphere>();
-                        
+                       
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
                         instanceMap[key].boundingSpheres.push_back(Sphere());
-
                     }
                 }
                 else
@@ -339,6 +339,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
                     object.vao = mesh->getNativeGraphicsVAO();
                     object.vbo = -1;
+                    object.vbo2 = -1;
                     object.culled = false;
                     object.instanced = false;
 
@@ -362,7 +363,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
         {
             RenderObject renderObject = it->first.second;
             renderObject.instanceStart = count;
-            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(100));
+            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Graphics::INSTANCE_BATCH_SIZE));
             
             mRenderObjects.push_back(renderObject);
             for (size_t i = 0; i < renderObject.instanceCount; i++)
@@ -372,7 +373,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 mBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
             }
        
-            count += 100;
+            count += Graphics::INSTANCE_BATCH_SIZE;
         }
     }
 

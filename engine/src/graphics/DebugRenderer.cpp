@@ -41,6 +41,7 @@ void PhysicsEngine::initializeDebugRenderer(World *world, DebugRendererState &st
     Graphics::compileLinearDepthShader(state);
     Graphics::compileLinearDepthInstancedShader(state);
     Graphics::compileColorShader(state);
+    Graphics::compileColorInstancedShader(state);
     Graphics::compileScreenQuadShader(state);
 
     Graphics::createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
@@ -56,6 +57,7 @@ void PhysicsEngine::beginDebugFrame(World *world, Camera *camera, DebugRendererS
 
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
+    state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
     state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
 
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -209,14 +211,13 @@ void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugR
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::use(state.mColorShaderProgram);
-
     color = 1;
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
         if (renderObjects[i].instanced)
         {
+            std::vector<glm::vec4> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
             {
                 unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
@@ -224,11 +225,16 @@ void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugR
                 unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
                 unsigned char a = static_cast<unsigned char>(255);
 
+                colors[j] = glm::vec4(r, g, b, a);
                 color++;
-                modelIndex++;
-
-                // TODO draw the instanced version with colors
             }
+
+            Graphics::use(state.mColorInstancedShaderProgram);
+            Graphics::updateInstanceBuffer(renderObjects[i].vbo, &models[modelIndex], renderObjects[i].instanceCount);
+            Graphics::updateInstanceColorBuffer(renderObjects[i].vbo2, &colors[0], renderObjects[i].instanceCount);
+            Graphics::renderInstanced(renderObjects[i], camera->mQuery);
+
+            modelIndex += renderObjects[i].instanceCount;
         }
         else
         {
@@ -239,6 +245,7 @@ void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugR
 
             color++;
 
+            Graphics::use(state.mColorShaderProgram);
             Graphics::setMat4(state.mColorShaderModelLoc, models[modelIndex]);
             Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
 

@@ -689,6 +689,8 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_g.glsl"] = "getShadowDepthCubemapGeometryShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/color_v.glsl"] = "getColorVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/color_f.glsl"] = "getColorFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/color_instanced_v.glsl"] = "getColorInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/glsl/color_instanced_f.glsl"] = "getColorInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_v.glsl"] = "getScreenQuadVertexShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_f.glsl"] = "getScreenQuadFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/glsl/sprite_v.glsl"] = "getSpriteVertexShader";

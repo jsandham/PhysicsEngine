@@ -23,7 +23,7 @@ void main()
     FragPos = vec3(model * vec4(position, 1.0));
     Normal = mat3(transpose(inverse(model))) * normal;
     TexCoord = texCoord;
-    gl_Position = Camera.projection * Camera.view * vec4(FragPos, 1.0);
+    gl_Position = Camera.viewProjection * vec4(FragPos, 1.0);
     ClipSpaceZ = gl_Position.z;
     for (int i = 0; i < 5; i++)
     {

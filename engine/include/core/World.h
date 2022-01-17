@@ -237,10 +237,7 @@ class World
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
-        if (allocator == nullptr)
-        {
-            return nullptr;
-        }
+        assert(allocator != nullptr);
 
         std::vector<std::pair<Guid, int>> componentsOnEntity = getComponentsOnEntity(entityId);
 
@@ -265,6 +262,8 @@ class World
     template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityId)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+
+        assert(allocator != nullptr);
 
         if (getTypeOf(entityId) != EntityType<Entity>::type)
         {

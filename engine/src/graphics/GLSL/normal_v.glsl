@@ -10,5 +10,5 @@ void main()
     vec4 worldPos = model * vec4(aPos, 1.0);
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     Normal = normalMatrix * aNormal;
-    gl_Position = Camera.projection * Camera.view * worldPos;
+    gl_Position = Camera.viewProjection * worldPos;
 }

@@ -14,6 +14,8 @@ namespace PhysicsEngine
     std::string getShadowDepthCubemapGeometryShader();
     std::string getColorVertexShader();
     std::string getColorFragmentShader();
+    std::string getColorInstancedVertexShader();
+    std::string getColorInstancedFragmentShader();
     std::string getScreenQuadVertexShader();
     std::string getScreenQuadFragmentShader();
     std::string getSpriteVertexShader();

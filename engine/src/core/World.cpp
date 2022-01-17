@@ -651,16 +651,14 @@ void World::clearIdsMarkedCreatedOrDestroyed()
 
 std::vector<std::pair<Guid, int>> World::getComponentsOnEntity(const Guid &entityId) const
 {
-    std::vector<std::pair<Guid, int>> componentsOnEntity;
-
     std::unordered_map<Guid, std::vector<std::pair<Guid, int>>>::const_iterator it =
         mIdState.mEntityIdToComponentIds.find(entityId);
     if (it != mIdState.mEntityIdToComponentIds.end())
     {
-        componentsOnEntity = it->second;
+        return it->second;
     }
 
-    return componentsOnEntity;
+    return std::vector<std::pair<Guid, int>>();
 }
 
 std::vector<Guid> World::getEntityIdsMarkedCreated() const

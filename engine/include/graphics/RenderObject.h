@@ -18,6 +18,7 @@ typedef struct RenderObject
     int size;  // size of vbo
     int vao;
     int vbo;
+    int vbo2;
     bool culled;
     bool instanced;
 
@@ -26,7 +27,8 @@ typedef struct RenderObject
         return this->instanceStart == object.instanceStart && this->instanceCount == object.instanceCount &&
                this->materialIndex == object.materialIndex && this->shaderIndex == object.shaderIndex &&
                this->start == object.start && this->size == object.size && this->vao == object.vao &&
-               this->vbo == object.vbo && this->culled == object.culled && this->instanced == object.instanced;
+               this->vbo == object.vbo && this->vbo2 == object.vbo2 && this->culled == object.culled &&
+               this->instanced == object.instanced;
     }
 } RenderObject;
 

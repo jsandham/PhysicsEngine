@@ -8,5 +8,5 @@ void main()
 {
     vec4 worldPos = model * vec4(aPos, 1.0);
     FragPos = worldPos.xyz;
-    gl_Position = Camera.projection * Camera.view * worldPos;
+    gl_Position = Camera.viewProjection * worldPos;
 }

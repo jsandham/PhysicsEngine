@@ -10,6 +10,93 @@
 
 using namespace PhysicsEngine;
 
+int Graphics::INSTANCE_BATCH_SIZE = 1000;
+
+struct Uniform
+{
+    GLsizei nameLength;
+    GLint size;
+    GLenum type;
+    GLchar name[32];
+};
+
+struct Attribute
+{
+    GLsizei nameLength;
+    GLint size;
+    GLenum type;
+    GLchar name[32];
+};
+
+GLenum getTextureFormat(TextureFormat format)
+{
+    GLenum openglFormat = GL_DEPTH_COMPONENT;
+
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        openglFormat = GL_DEPTH_COMPONENT;
+        break;
+    case TextureFormat::RG:
+        openglFormat = GL_RG;
+        break;
+    case TextureFormat::RGB:
+        openglFormat = GL_RGB;
+        break;
+    case TextureFormat::RGBA:
+        openglFormat = GL_RGBA;
+        break;
+    default:
+        Log::error("OpengGL: Invalid texture format\n");
+        break;
+    }
+
+    return openglFormat;
+}
+
+GLint getTextureWrapMode(TextureWrapMode wrapMode)
+{
+    GLint openglWrapMode = GL_REPEAT;
+
+    switch (wrapMode)
+    {
+    case TextureWrapMode::Repeat:
+        openglWrapMode = GL_REPEAT;
+        break;
+    case TextureWrapMode::Clamp:
+        openglWrapMode = GL_CLAMP_TO_EDGE;
+        break;
+    default:
+        Log::error("OpengGL: Invalid texture wrap mode\n");
+        break;
+    }
+
+    return openglWrapMode;
+}
+
+GLint getTextureFilterMode(TextureFilterMode filterMode)
+{
+    GLint openglFilterMode = GL_NEAREST;
+
+    switch (filterMode)
+    {
+    case TextureFilterMode::Nearest:
+        openglFilterMode = GL_NEAREST;
+        break;
+    case TextureFilterMode::Bilinear:
+        openglFilterMode = GL_LINEAR;
+        break;
+    case TextureFilterMode::Trilinear:
+        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
+        break;
+    default:
+        Log::error("OpengGL: Invalid texture filter mode\n");
+        break;
+    }
+
+    return openglFilterMode;
+}
+
 void Graphics::checkError(long line, const char *file)
 {
     GLenum error;
@@ -121,75 +208,6 @@ void Graphics::turnOff(Capability capability)
     }
 }
 
-GLenum Graphics::getTextureFormat(TextureFormat format)
-{
-    GLenum openglFormat = GL_DEPTH_COMPONENT;
-
-    switch (format)
-    {
-    case TextureFormat::Depth:
-        openglFormat = GL_DEPTH_COMPONENT;
-        break;
-    case TextureFormat::RG:
-        openglFormat = GL_RG;
-        break;
-    case TextureFormat::RGB:
-        openglFormat = GL_RGB;
-        break;
-    case TextureFormat::RGBA:
-        openglFormat = GL_RGBA;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture format\n");
-        break;
-    }
-
-    return openglFormat;
-}
-
-int Graphics::getTextureWrapMode(TextureWrapMode wrapMode)
-{
-    int openglWrapMode = GL_REPEAT;
-
-    switch (wrapMode)
-    {
-    case TextureWrapMode::Repeat:
-        openglWrapMode = GL_REPEAT;
-        break;
-    case TextureWrapMode::Clamp:
-        openglWrapMode = GL_CLAMP_TO_EDGE;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture wrap mode\n");
-        break;
-    }
-
-    return openglWrapMode;
-}
-
-int Graphics::getTextureFilterMode(TextureFilterMode filterMode)
-{
-    int openglFilterMode = GL_NEAREST;
-
-    switch (filterMode)
-    {
-    case TextureFilterMode::Nearest:
-        openglFilterMode = GL_NEAREST;
-        break;
-    case TextureFilterMode::Bilinear:
-        openglFilterMode = GL_LINEAR;
-        break;
-    case TextureFilterMode::Trilinear:
-        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture filter mode\n");
-        break;
-    }
-
-    return openglFilterMode;
-}
-
 void Graphics::beginQuery(unsigned int queryId)
 {
     Graphics::checkError(__LINE__, __FILE__);
@@ -210,8 +228,8 @@ void Graphics::createGlobalCameraUniforms(CameraUniform &uniform)
 {
     glGenBuffers(1, &uniform.mBuffer);
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
-    glBufferData(GL_UNIFORM_BUFFER, 144, NULL, GL_DYNAMIC_DRAW);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 144);
+    glBufferData(GL_UNIFORM_BUFFER, 204, NULL, GL_DYNAMIC_DRAW);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -231,10 +249,11 @@ void Graphics::createGlobalLightUniforms(LightUniform &uniform)
 void Graphics::setGlobalCameraUniforms(const CameraUniform &uniform)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer);
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 144);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(uniform.mProjection));
     glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(uniform.mView));
-    glBufferSubData(GL_UNIFORM_BUFFER, 128, 12, glm::value_ptr(uniform.mCameraPos));
+    glBufferSubData(GL_UNIFORM_BUFFER, 128, 64, glm::value_ptr(uniform.mViewProjection));
+    glBufferSubData(GL_UNIFORM_BUFFER, 192, 12, glm::value_ptr(uniform.mCameraPos));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -871,9 +890,9 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLenum openglFormat = getTextureFormat(format);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data());
 
@@ -901,8 +920,8 @@ void Graphics::destroyTexture2D(unsigned int *tex)
 
 void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
@@ -922,7 +941,7 @@ void Graphics::readPixelsTexture2D(TextureFormat format, int width, int height, 
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels, &data[0]);
 
@@ -936,7 +955,7 @@ void Graphics::writePixelsTexture2D(TextureFormat format, int width, int height,
 {
     glBindTexture(GL_TEXTURE_2D, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data());
 
@@ -951,9 +970,9 @@ void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, T
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_3D, *tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLenum openglFormat = getTextureFormat(format);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
@@ -976,8 +995,8 @@ void Graphics::destroyTexture3D(unsigned int *tex)
 
 void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     glBindTexture(GL_TEXTURE_3D, tex);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode);
@@ -998,7 +1017,7 @@ void Graphics::readPixelsTexture3D(TextureFormat format, int width, int height, 
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * depth * numChannels, &data[0]);
 
@@ -1012,7 +1031,7 @@ void Graphics::writePixelsTexture3D(TextureFormat format, int width, int height,
 {
     glBindTexture(GL_TEXTURE_3D, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]);
 
@@ -1027,9 +1046,9 @@ void Graphics::createCubemap(TextureFormat format, TextureWrapMode wrapMode, Tex
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, *tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLenum openglFormat = getTextureFormat(format);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     for (unsigned int i = 0; i < 6; i++)
     {
@@ -1056,8 +1075,8 @@ void Graphics::destroyCubemap(unsigned int *tex)
 
 void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
 {
-    GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    GLint openglFilterMode = getTextureFilterMode(filterMode);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode);
@@ -1078,7 +1097,7 @@ void Graphics::readPixelsCubemap(TextureFormat format, int width, int numChannel
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     for (unsigned int i = 0; i < 6; i++)
     {
@@ -1095,7 +1114,7 @@ void Graphics::writePixelsCubemap(TextureFormat format, int width, const std::ve
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
-    GLenum openglFormat = Graphics::getTextureFormat(format);
+    GLenum openglFormat = getTextureFormat(format);
 
     for (unsigned int i = 0; i < 6; i++)
     {
@@ -1117,9 +1136,9 @@ void Graphics::createRenderTextureTargets(RenderTextureTargets* targets, Texture
     glGenTextures(1, &(targets->mColorTex));
     glBindTexture(GL_TEXTURE_2D, targets->mColorTex);
     
-    GLenum openglFormat = Graphics::getTextureFormat(format);
-    //GLint openglWrapMode = Graphics::getTextureWrapMode(wrapMode);
-    //GLint openglFilterMode = Graphics::getTextureFilterMode(filterMode);
+    GLenum openglFormat = getTextureFormat(format);
+    //GLint openglWrapMode = getTextureWrapMode(wrapMode);
+    //GLint openglFilterMode = getTextureFilterMode(filterMode);
     
     glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1177,14 +1196,15 @@ void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
 
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, 
-                          unsigned int*vbo2, unsigned int*instance_vbo)
+                          unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
     glGenBuffers(1, vbo0); // vertex vbo
     glGenBuffers(1, vbo1); // normals vbo
     glGenBuffers(1, vbo2); // texcoords vbo
-    glGenBuffers(1, instance_vbo); // instancing vbo
+    glGenBuffers(1, model_vbo); // instance model vbo
+    glGenBuffers(1, color_vbo); // instance color vbo
 
     glBindVertexArray(*vao);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
@@ -1202,9 +1222,9 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
-    // allow instancing on all meshes
-    glBindBuffer(GL_ARRAY_BUFFER, *instance_vbo);
-    glBufferData(GL_ARRAY_BUFFER, 100 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+    // instancing model matrices vbo
+    glBindBuffer(GL_ARRAY_BUFFER, *model_vbo);
+    glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
     // set attribute pointers for matrix (4 times vec4)
     glEnableVertexAttribArray(3); 
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0);
@@ -1220,27 +1240,47 @@ void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
 
+    // instancing colors vbo
+    glBindBuffer(GL_ARRAY_BUFFER, *color_vbo);
+    glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void *)0);
+
+    glVertexAttribDivisor(7, 1);
+
     glBindVertexArray(0);
 
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*instance_vbo)
+void Graphics::destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo)
 {
     glDeleteBuffers(1, vbo0);
     glDeleteBuffers(1, vbo1);
     glDeleteBuffers(1, vbo2);
-    glDeleteBuffers(1, instance_vbo);
+    glDeleteBuffers(1, model_vbo);
+    glDeleteBuffers(1, color_vbo);
 
     glDeleteVertexArrays(1, vao);
 }
 
 void Graphics::updateInstanceBuffer(unsigned int vbo, const glm::mat4* models, size_t instanceCount)
 {
-    assert(instanceCount <= 100);
+    assert(instanceCount <= INSTANCE_BATCH_SIZE);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferSubData(GL_ARRAY_BUFFER, 0, instanceCount * sizeof(glm::mat4), models);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::updateInstanceColorBuffer(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount)
+{
+    assert(instanceCount <= INSTANCE_BATCH_SIZE);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, instanceCount * sizeof(glm::vec4), colors);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1970,6 +2010,21 @@ void Graphics::compileColorShader(ForwardRendererState &state)
     }
 }
 
+void Graphics::compileColorInstancedShader(ForwardRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    {
+        state.mColorInstancedShaderProgram = program;
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorInstancedShaderProgram);
+    }
+    else
+    {
+        state.mColorInstancedShaderProgram = -1;
+    }
+}
+
 void Graphics::compileScreenQuadShader(ForwardRendererState &state)
 {
     unsigned int program = 0;
@@ -2048,6 +2103,21 @@ void Graphics::compileColorShader(DeferredRendererState &state)
     else
     {
         state.mColorShaderProgram = -1;
+    }
+}
+
+void Graphics::compileColorInstancedShader(DeferredRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    {
+        state.mColorInstancedShaderProgram = program;
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorInstancedShaderProgram);
+    }
+    else
+    {
+        state.mColorInstancedShaderProgram = -1;
     }
 }
 
@@ -2158,6 +2228,21 @@ void Graphics::compileColorShader(DebugRendererState &state)
     else
     {
         state.mColorShaderProgram = -1;
+    }
+}
+
+void Graphics::compileColorInstancedShader(DebugRendererState &state)
+{
+    unsigned int program = 0;
+    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    {
+        state.mColorInstancedShaderProgram = program;
+
+        Graphics::setUniformBlock("CameraBlock", 0, state.mColorInstancedShaderProgram);
+    }
+    else
+    {
+        state.mColorInstancedShaderProgram = -1;
     }
 }
 
@@ -2356,6 +2441,16 @@ std::string Graphics::getColorVertexShader()
 std::string Graphics::getColorFragmentShader()
 {
     return PhysicsEngine::getColorFragmentShader();
+}
+
+std::string Graphics::getColorInstancedVertexShader()
+{
+    return PhysicsEngine::getColorInstancedVertexShader();
+}
+
+std::string Graphics::getColorInstancedFragmentShader()
+{
+    return PhysicsEngine::getColorInstancedFragmentShader();
 }
 
 std::string Graphics::getScreenQuadVertexShader()

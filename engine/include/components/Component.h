@@ -37,14 +37,7 @@ class Component : public Object
 
     template <typename T> T *getComponent() const
     {
-        const Entity *entity = getEntity();
-
-        if (entity != nullptr)
-        {
-            return entity->getComponent<T>();
-        }
-
-        return nullptr;
+        return mWorld->getComponent<T>(mEntityId);
     }
 
     Guid getEntityId() const;

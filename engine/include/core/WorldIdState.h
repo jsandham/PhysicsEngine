@@ -56,6 +56,10 @@ struct WorldIdState
     // entity ids to component ids
     std::unordered_map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds;
 
+    //std::unordered_map<Guid, Guid> mEntityIdToTransformId;
+    //std::unordered_map<Guid, Guid> mEntityIdToMeshRendererId;
+    //std::unordered_map<Guid, Guid> mEntityIdToRigidbodyId;
+
     // entity creation/deletion state
     std::vector<Guid> mEntityIdsMarkedCreated;
     std::vector<Guid> mEntityIdsMarkedLatentDestroy;
