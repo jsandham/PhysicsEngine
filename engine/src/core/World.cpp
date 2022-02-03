@@ -805,6 +805,11 @@ template <> size_t World::getNumberOfSystems<FreeLookCameraSystem>() const
     return mAllocators.mFreeLookCameraSystemAllocator.getCount();
 }
 
+template <> size_t World::getNumberOfSystems<TerrainSystem>() const
+{
+    return mAllocators.mTerrainSystemAllocator.getCount();
+}
+
 template <> size_t World::getNumberOfComponents<Transform>() const
 {
     return mAllocators.mTransformAllocator.getCount();
@@ -858,6 +863,11 @@ template <> size_t World::getNumberOfComponents<CapsuleCollider>() const
 template <> size_t World::getNumberOfComponents<MeshCollider>() const
 {
     return mAllocators.mMeshColliderAllocator.getCount();
+}
+
+template <> size_t World::getNumberOfComponents<Terrain>() const
+{
+    return mAllocators.mTerrainAllocator.getCount();
 }
 
 template <> size_t World::getNumberOfAssets<Mesh>() const
@@ -935,6 +945,11 @@ template <> FreeLookCameraSystem *World::getSystem<FreeLookCameraSystem>() const
     return getSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator);
 }
 
+template <> TerrainSystem *World::getSystem<TerrainSystem>() const
+{
+    return getSystem_impl(&mAllocators.mTerrainSystemAllocator);
+}
+
 template <> Transform *World::getComponent<Transform>(const Guid &entityId) const
 {
     return getComponent_impl(&mAllocators.mTransformAllocator, entityId);
@@ -988,6 +1003,11 @@ template <> CapsuleCollider *World::getComponent<CapsuleCollider>(const Guid &en
 template <> MeshCollider *World::getComponent<MeshCollider>(const Guid &entityId) const
 {
     return getComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
+}
+
+template <> Terrain *World::getComponent<Terrain>(const Guid &entityId) const
+{
+    return getComponent_impl(&mAllocators.mTerrainAllocator, entityId);
 }
 
 template <> Transform *World::addComponent<Transform>(const Guid &entityId)
@@ -1045,6 +1065,11 @@ template <> MeshCollider *World::addComponent<MeshCollider>(const Guid &entityId
     return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
 }
 
+template <> Terrain *World::addComponent<Terrain>(const Guid &entityId)
+{
+    return addComponent_impl(&mAllocators.mTerrainAllocator, entityId);
+}
+
 template <> RenderSystem *World::addSystem<RenderSystem>(size_t order)
 {
     return addSystem_impl(&mAllocators.mRenderSystemAllocator, order);
@@ -1073,6 +1098,11 @@ template <> GizmoSystem *World::addSystem<GizmoSystem>(size_t order)
 template <> FreeLookCameraSystem *World::addSystem<FreeLookCameraSystem>(size_t order)
 {
     return addSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator, order);
+}
+
+template <> TerrainSystem *World::addSystem<TerrainSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mTerrainSystemAllocator, order);
 }
 
 template <> RenderSystem *World::getSystemByIndex<RenderSystem>(size_t index) const
@@ -1105,6 +1135,11 @@ template <> FreeLookCameraSystem *World::getSystemByIndex<FreeLookCameraSystem>(
     return getSystemByIndex_impl(&mAllocators.mFreeLookCameraSystemAllocator, index);
 }
 
+template <> TerrainSystem *World::getSystemByIndex<TerrainSystem>(size_t index) const
+{
+    return getSystemByIndex_impl(&mAllocators.mTerrainSystemAllocator, index);
+}
+
 template <> RenderSystem *World::getSystemById<RenderSystem>(const Guid &systemId) const
 {
     return getSystemById_impl(&mAllocators.mRenderSystemAllocator, systemId);
@@ -1133,6 +1168,11 @@ template <> GizmoSystem *World::getSystemById<GizmoSystem>(const Guid &systemId)
 template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(const Guid &systemId) const
 {
     return getSystemById_impl(&mAllocators.mFreeLookCameraSystemAllocator, systemId);
+}
+
+template <> TerrainSystem *World::getSystemById<TerrainSystem>(const Guid &systemId) const
+{
+    return getSystemById_impl(&mAllocators.mTerrainSystemAllocator, systemId);
 }
 
 template <> Mesh *World::getAssetByIndex<Mesh>(size_t index) const
@@ -1280,6 +1320,11 @@ template <> MeshCollider *World::getComponentByIndex<MeshCollider>(size_t index)
     return getComponentByIndex_impl(&mAllocators.mMeshColliderAllocator, index);
 }
 
+template <> Terrain *World::getComponentByIndex<Terrain>(size_t index) const
+{
+    return getComponentByIndex_impl(&mAllocators.mTerrainAllocator, index);
+}
+
 template <> Transform *World::getComponentById<Transform>(const Guid &componentId) const
 {
     return getComponentById_impl(&mAllocators.mTransformAllocator, componentId);
@@ -1333,6 +1378,11 @@ template <> CapsuleCollider *World::getComponentById<CapsuleCollider>(const Guid
 template <> MeshCollider *World::getComponentById<MeshCollider>(const Guid &componentId) const
 {
     return getComponentById_impl(&mAllocators.mMeshColliderAllocator, componentId);
+}
+
+template <> Terrain *World::getComponentById<Terrain>(const Guid &componentId) const
+{
+    return getComponentById_impl(&mAllocators.mTerrainAllocator, componentId);
 }
 
 template <> Mesh *World::createAsset<Mesh>()
@@ -1500,6 +1550,13 @@ MeshCollider *World::getComponentById_impl<MeshCollider>(const PoolAllocator<Mes
     return getById_impl<MeshCollider>(mIdState.mMeshColliderIdToGlobalIndex, allocator, componentId);
 }
 
+template <>
+Terrain *World::getComponentById_impl<Terrain>(const PoolAllocator<Terrain> *allocator,
+                                                         const Guid &componentId) const
+{
+    return getById_impl<Terrain>(mIdState.mTerrainIdToGlobalIndex, allocator, componentId);
+}
+
 template <> Mesh *World::getAssetById_impl<Mesh>(const PoolAllocator<Mesh> *allocator, const Guid &assetId) const
 {
     return getById_impl<Mesh>(mIdState.mMeshIdToGlobalIndex, allocator, assetId);
@@ -1594,6 +1651,13 @@ FreeLookCameraSystem *World::getSystemById_impl<FreeLookCameraSystem>(
     return getById_impl<FreeLookCameraSystem>(mIdState.mFreeLookCameraSystemIdToGlobalIndex, allocator, assetId);
 }
 
+template <>
+TerrainSystem *World::getSystemById_impl<TerrainSystem>(
+    const PoolAllocator<TerrainSystem> *allocator, const Guid &assetId) const
+{
+    return getById_impl<TerrainSystem>(mIdState.mTerrainSystemIdToGlobalIndex, allocator, assetId);
+}
+
 template <> void World::addIdToGlobalIndexMap_impl<Scene>(const Guid &id, int index, int type)
 {
     mIdState.mSceneIdToGlobalIndex[id] = index;
@@ -1681,6 +1745,13 @@ template <> void World::addIdToGlobalIndexMap_impl<CapsuleCollider>(const Guid &
 template <> void World::addIdToGlobalIndexMap_impl<MeshCollider>(const Guid &id, int index, int type)
 {
     mIdState.mMeshColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<Terrain>(const Guid &id, int index, int type)
+{
+    mIdState.mTerrainIdToGlobalIndex[id] = index;
     mIdState.mIdToGlobalIndex[id] = index;
     mIdState.mIdToType[id] = type;
 }
@@ -1786,6 +1857,13 @@ template <> void World::addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid &id, 
 template <> void World::addIdToGlobalIndexMap_impl<FreeLookCameraSystem>(const Guid &id, int index, int type)
 {
     mIdState.mFreeLookCameraSystemIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void World::addIdToGlobalIndexMap_impl<TerrainSystem>(const Guid &id, int index, int type)
+{
+    mIdState.mTerrainSystemIdToGlobalIndex[id] = index;
     mIdState.mIdToGlobalIndex[id] = index;
     mIdState.mIdToType[id] = type;
 }

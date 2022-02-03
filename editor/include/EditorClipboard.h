@@ -38,8 +38,8 @@ class Clipboard
         PhysicsEngine::Transform* mSceneViewTempTransform;
 
         PhysicsEngine::World mWorld;
-        //PhysicsEngine::EditorCameraSystem* mEditorCameraSystem;
         PhysicsEngine::FreeLookCameraSystem* mCameraSystem;
+        PhysicsEngine::TerrainSystem* mTerrainSystem;
         PhysicsEngine::RenderSystem* mRenderSystem;
         PhysicsEngine::GizmoSystem* mGizmoSystem;
         PhysicsEngine::CleanUpSystem* mCleanUpSystem;

@@ -1194,6 +1194,83 @@ void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
     glDeleteTextures(1, &(targets->mDepthTex));
 }
 
+
+
+
+
+
+
+
+
+
+
+void Graphics::createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                               const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
+                               unsigned int *vbo1, unsigned int *vbo2)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+    glGenBuffers(1, vbo0);      // vertex vbo
+    glGenBuffers(1, vbo1);      // normals vbo
+    glGenBuffers(1, vbo2);      // texcoords vbo
+
+    glBindVertexArray(*vao);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
+    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+    glBindVertexArray(0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::destroyTerrainChunk(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2)
+{
+    glDeleteBuffers(1, vbo0);
+    glDeleteBuffers(1, vbo1);
+    glDeleteBuffers(1, vbo2);
+
+    glDeleteVertexArrays(1, vao);
+}
+
+void Graphics::updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                               unsigned int vbo0, unsigned int vbo1)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vbo0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo1);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), normals.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, 
                           unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo)
@@ -1606,68 +1683,57 @@ void Graphics::destroy(int program)
 void Graphics::setBool(int nameLocation, bool value)
 {
     glUniform1i(nameLocation, (int)value);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setInt(int nameLocation, int value)
 {
     glUniform1i(nameLocation, value);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setFloat(int nameLocation, float value)
 {
     glUniform1f(nameLocation, value);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setColor(int nameLocation, const Color &color)
 {
     glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.mR));
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setColor32(int nameLocation, const Color32& color)
 {
     glUniform4ui(nameLocation, static_cast<GLuint>(color.mR), 
         static_cast<GLuint>(color.mG), static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA));
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setVec2(int nameLocation, const glm::vec2 &vec)
 {
     glUniform2fv(nameLocation, 1, &vec[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setVec3(int nameLocation, const glm::vec3 &vec)
 {
     glUniform3fv(nameLocation, 1, &vec[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setVec4(int nameLocation, const glm::vec4 &vec)
 {
     glUniform4fv(nameLocation, 1, &vec[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setMat2(int nameLocation, const glm::mat2 &mat)
 {
     glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setMat3(int nameLocation, const glm::mat3 &mat)
 {
     glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setMat4(int nameLocation, const glm::mat4 &mat)
 {
     glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 void Graphics::setTexture2D(int nameLocation, int texUnit, int tex)
@@ -1676,14 +1742,12 @@ void Graphics::setTexture2D(int nameLocation, int texUnit, int tex)
 
     glActiveTexture(GL_TEXTURE0 + texUnit);
     glBindTexture(GL_TEXTURE_2D, tex);
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
 bool Graphics::getBool(int nameLocation, int program)
 {
     int value = 0;
     glGetUniformiv(program, nameLocation, &value);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return (bool)value;
 }
@@ -1692,7 +1756,6 @@ int Graphics::getInt(int nameLocation, int program)
 {
     int value = 0;
     glGetUniformiv(program, nameLocation, &value);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1701,7 +1764,6 @@ float Graphics::getFloat(int nameLocation, int program)
 {
     float value = 0.0f;
     glGetUniformfv(program, nameLocation, &value);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1710,7 +1772,6 @@ Color Graphics::getColor(int nameLocation, int program)
 {
     Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
     glGetnUniformfv(program, nameLocation, sizeof(Color), &color.mR);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return color;
 }
@@ -1729,8 +1790,6 @@ Color32 Graphics::getColor32(int nameLocation, int program)
     color.mG = static_cast<unsigned char>(c[1]);
     color.mB = static_cast<unsigned char>(c[2]);
     color.mA = static_cast<unsigned char>(c[3]);
-    
-    Graphics::checkError(__LINE__, __FILE__);
 
     return color;
 }
@@ -1739,7 +1798,6 @@ glm::vec2 Graphics::getVec2(int nameLocation, int program)
 {
     glm::vec2 value = glm::vec2(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::vec2), &value[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1748,7 +1806,6 @@ glm::vec3 Graphics::getVec3(int nameLocation, int program)
 {
     glm::vec3 value = glm::vec3(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::vec3), &value[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1757,7 +1814,6 @@ glm::vec4 Graphics::getVec4(int nameLocation, int program)
 {
     glm::vec4 value = glm::vec4(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::vec4), &value[0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1766,7 +1822,6 @@ glm::mat2 Graphics::getMat2(int nameLocation, int program)
 {
     glm::mat2 value = glm::mat2(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::mat2), &value[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1775,7 +1830,6 @@ glm::mat3 Graphics::getMat3(int nameLocation, int program)
 {
     glm::mat3 value = glm::mat3(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::mat3), &value[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1784,7 +1838,6 @@ glm::mat4 Graphics::getMat4(int nameLocation, int program)
 {
     glm::mat4 value = glm::mat4(0.0f);
     glGetnUniformfv(program, nameLocation, sizeof(glm::mat4), &value[0][0]);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return value;
 }
@@ -1794,7 +1847,6 @@ int Graphics::getTexture2D(int nameLocation, int texUnit, int program)
     int tex = -1;
     glActiveTexture(GL_TEXTURE0 + texUnit);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex);
-    Graphics::checkError(__LINE__, __FILE__);
 
     return tex;
 }
@@ -1814,12 +1866,12 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, int sha
             if (uniforms[i].mCachedHandle != -1)
             {
                 Graphics::setTexture2D(location, textureUnit, uniforms[i].mCachedHandle);
-                Graphics::checkError(__LINE__, __FILE__);
+                //Graphics::checkError(__LINE__, __FILE__);
             }
             else
             {
                 Graphics::setTexture2D(location, textureUnit, 0);
-                Graphics::checkError(__LINE__, __FILE__);
+                //Graphics::checkError(__LINE__, __FILE__);
             }
 
             textureUnit++;
@@ -1827,27 +1879,27 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, int sha
         else if (uniforms[i].mType == ShaderUniformType::Int)
         {
             Graphics::setInt(location, *reinterpret_cast<const int *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Float)
         {
             Graphics::setFloat(location, *reinterpret_cast<const float *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
             Graphics::setVec2(location, *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
             Graphics::setVec3(location, *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
             Graphics::setVec4(location, *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
-            Graphics::checkError(__LINE__, __FILE__);
+            //Graphics::checkError(__LINE__, __FILE__);
         }
     }
 

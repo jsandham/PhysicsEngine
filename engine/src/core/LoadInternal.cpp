@@ -97,6 +97,14 @@ Component *PhysicsEngine::getInternalComponent(const WorldAllocators &allocators
             return allocators.mCapsuleColliderAllocator.get(it->second);
         }
     }
+    else if (type == ComponentType<Terrain>::type)
+    {
+        std::unordered_map<Guid, int>::const_iterator it = state.mTerrainIdToGlobalIndex.find(id);
+        if (it != state.mTerrainIdToGlobalIndex.end())
+        {
+            return allocators.mTerrainAllocator.get(it->second);
+        }
+    }
 
     return nullptr;
 }
@@ -505,6 +513,21 @@ Component *loadInternalComponent_Impl(World &world, WorldAllocators &allocators,
             }
         }
     }
+    else if (type == ComponentType<Terrain>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mTerrainIdToGlobalIndex.find(id);
+        if (it != state.mTerrainIdToGlobalIndex.end())
+        {
+            Component *component = allocators.mTerrainAllocator.get(it->second);
+
+            if (component != nullptr)
+            {
+                component->deserialize(in);
+
+                return component;
+            }
+        }
+    }
 
     int index = -1;
     Component *component = nullptr;
@@ -647,6 +670,19 @@ Component *loadInternalComponent_Impl(World &world, WorldAllocators &allocators,
         if (component != nullptr)
         {
             state.mCapsuleColliderIdToGlobalIndex[component->getId()] = index;
+            state.mIdToGlobalIndex[component->getId()] = index;
+            state.mIdToType[component->getId()] = type;
+            state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
+        }
+    }
+    else if (type == ComponentType<Terrain>::type)
+    {
+        index = (int)allocators.mTerrainAllocator.getCount();
+        component = allocators.mTerrainAllocator.construct(&world, in);
+
+        if (component != nullptr)
+        {
+            state.mTerrainIdToGlobalIndex[component->getId()] = index;
             state.mIdToGlobalIndex[component->getId()] = index;
             state.mIdToType[component->getId()] = type;
             state.mEntityIdToComponentIds[component->getEntityId()].push_back(std::make_pair(component->getId(), type));
@@ -1309,6 +1345,21 @@ Component *PhysicsEngine::destroyInternalComponent(WorldAllocators &allocators, 
         if (swap != nullptr)
         {
             state.mCapsuleColliderIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToGlobalIndex[swap->getId()] = index;
+            state.mIdToType[swap->getId()] = type;
+        }
+    }
+    else if (type == ComponentType<Terrain>::type)
+    {
+        swap = allocators.mTerrainAllocator.destruct(index);
+
+        state.mTerrainIdToGlobalIndex.erase(componentId);
+        state.mIdToGlobalIndex.erase(componentId);
+        state.mIdToType.erase(componentId);
+
+        if (swap != nullptr)
+        {
+            state.mTerrainIdToGlobalIndex[swap->getId()] = index;
             state.mIdToGlobalIndex[swap->getId()] = index;
             state.mIdToType[swap->getId()] = type;
         }

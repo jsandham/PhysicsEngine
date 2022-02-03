@@ -29,6 +29,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mBoxColliderIdToGlobalIndex;
     std::unordered_map<Guid, int> mCapsuleColliderIdToGlobalIndex;
     std::unordered_map<Guid, int> mMeshColliderIdToGlobalIndex;
+    std::unordered_map<Guid, int> mTerrainIdToGlobalIndex;
 
     // internal world asset id state
     std::unordered_map<Guid, int> mMeshIdToGlobalIndex;
@@ -48,6 +49,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mDebugSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mGizmoSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mFreeLookCameraSystemIdToGlobalIndex;
+    std::unordered_map<Guid, int> mTerrainSystemIdToGlobalIndex;
 
     // world id state for all entity, components, systems, and assets
     std::unordered_map<Guid, int> mIdToGlobalIndex;

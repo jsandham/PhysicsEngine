@@ -5,80 +5,85 @@
 #include <vector>
 
 #include "Component.h"
-
-#include <GL/glew.h>
-#include <gl/gl.h>
+#include "../core/Rect.h"
 
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
 
+#include <vector>
+
 namespace PhysicsEngine
 {
-/*enum class TerrainMode
+struct TerrainChunk
 {
-    Triangular = 0,
-    Voxel = 1
-};
-
-enum class VoxelFace
-{
-    Left = 0,
-    Right = 1,
-    Near = 2,
-    Far = 3,
-    Top = 4,
-    Bottom = 5
-};
-
-struct Voxel
-{
-    char faces[6];
-
-};
-
-struct Chunk
-{
-    Voxel voxels[128*128*128];
-    glm::ivec2 position;
+    int mStart;
+    int mEnd;
+    Rect mRect;
+    bool mEnabled;
 };
 
 class Terrain : public Component
 {
     private:
-        TerrainMode mMode;
-        glm::ivec2 mSize;
-        std::vector<float> mHeightMap;
+        glm::ivec2 mChunkSize;
+        TerrainChunk mTerrainChunks[9];
+        Guid mMaterialId;
 
-        std::vector<glm::vec3> mVertices;
-        std::vector<glm::vec3> mNormals;
+        std::vector<float> mVertices;
+        std::vector<float> mNormals;
+        std::vector<float> mTexCoords;
 
-        GLuint mVao;
-        GLuint mVbo[3];
+        unsigned int mVao;
+        unsigned int mVbo[3];
+
         bool mCreated;
         bool mChanged;
+        bool mMaterialChanged;
 
     public:
-        Terrain();
+        float mScale;
+        float mAmplitude;
+        float mOffsetX;
+        float mOffsetZ;
+        //int mOctaves;
+        //float mLacunarity;
+        //float mGain;
+        //float mOffset;
+        Guid mCameraTransformId;
+
+    public:
+        Terrain(World *world);
+        Terrain(World *world, const Guid &id);
         ~Terrain();
 
-        virtual void serialize(std::ostream& out) const override;
-        virtual void deserialize(std::istream& in) override;
         virtual void serialize(YAML::Node& out) const override;
         virtual void deserialize(const YAML::Node& in) override;
 
         virtual int getType() const override;
         virtual std::string getObjectName() const override;
 
+        void generateTerrain();
         void regenerateTerrain();
         void refine(int level);
 
-        GLuint getNativeGraphicsVAO() const;
+        std::vector<float> getVertices() const;
+        std::vector<float> getNormals() const;
+        std::vector<float> getTexCoords() const;
 
-        void create();
-        void destroy();
+        unsigned int getNativeGraphicsVAO() const;
+
+        void setMaterial(Guid materialId);
+        Guid getMaterial() const;
+
+        bool isCreated() const;
+        bool isChunkEnabled(int chunk) const;
+        void enableChunk(int chunk);
+        void disableChunk(int chunk);
+
+        size_t getChunkStart(int chunk) const;
+        size_t getChunkSize(int chunk) const;
 };
-
 
 template <> struct ComponentType<Terrain>
 {
@@ -88,7 +93,7 @@ template <> struct ComponentType<Terrain>
 template <> struct IsComponentInternal<Terrain>
 {
     static constexpr bool value = true;
-};*/
+};
 }
 
 #endif

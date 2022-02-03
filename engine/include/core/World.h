@@ -514,6 +514,7 @@ template <> size_t World::getNumberOfSystems<CleanUpSystem>() const;
 template <> size_t World::getNumberOfSystems<DebugSystem>() const;
 template <> size_t World::getNumberOfSystems<GizmoSystem>() const;
 template <> size_t World::getNumberOfSystems<FreeLookCameraSystem>() const;
+template <> size_t World::getNumberOfSystems<TerrainSystem>() const;
 template <> size_t World::getNumberOfComponents<Transform>() const;
 template <> size_t World::getNumberOfComponents<MeshRenderer>() const;
 template <> size_t World::getNumberOfComponents<SpriteRenderer>() const;
@@ -525,6 +526,7 @@ template <> size_t World::getNumberOfComponents<SphereCollider>() const;
 template <> size_t World::getNumberOfComponents<BoxCollider>() const;
 template <> size_t World::getNumberOfComponents<CapsuleCollider>() const;
 template <> size_t World::getNumberOfComponents<MeshCollider>() const;
+template <> size_t World::getNumberOfComponents<Terrain>() const;
 template <> size_t World::getNumberOfAssets<Mesh>() const;
 template <> size_t World::getNumberOfAssets<Material>() const;
 template <> size_t World::getNumberOfAssets<Shader>() const;
@@ -540,6 +542,7 @@ template <> CleanUpSystem *World::getSystem<CleanUpSystem>() const;
 template <> DebugSystem *World::getSystem<DebugSystem>() const;
 template <> GizmoSystem *World::getSystem<GizmoSystem>() const;
 template <> FreeLookCameraSystem *World::getSystem<FreeLookCameraSystem>() const;
+template <> TerrainSystem *World::getSystem<TerrainSystem>() const;
 template <> Transform *World::getComponent<Transform>(const Guid &entityId) const;
 template <> MeshRenderer *World::getComponent<MeshRenderer>(const Guid &entityId) const;
 template <> SpriteRenderer *World::getComponent<SpriteRenderer>(const Guid &entityId) const;
@@ -551,6 +554,7 @@ template <> SphereCollider *World::getComponent<SphereCollider>(const Guid &enti
 template <> BoxCollider *World::getComponent<BoxCollider>(const Guid &entityId) const;
 template <> CapsuleCollider *World::getComponent<CapsuleCollider>(const Guid &entityId) const;
 template <> MeshCollider *World::getComponent<MeshCollider>(const Guid &entityId) const;
+template <> Terrain *World::getComponent<Terrain>(const Guid &entityId) const;
 template <> Transform *World::addComponent<Transform>(const Guid &entityId);
 template <> MeshRenderer *World::addComponent<MeshRenderer>(const Guid &entityId);
 template <> SpriteRenderer *World::addComponent<SpriteRenderer>(const Guid &entityId);
@@ -562,24 +566,28 @@ template <> SphereCollider *World::addComponent<SphereCollider>(const Guid &enti
 template <> BoxCollider *World::addComponent<BoxCollider>(const Guid &entityId);
 template <> CapsuleCollider *World::addComponent<CapsuleCollider>(const Guid &entityId);
 template <> MeshCollider *World::addComponent<MeshCollider>(const Guid &entityId);
+template <> Terrain *World::addComponent<Terrain>(const Guid &entityId);
 template <> RenderSystem *World::addSystem<RenderSystem>(size_t order);
 template <> PhysicsSystem *World::addSystem<PhysicsSystem>(size_t order);
 template <> CleanUpSystem *World::addSystem<CleanUpSystem>(size_t order);
 template <> DebugSystem *World::addSystem<DebugSystem>(size_t order);
 template <> GizmoSystem *World::addSystem<GizmoSystem>(size_t order);
 template <> FreeLookCameraSystem *World::addSystem<FreeLookCameraSystem>(size_t order);
+template <> TerrainSystem *World::addSystem<TerrainSystem>(size_t order);
 template <> RenderSystem *World::getSystemByIndex<RenderSystem>(size_t index) const;
 template <> PhysicsSystem *World::getSystemByIndex<PhysicsSystem>(size_t index) const;
 template <> CleanUpSystem *World::getSystemByIndex<CleanUpSystem>(size_t index) const;
 template <> DebugSystem *World::getSystemByIndex<DebugSystem>(size_t index) const;
 template <> GizmoSystem *World::getSystemByIndex<GizmoSystem>(size_t index) const;
 template <> FreeLookCameraSystem *World::getSystemByIndex<FreeLookCameraSystem>(size_t index) const;
+template <> TerrainSystem *World::getSystemByIndex<TerrainSystem>(size_t index) const;
 template <> RenderSystem *World::getSystemById<RenderSystem>(const Guid &systemId) const;
 template <> PhysicsSystem *World::getSystemById<PhysicsSystem>(const Guid &systemId) const;
 template <> CleanUpSystem *World::getSystemById<CleanUpSystem>(const Guid &systemId) const;
 template <> DebugSystem *World::getSystemById<DebugSystem>(const Guid &systemId) const;
 template <> GizmoSystem *World::getSystemById<GizmoSystem>(const Guid &systemId) const;
 template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(const Guid &systemId) const;
+template <> TerrainSystem *World::getSystemById<TerrainSystem>(const Guid &systemId) const;
 template <> Mesh *World::getAssetByIndex<Mesh>(size_t index) const;
 template <> Material *World::getAssetByIndex<Material>(size_t index) const;
 template <> Shader *World::getAssetByIndex<Shader>(size_t index) const;
@@ -609,6 +617,7 @@ template <> SphereCollider *World::getComponentByIndex<SphereCollider>(size_t in
 template <> BoxCollider *World::getComponentByIndex<BoxCollider>(size_t index) const;
 template <> CapsuleCollider *World::getComponentByIndex<CapsuleCollider>(size_t index) const;
 template <> MeshCollider *World::getComponentByIndex<MeshCollider>(size_t index) const;
+template <> Terrain *World::getComponentByIndex<Terrain>(size_t index) const;
 template <> Transform *World::getComponentById<Transform>(const Guid &componentId) const;
 template <> MeshRenderer *World::getComponentById<MeshRenderer>(const Guid &componentId) const;
 template <> SpriteRenderer *World::getComponentById<SpriteRenderer>(const Guid &componentId) const;
@@ -620,6 +629,7 @@ template <> SphereCollider *World::getComponentById<SphereCollider>(const Guid &
 template <> BoxCollider *World::getComponentById<BoxCollider>(const Guid &componentId) const;
 template <> CapsuleCollider *World::getComponentById<CapsuleCollider>(const Guid &componentId) const;
 template <> MeshCollider *World::getComponentById<MeshCollider>(const Guid &componentId) const;
+template <> Terrain *World::getComponentById<Terrain>(const Guid &componentId) const;
 template <> Mesh *World::createAsset<Mesh>();
 template <> Mesh *World::createAsset<Mesh>(const Guid &id);
 template <> Material *World::createAsset<Material>();
@@ -669,6 +679,9 @@ CapsuleCollider *World::getComponentById_impl<CapsuleCollider>(const PoolAllocat
 template <>
 MeshCollider *World::getComponentById_impl<MeshCollider>(const PoolAllocator<MeshCollider> *allocator,
                                                          const Guid &componentId) const;
+template <>
+Terrain *World::getComponentById_impl<Terrain>(const PoolAllocator<Terrain> *allocator,
+                                                         const Guid &componentId) const;
 template <> Mesh *World::getAssetById_impl<Mesh>(const PoolAllocator<Mesh> *allocator, const Guid &assetId) const;
 template <>
 Material *World::getAssetById_impl<Material>(const PoolAllocator<Material> *allocator, const Guid &assetId) const;
@@ -702,6 +715,9 @@ GizmoSystem *World::getSystemById_impl<GizmoSystem>(const PoolAllocator<GizmoSys
 template <>
 FreeLookCameraSystem *World::getSystemById_impl<FreeLookCameraSystem>(
     const PoolAllocator<FreeLookCameraSystem> *allocator, const Guid &assetId) const;
+template <>
+TerrainSystem *World::getSystemById_impl<TerrainSystem>(
+    const PoolAllocator<TerrainSystem> *allocator, const Guid &assetId) const;
 template <> void World::addIdToGlobalIndexMap_impl<Scene>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<Entity>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<Transform>(const Guid &id, int index, int type);
@@ -715,6 +731,7 @@ template <> void World::addIdToGlobalIndexMap_impl<SphereCollider>(const Guid &i
 template <> void World::addIdToGlobalIndexMap_impl<BoxCollider>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<CapsuleCollider>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<MeshCollider>(const Guid &id, int index, int type);
+template <> void World::addIdToGlobalIndexMap_impl<Terrain>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<Mesh>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<Material>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<Shader>(const Guid &id, int index, int type);
@@ -730,6 +747,7 @@ template <> void World::addIdToGlobalIndexMap_impl<CleanUpSystem>(const Guid &id
 template <> void World::addIdToGlobalIndexMap_impl<DebugSystem>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid &id, int index, int type);
 template <> void World::addIdToGlobalIndexMap_impl<FreeLookCameraSystem>(const Guid &id, int index, int type);
+template <> void World::addIdToGlobalIndexMap_impl<TerrainSystem>(const Guid &id, int index, int type);
 
 } // namespace PhysicsEngine
 

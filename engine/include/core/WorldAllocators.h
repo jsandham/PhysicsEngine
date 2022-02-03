@@ -17,6 +17,7 @@
 #include "../components/SphereCollider.h"
 #include "../components/SpriteRenderer.h"
 #include "../components/Transform.h"
+#include "../components/Terrain.h"
 
 #include "../core/Entity.h"
 #include "../core/Scene.h"
@@ -35,6 +36,7 @@
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
 #include "../systems/FreeLookCameraSystem.h"
+#include "../systems/TerrainSystem.h"
 
 namespace PhysicsEngine
 {
@@ -59,6 +61,7 @@ struct WorldAllocators
     PoolAllocator<BoxCollider> mBoxColliderAllocator;
     PoolAllocator<CapsuleCollider> mCapsuleColliderAllocator;
     PoolAllocator<MeshCollider> mMeshColliderAllocator;
+    PoolAllocator<Terrain> mTerrainAllocator;
 
     // internal asset allocators
     PoolAllocator<Mesh> mMeshAllocator;
@@ -78,6 +81,7 @@ struct WorldAllocators
     PoolAllocator<DebugSystem> mDebugSystemAllocator;
     PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
     PoolAllocator<FreeLookCameraSystem> mFreeLookCameraSystemAllocator;
+    PoolAllocator<TerrainSystem> mTerrainSystemAllocator;
 
     // non-internal allocators for user defined components, systems and assets
     std::unordered_map<int, Allocator *> mComponentAllocatorMap;

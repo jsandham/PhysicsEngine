@@ -379,6 +379,59 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
     assert(mModels.size() == mTransformIds.size());
     assert(mModels.size() == mBoundingSpheres.size());
+
+    for (size_t i = 0; i < world->getNumberOfComponents<Terrain>(); i++)
+    {
+        Terrain *terrain = world->getComponentByIndex<Terrain>(i);
+
+        if (terrain != nullptr)
+        {
+            Transform *transform = terrain->getComponent<Transform>();
+
+            if (transform == nullptr)
+            {
+                continue;
+            }
+
+            glm::mat4 model = transform->getModelMatrix();
+
+            int materialIndex = world->getIndexOf(terrain->getMaterial());
+            Material *material = world->getAssetByIndex<Material>(materialIndex);
+
+            // could be nullptr if for example we are adding a material to the renderer in the editor
+            // but we have not yet actually set the material
+            if (material == nullptr)
+            {
+                break;
+            }
+
+            int shaderIndex = world->getIndexOf(material->getShaderId());
+ 
+            for (int j = 0; j < 9; j++)
+            {
+                if (terrain->isChunkEnabled(j))
+                {
+                    RenderObject object;
+                    object.instanceStart = 0;
+                    object.instanceCount = 0;
+                    object.materialIndex = materialIndex;
+                    object.shaderIndex = shaderIndex;
+                    object.start = terrain->getChunkStart(j);
+                    object.size = terrain->getChunkSize(j);
+                    object.vao = terrain->getNativeGraphicsVAO();
+                    object.vbo = -1;
+                    object.vbo2 = -1;
+                    object.culled = false;
+                    object.instanced = false;
+
+                    mRenderObjects.push_back(object);
+                    mModels.push_back(model);
+                    mTransformIds.push_back(transform->getId());
+                    mBoundingSpheres.push_back(Sphere());
+                }
+            }
+        }
+    }
 }
 
 void RenderSystem::buildSpriteObjectsList(World* world)

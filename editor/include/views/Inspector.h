@@ -24,6 +24,7 @@
 #include "../../include/drawers/RigidbodyDrawer.h"
 #include "../../include/drawers/SphereColliderDrawer.h"
 #include "../../include/drawers/TransformDrawer.h"
+#include "../../include/drawers/TerrainDrawer.h"
 
 namespace PhysicsEditor
 {
@@ -48,6 +49,7 @@ class Inspector : public Window
     SphereColliderDrawer mSphereColliderDrawer;
     CapsuleColliderDrawer mCapsuleColliderDrawer;
     MeshColliderDrawer mMeshColliderDrawer;
+    TerrainDrawer mTerrainDrawer;
 
   public:
     Inspector();

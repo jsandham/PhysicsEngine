@@ -276,6 +276,20 @@ class Graphics
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, unsigned int tex);
     static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
     static void destroyRenderTextureTargets(RenderTextureTargets* targets);
+
+
+
+    static void createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                           const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
+                           unsigned int *vbo1, unsigned int *vbo2);
+    static void destroyTerrainChunk(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2);
+    static void updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                                   unsigned int vbo0, unsigned int vbo1);
+
+
+
+
+
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                            const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);
     static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);

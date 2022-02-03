@@ -16,7 +16,7 @@ namespace PhysicsEngine
 {
 class World;
 
-template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocator
+template <class T, size_t T_per_page = 512> class PoolAllocator : public Allocator
 {
   private:
     const size_t pool_size = T_per_page * sizeof(T);
@@ -66,12 +66,7 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         return *this;
     }
 
-    // T *construct()
-    //{
-    //    return new (allocate()) T();
-    //}
-
-    T *construct(World *world, Guid id)
+    T *construct(World *world, const Guid& id)
     {
         return new (allocate()) T(world, id);
     }
@@ -82,18 +77,6 @@ template <class T, size_t T_per_page = 256> class PoolAllocator : public Allocat
         t->deserialize(in);
         return t;
     }
-
-    // T *construct(Guid id)
-    //{
-    //    return new (allocate()) T(id);
-    //}
-
-    // T *construct(const YAML::Node &in)
-    //{
-    //    T *t = new (allocate()) T();
-    //    t->deserialize(in);
-    //    return t;
-    //}
 
     size_t getCount() const override
     {

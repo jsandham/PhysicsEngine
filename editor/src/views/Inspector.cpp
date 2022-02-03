@@ -143,6 +143,10 @@ void Inspector::drawEntity(Clipboard &clipboard)
             {
                 drawer = &mMeshColliderDrawer;
             }
+            else if (componentType == ComponentType<Terrain>::type)
+            {
+                drawer = &mTerrainDrawer;
+            }
         }
 
         if (drawer != nullptr) {
@@ -166,9 +170,9 @@ void Inspector::drawEntity(Clipboard &clipboard)
     }
 
     std::string componentToAdd = "";
-    std::vector<std::string> components = {"Transform",    "Camera",       "Light",       "Rigidbody",
-                                           "MeshRenderer", "SpriteRenderer", "LineRenderer", "BoxCollider", 
-                                           "SphereCollider"};
+    std::vector<std::string> components = {"Transform",      "Rigidbody",    "Camera",
+                                           "MeshRenderer",   "LineRenderer", "SpriteRenderer", "Light",
+                                           "SphereCollider", "BoxCollider",  "Terrain"};
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
@@ -208,6 +212,10 @@ void Inspector::drawEntity(Clipboard &clipboard)
         else if (componentToAdd == "BoxCollider")
         {
             component = entity->addComponent<BoxCollider>();
+        }
+        else if (componentToAdd == "Terrain")
+        {
+            component = entity->addComponent<Terrain>();
         }
 
         if (component != nullptr) {
