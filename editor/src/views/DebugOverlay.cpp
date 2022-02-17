@@ -111,6 +111,11 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("Active scene path: %s\n", clipboard.getScenePath().c_str());
     ImGui::Text("Active scene id: %s\n", clipboard.getSceneId().toString().c_str());
 
+    ImGui::Text("Selected id: %s\n", clipboard.getSelectedId().toString().c_str());
+    ImGui::Text("Selected type: %s\n", std::to_string((int)clipboard.getSelectedType()).c_str());
+    ImGui::Text("Dragged id: %s\n", clipboard.getDraggedId().toString().c_str());
+    ImGui::Text("Dragged type: %s\n", std::to_string((int)clipboard.getDraggedType()).c_str());
+
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());

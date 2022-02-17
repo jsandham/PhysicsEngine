@@ -58,7 +58,7 @@ void Material::deserialize(const YAML::Node &in)
     {
         index++;
 
-        if (index <= 6)
+        if (index <= 7)
         {
             continue;
         }
@@ -68,6 +68,8 @@ void Material::deserialize(const YAML::Node &in)
 
         mUniforms.push_back(uniform);
     }
+
+    std::string test = mShaderId.toString();
 
     mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
 

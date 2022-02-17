@@ -6,7 +6,7 @@ using namespace PhysicsEngine;
 
 const float FreeLookCameraSystem::YAW_PAN_SENSITIVITY = 0.0025f;
 const float FreeLookCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
-const float FreeLookCameraSystem::ZOOM_SENSITIVITY = 1.0f;      // 125.0f;
+const float FreeLookCameraSystem::ZOOM_SENSITIVITY = 0.2f;      // 125.0f;
 const float FreeLookCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
 FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)

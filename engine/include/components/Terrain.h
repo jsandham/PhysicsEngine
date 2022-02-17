@@ -6,6 +6,7 @@
 
 #include "Component.h"
 #include "../core/Rect.h"
+#include "../core/Sphere.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -17,39 +18,59 @@ namespace PhysicsEngine
 {
 struct TerrainChunk
 {
+    Rect mRect;
     int mStart;
     int mEnd;
-    Rect mRect;
     bool mEnabled;
+};
+
+struct TerrainCoverMesh
+{
+    Guid mMeshId;
+    Guid mMaterialIds[8];
+
+    int mMaterialCount;
 };
 
 class Terrain : public Component
 {
     private:
-        glm::ivec2 mChunkSize;
-        TerrainChunk mTerrainChunks[9];
+        TerrainChunk mTerrainChunks[81];
+        TerrainCoverMesh mGrassMeshes[8];
+        TerrainCoverMesh mTreeMeshes[8];
         Guid mMaterialId;
+
+        glm::vec2 mChunkSize;
+        glm::ivec2 mChunkResolution;
 
         std::vector<float> mVertices;
         std::vector<float> mNormals;
         std::vector<float> mTexCoords;
 
+        std::vector<float> mPlaneVertices;
+        std::vector<float> mPlaneTexCoords;
+
         unsigned int mVao;
         unsigned int mVbo[3];
+
+        int mTotalChunkCount;
 
         bool mCreated;
         bool mChanged;
         bool mMaterialChanged;
+        bool mGrassMeshChanged;
+        bool mTreeMeshChanged;
 
     public:
+        float mMaxViewDistance;
+
         float mScale;
         float mAmplitude;
         float mOffsetX;
         float mOffsetZ;
-        //int mOctaves;
-        //float mLacunarity;
-        //float mGain;
-        //float mOffset;
+
+        int mGrassMeshCount;
+        int mTreeMeshCount;
         Guid mCameraTransformId;
 
     public:
@@ -65,7 +86,7 @@ class Terrain : public Component
 
         void generateTerrain();
         void regenerateTerrain();
-        void refine(int level);
+        void updateTerrainHeight(float dx = 0.0f, float dz = 0.0f);
 
         std::vector<float> getVertices() const;
         std::vector<float> getNormals() const;
@@ -74,7 +95,15 @@ class Terrain : public Component
         unsigned int getNativeGraphicsVAO() const;
 
         void setMaterial(Guid materialId);
+        void setGrassMesh(Guid meshId, int index);
+        void setTreeMesh(Guid meshId, int index);
+        void setGrassMaterial(Guid materialId, int meshIndex, int materialIndex);
+        void setTreeMaterial(Guid materialId, int meshIndex, int materialIndex);
         Guid getMaterial() const;
+        Guid getGrassMesh(int index) const;
+        Guid getTreeMesh(int index) const;
+        Guid getGrassMesh(int meshIndex, int materialIndex) const;
+        Guid getTreeMesh(int meshIndex, int materialIndex) const;
 
         bool isCreated() const;
         bool isChunkEnabled(int chunk) const;
@@ -83,6 +112,11 @@ class Terrain : public Component
 
         size_t getChunkStart(int chunk) const;
         size_t getChunkSize(int chunk) const;
+        Sphere getChunkBounds(int chunk) const;
+        Rect getChunkRect(int chunk) const;
+        Rect getCentreChunkRect() const;
+
+        int getTotalChunkCount() const;
 };
 
 template <> struct ComponentType<Terrain>

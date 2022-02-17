@@ -315,6 +315,67 @@ bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool* 
     return isClicked;
 }
 
+
+
+
+bool ImGui::Slot2(const std::string slotLabel, const std::string slotText, SlotData* data)
+{
+    ImVec2 windowSize = ImGui::GetWindowSize();
+    windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+
+    ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
+    ImVec2 size = ImGui::GetItemRectSize();
+    ImVec2 position = ImGui::GetItemRectMin();
+
+    ImVec2 topLeft = position;
+    ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+    ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+    ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+    ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+    ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+    ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+    ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+    size.x += position.x;
+    size.y += position.y;
+
+    data->isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
+    data->isClicked = data->isHovered && ImGui::IsMouseClicked(0);
+
+    if (data->isClicked)
+    {
+        ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
+    }
+
+    if (data->isHovered)
+    {
+        ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+
+        if (ImGui::IsMouseReleased(0))
+        {
+            data->releaseTriggered = true;
+        }
+    }
+
+    ImGui::SameLine();
+    ImGui::Text(slotLabel.c_str());
+
+    if (data->isHovered)
+    {
+        // 'c' key pressed
+        if (ImGui::IsKeyPressed(67, false))
+        {
+            data->clearClicked = true;
+        }
+    }
+
+    return data->isHovered || data->isClicked || data->releaseTriggered || data->clearClicked;
+}
+
+
+
+
 bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool* releaseTriggered, bool* clearClicked)
 {
     ImGui::ImageButton((void*)(intptr_t)texture, ImVec2(80, 80), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(1, 1, 1, 1),
@@ -364,6 +425,95 @@ bool ImGui::ImageSlot(const std::string slotLabel, GLuint texture, bool* release
     }
 
     return isClicked;
+}
+
+
+bool ImGui::ImageSlot2(const std::string slotLabel, GLuint texture, SlotData* data)
+{
+    ImGui::ImageButton((void*)(intptr_t)texture, ImVec2(80, 80), ImVec2(1, 1), ImVec2(0, 0), 0, ImVec4(1, 1, 1, 1),
+        ImVec4(1, 1, 1, 0.5));
+
+    ImVec2 size = ImGui::GetItemRectSize();
+    ImVec2 position = ImGui::GetItemRectMin();
+
+    ImVec2 topLeft = position;
+    ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+    ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+    ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+    ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+    ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+    ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+    ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+    size.x += position.x;
+    size.y += position.y;
+
+    data->isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
+    data->isClicked = data->isHovered && ImGui::IsMouseClicked(0);
+
+    if (data->isClicked)
+    {
+        ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
+    }
+
+    if (data->isHovered)
+    {
+        ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+
+        if (ImGui::IsMouseReleased(0))
+        {
+            data->releaseTriggered = true;
+        }
+    }
+
+    ImGui::SameLine();
+    ImGui::Text(slotLabel.c_str());
+
+    if (data->isHovered)
+    {
+        // 'c' key pressed
+        if (ImGui::IsKeyPressed(67, false))
+        {
+            data->clearClicked = true;
+        }
+    }
+
+    return data->isHovered || data->isClicked || data->releaseTriggered || data->clearClicked;
+
+
+
+
+
+
+    /*bool isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
+    bool isClicked = isHovered && ImGui::IsMouseClicked(0);
+
+    if (isClicked)
+    {
+        ImGui::GetForegroundDrawList()->AddRect(position, size, 0xFFFF0000);
+    }
+
+    if (isHovered)
+    {
+        ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+
+        if (ImGui::IsMouseReleased(0))
+        {
+            *releaseTriggered = true;
+        }
+    }
+
+    ImGui::SameLine();
+    ImGui::Text(slotLabel.c_str());*/
+
+    /*SameLine(GetWindowWidth() - 60);
+    if (ImGui::Button(("clear##" + slotLabel).c_str()))
+    {
+        *clearClicked = true;
+    }
+
+    return isClicked;*/
 }
 
 bool ImGui::SelectableInput(const char *str_id, bool selected, bool *edited, ImGuiSelectableFlags flags, char *buf,

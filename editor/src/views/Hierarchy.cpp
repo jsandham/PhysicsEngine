@@ -77,6 +77,21 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 clipboard.mSceneDirty = true;
             }
+
+            if (ImGui::IsItemHovered())
+            {
+                if (ImGui::IsMouseClicked(0))
+                {
+                    clipboard.mDraggedType = InteractionType::Entity;
+                    clipboard.mDraggedPath = "";
+                    clipboard.mDraggedId = mEntries[i].entity->getId();
+                }
+
+                if (!ImGui::IsMouseDown(0))
+                {
+                    clipboard.clearDraggedItem();
+                }
+            }
         }
 
         // Right click popup menu

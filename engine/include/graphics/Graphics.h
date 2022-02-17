@@ -233,6 +233,7 @@ class Graphics
     static void setGlobalLightUniforms(const LightUniform &uniform);
     static void createScreenQuad(unsigned int* vao, unsigned int* vbo);
     static void renderScreenQuad(unsigned int vao);
+    static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color);
     static void createFramebuffer(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth);
     static void destroyFramebuffer(unsigned int* fbo, unsigned int* color, unsigned int* depth);
     static void bindFramebuffer(unsigned int fbo);
@@ -280,11 +281,14 @@ class Graphics
 
 
     static void createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
-                           const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                           unsigned int *vbo1, unsigned int *vbo2);
+                           const std::vector<float> &texCoords, int vertexCount, 
+                           unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2);
     static void destroyTerrainChunk(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2);
     static void updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                                    unsigned int vbo0, unsigned int vbo1);
+    static void updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                                   const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1, 
+                                   unsigned int vbo2);
 
 
 

@@ -32,29 +32,30 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
             // Mesh
-            Guid meshId = meshRenderer->getMesh();
-
-            std::string meshName = "None (Mesh)";
-            if (meshId.isValid())
             {
-                meshName = meshId.toString();
-            }
+                Guid meshId = meshRenderer->getMesh();
 
-            bool releaseTriggered = false;
-            bool clearClicked = false;
-            bool isClicked = ImGui::Slot("Mesh", meshName, &releaseTriggered, &clearClicked);
+                ImGui::SlotData data;
+                if (ImGui::Slot2("Mesh", meshId.isValid() ? meshId.toString() : "None (Mesh)", &data))
+                {
+                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
+                    {
+                        meshId = clipboard.getDraggedId();
+                        clipboard.clearDraggedItem();
 
-            if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-            {
-                meshId = clipboard.getDraggedId();
-                clipboard.clearDraggedItem();
+                        meshRenderer->setMesh(meshId);
+                    }
 
-                meshRenderer->setMesh(meshId);
-            }
+                    if (data.isClicked && meshId.isValid())
+                    {
+                        clipboard.setSelectedItem(InteractionType::Mesh, meshId);
+                    }
 
-            if (isClicked)
-            {
-                clipboard.setSelectedItem(InteractionType::Mesh, meshId);
+                    if (data.clearClicked)
+                    {
+                        meshRenderer->setMesh(Guid::INVALID);
+                    }
+                }
             }
 
             // Materials
@@ -74,27 +75,26 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
             {
                 materialIds[i] = meshRenderer->getMaterial(i);
 
-                std::string materialName = "None (Material)";
-                if (materialIds[i].isValid())
+                ImGui::SlotData data;
+                if (ImGui::Slot2("Material", materialIds[i].isValid() ? materialIds[i].toString() : "None (Material)", &data))
                 {
-                    materialName = materialIds[i].toString();
-                }
+                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
+                    {
+                        materialIds[i] = clipboard.getDraggedId();
+                        clipboard.clearDraggedItem();
 
-                bool releaseTriggered = false;
-                bool clearClicked = false;
-                bool isClicked = ImGui::Slot("Material", materialName, &releaseTriggered, &clearClicked);
+                        meshRenderer->setMaterial(materialIds[i], i);
+                    }
 
-                if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
-                {
-                    materialIds[i] = clipboard.getDraggedId();
-                    clipboard.clearDraggedItem();
+                    if (data.isClicked && materialIds[i].isValid())
+                    {
+                        clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
+                    }
 
-                    meshRenderer->setMaterial(materialIds[i], i);
-                }
-
-                if (isClicked && materialIds[i].isValid())
-                {
-                    clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
+                    if (data.clearClicked)
+                    {
+                        meshRenderer->setMaterial(Guid::INVALID, i);
+                    }
                 }
             }
 

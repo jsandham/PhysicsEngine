@@ -328,6 +328,29 @@ void Graphics::renderScreenQuad(unsigned int vao)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
+void Graphics::createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color)
+{
+    // generate fbo (color + depth)
+    glGenFramebuffers(1, fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+
+    glGenTextures(1, color);
+    glBindTexture(GL_TEXTURE_2D, *color);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0);
+    
+    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, mainAttachments);
+
+    Graphics::checkFrambufferError(__LINE__, __FILE__);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Graphics::createFramebuffer(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth)
 {
     // generate fbo (color + depth)
@@ -1194,19 +1217,9 @@ void Graphics::destroyRenderTextureTargets(RenderTextureTargets* targets)
     glDeleteTextures(1, &(targets->mDepthTex));
 }
 
-
-
-
-
-
-
-
-
-
-
 void Graphics::createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
-                               const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                               unsigned int *vbo1, unsigned int *vbo2)
+                                  const std::vector<float> &texCoords, int vertexCount,
+                                  unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
@@ -1216,17 +1229,20 @@ void Graphics::createTerrainChunk(const std::vector<float> &vertices, const std:
 
     glBindVertexArray(*vao);
     glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 81 * 3 * vertexCount * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 81 * 3 * vertexCount * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), normals.data());
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 81 * 2 * vertexCount * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, texCoords.size() * sizeof(float), texCoords.data());
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
 
@@ -1258,18 +1274,24 @@ void Graphics::updateTerrainChunk(const std::vector<float> &vertices, const std:
     Graphics::checkError(__LINE__, __FILE__);
 }
 
+void Graphics::updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
+                                  const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
+                                  unsigned int vbo2)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vbo0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo1);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), normals.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo2);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, texCoords.size() * sizeof(float), texCoords.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-
-
-
-
-
-
-
-
+    Graphics::checkError(__LINE__, __FILE__);
+}
 
 void Graphics::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                           const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, 

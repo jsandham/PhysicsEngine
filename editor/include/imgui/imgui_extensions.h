@@ -27,8 +27,27 @@ void EndDropdownWindow();
 
 bool Combo(const char *label, int *currIndex, std::vector<std::string> &values);
 
+struct SlotData
+{
+    bool isHovered;
+    bool isClicked;
+    bool releaseTriggered;
+    bool clearClicked;
+
+    SlotData()
+    {
+        isHovered = false;
+        isClicked = false;
+        releaseTriggered = false;
+        clearClicked = false;
+    }
+};
+
 bool Slot(const std::string slotLabel, const std::string slotText, bool* releaseTriggered, bool* clearClicked);
+bool Slot2(const std::string slotLabel, const std::string slotText, SlotData* data);
 bool ImageSlot(const std::string slotLabel, GLuint texture, bool* releaseTriggered, bool* clearClicked);
+bool ImageSlot2(const std::string slotLabel, GLuint texture, SlotData* data);
+
 
 bool SelectableInput(const char *str_id, bool selected, bool *edited, ImGuiSelectableFlags flags, char *buf,
                      size_t buf_size);

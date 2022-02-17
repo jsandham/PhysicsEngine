@@ -116,6 +116,9 @@ void EditorLayer::update(const PhysicsEngine::Time& time)
         ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.string().c_str());
     }
 
+    static bool test = true;
+    ImGui::ShowDemoWindow(&test);
+
     mClipboard.mTime = time;
 }
 

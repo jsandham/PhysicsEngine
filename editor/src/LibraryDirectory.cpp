@@ -101,7 +101,7 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         }
 
         // ensure each png file has a generated yaml texture file and if not then create one
-        if (extension == ".png")
+        if (extension == ".png" || extension == ".jpg")
         {
             std::string texturePath = mAddBuffer[i].string().substr(0, mAddBuffer[i].string().find_last_of(".")) + ".texture";
             if (!std::filesystem::exists(texturePath))

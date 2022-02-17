@@ -325,7 +325,8 @@ void RenderSystem::buildRenderObjectsList(World *world)
                        
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
-                        instanceMap[key].boundingSpheres.push_back(Sphere());
+                        //instanceMap[key].boundingSpheres.push_back(Sphere());
+                        mBoundingSpheres.push_back(mesh->getBounds());
                     }
                 }
                 else
@@ -346,7 +347,8 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     mRenderObjects.push_back(object);
                     mModels.push_back(model);
                     mTransformIds.push_back(transform->getId());
-                    mBoundingSpheres.push_back(Sphere());
+                    /*mBoundingSpheres.push_back(Sphere());*/
+                    mBoundingSpheres.push_back(mesh->getBounds());
                 }
             }
         }
@@ -407,7 +409,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
             int shaderIndex = world->getIndexOf(material->getShaderId());
  
-            for (int j = 0; j < 9; j++)
+            for (int j = 0; j < terrain->getTotalChunkCount(); j++)
             {
                 if (terrain->isChunkEnabled(j))
                 {
@@ -427,7 +429,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     mRenderObjects.push_back(object);
                     mModels.push_back(model);
                     mTransformIds.push_back(transform->getId());
-                    mBoundingSpheres.push_back(Sphere());
+                    mBoundingSpheres.push_back(terrain->getChunkBounds(j));
                 }
             }
         }
@@ -535,6 +537,9 @@ void RenderSystem::cullRenderObjects(Camera *camera)
             index++;
         }
     }
+
+    std::string message = "Objects in camera frustum count " + std::to_string(count) + "\n";
+    Log::info(message.c_str());
 }
 
 void RenderSystem::buildRenderQueue()

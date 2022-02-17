@@ -123,7 +123,40 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
 {
     Texture2D* texture = clipboard.getWorld()->getAssetById<Texture2D>(material->getTexture(uniform->mName));
 
-    bool releaseTriggered = false;
+    ImGui::SlotData data;
+    if (ImGui::ImageSlot2(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &data))
+    {
+        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
+        {
+            material->setTexture(uniform->mName, clipboard.getDraggedId());
+            material->onTextureChanged();
+
+            clipboard.clearDraggedItem();
+        }
+
+        if (data.isClicked)
+        {
+            if (material->getTexture(uniform->mName).isValid())
+            {
+                clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
+            }
+        }
+
+        if (data.clearClicked)
+        {
+            material->setTexture(uniform->mName, Guid::INVALID);
+            material->onTextureChanged();
+        }
+    }
+
+
+
+
+
+
+
+
+    /*bool releaseTriggered = false;
     bool clearClicked = false;
     bool isClicked = ImGui::ImageSlot(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
 
@@ -147,7 +180,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
         {
             clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
         }
-    }
+    }*/
 }
 
 MaterialDrawer::MaterialDrawer()

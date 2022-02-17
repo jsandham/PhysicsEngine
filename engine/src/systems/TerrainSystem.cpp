@@ -60,7 +60,35 @@ void TerrainSystem::update(const Input &input, const Time &time)
 
         if (transform != nullptr)
         {
+            float x = transform->mPosition.x;
+            float z = transform->mPosition.z;
+
+            Rect centreChunkRect = terrain->getCentreChunkRect();
             
+            if (!centreChunkRect.contains(x, z))
+            {
+                float dx = 0.0f;
+                float dz = 0.0f;
+                if (x < centreChunkRect.mX)
+                {
+                    dx += -10.0f;
+                }
+                else if (x > centreChunkRect.mX + centreChunkRect.mWidth)
+                {
+                    dx += 10.0f;
+                }
+
+                if (z < centreChunkRect.mY)
+                {
+                    dz += -10.0f;
+                }
+                else if (z > centreChunkRect.mY + centreChunkRect.mHeight)
+                {
+                    dz += 10.0f;
+                }
+
+                terrain->updateTerrainHeight(dx, dz);
+            }
         }
     }
 }
