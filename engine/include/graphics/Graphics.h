@@ -338,7 +338,8 @@ class Graphics
     static int getTexture2D(int nameLocation, int texUnit, int program);
     static void applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram);
     static void render(int start, int count, int vao, bool wireframe = false);
-    static void renderInstanced(int start, int count, int instanceCount, int vao);
+    static void render(int start, int count, int vao, GraphicsQuery &query, bool wireframe = false);
+    static void renderInstanced(int start, int count, int instanceCount, int vao, GraphicsQuery &query);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
     static void renderInstanced(const RenderObject &renderObject, GraphicsQuery &query);
 

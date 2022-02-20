@@ -153,8 +153,7 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
             glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
     }
 
-    mCamera->getFrustum().computePlanes(position, front, up, right);
-    mCamera->computeViewMatrix(position, front, up);
+    mCamera->computeViewMatrix(position, front, up, right);
 
     mTransform->mPosition = position;
 }

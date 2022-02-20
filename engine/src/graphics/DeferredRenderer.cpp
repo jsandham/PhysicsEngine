@@ -245,8 +245,10 @@ void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, Def
             }
 
             Graphics::use(state.mColorInstancedShaderProgram);
-            Graphics::updateInstanceBuffer(renderObjects[i].vbo, &models[modelIndex], renderObjects[i].instanceCount);
-            Graphics::updateInstanceColorBuffer(renderObjects[i].vbo2, &colors[0], renderObjects[i].instanceCount);
+            Graphics::updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
+                                           renderObjects[i].instanceCount);
+            Graphics::updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
+                                                renderObjects[i].instanceCount);
             Graphics::renderInstanced(renderObjects[i], camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;

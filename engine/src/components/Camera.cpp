@@ -246,11 +246,17 @@ void Camera::endQuery()
     }
 }
 
-void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up)
+void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right)
 {
     mPosition = position;
+    mForward = forward;
+    mUp = up;
+    mRight = right;
     mViewMatrix = glm::lookAt(position, position + forward, up);
     mInvViewMatrix = glm::inverse(mViewMatrix);
+
+    // update frustum planes
+    mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
 }
 
 void Camera::assignColoring(Color32 color, const Guid& transformId)
@@ -266,6 +272,16 @@ void Camera::clearColoring()
 glm::vec3 Camera::getPosition() const
 {
     return mPosition;
+}
+
+glm::vec3 Camera::getForward() const
+{
+    return mForward;
+}
+
+glm::vec3 Camera::getUp() const
+{
+    return mUp;
 }
 
 glm::mat4 Camera::getViewMatrix() const
@@ -322,6 +338,9 @@ void Camera::setFrustum(float fov, float aspectRatio, float nearPlane, float far
 
     mProjMatrix =
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+
+    // update frustum planes
+    mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
 }
 
 void Camera::setViewport(int x, int y, int width, int height)

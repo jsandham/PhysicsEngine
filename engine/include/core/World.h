@@ -32,6 +32,9 @@ class World
     std::unordered_map<Guid, std::unordered_map<Guid, std::vector<ShaderUniform>>> mMaterialUniformCache;
 
   public:
+    std::vector<Sphere> mBoundingSpheres;
+
+  public:
     World();
     ~World();
     World(const World &other) = delete;

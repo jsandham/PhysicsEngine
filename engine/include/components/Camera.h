@@ -120,6 +120,9 @@ class Camera : public Component
     glm::mat4 mInvViewMatrix;
     glm::mat4 mProjMatrix;
     glm::vec3 mPosition;
+    glm::vec3 mForward;
+    glm::vec3 mUp;
+    glm::vec3 mRight;
 
     std::unordered_map<Color32, Guid> mColoringMap;
 
@@ -143,13 +146,15 @@ class Camera : public Component
     void beginQuery();
     void endQuery();
 
-    void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up);
+    void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right);
     void assignColoring(Color32 color, const Guid& transformId);
     void clearColoring();
 
     bool isCreated() const;
     bool isViewportChanged() const;
     glm::vec3 getPosition() const;
+    glm::vec3 getForward() const;
+    glm::vec3 getUp() const;
     glm::mat4 getViewMatrix() const;
     glm::mat4 getInvViewMatrix() const;
     glm::mat4 getProjMatrix() const;

@@ -19,7 +19,7 @@ enum class MeshVBO
     Vertices,
     Normals,
     TexCoords,
-    Instance,
+    InstanceModel,
     InstanceColor
 };
 

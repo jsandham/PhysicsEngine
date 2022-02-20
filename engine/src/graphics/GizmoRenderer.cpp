@@ -24,6 +24,12 @@ void GizmoRenderer::init(World *world)
 
 void GizmoRenderer::update(Camera *camera)
 {
+    for (size_t i = 0; i < mWorld->mBoundingSpheres.size(); i++)
+    {
+        /*addToDrawList(mWorld->mBoundingSpheres[i], mWorld->mRenderObjects[i].culled ? Color::blue : Color::red);*/
+        addToDrawList(mWorld->mBoundingSpheres[i], Color::blue);
+    }
+
     renderLineGizmos(mWorld, camera, mState, mLines);
     renderPlaneGizmos(mWorld, camera, mState, mPlanes);
     renderAABBGizmos(mWorld, camera, mState, mAABBs);
@@ -211,7 +217,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mSphere.mCentre);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mSphere.mCentre);
         model = glm::scale(model,
                            glm::vec3(gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius));
 
@@ -258,7 +264,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mAABB.mCentre);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mAABB.mCentre);
         model = glm::scale(model, gizmos[i].mAABB.mSize);
 
         Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
@@ -304,7 +310,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(), gizmos[i].mPlane.mX0);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mPlane.mX0);
         glm::vec3 a = glm::vec3(0, 0, 1);
         glm::vec3 b = gizmos[i].mPlane.mNormal;
         float d = glm::dot(a, b);

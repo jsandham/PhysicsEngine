@@ -404,7 +404,7 @@ void SceneView::update(Clipboard &clipboard)
             Camera* camera = clipboard.getWorld()->getComponent<Camera>(clipboard.getSelectedId());
             if (camera != nullptr && camera->mEnabled)
             {
-                camera->computeViewMatrix(transform->mPosition, transform->getForward(), transform->getUp());
+                camera->computeViewMatrix(transform->mPosition, transform->getForward(), transform->getUp(), transform->getRight());
 
                 ImVec2 min = mSceneContentMin;
                 ImVec2 max = mSceneContentMax;

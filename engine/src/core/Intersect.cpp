@@ -163,33 +163,22 @@ bool Intersect::intersect(const Sphere &sphere, const Capsule &capsule)
 
 bool Intersect::intersect(const Sphere &sphere, const Frustum &frustum)
 {
-    // sphere lies outside frustum
-    if (frustum.mPlanes[0].signedDistance(sphere.mCentre) < -sphere.mRadius)
+    // various distances
+    float distance;
+
+    // calculate our distances to each of the planes
+    for (int i = 0; i < 6; ++i)
     {
-        return false;
-    }
-    if (frustum.mPlanes[1].signedDistance(sphere.mCentre) < -sphere.mRadius)
-    {
-        return false;
-    }
-    if (frustum.mPlanes[2].signedDistance(sphere.mCentre) < -sphere.mRadius)
-    {
-        return false;
-    }
-    if (frustum.mPlanes[3].signedDistance(sphere.mCentre) < -sphere.mRadius)
-    {
-        return false;
-    }
-    if (frustum.mPlanes[4].signedDistance(sphere.mCentre) < -sphere.mRadius)
-    {
-        return false;
-    }
-    if (frustum.mPlanes[5].signedDistance(sphere.mCentre) < -sphere.mRadius)
-    {
-        return false;
+        distance = frustum.mPlanes[i].signedDistance(sphere.mCentre);
+
+        // if this distance is < -sphere.radius, we are outside
+        if (distance < -sphere.mRadius)
+        {
+            return false;
+        }
     }
 
-    // sphere touches or intersect frustum
+    // otherwise we are fully in view
     return true;
 }
 

@@ -17,9 +17,8 @@ typedef struct RenderObject
     int start; // start index in vbo
     int size;  // size of vbo
     int vao;
-    int vbo;
-    int vbo2;
-    bool culled;
+    int instanceModelVbo;
+    int instanceColorVbo;
     bool instanced;
 
     bool operator==(const RenderObject &object) const
@@ -27,7 +26,7 @@ typedef struct RenderObject
         return this->instanceStart == object.instanceStart && this->instanceCount == object.instanceCount &&
                this->materialIndex == object.materialIndex && this->shaderIndex == object.shaderIndex &&
                this->start == object.start && this->size == object.size && this->vao == object.vao &&
-               this->vbo == object.vbo && this->vbo2 == object.vbo2 && this->culled == object.culled &&
+               this->instanceModelVbo == object.instanceModelVbo && this->instanceColorVbo == object.instanceColorVbo &&
                this->instanced == object.instanced;
     }
 } RenderObject;

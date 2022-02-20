@@ -24,10 +24,17 @@ class RenderSystem : public System
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
 
+    std::vector<glm::mat4> mTotalModels;
+    std::vector<Guid> mTotalTransformIds;
+    std::vector<Sphere> mTotalBoundingSpheres;
+    std::vector<RenderObject> mTotalRenderObjects;
+    
     std::vector<glm::mat4> mModels;
     std::vector<Guid> mTransformIds;
-    std::vector<Sphere> mBoundingSpheres;
     std::vector<RenderObject> mRenderObjects;
+
+    //std::vector<bool> mCulledObjectFlags;
+
     std::vector<SpriteObject> mSpriteObjects;
 
   public:
@@ -53,6 +60,7 @@ class RenderSystem : public System
     void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
+    Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
 };
 
 template <> struct SystemType<RenderSystem>

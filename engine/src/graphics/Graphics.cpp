@@ -1947,11 +1947,38 @@ void Graphics::render(int start, int count, int vao, bool wireframe)
     Graphics::checkError(__LINE__, __FILE__);
 }
 
-void Graphics::renderInstanced(int start, int count, int instanceCount, int vao)
+void Graphics::render(int start, int count, int vao, GraphicsQuery &query, bool wireframe)
+{
+    if (wireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, start, count);
+    glBindVertexArray(0);
+
+    if (wireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    query.mNumDrawCalls++;
+    query.mVerts += count;
+    query.mTris += count / 3;
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::renderInstanced(int start, int count, int instanceCount, int vao, GraphicsQuery &query)
 {
     glBindVertexArray(vao);
     glDrawArraysInstanced(GL_TRIANGLES, start, count, instanceCount);
     glBindVertexArray(0);
+
+    query.mNumBatchDrawCalls++;
+    query.mVerts += count;
+    query.mTris += count / 3;
 
     Graphics::checkError(__LINE__, __FILE__);
 }
@@ -1960,27 +1987,15 @@ void Graphics::render(const RenderObject &renderObject, GraphicsQuery &query)
 {
     assert(renderObject.instanced == false);
 
-    int numVertices = renderObject.size / 3;
-
-    Graphics::render(renderObject.start / 3, numVertices, renderObject.vao);
-
-    query.mNumDrawCalls++;
-    query.mVerts += numVertices;
-    query.mTris += numVertices / 3;
+    Graphics::render(renderObject.start / 3, renderObject.size / 3, renderObject.vao, query);
 }
 
 void Graphics::renderInstanced(const RenderObject &renderObject, GraphicsQuery &query)
 {
     assert(renderObject.instanced == true);
 
-    int numVertices = renderObject.size / 3;
-
-    Graphics::renderInstanced(renderObject.start / 3, numVertices, renderObject.instanceCount,
-                              renderObject.vao);
-
-    query.mNumBatchDrawCalls++;
-    query.mVerts += numVertices;
-    query.mTris += numVertices / 3;
+    Graphics::renderInstanced(renderObject.start / 3, renderObject.size / 3, renderObject.instanceCount,
+                              renderObject.vao, query);
 }
 
 void Graphics::compileSSAOShader(ForwardRendererState &state)

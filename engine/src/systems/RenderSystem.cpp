@@ -252,10 +252,10 @@ void RenderSystem::registerLights(World *world)
 
 void RenderSystem::buildRenderObjectsList(World *world)
 {
-    mRenderObjects.clear();
-    mModels.clear();
-    mTransformIds.clear();
-    mBoundingSpheres.clear();
+    mTotalRenderObjects.clear();
+    mTotalModels.clear();
+    mTotalTransformIds.clear();
+    mTotalBoundingSpheres.clear();
 
     InstanceMap instanceMap;
 
@@ -269,12 +269,11 @@ void RenderSystem::buildRenderObjectsList(World *world)
             Transform *transform = meshRenderer->getComponent<Transform>();
             Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMesh());
 
-            if (transform == nullptr || mesh == nullptr)
-            {
-                continue;
-            }
+            if (transform == nullptr || mesh == nullptr){ continue; }
 
             glm::mat4 model = transform->getModelMatrix();
+
+            Sphere boundingSphere = computeWorldSpaceBoundingSphere(model, mesh->getBounds());
 
             for (int j = 0; j < meshRenderer->mMaterialCount; j++)
             {
@@ -283,10 +282,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
                 // could be nullptr if for example we are adding a material to the renderer in the editor
                 // but we have not yet actually set the material
-                if (material == nullptr)
-                {
-                    break;
-                }
+                if (material == nullptr){ break; }
 
                 int shaderIndex = world->getIndexOf(material->getShaderId());
 
@@ -303,9 +299,8 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.start = subMeshVertexStartIndex;
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
                     object.vao = mesh->getNativeGraphicsVAO();
-                    object.vbo = mesh->getNativeGraphicsVBO(MeshVBO::Instance);
-                    object.vbo2 = mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor);
-                    object.culled = false;
+                    object.instanceModelVbo = mesh->getNativeGraphicsVBO(MeshVBO::InstanceModel);
+                    object.instanceColorVbo = mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor);
                     object.instanced = true;
 
                     std::pair<Guid, RenderObject> key = std::make_pair(material->getId(), object);
@@ -315,7 +310,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     {
                         it->second.models.push_back(model);
                         it->second.transformIds.push_back(transform->getId());
-                        it->second.boundingSpheres.push_back(Sphere());
+                        it->second.boundingSpheres.push_back(boundingSphere);
                     }
                     else
                     {
@@ -325,8 +320,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                        
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
-                        //instanceMap[key].boundingSpheres.push_back(Sphere());
-                        mBoundingSpheres.push_back(mesh->getBounds());
+                        instanceMap[key].boundingSpheres.push_back(boundingSphere);
                     }
                 }
                 else
@@ -339,16 +333,14 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.start = subMeshVertexStartIndex;
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
                     object.vao = mesh->getNativeGraphicsVAO();
-                    object.vbo = -1;
-                    object.vbo2 = -1;
-                    object.culled = false;
+                    object.instanceModelVbo = -1;
+                    object.instanceColorVbo = -1;
                     object.instanced = false;
 
-                    mRenderObjects.push_back(object);
-                    mModels.push_back(model);
-                    mTransformIds.push_back(transform->getId());
-                    /*mBoundingSpheres.push_back(Sphere());*/
-                    mBoundingSpheres.push_back(mesh->getBounds());
+                    mTotalRenderObjects.push_back(object);
+                    mTotalModels.push_back(model);
+                    mTotalTransformIds.push_back(transform->getId());
+                    mTotalBoundingSpheres.push_back(boundingSphere);
                 }
             }
         }
@@ -367,21 +359,22 @@ void RenderSystem::buildRenderObjectsList(World *world)
             renderObject.instanceStart = count;
             renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Graphics::INSTANCE_BATCH_SIZE));
             
-            mRenderObjects.push_back(renderObject);
+            mTotalRenderObjects.push_back(renderObject);
             for (size_t i = 0; i < renderObject.instanceCount; i++)
             {
-                mModels.push_back(models[renderObject.instanceStart + i]);
-                mTransformIds.push_back(transformIds[renderObject.instanceStart + i]);
-                mBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
+                mTotalModels.push_back(models[renderObject.instanceStart + i]);
+                mTotalTransformIds.push_back(transformIds[renderObject.instanceStart + i]);
+                mTotalBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
             }
        
             count += Graphics::INSTANCE_BATCH_SIZE;
         }
     }
 
-    assert(mModels.size() == mTransformIds.size());
-    assert(mModels.size() == mBoundingSpheres.size());
+    assert(mTotalModels.size() == mTotalTransformIds.size());
+    assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
+    // add enabled terrain to render object list
     for (size_t i = 0; i < world->getNumberOfComponents<Terrain>(); i++)
     {
         Terrain *terrain = world->getComponentByIndex<Terrain>(i);
@@ -390,10 +383,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
         {
             Transform *transform = terrain->getComponent<Transform>();
 
-            if (transform == nullptr)
-            {
-                continue;
-            }
+            if (transform == nullptr){ continue; }
 
             glm::mat4 model = transform->getModelMatrix();
 
@@ -402,10 +392,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
             // could be nullptr if for example we are adding a material to the renderer in the editor
             // but we have not yet actually set the material
-            if (material == nullptr)
-            {
-                break;
-            }
+            if (material == nullptr){ break; }
 
             int shaderIndex = world->getIndexOf(material->getShaderId());
  
@@ -421,19 +408,24 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.start = terrain->getChunkStart(j);
                     object.size = terrain->getChunkSize(j);
                     object.vao = terrain->getNativeGraphicsVAO();
-                    object.vbo = -1;
-                    object.vbo2 = -1;
-                    object.culled = false;
+                    object.instanceModelVbo = -1;
+                    object.instanceColorVbo = -1;
                     object.instanced = false;
 
-                    mRenderObjects.push_back(object);
-                    mModels.push_back(model);
-                    mTransformIds.push_back(transform->getId());
-                    mBoundingSpheres.push_back(terrain->getChunkBounds(j));
+                    mTotalRenderObjects.push_back(object);
+                    mTotalModels.push_back(model);
+                    mTotalTransformIds.push_back(transform->getId());
+
+                    mTotalBoundingSpheres.push_back(computeWorldSpaceBoundingSphere(model, terrain->getChunkBounds(j)));
                 }
             }
         }
     }
+
+    assert(mTotalModels.size() == mTotalTransformIds.size());
+    assert(mTotalModels.size() == mTotalBoundingSpheres.size());
+
+    mWorld->mBoundingSpheres = mTotalBoundingSpheres;
 }
 
 void RenderSystem::buildSpriteObjectsList(World* world)
@@ -493,44 +485,42 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
 void RenderSystem::cullRenderObjects(Camera *camera)
 {
-    int count = 0;
+    mModels.resize(mTotalModels.size());
+    mTransformIds.resize(mTotalTransformIds.size());
+    mRenderObjects.resize(mTotalRenderObjects.size());
+
     int index = 0;
-    for (size_t i = 0; i < mRenderObjects.size(); i++)
+    int objectCount = 0;
+    int count = 0;
+    for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
     {
-        if (mRenderObjects[i].instanced)
+        //dont perform any culling on instanced objects
+        if (mTotalRenderObjects[i].instanced)
         {
-            for (size_t j = 0; j < mRenderObjects[i].instanceCount; j++)
+            mRenderObjects[objectCount] = mTotalRenderObjects[i];
+            mRenderObjects[objectCount].instanceStart = count; 
+
+            for (size_t j = 0; j < mTotalRenderObjects[i].instanceCount; j++)
             {
-                glm::vec3 centre = mBoundingSpheres[index].mCentre;
-                float radius = mBoundingSpheres[index].mRadius;
-
-                glm::vec4 temp = mModels[index] * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-
-                Sphere cullingSphere;
-                cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
-                cullingSphere.mRadius = radius;
-
-                if (Intersect::intersect(cullingSphere, camera->getFrustum()))
-                {
-                    count++;
-                }
-
+                mModels[count + j] = mTotalModels[index];
+                mTransformIds[count + j] = mTotalTransformIds[index];
+              
                 index++;
             }
+
+            objectCount++;
+            count += mTotalRenderObjects[i].instanceCount;
         }
         else
         {
-            glm::vec3 centre = mBoundingSpheres[index].mCentre;
-            float radius = mBoundingSpheres[index].mRadius;
-
-            glm::vec4 temp = mModels[index] * glm::vec4(centre.x, centre.y, centre.z, 1.0f);
-
-            Sphere cullingSphere;
-            cullingSphere.mCentre = glm::vec3(temp.x, temp.y, temp.z);
-            cullingSphere.mRadius = radius;
-
-            if (Intersect::intersect(cullingSphere, camera->getFrustum()))
+            if (Intersect::intersect(mTotalBoundingSpheres[index], camera->getFrustum()))
             {
+                mRenderObjects[objectCount] = mTotalRenderObjects[i];
+
+                mModels[count] = mTotalModels[index];
+                mTransformIds[count] = mTotalTransformIds[index];
+           
+                objectCount++;
                 count++;
             }
 
@@ -538,26 +528,27 @@ void RenderSystem::cullRenderObjects(Camera *camera)
         }
     }
 
-    std::string message = "Objects in camera frustum count " + std::to_string(count) + "\n";
-    Log::info(message.c_str());
+    mModels.resize(count);
+    mTransformIds.resize(count);
+    mRenderObjects.resize(objectCount);
 }
 
 void RenderSystem::buildRenderQueue()
 {
     //mRenderQueue.clear();
 
-    //for (size_t i = 0; i < mRenderObjects.size(); i++)
+    //for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
     //{
     //    // for now dont sort
     //    uint64_t key = i;
 
     //    mRenderQueue.push_back(std::make_pair(key, (int)i));
 
-    //    //if (!mRenderObjects[i].culled)
+    //    //if (!mTotalRenderObjects[i].culled)
     //    //{
     //    //    uint64_t key = 0;
 
-    //    //    uint32_t matIndex = mRenderObjects[i].materialIndex;
+    //    //    uint32_t matIndex = mTotalRenderObjects[i].materialIndex;
     //    //    uint32_t depth = 2342;
     //    //    uint32_t reserved = 112;
 
@@ -587,4 +578,17 @@ void RenderSystem::sortRenderQueue()
     // sort render queue from highest priority key to lowest
     //std::sort(mRenderQueue.begin(), mRenderQueue.end(),
     //          [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
+}
+
+
+
+Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere)
+{
+    glm::vec4 temp = model * glm::vec4(sphere.mRadius, sphere.mRadius, sphere.mRadius, 0.0f);
+
+    Sphere boundingSphere;
+    boundingSphere.mCentre = glm::vec3(model * glm::vec4(sphere.mCentre, 1.0f));
+    boundingSphere.mRadius = std::max(temp.x, std::max(temp.y, temp.z));
+
+    return boundingSphere;
 }

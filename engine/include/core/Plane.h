@@ -23,7 +23,7 @@ class Plane
     Plane(glm::vec3 normal, glm::vec3 x0);
     ~Plane();
 
-    float signedDistance(glm::vec3 point) const;
+    float signedDistance(const glm::vec3& point) const;
 };
 } // namespace PhysicsEngine
 

@@ -67,19 +67,19 @@ glm::mat4 Transform::getModelMatrix() const
 
 glm::vec3 Transform::getForward() const
 {
-    // a transform with zero rotation has its blue axis pointing in the z direction
+    // a transform with zero rotation has its blue axis pointing in the +z direction
     return glm::vec3(glm::rotate(mRotation, glm::vec4(0, 0, 1, 0)));
 }
 
 glm::vec3 Transform::getUp() const
 {
-    // a transform with zero rotation has its green axis pointing in the y direction
+    // a transform with zero rotation has its green axis pointing in the +y direction
     return glm::vec3(glm::rotate(mRotation, glm::vec4(0, 1, 0, 0)));
 }
 
 glm::vec3 Transform::getRight() const
 {
-    // a transform with zero rotation has its red axis pointing in the x direction
+    // a transform with zero rotation has its red axis pointing in the +x direction
     return glm::vec3(glm::rotate(mRotation, glm::vec4(1, 0, 0, 0)));
 }
 
