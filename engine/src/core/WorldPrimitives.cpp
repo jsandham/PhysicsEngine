@@ -169,11 +169,29 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     {
         for (int x = 0; x < (nx - 1); x++)
         {
-            // first triangle
+            // first triangle (clockwise winding order)
             planeVertices[i++] = xmin + x * dx;
             planeVertices[i++] = 0.0f;
             planeVertices[i++] = zmin + z * dz;
-            
+
+            planeVertices[i++] = xmin + x * dx;
+            planeVertices[i++] = 0.0f;
+            planeVertices[i++] = zmin + (z + 1) * dz;
+
+            planeVertices[i++] = xmin + (x + 1) * dx;
+            planeVertices[i++] = 0.0f;
+            planeVertices[i++] = zmin + z * dz;
+
+            planeTexCoords[k++] = x * dx;
+            planeTexCoords[k++] = z * dz;
+
+            planeTexCoords[k++] = x * dx;
+            planeTexCoords[k++] = (z + 1) * dz;
+
+            planeTexCoords[k++] = (x + 1) * dx;
+            planeTexCoords[k++] = z * dz;
+
+            // second triangle (clockwise winding order)
             planeVertices[i++] = xmin + (x + 1) * dx;
             planeVertices[i++] = 0.0f;
             planeVertices[i++] = zmin + z * dz;
@@ -182,36 +200,63 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
             planeVertices[i++] = 0.0f;
             planeVertices[i++] = zmin + (z + 1) * dz;
 
-            planeTexCoords[k++] = x * dx;
-            planeTexCoords[k++] = z * dz;
-
-            planeTexCoords[k++] = (x + 1) * dx;
-            planeTexCoords[k++] = z * dz;
-
-            planeTexCoords[k++] = x * dx;
-            planeTexCoords[k++] = (z + 1) * dz;
-
-            // second triangle
-            planeVertices[i++] = xmin + (x + 1) * dx;
-            planeVertices[i++] = 0.0f;
-            planeVertices[i++] = zmin + z * dz;
-
             planeVertices[i++] = xmin + (x + 1) * dx;
             planeVertices[i++] = 0.0f;
             planeVertices[i++] = zmin + (z + 1) * dz;
 
-            planeVertices[i++] = xmin + x * dx;
-            planeVertices[i++] = 0.0f;
-            planeVertices[i++] = zmin + (z + 1) * dz;
-
             planeTexCoords[k++] = (x + 1) * dx;
             planeTexCoords[k++] = z * dz;
 
+            planeTexCoords[k++] = x * dx;
+            planeTexCoords[k++] = (z + 1) * dz;
+
             planeTexCoords[k++] = (x + 1) * dx;
             planeTexCoords[k++] = (z + 1) * dz;
 
-            planeTexCoords[k++] = x * dx;
-            planeTexCoords[k++] = (z + 1) * dz;
+
+            //// first triangle
+            //planeVertices[i++] = xmin + x * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + z * dz;
+            //
+            //planeVertices[i++] = xmin + (x + 1) * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + z * dz;
+
+            //planeVertices[i++] = xmin + x * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + (z + 1) * dz;
+
+            //planeTexCoords[k++] = x * dx;
+            //planeTexCoords[k++] = z * dz;
+
+            //planeTexCoords[k++] = (x + 1) * dx;
+            //planeTexCoords[k++] = z * dz;
+
+            //planeTexCoords[k++] = x * dx;
+            //planeTexCoords[k++] = (z + 1) * dz;
+
+            //// second triangle
+            //planeVertices[i++] = xmin + (x + 1) * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + z * dz;
+
+            //planeVertices[i++] = xmin + (x + 1) * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + (z + 1) * dz;
+
+            //planeVertices[i++] = xmin + x * dx;
+            //planeVertices[i++] = 0.0f;
+            //planeVertices[i++] = zmin + (z + 1) * dz;
+
+            //planeTexCoords[k++] = (x + 1) * dx;
+            //planeTexCoords[k++] = z * dz;
+
+            //planeTexCoords[k++] = (x + 1) * dx;
+            //planeTexCoords[k++] = (z + 1) * dz;
+
+            //planeTexCoords[k++] = x * dx;
+            //planeTexCoords[k++] = (z + 1) * dz;
 
             for (int n = 0; n < 6; n++)
             {
@@ -286,9 +331,9 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     // bottom face
     for (int v = 0; v < vertexCount; v++)
     {
-        cubeVertices[3 * v + 0 + faceStart] = planeVertices[3 * v + 0];
+        cubeVertices[3 * v + 0 + faceStart] = planeVertices[3 * v + 2];
         cubeVertices[3 * v + 1 + faceStart] = -0.5f;
-        cubeVertices[3 * v + 2 + faceStart] = planeVertices[3 * v + 2];
+        cubeVertices[3 * v + 2 + faceStart] = planeVertices[3 * v + 0];
 
         cubeNormals[3 * v + 0 + faceStart] = 0.0f;
         cubeNormals[3 * v + 1 + faceStart] = -1.0f;
@@ -339,8 +384,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     for (int v = 0; v < vertexCount; v++)
     {
         cubeVertices[3 * v + 0 + faceStart] = 0.5f;
-        cubeVertices[3 * v + 1 + faceStart] = planeVertices[3 * v + 0];
-        cubeVertices[3 * v + 2 + faceStart] = planeVertices[3 * v + 2];
+        cubeVertices[3 * v + 1 + faceStart] = planeVertices[3 * v + 2];
+        cubeVertices[3 * v + 2 + faceStart] = planeVertices[3 * v + 0];
 
         cubeNormals[3 * v + 0 + faceStart] = 1.0f;
         cubeNormals[3 * v + 1 + faceStart] = 0.0f;
@@ -355,8 +400,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     // near face
     for (int v = 0; v < vertexCount; v++)
     {
-        cubeVertices[3 * v + 0 + faceStart] = planeVertices[3 * v + 2];
-        cubeVertices[3 * v + 1 + faceStart] = planeVertices[3 * v + 0];
+        cubeVertices[3 * v + 0 + faceStart] = planeVertices[3 * v + 0];
+        cubeVertices[3 * v + 1 + faceStart] = planeVertices[3 * v + 2];
         cubeVertices[3 * v + 2 + faceStart] = -0.5;
 
         cubeNormals[3 * v + 0 + faceStart] = 0.0f;

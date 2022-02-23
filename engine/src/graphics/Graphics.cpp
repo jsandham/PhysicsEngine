@@ -192,6 +192,9 @@ void Graphics::turnOn(Capability capability)
     case Capability::Blending:
         glEnable(GL_BLEND);
         break;
+    case Capability::BackfaceCulling:
+        glEnable(GL_CULL_FACE);  
+        break;
     }
 }
 
@@ -204,6 +207,9 @@ void Graphics::turnOff(Capability capability)
         break;
     case Capability::Blending:
         glDisable(GL_BLEND);
+        break;
+    case Capability::BackfaceCulling:
+        glDisable(GL_CULL_FACE);
         break;
     }
 }
@@ -1764,6 +1770,17 @@ void Graphics::setTexture2D(int nameLocation, int texUnit, int tex)
 
     glActiveTexture(GL_TEXTURE0 + texUnit);
     glBindTexture(GL_TEXTURE_2D, tex);
+}
+
+void Graphics::setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs)
+{
+    glUniform1iv(nameLocation, count, texUnits);
+
+    for (int i = 0; i < count; i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + texUnits[i]);
+        glBindTexture(GL_TEXTURE_2D, texs[i]);
+    }
 }
 
 bool Graphics::getBool(int nameLocation, int program)

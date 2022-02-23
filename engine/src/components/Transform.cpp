@@ -58,6 +58,8 @@ std::string Transform::getObjectName() const
 
 glm::mat4 Transform::getModelMatrix() const
 {
+    //glm::mat4 rotation = glm::toMat4(mRotation);
+    //return glm::translate(glm::mat4(1.0f), mPosition) * rotation * glm::scale(glm::mat4(1.0f), mScale);
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
     modelMatrix *= glm::toMat4(mRotation);
     modelMatrix = glm::scale(modelMatrix, mScale);

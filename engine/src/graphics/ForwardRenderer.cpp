@@ -88,6 +88,8 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
 
 void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState &state)
 {
+    Graphics::turnOn(Capability::BackfaceCulling);
+
     camera->beginQuery();
 
     state.mCameraState.mProjection = camera->getProjMatrix();
@@ -390,9 +392,6 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         variant |= static_cast<int64_t>(ShaderMacro::SoftShadows);
     }
 
-    const char *const shaderShadowMapNames[] = {"shadowMap[0]", "shadowMap[1]", "shadowMap[2]", "shadowMap[3]",
-                                                "shadowMap[4]"};
-
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
@@ -462,14 +461,17 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
 
         if (light->mLightType == LightType::Directional)
         {
-            for (int j = 0; j < 5; j++)
-            {
-                shader->setTexture2D(shaderShadowMapNames[j], 3 + j, light->getNativeGraphicsShadowCascadeDepthTex(j));
-            }
+            int tex[5] = {light->getNativeGraphicsShadowCascadeDepthTex(0),
+                          light->getNativeGraphicsShadowCascadeDepthTex(1),
+                          light->getNativeGraphicsShadowCascadeDepthTex(2), 
+                          light->getNativeGraphicsShadowCascadeDepthTex(3),
+                          light->getNativeGraphicsShadowCascadeDepthTex(4)};
+            int texUnit[5] = {3, 4, 5, 6, 7};
+            shader->setTexture2Ds("shadowMap", &texUnit[0], 5, &tex[0]);
         }
         else if (light->mLightType == LightType::Spot)
         {
-            shader->setTexture2D(shaderShadowMapNames[0], 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
+            shader->setTexture2D("shadowMap[0]", 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
         }
 
         if (renderObjects[i].instanced)
@@ -653,6 +655,7 @@ void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState 
 
     camera->endQuery();
 
+    Graphics::turnOff(Capability::BackfaceCulling);
     Graphics::checkError(__LINE__, __FILE__);
 }
 

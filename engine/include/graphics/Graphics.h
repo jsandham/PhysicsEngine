@@ -27,7 +27,8 @@ enum class API
 enum class Capability
 {
     Depth_Testing,
-    Blending
+    Blending,
+    BackfaceCulling
 };
 
 struct CameraUniform
@@ -324,6 +325,7 @@ class Graphics
     static void setMat3(int nameLocation, const glm::mat3 &mat);
     static void setMat4(int nameLocation, const glm::mat4 &mat);
     static void setTexture2D(int nameLocation, int texUnit, int tex);
+    static void setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs);
     static bool getBool(int nameLocation, int program);
     static int getInt(int nameLocation, int program);
     static float getFloat(int nameLocation, int program);

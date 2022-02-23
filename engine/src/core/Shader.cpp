@@ -387,6 +387,11 @@ void Shader::setTexture2D(const char *name, int texUnit, int tex) const
     this->setTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit, tex);
 }
 
+void Shader::setTexture2Ds(const char *name, int *texUnits, int count, int *texs) const
+{
+    this->setTexture2Ds(Graphics::findUniformLocation(name, mActiveProgram), texUnits, count, texs);
+}
+
 void Shader::setBool(int nameLocation, bool value) const
 {
     if (mActiveProgram != -1)
@@ -472,6 +477,14 @@ void Shader::setTexture2D(int nameLocation, int texUnit, int tex) const
     if (mActiveProgram != -1)
     {
         Graphics::setTexture2D(nameLocation, texUnit, tex);
+    }
+}
+
+void Shader::setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs) const
+{
+    if (mActiveProgram != -1)
+    {
+        Graphics::setTexture2Ds(nameLocation, texUnits, count, texs);
     }
 }
 

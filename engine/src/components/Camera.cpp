@@ -218,7 +218,7 @@ void Camera::beginQuery()
 
     if (mIsCreated)
     {
-        Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+        //Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
     }
 }
 
@@ -228,7 +228,7 @@ void Camera::endQuery()
 
     if (mIsCreated)
     {
-        Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+        //Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
     
         mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
