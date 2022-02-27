@@ -34,16 +34,18 @@ void GameLayer::init()
     std::cout << "texture count: " << mWorld.getNumberOfAssets<Texture2D>() << std::endl;
 
     /*std::filesystem::path scenePath = cwd / "game_data\\scenes\\simple.scene";*/
-    std::filesystem::path scenePath = cwd / "game_data\\scenes\\demo.scene";
+    std::filesystem::path scenePath = cwd / "game_data\\scenes\\Terrain.scene";
     std::cout << "scenePath: " << scenePath.string() << std::endl;
 
     mWorld.loadSceneFromYAML(scenePath.string());
 
     FreeLookCameraSystem* cameraSystem = mWorld.addSystem<FreeLookCameraSystem>(0);
-    mWorld.addSystem<RenderSystem>(1);
-    mWorld.addSystem<CleanUpSystem>(2);
+    mWorld.addSystem<TerrainSystem>(1);
+    mWorld.addSystem<RenderSystem>(2);
+    mWorld.addSystem<CleanUpSystem>(3);
 
     std::cout << "camerasystem count: " << mWorld.getNumberOfSystems<FreeLookCameraSystem>() << std::endl;
+    std::cout << "terrainsystem count: " << mWorld.getNumberOfSystems<TerrainSystem>() << std::endl;
     std::cout << "rendersystem count: " << mWorld.getNumberOfSystems<RenderSystem>() << std::endl;
     std::cout << "cleanupsystem count: " << mWorld.getNumberOfSystems<CleanUpSystem>() << std::endl;
 

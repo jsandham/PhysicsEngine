@@ -6,11 +6,13 @@ using namespace PhysicsEngine;
 
 Scene::Scene(World *world) : Object(world)
 {
+    mName = "Unnamed scene";
     mVersion = SCENE_VERSION;
 }
 
 Scene::Scene(World *world, Guid id) : Object(world, id)
 {
+    mName = "Unnamed scene";
     mVersion = SCENE_VERSION;
 }
 
@@ -22,6 +24,7 @@ void Scene::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
+    out["name"] = mName;
     out["version"] = mVersion;
 }
 
@@ -29,6 +32,7 @@ void Scene::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 
+    mName = YAML::getValue<std::string>(in, "name");
     mVersion = YAML::getValue<std::string>(in, "version");
 }
 

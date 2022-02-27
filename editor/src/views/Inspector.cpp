@@ -154,14 +154,17 @@ void Inspector::drawEntity(Clipboard &clipboard)
 
             if (drawer->isHovered())
             {
-                if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+                if (componentType != ComponentType<Transform>::type)
                 {
-                    if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+                    if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
                     {
-                        clipboard.getWorld()->immediateDestroyComponent(entity->getId(), componentId, componentType);
-                    }
+                        if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+                        {
+                            clipboard.getWorld()->immediateDestroyComponent(entity->getId(), componentId, componentType);
+                        }
 
-                    ImGui::EndPopup();
+                        ImGui::EndPopup();
+                    }
                 }
             }
         }
@@ -170,18 +173,14 @@ void Inspector::drawEntity(Clipboard &clipboard)
     }
 
     std::string componentToAdd = "";
-    std::vector<std::string> components = {"Transform",      "Rigidbody",    "Camera",
+    std::vector<std::string> components = {"Rigidbody",    "Camera",
                                            "MeshRenderer",   "LineRenderer", "SpriteRenderer", "Light",
                                            "SphereCollider", "BoxCollider",  "Terrain"};
 
     if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
     {
         Component* component = nullptr;
-        if (componentToAdd == "Transform")
-        {
-            component = entity->addComponent<Transform>();
-        }
-        else if (componentToAdd == "Rigidbody")
+        if (componentToAdd == "Rigidbody")
         {
             component = entity->addComponent<Rigidbody>();
         }

@@ -1,6 +1,10 @@
 #ifndef __BUILD_WINDOW_H__
 #define __BUILD_WINDOW_H__
 
+#include <thread>
+#include <vector>
+#include <assert.h>
+
 #include "PopupWindow.h"
 #include "../Filebrowser.h"
 
@@ -17,6 +21,13 @@ class BuildWindow : public PopupWindow
 private:
     TargetPlatform mTargetPlatform;
     Filebrowser mFilebrowser;
+     
+    float mBuildCompletion;
+    std::string mBuildStep;
+
+    std::atomic<bool> mLaunchBuild{ false };
+    std::atomic<bool> mBuildInProgress{ false };
+    std::thread mWorker;
 
   public:
     BuildWindow();
@@ -27,7 +38,10 @@ private:
     void init(Clipboard &clipboard);
     void update(Clipboard &clipboard);
 
-    void build(const std::filesystem::path& path);
+  private:
+    void build();
+    void doWork();
+
 };
 } // namespace PhysicsEditor
 

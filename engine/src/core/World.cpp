@@ -371,13 +371,14 @@ Entity *World::createPrimitive(PrimitiveType type)
 {
     Mesh *mesh = getPrimtiveMesh(type);
     Entity *entity = createEntity();
-    Transform* transform = entity->addComponent<Transform>();
-    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
-    
     assert(mesh != nullptr);
     assert(entity != nullptr);
-    assert(transform != nullptr);
+    
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
     assert(meshRenderer != nullptr);
+
+    Transform *transform = entity->getComponent<Transform>();
+    assert(transform != nullptr);
 
     entity->setName(mesh->getName());
     
@@ -399,12 +400,13 @@ Entity *World::createNonPrimitive(const Guid &meshId)
     }
 
     Entity *entity = createEntity();
-    Transform *transform = entity->addComponent<Transform>();
-    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
-
     assert(entity != nullptr);
-    assert(transform != nullptr);
+
+    MeshRenderer *meshRenderer = entity->addComponent<MeshRenderer>();
     assert(meshRenderer != nullptr);
+
+    Transform *transform = entity->getComponent<Transform>();
+    assert(transform != nullptr);
 
     entity->setName(mesh->getName());
    
@@ -420,7 +422,6 @@ Entity *World::createNonPrimitive(const Guid &meshId)
 Entity *World::createLight(LightType type)
 {
     Entity *entity = createEntity();
-    entity->addComponent<Transform>();
     Light* light = entity->addComponent<Light>();
 
     switch (type)
@@ -442,7 +443,6 @@ Entity *World::createLight(LightType type)
 Entity *World::createCamera()
 {
     Entity *entity = createEntity();
-    entity->addComponent<Transform>();
     entity->addComponent<Camera>();
 
     return entity;
@@ -532,6 +532,23 @@ Entity *World::createEntity()
 
         mIdState.mEntityIdsMarkedCreated.push_back(entityId);
     }
+
+    // Add transform (all entitie must have a transform)
+    int componentGlobalIndex = (int)mAllocators.mTransformAllocator.getCount();
+    int componentType = ComponentType<Transform>::type;
+    Guid componentId = Guid::newGuid();
+
+    Transform *component = mAllocators.mTransformAllocator.construct(this, componentId);
+
+    assert(component != nullptr);
+
+    component->mEntityId = entityId;
+
+    addIdToGlobalIndexMap_impl<Transform>(componentId, componentGlobalIndex, componentType);
+
+    mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
+
+    mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, componentId, componentType));
 
     return entity;
 }
@@ -952,7 +969,7 @@ template <> TerrainSystem *World::getSystem<TerrainSystem>() const
 
 template <> Transform *World::getComponent<Transform>(const Guid &entityId) const
 {
-    return getComponent_impl(&mAllocators.mTransformAllocator, entityId);
+    return getComponentByIndex<Transform>(getIndexOf(entityId));
 }
 
 template <> MeshRenderer *World::getComponent<MeshRenderer>(const Guid &entityId) const
@@ -1008,11 +1025,6 @@ template <> MeshCollider *World::getComponent<MeshCollider>(const Guid &entityId
 template <> Terrain *World::getComponent<Terrain>(const Guid &entityId) const
 {
     return getComponent_impl(&mAllocators.mTerrainAllocator, entityId);
-}
-
-template <> Transform *World::addComponent<Transform>(const Guid &entityId)
-{
-    return addComponent_impl(&mAllocators.mTransformAllocator, entityId);
 }
 
 template <> MeshRenderer *World::addComponent<MeshRenderer>(const Guid &entityId)

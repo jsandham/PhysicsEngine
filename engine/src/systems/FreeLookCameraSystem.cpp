@@ -61,12 +61,12 @@ void FreeLookCameraSystem::init(World* world)
     entity->mDoNotDestroy = true;
     entity->mHide = HideFlag::DontSave;
 
-    mTransform = entity->addComponent<Transform>();
-    mTransform->mPosition = glm::vec3(0, 2, -10);
-    mHide = HideFlag::DontSave;
-
     mCamera = entity->addComponent<Camera>();
     mCamera->mHide = HideFlag::DontSave;
+
+    mTransform = entity->getComponent<Transform>();
+    mTransform->mPosition = glm::vec3(0, 2, -10);
+    mHide = HideFlag::DontSave;
 }
 
 void FreeLookCameraSystem::update(const Input& input, const Time& time)

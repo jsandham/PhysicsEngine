@@ -117,8 +117,7 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 if (ImGui::MenuItem("Empty"))
                 {
-                    PhysicsEngine::Entity* entity = clipboard.getWorld()->createEntity();
-                    entity->addComponent<PhysicsEngine::Transform>();
+                    clipboard.getWorld()->createEntity();
                 }
                 if (ImGui::MenuItem("Camera"))
                 {

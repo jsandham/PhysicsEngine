@@ -100,6 +100,7 @@ class World
     template <typename T> T *addComponent(const Guid &entityId)
     {
         static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+        static_assert(!std::is_base_of<Transform, T>(), "'T' cannot be of type Transform");
 
         return addComponent_impl<T>(getComponentOrAddAllocator_impl<T>(), entityId);
     }
@@ -558,7 +559,6 @@ template <> BoxCollider *World::getComponent<BoxCollider>(const Guid &entityId) 
 template <> CapsuleCollider *World::getComponent<CapsuleCollider>(const Guid &entityId) const;
 template <> MeshCollider *World::getComponent<MeshCollider>(const Guid &entityId) const;
 template <> Terrain *World::getComponent<Terrain>(const Guid &entityId) const;
-template <> Transform *World::addComponent<Transform>(const Guid &entityId);
 template <> MeshRenderer *World::addComponent<MeshRenderer>(const Guid &entityId);
 template <> SpriteRenderer *World::addComponent<SpriteRenderer>(const Guid &entityId);
 template <> LineRenderer *World::addComponent<LineRenderer>(const Guid &entityId);

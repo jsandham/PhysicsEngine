@@ -317,6 +317,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
                         instanceMap[key].models = std::vector<glm::mat4>();
                         instanceMap[key].transformIds = std::vector<Guid>();
                         instanceMap[key].boundingSpheres = std::vector<Sphere>();
+
+                        instanceMap[key].models.reserve(Graphics::INSTANCE_BATCH_SIZE);
+                        instanceMap[key].transformIds.reserve(Graphics::INSTANCE_BATCH_SIZE);
+                        instanceMap[key].boundingSpheres.reserve(Graphics::INSTANCE_BATCH_SIZE);
                        
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
@@ -360,11 +364,20 @@ void RenderSystem::buildRenderObjectsList(World *world)
             renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Graphics::INSTANCE_BATCH_SIZE));
             
             mTotalRenderObjects.push_back(renderObject);
+
+            size_t start = mTotalModels.size();
+            mTotalModels.resize(mTotalModels.size() + renderObject.instanceCount);
+            mTotalTransformIds.resize(mTotalTransformIds.size() + renderObject.instanceCount);
+            mTotalBoundingSpheres.resize(mTotalBoundingSpheres.size() + renderObject.instanceCount);
+
             for (size_t i = 0; i < renderObject.instanceCount; i++)
             {
-                mTotalModels.push_back(models[renderObject.instanceStart + i]);
+                /*mTotalModels.push_back(models[renderObject.instanceStart + i]);
                 mTotalTransformIds.push_back(transformIds[renderObject.instanceStart + i]);
-                mTotalBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
+                mTotalBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);*/
+                mTotalModels[start + i] = models[renderObject.instanceStart + i];
+                mTotalTransformIds[start + i] = transformIds[renderObject.instanceStart + i];
+                mTotalBoundingSpheres[start + i] = boundingSpheres[renderObject.instanceStart + i];
             }
        
             count += Graphics::INSTANCE_BATCH_SIZE;
