@@ -733,6 +733,21 @@ System *loadInternalSystem_Impl(World &world, WorldAllocators &allocators, World
             }
         }
     }
+    else if (type == SystemType<FreeLookCameraSystem>::type)
+    {
+        std::unordered_map<Guid, int>::iterator it = state.mFreeLookCameraSystemIdToGlobalIndex.find(id);
+        if (it != state.mFreeLookCameraSystemIdToGlobalIndex.end())
+        {
+            System *system = allocators.mFreeLookCameraSystemAllocator.get(it->second);
+
+            if (system != nullptr)
+            {
+                system->deserialize(in);
+
+                return system;
+            }
+        }
+    }
     else if (type == SystemType<CleanUpSystem>::type)
     {
         std::unordered_map<Guid, int>::iterator it = state.mCleanupSystemIdToGlobalIndex.find(id);
@@ -802,6 +817,18 @@ System *loadInternalSystem_Impl(World &world, WorldAllocators &allocators, World
         if (system != nullptr)
         {
             state.mPhysicsSystemIdToGlobalIndex[system->getId()] = index;
+            state.mIdToGlobalIndex[system->getId()] = index;
+            state.mIdToType[system->getId()] = type;
+        }
+    }
+    else if (type == SystemType<FreeLookCameraSystem>::type)
+    {
+        index = (int)allocators.mFreeLookCameraSystemAllocator.getCount();
+        system = allocators.mFreeLookCameraSystemAllocator.construct(&world, in);
+
+        if (system != nullptr)
+        {
+            state.mFreeLookCameraSystemIdToGlobalIndex[system->getId()] = index;
             state.mIdToGlobalIndex[system->getId()] = index;
             state.mIdToType[system->getId()] = type;
         }

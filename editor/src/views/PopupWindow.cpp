@@ -34,3 +34,8 @@ void PopupWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
         ImGui::EndPopup();
     }
 }
+
+void PopupWindow::close()
+{
+    mOpen = false;
+}

@@ -24,6 +24,8 @@ namespace PhysicsEditor
 
         void draw(Clipboard& clipboard, bool isOpenedThisFrame);
 
+        void close();
+
         virtual void init(Clipboard& clipboard) = 0;
         virtual void update(Clipboard& clipboard) = 0;
     };

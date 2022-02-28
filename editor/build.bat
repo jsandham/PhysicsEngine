@@ -6,9 +6,9 @@ set ENGINE_INC="../../../engine/include"
 set YAML_INC="../../../external/yaml-cpp/include"
 set GLEW_INC="../../../external/glew-2.1.0"
 set FREETYPE_INC="../../../external/freetype"
-set FREETYPE_INC="../../../external/glm"
+set GLM_INC="../../../external/glm"
 
-set INCLUDES=/I%ENGINE_INC% /I%YAML_INC% /I%GLEW_INC% /I%FREETYPE_INC% /I%GLM%
+set INCLUDES=/I%ENGINE_INC% /I%YAML_INC% /I%GLEW_INC% /I%FREETYPE_INC% /I%GLM_INC%
 
 set ENGINE_LIB="../../../engine/lib/debug/engine.lib"
 set YAML_LIB="../../../external/yaml-cpp/lib/debug/yaml-cppd.lib"
@@ -47,7 +47,7 @@ echo %SRC_FILES%
 
 call cl /std:c++17 -o %EXECUTABLE% %SRC_FILES% %INCLUDE_FILES% %INCLUDES% %OPT% %WARN% %FLAGS% %LIBS%
 
-PAUSE
+::PAUSE
 
 goto :eof
 :concat_inc
