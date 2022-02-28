@@ -9,3 +9,11 @@ engine/lib/debug/obj
 engine/lib/release/obj
 editor/bin/debug/obj
 editor/bin/release/obj
+external/imgui/lib/debug/obj
+external/imgui/lib/release/obj
+external/imguizmo/lib/debug/obj
+external/imguizmo/lib/release/obj
+external/simplefilewatcher/lib/debug/obj
+external/simplefilewatcher/lib/release/obj
+external/yaml-cpp/lib/debug/obj
+external/yaml-cpp/lib/release/obj
