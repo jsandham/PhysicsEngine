@@ -5,3 +5,7 @@
 *.idb
 *.ilk
 *.pdb
+engine/lib/debug/obj
+engine/lib/release/obj
+editor/bin/debug/obj
+editor/bin/release/obj
