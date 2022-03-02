@@ -1,4 +1,4 @@
-# PhysicsEngine [![License]](https://github.com/jsandham/PhysicsEngine/blob/master/LICENSE)
+# PhysicsEngine 
 
 ## Getting Started
 I use visual studio 2022 but use whatever editor works best for you. I use the 'cl' c++ compiler that comes with visual studio. You can use a different c++ compiler but this will require you to modify the bat scripts.
@@ -23,4 +23,4 @@ This repo contains my attempt at making a game engine written in C++ and opengl.
 ## What is the plan?
 I am developing this as a hobby as a way to learn about rendering, physics, I/O, serialization, GUI programming, C++, and anything else I run into while eveloping it. Right now I am working on basic features, so the engine is not something you would use to actually make a game...yet =).
 
-![PhysicsEngine](/resources/snapshots/editor_snapshot.png?raw=true "PhysicsEngine") 
+![PhysicsEngine](/resources/snapshots/editor_snapshot.PNG?raw=true "PhysicsEngine") 
