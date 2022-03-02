@@ -23,7 +23,7 @@ class System : public Object
 
   public:
     System(World* world);
-    System(World* world, Guid id);
+    System(World* world, const Guid& id);
     ~System();
 
     virtual void serialize(YAML::Node &out) const override;

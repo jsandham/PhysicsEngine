@@ -9,7 +9,7 @@ GizmoSystem::GizmoSystem(World* world) : System(world)
 {
 }
 
-GizmoSystem::GizmoSystem(World* world, Guid id) : System(world, id)
+GizmoSystem::GizmoSystem(World* world, const Guid& id) : System(world, id)
 {
 }
 

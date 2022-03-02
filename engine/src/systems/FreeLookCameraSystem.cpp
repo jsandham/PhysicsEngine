@@ -21,7 +21,7 @@ FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-FreeLookCameraSystem::FreeLookCameraSystem(World* world, Guid id) : System(world, id)
+FreeLookCameraSystem::FreeLookCameraSystem(World* world, const Guid& id) : System(world, id)
 {
     mMousePosX = 0;
     mMousePosY = 0;

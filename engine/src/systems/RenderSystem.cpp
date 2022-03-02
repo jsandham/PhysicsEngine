@@ -24,7 +24,7 @@ RenderSystem::RenderSystem(World* world) : System(world)
 {
 }
 
-RenderSystem::RenderSystem(World* world, Guid id) : System(world, id)
+RenderSystem::RenderSystem(World* world, const Guid& id) : System(world, id)
 {
 }
 

@@ -22,7 +22,7 @@ PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 }
 
-PhysicsSystem::PhysicsSystem(World* world, Guid id) : System(world, id)
+PhysicsSystem::PhysicsSystem(World* world, const Guid& id) : System(world, id)
 {
 }
 

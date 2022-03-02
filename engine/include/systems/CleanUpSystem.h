@@ -13,7 +13,7 @@ class CleanUpSystem : public System
 {
   public:
     CleanUpSystem(World* world);
-    CleanUpSystem(World* world, Guid id);
+    CleanUpSystem(World* world, const Guid& id);
     ~CleanUpSystem();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -39,7 +39,7 @@ class RenderSystem : public System
 
   public:
     RenderSystem(World* world);
-    RenderSystem(World* world, Guid id);
+    RenderSystem(World* world, const Guid& id);
     ~RenderSystem();
 
     virtual void serialize(YAML::Node &out) const override;

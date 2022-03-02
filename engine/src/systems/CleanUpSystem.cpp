@@ -11,7 +11,7 @@ CleanUpSystem::CleanUpSystem(World* world) : System(world)
 {
 }
 
-CleanUpSystem::CleanUpSystem(World* world, Guid id) : System(world, id)
+CleanUpSystem::CleanUpSystem(World* world, const Guid& id) : System(world, id)
 {
 }
 

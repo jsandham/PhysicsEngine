@@ -40,7 +40,7 @@ namespace PhysicsEngine
 
     public:
         FreeLookCameraSystem(World* world);
-        FreeLookCameraSystem(World* world, Guid id);
+        FreeLookCameraSystem(World* world, const Guid& id);
         ~FreeLookCameraSystem();
 
         virtual void serialize(YAML::Node& out) const override;

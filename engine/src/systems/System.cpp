@@ -9,7 +9,7 @@ System::System(World* world) : Object(world)
     mEnabled = true;
 }
 
-System::System(World* world, Guid id) : Object(world, id)
+System::System(World* world, const Guid& id) : Object(world, id)
 {
     mOrder = 0;
     mEnabled = true;

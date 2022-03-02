@@ -969,6 +969,7 @@ template <> TerrainSystem *World::getSystem<TerrainSystem>() const
 
 template <> Transform *World::getComponent<Transform>(const Guid &entityId) const
 {
+    // Transform occurs at same index as its entity since all entities have a transform
     return getComponentByIndex<Transform>(getIndexOf(entityId));
 }
 

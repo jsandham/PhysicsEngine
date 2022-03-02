@@ -1,6 +1,7 @@
 #include <iostream>
 #include <objbase.h>
 #include <stdio.h>
+#include <intrin.h>
 
 #include "../../include/core/Guid.h"
 
@@ -158,28 +159,29 @@ Guid &Guid::operator=(const Guid &guid)
 
 bool Guid::operator==(const Guid &guid) const
 {
-    for (int i = 0; i < 16; i++)
-    {
-        if (bytes[i] != guid.bytes[i])
-        {
-            return false;
-        }
-    }
+    const uint64_t *a1 = reinterpret_cast<const uint64_t *>(&bytes[0]);
+    const uint64_t *a2 = reinterpret_cast<const uint64_t *>(&bytes[8]);
 
-    return true;
+    const uint64_t *b1 = reinterpret_cast<const uint64_t *>(&(guid.bytes[0]));
+    const uint64_t *b2 = reinterpret_cast<const uint64_t *>(&(guid.bytes[8]));
+
+    return (*a1 == *b1) && (*a2 == *b2);
+    /*const __m128i a = _mm_loadu_si128(reinterpret_cast<const __m128i *>(&bytes[0]));
+    const __m128i b = _mm_loadu_si128(reinterpret_cast<const __m128i *>(&(guid.bytes[0])));
+
+    uint32_t mask = _mm_movemask_epi8(_mm_cmpeq_epi8(a, b));
+    return mask == 0x0000ffff;*/
 }
 
 bool Guid::operator!=(const Guid &guid) const
 {
-    for (int i = 0; i < 16; i++)
-    {
-        if (bytes[i] != guid.bytes[i])
-        {
-            return true;
-        }
-    }
+    const uint64_t *a1 = reinterpret_cast<const uint64_t *>(&bytes[0]);
+    const uint64_t *a2 = reinterpret_cast<const uint64_t *>(&bytes[8]);
 
-    return false;
+    const uint64_t *b1 = reinterpret_cast<const uint64_t *>(&(guid.bytes[0]));
+    const uint64_t *b2 = reinterpret_cast<const uint64_t *>(&(guid.bytes[8]));
+
+    return (*a1 != *b1) || (*a2 != *b2);
 }
 
 bool Guid::operator<(const Guid &guid) const

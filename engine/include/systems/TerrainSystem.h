@@ -17,7 +17,7 @@ namespace PhysicsEngine
 
     public:
         TerrainSystem(World *world);
-        TerrainSystem(World *world, Guid id);
+        TerrainSystem(World *world, const Guid& id);
         ~TerrainSystem();
 
         virtual void serialize(YAML::Node& out) const override;
