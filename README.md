@@ -9,7 +9,7 @@ Start by cloning the repository with `https://github.com/jsandham/PhysicsEngine.
 
 <ins>**2. Configuring and building:**</ins>
 
-1. Edit the [shell.bat](https://github.com/jsandham/PhysicsEngine/blob/master/shell.bat) file found at the root of the repository to point to whereever your vcvarsall.bat script is located. Typically this is located in something like C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\ but this will vary on your visual studio installation.
+1. Edit the [shell.bat](https://github.com/jsandham/PhysicsEngine/blob/master/shell.bat) file found at the root of the repository to point to wherever your vcvarsall.bat script is located. Typically this is located in something like C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\ but this will vary on your visual studio installation.
 2. Run the [build_all_debug.bat](https://github.com/jsandham/PhysicsEngine/blob/master/build_all_debug.bat) for a debug build or [build_all_release.bat](https://github.com/jsandham/PhysicsEngine/blob/master/build_all_release.bat) for a release build. These bat scipts will build all dependencies, the engine and the editor.
 3. You can now run the [editor](https://github.com/jsandham/PhysicsEngine/tree/master/editor/bin/debug) executable.
 4. Thats it.
@@ -29,6 +29,6 @@ I am developing this as a hobby as a way to learn about rendering, physics, I/O,
 ![PhysicsEngine](/resources/snapshots/editor_snapshot.PNG?raw=true "PhysicsEngine") 
 
 ## What can you do with the engine?
-Not much right now. Currently I am still implementing core features like loading assets, creating materials, and testing rendering. As I make progress ill keep updating this readme. Right now I am working on a terrain generation system but I also need to implement physics still as well as fine tune my material system to increase its flexibility.
+Not much right now. Currently I am still implementing core features like loading assets, creating materials, and rendering. As I make progress ill keep updating this readme. Right now I am working on a terrain generation system but I also need to implement physics still as well as fine tune my material system to increase its flexibility.
 
 ![PhysicsEngine](/resources/snapshots/editor_snapshot2.PNG?raw=true "PhysicsEngine") 

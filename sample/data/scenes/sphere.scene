@@ -1,0 +1,146 @@
+type: 1
+hide: 0
+id: 25944d19-3a9f-4243-ac1c-ddd391dede97
+name: Unnamed scene
+version: 0.1
+Entity:
+  type: 0
+  hide: 0
+  id: 08f0dbbb-cb33-41a9-a14d-9932e7539035
+  doNotDestroy: false
+  name: Camera
+Transform:
+  type: 2000
+  hide: 0
+  id: 5c55b275-724b-4ee6-b6da-fa724ae47185
+  entityId: 08f0dbbb-cb33-41a9-a14d-9932e7539035
+  parentId: 00000000-0000-0000-0000-000000000000
+  position:
+    - 0
+    - 0
+    - 0
+  rotation:
+    - 0
+    - 0
+    - 0
+    - 1
+  scale:
+    - 1
+    - 1
+    - 1
+Camera:
+  type: 2002
+  hide: 0
+  id: 1a6f96b2-d519-4e59-ac87-42dcd9bb2547
+  entityId: 08f0dbbb-cb33-41a9-a14d-9932e7539035
+  renderTextureId: 00000000-0000-0000-0000-000000000000
+  renderPath: 0
+  colorTarget: 0
+  cameraMode: 0
+  cameraSSAO: 1
+  cameraGizmos: 1
+  shadowCascades: 4
+  viewport:
+    x: 0
+    y: 0
+    width: 1920
+    height: 1080
+  frustum:
+    fov: 45
+    aspectRatio: 1
+    nearPlane: 0.100000001
+    farPlane: 250
+  backgroundColor:
+    - 0.150000006
+    - 0.150000006
+    - 0.150000006
+    - 1
+  cascade splits:
+    - 2
+    - 4
+    - 8
+    - 16
+    - 100
+  enabled: true
+Entity:
+  type: 0
+  hide: 0
+  id: f15fe92e-5949-4cf6-8efd-f680f35606d4
+  doNotDestroy: false
+  name: Directional
+Transform:
+  type: 2000
+  hide: 0
+  id: 24e7d7da-adf7-4a3f-9080-b5a169eb36db
+  entityId: f15fe92e-5949-4cf6-8efd-f680f35606d4
+  parentId: 00000000-0000-0000-0000-000000000000
+  position:
+    - 0
+    - 0
+    - 0
+  rotation:
+    - 0
+    - 0
+    - 0
+    - 1
+  scale:
+    - 1
+    - 1
+    - 1
+Light:
+  type: 2005
+  hide: 0
+  id: bf09006d-63aa-47d0-a39c-8c61690b52c8
+  entityId: f15fe92e-5949-4cf6-8efd-f680f35606d4
+  color:
+    - 0.400000006
+    - 0.400000006
+    - 0.400000006
+    - 1
+  intensity: 1
+  spotAngle: 15
+  innerSpotAngle: 12.5
+  shadowStrength: 1
+  shadowNearPlane: 1
+  shadowFarPlane: 100
+  shadowBias: 0.00499999989
+  lightType: 0
+  shadowType: 0
+  shadowMapResolution: 1024
+  enabled: true
+Entity:
+  type: 0
+  hide: 0
+  id: b085ca53-19f5-43a1-a931-3def43a7842d
+  doNotDestroy: false
+  name: Sphere
+Transform:
+  type: 2000
+  hide: 0
+  id: 3636f725-8685-421b-b079-7c40ab8722a0
+  entityId: b085ca53-19f5-43a1-a931-3def43a7842d
+  parentId: 00000000-0000-0000-0000-000000000000
+  position:
+    - 0
+    - 0
+    - 0
+  rotation:
+    - 0
+    - 0
+    - 0
+    - 1
+  scale:
+    - 1
+    - 1
+    - 1
+MeshRenderer:
+  type: 2003
+  hide: 0
+  id: 2e48d6d2-ea2e-45a4-a65e-4a94ebeeebfd
+  entityId: b085ca53-19f5-43a1-a931-3def43a7842d
+  meshId: 6b415ea5-1c19-4d0d-a6df-62461167b4b3
+  materialCount: 1
+  materialIds:
+    - 1d83f0b2-f16d-48e6-9cbd-20be8115179b
+  isStatic: true
+  enabled: true
