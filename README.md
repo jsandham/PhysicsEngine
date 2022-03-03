@@ -14,7 +14,7 @@ Start by cloning the repository with `https://github.com/jsandham/PhysicsEngine.
 3. You can now run the [editor](https://github.com/jsandham/PhysicsEngine/tree/master/editor/bin/debug) executable.
 4. Thats it.
 
-<ins>**2. Dependencies:**</ins>
+<ins>**3. Dependencies:**</ins>
 
 All of the dependencies are already included as part of the repository and are located in the [external](https://github.com/jsandham/PhysicsEngine/tree/master/external) folder and are rebuilt when the engine is built. One of my philosophies with this engine is to 1) limit the number of dependencies, and 2) dont force users (or myself) to have to install spurious extra software in order to use my engine. What this means is that all you need is a C++ compiler. Any dependencies should be included as part of the repository and are built from source. No installing cmake. No installing python. No installing chocolatey. No powershell. It also means that all of the files found in the repository should be files that the average C++ programmer can understand. Because I don't use a build system (only simple bat files), there are no solution files or other extraneous Visual Studio cruft. There are no CmakeList files sprinkled throughout the project. The ultimate goal here is to have the user be able to 1) clone the repo and 2) run a simple bat file. I will continue to test on various Windows machines to fix problems encountered when trying to build this engine.
 
@@ -30,3 +30,5 @@ I am developing this as a hobby as a way to learn about rendering, physics, I/O,
 
 ## What can you do with the engine?
 Not much right now. Currently I am still implementing core features like loading assets, creating materials, and testing rendering. As I make progress ill keep updating this readme. Right now I am working on a terrain generation system but I also need to implement physics still as well as fine tune my material system to increase its flexibility.
+
+![PhysicsEngine](/resources/snapshots/editor_snapshot2.PNG?raw=true "PhysicsEngine") 
