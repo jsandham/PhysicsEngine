@@ -2,7 +2,6 @@
 #define CAMERA_H__
 
 #include <unordered_map>
-#include <vector>
 
 #undef NEAR
 #undef FAR

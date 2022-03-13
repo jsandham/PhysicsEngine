@@ -1,5 +1,5 @@
-#ifndef __MESHRENDERER_DRAWER_H__
-#define __MESHRENDERER_DRAWER_H__
+#ifndef MESHRENDERER_DRAWER_H__
+#define MESHRENDERER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

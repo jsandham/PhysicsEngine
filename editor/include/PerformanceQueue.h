@@ -1,5 +1,5 @@
-#ifndef __PERFORMANCE_QUEUE_H__
-#define __PERFORMANCE_QUEUE_H__
+#ifndef PERFORMANCE_QUEUE_H__
+#define PERFORMANCE_QUEUE_H__
 
 #include <vector>
 

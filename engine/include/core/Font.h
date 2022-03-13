@@ -5,9 +5,6 @@
 #include <string>
 #include <vector>
 
-//#include <GL/glew.h>
-//#include <gl/gl.h>
-
 #include "Asset.h"
 #include "Shader.h"
 

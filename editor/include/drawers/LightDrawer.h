@@ -1,5 +1,5 @@
-#ifndef __LIGHT_DRAWER_H__
-#define __LIGHT_DRAWER_H__
+#ifndef LIGHT_DRAWER_H__
+#define LIGHT_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

@@ -1,12 +1,19 @@
-#ifndef __DEBUG_OVERLAY_H__
-#define __DEBUG_OVERLAY_H__
+#ifndef DEBUG_OVERLAY_H__
+#define DEBUG_OVERLAY_H__
 
-#include "Window.h"
+#include "../EditorClipboard.h"
 #include "../PerformanceQueue.h"
 
 namespace PhysicsEditor
 {
-    class DebugOverlay : public Window
+    class Overlay
+    {
+    public:
+        virtual void init(Clipboard& clipboard) = 0;
+        virtual void update(Clipboard& clipboard) = 0;
+    };
+
+    class DebugOverlay
     {
     private:
         float mMaxFPS;
@@ -18,9 +25,10 @@ namespace PhysicsEditor
         DebugOverlay(const DebugOverlay& other) = delete;
         DebugOverlay& operator=(const DebugOverlay& other) = delete;
 
-        void init(Clipboard& clipboard) override;
-        void update(Clipboard& clipboard) override;
+        void init(Clipboard& clipboard);
+        void update(Clipboard& clipboard);
 
+    private:
         void sceneTab(Clipboard& clipboard);
         void shaderTab(Clipboard& clipboard);
     };

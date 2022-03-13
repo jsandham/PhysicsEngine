@@ -1,5 +1,5 @@
-#ifndef __CAPSULECOLLIDER_DRAWER_H__
-#define __CAPSULECOLLIDER_DRAWER_H__
+#ifndef CAPSULECOLLIDER_DRAWER_H__
+#define CAPSULECOLLIDER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

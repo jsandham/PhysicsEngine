@@ -1,8 +1,6 @@
 #ifndef DEFERREDRENDERER_H__
 #define DEFERREDRENDERER_H__
 
-#include <GL/glew.h>
-#include <gl/gl.h>
 #include <vector>
 
 #include "../components/Camera.h"

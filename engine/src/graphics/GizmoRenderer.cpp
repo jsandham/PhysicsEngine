@@ -1,9 +1,6 @@
 #include "../../include/graphics/GizmoRenderer.h"
 #include "../../include/core/World.h"
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 using namespace PhysicsEngine;
 
 GizmoRenderer::GizmoRenderer()
@@ -27,7 +24,7 @@ void GizmoRenderer::update(Camera *camera)
     for (size_t i = 0; i < mWorld->mBoundingSpheres.size(); i++)
     {
         /*addToDrawList(mWorld->mBoundingSpheres[i], mWorld->mRenderObjects[i].culled ? Color::blue : Color::red);*/
-        addToDrawList(mWorld->mBoundingSpheres[i], Color::blue);
+        addToDrawList(mWorld->mBoundingSpheres[i], Color(0.0f, 0.0f, 1.0f, 0.3f) /*Color::blue*/);
     }
 
     renderLineGizmos(mWorld, camera, mState, mLines);
@@ -177,9 +174,7 @@ void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRenderer
     Graphics::use(state.mLineShaderProgram);
     Graphics::setMat4(state.mLineShaderMVPLoc, mvp);
 
-    glBindVertexArray(lineVAO);
-    glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
-    glBindVertexArray(0);
+    Graphics::renderLines(lineVAO, 0, (int)vertices.size() / 3);
 
     Graphics::unbindFramebuffer();
 
@@ -197,7 +192,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
     }
 
     Graphics::turnOn(Capability::Blending);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
@@ -224,7 +219,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
         Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
         Graphics::setMat4(state.mGizmoShaderModelLoc, model);
 
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
+        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
     Graphics::unbindVertexArray();
@@ -244,7 +239,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
     }
 
     Graphics::turnOn(Capability::Blending);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
@@ -270,7 +265,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
         Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
         Graphics::setMat4(state.mGizmoShaderModelLoc, model);
 
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
+        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
     Graphics::unbindVertexArray();   
@@ -290,7 +285,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
     }
 
     Graphics::turnOn(Capability::Blending);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
@@ -322,7 +317,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
         Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
         Graphics::setMat4(state.mGizmoShaderModelLoc, model);
 
-        glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(mesh->getVertices().size() / 3));
+        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
     Graphics::unbindVertexArray();    
@@ -416,15 +411,10 @@ void PhysicsEngine::renderShadedFrustumGizmo(World *world, Camera *camera, Gizmo
     Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
     Graphics::setColor(state.mGizmoShaderColorLoc, gizmo.mColor);
 
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, state.mFrustumVertices.size() * sizeof(float), &state.mFrustumVertices[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Graphics::updateFrustum(state.mFrustumVertices, state.mFrustumNormals, state.mFrustumVBO[0],
+                            state.mFrustumVBO[1]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO[1]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, state.mFrustumNormals.size() * sizeof(float), &state.mFrustumNormals[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(state.mFrustumVertices.size() / 3));
+    Graphics::renderWithCurrentlyBoundVAO(0, (int)state.mFrustumVertices.size() / 3);
 }
 
 void PhysicsEngine::renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
@@ -470,11 +460,9 @@ void PhysicsEngine::renderWireframeFrustumGizmo(World *world, Camera *camera, Gi
     Graphics::use(state.mLineShaderProgram);
     Graphics::setMat4(state.mLineShaderMVPLoc, mvp);
 
-    glBindBuffer(GL_ARRAY_BUFFER, state.mFrustumVBO[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 24 * 3 * sizeof(float), &state.mFrustumVertices[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glDrawArrays(GL_LINES, 0, (GLsizei)(24));
+    Graphics::updateFrustum(state.mFrustumVertices, state.mFrustumVBO[0]);
+    
+    Graphics::renderLinesWithCurrentlyBoundVAO(0, 24);
 }
 
 void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
@@ -486,7 +474,7 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
     }
 
     Graphics::turnOn(Capability::Blending);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -517,7 +505,8 @@ void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererS
 {
     Graphics::checkError(__LINE__, __FILE__);
     Graphics::turnOn(Capability::Blending);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Graphics::turnOn(Capability::LineSmoothing);
+    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Graphics::checkError(__LINE__, __FILE__);
     Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
@@ -532,13 +521,14 @@ void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererS
     Graphics::setColor(state.mGridShaderColorLoc, state.mGridColor);
 
     Graphics::checkError(__LINE__, __FILE__);
-    glBindVertexArray(state.mGridVAO);
-    glDrawArrays(GL_LINES, 0, (GLsizei)(state.mGridVertices.size()));
-    glBindVertexArray(0);
+
+    Graphics::renderLines(0, (int)state.mGridVertices.size(), state.mGridVAO);
 
     Graphics::checkError(__LINE__, __FILE__);
     Graphics::unbindFramebuffer();
 
     Graphics::turnOff(Capability::Blending);
+    Graphics::turnOff(Capability::LineSmoothing);
+
     Graphics::checkError(__LINE__, __FILE__);
 }

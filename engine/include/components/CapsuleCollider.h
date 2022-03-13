@@ -1,8 +1,6 @@
 #ifndef CAPSULECOLLIDER_H__
 #define CAPSULECOLLIDER_H__
 
-#include <vector>
-
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS

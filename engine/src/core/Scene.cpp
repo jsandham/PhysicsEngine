@@ -1,4 +1,5 @@
 #include "../../include/core/Scene.h"
+#include "../../include/core/GLM.h"
 #include "../../include/core/Types.h"
 #include "../../include/core/Version.h"
 

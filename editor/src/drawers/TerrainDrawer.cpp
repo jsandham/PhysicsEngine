@@ -54,8 +54,14 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             {
                 Guid transformId = terrain->mCameraTransformId;
 
+                Entity* entity = nullptr;
+                if (transformId.isValid())
+                {
+                    entity = clipboard.getWorld()->getComponentById<Transform>(transformId)->getEntity();
+                }
+
                 ImGui::SlotData data;
-                if (ImGui::Slot2("Transform", transformId.isValid() ? transformId.toString() : "None (Transform)", &data))
+                if (ImGui::Slot2("Transform", transformId.isValid() ? entity->getName()/*transformId.toString()*/ : "None (Transform)", &data))
                 {
                     if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Entity)
                     {
@@ -72,67 +78,14 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 }
             }
 
-
-
-
-
-
-
-
-
-            //static bool generateModeActive = true;
-            //static bool grassModeActive = false;
-            //static bool treeModeActive = false;
-
-            /*if (ImGui::StampButton("T", translationModeActive))
-            {
-                translationModeActive = true;
-                rotationModeActive = false;
-                scaleModeActive = false;
-                operation = ImGuizmo::OPERATION::TRANSLATE;
-            }
-            ImGui::SameLine();
-
-            if (ImGui::StampButton("R", rotationModeActive))
-            {
-                translationModeActive = false;
-                rotationModeActive = true;
-                scaleModeActive = false;
-                operation = ImGuizmo::OPERATION::ROTATE;
-            }
-            ImGui::SameLine();
-
-            if (ImGui::StampButton("S", scaleModeActive))
-            {
-                translationModeActive = false;
-                rotationModeActive = false;
-                scaleModeActive = true;
-                operation = ImGuizmo::OPERATION::SCALE;
-            }*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // Material
             {
                 Guid materialId = terrain->getMaterial();
 
+                Material* material = clipboard.getWorld()->getAssetById<Material>(materialId);
+
                 ImGui::SlotData data;
-                if (ImGui::Slot2("Material", materialId.isValid() ? materialId.toString() : "None (Material)", &data))
+                if (ImGui::Slot2("Material", materialId.isValid() ? material->getName()/*materialId.toString()*/ : "None (Material)", &data))
                 {
                     if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
                     {
@@ -216,8 +169,10 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 {
                     grassMeshIds[i] = terrain->getGrassMesh(i);
 
+                    Mesh* grassMesh = clipboard.getWorld()->getAssetById<Mesh>(grassMeshIds[i]);
+
                     ImGui::SlotData data;
-                    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMeshIds[i].toString() : "None (Mesh)", &data))
+                    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
                     {
                         if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
                         {
@@ -237,13 +192,6 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                             terrain->setGrassMesh(Guid::INVALID, i);
                         }
                     }
-
-
-
-
-                    
-
-
                 }
 
                 ImGui::TreePop();
@@ -268,8 +216,10 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 {
                     treeMeshIds[i] = terrain->getTreeMesh(i);
 
+                    Mesh* treeMesh = clipboard.getWorld()->getAssetById<Mesh>(treeMeshIds[i]);
+
                     ImGui::SlotData data;
-                    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMeshIds[i].toString() : "None (Mesh)", &data))
+                    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))
                     {
                         if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
                         {

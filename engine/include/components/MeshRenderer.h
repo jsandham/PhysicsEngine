@@ -1,8 +1,6 @@
 #ifndef MESHRENDERER_H__
 #define MESHRENDERER_H__
 
-#include <vector>
-
 #include "Component.h"
 
 namespace PhysicsEngine

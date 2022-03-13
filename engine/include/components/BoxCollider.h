@@ -1,8 +1,6 @@
 #ifndef BOXCOLLIDER_H__
 #define BOXCOLLIDER_H__
 
-#include <vector>
-
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS

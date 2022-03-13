@@ -4,6 +4,8 @@
 
 #include "tiny_obj_loader.h"
 
+#include <filesystem>
+
 using namespace PhysicsEngine;
 
 Mesh::Mesh(World *world) : Asset(world)

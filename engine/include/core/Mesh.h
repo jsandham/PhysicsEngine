@@ -1,11 +1,9 @@
 #ifndef MESH_H__
 #define MESH_H__
 
-#include <string>
 #include <vector>
 
 #include "Asset.h"
-#include "Guid.h"
 #include "Sphere.h"
 
 #define GLM_FORCE_RADIANS

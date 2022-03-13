@@ -1,5 +1,5 @@
-#ifndef __BOXCOLLIDER_DRAWER_H__
-#define __BOXCOLLIDER_DRAWER_H__
+#ifndef BOXCOLLIDER_DRAWER_H__
+#define BOXCOLLIDER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

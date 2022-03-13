@@ -1,9 +1,6 @@
 #ifndef TERRAIN_H__
 #define TERRAIN_H__
 
-#include <string>
-#include <vector>
-
 #include "Component.h"
 #include "../core/Rect.h"
 #include "../core/Sphere.h"
@@ -11,8 +8,6 @@
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
-
-#include <vector>
 
 namespace PhysicsEngine
 {

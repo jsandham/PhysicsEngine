@@ -363,6 +363,16 @@ void Win32ApplicationWindow::update()
     mRendererAPI->update();
 }
 
+void Win32ApplicationWindow::turnVsyncOn()
+{
+    mRendererAPI->turnVsyncOn();
+}
+
+void Win32ApplicationWindow::turnVsyncOff()
+{
+    mRendererAPI->turnVsyncOff();
+}
+
 int Win32ApplicationWindow::getWidth() const
 {
     return sWidth;
@@ -396,12 +406,12 @@ void Win32ApplicationWindow::init(const std::string& title, int width, int heigh
 
     mRunning = true;
 
-    mWC = { 0 };
+    mWC = {};
     mWC.lpfnWndProc = WndProc;
     mWC.hInstance = GetModuleHandle(0);
     mWC.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
     mWC.lpszClassName = _T("PHYSICS_ENGINE_WINDOW_CLASS");
-    mWC.style = CS_OWNDC;// CS_HREDRAW | CS_VREDRAW;
+    mWC.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     if (!RegisterClass(&mWC))
         return;
     mWindow = CreateWindowEx(0, mWC.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,

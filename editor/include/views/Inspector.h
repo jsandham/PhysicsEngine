@@ -1,5 +1,5 @@
-#ifndef __INSPECTOR_H__
-#define __INSPECTOR_H__
+#ifndef INSPECTOR_H__
+#define INSPECTOR_H__
 
 #include <vector>
 

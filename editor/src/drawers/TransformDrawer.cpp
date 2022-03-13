@@ -38,12 +38,12 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
             glm::vec3 scale = transform->mScale;
             glm::vec3 eulerAngles = glm::degrees(glm::eulerAngles(rotation));
 
-            if (ImGui::InputFloat3("Position", glm::value_ptr(position)))
+            if (ImGui::DragFloat3("Position", glm::value_ptr(position)))
             {
                 transform->mPosition = position;
             }
 
-            if (ImGui::InputFloat3("Rotation", glm::value_ptr(eulerAngles)))
+            if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles)))
             {
                 glm::quat x = glm::angleAxis(glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
                 glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -51,7 +51,7 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 transform->mRotation = z * y * x;
             }
-            if (ImGui::InputFloat3("Scale", glm::value_ptr(scale)))
+            if (ImGui::DragFloat3("Scale", glm::value_ptr(scale)))
             {
                 transform->mScale = scale;
             }

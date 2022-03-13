@@ -1,5 +1,5 @@
-#ifndef __HIERARCHY_H__
-#define __HIERARCHY_H__
+#ifndef HIERARCHY_H__
+#define HIERARCHY_H__
 
 #include <set>
 #include <string>

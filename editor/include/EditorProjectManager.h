@@ -1,3 +1,6 @@
+#ifndef EDITOR_PROJECT_MANAGER_H__
+#define EDITOR_PROJECT_MANAGER_H__
+
 #include <string>
 #include <filesystem>
 
@@ -13,3 +16,5 @@ namespace PhysicsEditor
 		static void saveProject(Clipboard& clipboard);
 	};
 }
+
+#endif

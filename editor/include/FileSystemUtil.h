@@ -1,5 +1,5 @@
-#ifndef __FILESYSTEM_UTIL_H__
-#define __FILESYSTEM_UTIL_H__
+#ifndef FILESYSTEM_UTIL_H__
+#define FILESYSTEM_UTIL_H__
 
 #include <string>
 #include <vector>

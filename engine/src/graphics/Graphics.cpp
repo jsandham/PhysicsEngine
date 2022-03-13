@@ -195,6 +195,9 @@ void Graphics::turnOn(Capability capability)
     case Capability::BackfaceCulling:
         glEnable(GL_CULL_FACE);  
         break;
+    case Capability::LineSmoothing:
+        glEnable(GL_LINE_SMOOTH);
+        break;
     }
 }
 
@@ -211,7 +214,49 @@ void Graphics::turnOff(Capability capability)
     case Capability::BackfaceCulling:
         glDisable(GL_CULL_FACE);
         break;
+    case Capability::LineSmoothing:
+        glDisable(GL_LINE_SMOOTH);
+        break;
     }
+}
+
+void Graphics::setBlending(BlendingFactor source, BlendingFactor dest)
+{
+    GLenum s = GL_ZERO;
+    switch (source)
+    {
+    case BlendingFactor::ZERO:
+        s = GL_ZERO;
+        break; 
+    case BlendingFactor::ONE:
+        s = GL_ONE;
+        break;
+    case BlendingFactor::SRC_ALPHA:
+        s = GL_SRC_ALPHA;
+        break;
+    case BlendingFactor::ONE_MINUS_SRC_ALPHA:
+        s = GL_ONE_MINUS_SRC_ALPHA;
+        break;
+    }
+
+    GLenum d = GL_ZERO;
+    switch (dest)
+    {
+    case BlendingFactor::ZERO:
+        d = GL_ZERO;
+        break;
+    case BlendingFactor::ONE:
+        d = GL_ONE;
+        break;
+    case BlendingFactor::SRC_ALPHA:
+        d = GL_SRC_ALPHA;
+        break;
+    case BlendingFactor::ONE_MINUS_SRC_ALPHA:
+        d = GL_ONE_MINUS_SRC_ALPHA;
+        break;
+    }
+
+    glBlendFunc(s, d);
 }
 
 void Graphics::beginQuery(unsigned int queryId)
@@ -933,11 +978,8 @@ void Graphics::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, T
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
 
-    float aniso = 0.0f;
-    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
-
-    // to set aniso
-    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    // clamp the requested anisotropic filtering level to what is available and set it
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f); 
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -958,8 +1000,14 @@ void Graphics::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filte
                     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode);
-    // float aniso = 0.0f;
-    // glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    
+    // Determine how many levels of anisotropic filtering are available
+    float aniso = 0.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+    
+    // clamp the requested anisotropic filtering level to what is available and set it
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)); 
+    
     glBindTexture(GL_TEXTURE_2D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1012,6 +1060,9 @@ void Graphics::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, T
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
 
+    // clamp the requested anisotropic filtering level to what is available and set it
+    glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f); 
+
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1034,8 +1085,14 @@ void Graphics::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filte
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode);
-    // to set aniso
-    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    
+    // Determine how many levels of anisotropic filtering are available
+    float aniso = 0.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+
+    // clamp the requested anisotropic filtering level to what is available and set it
+    glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)); 
+
     glBindTexture(GL_TEXTURE_3D, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1114,8 +1171,7 @@ void Graphics::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterM
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode);
-    // to set aniso
-    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, an);
+    
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     Graphics::checkError(__LINE__, __FILE__);
@@ -1422,6 +1478,108 @@ void Graphics::createSprite(unsigned int* vao)
 void Graphics::destroySprite(unsigned int* vao)
 {
     glDeleteVertexArrays(1, vao);
+}
+
+void Graphics::createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int *vao,
+                             unsigned int *vbo0, unsigned int *vbo1)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(2, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glGenBuffers(1, vbo1);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(2, vbo0);
+    glDeleteBuffers(2, vbo1);
+}
+
+void Graphics::updateFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int vbo0,
+                             unsigned int vbo1)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vbo0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), &vertices[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo1);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, normals.size() * sizeof(float), &normals[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::updateFrustum(const std::vector<float> &vertices, unsigned int vbo0)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, vbo0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), &vertices[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(1, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyGrid(unsigned int *vao, unsigned int *vbo0)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(1, vbo0);
+}
+
+void Graphics::createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
+                          unsigned int *vbo0, unsigned int *vbo1)
+{
+    glGenVertexArrays(1, vao);
+    glBindVertexArray(*vao);
+
+    glGenBuffers(2, vbo0);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
+    glGenBuffers(1, vbo1);
+    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), &colors[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Graphics::destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
+{
+    glDeleteVertexArrays(1, vao);
+    glDeleteBuffers(1, vbo0);
+    glDeleteBuffers(1, vbo1);
 }
 
 void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant)
@@ -1905,12 +2063,10 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, int sha
             if (uniforms[i].mCachedHandle != -1)
             {
                 Graphics::setTexture2D(location, textureUnit, uniforms[i].mCachedHandle);
-                //Graphics::checkError(__LINE__, __FILE__);
             }
             else
             {
                 Graphics::setTexture2D(location, textureUnit, 0);
-                //Graphics::checkError(__LINE__, __FILE__);
             }
 
             textureUnit++;
@@ -1918,31 +2074,43 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, int sha
         else if (uniforms[i].mType == ShaderUniformType::Int)
         {
             Graphics::setInt(location, *reinterpret_cast<const int *>(uniforms[i].mData));
-            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Float)
         {
             Graphics::setFloat(location, *reinterpret_cast<const float *>(uniforms[i].mData));
-            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
             Graphics::setVec2(location, *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
-            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
             Graphics::setVec3(location, *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
-            //Graphics::checkError(__LINE__, __FILE__);
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
             Graphics::setVec4(location, *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
-            //Graphics::checkError(__LINE__, __FILE__);
         }
     }
 
     Graphics::checkError(__LINE__, __FILE__);
+}
+
+void Graphics::renderLines(int start, int count, int vao)
+{
+    glBindVertexArray(vao);
+    glDrawArrays(GL_LINES, start, count);
+    glBindVertexArray(0);
+}
+
+void Graphics::renderLinesWithCurrentlyBoundVAO(int start, int count)
+{
+    glDrawArrays(GL_LINES, start, count);
+}
+
+void Graphics::renderWithCurrentlyBoundVAO(int start, int count)
+{
+    glDrawArrays(GL_TRIANGLES, start, count);
 }
 
 void Graphics::render(int start, int count, int vao, bool wireframe)
@@ -2415,84 +2583,140 @@ void Graphics::compileGridShader(GizmoRendererState &state)
     }
 }
 
-void Graphics::createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int *vao,
-                          unsigned int *vbo0, unsigned int *vbo1)
-{
-    glGenVertexArrays(1, vao);
-    glBindVertexArray(*vao);
 
-    glGenBuffers(2, vbo0);
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+static void compileColorShader(ForwardRendererState &state);
+static void compileColorInstancedShader(ForwardRendererState &state);
+static void compileScreenQuadShader(ForwardRendererState &state);
+static void compileSpriteShader(ForwardRendererState &state);
+static void compileGBufferShader(DeferredRendererState &state);
+static void compileScreenQuadShader(DeferredRendererState &state);
+static void compileColorShader(DeferredRendererState &state);
+static void compileColorInstancedShader(DeferredRendererState &state);
+static void compileNormalShader(DebugRendererState &state);
+static void compileNormalInstancedShader(DebugRendererState &state);
+static void compilePositionShader(DebugRendererState &state);
+static void compilePositionInstancedShader(DebugRendererState &state);
+static void compileLinearDepthShader(DebugRendererState &state);
+static void compileLinearDepthInstancedShader(DebugRendererState &state);
+static void compileColorShader(DebugRendererState &state);
+static void compileColorInstancedShader(DebugRendererState &state);
+static void compileScreenQuadShader(DebugRendererState &state);
+static void compileLineShader(GizmoRendererState &state);
+static void compileGizmoShader(GizmoRendererState &state);
+static void compileGridShader(GizmoRendererState &state);
 
-    glGenBuffers(1, vbo1);
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+ /*enum class InternalShader
+ {
+     SSAO,
+     ShadowDepthMap,
+     ShadowDepthCubeMap,
+     Color,
+     ColorInstanced,
+     ScreenQuad,
+     Sprite,
+     GBuffer,
+     Normal,
+     NormalInstanced,
+     Position,
+     PositionInsanced,
+     LinearDepth,
+     LinearDepthInstanced,
+     Line,
+     Gizmo,
+     Grid,
+     Count
+ }
+ 
+ void compileShader(InternalShader shader, ForwardRendererState& state)
+ {
+     switch (shader)
+     {
+     case InternalShader::SSAO: 
+     {
+         unsigned int program = 0;
+         if (Graphics::compile("Geometry", getGeometryVertexShader(), getGeometryFragmentShader(), "", &program))
+         {
+             state.mGeometryShaderProgram = program;
+             state.mGeometryShaderModelLoc = Graphics::findUniformLocation("model", state.mGeometryShaderProgram);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
+             Graphics::setUniformBlock("CameraBlock", 0, state.mGeometryShaderProgram);
+         }
+         else
+         {
+             state.mGeometryShaderProgram = -1;
+         }
 
-void Graphics::destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
-{
-    glDeleteVertexArrays(1, vao);
-    glDeleteBuffers(2, vbo0);
-    glDeleteBuffers(2, vbo1);
-}
+         program = 0;
+         if (Graphics::compile("SSAO", getSSAOVertexShader(), getSSAOFragmentShader(), "", &program))
+         {
+             state.mSsaoShaderProgram = program;
+             state.mSsaoShaderProjectionLoc = Graphics::findUniformLocation("projection", state.mSsaoShaderProgram);
+             state.mSsaoShaderPositionTexLoc = Graphics::findUniformLocation("positionTex", state.mSsaoShaderProgram);
+             state.mSsaoShaderNormalTexLoc = Graphics::findUniformLocation("normalTex", state.mSsaoShaderProgram);
+             state.mSsaoShaderNoiseTexLoc = Graphics::findUniformLocation("noiseTex", state.mSsaoShaderProgram);
 
-void Graphics::createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0)
-{
-    glGenVertexArrays(1, vao);
-    glBindVertexArray(*vao);
-
-    glGenBuffers(1, vbo0);
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void Graphics::destroyGrid(unsigned int *vao, unsigned int *vbo0)
-{
-    glDeleteVertexArrays(1, vao);
-    glDeleteBuffers(1, vbo0);
-}
-
-void Graphics::createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
-                          unsigned int *vbo0, unsigned int *vbo1)
-{
-    glGenVertexArrays(1, vao);
-    glBindVertexArray(*vao);
-
-    glGenBuffers(2, vbo0);
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-
-    glGenBuffers(1, vbo1);
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
-    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), &colors[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void Graphics::destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1)
-{
-    glDeleteVertexArrays(1, vao);
-    glDeleteBuffers(1, vbo0);
-    glDeleteBuffers(1, vbo1);
-}
+             for (int i = 0; i < 64; i++)
+             {
+                 std::string sample = "samples[" + std::to_string(i) + "]";
+                 state.mSsaoShaderSamplesLoc[i] =
+                     Graphics::findUniformLocation(sample.c_str(), state.mSsaoShaderProgram);
+             }
+         }
+         else
+         {
+             state.mSsaoShaderProgram = -1;
+         }
+         break;
+     }
+     case InternalShader::ShadowDepthMap: 
+     {
+         unsigned int program = 0;
+         if (Graphics::compile("Shadow Depth Map", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader(),
+                               "", &program))
+         {
+             state.mDepthShaderProgram = program;
+             state.mDepthShaderModelLoc = Graphics::findUniformLocation("model", state.mDepthShaderProgram);
+             state.mDepthShaderViewLoc = Graphics::findUniformLocation("view", state.mDepthShaderProgram);
+             state.mDepthShaderProjectionLoc = Graphics::findUniformLocation("projection", state.mDepthShaderProgram);
+         }
+         else
+         {
+             state.mDepthShaderProgram = -1;
+         }
+         break;
+     }
+     case InternalShader::ShadowDepthCubeMap: 
+     {
+         unsigned int program = 0;
+         if (Graphics::compile("Shadow Depth Cubemap", getShadowDepthCubemapVertexShader(),
+                               getShadowDepthCubemapFragmentShader(), getShadowDepthCubemapGeometryShader(), &program))
+         {
+             state.mDepthCubemapShaderProgram = program;
+             state.mDepthCubemapShaderLightPosLoc =
+                 Graphics::findUniformLocation("lightPos", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderFarPlaneLoc =
+                 Graphics::findUniformLocation("farPlane", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderModelLoc =
+                 Graphics::findUniformLocation("model", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc0 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[0]", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc1 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[1]", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc2 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[2]", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc3 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[3]", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc4 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[4]", state.mDepthCubemapShaderProgram);
+             state.mDepthCubemapShaderCubeViewProjMatricesLoc5 =
+                 Graphics::findUniformLocation("cubeViewProjMatrices[5]", state.mDepthCubemapShaderProgram);
+         }
+         else
+         {
+             state.mDepthCubemapShaderProgram = -1;
+         }
+     }
+ }*/
 
 std::string Graphics::getGeometryVertexShader()
 {

@@ -6,6 +6,10 @@
 
 using namespace PhysicsEditor;
 
+extern std::string openFile(const char* filter);
+extern std::string saveFile(const char* filter);
+extern std::string selectFolder();
+
 MenuBar::MenuBar()
 {
     mNewSceneClicked = false;
@@ -88,9 +92,14 @@ void MenuBar::update(Clipboard &clipboard)
     {
         EditorSceneManager::newScene(clipboard, "default.scene");
     }
+
     if (isOpenSceneClicked())
     {
-        mFilebrowser.setMode(FilebrowserMode::Open);
+        std::string fileToOpen = openFile("Scene (*.scene)\0*.scene\0");
+        if (!fileToOpen.empty())
+        {
+            EditorSceneManager::openScene(clipboard, fileToOpen);
+        }
     }
     else if (isSaveClicked())
     {
@@ -98,28 +107,21 @@ void MenuBar::update(Clipboard &clipboard)
     }
     else if (isSaveAsClicked())
     {
-        mFilebrowser.setMode(FilebrowserMode::Save);
-    }
-
-    mFilebrowser.render(clipboard.getProjectPath(), isOpenSceneClicked() || isSaveAsClicked());
-
-    if (mFilebrowser.isOpenClicked())
-    {
-        EditorSceneManager::openScene(clipboard, mFilebrowser.getOpenFilePath());
-    }
-    else if (mFilebrowser.isSaveClicked())
-    {
-        EditorSceneManager::saveScene(clipboard, mFilebrowser.getSaveFilePath());
+        std::string fileToSave = saveFile("Scene (*.scene)\0*.scene\0");
+        if (!fileToSave.empty())
+        {
+            EditorSceneManager::openScene(clipboard, fileToSave);
+        }
     }
 
     // new, open, save project project
     if (isOpenProjectClicked())
     {
-        mProjectWindow.setMode(ProjectWindowMode::OpenProject);
-    }
-    else if (isNewProjectClicked())
-    {
-        mProjectWindow.setMode(ProjectWindowMode::NewProject);
+        std::string folderToOpen = selectFolder();
+        if (!folderToOpen.empty())
+        {
+            EditorProjectManager::openProject(clipboard, folderToOpen);
+        }
     }
     else if (isSaveProjectClicked())
     {
@@ -131,7 +133,7 @@ void MenuBar::update(Clipboard &clipboard)
         EditorSceneManager::populateScene(clipboard);
     }
 
-    mProjectWindow.draw(clipboard, isOpenProjectClicked() || isNewProjectClicked());
+    mProjectWindow.draw(clipboard, isNewProjectClicked());
     mAboutPopup.draw(clipboard, isAboutClicked());
     mPreferencesWindow.draw(clipboard, isPreferencesClicked());
     mBuildWindow.draw(clipboard, isBuildClicked());

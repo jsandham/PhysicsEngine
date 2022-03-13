@@ -2,7 +2,6 @@
 #define TEXTURE_H__
 
 #include "Asset.h"
-#include "Guid.h"
 
 #include "yaml-cpp/yaml.h"
 

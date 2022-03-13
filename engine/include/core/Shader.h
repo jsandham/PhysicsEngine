@@ -3,7 +3,6 @@
 
 #define NOMINMAX
 
-#include <string>
 #include <vector>
 #include <unordered_map>
 #include <set>
@@ -15,8 +14,6 @@
 
 #include "Asset.h"
 #include "Color.h"
-#include "GLM.h"
-#include "Guid.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -91,6 +88,12 @@ struct ShaderUniform
     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
     int mCachedHandle; // if data stores a texture id, this is the cached handle
     unsigned int mUniformId; // integer hash of uniform name
+
+    std::string getShortName() const
+    {
+        size_t pos = mName.find_first_of('.');
+        return mName.substr(pos + 1);
+    }
 };
 
 struct ShaderAttribute

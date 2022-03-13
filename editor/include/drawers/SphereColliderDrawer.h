@@ -1,5 +1,5 @@
-#ifndef __SPHERECOLLIDER_DRAWER_H__
-#define __SPHERECOLLIDER_DRAWER_H__
+#ifndef SPHERECOLLIDER_DRAWER_H__
+#define SPHERECOLLIDER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

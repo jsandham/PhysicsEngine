@@ -1,5 +1,6 @@
 #include "../../include/components/LineRenderer.h"
 
+#include "../../include/core/GLM.h"
 #include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;

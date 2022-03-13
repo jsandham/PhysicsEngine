@@ -1,24 +1,15 @@
-#ifndef __PROJECT_WINDOW_H__
-#define __PROJECT_WINDOW_H__
+#ifndef PROJECT_WINDOW_H__
+#define PROJECT_WINDOW_H__
 
 #include "PopupWindow.h"
 
-#include "../Filebrowser.h"
-
 namespace PhysicsEditor
 {
-enum class ProjectWindowMode
-{
-    OpenProject,
-    NewProject
-};
-
 class ProjectWindow : public PopupWindow
 {
   private:
-    ProjectWindowMode mMode;
-    Filebrowser mFilebrowser;
     std::vector<char> mInputBuffer;
+    std::string mSelectedFolder;
 
   public:
     ProjectWindow();
@@ -29,14 +20,7 @@ class ProjectWindow : public PopupWindow
     void init(Clipboard &clipboard) override;
     void update(Clipboard &clipboard) override;
 
-    void setMode(ProjectWindowMode mode);
-
     std::string getProjectName() const;
-    std::filesystem::path getSelectedFolderPath() const;
-
-  private:
-    void renderOpenMode(Clipboard& clipboard);
-    void renderNewMode(Clipboard& clipboard);
 };
 } // namespace PhysicsEditor
 #endif

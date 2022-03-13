@@ -1,5 +1,5 @@
-#ifndef __INSPECTOR_DRAWER_H__
-#define __INSPECTOR_DRAWER_H__
+#ifndef INSPECTOR_DRAWER_H__
+#define INSPECTOR_DRAWER_H__
 
 #include "core/Guid.h"
 #include "core/World.h"

@@ -1,7 +1,6 @@
 #ifndef COMPONENT_H__
 #define COMPONENT_H__
 
-#include "../core/Guid.h"
 #include "../core/Object.h"
 #include "../core/Types.h"
 

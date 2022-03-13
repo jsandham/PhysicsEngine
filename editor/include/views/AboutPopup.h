@@ -1,5 +1,5 @@
-#ifndef __ABOUT_POPUP_H__
-#define __ABOUT_POPUP_H__
+#ifndef ABOUT_POPUP_H__
+#define ABOUT_POPUP_H__
 
 #include "PopupWindow.h"
 

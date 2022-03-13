@@ -14,6 +14,12 @@
 
 namespace PhysicsEngine
 {
+    struct CameraSystemConfig
+    {
+        bool mRenderToScreen;
+        bool mSpawnCameraOnInit;
+    };
+
     class FreeLookCameraSystem : public System
     {
     private:
@@ -38,6 +44,9 @@ namespace PhysicsEngine
         bool mIsRightMouseHeldDown;
         glm::quat rotationOnClick;
 
+        bool mRenderToScreen;
+        bool mSpawnCameraOnInit;
+
     public:
         FreeLookCameraSystem(World* world);
         FreeLookCameraSystem(World* world, const Guid& id);
@@ -53,7 +62,7 @@ namespace PhysicsEngine
         void update(const Input& input, const Time& time) override;
 
         void resetCamera();
-        void configureCamera();
+        void configureCamera(CameraSystemConfig config);
         void setViewport(Viewport viewport);
         void setFrustum(Frustum frustum);
         void setRenderPath(RenderPath path);

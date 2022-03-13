@@ -45,6 +45,7 @@ for /r "../src" %%v in (*.cpp) do (
 :: create editor executable
 echo [92mCreating editor executable...[0m
 
+:: static libraries
 set YAML_LIB="../../external/yaml-cpp/lib/%MODE%/yaml-cppd.lib"
 if %MODE%==release (
 	set YAML_LIB="../../external/yaml-cpp/lib/%MODE%/yaml-cpp.lib"
@@ -53,10 +54,12 @@ set IMGUI_LIB="../../external/imgui/lib/%MODE%/imgui.lib"
 set IMGUIZMO_LIB="../../external/imguizmo/lib/%MODE%/imguizmo.lib"
 set FILEWATCH_LIB="../../external/simplefilewatcher/lib/%MODE%/simplefilewatcher.lib"
 set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
-set GLEW_LIB="../../engine/lib/%MODE%/glew32.lib"
-set FREETYPE_LIB="../../engine/lib/%MODE%/freetype.lib"
 
-set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% %FREETYPE_LIB% opengl32.lib
+::import libraries
+set GLEW_LIB="../../external/glew-2.1.0/lib/%MODE%/glew32.lib"
+set FREETYPE_LIB="../../external/freetype/lib/%MODE%/freetype.lib"
+
+set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% %FREETYPE_LIB% opengl32.lib comdlg32.lib
 set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%FILEWATCH% /I%ENGINE%
 cl /std:c++17 /Fe"%MODE%/EditorApplication" %OPT% %WARN% %MODEFLAGS% %FLAGS% %INCLUDES% ../EditorApplication.cpp %SRC_FILES% %LIBS%
 

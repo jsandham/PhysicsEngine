@@ -1,5 +1,5 @@
-#ifndef __RIGIDBODY_DRAWER_H__
-#define __RIGIDBODY_DRAWER_H__
+#ifndef RIGIDBODY_DRAWER_H__
+#define RIGIDBODY_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

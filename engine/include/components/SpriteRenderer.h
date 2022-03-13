@@ -1,8 +1,6 @@
 #ifndef SPRITERENDERER_H__
 #define SPRITERENDERER_H__
 
-#include <vector>
-
 #include "Component.h"
 
 #include "../core/Color.h"

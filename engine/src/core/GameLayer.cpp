@@ -49,14 +49,17 @@ void GameLayer::init()
     std::cout << "rendersystem count: " << mWorld.getNumberOfSystems<RenderSystem>() << std::endl;
     std::cout << "cleanupsystem count: " << mWorld.getNumberOfSystems<CleanUpSystem>() << std::endl;
 
+    CameraSystemConfig config;
+    config.mRenderToScreen = true;
+    config.mSpawnCameraOnInit = false;
+    cameraSystem->configureCamera(config);
+
     for (size_t i = 0; i < mWorld.getNumberOfUpdatingSystems(); i++)
     {
         System* system = mWorld.getSystemByUpdateOrder(i);
 
         system->init(&mWorld);
     }
-
-    cameraSystem->configureCamera();
 }
 
 void GameLayer::begin()
@@ -77,4 +80,9 @@ void GameLayer::update(const Time& time)
 void GameLayer::end()
 {
 
+}
+
+bool GameLayer::quit()
+{
+    return false;
 }

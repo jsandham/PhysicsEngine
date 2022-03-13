@@ -57,16 +57,26 @@ void FreeLookCameraSystem::init(World* world)
 {
     mWorld = world;
 
-    Entity* entity = world->createEntity();
-    entity->mDoNotDestroy = true;
-    entity->mHide = HideFlag::DontSave;
+    if (mSpawnCameraOnInit)
+    {
+        Entity *entity = world->createEntity();
+        entity->mDoNotDestroy = true;
+        entity->mHide = HideFlag::DontSave;
 
-    mCamera = entity->addComponent<Camera>();
-    mCamera->mHide = HideFlag::DontSave;
+        mCamera = entity->addComponent<Camera>();
+        mCamera->mHide = HideFlag::DontSave;
 
-    mTransform = entity->getComponent<Transform>();
-    mTransform->mPosition = glm::vec3(0, 2, -10);
-    mHide = HideFlag::DontSave;
+        mTransform = entity->getComponent<Transform>();
+        mTransform->mPosition = glm::vec3(0, 2, -10);
+        mHide = HideFlag::DontSave;  
+    }
+    else
+    {
+        mCamera = mWorld->getComponentByIndex<Camera>(0);
+        mTransform = mCamera->getComponent<Transform>();
+    }
+
+    mCamera->mRenderToScreen = mRenderToScreen;
 }
 
 void FreeLookCameraSystem::update(const Input& input, const Time& time)
@@ -164,9 +174,10 @@ void FreeLookCameraSystem::resetCamera()
     mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 }
 
-void FreeLookCameraSystem::configureCamera()
+void FreeLookCameraSystem::configureCamera(CameraSystemConfig config)
 {
-    mCamera->mRenderToScreen = true;
+    mRenderToScreen = config.mRenderToScreen;
+    mSpawnCameraOnInit = config.mSpawnCameraOnInit;
 }
 
 void FreeLookCameraSystem::setViewport(Viewport viewport)

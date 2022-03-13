@@ -20,6 +20,7 @@ namespace PhysicsEngine
 		virtual void begin() = 0;
 		virtual void update(const Time& time) = 0;
 		virtual void end() = 0;
+        virtual bool quit() = 0;
 	};
 }
 

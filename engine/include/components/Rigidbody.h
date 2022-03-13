@@ -1,8 +1,6 @@
 #ifndef RIGIDBODY_H__
 #define RIGIDBODY_H__
 
-#include <vector>
-
 #include "Component.h"
 
 #define GLM_FORCE_RADIANS

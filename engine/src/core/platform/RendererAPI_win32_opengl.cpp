@@ -61,6 +61,16 @@ void RendererAPI_win32_opengl::cleanup()
     wglDeleteContext(mOpenGLRC);
 }
 
+void RendererAPI_win32_opengl::turnVsyncOn()
+{
+    SetSwapInterval(1);
+}
+
+void RendererAPI_win32_opengl::turnVsyncOff()
+{
+    SetSwapInterval(0);
+}
+
 void RendererAPI_win32_opengl::CreateGlContext(void* window)
 {
     PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
@@ -83,7 +93,7 @@ void RendererAPI_win32_opengl::CreateGlContext(void* window)
     mOpenGLRC = wglCreateContext(mWindowDC);
     if (wglMakeCurrent(mWindowDC, mOpenGLRC))
     {
-        SetSwapInterval(0);
+        SetSwapInterval(1);
     }
     else
     {

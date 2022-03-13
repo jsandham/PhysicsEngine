@@ -21,6 +21,8 @@ namespace PhysicsEngine
 		void init(void* window) override;
 		void update() override;
 		void cleanup() override;
+        void turnVsyncOn() override;
+        void turnVsyncOff() override;
 	};
 }
 

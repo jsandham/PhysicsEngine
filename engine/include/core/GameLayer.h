@@ -22,6 +22,7 @@ class GameLayer : public Layer
     void begin() override;
     void update(const Time& time) override;
     void end() override;
+    bool quit() override;
 };
 } // namespace PhysicsEngine
 

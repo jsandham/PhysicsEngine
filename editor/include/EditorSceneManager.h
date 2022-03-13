@@ -1,3 +1,6 @@
+#ifndef EDITOR_SCENE_MANAGER_H__
+#define EDITOR_SCENE_MANAGER_H__
+
 #include <string>
 #include <filesystem>
 
@@ -15,3 +18,5 @@ namespace PhysicsEditor
 		static void populateScene(Clipboard& clipboard);
 	};
 }
+
+#endif

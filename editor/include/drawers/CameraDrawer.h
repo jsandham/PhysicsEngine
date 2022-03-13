@@ -1,5 +1,5 @@
-#ifndef __CAMERA_DRAWER_H__
-#define __CAMERA_DRAWER_H__
+#ifndef CAMERA_DRAWER_H__
+#define CAMERA_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

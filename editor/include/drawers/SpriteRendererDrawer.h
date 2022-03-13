@@ -1,5 +1,5 @@
-#ifndef __SPRITERENDERER_DRAWER_H__
-#define __SPRITERENDERER_DRAWER_H__
+#ifndef SPRITERENDERER_DRAWER_H__
+#define SPRITERENDERER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

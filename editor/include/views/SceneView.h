@@ -1,5 +1,5 @@
-#ifndef __SCENE_VIEW_H__
-#define __SCENE_VIEW_H__
+#ifndef SCENE_VIEW_H__
+#define SCENE_VIEW_H__
 
 #define GLM_FORCE_RADIANS
 
@@ -29,8 +29,6 @@ class SceneView : public Window
 
     PhysicsEngine::Input mInput;
     PhysicsEngine::Time mTime;
-
-    //PhysicsEngine::SpriteRenderer mSpriteRenderer;
 
   public:
     SceneView();

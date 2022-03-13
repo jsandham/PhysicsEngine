@@ -1,5 +1,5 @@
-#ifndef __BUILD_WINDOW_H__
-#define __BUILD_WINDOW_H__
+#ifndef BUILD_WINDOW_H__
+#define BUILD_WINDOW_H__
 
 #include <thread>
 #include <vector>
@@ -7,7 +7,6 @@
 
 #include "imgui.h"
 
-#include "../Filebrowser.h"
 #include "../EditorClipboard.h"
 
 namespace PhysicsEditor
@@ -133,11 +132,11 @@ private:
     bool mOpen;
 
     TargetPlatform mTargetPlatform;
-    Filebrowser mFilebrowser;
     AppLog mBuildLog;
      
     float mBuildCompletion;
     std::string mBuildStep;
+	std::string mSelectedFolder;
 
     std::atomic<bool> mLaunchBuild{ false };
     std::atomic<bool> mBuildInProgress{ false };

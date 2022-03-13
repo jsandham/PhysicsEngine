@@ -1,5 +1,7 @@
 #include "../../include/components/Transform.h"
 
+#include "../../include/core/GLM.h"
+
 #include "glm/gtx/matrix_decompose.hpp"
 
 using namespace PhysicsEngine;

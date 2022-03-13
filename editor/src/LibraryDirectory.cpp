@@ -108,6 +108,14 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
             {
                 PhysicsEngine::Texture2D* texture = world->createAsset<PhysicsEngine::Texture2D>();
                 texture->load(mAddBuffer[i].string());
+                if (mAddBuffer[i].has_stem())
+                {
+                    texture->setName(mAddBuffer[i].stem().string());
+                }
+                else
+                {
+                    texture->setName(mAddBuffer[i].filename().string());
+                }
                 texture->writeToYAML(texturePath);
 
                 asset = texture;
@@ -122,6 +130,14 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
             {
                 PhysicsEngine::Mesh* mesh = world->createAsset<PhysicsEngine::Mesh>();
                 mesh->load(mAddBuffer[i].string());
+                if (mAddBuffer[i].has_stem())
+                {
+                    mesh->setName(mAddBuffer[i].stem().string());
+                }
+                else
+                {
+                    mesh->setName(mAddBuffer[i].filename().string());
+                }
                 mesh->writeToYAML(meshPath);
 
                 asset = mesh;

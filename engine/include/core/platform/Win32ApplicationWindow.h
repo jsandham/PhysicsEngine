@@ -6,7 +6,6 @@
 #include <windows.h>
 
 #include "../ApplicationWindow.h"
-#include "../RendererAPI.h"
 
 namespace PhysicsEngine
 {
@@ -17,9 +16,6 @@ namespace PhysicsEngine
 		HWND mWindow;
 
 		std::string mTitle;
-
-		RendererAPI* mRendererAPI;
-
 		bool mRunning;
 
 	public:
@@ -27,6 +23,8 @@ namespace PhysicsEngine
 		~Win32ApplicationWindow();
 
 		void update() override;
+        void turnVsyncOn() override;
+        void turnVsyncOff() override;
 
 		int getWidth() const override;
 		int getHeight() const override;

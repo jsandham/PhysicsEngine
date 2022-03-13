@@ -1,5 +1,5 @@
-#ifndef __INTERACTION_TYPE_H__
-#define __INTERACTION_TYPE_H__
+#ifndef INTERACTION_TYPE_H__
+#define INTERACTION_TYPE_H__
 
 namespace PhysicsEditor
 {

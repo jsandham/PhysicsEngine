@@ -1,5 +1,5 @@
-#ifndef __FONT_DRAWER_H__
-#define __FONT_DRAWER_H__
+#ifndef FONT_DRAWER_H__
+#define FONT_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

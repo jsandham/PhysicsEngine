@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "Guid.h"
 #include "Object.h"
 #include "Types.h"
 

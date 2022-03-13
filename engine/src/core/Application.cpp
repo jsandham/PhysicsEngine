@@ -2,7 +2,7 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Input.h"
 
-#include<assert.h>
+#include <assert.h>
 #include <iostream>
 
 using namespace PhysicsEngine;
@@ -35,6 +35,11 @@ void Application::run()
 {
 	auto app_start = std::chrono::high_resolution_clock::now();
 
+	for (Layer *layer : mLayers)
+    {
+        layer->init();
+    }
+
 	while (mRunning)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
@@ -59,9 +64,6 @@ void Application::run()
 
 		mWindow->update();
 
-		mRunning = mWindow->isRunning();
-		mMinimized = mWindow->isMinimized();
-
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> start_time = start - app_start;
 		std::chrono::duration<double> end_time = end - app_start;
@@ -71,6 +73,17 @@ void Application::run()
 		mTime.mEndTime = end_time.count();
 		mTime.mDeltaTime = elapsed_time.count();
 		mTime.mFrameCount++;
+
+		mRunning = mWindow->isRunning();
+        mMinimized = mWindow->isMinimized();
+
+		for (Layer* layer : mLayers)
+        {
+            if (layer->quit())
+            {
+                close();
+			}
+		}
 	}
 }
 
@@ -82,8 +95,6 @@ void Application::close()
 void Application::pushLayer(Layer* layer)
 {
 	mLayers.push_back(layer);
-
-	layer->init();
 }
 
 ApplicationWindow& Application::getWindow()

@@ -12,6 +12,8 @@
 
 using namespace PhysicsEditor;
 
+extern std::string selectFolder();
+
 #define BUILD_STEP(DESCRIPTION, STEP, FRACTION) \
     mBuildStep = DESCRIPTION;                   \
 	STEP;                                       \
@@ -45,7 +47,6 @@ BuildWindow::BuildWindow()
 	mOpen = true;
 
 	mTargetPlatform = TargetPlatform::Windows;
-	mFilebrowser.setMode(FilebrowserMode::SelectFolder);
 
 	mBuildCompletion = 0.0f;
 
@@ -62,7 +63,6 @@ BuildWindow::BuildWindow(const std::string& name, float x, float y, float width,
 	mOpen = true;
 
 	mTargetPlatform = TargetPlatform::Windows;
-	mFilebrowser.setMode(FilebrowserMode::SelectFolder);
 
 	mBuildCompletion = 0.0f;
 
@@ -116,51 +116,15 @@ void BuildWindow::update(Clipboard &clipboard)
 		mTargetPlatform = static_cast<TargetPlatform>(targetPlatformIndex);
 	}
 
-	/*if (clipboard.getWorld()->getNumberOfScenes() > 0)
-	{
-		size_t count = clipboard.getWorld()->getNumberOfScenes();
-		PhysicsEngine::Scene* scene = clipboard.getWorld()->getSceneByIndex(0);
-		PhysicsEngine::Guid currentSceneId = scene->getId();
-
-		if (ImGui::BeginCombo("Starting Scene", scene->getName().c_str(), ImGuiComboFlags_None))
-		{
-			for (int i = 0; i < clipboard.getWorld()->getNumberOfScenes(); i++)
-			{
-				PhysicsEngine::Scene* s = clipboard.getWorld()->getSceneByIndex(i);
-
-				std::string label = s->getName() + "##" + s->getId().toString();
-
-				bool is_selected = (currentSceneId == s->getId());
-				if (ImGui::Selectable(label.c_str(), is_selected))
-				{
-					currentSceneId = s->getId();
-					scene = clipboard.getWorld()->getSceneById(currentSceneId);
-				}
-				if (is_selected)
-				{
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-	}*/
-
-	static bool buildClicked = false;
 	if (!mBuildInProgress && ImGui::Button("Build"))
 	{
-		buildClicked = true;
-	}
-	
-	std::filesystem::path projectPath = clipboard.getProjectPath();
-	std::filesystem::path buildPath = projectPath / "build";
+		mSelectedFolder = selectFolder();
 
-	mFilebrowser.render(buildPath, buildClicked);
-
-	if (mFilebrowser.isSelectFolderClicked())
-	{		
-		buildClicked = false;
-		mLaunchBuild = true;
-		mBuildCompletion = 0.0f;
+		if (!mSelectedFolder.empty())
+		{
+			mLaunchBuild = true;
+			mBuildCompletion = 0.0f;
+		}
 	}
 
 	if (mBuildInProgress)
@@ -189,7 +153,7 @@ void BuildWindow::build()
 
 	mBuildLog.Clear();
 
-	std::filesystem::path path = mFilebrowser.getSelectedFolderPath();
+	std::filesystem::path path = mSelectedFolder;
 
 	std::filesystem::path buildPath = path / "build";
 	std::filesystem::path buildGameDataPath = buildPath / "game_data";
@@ -241,8 +205,8 @@ void BuildWindow::build()
 
 	const std::string ENGINE_LIB = "..\\..\\..\\engine\\lib\\debug\\engine.lib";
 	const std::string YAML_LIB = "..\\..\\..\\external\\yaml-cpp\\lib\\debug\\yaml-cppd.lib";
-	const std::string GLEW_LIB = "..\\..\\..\\engine\\lib\\debug\\glew32.lib";
-	const std::string FREETYPE_LIB = "..\\..\\..\\engine\\lib\\debug\\freetype.lib";
+	const std::string GLEW_LIB = "..\\..\\..\\external\\glew-2.1.0\\lib\\debug\\glew32.lib";
+	const std::string FREETYPE_LIB = "..\\..\\..\\external\\freetype\\lib\\debug\\freetype.lib";
 
 	const std::string LIBS = "kernel32.lib user32.lib gdi32.lib ole32.lib opengl32.lib " + ENGINE_LIB + " " + YAML_LIB + " " + GLEW_LIB + " " + FREETYPE_LIB;
 	

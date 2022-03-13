@@ -23,6 +23,16 @@ void Inspector::init(Clipboard &clipboard)
 
 void Inspector::update(Clipboard &clipboard)
 {
+    clipboard.mOpen[static_cast<int>(View::Inspector)] = isOpen();
+    clipboard.mHovered[static_cast<int>(View::Inspector)] = isHovered();
+    clipboard.mFocused[static_cast<int>(View::Inspector)] = isFocused();
+    clipboard.mOpenedThisFrame[static_cast<int>(View::Inspector)] = openedThisFrame();
+    clipboard.mHoveredThisFrame[static_cast<int>(View::Inspector)] = hoveredThisFrame();
+    clipboard.mFocusedThisFrame[static_cast<int>(View::Inspector)] = focusedThisFrame();
+    clipboard.mClosedThisFrame[static_cast<int>(View::Inspector)] = closedThisFrame();
+    clipboard.mUnfocusedThisFrame[static_cast<int>(View::Inspector)] = unfocusedThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Inspector)] = unhoveredThisFrame();
+
     // draw selected asset
     if (clipboard.getSelectedType() == InteractionType::Mesh)
     {

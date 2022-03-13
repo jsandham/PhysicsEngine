@@ -1,8 +1,6 @@
 #ifndef LINERENDERER_H__
 #define LINERENDERER_H__
 
-#include <vector>
-
 #include "Component.h"
 
 #define GLM_FORCE_RADIANS

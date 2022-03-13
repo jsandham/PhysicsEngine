@@ -1,12 +1,10 @@
 #include "../include/ImGuiLayer.h"
 
-#include "../include/imgui/imgui_styles.h"
+#include "imgui.h"
 #include "ImGuizmo.h"
 
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
-
-#include "../include/IconsFontAwesome4.h"
 
 #include <core/Application.h>
 #include <windows.h>
@@ -45,18 +43,6 @@ void ImGuiLayer::init()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-    // Setup style
-    ImGui::StyleColorsCorporate();
-
-    io.Fonts->AddFontDefault();
-
-    ImFontConfig config;
-    config.MergeMode = true;
-    config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
-    io.Fonts->Build();
 }
 
 void ImGuiLayer::begin()
@@ -85,9 +71,9 @@ void ImGuiLayer::begin()
 
 void ImGuiLayer::update(const PhysicsEngine::Time& time)
 {
-    // ImGui::ShowDemoWindow();
-    // ImGui::ShowMetricsWindow();
-    // ImGui::ShowStyleEditor();
+    //ImGui::ShowDemoWindow();
+    //ImGui::ShowMetricsWindow();
+    //ImGui::ShowStyleEditor();
 }
 
 void ImGuiLayer::end()
@@ -99,4 +85,9 @@ void ImGuiLayer::end()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     ImGui::EndFrame();
+}
+
+bool ImGuiLayer::quit()
+{
+    return false;
 }

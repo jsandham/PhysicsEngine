@@ -135,8 +135,8 @@ bool ImGui::StampButtonEx(const char *label, const ImVec2 &size_arg, ImGuiButton
     if (!ItemAdd(bb, id))
         return false;
 
-    if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
-        flags |= ImGuiButtonFlags_Repeat;
+    //if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
+    //    flags |= ImGuiButtonFlags_Repeat;
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
@@ -268,7 +268,8 @@ bool ImGui::Slot(const std::string slotLabel, const std::string slotText, bool* 
     ImVec2 windowSize = ImGui::GetWindowSize();
     windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-    ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
+    /*ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);*/
+    ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0));
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 position = ImGui::GetItemRectMin();
 
@@ -323,7 +324,8 @@ bool ImGui::Slot2(const std::string slotLabel, const std::string slotText, SlotD
     ImVec2 windowSize = ImGui::GetWindowSize();
     windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-    ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);
+    /*ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0), ImGuiButtonFlags_Disabled);*/
+    ImGui::ButtonEx(slotText.c_str(), ImVec2(windowSize.x, 0));
     ImVec2 size = ImGui::GetItemRectSize();
     ImVec2 position = ImGui::GetItemRectMin();
 
@@ -540,7 +542,8 @@ bool ImGui::SelectableInput(const char *str_id, bool selected, bool *edited, ImG
     {
         ImVec2 pos_after = window->DC.CursorPos;
         window->DC.CursorPos = pos_before;
-        ret = TempInputText(window->DC.LastItemRect, id, "##Input", buf, (int)buf_size, ImGuiInputTextFlags_None);
+        /*ret = TempInputText(window->DC.LastItemRect, id, "##Input", buf, (int)buf_size, ImGuiInputTextFlags_None);*/
+        ret = TempInputText(g.LastItemData.Rect, id, "##Input", buf, (int)buf_size, ImGuiInputTextFlags_None);
         window->DC.CursorPos = pos_after;
 
         *edited = true;

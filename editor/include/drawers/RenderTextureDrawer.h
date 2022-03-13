@@ -1,5 +1,5 @@
-#ifndef __RENDER_TEXTURE_DRAWER_H__
-#define __RENDER_TEXTURE_DRAWER_H__
+#ifndef RENDER_TEXTURE_DRAWER_H__
+#define RENDER_TEXTURE_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

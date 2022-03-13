@@ -1,5 +1,5 @@
-#ifndef __TERRAIN_DRAWER_H__
-#define __TERRAIN_DRAWER_H__
+#ifndef TERRAIN_DRAWER_H__
+#define TERRAIN_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

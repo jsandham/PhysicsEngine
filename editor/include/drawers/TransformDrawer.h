@@ -1,5 +1,5 @@
-#ifndef __TRANSFORM_DRAWER_H__
-#define __TRANSFORM_DRAWER_H__
+#ifndef TRANSFORM_DRAWER_H__
+#define TRANSFORM_DRAWER_H__
 
 #define GLM_FORCE_RADIANS
 

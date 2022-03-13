@@ -42,11 +42,11 @@ Clipboard::Clipboard()
     mProjectDirty = false;
     mSceneDirty = false;
 
-    mInspectorHovered = false;
-    mSceneViewHovered = false;
-    mHierarchyHovered = false;
-    mProjectViewHovered = false;
-    mConsoleHovered = false;
+    mHovered[static_cast<int>(View::Inspector)] = false;
+    mHovered[static_cast<int>(View::SceneView)] = false;
+    mHovered[static_cast<int>(View::Hierarchy)] = false;
+    mHovered[static_cast<int>(View::ProjectView)] = false;
+    mHovered[static_cast<int>(View::Console)] = false;
 }
 
 Clipboard::~Clipboard()

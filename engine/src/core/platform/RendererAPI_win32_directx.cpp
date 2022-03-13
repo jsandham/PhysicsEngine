@@ -33,3 +33,13 @@ void RendererAPI_win32_directx::cleanup()
     Device->Release();
     D3D->Release();	
 }
+
+void RendererAPI_win32_directx::turnVsyncOn()
+{
+
+}
+
+void RendererAPI_win32_directx::turnVsyncOff()
+{
+
+}

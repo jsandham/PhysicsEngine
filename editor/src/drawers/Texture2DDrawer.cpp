@@ -103,11 +103,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     const std::array<const char *, 2> wrapMode = {"Repeat", "Clamp To Edge"};
     const std::array<const char *, 3> filterMode = {"Nearest", "Linear", "Bilinear"};
 
-    static int activeWrapModeIndex = 0;
-    static int activeFilterModeIndex = 0;
+    static int activeWrapModeIndex = static_cast<int>(texture->getWrapMode());
+    static int activeFilterModeIndex = static_cast<int>(texture->getFilterMode());
 
     // select wrap mode for texture
-    if (ImGui::BeginCombo("Warp Mode", wrapMode[activeWrapModeIndex]))
+    if (ImGui::BeginCombo("Wrap Mode", wrapMode[activeWrapModeIndex]))
     {
         for (int n = 0; n < wrapMode.size(); n++)
         {
@@ -115,6 +115,8 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             if (ImGui::Selectable(wrapMode[n], is_selected))
             {
                 activeWrapModeIndex = n;
+
+                texture->setWrapMode(static_cast<TextureWrapMode>(n));
 
                 if (is_selected)
                 {
@@ -135,6 +137,8 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             {
                 activeFilterModeIndex = n;
 
+                texture->setFilterMode(static_cast<TextureFilterMode>(n));
+
                 if (is_selected)
                 {
                     ImGui::SetItemDefaultFocus();
@@ -145,9 +149,10 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     }
 
     // select aniso filtering for texture
-    static int aniso = 0;
-    if (ImGui::SliderInt("Aniso", &aniso, 0, 16))
+    static int aniso = texture->getAnisoLevel();
+    if (ImGui::SliderInt("Aniso", &aniso, 1, 16))
     {
+        texture->setAnisoLevel(aniso);
     }
 
     // Draw texture child window

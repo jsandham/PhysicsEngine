@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <GL/glew.h>
-#include <gl/gl.h>
-
 #include "Asset.h"
 #include "Guid.h"
 
@@ -19,7 +16,7 @@ class Sprite : public Asset
 {
   private:
     Guid mTextureId;
-    GLuint mVao;
+    unsigned int mVao;
     // int mWidth;
     // int mHeight;
     bool mCreated;
@@ -42,7 +39,7 @@ class Sprite : public Asset
     bool isCreated() const;
     bool isChanged() const;
 
-    GLuint getNativeGraphicsVAO() const;
+    unsigned int getNativeGraphicsVAO() const;
 
     Guid getTextureId() const;
     void setTextureId(Guid textureId);

@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Guid.h"
 #include "Object.h"
 #include "Types.h"
 

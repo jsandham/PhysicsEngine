@@ -1,5 +1,5 @@
-#ifndef __CUBEMAP_DRAWER_H__
-#define __CUBEMAP_DRAWER_H__
+#ifndef CUBEMAP_DRAWER_H__
+#define CUBEMAP_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

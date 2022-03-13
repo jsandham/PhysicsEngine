@@ -80,10 +80,6 @@ void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state
     Graphics::createGlobalLightUniforms(state.mLightState);
 
     Graphics::turnOn(Capability::Depth_Testing);
-    Graphics::turnOn(Capability::Blending);
-    glDepthFunc(GL_LEQUAL);
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glBlendEquation(GL_FUNC_ADD);
 }
 
 void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState &state)
@@ -462,10 +458,10 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         if (light->mLightType == LightType::Directional)
         {
             int tex[5] = {light->getNativeGraphicsShadowCascadeDepthTex(0),
-                          light->getNativeGraphicsShadowCascadeDepthTex(1),
-                          light->getNativeGraphicsShadowCascadeDepthTex(2), 
-                          light->getNativeGraphicsShadowCascadeDepthTex(3),
-                          light->getNativeGraphicsShadowCascadeDepthTex(4)};
+                                   light->getNativeGraphicsShadowCascadeDepthTex(1),
+                                   light->getNativeGraphicsShadowCascadeDepthTex(2), 
+                                   light->getNativeGraphicsShadowCascadeDepthTex(3),
+                                   light->getNativeGraphicsShadowCascadeDepthTex(4)};
             int texUnit[5] = {3, 4, 5, 6, 7};
             shader->setTexture2Ds("shadowMap", &texUnit[0], 5, &tex[0]);
         }

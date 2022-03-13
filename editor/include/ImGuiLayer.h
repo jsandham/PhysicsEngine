@@ -18,6 +18,7 @@ namespace PhysicsEditor
         void begin() override;
         void update(const PhysicsEngine::Time& time) override;
         void end() override;
+        bool quit() override;
 	};
 }
 

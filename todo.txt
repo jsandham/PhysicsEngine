@@ -43,3 +43,21 @@ TODO:
 
 clang-format -i -style=microsoft *.cpp
 clang-tidy src\core\*.cpp -- -Iinclude\glew-2.1.0
+
+
+
+
+
+
+-fix bug when increasing terrain max range
+-come up with better system of compiling and getting interal shaders in Graphics.cpp. Maybe using enum for internal shaders?
+-add scene to world so that multiple scenes can be loaded each with their own id and index state
+-fix editor cascade shadow map seeting of cascades
+-add light gizmos
+-add ability to only turn on certain gizmos in editor instead of always showing all of them
+-add skybox to scene view background
+-move glew dll to eternal/glew-2.1.0/bin folder?
+-figure out what is causing window close button to flicker (has something to do with imgui)
+-improve compilation time
+-add debug layer that shows all color framebuffers 
+-remove absolute paths from asset yaml files

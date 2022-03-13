@@ -1,9 +1,6 @@
 #ifndef SYSTEM_H__
 #define SYSTEM_H__
 
-#include <vector>
-
-#include "../core/Guid.h"
 #include "../core/Input.h"
 #include "../core/Object.h"
 #include "../core/Time.h"

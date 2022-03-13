@@ -1,8 +1,6 @@
 #ifndef MESHCOLLIDER_H__
 #define MESHCOLLIDER_H__
 
-#include <vector>
-
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS

@@ -28,7 +28,16 @@ enum class Capability
 {
     Depth_Testing,
     Blending,
-    BackfaceCulling
+    BackfaceCulling,
+    LineSmoothing
+};
+
+enum class BlendingFactor
+{
+    ZERO,
+    ONE,
+    SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA
 };
 
 struct CameraUniform
@@ -226,6 +235,7 @@ class Graphics
     static void checkFrambufferError(long line, const char *file);
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
+    static void setBlending(BlendingFactor source, BlendingFactor dest);
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long*elapsedTime);
     static void createGlobalCameraUniforms(CameraUniform &uniform);
@@ -278,9 +288,6 @@ class Graphics
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data, unsigned int tex);
     static void createRenderTextureTargets(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height);
     static void destroyRenderTextureTargets(RenderTextureTargets* targets);
-
-
-
     static void createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                            const std::vector<float> &texCoords, int vertexCount, 
                            unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2);
@@ -290,11 +297,6 @@ class Graphics
     static void updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                                    const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1, 
                                    unsigned int vbo2);
-
-
-
-
-
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                            const std::vector<float> &texCoords, unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);
     static void destroyMesh(unsigned int*vao, unsigned int*vbo0, unsigned int*vbo1, unsigned int*vbo2, unsigned int*model_vbo, unsigned int*color_vbo);
@@ -302,6 +304,18 @@ class Graphics
     static void updateInstanceColorBuffer(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount);
     static void createSprite(unsigned int*vao);
     static void destroySprite(unsigned int*vao);
+    static void createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int *vao,
+                              unsigned int *vbo0, unsigned int *vbo1);
+    static void destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
+    static void updateFrustum(const std::vector<float> &vertices, const std::vector<float> &normals, unsigned int vbo0,
+                              unsigned int vbo1);
+    static void updateFrustum(const std::vector<float> &vertices, unsigned int vbo0);
+    static void createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0);
+    static void destroyGrid(unsigned int *vao, unsigned int *vbo0);
+    static void createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
+                           unsigned int *vbo0, unsigned int *vbo1);
+    static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
+    
     static void preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant);
     static bool compile(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom, unsigned int *program);
     static int findUniformLocation(const char *name, int program);
@@ -339,14 +353,34 @@ class Graphics
     static glm::mat4 getMat4(int nameLocation, int program);
     static int getTexture2D(int nameLocation, int texUnit, int program);
     static void applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram);
+    static void renderLines(int start, int count, int vao);
+    static void renderLinesWithCurrentlyBoundVAO(int start, int count);
+    static void renderWithCurrentlyBoundVAO(int start, int count);
     static void render(int start, int count, int vao, bool wireframe = false);
     static void render(int start, int count, int vao, GraphicsQuery &query, bool wireframe = false);
     static void renderInstanced(int start, int count, int instanceCount, int vao, GraphicsQuery &query);
     static void render(const RenderObject &renderObject, GraphicsQuery &query);
     static void renderInstanced(const RenderObject &renderObject, GraphicsQuery &query);
 
-    //static void compileShader()
+    //enum class InternalShader
+    // {
+    //     SSAO,
+    //     ShadowDepthMap,
+    //     ShadowDepthCubeMap
+    // }
+    //static void compileShader(InternalShader shader, RenderState& state);
+    // or
+    // static void compileShader(InternalShader shader, ForwardRendererState& state);
+    // static void compileShader(InternalShader shader, DeferredRendererState& state);
+    // static void compileShader(InternalShader shader, DebugRendererState& state);
+    // static void compileShader(InternalShader shader, GizmoRendererState& state);
 
+    /*template <class T> 
+    static void compileShader(InternalShader shader, T& state);
+    template <> compileShader<ForwardRendererState>(InternalShader shader, ForwardRendererState &state);
+    template <> compileShader<DeferredRendererState>(InternalShader shader, DeferredRendererState &state);
+    template <> compileShader<DebugRendererState>(InternalShader shader, DebugRendererState &state);
+    template <> compileShader<GizmoRendererState>(InternalShader shader, GizmoRendererState &state);*/
 
     static void compileSSAOShader(ForwardRendererState &state);
     static void compileShadowDepthMapShader(ForwardRendererState &state);
@@ -371,15 +405,6 @@ class Graphics
     static void compileLineShader(GizmoRendererState &state);
     static void compileGizmoShader(GizmoRendererState &state);
     static void compileGridShader(GizmoRendererState &state);
-
-    static void createFrustum(const std::vector<float> &vertices, const std::vector<float> &normals,
-                           unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
-    static void destroyFrustum(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
-    static void createGrid(const std::vector<glm::vec3> &vertices, unsigned int *vao, unsigned int *vbo0);
-    static void destroyGrid(unsigned int *vao, unsigned int *vbo0);
-    static void createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
-                           unsigned int *vbo0, unsigned int *vbo1);
-    static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
 
     static std::string getGeometryVertexShader();
     static std::string getGeometryFragmentShader();

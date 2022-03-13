@@ -8,7 +8,7 @@
 
 using namespace PhysicsEditor;
 
-DebugOverlay::DebugOverlay() : Window("Debug Overlay")
+DebugOverlay::DebugOverlay()
 {
     mMaxFPS = 0.0f;
 }
@@ -24,91 +24,85 @@ void DebugOverlay::init(Clipboard& clipboard)
 
 void DebugOverlay::update(Clipboard& clipboard)
 {
-    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-    if (ImGui::BeginTabBar("Debug Overlay", tab_bar_flags))
+    static ImGuiWindowFlags overlay_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoResize;
+
+    static bool show_overlay = false;
+    if (ImGui::IsKeyPressed(112, false))
     {
-        if (ImGui::BeginTabItem("Scene"))
-        {   
-            sceneTab(clipboard);
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Shaders"))
+        show_overlay = !show_overlay;
+    }
+
+    ImGui::SetNextWindowBgAlpha(0.35f);
+
+    if (show_overlay)
+    {
+        if (ImGui::Begin("Debug Overlay", NULL, overlay_flags))
         {
-            shaderTab(clipboard);
-            ImGui::EndTabItem();
+            if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+            {
+                ImGui::SetWindowFocus("Debug Overlay");
+            }
+
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+            if (ImGui::BeginTabBar("Debug Overlay Tab Bar", tab_bar_flags))
+            {
+                if (ImGui::BeginTabItem("Scene"))
+                {
+                    sceneTab(clipboard);
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("Shaders"))
+                {
+                    shaderTab(clipboard);
+                    ImGui::EndTabItem();
+                }
+
+                ImGui::EndTabBar();
+            }
+
+            if (clipboard.getDraggedType() != InteractionType::None)
+            {
+                ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, clipboard.mDraggedPath.string().c_str());
+            }
         }
-       
-        ImGui::EndTabBar();
+
+        ImGui::End();
     }
 }
 
 void DebugOverlay::sceneTab(Clipboard& clipboard)
 {
-    ImGui::BeginColumns("Column Layout", 2, ImGuiColumnsFlags_GrowParentContentsSize);//false);
+    ImGui::BeginColumns("Column Layout", 2, ImGuiColumnsFlags_GrowParentContentsSize);
     ImGui::SetColumnOffset(0, 0.0f);
     ImGui::SetColumnOffset(1, 300.0f);
 
     ImGui::Text("Framerate: %f", ImGui::GetIO().Framerate);
 
-    ImGui::Text("Is SceneView open? %d\n", clipboard.mSceneViewOpen);
-    ImGui::Text("Is Inspector open? %d\n", clipboard.mInspectorOpen);
-    ImGui::Text("Is Hierarchy open? %d\n", clipboard.mHierarchyOpen);
-    ImGui::Text("Is Console open? %d\n", clipboard.mConsoleOpen);
-    ImGui::Text("Is ProjectView open? %d\n", clipboard.mProjectViewOpen);
+    const char* views[] = {"Inspector", "SceneView", "Hierarchy", "ProjectView", "Console"};
 
-    ImGui::Text("Is SceneView opened this frame? %d\n", clipboard.mSceneViewOpenedThisFrame);
-    ImGui::Text("Is Inspector opened this frame? %d\n", clipboard.mInspectorOpenedThisFrame);
-    ImGui::Text("Is Hierarchy opened this frame? %d\n", clipboard.mHierarchyOpenedThisFrame);
-    ImGui::Text("Is Console opened this frame? %d\n", clipboard.mConsoleOpenedThisFrame);
-    ImGui::Text("Is ProjectView opened this frame? %d\n", clipboard.mProjectViewOpenedThisFrame);
-
-    ImGui::Text("Is SceneView closed this frame? %d\n", clipboard.mSceneViewClosedThisFrame);
-    ImGui::Text("Is Inspector closed this frame? %d\n", clipboard.mInspectorClosedThisFrame);
-    ImGui::Text("Is Hierarchy closed this frame? %d\n", clipboard.mHierarchyClosedThisFrame);
-    ImGui::Text("Is Console closed this frame? %d\n", clipboard.mConsoleClosedThisFrame);
-    ImGui::Text("Is ProjectView closed this frame? %d\n", clipboard.mProjectViewClosedThisFrame);
-
-    ImGui::Text("Is SceneView hovered? %d\n", clipboard.mSceneViewHovered);
-    ImGui::Text("Is Inspector hovered? %d\n", clipboard.mInspectorHovered);
-    ImGui::Text("Is Hierarchy hovered? %d\n", clipboard.mHierarchyHovered);
-    ImGui::Text("Is Console hovered? %d\n", clipboard.mConsoleHovered);
-    ImGui::Text("Is ProjectView hovered? %d\n", clipboard.mProjectViewHovered);
-
-    ImGui::Text("Is SceneView hovered this frame? %d\n", clipboard.mSceneViewHoveredThisFrame);
-    ImGui::Text("Is Inspector hovered this frame? %d\n", clipboard.mInspectorHoveredThisFrame);
-    ImGui::Text("Is Hierarchy hovered this frame? %d\n", clipboard.mHierarchyHoveredThisFrame);
-    ImGui::Text("Is Console hovered this frame? %d\n", clipboard.mConsoleHoveredThisFrame);
-    ImGui::Text("Is ProjectView hovered this frame? %d\n", clipboard.mProjectViewHoveredThisFrame);
-
-    ImGui::Text("Is SceneView unhovered this frame? %d\n", clipboard.mSceneViewUnhoveredThisFrame);
-    ImGui::Text("Is Inspector unhovered this frame? %d\n", clipboard.mInspectorUnhoveredThisFrame);
-    ImGui::Text("Is Hierarchy unhovered this frame? %d\n", clipboard.mHierarchyUnhoveredThisFrame);
-    ImGui::Text("Is Console unhovered this frame? %d\n", clipboard.mConsoleUnhoveredThisFrame);
-    ImGui::Text("Is ProjectView unhovered this frame? %d\n", clipboard.mProjectViewUnhoveredThisFrame);
-
-    ImGui::Text("Is SceneView focused? %d\n", clipboard.mSceneViewFocused);
-    ImGui::Text("Is Inspector focused? %d\n", clipboard.mInspectorFocused);
-    ImGui::Text("Is Hierarchy focused? %d\n", clipboard.mHierarchyFocused);
-    ImGui::Text("Is Console focused? %d\n", clipboard.mConsoleFocused);
-    ImGui::Text("Is ProjectView focused? %d\n", clipboard.mProjectViewFocused);
-
-    ImGui::Text("Is SceneView focused this frame? %d\n", clipboard.mSceneViewFocusedThisFrame);
-    ImGui::Text("Is Inspector focused this frame? %d\n", clipboard.mInspectorFocusedThisFrame);
-    ImGui::Text("Is Hierarchy focused this frame? %d\n", clipboard.mHierarchyFocusedThisFrame);
-    ImGui::Text("Is Console focused this frame? %d\n", clipboard.mConsoleFocusedThisFrame);
-    ImGui::Text("Is ProjectView focused this frame? %d\n", clipboard.mProjectViewFocusedThisFrame);
-
-    ImGui::Text("Is SceneView unfocused this frame? %d\n", clipboard.mSceneViewUnfocusedThisFrame);
-    ImGui::Text("Is Inspector unfocused this frame? %d\n", clipboard.mInspectorUnfocusedThisFrame);
-    ImGui::Text("Is Hierarchy unfocused this frame? %d\n", clipboard.mHierarchyUnfocusedThisFrame);
-    ImGui::Text("Is Console unfocused this frame? %d\n", clipboard.mConsoleUnfocusedThisFrame);
-    ImGui::Text("Is ProjectView unfocused this frame? %d\n", clipboard.mProjectViewUnfocusedThisFrame);
+    for (int i = 0; i < static_cast<int>(View::Count); i++)
+    {
+        ImGui::Text(views[i]);
+        ImGui::Indent(16.0f);
+        ImGui::Text("Is open? %d\n", clipboard.mOpen[i]);
+        ImGui::Text("Is opened this frame? %d\n", clipboard.mOpenedThisFrame[i]);
+        ImGui::Text("Is closed this frame? %d\n", clipboard.mClosedThisFrame[i]);
+        ImGui::Text("Is hovered? %d\n", clipboard.mHovered[i]);
+        ImGui::Text("Is hovered this frame? %d\n", clipboard.mHoveredThisFrame[i]);
+        ImGui::Text("Is unhovered this frame? %d\n", clipboard.mUnhoveredThisFrame[i]);
+        ImGui::Text("Is focused? %d\n", clipboard.mFocused[i]);
+        ImGui::Text("Is focused this frame? %d\n", clipboard.mFocusedThisFrame[i]);
+        ImGui::Text("Is unfocused this frame? %d\n", clipboard.mUnfocusedThisFrame[i]);
+        ImGui::Unindent(16.0f);
+    }
 
     ImGui::NextColumn();
     ImGui::Text("Active project name: %s\n", clipboard.getProjectName().c_str());
-    ImGui::Text("Active project path: %s\n", clipboard.getProjectPath().c_str());
+    ImGui::Text("Active project path: %s\n", clipboard.getProjectPath().string().c_str());
     ImGui::Text("Active scene name: %s\n", clipboard.getSceneName().c_str());
-    ImGui::Text("Active scene path: %s\n", clipboard.getScenePath().c_str());
+    ImGui::Text("Active scene path: %s\n", clipboard.getScenePath().string().c_str());
     ImGui::Text("Active scene id: %s\n", clipboard.getSceneId().toString().c_str());
 
     ImGui::Text("Selected id: %s\n", clipboard.getSelectedId().toString().c_str());
@@ -204,15 +198,9 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
         {
             ImGui::Text("Data: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mData);
             ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName.c_str());
-            //ImGui::Text("ShortName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mShortName);
-            //ImGui::Text("BlockName: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mBlockName);
-            //ImGui::Text("NameLength: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mNameLength).c_str());
-            //ImGui::Text("Size: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mSize).c_str());
             ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(static_cast<int>(uniforms[i].mType)).c_str());
-            //ImGui::Text("Variant: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mVariant).c_str());
-            //ImGui::Text("CachedLocation: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mCachedLocation).c_str());
-            //ImGui::Text("Index: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mIndex).c_str());
             ImGui::Text("CachedHandle: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mCachedHandle).c_str());
+            ImGui::Text("Uniform id: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mUniformId).c_str());
         }
         ImGui::Unindent(16.0f);
     }

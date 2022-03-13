@@ -35,7 +35,7 @@ inline void UniformDrawer<ShaderUniformType::Int>::draw(Clipboard& clipboard, Ma
 {
     int temp = material->getInt(uniform->mName);
 
-    if (ImGui::InputInt(uniform->mName.c_str(), &temp))
+    if (ImGui::InputInt(uniform->getShortName().c_str(), &temp))
     {
         material->setInt(uniform->mName, temp);
     }
@@ -46,7 +46,7 @@ inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, 
 {
     float temp = material->getFloat(uniform->mName);
 
-    if (ImGui::InputFloat(uniform->mName.c_str(), &temp))
+    if (ImGui::InputFloat(uniform->getShortName().c_str(), &temp))
     {
         material->setFloat(uniform->mName, temp);
     }
@@ -57,7 +57,7 @@ inline void UniformDrawer<ShaderUniformType::Color>::draw(Clipboard& clipboard, 
 {
     Color temp = material->getColor(uniform->mName);
 
-    if (ImGui::ColorEdit4(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.mR)))
+    if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
     {
         material->setColor(uniform->mName, temp);
     }
@@ -68,7 +68,7 @@ inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, M
 {
     glm::vec2 temp = material->getVec2(uniform->mName);
 
-    if (ImGui::InputFloat2(uniform->mName.c_str(), &temp[0]))
+    if (ImGui::InputFloat2(uniform->getShortName().c_str(), &temp[0]))
     {
         material->setVec2(uniform->mName, temp);
     }
@@ -82,14 +82,14 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
     if (uniform->mName.find("color") != std::string::npos ||
         uniform->mName.find("colour") != std::string::npos)
     {
-        if (ImGui::ColorEdit3(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.x)))
+        if (ImGui::ColorEdit3(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec3(uniform->mName, temp);
         }
     }
     else
     {
-        if (ImGui::InputFloat3(uniform->mName.c_str(), &temp[0]))
+        if (ImGui::InputFloat3(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec3(uniform->mName, temp);
         }
@@ -104,14 +104,14 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
     if (uniform->mName.find("color") != std::string::npos ||
         uniform->mName.find("colour") != std::string::npos)
     {
-        if (ImGui::ColorEdit4(uniform->mName.c_str(), reinterpret_cast<float*>(&temp.x)))
+        if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec4(uniform->mName, temp);
         }
     }
     else
     {
-        if (ImGui::InputFloat4(uniform->mName.c_str(), &temp[0]))
+        if (ImGui::InputFloat4(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec4(uniform->mName, temp);
         }
@@ -124,7 +124,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
     Texture2D* texture = clipboard.getWorld()->getAssetById<Texture2D>(material->getTexture(uniform->mName));
 
     ImGui::SlotData data;
-    if (ImGui::ImageSlot2(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &data))
+    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : texture->getNativeGraphics(), &data))
     {
         if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
         {
@@ -148,39 +148,6 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
             material->onTextureChanged();
         }
     }
-
-
-
-
-
-
-
-
-    /*bool releaseTriggered = false;
-    bool clearClicked = false;
-    bool isClicked = ImGui::ImageSlot(uniform->mName, texture == nullptr ? 0 : texture->getNativeGraphics(), &releaseTriggered, &clearClicked);
-
-    if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
-    {
-        material->setTexture(uniform->mName, clipboard.getDraggedId());
-        material->onTextureChanged();
-        
-        clipboard.clearDraggedItem();
-    }
-
-    if (clearClicked)
-    {
-        material->setTexture(uniform->mName, Guid::INVALID);
-        material->onTextureChanged();
-    }
-
-    if (isClicked)
-    {
-        if (material->getTexture(uniform->mName).isValid())
-        {
-            clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
-        }
-    }*/
 }
 
 MaterialDrawer::MaterialDrawer()

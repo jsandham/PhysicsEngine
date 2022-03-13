@@ -1,5 +1,5 @@
-#ifndef __MATERIAL_DRAWER_H__
-#define __MATERIAL_DRAWER_H__
+#ifndef MATERIAL_DRAWER_H__
+#define MATERIAL_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

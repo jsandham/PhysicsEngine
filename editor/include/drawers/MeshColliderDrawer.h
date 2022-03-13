@@ -1,5 +1,5 @@
-#ifndef __MESHCOLLIDER_DRAWER_H__
-#define __MESHCOLLIDER_DRAWER_H__
+#ifndef MESHCOLLIDER_DRAWER_H__
+#define MESHCOLLIDER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

@@ -1,4 +1,5 @@
 #include "../../include/core/Object.h"
+#include "../../include/core/GLM.h"
 
 using namespace PhysicsEngine;
 

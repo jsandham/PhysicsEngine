@@ -12,6 +12,9 @@ namespace PhysicsEngine
 		virtual void init(void* window) = 0;
 		virtual void update() = 0;
 		virtual void cleanup() = 0;
+        virtual void turnVsyncOn() = 0;
+        virtual void turnVsyncOff() = 0;
+
 
 		static RendererAPI* createRendererAPI();
 	};

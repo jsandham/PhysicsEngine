@@ -25,6 +25,16 @@ void Hierarchy::init(Clipboard &clipboard)
 
 void Hierarchy::update(Clipboard &clipboard)
 {
+    clipboard.mOpen[static_cast<int>(View::Hierarchy)] = isOpen();
+    clipboard.mHovered[static_cast<int>(View::Hierarchy)] = isHovered();
+    clipboard.mFocused[static_cast<int>(View::Hierarchy)] = isFocused();
+    clipboard.mOpenedThisFrame[static_cast<int>(View::Hierarchy)] = openedThisFrame();
+    clipboard.mHoveredThisFrame[static_cast<int>(View::Hierarchy)] = hoveredThisFrame();
+    clipboard.mFocusedThisFrame[static_cast<int>(View::Hierarchy)] = focusedThisFrame();
+    clipboard.mClosedThisFrame[static_cast<int>(View::Hierarchy)] = closedThisFrame();
+    clipboard.mUnfocusedThisFrame[static_cast<int>(View::Hierarchy)] = unfocusedThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Hierarchy)] = unhoveredThisFrame();
+
     // If number of entities has changed, update cached entity ids and names
     if (mEntries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities())
     {

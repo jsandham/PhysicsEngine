@@ -2,16 +2,22 @@
 #define APPLICATION_WINDOW_H__
 
 #include <string>
+#include "RendererAPI.h"
 
 namespace PhysicsEngine
 {
 	class ApplicationWindow
 	{
+    protected:
+        RendererAPI *mRendererAPI;
+
 	public:
 		ApplicationWindow();
 		virtual ~ApplicationWindow() = 0;
 
 		virtual void update() = 0;
+        virtual void turnVsyncOn() = 0;
+        virtual void turnVsyncOff() = 0;
 
 		virtual int getWidth() const = 0;
 		virtual int getHeight() const = 0;

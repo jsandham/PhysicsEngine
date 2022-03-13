@@ -1,12 +1,7 @@
 #ifndef OBJECT_H__
 #define OBJECT_H__
 
-#include <vector>
-
 #include "Guid.h"
-
-#include "GLM.h"
-#include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine
 {

@@ -4,7 +4,6 @@
 #include <string>
 
 #include "EditorClipboard.h"
-#include "Filebrowser.h"
 
 #include "views/ProjectWindow.h"
 #include "views/PreferencesWindow.h"
@@ -41,7 +40,7 @@ class MenuBar
     // About
     bool mAboutClicked;
 
-    Filebrowser mFilebrowser;
+    //Filebrowser mFilebrowser;
     
     ProjectWindow mProjectWindow;
     BuildWindow mBuildWindow;

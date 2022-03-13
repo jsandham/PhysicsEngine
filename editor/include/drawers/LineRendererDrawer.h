@@ -1,5 +1,5 @@
-#ifndef __LINERENDERER_DRAWER_H__
-#define __LINERENDERER_DRAWER_H__
+#ifndef LINERENDERER_DRAWER_H__
+#define LINERENDERER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

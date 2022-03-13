@@ -1,5 +1,5 @@
-#ifndef __EDITOR_H__
-#define __EDITOR_H__
+#ifndef EDITOR_LAYER_H__
+#define EDITOR_LAYER_H__
 
 #include <core/Layer.h>
 #include <core/Time.h>
@@ -27,7 +27,8 @@ namespace PhysicsEditor
         SceneView mSceneView;
         ProjectView mProjectView;
         Console mConsole;
-        DebugOverlay mDebugOverlay;
+        
+        DebugOverlay mDebugOverlay; 
 
     public:
         EditorLayer();
@@ -39,6 +40,7 @@ namespace PhysicsEditor
         void begin() override;
         void update(const PhysicsEngine::Time& time) override;
         void end() override;
+        bool quit() override;
     };
 } // namespace PhysicsEditor
 

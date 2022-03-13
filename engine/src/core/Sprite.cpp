@@ -60,7 +60,7 @@ bool Sprite::isChanged() const
     return mChanged;
 }
 
-GLuint Sprite::getNativeGraphicsVAO() const
+unsigned int Sprite::getNativeGraphicsVAO() const
 {
     return mVao;
 }

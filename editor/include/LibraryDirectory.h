@@ -1,5 +1,5 @@
-#ifndef __LIBRARY_DIRECTORY_H__
-#define __LIBRARY_DIRECTORY_H__
+#ifndef LIBRARY_DIRECTORY_H__
+#define LIBRARY_DIRECTORY_H__
 
 #include <map>
 #include <string>

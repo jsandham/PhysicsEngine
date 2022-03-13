@@ -1,8 +1,6 @@
 #ifndef SPHERECOLLIDER_H__
 #define SPHERECOLLIDER_H__
 
-#include <vector>
-
 #include "Collider.h"
 
 #define GLM_FORCE_RADIANS

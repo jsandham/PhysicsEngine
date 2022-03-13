@@ -195,6 +195,16 @@ void Console::init(Clipboard &clipboard)
 
 void Console::update(Clipboard &clipboard)
 {
+    clipboard.mOpen[static_cast<int>(View::Console)] = isOpen();
+    clipboard.mHovered[static_cast<int>(View::Console)] = isHovered();
+    clipboard.mFocused[static_cast<int>(View::Console)] = isFocused();
+    clipboard.mOpenedThisFrame[static_cast<int>(View::Console)] = openedThisFrame();
+    clipboard.mHoveredThisFrame[static_cast<int>(View::Console)] = hoveredThisFrame();
+    clipboard.mFocusedThisFrame[static_cast<int>(View::Console)] = focusedThisFrame();
+    clipboard.mClosedThisFrame[static_cast<int>(View::Console)] = closedThisFrame();
+    clipboard.mUnfocusedThisFrame[static_cast<int>(View::Console)] = unfocusedThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Console)] = unhoveredThisFrame();
+
     static AppLog log;
 
     std::queue<std::string> messages = Log::getMessages();

@@ -1,5 +1,5 @@
-#ifndef __SHADER_DRAWER_H__
-#define __SHADER_DRAWER_H__
+#ifndef SHADER_DRAWER_H__
+#define SHADER_DRAWER_H__
 
 #include "InspectorDrawer.h"
 

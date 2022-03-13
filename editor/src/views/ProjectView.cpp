@@ -28,6 +28,16 @@ void ProjectView::init(Clipboard &clipboard)
 
 void ProjectView::update(Clipboard &clipboard)
 {
+    clipboard.mOpen[static_cast<int>(View::ProjectView)] = isOpen();
+    clipboard.mHovered[static_cast<int>(View::ProjectView)] = isHovered();
+    clipboard.mFocused[static_cast<int>(View::ProjectView)] = isFocused();
+    clipboard.mOpenedThisFrame[static_cast<int>(View::ProjectView)] = openedThisFrame();
+    clipboard.mHoveredThisFrame[static_cast<int>(View::ProjectView)] = hoveredThisFrame();
+    clipboard.mFocusedThisFrame[static_cast<int>(View::ProjectView)] = focusedThisFrame();
+    clipboard.mClosedThisFrame[static_cast<int>(View::ProjectView)] = closedThisFrame();
+    clipboard.mUnfocusedThisFrame[static_cast<int>(View::ProjectView)] = unfocusedThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::ProjectView)] = unhoveredThisFrame();
+
     if (!clipboard.getProjectPath().empty())
     {
         if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() / "data") || mProjectTree.isEmpty())

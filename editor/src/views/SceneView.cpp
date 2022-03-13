@@ -5,6 +5,7 @@
 #include "core/Intersect.h"
 #include "core/Log.h"
 #include "core/Rect.h"
+#include "core/Application.h"
 
 #include "graphics/Graphics.h"
 
@@ -57,17 +58,24 @@ void SceneView::init(Clipboard &clipboard)
 
 void SceneView::update(Clipboard &clipboard)
 {
+    clipboard.mOpen[static_cast<int>(View::SceneView)] = isOpen();
+    clipboard.mHovered[static_cast<int>(View::SceneView)] = isHovered();
+    clipboard.mFocused[static_cast<int>(View::SceneView)] = isFocused();
+    clipboard.mOpenedThisFrame[static_cast<int>(View::SceneView)] = openedThisFrame();
+    clipboard.mHoveredThisFrame[static_cast<int>(View::SceneView)] = hoveredThisFrame();
+    clipboard.mFocusedThisFrame[static_cast<int>(View::SceneView)] = focusedThisFrame();
+    clipboard.mClosedThisFrame[static_cast<int>(View::SceneView)] = closedThisFrame();
+    clipboard.mUnfocusedThisFrame[static_cast<int>(View::SceneView)] = unfocusedThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::SceneView)] = unhoveredThisFrame();
+
     if (clipboard.mProjectPath.empty())
     {
         return;
     }
-    /*if (clipboard.mScenePath.empty())
-    {
-        return;
-    }*/
 
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
+    static bool vsyncChecked = true;
     static bool cameraSettingsClicked = false;
     static bool translationModeActive = true;
     static bool rotationModeActive = false;
@@ -106,7 +114,7 @@ void SceneView::update(Clipboard &clipboard)
     FreeLookCameraSystem* cameraSystem = clipboard.mCameraSystem;
 
     cameraSystem->setViewport(viewport);
-    clipboard.mGizmoSystem->mEnabled = !clipboard.mScenePath.empty();
+    clipboard.mGizmoSystem->mEnabled = !clipboard.mSceneName.empty();
 
     updateWorld(clipboard.getWorld());
 
@@ -126,22 +134,6 @@ void SceneView::update(Clipboard &clipboard)
     {
         for (int n = 0; n < count; n++)
         {
-            /*if (textures[n] == -1)
-            {
-                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-            }*/
-
-            /*bool is_selected = (textureNames[mActiveTextureIndex] == textureNames[n]);
-            if (ImGui::Selectable(textureNames[n], is_selected))
-            {
-                mActiveTextureIndex = n;
-
-                if (is_selected)
-                {
-                    ImGui::SetItemDefaultFocus();
-                }
-            }*/
             bool is_selected = (targets[mActiveTextureIndex] == targets[n]);
             if (ImGui::Selectable(targetNames[n], is_selected))
             {
@@ -192,6 +184,19 @@ void SceneView::update(Clipboard &clipboard)
     // editor rendering performance overlay
     if (ImGui::Checkbox("Perf", &overlayChecked))
     {
+    }
+    ImGui::SameLine();
+
+    if (ImGui::Checkbox("VSYNC", &vsyncChecked))
+    {
+        if (vsyncChecked)
+        {
+            PhysicsEngine::Application::get().getWindow().turnVsyncOn();
+        }
+        else
+        {
+            PhysicsEngine::Application::get().getWindow().turnVsyncOff();
+        }
     }
     ImGui::SameLine();
 
@@ -292,6 +297,7 @@ void SceneView::update(Clipboard &clipboard)
             std::array<Frustum, 5> cascadeFrustums = camera->calcCascadeFrustums(camera->calcViewSpaceCascadeEnds());
             for (size_t j = 0; j < cascadeFrustums.size(); j++)
             {
+                cascadeColors[j].mA = 0.3f;
                 cascadeFrustums[j].computePlanes(position, front, up, right);
                 clipboard.mGizmoSystem->addToDrawList(cascadeFrustums[j], cascadeColors[j], false);
             }
@@ -300,7 +306,7 @@ void SceneView::update(Clipboard &clipboard)
 
     if (clipboard.getDraggedType() == InteractionType::Mesh)
     {
-        if (clipboard.mSceneViewHoveredThisFrame)
+        if(hoveredThisFrame())
         {
             Entity* entity = clipboard.getWorld()->createNonPrimitive(clipboard.getDraggedId());
             Transform* transform = entity->getComponent<Transform>();
@@ -310,7 +316,7 @@ void SceneView::update(Clipboard &clipboard)
             clipboard.mSceneViewTempTransform = transform;
         }
 
-        if (clipboard.mSceneViewUnhoveredThisFrame)
+        if(unhoveredThisFrame())
         {
             if (clipboard.mSceneViewTempEntityId.isValid())
             {
@@ -321,7 +327,7 @@ void SceneView::update(Clipboard &clipboard)
             }
         }
 
-        if (clipboard.mSceneViewHovered)
+        if(isHovered())
         {
             if (clipboard.mSceneViewTempEntityId.isValid())
             {
