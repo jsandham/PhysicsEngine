@@ -1,6 +1,6 @@
 Mesh:
   type: 1005
-  hide : 0
-  id : 24d961b1-831c-4a69-b571-beed0fa59c46
-  name : Capsule
-  source : data\meshes\capsule.obj
+  hide: 0
+  id: 24d961b1-831c-4a69-b571-beed0fa59c46
+  name: Capsule
+  source: capsule.obj

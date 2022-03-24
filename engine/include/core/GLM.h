@@ -29,6 +29,9 @@ template <typename T> T getValue(const Node &node, const std::string &key, int i
     return T();
 }
 
+
+template <> std::string getValue<std::string>(const Node &node, const std::string &key);
+
 // vec2
 template <> struct convert<glm::vec2>
 {

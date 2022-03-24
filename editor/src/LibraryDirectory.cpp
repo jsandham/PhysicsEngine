@@ -66,6 +66,42 @@ void LibraryDirectory::watch(const std::filesystem::path& projectPath)
     mWatchID = mFileWatcher.addWatch(mDataPath.string(), &mListener, true);
 }
 
+bool isAssetYamlExtension(const std::string& extension)
+{
+    if (extension == ".texture" ||
+        extension == ".mesh" ||
+        extension == ".shader" ||
+        extension == ".material" ||
+        extension == ".sprite" ||
+        extension == ".rendertexture")
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool isTextureExtension(const std::string& extension)
+{
+    if (extension == ".png" ||
+        extension == ".jpg")
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool isMeshExtension(const std::string& extension)
+{
+    if (extension == ".obj")
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void LibraryDirectory::update(PhysicsEngine::World * world)
 {
     mFileWatcher.update();
@@ -76,32 +112,13 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         std::string extension = mAddBuffer[i].extension().string();
 
         PhysicsEngine::Asset* asset = nullptr;
-        if (extension == ".texture") {
-            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
-        }
-        else if (extension == ".mesh")
-        {
-            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
-        }
-        else if (extension == ".shader")
-        {
-            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
-        }
-        else if (extension == ".material")
-        {
-            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
-        }
-        else if (extension == ".sprite")
-        {
-            asset = world->loadAssetFromYAML(mAddBuffer[i].string());
-        }
-        else if (extension == ".rendertexture")
+        if (isAssetYamlExtension(extension))
         {
             asset = world->loadAssetFromYAML(mAddBuffer[i].string());
         }
 
         // ensure each png file has a generated yaml texture file and if not then create one
-        if (extension == ".png" || extension == ".jpg")
+        if (isTextureExtension(extension))
         {
             std::string texturePath = mAddBuffer[i].string().substr(0, mAddBuffer[i].string().find_last_of(".")) + ".texture";
             if (!std::filesystem::exists(texturePath))
@@ -123,7 +140,7 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         }
 
         // ensure each obj file has a generated yaml mesh file and if not then create one
-        if (extension == ".obj")
+        if (isMeshExtension(extension))
         {
             std::string meshPath = mAddBuffer[i].string().substr(0, mAddBuffer[i].string().find_last_of(".")) + ".mesh";
             if (!std::filesystem::exists(meshPath))
@@ -166,28 +183,9 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
         std::string extension = mDeleteBuffer[i].extension().string();
         PhysicsEngine::Guid id = getId(mDeleteBuffer[i]);
 
-        if (extension == ".texture") {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Texture2D>::type);
-        }
-        else if (extension == ".mesh")
+        if (isAssetYamlExtension(extension))
         {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Mesh>::type);
-        }
-        else if (extension == ".shader")
-        {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Shader>::type);
-        }
-        else if (extension == ".material")
-        {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Material>::type);
-        }
-        else if (extension == ".sprite")
-        {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::Sprite>::type);
-        }
-        else if (extension == ".rendertexture")
-        {
-            world->immediateDestroyAsset(id, PhysicsEngine::AssetType<PhysicsEngine::RenderTexture>::type);
+            world->immediateDestroyAsset(id, world->getTypeOf(id));
         }
 
         mFilePathToId.erase(mDeleteBuffer[i]);

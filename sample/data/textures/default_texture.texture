@@ -1,0 +1,14 @@
+Texture2D:
+  type: 1001
+  hide: 0
+  id: 66b506b1-2eee-4c93-9691-1bb871e4354d
+  name: default_texture
+  dimension: 0
+  format: 3
+  wrapMode: 0
+  filterMode: 2
+  numChannels: 4
+  anisoLevel: 1
+  width: 256
+  height: 256
+  source: default_texture.png

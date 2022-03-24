@@ -42,6 +42,7 @@ void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
         clipboard.clearDraggedItem();
 
         sprite->setTextureId(textureId);
+        clipboard.mModifiedAssets.insert(sprite->getId());
     }
 
     if (isClicked)

@@ -69,9 +69,10 @@ void Material::deserialize(const YAML::Node &in)
         mUniforms.push_back(uniform);
     }
 
-    std::string test = mShaderId.toString();
-
-    mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+    if (mShaderId.isValid())
+    {
+        mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+    }
 
     mShaderChanged = true;
     mTextureChanged = true;
@@ -102,7 +103,6 @@ void Material::onShaderChanged()
 
     if (shader == nullptr)
     {
-        Log::error("No shader attached to material\n");
         return;
     }
 

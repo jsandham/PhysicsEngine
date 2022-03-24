@@ -24,7 +24,7 @@ enum class MeshVBO
 class Mesh : public Asset
 {
   private:
-    std::string mSourceFilepath;
+    std::string mSource;
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;

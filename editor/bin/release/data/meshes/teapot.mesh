@@ -1,6 +1,6 @@
 Mesh:
   type: 1005
-  hide : 0
-  id : defc2607-0226-42f2-9b88-cfe55213321f
-  name : Teapot
-  source : data\meshes\teapot.obj
+  hide: 0
+  id: defc2607-0226-42f2-9b88-cfe55213321f
+  name: Teapot
+  source: teapot.obj

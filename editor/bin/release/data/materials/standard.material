@@ -5,6 +5,7 @@ Material:
   name: Editor loaded Standard
   shaderId: 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
   renderQueue: Opaque
+  enableInstancing: false
   material.shininess:
     type: Float
     data: 0

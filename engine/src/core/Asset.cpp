@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../../include/core/Asset.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;

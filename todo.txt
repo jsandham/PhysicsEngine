@@ -60,4 +60,3 @@ clang-tidy src\core\*.cpp -- -Iinclude\glew-2.1.0
 -figure out what is causing window close button to flicker (has something to do with imgui)
 -improve compilation time
 -add debug layer that shows all color framebuffers 
--remove absolute paths from asset yaml files

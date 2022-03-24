@@ -63,9 +63,8 @@ enum class ShaderSourceLanguage
 struct ShaderCreationAttrib
 {
     std::string mName;
-    std::string mVertexSourceFilepath;
-    std::string mFragmentSourceFilepath;
-    std::string mGeometrySourceFilepath;
+    std::string mShaderSourceFilepath;
+    std::string mSourceFilepath;
     ShaderSourceLanguage mSourceLanguage;
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 };
@@ -104,9 +103,8 @@ struct ShaderAttribute
 class Shader : public Asset
 {
   private:
-    std::string mVertexSourceFilepath;
-    std::string mFragmentSourceFilepath;
-    std::string mGeometrySourceFilepath;
+    std::string mSource;
+      
     std::string mVertexShader;
     std::string mFragmentShader;
     std::string mGeometryShader;

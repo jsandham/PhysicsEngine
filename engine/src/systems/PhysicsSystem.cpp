@@ -6,7 +6,6 @@
 #include "../../include/core/Input.h"
 #include "../../include/core/Physics.h"
 #include "../../include/core/PoolAllocator.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Triangle.h"
 #include "../../include/core/World.h"

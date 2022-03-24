@@ -38,6 +38,7 @@ inline void UniformDrawer<ShaderUniformType::Int>::draw(Clipboard& clipboard, Ma
     if (ImGui::InputInt(uniform->getShortName().c_str(), &temp))
     {
         material->setInt(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getId());
     }
 }
 
@@ -49,6 +50,7 @@ inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, 
     if (ImGui::InputFloat(uniform->getShortName().c_str(), &temp))
     {
         material->setFloat(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getId());
     }
 }
 
@@ -60,6 +62,7 @@ inline void UniformDrawer<ShaderUniformType::Color>::draw(Clipboard& clipboard, 
     if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
     {
         material->setColor(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getId());
     }
 }
 
@@ -71,6 +74,7 @@ inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, M
     if (ImGui::InputFloat2(uniform->getShortName().c_str(), &temp[0]))
     {
         material->setVec2(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getId());
     }
 }
 
@@ -85,6 +89,7 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
         if (ImGui::ColorEdit3(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec3(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getId());
         }
     }
     else
@@ -92,6 +97,7 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
         if (ImGui::InputFloat3(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec3(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getId());
         }
     }
 }
@@ -107,6 +113,7 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
         if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec4(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getId());
         }
     }
     else
@@ -114,6 +121,7 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
         if (ImGui::InputFloat4(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec4(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getId());
         }
     }
 }
@@ -131,6 +139,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
             material->setTexture(uniform->mName, clipboard.getDraggedId());
             material->onTextureChanged();
 
+            clipboard.mModifiedAssets.insert(material->getId());
             clipboard.clearDraggedItem();
         }
 
@@ -139,6 +148,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
             if (material->getTexture(uniform->mName).isValid())
             {
                 clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
+                clipboard.mModifiedAssets.insert(material->getId());
             }
         }
 
@@ -146,6 +156,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
         {
             material->setTexture(uniform->mName, Guid::INVALID);
             material->onTextureChanged();
+            clipboard.mModifiedAssets.insert(material->getId());
         }
     }
 }
@@ -209,8 +220,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                 currentShaderId = s->getId();
 
                 material->setShaderId(currentShaderId);
-
                 material->onShaderChanged();
+                clipboard.mModifiedAssets.insert(material->getId());
             }
             if (is_selected)
             {

@@ -10,14 +10,14 @@ using namespace PhysicsEngine;
 
 Mesh::Mesh(World *world) : Asset(world)
 {
-    mSourceFilepath = "";
+    mSource = "";
     mCreated = false;
     mChanged = false;
 }
 
 Mesh::Mesh(World *world, const Guid& id) : Asset(world, id)
 {
-    mSourceFilepath = "";
+    mSource = "";
     mCreated = false;
     mChanged = false;
 }
@@ -30,15 +30,15 @@ void Mesh::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["source"] = mSourceFilepath;
+    out["source"] = mSource;
 }
 
 void Mesh::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mSourceFilepath = YAML::getValue<std::string>(in, "source");
-    load(mSourceFilepath);
+    mSource = YAML::getValue<std::string>(in, "source");
+    load(YAML::getValue<std::string>(in, "sourceFilepath"));
 }
 
 int Mesh::getType() const
@@ -238,9 +238,10 @@ void Mesh::load(const std::string &filepath)
 
     computeBoundingSphere();
 
-    mCreated = false;
+    std::filesystem::path temp = filepath;
+    mSource = temp.filename().string();
 
-    mSourceFilepath = filepath;
+    mCreated = false;
 }
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,

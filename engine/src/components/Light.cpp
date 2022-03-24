@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include "../../include/components/Light.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 using namespace PhysicsEngine;

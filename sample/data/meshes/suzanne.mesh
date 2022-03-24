@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 5c602b1d-c5f2-4a2d-94ff-c27523276041
+  name: suzanne
+  source: suzanne.obj

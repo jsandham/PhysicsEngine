@@ -1,7 +1,6 @@
 #include "../../include/components/MeshCollider.h"
 
 #include "../../include/core/Intersect.h"
-#include "../../include/core/Serialization.h"
 
 using namespace PhysicsEngine;
 

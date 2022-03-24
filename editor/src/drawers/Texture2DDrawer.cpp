@@ -117,6 +117,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 activeWrapModeIndex = n;
 
                 texture->setWrapMode(static_cast<TextureWrapMode>(n));
+                clipboard.mModifiedAssets.insert(texture->getId());
 
                 if (is_selected)
                 {
@@ -138,6 +139,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 activeFilterModeIndex = n;
 
                 texture->setFilterMode(static_cast<TextureFilterMode>(n));
+                clipboard.mModifiedAssets.insert(texture->getId());
 
                 if (is_selected)
                 {
@@ -153,6 +155,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     if (ImGui::SliderInt("Aniso", &aniso, 1, 16))
     {
         texture->setAnisoLevel(aniso);
+        clipboard.mModifiedAssets.insert(texture->getId());
     }
 
     // Draw texture child window

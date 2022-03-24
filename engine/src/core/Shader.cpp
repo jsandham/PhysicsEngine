@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
@@ -7,9 +9,7 @@ using namespace PhysicsEngine;
 
 Shader::Shader(World *world) : Asset(world)
 {
-    mVertexSourceFilepath = "";
-    mFragmentSourceFilepath = "";
-    mGeometrySourceFilepath = "";
+    mSource = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -21,10 +21,8 @@ Shader::Shader(World *world) : Asset(world)
 }
 
 Shader::Shader(World *world, const Guid& id) : Asset(world, id)
-{
-    mVertexSourceFilepath = "";
-    mFragmentSourceFilepath = "";
-    mGeometrySourceFilepath= "";
+{   
+    mSource = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -44,9 +42,7 @@ void Shader::serialize(YAML::Node &out) const
     Asset::serialize(out);
 
     out["shaderSourceLanguage"] = mShaderSourceLanguage;
-    out["vertexSource"] = mVertexSourceFilepath;
-    out["fragmentSource"] = mFragmentSourceFilepath;
-    out["geometrySource"] = mGeometrySourceFilepath;
+    out["source"] = mSource;
     out["variants"] = mVariantMacroMap;
 }
 
@@ -55,31 +51,12 @@ void Shader::deserialize(const YAML::Node &in)
     Asset::deserialize(in);
 
     mShaderSourceLanguage = YAML::getValue<ShaderSourceLanguage>(in, "shaderSourceLanguage");
-    mVertexSourceFilepath = YAML::getValue<std::string>(in, "vertexSource");
-    mFragmentSourceFilepath = YAML::getValue<std::string>(in, "fragmentSource");
-    mGeometrySourceFilepath = YAML::getValue<std::string>(in, "geometrySource");
     mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
-
-    if (mVertexSourceFilepath.compare("null") == 0)
-    {
-        mVertexSourceFilepath = "";
-    }
-
-    if (mFragmentSourceFilepath.compare("null") == 0)
-    {
-        mFragmentSourceFilepath = "";
-    }
-
-    if (mGeometrySourceFilepath.compare("null") == 0)
-    {
-        mGeometrySourceFilepath = "";
-    }
+    mSource = YAML::getValue<std::string>(in, "source");
 
     ShaderCreationAttrib attrib;
     attrib.mName = mName;
-    attrib.mVertexSourceFilepath = mVertexSourceFilepath;
-    attrib.mFragmentSourceFilepath = mFragmentSourceFilepath;
-    attrib.mGeometrySourceFilepath = mGeometrySourceFilepath;
+    attrib.mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath");
     attrib.mSourceLanguage = mShaderSourceLanguage;
     attrib.mVariantMacroMap = mVariantMacroMap;
 
@@ -98,14 +75,11 @@ std::string Shader::getObjectName() const
 
 void Shader::load(const ShaderCreationAttrib& attrib)
 {
-    if (attrib.mVertexSourceFilepath.empty() || attrib.mFragmentSourceFilepath.empty())
-    {
-        return;
-    }
+    if (attrib.mSourceFilepath.empty()){ return; }
 
     shader_data data;
 
-    if (shader_load(attrib.mVertexSourceFilepath, attrib.mFragmentSourceFilepath, attrib.mGeometrySourceFilepath, data))
+    if (shader_load(attrib.mSourceFilepath, data))
     {
         this->setVertexShader(data.mVertexShader);
         this->setGeometryShader(data.mGeometryShader);
@@ -118,11 +92,11 @@ void Shader::load(const ShaderCreationAttrib& attrib)
     }
 
     mName = attrib.mName;
-    mVertexSourceFilepath = attrib.mVertexSourceFilepath;
-    mFragmentSourceFilepath = attrib.mFragmentSourceFilepath;
-    mGeometrySourceFilepath = attrib.mGeometrySourceFilepath;
     mShaderSourceLanguage = attrib.mSourceLanguage;
     mVariantMacroMap = attrib.mVariantMacroMap;
+
+    std::filesystem::path temp = attrib.mSourceFilepath;
+    mSource = temp.filename().string();
 
     mPrograms.resize(attrib.mVariantMacroMap.size());
 }

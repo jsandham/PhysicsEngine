@@ -71,6 +71,8 @@ class Clipboard
 
         PhysicsEngine::Time mTime;
 
+        std::set<PhysicsEngine::Guid> mModifiedAssets;
+
     public:
         Clipboard();
         ~Clipboard();

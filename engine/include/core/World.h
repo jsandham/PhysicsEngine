@@ -204,10 +204,10 @@ class World
     Guid getSceneId(const std::string& filepath) const;
 
   private:
-    Asset *loadAssetFromYAML(const YAML::Node &in);
-    Asset *loadAssetFromYAML(const YAML::Node &in, const Guid id, int type);
-    Scene *loadSceneFromYAML(const YAML::Node &in);
-    Scene *loadSceneFromYAML(const YAML::Node &in, const Guid id);
+    Asset *loadAssetFromYAML_impl(const YAML::Node &in);
+    Scene *loadSceneFromYAML_impl(const YAML::Node &in);
+
+    void generateSourcePaths(const std::string& filepath, YAML::Node &in);
 
     template <typename T> size_t getNumberOfSystems_impl(const PoolAllocator<T> *allocator) const
     {

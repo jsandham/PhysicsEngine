@@ -2,7 +2,6 @@
 
 #include "../../include/core/Log.h"
 #include "../../include/core/PoolAllocator.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;

@@ -1,5 +1,6 @@
 Mesh:
   type: 1005
-  id : 04e41d6c-bd72-4ae9-9036-5b5e70d6a843
-  name : sphere
-  source : data\meshes\sphere.obj
+  hide: 0
+  id: 04e41d6c-bd72-4ae9-9036-5b5e70d6a843
+  name: sphere
+  source: sphere.obj

@@ -45,6 +45,9 @@ void World::loadAssetsInPath(const std::filesystem::path &filePath)
                     {
                         std::filesystem::path relativeDataPath =
                             entry.path().lexically_relative(std::filesystem::current_path());
+
+                        std::cout << "relative data path: " << relativeDataPath.string() << std::endl;
+
                         loadAssetFromYAML(relativeDataPath.string());
                     }
                 }
@@ -73,7 +76,9 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
 
     if (in.begin()->first.IsScalar() && in.begin()->second.IsMap())
     {
-        Asset *asset = loadAssetFromYAML(in.begin()->second);
+        generateSourcePaths(filePath, in.begin()->second);
+
+        Asset *asset = loadAssetFromYAML_impl(in.begin()->second);
         if (asset != nullptr)
         {
             mIdState.mAssetIdToFilepath[asset->getId()] = filePath;
@@ -99,7 +104,7 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
         return nullptr;
     }
 
-    Scene *scene = loadSceneFromYAML(in);
+    Scene *scene = loadSceneFromYAML_impl(in);
     if (scene != nullptr)
     {
         mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
@@ -225,47 +230,59 @@ bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) c
     return true;
 }
 
-Asset *World::loadAssetFromYAML(const YAML::Node &in)
+Asset *World::loadAssetFromYAML_impl(const YAML::Node &in)
 {
     int type = YAML::getValue<int>(in, "type");
     Guid id = YAML::getValue<Guid>(in, "id");
 
     if (PhysicsEngine::isAsset(type) && id.isValid())
     {
-        return loadAssetFromYAML(in, id, type);
+        if (Asset::isInternal(type))
+        {
+            return PhysicsEngine::loadInternalAsset(*this, mAllocators, mIdState, in, id, type);
+        }
+        else
+        {
+            return PhysicsEngine::loadAsset(*this, mAllocators, mIdState, in, id, type);
+        }
     }
 
     return nullptr;
 }
 
-Scene *World::loadSceneFromYAML(const YAML::Node &in)
+Scene *World::loadSceneFromYAML_impl(const YAML::Node &in)
 {
     int type = YAML::getValue<int>(in, "type");
     Guid id = YAML::getValue<Guid>(in, "id");
 
     if (PhysicsEngine::isScene(type) && id.isValid())
     {
-        return loadSceneFromYAML(in, id);
+        return PhysicsEngine::loadInternalScene(*this, mAllocators, mIdState, in, id);
     }
 
     return nullptr;
 }
 
-Asset *World::loadAssetFromYAML(const YAML::Node &in, const Guid id, int type)
+void World::generateSourcePaths(const std::string &filepath, YAML::Node &in)
 {
-    if (Asset::isInternal(type))
-    {
-        return PhysicsEngine::loadInternalAsset(*this, mAllocators, mIdState, in, id, type);
-    }
-    else
-    {
-        return PhysicsEngine::loadAsset(*this, mAllocators, mIdState, in, id, type);
-    }
-}
+    int type = YAML::getValue<int>(in, "type");
 
-Scene *World::loadSceneFromYAML(const YAML::Node &in, const Guid id)
-{
-    return PhysicsEngine::loadInternalScene(*this, mAllocators, mIdState, in, id);
+    std::filesystem::path path = filepath;
+    path.remove_filename();
+
+    if (PhysicsEngine::isAsset(type))
+    {
+        switch (type)
+        {
+        case AssetType<Shader>::type:
+        case AssetType<Texture2D>::type:
+        case AssetType<Mesh>::type: {
+            std::filesystem::path source = YAML::getValue<std::string>(in, "source");
+            in["sourceFilepath"] = (path / source).string();
+            break;
+        }
+        }
+    }
 }
 
 void World::latentDestroyEntitiesInWorld()

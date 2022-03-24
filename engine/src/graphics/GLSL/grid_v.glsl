@@ -1,9 +1,10 @@
 #version 430 core
 #include "camera.glsl"
 
+layout (location = 0) in vec3 position;
+
 uniform mat4 mvp;
 uniform vec4 color;
-in vec3 position;
 out vec4 Color;
 void main()
 {

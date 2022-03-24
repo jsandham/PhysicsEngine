@@ -5,7 +5,6 @@
 #include <gl/gl.h>
 
 #include "../../include/core/Font.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 
 #include <ft2build.h>

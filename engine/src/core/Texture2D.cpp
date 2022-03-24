@@ -1,9 +1,10 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Serialization.h"
 #include "../../include/graphics/Graphics.h"
 #include "stb_image.h"
 #include "stb_image_write.h"
+
+#include<filesystem>
 
 using namespace PhysicsEngine;
 
@@ -101,7 +102,7 @@ void Texture2D::deserialize(const YAML::Node &in)
     mHeight = YAML::getValue<int>(in, "height");
 
     mSource = YAML::getValue<std::string>(in, "source");
-    load(mSource);
+    load(YAML::getValue<std::string>(in, "sourceFilepath"));
 }
 
 int Texture2D::getType() const
@@ -170,7 +171,8 @@ void Texture2D::load(const std::string &filepath)
         return;
     }
 
-    mSource = filepath;
+    std::filesystem::path temp = filepath;
+    mSource = temp.filename().string();
 }
 
 void Texture2D::writeToPNG(const std::string &filepath) const
