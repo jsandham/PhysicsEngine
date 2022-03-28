@@ -71,7 +71,7 @@ void ImGuiLayer::begin()
 
 void ImGuiLayer::update(const PhysicsEngine::Time& time)
 {
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     //ImGui::ShowMetricsWindow();
     //ImGui::ShowStyleEditor();
 }

@@ -179,6 +179,7 @@ class World
 
     Scene *createScene();
     Entity *createEntity();
+    Entity *createEntity(const std::string& name);
 
     void latentDestroyEntity(const Guid &entityId);
     void immediateDestroyEntity(const Guid &entityId);

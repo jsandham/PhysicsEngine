@@ -1740,6 +1740,123 @@ bool Graphics::compile(const std::string &name, const std::string &vert, const s
     return true;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Graphics::compile(const std::string &name, const std::string &vert, const std::string &frag,
+                       const std::string &geom, unsigned int *program, ShaderStatus& status)
+{
+    const GLchar *vertexShaderCharPtr = vert.c_str();
+    const GLchar *geometryShaderCharPtr = geom.c_str();
+    const GLchar *fragmentShaderCharPtr = frag.c_str();
+
+    // Compile vertex shader
+    GLuint vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL);
+    glCompileShader(vertexShaderObj);
+    glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &status.mVertexShaderCompiled);
+    if (!status.mVertexShaderCompiled)
+    {
+        glGetShaderInfoLog(vertexShaderObj, 512, NULL, status.mVertexCompileLog);
+        
+        std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
+        Log::error(message.c_str());
+    }
+
+    // Compile fragment shader
+    GLuint fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL);
+    glCompileShader(fragmentShaderObj);
+    glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &status.mFragmentShaderCompiled);
+    if (!status.mFragmentShaderCompiled)
+    {
+        glGetShaderInfoLog(fragmentShaderObj, 512, NULL, status.mFragmentCompileLog);
+
+        std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
+        Log::error(message.c_str());
+    }
+
+    // Compile geometry shader
+    GLuint geometryShaderObj = 0;
+    if (!geom.empty())
+    {
+        geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
+        glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
+        glCompileShader(geometryShaderObj);
+        glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &status.mGeometryShaderCompiled);
+        if (!status.mGeometryShaderCompiled)
+        {
+            glGetShaderInfoLog(geometryShaderObj, 512, NULL, status.mGeometryCompileLog);
+            
+            std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
+            Log::error(message.c_str());
+        }
+    }
+
+    // Create shader program
+    *program = glCreateProgram();
+
+    // Attach shader objects to shader program
+    glAttachShader(*program, vertexShaderObj);
+    glAttachShader(*program, fragmentShaderObj);
+    if (geometryShaderObj != 0)
+    {
+        glAttachShader(*program, geometryShaderObj);
+    }
+
+    // Link shader program
+    glLinkProgram(*program);
+    glGetProgramiv(*program, GL_LINK_STATUS, &status.mShaderLinked);
+    if (!status.mShaderLinked)
+    {
+        glGetProgramInfoLog(*program, 512, NULL, status.mLinkLog);
+        
+        std::string message = "Shader: " + name + " program linking failed\n";
+        Log::error(message.c_str());
+    }
+
+    // Detach shader objects from shader program
+    glDetachShader(*program, vertexShaderObj);
+    glDetachShader(*program, fragmentShaderObj);
+    if (geometryShaderObj != 0)
+    {
+        glDetachShader(*program, geometryShaderObj);
+    }
+
+    // Delete shader objects
+    glDeleteShader(vertexShaderObj);
+    glDeleteShader(fragmentShaderObj);
+    if (!geom.empty())
+    {
+        glDeleteShader(geometryShaderObj);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 int Graphics::findUniformLocation(const char *name, int program)
 {
     return glGetUniformLocation(program, name);
@@ -1810,7 +1927,7 @@ std::vector<ShaderUniform> Graphics::getShaderUniforms(int program)
         }
 
         uniforms[j].mUniformId = 0;
-        uniforms[j].mCachedHandle = -1;
+        uniforms[j].mTex = -1;
         memset(uniforms[j].mData, '\0', 64);
     }
 
@@ -2060,9 +2177,9 @@ void Graphics::applyMaterial(const std::vector<ShaderUniform> &uniforms, int sha
 
         if (uniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            if (uniforms[i].mCachedHandle != -1)
+            if (uniforms[i].mTex != -1)
             {
-                Graphics::setTexture2D(location, textureUnit, uniforms[i].mCachedHandle);
+                Graphics::setTexture2D(location, textureUnit, uniforms[i].mTex);
             }
             else
             {

@@ -102,6 +102,17 @@ bool isMeshExtension(const std::string& extension)
     return false;
 }
 
+bool isShaderExtension(const std::string& extension)
+{
+    if (extension == ".glsl" ||
+        extension == ".hlsl")
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void LibraryDirectory::update(PhysicsEngine::World * world)
 {
     mFileWatcher.update();
@@ -158,6 +169,37 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
                 mesh->writeToYAML(meshPath);
 
                 asset = mesh;
+            }
+        }
+
+        // ensure each glsl file has a generated yaml shader file and if not then create one
+        if (isShaderExtension(extension))
+        {
+            std::string shaderPath = mAddBuffer[i].string().substr(0, mAddBuffer[i].string().find_last_of(".")) + ".shader";
+            if (!std::filesystem::exists(shaderPath))
+            {
+                PhysicsEngine::Shader* shader = world->createAsset<PhysicsEngine::Shader>();
+
+                PhysicsEngine::ShaderCreationAttrib attrib;
+                attrib.mSourceFilepath = mAddBuffer[i].string();
+                attrib.mSourceLanguage = PhysicsEngine::ShaderSourceLanguage::GLSL;
+                attrib.mVariantMacroMap[0] = { PhysicsEngine::ShaderMacro::None };
+
+                if (mAddBuffer[i].has_stem())
+                {
+                    attrib.mName = mAddBuffer[i].stem().string();
+                    shader->setName(mAddBuffer[i].stem().string());
+                }
+                else
+                {
+                    attrib.mName = mAddBuffer[i].filename().string();
+                    shader->setName(mAddBuffer[i].filename().string());
+                }
+
+                shader->load(attrib);
+                shader->writeToYAML(shaderPath);
+
+                asset = shader;
             }
         }
 

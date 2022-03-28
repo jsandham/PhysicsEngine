@@ -570,6 +570,18 @@ Entity *World::createEntity()
     return entity;
 }
 
+Entity *World::createEntity(const std::string& name)
+{
+    Entity *entity = createEntity();
+    if (entity != nullptr)
+    {
+        entity->setName(name);
+        return entity;
+    }
+
+    return nullptr;
+}
+
 void World::latentDestroyEntity(const Guid &entityId)
 {
     mIdState.mEntityIdsMarkedLatentDestroy.push_back(entityId);

@@ -318,6 +318,12 @@ class Graphics
     
     static void preprocess(std::string& vert, std::string& frag, std::string& geom, int64_t variant);
     static bool compile(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom, unsigned int *program);
+
+
+    static void compile(const std::string &name, const std::string &vert, const std::string &frag,
+                        const std::string &geom, unsigned int *program, ShaderStatus& status);
+
+
     static int findUniformLocation(const char *name, int program);
     static int getUniformCount(int program);
     static int getAttributeCount(int program);

@@ -109,53 +109,20 @@ void Inspector::drawEntity(Clipboard &clipboard)
         InspectorDrawer *drawer = nullptr;
         if (Component::isInternal(componentType))
         {
-            if (componentType == ComponentType<Transform>::type)
+            switch (componentType)
             {
-                drawer = &mTransformDrawer;
-            }
-            else if (componentType == ComponentType<Rigidbody>::type)
-            {
-                drawer = &mRigidbodyDrawer;
-            }
-            else if (componentType == ComponentType<Camera>::type)
-            {
-                drawer = &mCameraDrawer;
-            }
-            else if (componentType == ComponentType<MeshRenderer>::type)
-            {
-                drawer = &mMeshRendererDrawer;
-            }
-            else if (componentType == ComponentType<SpriteRenderer>::type)
-            {
-                drawer = &mSpriteRendererDrawer;
-            }
-            else if (componentType == ComponentType<LineRenderer>::type)
-            {
-                drawer = &mLineRendererDrawer;
-            }
-            else if (componentType == ComponentType<Light>::type)
-            {
-                drawer = &mLightDrawer;
-            }
-            else if (componentType == ComponentType<BoxCollider>::type)
-            {
-                drawer = &mBoxColliderDrawer;
-            }
-            else if (componentType == ComponentType<SphereCollider>::type)
-            {
-                drawer = &mSphereColliderDrawer;
-            }
-            else if (componentType == ComponentType<CapsuleCollider>::type)
-            {
-                drawer = &mCapsuleColliderDrawer;
-            }
-            else if (componentType == ComponentType<MeshCollider>::type)
-            {
-                drawer = &mMeshColliderDrawer;
-            }
-            else if (componentType == ComponentType<Terrain>::type)
-            {
-                drawer = &mTerrainDrawer;
+            case ComponentType<Transform>::type: { drawer = &mTransformDrawer; break; }
+            case ComponentType<Rigidbody>::type: { drawer = &mRigidbodyDrawer; break; }
+            case ComponentType<Camera>::type: { drawer = &mCameraDrawer; break; }
+            case ComponentType<MeshRenderer>::type: { drawer = &mMeshRendererDrawer; break; }
+            case ComponentType<SpriteRenderer>::type: { drawer = &mSpriteRendererDrawer; break; }
+            case ComponentType<LineRenderer>::type: { drawer = &mLineRendererDrawer; break; }
+            case ComponentType<Light>::type: { drawer = &mLightDrawer; break; }
+            case ComponentType<BoxCollider>::type: { drawer = &mBoxColliderDrawer; break; }
+            case ComponentType<SphereCollider>::type: { drawer = &mSphereColliderDrawer; break; }
+            case ComponentType<CapsuleCollider>::type: { drawer = &mCapsuleColliderDrawer; break; }
+            case ComponentType<MeshCollider>::type: { drawer = &mMeshColliderDrawer; break; }
+            case ComponentType<Terrain>::type: { drawer = &mTerrainDrawer; break; }
             }
         }
 

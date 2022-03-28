@@ -130,7 +130,6 @@ void Shader::preprocess()
 
         mPrograms[i].mVariant = variant;
         mPrograms[i].mHandle = 0;
-        mPrograms[i].mCompiled = false;
 
         Graphics::preprocess(mPrograms[i].mVertexShader,
                              mPrograms[i].mFragmentShader,
@@ -146,21 +145,15 @@ void Shader::compile()
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
         Graphics::destroy(mPrograms[i].mHandle);
-    }
 
-    for (size_t i = 0; i < mPrograms.size(); i++)
-    {
-        Graphics::compile(mName,
-                          mPrograms[i].mVertexShader, 
-                          mPrograms[i].mFragmentShader, 
-                          mPrograms[i].mGeometryShader,
-                          &mPrograms[i].mHandle);
+        Graphics::compile(mName, mPrograms[i].mVertexShader, mPrograms[i].mFragmentShader, mPrograms[i].mGeometryShader,
+                          &mPrograms[i].mHandle, mPrograms[i].mStatus);
     }
 
     mAllProgramsCompiled = true;
 
     // Finally set camera and light uniform block binding points
-    this->setUniformBlock("CamerBlock", 0);
+    this->setUniformBlock("CameraBlock", 0);
     this->setUniformBlock("LightBlock", 1);
 
     // find all uniforms and attributes in shader across all variants
@@ -188,7 +181,7 @@ void Shader::compile()
                 ShaderUniform uniform;
                 uniform.mName = name;
                 uniform.mType = type;
-                uniform.mCachedHandle = -1;
+                uniform.mTex = -1;
                 uniform.mUniformId = Shader::uniformToId(name.c_str());
                 memset(uniform.mData, '\0', 64);
 
@@ -237,6 +230,16 @@ void Shader::setFragmentShader(const std::string &fragmentShader)
 {
     mFragmentShader = fragmentShader;
     mAllProgramsCompiled = false;
+}
+
+std::string Shader::getSource() const
+{
+    return mSource;
+}
+
+ShaderSourceLanguage Shader::getSourceLanguage() const
+{
+    return mShaderSourceLanguage;
 }
 
 void Shader::setUniformBlock(const std::string &blockName, int bindingPoint) const

@@ -63,21 +63,33 @@ enum class ShaderSourceLanguage
 struct ShaderCreationAttrib
 {
     std::string mName;
-    std::string mShaderSourceFilepath;
     std::string mSourceFilepath;
     ShaderSourceLanguage mSourceLanguage;
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 };
 
+struct ShaderStatus
+{
+    char mVertexCompileLog[512];
+    char mFragmentCompileLog[512];
+    char mGeometryCompileLog[512];
+    char mLinkLog[512];
+    int mVertexShaderCompiled;
+    int mFragmentShaderCompiled;
+    int mGeometryShaderCompiled;
+    int mShaderLinked;
+};
+
 struct ShaderProgram
 {
+    ShaderStatus mStatus;
+
     std::string mVertexShader;
     std::string mFragmentShader;
     std::string mGeometryShader;
 
     int64_t mVariant;
     unsigned int mHandle;
-    bool mCompiled;
 };
 
 struct ShaderUniform
@@ -85,7 +97,7 @@ struct ShaderUniform
     char mData[64];
     std::string mName; // variable name in GLSL (including block name if applicable)
     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-    int mCachedHandle; // if data stores a texture id, this is the cached handle
+    int mTex; // if data stores a texture id, this is the texture handle
     unsigned int mUniformId; // integer hash of uniform name
 
     std::string getShortName() const
@@ -156,6 +168,8 @@ class Shader : public Asset
     std::string getVertexShader() const;
     std::string getGeometryShader() const;
     std::string getFragmentShader() const;
+    std::string getSource() const;
+    ShaderSourceLanguage getSourceLanguage() const;
 
     void setBool(const char *name, bool value) const;
     void setInt(const char *name, int value) const;
@@ -563,7 +577,7 @@ template <> struct convert<std::set<PhysicsEngine::ShaderMacro>>
 {
     static Node encode(const std::set<PhysicsEngine::ShaderMacro>& rhs)
     {
-        Node node;
+        Node node = YAML::Load("[]");
 
         for (auto it = rhs.begin(); it != rhs.end(); it++)
         {
@@ -598,7 +612,7 @@ template <> struct convert<std::unordered_map<int, std::set<PhysicsEngine::Shade
 
         for (auto it = rhs.begin(); it != rhs.end(); it++)
         {
-            node[it->first] = it->second;
+            node[std::to_string(it->first)] = it->second;
         }
 
         return node;

@@ -123,7 +123,7 @@ void Material::onShaderChanged()
             if (newUniforms[i].mType == cachedUniforms[i].mType && newUniforms[i].mName == cachedUniforms[i].mName)
             {
                 newUniforms[i].mUniformId = cachedUniforms[i].mUniformId;
-                newUniforms[i].mCachedHandle = cachedUniforms[i].mCachedHandle;
+                newUniforms[i].mTex = cachedUniforms[i].mTex;
                 memcpy(newUniforms[i].mData, cachedUniforms[i].mData, 64);
             }
         }
@@ -144,11 +144,11 @@ void Material::onTextureChanged()
             Texture2D *texture = mWorld->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
-                mUniforms[i].mCachedHandle = texture->getNativeGraphics();
+                mUniforms[i].mTex = texture->getNativeGraphics();
             }
             else
             {
-                mUniforms[i].mCachedHandle = -1;
+                mUniforms[i].mTex = -1;
             }
         }
     }

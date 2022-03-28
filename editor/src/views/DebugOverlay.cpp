@@ -199,7 +199,7 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
             ImGui::Text("Data: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mData);
             ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName.c_str());
             ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(static_cast<int>(uniforms[i].mType)).c_str());
-            ImGui::Text("CachedHandle: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mCachedHandle).c_str());
+            ImGui::Text("CachedHandle: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mTex).c_str());
             ImGui::Text("Uniform id: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mUniformId).c_str());
         }
         ImGui::Unindent(16.0f);
