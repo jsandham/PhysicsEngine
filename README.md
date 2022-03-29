@@ -9,7 +9,7 @@ Start by cloning the repository with `https://github.com/jsandham/PhysicsEngine.
 
 <ins>**2. Configuring and building:**</ins>
 
-1. Edit the [shell.bat](https://github.com/jsandham/PhysicsEngine/blob/master/shell.bat) file found at the root of the repository to point to wherever your vcvarsall.bat script is located. Typically this is located in something like C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\ but this will vary on your visual studio installation.
+1. Edit the [shell.bat](https://github.com/jsandham/PhysicsEngine/blob/master/shell.bat) file found at the root of the repository to point to wherever your vcvarsall.bat script is located. Typically this is located in something like `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\` but this will vary on your visual studio installation.
 2. Run the [build_all_debug.bat](https://github.com/jsandham/PhysicsEngine/blob/master/build_all_debug.bat) for a debug build or [build_all_release.bat](https://github.com/jsandham/PhysicsEngine/blob/master/build_all_release.bat) for a release build. These bat scipts will build all dependencies, the engine and the editor.
 3. You can now run the [editor](https://github.com/jsandham/PhysicsEngine/tree/master/editor/bin/debug) executable.
 4. Thats it.
