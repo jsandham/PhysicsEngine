@@ -7,6 +7,8 @@ namespace PhysicsEditor
 {
 class ShaderDrawer : public InspectorDrawer
 {
+  private:
+      PhysicsEngine::Guid mShaderId;
   public:
     ShaderDrawer();
     ~ShaderDrawer();

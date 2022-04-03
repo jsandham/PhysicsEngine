@@ -427,11 +427,14 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
             }
             else
             {
-                shader->use(shader->getProgramFromVariant(variant)); 
+                shader->use(shader->getProgramFromVariant(variant) != -1 ? shader->getProgramFromVariant(variant)
+                                                                         : shader->getProgramFromVariant(0));
             }  
 
             currentShaderIndex = renderObjects[i].shaderIndex;
         }
+
+        Graphics::checkError(__LINE__, __FILE__);
 
         if (renderObjects[i].instanced)
         {

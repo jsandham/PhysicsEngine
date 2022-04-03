@@ -65,10 +65,11 @@ Texture2DDrawer::Texture2DDrawer()
                                   "                     texture(texture0, TexCoord).a, 1);\n"
                                   "}";
 
-    Graphics::compile("Texture2DDrawer0", vertexShader, fragmentShaderR, "", &mProgramR);
-    Graphics::compile("Texture2DDrawer1", vertexShader, fragmentShaderG, "", &mProgramG);
-    Graphics::compile("Texture2DDrawer2", vertexShader, fragmentShaderB, "", &mProgramB);
-    Graphics::compile("Texture2DDrawer3", vertexShader, fragmentShaderA, "", &mProgramA);
+    ShaderStatus status;
+    Graphics::compile("Texture2DDrawer0", vertexShader, fragmentShaderR, "", &mProgramR, status);
+    Graphics::compile("Texture2DDrawer1", vertexShader, fragmentShaderG, "", &mProgramG, status);
+    Graphics::compile("Texture2DDrawer2", vertexShader, fragmentShaderB, "", &mProgramB, status);
+    Graphics::compile("Texture2DDrawer3", vertexShader, fragmentShaderA, "", &mProgramA, status);
 
     mTexLocR = Graphics::findUniformLocation("texture0", mProgramR);
     mTexLocG = Graphics::findUniformLocation("texture0", mProgramG);

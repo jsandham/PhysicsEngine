@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@ using namespace PhysicsEditor;
 
 ShaderDrawer::ShaderDrawer()
 {
+    mShaderId = PhysicsEngine::Guid::INVALID;
 }
 
 ShaderDrawer::~ShaderDrawer()
@@ -68,42 +70,17 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
         ImGui::TableNextColumn();
         ImGui::Text(std::to_string(uniforms.size()).c_str());
 
+        for (size_t i = 0; i < uniforms.size(); i++)
+        {
+            ImGui::TableNextColumn();
+            ImGui::TableNextColumn();
+            ImGui::Text(uniforms[i].mName.c_str());
+        }
+
         ImGui::EndTable();
     }
 
     ImGui::Separator();
-
-    /*bool static showVariants = false;
-    if (ImGui::Checkbox("Show Variants", &showVariants))
-    {
-    }
-    if(showVariants)
-    {
-        size_t currentProgram = 0;
-        char currentText[16384];
-
-        if (ImGui::BeginCombo("Variant", "0", ImGuiComboFlags_None))
-        {
-            for (size_t i = 0; i < programs.size(); i++)
-            {
-                std::string label = std::to_string(i) + "##" + shader->getId().toString();
-
-                bool is_selected = (currentProgram == i);
-                if (ImGui::Selectable(label.c_str(), is_selected))
-                {
-                    currentProgram = i;
-                    strncpy(currentText, programs[i].mVertexShader.c_str(), sizeof(currentText));
-                }
-                if (is_selected)
-                {
-                    ImGui::SetItemDefaultFocus();
-                }
-            }
-            ImGui::EndCombo();
-        }
-
-        ImGui::InputTextMultiline("Shader Variant", currentText, 16384, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 32), ImGuiInputTextFlags_ReadOnly);
-    }*/
 
     static bool vertexShaderActive = true;
     static bool geometryShaderActive = false;
@@ -147,6 +124,15 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     static bool fragmentTextFilled = false;
     static bool geometryTextFilled = false;
 
+    // if selected shader changes, refill buffers
+    if (mShaderId != shader->getId())
+    {
+        vertexTextFilled = false;
+        fragmentTextFilled = false;
+        geometryTextFilled = false;
+    }
+    mShaderId = shader->getId();
+
     // Fill buffers with current shaders
     if (!vertexTextFilled)
     {
@@ -175,7 +161,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     {
         text = &fragmentText[0];
     }
-    else
+    else if(geometryShaderActive)
     {
         text = &geometryText[0];
     }
@@ -185,7 +171,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
     ImGui::InputTextMultiline("Shader Source", text, 16384, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 32), flags);
 
-    if (ImGui::BeginTable("Compilation Status", 2))
+    if (ImGui::BeginTable("Compilation Status", 2, ImGuiTableFlags_SizingFixedFit))
     {
         // Determine if shader has been edited
         bool vertexEditMade = (strcmp(shader->getVertexShader().c_str(), &vertexText[0]) != 0);
@@ -193,16 +179,36 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
         bool geometryEditMade = (strcmp(shader->getGeometryShader().c_str(), &geometryText[0]) != 0);
 
         // Determine if all shader variants compiled successfully
+        char vertexCompileLog[512];
+        char fragmentCompileLog[512];
+        char geometryCompileLog[512];
+        char linkLog[512];
         bool vertexCompiled = true;
         bool fragmentCompiled = true;
         bool geometryCompiled = true;
         bool linked = true;
         for (size_t i = 0; i < programs.size(); i++)
         {
-            vertexCompiled &= programs[i].mStatus.mVertexShaderCompiled;
-            fragmentCompiled &= programs[i].mStatus.mFragmentShaderCompiled;
-            geometryCompiled &= programs[i].mStatus.mGeometryShaderCompiled;
-            linked &= programs[i].mStatus.mShaderLinked;
+            if (vertexCompiled && !programs[i].mStatus.mVertexShaderCompiled)
+            {
+                strncpy(vertexCompileLog, programs[i].mStatus.mVertexCompileLog, sizeof(vertexCompileLog));
+                vertexCompiled = false;
+            }
+            if (fragmentCompiled && !programs[i].mStatus.mFragmentShaderCompiled)
+            {
+                strncpy(fragmentCompileLog, programs[i].mStatus.mFragmentCompileLog, sizeof(fragmentCompileLog));
+                fragmentCompiled = false;
+            }
+            if (geometryCompiled && !programs[i].mStatus.mGeometryShaderCompiled)
+            {
+                strncpy(geometryCompileLog, programs[i].mStatus.mGeometryCompileLog, sizeof(geometryCompileLog));
+                geometryCompiled = false;
+            }
+            if (linked && !programs[i].mStatus.mShaderLinked)
+            {
+                strncpy(linkLog, programs[i].mStatus.mLinkLog, sizeof(linkLog));
+                linked = false;
+            }
         }
 
         ImGui::TableNextColumn();
@@ -220,7 +226,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             }
             else
             {
-                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), vertexCompileLog);
             }
         }
 
@@ -239,7 +245,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             }
             else
             {
-                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), fragmentCompileLog);
             }
         }
 
@@ -262,7 +268,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             }
             else
             {
-                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), geometryCompileLog);
             }
         }
 
@@ -275,7 +281,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
         }
         else
         {
-            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Failed");
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), linkLog);
         }
 
         ImGui::EndTable();
@@ -286,18 +292,9 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::SetCursorPosX(glm::max(ImGui::GetWindowSize().x - 80.0f, 0.0f));
     if (ImGui::Button("Recompile"))
     {
-        if (vertexShaderActive)
-        {
-            shader->setVertexShader(std::string(text));
-        }
-        else if (fragmentShaderActive)
-        {
-            shader->setFragmentShader(std::string(text));
-        }
-        else
-        {
-            shader->setGeometryShader(std::string(text));
-        }
+        shader->setVertexShader(std::string(vertexText));
+        shader->setFragmentShader(std::string(fragmentText));
+        shader->setGeometryShader(std::string(geometryText));
     }
 
     ImGui::Separator();
@@ -310,10 +307,15 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     //    geometryTextFilled = false;
     //}
 
-    //if (ImGui::Button("Save to file"))
-    //{
-    //
-    //}
+    if (ImGui::Button("Save to file"))
+    {
+        std::ofstream file(shader->getSourceFilepath());
+        file << "#vertex\n";
+        file << shader->getVertexShader() + "\n";
+        file << "#fragment\n";
+        file << shader->getFragmentShader() + "\n";
+        file.close();
+    }
 
     mContentMax = ImGui::GetItemRectMax();
 }

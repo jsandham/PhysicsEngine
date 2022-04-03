@@ -10,6 +10,7 @@ using namespace PhysicsEngine;
 Shader::Shader(World *world) : Asset(world)
 {
     mSource = "";
+    mSourceFilepath = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -23,6 +24,7 @@ Shader::Shader(World *world) : Asset(world)
 Shader::Shader(World *world, const Guid& id) : Asset(world, id)
 {   
     mSource = "";
+    mSourceFilepath = "";
     mVertexShader = "";
     mFragmentShader = "";
     mGeometryShader = "";
@@ -53,10 +55,11 @@ void Shader::deserialize(const YAML::Node &in)
     mShaderSourceLanguage = YAML::getValue<ShaderSourceLanguage>(in, "shaderSourceLanguage");
     mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
     mSource = YAML::getValue<std::string>(in, "source");
+    mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath"); // dont serialize out
 
     ShaderCreationAttrib attrib;
     attrib.mName = mName;
-    attrib.mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath");
+    attrib.mSourceFilepath = mSourceFilepath;
     attrib.mSourceLanguage = mShaderSourceLanguage;
     attrib.mVariantMacroMap = mVariantMacroMap;
 
@@ -235,6 +238,11 @@ void Shader::setFragmentShader(const std::string &fragmentShader)
 std::string Shader::getSource() const
 {
     return mSource;
+}
+
+std::string Shader::getSourceFilepath() const
+{
+    return mSourceFilepath;
 }
 
 ShaderSourceLanguage Shader::getSourceLanguage() const

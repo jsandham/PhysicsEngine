@@ -1649,118 +1649,14 @@ void Graphics::preprocess(std::string& vert, std::string& frag, std::string& geo
     //geom = version + defines + shader;
 }
 
-bool Graphics::compile(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom, unsigned int *program)
-{
-    const GLchar *vertexShaderCharPtr = vert.c_str();
-    const GLchar *geometryShaderCharPtr = geom.c_str();
-    const GLchar *fragmentShaderCharPtr = frag.c_str();
-
-    GLuint vertexShaderObj = 0;
-    GLuint fragmentShaderObj = 0;
-    GLuint geometryShaderObj = 0;
-    GLint success = 0;
-    GLchar infoLog[512];
-
-    // Compile vertex shader
-    vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL);
-    glCompileShader(vertexShaderObj);
-    glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShaderObj, 512, NULL, infoLog);
-        std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
-        Log::error(message.c_str());
-    }
-
-    // Compile fragment shader
-    fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL);
-    glCompileShader(fragmentShaderObj);
-    glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShaderObj, 512, NULL, infoLog);
-        std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
-        Log::error(message.c_str());
-    }
-
-    // Compile geometry shader
-    if (!geom.empty())
-    {
-        geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL);
-        glCompileShader(geometryShaderObj);
-        glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(geometryShaderObj, 512, NULL, infoLog);
-            std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
-            Log::error(message.c_str());
-        }
-    }
-
-    // Create shader program
-    *program = glCreateProgram();
-
-    // Attach shader objects to shader program
-    glAttachShader(*program, vertexShaderObj);
-    glAttachShader(*program, fragmentShaderObj);
-    if (geometryShaderObj != 0)
-    {
-        glAttachShader(*program, geometryShaderObj);
-    }
-
-    // Link shader program
-    glLinkProgram(*program);
-    glGetProgramiv(*program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(*program, 512, NULL, infoLog);
-        std::string message = "Shader: " + name + " program linking failed\n";
-        Log::error(message.c_str());
-    }
-
-    // Detach shader objects from shader program
-    glDetachShader(*program, vertexShaderObj);
-    glDetachShader(*program, fragmentShaderObj);
-    if (geometryShaderObj != 0)
-    {
-        glDetachShader(*program, geometryShaderObj);
-    }
-
-    // Delete shader objects
-    glDeleteShader(vertexShaderObj);
-    glDeleteShader(fragmentShaderObj);
-    if (!geom.empty())
-    {
-        glDeleteShader(geometryShaderObj);
-    }
-
-    return true;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Graphics::compile(const std::string &name, const std::string &vert, const std::string &frag,
                        const std::string &geom, unsigned int *program, ShaderStatus& status)
 {
+    memset(status.mVertexCompileLog, 0, sizeof(status.mVertexCompileLog));
+    memset(status.mFragmentCompileLog, 0, sizeof(status.mFragmentCompileLog));
+    memset(status.mGeometryCompileLog, 0, sizeof(status.mGeometryCompileLog));
+    memset(status.mLinkLog, 0, sizeof(status.mLinkLog));
+
     const GLchar *vertexShaderCharPtr = vert.c_str();
     const GLchar *geometryShaderCharPtr = geom.c_str();
     const GLchar *fragmentShaderCharPtr = frag.c_str();
@@ -1846,16 +1742,6 @@ void Graphics::compile(const std::string &name, const std::string &vert, const s
         glDeleteShader(geometryShaderObj);
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 int Graphics::findUniformLocation(const char *name, int program)
 {
@@ -2302,8 +2188,10 @@ void Graphics::renderInstanced(const RenderObject &renderObject, GraphicsQuery &
 
 void Graphics::compileSSAOShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Geometry", getGeometryVertexShader(), getGeometryFragmentShader(), "", &program))
+    Graphics::compile("Geometry", getGeometryVertexShader(), getGeometryFragmentShader(), "", &program, status);
+    if(status.mShaderLinked)
     {
         state.mGeometryShaderProgram = program;
         state.mGeometryShaderModelLoc = Graphics::findUniformLocation("model", state.mGeometryShaderProgram);
@@ -2316,7 +2204,8 @@ void Graphics::compileSSAOShader(ForwardRendererState &state)
     }
 
     program = 0;
-    if (Graphics::compile("SSAO", getSSAOVertexShader(), getSSAOFragmentShader(), "", &program))
+    Graphics::compile("SSAO", getSSAOVertexShader(), getSSAOFragmentShader(), "", &program, status);
+    if(status.mShaderLinked)
     {
         state.mSsaoShaderProgram = program;
         state.mSsaoShaderProjectionLoc = Graphics::findUniformLocation("projection", state.mSsaoShaderProgram);
@@ -2338,8 +2227,11 @@ void Graphics::compileSSAOShader(ForwardRendererState &state)
 
 void Graphics::compileShadowDepthMapShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Shadow Depth Map", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader(), "", &program))
+    Graphics::compile("Shadow Depth Map", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader(), "",
+                      &program, status);
+    if (status.mShaderLinked)
     {
         state.mDepthShaderProgram = program;
         state.mDepthShaderModelLoc = Graphics::findUniformLocation("model", state.mDepthShaderProgram);
@@ -2354,10 +2246,11 @@ void Graphics::compileShadowDepthMapShader(ForwardRendererState &state)
 
 void Graphics::compileShadowDepthCubemapShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Shadow Depth Cubemap", getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(),
-                          getShadowDepthCubemapGeometryShader(),
-                          &program))
+    Graphics::compile("Shadow Depth Cubemap", getShadowDepthCubemapVertexShader(),
+                      getShadowDepthCubemapFragmentShader(), getShadowDepthCubemapGeometryShader(), &program, status);
+    if (status.mShaderLinked)
     {
         state.mDepthCubemapShaderProgram = program;
         state.mDepthCubemapShaderLightPosLoc =
@@ -2386,8 +2279,10 @@ void Graphics::compileShadowDepthCubemapShader(ForwardRendererState &state)
 
 void Graphics::compileColorShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program))
+    Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorShaderProgram = program;
         state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
@@ -2403,8 +2298,11 @@ void Graphics::compileColorShader(ForwardRendererState &state)
 
 void Graphics::compileColorInstancedShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "",
+                      &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorInstancedShaderProgram = program;
 
@@ -2418,8 +2316,10 @@ void Graphics::compileColorInstancedShader(ForwardRendererState &state)
 
 void Graphics::compileScreenQuadShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program))
+    Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mQuadShaderProgram = program;
         state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
@@ -2432,8 +2332,10 @@ void Graphics::compileScreenQuadShader(ForwardRendererState &state)
 
 void Graphics::compileSpriteShader(ForwardRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Sprite", getSpriteVertexShader(), getSpriteFragmentShader(), "", &program))
+    Graphics::compile("Sprite", getSpriteVertexShader(), getSpriteFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mSpriteShaderProgram = program;
         state.mSpriteModelLoc = Graphics::findUniformLocation("model", state.mSpriteShaderProgram);
@@ -2450,8 +2352,10 @@ void Graphics::compileSpriteShader(ForwardRendererState &state)
 
 void Graphics::compileGBufferShader(DeferredRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader(), "", &program))
+    Graphics::compile("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mGBufferShaderProgram = program;
         state.mGBufferShaderModelLoc = Graphics::findUniformLocation("model", state.mGBufferShaderProgram);
@@ -2468,8 +2372,10 @@ void Graphics::compileGBufferShader(DeferredRendererState &state)
 
 void Graphics::compileScreenQuadShader(DeferredRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program))
+    Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mQuadShaderProgram = program;
         state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
@@ -2482,8 +2388,10 @@ void Graphics::compileScreenQuadShader(DeferredRendererState &state)
 
 void Graphics::compileColorShader(DeferredRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program))
+    Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorShaderProgram = program;
         state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
@@ -2499,8 +2407,11 @@ void Graphics::compileColorShader(DeferredRendererState &state)
 
 void Graphics::compileColorInstancedShader(DeferredRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "",
+                      &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorInstancedShaderProgram = program;
 
@@ -2514,8 +2425,10 @@ void Graphics::compileColorInstancedShader(DeferredRendererState &state)
 
 void Graphics::compileNormalShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Normal", getNormalVertexShader(), getNormalFragmentShader(), "", &program))
+    Graphics::compile("Normal", getNormalVertexShader(), getNormalFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mNormalsShaderProgram = program;
         state.mNormalsShaderModelLoc = Graphics::findUniformLocation("model", state.mNormalsShaderProgram);
@@ -2530,8 +2443,11 @@ void Graphics::compileNormalShader(DebugRendererState &state)
 
 void Graphics::compileNormalInstancedShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Normal Instanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader(), "", &program))
+    Graphics::compile("Normal Instanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader(), "",
+                      &program, status);
+    if (status.mShaderLinked)
     {
         state.mNormalsInstancedShaderProgram = program;
 
@@ -2546,8 +2462,10 @@ void Graphics::compileNormalInstancedShader(DebugRendererState &state)
 
 void Graphics::compilePositionShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Position", getPositionVertexShader(), getPositionFragmentShader(), "", &program))
+    Graphics::compile("Position", getPositionVertexShader(), getPositionFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mPositionShaderProgram = program;
         state.mPositionShaderModelLoc = Graphics::findUniformLocation("model", state.mPositionShaderProgram);
@@ -2562,8 +2480,11 @@ void Graphics::compilePositionShader(DebugRendererState &state)
 
 void Graphics::compilePositionInstancedShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Position Instanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader(), "", &program))
+    Graphics::compile("Position Instanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader(),
+                      "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mPositionInstancedShaderProgram = program;
 
@@ -2577,8 +2498,11 @@ void Graphics::compilePositionInstancedShader(DebugRendererState &state)
 
 void Graphics::compileLinearDepthShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Linear Depth", getLinearDepthVertexShader(), getLinearDepthFragmentShader(), "", &program))
+    Graphics::compile("Linear Depth", getLinearDepthVertexShader(), getLinearDepthFragmentShader(), "", &program,
+                      status);
+    if (status.mShaderLinked)
     {
         state.mLinearDepthShaderProgram = program;
         state.mLinearDepthShaderModelLoc = Graphics::findUniformLocation("model", state.mLinearDepthShaderProgram);
@@ -2593,8 +2517,11 @@ void Graphics::compileLinearDepthShader(DebugRendererState &state)
 
 void Graphics::compileLinearDepthInstancedShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Linear Depth Instanced", getLinearDepthInstancedVertexShader(), getLinearDepthInstancedFragmentShader(), "", &program))
+    Graphics::compile("Linear Depth Instanced", getLinearDepthInstancedVertexShader(),
+                      getLinearDepthInstancedFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mLinearDepthInstancedShaderProgram = program;
         Graphics::setUniformBlock("CameraBlock", 0, state.mLinearDepthInstancedShaderProgram);
@@ -2607,8 +2534,10 @@ void Graphics::compileLinearDepthInstancedShader(DebugRendererState &state)
 
 void Graphics::compileColorShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program))
+    Graphics::compile("Color", getColorVertexShader(), getColorFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorShaderProgram = program;
         state.mColorShaderModelLoc = Graphics::findUniformLocation("model", state.mColorShaderProgram);
@@ -2624,8 +2553,11 @@ void Graphics::compileColorShader(DebugRendererState &state)
 
 void Graphics::compileColorInstancedShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "", &program))
+    Graphics::compile("Color Instanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader(), "",
+                      &program, status);
+    if (status.mShaderLinked)
     {
         state.mColorInstancedShaderProgram = program;
 
@@ -2639,8 +2571,10 @@ void Graphics::compileColorInstancedShader(DebugRendererState &state)
 
 void Graphics::compileScreenQuadShader(DebugRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program))
+    Graphics::compile("Screen Quad", getScreenQuadVertexShader(), getScreenQuadFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mQuadShaderProgram = program;
         state.mQuadShaderTexLoc = Graphics::findUniformLocation("screenTexture", state.mQuadShaderProgram);
@@ -2653,8 +2587,10 @@ void Graphics::compileScreenQuadShader(DebugRendererState &state)
 
 void Graphics::compileLineShader(GizmoRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Line", getLineVertexShader(), getLineFragmentShader(), "", &program))
+    Graphics::compile("Line", getLineVertexShader(), getLineFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mLineShaderProgram = program;
         state.mLineShaderMVPLoc = Graphics::findUniformLocation("mvp", state.mLineShaderProgram);
@@ -2667,8 +2603,10 @@ void Graphics::compileLineShader(GizmoRendererState &state)
 
 void Graphics::compileGizmoShader(GizmoRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader(), "", &program))
+    Graphics::compile("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mGizmoShaderProgram = program;
         state.mGizmoShaderColorLoc = Graphics::findUniformLocation("color", state.mGizmoShaderProgram);
@@ -2685,8 +2623,10 @@ void Graphics::compileGizmoShader(GizmoRendererState &state)
 
 void Graphics::compileGridShader(GizmoRendererState &state)
 {
+    ShaderStatus status;
     unsigned int program = 0;
-    if (Graphics::compile("Grid", getGridVertexShader(), getGridFragmentShader(), "", &program))
+    Graphics::compile("Grid", getGridVertexShader(), getGridFragmentShader(), "", &program, status);
+    if (status.mShaderLinked)
     {
         state.mGridShaderProgram = program;
         state.mGridShaderMVPLoc = Graphics::findUniformLocation("mvp", state.mGridShaderProgram);

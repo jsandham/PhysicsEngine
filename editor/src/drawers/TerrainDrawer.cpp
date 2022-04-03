@@ -28,7 +28,8 @@ TerrainDrawer::TerrainDrawer()
         "    FragColor = vec4(height, height, height, 1);\n"
         "}";
 
-    Graphics::compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram);
+    ShaderStatus status;
+    Graphics::compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
 }
 
 TerrainDrawer::~TerrainDrawer()

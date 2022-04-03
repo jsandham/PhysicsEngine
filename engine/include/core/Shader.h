@@ -116,6 +116,7 @@ class Shader : public Asset
 {
   private:
     std::string mSource;
+    std::string mSourceFilepath;
       
     std::string mVertexShader;
     std::string mFragmentShader;
@@ -169,6 +170,7 @@ class Shader : public Asset
     std::string getGeometryShader() const;
     std::string getFragmentShader() const;
     std::string getSource() const;
+    std::string getSourceFilepath() const;
     ShaderSourceLanguage getSourceLanguage() const;
 
     void setBool(const char *name, bool value) const;

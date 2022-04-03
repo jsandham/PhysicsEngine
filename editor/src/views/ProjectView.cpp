@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <stack>
+#include <fstream>
 
 #include "../../include/imgui/imgui_extensions.h"
 
@@ -228,6 +229,23 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
             ImGui::Separator();
 
+            if (ImGui::BeginMenu("Shader..."))
+            {
+                if (ImGui::MenuItem("GLSL"))
+                {
+                    size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Shader>();
+                    std::string filename = ("Source(" + std::to_string(count) + ").glsl");
+                    std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
+
+                    std::ofstream file(filepath);
+                    file << "#vertex\n";
+                    file << "#fragment\n";
+                    file.close();
+                }
+              
+                ImGui::EndMenu();
+            }
+
             if (ImGui::MenuItem("Material"))
             {
                 size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>();
@@ -235,6 +253,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
 
                 PhysicsEngine::Material* material = clipboard.getWorld()->createAsset<PhysicsEngine::Material>();
+                material->setName(filename);
                 material->writeToYAML(filepath.string());
 
                 mSelected->addFile(filename);
