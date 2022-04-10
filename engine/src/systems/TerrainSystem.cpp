@@ -60,8 +60,8 @@ void TerrainSystem::update(const Input &input, const Time &time)
 
         if (transform != nullptr)
         {
-            float x = transform->mPosition.x;
-            float z = transform->mPosition.z;
+            float x = transform->getPosition().x;
+            float z = transform->getPosition().z;
 
             Rect centreChunkRect = terrain->getCentreChunkRect();
             

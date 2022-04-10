@@ -399,9 +399,12 @@ Entity *World::createPrimitive(PrimitiveType type)
 
     entity->setName(mesh->getName());
     
-    transform->mPosition = glm::vec3(0, 0, 0);
-    transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    transform->mScale = glm::vec3(1, 1, 1);
+    //transform->mPosition = glm::vec3(0, 0, 0);
+    //transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    //transform->mScale = glm::vec3(1, 1, 1);
+    transform->setPosition(glm::vec3(0, 0, 0));
+    transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+    transform->setScale(glm::vec3(1, 1, 1));
     meshRenderer->setMesh(mesh->getId());
     meshRenderer->setMaterial(mPrimitives.mStandardMaterialId);
 
@@ -427,9 +430,12 @@ Entity *World::createNonPrimitive(const Guid &meshId)
 
     entity->setName(mesh->getName());
    
-    transform->mPosition = glm::vec3(0, 0, 0);
-    transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    transform->mScale = glm::vec3(1, 1, 1);
+    //transform->mPosition = glm::vec3(0, 0, 0);
+    //transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    //transform->mScale = glm::vec3(1, 1, 1);
+    transform->setPosition(glm::vec3(0, 0, 0));
+    transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+    transform->setScale(glm::vec3(1, 1, 1));
     meshRenderer->setMesh(meshId);
     meshRenderer->setMaterial(mPrimitives.mStandardMaterialId);
 

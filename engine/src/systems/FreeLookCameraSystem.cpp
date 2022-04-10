@@ -67,7 +67,8 @@ void FreeLookCameraSystem::init(World* world)
         mCamera->mHide = HideFlag::DontSave;
 
         mTransform = entity->getComponent<Transform>();
-        mTransform->mPosition = glm::vec3(0, 2, -10);
+        mTransform->setPosition(glm::vec3(0, 2, -10));
+        //mTransform->mPosition = glm::vec3(0, 2, -10);
         mHide = HideFlag::DontSave;  
     }
     else
@@ -81,7 +82,7 @@ void FreeLookCameraSystem::init(World* world)
 
 void FreeLookCameraSystem::update(const Input& input, const Time& time)
 {
-    glm::vec3 position = mTransform->mPosition;
+    glm::vec3 position = mTransform->getPosition();
     glm::vec3 front = mTransform->getForward();
     glm::vec3 up = mTransform->getUp();
     glm::vec3 right = mTransform->getRight();
@@ -151,7 +152,7 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
     {
         mMousePosXOnRightClick = mMousePosX;
         mMousePosYOnRightClick = mMousePosY;
-        rotationOnClick = mTransform->mRotation;
+        rotationOnClick = mTransform->getRotation();
     }
     else if (mIsRightMouseHeldDown)
     {
@@ -159,18 +160,22 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
         float pitch = FreeLookCameraSystem::PITCH_PAN_SENSITIVITY * (mMousePosYOnRightClick - mMousePosY);
 
         // https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
-        mTransform->mRotation =
-            glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
+        //mTransform->mRotation =
+        //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
+        mTransform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick *
+                                glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
     }
 
     mCamera->computeViewMatrix(position, front, up, right);
 
-    mTransform->mPosition = position;
+    mTransform->setPosition(position);
+    //mTransform->mPosition = position;
 }
 
 void FreeLookCameraSystem::resetCamera()
 {
-    mTransform->mPosition = glm::vec3(0, 2, -10);
+    //mTransform->mPosition = glm::vec3(0, 2, -10);
+    mTransform->setPosition(glm::vec3(0, 2, -10));
     mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 }
 

@@ -206,7 +206,7 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
 
     Graphics::use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
     Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
@@ -253,7 +253,7 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
 
     Graphics::use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
     Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
@@ -299,7 +299,7 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
 
     Graphics::use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
     Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
@@ -405,7 +405,7 @@ void PhysicsEngine::renderShadedFrustumGizmo(World *world, Camera *camera, Gizmo
     Transform *transform = camera->getComponent<Transform>();
 
     Graphics::use(state.mGizmoShaderProgram);
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->mPosition);
+    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
     Graphics::setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
     Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
     Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());

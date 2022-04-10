@@ -91,7 +91,7 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
     state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
 
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
@@ -235,7 +235,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 
         state.mShadowProjMatrix = light->getProjMatrix();
         state.mShadowViewMatrix =
-            glm::lookAt(lightTransform->mPosition, lightTransform->mPosition + lightTransform->getForward(),
+            glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
                         glm::vec3(0.0f, 1.0f, 0.0f));
 
         Graphics::use(state.mDepthShaderProgram);
@@ -263,28 +263,28 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
     {
 
         state.mCubeViewProjMatrices[0] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(1.0, 0.0, 0.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
         state.mCubeViewProjMatrices[1] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(-1.0, 0.0, 0.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(-1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
         state.mCubeViewProjMatrices[2] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(0.0, 1.0, 0.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(0.0, 1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, 1.0)));
         state.mCubeViewProjMatrices[3] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(0.0, -1.0, 0.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(0.0, -1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, -1.0)));
         state.mCubeViewProjMatrices[4] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(0.0, 0.0, 1.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(0.0, 0.0, 1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
         state.mCubeViewProjMatrices[5] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->mPosition,
-                                                  lightTransform->mPosition + glm::vec3(0.0, 0.0, -1.0),
+            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                  lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
 
         Graphics::bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
@@ -294,7 +294,7 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
         Graphics::clearFramebufferDepth(1.0f);
 
         Graphics::use(state.mDepthCubemapShaderProgram);
-        Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->mPosition);
+        Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->getPosition());
         Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc,
                            camera->getFrustum().mFarPlane); // shadow map far plane?
         Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
@@ -327,7 +327,7 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
                                   ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
-    state.mLightState.mPosition = lightTransform->mPosition;
+    state.mLightState.mPosition = lightTransform->getPosition();
     state.mLightState.mDirection = lightTransform->getForward();
     state.mLightState.mColor = light->mColor;
 

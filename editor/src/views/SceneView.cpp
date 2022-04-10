@@ -287,7 +287,7 @@ void SceneView::update(Clipboard &clipboard)
             Entity* entity = camera->getEntity();
             Transform* transform = clipboard.mWorld.getComponent<Transform>(entity->getId());
 
-            glm::vec3 position = transform->mPosition;
+            glm::vec3 position = transform->getPosition();
             glm::vec3 front = transform->getForward();
             glm::vec3 up = transform->getUp();
             glm::vec3 right = transform->getRight();
@@ -343,7 +343,7 @@ void SceneView::update(Clipboard &clipboard)
                 float dist = -1.0f;
                 bool intersects = Intersect::intersect(cameraRay, xz, dist);
 
-                clipboard.mSceneViewTempTransform->mPosition = (intersects && dist >= 0.0f) ? cameraRay.getPoint(dist) : cameraRay.getPoint(5.0f);
+                clipboard.mSceneViewTempTransform->setPosition((intersects && dist >= 0.0f) ? cameraRay.getPoint(dist) : cameraRay.getPoint(5.0f));
             }
         }
     }
@@ -402,15 +402,15 @@ void SceneView::update(Clipboard &clipboard)
 
                 Transform::decompose(model, translation, rotation, scale);
 
-                transform->mPosition = translation;
-                transform->mScale = scale;
-                transform->mRotation = rotation;
+                transform->setPosition(translation);
+                transform->setScale(scale);
+                transform->setRotation(rotation);
             }
 
             Camera* camera = clipboard.getWorld()->getComponent<Camera>(clipboard.getSelectedId());
             if (camera != nullptr && camera->mEnabled)
             {
-                camera->computeViewMatrix(transform->mPosition, transform->getForward(), transform->getUp(), transform->getRight());
+                camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(), transform->getRight());
 
                 ImVec2 min = mSceneContentMin;
                 ImVec2 max = mSceneContentMax;
@@ -559,14 +559,14 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
     {
         // Editor camera transform
         Transform* transform = cameraSystem->getCamera()->getComponent<Transform>();
-        glm::vec3 position = transform->mPosition;
-        glm::quat rotation = transform->mRotation;
-        glm::vec3 scale = transform->mScale;
+        glm::vec3 position = transform->getPosition();
+        glm::quat rotation = transform->getRotation();
+        glm::vec3 scale = transform->getScale();
         glm::vec3 eulerAngles = glm::degrees(glm::eulerAngles(rotation));
 
         if (ImGui::InputFloat3("Position", glm::value_ptr(position)))
         {
-            transform->mPosition = position;
+            transform->setPosition(position);
         }
 
         if (ImGui::InputFloat3("Rotation", glm::value_ptr(eulerAngles)))
@@ -575,11 +575,11 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
             glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::quat z = glm::angleAxis(glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-            transform->mRotation = z * y * x;
+            transform->setRotation(z * y * x);
         }
         if (ImGui::InputFloat3("Scale", glm::value_ptr(scale)))
         {
-            transform->mScale = scale;
+            transform->setScale(scale);
         }
 
         // Viewport viewport = cameraSystem->getViewport();

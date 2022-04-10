@@ -58,7 +58,7 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
     state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
 
     // set camera state binding point and update camera state data
     Graphics::setGlobalCameraUniforms(state.mCameraState);

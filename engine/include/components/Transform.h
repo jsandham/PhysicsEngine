@@ -12,11 +12,13 @@ namespace PhysicsEngine
 {
 class Transform : public Component
 {
-  public:
+  private:
     Guid mParentId;
+    glm::mat4 mModelMatrix;
     glm::vec3 mPosition;
     glm::quat mRotation;
     glm::vec3 mScale;
+    bool mIsDirty;
 
   public:
     Transform(World *world);
@@ -28,6 +30,15 @@ class Transform : public Component
 
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
+
+    void computeModelMatrix();
+    void setPosition(const glm::vec3 &position);
+    void setRotation(const glm::quat &rotation);
+    void setScale(const glm::vec3 &scale);
+
+    glm::vec3 getPosition() const;
+    glm::quat getRotation() const;
+    glm::vec3 getScale() const;
 
     glm::mat4 getModelMatrix() const;
     glm::vec3 getForward() const;

@@ -5,12 +5,15 @@
 #include "tiny_obj_loader.h"
 
 #include <filesystem>
+#include <emmintrin.h>
+#include <iostream>
 
 using namespace PhysicsEngine;
 
 Mesh::Mesh(World *world) : Asset(world)
 {
     mSource = "";
+    mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
 }
@@ -18,6 +21,7 @@ Mesh::Mesh(World *world) : Asset(world)
 Mesh::Mesh(World *world, const Guid& id) : Asset(world, id)
 {
     mSource = "";
+    mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
 }
@@ -38,7 +42,8 @@ void Mesh::deserialize(const YAML::Node &in)
     Asset::deserialize(in);
 
     mSource = YAML::getValue<std::string>(in, "source");
-    load(YAML::getValue<std::string>(in, "sourceFilepath"));
+    mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath"); // dont serialize out
+    load(mSourceFilepath);
 }
 
 int Mesh::getType() const
@@ -236,7 +241,8 @@ void Mesh::load(const std::string &filepath)
         }
     }
 
-    computeBoundingSphere();
+    //computeBoundingSphere();
+    computeBoundingSphere_SIMD128();
 
     std::filesystem::path temp = filepath;
     mSource = temp.filename().string();
@@ -269,7 +275,8 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
         mTexCoords.resize(2 * mVertices.size() / 3);
     }
 
-    computeBoundingSphere();
+    //computeBoundingSphere();
+    computeBoundingSphere_SIMD128();
 
     mCreated = false;
 }
@@ -352,7 +359,8 @@ unsigned int Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
 void Mesh::setVertices(const std::vector<float> &vertices)
 {
     mVertices = vertices;
-    computeBoundingSphere();
+    //computeBoundingSphere();
+    computeBoundingSphere_SIMD128();
 
     mChanged = true;
 }
@@ -459,6 +467,251 @@ void Mesh::computeBoundingSphere()
         if (radius > mBounds.mRadius)
         {
             mBounds.mRadius = radius;
+        }
+    }
+}
+
+void Mesh::computeBoundingSphere_SIMD128()
+{
+    mBounds.mRadius = 0.0f;
+    mBounds.mCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    size_t numVertices = mVertices.size() / 3;
+
+    if (numVertices == 0){ return; }
+
+    size_t numSimdVertices = numVertices - (numVertices % 4);
+
+    // Ritter algorithm for bounding sphere
+    // find furthest point from first vertex
+    // float x_x = mVertices[0];
+    // float x_y = mVertices[1];
+    // float x_z = mVertices[2];
+    __m128 x_x = _mm_set_ps(mVertices[0], mVertices[0], mVertices[0], mVertices[0]);
+    __m128 x_y = _mm_set_ps(mVertices[1], mVertices[1], mVertices[1], mVertices[1]);
+    __m128 x_z = _mm_set_ps(mVertices[2], mVertices[2], mVertices[2], mVertices[2]);
+
+    // float y_x = x_x;
+    // float y_y = x_y;
+    // float y_z = x_z;
+    // float maxDistance = 0.0f;
+    __m128 y_x = x_x;
+    __m128 y_y = x_y;
+    __m128 y_z = x_z;
+    __m128 maxDistance = _mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f);
+    for (size_t i = 0; i < numSimdVertices; i += 4)
+    {
+        // float temp_x = mVertices[3 * i];
+        // float temp_y = mVertices[3 * i + 1];
+        // float temp_z = mVertices[3 * i + 2];
+        __m128 temp_x = _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
+        __m128 temp_y = _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
+        __m128 temp_z = _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
+
+        // calculate distance between x and temp
+        __m128 xmt_x = _mm_sub_ps(x_x, temp_x);
+        __m128 xmt_y = _mm_sub_ps(x_y, temp_y);
+        __m128 xmt_z = _mm_sub_ps(x_z, temp_z);
+
+        xmt_x = _mm_mul_ps(xmt_x, xmt_x);
+        xmt_y = _mm_mul_ps(xmt_y, xmt_y);
+        xmt_z = _mm_mul_ps(xmt_z, xmt_z);
+
+        // float distance = sqrt((x_x - temp_x) * (x_x - temp_x) +
+        //                      (x_y - temp_y) * (x_y - temp_y) +
+        //                      (x_z - temp_z) * (x_z - temp_z));
+        __m128 distance = _mm_sqrt_ps(_mm_add_ps(xmt_x, _mm_add_ps(xmt_y, xmt_z)));
+
+        // if (distance > maxDistance)
+        //{
+        //    y_x = temp_x;
+        //    y_y = temp_y;
+        //    y_z = temp_z;
+        //    maxDistance = distance;
+        //}
+        // if (x) y=temp; else y=y; ==> y=y+x*(temp-y);
+        __m128 condition = _mm_and_ps(_mm_set1_ps(1), _mm_cmpgt_ps(distance, maxDistance));
+        y_x = _mm_add_ps(y_x, _mm_mul_ps(condition, _mm_sub_ps(temp_x, y_x)));
+        y_y = _mm_add_ps(y_y, _mm_mul_ps(condition, _mm_sub_ps(temp_y, y_y)));
+        y_z = _mm_add_ps(y_z, _mm_mul_ps(condition, _mm_sub_ps(temp_z, y_z)));
+        maxDistance = _mm_add_ps(maxDistance, _mm_mul_ps(condition, _mm_sub_ps(distance, maxDistance)));
+    }
+
+    float y2_x[4];
+    float y2_y[4];
+    float y2_z[4];
+
+    _mm_store_ps(y2_x, y_x);
+    _mm_store_ps(y2_y, y_y);
+    _mm_store_ps(y2_z, y_z);
+
+    glm::vec3 x = glm::vec3(mVertices[0], mVertices[1], mVertices[2]);
+    glm::vec3 y = x;
+    float maxDistance2 = 0.0f;
+    for (size_t i = 0; i < 4; i++)
+    {
+        glm::vec3 temp = glm::vec3(y2_x[i], y2_y[i], y2_z[i]);
+        float distance = glm::distance(x, temp);
+        if (distance > maxDistance2)
+        {
+            y = temp;
+            maxDistance2 = distance;
+        }
+    }
+
+    for (size_t i = numSimdVertices; i < numVertices; i++)
+    {
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float distance = glm::distance(x, temp);
+        if (distance > maxDistance2)
+        {
+            y = temp;
+            maxDistance2 = distance;
+        }   
+    }
+
+    y_x = _mm_set_ps(y.x, y.x, y.x, y.x);
+    y_y = _mm_set_ps(y.y, y.y, y.y, y.y);
+    y_z = _mm_set_ps(y.z, y.z, y.z, y.z);
+
+    // now find furthest point from y
+    // float z_x = y_x;
+    // float z_y = y_y;
+    // float z_z = y_z;
+    // maxDistance = 0.0f;
+    __m128 z_x = y_x;
+    __m128 z_y = y_y;
+    __m128 z_z = y_z;
+    maxDistance = _mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f);
+    for (size_t i = 0; i < numSimdVertices; i += 4)
+    {
+        // float temp_x = mVertices[3 * i];
+        // float temp_y = mVertices[3 * i + 1];
+        // float temp_z = mVertices[3 * i + 2];
+        __m128 temp_x = _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
+        __m128 temp_y = _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
+        __m128 temp_z = _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
+
+        // calculate distance between y and temp
+        __m128 ymt_x = _mm_sub_ps(y_x, temp_x);
+        __m128 ymt_y = _mm_sub_ps(y_y, temp_y);
+        __m128 ymt_z = _mm_sub_ps(y_z, temp_z);
+
+        ymt_x = _mm_mul_ps(ymt_x, ymt_x);
+        ymt_y = _mm_mul_ps(ymt_y, ymt_y);
+        ymt_z = _mm_mul_ps(ymt_z, ymt_z);
+
+        // float distance = sqrt((y_x - temp_x) * (y_x - temp_x) +
+        //                      (y_y - temp_y) * (y_y - temp_y) +
+        //                      (y_z - temp_z) * (y_z - temp_z));
+        __m128 distance = _mm_sqrt_ps(_mm_add_ps(ymt_x, _mm_add_ps(ymt_y, ymt_z)));
+
+        // if (distance > maxDistance)
+        // {
+        //     z_x = temp_x;
+        //     z_y = temp_y;
+        //     z_z = temp_z;
+        //     maxDistance = distance;
+        // }
+        // if (x) z=temp; else z=z; ==> z=z+x*(temp-z);
+        __m128 condition = _mm_and_ps(_mm_set1_ps(1), _mm_cmpgt_ps(distance, maxDistance));
+        z_x = _mm_add_ps(z_x, _mm_mul_ps(condition, _mm_sub_ps(temp_x, z_x)));
+        z_y = _mm_add_ps(z_y, _mm_mul_ps(condition, _mm_sub_ps(temp_y, z_y)));
+        z_z = _mm_add_ps(z_z, _mm_mul_ps(condition, _mm_sub_ps(temp_z, z_z)));
+        maxDistance = _mm_add_ps(maxDistance, _mm_mul_ps(condition, _mm_sub_ps(distance, maxDistance)));
+    }
+
+    float z2_x[4];
+    float z2_y[4];
+    float z2_z[4];
+
+    _mm_store_ps(z2_x, z_x);
+    _mm_store_ps(z2_y, z_y);
+    _mm_store_ps(z2_z, z_z);
+
+    glm::vec3 z = y;
+    maxDistance2 = 0.0f;
+    for (size_t i = 0; i < 4; i++)
+    {
+        glm::vec3 temp = glm::vec3(z2_x[i], z2_y[i], z2_z[i]);
+        float distance = glm::distance(y, temp);
+        if (distance > maxDistance2)
+        {
+            z = temp;
+            maxDistance2 = distance;
+        }
+    }
+
+    for (size_t i = numSimdVertices; i < numVertices; i++)
+    {
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float distance = glm::distance(y, temp);
+        if (distance > maxDistance2)
+        {
+            z = temp;
+            maxDistance2 = distance;
+        }
+    }
+
+    mBounds.mRadius = 0.5f * glm::distance(y, z);
+    mBounds.mCentre = 0.5f * (y + z);
+
+    __m128 radius = _mm_set_ps(mBounds.mRadius, mBounds.mRadius, mBounds.mRadius, mBounds.mRadius);
+    __m128 centre_x = _mm_set_ps(mBounds.mCentre.x, mBounds.mCentre.x, mBounds.mCentre.x, mBounds.mCentre.x);
+    __m128 centre_y = _mm_set_ps(mBounds.mCentre.y, mBounds.mCentre.y, mBounds.mCentre.y, mBounds.mCentre.y);
+    __m128 centre_z = _mm_set_ps(mBounds.mCentre.z, mBounds.mCentre.z, mBounds.mCentre.z, mBounds.mCentre.z);
+
+    for (size_t i = 0; i < numSimdVertices; i += 4)
+    {
+        // float temp_x = mVertices[3 * i];
+        // float temp_y = mVertices[3 * i + 1];
+        // float temp_z = mVertices[3 * i + 2];
+        __m128 temp_x =
+            _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
+        __m128 temp_y =
+            _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
+        __m128 temp_z =
+            _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
+
+        // calculate distance between centre and temp
+        __m128 centremt_x = _mm_sub_ps(centre_x, temp_x);
+        __m128 centremt_y = _mm_sub_ps(centre_y, temp_y);
+        __m128 centremt_z = _mm_sub_ps(centre_z, temp_z);
+
+        centremt_x = _mm_mul_ps(centremt_x, centremt_x);
+        centremt_y = _mm_mul_ps(centremt_y, centremt_y);
+        centremt_z = _mm_mul_ps(centremt_z, centremt_z);
+
+        // float distance = sqrt((centre_x - temp_x) * (centre_x - temp_x) +
+        //                       (centre_y - temp_y) * (centre_y - temp_y) +
+        //                       (centre_z - temp_z) * (centre_z - temp_z));
+        __m128 distance = _mm_sqrt_ps(_mm_add_ps(centremt_x, _mm_add_ps(centremt_y, centremt_z)));
+
+        // if (distance > mBounds.mRadius)
+        // {
+        //     mBounds.mRadius = distance;
+        // }
+        radius = _mm_max_ps(distance, radius);
+    }
+
+    float radius2[4];
+    _mm_store_ps(radius2, radius);
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (radius2[i] > mBounds.mRadius)
+        {
+            mBounds.mRadius = radius2[i];
+        }
+    }
+
+    for (size_t i = numSimdVertices; i < numVertices; i++)
+    {
+        glm::vec3 temp = glm::vec3(mVertices[3 * i], mVertices[3 * i + 1], mVertices[3 * i + 2]);
+        float distance = glm::distance(temp, mBounds.mCentre);
+        if (distance > mBounds.mRadius)
+        {
+            mBounds.mRadius = distance;
         }
     }
 }

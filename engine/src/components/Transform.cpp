@@ -11,9 +11,11 @@ using namespace PhysicsEngine;
 Transform::Transform(World* world) : Component(world)
 {
     mParentId = Guid::INVALID;
+    mModelMatrix = glm::mat4(0.0f);
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    mIsDirty = true;
 }
 
 Transform::Transform(World* world, const Guid& id) : Component(world, id)
@@ -22,6 +24,7 @@ Transform::Transform(World* world, const Guid& id) : Component(world, id)
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
+    mIsDirty = true;
 }
 
 Transform::~Transform()
@@ -46,6 +49,10 @@ void Transform::deserialize(const YAML::Node &in)
     mPosition = YAML::getValue<glm::vec3>(in, "position");
     mRotation = YAML::getValue<glm::quat>(in, "rotation");
     mScale = YAML::getValue<glm::vec3>(in, "scale");
+
+    mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    mModelMatrix *= glm::toMat4(mRotation);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
 }
 
 int Transform::getType() const
@@ -58,15 +65,70 @@ std::string Transform::getObjectName() const
     return PhysicsEngine::TRANSFORM_NAME;
 }
 
+void Transform::computeModelMatrix()
+{
+    mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    mModelMatrix *= glm::toMat4(mRotation);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
+    mIsDirty = false;
+}
+
+void Transform::setPosition(const glm::vec3 &position)
+{
+    mPosition = position;
+
+    mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    mModelMatrix *= glm::toMat4(mRotation);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
+
+    mIsDirty = true;
+}
+
+void Transform::setRotation(const glm::quat &rotation)
+{
+    mRotation = rotation;
+
+    mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    mModelMatrix *= glm::toMat4(mRotation);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
+
+    mIsDirty = true;
+}
+
+void Transform::setScale(const glm::vec3 &scale)
+{
+    mScale = scale;
+
+    mModelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    mModelMatrix *= glm::toMat4(mRotation);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
+
+    mIsDirty = true;
+}
+
+glm::vec3 Transform::getPosition() const
+{
+    return mPosition;
+}
+
+glm::quat Transform::getRotation() const
+{
+    return mRotation;
+}
+
+glm::vec3 Transform::getScale() const
+{
+    return mScale;
+}
+
 glm::mat4 Transform::getModelMatrix() const
 {
-    //glm::mat4 rotation = glm::toMat4(mRotation);
-    //return glm::translate(glm::mat4(1.0f), mPosition) * rotation * glm::scale(glm::mat4(1.0f), mScale);
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
-    modelMatrix *= glm::toMat4(mRotation);
-    modelMatrix = glm::scale(modelMatrix, mScale);
-
-    return modelMatrix;
+    //glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
+    //modelMatrix *= glm::toMat4(mRotation);
+    //modelMatrix = glm::scale(modelMatrix, mScale);
+    
+    //return modelMatrix;
+    return mModelMatrix;
 }
 
 glm::vec3 Transform::getForward() const

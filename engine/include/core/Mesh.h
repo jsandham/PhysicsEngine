@@ -25,6 +25,7 @@ class Mesh : public Asset
 {
   private:
     std::string mSource;
+    std::string mSourceFilepath;
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;
@@ -79,6 +80,7 @@ class Mesh : public Asset
 
   private:
     void computeBoundingSphere();
+    void computeBoundingSphere_SIMD128();
 };
 
 template <> struct AssetType<Mesh>

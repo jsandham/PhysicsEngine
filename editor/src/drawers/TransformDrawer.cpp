@@ -33,14 +33,14 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
         {
             ImGui::Text(("ComponentId: " + transform->getId().toString()).c_str());
 
-            glm::vec3 position = transform->mPosition;
-            glm::quat rotation = transform->mRotation;
-            glm::vec3 scale = transform->mScale;
+            glm::vec3 position = transform->getPosition();
+            glm::quat rotation = transform->getRotation();
+            glm::vec3 scale = transform->getScale();
             glm::vec3 eulerAngles = glm::degrees(glm::eulerAngles(rotation));
 
             if (ImGui::DragFloat3("Position", glm::value_ptr(position)))
             {
-                transform->mPosition = position;
+                transform->setPosition(position);// mPosition = position;
             }
 
             if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles)))
@@ -49,11 +49,11 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
                 glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
                 glm::quat z = glm::angleAxis(glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-                transform->mRotation = z * y * x;
+                transform->setRotation(z * y * x);// mRotation = z * y * x;
             }
             if (ImGui::DragFloat3("Scale", glm::value_ptr(scale)))
             {
-                transform->mScale = scale;
+                transform->setScale(scale);// mScale = scale;
             }
         }
 

@@ -106,8 +106,10 @@ void EditorSceneManager::populateScene(Clipboard& clipboard)
     PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
     planeEntity->setName("Plane");
     PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
-    planeTransform->mPosition = glm::vec3(0, 0, 0);
-    planeTransform->mScale = glm::vec3(50, 1, 50);
+    planeTransform->setPosition(glm::vec3(0, 0, 0));
+    planeTransform->setScale(glm::vec3(50, 1, 50));
+    //planeTransform->mPosition = glm::vec3(0, 0, 0);
+    //planeTransform->mScale = glm::vec3(50, 1, 50);
 
     int index = 0;
     for (int i = 0; i < m; i++) 
@@ -122,7 +124,8 @@ void EditorSceneManager::populateScene(Clipboard& clipboard)
                 PhysicsEngine::Entity* entity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
                 entity->setName(name);
                 PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
-                transform->mPosition = glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f);
+                transform->setPosition(glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f));
+                //transform->mPosition = glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f);
             }
         }
     }

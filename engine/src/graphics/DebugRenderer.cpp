@@ -58,7 +58,7 @@ void PhysicsEngine::beginDebugFrame(World *world, Camera *camera, DebugRendererS
     state.mCameraState.mProjection = camera->getProjMatrix();
     state.mCameraState.mView = camera->getViewMatrix();
     state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->mPosition;
+    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
 
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
