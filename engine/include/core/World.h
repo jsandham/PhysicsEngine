@@ -277,19 +277,18 @@ class World
 
         int componentGlobalIndex = (int)allocator->getCount();
         int componentType = ComponentType<T>::type;
-        Guid componentId = Guid::newGuid();
 
-        T *component = allocator->construct(this, componentId);
+        T *component = allocator->construct(this, Guid::newGuid());
 
         if (component != nullptr)
         {
             component->mEntityId = entityId;
 
-            addIdToGlobalIndexMap_impl<T>(componentId, componentGlobalIndex, componentType);
+            addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
 
-            mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
+            mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(component->getId(), componentType));
 
-            mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, componentId, componentType));
+            mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, component->getId(), componentType));
         }
 
         return component;
@@ -301,13 +300,12 @@ class World
 
         int systemGlobalIndex = (int)allocator->getCount();
         int systemType = SystemType<T>::type;
-        Guid systemId = Guid::newGuid();
 
-        T *system = allocator->construct(this, systemId);
+        T *system = allocator->construct(this, Guid::newGuid());
 
         if (system != nullptr)
         {
-            addIdToGlobalIndexMap_impl<T>(systemId, systemGlobalIndex, systemType);
+            addIdToGlobalIndexMap_impl<T>(system->getId(), systemGlobalIndex, systemType);
 
             size_t locationToInsert = mSystems.size();
             for (size_t i = 0; i < mSystems.size(); i++)

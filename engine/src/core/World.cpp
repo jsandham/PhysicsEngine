@@ -399,9 +399,6 @@ Entity *World::createPrimitive(PrimitiveType type)
 
     entity->setName(mesh->getName());
     
-    //transform->mPosition = glm::vec3(0, 0, 0);
-    //transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    //transform->mScale = glm::vec3(1, 1, 1);
     transform->setPosition(glm::vec3(0, 0, 0));
     transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
     transform->setScale(glm::vec3(1, 1, 1));
@@ -430,9 +427,6 @@ Entity *World::createNonPrimitive(const Guid &meshId)
 
     entity->setName(mesh->getName());
    
-    //transform->mPosition = glm::vec3(0, 0, 0);
-    //transform->mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    //transform->mScale = glm::vec3(1, 1, 1);
     transform->setPosition(glm::vec3(0, 0, 0));
     transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
     transform->setScale(glm::vec3(1, 1, 1));
@@ -527,9 +521,8 @@ Scene *World::createScene()
 {
     int globalIndex = (int)mAllocators.mSceneAllocator.getCount();
     int type = SceneType<Scene>::type;
-    Guid sceneId = Guid::newGuid();
 
-    Scene *scene = mAllocators.mSceneAllocator.construct(this, sceneId);
+    Scene *scene = mAllocators.mSceneAllocator.construct(this, Guid::newGuid());
 
     if (scene != nullptr)
     {
@@ -543,35 +536,33 @@ Entity *World::createEntity()
 {
     int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
     int type = EntityType<Entity>::type;
-    Guid entityId = Guid::newGuid();
 
-    Entity *entity = mAllocators.mEntityAllocator.construct(this, entityId);
+    Entity *entity = mAllocators.mEntityAllocator.construct(this, Guid::newGuid());
 
     if (entity != nullptr)
     {
         addIdToGlobalIndexMap_impl<Entity>(entity->getId(), globalIndex, type);
 
-        mIdState.mEntityIdToComponentIds[entityId] = std::vector<std::pair<Guid, int>>();
+        mIdState.mEntityIdToComponentIds[entity->getId()] = std::vector<std::pair<Guid, int>>();
 
-        mIdState.mEntityIdsMarkedCreated.push_back(entityId);
+        mIdState.mEntityIdsMarkedCreated.push_back(entity->getId());
     }
 
-    // Add transform (all entitie must have a transform)
+    // Add transform (all entities must have a transform)
     int componentGlobalIndex = (int)mAllocators.mTransformAllocator.getCount();
     int componentType = ComponentType<Transform>::type;
-    Guid componentId = Guid::newGuid();
 
-    Transform *component = mAllocators.mTransformAllocator.construct(this, componentId);
+    Transform *component = mAllocators.mTransformAllocator.construct(this, Guid::newGuid());
 
     assert(component != nullptr);
 
-    component->mEntityId = entityId;
+    component->mEntityId = entity->getId();
 
-    addIdToGlobalIndexMap_impl<Transform>(componentId, componentGlobalIndex, componentType);
+    addIdToGlobalIndexMap_impl<Transform>(component->getId(), componentGlobalIndex, componentType);
 
-    mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(componentId, componentType));
+    mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(component->getId(), componentType));
 
-    mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, componentId, componentType));
+    mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entity->getId(), component->getId(), componentType));
 
     return entity;
 }
