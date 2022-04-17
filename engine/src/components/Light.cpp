@@ -7,8 +7,6 @@ using namespace PhysicsEngine;
 
 Light::Light(World* world) : Component(world)
 {
-    mEntityId = Guid::INVALID;
-
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));
@@ -44,10 +42,8 @@ Light::Light(World* world) : Component(world)
     mTargets.mShadowCubemapDepthTex = 0;
 }
 
-Light::Light(World* world, const Guid& id) : Component(world, id)
+Light::Light(World* world, Id id) : Component(world, id)
 {
-    mEntityId = Guid::INVALID;
-
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));

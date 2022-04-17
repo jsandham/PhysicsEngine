@@ -19,7 +19,7 @@ class CapsuleCollider : public Collider
 
   public:
     CapsuleCollider(World *world);
-    CapsuleCollider(World *world, const Guid& id);
+    CapsuleCollider(World *world, Id id);
     ~CapsuleCollider();
 
     virtual void serialize(YAML::Node &out) const override;

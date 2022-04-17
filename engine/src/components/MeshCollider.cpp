@@ -1,17 +1,18 @@
 #include "../../include/components/MeshCollider.h"
 
 #include "../../include/core/Intersect.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
 MeshCollider::MeshCollider(World* world) : Collider(world)
 {
-    mMeshId = Guid::INVALID;
+    mMeshId = -1;
 }
 
-MeshCollider::MeshCollider(World* world, const Guid& id) : Collider(world, id)
+MeshCollider::MeshCollider(World* world, Id id) : Collider(world, id)
 {
-    mMeshId = Guid::INVALID;
+    mMeshId = -1;
 }
 
 MeshCollider::~MeshCollider()
@@ -22,14 +23,14 @@ void MeshCollider::serialize(YAML::Node &out) const
 {
     Collider::serialize(out);
 
-    out["meshId"] = mMeshId;
+    out["meshId"] = mWorld->getGuidOf(mMeshId);
 }
 
 void MeshCollider::deserialize(const YAML::Node &in)
 {
     Collider::deserialize(in);
 
-    mMeshId = YAML::getValue<Guid>(in, "meshId");
+    mMeshId = mWorld->getIdOf(YAML::getValue<Guid>(in, "meshId"));
 }
 
 int MeshCollider::getType() const

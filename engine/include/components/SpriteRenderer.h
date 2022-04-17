@@ -10,7 +10,7 @@ namespace PhysicsEngine
 class SpriteRenderer : public Component
 {
   private:
-    Guid mSpriteId;
+    Id mSpriteId;
 
   public:
     Color mColor;
@@ -22,7 +22,7 @@ class SpriteRenderer : public Component
 
   public:
     SpriteRenderer(World *world);
-    SpriteRenderer(World *world, const Guid& id);
+    SpriteRenderer(World *world, Id id);
     ~SpriteRenderer();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -31,8 +31,8 @@ class SpriteRenderer : public Component
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void setSprite(Guid id);
-    Guid getSprite() const;
+    void setSprite(Id id);
+    Id getSprite() const;
 };
 
 template <> struct ComponentType<SpriteRenderer>

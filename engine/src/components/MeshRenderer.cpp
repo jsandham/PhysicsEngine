@@ -1,16 +1,17 @@
 #include "../../include/components/MeshRenderer.h"
 
 #include "../../include/core/GLM.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
 MeshRenderer::MeshRenderer(World* world) : Component(world)
 {
-    mMeshId = Guid::INVALID;
+    mMeshId = -1;
 
     for (int i = 0; i < 8; i++)
     {
-        mMaterialIds[i] = Guid::INVALID;
+        mMaterialIds[i] = -1;
     }
 
     mMaterialCount = 0;
@@ -20,13 +21,13 @@ MeshRenderer::MeshRenderer(World* world) : Component(world)
     mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(World* world, const Guid& id) : Component(world, id)
+MeshRenderer::MeshRenderer(World* world, Id id) : Component(world, id)
 {
-    mMeshId = Guid::INVALID;
+    mMeshId = -1;
 
     for (int i = 0; i < 8; i++)
     {
-        mMaterialIds[i] = Guid::INVALID;
+        mMaterialIds[i] = -1;
     }
 
     mMaterialCount = 0;
@@ -44,11 +45,11 @@ void MeshRenderer::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
-    out["meshId"] = mMeshId;
+    out["meshId"] = mWorld->getGuidOf(mMeshId);
     out["materialCount"] = mMaterialCount;
     for (int i = 0; i < mMaterialCount; i++)
     {
-        out["materialIds"].push_back(mMaterialIds[i]);
+        out["materialIds"].push_back(mWorld->getGuidOf(mMaterialIds[i]));
     }
     out["isStatic"] = mIsStatic;
     out["enabled"] = mEnabled;
@@ -58,11 +59,11 @@ void MeshRenderer::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 
-    mMeshId = YAML::getValue<Guid>(in, "meshId");
+    mMeshId = mWorld->getIdOf(YAML::getValue<Guid>(in, "meshId"));
     mMaterialCount = YAML::getValue<int>(in, "materialCount");
     for (int i = 0; i < mMaterialCount; i++)
     {
-        mMaterialIds[i] = YAML::getValue<Guid>(in, "materialIds", i);
+        mMaterialIds[i] = mWorld->getIdOf(YAML::getValue<Guid>(in, "materialIds", i));
     }
     mIsStatic = YAML::getValue<bool>(in, "isStatic");
     mEnabled = YAML::getValue<bool>(in, "enabled");
@@ -81,13 +82,13 @@ std::string MeshRenderer::getObjectName() const
     return PhysicsEngine::MESHRENDERER_NAME;
 }
 
-void MeshRenderer::setMesh(Guid meshId)
+void MeshRenderer::setMesh(Id meshId)
 {
     mMeshId = meshId;
     mMeshChanged = true;
 }
 
-void MeshRenderer::setMaterial(Guid materialId)
+void MeshRenderer::setMaterial(Id materialId)
 {
     mMaterialIds[0] = materialId;
     mMaterialChanged = true;
@@ -97,7 +98,7 @@ void MeshRenderer::setMaterial(Guid materialId)
     }
 }
 
-void MeshRenderer::setMaterial(Guid materialId, int index)
+void MeshRenderer::setMaterial(Id materialId, int index)
 {
     if (index >= 0 && index < 8)
     {
@@ -106,32 +107,32 @@ void MeshRenderer::setMaterial(Guid materialId, int index)
     }
 }
 
-Guid MeshRenderer::getMesh() const
+Id MeshRenderer::getMesh() const
 {
     return mMeshId;
 }
 
-Guid MeshRenderer::getMaterial() const
+Id MeshRenderer::getMaterial() const
 {
     return mMaterialIds[0];
 }
 
-Guid MeshRenderer::getMaterial(int index) const
+Id MeshRenderer::getMaterial(int index) const
 {
     if (index >= 0 && index < 8)
     {
         return mMaterialIds[index];
     }
 
-    return Guid::INVALID;
+    return -1;
 }
 
-std::vector<Guid> MeshRenderer::getMaterials() const
+std::vector<Id> MeshRenderer::getMaterials() const
 {
-    std::vector<Guid> materials;
+    std::vector<Id> materials;
     for (int i = 0; i < 8; i++)
     {
-        if (mMaterialIds[i] != Guid::INVALID)
+        if (mMaterialIds[i] != -1)
         {
             materials.push_back(mMaterialIds[i]);
         }

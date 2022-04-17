@@ -13,7 +13,7 @@ namespace PhysicsEngine
 class Transform : public Component
 {
   private:
-    Guid mParentId;
+    Id mParentId;
     glm::mat4 mModelMatrix;
     glm::vec3 mPosition;
     glm::quat mRotation;
@@ -22,7 +22,7 @@ class Transform : public Component
 
   public:
     Transform(World *world);
-    Transform(World *world, const Guid& id);
+    Transform(World *world, Id id);
     ~Transform();
 
     virtual void serialize(YAML::Node &out) const override;

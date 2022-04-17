@@ -15,7 +15,7 @@ class Scene : public Object
 
   public:
     Scene(World *world);
-    Scene(World *world, Guid id);
+    Scene(World *world, Id id);
     ~Scene();
 
     virtual void serialize(YAML::Node &out) const override;

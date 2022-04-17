@@ -10,6 +10,10 @@
 
 namespace PhysicsEngine
 {
+typedef int Id;
+
+Id newId();
+
 // see https://github.com/graeme-hill/crossguid
 class Guid
 {

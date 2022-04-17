@@ -21,7 +21,7 @@ void DebugRenderer::init(World *world)
 void DebugRenderer::update(const Input &input, Camera *camera,
     const std::vector<RenderObject>& renderObjects,
     const std::vector<glm::mat4> &models,
-    const std::vector<Guid> &transformIds)
+    const std::vector<Id> &transformIds)
 {
     beginDebugFrame(mWorld, camera, mState);
 
@@ -66,7 +66,7 @@ void PhysicsEngine::beginDebugFrame(World *world, Camera *camera, DebugRendererS
     // update camera state data
     Graphics::setGlobalCameraUniforms(state.mCameraState);
 
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -95,7 +95,7 @@ void PhysicsEngine::beginDebugFrame(World *world, Camera *camera, DebugRendererS
 void PhysicsEngine::renderDebug(World* world, Camera* camera, DebugRendererState& state,
     const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4> &models)
 {
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -171,7 +171,7 @@ void PhysicsEngine::renderDebug(World* world, Camera* camera, DebugRendererState
 void PhysicsEngine::renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
                                        const std::vector<RenderObject> &renderObjects,
                                        const std::vector<glm::mat4> &models,
-                                       const std::vector<Guid> &transformIds)
+                                       const std::vector<Id> &transformIds)
 {
     camera->clearColoring();
 

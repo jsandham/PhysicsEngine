@@ -16,7 +16,7 @@ class World;
 class Object
 {
   private:
-    Guid mId;
+    Id mId;
 
   protected:
     World *mWorld;
@@ -26,7 +26,7 @@ class Object
 
   public:
     Object(World *world);
-    Object(World *world, const Guid& id);
+    Object(World *world, Id id);
     virtual ~Object() = 0;
 
     virtual void serialize(YAML::Node &out) const;
@@ -35,7 +35,8 @@ class Object
     virtual int getType() const = 0;
     virtual std::string getObjectName() const = 0;
 
-    Guid getId() const;
+    Guid getGuid() const;
+    Id getId() const;
 };
 
 } // namespace PhysicsEngine

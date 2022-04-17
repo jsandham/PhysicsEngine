@@ -7,6 +7,13 @@
 
 using namespace PhysicsEngine;
 
+Id PhysicsEngine::newId()
+{
+    static Id id = 0;
+    id++;
+    return id;
+}
+
 const Guid Guid::INVALID = Guid("00000000-0000-0000-0000-000000000000");
 
 Guid::Guid()

@@ -21,7 +21,7 @@ void ForwardRenderer::init(World *world)
 void ForwardRenderer::update(const Input &input, Camera *camera,
                              const std::vector<RenderObject> &renderObjects,
                              const std::vector<glm::mat4> &models,
-                             const std::vector<Guid> &transformIds,
+                             const std::vector<Id> &transformIds,
                              const std::vector<SpriteObject> &spriteObjects)
 {
     beginFrame(mWorld, camera, mState);
@@ -99,7 +99,7 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     // update camera state data
     Graphics::setGlobalCameraUniforms(state.mCameraState);
 
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -388,7 +388,7 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         variant |= static_cast<int64_t>(ShaderMacro::SoftShadows);
     }
 
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -503,7 +503,7 @@ void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererS
     Graphics::setMat4(state.mSpriteProjectionLoc, projection);
     Graphics::setMat4(state.mSpriteViewLoc, view);
 
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -537,7 +537,7 @@ void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererS
 
 void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
                                        const std::vector<RenderObject> &renderObjects,
-                                       const std::vector<glm::mat4> &models, const std::vector<Guid> &transformIds)
+                                       const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     camera->clearColoring();
 

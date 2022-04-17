@@ -11,7 +11,7 @@ Scene::Scene(World *world) : Object(world)
     mVersion = SCENE_VERSION;
 }
 
-Scene::Scene(World *world, Guid id) : Object(world, id)
+Scene::Scene(World *world, Id id) : Object(world, id)
 {
     mName = "Unnamed scene";
     mVersion = SCENE_VERSION;

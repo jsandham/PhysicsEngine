@@ -20,7 +20,7 @@ DebugSystem::DebugSystem(World* world) : System(world)
 {
 }
 
-DebugSystem::DebugSystem(World* world, const Guid& id) : System(world, id)
+DebugSystem::DebugSystem(World* world, Id id) : System(world, id)
 {
 }
 

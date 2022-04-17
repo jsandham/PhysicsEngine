@@ -136,7 +136,7 @@ class Shader : public Asset
 
   public:
     Shader(World *world);
-    Shader(World *world, const Guid& id);
+    Shader(World *world, Id id);
     ~Shader();
 
     virtual void serialize(YAML::Node &out) const override;

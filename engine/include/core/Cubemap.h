@@ -26,8 +26,7 @@ class Cubemap : public Texture
 
   public:
     Cubemap(World *world);
-    Cubemap(World *world, const Guid& id);
-    Cubemap(World *world, int width);
+    Cubemap(World *world, Id id);
     Cubemap(World *world, int width, TextureFormat format);
     ~Cubemap();
 

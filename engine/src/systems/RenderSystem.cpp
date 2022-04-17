@@ -24,7 +24,7 @@ RenderSystem::RenderSystem(World* world) : System(world)
 {
 }
 
-RenderSystem::RenderSystem(World* world, const Guid& id) : System(world, id)
+RenderSystem::RenderSystem(World* world, Id id) : System(world, id)
 {
 }
 
@@ -112,7 +112,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!texture->isCreated())
             {
-                std::string errorMessage = "Error: Failed to create texture " + texture->getId().toString() + "\n";
+                std::string errorMessage = "Error: Failed to create texture " + std::to_string(texture->getId()) + "\n";
                 Log::error(errorMessage.c_str());
             }
         }
@@ -133,7 +133,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!texture->isCreated())
             {
-                std::string errorMessage = "Error: Failed to create render texture " + texture->getId().toString() + "\n";
+                std::string errorMessage = "Error: Failed to create render texture " + std::to_string(texture->getId()) + "\n";
                 Log::error(errorMessage.c_str());
             }
         }
@@ -145,7 +145,7 @@ void RenderSystem::registerRenderAssets(World *world)
     }
 
     // compile all shader assets and configure uniform blocks not already compiled
-    std::unordered_set<Guid> shadersCompiledThisFrame;
+    std::unordered_set<Id> shadersCompiledThisFrame;
     for (size_t i = 0; i < world->getNumberOfAssets<Shader>(); i++)
     {
         Shader *shader = world->getAssetByIndex<Shader>(i);
@@ -157,7 +157,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!shader->isCompiled())
             {
-                std::string errorMessage = "Shader failed to compile " + shader->getName() + " " + shader->getId().toString() + "\n";
+                std::string errorMessage = "Shader failed to compile " + shader->getName() + " " + std::to_string(shader->getId()) + "\n";
                 Log::error(&errorMessage[0]);
             }
 
@@ -170,7 +170,7 @@ void RenderSystem::registerRenderAssets(World *world)
     {
         Material *material = world->getAssetByIndex<Material>(i);
 
-        std::unordered_set<Guid>::iterator it = shadersCompiledThisFrame.find(material->getShaderId());
+        std::unordered_set<Id>::iterator it = shadersCompiledThisFrame.find(material->getShaderId());
 
         if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end())
         {
@@ -195,7 +195,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!mesh->isCreated())
             {
-                std::string errorMessage = "Error: Failed to create mesh " + mesh->getId().toString() + "\n";
+                std::string errorMessage = "Error: Failed to create mesh " + std::to_string(mesh->getId()) + "\n";
                 Log::error(errorMessage.c_str());
             }
         }
@@ -212,7 +212,7 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!sprite->isCreated())
             {
-                std::string errorMessage = "Error: Failed to create sprite " + sprite->getId().toString() + "\n";
+                std::string errorMessage = "Error: Failed to create sprite " + std::to_string(sprite->getId()) + "\n";
                 Log::error(errorMessage.c_str());
             }
         }
@@ -303,7 +303,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.instanceColorVbo = mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor);
                     object.instanced = true;
 
-                    std::pair<Guid, RenderObject> key = std::make_pair(material->getId(), object);
+                    std::pair<Id, RenderObject> key = std::make_pair(material->getId(), object);
 
                     auto it = instanceMap.find(key);
                     if(it != instanceMap.end())
@@ -315,7 +315,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     else
                     {
                         instanceMap[key].models = std::vector<glm::mat4>();
-                        instanceMap[key].transformIds = std::vector<Guid>();
+                        instanceMap[key].transformIds = std::vector<Id>();
                         instanceMap[key].boundingSpheres = std::vector<Sphere>();
 
                         instanceMap[key].models.reserve(Graphics::INSTANCE_BATCH_SIZE);
@@ -353,7 +353,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
     for (auto it = instanceMap.begin(); it != instanceMap.end(); it++)
     {
         std::vector<glm::mat4> &models = it->second.models;
-        std::vector<Guid> &transformIds = it->second.transformIds;
+        std::vector<Id> &transformIds = it->second.transformIds;
         std::vector<Sphere> &boundingSpheres = it->second.boundingSpheres;
 
         size_t count = 0;

@@ -30,7 +30,7 @@ class ForwardRenderer
     void update(const Input &input, Camera *camera,
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models, 
-                const std::vector<Guid> &transformIds,
+                const std::vector<Id> &transformIds,
                 const std::vector<SpriteObject> &spriteObjects);
 };
 
@@ -53,7 +53,7 @@ void renderSprites(World *world, Camera *camera, ForwardRendererState &state,
 
 void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
                         const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models,
-                        const std::vector<Guid> &transformIds);
+                        const std::vector<Id> &transformIds);
 
 void renderTransparents();
 

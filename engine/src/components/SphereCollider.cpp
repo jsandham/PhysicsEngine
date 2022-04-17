@@ -10,7 +10,7 @@ SphereCollider::SphereCollider(World* world) : Collider(world)
 {
 }
 
-SphereCollider::SphereCollider(World* world, const Guid& id) : Collider(world, id)
+SphereCollider::SphereCollider(World* world, Id id) : Collider(world, id)
 {
 }
 

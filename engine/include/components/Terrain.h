@@ -21,8 +21,8 @@ struct TerrainChunk
 
 struct TerrainCoverMesh
 {
-    Guid mMeshId;
-    Guid mMaterialIds[8];
+    Id mMeshId;
+    Id mMaterialIds[8];
 
     int mMaterialCount;
 };
@@ -33,7 +33,7 @@ class Terrain : public Component
         TerrainChunk mTerrainChunks[81];
         TerrainCoverMesh mGrassMeshes[8];
         TerrainCoverMesh mTreeMeshes[8];
-        Guid mMaterialId;
+        Id mMaterialId;
 
         glm::vec2 mChunkSize;
         glm::ivec2 mChunkResolution;
@@ -66,11 +66,11 @@ class Terrain : public Component
 
         int mGrassMeshCount;
         int mTreeMeshCount;
-        Guid mCameraTransformId;
+        Id mCameraTransformId;
 
     public:
         Terrain(World *world);
-        Terrain(World *world, const Guid &id);
+        Terrain(World *world, Id id);
         ~Terrain();
 
         virtual void serialize(YAML::Node& out) const override;
@@ -89,16 +89,16 @@ class Terrain : public Component
 
         unsigned int getNativeGraphicsVAO() const;
 
-        void setMaterial(Guid materialId);
-        void setGrassMesh(Guid meshId, int index);
-        void setTreeMesh(Guid meshId, int index);
-        void setGrassMaterial(Guid materialId, int meshIndex, int materialIndex);
-        void setTreeMaterial(Guid materialId, int meshIndex, int materialIndex);
-        Guid getMaterial() const;
-        Guid getGrassMesh(int index) const;
-        Guid getTreeMesh(int index) const;
-        Guid getGrassMesh(int meshIndex, int materialIndex) const;
-        Guid getTreeMesh(int meshIndex, int materialIndex) const;
+        void setMaterial(Id materialId);
+        void setGrassMesh(Id meshId, int index);
+        void setTreeMesh(Id meshId, int index);
+        void setGrassMaterial(Id materialId, int meshIndex, int materialIndex);
+        void setTreeMaterial(Id materialId, int meshIndex, int materialIndex);
+        Id getMaterial() const;
+        Id getGrassMesh(int index) const;
+        Id getTreeMesh(int index) const;
+        Id getGrassMesh(int meshIndex, int materialIndex) const;
+        Id getTreeMesh(int meshIndex, int materialIndex) const;
 
         bool isCreated() const;
         bool isChunkEnabled(int chunk) const;

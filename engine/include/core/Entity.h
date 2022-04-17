@@ -20,7 +20,7 @@ class Entity : public Object
 
   public:
     Entity(World *world);
-    Entity(World *world, const Guid& id);
+    Entity(World *world, Id id);
     ~Entity();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -42,7 +42,7 @@ class Entity : public Object
         return mWorld->getComponent<T>(getId());
     }
 
-    std::vector<std::pair<Guid, int>> getComponentsOnEntity() const;
+    std::vector<std::pair<Id, int>> getComponentsOnEntity() const;
 
     std::string getName() const;
     void setName(const std::string &name);

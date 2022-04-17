@@ -16,11 +16,11 @@ class LineRenderer : public Component
     glm::vec3 mEnd;
     bool mEnabled;
 
-    Guid mMaterialId;
+    Id mMaterialId;
 
   public:
     LineRenderer(World *world);
-    LineRenderer(World *world, const Guid& id);
+    LineRenderer(World *world, Id id);
     ~LineRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -10,7 +10,7 @@ TerrainSystem::TerrainSystem(World *world) : System(world)
 
 }
 
-TerrainSystem::TerrainSystem(World *world, const Guid& id) : System(world, id)
+TerrainSystem::TerrainSystem(World *world, Id id) : System(world, id)
 {
 
 }

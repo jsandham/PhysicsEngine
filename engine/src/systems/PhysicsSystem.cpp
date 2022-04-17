@@ -21,7 +21,7 @@ PhysicsSystem::PhysicsSystem(World* world) : System(world)
 {
 }
 
-PhysicsSystem::PhysicsSystem(World* world, const Guid& id) : System(world, id)
+PhysicsSystem::PhysicsSystem(World* world, Id id) : System(world, id)
 {
 }
 

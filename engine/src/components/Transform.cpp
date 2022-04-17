@@ -1,6 +1,7 @@
 #include "../../include/components/Transform.h"
 
 #include "../../include/core/GLM.h"
+#include "../../include/core/World.h"
 
 #include "glm/gtx/matrix_decompose.hpp"
 
@@ -10,7 +11,7 @@ using namespace PhysicsEngine;
 
 Transform::Transform(World* world) : Component(world)
 {
-    mParentId = Guid::INVALID;
+    mParentId = -1;
     mModelMatrix = glm::mat4(0.0f);
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -18,9 +19,9 @@ Transform::Transform(World* world) : Component(world)
     mIsDirty = true;
 }
 
-Transform::Transform(World* world, const Guid& id) : Component(world, id)
+Transform::Transform(World* world, Id id) : Component(world, id)
 {
-    mParentId = Guid::INVALID;
+    mParentId = -1;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -35,7 +36,7 @@ void Transform::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
-    out["parentId"] = mParentId;
+    out["parentId"] = mWorld->getGuidOf(mParentId);
     out["position"] = mPosition;
     out["rotation"] = mRotation;
     out["scale"] = mScale;
@@ -45,7 +46,7 @@ void Transform::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 
-    mParentId = YAML::getValue<Guid>(in, "parentId");
+    mParentId = mWorld->getIdOf(YAML::getValue<Guid>(in, "parentId"));
     mPosition = YAML::getValue<glm::vec3>(in, "position");
     mRotation = YAML::getValue<glm::quat>(in, "rotation");
     mScale = YAML::getValue<glm::vec3>(in, "scale");

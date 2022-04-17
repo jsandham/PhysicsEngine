@@ -12,11 +12,11 @@ namespace PhysicsEngine
 class MeshCollider : public Collider
 {
   public:
-    Guid mMeshId;
+    Id mMeshId;
 
   public:
     MeshCollider(World *world);
-    MeshCollider(World *world, const Guid& id);
+    MeshCollider(World *world, Id id);
     ~MeshCollider();
 
     virtual void serialize(YAML::Node &out) const override;

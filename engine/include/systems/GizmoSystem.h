@@ -27,7 +27,7 @@ class GizmoSystem : public System
 
   public:
     GizmoSystem(World* world);
-    GizmoSystem(World* world, const Guid& id);
+    GizmoSystem(World* world, Id id);
     ~GizmoSystem();
 
     virtual void serialize(YAML::Node &out) const override;

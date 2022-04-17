@@ -19,7 +19,7 @@ Cubemap::Cubemap(World *world) : Texture(world)
     mUpdateRequired = false;
 }
 
-Cubemap::Cubemap(World *world, const Guid& id) : Texture(world, id)
+Cubemap::Cubemap(World *world, Id id) : Texture(world, id)
 {
     mDimension = TextureDimension::Cube;
 
@@ -32,23 +32,6 @@ Cubemap::Cubemap(World *world, const Guid& id) : Texture(world, id)
     mAnisoLevel = 1;
     mCreated = false;
     mUpdateRequired = false;
-}
-
-Cubemap::Cubemap(World *world, int width) : Texture(world)
-{
-    mDimension = TextureDimension::Cube;
-
-    mWidth = width;
-    mFormat = TextureFormat::RGB;
-    mWrapMode = TextureWrapMode::Repeat;
-    mFilterMode = TextureFilterMode::Trilinear;
-
-    mNumChannels = calcNumChannels(mFormat);
-    mAnisoLevel = 1;
-    mCreated = false;
-    mUpdateRequired = false;
-
-    mRawTextureData.resize(6 * width * width * mNumChannels);
 }
 
 Cubemap::Cubemap(World *world, int width, TextureFormat format) : Texture(world)

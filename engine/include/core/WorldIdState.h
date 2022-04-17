@@ -12,70 +12,68 @@ namespace PhysicsEngine
 struct WorldIdState
 {
     // internal world scene id state
-    std::unordered_map<Guid, int> mSceneIdToGlobalIndex;
+    std::unordered_map<Id, int> mSceneIdToGlobalIndex;
 
     // internal world entity id state
-    std::unordered_map<Guid, int> mEntityIdToGlobalIndex;
+    std::unordered_map<Id, int> mEntityIdToGlobalIndex;
 
     // internal world components id state
-    std::unordered_map<Guid, int> mTransformIdToGlobalIndex;
-    std::unordered_map<Guid, int> mMeshRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mSpriteRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mLineRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mRigidbodyIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCameraIdToGlobalIndex;
-    std::unordered_map<Guid, int> mLightIdToGlobalIndex;
-    std::unordered_map<Guid, int> mSphereColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mBoxColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCapsuleColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mMeshColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mTerrainIdToGlobalIndex;
+    std::unordered_map<Id, int> mTransformIdToGlobalIndex;
+    std::unordered_map<Id, int> mMeshRendererIdToGlobalIndex;
+    std::unordered_map<Id, int> mSpriteRendererIdToGlobalIndex;
+    std::unordered_map<Id, int> mLineRendererIdToGlobalIndex;
+    std::unordered_map<Id, int> mRigidbodyIdToGlobalIndex;
+    std::unordered_map<Id, int> mCameraIdToGlobalIndex;
+    std::unordered_map<Id, int> mLightIdToGlobalIndex;
+    std::unordered_map<Id, int> mSphereColliderIdToGlobalIndex;
+    std::unordered_map<Id, int> mBoxColliderIdToGlobalIndex;
+    std::unordered_map<Id, int> mCapsuleColliderIdToGlobalIndex;
+    std::unordered_map<Id, int> mMeshColliderIdToGlobalIndex;
+    std::unordered_map<Id, int> mTerrainIdToGlobalIndex;
 
     // internal world asset id state
-    std::unordered_map<Guid, int> mMeshIdToGlobalIndex;
-    std::unordered_map<Guid, int> mMaterialIdToGlobalIndex;
-    std::unordered_map<Guid, int> mShaderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mTexture2DIdToGlobalIndex;
-    std::unordered_map<Guid, int> mTexture3DIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCubemapIdToGlobalIndex;
-    std::unordered_map<Guid, int> mRenderTextureIdToGlobalIndex;
-    std::unordered_map<Guid, int> mFontIdToGlobalIndex;
-    std::unordered_map<Guid, int> mSpriteIdToGlobalIndex;
+    std::unordered_map<Id, int> mMeshIdToGlobalIndex;
+    std::unordered_map<Id, int> mMaterialIdToGlobalIndex;
+    std::unordered_map<Id, int> mShaderIdToGlobalIndex;
+    std::unordered_map<Id, int> mTexture2DIdToGlobalIndex;
+    std::unordered_map<Id, int> mTexture3DIdToGlobalIndex;
+    std::unordered_map<Id, int> mCubemapIdToGlobalIndex;
+    std::unordered_map<Id, int> mRenderTextureIdToGlobalIndex;
+    std::unordered_map<Id, int> mFontIdToGlobalIndex;
+    std::unordered_map<Id, int> mSpriteIdToGlobalIndex;
 
     // internal world system id state
-    std::unordered_map<Guid, int> mRenderSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mPhysicsSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCleanupSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mDebugSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mGizmoSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mFreeLookCameraSystemIdToGlobalIndex;
-    std::unordered_map<Guid, int> mTerrainSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mRenderSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mPhysicsSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mCleanupSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mDebugSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mGizmoSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mFreeLookCameraSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mTerrainSystemIdToGlobalIndex;
 
     // world id state for all entity, components, systems, and assets
-    std::unordered_map<Guid, int> mIdToGlobalIndex;
-    std::unordered_map<Guid, int> mIdToType;
+    std::unordered_map<Guid, Id> mGuidToId;
+    std::unordered_map<Id, Guid> mIdToGuid;
+    std::unordered_map<Id, int> mIdToGlobalIndex;
+    std::unordered_map<Id, int> mIdToType;
 
     // entity ids to component ids
-    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds;
-
-    //std::unordered_map<Guid, Guid> mEntityIdToTransformId;
-    //std::unordered_map<Guid, Guid> mEntityIdToMeshRendererId;
-    //std::unordered_map<Guid, Guid> mEntityIdToRigidbodyId;
+    std::unordered_map<Id, std::vector<std::pair<Id, int>>> mEntityIdToComponentIds;
 
     // entity creation/deletion state
-    std::vector<Guid> mEntityIdsMarkedCreated;
-    std::vector<Guid> mEntityIdsMarkedLatentDestroy;
-    std::vector<std::pair<Guid, int>> mEntityIdsMarkedMoved;
+    std::vector<Id> mEntityIdsMarkedCreated;
+    std::vector<Id> mEntityIdsMarkedLatentDestroy;
+    std::vector<std::pair<Id, int>> mEntityIdsMarkedMoved;
 
     // component create/deletion state
-    std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedCreated;
-    std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
-    std::vector<std::tuple<Guid, int, int>> mComponentIdsMarkedMoved;
+    std::vector<std::tuple<Id, Id, int>> mComponentIdsMarkedCreated;
+    std::vector<std::tuple<Id, Id, int>> mComponentIdsMarkedLatentDestroy;
+    std::vector<std::tuple<Id, int, int>> mComponentIdsMarkedMoved;
 
     // asset create/deletion state
-    std::vector<std::pair<Guid, int>> mAssetIdsMarkedCreated;
-    std::vector<std::pair<Guid, int>> mAssetIdsMarkedLatentDestroy;
-    std::vector<std::pair<Guid, int>> mAssetIdsMarkedMoved;
+    std::vector<std::pair<Id, int>> mAssetIdsMarkedCreated;
+    std::vector<std::pair<Id, int>> mAssetIdsMarkedLatentDestroy;
+    std::vector<std::pair<Id, int>> mAssetIdsMarkedMoved;
 
     // asset and scene id to filepath
     std::unordered_map<Guid, std::string> mAssetIdToFilepath;

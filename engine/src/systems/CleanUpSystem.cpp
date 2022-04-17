@@ -10,7 +10,7 @@ CleanUpSystem::CleanUpSystem(World* world) : System(world)
 {
 }
 
-CleanUpSystem::CleanUpSystem(World* world, const Guid& id) : System(world, id)
+CleanUpSystem::CleanUpSystem(World* world, Id id) : System(world, id)
 {
 }
 
@@ -45,7 +45,7 @@ void CleanUpSystem::init(World *world)
 
 void CleanUpSystem::update(const Input &input, const Time &time)
 {
-    std::vector<std::tuple<Guid, Guid, int>> componentIdsMarkedLatentDestroy =
+    std::vector<std::tuple<Id, Id, int>> componentIdsMarkedLatentDestroy =
         mWorld->getComponentIdsMarkedLatentDestroy();
     for (size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++)
     {
@@ -55,7 +55,7 @@ void CleanUpSystem::update(const Input &input, const Time &time)
                                           std::get<2>(componentIdsMarkedLatentDestroy[i]));
     }
 
-    std::vector<Guid> entityIdsMarkedForLatentDestroy = mWorld->getEntityIdsMarkedLatentDestroy();
+    std::vector<Id> entityIdsMarkedForLatentDestroy = mWorld->getEntityIdsMarkedLatentDestroy();
     for (size_t i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++)
     {
         mWorld->immediateDestroyEntity(entityIdsMarkedForLatentDestroy[i]);

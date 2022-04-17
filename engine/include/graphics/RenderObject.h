@@ -34,7 +34,7 @@ typedef struct RenderObject
 struct InstanceModelData
 {
     std::vector<glm::mat4> models;
-    std::vector<Guid> transformIds;
+    std::vector<Id> transformIds;
     std::vector<Sphere> boundingSpheres;
 };
 
@@ -46,7 +46,7 @@ struct pair_hash
     }
 };
 
-typedef std::unordered_map<std::pair<Guid, RenderObject>, InstanceModelData, pair_hash> InstanceMap;
+typedef std::unordered_map<std::pair<Id, RenderObject>, InstanceModelData, pair_hash> InstanceMap;
 } // namespace PhysicsEngine
 
 // allow use of InstancedRenderObject in unordered_set and unordered_map

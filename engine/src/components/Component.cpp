@@ -5,12 +5,12 @@ using namespace PhysicsEngine;
 
 Component::Component(World* world) : Object(world)
 {
-    mEntityId = Guid::INVALID;
+    mEntityId = -1;
 }
 
-Component::Component(World* world, const Guid& id) : Object(world, id)
+Component::Component(World* world, Id id) : Object(world, id)
 {
-    mEntityId = Guid::INVALID;
+    mEntityId = -1;
 }
 
 Component::~Component()
@@ -21,14 +21,14 @@ void Component::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
-    out["entityId"] = mEntityId;
+    out["entityId"] = mWorld->getGuidOf(mEntityId);
 }
 
 void Component::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 
-    mEntityId = YAML::getValue<Guid>(in, "entityId");
+    mEntityId = mWorld->getIdOf(YAML::getValue<Guid>(in, "entityId"));
 }
 
 Entity* Component::getEntity() const
@@ -36,7 +36,7 @@ Entity* Component::getEntity() const
     return mWorld->getEntityById(mEntityId);
 }
 
-Guid Component::getEntityId() const
+Id Component::getEntityId() const
 {
     return mEntityId;
 }

@@ -23,7 +23,7 @@ void DeferredRenderer::init(World *world)
 void DeferredRenderer::update(const Input &input, Camera *camera,
                               const std::vector<RenderObject> &renderObjects,
                               const std::vector<glm::mat4> &models,
-                              const std::vector<Guid> &transformIds)
+                              const std::vector<Id> &transformIds)
 {
     beginDeferredFrame(mWorld, camera, mState);
 
@@ -66,7 +66,7 @@ void PhysicsEngine::beginDeferredFrame(World *world, Camera *camera, DeferredRen
     Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    if (camera->mRenderTextureId.isValid())
+    if (camera->mRenderTextureId != -1)
     {
         RenderTexture *renderTexture = world->getAssetById<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
@@ -185,7 +185,7 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
 void PhysicsEngine::renderColorPickingDeferred(World *world, Camera *camera, DeferredRendererState &state,
                                        const std::vector<RenderObject> &renderObjects,
                                        const std::vector<glm::mat4> &models,
-                                       const std::vector<Guid> &transformIds)
+                                       const std::vector<Id> &transformIds)
 {
     camera->clearColoring();
 

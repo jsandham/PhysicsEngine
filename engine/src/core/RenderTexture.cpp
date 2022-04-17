@@ -19,7 +19,7 @@ RenderTexture::RenderTexture(World* world) : Texture(world)
     mCreated = false;
 }
 
-RenderTexture::RenderTexture(World* world, const Guid& id) : Texture(world, id)
+RenderTexture::RenderTexture(World* world, Id id) : Texture(world, id)
 {
     mWidth = 1920;
     mHeight = 1080;

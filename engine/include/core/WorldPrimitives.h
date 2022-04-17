@@ -19,15 +19,15 @@ namespace PhysicsEngine
 
 	struct WorldPrimitives
 	{
-        Guid mPlaneMeshId;
-        Guid mDiscMeshId;
-        Guid mCubeMeshId;
-        Guid mSphereMeshId;
-        Guid mCylinderMeshId;
-        Guid mConeMeshId;
+        Id mPlaneMeshId;
+        Id mDiscMeshId;
+        Id mCubeMeshId;
+        Id mSphereMeshId;
+        Id mCylinderMeshId;
+        Id mConeMeshId;
 
-        Guid mStandardShaderId;
-        Guid mStandardMaterialId;
+        Id mStandardShaderId;
+        Id mStandardMaterialId;
 
         void createPrimitiveMeshes(World* world, int nx, int nz);
 	};

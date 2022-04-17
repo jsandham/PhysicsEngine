@@ -1,12 +1,13 @@
 #include "../../include/components/SpriteRenderer.h"
 
 #include "../../include/graphics/Graphics.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
 SpriteRenderer::SpriteRenderer(World* world) : Component(world)
 {
-    mSpriteId = Guid::INVALID;
+    mSpriteId = -1;
     mColor = Color::white;
     mFlipX = false;
     mFlipY = false;
@@ -15,9 +16,9 @@ SpriteRenderer::SpriteRenderer(World* world) : Component(world)
     mEnabled = true;
 }
 
-SpriteRenderer::SpriteRenderer(World* world, const Guid& id) : Component(world, id)
+SpriteRenderer::SpriteRenderer(World* world, Id id) : Component(world, id)
 {
-    mSpriteId = Guid::INVALID;
+    mSpriteId = -1;
     mColor = Color::white;
     mFlipX = false;
     mFlipY = false;
@@ -35,7 +36,7 @@ void SpriteRenderer::serialize(YAML::Node& out) const
 {
     Component::serialize(out);
 
-    out["spriteId"] = mSpriteId;
+    out["spriteId"] = mWorld->getGuidOf(mSpriteId);
     out["color"] = mColor;
     out["flipX"] = mFlipX;
     out["flipY"] = mFlipY;
@@ -47,7 +48,7 @@ void SpriteRenderer::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mSpriteId = YAML::getValue<Guid>(in, "spriteId");
+    mSpriteId = mWorld->getIdOf(YAML::getValue<Guid>(in, "spriteId"));
     mColor = YAML::getValue<Color>(in, "color");
     mFlipX = YAML::getValue<bool>(in, "flipX");
     mFlipY = YAML::getValue<bool>(in, "flipY");
@@ -67,13 +68,13 @@ std::string SpriteRenderer::getObjectName() const
     return PhysicsEngine::SPRITERENDERER_NAME;
 }
 
-void SpriteRenderer::setSprite(Guid id)
+void SpriteRenderer::setSprite(Id id)
 {
     mSpriteId = id;
     mSpriteChanged = true;
 }
 
-Guid SpriteRenderer::getSprite() const
+Id SpriteRenderer::getSprite() const
 {
     return mSpriteId;
 }

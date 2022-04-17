@@ -1,6 +1,7 @@
 #include "../../include/components/Terrain.h"
 #include "../../include/graphics/Graphics.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
 
 #include "stb_perlin.h"
 
@@ -8,8 +9,8 @@ using namespace PhysicsEngine;
 
 Terrain::Terrain(World *world) : Component(world)
 {
-    mMaterialId = Guid::INVALID;
-    mCameraTransformId = Guid::INVALID;
+    mMaterialId = -1;
+    mCameraTransformId = -1;
 
     mCreated = false;
     mChanged = false;
@@ -31,10 +32,10 @@ Terrain::Terrain(World *world) : Component(world)
     mOffsetZ = 1.0f;
 }
 
-Terrain::Terrain(World *world, const Guid &id) : Component(world, id)
+Terrain::Terrain(World *world, Id id) : Component(world, id)
 {
-    mMaterialId = Guid::INVALID;
-    mCameraTransformId = Guid::INVALID;
+    mMaterialId = -1;
+    mCameraTransformId = -1;
 
     mCreated = false;
     mChanged = false;
@@ -65,8 +66,8 @@ void Terrain::serialize(YAML::Node& out) const
 {
     Component::serialize(out);
 
-    out["cameraTransformId"] = mCameraTransformId;
-    out["materialId"] = mMaterialId;
+    out["cameraTransformId"] = mWorld->getGuidOf(mCameraTransformId);
+    out["materialId"] = mWorld->getGuidOf(mMaterialId);
     out["maxViewDistance"] = mMaxViewDistance;
     out["scale"] = mScale;
     out["amplitude"] = mAmplitude;
@@ -77,8 +78,8 @@ void Terrain::deserialize(const YAML::Node& in)
 {
     Component::deserialize(in);
 
-    mCameraTransformId = YAML::getValue<Guid>(in, "cameraTransformId");
-    mMaterialId = YAML::getValue<Guid>(in, "materialId");
+    mCameraTransformId = mWorld->getIdOf(YAML::getValue<Guid>(in, "cameraTransformId"));
+    mMaterialId = mWorld->getIdOf(YAML::getValue<Guid>(in, "materialId"));
     mMaxViewDistance = YAML::getValue<float>(in, "maxViewDistance");
     mScale = YAML::getValue<float>(in, "scale");
     mAmplitude = YAML::getValue<float>(in, "amplitude");
@@ -542,13 +543,13 @@ unsigned int Terrain::getNativeGraphicsVAO() const
     return mVao;
 }
 
-void Terrain::setMaterial(Guid materialId)
+void Terrain::setMaterial(Id materialId)
 {
     mMaterialId = materialId;
     mMaterialChanged = true;
 }
 
-void Terrain::setGrassMesh(Guid meshId, int index)
+void Terrain::setGrassMesh(Id meshId, int index)
 {
     if (index >= 0 && index < 8)
     {
@@ -557,7 +558,7 @@ void Terrain::setGrassMesh(Guid meshId, int index)
     }
 }
 
-void Terrain::setTreeMesh(Guid meshId, int index)
+void Terrain::setTreeMesh(Id meshId, int index)
 {
     if (index >= 0 && index < 8)
     {
@@ -566,7 +567,7 @@ void Terrain::setTreeMesh(Guid meshId, int index)
     }
 }
 
-void Terrain::setGrassMaterial(Guid materialId, int meshIndex, int materialIndex)
+void Terrain::setGrassMaterial(Id materialId, int meshIndex, int materialIndex)
 {
     if (meshIndex >= 0 && meshIndex < 8)
     {
@@ -578,7 +579,7 @@ void Terrain::setGrassMaterial(Guid materialId, int meshIndex, int materialIndex
     }
 }
 
-void Terrain::setTreeMaterial(Guid materialId, int meshIndex, int materialIndex)
+void Terrain::setTreeMaterial(Id materialId, int meshIndex, int materialIndex)
 {
     if (meshIndex >= 0 && meshIndex < 8)
     {
@@ -590,32 +591,32 @@ void Terrain::setTreeMaterial(Guid materialId, int meshIndex, int materialIndex)
     }
 }
 
-Guid Terrain::getMaterial() const
+Id Terrain::getMaterial() const
 {
     return mMaterialId;
 }
 
-Guid Terrain::getGrassMesh(int index) const
+Id Terrain::getGrassMesh(int index) const
 {
     if (index >= 0 && index < 8)
     {
         return mGrassMeshes[index].mMeshId;
     }
 
-    return Guid::INVALID;
+    return -1;
 }
 
-Guid Terrain::getTreeMesh(int index) const
+Id Terrain::getTreeMesh(int index) const
 {
     if (index >= 0 && index < 8)
     {
         return mTreeMeshes[index].mMeshId;
     }
 
-    return Guid::INVALID;
+    return -1;
 }
 
-Guid Terrain::getGrassMesh(int meshIndex, int materialIndex) const
+Id Terrain::getGrassMesh(int meshIndex, int materialIndex) const
 {
     if (meshIndex >= 0 && meshIndex < 8)
     {
@@ -625,10 +626,10 @@ Guid Terrain::getGrassMesh(int meshIndex, int materialIndex) const
         }
     }
 
-    return Guid::INVALID;
+    return -1;
 }
 
-Guid Terrain::getTreeMesh(int meshIndex, int materialIndex) const
+Id Terrain::getTreeMesh(int meshIndex, int materialIndex) const
 {
     if (meshIndex >= 0 && meshIndex < 8)
     {
@@ -638,7 +639,7 @@ Guid Terrain::getTreeMesh(int meshIndex, int materialIndex) const
         }
     }
 
-    return Guid::INVALID;
+    return -1;
 }
 
 bool Terrain::isCreated() const

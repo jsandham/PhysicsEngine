@@ -23,7 +23,7 @@ class PhysicsSystem : public System
 
   public:
     PhysicsSystem(World* world);
-    PhysicsSystem(World* world, const Guid& id);
+    PhysicsSystem(World* world, Id id);
     ~PhysicsSystem();
 
     virtual void serialize(YAML::Node &out) const override;

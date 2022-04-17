@@ -9,7 +9,7 @@ Collider::Collider(World* world) : Component(world)
     mEnabled = true;
 }
 
-Collider::Collider(World* world, const Guid& id) : Component(world, id)
+Collider::Collider(World* world, Id id) : Component(world, id)
 {
     mEnabled = true;
 }

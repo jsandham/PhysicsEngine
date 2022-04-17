@@ -18,7 +18,7 @@ Mesh::Mesh(World *world) : Asset(world)
     mChanged = false;
 }
 
-Mesh::Mesh(World *world, const Guid& id) : Asset(world, id)
+Mesh::Mesh(World *world, Id id) : Asset(world, id)
 {
     mSource = "";
     mSourceFilepath = "";

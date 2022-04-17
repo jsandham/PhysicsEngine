@@ -7,7 +7,7 @@ using namespace PhysicsEngine;
 
 Material::Material(World *world) : Asset(world)
 {
-    mShaderId = Guid::INVALID;
+    mShaderId = -1;
     mRenderQueue = RenderQueue::Opaque;
 
     mShaderChanged = true;
@@ -15,9 +15,9 @@ Material::Material(World *world) : Asset(world)
     mEnableInstancing = false;
 }
 
-Material::Material(World *world, const Guid& id) : Asset(world, id)
+Material::Material(World *world, Id id) : Asset(world, id)
 {
-    mShaderId = Guid::INVALID;
+    mShaderId = -1;
     mRenderQueue = RenderQueue::Opaque;
 
     mShaderChanged = true;
@@ -33,7 +33,7 @@ void Material::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["shaderId"] = mShaderId;
+    out["shaderId"] = mWorld->getGuidOf(mShaderId);
     out["renderQueue"] = mRenderQueue;
     out["enableInstancing"] = mEnableInstancing;
 
@@ -47,7 +47,7 @@ void Material::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mShaderId = YAML::getValue<Guid>(in, "shaderId");
+    mShaderId = mWorld->getIdOf(YAML::getValue<Guid>(in, "shaderId"));
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
     mEnableInstancing = YAML::getValue<bool>(in, "enableInstancing");
 
@@ -69,7 +69,7 @@ void Material::deserialize(const YAML::Node &in)
         mUniforms.push_back(uniform);
     }
 
-    if (mShaderId.isValid())
+    if (mShaderId != -1)
     {
         mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
     }
@@ -141,7 +141,7 @@ void Material::onTextureChanged()
     {
         if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            Texture2D *texture = mWorld->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
+            Texture2D *texture = mWorld->getAssetById<Texture2D>(*reinterpret_cast<Id *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
                 mUniforms[i].mTex = texture->getNativeGraphics();
@@ -166,10 +166,10 @@ bool Material::hasTextureChanged() const
     return mTextureChanged;
 }
 
-void Material::setShaderId(const Guid& shaderId)
+void Material::setShaderId(Id shaderId)
 {
     // If current shader on material was valid, cache its uniforms before setting new shader
-    if (mShaderId.isValid())
+    if (mShaderId != -1)
     {
         mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
     }
@@ -178,7 +178,7 @@ void Material::setShaderId(const Guid& shaderId)
     mShaderChanged = true;
 }
 
-Guid Material::getShaderId() const
+Id Material::getShaderId() const
 {
     return mShaderId;
 }

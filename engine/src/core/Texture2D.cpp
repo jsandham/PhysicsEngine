@@ -25,7 +25,7 @@ Texture2D::Texture2D(World *world) : Texture(world)
     mUpdateRequired = false;
 }
 
-Texture2D::Texture2D(World *world, const Guid& id) : Texture(world, id)
+Texture2D::Texture2D(World *world, Id id) : Texture(world, id)
 {
     mDimension = TextureDimension::Tex2D;
 

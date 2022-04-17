@@ -8,8 +8,8 @@ namespace PhysicsEngine
 class MeshRenderer : public Component
 {
   private:
-    Guid mMeshId;
-    Guid mMaterialIds[8];
+    Id mMeshId;
+    Id mMaterialIds[8];
 
   public:
     int mMaterialCount;
@@ -20,7 +20,7 @@ class MeshRenderer : public Component
 
   public:
     MeshRenderer(World *world);
-    MeshRenderer(World *world, const Guid& id);
+    MeshRenderer(World *world, Id id);
     ~MeshRenderer();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -29,14 +29,14 @@ class MeshRenderer : public Component
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void setMesh(Guid meshId);
-    void setMaterial(Guid materialId);
-    void setMaterial(Guid materialId, int index);
+    void setMesh(Id meshId);
+    void setMaterial(Id materialId);
+    void setMaterial(Id materialId, int index);
 
-    Guid getMesh() const;
-    Guid getMaterial() const;
-    Guid getMaterial(int index) const;
-    std::vector<Guid> getMaterials() const;
+    Id getMesh() const;
+    Id getMaterial() const;
+    Id getMaterial(int index) const;
+    std::vector<Id> getMaterials() const;
 };
 
 template <> struct ComponentType<MeshRenderer>

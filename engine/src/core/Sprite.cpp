@@ -1,4 +1,5 @@
 #include "../../include/core/Sprite.h"
+#include "../../include/core/World.h"
 
 #include "../../include/graphics/Graphics.h"
 
@@ -12,7 +13,7 @@ Sprite::Sprite(World *world) : Asset(world)
     mPixelsPerUnit = 100;
 }
 
-Sprite::Sprite(World *world, const Guid& id) : Asset(world, id)
+Sprite::Sprite(World *world, Id id) : Asset(world, id)
 {
     mCreated = false;
     mChanged = false;
@@ -28,7 +29,7 @@ void Sprite::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["textureId"] = mTextureId;
+    out["textureId"] = mWorld->getGuidOf(mTextureId);
     out["pixelsPerUnit"] = mPixelsPerUnit;
 }
 
@@ -36,7 +37,7 @@ void Sprite::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mTextureId = YAML::getValue<Guid>(in, "textureId");
+    mTextureId = mWorld->getIdOf(YAML::getValue<Guid>(in, "textureId"));
     mPixelsPerUnit = YAML::getValue<int>(in, "pixelsPerUnit");
 }
 
@@ -65,12 +66,12 @@ unsigned int Sprite::getNativeGraphicsVAO() const
     return mVao;
 }
 
-Guid Sprite::getTextureId() const
+Id Sprite::getTextureId() const
 {
     return mTextureId;
 }
 
-void Sprite::setTextureId(Guid textureId)
+void Sprite::setTextureId(Id textureId)
 {
     mTextureId = textureId;
 

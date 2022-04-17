@@ -14,7 +14,7 @@ namespace PhysicsEngine
 class Material : public Asset
 {
   private:
-    Guid mShaderId;
+    Id mShaderId;
     std::vector<ShaderUniform> mUniforms;
     bool mShaderChanged;
     bool mTextureChanged;
@@ -25,7 +25,7 @@ class Material : public Asset
 
   public:
     Material(World *world);
-    Material(World *world, const Guid& id);
+    Material(World *world, Id id);
     ~Material();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -39,8 +39,8 @@ class Material : public Asset
     void onTextureChanged();
     bool hasShaderChanged() const;
     bool hasTextureChanged() const;
-    void setShaderId(const Guid& shaderId);
-    Guid getShaderId() const;
+    void setShaderId(Id shaderId);
+    Id getShaderId() const;
     std::vector<ShaderUniform> getUniforms() const;
 
     void setBool(const std::string &name, bool value);

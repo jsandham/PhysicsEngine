@@ -8,7 +8,7 @@ BoxCollider::BoxCollider(World* world) : Collider(world)
 {
 }
 
-BoxCollider::BoxCollider(World* world, const Guid& id) : Collider(world, id)
+BoxCollider::BoxCollider(World* world, Id id) : Collider(world, id)
 {
 }
 

@@ -91,7 +91,7 @@ struct CameraTargets
 class Camera : public Component
 {
   public:
-    Guid mRenderTextureId;
+    Id mRenderTextureId;
 
     RenderPath mRenderPath;
     ColorTarget mColorTarget;
@@ -123,14 +123,14 @@ class Camera : public Component
     glm::vec3 mUp;
     glm::vec3 mRight;
 
-    std::unordered_map<Color32, Guid> mColoringMap;
+    std::unordered_map<Color32, Id> mColoringMap;
 
     bool mIsCreated;
     bool mIsViewportChanged;
 
   public:
     Camera(World *world);
-    Camera(World *world, const Guid& id);
+    Camera(World *world, Id id);
     ~Camera();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -146,7 +146,7 @@ class Camera : public Component
     void endQuery();
 
     void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right);
-    void assignColoring(Color32 color, const Guid& transformId);
+    void assignColoring(Color32 color, Id transformId);
     void clearColoring();
 
     bool isCreated() const;
@@ -158,7 +158,7 @@ class Camera : public Component
     glm::mat4 getInvViewMatrix() const;
     glm::mat4 getProjMatrix() const;
     glm::vec3 getSSAOSample(int sample) const;
-    Guid getTransformIdAtScreenPos(int x, int y) const;
+    Id getTransformIdAtScreenPos(int x, int y) const;
 
     Frustum getFrustum() const;
     Viewport getViewport() const;

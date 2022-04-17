@@ -15,7 +15,7 @@ class DebugSystem : public System
 {
   public:
     DebugSystem(World* world);
-    DebugSystem(World* world, const Guid& id);
+    DebugSystem(World* world, Id id);
     ~DebugSystem();
 
     virtual void serialize(YAML::Node &out) const override;

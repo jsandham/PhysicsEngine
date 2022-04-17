@@ -28,7 +28,7 @@ class DeferredRenderer
     void update(const Input &input, Camera *camera,
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models,
-                const std::vector<Guid> &transformIds);
+                const std::vector<Id> &transformIds);
 };
 
 void initializeDeferredRenderer(World *world, DeferredRendererState &state);
@@ -45,7 +45,7 @@ void lightingPass(World *world, Camera *camera, DeferredRendererState &state,
 void renderColorPickingDeferred(World *world, Camera *camera, DeferredRendererState &state,
                                 const std::vector<RenderObject> &renderObjects,
                                 const std::vector<glm::mat4> &models,
-                                const std::vector<Guid> &transformIds);
+                                const std::vector<Id> &transformIds);
 
 void endDeferredFrame(World *world, Camera *camera, DeferredRendererState &state);
 } // namespace PhysicsEngine

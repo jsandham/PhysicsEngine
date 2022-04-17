@@ -12,11 +12,11 @@ class World;
 class Component : public Object
 {
   protected:
-    Guid mEntityId;
+    Id mEntityId;
 
   public:
     Component(World *world);
-    Component(World *world, const Guid& id);
+    Component(World *world, Id id);
     ~Component();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -39,7 +39,7 @@ class Component : public Object
         return mWorld->getComponent<T>(mEntityId);
     }
 
-    Guid getEntityId() const;
+    Id getEntityId() const;
 
     static bool isInternal(int type);
 

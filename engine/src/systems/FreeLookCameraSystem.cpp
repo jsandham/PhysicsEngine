@@ -21,7 +21,7 @@ FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-FreeLookCameraSystem::FreeLookCameraSystem(World* world, const Guid& id) : System(world, id)
+FreeLookCameraSystem::FreeLookCameraSystem(World* world, Id id) : System(world, id)
 {
     mMousePosX = 0;
     mMousePosY = 0;
@@ -280,7 +280,7 @@ glm::vec2 FreeLookCameraSystem::distanceTraveledSinceRightMouseClick() const
     return glm::vec2(mMousePosX - mMousePosXOnRightClick, mMousePosY - mMousePosYOnRightClick);
 }
 
-Guid FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
+Id FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
     int x = (int)(mCamera->getViewport().mX + mCamera->getViewport().mWidth * nx);
     int y = (int)(mCamera->getViewport().mY + mCamera->getViewport().mHeight * ny);

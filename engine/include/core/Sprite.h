@@ -15,10 +15,8 @@ namespace PhysicsEngine
 class Sprite : public Asset
 {
   private:
-    Guid mTextureId;
+    Id mTextureId;
     unsigned int mVao;
-    // int mWidth;
-    // int mHeight;
     bool mCreated;
     bool mChanged;
 
@@ -27,7 +25,7 @@ class Sprite : public Asset
 
   public:
     Sprite(World *world);
-    Sprite(World *world, const Guid& id);
+    Sprite(World *world, Id id);
     ~Sprite();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -41,8 +39,8 @@ class Sprite : public Asset
 
     unsigned int getNativeGraphicsVAO() const;
 
-    Guid getTextureId() const;
-    void setTextureId(Guid textureId);
+    Id getTextureId() const;
+    void setTextureId(Id textureId);
 
     void create();
     void destroy();

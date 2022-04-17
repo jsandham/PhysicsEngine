@@ -21,7 +21,7 @@ Shader::Shader(World *world) : Asset(world)
     mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
-Shader::Shader(World *world, const Guid& id) : Asset(world, id)
+Shader::Shader(World *world, Id id) : Asset(world, id)
 {   
     mSource = "";
     mSourceFilepath = "";

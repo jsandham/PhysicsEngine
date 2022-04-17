@@ -12,7 +12,7 @@ Entity::Entity(World *world) : Object(world)
     mDoNotDestroy = false;
 }
 
-Entity::Entity(World *world, const Guid& id) : Object(world, id)
+Entity::Entity(World *world, Id id) : Object(world, id)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
@@ -58,7 +58,7 @@ void Entity::immediateDestroy()
     mWorld->immediateDestroyEntity(getId());
 }
 
-std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity() const
+std::vector<std::pair<Id, int>> Entity::getComponentsOnEntity() const
 {
     return mWorld->getComponentsOnEntity(getId());
 }

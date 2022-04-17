@@ -34,7 +34,7 @@ class Font : public Asset
 
   public:
     Font(World *world);
-    Font(World *world, const Guid& id);
+    Font(World *world, Id id);
     Font(World *world, const std::string &filepath);
     ~Font();
 

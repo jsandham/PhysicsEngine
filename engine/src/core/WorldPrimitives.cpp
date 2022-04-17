@@ -9,12 +9,18 @@ using namespace PhysicsEngine;
 
 void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
 {
-    Mesh *plane = world->createAsset<Mesh>(Guid("83a08619-90c8-49a0-af38-9fb3732c6bc3"));
+    /*Mesh *plane = world->createAsset<Mesh>(Guid("83a08619-90c8-49a0-af38-9fb3732c6bc3"));
     Mesh *disc = world->createAsset<Mesh>(Guid("a564ec96-bd6f-493a-ad2a-0009a7cb0fb0"));
     Mesh *cube = world->createAsset<Mesh>(Guid("94f5dcfc-977b-44ad-ba7c-502ce049a187"));
     Mesh *sphere = world->createAsset<Mesh>(Guid("6b415ea5-1c19-4d0d-a6df-62461167b4b3"));
     Mesh *cylinder = world->createAsset<Mesh>(Guid("af6181eb-1b8e-4102-9b6b-39ba470a87e9"));
-    Mesh *cone = world->createAsset<Mesh>(Guid("d03432f9-4f06-436f-8c2f-8d3d1264da25"));
+    Mesh *cone = world->createAsset<Mesh>(Guid("d03432f9-4f06-436f-8c2f-8d3d1264da25"));*/
+    Mesh *plane = world->createAsset<Mesh>();
+    Mesh *disc = world->createAsset<Mesh>();
+    Mesh *cube = world->createAsset<Mesh>();
+    Mesh *sphere = world->createAsset<Mesh>();
+    Mesh *cylinder = world->createAsset<Mesh>();
+    Mesh *cone = world->createAsset<Mesh>();
 
     assert(plane != nullptr);
     assert(disc != nullptr);
@@ -30,7 +36,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     cylinder->setName("Cylinder");
     cone->setName("Cone");
 
-    Shader *standardShader = world->createAsset<Shader>(Guid("d875cfa8-d25b-4c5d-a26d-caafd191baf7"));
+    /*Shader *standardShader = world->createAsset<Shader>(Guid("d875cfa8-d25b-4c5d-a26d-caafd191baf7"));*/
+    Shader *standardShader = world->createAsset<Shader>();
     
     assert(standardShader != nullptr);
     
@@ -127,7 +134,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     standardShader->preprocess();
     standardShader->compile();
 
-    Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
+    /*Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));*/
+    Material *standardMaterial = world->createAsset<Material>();
     
     assert(standardMaterial != nullptr);
 
