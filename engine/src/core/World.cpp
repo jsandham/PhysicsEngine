@@ -560,7 +560,7 @@ Entity *World::createEntity()
 
     addIdToGlobalIndexMap_impl<Transform>(component->getId(), componentGlobalIndex, componentType);
 
-    mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(component->getId(), componentType));
+    mIdState.mEntityIdToComponentIds[entity->getId()].push_back(std::make_pair(component->getId(), componentType));
 
     mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entity->getId(), component->getId(), componentType));
 
