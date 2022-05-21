@@ -45,9 +45,9 @@ void GizmoSystem::init(World *world)
 
 void GizmoSystem::update(const Input &input, const Time &time)
 {
-    for (size_t i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
-        Camera *camera = mWorld->getComponentByIndex<Camera>(i);
+        Camera *camera = mWorld->getActiveScene()->getComponentByIndex<Camera>(i);
 
         if (camera->mEnabled)
         {

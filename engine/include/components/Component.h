@@ -26,17 +26,17 @@ class Component : public Object
 
     template <typename T> void latentDestroy()
     {
-        mWorld->latentDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
+        mWorld->getActiveScene()->latentDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
     }
 
     template <typename T> void immediateDestroy()
     {
-        mWorld->immediateDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
+        mWorld->getActiveScene()->immediateDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
     }
 
     template <typename T> T *getComponent() const
     {
-        return mWorld->getComponent<T>(mEntityId);
+        return mWorld->getActiveScene()->getComponent<T>(mEntityId);
     }
 
     Guid getEntityId() const;
@@ -44,7 +44,7 @@ class Component : public Object
     static bool isInternal(int type);
 
   private:
-    friend class World;
+    friend class Scene;
 };
 
 template <typename T> struct ComponentType

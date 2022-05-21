@@ -68,7 +68,7 @@ void Inspector::update(Clipboard &clipboard)
 
 void Inspector::drawEntity(Clipboard &clipboard)
 {
-    Entity *entity = clipboard.getWorld()->getEntityById(clipboard.getSelectedId());
+    Entity *entity = clipboard.getWorld()->getActiveScene()->getEntityById(clipboard.getSelectedId());
 
     // entity may have been recently deleted
     if (entity == nullptr)
@@ -137,7 +137,7 @@ void Inspector::drawEntity(Clipboard &clipboard)
                     {
                         if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
                         {
-                            clipboard.getWorld()->immediateDestroyComponent(entity->getId(), componentId, componentType);
+                            clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(entity->getId(), componentId, componentType);
                         }
 
                         ImGui::EndPopup();

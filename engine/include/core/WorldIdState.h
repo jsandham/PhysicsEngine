@@ -14,23 +14,6 @@ struct WorldIdState
     // internal world scene id state
     std::unordered_map<Guid, int> mSceneIdToGlobalIndex;
 
-    // internal world entity id state
-    std::unordered_map<Guid, int> mEntityIdToGlobalIndex;
-
-    // internal world components id state
-    std::unordered_map<Guid, int> mTransformIdToGlobalIndex;
-    std::unordered_map<Guid, int> mMeshRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mSpriteRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mLineRendererIdToGlobalIndex;
-    std::unordered_map<Guid, int> mRigidbodyIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCameraIdToGlobalIndex;
-    std::unordered_map<Guid, int> mLightIdToGlobalIndex;
-    std::unordered_map<Guid, int> mSphereColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mBoxColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mCapsuleColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mMeshColliderIdToGlobalIndex;
-    std::unordered_map<Guid, int> mTerrainIdToGlobalIndex;
-
     // internal world asset id state
     std::unordered_map<Guid, int> mMeshIdToGlobalIndex;
     std::unordered_map<Guid, int> mMaterialIdToGlobalIndex;
@@ -51,26 +34,9 @@ struct WorldIdState
     std::unordered_map<Guid, int> mFreeLookCameraSystemIdToGlobalIndex;
     std::unordered_map<Guid, int> mTerrainSystemIdToGlobalIndex;
 
-    // world id state for all entity, components, systems, and assets
+    // world id state for all scenes, systems, and assets
     std::unordered_map<Guid, int> mIdToGlobalIndex;
     std::unordered_map<Guid, int> mIdToType;
-
-    // entity ids to component ids
-    std::unordered_map<Guid, std::vector<std::pair<Guid, int>>> mEntityIdToComponentIds;
-
-    //std::unordered_map<Guid, Guid> mEntityIdToTransformId;
-    //std::unordered_map<Guid, Guid> mEntityIdToMeshRendererId;
-    //std::unordered_map<Guid, Guid> mEntityIdToRigidbodyId;
-
-    // entity creation/deletion state
-    std::vector<Guid> mEntityIdsMarkedCreated;
-    std::vector<Guid> mEntityIdsMarkedLatentDestroy;
-    std::vector<std::pair<Guid, int>> mEntityIdsMarkedMoved;
-
-    // component create/deletion state
-    std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedCreated;
-    std::vector<std::tuple<Guid, Guid, int>> mComponentIdsMarkedLatentDestroy;
-    std::vector<std::tuple<Guid, int, int>> mComponentIdsMarkedMoved;
 
     // asset create/deletion state
     std::vector<std::pair<Guid, int>> mAssetIdsMarkedCreated;

@@ -113,19 +113,19 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());
-    ImGui::Text("Entity count in world: %d\n", clipboard.getWorld()->getNumberOfEntities());
+    ImGui::Text("Entity count in world: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
 
     ImGui::Text("Components");
     ImGui::Indent(16.0f);
-    ImGui::Text("Transform count: %d\n", clipboard.getWorld()->getNumberOfComponents <PhysicsEngine::Transform>());
-    ImGui::Text("MeshRenderer count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::MeshRenderer>());
-    ImGui::Text("Light count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Light>());
-    ImGui::Text("Camera count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Camera>());
-    ImGui::Text("Rigidbody count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::Rigidbody>());
-    ImGui::Text("SphereCollider count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::SphereCollider>());
-    ImGui::Text("BoxCollider count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::BoxCollider>());
-    ImGui::Text("CapsuleCollider count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::CapsuleCollider>());
-    ImGui::Text("MeshCollider count: %d\n", clipboard.getWorld()->getNumberOfComponents<PhysicsEngine::MeshCollider>());
+    ImGui::Text("Transform count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents <PhysicsEngine::Transform>());
+    ImGui::Text("MeshRenderer count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::MeshRenderer>());
+    ImGui::Text("Light count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::Light>());
+    ImGui::Text("Camera count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::Camera>());
+    ImGui::Text("Rigidbody count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::Rigidbody>());
+    ImGui::Text("SphereCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::SphereCollider>());
+    ImGui::Text("BoxCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::BoxCollider>());
+    ImGui::Text("CapsuleCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::CapsuleCollider>());
+    ImGui::Text("MeshCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::MeshCollider>());
     ImGui::Unindent(16.0f);
 
     ImGui::Text("Assets");

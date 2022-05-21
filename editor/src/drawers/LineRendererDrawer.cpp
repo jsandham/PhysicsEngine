@@ -23,7 +23,7 @@ void LineRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("LineRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        LineRenderer *lineRenderer = clipboard.getWorld()->getComponentById<LineRenderer>(id);
+        LineRenderer *lineRenderer = clipboard.getWorld()->getActiveScene()->getComponentById<LineRenderer>(id);
 
         if (lineRenderer != nullptr)
         {

@@ -33,26 +33,30 @@ void Asset::deserialize(const YAML::Node &in)
     mName = YAML::getValue<std::string>(in, "name");
 }
 
-void Asset::writeToYAML(const std::string &filepath) const
+bool Asset::writeToYAML(const std::string &filepath) const
 {
     std::ofstream out;
     out.open(filepath);
 
     if (!out.is_open())
     {
-        return;
+        return false;
     }
 
-    YAML::Node n;
-    serialize(n);
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
 
-    YAML::Node assetNode;
-    assetNode[getObjectName()] = n;
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
 
-    out << assetNode;
-    out << "\n";
-
+        out << assetNode;
+        out << "\n";
+    }
     out.close();
+
+    return true;
 }
 
 void Asset::loadFromYAML(const std::string &filepath)

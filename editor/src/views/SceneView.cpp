@@ -263,7 +263,7 @@ void SceneView::update(Clipboard &clipboard)
     {
         Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
-        Transform* transform = clipboard.getWorld()->getComponentById<Transform>(transformId);
+        Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId);
 
         if (transform != nullptr)
         {
@@ -278,14 +278,14 @@ void SceneView::update(Clipboard &clipboard)
     clipboard.mGizmoSystem->clearDrawList();
 
     // draw camera gizmos
-    for (int i = 0; i < clipboard.mWorld.getNumberOfComponents<Camera>(); i++)
+    for (int i = 0; i < clipboard.mWorld.getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
-        Camera* camera = clipboard.mWorld.getComponentByIndex<Camera>(i);
+        Camera* camera = clipboard.mWorld.getActiveScene()->getComponentByIndex<Camera>(i);
 
         if (camera->mHide == HideFlag::None && camera->mEnabled)
         {
             Entity* entity = camera->getEntity();
-            Transform* transform = clipboard.mWorld.getComponent<Transform>(entity->getId());
+            Transform* transform = clipboard.mWorld.getActiveScene()->getComponent<Transform>(entity->getId());
 
             glm::vec3 position = transform->getPosition();
             glm::vec3 front = transform->getForward();
@@ -308,7 +308,7 @@ void SceneView::update(Clipboard &clipboard)
     {
         if(hoveredThisFrame())
         {
-            Entity* entity = clipboard.getWorld()->createNonPrimitive(clipboard.getDraggedId());
+            Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(clipboard.getDraggedId());
             Transform* transform = entity->getComponent<Transform>();
            
             clipboard.mSceneViewTempEntityId = entity->getId();
@@ -320,7 +320,7 @@ void SceneView::update(Clipboard &clipboard)
         {
             if (clipboard.mSceneViewTempEntityId.isValid())
             {
-                clipboard.getWorld()->immediateDestroyEntity(clipboard.mSceneViewTempEntityId);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyEntity(clipboard.mSceneViewTempEntityId);
                 clipboard.mSceneViewTempEntityId = Guid::INVALID;
                 clipboard.mSceneViewTempEntity = nullptr;
                 clipboard.mSceneViewTempTransform = nullptr;
@@ -375,7 +375,7 @@ void SceneView::update(Clipboard &clipboard)
     // draw transform gizmo if entity is selected
     if (clipboard.getSelectedType() == InteractionType::Entity)
     {
-        Transform* transform = clipboard.getWorld()->getComponent<Transform>(clipboard.getSelectedId());
+        Transform* transform = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(clipboard.getSelectedId());
 
         if (transform != nullptr)
         {
@@ -407,7 +407,7 @@ void SceneView::update(Clipboard &clipboard)
                 transform->setRotation(rotation);
             }
 
-            Camera* camera = clipboard.getWorld()->getComponent<Camera>(clipboard.getSelectedId());
+            Camera* camera = clipboard.getWorld()->getActiveScene()->getComponent<Camera>(clipboard.getSelectedId());
             if (camera != nullptr && camera->mEnabled)
             {
                 camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(), transform->getRight());

@@ -46,20 +46,20 @@ void CleanUpSystem::init(World *world)
 void CleanUpSystem::update(const Input &input, const Time &time)
 {
     std::vector<std::tuple<Guid, Guid, int>> componentIdsMarkedLatentDestroy =
-        mWorld->getComponentIdsMarkedLatentDestroy();
+        mWorld->getActiveScene()->getComponentIdsMarkedLatentDestroy();
     for (size_t i = 0; i < componentIdsMarkedLatentDestroy.size(); i++)
     {
 
-        mWorld->immediateDestroyComponent(std::get<0>(componentIdsMarkedLatentDestroy[i]),
+        mWorld->getActiveScene()->immediateDestroyComponent(std::get<0>(componentIdsMarkedLatentDestroy[i]),
                                           std::get<1>(componentIdsMarkedLatentDestroy[i]),
                                           std::get<2>(componentIdsMarkedLatentDestroy[i]));
     }
 
-    std::vector<Guid> entityIdsMarkedForLatentDestroy = mWorld->getEntityIdsMarkedLatentDestroy();
+    std::vector<Guid> entityIdsMarkedForLatentDestroy = mWorld->getActiveScene()->getEntityIdsMarkedLatentDestroy();
     for (size_t i = 0; i < entityIdsMarkedForLatentDestroy.size(); i++)
     {
-        mWorld->immediateDestroyEntity(entityIdsMarkedForLatentDestroy[i]);
+        mWorld->getActiveScene()->immediateDestroyEntity(entityIdsMarkedForLatentDestroy[i]);
     }
 
-    mWorld->clearIdsMarkedCreatedOrDestroyed();
+    mWorld->getActiveScene()->clearIdsMarkedCreatedOrDestroyed();
 }

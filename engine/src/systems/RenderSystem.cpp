@@ -70,9 +70,9 @@ void RenderSystem::update(const Input &input, const Time &time)
     buildRenderObjectsList(mWorld);
     buildSpriteObjectsList(mWorld);
 
-    for (size_t i = 0; i < mWorld->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
-        Camera *camera = mWorld->getComponentByIndex<Camera>(i);
+        Camera *camera = mWorld->getActiveScene()->getComponentByIndex<Camera>(i);
 
         if (camera->mEnabled)
         {
@@ -221,9 +221,9 @@ void RenderSystem::registerRenderAssets(World *world)
 
 void RenderSystem::registerCameras(World *world)
 {
-    for (size_t i = 0; i < world->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
-        Camera *camera = world->getComponentByIndex<Camera>(i);
+        Camera *camera = world->getActiveScene()->getComponentByIndex<Camera>(i);
 
         if (!camera->isCreated())
         {
@@ -234,9 +234,9 @@ void RenderSystem::registerCameras(World *world)
 
 void RenderSystem::registerLights(World *world)
 {
-    for (size_t i = 0; i < world->getNumberOfComponents<Light>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Light>(); i++)
     {
-        Light *light = world->getComponentByIndex<Light>(i);
+        Light *light = world->getActiveScene()->getComponentByIndex<Light>(i);
 
         if (!light->isCreated())
         {
@@ -260,9 +260,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
     InstanceMap instanceMap;
 
     // add enabled renderers to render object list
-    for (size_t i = 0; i < world->getNumberOfComponents<MeshRenderer>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<MeshRenderer>(); i++)
     {
-        MeshRenderer *meshRenderer = world->getComponentByIndex<MeshRenderer>(i);
+        MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
 
         if (meshRenderer != nullptr && meshRenderer->mEnabled)
         {
@@ -388,9 +388,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
     assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
     // add enabled terrain to render object list
-    for (size_t i = 0; i < world->getNumberOfComponents<Terrain>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
     {
-        Terrain *terrain = world->getComponentByIndex<Terrain>(i);
+        Terrain *terrain = world->getActiveScene()->getComponentByIndex<Terrain>(i);
 
         if (terrain != nullptr)
         {
@@ -446,9 +446,9 @@ void RenderSystem::buildSpriteObjectsList(World* world)
     mSpriteObjects.clear();
 
     // add enabled renderers to render object list
-    for (size_t i = 0; i < world->getNumberOfComponents<SpriteRenderer>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<SpriteRenderer>(); i++)
     {
-        SpriteRenderer* spriteRenderer = world->getComponentByIndex<SpriteRenderer>(i);
+        SpriteRenderer *spriteRenderer = world->getActiveScene()->getComponentByIndex<SpriteRenderer>(i);
 
         if (spriteRenderer->mEnabled)
         {

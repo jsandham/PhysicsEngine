@@ -25,7 +25,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshRenderer *meshRenderer = clipboard.getWorld()->getComponentById<MeshRenderer>(id);
+        MeshRenderer *meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentById<MeshRenderer>(id);
 
         if (meshRenderer != nullptr)
         {

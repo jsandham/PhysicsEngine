@@ -27,7 +27,7 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Transform *transform = clipboard.getWorld()->getComponentById<Transform>(id);
+        Transform *transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(id);
 
         if (transform != nullptr)
         {

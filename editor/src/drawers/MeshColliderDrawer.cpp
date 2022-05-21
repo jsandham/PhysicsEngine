@@ -23,7 +23,7 @@ void MeshColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("MeshCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshCollider *meshCollider = clipboard.getWorld()->getComponentById<MeshCollider>(id);
+        MeshCollider *meshCollider = clipboard.getWorld()->getActiveScene()->getComponentById<MeshCollider>(id);
 
         if (meshCollider != nullptr)
         {

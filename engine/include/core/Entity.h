@@ -34,12 +34,12 @@ class Entity : public Object
 
     template <typename T> T *addComponent()
     {
-        return mWorld->addComponent<T>(getId());
+        return mWorld->getActiveScene()->addComponent<T>(getId());
     }
 
     template <typename T> T *getComponent() const
     {
-        return mWorld->getComponent<T>(getId());
+        return mWorld->getActiveScene()->getComponent<T>(getId());
     }
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity() const;
@@ -48,7 +48,7 @@ class Entity : public Object
     void setName(const std::string &name);
 
   private:
-    friend class World;
+    friend class Scene;
 };
 
 template <typename T> struct EntityType

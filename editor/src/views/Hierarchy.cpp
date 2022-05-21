@@ -36,7 +36,7 @@ void Hierarchy::update(Clipboard &clipboard)
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::Hierarchy)] = unhoveredThisFrame();
 
     // If number of entities has changed, update cached entity ids and names
-    if (mEntries.size() != clipboard.getWorld()->getNumberOfNonHiddenEntities())
+    if (mEntries.size() != clipboard.getWorld()->getActiveScene()->getNumberOfNonHiddenEntities())
     {
         rebuildEntityLists(clipboard.getWorld());
     }
@@ -116,7 +116,7 @@ void Hierarchy::update(Clipboard &clipboard)
             if (ImGui::MenuItem("Delete", NULL, false, clipboard.getSelectedType() == InteractionType::Entity) &&
                 clipboard.getSelectedType() == InteractionType::Entity)
             {
-                clipboard.getWorld()->latentDestroyEntity(clipboard.getSelectedId());
+                clipboard.getWorld()->getActiveScene()->latentDestroyEntity(clipboard.getSelectedId());
 
                 clipboard.clearSelectedItem();
             }
@@ -127,26 +127,26 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 if (ImGui::MenuItem("Empty"))
                 {
-                    clipboard.getWorld()->createEntity();
+                    clipboard.getWorld()->getActiveScene()->createEntity();
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
-                    clipboard.getWorld()->createCamera();
+                    clipboard.getWorld()->getActiveScene()->createCamera();
                 }
 
                 if (ImGui::BeginMenu("Light"))
                 {
                     if (ImGui::MenuItem("Directional"))
                     {
-                        clipboard.getWorld()->createLight(PhysicsEngine::LightType::Directional);
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
                     }
                     if (ImGui::MenuItem("Spot"))
                     {
-                        clipboard.getWorld()->createLight(PhysicsEngine::LightType::Spot);
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Spot);
                     }
                     if (ImGui::MenuItem("Point"))
                     {
-                        clipboard.getWorld()->createLight(PhysicsEngine::LightType::Point);
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Point);
                     }
                     ImGui::EndMenu();
                 }
@@ -155,11 +155,11 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Plane"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
                     }
                     if (ImGui::MenuItem("Disc"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Disc);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Disc);
                     }
                     ImGui::EndMenu();
                 }
@@ -168,19 +168,19 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     if (ImGui::MenuItem("Cube"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
                     }
                     if (ImGui::MenuItem("Sphere"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Sphere);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Sphere);
                     }
                     if (ImGui::MenuItem("Cylinder"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cylinder);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cylinder);
                     }
                     if (ImGui::MenuItem("Cone"))
                     {
-                        clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cone);
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cone);
                     }
                     ImGui::EndMenu();
                 }
@@ -196,7 +196,7 @@ void Hierarchy::update(Clipboard &clipboard)
         {
             if (clipboard.getDraggedType() == InteractionType::Mesh)
             {
-                clipboard.getWorld()->createNonPrimitive(clipboard.getDraggedId());
+                clipboard.getWorld()->getActiveScene()->createNonPrimitive(clipboard.getDraggedId());
                 clipboard.clearDraggedItem();
             }
         }
@@ -205,12 +205,12 @@ void Hierarchy::update(Clipboard &clipboard)
 
 void Hierarchy::rebuildEntityLists(PhysicsEngine::World *world)
 {
-    mEntries.resize(world->getNumberOfNonHiddenEntities());
+    mEntries.resize(world->getActiveScene()->getNumberOfNonHiddenEntities());
 
     int index = 0;
-    for (size_t i = 0; i < world->getNumberOfEntities(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfEntities(); i++)
     {
-        PhysicsEngine::Entity* entity = world->getEntityByIndex(i);
+        PhysicsEngine::Entity* entity = world->getActiveScene()->getEntityByIndex(i);
         if (entity->mHide == PhysicsEngine::HideFlag::None)
         {
             mEntries[index].entity = entity;

@@ -19,7 +19,7 @@ void EditorSceneManager::newScene(Clipboard& clipboard, const std::string& scene
     }
 
     // mark any (non-editor) entities in currently opened scene to be immediately destroyed
-    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // re-centre editor camera to default position
     clipboard.mCameraSystem->resetCamera();
@@ -53,7 +53,7 @@ void EditorSceneManager::openScene(Clipboard& clipboard, const std::filesystem::
     }
 
     // mark any (non-editor) entities in currently opened scene to be immediately destroyed
-    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // reset editor camera to default position
     clipboard.mCameraSystem->resetCamera();
@@ -100,16 +100,14 @@ void EditorSceneManager::populateScene(Clipboard& clipboard)
         layout[i] = distr(generator);
     }
 
-    PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->createLight(PhysicsEngine::LightType::Directional);
+    PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
     lightEntity->setName("Light");
 
-    PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
+    PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
     planeEntity->setName("Plane");
     PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
     planeTransform->setPosition(glm::vec3(0, 0, 0));
     planeTransform->setScale(glm::vec3(50, 1, 50));
-    //planeTransform->mPosition = glm::vec3(0, 0, 0);
-    //planeTransform->mScale = glm::vec3(50, 1, 50);
 
     int index = 0;
     for (int i = 0; i < m; i++) 
@@ -121,7 +119,7 @@ void EditorSceneManager::populateScene(Clipboard& clipboard)
             {
                 std::string name = "Cube" + std::to_string(index++);
 
-                PhysicsEngine::Entity* entity = clipboard.getWorld()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
+                PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
                 entity->setName(name);
                 PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
                 transform->setPosition(glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f));

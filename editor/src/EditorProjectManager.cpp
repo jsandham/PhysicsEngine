@@ -39,7 +39,7 @@ void EditorProjectManager::newProject(Clipboard& clipboard, const std::filesyste
     }
 
     // mark any (non-editor) entities in currently opened scene to be immediately destroyed
-    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // tell library directory which project to watch
     clipboard.getLibrary().watch(projectPath.string());
@@ -62,7 +62,7 @@ void EditorProjectManager::openProject(Clipboard& clipboard, const std::filesyst
     }
 
     // mark any (non-editor) entities in currently opened scene to be immediately destroyed
-    clipboard.getWorld()->immediateDestroyEntitiesInWorld();
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // tell library directory which project to watch
     clipboard.getLibrary().watch(projectPath);

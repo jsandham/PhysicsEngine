@@ -31,9 +31,9 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
         computeSSAO(mWorld, camera, mState, renderObjects, models);
     }
 
-    for (size_t j = 0; j < mWorld->getNumberOfComponents<Light>(); j++)
+    for (size_t j = 0; j < mWorld->getActiveScene()->getNumberOfComponents<Light>(); j++)
     {
-        Light *light = mWorld->getComponentByIndex<Light>(j);
+        Light *light = mWorld->getActiveScene()->getComponentByIndex<Light>(j);
         
         if (light->mEnabled)
         {

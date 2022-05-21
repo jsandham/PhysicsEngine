@@ -33,7 +33,7 @@ void Component::deserialize(const YAML::Node &in)
 
 Entity* Component::getEntity() const
 {
-    return mWorld->getEntityById(mEntityId);
+    return mWorld->getActiveScene()->getEntityById(mEntityId);
 }
 
 Guid Component::getEntityId() const

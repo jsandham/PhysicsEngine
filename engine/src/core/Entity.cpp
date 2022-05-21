@@ -50,17 +50,17 @@ std::string Entity::getObjectName() const
 
 void Entity::latentDestroy()
 {
-    mWorld->latentDestroyEntity(getId());
+    mWorld->getActiveScene()->latentDestroyEntity(getId());
 }
 
 void Entity::immediateDestroy()
 {
-    mWorld->immediateDestroyEntity(getId());
+    mWorld->getActiveScene()->immediateDestroyEntity(getId());
 }
 
 std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity() const
 {
-    return mWorld->getComponentsOnEntity(getId());
+    return mWorld->getActiveScene()->getComponentsOnEntity(getId());
 }
 
 std::string Entity::getName() const

@@ -23,7 +23,7 @@ void BoxColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("BoxCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        BoxCollider *boxCollider = clipboard.getWorld()->getComponentById<BoxCollider>(id);
+        BoxCollider *boxCollider = clipboard.getWorld()->getActiveScene()->getComponentById<BoxCollider>(id);
 
         if (boxCollider != nullptr)
         {

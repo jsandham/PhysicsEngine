@@ -47,16 +47,16 @@ void TerrainSystem::init(World *world)
 
 void TerrainSystem::update(const Input &input, const Time &time)
 {
-    for (size_t i = 0; i < mWorld->getNumberOfComponents<Terrain>(); i++)
+    for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
     {
-        Terrain *terrain = mWorld->getComponentByIndex<Terrain>(i);
+        Terrain *terrain = mWorld->getActiveScene()->getComponentByIndex<Terrain>(i);
 
         if (!terrain->isCreated())
         {
             terrain->generateTerrain();
         }
 
-        Transform *transform = mWorld->getComponentById<Transform>(terrain->mCameraTransformId);
+        Transform *transform = mWorld->getActiveScene()->getComponentById<Transform>(terrain->mCameraTransformId);
 
         if (transform != nullptr)
         {

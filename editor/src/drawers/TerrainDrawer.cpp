@@ -45,7 +45,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Terrain", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Terrain* terrain = clipboard.getWorld()->getComponentById<Terrain>(id);
+        Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentById<Terrain>(id);
 
         if (terrain != nullptr)
         {
@@ -58,7 +58,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 Entity* entity = nullptr;
                 if (transformId.isValid())
                 {
-                    entity = clipboard.getWorld()->getComponentById<Transform>(transformId)->getEntity();
+                    entity = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId)->getEntity();
                 }
 
                 ImGui::SlotData data;
@@ -69,7 +69,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                         Guid entityId = clipboard.getDraggedId();
                         clipboard.clearDraggedItem();
 
-                        terrain->mCameraTransformId = clipboard.getWorld()->getComponent<Transform>(entityId)->getId();
+                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(entityId)->getId();
                     }
 
                     if (data.clearClicked)

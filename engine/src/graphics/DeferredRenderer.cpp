@@ -164,9 +164,9 @@ void PhysicsEngine::lightingPass(World *world, Camera *camera, DeferredRendererS
     //Graphics::setTexture2D(state.mNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
     //Graphics::setTexture2D(state.mAlbedoSpecTexLoc, 2, camera->getNativeGraphicsAlbedoSpecTex());
 
-    for (size_t i = 0; i < world->getNumberOfComponents<Light>(); i++)
+    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Light>(); i++)
     {
-        Light *light = world->getComponentByIndex<Light>(i);
+        Light *light = world->getActiveScene()->getComponentByIndex<Light>(i);
         Transform *lightTransform = light->getComponent<Transform>();
         if (lightTransform != nullptr)
         {

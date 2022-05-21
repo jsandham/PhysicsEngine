@@ -59,9 +59,11 @@ void FreeLookCameraSystem::init(World* world)
 
     if (mSpawnCameraOnInit)
     {
-        Entity *entity = world->createEntity();
+        Entity *entity = world->getActiveScene()->createEntity();
         entity->mDoNotDestroy = true;
         entity->mHide = HideFlag::DontSave;
+
+        std::cout << "do not destroy camera entity id: " << entity->getId().toString() << std::endl;
 
         mCamera = entity->addComponent<Camera>();
         mCamera->mHide = HideFlag::DontSave;
@@ -73,7 +75,7 @@ void FreeLookCameraSystem::init(World* world)
     }
     else
     {
-        mCamera = mWorld->getComponentByIndex<Camera>(0);
+        mCamera = mWorld->getActiveScene()->getComponentByIndex<Camera>(0);
         mTransform = mCamera->getComponent<Transform>();
     }
 

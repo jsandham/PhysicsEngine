@@ -24,7 +24,7 @@ void LightDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Light *light = clipboard.getWorld()->getComponentById<Light>(id);
+        Light *light = clipboard.getWorld()->getActiveScene()->getComponentById<Light>(id);
 
         if (light != nullptr)
         {

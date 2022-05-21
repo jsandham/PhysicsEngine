@@ -25,7 +25,7 @@ void SpriteRendererDrawer::render(Clipboard& clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("SpriteRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        SpriteRenderer* spriteRenderer = clipboard.getWorld()->getComponentById<SpriteRenderer>(id);
+        SpriteRenderer* spriteRenderer = clipboard.getWorld()->getActiveScene()->getComponentById<SpriteRenderer>(id);
 
         if (spriteRenderer != nullptr)
         {
