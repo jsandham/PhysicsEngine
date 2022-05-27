@@ -11,8 +11,8 @@ const float FreeLookCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
 FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
 {
-    mTransform = nullptr;
-    mCamera = nullptr;
+    mTransformId = Guid::INVALID;
+    mCameraId = Guid::INVALID;
 
     mMousePosX = 0;
     mMousePosY = 0;
@@ -23,6 +23,9 @@ FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
 
 FreeLookCameraSystem::FreeLookCameraSystem(World* world, const Guid& id) : System(world, id)
 {
+    mTransformId = Guid::INVALID;
+    mCameraId = Guid::INVALID;
+
     mMousePosX = 0;
     mMousePosY = 0;
     mIsLeftMouseClicked = false;
@@ -57,6 +60,9 @@ void FreeLookCameraSystem::init(World* world)
 {
     mWorld = world;
 
+    Camera *camera = nullptr;
+    Transform *transform = nullptr;
+
     if (mSpawnCameraOnInit)
     {
         Entity *entity = world->getActiveScene()->createEntity();
@@ -65,29 +71,34 @@ void FreeLookCameraSystem::init(World* world)
 
         std::cout << "do not destroy camera entity id: " << entity->getId().toString() << std::endl;
 
-        mCamera = entity->addComponent<Camera>();
-        mCamera->mHide = HideFlag::DontSave;
+        camera = entity->addComponent<Camera>();
+        camera->mHide = HideFlag::DontSave;
 
-        mTransform = entity->getComponent<Transform>();
-        mTransform->setPosition(glm::vec3(0, 2, -10));
-        //mTransform->mPosition = glm::vec3(0, 2, -10);
-        mHide = HideFlag::DontSave;  
+        transform = entity->getComponent<Transform>();
+        transform->setPosition(glm::vec3(0, 2, -10));
+        transform->mHide = HideFlag::DontSave;  
     }
     else
     {
-        mCamera = mWorld->getActiveScene()->getComponentByIndex<Camera>(0);
-        mTransform = mCamera->getComponent<Transform>();
+        camera = mWorld->getActiveScene()->getComponentByIndex<Camera>(0);
+        transform = camera->getComponent<Transform>();
     }
 
-    mCamera->mRenderToScreen = mRenderToScreen;
+    camera->mRenderToScreen = mRenderToScreen;
+
+    mCameraId = camera->getId();
+    mTransformId = transform->getId();
 }
 
 void FreeLookCameraSystem::update(const Input& input, const Time& time)
 {
-    glm::vec3 position = mTransform->getPosition();
-    glm::vec3 front = mTransform->getForward();
-    glm::vec3 up = mTransform->getUp();
-    glm::vec3 right = mTransform->getRight();
+    Camera *camera = getCamera();
+    Transform *transform = getTransform();
+
+    glm::vec3 position = transform->getPosition();
+    glm::vec3 front = transform->getForward();
+    glm::vec3 up = transform->getUp();
+    glm::vec3 right = transform->getRight();
 
     // D pad controls
     if (!getMouseButton(input, MouseButton::RButton))
@@ -154,7 +165,7 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
     {
         mMousePosXOnRightClick = mMousePosX;
         mMousePosYOnRightClick = mMousePosY;
-        rotationOnClick = mTransform->getRotation();
+        rotationOnClick = transform->getRotation();
     }
     else if (mIsRightMouseHeldDown)
     {
@@ -164,21 +175,19 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
         // https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
         //mTransform->mRotation =
         //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
-        mTransform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick *
+        transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick *
                                 glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
     }
 
-    mCamera->computeViewMatrix(position, front, up, right);
+    camera->computeViewMatrix(position, front, up, right);
 
-    mTransform->setPosition(position);
-    //mTransform->mPosition = position;
+    transform->setPosition(position);
 }
 
 void FreeLookCameraSystem::resetCamera()
 {
-    //mTransform->mPosition = glm::vec3(0, 2, -10);
-    mTransform->setPosition(glm::vec3(0, 2, -10));
-    mCamera->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
+    getTransform()->setPosition(glm::vec3(0, 2, -10));
+    getCamera()->mBackgroundColor = glm::vec4(0.15, 0.15f, 0.15f, 1.0f);
 }
 
 void FreeLookCameraSystem::configureCamera(CameraSystemConfig config)
@@ -189,57 +198,62 @@ void FreeLookCameraSystem::configureCamera(CameraSystemConfig config)
 
 void FreeLookCameraSystem::setViewport(Viewport viewport)
 {
-    mCamera->setViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
+    getCamera()->setViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
 }
 
 void FreeLookCameraSystem::setFrustum(Frustum frustum)
 {
-    mCamera->setFrustum(frustum.mFov, frustum.mAspectRatio, frustum.mNearPlane, frustum.mFarPlane);
+    getCamera()->setFrustum(frustum.mFov, frustum.mAspectRatio, frustum.mNearPlane, frustum.mFarPlane);
 }
 
 void FreeLookCameraSystem::setRenderPath(RenderPath path)
 {
-    mCamera->mRenderPath = path;
+    getCamera()->mRenderPath = path;
 }
 
 void FreeLookCameraSystem::setSSAO(CameraSSAO ssao)
 {
-    mCamera->mSSAO = ssao;
+    getCamera()->mSSAO = ssao;
 }
 
 void FreeLookCameraSystem::setGizmos(CameraGizmos gizmos)
 {
-    mCamera->mGizmos = gizmos;
+    getCamera()->mGizmos = gizmos;
 }
 
 Viewport FreeLookCameraSystem::getViewport() const
 {
-    return mCamera->getViewport();
+    return getCamera()->getViewport();
 }
 
 Frustum FreeLookCameraSystem::getFrustum() const
 {
-    return mCamera->getFrustum();
+    return getCamera()->getFrustum();
 }
 
 RenderPath FreeLookCameraSystem::getRenderPath() const
 {
-    return mCamera->mRenderPath;
+    return getCamera()->mRenderPath;
 }
 
 CameraSSAO FreeLookCameraSystem::getSSAO() const
 {
-    return mCamera->mSSAO;
+    return getCamera()->mSSAO;
 }
 
 CameraGizmos FreeLookCameraSystem::getGizmos() const
 {
-    return mCamera->mGizmos;
+    return getCamera()->mGizmos;
 }
 
 Camera* FreeLookCameraSystem::getCamera() const
 {
-    return mCamera;
+    return mWorld->getActiveScene()->getComponentById<Camera>(mCameraId);
+}
+
+Transform *FreeLookCameraSystem::getTransform() const
+{
+    return mWorld->getActiveScene()->getComponentById<Transform>(mTransformId);
 }
 
 int FreeLookCameraSystem::getMousePosX() const
@@ -284,88 +298,89 @@ glm::vec2 FreeLookCameraSystem::distanceTraveledSinceRightMouseClick() const
 
 Guid FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
-    int x = (int)(mCamera->getViewport().mX + mCamera->getViewport().mWidth * nx);
-    int y = (int)(mCamera->getViewport().mY + mCamera->getViewport().mHeight * ny);
+    Camera *camera = getCamera();
+    int x = (int)(camera->getViewport().mX + camera->getViewport().mWidth * nx);
+    int y = (int)(camera->getViewport().mY + camera->getViewport().mHeight * ny);
 
-    return mCamera->getTransformIdAtScreenPos(x, y);
+    return camera->getTransformIdAtScreenPos(x, y);
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsMainFBO() const
 {
-    return mCamera->getNativeGraphicsMainFBO();
+    return getCamera()->getNativeGraphicsMainFBO();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsColorTex() const
 {
-    return mCamera->getNativeGraphicsColorTex();
+    return getCamera()->getNativeGraphicsColorTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsDepthTex() const
 {
-    return mCamera->getNativeGraphicsDepthTex();
+    return getCamera()->getNativeGraphicsDepthTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsColorPickingTex() const
 {
-    return mCamera->getNativeGraphicsColorPickingTex();
+    return getCamera()->getNativeGraphicsColorPickingTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsPositionTex() const
 {
-    return mCamera->getNativeGraphicsPositionTex();
+    return getCamera()->getNativeGraphicsPositionTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsNormalTex() const
 {
-    return mCamera->getNativeGraphicsNormalTex();
+    return getCamera()->getNativeGraphicsNormalTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsAlbedoSpecTex() const
 {
-    return mCamera->getNativeGraphicsAlbedoSpecTex();
+    return getCamera()->getNativeGraphicsAlbedoSpecTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsSSAOColorTex() const
 {
-    return mCamera->getNativeGraphicsSSAOColorTex();
+    return getCamera()->getNativeGraphicsSSAOColorTex();
 }
 
 unsigned int FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
 {
-    return mCamera->getNativeGraphicsSSAONoiseTex();
+    return getCamera()->getNativeGraphicsSSAONoiseTex();
 }
 
 GraphicsQuery FreeLookCameraSystem::getQuery() const
 {
-    return mCamera->mQuery;
+    return getCamera()->mQuery;
 }
 
 glm::vec3 FreeLookCameraSystem::getCameraForward() const
 {
-    return mTransform->getForward();
+    return getTransform()->getForward();
 }
 
 glm::vec3 FreeLookCameraSystem::getCameraPosition() const
 {
-    return mCamera->getPosition();
+    return getCamera()->getPosition();
 }
 
 glm::mat4 FreeLookCameraSystem::getViewMatrix() const
 {
-    return mCamera->getViewMatrix();
+    return getCamera()->getViewMatrix();
 }
 
 glm::mat4 FreeLookCameraSystem::getInvViewMatrix() const
 {
-    return mCamera->getInvViewMatrix();
+    return getCamera()->getInvViewMatrix();
 }
 
 glm::mat4 FreeLookCameraSystem::getProjMatrix() const
 {
-    return mCamera->getProjMatrix();
+    return getCamera()->getProjMatrix();
 }
 
 Ray FreeLookCameraSystem::normalizedDeviceSpaceToRay(float x, float y) const
 {
-    return mCamera->normalizedDeviceSpaceToRay(x, y);
+    return getCamera()->normalizedDeviceSpaceToRay(x, y);
 }

@@ -131,8 +131,7 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
         {
             scene->deserialize(in);
         }
-
-        if (scene == nullptr)
+        else
         {
             scene = createScene(in);
         }
@@ -142,39 +141,8 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
             mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
             mIdState.mSceneFilepathToId[filePath] = scene->getId();
 
-            for (size_t i = 0; i < mActiveScene->getNumberOfEntities(); i++)
-            {
-                Entity *entity = mActiveScene->getEntityByIndex(i);
-                if (entity->mDoNotDestroy)
-                {
-                    std::cout << "do not destroy entity: " << entity->getId().toString()
-                              << std::endl;
-
-                    YAML::Node node;
-                    entity->serialize(node);
-
-                    scene->createEntity(node);
-
-                    std::vector<std::pair<Guid, int>> components = entity->getComponentsOnEntity();
-                    for (size_t j = 0; j < components.size(); j++)
-                    {
-                        Component *component = scene->getComponentById(components[j].first, components[j].second);
-
-                        YAML::Node componentNode;
-                        component->serialize(componentNode);
-
-
-                        // 4  6  9  10
-
-                        // 16 threads 
-                        // 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                        // 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1
-                        // 0 0 0 0 1 1 2 2 2 2 2 2 2 2 2 2
-                        // 0 0 0 0 1 1 2 2 2 3 3 3 3 3 3 3
-                        // 0 0 0 0 1 1 2 2 2 3 4 4 4 4 4 4
-                    }
-                }
-            }
+            // Copy 'do not destroy' entities from old scene to new scene
+            copyDoNotDestroyEntities(mActiveScene, scene);
 
             mActiveScene = scene;
         }
@@ -207,6 +175,50 @@ bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) c
     }
 
     return scene->writeToYAML(filePath);
+}
+
+void World::copyDoNotDestroyEntities(Scene *from, Scene *to)
+{
+    for (size_t i = 0; i < from->getNumberOfEntities(); i++)
+    {
+        Entity *entity = from->getEntityByIndex(i);
+        if (entity->mDoNotDestroy)
+        {
+            YAML::Node entityNode;
+            entity->serialize(entityNode);
+
+            std::cout << "do not destroy entity: " << entity->getId().toString() << std::endl;
+
+            Entity *newEntity = to->getEntityById(entity->getId());
+            if (newEntity != nullptr)
+            {
+                newEntity->deserialize(entityNode);
+            }
+            else
+            {
+                newEntity = to->createEntity(entityNode);   
+            }
+
+            std::vector<std::pair<Guid, int>> components = entity->getComponentsOnEntity();
+            for (size_t j = 0; j < components.size(); j++)
+            {
+                Component *component = from->getComponentById(components[j].first, components[j].second);
+
+                YAML::Node componentNode;
+                component->serialize(componentNode);
+
+                Component *newComponent = to->getComponentById(components[j].first, components[j].second);
+                if (newComponent != nullptr)
+                {
+                    newComponent->deserialize(componentNode);
+                }
+                else
+                {
+                    to->addComponent(componentNode, component->getType());
+                }
+            }
+        }
+    }
 }
 
 void World::generateSourcePaths(const std::string &filepath, YAML::Node &in)

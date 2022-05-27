@@ -49,6 +49,8 @@ class World
     bool writeAssetToYAML(const std::string &filePath, const Guid &assetId) const;
     bool writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const;
 
+    void copyDoNotDestroyEntities(Scene* from, Scene* to);
+
     std::vector<ShaderUniform> getCachedMaterialUniforms(const Guid &materialId, const Guid &shaderId);
     void cacheMaterialUniforms(const Guid &materialId, const Guid &shaderId, const std::vector<ShaderUniform>& uniforms);
 

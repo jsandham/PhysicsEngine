@@ -29,8 +29,10 @@ namespace PhysicsEngine
         static const float TRANSLATE_SENSITIVITY;
 
     private:
-        Transform* mTransform;
-        Camera* mCamera;
+        Guid mTransformId;
+        Guid mCameraId;
+        //Transform* mTransform;
+        //Camera* mCamera;
 
         int mMousePosX;
         int mMousePosY;
@@ -76,6 +78,7 @@ namespace PhysicsEngine
         CameraGizmos getGizmos() const;
 
         Camera* getCamera() const;
+        Transform *getTransform() const;
 
         Guid getTransformUnderMouse(float nx, float ny) const;
         int getMousePosX() const;

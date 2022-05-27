@@ -113,7 +113,7 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());
-    ImGui::Text("Entity count in world: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
+    ImGui::Text("Entity count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
 
     ImGui::Text("Components");
     ImGui::Indent(16.0f);
