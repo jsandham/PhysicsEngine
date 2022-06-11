@@ -6,8 +6,6 @@
 #include "../../include/core/Version.h"
 #include "../../include/core/Entity.h"
 #include "../../include/core/Log.h"
-#include "../../include/core/Load.h"
-#include "../../include/core/LoadInternal.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
