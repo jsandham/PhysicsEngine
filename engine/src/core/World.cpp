@@ -10,7 +10,7 @@ using namespace PhysicsEngine;
 
 World::World()
 {
-    mActiveScene = createScene();//nullptr;
+    mActiveScene = createScene();
     mPrimitives.createPrimitiveMeshes(this, 10, 10);
 }
 
