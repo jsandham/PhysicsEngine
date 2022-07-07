@@ -10,6 +10,555 @@
 
 using namespace PhysicsEngine;
 
+template <> size_t Scene::getNumberOfComponents<Transform>() const
+{
+    return mAllocators.mTransformAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<MeshRenderer>() const
+{
+    return mAllocators.mMeshRendererAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<SpriteRenderer>() const
+{
+    return mAllocators.mSpriteRendererAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<LineRenderer>() const
+{
+    return mAllocators.mLineRendererAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<Rigidbody>() const
+{
+    return mAllocators.mRigidbodyAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<Camera>() const
+{
+    return mAllocators.mCameraAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<Light>() const
+{
+    return mAllocators.mLightAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<SphereCollider>() const
+{
+    return mAllocators.mSphereColliderAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<BoxCollider>() const
+{
+    return mAllocators.mBoxColliderAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<CapsuleCollider>() const
+{
+    return mAllocators.mCapsuleColliderAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<MeshCollider>() const
+{
+    return mAllocators.mMeshColliderAllocator.getCount();
+}
+
+template <> size_t Scene::getNumberOfComponents<Terrain>() const
+{
+    return mAllocators.mTerrainAllocator.getCount();
+}
+
+template <> Transform* Scene::getComponentByIndex<Transform>(size_t index) const
+{
+    return mAllocators.mTransformAllocator.get(index);
+}
+
+template <> MeshRenderer* Scene::getComponentByIndex<MeshRenderer>(size_t index) const
+{
+    return mAllocators.mMeshRendererAllocator.get(index);
+}
+
+template <> SpriteRenderer* Scene::getComponentByIndex<SpriteRenderer>(size_t index) const
+{
+    return mAllocators.mSpriteRendererAllocator.get(index);
+}
+
+template <> LineRenderer* Scene::getComponentByIndex<LineRenderer>(size_t index) const
+{
+    return mAllocators.mLineRendererAllocator.get(index);
+}
+
+template <> Rigidbody* Scene::getComponentByIndex<Rigidbody>(size_t index) const
+{
+    return mAllocators.mRigidbodyAllocator.get(index);
+}
+
+template <> Camera* Scene::getComponentByIndex<Camera>(size_t index) const
+{
+    return mAllocators.mCameraAllocator.get(index);
+}
+
+template <> Light* Scene::getComponentByIndex<Light>(size_t index) const
+{
+    return mAllocators.mLightAllocator.get(index);
+}
+
+template <> SphereCollider* Scene::getComponentByIndex<SphereCollider>(size_t index) const
+{
+    return mAllocators.mSphereColliderAllocator.get(index);
+}
+
+template <> BoxCollider* Scene::getComponentByIndex<BoxCollider>(size_t index) const
+{
+    return mAllocators.mBoxColliderAllocator.get(index);
+}
+
+template <> CapsuleCollider* Scene::getComponentByIndex<CapsuleCollider>(size_t index) const
+{
+    return mAllocators.mCapsuleColliderAllocator.get(index);
+}
+
+template <> MeshCollider* Scene::getComponentByIndex<MeshCollider>(size_t index) const
+{
+    return mAllocators.mMeshColliderAllocator.get(index);
+}
+
+template <> Terrain* Scene::getComponentByIndex<Terrain>(size_t index) const
+{
+    return mAllocators.mTerrainAllocator.get(index);
+}
+
+template <> Transform* Scene::getComponentById<Transform>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mTransformIdToGlobalIndex, &mAllocators.mTransformAllocator, componentId);
+}
+
+template <> MeshRenderer* Scene::getComponentById<MeshRenderer>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mMeshRendererIdToGlobalIndex, &mAllocators.mMeshRendererAllocator,
+        componentId);
+}
+
+template <> SpriteRenderer* Scene::getComponentById<SpriteRenderer>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mSpriteRendererIdToGlobalIndex, &mAllocators.mSpriteRendererAllocator,
+        componentId);
+}
+
+template <> LineRenderer* Scene::getComponentById<LineRenderer>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mLineRendererIdToGlobalIndex, &mAllocators.mLineRendererAllocator,
+        componentId);
+}
+
+template <> Rigidbody* Scene::getComponentById<Rigidbody>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mRigidbodyIdToGlobalIndex, &mAllocators.mRigidbodyAllocator, componentId);
+}
+
+template <> Camera* Scene::getComponentById<Camera>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mCameraIdToGlobalIndex, &mAllocators.mCameraAllocator, componentId);
+}
+
+template <> Light* Scene::getComponentById<Light>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mLightIdToGlobalIndex, &mAllocators.mLightAllocator, componentId);
+}
+
+template <> SphereCollider* Scene::getComponentById<SphereCollider>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mSphereColliderIdToGlobalIndex, &mAllocators.mSphereColliderAllocator,
+        componentId);
+}
+
+template <> BoxCollider* Scene::getComponentById<BoxCollider>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mBoxColliderIdToGlobalIndex, &mAllocators.mBoxColliderAllocator,
+        componentId);
+}
+
+template <> CapsuleCollider* Scene::getComponentById<CapsuleCollider>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mCapsuleColliderIdToGlobalIndex, &mAllocators.mCapsuleColliderAllocator,
+        componentId);
+}
+
+template <> MeshCollider* Scene::getComponentById<MeshCollider>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mMeshColliderIdToGlobalIndex, &mAllocators.mMeshColliderAllocator,
+        componentId);
+}
+
+template <> Terrain* Scene::getComponentById<Terrain>(const Guid& componentId) const
+{
+    return getComponentById_impl(mIdState.mTerrainIdToGlobalIndex, &mAllocators.mTerrainAllocator, componentId);
+}
+
+template <> Transform* Scene::getComponent<Transform>(const Guid& entityId) const
+{
+    // Transform occurs at same index as its entity since all entities have a transform
+    return getComponentByIndex<Transform>(getIndexOf(entityId));
+}
+
+template <> MeshRenderer* Scene::getComponent<MeshRenderer>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
+}
+
+template <> SpriteRenderer* Scene::getComponent<SpriteRenderer>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
+}
+
+template <> LineRenderer* Scene::getComponent<LineRenderer>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
+}
+
+template <> Rigidbody* Scene::getComponent<Rigidbody>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mRigidbodyAllocator, entityId);
+}
+
+template <> Camera* Scene::getComponent<Camera>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mCameraAllocator, entityId);
+}
+
+template <> Light* Scene::getComponent<Light>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mLightAllocator, entityId);
+}
+
+template <> SphereCollider* Scene::getComponent<SphereCollider>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mSphereColliderAllocator, entityId);
+}
+
+template <> BoxCollider* Scene::getComponent<BoxCollider>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mBoxColliderAllocator, entityId);
+}
+
+template <> CapsuleCollider* Scene::getComponent<CapsuleCollider>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityId);
+}
+
+template <> MeshCollider* Scene::getComponent<MeshCollider>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
+}
+
+template <> Terrain* Scene::getComponent<Terrain>(const Guid& entityId) const
+{
+    return getComponent_impl(&mAllocators.mTerrainAllocator, entityId);
+}
+
+template <> MeshRenderer* Scene::addComponent<MeshRenderer>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityId);
+}
+
+template <> SpriteRenderer* Scene::addComponent<SpriteRenderer>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mSpriteRendererAllocator, entityId);
+}
+
+template <> LineRenderer* Scene::addComponent<LineRenderer>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mLineRendererAllocator, entityId);
+}
+
+template <> Rigidbody* Scene::addComponent<Rigidbody>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mRigidbodyAllocator, entityId);
+}
+
+template <> Camera* Scene::addComponent<Camera>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mCameraAllocator, entityId);
+}
+
+template <> Light* Scene::addComponent<Light>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mLightAllocator, entityId);
+}
+
+template <> SphereCollider* Scene::addComponent<SphereCollider>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mSphereColliderAllocator, entityId);
+}
+
+template <> BoxCollider* Scene::addComponent<BoxCollider>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mBoxColliderAllocator, entityId);
+}
+
+template <> CapsuleCollider* Scene::addComponent<CapsuleCollider>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityId);
+}
+
+template <> MeshCollider* Scene::addComponent<MeshCollider>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityId);
+}
+
+template <> Terrain* Scene::addComponent<Terrain>(const Guid& entityId)
+{
+    return addComponent_impl(&mAllocators.mTerrainAllocator, entityId);
+}
+
+template <> Transform* Scene::addComponent<Transform>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mTransformAllocator, in);
+}
+
+template <> MeshRenderer* Scene::addComponent<MeshRenderer>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mMeshRendererAllocator, in);
+}
+
+template <> SpriteRenderer* Scene::addComponent<SpriteRenderer>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mSpriteRendererAllocator, in);
+}
+
+template <> LineRenderer* Scene::addComponent<LineRenderer>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mLineRendererAllocator, in);
+}
+
+template <> Rigidbody* Scene::addComponent<Rigidbody>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mRigidbodyAllocator, in);
+}
+
+template <> Camera* Scene::addComponent<Camera>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mCameraAllocator, in);
+}
+
+template <> Light* Scene::addComponent<Light>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mLightAllocator, in);
+}
+
+template <> SphereCollider* Scene::addComponent<SphereCollider>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mSphereColliderAllocator, in);
+}
+
+template <> BoxCollider* Scene::addComponent<BoxCollider>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mBoxColliderAllocator, in);
+}
+
+template <> CapsuleCollider* Scene::addComponent<CapsuleCollider>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, in);
+}
+
+template <> MeshCollider* Scene::addComponent<MeshCollider>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mMeshColliderAllocator, in);
+}
+
+template <> Terrain* Scene::addComponent<Terrain>(const YAML::Node& in)
+{
+    return addComponent_impl(&mAllocators.mTerrainAllocator, in);
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Entity>(const Guid& id, int index, int type)
+{
+    mIdState.mEntityIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Transform>(const Guid& id, int index, int type)
+{
+    mIdState.mTransformIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<MeshRenderer>(const Guid& id, int index, int type)
+{
+    mIdState.mMeshRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<SpriteRenderer>(const Guid& id, int index, int type)
+{
+    mIdState.mSpriteRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<LineRenderer>(const Guid& id, int index, int type)
+{
+    mIdState.mLineRendererIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Rigidbody>(const Guid& id, int index, int type)
+{
+    mIdState.mRigidbodyIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Camera>(const Guid& id, int index, int type)
+{
+    mIdState.mCameraIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Light>(const Guid& id, int index, int type)
+{
+    mIdState.mLightIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<SphereCollider>(const Guid& id, int index, int type)
+{
+    mIdState.mSphereColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<BoxCollider>(const Guid& id, int index, int type)
+{
+    mIdState.mBoxColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<CapsuleCollider>(const Guid& id, int index, int type)
+{
+    mIdState.mCapsuleColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<MeshCollider>(const Guid& id, int index, int type)
+{
+    mIdState.mMeshColliderIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <> void Scene::addIdToGlobalIndexMap_impl<Terrain>(const Guid& id, int index, int type)
+{
+    mIdState.mTerrainIdToGlobalIndex[id] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+    mIdState.mIdToType[id] = type;
+}
+
+template <typename T>
+T* Scene::getComponentById_impl(const std::unordered_map<Guid, int>& idToIndexMap, const PoolAllocator<T>* allocator, const Guid& id) const
+{
+    std::unordered_map<Guid, int>::const_iterator it = idToIndexMap.find(id);
+    if (it != idToIndexMap.end())
+    {
+        return allocator->get(it->second);
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+template <typename T> T* Scene::getComponent_impl(const PoolAllocator<T>* allocator, const Guid& entityId) const
+{
+    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+
+    assert(allocator != nullptr);
+
+    std::vector<std::pair<Guid, int>> componentsOnEntity = getComponentsOnEntity(entityId);
+
+    for (size_t i = 0; i < componentsOnEntity.size(); i++)
+    {
+        if (ComponentType<T>::type == componentsOnEntity[i].second)
+        {
+            std::unordered_map<Guid, int>::const_iterator it =
+                mIdState.mIdToGlobalIndex.find(componentsOnEntity[i].first);
+            if (it != mIdState.mIdToGlobalIndex.end())
+            {
+                return allocator->get(it->second);
+            }
+
+            break;
+        }
+    }
+
+    return nullptr;
+}
+
+template <typename T> T* Scene::addComponent_impl(PoolAllocator<T>* allocator, const YAML::Node& in)
+{
+    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+
+    assert(allocator != nullptr);
+
+    int componentGlobalIndex = (int)allocator->getCount();
+    int componentType = ComponentType<T>::type;
+
+    T* component = allocator->construct(mWorld, in);
+
+    if (component != nullptr)
+    {
+        addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
+
+        mIdState.mEntityIdToComponentIds[component->getEntityId()].push_back(
+            std::make_pair(component->getId(), componentType));
+
+        mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(component->getEntityId(), component->getId(), componentType));
+    }
+
+    return component;
+}
+
+template <typename T> T* Scene::addComponent_impl(PoolAllocator<T>* allocator, const Guid& entityId)
+{
+    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+
+    assert(allocator != nullptr);
+
+    if (getTypeOf(entityId) != EntityType<Entity>::type)
+    {
+        return nullptr;
+    }
+
+    int componentGlobalIndex = (int)allocator->getCount();
+    int componentType = ComponentType<T>::type;
+
+    T* component = allocator->construct(mWorld, Guid::newGuid());
+
+    if (component != nullptr)
+    {
+        component->mEntityId = entityId;
+
+        addIdToGlobalIndexMap_impl<T>(component->getId(), componentGlobalIndex, componentType);
+
+        mIdState.mEntityIdToComponentIds[entityId].push_back(std::make_pair(component->getId(), componentType));
+
+        mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entityId, component->getId(), componentType));
+    }
+
+    return component;
+}
+
+
 Scene::Scene(World *world) : Object(world)
 {
     mName = "Unnamed scene";
