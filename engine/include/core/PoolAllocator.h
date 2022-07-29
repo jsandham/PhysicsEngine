@@ -9,6 +9,7 @@
 
 #include "Allocator.h"
 #include "Guid.h"
+#include "Id.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -66,14 +67,14 @@ template <class T, size_t T_per_page = 512> class PoolAllocator : public Allocat
         return *this;
     }
 
-    T *construct(World *world, const Guid& id)
+    T *construct(World *world, const Guid& guid, const Id& id)
     {
-        return new (allocate()) T(world, id);
+        return new (allocate()) T(world, guid, id);
     }
 
-    T *construct(World *world, const YAML::Node &in)
+    T *construct(World *world, const YAML::Node &in, const Id& id)
     {
-        T *t = new (allocate()) T(world);
+        T *t = new (allocate()) T(world, id);
         t->deserialize(in);
         return t;
     }

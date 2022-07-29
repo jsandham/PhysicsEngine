@@ -26,8 +26,8 @@ class Sprite : public Asset
     int mPixelsPerUnit;
 
   public:
-    Sprite(World *world);
-    Sprite(World *world, const Guid& id);
+    Sprite(World *world, const Id &id);
+    Sprite(World *world, const Guid &guid, const Id &id);
     ~Sprite();
 
     virtual void serialize(YAML::Node &out) const override;

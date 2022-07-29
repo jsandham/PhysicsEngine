@@ -80,7 +80,7 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 mEntries[i].entity->setName(std::string(buf1));
 
-                clipboard.setSelectedItem(InteractionType::Entity, mEntries[i].entity->getId());
+                clipboard.setSelectedItem(InteractionType::Entity, mEntries[i].entity->getGuid());
             }
 
             if (edited)
@@ -94,7 +94,7 @@ void Hierarchy::update(Clipboard &clipboard)
                 {
                     clipboard.mDraggedType = InteractionType::Entity;
                     clipboard.mDraggedPath = "";
-                    clipboard.mDraggedId = mEntries[i].entity->getId();
+                    clipboard.mDraggedId = mEntries[i].entity->getGuid();
                 }
 
                 if (!ImGui::IsMouseDown(0))
@@ -214,9 +214,9 @@ void Hierarchy::rebuildEntityLists(PhysicsEngine::World *world)
         if (entity->mHide == PhysicsEngine::HideFlag::None)
         {
             mEntries[index].entity = entity;
-            mEntries[index].label = entity->getId().toString();
+            mEntries[index].label = entity->getGuid().toString();
             mEntries[index].indentLevel = 0;
-            mIdToEntryIndex[entity->getId()] = index;
+            mIdToEntryIndex[entity->getGuid()] = index;
             index++;
         }
     }

@@ -2,6 +2,7 @@
 #define OBJECT_H__
 
 #include "Guid.h"
+#include "Id.h"
 
 namespace PhysicsEngine
 {
@@ -16,7 +17,8 @@ class World;
 class Object
 {
   private:
-    Guid mId;
+    Guid mGuid;
+    Id mId;
 
   protected:
     World *mWorld;
@@ -25,8 +27,8 @@ class Object
     HideFlag mHide;
 
   public:
-    Object(World *world);
-    Object(World *world, const Guid& id);
+    Object(World *world, const Id &id);
+    Object(World *world, const Guid& guid, const Id& id);
     virtual ~Object() = 0;
 
     virtual void serialize(YAML::Node &out) const;
@@ -35,7 +37,8 @@ class Object
     virtual int getType() const = 0;
     virtual std::string getObjectName() const = 0;
 
-    Guid getId() const;
+    Guid getGuid() const;
+    Id getId() const;
 };
 
 } // namespace PhysicsEngine

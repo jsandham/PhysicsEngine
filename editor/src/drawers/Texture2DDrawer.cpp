@@ -91,13 +91,13 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Texture2D *texture = clipboard.getWorld()->getAssetById<Texture2D>(id);
+    Texture2D *texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(id);
 
     ImGui::Separator();
 
-    if (mCurrentTexId != texture->getId())
+    if (mCurrentTexId != texture->getGuid())
     {
-        mCurrentTexId = texture->getId();
+        mCurrentTexId = texture->getGuid();
         mDrawTex = texture->getNativeGraphics();
     }
 
@@ -118,7 +118,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 activeWrapModeIndex = n;
 
                 texture->setWrapMode(static_cast<TextureWrapMode>(n));
-                clipboard.mModifiedAssets.insert(texture->getId());
+                clipboard.mModifiedAssets.insert(texture->getGuid());
 
                 if (is_selected)
                 {
@@ -140,7 +140,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 activeFilterModeIndex = n;
 
                 texture->setFilterMode(static_cast<TextureFilterMode>(n));
-                clipboard.mModifiedAssets.insert(texture->getId());
+                clipboard.mModifiedAssets.insert(texture->getGuid());
 
                 if (is_selected)
                 {
@@ -156,7 +156,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     if (ImGui::SliderInt("Aniso", &aniso, 1, 16))
     {
         texture->setAnisoLevel(aniso);
-        clipboard.mModifiedAssets.insert(texture->getId());
+        clipboard.mModifiedAssets.insert(texture->getGuid());
     }
 
     // Draw texture child window

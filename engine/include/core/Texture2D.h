@@ -17,10 +17,10 @@ class Texture2D : public Texture
     int mHeight;
 
   public:
-    Texture2D(World *world);
-    Texture2D(World *world, const Guid& id);
-    Texture2D(World *world, int width, int height);
-    Texture2D(World *world, int width, int height, TextureFormat format);
+    Texture2D(World *world, const Id &id);
+    Texture2D(World *world, const Guid &guid, const Id &id);
+    Texture2D(World *world, const Id &id, int width, int height);
+    Texture2D(World *world, const Id &id, int width, int height, TextureFormat format);
     ~Texture2D();
 
     virtual void serialize(YAML::Node &out) const override;

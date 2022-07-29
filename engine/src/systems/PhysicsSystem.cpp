@@ -17,11 +17,11 @@
 
 using namespace PhysicsEngine;
 
-PhysicsSystem::PhysicsSystem(World* world) : System(world)
+PhysicsSystem::PhysicsSystem(World *world, const Id &id) : System(world, id)
 {
 }
 
-PhysicsSystem::PhysicsSystem(World* world, const Guid& id) : System(world, id)
+PhysicsSystem::PhysicsSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
 }
 

@@ -31,7 +31,7 @@ void EditorSceneManager::newScene(Clipboard& clipboard, const std::string& scene
     PhysicsEngine::Scene* scene = clipboard.getWorld()->createScene();
     if (scene != nullptr)
     {
-        clipboard.setActiveScene(sceneName, "", scene->getId());
+        clipboard.setActiveScene(sceneName, "", scene->getGuid());
     }
 }
 
@@ -66,7 +66,7 @@ void EditorSceneManager::openScene(Clipboard& clipboard, const std::filesystem::
     PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(scenePath.string());
     if (scene != nullptr)
     {
-        clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), scene->getId());
+        clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), scene->getGuid());
     }
 }
 

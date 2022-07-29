@@ -23,7 +23,7 @@ void RigidbodyDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Rigidbody *rigidbody = clipboard.getWorld()->getActiveScene()->getComponentById<Rigidbody>(id);
+        Rigidbody *rigidbody = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Rigidbody>(id);
 
         if (rigidbody != nullptr)
         {

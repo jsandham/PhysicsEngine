@@ -205,8 +205,8 @@ void LibraryDirectory::update(PhysicsEngine::World * world)
 
         if (asset != nullptr)
         {
-            mFilePathToId[mAddBuffer[i]] = asset->getId();
-            mIdToFilePath[asset->getId()] = mAddBuffer[i];
+            mFilePathToId[mAddBuffer[i]] = asset->getGuid();
+            mIdToFilePath[asset->getGuid()] = mAddBuffer[i];
         }
         else
         {

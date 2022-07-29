@@ -135,8 +135,8 @@ class Shader : public Asset
     int mActiveProgram;
 
   public:
-    Shader(World *world);
-    Shader(World *world, const Guid& id);
+    Shader(World *world, const Id &id);
+    Shader(World *world, const Guid &guid, const Id &id);
     ~Shader();
 
     virtual void serialize(YAML::Node &out) const override;

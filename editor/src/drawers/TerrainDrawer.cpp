@@ -45,7 +45,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Terrain", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentById<Terrain>(id);
+        Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Terrain>(id);
 
         if (terrain != nullptr)
         {
@@ -58,7 +58,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 Entity* entity = nullptr;
                 if (transformId.isValid())
                 {
-                    entity = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId)->getEntity();
+                    entity = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(transformId)->getEntity();
                 }
 
                 ImGui::SlotData data;
@@ -69,7 +69,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                         Guid entityId = clipboard.getDraggedId();
                         clipboard.clearDraggedItem();
 
-                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(entityId)->getId();
+                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(entityId)->getGuid();
                     }
 
                     if (data.clearClicked)
@@ -83,7 +83,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             {
                 Guid materialId = terrain->getMaterial();
 
-                Material* material = clipboard.getWorld()->getAssetById<Material>(materialId);
+                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(materialId);
 
                 ImGui::SlotData data;
                 if (ImGui::Slot2("Material", materialId.isValid() ? material->getName()/*materialId.toString()*/ : "None (Material)", &data))
@@ -170,7 +170,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 {
                     grassMeshIds[i] = terrain->getGrassMesh(i);
 
-                    Mesh* grassMesh = clipboard.getWorld()->getAssetById<Mesh>(grassMeshIds[i]);
+                    Mesh* grassMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(grassMeshIds[i]);
 
                     ImGui::SlotData data;
                     if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
@@ -217,7 +217,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 {
                     treeMeshIds[i] = terrain->getTreeMesh(i);
 
-                    Mesh* treeMesh = clipboard.getWorld()->getAssetById<Mesh>(treeMeshIds[i]);
+                    Mesh* treeMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(treeMeshIds[i]);
 
                     ImGui::SlotData data;
                     if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))

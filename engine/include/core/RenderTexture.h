@@ -20,10 +20,10 @@ namespace PhysicsEngine
         int mHeight;
 
     public:
-        RenderTexture(World* world);
-        RenderTexture(World* world, const Guid& id);
-        RenderTexture(World* world, int width, int height);
-        RenderTexture(World* world, int width, int height, TextureFormat format);
+        RenderTexture(World *world, const Id &id);
+        RenderTexture(World *world, const Guid &guid, const Id &id);
+        RenderTexture(World *world, const Id &id, int width, int height);
+        RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format);
         ~RenderTexture();
 
         virtual void serialize(YAML::Node& out) const override;

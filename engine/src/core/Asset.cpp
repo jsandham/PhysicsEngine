@@ -7,12 +7,12 @@
 
 using namespace PhysicsEngine;
 
-Asset::Asset(World *world) : Object(world)
+Asset::Asset(World *world, const Id &id) : Object(world, id)
 {
     mName = "Unnamed Asset";
 }
 
-Asset::Asset(World *world, const Guid& id) : Object(world, id)
+Asset::Asset(World *world, const Guid& guid, const Id& id) : Object(world, guid, id)
 {
     mName = "Unnamed Asset";
 }

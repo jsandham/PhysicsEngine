@@ -7,7 +7,7 @@
 
 using namespace PhysicsEngine;
 
-Shader::Shader(World *world) : Asset(world)
+Shader::Shader(World *world, const Id &id) : Asset(world, id)
 {
     mSource = "";
     mSourceFilepath = "";
@@ -21,7 +21,7 @@ Shader::Shader(World *world) : Asset(world)
     mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
-Shader::Shader(World *world, const Guid& id) : Asset(world, id)
+Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {   
     mSource = "";
     mSourceFilepath = "";

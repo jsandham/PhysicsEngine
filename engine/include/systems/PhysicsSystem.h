@@ -22,8 +22,8 @@ class PhysicsSystem : public System
     float mGravity;
 
   public:
-    PhysicsSystem(World* world);
-    PhysicsSystem(World* world, const Guid& id);
+    PhysicsSystem(World *world, const Id &id);
+    PhysicsSystem(World *world, const Guid &guid, const Id &id);
     ~PhysicsSystem();
 
     virtual void serialize(YAML::Node &out) const override;

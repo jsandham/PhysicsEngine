@@ -3,14 +3,14 @@
 
 using namespace PhysicsEngine;
 
-Component::Component(World* world) : Object(world)
+Component::Component(World *world, const Id &id) : Object(world, id)
 {
-    mEntityId = Guid::INVALID;
+    mEntityGuid = Guid::INVALID;
 }
 
-Component::Component(World* world, const Guid& id) : Object(world, id)
+Component::Component(World* world, const Guid& guid, const Id& id) : Object(world, guid, id)
 {
-    mEntityId = Guid::INVALID;
+    mEntityGuid = Guid::INVALID;
 }
 
 Component::~Component()
@@ -21,24 +21,24 @@ void Component::serialize(YAML::Node &out) const
 {
     Object::serialize(out);
 
-    out["entityId"] = mEntityId;
+    out["entityId"] = mEntityGuid;
 }
 
 void Component::deserialize(const YAML::Node &in)
 {
     Object::deserialize(in);
 
-    mEntityId = YAML::getValue<Guid>(in, "entityId");
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 }
 
 Entity* Component::getEntity() const
 {
-    return mWorld->getActiveScene()->getEntityById(mEntityId);
+    return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
 }
 
-Guid Component::getEntityId() const
+Guid Component::getEntityGuid() const
 {
-    return mEntityId;
+    return mEntityGuid;
 }
 
 bool Component::isInternal(int type)

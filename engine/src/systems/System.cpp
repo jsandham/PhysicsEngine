@@ -3,13 +3,13 @@
 
 using namespace PhysicsEngine;
 
-System::System(World* world) : Object(world)
+System::System(World *world, const Id &id) : Object(world, id)
 {
     mOrder = 0;
     mEnabled = true;
 }
 
-System::System(World* world, const Guid& id) : Object(world, id)
+System::System(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
 {
     mOrder = 0;
     mEnabled = true;

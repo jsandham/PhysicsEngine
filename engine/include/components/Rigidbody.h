@@ -27,8 +27,8 @@ class Rigidbody : public Component
     glm::vec3 mHalfVelocity;
 
   public:
-    Rigidbody(World *world);
-    Rigidbody(World *world, const Guid& id);
+    Rigidbody(World *world, const Id &id);
+    Rigidbody(World *world, const Guid &guid, const Id &id);
     ~Rigidbody();
 
     virtual void serialize(YAML::Node &out) const override;

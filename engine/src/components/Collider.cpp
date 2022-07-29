@@ -4,12 +4,12 @@
 
 using namespace PhysicsEngine;
 
-Collider::Collider(World* world) : Component(world)
+Collider::Collider(World *world, const Id &id) : Component(world, id)
 {
     mEnabled = true;
 }
 
-Collider::Collider(World* world, const Guid& id) : Component(world, id)
+Collider::Collider(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
 {
     mEnabled = true;
 }

@@ -25,7 +25,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshRenderer *meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentById<MeshRenderer>(id);
+        MeshRenderer *meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentByGuid<MeshRenderer>(id);
 
         if (meshRenderer != nullptr)
         {
@@ -35,7 +35,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
             {
                 Guid meshId = meshRenderer->getMesh();
 
-                Mesh* mesh = clipboard.getWorld()->getAssetById<Mesh>(meshId);
+                Mesh* mesh = clipboard.getWorld()->getAssetByGuid<Mesh>(meshId);
 
                 ImGui::SlotData data;
                 if (ImGui::Slot2("Mesh", meshId.isValid() ? mesh->getName()/*meshId.toString()*/ : "None (Mesh)", &data))
@@ -77,7 +77,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
             {
                 materialIds[i] = meshRenderer->getMaterial(i);
 
-                Material* material = clipboard.getWorld()->getAssetById<Material>(materialIds[i]);
+                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(materialIds[i]);
 
                 ImGui::SlotData data;
                 if (ImGui::Slot2("Material", materialIds[i].isValid() ? material->getName()/*materialIds[i].toString()*/ : "None (Material)", &data))

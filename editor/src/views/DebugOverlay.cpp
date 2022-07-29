@@ -164,7 +164,7 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
 
     PhysicsEngine::Shader* selected = clipboard.getWorld()->getAssetByIndex<PhysicsEngine::Shader>(index);
 
-    PhysicsEngine::Guid currentShaderId = selected->getId();
+    PhysicsEngine::Guid currentShaderId = selected->getGuid();
 
     if (ImGui::BeginCombo("Shader", (selected == nullptr ? "" : selected->getName()).c_str(), ImGuiComboFlags_None))
     {
@@ -172,13 +172,13 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
         {
             PhysicsEngine::Shader* s = clipboard.getWorld()->getAssetByIndex<PhysicsEngine::Shader>(i);
 
-            std::string label = s->getName() + "##" + s->getId().toString();
+            std::string label = s->getName() + "##" + s->getGuid().toString();
 
-            bool is_selected = (currentShaderId == s->getId());
+            bool is_selected = (currentShaderId == s->getGuid());
             if (ImGui::Selectable(label.c_str(), is_selected))
             {
                 selected = s;
-                currentShaderId = s->getId();
+                currentShaderId = s->getGuid();
                 index = i;
             }
             if (is_selected)

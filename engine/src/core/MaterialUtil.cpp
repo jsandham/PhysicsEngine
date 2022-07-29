@@ -11,7 +11,7 @@ void MaterialUtil::copyMaterialTo(World *srcWorld, Material *srcMat, World *dest
 {
     Guid shaderId = srcMat->getShaderId();
 
-    if (destWorld->getAssetById<Shader>(shaderId) == NULL)
+    if (destWorld->getAssetByGuid<Shader>(shaderId) == NULL)
     {
         std::string message = "Shader with id: " + shaderId.toString() + " does not exist in destination world\n";
         Log::error(message.c_str());

@@ -69,8 +69,8 @@ class Terrain : public Component
         Guid mCameraTransformId;
 
     public:
-        Terrain(World *world);
-        Terrain(World *world, const Guid &id);
+        Terrain(World *world, const Id &id);
+        Terrain(World *world, const Guid& guid, const Id& id);
         ~Terrain();
 
         virtual void serialize(YAML::Node& out) const override;

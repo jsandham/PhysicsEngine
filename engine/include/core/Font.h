@@ -33,9 +33,9 @@ class Font : public Asset
     unsigned int mVbo;
 
   public:
-    Font(World *world);
-    Font(World *world, const Guid& id);
-    Font(World *world, const std::string &filepath);
+    Font(World *world, const Id &id);
+    Font(World *world, const Guid &guid, const Id &id);
+    Font(World *world, const Id &id, const std::string &filepath);
     ~Font();
 
     virtual void serialize(YAML::Node &out) const override;

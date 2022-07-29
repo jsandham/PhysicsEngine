@@ -12,11 +12,11 @@ class World;
 class Component : public Object
 {
   protected:
-    Guid mEntityId;
+    Guid mEntityGuid;
 
   public:
-    Component(World *world);
-    Component(World *world, const Guid& id);
+    Component(World *world, const Id &id);
+    Component(World *world, const Guid& guid, const Id& id);
     ~Component();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -26,20 +26,20 @@ class Component : public Object
 
     template <typename T> void latentDestroy()
     {
-        mWorld->getActiveScene()->latentDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
+        mWorld->getActiveScene()->latentDestroyComponent(mEntityGuid, getGuid(), ComponentType<T>::type);
     }
 
     template <typename T> void immediateDestroy()
     {
-        mWorld->getActiveScene()->immediateDestroyComponent(mEntityId, getId(), ComponentType<T>::type);
+        mWorld->getActiveScene()->immediateDestroyComponent(mEntityGuid, getGuid(), ComponentType<T>::type);
     }
 
     template <typename T> T *getComponent() const
     {
-        return mWorld->getActiveScene()->getComponent<T>(mEntityId);
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
     }
 
-    Guid getEntityId() const;
+    Guid getEntityGuid() const;
 
     static bool isInternal(int type);
 

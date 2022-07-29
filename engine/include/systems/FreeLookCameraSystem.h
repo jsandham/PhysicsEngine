@@ -50,8 +50,8 @@ namespace PhysicsEngine
         bool mSpawnCameraOnInit;
 
     public:
-        FreeLookCameraSystem(World* world);
-        FreeLookCameraSystem(World* world, const Guid& id);
+        FreeLookCameraSystem(World *world, const Id &id);
+        FreeLookCameraSystem(World *world, const Guid &guid, const Id &id);
         ~FreeLookCameraSystem();
 
         virtual void serialize(YAML::Node& out) const override;
@@ -80,7 +80,7 @@ namespace PhysicsEngine
         Camera* getCamera() const;
         Transform *getTransform() const;
 
-        Guid getTransformUnderMouse(float nx, float ny) const;
+        Id getTransformUnderMouse(float nx, float ny) const;
         int getMousePosX() const;
         int getMousePosY() const;
         bool isLeftMouseClicked() const;

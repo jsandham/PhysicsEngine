@@ -10,7 +10,7 @@
 
 using namespace PhysicsEngine;
 
-Mesh::Mesh(World *world) : Asset(world)
+Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
 {
     mSource = "";
     mSourceFilepath = "";
@@ -18,7 +18,7 @@ Mesh::Mesh(World *world) : Asset(world)
     mChanged = false;
 }
 
-Mesh::Mesh(World *world, const Guid& id) : Asset(world, id)
+Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {
     mSource = "";
     mSourceFilepath = "";

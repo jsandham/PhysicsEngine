@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-Material::Material(World *world) : Asset(world)
+Material::Material(World *world, const Id &id) : Asset(world, id)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -15,7 +15,7 @@ Material::Material(World *world) : Asset(world)
     mEnableInstancing = false;
 }
 
-Material::Material(World *world, const Guid& id) : Asset(world, id)
+Material::Material(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {
     mShaderId = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
@@ -71,7 +71,7 @@ void Material::deserialize(const YAML::Node &in)
 
     if (mShaderId.isValid())
     {
-        mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+        mWorld->cacheMaterialUniforms(getGuid(), mShaderId, mUniforms);
     }
 
     mShaderChanged = true;
@@ -90,7 +90,7 @@ std::string Material::getObjectName() const
 
 void Material::apply()
 {
-    Shader *shader = mWorld->getAssetById<Shader>(mShaderId);
+    Shader *shader = mWorld->getAssetByGuid<Shader>(mShaderId);
 
     assert(shader != nullptr);
 
@@ -99,7 +99,7 @@ void Material::apply()
 
 void Material::onShaderChanged()
 {
-    Shader *shader = mWorld->getAssetById<Shader>(mShaderId);
+    Shader *shader = mWorld->getAssetByGuid<Shader>(mShaderId);
 
     if (shader == nullptr)
     {
@@ -115,7 +115,7 @@ void Material::onShaderChanged()
     std::vector<ShaderUniform> newUniforms = shader->getMaterialUniforms();
 
     // Attempt to copy cached uniform data to new uniforms
-    std::vector<ShaderUniform> cachedUniforms = mWorld->getCachedMaterialUniforms(getId(), mShaderId);
+    std::vector<ShaderUniform> cachedUniforms = mWorld->getCachedMaterialUniforms(getGuid(), mShaderId);
     if (newUniforms.size() == cachedUniforms.size())
     {
         for (size_t i = 0; i < newUniforms.size(); i++)
@@ -141,7 +141,7 @@ void Material::onTextureChanged()
     {
         if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            Texture2D *texture = mWorld->getAssetById<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
+            Texture2D *texture = mWorld->getAssetByGuid<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
                 mUniforms[i].mTex = texture->getNativeGraphics();
@@ -171,7 +171,7 @@ void Material::setShaderId(const Guid& shaderId)
     // If current shader on material was valid, cache its uniforms before setting new shader
     if (mShaderId.isValid())
     {
-        mWorld->cacheMaterialUniforms(getId(), mShaderId, mUniforms);
+        mWorld->cacheMaterialUniforms(getGuid(), mShaderId, mUniforms);
     }
 
     mShaderId = shaderId;

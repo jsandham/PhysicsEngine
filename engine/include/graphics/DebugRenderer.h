@@ -29,7 +29,7 @@ class DebugRenderer
     void update(const Input &input, Camera *camera,
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models,
-                const std::vector<Guid> &transformIds);
+                const std::vector<Id> &transformIds);
 };
 
 void initializeDebugRenderer(World *world, DebugRendererState &state);
@@ -43,7 +43,7 @@ void renderDebug(World *world, Camera *camera, DebugRendererState &state,
 void renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
                              const std::vector<RenderObject> &renderObjects,
                              const std::vector<glm::mat4> &models,
-                             const std::vector<Guid> &transformIds);
+                             const std::vector<Id> &transformIds);
 
 void endDebugFrame(World *world, Camera *camera, DebugRendererState &state);
 } // namespace PhysicsEngine

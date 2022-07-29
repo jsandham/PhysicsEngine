@@ -16,9 +16,9 @@ class Texture3D : public Texture
     int mDepth;
 
   public:
-    Texture3D(World *world);
-    Texture3D(World *world, const Guid& id);
-    Texture3D(World *world, int width, int height, int depth, int numChannels);
+    Texture3D(World *world, const Id &id);
+    Texture3D(World *world, const Guid &guid, const Id &id);
+    Texture3D(World *world, const Id &id, int width, int height, int depth, int numChannels);
     ~Texture3D();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -26,7 +26,7 @@ void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Camera *camera = clipboard.getWorld()->getActiveScene()->getComponentById<Camera>(id);
+        Camera *camera = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Camera>(id);
 
         if (camera != nullptr)
         {

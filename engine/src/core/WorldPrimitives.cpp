@@ -132,7 +132,7 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     assert(standardMaterial != nullptr);
 
     standardMaterial->setName("Standard");
-    standardMaterial->setShaderId(standardShader->getId());
+    standardMaterial->setShaderId(standardShader->getGuid());
     standardMaterial->onShaderChanged();
 
     standardMaterial->setFloat("material.shininess", 0.5f);
@@ -576,13 +576,13 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
 
     cylinder->load(cylinderVertices, cylinderNormals, cylinderTexCoords, {0, 3 * cylinderVertexCount});
 
-    mPlaneMeshId = plane->getId();
-    mDiscMeshId = disc->getId();
-    mCubeMeshId = cube->getId();
-    mSphereMeshId = sphere->getId();
-    mCylinderMeshId = cylinder->getId();
-    mConeMeshId = cone->getId();
+    mPlaneMeshId = plane->getGuid();
+    mDiscMeshId = disc->getGuid();
+    mCubeMeshId = cube->getGuid();
+    mSphereMeshId = sphere->getGuid();
+    mCylinderMeshId = cylinder->getGuid();
+    mConeMeshId = cone->getGuid();
 
-    mStandardShaderId = standardShader->getId();
-    mStandardMaterialId = standardMaterial->getId();
+    mStandardShaderId = standardShader->getGuid();
+    mStandardMaterialId = standardMaterial->getGuid();
 }

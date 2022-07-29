@@ -22,7 +22,7 @@ void RenderTextureDrawer::render(Clipboard& clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    RenderTexture* texture = clipboard.getWorld()->getAssetById<RenderTexture>(id);
+    RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(id);
 
     ImGui::Separator();
 

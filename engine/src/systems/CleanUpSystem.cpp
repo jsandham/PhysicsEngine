@@ -6,11 +6,11 @@
 
 using namespace PhysicsEngine;
 
-CleanUpSystem::CleanUpSystem(World* world) : System(world)
+CleanUpSystem::CleanUpSystem(World *world, const Id &id) : System(world, id)
 {
 }
 
-CleanUpSystem::CleanUpSystem(World* world, const Guid& id) : System(world, id)
+CleanUpSystem::CleanUpSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
 }
 

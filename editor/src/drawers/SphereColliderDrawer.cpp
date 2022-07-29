@@ -23,7 +23,7 @@ void SphereColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        SphereCollider *sphereCollider = clipboard.getWorld()->getActiveScene()->getComponentById<SphereCollider>(id);
+        SphereCollider *sphereCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<SphereCollider>(id);
 
         if (sphereCollider != nullptr)
         {

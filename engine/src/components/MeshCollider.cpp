@@ -4,12 +4,12 @@
 
 using namespace PhysicsEngine;
 
-MeshCollider::MeshCollider(World* world) : Collider(world)
+MeshCollider::MeshCollider(World *world, const Id &id) : Collider(world, id)
 {
     mMeshId = Guid::INVALID;
 }
 
-MeshCollider::MeshCollider(World* world, const Guid& id) : Collider(world, id)
+MeshCollider::MeshCollider(World *world, const Guid &guid, const Id &id) : Collider(world, guid, id)
 {
     mMeshId = Guid::INVALID;
 }

@@ -5,9 +5,8 @@
 
 using namespace PhysicsEngine;
 
-Camera::Camera(World* world) : Component(world)
+Camera::Camera(World *world, const Id &id) : Component(world, id)
 {
-    mEntityId = Guid::INVALID;
     mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
@@ -64,9 +63,8 @@ Camera::Camera(World* world) : Component(world)
     mRenderToScreen = false;
 }
 
-Camera::Camera(World* world, const Guid& id) : Component(world, id)
+Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
 {
-    mEntityId = Guid::INVALID;
     mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
@@ -259,9 +257,9 @@ void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forwa
     mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
 }
 
-void Camera::assignColoring(Color32 color, const Guid& transformId)
+void Camera::assignColoring(Color32 color, const Id &transformId)
 {
-    mColoringMap.insert(std::pair<Color32, Guid>(color, transformId));
+    mColoringMap.insert(std::pair<Color32, Id>(color, transformId));
 }
 
 void Camera::clearColoring()
@@ -304,19 +302,19 @@ glm::vec3 Camera::getSSAOSample(int sample) const
     return mSsaoSamples[sample];
 }
 
-Guid Camera::getTransformIdAtScreenPos(int x, int y) const
+Id Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
     Graphics::readColorAtPixel(&mTargets.mColorPickingFBO, x, y, &color);
 
-    std::unordered_map<Color32, Guid>::const_iterator it = mColoringMap.find(color);
+    std::unordered_map<Color32, Id>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())
     {
         return it->second;
     }
 
-    return Guid::INVALID;
+    return Id::INVALID;
 }
 
 Frustum Camera::getFrustum() const

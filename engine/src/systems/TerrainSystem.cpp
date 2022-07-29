@@ -5,12 +5,12 @@
 
 using namespace PhysicsEngine;
 
-TerrainSystem::TerrainSystem(World *world) : System(world)
+TerrainSystem::TerrainSystem(World *world, const Id &id) : System(world, id)
 {
 
 }
 
-TerrainSystem::TerrainSystem(World *world, const Guid& id) : System(world, id)
+TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
 
 }
@@ -56,7 +56,7 @@ void TerrainSystem::update(const Input &input, const Time &time)
             terrain->generateTerrain();
         }
 
-        Transform *transform = mWorld->getActiveScene()->getComponentById<Transform>(terrain->mCameraTransformId);
+        Transform *transform = mWorld->getActiveScene()->getComponentByGuid<Transform>(terrain->mCameraTransformId);
 
         if (transform != nullptr)
         {

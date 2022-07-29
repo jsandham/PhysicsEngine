@@ -12,15 +12,15 @@
 
 using namespace PhysicsEngine;
 
-Font::Font(World *world) : Asset(world)
+Font::Font(World *world, const Id &id) : Asset(world, id)
 {
 }
 
-Font::Font(World *world, const Guid& id) : Asset(world, id)
+Font::Font(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {
 }
 
-Font::Font(World *world, const std::string &filepath) : Asset(world)
+Font::Font(World *world, const Id &id, const std::string &filepath) : Asset(world, id)
 {
     mFilepath = filepath;
 }

@@ -24,8 +24,8 @@ class Material : public Asset
     bool mEnableInstancing;
 
   public:
-    Material(World *world);
-    Material(World *world, const Guid& id);
+    Material(World *world, const Id &id);
+    Material(World *world, const Guid &guid, const Id &id);
     ~Material();
 
     virtual void serialize(YAML::Node &out) const override;

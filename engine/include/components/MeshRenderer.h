@@ -19,8 +19,8 @@ class MeshRenderer : public Component
     bool mEnabled;
 
   public:
-    MeshRenderer(World *world);
-    MeshRenderer(World *world, const Guid& id);
+    MeshRenderer(World *world, const Id &id);
+    MeshRenderer(World *world, const Guid &guid, const Id &id);
     ~MeshRenderer();
 
     virtual void serialize(YAML::Node &out) const override;

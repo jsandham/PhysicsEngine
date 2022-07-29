@@ -38,7 +38,7 @@ inline void UniformDrawer<ShaderUniformType::Int>::draw(Clipboard& clipboard, Ma
     if (ImGui::InputInt(uniform->getShortName().c_str(), &temp))
     {
         material->setInt(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getId());
+        clipboard.mModifiedAssets.insert(material->getGuid());
     }
 }
 
@@ -50,7 +50,7 @@ inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, 
     if (ImGui::InputFloat(uniform->getShortName().c_str(), &temp))
     {
         material->setFloat(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getId());
+        clipboard.mModifiedAssets.insert(material->getGuid());
     }
 }
 
@@ -62,7 +62,7 @@ inline void UniformDrawer<ShaderUniformType::Color>::draw(Clipboard& clipboard, 
     if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
     {
         material->setColor(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getId());
+        clipboard.mModifiedAssets.insert(material->getGuid());
     }
 }
 
@@ -74,7 +74,7 @@ inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, M
     if (ImGui::InputFloat2(uniform->getShortName().c_str(), &temp[0]))
     {
         material->setVec2(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getId());
+        clipboard.mModifiedAssets.insert(material->getGuid());
     }
 }
 
@@ -89,7 +89,7 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
         if (ImGui::ColorEdit3(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec3(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
         }
     }
     else
@@ -97,7 +97,7 @@ inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, M
         if (ImGui::InputFloat3(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec3(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
         }
     }
 }
@@ -113,7 +113,7 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
         if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
         {
             material->setVec4(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
         }
     }
     else
@@ -121,7 +121,7 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
         if (ImGui::InputFloat4(uniform->getShortName().c_str(), &temp[0]))
         {
             material->setVec4(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
         }
     }
 }
@@ -129,7 +129,7 @@ inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, M
 template <>
 inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
 {
-    Texture2D* texture = clipboard.getWorld()->getAssetById<Texture2D>(material->getTexture(uniform->mName));
+    Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
 
     ImGui::SlotData data;
     if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : texture->getNativeGraphics(), &data))
@@ -139,7 +139,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
             material->setTexture(uniform->mName, clipboard.getDraggedId());
             material->onTextureChanged();
 
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
             clipboard.clearDraggedItem();
         }
 
@@ -148,7 +148,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
             if (material->getTexture(uniform->mName).isValid())
             {
                 clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
-                clipboard.mModifiedAssets.insert(material->getId());
+                clipboard.mModifiedAssets.insert(material->getGuid());
             }
         }
 
@@ -156,7 +156,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
         {
             material->setTexture(uniform->mName, Guid::INVALID);
             material->onTextureChanged();
-            clipboard.mModifiedAssets.insert(material->getId());
+            clipboard.mModifiedAssets.insert(material->getGuid());
         }
     }
 }
@@ -197,14 +197,14 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Material *material = clipboard.getWorld()->getAssetById<Material>(id);
+    Material *material = clipboard.getWorld()->getAssetByGuid<Material>(id);
 
-    ImGui::Text(("Material id: " + material->getId().toString()).c_str());
+    ImGui::Text(("Material id: " + material->getGuid().toString()).c_str());
     ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
 
     Guid currentShaderId = material->getShaderId();
 
-    Shader *ss = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
+    Shader *ss = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
 
     if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
     {
@@ -212,16 +212,16 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         {
             Shader *s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
 
-            std::string label = s->getName() + "##" + s->getId().toString();
+            std::string label = s->getName() + "##" + s->getGuid().toString();
 
-            bool is_selected = (currentShaderId == s->getId());
+            bool is_selected = (currentShaderId == s->getGuid());
             if (ImGui::Selectable(label.c_str(), is_selected))
             {
-                currentShaderId = s->getId();
+                currentShaderId = s->getGuid();
 
                 material->setShaderId(currentShaderId);
                 material->onShaderChanged();
-                clipboard.mModifiedAssets.insert(material->getId());
+                clipboard.mModifiedAssets.insert(material->getGuid());
             }
             if (is_selected)
             {
@@ -281,7 +281,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Text("Preview");
 
     Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
-    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(currentShaderId);
+    Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
 
     if (mesh == nullptr || shader == nullptr) {
         return;

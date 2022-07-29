@@ -19,8 +19,8 @@ class System : public Object
     bool mEnabled;
 
   public:
-    System(World* world);
-    System(World* world, const Guid& id);
+    System(World *world, const Id &id);
+    System(World *world, const Guid &guid, const Id &id);
     ~System();
 
     virtual void serialize(YAML::Node &out) const override;

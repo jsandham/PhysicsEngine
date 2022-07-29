@@ -18,8 +18,8 @@ class Collider : public Component
     bool mEnabled;
 
   public:
-    Collider(World *world);
-    Collider(World *world, const Guid& id);
+    Collider(World *world, const Id &id);
+    Collider(World *world, const Guid &guid, const Id &id);
     ~Collider();
 
     virtual void serialize(YAML::Node &out) const override;

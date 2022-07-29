@@ -31,15 +31,15 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Mesh *mesh = clipboard.getWorld()->getAssetById<Mesh>(id);
+    Mesh *mesh = clipboard.getWorld()->getAssetByGuid<Mesh>(id);
 
     const int count = 4;
     const char *drawMode[] = {"Color", "Normals", "Tangents", "Binormal"};
 
-    const Guid shaders[] = { clipboard.getWorld()->getAssetId("data\\shaders\\colorLit.shader"), 
-                             clipboard.getWorld()->getAssetId("data\\shaders\\normal.shader"),
-                             clipboard.getWorld()->getAssetId("data\\shaders\\tangent.shader"),
-                             clipboard.getWorld()->getAssetId("data\\shaders\\binormal.shader") };
+    const Guid shaders[] = { clipboard.getWorld()->getAssetGuid("data\\shaders\\colorLit.shader"), 
+                             clipboard.getWorld()->getAssetGuid("data\\shaders\\normal.shader"),
+                             clipboard.getWorld()->getAssetGuid("data\\shaders\\tangent.shader"),
+                             clipboard.getWorld()->getAssetGuid("data\\shaders\\binormal.shader") };
 
     // select draw mode for mesh
     if (ImGui::BeginCombo("##DrawMode", drawMode[mActiveDrawModeIndex]))
@@ -111,7 +111,7 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     // Draw mesh preview child window
     ImGui::Text("Preview");
 
-    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(shaders[mActiveDrawModeIndex]);
+    Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(shaders[mActiveDrawModeIndex]);
     int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
 
     float meshRadius = mesh->getBounds().mRadius;

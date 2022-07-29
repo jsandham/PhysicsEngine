@@ -4,11 +4,11 @@
 
 using namespace PhysicsEngine;
 
-CapsuleCollider::CapsuleCollider(World* world) : Collider(world)
+CapsuleCollider::CapsuleCollider(World *world, const Id &id) : Collider(world, id)
 {
 }
 
-CapsuleCollider::CapsuleCollider(World* world, const Guid& id) : Collider(world, id)
+CapsuleCollider::CapsuleCollider(World *world, const Guid &guid, const Id &id) : Collider(world, guid, id)
 {
 }
 

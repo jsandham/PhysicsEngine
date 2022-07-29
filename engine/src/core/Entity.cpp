@@ -6,13 +6,13 @@
 
 using namespace PhysicsEngine;
 
-Entity::Entity(World *world) : Object(world)
+Entity::Entity(World *world, const Id &id) : Object(world, id)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
 }
 
-Entity::Entity(World *world, const Guid& id) : Object(world, id)
+Entity::Entity(World *world, const Guid& guid, const Id& id) : Object(world, guid, id)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
@@ -50,17 +50,17 @@ std::string Entity::getObjectName() const
 
 void Entity::latentDestroy()
 {
-    mWorld->getActiveScene()->latentDestroyEntity(getId());
+    mWorld->getActiveScene()->latentDestroyEntity(getGuid());
 }
 
 void Entity::immediateDestroy()
 {
-    mWorld->getActiveScene()->immediateDestroyEntity(getId());
+    mWorld->getActiveScene()->immediateDestroyEntity(getGuid());
 }
 
 std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity() const
 {
-    return mWorld->getActiveScene()->getComponentsOnEntity(getId());
+    return mWorld->getActiveScene()->getComponentsOnEntity(getGuid());
 }
 
 std::string Entity::getName() const

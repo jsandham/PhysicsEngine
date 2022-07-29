@@ -23,7 +23,7 @@ void CapsuleColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        CapsuleCollider *capsuleCollider = clipboard.getWorld()->getActiveScene()->getComponentById<CapsuleCollider>(id);
+        CapsuleCollider *capsuleCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<CapsuleCollider>(id);
 
         if (capsuleCollider != nullptr)
         {

@@ -187,43 +187,89 @@ template <> TerrainSystem* World::getSystemByIndex<TerrainSystem>(size_t index) 
     return mAllocators.mTerrainSystemAllocator.get(index);
 }
 
-template <> RenderSystem* World::getSystemById<RenderSystem>(const Guid& systemId) const
+template <> RenderSystem* World::getSystemById<RenderSystem>(const Id& systemId) const
 {
     return getSystemById_impl(mIdState.mRenderSystemIdToGlobalIndex, &mAllocators.mRenderSystemAllocator, systemId);
 }
 
-template <> PhysicsSystem* World::getSystemById<PhysicsSystem>(const Guid& systemId) const
+template <> PhysicsSystem *World::getSystemById<PhysicsSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mPhysicsSystemIdToGlobalIndex, &mAllocators.mPhysicsSystemAllocator,
         systemId);
 }
-template <> CleanUpSystem* World::getSystemById<CleanUpSystem>(const Guid& systemId) const
+template <> CleanUpSystem *World::getSystemById<CleanUpSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mCleanupSystemIdToGlobalIndex, &mAllocators.mCleanupSystemAllocator,
         systemId);
 }
 
-template <> DebugSystem* World::getSystemById<DebugSystem>(const Guid& systemId) const
+template <> DebugSystem *World::getSystemById<DebugSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mDebugSystemIdToGlobalIndex, &mAllocators.mDebugSystemAllocator, systemId);
 }
 
-template <> GizmoSystem* World::getSystemById<GizmoSystem>(const Guid& systemId) const
+template <> GizmoSystem *World::getSystemById<GizmoSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mGizmoSystemIdToGlobalIndex, &mAllocators.mGizmoSystemAllocator, systemId);
 }
 
-template <> FreeLookCameraSystem* World::getSystemById<FreeLookCameraSystem>(const Guid& systemId) const
+template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mFreeLookCameraSystemIdToGlobalIndex, &mAllocators.mFreeLookCameraSystemAllocator,
         systemId);
 }
 
-template <> TerrainSystem* World::getSystemById<TerrainSystem>(const Guid& systemId) const
+template <> TerrainSystem *World::getSystemById<TerrainSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mTerrainSystemIdToGlobalIndex, &mAllocators.mTerrainSystemAllocator,
         systemId);
 }
+
+
+
+
+
+template <> RenderSystem *World::getSystemByGuid<RenderSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mRenderSystemGuidToGlobalIndex, &mAllocators.mRenderSystemAllocator,
+                                systemGuid);
+}
+
+template <> PhysicsSystem *World::getSystemByGuid<PhysicsSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mPhysicsSystemGuidToGlobalIndex, &mAllocators.mPhysicsSystemAllocator,
+                              systemGuid);
+}
+template <> CleanUpSystem *World::getSystemByGuid<CleanUpSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mCleanupSystemGuidToGlobalIndex, &mAllocators.mCleanupSystemAllocator,
+                              systemGuid);
+}
+
+template <> DebugSystem *World::getSystemByGuid<DebugSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mDebugSystemGuidToGlobalIndex, &mAllocators.mDebugSystemAllocator, systemGuid);
+}
+
+template <> GizmoSystem *World::getSystemByGuid<GizmoSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mGizmoSystemGuidToGlobalIndex, &mAllocators.mGizmoSystemAllocator, systemGuid);
+}
+
+template <> FreeLookCameraSystem *World::getSystemByGuid<FreeLookCameraSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mFreeLookCameraSystemGuidToGlobalIndex,
+                              &mAllocators.mFreeLookCameraSystemAllocator, systemGuid);
+}
+
+template <> TerrainSystem *World::getSystemByGuid<TerrainSystem>(const Guid &systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mTerrainSystemGuidToGlobalIndex, &mAllocators.mTerrainSystemAllocator,
+                              systemGuid);
+}
+
+
+
 
 template <> Mesh* World::getAssetByIndex<Mesh>(size_t index) const
 {
@@ -270,50 +316,108 @@ template <> Sprite* World::getAssetByIndex<Sprite>(size_t index) const
     return mAllocators.mSpriteAllocator.get(index);
 }
 
-template <> Mesh* World::getAssetById<Mesh>(const Guid& assetId) const
+template <> Mesh* World::getAssetById<Mesh>(const Id& assetId) const
 {
     return getAssetById_impl(mIdState.mMeshIdToGlobalIndex, &mAllocators.mMeshAllocator, assetId);
 }
 
-template <> Material* World::getAssetById<Material>(const Guid& assetId) const
+template <> Material *World::getAssetById<Material>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mMaterialIdToGlobalIndex, &mAllocators.mMaterialAllocator, assetId);
 }
 
-template <> Shader* World::getAssetById<Shader>(const Guid& assetId) const
+template <> Shader *World::getAssetById<Shader>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mShaderIdToGlobalIndex, &mAllocators.mShaderAllocator, assetId);
 }
 
-template <> Texture2D* World::getAssetById<Texture2D>(const Guid& assetId) const
+template <> Texture2D *World::getAssetById<Texture2D>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mTexture2DIdToGlobalIndex, &mAllocators.mTexture2DAllocator, assetId);
 }
 
-template <> Texture3D* World::getAssetById<Texture3D>(const Guid& assetId) const
+template <> Texture3D *World::getAssetById<Texture3D>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mTexture3DIdToGlobalIndex, &mAllocators.mTexture3DAllocator, assetId);
 }
 
-template <> Cubemap* World::getAssetById<Cubemap>(const Guid& assetId) const
+template <> Cubemap *World::getAssetById<Cubemap>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mCubemapIdToGlobalIndex, &mAllocators.mCubemapAllocator, assetId);
 }
 
-template <> RenderTexture* World::getAssetById<RenderTexture>(const Guid& assetId) const
+template <> RenderTexture *World::getAssetById<RenderTexture>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mRenderTextureIdToGlobalIndex, &mAllocators.mRenderTextureAllocator, assetId);
 }
 
-template <> Font* World::getAssetById<Font>(const Guid& assetId) const
+template <> Font *World::getAssetById<Font>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mFontIdToGlobalIndex, &mAllocators.mFontAllocator, assetId);
 }
 
-template <> Sprite* World::getAssetById<Sprite>(const Guid& assetId) const
+template <> Sprite *World::getAssetById<Sprite>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mSpriteIdToGlobalIndex, &mAllocators.mSpriteAllocator, assetId);
 }
+
+
+
+
+
+template <> Mesh *World::getAssetByGuid<Mesh>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mMeshGuidToGlobalIndex, &mAllocators.mMeshAllocator, assetGuid);
+}
+
+template <> Material *World::getAssetByGuid<Material>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mMaterialGuidToGlobalIndex, &mAllocators.mMaterialAllocator, assetGuid);
+}
+
+template <> Shader *World::getAssetByGuid<Shader>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mShaderGuidToGlobalIndex, &mAllocators.mShaderAllocator, assetGuid);
+}
+
+template <> Texture2D *World::getAssetByGuid<Texture2D>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mTexture2DGuidToGlobalIndex, &mAllocators.mTexture2DAllocator, assetGuid);
+}
+
+template <> Texture3D *World::getAssetByGuid<Texture3D>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mTexture3DGuidToGlobalIndex, &mAllocators.mTexture3DAllocator, assetGuid);
+}
+
+template <> Cubemap *World::getAssetByGuid<Cubemap>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mCubemapGuidToGlobalIndex, &mAllocators.mCubemapAllocator, assetGuid);
+}
+
+template <> RenderTexture *World::getAssetByGuid<RenderTexture>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mRenderTextureGuidToGlobalIndex, &mAllocators.mRenderTextureAllocator,
+                               assetGuid);
+}
+
+template <> Font *World::getAssetByGuid<Font>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mFontGuidToGlobalIndex, &mAllocators.mFontAllocator, assetGuid);
+}
+
+template <> Sprite *World::getAssetByGuid<Sprite>(const Guid &assetGuid) const
+{
+    return getAssetByGuid_impl(mIdState.mSpriteGuidToGlobalIndex, &mAllocators.mSpriteAllocator, assetGuid);
+}
+
+
+
+
+
+
+
+
 
 template <> Mesh* World::createAsset<Mesh>()
 {
@@ -360,49 +464,49 @@ template <> Sprite* World::createAsset<Sprite>()
     return createAsset_impl(&mAllocators.mSpriteAllocator, Guid::newGuid());
 }
 
-template <> Mesh* World::createAsset<Mesh>(const Guid& id)
+template <> Mesh* World::createAsset<Mesh>(const Guid& assetGuid)
 {
-    return createAsset_impl(&mAllocators.mMeshAllocator, id);
+    return createAsset_impl(&mAllocators.mMeshAllocator, assetGuid);
 }
 
-template <> Material* World::createAsset<Material>(const Guid& id)
+template <> Material *World::createAsset<Material>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mMaterialAllocator, id);
+    return createAsset_impl(&mAllocators.mMaterialAllocator, assetGuid);
 }
 
-template <> Shader* World::createAsset<Shader>(const Guid& id)
+template <> Shader *World::createAsset<Shader>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mShaderAllocator, id);
+    return createAsset_impl(&mAllocators.mShaderAllocator, assetGuid);
 }
 
-template <> Texture2D* World::createAsset<Texture2D>(const Guid& id)
+template <> Texture2D *World::createAsset<Texture2D>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mTexture2DAllocator, id);
+    return createAsset_impl(&mAllocators.mTexture2DAllocator, assetGuid);
 }
 
-template <> Texture3D* World::createAsset<Texture3D>(const Guid& id)
+template <> Texture3D *World::createAsset<Texture3D>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mTexture3DAllocator, id);
+    return createAsset_impl(&mAllocators.mTexture3DAllocator, assetGuid);
 }
 
-template <> Cubemap* World::createAsset<Cubemap>(const Guid& id)
+template <> Cubemap *World::createAsset<Cubemap>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mCubemapAllocator, id);
+    return createAsset_impl(&mAllocators.mCubemapAllocator, assetGuid);
 }
 
-template <> RenderTexture* World::createAsset<RenderTexture>(const Guid& id)
+template <> RenderTexture *World::createAsset<RenderTexture>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mRenderTextureAllocator, id);
+    return createAsset_impl(&mAllocators.mRenderTextureAllocator, assetGuid);
 }
 
-template <> Font* World::createAsset<Font>(const Guid& id)
+template <> Font *World::createAsset<Font>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mFontAllocator, id);
+    return createAsset_impl(&mAllocators.mFontAllocator, assetGuid);
 }
 
-template <> Sprite* World::createAsset<Sprite>(const Guid& id)
+template <> Sprite *World::createAsset<Sprite>(const Guid &assetGuid)
 {
-    return createAsset_impl(&mAllocators.mSpriteAllocator, id);
+    return createAsset_impl(&mAllocators.mSpriteAllocator, assetGuid);
 }
 
 template <> Mesh* World::createAsset<Mesh>(const YAML::Node& in)
@@ -450,123 +554,301 @@ template <> Sprite* World::createAsset<Sprite>(const YAML::Node& in)
     return createAsset_impl(&mAllocators.mSpriteAllocator, in);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Scene>(const Guid& id, int index, int type)
+void World::addToIdState(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mGuidToGlobalIndex[guid] = index;
+    mIdState.mIdToGlobalIndex[id] = index;
+
+    mIdState.mGuidToType[guid] = type;
+    mIdState.mIdToType[id] = type;
+
+    mIdState.mGuidToId[guid] = id;
+    mIdState.mIdToGuid[id] = guid;
+}
+
+void World::removeFromIdState(const Guid &guid, const Id &id)
+{
+    mIdState.mGuidToGlobalIndex.erase(guid);
+    mIdState.mIdToGlobalIndex.erase(id);
+
+    mIdState.mGuidToType.erase(guid);
+    mIdState.mIdToType.erase(id);
+
+    mIdState.mGuidToId.erase(guid);
+    mIdState.mIdToGuid.erase(id);
+}
+
+template <> void World::addToIdState_impl<Scene>(const Guid &guid, const Id &id, int index, int type)
+{
+    mIdState.mSceneGuidToGlobalIndex[guid] = index;
     mIdState.mSceneIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Mesh>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Mesh>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mMeshGuidToGlobalIndex[guid] = index;
     mIdState.mMeshIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Material>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Material>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mMaterialGuidToGlobalIndex[guid] = index;
     mIdState.mMaterialIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Shader>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Shader>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mShaderGuidToGlobalIndex[guid] = index;
     mIdState.mShaderIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Texture2D>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Texture2D>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mTexture2DGuidToGlobalIndex[guid] = index;
     mIdState.mTexture2DIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Texture3D>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Texture3D>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mTexture3DGuidToGlobalIndex[guid] = index;
     mIdState.mTexture3DIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Cubemap>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Cubemap>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mCubemapGuidToGlobalIndex[guid] = index;
     mIdState.mCubemapIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<RenderTexture>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<RenderTexture>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mRenderTextureGuidToGlobalIndex[guid] = index;
     mIdState.mRenderTextureIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Font>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Font>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mFontGuidToGlobalIndex[guid] = index;
     mIdState.mFontIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<Sprite>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<Sprite>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mSpriteGuidToGlobalIndex[guid] = index;
     mIdState.mSpriteIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<RenderSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<RenderSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mRenderSystemGuidToGlobalIndex[guid] = index;
     mIdState.mRenderSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<PhysicsSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<PhysicsSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mPhysicsSystemGuidToGlobalIndex[guid] = index;
     mIdState.mPhysicsSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<CleanUpSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<CleanUpSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mCleanupSystemGuidToGlobalIndex[guid] = index;
     mIdState.mCleanupSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<DebugSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<DebugSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mDebugSystemGuidToGlobalIndex[guid] = index;
     mIdState.mDebugSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<GizmoSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<GizmoSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mGizmoSystemGuidToGlobalIndex[guid] = index;
     mIdState.mGizmoSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<FreeLookCameraSystem>(const Guid& id, int index, int type)
+template <>
+void World::addToIdState_impl<FreeLookCameraSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mFreeLookCameraSystemGuidToGlobalIndex[guid] = index;
     mIdState.mFreeLookCameraSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
 }
 
-template <> void World::addIdToGlobalIndexMap_impl<TerrainSystem>(const Guid& id, int index, int type)
+template <> void World::addToIdState_impl<TerrainSystem>(const Guid &guid, const Id &id, int index, int type)
 {
+    mIdState.mTerrainSystemGuidToGlobalIndex[guid] = index;
     mIdState.mTerrainSystemIdToGlobalIndex[id] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-    mIdState.mIdToType[id] = type;
+    
+    addToIdState(guid, id, index, type);
+}
+
+template <> void World::removeFromIdState_impl<Scene>(const Guid &guid, const Id &id)
+{
+    mIdState.mSceneGuidToGlobalIndex.erase(guid);
+    mIdState.mSceneIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Mesh>(const Guid &guid, const Id &id)
+{
+    mIdState.mMeshGuidToGlobalIndex.erase(guid);
+    mIdState.mMeshIdToGlobalIndex.erase(id);
+   
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Material>(const Guid &guid, const Id &id)
+{
+    mIdState.mMaterialGuidToGlobalIndex.erase(guid);
+    mIdState.mMaterialIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Shader>(const Guid &guid, const Id &id)
+{
+    mIdState.mShaderGuidToGlobalIndex.erase(guid);
+    mIdState.mShaderIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Texture2D>(const Guid &guid, const Id &id)
+{
+    mIdState.mTexture2DGuidToGlobalIndex.erase(guid);
+    mIdState.mTexture2DIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Texture3D>(const Guid &guid, const Id &id)
+{
+    mIdState.mTexture3DGuidToGlobalIndex.erase(guid);
+    mIdState.mTexture3DIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Cubemap>(const Guid &guid, const Id &id)
+{
+    mIdState.mCubemapGuidToGlobalIndex.erase(guid);
+    mIdState.mCubemapIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<RenderTexture>(const Guid &guid, const Id &id)
+{
+    mIdState.mRenderTextureGuidToGlobalIndex.erase(guid);
+    mIdState.mRenderTextureIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Font>(const Guid &guid, const Id &id)
+{
+    mIdState.mFontGuidToGlobalIndex.erase(guid);
+    mIdState.mFontIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<Sprite>(const Guid &guid, const Id &id)
+{
+    mIdState.mSpriteGuidToGlobalIndex.erase(guid);
+    mIdState.mSpriteIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<RenderSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mRenderSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mRenderSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<PhysicsSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mPhysicsSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mPhysicsSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<CleanUpSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mCleanupSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mCleanupSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<DebugSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mDebugSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mDebugSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<GizmoSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mGizmoSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mGizmoSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<FreeLookCameraSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mFreeLookCameraSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mFreeLookCameraSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<TerrainSystem>(const Guid &guid, const Id &id)
+{
+    mIdState.mTerrainSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mTerrainSystemIdToGlobalIndex.erase(id);
+    
+    removeFromIdState(guid, id);
 }
 
 template <typename T> T* World::addSystem_impl(PoolAllocator<T>* allocator, size_t order)
@@ -576,11 +858,11 @@ template <typename T> T* World::addSystem_impl(PoolAllocator<T>* allocator, size
     int systemGlobalIndex = (int)allocator->getCount();
     int systemType = SystemType<T>::type;
 
-    T* system = allocator->construct(this, Guid::newGuid());
+    T* system = allocator->construct(this, Guid::newGuid(), Id::newId());
 
     if (system != nullptr)
     {
-        addIdToGlobalIndexMap_impl<T>(system->getId(), systemGlobalIndex, systemType);
+        addToIdState_impl<T>(system->getGuid(), system->getId(), systemGlobalIndex, systemType);
 
         size_t locationToInsert = mSystems.size();
         for (size_t i = 0; i < mSystems.size(); i++)
@@ -599,8 +881,8 @@ template <typename T> T* World::addSystem_impl(PoolAllocator<T>* allocator, size
 }
 
 template <typename T>
-T* World::getSystemById_impl(const std::unordered_map<Guid, int>& idToIndexMap, const PoolAllocator<T>* allocator,
-    const Guid& systemId) const
+T* World::getSystemById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator,
+                             const Id &systemId) const
 {
     static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
 
@@ -613,8 +895,22 @@ T* World::getSystemById_impl(const std::unordered_map<Guid, int>& idToIndexMap, 
 }
 
 template <typename T>
-T* World::getAssetById_impl(const std::unordered_map<Guid, int>& idToIndexMap, const PoolAllocator<T>* allocator,
-    const Guid& assetId) const
+T *World::getSystemByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                             const Guid &systemGuid) const
+{
+    static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
+
+    if (allocator == nullptr || SystemType<T>::type != getTypeOf(systemGuid))
+    {
+        return nullptr;
+    }
+
+    return getByGuid_impl<T>(guidToIndexMap, allocator, systemGuid);
+}
+
+template <typename T>
+T* World::getAssetById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator,
+    const Id& assetId) const
 {
     static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
@@ -626,18 +922,32 @@ T* World::getAssetById_impl(const std::unordered_map<Guid, int>& idToIndexMap, c
     return getById_impl<T>(idToIndexMap, allocator, assetId);
 }
 
-template <typename T> T* World::createAsset_impl(PoolAllocator<T>* allocator, const Guid& assetId)
+template <typename T>
+T *World::getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                            const Guid &assetGuid) const
+{
+    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+
+    if (allocator == nullptr || AssetType<T>::type != getTypeOf(assetGuid))
+    {
+        return nullptr;
+    }
+
+    return getByGuid_impl<T>(guidToIndexMap, allocator, assetGuid);
+}
+
+template <typename T> T* World::createAsset_impl(PoolAllocator<T>* allocator, const Guid& assetGuid)
 {
     static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     int index = (int)allocator->getCount();
     int type = AssetType<T>::type;
 
-    T* asset = allocator->construct(this, assetId);
+    T* asset = allocator->construct(this, assetGuid, Id::newId());
 
     if (asset != nullptr)
     {
-        addIdToGlobalIndexMap_impl<T>(asset->getId(), index, type);
+        addToIdState_impl<T>(asset->getGuid(), asset->getId(), index, type);
     }
 
     return asset;
@@ -650,25 +960,43 @@ template <typename T> T* World::createAsset_impl(PoolAllocator<T>* allocator, co
     int index = (int)allocator->getCount();
     int type = AssetType<T>::type;
 
-    T* asset = allocator->construct(this, in);
+    T* asset = allocator->construct(this, in, Id::newId());
 
     if (asset != nullptr)
     {
-        addIdToGlobalIndexMap_impl<T>(asset->getId(), index, type);
+        addToIdState_impl<T>(asset->getGuid(), asset->getId(), index, type);
     }
 
     return asset;
 }
 
 template <typename T>
-T* World::getById_impl(const std::unordered_map<Guid, int>& idToIndexMap, const PoolAllocator<T>* allocator,
-    const Guid& id) const
+T* World::getById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator,
+    const Id& id) const
 {
     static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
         "'T' is not of type Asset or System");
 
-    std::unordered_map<Guid, int>::const_iterator it = idToIndexMap.find(id);
+    std::unordered_map<Id, int>::const_iterator it = idToIndexMap.find(id);
     if (it != idToIndexMap.end())
+    {
+        return allocator->get(it->second);
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+template <typename T>
+T *World::getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                       const Guid &guid) const
+{
+    static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
+                  "'T' is not of type Asset or System");
+
+    std::unordered_map<Guid, int>::const_iterator it = guidToIndexMap.find(guid);
+    if (it != guidToIndexMap.end())
     {
         return allocator->get(it->second);
     }
@@ -749,13 +1077,13 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
     if (in.begin()->first.IsScalar() && in.begin()->second.IsMap())
     {
         int type = YAML::getValue<int>(in.begin()->second, "type");
-        Guid id = YAML::getValue<Guid>(in.begin()->second, "id");
+        Guid guid = YAML::getValue<Guid>(in.begin()->second, "id");
 
-        if (PhysicsEngine::isAsset(type) && id.isValid())
+        if (PhysicsEngine::isAsset(type) && guid.isValid())
         {
             generateSourcePaths(filePath, in.begin()->second);
 
-            Asset *asset = getAssetById(id, type);
+            Asset *asset = getAssetByGuid(guid, type);
             if (asset != nullptr)
             {
                 asset->deserialize(in);
@@ -768,8 +1096,8 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
 
             if (asset != nullptr)
             {
-                mIdState.mAssetIdToFilepath[asset->getId()] = filePath;
-                mIdState.mAssetFilepathToId[filePath] = asset->getId();
+                mIdState.mAssetGuidToFilepath[asset->getGuid()] = filePath;
+                mIdState.mAssetFilepathToGuid[filePath] = asset->getGuid();
             }
 
             return asset;
@@ -793,11 +1121,11 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
     }
 
     int type = YAML::getValue<int>(in, "type");
-    Guid id = YAML::getValue<Guid>(in, "id");
+    Guid guid = YAML::getValue<Guid>(in, "id");
 
-    if (PhysicsEngine::isScene(type) && id.isValid())
+    if (PhysicsEngine::isScene(type) && guid.isValid())
     {
-        Scene *scene = getSceneById(id);
+        Scene *scene = getSceneByGuid(guid);
         if (scene != nullptr)
         {
             scene->deserialize(in);
@@ -809,8 +1137,8 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
 
         if (scene != nullptr)
         {
-            mIdState.mSceneIdToFilepath[scene->getId()] = filePath;
-            mIdState.mSceneFilepathToId[filePath] = scene->getId();
+            mIdState.mSceneGuidToFilepath[scene->getGuid()] = filePath;
+            mIdState.mSceneFilepathToGuid[filePath] = scene->getGuid();
 
             // Copy 'do not destroy' entities from old scene to new scene
             copyDoNotDestroyEntities(mActiveScene, scene);
@@ -824,11 +1152,11 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
     return nullptr;
 }
 
-bool World::writeAssetToYAML(const std::string &filePath, const Guid &assetId) const
+bool World::writeAssetToYAML(const std::string &filePath, const Guid &assetGuid) const
 {
-    int type = getTypeOf(assetId);
+    int type = getTypeOf(assetGuid);
 
-    Asset *asset = getAssetById(assetId, type);
+    Asset *asset = getAssetByGuid(assetGuid, type);
     if (asset == nullptr)
     {
         return false;    
@@ -837,9 +1165,9 @@ bool World::writeAssetToYAML(const std::string &filePath, const Guid &assetId) c
     return asset->writeToYAML(filePath);
 }
 
-bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneId) const
+bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneGuid) const
 {
-    Scene *scene = getSceneById(sceneId);
+    Scene *scene = getSceneByGuid(sceneGuid);
     if (scene == nullptr)
     {
         return false;
@@ -858,9 +1186,9 @@ void World::copyDoNotDestroyEntities(Scene *from, Scene *to)
             YAML::Node entityNode;
             entity->serialize(entityNode);
 
-            std::cout << "do not destroy entity: " << entity->getId().toString() << std::endl;
+            std::cout << "do not destroy entity: " << entity->getGuid().toString() << std::endl;
 
-            Entity *newEntity = to->getEntityById(entity->getId());
+            Entity *newEntity = to->getEntityByGuid(entity->getGuid());
             if (newEntity != nullptr)
             {
                 newEntity->deserialize(entityNode);
@@ -873,12 +1201,12 @@ void World::copyDoNotDestroyEntities(Scene *from, Scene *to)
             std::vector<std::pair<Guid, int>> components = entity->getComponentsOnEntity();
             for (size_t j = 0; j < components.size(); j++)
             {
-                Component *component = from->getComponentById(components[j].first, components[j].second);
+                Component *component = from->getComponentByGuid(components[j].first, components[j].second);
 
                 YAML::Node componentNode;
                 component->serialize(componentNode);
 
-                Component *newComponent = to->getComponentById(components[j].first, components[j].second);
+                Component *newComponent = to->getComponentByGuid(components[j].first, components[j].second);
                 if (newComponent != nullptr)
                 {
                     newComponent->deserialize(componentNode);
@@ -914,17 +1242,17 @@ void World::generateSourcePaths(const std::string &filepath, YAML::Node &in)
     }
 }
 
-std::vector<ShaderUniform> World::getCachedMaterialUniforms(const Guid &materialId, const Guid &shaderId)
+std::vector<ShaderUniform> World::getCachedMaterialUniforms(const Guid &materialGuid, const Guid &shaderGuid)
 {
-    return mMaterialUniformCache[materialId][shaderId];
+    return mMaterialUniformCache[materialGuid][shaderGuid];
 }
 
-void World::cacheMaterialUniforms(const Guid &materialId, const Guid &shaderId, const std::vector<ShaderUniform> &uniforms)
+void World::cacheMaterialUniforms(const Guid &materialGuid, const Guid &shaderGuid, const std::vector<ShaderUniform> &uniforms)
 {
-    assert(materialId != Guid::INVALID);
-    assert(shaderId != Guid::INVALID);
+    assert(materialGuid != Guid::INVALID);
+    assert(shaderGuid != Guid::INVALID);
 
-    mMaterialUniformCache[materialId][shaderId] = uniforms;
+    mMaterialUniformCache[materialGuid][shaderGuid] = uniforms;
 }
 
 size_t World::getNumberOfScenes() const
@@ -942,17 +1270,17 @@ Mesh *World::getPrimtiveMesh(PrimitiveType type) const
     switch (type)
     {
     case PrimitiveType::Plane:
-        return getAssetById<Mesh>(mPrimitives.mPlaneMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mPlaneMeshId);
     case PrimitiveType::Disc:
-        return getAssetById<Mesh>(mPrimitives.mDiscMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mDiscMeshId);
     case PrimitiveType::Cube:
-        return getAssetById<Mesh>(mPrimitives.mCubeMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mCubeMeshId);
     case PrimitiveType::Sphere:
-        return getAssetById<Mesh>(mPrimitives.mSphereMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mSphereMeshId);
     case PrimitiveType::Cylinder:
-        return getAssetById<Mesh>(mPrimitives.mCylinderMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mCylinderMeshId);
     case PrimitiveType::Cone:
-        return getAssetById<Mesh>(mPrimitives.mConeMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mConeMeshId);
     default:
         return nullptr;
     }
@@ -961,10 +1289,46 @@ Mesh *World::getPrimtiveMesh(PrimitiveType type) const
 
 Material *World::getPrimtiveMaterial() const
 {
-    return getAssetById<Material>(mPrimitives.mStandardMaterialId);
+    return getAssetByGuid<Material>(mPrimitives.mStandardMaterialId);
 }
 
-Asset *World::getAssetById(const Guid &assetId, int type) const
+Asset *World::getAssetByGuid(const Guid &assetGuid, int type) const
+{
+    switch (type)
+    {
+    case AssetType<Mesh>::type: {
+        return getAssetByGuid<Mesh>(assetGuid);
+    }
+    case AssetType<Material>::type: {
+        return getAssetByGuid<Material>(assetGuid);
+    }
+    case AssetType<Shader>::type: {
+        return getAssetByGuid<Shader>(assetGuid);
+    }
+    case AssetType<Texture2D>::type: {
+        return getAssetByGuid<Texture2D>(assetGuid);
+    }
+    case AssetType<Texture3D>::type: {
+        return getAssetByGuid<Texture3D>(assetGuid);
+    }
+    case AssetType<Cubemap>::type: {
+        return getAssetByGuid<Cubemap>(assetGuid);
+    }
+    case AssetType<RenderTexture>::type: {
+        return getAssetByGuid<RenderTexture>(assetGuid);
+    }
+    case AssetType<Sprite>::type: {
+        return getAssetByGuid<Sprite>(assetGuid);
+    }
+    case AssetType<Font>::type: {
+        return getAssetByGuid<Font>(assetGuid);
+    }
+    }
+
+    return nullptr;
+}
+
+Asset *World::getAssetById(const Id &assetId, int type) const
 {
     switch (type)
     {
@@ -982,9 +1346,14 @@ Asset *World::getAssetById(const Guid &assetId, int type) const
     return nullptr;
 }
 
-Scene *World::getSceneById(const Guid &sceneId) const
+Scene *World::getSceneById(const Id &sceneId) const
 {
     return getById_impl<Scene>(mIdState.mSceneIdToGlobalIndex, &mAllocators.mSceneAllocator, sceneId);
+}
+
+Scene *World::getSceneByGuid(const Guid &sceneGuid) const
+{
+    return getByGuid_impl<Scene>(mIdState.mSceneGuidToGlobalIndex, &mAllocators.mSceneAllocator, sceneGuid);
 }
 
 Scene *World::getSceneByIndex(size_t index) const
@@ -1002,9 +1371,9 @@ System *World::getSystemByUpdateOrder(size_t order) const
     return mSystems[order];
 }
 
-int World::getIndexOf(const Guid &id) const
+int World::getIndexOf(const Id &id) const
 {
-    std::unordered_map<Guid, int>::const_iterator it = mIdState.mIdToGlobalIndex.find(id);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mIdToGlobalIndex.find(id);
     if (it != mIdState.mIdToGlobalIndex.end())
     {
         return it->second;
@@ -1013,10 +1382,32 @@ int World::getIndexOf(const Guid &id) const
     return -1;
 }
 
-int World::getTypeOf(const Guid &id) const
+int World::getIndexOf(const Guid &guid) const
 {
-    std::unordered_map<Guid, int>::const_iterator it = mIdState.mIdToType.find(id);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mGuidToGlobalIndex.find(guid);
+    if (it != mIdState.mGuidToGlobalIndex.end())
+    {
+        return it->second;
+    }
+
+    return -1;
+}
+
+int World::getTypeOf(const Id &id) const
+{
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mIdToType.find(id);
     if (it != mIdState.mIdToType.end())
+    {
+        return it->second;
+    }
+
+    return -1;
+}
+
+int World::getTypeOf(const Guid &guid) const
+{
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mGuidToType.find(guid);
+    if (it != mIdState.mGuidToType.end())
     {
         return it->second;
     }
@@ -1029,11 +1420,11 @@ Scene *World::createScene()
     int globalIndex = (int)mAllocators.mSceneAllocator.getCount();
     int type = SceneType<Scene>::type;
 
-    Scene *scene = mAllocators.mSceneAllocator.construct(this, Guid::newGuid());
+    Scene *scene = mAllocators.mSceneAllocator.construct(this, Guid::newGuid(), Id::newId());
 
     if (scene != nullptr)
     {
-        addIdToGlobalIndexMap_impl<Scene>(scene->getId(), globalIndex, type);
+        addToIdState_impl<Scene>(scene->getGuid(), scene->getId(), globalIndex, type);
     }
 
     return scene;
@@ -1044,11 +1435,11 @@ Scene *World::createScene(const YAML::Node &in)
     int globalIndex = (int)mAllocators.mSceneAllocator.getCount();
     int type = SceneType<Scene>::type;
 
-    Scene *scene = mAllocators.mSceneAllocator.construct(this, in);
+    Scene *scene = mAllocators.mSceneAllocator.construct(this, in, Id::newId());
 
     if (scene != nullptr)
     {
-        addIdToGlobalIndexMap_impl<Scene>(scene->getId(), globalIndex, type);
+        addToIdState_impl<Scene>(scene->getGuid(), scene->getId(), globalIndex, type);
     }
 
     return scene;
@@ -1090,149 +1481,114 @@ Asset *World::createAsset(const YAML::Node &in, int type)
     return nullptr;
 }
 
-void World::latentDestroyAsset(const Guid &assetId, int assetType)
+void World::latentDestroyAsset(const Guid &assetGuid, int assetType)
 {
-    mIdState.mAssetIdsMarkedLatentDestroy.push_back(std::make_pair(assetId, assetType));
+    mIdState.mAssetGuidsMarkedLatentDestroy.push_back(std::make_pair(assetGuid, assetType));
 }
 
-void World::immediateDestroyAsset(const Guid &assetId, int assetType)
+void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
 {
-    int index = getIndexOf(assetId);
-    Asset *swap = nullptr;
+    int index = getIndexOf(assetGuid);
+
+    Id assetId = mIdState.mGuidToId[assetGuid];
     
     if (assetType == AssetType<Material>::type)
     {
-        swap = mAllocators.mMaterialAllocator.destruct(index);
+        Asset *swap = mAllocators.mMaterialAllocator.destruct(index);
     
-        mIdState.mMaterialIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Material>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mMaterialIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Material>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Mesh>::type)
     {
-        swap = mAllocators.mMeshAllocator.destruct(index);
+        Asset *swap = mAllocators.mMeshAllocator.destruct(index);
     
-        mIdState.mMeshIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Mesh>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mMeshIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Mesh>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Shader>::type)
     {
-        swap = mAllocators.mShaderAllocator.destruct(index);
+        Asset *swap = mAllocators.mShaderAllocator.destruct(index);
     
-        mIdState.mShaderIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Shader>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mShaderIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Shader>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Texture2D>::type)
     {
-        swap = mAllocators.mTexture2DAllocator.destruct(index);
+        Asset *swap = mAllocators.mTexture2DAllocator.destruct(index);
     
-        mIdState.mTexture2DIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Texture2D>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mTexture2DIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Texture2D>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Texture3D>::type)
     {
-        swap = mAllocators.mTexture3DAllocator.destruct(index);
+        Asset *swap = mAllocators.mTexture3DAllocator.destruct(index);
     
-        mIdState.mTexture3DIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Texture3D>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mTexture3DIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Texture3D>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Cubemap>::type)
     {
-        swap = mAllocators.mCubemapAllocator.destruct(index);
+        Asset *swap = mAllocators.mCubemapAllocator.destruct(index);
     
-        mIdState.mCubemapIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Cubemap>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mCubemapIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Cubemap>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<RenderTexture>::type)
     {
-        swap = mAllocators.mRenderTextureAllocator.destruct(index);
+        Asset *swap = mAllocators.mRenderTextureAllocator.destruct(index);
     
-        mIdState.mRenderTextureIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<RenderTexture>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mRenderTextureIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<RenderTexture>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Font>::type)
     {
-        swap = mAllocators.mFontAllocator.destruct(index);
+        Asset *swap = mAllocators.mFontAllocator.destruct(index);
     
-        mIdState.mFontIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Font>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mFontIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Font>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Sprite>::type)
     {
-        swap = mAllocators.mSpriteAllocator.destruct(index);
+        Asset *swap = mAllocators.mSpriteAllocator.destruct(index);
     
-        mIdState.mSpriteIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToGlobalIndex.erase(assetId);
-        mIdState.mIdToType.erase(assetId);
-    
+        removeFromIdState_impl<Sprite>(assetGuid, assetId);
+
         if (swap != nullptr)
         {
-            mIdState.mSpriteIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToGlobalIndex[swap->getId()] = index;
-            mIdState.mIdToType[swap->getId()] = assetType;
+            addToIdState_impl<Sprite>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else
@@ -1243,10 +1599,10 @@ void World::immediateDestroyAsset(const Guid &assetId, int assetType)
     }
 }
 
-std::string World::getAssetFilepath(const Guid &assetId) const
+std::string World::getAssetFilepath(const Guid &assetGuid) const
 {
-    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mAssetIdToFilepath.find(assetId);
-    if (it != mIdState.mAssetIdToFilepath.end())
+    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mAssetGuidToFilepath.find(assetGuid);
+    if (it != mIdState.mAssetGuidToFilepath.end())
     {
         return it->second;
     }
@@ -1254,10 +1610,10 @@ std::string World::getAssetFilepath(const Guid &assetId) const
     return std::string();
 }
 
-std::string World::getSceneFilepath(const Guid &sceneId) const
+std::string World::getSceneFilepath(const Guid &sceneGuid) const
 {
-    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mSceneIdToFilepath.find(sceneId);
-    if (it != mIdState.mSceneIdToFilepath.end())
+    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mSceneGuidToFilepath.find(sceneGuid);
+    if (it != mIdState.mSceneGuidToFilepath.end())
     {
         return it->second;
     }
@@ -1265,10 +1621,10 @@ std::string World::getSceneFilepath(const Guid &sceneId) const
     return std::string();
 }
 
-Guid World::getAssetId(const std::string& filepath) const
+Guid World::getAssetGuid(const std::string& filepath) const
 {
-    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mAssetFilepathToId.find(filepath);
-    if (it != mIdState.mAssetFilepathToId.end())
+    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mAssetFilepathToGuid.find(filepath);
+    if (it != mIdState.mAssetFilepathToGuid.end())
     {
         return it->second;
     }
@@ -1276,10 +1632,10 @@ Guid World::getAssetId(const std::string& filepath) const
     return Guid::INVALID;
 }
 
-Guid World::getSceneId(const std::string& filepath) const
+Guid World::getSceneGuid(const std::string& filepath) const
 {
-    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mSceneFilepathToId.find(filepath);
-    if (it != mIdState.mSceneFilepathToId.end())
+    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mSceneFilepathToGuid.find(filepath);
+    if (it != mIdState.mSceneFilepathToGuid.end())
     {
         return it->second;
     }

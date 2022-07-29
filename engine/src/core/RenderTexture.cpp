@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-RenderTexture::RenderTexture(World* world) : Texture(world)
+RenderTexture::RenderTexture(World *world, const Id &id) : Texture(world, id)
 {
     mWidth = 1920;
     mHeight = 1080;
@@ -19,7 +19,7 @@ RenderTexture::RenderTexture(World* world) : Texture(world)
     mCreated = false;
 }
 
-RenderTexture::RenderTexture(World* world, const Guid& id) : Texture(world, id)
+RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
     mWidth = 1920;
     mHeight = 1080;
@@ -32,7 +32,7 @@ RenderTexture::RenderTexture(World* world, const Guid& id) : Texture(world, id)
     mCreated = false;
 }
 
-RenderTexture::RenderTexture(World* world, int width, int height) : Texture(world)
+RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) : Texture(world, id)
 {
     mWidth = width;
     mHeight = height;
@@ -47,7 +47,7 @@ RenderTexture::RenderTexture(World* world, int width, int height) : Texture(worl
     mRawTextureData.resize(width * height * mNumChannels);
 }
 
-RenderTexture::RenderTexture(World* world, int width, int height, TextureFormat format) : Texture(world)
+RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format) : Texture(world, id)
 {
     mWidth = width;
     mHeight = height;

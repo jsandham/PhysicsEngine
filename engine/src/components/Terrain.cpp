@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-Terrain::Terrain(World *world) : Component(world)
+Terrain::Terrain(World *world, const Id &id) : Component(world, id)
 {
     mMaterialId = Guid::INVALID;
     mCameraTransformId = Guid::INVALID;
@@ -31,7 +31,7 @@ Terrain::Terrain(World *world) : Component(world)
     mOffsetZ = 1.0f;
 }
 
-Terrain::Terrain(World *world, const Guid &id) : Component(world, id)
+Terrain::Terrain(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
 {
     mMaterialId = Guid::INVALID;
     mCameraTransformId = Guid::INVALID;

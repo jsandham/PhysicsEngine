@@ -6,11 +6,11 @@
 
 using namespace PhysicsEngine;
 
-SphereCollider::SphereCollider(World* world) : Collider(world)
+SphereCollider::SphereCollider(World *world, const Id &id) : Collider(world, id)
 {
 }
 
-SphereCollider::SphereCollider(World* world, const Guid& id) : Collider(world, id)
+SphereCollider::SphereCollider(World *world, const Guid &guid, const Id &id) : Collider(world, guid, id)
 {
 }
 

@@ -4,11 +4,11 @@
 
 using namespace PhysicsEngine;
 
-GizmoSystem::GizmoSystem(World* world) : System(world)
+GizmoSystem::GizmoSystem(World *world, const Id &id) : System(world, id)
 {
 }
 
-GizmoSystem::GizmoSystem(World* world, const Guid& id) : System(world, id)
+GizmoSystem::GizmoSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
 }
 

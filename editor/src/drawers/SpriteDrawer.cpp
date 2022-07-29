@@ -22,7 +22,7 @@ void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Sprite* sprite = clipboard.getWorld()->getAssetById<Sprite>(id);
+    Sprite* sprite = clipboard.getWorld()->getAssetByGuid<Sprite>(id);
 
     Guid textureId = sprite->getTextureId();
 
@@ -42,7 +42,7 @@ void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
         clipboard.clearDraggedItem();
 
         sprite->setTextureId(textureId);
-        clipboard.mModifiedAssets.insert(sprite->getId());
+        clipboard.mModifiedAssets.insert(sprite->getGuid());
     }
 
     if (isClicked)

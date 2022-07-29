@@ -25,12 +25,14 @@ class RenderSystem : public System
     DebugRenderer mDebugRenderer;
 
     std::vector<glm::mat4> mTotalModels;
-    std::vector<Guid> mTotalTransformIds;
+    /*std::vector<Guid> mTotalTransformIds;*/
+    std::vector<Id> mTotalTransformIds;
     std::vector<Sphere> mTotalBoundingSpheres;
     std::vector<RenderObject> mTotalRenderObjects;
     
     std::vector<glm::mat4> mModels;
-    std::vector<Guid> mTransformIds;
+    /*std::vector<Guid> mTransformIds;*/
+    std::vector<Id> mTransformIds;
     std::vector<RenderObject> mRenderObjects;
 
     //std::vector<bool> mCulledObjectFlags;
@@ -38,8 +40,8 @@ class RenderSystem : public System
     std::vector<SpriteObject> mSpriteObjects;
 
   public:
-    RenderSystem(World* world);
-    RenderSystem(World* world, const Guid& id);
+    RenderSystem(World *world, const Id &id);
+    RenderSystem(World *world, const Guid &guid, const Id &id);
     ~RenderSystem();
 
     virtual void serialize(YAML::Node &out) const override;

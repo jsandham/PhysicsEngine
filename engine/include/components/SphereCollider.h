@@ -18,8 +18,8 @@ class SphereCollider : public Collider
     Sphere mSphere;
 
   public:
-    SphereCollider(World *world);
-    SphereCollider(World *world, const Guid& id);
+    SphereCollider(World *world, const Id &id);
+    SphereCollider(World *world, const Guid &guid, const Id &id);
     ~SphereCollider();
 
     virtual void serialize(YAML::Node &out) const override;

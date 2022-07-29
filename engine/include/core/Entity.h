@@ -19,8 +19,8 @@ class Entity : public Object
     bool mEnabled;
 
   public:
-    Entity(World *world);
-    Entity(World *world, const Guid& id);
+    Entity(World *world, const Id &id);
+    Entity(World *world, const Guid& guid, const Id& id);
     ~Entity();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -34,12 +34,12 @@ class Entity : public Object
 
     template <typename T> T *addComponent()
     {
-        return mWorld->getActiveScene()->addComponent<T>(getId());
+        return mWorld->getActiveScene()->addComponent<T>(getGuid());
     }
 
     template <typename T> T *getComponent() const
     {
-        return mWorld->getActiveScene()->getComponent<T>(getId());
+        return mWorld->getActiveScene()->getComponent<T>(getGuid());
     }
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity() const;

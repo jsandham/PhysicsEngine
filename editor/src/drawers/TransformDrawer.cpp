@@ -27,11 +27,11 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
 
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Transform *transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(id);
+        Transform *transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(id);
 
         if (transform != nullptr)
         {
-            ImGui::Text(("ComponentId: " + transform->getId().toString()).c_str());
+            ImGui::Text(("ComponentId: " + transform->getGuid().toString()).c_str());
 
             glm::vec3 position = transform->getPosition();
             glm::quat rotation = transform->getRotation();

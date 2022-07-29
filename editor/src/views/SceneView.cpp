@@ -261,13 +261,13 @@ void SceneView::update(Clipboard &clipboard)
     // Update selected entity
     if (isSceneContentHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
     {
-        Guid transformId = cameraSystem->getTransformUnderMouse(nx, ny);
+        Id transformId = cameraSystem->getTransformUnderMouse(nx, ny);
 
         Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId);
 
         if (transform != nullptr)
         {
-            clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityId());
+            clipboard.setSelectedItem(InteractionType::Entity, transform->getEntityGuid());
         }
         else
         {
@@ -285,7 +285,7 @@ void SceneView::update(Clipboard &clipboard)
         if (camera->mHide == HideFlag::None && camera->mEnabled)
         {
             Entity* entity = camera->getEntity();
-            Transform* transform = clipboard.mWorld.getActiveScene()->getComponent<Transform>(entity->getId());
+            Transform* transform = clipboard.mWorld.getActiveScene()->getComponent<Transform>(entity->getGuid());
 
             glm::vec3 position = transform->getPosition();
             glm::vec3 front = transform->getForward();
@@ -311,7 +311,7 @@ void SceneView::update(Clipboard &clipboard)
             Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(clipboard.getDraggedId());
             Transform* transform = entity->getComponent<Transform>();
            
-            clipboard.mSceneViewTempEntityId = entity->getId();
+            clipboard.mSceneViewTempEntityId = entity->getGuid();
             clipboard.mSceneViewTempEntity = entity;
             clipboard.mSceneViewTempTransform = transform;
         }
@@ -420,7 +420,7 @@ void SceneView::update(Clipboard &clipboard)
 
                 if (camera->mRenderTextureId.isValid())
                 {
-                    RenderTexture* renderTexture = clipboard.getWorld()->getAssetById<RenderTexture>(camera->mRenderTextureId);
+                    RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
                     ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)renderTexture->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
                 }
                 else

@@ -9,7 +9,7 @@ const float FreeLookCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
 const float FreeLookCameraSystem::ZOOM_SENSITIVITY = 0.2f;      // 125.0f;
 const float FreeLookCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
-FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
+FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : System(world, id)
 {
     mTransformId = Guid::INVALID;
     mCameraId = Guid::INVALID;
@@ -21,7 +21,7 @@ FreeLookCameraSystem::FreeLookCameraSystem(World* world) : System(world)
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-FreeLookCameraSystem::FreeLookCameraSystem(World* world, const Guid& id) : System(world, id)
+FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
     mTransformId = Guid::INVALID;
     mCameraId = Guid::INVALID;
@@ -69,7 +69,7 @@ void FreeLookCameraSystem::init(World* world)
         entity->mDoNotDestroy = true;
         entity->mHide = HideFlag::DontSave;
 
-        std::cout << "do not destroy camera entity id: " << entity->getId().toString() << std::endl;
+        std::cout << "do not destroy camera entity id: " << entity->getGuid().toString() << std::endl;
 
         camera = entity->addComponent<Camera>();
         camera->mHide = HideFlag::DontSave;
@@ -86,8 +86,8 @@ void FreeLookCameraSystem::init(World* world)
 
     camera->mRenderToScreen = mRenderToScreen;
 
-    mCameraId = camera->getId();
-    mTransformId = transform->getId();
+    mCameraId = camera->getGuid();
+    mTransformId = transform->getGuid();
 }
 
 void FreeLookCameraSystem::update(const Input& input, const Time& time)
@@ -248,12 +248,12 @@ CameraGizmos FreeLookCameraSystem::getGizmos() const
 
 Camera* FreeLookCameraSystem::getCamera() const
 {
-    return mWorld->getActiveScene()->getComponentById<Camera>(mCameraId);
+    return mWorld->getActiveScene()->getComponentByGuid<Camera>(mCameraId);
 }
 
 Transform *FreeLookCameraSystem::getTransform() const
 {
-    return mWorld->getActiveScene()->getComponentById<Transform>(mTransformId);
+    return mWorld->getActiveScene()->getComponentByGuid<Transform>(mTransformId);
 }
 
 int FreeLookCameraSystem::getMousePosX() const
@@ -296,7 +296,7 @@ glm::vec2 FreeLookCameraSystem::distanceTraveledSinceRightMouseClick() const
     return glm::vec2(mMousePosX - mMousePosXOnRightClick, mMousePosY - mMousePosYOnRightClick);
 }
 
-Guid FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
+Id FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
 {
     Camera *camera = getCamera();
     int x = (int)(camera->getViewport().mX + camera->getViewport().mWidth * nx);

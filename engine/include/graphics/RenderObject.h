@@ -34,7 +34,7 @@ typedef struct RenderObject
 struct InstanceModelData
 {
     std::vector<glm::mat4> models;
-    std::vector<Guid> transformIds;
+    std::vector<Id> transformIds;
     std::vector<Sphere> boundingSpheres;
 };
 

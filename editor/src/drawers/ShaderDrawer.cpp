@@ -30,7 +30,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Shader *shader = clipboard.getWorld()->getAssetById<Shader>(id);
+    Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(id);
 
     std::vector<ShaderProgram> programs = shader->getPrograms();
     std::vector<ShaderUniform> uniforms = shader->getUniforms();
@@ -125,13 +125,13 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     static bool geometryTextFilled = false;
 
     // if selected shader changes, refill buffers
-    if (mShaderId != shader->getId())
+    if (mShaderId != shader->getGuid())
     {
         vertexTextFilled = false;
         fragmentTextFilled = false;
         geometryTextFilled = false;
     }
-    mShaderId = shader->getId();
+    mShaderId = shader->getGuid();
 
     // Fill buffers with current shaders
     if (!vertexTextFilled)

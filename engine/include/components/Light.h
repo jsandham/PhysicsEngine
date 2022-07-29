@@ -65,8 +65,8 @@ class Light : public Component
     LightTargets mTargets;
 
   public:
-    Light(World *world);
-    Light(World *world, const Guid& id);
+    Light(World *world, const Id &id);
+    Light(World *world, const Guid &guid, const Id &id);
     ~Light();
 
     virtual void serialize(YAML::Node &out) const override;
