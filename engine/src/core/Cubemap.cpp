@@ -1,6 +1,6 @@
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -241,7 +241,7 @@ void Cubemap::create()
         return;
     }
 
-    Graphics::createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, &mTex);
+    Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -253,7 +253,7 @@ void Cubemap::destroy()
         return;
     }
 
-    Graphics::destroyCubemap(&mTex);
+    Renderer::getRenderer()->destroyCubemap(&mTex);
 
     mCreated = false;
 }
@@ -265,17 +265,17 @@ void Cubemap::update()
         return;
     }
 
-    Graphics::updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    Renderer::getRenderer()->updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
 
     mUpdateRequired = false;
 }
 
 void Cubemap::readPixels()
 {
-    Graphics::readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
+    Renderer::getRenderer()->readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
 }
 
 void Cubemap::writePixels()
 {
-    Graphics::writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
+    Renderer::getRenderer()->writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
 }

@@ -1,6 +1,6 @@
 #include "../../include/core/Mesh.h"
 #include "../../include/core/Log.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 #include "tiny_obj_loader.h"
 
@@ -171,75 +171,11 @@ void Mesh::load(const std::string &filepath)
         mSubMeshVertexStartIndices.push_back((int)mVertices.size());
     }
 
-    if(vIndex != nIndex)
-    {
-        nIndex = 0;
-
-        float nx = 0.f, ny = 0.f, nz = 0.0f;   // normal for current triangle
-        float vx1 = 0.f, vx2 = 0.f, vx3 = 0.f; // vertex 1
-        float vy1 = 0.f, vy2 = 0.f, vy3 = 0.f; // vertex 2
-        float vz1 = 0.f, vz2 = 0.f, vz3 = 0.f; // vertex 3
-        for (size_t v = 0; v < mVertices.size() / 3; v++)
-        {
-            float x = mVertices[3 * v];
-            float y = mVertices[3 * v + 1];
-            float z = mVertices[3 * v + 2];
-            switch (v % 3)
-            {
-            case 0:
-                // Defining first point in triangle
-                vx1 = x;
-                vy1 = y;
-                vz1 = z;
-                break;
-            case 1:
-                // Defining second point in triangle
-                vx2 = x;
-                vy2 = y;
-                vz2 = z;
-                break;
-            case 2:
-                // Defining third point in a triangle
-                vx3 = x;
-                vy3 = y;
-                vz3 = z;
-
-                float px = 0.0f, py = 0.0f, pz = 0.0f;
-                float qx = 0.0f, qy = 0.0f, qz = 0.0f;
-                // Calculate p vector
-                px = vx2 - vx1;
-                py = vy2 - vy1;
-                pz = vz2 - vz1;
-                // Calculate q vector
-                qx = vx3 - vx1;
-                qy = vy3 - vy1;
-                qz = vz3 - vz1;
-
-                // Calculate normal (p x q)
-                // i  j  k 
-                // px py pz
-                // qx qy qz
-                nx = py * qz - pz * qy;
-                ny = pz * qx - px * qz;
-                nz = px * qy - py * qx;
-                // Scale to unit vector
-                float s = sqrt(nx * nx + ny * ny + nz * nz);
-                nx /= s;
-                ny /= s;
-                nz /= s;
-                // Add the normal 3 times (once for each vertex)
-                for (int j = 0; j < 3; j++)
-                {
-                    mNormals[3 * nIndex + 0] = nx;
-                    mNormals[3 * nIndex + 1] = ny;
-                    mNormals[3 * nIndex + 2] = nz;
-
-                    nIndex++;
-                }
-                break;
-            }
-        }
-    }
+    //if(vIndex != nIndex)
+    //{
+        //computeNormals();
+        computeNormals_SIMD128();
+    //}
 
     //computeBoundingSphere();
     computeBoundingSphere_SIMD128();
@@ -393,7 +329,7 @@ void Mesh::create()
         return;
     }
 
-    Graphics::createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
+    Renderer::getRenderer()->createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
 
     mCreated = true;
 }
@@ -405,13 +341,65 @@ void Mesh::destroy()
         return;
     }
 
-    Graphics::destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
+    Renderer::getRenderer()->destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
 
     mCreated = false;
 }
 
 void Mesh::writeMesh()
 {
+}
+
+void Mesh::computeNormals()
+{
+    size_t numTriangles = mVertices.size() / 9;
+
+    for (size_t t = 0; t < numTriangles; t++)
+    {
+        float vx1 = mVertices[9 * t + 0];
+        float vy1 = mVertices[9 * t + 1];
+        float vz1 = mVertices[9 * t + 2];
+
+        float vx2 = mVertices[9 * t + 3];
+        float vy2 = mVertices[9 * t + 4];
+        float vz2 = mVertices[9 * t + 5];
+
+        float vx3 = mVertices[9 * t + 6];
+        float vy3 = mVertices[9 * t + 7];
+        float vz3 = mVertices[9 * t + 8];
+
+        // Calculate p vector
+        float px = vx2 - vx1;
+        float py = vy2 - vy1;
+        float pz = vz2 - vz1;
+        // Calculate q vector
+        float qx = vx3 - vx1;
+        float qy = vy3 - vy1;
+        float qz = vz3 - vz1;
+
+        // Calculate normal (p x q)
+        // i  j  k 
+        // px py pz
+        // qx qy qz
+        float nx = py * qz - pz * qy;
+        float ny = pz * qx - px * qz;
+        float nz = px * qy - py * qx;
+        // Scale to unit vector
+        float s = sqrt(nx * nx + ny * ny + nz * nz);
+        nx /= s;
+        ny /= s;
+        nz /= s;
+        // Add the normal 3 times (once for each vertex in triangle)
+        mNormals[9 * t + 0] = nx;
+        mNormals[9 * t + 1] = ny;
+        mNormals[9 * t + 2] = nz;
+        mNormals[9 * t + 3] = nx;
+        mNormals[9 * t + 4] = ny;
+        mNormals[9 * t + 5] = nz;
+        mNormals[9 * t + 6] = nx;
+        mNormals[9 * t + 7] = ny;
+        mNormals[9 * t + 8] = nz;
+    }
 }
 
 void Mesh::computeBoundingSphere()
@@ -468,6 +456,149 @@ void Mesh::computeBoundingSphere()
         {
             mBounds.mRadius = radius;
         }
+    }
+}
+
+void Mesh::computeNormals_SIMD128()
+{
+    size_t numTriangles = mVertices.size() / 9;
+    size_t numSimdTriangles = numTriangles - (numTriangles % 4);
+
+    std::cout << "numTriangles: " << numTriangles << " numSimdTriangles: " << numSimdTriangles << " mName: " << getName() << std::endl;
+
+    for (size_t t = 0; t < numSimdTriangles;  t += 4)
+    {
+        __m128 vx1 = _mm_set_ps(mVertices[9 * t + 0], mVertices[9 * t + 9], mVertices[9 * t + 18], mVertices[9 * t + 27]);
+        __m128 vy1 = _mm_set_ps(mVertices[9 * t + 1], mVertices[9 * t + 10], mVertices[9 * t + 19], mVertices[9 * t + 28]);
+        __m128 vz1 = _mm_set_ps(mVertices[9 * t + 2], mVertices[9 * t + 11], mVertices[9 * t + 20], mVertices[9 * t + 29]);
+
+        __m128 vx2 = _mm_set_ps(mVertices[9 * t + 3], mVertices[9 * t + 12], mVertices[9 * t + 21], mVertices[9 * t + 30]);
+        __m128 vy2 = _mm_set_ps(mVertices[9 * t + 4], mVertices[9 * t + 13], mVertices[9 * t + 22], mVertices[9 * t + 31]);
+        __m128 vz2 = _mm_set_ps(mVertices[9 * t + 5], mVertices[9 * t + 14], mVertices[9 * t + 23], mVertices[9 * t + 32]);
+
+        __m128 vx3 = _mm_set_ps(mVertices[9 * t + 6], mVertices[9 * t + 15], mVertices[9 * t + 24], mVertices[9 * t + 33]);
+        __m128 vy3 = _mm_set_ps(mVertices[9 * t + 7], mVertices[9 * t + 16], mVertices[9 * t + 25], mVertices[9 * t + 34]);
+        __m128 vz3 = _mm_set_ps(mVertices[9 * t + 8], mVertices[9 * t + 17], mVertices[9 * t + 26], mVertices[9 * t + 35]);
+
+        // Calculate p vector
+        __m128 px = _mm_sub_ps(vx2, vx1);
+        __m128 py = _mm_sub_ps(vy2, vy1);
+        __m128 pz = _mm_sub_ps(vz2, vz1);
+        // Calculate q vector
+        __m128 qx = _mm_sub_ps(vx3, vx1);
+        __m128 qy = _mm_sub_ps(vy3, vy1);
+        __m128 qz = _mm_sub_ps(vz3, vz1);
+
+        // Calculate normal (p x q)
+        // i  j  k 
+        // px py pz
+        // qx qy qz
+        __m128 nx = _mm_sub_ps(_mm_mul_ps(py, qz), _mm_mul_ps(pz, qy));
+        __m128 ny = _mm_sub_ps(_mm_mul_ps(pz, qx), _mm_mul_ps(px, qz));
+        __m128 nz = _mm_sub_ps(_mm_mul_ps(px, qy), _mm_mul_ps(py, qx));
+
+        // Scale to unit vector
+        __m128 s = _mm_sqrt_ps(_mm_add_ps(_mm_mul_ps(nx, nx), _mm_add_ps(_mm_mul_ps(ny, ny), _mm_mul_ps(nz, nz))));
+        nx = _mm_div_ps(nx, s);
+        ny = _mm_div_ps(ny, s);
+        nz = _mm_div_ps(nz, s);
+        
+        // Add the normal 3 times (once for each vertex in triangle)
+        alignas(16) float nx_t[4];
+        alignas(16) float ny_t[4];
+        alignas(16) float nz_t[4];
+
+        _mm_store_ps(nx_t, nx);
+        _mm_store_ps(ny_t, ny);
+        _mm_store_ps(nz_t, nz);
+
+        mNormals[9 * t + 0] = nx_t[3];
+        mNormals[9 * t + 1] = ny_t[3];
+        mNormals[9 * t + 2] = nz_t[3];
+        mNormals[9 * t + 3] = nx_t[3];
+        mNormals[9 * t + 4] = ny_t[3];
+        mNormals[9 * t + 5] = nz_t[3];
+        mNormals[9 * t + 6] = nx_t[3];
+        mNormals[9 * t + 7] = ny_t[3];
+        mNormals[9 * t + 8] = nz_t[3];
+
+        mNormals[9 * t + 9] = nx_t[2];
+        mNormals[9 * t + 10] = ny_t[2];
+        mNormals[9 * t + 11] = nz_t[2];
+        mNormals[9 * t + 12] = nx_t[2];
+        mNormals[9 * t + 13] = ny_t[2];
+        mNormals[9 * t + 14] = nz_t[2];
+        mNormals[9 * t + 15] = nx_t[2];
+        mNormals[9 * t + 16] = ny_t[2];
+        mNormals[9 * t + 17] = nz_t[2];
+
+        mNormals[9 * t + 18] = nx_t[1];
+        mNormals[9 * t + 19] = ny_t[1];
+        mNormals[9 * t + 20] = nz_t[1];
+        mNormals[9 * t + 21] = nx_t[1];
+        mNormals[9 * t + 22] = ny_t[1];
+        mNormals[9 * t + 23] = nz_t[1];
+        mNormals[9 * t + 24] = nx_t[1];
+        mNormals[9 * t + 25] = ny_t[1];
+        mNormals[9 * t + 26] = nz_t[1];
+
+        mNormals[9 * t + 27] = nx_t[0];
+        mNormals[9 * t + 28] = ny_t[0];
+        mNormals[9 * t + 29] = nz_t[0];
+        mNormals[9 * t + 30] = nx_t[0];
+        mNormals[9 * t + 31] = ny_t[0];
+        mNormals[9 * t + 32] = nz_t[0];
+        mNormals[9 * t + 33] = nx_t[0];
+        mNormals[9 * t + 34] = ny_t[0];
+        mNormals[9 * t + 35] = nz_t[0];
+    }
+
+    for (size_t t = numSimdTriangles; t < numTriangles; t++)
+    {
+        float vx1 = mVertices[9 * t + 0];
+        float vy1 = mVertices[9 * t + 1];
+        float vz1 = mVertices[9 * t + 2];
+
+        float vx2 = mVertices[9 * t + 3];
+        float vy2 = mVertices[9 * t + 4];
+        float vz2 = mVertices[9 * t + 5];
+
+        float vx3 = mVertices[9 * t + 6];
+        float vy3 = mVertices[9 * t + 7];
+        float vz3 = mVertices[9 * t + 8];
+
+        // Calculate p vector
+        float px = vx2 - vx1;
+        float py = vy2 - vy1;
+        float pz = vz2 - vz1;
+        // Calculate q vector
+        float qx = vx3 - vx1;
+        float qy = vy3 - vy1;
+        float qz = vz3 - vz1;
+
+        // Calculate normal (p x q)
+        // i  j  k 
+        // px py pz
+        // qx qy qz
+        float nx = py * qz - pz * qy;
+        float ny = pz * qx - px * qz;
+        float nz = px * qy - py * qx;
+        // Scale to unit vector
+        float s = sqrt(nx * nx + ny * ny + nz * nz);
+        nx /= s;
+        ny /= s;
+        nz /= s;
+        
+        // Add the normal 3 times (once for each vertex in triangle)
+        mNormals[9 * t + 0] = nx;
+        mNormals[9 * t + 1] = ny;
+        mNormals[9 * t + 2] = nz;
+        mNormals[9 * t + 3] = nx;
+        mNormals[9 * t + 4] = ny;
+        mNormals[9 * t + 5] = nz;
+        mNormals[9 * t + 6] = nx;
+        mNormals[9 * t + 7] = ny;
+        mNormals[9 * t + 8] = nz;
     }
 }
 
@@ -537,9 +668,9 @@ void Mesh::computeBoundingSphere_SIMD128()
         maxDistance = _mm_add_ps(maxDistance, _mm_mul_ps(condition, _mm_sub_ps(distance, maxDistance)));
     }
 
-    float y2_x[4];
-    float y2_y[4];
-    float y2_z[4];
+    alignas(16) float y2_x[4];
+    alignas(16) float y2_y[4];
+    alignas(16) float y2_z[4];
 
     _mm_store_ps(y2_x, y_x);
     _mm_store_ps(y2_y, y_y);
@@ -621,9 +752,9 @@ void Mesh::computeBoundingSphere_SIMD128()
         maxDistance = _mm_add_ps(maxDistance, _mm_mul_ps(condition, _mm_sub_ps(distance, maxDistance)));
     }
 
-    float z2_x[4];
-    float z2_y[4];
-    float z2_z[4];
+    alignas(16) float z2_x[4];
+    alignas(16) float z2_y[4];
+    alignas(16) float z2_z[4];
 
     _mm_store_ps(z2_x, z_x);
     _mm_store_ps(z2_y, z_y);
@@ -694,7 +825,7 @@ void Mesh::computeBoundingSphere_SIMD128()
         radius = _mm_max_ps(distance, radius);
     }
 
-    float radius2[4];
+    alignas(16) float radius2[4];
     _mm_store_ps(radius2, radius);
 
     for (size_t i = 0; i < 4; i++)

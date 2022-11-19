@@ -9,8 +9,6 @@
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/Transform.h"
 
-#include "../../include/graphics/Graphics.h"
-
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 

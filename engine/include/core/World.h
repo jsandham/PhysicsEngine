@@ -73,7 +73,7 @@ class World
     int getTypeOf(const Guid &guid) const;
 
     Scene *createScene();
-    Scene *World::createScene(const YAML::Node &in);
+    Scene *createScene(const YAML::Node &in);
     void latentDestroyAsset(const Guid &assetGuid, int assetType);
     void immediateDestroyAsset(const Guid &assetGuid, int assetType);
 

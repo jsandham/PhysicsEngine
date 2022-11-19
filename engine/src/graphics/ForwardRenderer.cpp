@@ -3,6 +3,26 @@
 
 using namespace PhysicsEngine;
 
+static void initializeRenderer(World* world, ForwardRendererState& state);
+static void beginFrame(World* world, Camera* camera, ForwardRendererState& state);
+static void computeSSAO(World* world, Camera* camera, ForwardRendererState& state,
+    const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
+static void renderShadows(World* world, Camera* camera, Light* light, Transform* lightTransform,
+    ForwardRendererState& state, const std::vector<RenderObject>& renderObjects,
+    const std::vector<glm::mat4>& models);
+static void renderOpaques(World* world, Camera* camera, Light* light, Transform* lightTransform,
+    ForwardRendererState& state, const std::vector<RenderObject>& renderObjects,
+    const std::vector<glm::mat4>& models);
+static void renderSprites(World* world, Camera* camera, ForwardRendererState& state,
+    const std::vector<SpriteObject>& spriteObjects);
+static void renderColorPicking(World* world, Camera* camera, ForwardRendererState& state,
+    const std::vector<RenderObject>& renderObjects,
+    const std::vector<glm::mat4>& models, const std::vector<Id>& transformIds);
+static void renderTransparents();
+static void postProcessing();
+static void endFrame(World* world, Camera* camera, ForwardRendererState& state);
+static void calcCascadeOrthoProj(Camera* camera, glm::vec3 lightDirection, ForwardRendererState& state);
+
 ForwardRenderer::ForwardRenderer()
 {
 }
@@ -60,31 +80,65 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
     postProcessing();
 
     endFrame(mWorld, camera, mState);
-
-    Graphics::checkError(__LINE__, __FILE__);
 }
 
-void PhysicsEngine::initializeRenderer(World *world, ForwardRendererState &state)
+static void initializeRenderer(World *world, ForwardRendererState &state)
 {
-    Graphics::compileSSAOShader(state);
-    Graphics::compileShadowDepthMapShader(state);
-    Graphics::compileShadowDepthCubemapShader(state);
-    Graphics::compileColorShader(state);
-    Graphics::compileColorInstancedShader(state);
-    Graphics::compileScreenQuadShader(state);
-    Graphics::compileSpriteShader(state);
+    state.mDepthShaderProgram = RendererShaders::getRendererShaders()->getDepthShader().mProgram;
+    state.mDepthShaderModelLoc = RendererShaders::getRendererShaders()->getDepthShader().mModelLoc;
+    state.mDepthShaderViewLoc = RendererShaders::getRendererShaders()->getDepthShader().mViewLoc;
+    state.mDepthShaderProjectionLoc = RendererShaders::getRendererShaders()->getDepthShader().mProjectionLoc;
 
-    Graphics::createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
+    state.mDepthCubemapShaderProgram = RendererShaders::getRendererShaders()->getDepthCubemapShader().mProgram;
+    state.mDepthCubemapShaderLightPosLoc = RendererShaders::getRendererShaders()->getDepthCubemapShader().mLightPosLoc;
+    state.mDepthCubemapShaderFarPlaneLoc = RendererShaders::getRendererShaders()->getDepthCubemapShader().mFarPlaneLoc;
+    state.mDepthCubemapShaderModelLoc = RendererShaders::getRendererShaders()->getDepthCubemapShader().mModelLoc;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc0 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc0;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc1 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc1;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc2 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc2;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc3 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc3;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc4 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc4;
+    state.mDepthCubemapShaderCubeViewProjMatricesLoc5 = RendererShaders::getRendererShaders()->getDepthCubemapShader().mCubeViewProjMatricesLoc5;
 
-    Graphics::createGlobalCameraUniforms(state.mCameraState);
-    Graphics::createGlobalLightUniforms(state.mLightState);
+    state.mGeometryShaderProgram = RendererShaders::getRendererShaders()->getGeometryShader().mProgram;
+    state.mGeometryShaderModelLoc = RendererShaders::getRendererShaders()->getGeometryShader().mModelLoc;
 
-    Graphics::turnOn(Capability::Depth_Testing);
+    state.mColorShaderProgram = RendererShaders::getRendererShaders()->getColorShader().mProgram;
+    state.mColorShaderModelLoc = RendererShaders::getRendererShaders()->getColorShader().mModelLoc;
+    state.mColorShaderColorLoc = RendererShaders::getRendererShaders()->getColorShader().mColorLoc;
+    state.mColorInstancedShaderProgram = RendererShaders::getRendererShaders()->getColorInstancedShader().mProgram;
+
+    state.mSsaoShaderProgram = RendererShaders::getRendererShaders()->getSSAOShader().mProgram;
+    state.mSsaoShaderProjectionLoc = RendererShaders::getRendererShaders()->getSSAOShader().mProjectionLoc;
+    state.mSsaoShaderPositionTexLoc = RendererShaders::getRendererShaders()->getSSAOShader().mPositionTexLoc;
+    state.mSsaoShaderNormalTexLoc = RendererShaders::getRendererShaders()->getSSAOShader().mNormalTexLoc;
+    state.mSsaoShaderNoiseTexLoc = RendererShaders::getRendererShaders()->getSSAOShader().mNoiseTexLoc;
+    for (int i = 0; i < 64; i++)
+    {
+        state.mSsaoShaderSamplesLoc[i] = RendererShaders::getRendererShaders()->getSSAOShader().mSamplesLoc[i];
+    }
+
+    state.mSpriteShaderProgram = RendererShaders::getRendererShaders()->getSpriteShader().mProgram;
+    state.mSpriteModelLoc = RendererShaders::getRendererShaders()->getSpriteShader().mModelLoc;
+    state.mSpriteViewLoc = RendererShaders::getRendererShaders()->getSpriteShader().mViewLoc;
+    state.mSpriteProjectionLoc = RendererShaders::getRendererShaders()->getSpriteShader().mProjectionLoc;
+    state.mSpriteColorLoc = RendererShaders::getRendererShaders()->getSpriteShader().mColorLoc;
+    state.mSpriteImageLoc = RendererShaders::getRendererShaders()->getSpriteShader().mImageLoc;
+
+    state.mQuadShaderProgram = RendererShaders::getRendererShaders()->getScreenQuadShader().mProgram;
+    state.mQuadShaderTexLoc = RendererShaders::getRendererShaders()->getScreenQuadShader().mTexLoc;
+
+    Renderer::getRenderer()->createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
+
+    Renderer::getRenderer()->createGlobalCameraUniforms(state.mCameraState);
+    Renderer::getRenderer()->createGlobalLightUniforms(state.mLightState);
+
+    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererState &state)
+static void beginFrame(World *world, Camera *camera, ForwardRendererState &state)
 {
-    Graphics::turnOn(Capability::BackfaceCulling);
+    Renderer::getRenderer()->turnOn(Capability::BackfaceCulling);
 
     camera->beginQuery();
 
@@ -93,54 +147,54 @@ void PhysicsEngine::beginFrame(World *world, Camera *camera, ForwardRendererStat
     state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
     state.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
 
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     // update camera state data
-    Graphics::setGlobalCameraUniforms(state.mCameraState);
+    Renderer::getRenderer()->setGlobalCameraUniforms(state.mCameraState);
 
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
         }
         else
         {
-            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
         }
     }
     else
     {
-        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
     }
-    Graphics::clearFrambufferColor(camera->mBackgroundColor);
-    Graphics::clearFramebufferDepth(1.0f);
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
+    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
-    Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Graphics::clearFramebufferDepth(1.0f);
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    Renderer::getRenderer()->unbindFramebuffer();
 
     if(camera->mSSAO == CameraSSAO::SSAO_On)
     {
-        Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
-        Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Graphics::unbindFramebuffer();
+        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+        Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Renderer::getRenderer()->unbindFramebuffer();
     }
 }
 
-void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
+static void computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
                                 const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
-    Graphics::bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::use(state.mGeometryShaderProgram);
+    Renderer::getRenderer()->use(state.mGeometryShaderProgram);
 
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
@@ -151,37 +205,35 @@ void PhysicsEngine::computeSSAO(World *world, Camera *camera, ForwardRendererSta
         }
         else
         {
-            Graphics::setMat4(state.mGeometryShaderModelLoc, models[modelIndex]);
-            Graphics::render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->setMat4(state.mGeometryShaderModelLoc, models[modelIndex]);
+            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }
 
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindFramebuffer();
 
     // fill ssao color texture
-    Graphics::bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::use(state.mSsaoShaderProgram);
-    Graphics::setMat4(state.mSsaoShaderProjectionLoc, camera->getProjMatrix());
+    Renderer::getRenderer()->use(state.mSsaoShaderProgram);
+    Renderer::getRenderer()->setMat4(state.mSsaoShaderProjectionLoc, camera->getProjMatrix());
     for (int i = 0; i < 64; i++)
     {
-        Graphics::setVec3(state.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
+        Renderer::getRenderer()->setVec3(state.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
     }
-    Graphics::setTexture2D(state.mSsaoShaderPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
-    Graphics::setTexture2D(state.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
-    Graphics::setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
 
-    Graphics::renderScreenQuad(state.mQuadVAO);
+    Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
 
-    Graphics::unbindFramebuffer();
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->unbindFramebuffer();
 }
 
-void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
+static void renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
                                   ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
@@ -197,15 +249,15 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
 
         for (int i = 0; i < 5; i++)
         {
-            Graphics::bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
-            Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+            Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
+            Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                                   static_cast<int>(light->getShadowMapResolution()));
 
-            Graphics::clearFramebufferDepth(1.0f);
+            Renderer::getRenderer()->clearFramebufferDepth(1.0f);
 
-            Graphics::use(state.mDepthShaderProgram);
-            Graphics::setMat4(state.mDepthShaderViewLoc, state.mCascadeLightView[i]);
-            Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mCascadeOrthoProj[i]);
+            Renderer::getRenderer()->use(state.mDepthShaderProgram);
+            Renderer::getRenderer()->setMat4(state.mDepthShaderViewLoc, state.mCascadeLightView[i]);
+            Renderer::getRenderer()->setMat4(state.mDepthShaderProjectionLoc, state.mCascadeOrthoProj[i]);
 
             int modelIndex = 0;
             for (size_t j = 0; j < renderObjects.size(); j++)
@@ -216,31 +268,39 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
                 }
                 else
                 {
-                    Graphics::setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
-                    Graphics::render(renderObjects[j], camera->mQuery);
+                    Renderer::getRenderer()->setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                    Renderer::getRenderer()->render(renderObjects[j], camera->mQuery);
                     modelIndex++;
                 }
             }
 
-            Graphics::unbindFramebuffer();
+            //RendererShaders::getRendererShaders()->getDepthShader()->getModelLocation();
+            //RendererShaders::getRendererShaders()->getDepthShader()->getViewLocation();
+            //RendererShaders::getRendererShaders()->getDepthShader()->getProjectionLocation();
+            //RendererShaders::getRendererShaders()->getDepthShader()->getVertexShader();
+            //RendererShaders::getRendererShaders()->getDepthShader()->getFragmentShader();
+            //shader mDepthShader;
+            //mDepthShader.get
+
+            Renderer::getRenderer()->unbindFramebuffer();
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
-        Graphics::bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
-        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+        Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
+        Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                               static_cast<int>(light->getShadowMapResolution()));
 
-        Graphics::clearFramebufferDepth(1.0f);
+        Renderer::getRenderer()->clearFramebufferDepth(1.0f);
 
         state.mShadowProjMatrix = light->getProjMatrix();
         state.mShadowViewMatrix =
             glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
                         glm::vec3(0.0f, 1.0f, 0.0f));
 
-        Graphics::use(state.mDepthShaderProgram);
-        Graphics::setMat4(state.mDepthShaderProjectionLoc, state.mShadowProjMatrix);
-        Graphics::setMat4(state.mDepthShaderViewLoc, state.mShadowViewMatrix);
+        Renderer::getRenderer()->use(state.mDepthShaderProgram);
+        Renderer::getRenderer()->setMat4(state.mDepthShaderProjectionLoc, state.mShadowProjMatrix);
+        Renderer::getRenderer()->setMat4(state.mDepthShaderViewLoc, state.mShadowViewMatrix);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -251,13 +311,13 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
             }
             else
             {
-                Graphics::setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
-                Graphics::render(renderObjects[i], camera->mQuery);
+                Renderer::getRenderer()->setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
         }
 
-        Graphics::unbindFramebuffer();
+        Renderer::getRenderer()->unbindFramebuffer();
     }
     else if (light->mLightType == LightType::Point)
     {
@@ -287,22 +347,22 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
 
-        Graphics::bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
-        Graphics::setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+        Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
+        Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                               static_cast<int>(light->getShadowMapResolution()));
 
-        Graphics::clearFramebufferDepth(1.0f);
+        Renderer::getRenderer()->clearFramebufferDepth(1.0f);
 
-        Graphics::use(state.mDepthCubemapShaderProgram);
-        Graphics::setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->getPosition());
-        Graphics::setFloat(state.mDepthCubemapShaderFarPlaneLoc,
+        Renderer::getRenderer()->use(state.mDepthCubemapShaderProgram);
+        Renderer::getRenderer()->setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->getPosition());
+        Renderer::getRenderer()->setFloat(state.mDepthCubemapShaderFarPlaneLoc,
                            camera->getFrustum().mFarPlane); // shadow map far plane?
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1, state.mCubeViewProjMatrices[1]);
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2, state.mCubeViewProjMatrices[2]);
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc3, state.mCubeViewProjMatrices[3]);
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc4, state.mCubeViewProjMatrices[4]);
-        Graphics::setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc5, state.mCubeViewProjMatrices[5]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0, state.mCubeViewProjMatrices[0]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1, state.mCubeViewProjMatrices[1]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2, state.mCubeViewProjMatrices[2]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc3, state.mCubeViewProjMatrices[3]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc4, state.mCubeViewProjMatrices[4]);
+        Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc5, state.mCubeViewProjMatrices[5]);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -313,17 +373,17 @@ void PhysicsEngine::renderShadows(World *world, Camera *camera, Light *light, Tr
             }
             else
             {
-                Graphics::setMat4(state.mDepthCubemapShaderModelLoc, models[modelIndex]);
-                Graphics::render(renderObjects[i], camera->mQuery);
+                Renderer::getRenderer()->setMat4(state.mDepthCubemapShaderModelLoc, models[modelIndex]);
+                Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
         }
 
-        Graphics::unbindFramebuffer();
+        Renderer::getRenderer()->unbindFramebuffer();
     }
 }
 
-void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform,
+static void renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform,
                                   ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
@@ -356,7 +416,7 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         state.mLightState.mLightView[0] = state.mShadowViewMatrix;
     }
 
-    Graphics::setGlobalLightUniforms(state.mLightState);
+    Renderer::getRenderer()->setGlobalLightUniforms(state.mLightState);
 
     int64_t variant = static_cast<int64_t>(ShaderMacro::None);
     if (light->mLightType == LightType::Directional)
@@ -393,19 +453,19 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
         }
         else
         {
-            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
         }
     }
     else
     {
-        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
     }
 
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     int currentMaterialIndex = -1;
@@ -434,11 +494,9 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
             currentShaderIndex = renderObjects[i].shaderIndex;
         }
 
-        Graphics::checkError(__LINE__, __FILE__);
-
         if (renderObjects[i].instanced)
         {
-            Graphics::updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
+            Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -447,8 +505,6 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
             shader->setMat4("model", models[modelIndex]);
             modelIndex++;
         }
-
-        Graphics::checkError(__LINE__, __FILE__);
 
         if (currentMaterialIndex != renderObjects[i].materialIndex)
         {
@@ -475,23 +531,21 @@ void PhysicsEngine::renderOpaques(World *world, Camera *camera, Light *light, Tr
 
         if (renderObjects[i].instanced)
         {
-            Graphics::renderInstanced(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->renderInstanced(renderObjects[i], camera->mQuery);
         }
         else
         {
-            Graphics::render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
         }
     }
 
-    Graphics::unbindFramebuffer();
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->unbindFramebuffer();
 }
 
-void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererState &state,
+static void renderSprites(World *world, Camera *camera, ForwardRendererState &state,
                                   const std::vector<SpriteObject> &spriteObjects)
 {
-    Graphics::use(state.mSpriteShaderProgram);
+    Renderer::getRenderer()->use(state.mSpriteShaderProgram);
 
     //float width = static_cast<float>(camera->getViewport().mWidth);
     //float height = static_cast<float>(camera->getViewport().mHeight);
@@ -500,42 +554,42 @@ void PhysicsEngine::renderSprites(World *world, Camera *camera, ForwardRendererS
     glm::mat4 projection = camera->getProjMatrix();
     glm::mat4 view = camera->getViewMatrix();
 
-    Graphics::setMat4(state.mSpriteProjectionLoc, projection);
-    Graphics::setMat4(state.mSpriteViewLoc, view);
+    Renderer::getRenderer()->setMat4(state.mSpriteProjectionLoc, projection);
+    Renderer::getRenderer()->setMat4(state.mSpriteViewLoc, view);
 
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Graphics::bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
         }
         else
         {
-            Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
         }
     }
     else
     {
-        Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
     }
 
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     for (size_t i = 0; i < spriteObjects.size(); i++)
     {
-        Graphics::setMat4(state.mSpriteModelLoc, spriteObjects[i].model);
-        Graphics::setColor(state.mSpriteColorLoc, spriteObjects[i].color);
-        Graphics::setTexture2D(state.mSpriteImageLoc, 0, spriteObjects[i].texture);
+        Renderer::getRenderer()->setMat4(state.mSpriteModelLoc, spriteObjects[i].model);
+        Renderer::getRenderer()->setColor(state.mSpriteColorLoc, spriteObjects[i].color);
+        Renderer::getRenderer()->setTexture2D(state.mSpriteImageLoc, 0, spriteObjects[i].texture);
 
-        Graphics::render(0, 6, spriteObjects[i].vao, camera->mQuery);
+        Renderer::getRenderer()->render(0, 6, spriteObjects[i].vao, camera->mQuery);
     }
 
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindFramebuffer();
 }
 
-void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
+static void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
                                        const std::vector<RenderObject> &renderObjects,
                                        const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
@@ -574,8 +628,8 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
         }
     }
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     color = 1;
@@ -596,12 +650,12 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
                 color++;
             }
 
-            Graphics::use(state.mColorInstancedShaderProgram);
-            Graphics::updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
+            Renderer::getRenderer()->use(state.mColorInstancedShaderProgram);
+            Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
-            Graphics::updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
+            Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
                                                 renderObjects[i].instanceCount);
-            Graphics::renderInstanced(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->renderInstanced(renderObjects[i], camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -614,51 +668,48 @@ void PhysicsEngine::renderColorPicking(World *world, Camera *camera, ForwardRend
 
             color++;
 
-            Graphics::use(state.mColorShaderProgram);
-            Graphics::setMat4(state.mColorShaderModelLoc, models[modelIndex]);
-            Graphics::setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
-            Graphics::render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->use(state.mColorShaderProgram);
+            Renderer::getRenderer()->setMat4(state.mColorShaderModelLoc, models[modelIndex]);
+            Renderer::getRenderer()->setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
 
             modelIndex++;
         }
     }
    
-    Graphics::unbindFramebuffer();
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->unbindFramebuffer();
 }
 
-void PhysicsEngine::renderTransparents()
+static void renderTransparents()
 {
 }
 
-void PhysicsEngine::postProcessing()
+static void postProcessing()
 {
 }
 
-void PhysicsEngine::endFrame(World *world, Camera *camera, ForwardRendererState &state)
+static void endFrame(World *world, Camera *camera, ForwardRendererState &state)
 {
     if (camera->mRenderToScreen)
     {
-        Graphics::bindFramebuffer(0);
-        Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+        Renderer::getRenderer()->bindFramebuffer(0);
+        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
-        Graphics::use(state.mQuadShaderProgram);
-        Graphics::setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        Renderer::getRenderer()->use(state.mQuadShaderProgram);
+        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
 
-        Graphics::renderScreenQuad(state.mQuadVAO);
+        Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
 
-        Graphics::unbindFramebuffer();
+        Renderer::getRenderer()->unbindFramebuffer();
     }
 
     camera->endQuery();
 
-    Graphics::turnOff(Capability::BackfaceCulling);
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::BackfaceCulling);
 }
 
-void PhysicsEngine::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
+static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
 {
     glm::mat4 viewInv = camera->getInvViewMatrix();
     float fov = camera->getFrustum().mFov;

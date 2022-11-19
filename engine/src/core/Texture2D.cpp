@@ -1,6 +1,6 @@
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 #include "stb_image.h"
 #include "stb_image_write.h"
 
@@ -392,7 +392,7 @@ void Texture2D::create()
         return;
     }
 
-    Graphics::createTexture2D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData, &mTex);
+    Renderer::getRenderer()->createTexture2D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -404,7 +404,7 @@ void Texture2D::destroy()
         return;
     }
 
-    Graphics::destroyTexture2D(&mTex);
+    Renderer::getRenderer()->destroyTexture2D(&mTex);
 
     mCreated = false;
 }
@@ -416,17 +416,17 @@ void Texture2D::update()
         return;
     }
 
-    Graphics::updateTexture2D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    Renderer::getRenderer()->updateTexture2D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
 
     mUpdateRequired = false;
 }
 
 void Texture2D::readPixels()
 {
-    Graphics::readPixelsTexture2D(mFormat, mWidth, mHeight, mNumChannels, mRawTextureData, mTex);
+    Renderer::getRenderer()->readPixelsTexture2D(mFormat, mWidth, mHeight, mNumChannels, mRawTextureData, mTex);
 }
 
 void Texture2D::writePixels()
 {
-    Graphics::writePixelsTexture2D(mFormat, mWidth, mHeight, mRawTextureData, mTex);
+    Renderer::getRenderer()->writePixelsTexture2D(mFormat, mWidth, mHeight, mRawTextureData, mTex);
 }

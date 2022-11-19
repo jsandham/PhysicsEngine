@@ -79,7 +79,9 @@ class Mesh : public Asset
     void writeMesh();
 
   private:
+    void computeNormals();
     void computeBoundingSphere();
+    void computeNormals_SIMD128();
     void computeBoundingSphere_SIMD128();
 };
 

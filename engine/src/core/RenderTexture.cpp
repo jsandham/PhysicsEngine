@@ -1,6 +1,6 @@
 #include "../../include/core/RenderTexture.h"
 #include "../../include/core/Log.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 #include "stb_image_write.h"
 
@@ -143,7 +143,7 @@ void RenderTexture::create()
         return;
     }
 
-    Graphics::createRenderTextureTargets(&mTargets, mFormat, mWrapMode, mFilterMode, mWidth, mHeight);
+    Renderer::getRenderer()->createRenderTextureTargets(&mTargets, mFormat, mWrapMode, mFilterMode, mWidth, mHeight);
 
     mCreated = true;
 }
@@ -155,7 +155,7 @@ void RenderTexture::destroy()
         return;
     }
 
-    Graphics::destroyRenderTextureTargets(&mTargets);
+    Renderer::getRenderer()->destroyRenderTextureTargets(&mTargets);
 
     mCreated = false;
 }

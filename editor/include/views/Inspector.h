@@ -6,6 +6,7 @@
 #include "Window.h"
 
 #include "../drawers/InspectorDrawer.h"
+#include "../drawers/SceneDrawer.h"
 #include "../drawers/MaterialDrawer.h"
 #include "../drawers/MeshDrawer.h"
 #include "../drawers/ShaderDrawer.h"
@@ -31,6 +32,7 @@ namespace PhysicsEditor
 class Inspector : public Window
 {
   private:
+    SceneDrawer mSceneDrawer;
     MeshDrawer mMeshDrawer;
     MaterialDrawer mMaterialDrawer;
     ShaderDrawer mShaderDrawer;

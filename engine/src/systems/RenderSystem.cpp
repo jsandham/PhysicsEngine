@@ -318,9 +318,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
                         instanceMap[key].transformIds = std::vector<Id>();
                         instanceMap[key].boundingSpheres = std::vector<Sphere>();
 
-                        instanceMap[key].models.reserve(Graphics::INSTANCE_BATCH_SIZE);
-                        instanceMap[key].transformIds.reserve(Graphics::INSTANCE_BATCH_SIZE);
-                        instanceMap[key].boundingSpheres.reserve(Graphics::INSTANCE_BATCH_SIZE);
+                        instanceMap[key].models.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+                        instanceMap[key].transformIds.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+                        instanceMap[key].boundingSpheres.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
                        
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
@@ -361,7 +361,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
         {
             RenderObject renderObject = it->first.second;
             renderObject.instanceStart = count;
-            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Graphics::INSTANCE_BATCH_SIZE));
+            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Renderer::getRenderer()->INSTANCE_BATCH_SIZE));
             
             mTotalRenderObjects.push_back(renderObject);
 
@@ -380,7 +380,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 mTotalBoundingSpheres[start + i] = boundingSpheres[renderObject.instanceStart + i];
             }
        
-            count += Graphics::INSTANCE_BATCH_SIZE;
+            count += Renderer::getRenderer()->INSTANCE_BATCH_SIZE;
         }
     }
 

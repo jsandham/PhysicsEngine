@@ -97,7 +97,12 @@ void ProjectNode::addFile(const std::string& name)
     std::string extension = name.substr(name.find_last_of(".") + 1);
     std::string label = std::string(ICON_FA_FILE);
     InteractionType type = InteractionType::None;
-    if (extension == "material") 
+    if (extension == "scene")
+    {
+        label = std::string(ICON_FA_MAXCDN);
+        type = InteractionType::Scene;
+    }
+    else if (extension == "material") 
     {
         label = std::string(ICON_FA_MAXCDN);
         type = InteractionType::Material;

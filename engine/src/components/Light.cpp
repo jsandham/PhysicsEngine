@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "../../include/components/Light.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -132,21 +132,21 @@ std::string Light::getObjectName() const
 
 void Light::createTargets()
 {
-    Graphics::createTargets(&mTargets, mShadowMapResolution);
+    Renderer::getRenderer()->createTargets(&mTargets, mShadowMapResolution);
 
     mIsCreated = true;
 }
 
 void Light::destroyTargets()
 {
-    Graphics::destroyTargets(&mTargets);
+    Renderer::getRenderer()->destroyTargets(&mTargets);
 
     mIsCreated = false;
 }
 
 void ::Light::resizeTargets()
 {
-    Graphics::resizeTargets(&mTargets, mShadowMapResolution);
+    Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
 
     mIsShadowMapResolutionChanged = false;
 }

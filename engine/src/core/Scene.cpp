@@ -833,14 +833,14 @@ void Scene::deserialize(const YAML::Node &in)
         if (it->first.IsScalar() && it->second.IsMap())
         {
             int objectType = YAML::getValue<int>(it->second, "type");
-            Guid objectId = YAML::getValue<Guid>(it->second, "id");
+            Guid objectGuid = YAML::getValue<Guid>(it->second, "id");
             HideFlag objectHideFlag = YAML::getValue<HideFlag>(it->second, "hide");
 
             if (objectHideFlag != HideFlag::DontSave)
             {
                 if (isEntity(objectType))
                 {
-                    Entity *entity = getEntityByGuid(objectId);
+                    Entity *entity = getEntityByGuid(objectGuid);
                     if (entity == nullptr)
                     {
                         entity = createEntity(it->second);
@@ -859,7 +859,7 @@ void Scene::deserialize(const YAML::Node &in)
                 {
                     Guid entityId = YAML::getValue<Guid>(it->second, "entityId");
 
-                    Component *component = getComponentByGuid(objectId, objectType);
+                    Component *component = getComponentByGuid(objectGuid, objectType);
                     if (component == nullptr)
                     {
                         component = addComponent(it->second, objectType);

@@ -5,7 +5,6 @@
 #include <gl/gl.h>
 
 #include "../../include/core/Font.h"
-#include "../../include/graphics/Graphics.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

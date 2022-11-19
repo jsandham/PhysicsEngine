@@ -1,7 +1,5 @@
 #include "../../include/components/SpriteRenderer.h"
 
-#include "../../include/graphics/Graphics.h"
-
 using namespace PhysicsEngine;
 
 SpriteRenderer::SpriteRenderer(World *world, const Id &id) : Component(world, id)

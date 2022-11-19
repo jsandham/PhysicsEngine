@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "../../include/components/Camera.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -188,14 +188,14 @@ bool Camera::isViewportChanged() const
 
 void Camera::createTargets()
 {
-    Graphics::createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+    Renderer::getRenderer()->createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
 
     mIsCreated = true;
 }
 
 void Camera::destroyTargets()
 {
-    Graphics::destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+    Renderer::getRenderer()->destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
 
     mIsCreated = false;
 }
@@ -216,7 +216,7 @@ void Camera::beginQuery()
 
     if (mIsCreated)
     {
-        //Graphics::beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
+        //Renderer::getRenderer()->beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
     }
 }
 
@@ -226,7 +226,7 @@ void Camera::endQuery()
 
     if (mIsCreated)
     {
-        //Graphics::endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+        //Renderer::getRenderer()->endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
     
         mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
@@ -306,7 +306,7 @@ Id Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
-    Graphics::readColorAtPixel(&mTargets.mColorPickingFBO, x, y, &color);
+    Renderer::getRenderer()->readColorAtPixel(&mTargets.mColorPickingFBO, x, y, &color);
 
     std::unordered_map<Color32, Id>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())

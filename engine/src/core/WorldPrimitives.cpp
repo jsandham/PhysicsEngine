@@ -35,8 +35,8 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     assert(standardShader != nullptr);
     
     standardShader->setName("Standard");
-    standardShader->setVertexShader(Graphics::getStandardVertexShader());
-    standardShader->setFragmentShader(Graphics::getStandardFragmentShader());
+    standardShader->setVertexShader(RendererShaders::getRendererShaders()->getStandardVertexShader());
+    standardShader->setFragmentShader(RendererShaders::getRendererShaders()->getStandardFragmentShader());
 
     std::set<ShaderMacro> variants[23];
     variants[0].insert(ShaderMacro::None);
@@ -576,13 +576,13 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
 
     cylinder->load(cylinderVertices, cylinderNormals, cylinderTexCoords, {0, 3 * cylinderVertexCount});
 
-    mPlaneMeshId = plane->getGuid();
-    mDiscMeshId = disc->getGuid();
-    mCubeMeshId = cube->getGuid();
-    mSphereMeshId = sphere->getGuid();
-    mCylinderMeshId = cylinder->getGuid();
-    mConeMeshId = cone->getGuid();
+    mPlaneMeshGuid = plane->getGuid();
+    mDiscMeshGuid = disc->getGuid();
+    mCubeMeshGuid = cube->getGuid();
+    mSphereMeshGuid = sphere->getGuid();
+    mCylinderMeshGuid = cylinder->getGuid();
+    mConeMeshGuid = cone->getGuid();
 
-    mStandardShaderId = standardShader->getGuid();
-    mStandardMaterialId = standardMaterial->getGuid();
+    mStandardShaderGuid = standardShader->getGuid();
+    mStandardMaterialGuid = standardMaterial->getGuid();
 }

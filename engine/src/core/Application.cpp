@@ -1,6 +1,8 @@
 #include "../../include/core/Application.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/Input.h"
+#include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/RendererShaders.h"
 
 #include <assert.h>
 #include <iostream>
@@ -24,6 +26,9 @@ Application::Application(const std::string& name, int width, int height)
 	mTime.mFrameCount = 0;
 
 	mWindow = ApplicationWindow::createApplicationWindow(name, width, height);
+
+	Renderer::init();
+	RendererShaders::init();
 }
 
 Application::~Application()

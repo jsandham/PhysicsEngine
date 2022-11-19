@@ -5,6 +5,7 @@
 
 #include "core/Material.h"
 #include "core/Shader.h"
+#include "core/Scene.h"
 
 using namespace PhysicsEditor;
 
@@ -113,6 +114,13 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
     ImGui::Text("Scene count in world: %d\n", clipboard.getWorld()->getNumberOfScenes());
+    for (size_t i = 0; i < clipboard.getWorld()->getNumberOfScenes(); i++)
+    {
+        PhysicsEngine::Scene* scene = clipboard.getWorld()->getSceneByIndex(i);
+
+        ImGui::Text("Scene name: %s guid: %s\n", scene->getName().c_str(), scene->getGuid().toString().c_str());
+    }
+
     ImGui::Text("Entity count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
 
     ImGui::Text("Components");

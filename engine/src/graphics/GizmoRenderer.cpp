@@ -3,6 +3,19 @@
 
 using namespace PhysicsEngine;
 
+static void initializeGizmoRenderer(World* world, GizmoRendererState& state);
+static void destroyGizmoRenderer(GizmoRendererState& state);
+static void renderLineGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<LineGizmo>& gizmos);
+static void renderPlaneGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<PlaneGizmo>& gizmos);
+static void renderAABBGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<AABBGizmo>& gizmos);
+static void renderSphereGizmos(World* world, Camera* camera, GizmoRendererState& state,
+    const std::vector<SphereGizmo>& gizmos);
+static void renderFrustumGizmos(World* world, Camera* camera, GizmoRendererState& state,
+    const std::vector<FrustumGizmo>& gizmos);
+static void renderShadedFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
+static void renderWireframeFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
+static void renderGridGizmo(World* world, Camera* camera, GizmoRendererState& state);
+
 GizmoRenderer::GizmoRenderer()
 {
 }
@@ -83,18 +96,28 @@ void GizmoRenderer::clearDrawList()
 }
 
 
-void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &state)
+static void initializeGizmoRenderer(World *world, GizmoRendererState &state)
 {
-    Graphics::compileLineShader(state);
-    Graphics::compileGizmoShader(state);
-    Graphics::compileGridShader(state);
+    state.mLineShaderProgram = RendererShaders::getRendererShaders()->getLineShader().mProgram;
+    state.mLineShaderMVPLoc = RendererShaders::getRendererShaders()->getLineShader().mMVPLoc;
+
+    state.mGizmoShaderProgram = RendererShaders::getRendererShaders()->getGizmoShader().mProgram;
+    state.mGizmoShaderModelLoc = RendererShaders::getRendererShaders()->getGizmoShader().mModelLoc;
+    state.mGizmoShaderViewLoc = RendererShaders::getRendererShaders()->getGizmoShader().mViewLoc;
+    state.mGizmoShaderProjLoc = RendererShaders::getRendererShaders()->getGizmoShader().mProjLoc;
+    state.mGizmoShaderColorLoc = RendererShaders::getRendererShaders()->getGizmoShader().mColorLoc;
+    state.mGizmoShaderLightPosLoc = RendererShaders::getRendererShaders()->getGizmoShader().mLightPosLoc;
+
+    state.mGridShaderProgram = RendererShaders::getRendererShaders()->getGridShader().mProgram;
+    state.mGridShaderMVPLoc = RendererShaders::getRendererShaders()->getGridShader().mMVPLoc;
+    state.mGridShaderColorLoc = RendererShaders::getRendererShaders()->getGridShader().mColorLoc;
 
     state.mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
     state.mFrustumVertices.resize(108, 0.0f);
     state.mFrustumNormals.resize(108, 0.0f);
 
-    Graphics::createFrustum(state.mFrustumVertices, state.mFrustumNormals, &state.mFrustumVAO, &state.mFrustumVBO[0],
+    Renderer::getRenderer()->createFrustum(state.mFrustumVertices, state.mFrustumNormals, &state.mFrustumVAO, &state.mFrustumVBO[0],
                             &state.mFrustumVBO[1]);
 
     for (int i = -100; i < 100; i++)
@@ -115,16 +138,16 @@ void PhysicsEngine::initializeGizmoRenderer(World *world, GizmoRendererState &st
         state.mGridVertices.push_back(end);
     }
 
-    Graphics::createGrid(state.mGridVertices, &state.mGridVAO, &state.mGridVBO);
+    Renderer::getRenderer()->createGrid(state.mGridVertices, &state.mGridVAO, &state.mGridVBO);
 }
 
-void PhysicsEngine::destroyGizmoRenderer(GizmoRendererState &state)
+static void destroyGizmoRenderer(GizmoRendererState &state)
 {
-    Graphics::destroyFrustum(&state.mFrustumVAO, &state.mFrustumVBO[0], &state.mFrustumVBO[1]);
-    Graphics::destroyGrid(&state.mGridVAO, &state.mGridVBO);
+    Renderer::getRenderer()->destroyFrustum(&state.mFrustumVAO, &state.mFrustumVBO[0], &state.mFrustumVBO[1]);
+    Renderer::getRenderer()->destroyGrid(&state.mGridVAO, &state.mGridVBO);
 }
 
-void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
+static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
                                      const std::vector<LineGizmo> &gizmos)
 {
     if (gizmos.empty())
@@ -163,27 +186,25 @@ void PhysicsEngine::renderLineGizmos(World *world, Camera *camera, GizmoRenderer
     unsigned int lineVAO;
     unsigned int lineVBO[2];
 
-    Graphics::createLine(vertices, colors, &lineVAO, &lineVBO[0], &lineVBO[1]);
+    Renderer::getRenderer()->createLine(vertices, colors, &lineVAO, &lineVBO[0], &lineVBO[1]);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    Graphics::use(state.mLineShaderProgram);
-    Graphics::setMat4(state.mLineShaderMVPLoc, mvp);
+    Renderer::getRenderer()->use(state.mLineShaderProgram);
+    Renderer::getRenderer()->setMat4(state.mLineShaderMVPLoc, mvp);
 
-    Graphics::renderLines(lineVAO, 0, (int)vertices.size() / 3);
+    Renderer::getRenderer()->renderLines(lineVAO, 0, (int)vertices.size() / 3);
 
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
 }
 
-void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
+static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
                                        const std::vector<SphereGizmo> &gizmos)
 {
     if (gizmos.empty())
@@ -191,24 +212,24 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
         return;
     }
 
-    Graphics::turnOn(Capability::Blending);
-    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Sphere);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
+    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    Graphics::use(state.mGizmoShaderProgram);
+    Renderer::getRenderer()->use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    Renderer::getRenderer()->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
@@ -216,21 +237,19 @@ void PhysicsEngine::renderSphereGizmos(World *world, Camera *camera, GizmoRender
         model = glm::scale(model,
                            glm::vec3(gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius));
 
-        Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        Graphics::setMat4(state.mGizmoShaderModelLoc, model);
+        Renderer::getRenderer()->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
+        Renderer::getRenderer()->setMat4(state.mGizmoShaderModelLoc, model);
 
-        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Graphics::unbindVertexArray();
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindVertexArray();
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::turnOff(Capability::Blending);
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state,
+static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state,
                                      const std::vector<AABBGizmo> &gizmos)
 {
     if (gizmos.empty())
@@ -238,45 +257,43 @@ void PhysicsEngine::renderAABBGizmos(World *world, Camera *camera, GizmoRenderer
         return;
     }
 
-    Graphics::turnOn(Capability::Blending);
-    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Cube);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
  
-    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
+    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    Graphics::use(state.mGizmoShaderProgram);
+    Renderer::getRenderer()->use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    Renderer::getRenderer()->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mAABB.mCentre);
         model = glm::scale(model, gizmos[i].mAABB.mSize);
 
-        Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        Graphics::setMat4(state.mGizmoShaderModelLoc, model);
+        Renderer::getRenderer()->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
+        Renderer::getRenderer()->setMat4(state.mGizmoShaderModelLoc, model);
 
-        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Graphics::unbindVertexArray();   
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindVertexArray();   
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::turnOff(Capability::Blending);
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state,
+static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state,
                                       const std::vector<PlaneGizmo> &gizmos)
 {
     if (gizmos.empty())
@@ -284,24 +301,24 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
         return;
     }
 
-    Graphics::turnOn(Capability::Blending);
-    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Plane);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::bindVertexArray(mesh->getNativeGraphicsVAO());
+    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    Graphics::use(state.mGizmoShaderProgram);
+    Renderer::getRenderer()->use(state.mGizmoShaderProgram);
 
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    Renderer::getRenderer()->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
@@ -314,21 +331,19 @@ void PhysicsEngine::renderPlaneGizmos(World *world, Camera *camera, GizmoRendere
 
         model = glm::rotate(model, angle, c);
 
-        Graphics::setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        Graphics::setMat4(state.mGizmoShaderModelLoc, model);
+        Renderer::getRenderer()->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
+        Renderer::getRenderer()->setMat4(state.mGizmoShaderModelLoc, model);
 
-        Graphics::renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Graphics::unbindVertexArray();    
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindVertexArray();    
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::turnOff(Capability::Blending);
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-void PhysicsEngine::renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
+static void renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
                                              const FrustumGizmo &gizmo)
 {
     glm::vec3 temp[36];
@@ -404,20 +419,20 @@ void PhysicsEngine::renderShadedFrustumGizmo(World *world, Camera *camera, Gizmo
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Graphics::use(state.mGizmoShaderProgram);
-    Graphics::setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    Graphics::setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
-    Graphics::setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    Graphics::setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
-    Graphics::setColor(state.mGizmoShaderColorLoc, gizmo.mColor);
+    Renderer::getRenderer()->use(state.mGizmoShaderProgram);
+    Renderer::getRenderer()->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
+    Renderer::getRenderer()->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    Renderer::getRenderer()->setColor(state.mGizmoShaderColorLoc, gizmo.mColor);
 
-    Graphics::updateFrustum(state.mFrustumVertices, state.mFrustumNormals, state.mFrustumVBO[0],
+    Renderer::getRenderer()->updateFrustum(state.mFrustumVertices, state.mFrustumNormals, state.mFrustumVBO[0],
                             state.mFrustumVBO[1]);
 
-    Graphics::renderWithCurrentlyBoundVAO(0, (int)state.mFrustumVertices.size() / 3);
+    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)state.mFrustumVertices.size() / 3);
 }
 
-void PhysicsEngine::renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
+static void renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
                                                 const FrustumGizmo &gizmo)
 {
     glm::vec3 temp[24];
@@ -457,15 +472,15 @@ void PhysicsEngine::renderWireframeFrustumGizmo(World *world, Camera *camera, Gi
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    Graphics::use(state.mLineShaderProgram);
-    Graphics::setMat4(state.mLineShaderMVPLoc, mvp);
+    Renderer::getRenderer()->use(state.mLineShaderProgram);
+    Renderer::getRenderer()->setMat4(state.mLineShaderMVPLoc, mvp);
 
-    Graphics::updateFrustum(state.mFrustumVertices, state.mFrustumVBO[0]);
+    Renderer::getRenderer()->updateFrustum(state.mFrustumVertices, state.mFrustumVBO[0]);
     
-    Graphics::renderLinesWithCurrentlyBoundVAO(0, 24);
+    Renderer::getRenderer()->renderLinesWithCurrentlyBoundVAO(0, 24);
 }
 
-void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
+static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
                                         const std::vector<FrustumGizmo> &gizmos)
 {
     if (gizmos.empty())
@@ -473,14 +488,14 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
         return;
     }
 
-    Graphics::turnOn(Capability::Blending);
-    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::bindVertexArray(state.mFrustumVAO);
+    Renderer::getRenderer()->bindVertexArray(state.mFrustumVAO);
 
     for (size_t i = 0; i < gizmos.size(); i++)
     {
@@ -494,41 +509,32 @@ void PhysicsEngine::renderFrustumGizmos(World *world, Camera *camera, GizmoRende
         }
     }
 
-    Graphics::unbindVertexArray();
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindVertexArray();
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::turnOff(Capability::Blending);
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-void PhysicsEngine::renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state)
+static void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state)
 {
-    Graphics::checkError(__LINE__, __FILE__);
-    Graphics::turnOn(Capability::Blending);
-    Graphics::turnOn(Capability::LineSmoothing);
-    Graphics::setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->turnOn(Capability::LineSmoothing);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
-    Graphics::checkError(__LINE__, __FILE__);
-    Graphics::bindFramebuffer(camera->getNativeGraphicsMainFBO());
-    Graphics::setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
+    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
-    Graphics::checkError(__LINE__, __FILE__);
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    Graphics::use(state.mGridShaderProgram);
-    Graphics::setMat4(state.mGridShaderMVPLoc, mvp);
-    Graphics::setColor(state.mGridShaderColorLoc, state.mGridColor);
+    Renderer::getRenderer()->use(state.mGridShaderProgram);
+    Renderer::getRenderer()->setMat4(state.mGridShaderMVPLoc, mvp);
+    Renderer::getRenderer()->setColor(state.mGridShaderColorLoc, state.mGridColor);
 
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->renderLines(0, (int)state.mGridVertices.size(), state.mGridVAO);
 
-    Graphics::renderLines(0, (int)state.mGridVertices.size(), state.mGridVAO);
+    Renderer::getRenderer()->unbindFramebuffer();
 
-    Graphics::checkError(__LINE__, __FILE__);
-    Graphics::unbindFramebuffer();
-
-    Graphics::turnOff(Capability::Blending);
-    Graphics::turnOff(Capability::LineSmoothing);
-
-    Graphics::checkError(__LINE__, __FILE__);
+    Renderer::getRenderer()->turnOff(Capability::Blending);
+    Renderer::getRenderer()->turnOff(Capability::LineSmoothing);
 }

@@ -1270,17 +1270,17 @@ Mesh *World::getPrimtiveMesh(PrimitiveType type) const
     switch (type)
     {
     case PrimitiveType::Plane:
-        return getAssetByGuid<Mesh>(mPrimitives.mPlaneMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mPlaneMeshGuid);
     case PrimitiveType::Disc:
-        return getAssetByGuid<Mesh>(mPrimitives.mDiscMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mDiscMeshGuid);
     case PrimitiveType::Cube:
-        return getAssetByGuid<Mesh>(mPrimitives.mCubeMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mCubeMeshGuid);
     case PrimitiveType::Sphere:
-        return getAssetByGuid<Mesh>(mPrimitives.mSphereMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mSphereMeshGuid);
     case PrimitiveType::Cylinder:
-        return getAssetByGuid<Mesh>(mPrimitives.mCylinderMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mCylinderMeshGuid);
     case PrimitiveType::Cone:
-        return getAssetByGuid<Mesh>(mPrimitives.mConeMeshId);
+        return getAssetByGuid<Mesh>(mPrimitives.mConeMeshGuid);
     default:
         return nullptr;
     }
@@ -1289,7 +1289,7 @@ Mesh *World::getPrimtiveMesh(PrimitiveType type) const
 
 Material *World::getPrimtiveMaterial() const
 {
-    return getAssetByGuid<Material>(mPrimitives.mStandardMaterialId);
+    return getAssetByGuid<Material>(mPrimitives.mStandardMaterialGuid);
 }
 
 Asset *World::getAssetByGuid(const Guid &assetGuid, int type) const

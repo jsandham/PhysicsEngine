@@ -1,6 +1,6 @@
 #include "../../include/core/Texture3D.h"
 #include "../../include/core/Log.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -165,7 +165,7 @@ void Texture3D::create()
         return;
     }
 
-    Graphics::createTexture3D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
+    Renderer::getRenderer()->createTexture3D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
 
     mCreated = true;
 }
@@ -177,7 +177,7 @@ void Texture3D::destroy()
         return;
     }
 
-    Graphics::destroyTexture3D(&mTex);
+    Renderer::getRenderer()->destroyTexture3D(&mTex);
 
     mCreated = false;
 }
@@ -189,17 +189,17 @@ void Texture3D::update()
         return;
     }
 
-    Graphics::updateTexture3D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    Renderer::getRenderer()->updateTexture3D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
 
     mUpdateRequired = false;
 }
 
 void Texture3D::readPixels()
 {
-    Graphics::readPixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mNumChannels, mRawTextureData, mTex);
+    Renderer::getRenderer()->readPixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mNumChannels, mRawTextureData, mTex);
 }
 
 void Texture3D::writePixels()
 {
-    Graphics::writePixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, mTex);
+    Renderer::getRenderer()->writePixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, mTex);
 }

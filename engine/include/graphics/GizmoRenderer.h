@@ -12,7 +12,8 @@
 #include "../core/Ray.h"
 #include "../core/Sphere.h"
 
-#include "Graphics.h"
+#include "Renderer.h"
+#include "RendererShaders.h"
 
 namespace PhysicsEngine
 {
@@ -106,6 +107,8 @@ class GizmoRenderer
   public:
     GizmoRenderer();
     ~GizmoRenderer();
+    GizmoRenderer(const GizmoRenderer& other) = delete;
+    GizmoRenderer& operator=(const GizmoRenderer& other) = delete;
 
     void init(World *world);
     void update(Camera *camera);
@@ -120,20 +123,6 @@ class GizmoRenderer
     void clearDrawList();
 };
 
-void initializeGizmoRenderer(World *world, GizmoRendererState &state);
-void destroyGizmoRenderer(GizmoRendererState &state);
-void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<LineGizmo> &gizmos);
-void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<PlaneGizmo> &gizmos);
-void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state, const std::vector<AABBGizmo> &gizmos);
-void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                        const std::vector<SphereGizmo> &gizmos);
-void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                         const std::vector<FrustumGizmo> &gizmos);
-
-void renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state, const FrustumGizmo &gizmo);
-void renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state, const FrustumGizmo &gizmo);
-
-void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state);
 } // namespace PhysicsEngine
 
 #endif

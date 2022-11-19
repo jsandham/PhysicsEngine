@@ -13,9 +13,9 @@ MeshDrawer::MeshDrawer()
     mWireframeOn = false;
     mResetModelMatrix = false;
 
-    Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
 
-    Graphics::createGlobalCameraUniforms(mCameraUniform);
+    Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
 
     mModel = glm::mat4(1.0f);
 }
@@ -120,7 +120,7 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     mCameraUniform.mView = glm::lookAt(mCameraUniform.mCameraPos, mCameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
                                       glm::vec3(0.0, 1.0f, 0.0f));
     mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-    Graphics::setGlobalCameraUniforms(mCameraUniform);
+    Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
 
     shader->use(shaderProgram);
     shader->setMat4("model", mModel);
@@ -131,23 +131,23 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
         shader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
-    Graphics::bindFramebuffer(mFBO);
-    Graphics::setViewport(0, 0, 1000, 1000);
-    Graphics::clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    Graphics::clearFramebufferDepth(1.0f);
+    Renderer::getRenderer()->bindFramebuffer(mFBO);
+    Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
+    Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
 
     shader->setInt("wireframe", 1);
 
-    Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+    Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
 
     if (mWireframeOn)
     {
         shader->setInt("wireframe", 0);
 
-        Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
+        Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
     }
 
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->unbindFramebuffer();
 
     if (ImGui::BeginChild("MeshPreviewWindow",
                           ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,

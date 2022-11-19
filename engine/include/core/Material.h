@@ -14,7 +14,7 @@ namespace PhysicsEngine
 class Material : public Asset
 {
   private:
-    Guid mShaderId;
+    Guid mShaderGuid;
     std::vector<ShaderUniform> mUniforms;
     bool mShaderChanged;
     bool mTextureChanged;

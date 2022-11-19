@@ -3,7 +3,7 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -134,7 +134,7 @@ void Shader::preprocess()
         mPrograms[i].mVariant = variant;
         mPrograms[i].mHandle = 0;
 
-        Graphics::preprocess(mPrograms[i].mVertexShader,
+        Renderer::getRenderer()->preprocess(mPrograms[i].mVertexShader,
                              mPrograms[i].mFragmentShader,
                              mPrograms[i].mGeometryShader,
                              mPrograms[i].mVariant);
@@ -147,9 +147,9 @@ void Shader::compile()
 {
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        Graphics::destroy(mPrograms[i].mHandle);
+        Renderer::getRenderer()->destroy(mPrograms[i].mHandle);
 
-        Graphics::compile(mName, mPrograms[i].mVertexShader, mPrograms[i].mFragmentShader, mPrograms[i].mGeometryShader,
+        Renderer::getRenderer()->compile(mName, mPrograms[i].mVertexShader, mPrograms[i].mFragmentShader, mPrograms[i].mGeometryShader,
                           &mPrograms[i].mHandle, mPrograms[i].mStatus);
     }
 
@@ -171,7 +171,7 @@ void Shader::compile()
     {
         unsigned int program = mPrograms[i].mHandle;
 
-        std::vector<ShaderUniform> uniforms = Graphics::getShaderUniforms(program);
+        std::vector<ShaderUniform> uniforms = Renderer::getRenderer()->getShaderUniforms(program);
 
         for (size_t j = 0; j < uniforms.size(); j++)
         {
@@ -208,13 +208,13 @@ void Shader::use(int program)
     }
 
     mActiveProgram = program;
-    Graphics::use(program);
+    Renderer::getRenderer()->use(program);
 }
 
 void Shader::unuse()
 {
     mActiveProgram = -1;
-    Graphics::unuse();
+    Renderer::getRenderer()->unuse();
 }
 
 void Shader::setVertexShader(const std::string &vertexShader)
@@ -255,13 +255,13 @@ void Shader::setUniformBlock(const std::string &blockName, int bindingPoint) con
     // set uniform block on all shader program
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        Graphics::setUniformBlock(blockName.c_str(), bindingPoint, mPrograms[i].mHandle);
+        Renderer::getRenderer()->setUniformBlock(blockName.c_str(), bindingPoint, mPrograms[i].mHandle);
     }
 }
 
 int Shader::findUniformLocation(const std::string &name, int program) const
 {
-    return Graphics::findUniformLocation(name.c_str(), program);
+    return Renderer::getRenderer()->findUniformLocation(name.c_str(), program);
 }
 
 int Shader::getProgramFromVariant(int64_t variant) const
@@ -319,69 +319,69 @@ std::string Shader::getFragmentShader() const
 
 void Shader::setBool(const char *name, bool value) const
 {
-    this->setBool(Graphics::findUniformLocation(name, mActiveProgram), value);
+    this->setBool(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
 }
 
 void Shader::setInt(const char *name, int value) const
 {
-    this->setInt(Graphics::findUniformLocation(name, mActiveProgram), value);
+    this->setInt(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
 }
 
 void Shader::setFloat(const char *name, float value) const
 {
-    this->setFloat(Graphics::findUniformLocation(name, mActiveProgram), value);
+    this->setFloat(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
 }
 
 void Shader::setColor(const char *name, const Color &color) const
 {
-    this->setColor(Graphics::findUniformLocation(name, mActiveProgram), color);
+    this->setColor(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), color);
 }
 
 void Shader::setVec2(const char *name, const glm::vec2 &vec) const
 {
-    this->setVec2(Graphics::findUniformLocation(name, mActiveProgram), vec);
+    this->setVec2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
 }
 
 void Shader::setVec3(const char *name, const glm::vec3 &vec) const
 {
-    this->setVec3(Graphics::findUniformLocation(name, mActiveProgram), vec);
+    this->setVec3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
 }
 
 void Shader::setVec4(const char *name, const glm::vec4 &vec) const
 {
-    this->setVec4(Graphics::findUniformLocation(name, mActiveProgram), vec);
+    this->setVec4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
 }
 
 void Shader::setMat2(const char *name, const glm::mat2 &mat) const
 {
-    this->setMat2(Graphics::findUniformLocation(name, mActiveProgram), mat);
+    this->setMat2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
 }
 
 void Shader::setMat3(const char *name, const glm::mat3 &mat) const
 {
-    this->setMat3(Graphics::findUniformLocation(name, mActiveProgram), mat);
+    this->setMat3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
 }
 
 void Shader::setMat4(const char *name, const glm::mat4 &mat) const
 {
-    this->setMat4(Graphics::findUniformLocation(name, mActiveProgram), mat);
+    this->setMat4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
 }
 
 void Shader::setTexture2D(const char *name, int texUnit, int tex) const
 {
-    this->setTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit, tex);
+    this->setTexture2D(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnit, tex);
 }
 
 void Shader::setTexture2Ds(const char *name, int *texUnits, int count, int *texs) const
 {
-    this->setTexture2Ds(Graphics::findUniformLocation(name, mActiveProgram), texUnits, count, texs);
+    this->setTexture2Ds(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnits, count, texs);
 }
 
 void Shader::setBool(int nameLocation, bool value) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setBool(nameLocation, (int)value);
+        Renderer::getRenderer()->setBool(nameLocation, (int)value);
     }
 }
 
@@ -389,7 +389,7 @@ void Shader::setInt(int nameLocation, int value) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setInt(nameLocation, value);
+        Renderer::getRenderer()->setInt(nameLocation, value);
     }
 }
 
@@ -397,7 +397,7 @@ void Shader::setFloat(int nameLocation, float value) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setFloat(nameLocation, value);
+        Renderer::getRenderer()->setFloat(nameLocation, value);
     }
 }
 
@@ -405,7 +405,7 @@ void Shader::setColor(int nameLocation, const Color &color) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setColor(nameLocation, color);
+        Renderer::getRenderer()->setColor(nameLocation, color);
     }
 }
 
@@ -413,7 +413,7 @@ void Shader::setVec2(int nameLocation, const glm::vec2 &vec) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setVec2(nameLocation, vec);
+        Renderer::getRenderer()->setVec2(nameLocation, vec);
     }
 }
 
@@ -421,7 +421,7 @@ void Shader::setVec3(int nameLocation, const glm::vec3 &vec) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setVec3(nameLocation, vec);
+        Renderer::getRenderer()->setVec3(nameLocation, vec);
     }
 }
 
@@ -429,7 +429,7 @@ void Shader::setVec4(int nameLocation, const glm::vec4 &vec) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setVec4(nameLocation, vec);
+        Renderer::getRenderer()->setVec4(nameLocation, vec);
     }
 }
 
@@ -437,7 +437,7 @@ void Shader::setMat2(int nameLocation, const glm::mat2 &mat) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setMat2(nameLocation, mat);
+        Renderer::getRenderer()->setMat2(nameLocation, mat);
     }
 }
 
@@ -445,7 +445,7 @@ void Shader::setMat3(int nameLocation, const glm::mat3 &mat) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setMat3(nameLocation, mat);
+        Renderer::getRenderer()->setMat3(nameLocation, mat);
     }
 }
 
@@ -453,7 +453,7 @@ void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setMat4(nameLocation, mat);
+        Renderer::getRenderer()->setMat4(nameLocation, mat);
     }
 }
 
@@ -461,7 +461,7 @@ void Shader::setTexture2D(int nameLocation, int texUnit, int tex) const
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setTexture2D(nameLocation, texUnit, tex);
+        Renderer::getRenderer()->setTexture2D(nameLocation, texUnit, tex);
     }
 }
 
@@ -469,70 +469,70 @@ void Shader::setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs
 {
     if (mActiveProgram != -1)
     {
-        Graphics::setTexture2Ds(nameLocation, texUnits, count, texs);
+        Renderer::getRenderer()->setTexture2Ds(nameLocation, texUnits, count, texs);
     }
 }
 
 bool Shader::getBool(const char *name) const
 {
-    return this->getBool(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getBool(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 int Shader::getInt(const char *name) const
 {
-    return this->getInt(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getInt(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 float Shader::getFloat(const char *name) const
 {
-    return this->getFloat(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getFloat(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 Color Shader::getColor(const char *name) const
 {
-    return this->getColor(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getColor(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::vec2 Shader::getVec2(const char *name) const
 {
-    return this->getVec2(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getVec2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::vec3 Shader::getVec3(const char *name) const
 {
-    return this->getVec3(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getVec3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::vec4 Shader::getVec4(const char *name) const
 {
-    return this->getVec4(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getVec4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::mat2 Shader::getMat2(const char *name) const
 {
-    return this->getMat2(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getMat2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::mat3 Shader::getMat3(const char *name) const
 {
-    return this->getMat3(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getMat3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 glm::mat4 Shader::getMat4(const char *name) const
 {
-    return this->getMat4(Graphics::findUniformLocation(name, mActiveProgram));
+    return this->getMat4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
 }
 
 int Shader::getTexture2D(const char *name, int texUnit) const
 {
-    return this->getTexture2D(Graphics::findUniformLocation(name, mActiveProgram), texUnit);
+    return this->getTexture2D(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnit);
 }
 
 bool Shader::getBool(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getBool(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getBool(nameLocation, mActiveProgram);
     }
 
     return false;
@@ -542,7 +542,7 @@ int Shader::getInt(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getInt(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getInt(nameLocation, mActiveProgram);
     }
 
     return 0;
@@ -552,7 +552,7 @@ float Shader::getFloat(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getFloat(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getFloat(nameLocation, mActiveProgram);
     }
 
     return 0.0f;
@@ -562,7 +562,7 @@ Color Shader::getColor(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getColor(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getColor(nameLocation, mActiveProgram);
     }
 
     return Color(0.0f, 0.0f, 0.0f, 1.0f);
@@ -572,7 +572,7 @@ glm::vec2 Shader::getVec2(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getVec2(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getVec2(nameLocation, mActiveProgram);
     }
 
     return glm::vec2(0.0f);
@@ -582,7 +582,7 @@ glm::vec3 Shader::getVec3(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getVec3(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getVec3(nameLocation, mActiveProgram);
     }
 
     return glm::vec3(0.0f);
@@ -592,7 +592,7 @@ glm::vec4 Shader::getVec4(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getVec4(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getVec4(nameLocation, mActiveProgram);
     }
 
     return glm::vec4(0.0f);
@@ -602,7 +602,7 @@ glm::mat2 Shader::getMat2(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getMat2(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getMat2(nameLocation, mActiveProgram);
     }
 
     return glm::mat2(0.0f);
@@ -612,7 +612,7 @@ glm::mat3 Shader::getMat3(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getMat3(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getMat3(nameLocation, mActiveProgram);
     }
 
     return glm::mat3(0.0f);
@@ -622,7 +622,7 @@ glm::mat4 Shader::getMat4(int nameLocation) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getMat4(nameLocation, mActiveProgram);
+        return Renderer::getRenderer()->getMat4(nameLocation, mActiveProgram);
     }
 
     return glm::mat4(0.0f);
@@ -632,7 +632,7 @@ int Shader::getTexture2D(int nameLocation, int texUnit) const
 {
     if (mActiveProgram != -1)
     {
-        return Graphics::getTexture2D(nameLocation, texUnit, mActiveProgram);
+        return Renderer::getRenderer()->getTexture2D(nameLocation, texUnit, mActiveProgram);
     }
 
     return -1;

@@ -14,7 +14,7 @@
 #include "systems/CleanUpSystem.h"
 #include "systems/RenderSystem.h"
 
-#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 
 #include "Windows.h"
 
@@ -168,10 +168,10 @@ MaterialDrawer::MaterialDrawer()
     mView = glm::lookAt(mCameraPos, mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
     mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
 
-    Graphics::createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
 
-    Graphics::createGlobalCameraUniforms(mCameraUniform);
-    Graphics::createGlobalLightUniforms(mLightUniform);
+    Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
+    Renderer::getRenderer()->createGlobalLightUniforms(mLightUniform);
 
     mCameraUniform.mView = mView;
     mCameraUniform.mProjection = mProjection;
@@ -187,7 +187,7 @@ MaterialDrawer::MaterialDrawer()
 
 MaterialDrawer::~MaterialDrawer()
 {
-    Graphics::destroyFramebuffer(&mFBO, &mColor, &mDepth);
+    Renderer::getRenderer()->destroyFramebuffer(&mFBO, &mColor, &mDepth);
 }
 
 void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
@@ -287,8 +287,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         return;
     }
 
-    Graphics::setGlobalCameraUniforms(mCameraUniform);
-    Graphics::setGlobalLightUniforms(mLightUniform);
+    Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
+    Renderer::getRenderer()->setGlobalLightUniforms(mLightUniform);
 
     int64_t variant = 0;
     variant |= static_cast<int64_t>(ShaderMacro::Directional);
@@ -306,12 +306,12 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
     material->apply();
 
-    Graphics::bindFramebuffer(mFBO);
-    Graphics::setViewport(0, 0, 1000, 1000);
-    Graphics::clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    Graphics::clearFramebufferDepth(1.0f);
-    Graphics::render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
-    Graphics::unbindFramebuffer();
+    Renderer::getRenderer()->bindFramebuffer(mFBO);
+    Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
+    Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+    Renderer::getRenderer()->unbindFramebuffer();
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
     ImGui::BeginChild("MaterialPreviewWindow",

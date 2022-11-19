@@ -34,7 +34,11 @@ void Inspector::update(Clipboard &clipboard)
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::Inspector)] = unhoveredThisFrame();
 
     // draw selected asset
-    if (clipboard.getSelectedType() == InteractionType::Mesh)
+    if (clipboard.getSelectedType() == InteractionType::Scene)
+    {
+        mSceneDrawer.render(clipboard, clipboard.getSelectedId());
+    }
+    else if (clipboard.getSelectedType() == InteractionType::Mesh)
     {
         mMeshDrawer.render(clipboard, clipboard.getSelectedId());
     }

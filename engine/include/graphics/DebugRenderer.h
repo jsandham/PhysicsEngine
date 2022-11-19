@@ -5,7 +5,8 @@
 
 #include "../core/Input.h"
 
-#include "Graphics.h"
+#include "Renderer.h"
+#include "RendererShaders.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -24,6 +25,8 @@ class DebugRenderer
   public:
     DebugRenderer();
     ~DebugRenderer();
+    DebugRenderer(const DebugRenderer& other) = delete;
+    DebugRenderer& operator=(const DebugRenderer& other) = delete;
 
     void init(World *world);
     void update(const Input &input, Camera *camera,
@@ -32,20 +35,6 @@ class DebugRenderer
                 const std::vector<Id> &transformIds);
 };
 
-void initializeDebugRenderer(World *world, DebugRendererState &state);
-
-void beginDebugFrame(World *world, Camera *camera, DebugRendererState &state);
-
-void renderDebug(World *world, Camera *camera, DebugRendererState &state,
-                   const std::vector<RenderObject> &renderObjects,
-                   const std::vector<glm::mat4> &models);
-
-void renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
-                             const std::vector<RenderObject> &renderObjects,
-                             const std::vector<glm::mat4> &models,
-                             const std::vector<Id> &transformIds);
-
-void endDebugFrame(World *world, Camera *camera, DebugRendererState &state);
 } // namespace PhysicsEngine
 
 #endif

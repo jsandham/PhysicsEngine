@@ -1,5 +1,5 @@
 #include "../../include/components/Terrain.h"
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 #include "../../include/core/Log.h"
 
 #include "stb_perlin.h"
@@ -297,7 +297,7 @@ void Terrain::generateTerrain()
         mNormals[9 * j + 8] = nz;
     }
 
-    Graphics::createTerrainChunk(mVertices, mNormals, mTexCoords, vertexCount,
+    Renderer::getRenderer()->createTerrainChunk(mVertices, mNormals, mTexCoords, vertexCount,
                                  &mVao, &mVbo[0], &mVbo[1], &mVbo[2]);
 
     mCreated = true;
@@ -436,7 +436,7 @@ void Terrain::regenerateTerrain()
         mNormals[9 * j + 8] = nz;
     }
 
-    Graphics::updateTerrainChunk(mVertices, mNormals, mTexCoords, mVbo[0], mVbo[1], mVbo[2]);
+    Renderer::getRenderer()->updateTerrainChunk(mVertices, mNormals, mTexCoords, mVbo[0], mVbo[1], mVbo[2]);
 }
 
 void Terrain::updateTerrainHeight(float dx, float dz)
@@ -519,7 +519,7 @@ void Terrain::updateTerrainHeight(float dx, float dz)
         mNormals[9 * j + 8] = nz;
     }
 
-    Graphics::updateTerrainChunk(mVertices, mNormals, mVbo[0], mVbo[1]);
+    Renderer::getRenderer()->updateTerrainChunk(mVertices, mNormals, mVbo[0], mVbo[1]);
 }
 
 std::vector<float> Terrain::getVertices() const

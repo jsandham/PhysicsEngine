@@ -670,7 +670,7 @@ void write_function_body(char *buffer, std::ofstream &out)
 void generate_cpp_file(std::vector<File>& files)
 {
     std::ofstream out;
-    out.open("../../src/graphics/GLSL/glsl_shaders.cpp");
+    out.open("../../src/graphics/platform/opengl/GLSL/glsl_shaders.cpp");
 
     if (!out.is_open())
     {
@@ -678,45 +678,45 @@ void generate_cpp_file(std::vector<File>& files)
     }
 
     std::unordered_map<std::string, std::string> filePathToFunctionNameMap;
-    filePathToFunctionNameMap["../../src/graphics/glsl/geometry_v.glsl"] = "getGeometryVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/geometry_f.glsl"] = "getGeometryFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/ssao_v.glsl"] = "getSSAOVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/ssao_f.glsl"] = "getSSAOFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_map_v.glsl"] = "getShadowDepthMapVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_map_f.glsl"] = "getShadowDepthMapFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_v.glsl"] = "getShadowDepthCubemapVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_f.glsl"] = "getShadowDepthCubemapFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/shadow_depth_cubemap_g.glsl"] = "getShadowDepthCubemapGeometryShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/color_v.glsl"] = "getColorVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/color_f.glsl"] = "getColorFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/color_instanced_v.glsl"] = "getColorInstancedVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/color_instanced_f.glsl"] = "getColorInstancedFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_v.glsl"] = "getScreenQuadVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/screen_quad_f.glsl"] = "getScreenQuadFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/sprite_v.glsl"] = "getSpriteVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/sprite_f.glsl"] = "getSpriteFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/gbuffer_v.glsl"] = "getGBufferVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/gbuffer_f.glsl"] = "getGBufferFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/normal_v.glsl"] = "getNormalVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/normal_f.glsl"] = "getNormalFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/normal_instanced_v.glsl"] = "getNormalInstancedVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/normal_instanced_f.glsl"] = "getNormalInstancedFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/position_v.glsl"] = "getPositionVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/position_f.glsl"] = "getPositionFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/position_instanced_v.glsl"] = "getPositionInstancedVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/position_instanced_f.glsl"] = "getPositionInstancedFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_v.glsl"] = "getLinearDepthVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_f.glsl"] = "getLinearDepthFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_instanced_v.glsl"] = "getLinearDepthInstancedVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/linear_depth_instanced_f.glsl"] = "getLinearDepthInstancedFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/line_v.glsl"] = "getLineVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/line_f.glsl"] = "getLineFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/gizmo_v.glsl"] = "getGizmoVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/gizmo_f.glsl"] = "getGizmoFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/grid_v.glsl"] = "getGridVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/grid_f.glsl"] = "getGridFragmentShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/standard_v.glsl"] = "getStandardVertexShader";
-    filePathToFunctionNameMap["../../src/graphics/glsl/standard_f.glsl"] = "getStandardFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/geometry_v.glsl"] = "getGeometryVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/geometry_f.glsl"] = "getGeometryFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/ssao_v.glsl"] = "getSSAOVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/ssao_f.glsl"] = "getSSAOFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/shadow_depth_map_v.glsl"] = "getShadowDepthMapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/shadow_depth_map_f.glsl"] = "getShadowDepthMapFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/shadow_depth_cubemap_v.glsl"] = "getShadowDepthCubemapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/shadow_depth_cubemap_f.glsl"] = "getShadowDepthCubemapFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/shadow_depth_cubemap_g.glsl"] = "getShadowDepthCubemapGeometryShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/color_v.glsl"] = "getColorVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/color_f.glsl"] = "getColorFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/color_instanced_v.glsl"] = "getColorInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/color_instanced_f.glsl"] = "getColorInstancedFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/screen_quad_v.glsl"] = "getScreenQuadVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/screen_quad_f.glsl"] = "getScreenQuadFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/sprite_v.glsl"] = "getSpriteVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/sprite_f.glsl"] = "getSpriteFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gbuffer_v.glsl"] = "getGBufferVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gbuffer_f.glsl"] = "getGBufferFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/normal_v.glsl"] = "getNormalVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/normal_f.glsl"] = "getNormalFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/normal_instanced_v.glsl"] = "getNormalInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/normal_instanced_f.glsl"] = "getNormalInstancedFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/position_v.glsl"] = "getPositionVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/position_f.glsl"] = "getPositionFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/position_instanced_v.glsl"] = "getPositionInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/position_instanced_f.glsl"] = "getPositionInstancedFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/linear_depth_v.glsl"] = "getLinearDepthVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/linear_depth_f.glsl"] = "getLinearDepthFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/linear_depth_instanced_v.glsl"] = "getLinearDepthInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/linear_depth_instanced_f.glsl"] = "getLinearDepthInstancedFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/line_v.glsl"] = "getLineVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/line_f.glsl"] = "getLineFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_v.glsl"] = "getGizmoVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_f.glsl"] = "getGizmoFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/grid_v.glsl"] = "getGridVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/grid_f.glsl"] = "getGridFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_v.glsl"] = "getStandardVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_f.glsl"] = "getStandardFragmentShader";
 
     write_header("PhysicsEngine", out);
 
@@ -742,9 +742,9 @@ void generate_cpp_file(std::vector<File>& files)
 
 int main()
 {
-    std::vector<File> files = loadFilesInDirectory("../../src/graphics/glsl/");
+    std::vector<File> files = loadFilesInDirectory("../../src/graphics/platform/opengl/glsl/");
 
-    preprocess("../../src/graphics/glsl/", files);
+    preprocess("../../src/graphics/platform/opengl/glsl/", files);
 
     generate_cpp_file(files);
 

@@ -9,7 +9,7 @@ using namespace PhysicsEditor;
 
 TerrainDrawer::TerrainDrawer()
 {
-    Graphics::createFramebuffer(256, 256, &mFBO, &mColor);
+    Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor);
 
     std::string vertexShader = "#version 430 core\n"
         "in vec3 position;\n"
@@ -29,7 +29,7 @@ TerrainDrawer::TerrainDrawer()
         "}";
 
     ShaderStatus status;
-    Graphics::compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
+    Renderer::getRenderer()->compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
 }
 
 TerrainDrawer::~TerrainDrawer()
@@ -136,13 +136,13 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 terrain->updateTerrainHeight();
             }
 
-            Graphics::bindFramebuffer(mFBO);
-            Graphics::setViewport(0, 0, 256, 256);
-            Graphics::clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-            Graphics::use(mProgram);
-            Graphics::render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
-            Graphics::unuse();
-            Graphics::unbindFramebuffer();
+            Renderer::getRenderer()->bindFramebuffer(mFBO);
+            Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+            Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+            Renderer::getRenderer()->use(mProgram);
+            Renderer::getRenderer()->render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
+            Renderer::getRenderer()->unuse();
+            Renderer::getRenderer()->unbindFramebuffer();
 
             /*ImGui::Image((void*)(intptr_t)mColor,
                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),

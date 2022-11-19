@@ -6,6 +6,7 @@ namespace PhysicsEditor
     enum class InteractionType
     {
         None,
+        Scene,
         Entity,
         Texture2D,
         Texture3D,

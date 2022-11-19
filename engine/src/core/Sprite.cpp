@@ -1,6 +1,6 @@
 #include "../../include/core/Sprite.h"
 
-#include "../../include/graphics/Graphics.h"
+#include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
@@ -84,7 +84,7 @@ void Sprite::create()
         return;
     }
 
-    Graphics::createSprite(&mVao);
+    Renderer::getRenderer()->createSprite(&mVao);
 
     mCreated = true;
 }
@@ -96,7 +96,7 @@ void Sprite::destroy()
         return;
     }
 
-    Graphics::destroySprite(&mVao);
+    Renderer::getRenderer()->destroySprite(&mVao);
 
     mCreated = false;
 }
