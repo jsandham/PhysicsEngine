@@ -305,47 +305,47 @@ Id FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
     return camera->getTransformIdAtScreenPos(x, y);
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsMainFBO() const
+Framebuffer *FreeLookCameraSystem::getNativeGraphicsMainFBO() const
 {
     return getCamera()->getNativeGraphicsMainFBO();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsColorTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsColorTex() const
 {
     return getCamera()->getNativeGraphicsColorTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsDepthTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsDepthTex() const
 {
     return getCamera()->getNativeGraphicsDepthTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsColorPickingTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsColorPickingTex() const
 {
     return getCamera()->getNativeGraphicsColorPickingTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsPositionTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsPositionTex() const
 {
     return getCamera()->getNativeGraphicsPositionTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsNormalTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsNormalTex() const
 {
     return getCamera()->getNativeGraphicsNormalTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsAlbedoSpecTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsAlbedoSpecTex() const
 {
     return getCamera()->getNativeGraphicsAlbedoSpecTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsSSAOColorTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAOColorTex() const
 {
     return getCamera()->getNativeGraphicsSSAOColorTex();
 }
 
-unsigned int FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
+TextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
 {
     return getCamera()->getNativeGraphicsSSAONoiseTex();
 }

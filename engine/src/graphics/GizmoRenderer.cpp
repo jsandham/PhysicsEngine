@@ -188,7 +188,8 @@ static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &s
 
     Renderer::getRenderer()->createLine(vertices, colors, &lineVAO, &lineVBO[0], &lineVBO[1]);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -199,7 +200,8 @@ static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &s
 
     Renderer::getRenderer()->renderLines(lineVAO, 0, (int)vertices.size() / 3);
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
 }
@@ -219,7 +221,8 @@ static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState 
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Sphere);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -244,7 +247,8 @@ static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState 
     }
 
     Renderer::getRenderer()->unbindVertexArray();
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
@@ -264,7 +268,8 @@ static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &s
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Cube);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
  
@@ -288,7 +293,8 @@ static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &s
     }
 
     Renderer::getRenderer()->unbindVertexArray();   
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
@@ -308,7 +314,8 @@ static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &
 
     Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Plane);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -338,7 +345,8 @@ static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &
     }
 
     Renderer::getRenderer()->unbindVertexArray();    
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
@@ -491,7 +499,8 @@ static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState
     Renderer::getRenderer()->turnOn(Capability::Blending);
     Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -510,7 +519,8 @@ static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState
     }
 
     Renderer::getRenderer()->unbindVertexArray();
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
@@ -521,7 +531,8 @@ static void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &st
     Renderer::getRenderer()->turnOn(Capability::LineSmoothing);
     Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+    camera->getNativeGraphicsMainFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -533,7 +544,8 @@ static void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &st
 
     Renderer::getRenderer()->renderLines(0, (int)state.mGridVertices.size(), state.mGridVAO);
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
     Renderer::getRenderer()->turnOff(Capability::LineSmoothing);

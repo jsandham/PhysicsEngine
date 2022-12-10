@@ -87,51 +87,72 @@ static void beginDebugFrame(World *world, Camera *camera, DebugRendererState &st
     // update camera state data
     Renderer::getRenderer()->setGlobalCameraUniforms(state.mCameraState);
 
+    Framebuffer* framebuffer = nullptr;
+
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        framebuffer = camera->getNativeGraphicsMainFBO();
     }
-    Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    Renderer::getRenderer()->unbindFramebuffer();
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
-    Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    Renderer::getRenderer()->unbindFramebuffer();
+    // Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
+    // Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    // Renderer::getRenderer()->unbindFramebuffer();
+    framebuffer->bind();
+    framebuffer->clearColor(camera->mBackgroundColor);
+    framebuffer->clearDepth(1.0f);
+    framebuffer->unbind();
+
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsColorPickingFBO()->bind();
+    camera->getNativeGraphicsColorPickingFBO()->clearColor(Color::black);
+    camera->getNativeGraphicsColorPickingFBO()->clearDepth(1.0f);
+    camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 
 static void renderDebug(World* world, Camera* camera, DebugRendererState& state,
     const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4> &models)
 {
+    Framebuffer *framebuffer = nullptr;
+
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        framebuffer = camera->getNativeGraphicsMainFBO();
     }
+
+    framebuffer->bind();
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
@@ -186,7 +207,8 @@ static void renderDebug(World* world, Camera* camera, DebugRendererState& state,
         }
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    framebuffer->unbind();
 }
 
 static void renderDebugColorPicking(World *world, Camera *camera, DebugRendererState &state,
@@ -229,7 +251,8 @@ static void renderDebugColorPicking(World *world, Camera *camera, DebugRendererS
         }
     }
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    camera->getNativeGraphicsColorPickingFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -278,7 +301,8 @@ static void renderDebugColorPicking(World *world, Camera *camera, DebugRendererS
         }
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 
 static void endDebugFrame(World *world, Camera *camera, DebugRendererState &state)
@@ -290,7 +314,7 @@ static void endDebugFrame(World *world, Camera *camera, DebugRendererState &stat
                               camera->getViewport().mHeight);
 
         Renderer::getRenderer()->use(state.mQuadShaderProgram);
-        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle()));
 
         Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();

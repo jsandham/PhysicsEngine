@@ -347,24 +347,24 @@ void SceneView::update(Clipboard &clipboard)
     }
 
     // Finally draw scene
-    unsigned int tex = cameraSystem->getNativeGraphicsColorTex();
+    unsigned int tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsColorTex()->getHandle());
     
     switch (targets[mActiveTextureIndex])
     {
     case DebugTargets::Depth:
-        tex = cameraSystem->getNativeGraphicsDepthTex();
+        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsDepthTex()->getHandle());
         break;
     case DebugTargets::ColorPicking:
-        tex = cameraSystem->getNativeGraphicsColorPickingTex();
+        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsColorPickingTex()->getHandle());
         break;
     case DebugTargets::AlbedoSpecular:
-        tex = cameraSystem->getNativeGraphicsAlbedoSpecTex();
+        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle());
         break;
     case DebugTargets::SSAO:
-        tex = cameraSystem->getNativeGraphicsSSAOColorTex();
+        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsSSAOColorTex()->getHandle());
         break;
     case DebugTargets::SSAONoise:
-        tex = cameraSystem->getNativeGraphicsSSAONoiseTex();
+        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle());
         break;
     }
 
@@ -419,11 +419,11 @@ void SceneView::update(Clipboard &clipboard)
                 if (camera->mRenderTextureId.isValid())
                 {
                     RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
-                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)renderTexture->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
                 }
                 else
                 {
-                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)camera->getNativeGraphicsColorTex(), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
                 }
             }
         }

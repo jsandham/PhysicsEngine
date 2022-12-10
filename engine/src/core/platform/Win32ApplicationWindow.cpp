@@ -1,6 +1,7 @@
 #include "../../../include/core/platform/Win32ApplicationWindow.h"
 #include "../../../include/core/Input.h"
 #include "../../../include/graphics/Renderer.h"
+#include "../../../include/graphics/RenderContext.h"
 
 #include <tchar.h>
 #include <algorithm>
@@ -320,17 +321,11 @@ Win32ApplicationWindow::Win32ApplicationWindow(const std::string& title, int wid
 	init(title, width, height);
 
     RenderContext::createRenderContext(mWindow);
-
-    //mRenderContext = RenderContext::createRenderContext();
-    //mRenderContext->init(static_cast<void*>(mWindow));
 }
 
 Win32ApplicationWindow::~Win32ApplicationWindow()
 {
 	cleanup();
-
-    //mRenderContext->cleanup();
-    //delete mRenderContext;
 }
 
 void Win32ApplicationWindow::update()
@@ -363,19 +358,16 @@ void Win32ApplicationWindow::update()
     }
 
     Renderer::present();
-    //mRenderContext->update();
 }
 
 void Win32ApplicationWindow::turnVsyncOn()
 {
     Renderer::turnVsyncOn();
-    //mRenderContext->turnVsyncOn();
 }
 
 void Win32ApplicationWindow::turnVsyncOff()
 {
     Renderer::turnVsyncOff();
-    //mRenderContext->turnVsyncOff();
 }
 
 int Win32ApplicationWindow::getWidth() const

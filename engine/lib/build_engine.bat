@@ -50,15 +50,16 @@ for /R "../src/" %%f in (*.cpp) do (
 )
 
 :: create list of .obj files
-echo [92mCompiled objects...[0m
-set OBJ_FILES=
-for /r "%MODE%/obj" %%v in (*.obj) do (
-	call :concat_obj %%v
-)
+::echo [92mCompiled objects...[0m
+::set OBJ_FILES=
+::for /r "%MODE%/obj" %%v in (*.obj) do (
+::	call :concat_obj %%v
+::)
 
 :: create static engine library
 echo [92mCreating static engine library...[0m
-lib /nologo /out:%MODE%/engine.lib %OBJ_FILES%
+::lib /nologo /out:%MODE%/engine.lib %OBJ_FILES%
+lib /nologo /out:%MODE%/engine.lib %MODE%/obj/*.obj 
 
 :: delete .obj fles
 ::echo [92mDeleting objects...[0m

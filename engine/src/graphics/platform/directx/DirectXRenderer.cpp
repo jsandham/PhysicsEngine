@@ -8,9 +8,32 @@
 
 using namespace PhysicsEngine;
 
+#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)           \
+    do{                                                 \
+        HRESULT hr = ROUTINE;                           \
+        LPTSTR lpBuf = NULL;                            \
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |  \
+                      FORMAT_MESSAGE_FROM_SYSTEM |      \
+                      FORMAT_MESSAGE_IGNORE_INSERTS,    \
+                      NULL,                             \
+                      hr,                               \
+                      0,                                \
+                      (LPTSTR)&lpBuf,                   \
+                      0,                                \
+                      NULL);                            \
+    }while(0)
+
+#define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
+
 void DirectXRenderer::init_impl()
 {
-    mContext = RenderContextDirectX::get();
+    mContext = DirectXRenderContext::get();
+
+    DXGI_ADAPTER_DESC descr;
+    mContext->getAdapter()->GetDesc(&descr);
+
+    //Log::warn(("Vender: " + vender + "\n").c_str());
+    Log::warn(("Dedicated video memory: " + std::to_string(descr.DedicatedVideoMemory) + "\n").c_str());
 }
 void DirectXRenderer::present_impl()
 {
@@ -38,10 +61,10 @@ void DirectXRenderer::setGlobalCameraUniforms_impl(const CameraUniform &uniform)
 void DirectXRenderer::setGlobalLightUniforms_impl(const LightUniform &uniform){}
 void DirectXRenderer::createScreenQuad_impl(unsigned int *vao, unsigned int *vbo){}
 void DirectXRenderer::renderScreenQuad_impl(unsigned int vao){}
-void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color){}
-void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
-                            unsigned int *depth){}
-void DirectXRenderer::destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth){}
+//void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color){}
+//void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
+//                            unsigned int *depth){}
+//void DirectXRenderer::destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth){}
 void DirectXRenderer::bindFramebuffer_impl(unsigned int fbo){}
 void DirectXRenderer::unbindFramebuffer_impl(){}
 void DirectXRenderer::clearFrambufferColor_impl(const Color &color){}
@@ -50,44 +73,44 @@ void DirectXRenderer::clearFramebufferDepth_impl(float depth){}
 void DirectXRenderer::bindVertexArray_impl(unsigned int vao){}
 void DirectXRenderer::unbindVertexArray_impl(){}
 void DirectXRenderer::setViewport_impl(int x, int y, int width, int height){}
-void DirectXRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
-                        unsigned int *queryId1){}
-void DirectXRenderer::destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1){}
-void DirectXRenderer::resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged){}
+//void DirectXRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
+//                        unsigned int *queryId1){}
+//void DirectXRenderer::destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1){}
+//void DirectXRenderer::resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged){}
 void DirectXRenderer::readColorAtPixel_impl(const unsigned int *fbo, int x, int y, Color32 *color){}
-void DirectXRenderer::createTargets_impl(LightTargets *targets, ShadowMapResolution resolution){}
-void DirectXRenderer::destroyTargets_impl(LightTargets *targets){}
-void DirectXRenderer::resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution){}
-void DirectXRenderer::createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                          int height, const std::vector<unsigned char> &data, unsigned int *tex){}
-void DirectXRenderer::destroyTexture2D_impl(unsigned int *tex){}
-void DirectXRenderer::updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                          unsigned int tex){}
-void DirectXRenderer::readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
-                              std::vector<unsigned char> &data, unsigned int tex){}
-void DirectXRenderer::writePixelsTexture2D_impl(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
-                               unsigned int tex){}
-void DirectXRenderer::createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                          int height, int depth, const std::vector<unsigned char> &data, unsigned int *tex){}
-void DirectXRenderer::destroyTexture3D_impl(unsigned int *tex){}
-void DirectXRenderer::updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                          unsigned int tex){}
-void DirectXRenderer::readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
-                              std::vector<unsigned char> &data, unsigned int tex){}
-void DirectXRenderer::writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
-                               const std::vector<unsigned char> &data, unsigned int tex){}
-void DirectXRenderer::createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                        const std::vector<unsigned char> &data, unsigned int *tex){}
-void DirectXRenderer::destroyCubemap_impl(unsigned int *tex){}
-void DirectXRenderer::updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                        unsigned int tex){}
-void DirectXRenderer::readPixelsCubemap_impl(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
-                            unsigned int tex){}
-void DirectXRenderer::writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
-                             unsigned int tex){}
-void DirectXRenderer::createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format, TextureWrapMode wrapMode,
-                                     TextureFilterMode filterMode, int width, int height){}
-void DirectXRenderer::destroyRenderTextureTargets_impl(RenderTextureTargets *targets){}
+//void DirectXRenderer::createTargets_impl(LightTargets *targets, ShadowMapResolution resolution){}
+//void DirectXRenderer::destroyTargets_impl(LightTargets *targets){}
+//void DirectXRenderer::resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution){}
+//void DirectXRenderer::createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                          int height, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::destroyTexture2D_impl(TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
+//                              std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::writePixelsTexture2D_impl(TextureFormat format, int width, int height, const std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                          int height, int depth, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::destroyTexture3D_impl(TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
+//                              std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
+//                               const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                        const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::destroyCubemap_impl(TextureHandle* tex /*unsigned int* tex*/) {}
+//void DirectXRenderer::updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::readPixelsCubemap_impl(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/) {}
+//void DirectXRenderer::createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format, TextureWrapMode wrapMode,
+//                                     TextureFilterMode filterMode, int width, int height){}
+//void DirectXRenderer::destroyRenderTextureTargets_impl(RenderTextureTargets *targets){}
 void DirectXRenderer::createTerrainChunk_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                              const std::vector<float> &texCoords, int vertexCount, unsigned int *vao,
                              unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2){}
@@ -98,10 +121,10 @@ void DirectXRenderer::updateTerrainChunk_impl(const std::vector<float> &vertices
                              const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                              unsigned int vbo2){}
 void DirectXRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
-                     const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1,
-                     unsigned int *vbo2, unsigned int *model_vbo, unsigned int *color_vbo){}
-void DirectXRenderer::destroyMesh_impl(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2,
-                      unsigned int *model_vbo, unsigned int *color_vbo){}
+                     const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1,
+    VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
+void DirectXRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+    VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
 void DirectXRenderer::updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4 *models, size_t instanceCount){}
 void DirectXRenderer::updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount){}
 void DirectXRenderer::createSprite_impl(unsigned int *vao){}

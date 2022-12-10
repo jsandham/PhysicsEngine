@@ -24,7 +24,7 @@ Light::Light(World *world, const Id &id) : Component(world, id)
     mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
-    mTargets.mShadowCascadeFBO[0] = 0;
+    /*mTargets.mShadowCascadeFBO[0] = 0;
     mTargets.mShadowCascadeFBO[1] = 0;
     mTargets.mShadowCascadeFBO[2] = 0;
     mTargets.mShadowCascadeFBO[3] = 0;
@@ -39,7 +39,15 @@ Light::Light(World *world, const Id &id) : Component(world, id)
     mTargets.mShadowSpotlightFBO = 0;
     mTargets.mShadowSpotlightDepthTex = 0;
     mTargets.mShadowCubemapFBO = 0;
-    mTargets.mShadowCubemapDepthTex = 0;
+    mTargets.mShadowCubemapDepthTex = 0;*/
+    mTargets.mShadowCascadeFBO[0] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[1] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[2] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[3] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[4] = Framebuffer::create(1024, 1024);
+
+    mTargets.mShadowSpotlightFBO = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCubemapFBO = Framebuffer::create(1024, 1024);
 }
 
 Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
@@ -61,22 +69,30 @@ Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, gu
     mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
-    mTargets.mShadowCascadeFBO[0] = 0;
-    mTargets.mShadowCascadeFBO[1] = 0;
-    mTargets.mShadowCascadeFBO[2] = 0;
-    mTargets.mShadowCascadeFBO[3] = 0;
-    mTargets.mShadowCascadeFBO[4] = 0;
+    //mTargets.mShadowCascadeFBO[0] = 0;
+    //mTargets.mShadowCascadeFBO[1] = 0;
+    //mTargets.mShadowCascadeFBO[2] = 0;
+    //mTargets.mShadowCascadeFBO[3] = 0;
+    //mTargets.mShadowCascadeFBO[4] = 0;
 
-    mTargets.mShadowCascadeDepthTex[0] = 0;
-    mTargets.mShadowCascadeDepthTex[1] = 0;
-    mTargets.mShadowCascadeDepthTex[2] = 0;
-    mTargets.mShadowCascadeDepthTex[3] = 0;
-    mTargets.mShadowCascadeDepthTex[4] = 0;
+    //mTargets.mShadowCascadeDepthTex[0] = 0;
+    //mTargets.mShadowCascadeDepthTex[1] = 0;
+    //mTargets.mShadowCascadeDepthTex[2] = 0;
+    //mTargets.mShadowCascadeDepthTex[3] = 0;
+    //mTargets.mShadowCascadeDepthTex[4] = 0;
 
-    mTargets.mShadowSpotlightFBO = 0;
-    mTargets.mShadowSpotlightDepthTex = 0;
-    mTargets.mShadowCubemapFBO = 0;
-    mTargets.mShadowCubemapDepthTex = 0;
+    //mTargets.mShadowSpotlightFBO = 0;
+    //mTargets.mShadowSpotlightDepthTex = 0;
+    //mTargets.mShadowCubemapFBO = 0;
+    //mTargets.mShadowCubemapDepthTex = 0;
+    mTargets.mShadowCascadeFBO[0] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[1] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[2] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[3] = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCascadeFBO[4] = Framebuffer::create(1024, 1024);
+
+    mTargets.mShadowSpotlightFBO = Framebuffer::create(1024, 1024);
+    mTargets.mShadowCubemapFBO = Framebuffer::create(1024, 1024);
 }
 
 Light::~Light()
@@ -132,21 +148,21 @@ std::string Light::getObjectName() const
 
 void Light::createTargets()
 {
-    Renderer::getRenderer()->createTargets(&mTargets, mShadowMapResolution);
+    //Renderer::getRenderer()->createTargets(&mTargets, mShadowMapResolution);
 
     mIsCreated = true;
 }
 
 void Light::destroyTargets()
 {
-    Renderer::getRenderer()->destroyTargets(&mTargets);
+    //Renderer::getRenderer()->destroyTargets(&mTargets);
 
     mIsCreated = false;
 }
 
 void ::Light::resizeTargets()
 {
-    Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
+    //Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
 
     mIsShadowMapResolutionChanged = false;
 }
@@ -187,32 +203,35 @@ glm::mat4 Light::getProjMatrix() const
     return glm::mat4(1.0f);
 }
 
-unsigned int Light::getNativeGraphicsShadowCascadeFBO(int index) const
+Framebuffer* Light::getNativeGraphicsShadowCascadeFBO(int index) const
 {
     return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))];
 }
 
-unsigned int Light::getNativeGraphicsShadowSpotlightFBO() const
+Framebuffer* Light::getNativeGraphicsShadowSpotlightFBO() const
 {
     return mTargets.mShadowSpotlightFBO;
 }
 
-unsigned int Light::getNativeGraphicsShadowCubemapFBO() const
+Framebuffer* Light::getNativeGraphicsShadowCubemapFBO() const
 {
     return mTargets.mShadowCubemapFBO;
 }
 
-unsigned int Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
+TextureHandle* Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
 {
-    return mTargets.mShadowCascadeDepthTex[std::min(4, std::max(0, index))];
+    /*return mTargets.mShadowCascadeDepthTex[std::min(4, std::max(0, index))];*/
+    return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))]->getDepthTex();
 }
 
-unsigned int Light::getNativeGrpahicsShadowSpotlightDepthTex() const
+TextureHandle* Light::getNativeGrpahicsShadowSpotlightDepthTex() const
 {
-    return mTargets.mShadowSpotlightDepthTex;
+    /*return mTargets.mShadowSpotlightDepthTex;*/
+    return mTargets.mShadowSpotlightFBO->getDepthTex();
 }
 
-unsigned int Light::getNativeGraphicsShadowCubemapDepthTex() const
+TextureHandle* Light::getNativeGraphicsShadowCubemapDepthTex() const
 {
-    return mTargets.mShadowCubemapDepthTex;
+    /*return mTargets.mShadowCubemapDepthTex;*/
+    return mTargets.mShadowCubemapFBO->getDepthTex();
 }

@@ -10,8 +10,15 @@ namespace PhysicsEngine
 class Log
 {
   private:
+    enum class Level
+    {
+        Info,
+        Warn,
+        Error
+    };
+
     static std::queue<std::string> messages;
-    static std::string convertToString(const char *format, va_list args);
+    static std::string convertToString(Level level, const char *format, va_list args);
 
   public:
     static size_t maxMessageCount;

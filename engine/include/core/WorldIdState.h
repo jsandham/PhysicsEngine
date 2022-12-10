@@ -28,6 +28,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mGizmoSystemGuidToGlobalIndex;
     std::unordered_map<Guid, int> mFreeLookCameraSystemGuidToGlobalIndex;
     std::unordered_map<Guid, int> mTerrainSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mAssetLoadingSystemGuidToGlobalIndex;
 
     // world id state for all scenes, systems, and assets
     std::unordered_map<Guid, int> mGuidToGlobalIndex;
@@ -78,6 +79,7 @@ struct WorldIdState
     std::unordered_map<Id, int> mGizmoSystemIdToGlobalIndex;
     std::unordered_map<Id, int> mFreeLookCameraSystemIdToGlobalIndex;
     std::unordered_map<Id, int> mTerrainSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mAssetLoadingSystemIdToGlobalIndex;
 
     // world id state for all scenes, systems, and assets
     std::unordered_map<Id, int> mIdToGlobalIndex;

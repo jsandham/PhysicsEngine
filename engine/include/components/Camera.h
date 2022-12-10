@@ -22,6 +22,7 @@
 #include "../core/Viewport.h"
 #include "../core/RenderTexture.h"
 
+#include "../graphics/Framebuffer.h"
 #include "../graphics/GraphicsQuery.h"
 
 namespace PhysicsEngine
@@ -70,7 +71,12 @@ enum class ShadowCascades
 
 struct CameraTargets
 {
-    unsigned int mMainFBO;
+    Framebuffer *mMainFBO;
+    Framebuffer *mColorPickingFBO;
+    Framebuffer *mGeometryFBO;
+    Framebuffer *mSsaoFBO;
+
+    /*unsigned int mMainFBO;
     unsigned int mColorTex;
     unsigned int mDepthTex;
 
@@ -85,7 +91,7 @@ struct CameraTargets
 
     unsigned int mSsaoFBO;
     unsigned int mSsaoColorTex;
-    unsigned int mSsaoNoiseTex;
+    unsigned int mSsaoNoiseTex;*/
 };
 
 class Camera : public Component
@@ -173,19 +179,19 @@ class Camera : public Component
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
     Ray screenSpaceToRay(int x, int y) const;
 
-    unsigned int getNativeGraphicsMainFBO() const;
-    unsigned int getNativeGraphicsColorPickingFBO() const;
-    unsigned int getNativeGraphicsGeometryFBO() const;
-    unsigned int getNativeGraphicsSSAOFBO() const;
+    Framebuffer* getNativeGraphicsMainFBO() const;
+    Framebuffer* getNativeGraphicsColorPickingFBO() const;
+    Framebuffer* getNativeGraphicsGeometryFBO() const;
+    Framebuffer* getNativeGraphicsSSAOFBO() const;
 
-    unsigned int getNativeGraphicsColorTex() const;
-    unsigned int getNativeGraphicsDepthTex() const;
-    unsigned int getNativeGraphicsColorPickingTex() const;
-    unsigned int getNativeGraphicsPositionTex() const;
-    unsigned int getNativeGraphicsNormalTex() const;
-    unsigned int getNativeGraphicsAlbedoSpecTex() const;
-    unsigned int getNativeGraphicsSSAOColorTex() const;
-    unsigned int getNativeGraphicsSSAONoiseTex() const;
+    TextureHandle *getNativeGraphicsColorTex() const;
+    TextureHandle *getNativeGraphicsDepthTex() const;
+    TextureHandle *getNativeGraphicsColorPickingTex() const;
+    TextureHandle *getNativeGraphicsPositionTex() const;
+    TextureHandle *getNativeGraphicsNormalTex() const;
+    TextureHandle *getNativeGraphicsAlbedoSpecTex() const;
+    TextureHandle *getNativeGraphicsSSAOColorTex() const;
+    TextureHandle *getNativeGraphicsSSAONoiseTex() const;
 };
 
 template <> struct ComponentType<Camera>

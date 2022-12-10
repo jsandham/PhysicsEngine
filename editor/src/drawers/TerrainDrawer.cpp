@@ -9,7 +9,8 @@ using namespace PhysicsEditor;
 
 TerrainDrawer::TerrainDrawer()
 {
-    Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor);
+    //Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor);
+    mFBO = Framebuffer::create(256, 256, 1, false);
 
     std::string vertexShader = "#version 430 core\n"
         "in vec3 position;\n"
@@ -34,6 +35,7 @@ TerrainDrawer::TerrainDrawer()
 
 TerrainDrawer::~TerrainDrawer()
 {
+    delete mFBO;
 }
 
 void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
@@ -136,18 +138,22 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 terrain->updateTerrainHeight();
             }
 
-            Renderer::getRenderer()->bindFramebuffer(mFBO);
-            Renderer::getRenderer()->setViewport(0, 0, 256, 256);
-            Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+            //Renderer::getRenderer()->bindFramebuffer(mFBO);
+            //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+            //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+            mFBO->bind();
+            mFBO->setViewport(0, 0, 256, 256);
+            mFBO->clearColor(Color::black);
             Renderer::getRenderer()->use(mProgram);
             Renderer::getRenderer()->render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
             Renderer::getRenderer()->unuse();
-            Renderer::getRenderer()->unbindFramebuffer();
+            //Renderer::getRenderer()->unbindFramebuffer();
+            mFBO->unbind();
 
             /*ImGui::Image((void*)(intptr_t)mColor,
                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                 ImVec2(0, 0));*/
-            ImGui::Image((void*)(intptr_t)mColor,
+            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
                 ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
                 ImVec2(0, 0));
 

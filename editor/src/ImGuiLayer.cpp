@@ -3,10 +3,14 @@
 #include "imgui.h"
 #include "ImGuizmo.h"
 
+#include "imgui_impl_dx11.h"
 #include "imgui_impl_opengl3.h"
+
 #include "imgui_impl_win32.h"
 
 #include <core/Application.h>
+#include <graphics/RenderContext.h>
+#include <graphics/platform/directx/DirectXRenderContext.h>
 #include <windows.h>
 
 using namespace PhysicsEditor;
@@ -19,7 +23,16 @@ ImGuiLayer::ImGuiLayer() : PhysicsEngine::Layer("Imgui")
 ImGuiLayer::~ImGuiLayer()
 {
     // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
+    switch (PhysicsEngine::RenderContext::getRenderAPI())
+    {
+    case PhysicsEngine::RenderAPI::OpenGL:
+        ImGui_ImplOpenGL3_Shutdown();
+        break;
+    case PhysicsEngine::RenderAPI::DirectX:
+        ImGui_ImplDX11_Shutdown();
+        break;
+    }
+
     ImGui::DestroyContext();
     ImGui_ImplWin32_Shutdown();
 }
@@ -35,9 +48,17 @@ void ImGuiLayer::init()
     // Init Win32
     ImGui_ImplWin32_Init(static_cast<HWND>(app.getWindow().getNativeWindow()));
 
-    // Init OpenGL Imgui Implementation
-    // GL 3.0 + GLSL 130
-    ImGui_ImplOpenGL3_Init("#version 330");
+    switch (PhysicsEngine::RenderContext::getRenderAPI())
+    {
+    case PhysicsEngine::RenderAPI::OpenGL:
+        // Init OpenGL Imgui Implementation
+        // GL 3.0 + GLSL 130
+        ImGui_ImplOpenGL3_Init("#version 330");
+        break;
+    case PhysicsEngine::RenderAPI::DirectX:
+        ImGui_ImplDX11_Init(PhysicsEngine::DirectXRenderContext::get()->getD3DDevice(), PhysicsEngine::DirectXRenderContext::get()->getD3DDeviceContext());
+        break;
+    }
 
     // enable docking
     ImGuiIO& io = ImGui::GetIO();
@@ -48,7 +69,16 @@ void ImGuiLayer::init()
 void ImGuiLayer::begin()
 {
     // start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
+    switch (PhysicsEngine::RenderContext::getRenderAPI())
+    {
+    case PhysicsEngine::RenderAPI::OpenGL:
+        ImGui_ImplOpenGL3_NewFrame();
+        break;
+    case PhysicsEngine::RenderAPI::DirectX:
+        ImGui_ImplDX11_NewFrame();
+        break;
+    }
+
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
@@ -83,7 +113,17 @@ void ImGuiLayer::end()
 
     // imgui render calls
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    switch (PhysicsEngine::RenderContext::getRenderAPI())
+    {
+    case PhysicsEngine::RenderAPI::OpenGL:
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        break;
+    case PhysicsEngine::RenderAPI::DirectX:
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        break;
+    }
+
     ImGui::EndFrame();
 }
 

@@ -12,7 +12,12 @@ Camera::Camera(World *world, const Id &id) : Component(world, id)
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
 
-    mTargets.mMainFBO = 0;
+    mTargets.mMainFBO = Framebuffer::create(1920, 1080);
+    mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
+    mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
+    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
+
+    /*mTargets.mMainFBO = 0;
     mTargets.mColorTex = 0;
     mTargets.mDepthTex = 0;
 
@@ -27,7 +32,7 @@ Camera::Camera(World *world, const Id &id) : Component(world, id)
 
     mTargets.mSsaoFBO = 0;
     mTargets.mSsaoColorTex = 0;
-    mTargets.mSsaoNoiseTex = 0;
+    mTargets.mSsaoNoiseTex = 0;*/
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -70,7 +75,12 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
 
-    mTargets.mMainFBO = 0;
+    mTargets.mMainFBO = Framebuffer::create(1920, 1080);
+    mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
+    mTargets.mGeometryFBO = Framebuffer::create(1920, 1080);
+    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080);
+
+    /*mTargets.mMainFBO = 0;
     mTargets.mColorTex = 0;
     mTargets.mDepthTex = 0;
 
@@ -85,7 +95,7 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
 
     mTargets.mSsaoFBO = 0;
     mTargets.mSsaoColorTex = 0;
-    mTargets.mSsaoNoiseTex = 0;
+    mTargets.mSsaoNoiseTex = 0;*/
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -123,7 +133,11 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
 
 Camera::~Camera()
 {
-}
+    delete mTargets.mMainFBO;
+    delete mTargets.mColorPickingFBO;
+    delete mTargets.mGeometryFBO;
+    delete mTargets.mSsaoFBO;
+} 
 
 void Camera::serialize(YAML::Node &out) const
 {
@@ -188,14 +202,14 @@ bool Camera::isViewportChanged() const
 
 void Camera::createTargets()
 {
-    Renderer::getRenderer()->createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+    //Renderer::getRenderer()->createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
 
     mIsCreated = true;
 }
 
 void Camera::destroyTargets()
 {
-    Renderer::getRenderer()->destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
+    //Renderer::getRenderer()->destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
 
     mIsCreated = false;
 }
@@ -306,7 +320,7 @@ Id Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
-    Renderer::getRenderer()->readColorAtPixel(&mTargets.mColorPickingFBO, x, y, &color);
+    Renderer::getRenderer()->readColorAtPixel(reinterpret_cast<unsigned int*>(mTargets.mColorPickingFBO->getHandle()), x, y, &color);
 
     std::unordered_map<Color32, Id>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())
@@ -449,62 +463,62 @@ Ray Camera::screenSpaceToRay(int x, int y) const
     return normalizedDeviceSpaceToRay(ndcX, ndcY);
 }
 
-unsigned int Camera::getNativeGraphicsMainFBO() const
+Framebuffer* Camera::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;
 }
 
-unsigned int Camera::getNativeGraphicsColorPickingFBO() const
+Framebuffer *Camera::getNativeGraphicsColorPickingFBO() const
 {
     return mTargets.mColorPickingFBO;
 }
 
-unsigned int Camera::getNativeGraphicsGeometryFBO() const
+Framebuffer *Camera::getNativeGraphicsGeometryFBO() const
 {
     return mTargets.mGeometryFBO;
 }
 
-unsigned int Camera::getNativeGraphicsSSAOFBO() const
+Framebuffer *Camera::getNativeGraphicsSSAOFBO() const
 {
     return mTargets.mSsaoFBO;
 }
 
-unsigned int Camera::getNativeGraphicsColorTex() const
+TextureHandle* Camera::getNativeGraphicsColorTex() const
 {
-    return mTargets.mColorTex;
+    return mTargets.mMainFBO->getColorTex();
 }
 
-unsigned int Camera::getNativeGraphicsDepthTex() const
+TextureHandle *Camera::getNativeGraphicsDepthTex() const
 {
-    return mTargets.mDepthTex;
+    return mTargets.mMainFBO->getDepthTex();
 }
 
-unsigned int Camera::getNativeGraphicsColorPickingTex() const
+TextureHandle *Camera::getNativeGraphicsColorPickingTex() const
 {
-    return mTargets.mColorPickingTex;
+    return mTargets.mColorPickingFBO->getDepthTex();
 }
 
-unsigned int Camera::getNativeGraphicsPositionTex() const
+TextureHandle *Camera::getNativeGraphicsPositionTex() const
 {
-    return mTargets.mPositionTex;
+    return mTargets.mGeometryFBO->getColorTex();
 }
 
-unsigned int Camera::getNativeGraphicsNormalTex() const
+TextureHandle *Camera::getNativeGraphicsNormalTex() const
 {
-    return mTargets.mNormalTex;
+    return mTargets.mGeometryFBO->getColorTex();
 }
 
-unsigned int Camera::getNativeGraphicsAlbedoSpecTex() const
+TextureHandle *Camera::getNativeGraphicsAlbedoSpecTex() const
 {
-    return mTargets.mAlbedoSpecTex;
+    return mTargets.mGeometryFBO->getColorTex();
 }
 
-unsigned int Camera::getNativeGraphicsSSAOColorTex() const
+TextureHandle *Camera::getNativeGraphicsSSAOColorTex() const
 {
-    return mTargets.mSsaoColorTex;
+    return mTargets.mSsaoFBO->getColorTex();
 }
 
-unsigned int Camera::getNativeGraphicsSSAONoiseTex() const
+TextureHandle *Camera::getNativeGraphicsSSAONoiseTex() const
 {
-    return mTargets.mSsaoNoiseTex;
+    return mTargets.mSsaoFBO->getColorTex();
 }

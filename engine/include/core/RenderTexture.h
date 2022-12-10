@@ -2,14 +2,16 @@
 #define RENDER_TEXTURE_H__
 
 #include "Texture.h"
+#include "../graphics/Framebuffer.h"
 
 namespace PhysicsEngine
 {
     struct RenderTextureTargets
     {
-        unsigned int mMainFBO;
-        unsigned int mColorTex;
-        unsigned int mDepthTex;
+        Framebuffer *mMainFBO;
+        //unsigned int mMainFBO;
+        //unsigned int mColorTex;
+        //unsigned int mDepthTex;
     };
 
     class RenderTexture : public Texture
@@ -40,14 +42,13 @@ namespace PhysicsEngine
         int getHeight() const;
 
         void create() override;
-        void destroy() override;
         void update() override;
         void readPixels() override;
         void writePixels() override;
 
-        unsigned int getNativeGraphicsMainFBO() const;
-        unsigned int getNativeGraphicsColorTex() const;
-        unsigned int getNativeGraphicsDepthTex() const;
+        Framebuffer* getNativeGraphicsMainFBO() const;
+        TextureHandle* getNativeGraphicsColorTex() const;
+        TextureHandle* getNativeGraphicsDepthTex() const;
 	};
 
     template <> struct AssetType<RenderTexture>

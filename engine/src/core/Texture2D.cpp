@@ -10,6 +10,8 @@ using namespace PhysicsEngine;
 
 Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -27,6 +29,8 @@ Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
 
 Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -44,6 +48,8 @@ Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(wor
 
 Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -63,6 +69,8 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Textur
 
 Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureFormat format) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -83,6 +91,7 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureF
 
 Texture2D::~Texture2D()
 {
+    delete mTex;
 }
 
 void Texture2D::serialize(YAML::Node &out) const
@@ -253,15 +262,15 @@ std::vector<Color32> Texture2D::getPixels() const
 Color32 Texture2D::getPixel(int x, int y) const
 {
     // clamp x and y
-    x = std::max(0, std::min(mWidth, x));
-    y = std::max(0, std::min(mHeight, y));
+    x = std::max(0, std::min(mWidth - 1, x));
+    y = std::max(0, std::min(mHeight - 1, y));
 
     int index = mNumChannels * (x + mWidth * y);
 
     Color32 color;
 
     int size = static_cast<int>(mRawTextureData.size());
-    if (index + mNumChannels >= size)
+    if ((index + mNumChannels - 1) >= size)
     {
         Log::error("Texture2D: pixel index out of range\n");
         return color;
@@ -329,19 +338,25 @@ void Texture2D::setPixels(const std::vector<Color32> &colors)
         return;
     }
 
-    for (size_t i = 0; i < colors.size(); i++)
+    if (mNumChannels == 1)
     {
-        if (mNumChannels == 1)
+        for (size_t i = 0; i < colors.size(); i++)
         {
             mRawTextureData[i] = colors[i].mR;
         }
-        else if (mNumChannels == 3)
+    }
+    else if (mNumChannels == 3)
+    {
+        for (size_t i = 0; i < colors.size(); i++)
         {
             mRawTextureData[i] = colors[i].mR;
             mRawTextureData[i + 1] = colors[i].mG;
             mRawTextureData[i + 2] = colors[i].mB;
         }
-        else if (mNumChannels == 4)
+    }
+    else if (mNumChannels == 4)
+    {
+        for (size_t i = 0; i < colors.size(); i++)
         {
             mRawTextureData[i] = colors[i].mR;
             mRawTextureData[i + 1] = colors[i].mG;
@@ -354,13 +369,13 @@ void Texture2D::setPixels(const std::vector<Color32> &colors)
 void Texture2D::setPixel(int x, int y, const Color32 &color)
 {
     // clamp x and y
-    x = std::max(0, std::min(mWidth, x));
-    y = std::max(0, std::min(mHeight, y));
+    x = std::max(0, std::min(mWidth - 1, x));
+    y = std::max(0, std::min(mHeight - 1, y));
 
     int index = mNumChannels * (x + mWidth * y);
 
     int size = static_cast<int>(mRawTextureData.size());
-    if (index + mNumChannels >= size)
+    if ((index + mNumChannels - 1) >= size)
     {
         Log::error("Texture2D: pixel index out of range\n");
         return;
@@ -392,21 +407,9 @@ void Texture2D::create()
         return;
     }
 
-    Renderer::getRenderer()->createTexture2D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData, &mTex);
+    mTex->load(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData);
 
     mCreated = true;
-}
-
-void Texture2D::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroyTexture2D(&mTex);
-
-    mCreated = false;
 }
 
 void Texture2D::update()
@@ -416,17 +419,17 @@ void Texture2D::update()
         return;
     }
 
-    Renderer::getRenderer()->updateTexture2D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
 
     mUpdateRequired = false;
 }
 
 void Texture2D::readPixels()
 {
-    Renderer::getRenderer()->readPixelsTexture2D(mFormat, mWidth, mHeight, mNumChannels, mRawTextureData, mTex);
+    mTex->readPixels(mRawTextureData);
 }
 
 void Texture2D::writePixels()
 {
-    Renderer::getRenderer()->writePixelsTexture2D(mFormat, mWidth, mHeight, mRawTextureData, mTex);
+    mTex->writePixels(mRawTextureData);
 }

@@ -132,7 +132,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
     Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
 
     ImGui::SlotData data;
-    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : texture->getNativeGraphics(), &data))
+    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()), &data))
     {
         if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
         {
@@ -168,7 +168,8 @@ MaterialDrawer::MaterialDrawer()
     mView = glm::lookAt(mCameraPos, mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
     mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
 
-    Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    //Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    mFBO = Framebuffer::create(1000, 1000);
 
     Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
     Renderer::getRenderer()->createGlobalLightUniforms(mLightUniform);
@@ -187,7 +188,8 @@ MaterialDrawer::MaterialDrawer()
 
 MaterialDrawer::~MaterialDrawer()
 {
-    Renderer::getRenderer()->destroyFramebuffer(&mFBO, &mColor, &mDepth);
+    //Renderer::getRenderer()->destroyFramebuffer(&mFBO, &mColor, &mDepth);
+    delete mFBO;
 }
 
 void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
@@ -306,18 +308,23 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
     material->apply();
 
-    Renderer::getRenderer()->bindFramebuffer(mFBO);
-    Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
-    Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->bindFramebuffer(mFBO);
+    //Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
+    //Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    mFBO->bind();
+    mFBO->setViewport(0, 0, 1000, 1000);
+    mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    mFBO->clearDepth(1.0f);
     Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    mFBO->unbind();
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
     ImGui::BeginChild("MaterialPreviewWindow",
                       ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
                       window_flags);
-    ImGui::Image((void *)(intptr_t)mColor,
+    ImGui::Image((void *)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
                  ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                  ImVec2(0, 0));
     ImGui::EndChild();

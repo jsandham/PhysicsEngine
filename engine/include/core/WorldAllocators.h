@@ -23,6 +23,7 @@
 #include "../systems/RenderSystem.h"
 #include "../systems/FreeLookCameraSystem.h"
 #include "../systems/TerrainSystem.h"
+#include "../systems/AssetLoadingSystem.h"
 
 namespace PhysicsEngine
 {
@@ -51,6 +52,7 @@ struct WorldAllocators
     PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
     PoolAllocator<FreeLookCameraSystem> mFreeLookCameraSystemAllocator;
     PoolAllocator<TerrainSystem> mTerrainSystemAllocator;
+    PoolAllocator<AssetLoadingSystem> mAssetLoadingSystemAllocator;
 };
 } // namespace PhysicsEngine
 

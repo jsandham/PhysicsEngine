@@ -7,6 +7,7 @@
 *.pdb
 engine/lib/debug/obj/*.obj
 engine/lib/release/obj/*.obj
+engine/tools/shader_cpp_generator/*.obj
 editor/bin/debug/obj/*.obj
 editor/bin/release/obj/*.obj
 external/imgui/lib/debug/obj/*.obj

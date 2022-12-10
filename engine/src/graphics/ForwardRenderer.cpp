@@ -153,36 +153,53 @@ static void beginFrame(World *world, Camera *camera, ForwardRendererState &state
     // update camera state data
     Renderer::getRenderer()->setGlobalCameraUniforms(state.mCameraState);
 
+    Framebuffer *framebuffer = nullptr;
+
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        framebuffer = camera->getNativeGraphicsMainFBO();
     }
-    Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    Renderer::getRenderer()->unbindFramebuffer();
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
-    Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->unbindFramebuffer();
+    framebuffer->bind();
+    framebuffer->clearColor(camera->mBackgroundColor);
+    framebuffer->clearDepth(1.0f);
+    framebuffer->unbind();
+
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsColorPickingFBO()->bind();
+    camera->getNativeGraphicsColorPickingFBO()->clearColor(Color::black);
+    camera->getNativeGraphicsColorPickingFBO()->clearDepth(1.0f);
+    camera->getNativeGraphicsColorPickingFBO()->unbind();
 
     if(camera->mSSAO == CameraSSAO::SSAO_On)
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
-        Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Renderer::getRenderer()->unbindFramebuffer();
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+        //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+        //Renderer::getRenderer()->unbindFramebuffer();
+        camera->getNativeGraphicsSSAOFBO()->bind();
+        camera->getNativeGraphicsSSAOFBO()->clearColor(Color::black);
+        camera->getNativeGraphicsSSAOFBO()->unbind();
     }
 }
 
@@ -190,7 +207,8 @@ static void computeSSAO(World *world, Camera *camera, ForwardRendererState &stat
                                 const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
+    camera->getNativeGraphicsGeometryFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -211,10 +229,12 @@ static void computeSSAO(World *world, Camera *camera, ForwardRendererState &stat
         }
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsGeometryFBO()->unbind();
 
     // fill ssao color texture
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsSSAOFBO());
+    camera->getNativeGraphicsSSAOFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -224,13 +244,14 @@ static void computeSSAO(World *world, Camera *camera, ForwardRendererState &stat
     {
         Renderer::getRenderer()->setVec3(state.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
     }
-    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
-    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
-    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderPositionTexLoc, 0, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsPositionTex()->getHandle()));
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNormalTexLoc, 1, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsNormalTex()->getHandle()));
+    Renderer::getRenderer()->setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsSSAONoiseTex()->getHandle()));
 
     Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsSSAOFBO()->unbind();
 }
 
 static void renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
@@ -249,7 +270,8 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
 
         for (int i = 0; i < 5; i++)
         {
-            Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
+            //Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCascadeFBO(i));
+            light->getNativeGraphicsShadowCascadeFBO(i)->bind();
             Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                                   static_cast<int>(light->getShadowMapResolution()));
 
@@ -274,20 +296,14 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
                 }
             }
 
-            //RendererShaders::getRendererShaders()->getDepthShader()->getModelLocation();
-            //RendererShaders::getRendererShaders()->getDepthShader()->getViewLocation();
-            //RendererShaders::getRendererShaders()->getDepthShader()->getProjectionLocation();
-            //RendererShaders::getRendererShaders()->getDepthShader()->getVertexShader();
-            //RendererShaders::getRendererShaders()->getDepthShader()->getFragmentShader();
-            //shader mDepthShader;
-            //mDepthShader.get
-
-            Renderer::getRenderer()->unbindFramebuffer();
+            //Renderer::getRenderer()->unbindFramebuffer();
+            light->getNativeGraphicsShadowCascadeFBO(i)->unbind();
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
-        Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
+        //Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowSpotlightFBO());
+        light->getNativeGraphicsShadowSpotlightFBO()->bind();
         Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                               static_cast<int>(light->getShadowMapResolution()));
 
@@ -317,7 +333,8 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
             }
         }
 
-        Renderer::getRenderer()->unbindFramebuffer();
+        //Renderer::getRenderer()->unbindFramebuffer();
+        light->getNativeGraphicsShadowSpotlightFBO()->unbind();
     }
     else if (light->mLightType == LightType::Point)
     {
@@ -347,7 +364,8 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
 
-        Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
+        //Renderer::getRenderer()->bindFramebuffer(light->getNativeGraphicsShadowCubemapFBO());
+        light->getNativeGraphicsShadowCubemapFBO()->bind();
         Renderer::getRenderer()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
                               static_cast<int>(light->getShadowMapResolution()));
 
@@ -379,7 +397,8 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
             }
         }
 
-        Renderer::getRenderer()->unbindFramebuffer();
+        //Renderer::getRenderer()->unbindFramebuffer();
+        light->getNativeGraphicsShadowCubemapFBO()->unbind();
     }
 }
 
@@ -448,22 +467,29 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
         variant |= static_cast<int64_t>(ShaderMacro::SoftShadows);
     }
 
+    Framebuffer *framebuffer = nullptr;
+
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        framebuffer = camera->getNativeGraphicsMainFBO();
     }
+
+    framebuffer->bind();
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
@@ -516,17 +542,22 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
 
         if (light->mLightType == LightType::Directional)
         {
-            int tex[5] = {light->getNativeGraphicsShadowCascadeDepthTex(0),
+            /*int tex[5] = {light->getNativeGraphicsShadowCascadeDepthTex(0),
                                    light->getNativeGraphicsShadowCascadeDepthTex(1),
                                    light->getNativeGraphicsShadowCascadeDepthTex(2), 
                                    light->getNativeGraphicsShadowCascadeDepthTex(3),
-                                   light->getNativeGraphicsShadowCascadeDepthTex(4)};
+                                   light->getNativeGraphicsShadowCascadeDepthTex(4)};*/
+            int tex[5] = {*reinterpret_cast<unsigned int*>(light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getHandle()),
+                          *reinterpret_cast<unsigned int*>(light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getHandle()),
+                          *reinterpret_cast<unsigned int*>(light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getHandle()),
+                          *reinterpret_cast<unsigned int*>(light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getHandle()),
+                          *reinterpret_cast<unsigned int*>(light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getHandle())};
             int texUnit[5] = {3, 4, 5, 6, 7};
             shader->setTexture2Ds("shadowMap", &texUnit[0], 5, &tex[0]);
         }
         else if (light->mLightType == LightType::Spot)
         {
-            shader->setTexture2D("shadowMap[0]", 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
+            shader->setTexture2D("shadowMap[0]", 3, *reinterpret_cast<unsigned int*>(light->getNativeGrpahicsShadowSpotlightDepthTex()->getHandle()));
         }
 
         if (renderObjects[i].instanced)
@@ -539,7 +570,8 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
         }
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    framebuffer->unbind();
 }
 
 static void renderSprites(World *world, Camera *camera, ForwardRendererState &state,
@@ -557,21 +589,26 @@ static void renderSprites(World *world, Camera *camera, ForwardRendererState &st
     Renderer::getRenderer()->setMat4(state.mSpriteProjectionLoc, projection);
     Renderer::getRenderer()->setMat4(state.mSpriteViewLoc, view);
 
+    Framebuffer *framebuffer = nullptr;
+
     if (camera->mRenderTextureId.isValid())
     {
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
+            framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+            framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
+        framebuffer = camera->getNativeGraphicsMainFBO();
     }
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
@@ -586,7 +623,8 @@ static void renderSprites(World *world, Camera *camera, ForwardRendererState &st
         Renderer::getRenderer()->render(0, 6, spriteObjects[i].vao, camera->mQuery);
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    framebuffer->unbind();
 }
 
 static void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
@@ -628,7 +666,8 @@ static void renderColorPicking(World *world, Camera *camera, ForwardRendererStat
         }
     }
 
-    Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
+    camera->getNativeGraphicsColorPickingFBO()->bind();
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
@@ -677,7 +716,8 @@ static void renderColorPicking(World *world, Camera *camera, ForwardRendererStat
         }
     }
    
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 
 static void renderTransparents()
@@ -697,7 +737,7 @@ static void endFrame(World *world, Camera *camera, ForwardRendererState &state)
                               camera->getViewport().mHeight);
 
         Renderer::getRenderer()->use(state.mQuadShaderProgram);
-        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle()));
 
         Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
 

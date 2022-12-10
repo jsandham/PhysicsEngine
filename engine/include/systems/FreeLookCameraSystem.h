@@ -90,15 +90,15 @@ namespace PhysicsEngine
         glm::vec2 distanceTraveledSinceLeftMouseClick() const;
         glm::vec2 distanceTraveledSinceRightMouseClick() const;
 
-        unsigned int getNativeGraphicsMainFBO() const;
-        unsigned int getNativeGraphicsColorTex() const;
-        unsigned int getNativeGraphicsDepthTex() const;
-        unsigned int getNativeGraphicsColorPickingTex() const;
-        unsigned int getNativeGraphicsPositionTex() const;
-        unsigned int getNativeGraphicsNormalTex() const;
-        unsigned int getNativeGraphicsAlbedoSpecTex() const;
-        unsigned int getNativeGraphicsSSAOColorTex() const;
-        unsigned int getNativeGraphicsSSAONoiseTex() const;
+        Framebuffer *getNativeGraphicsMainFBO() const;
+        TextureHandle *getNativeGraphicsColorTex() const;
+        TextureHandle *getNativeGraphicsDepthTex() const;
+        TextureHandle *getNativeGraphicsColorPickingTex() const;
+        TextureHandle *getNativeGraphicsPositionTex() const;
+        TextureHandle *getNativeGraphicsNormalTex() const;
+        TextureHandle *getNativeGraphicsAlbedoSpecTex() const;
+        TextureHandle *getNativeGraphicsSSAOColorTex() const;
+        TextureHandle *getNativeGraphicsSSAONoiseTex() const;
 
         GraphicsQuery getQuery() const;
 

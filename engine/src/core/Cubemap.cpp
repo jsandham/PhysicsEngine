@@ -6,6 +6,8 @@ using namespace PhysicsEngine;
 
 Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Cube;
 
     mWidth = 0;
@@ -21,6 +23,8 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
 
 Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Cube;
 
     mWidth = 0;
@@ -36,6 +40,8 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
 
 Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Cube;
 
     mWidth = width;
@@ -53,6 +59,8 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
 
 Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Cube;
 
     mWidth = width;
@@ -70,6 +78,7 @@ Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : 
 
 Cubemap::~Cubemap()
 {
+    delete mTex;
 }
 
 void Cubemap::serialize(YAML::Node &out) const
@@ -241,22 +250,22 @@ void Cubemap::create()
         return;
     }
 
-    Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, &mTex);
+    //Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, mTex);
 
     mCreated = true;
 }
 
-void Cubemap::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroyCubemap(&mTex);
-
-    mCreated = false;
-}
+//void Cubemap::destroy()
+//{
+//    if (!mCreated)
+//    {
+//        return;
+//    }
+//
+//    //Renderer::getRenderer()->destroyCubemap(mTex);
+//
+//    mCreated = false;
+//}
 
 void Cubemap::update()
 {
@@ -265,17 +274,18 @@ void Cubemap::update()
         return;
     }
 
-    Renderer::getRenderer()->updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
+    //Renderer::getRenderer()->updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
 
     mUpdateRequired = false;
 }
 
 void Cubemap::readPixels()
 {
-    Renderer::getRenderer()->readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
+    //Renderer::getRenderer()->readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
 }
 
 void Cubemap::writePixels()
 {
-    Renderer::getRenderer()->writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
+    //Renderer::getRenderer()->writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
 }

@@ -8,6 +8,9 @@
 
 #include "Component.h"
 
+#include "../graphics/Framebuffer.h"
+#include "../graphics/TextureHandle.h"
+
 namespace PhysicsEngine
 {
 enum class LightType
@@ -35,12 +38,15 @@ enum class ShadowMapResolution
 
 struct LightTargets
 {
-    unsigned int mShadowCascadeFBO[5];
-    unsigned int mShadowCascadeDepthTex[5];
-    unsigned int mShadowSpotlightFBO;
-    unsigned int mShadowSpotlightDepthTex;
-    unsigned int mShadowCubemapFBO;
-    unsigned int mShadowCubemapDepthTex;
+    Framebuffer *mShadowCascadeFBO[5];
+    Framebuffer *mShadowSpotlightFBO;
+    Framebuffer *mShadowCubemapFBO;
+    //unsigned int mShadowCascadeFBO[5];
+    //unsigned int mShadowCascadeDepthTex[5];
+    //unsigned int mShadowSpotlightFBO;
+    //unsigned int mShadowSpotlightDepthTex;
+    //unsigned int mShadowCubemapFBO;
+    //unsigned int mShadowCubemapDepthTex;
 };
 
 class Light : public Component
@@ -86,13 +92,13 @@ class Light : public Component
 
     glm::mat4 getProjMatrix() const;
 
-    unsigned int getNativeGraphicsShadowCascadeFBO(int index) const;
-    unsigned int getNativeGraphicsShadowSpotlightFBO() const;
-    unsigned int getNativeGraphicsShadowCubemapFBO() const;
+    Framebuffer* getNativeGraphicsShadowCascadeFBO(int index) const;
+    Framebuffer* getNativeGraphicsShadowSpotlightFBO() const;
+    Framebuffer* getNativeGraphicsShadowCubemapFBO() const;
 
-    unsigned int getNativeGraphicsShadowCascadeDepthTex(int index) const;
-    unsigned int getNativeGrpahicsShadowSpotlightDepthTex() const;
-    unsigned int getNativeGraphicsShadowCubemapDepthTex() const;
+    TextureHandle* getNativeGraphicsShadowCascadeDepthTex(int index) const;
+    TextureHandle* getNativeGrpahicsShadowSpotlightDepthTex() const;
+    TextureHandle* getNativeGraphicsShadowCubemapDepthTex() const;
 };
 
 template <> struct ComponentType<Light>

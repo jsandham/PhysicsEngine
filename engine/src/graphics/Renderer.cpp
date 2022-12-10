@@ -99,20 +99,20 @@ void Renderer::renderScreenQuad(unsigned int vao)
     return sInstance->renderScreenQuad_impl(vao);
 }
 
-void Renderer::createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color)
-{
-    return sInstance->createFramebuffer_impl(width, height, fbo, color);
-}
+//void Renderer::createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color)
+//{
+//    return sInstance->createFramebuffer_impl(width, height, fbo, color);
+//}
 
-void Renderer::createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color, unsigned int *depth)
-{
-    return sInstance->createFramebuffer_impl(width, height, fbo, color, depth);
-}
+//void Renderer::createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color, unsigned int *depth)
+//{
+//    return sInstance->createFramebuffer_impl(width, height, fbo, color, depth);
+//}
 
-void Renderer::destroyFramebuffer(unsigned int *fbo, unsigned int *color, unsigned int *depth)
-{
-    return sInstance->destroyFramebuffer_impl(fbo, color, depth);
-}
+//void Renderer::destroyFramebuffer(unsigned int *fbo, unsigned int *color, unsigned int *depth)
+//{
+//    return sInstance->destroyFramebuffer_impl(fbo, color, depth);
+//}
 
 void Renderer::bindFramebuffer(unsigned int fbo)
 {
@@ -154,139 +154,139 @@ void Renderer::setViewport(int x, int y, int width, int height)
     return sInstance->setViewport_impl(x, y, width, height);
 }
 
-void Renderer::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
-                            unsigned int *queryId1)
-{
-    return sInstance->createTargets_impl(targets, viewport, ssaoSamples, queryId0, queryId1);
-}
+//void Renderer::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
+//                            unsigned int *queryId1)
+//{
+//    return sInstance->createTargets_impl(targets, viewport, ssaoSamples, queryId0, queryId1);
+//}
 
-void Renderer::destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1)
-{
-    return sInstance->destroyTargets_impl(targets, queryId0, queryId1);
-}
+//void Renderer::destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1)
+//{
+//    return sInstance->destroyTargets_impl(targets, queryId0, queryId1);
+//}
 
-void Renderer::resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged)
-{
-    return sInstance->resizeTargets_impl(targets, viewport, viewportChanged);
-}
+//void Renderer::resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged)
+//{
+//    return sInstance->resizeTargets_impl(targets, viewport, viewportChanged);
+//}
 
 void Renderer::readColorAtPixel(const unsigned int *fbo, int x, int y, Color32 *color)
 {
     return sInstance->readColorAtPixel_impl(fbo, x, y, color);
 }
 
-void Renderer::createTargets(LightTargets *targets, ShadowMapResolution resolution)
-{
-    return sInstance->createTargets_impl(targets, resolution);
-}
+//void Renderer::createTargets(LightTargets *targets, ShadowMapResolution resolution)
+//{
+//    return sInstance->createTargets_impl(targets, resolution);
+//}
 
-void Renderer::destroyTargets(LightTargets *targets)
-{
-    return sInstance->destroyTargets_impl(targets);
-}
+//void Renderer::destroyTargets(LightTargets *targets)
+//{
+//    return sInstance->destroyTargets_impl(targets);
+//}
 
-void Renderer::resizeTargets(LightTargets *targets, ShadowMapResolution resolution)
-{
-    return sInstance->resizeTargets_impl(targets, resolution);
-}
+//void Renderer::resizeTargets(LightTargets *targets, ShadowMapResolution resolution)
+//{
+//    return sInstance->resizeTargets_impl(targets, resolution);
+//}
 
-void Renderer::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                            int height, const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    return sInstance->createTexture2D_impl(format, wrapMode, filterMode, width, height, data, tex);
-}
+//void Renderer::createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                            int height, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* mTex*/)
+//{
+//    return sInstance->createTexture2D_impl(format, wrapMode, filterMode, width, height, data, tex);
+//}
+//
+//void Renderer::destroyTexture2D(TextureHandle*tex /*unsigned int* tex*/)
+//{
+//    return sInstance->destroyTexture2D_impl(tex);
+//}
+//
+//void Renderer::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->updateTexture2D_impl(wrapMode, filterMode, anisoLevel, tex);
+//}
+//
+//void Renderer::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
+//                                std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->readPixelsTexture2D_impl(format, width, height, numChannels, data, tex);
+//}
+//
+//void Renderer::writePixelsTexture2D(TextureFormat format, int width, int height,
+//                                    const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->writePixelsTexture2D_impl(format, width, height, data, tex);
+//}
+//
+//void Renderer::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                            int height, int depth, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    return sInstance->createTexture3D_impl(format, wrapMode, filterMode, width, height, depth, data, tex);
+//}
+//
+//void Renderer::destroyTexture3D(TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    return sInstance->destroyTexture3D_impl(tex);
+//}
+//
+//void Renderer::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->updateTexture3D_impl(wrapMode, filterMode, anisoLevel, tex);
+//}
+//
+//void Renderer::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
+//                                std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->readPixelsTexture3D_impl(format, width, height, depth, numChannels, data, tex);
+//}
+//
+//void Renderer::writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
+//                                    const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->writePixelsTexture3D_impl(format, width, height, depth, data, tex);
+//}
+//
+//void Renderer::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                            const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    return sInstance->createCubemap_impl(format, wrapMode, filterMode, width, data, tex);
+//}
+//
+//void Renderer::destroyCubemap(TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    return sInstance->destroyCubemap_impl(tex);
+//}
+//
+//void Renderer::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->updateCubemap_impl(wrapMode, filterMode, anisoLevel, tex);
+//}
+//
+//void Renderer::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->readPixelsCubemap_impl(format, width, numChannels, data, tex);
+//}
+//
+//void Renderer::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    return sInstance->writePixelsCubemap_impl(format, width, data, tex);
+//}
 
-void Renderer::destroyTexture2D(unsigned int *tex)
-{
-    return sInstance->destroyTexture2D_impl(tex);
-}
-
-void Renderer::updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                            unsigned int tex)
-{
-    return sInstance->updateTexture2D_impl(wrapMode, filterMode, anisoLevel, tex);
-}
-
-void Renderer::readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
-                                std::vector<unsigned char> &data, unsigned int tex)
-{
-    return sInstance->readPixelsTexture2D_impl(format, width, height, numChannels, data, tex);
-}
-
-void Renderer::writePixelsTexture2D(TextureFormat format, int width, int height,
-                                    const std::vector<unsigned char> &data, unsigned int tex)
-{
-    return sInstance->writePixelsTexture2D_impl(format, width, height, data, tex);
-}
-
-void Renderer::createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                            int height, int depth, const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    return sInstance->createTexture3D_impl(format, wrapMode, filterMode, width, height, depth, data, tex);
-}
-
-void Renderer::destroyTexture3D(unsigned int *tex)
-{
-    return sInstance->destroyTexture3D_impl(tex);
-}
-
-void Renderer::updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                            unsigned int tex)
-{
-    return sInstance->updateTexture3D_impl(wrapMode, filterMode, anisoLevel, tex);
-}
-
-void Renderer::readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
-                                std::vector<unsigned char> &data, unsigned int tex)
-{
-    return sInstance->readPixelsTexture3D_impl(format, width, height, depth, numChannels, data, tex);
-}
-
-void Renderer::writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
-                                    const std::vector<unsigned char> &data, unsigned int tex)
-{
-    return sInstance->writePixelsTexture3D_impl(format, width, height, depth, data, tex);
-}
-
-void Renderer::createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                            const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    return sInstance->createCubemap_impl(format, wrapMode, filterMode, width, data, tex);
-}
-
-void Renderer::destroyCubemap(unsigned int *tex)
-{
-    return sInstance->destroyCubemap_impl(tex);
-}
-
-void Renderer::updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex)
-{
-    return sInstance->updateCubemap_impl(wrapMode, filterMode, anisoLevel, tex);
-}
-
-void Renderer::readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
-                                unsigned int tex)
-{
-    return sInstance->readPixelsCubemap_impl(format, width, numChannels, data, tex);
-}
-
-void Renderer::writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data,
-                                unsigned int tex)
-{
-    return sInstance->writePixelsCubemap_impl(format, width, data, tex);
-}
-
-void Renderer::createRenderTextureTargets(RenderTextureTargets *targets, TextureFormat format,
-                                        TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                                        int height)
-{
-    return sInstance->createRenderTextureTargets_impl(targets, format, wrapMode, filterMode, width, height);
-}
-
-void Renderer::destroyRenderTextureTargets(RenderTextureTargets *targets)
-{
-    return sInstance->destroyRenderTextureTargets_impl(targets);
-}
+//void Renderer::createRenderTextureTargets(RenderTextureTargets *targets, TextureFormat format,
+//                                        TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+//                                        int height)
+//{
+//    return sInstance->createRenderTextureTargets_impl(targets, format, wrapMode, filterMode, width, height);
+//}
+//
+//void Renderer::destroyRenderTextureTargets(RenderTextureTargets *targets)
+//{
+//    return sInstance->destroyRenderTextureTargets_impl(targets);
+//}
 
 void Renderer::createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                                 const std::vector<float> &texCoords, int vertexCount, unsigned int *vao,
@@ -315,14 +315,14 @@ void Renderer::updateTerrainChunk(const std::vector<float> &vertices, const std:
 }
 
 void Renderer::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                        const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                        unsigned int *vbo1, unsigned int *vbo2, unsigned int *model_vbo, unsigned int *color_vbo)
+                        const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
+    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
 {
     return sInstance->createMesh_impl(vertices, normals, texCoords, vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
 }
 
-void Renderer::destroyMesh(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2,
-                        unsigned int *model_vbo, unsigned int *color_vbo)
+void Renderer::destroyMesh(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
 {
     return sInstance->destroyMesh_impl(vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
 }

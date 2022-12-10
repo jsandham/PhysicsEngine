@@ -5,6 +5,7 @@
 
 #include "Asset.h"
 #include "Sphere.h"
+#include "../graphics/VertexBuffer.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -21,6 +22,38 @@ enum class MeshVBO
     InstanceColor
 };
 
+//class VertexArray
+//{
+//protected:
+//    std::vector<VertexBuffer*> mBuffers;
+//public:
+//    VertexArray();
+//    virtual ~VertexArray() = 0;
+//
+//    virtual void* get() = 0;
+//
+//    VertexBuffer* getBuffer(size_t index)
+//    {
+//        return mBuffers[index];
+//    }
+//
+//    void push(VertexBuffer* buffer)
+//    {
+//        mBuffers.push(buffer);
+//    }
+//
+//    static VertexArray* create();
+//};
+//
+//
+//class OpenGLVertexArray : public VertexArray
+//{
+//public:
+//    unsigned int mVao;
+//
+//    void* get() override;
+//};
+
 class Mesh : public Asset
 {
   private:
@@ -32,7 +65,7 @@ class Mesh : public Asset
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
     unsigned int mVao;
-    unsigned int mVbo[5];
+    VertexBuffer* mVbo[5];
     Sphere mBounds;
     bool mCreated;
     bool mChanged;
@@ -67,7 +100,7 @@ class Mesh : public Asset
     int getSubMeshCount() const;
     Sphere getBounds() const;
     unsigned int getNativeGraphicsVAO() const;
-    unsigned int getNativeGraphicsVBO(MeshVBO meshVBO) const;
+    void* getNativeGraphicsVBO(MeshVBO meshVBO) const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

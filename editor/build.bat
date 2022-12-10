@@ -12,8 +12,10 @@ set INCLUDES=/I%ENGINE_INC% /I%YAML_INC% /I%GLEW_INC% /I%FREETYPE_INC% /I%GLM_IN
 
 set ENGINE_LIB="../../../engine/lib/debug/engine.lib"
 set YAML_LIB="../../../external/yaml-cpp/lib/debug/yaml-cppd.lib"
-set GLEW_LIB="../../../engine/lib/debug/glew32.lib"
-set FREETYPE_LIB="../../../engine/lib/debug/freetype.lib"
+::set GLEW_LIB="../../../engine/lib/debug/glew32.lib"
+::set FREETYPE_LIB="../../../engine/lib/debug/freetype.lib"
+set GLEW_LIB="../../../external/glew-2.1.0/lib/debug/glew32.lib"
+set FREETYPE_LIB="../../../external/freetype/lib/debug/freetype.lib"
 
 set LIBS=kernel32.lib user32.lib gdi32.lib ole32.lib opengl32.lib %ENGINE_LIB% %YAML_LIB% %GLEW_LIB% %FREETYPE_LIB%
 

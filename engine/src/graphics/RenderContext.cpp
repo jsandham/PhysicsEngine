@@ -2,8 +2,8 @@
 #include "../../include/graphics/RenderContext.h"
 
 #ifdef PHYSICSENGINE_PLATFORM_WIN32
-#include "../../include/graphics/platform/opengl/RenderContextOpenGL.h"
-#include "../../include/graphics/platform/directx/RenderContextDirectX.h"
+#include "../../include/graphics/platform/opengl/OpenGLRenderContext.h"
+#include "../../include/graphics/platform/directx/DirectXRenderContext.h"
 #endif
 
 using namespace PhysicsEngine;
@@ -27,10 +27,10 @@ void RenderContext::createRenderContext(void* window)
     switch (getRenderAPI())
     {
     case RenderAPI::OpenGL:
-        sContext = new RenderContextOpenGL(window);
+        sContext = new OpenGLRenderContext(window);
         break;
     case RenderAPI::DirectX:
-        sContext = new RenderContextDirectX(window);
+        sContext = new DirectXRenderContext(window);
         break;
     default:
         sContext = nullptr;
@@ -39,53 +39,3 @@ void RenderContext::createRenderContext(void* window)
     sContext = nullptr;
 #endif
 }
-
-
-//#include "../../include/core/RenderContext.h"
-//#include "../../include/core/PlatformDetection.h"
-//
-//#ifdef PHYSICSENGINE_PLATFORM_WIN32
-//#include "../../include/core/platform/RenderContext_win32_opengl.h"
-//#include "../../include/core/platform/RenderContext_win32_directx.h"
-//#endif
-//
-//using namespace PhysicsEngine;
-//
-//RenderContext::RenderContext()
-//{
-//
-//}
-//
-//RenderContext::~RenderContext()
-//{
-//
-//}
-//
-//RenderAPI RenderContext::sAPI = RenderAPI::DirectX;// OpenGL;
-//
-//RenderAPI RenderContext::getRenderAPI()
-//{
-//    return sAPI;
-//}
-//
-//void RenderContext::setRenderAPI(RenderAPI api)
-//{
-//    sAPI = api;
-//}
-//
-//RenderContext *RenderContext::createRenderContext()
-//{
-//#ifdef PHYSICSENGINE_PLATFORM_WIN32
-//    switch (getRenderAPI())
-//    {
-//    case RenderAPI::OpenGL:
-//        return new RenderContext_win32_opengl();
-//    case RenderAPI::DirectX:
-//        return new RenderContext_win32_directx();
-//    default:
-//        return nullptr;
-//	}
-//#elif
-//	return nullptr;
-//#endif
-//}

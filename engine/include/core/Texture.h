@@ -2,6 +2,7 @@
 #define TEXTURE_H__
 
 #include "Asset.h"
+#include "../graphics/TextureHandle.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -14,27 +15,6 @@ enum class TextureDimension
     Cube = 2
 };
 
-enum class TextureFormat
-{
-    Depth = 0,
-    RG = 1,
-    RGB = 2,
-    RGBA = 3
-};
-
-enum class TextureWrapMode
-{
-    Repeat = 0,
-    Clamp = 1
-};
-
-enum class TextureFilterMode
-{
-    Nearest = 0,
-    Bilinear = 1,
-    Trilinear = 2
-};
-
 class Texture : public Asset
 {
   protected:
@@ -45,7 +25,8 @@ class Texture : public Asset
     TextureFormat mFormat;
     TextureWrapMode mWrapMode;
     TextureFilterMode mFilterMode;
-    unsigned int mTex;
+
+    TextureHandle* mTex;
     bool mCreated;
     bool mUpdateRequired;
 
@@ -58,7 +39,7 @@ class Texture : public Asset
     virtual void deserialize(const YAML::Node &in) override;
 
     virtual void create() = 0;
-    virtual void destroy() = 0;
+    //virtual void destroy() = 0;
     virtual void update() = 0;
     virtual void readPixels() = 0;
     virtual void writePixels() = 0;
@@ -71,7 +52,7 @@ class Texture : public Asset
     TextureFormat getFormat() const;
     TextureWrapMode getWrapMode() const;
     TextureFilterMode getFilterMode() const;
-    unsigned int getNativeGraphics() const;
+    void* getNativeGraphics() const;
 
     void setAnisoLevel(int anisoLevel);
     void setWrapMode(TextureWrapMode wrapMode);

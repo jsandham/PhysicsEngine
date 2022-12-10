@@ -12,13 +12,19 @@ using namespace PhysicsEditor;
 Texture2DDrawer::Texture2DDrawer()
 {
     Renderer::getRenderer()->createScreenQuad(&mVAO, &mVBO);
-    Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor, &mDepth);
+    mFBO = Framebuffer::create(256, 256);
+    //Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor, &mDepth);
 
-    Renderer::getRenderer()->bindFramebuffer(mFBO);
-    Renderer::getRenderer()->setViewport(0, 0, 256, 256);
-    Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->bindFramebuffer(mFBO);
+    //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+    //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->unbindFramebuffer();
+    mFBO->bind();
+    mFBO->setViewport(0, 0, 256, 256);
+    mFBO->clearColor(Color::black);
+    mFBO->clearDepth(1.0f);
+    mFBO->unbind();
 
     std::string vertexShader = "#version 430 core\n"
                                "in vec3 position;\n"
@@ -82,6 +88,7 @@ Texture2DDrawer::Texture2DDrawer()
 
 Texture2DDrawer::~Texture2DDrawer()
 {
+    delete mFBO;
 }
 
 void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
@@ -98,7 +105,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
     if (mCurrentTexId != texture->getGuid())
     {
         mCurrentTexId = texture->getGuid();
-        mDrawTex = texture->getNativeGraphics();
+        mDrawTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
     }
 
     const std::array<const char *, 2> wrapMode = {"Repeat", "Clamp To Edge"};
@@ -177,7 +184,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
             if (ImGui::Button("RG"))
             {
-                mDrawTex = texture->getNativeGraphics();
+                mDrawTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
             }
             ImGui::PopStyleColor();
 
@@ -186,14 +193,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
             if (ImGui::Button("R"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramR);
-                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -202,14 +213,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
             if (ImGui::Button("G"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramG);
-                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
         }
@@ -218,7 +233,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
             if (ImGui::Button("RGB"))
             {
-                mDrawTex = texture->getNativeGraphics();
+                mDrawTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
             }
             ImGui::PopStyleColor();
 
@@ -227,14 +242,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
             if (ImGui::Button("R"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramR);
-                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -243,14 +262,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
             if (ImGui::Button("G"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramG);
-                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -259,14 +282,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
             if (ImGui::Button("B"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramB);
-                Renderer::getRenderer()->setTexture2D(mTexLocB, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocB, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
         }
@@ -275,7 +302,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
             if (ImGui::Button("RGBA"))
             {
-                mDrawTex = texture->getNativeGraphics();
+                mDrawTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
             }
             ImGui::PopStyleColor();
 
@@ -284,14 +311,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
             if (ImGui::Button("R"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramR);
-                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocR, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -300,14 +331,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
             if (ImGui::Button("G"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramG);
-                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocG, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -316,14 +351,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
             if (ImGui::Button("B"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramB);
-                Renderer::getRenderer()->setTexture2D(mTexLocB, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocB, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
 
@@ -332,14 +371,18 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFFFFFF);
             if (ImGui::Button("A"))
             {
-                mDrawTex = mColor;
-                Renderer::getRenderer()->bindFramebuffer(mFBO);
-                Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                //mDrawTex = mColor;
+                //Renderer::getRenderer()->bindFramebuffer(mFBO);
+                //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
+                mDrawTex = *reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle());
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 256, 256);
                 Renderer::getRenderer()->use(mProgramA);
-                Renderer::getRenderer()->setTexture2D(mTexLocA, 0, texture->getNativeGraphics());
+                Renderer::getRenderer()->setTexture2D(mTexLocA, 0, *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()));
                 Renderer::getRenderer()->renderScreenQuad(mVAO);
                 Renderer::getRenderer()->unuse();
-                Renderer::getRenderer()->unbindFramebuffer();
+                //Renderer::getRenderer()->unbindFramebuffer();
+                mFBO->unbind();
             }
             ImGui::PopStyleColor();
         }

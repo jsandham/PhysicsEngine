@@ -16,6 +16,9 @@
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
 
+#include "TextureHandle.h"
+#include "VertexBuffer.h"
+
 namespace PhysicsEngine
 {
 enum class Capability
@@ -245,10 +248,10 @@ public:
     static void setGlobalLightUniforms(const LightUniform &uniform);
     static void createScreenQuad(unsigned int *vao, unsigned int *vbo);
     static void renderScreenQuad(unsigned int vao);
-    static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color);
-    static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color,
-                                   unsigned int *depth);
-    static void destroyFramebuffer(unsigned int *fbo, unsigned int *color, unsigned int *depth);
+    //static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color);
+    //static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color,
+    //                               unsigned int *depth);
+    //static void destroyFramebuffer(unsigned int *fbo, unsigned int *color, unsigned int *depth);
     static void bindFramebuffer(unsigned int fbo);
     static void unbindFramebuffer();
     static void clearFrambufferColor(const Color &color);
@@ -257,46 +260,47 @@ public:
     static void bindVertexArray(unsigned int vao);
     static void unbindVertexArray();
     static void setViewport(int x, int y, int width, int height);
-    static void createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
-                               unsigned int *queryId0, unsigned int *queryId1);
-    static void destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1);
-    static void resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged);
+    //static void createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
+    //                           unsigned int *queryId0, unsigned int *queryId1);
+    //static void destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1);
+    //static void resizeTargets(CameraTargets *targets, Viewport viewport, bool *viewportChanged);
     static void readColorAtPixel(const unsigned int *fbo, int x, int y, Color32 *color);
-    static void createTargets(LightTargets *targets, ShadowMapResolution resolution);
-    static void destroyTargets(LightTargets *targets);
-    static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
-    static void createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
-                                 int width, int height, const std::vector<unsigned char> &data, unsigned int *tex);
-    static void destroyTexture2D(unsigned int *tex);
+    //static void createTargets(LightTargets *targets, ShadowMapResolution resolution);
+    //static void destroyTargets(LightTargets *targets);
+    //static void resizeTargets(LightTargets *targets, ShadowMapResolution resolution);
+
+  /*  static void createTexture2D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
+                                 int width, int height, const std::vector<unsigned char> &data, TextureHandle* tex);
+    static void destroyTexture2D(TextureHandle*tex);
     static void updateTexture2D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                 unsigned int tex);
+                                 TextureHandle*tex);
     static void readPixelsTexture2D(TextureFormat format, int width, int height, int numChannels,
-                                     std::vector<unsigned char> &data, unsigned int tex);
+                                     std::vector<unsigned char> &data, TextureHandle* tex);
     static void writePixelsTexture2D(TextureFormat format, int width, int height,
-                                      const std::vector<unsigned char> &data, unsigned int tex);
+                                      const std::vector<unsigned char> &data, TextureHandle* tex);
     static void createTexture3D(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
                                  int width, int height, int depth, const std::vector<unsigned char> &data,
-                                 unsigned int *tex);
-    static void destroyTexture3D(unsigned int *tex);
+                                 TextureHandle*tex);
+    static void destroyTexture3D(TextureHandle* tex);
     static void updateTexture3D(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                 unsigned int tex);
+                                TextureHandle* tex);
     static void readPixelsTexture3D(TextureFormat format, int width, int height, int depth, int numChannels,
-                                     std::vector<unsigned char> &data, unsigned int tex);
+                                     std::vector<unsigned char> &data, TextureHandle* tex);
     static void writePixelsTexture3D(TextureFormat format, int width, int height, int depth,
-                                      const std::vector<unsigned char> &data, unsigned int tex);
+                                      const std::vector<unsigned char> &data, TextureHandle* tex);
     static void createCubemap(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                               const std::vector<unsigned char> &data, unsigned int *tex);
-    static void destroyCubemap(unsigned int *tex);
+                               const std::vector<unsigned char> &data, TextureHandle* tex);
+    static void destroyCubemap(TextureHandle* tex);
     static void updateCubemap(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                               unsigned int tex);
+        TextureHandle* tex);
     static void readPixelsCubemap(TextureFormat format, int width, int numChannels, std::vector<unsigned char> &data,
-                                   unsigned int tex);
+        TextureHandle* tex);
     static void writePixelsCubemap(TextureFormat format, int width, const std::vector<unsigned char> &data,
-                                    unsigned int tex);
-    static void createRenderTextureTargets(RenderTextureTargets *targets, TextureFormat format,
-                                            TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                                            int height);
-    static void destroyRenderTextureTargets(RenderTextureTargets *targets);
+        TextureHandle* tex);*/
+    //static void createRenderTextureTargets(RenderTextureTargets *targets, TextureFormat format,
+    //                                        TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+    //                                        int height);
+    //static void destroyRenderTextureTargets(RenderTextureTargets *targets);
     static void createTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                                     const std::vector<float> &texCoords, int vertexCount, unsigned int *vao,
                                     unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2);
@@ -307,11 +311,11 @@ public:
                                     const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                                     unsigned int vbo2);
     static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                            const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                            unsigned int *vbo1, unsigned int *vbo2, unsigned int *model_vbo,
-                            unsigned int *color_vbo);
-    static void destroyMesh(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2,
-                             unsigned int *model_vbo, unsigned int *color_vbo);
+                            const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer *vbo0,
+        VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo,
+        VertexBuffer*color_vbo);
+    static void destroyMesh(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+        VertexBuffer*model_vbo, VertexBuffer*color_vbo);
     static void updateInstanceBuffer(unsigned int vbo, const glm::mat4 *models, size_t instanceCount);
     static void updateInstanceColorBuffer(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount);
     static void createSprite(unsigned int *vao);
@@ -391,9 +395,9 @@ protected:
     virtual void setGlobalLightUniforms_impl(const LightUniform& uniform) = 0;
     virtual void createScreenQuad_impl(unsigned int* vao, unsigned int* vbo) = 0;
     virtual void renderScreenQuad_impl(unsigned int vao) = 0;
-    virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color) = 0;
-    virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
-    virtual void destroyFramebuffer_impl(unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
+    //virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color) = 0;
+    //virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
+    //virtual void destroyFramebuffer_impl(unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
     virtual void bindFramebuffer_impl(unsigned int fbo) = 0;
     virtual void unbindFramebuffer_impl() = 0;
     virtual void clearFrambufferColor_impl(const Color& color) = 0;
@@ -402,38 +406,38 @@ protected:
     virtual void bindVertexArray_impl(unsigned int vao) = 0;
     virtual void unbindVertexArray_impl() = 0;
     virtual void setViewport_impl(int x, int y, int width, int height) = 0;
-    virtual void createTargets_impl(CameraTargets* targets, Viewport viewport, glm::vec3* ssaoSamples, unsigned int* queryId0, unsigned int* queryId1) = 0;
-    virtual void destroyTargets_impl(CameraTargets* targets, unsigned int* queryId0, unsigned int* queryId1) = 0;
-    virtual void resizeTargets_impl(CameraTargets* targets, Viewport viewport, bool* viewportChanged) = 0;
+    //virtual void createTargets_impl(CameraTargets* targets, Viewport viewport, glm::vec3* ssaoSamples, unsigned int* queryId0, unsigned int* queryId1) = 0;
+    //virtual void destroyTargets_impl(CameraTargets* targets, unsigned int* queryId0, unsigned int* queryId1) = 0;
+    //virtual void resizeTargets_impl(CameraTargets* targets, Viewport viewport, bool* viewportChanged) = 0;
     virtual void readColorAtPixel_impl(const unsigned int* fbo, int x, int y, Color32* color) = 0;
-    virtual void createTargets_impl(LightTargets* targets, ShadowMapResolution resolution) = 0;
-    virtual void destroyTargets_impl(LightTargets* targets) = 0;
-    virtual void resizeTargets_impl(LightTargets* targets, ShadowMapResolution resolution) = 0;
-    virtual void createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-        int height, const std::vector<unsigned char>& data, unsigned int* tex) = 0;
-    virtual void destroyTexture2D_impl(unsigned int* tex) = 0;
-    virtual void updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex) = 0;
-    virtual void readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
-        std::vector<unsigned char>& data, unsigned int tex) = 0;
-    virtual void writePixelsTexture2D_impl(TextureFormat format, int width, int height,
-        const std::vector<unsigned char>& data, unsigned int tex) = 0;
-    virtual void createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-        int height, int depth, const std::vector<unsigned char>& data, unsigned int* tex) = 0;
-    virtual void destroyTexture3D_impl(unsigned int* tex) = 0;
-    virtual void updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex) = 0;
-    virtual void readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
-        std::vector<unsigned char>& data, unsigned int tex) = 0;
-    virtual void writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
-        const std::vector<unsigned char>& data, unsigned int tex) = 0;
-    virtual void createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-        const std::vector<unsigned char>& data, unsigned int* tex) = 0;
-    virtual void destroyCubemap_impl(unsigned int* tex) = 0;
-    virtual void updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, unsigned int tex) = 0;
-    virtual void readPixelsCubemap_impl(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data,
-        unsigned int tex) = 0;
-    virtual void writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char>& data, unsigned int tex) = 0;
-    virtual void createRenderTextureTargets_impl(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height) = 0;
-    virtual void destroyRenderTextureTargets_impl(RenderTextureTargets* targets) = 0;
+    //virtual void createTargets_impl(LightTargets* targets, ShadowMapResolution resolution) = 0;
+    //virtual void destroyTargets_impl(LightTargets* targets) = 0;
+    //virtual void resizeTargets_impl(LightTargets* targets, ShadowMapResolution resolution) = 0;
+    //virtual void createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+    //    int height, const std::vector<unsigned char>& data, TextureHandle*tex /*unsigned int* tex*/) = 0;
+    //virtual void destroyTexture2D_impl(TextureHandle*tex /*unsigned int* tex*/) = 0;
+    //virtual void updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
+    //    std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void writePixelsTexture2D_impl(TextureFormat format, int width, int height,
+    //    const std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+    //    int height, int depth, const std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int* tex*/) = 0;
+    //virtual void destroyTexture3D_impl(TextureHandle* tex /*unsigned int* tex*/) = 0;
+    //virtual void updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
+    //    std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
+    //    const std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+    //    const std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int* tex*/) = 0;
+    //virtual void destroyCubemap_impl(TextureHandle* tex /*unsigned int* tex*/) = 0;
+    //virtual void updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void readPixelsCubemap_impl(TextureFormat format, int width, int numChannels, std::vector<unsigned char>& data,
+    //    TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char>& data, TextureHandle* tex /*unsigned int tex*/) = 0;
+    //virtual void createRenderTextureTargets_impl(RenderTextureTargets* targets, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width, int height) = 0;
+    //virtual void destroyRenderTextureTargets_impl(RenderTextureTargets* targets) = 0;
     virtual void createTerrainChunk_impl(const std::vector<float>& vertices, const std::vector<float>& normals,
         const std::vector<float>& texCoords, int vertexCount,
         unsigned int* vao, unsigned int* vbo0, unsigned int* vbo1, unsigned int* vbo2) = 0;
@@ -444,8 +448,8 @@ protected:
         const std::vector<float>& texCoords, unsigned int vbo0, unsigned int vbo1,
         unsigned int vbo2) = 0;
     virtual void createMesh_impl(const std::vector<float>& vertices, const std::vector<float>& normals,
-        const std::vector<float>& texCoords, unsigned int* vao, unsigned int* vbo0, unsigned int* vbo1, unsigned int* vbo2, unsigned int* model_vbo, unsigned int* color_vbo) = 0;
-    virtual void destroyMesh_impl(unsigned int* vao, unsigned int* vbo0, unsigned int* vbo1, unsigned int* vbo2, unsigned int* model_vbo, unsigned int* color_vbo) = 0;
+        const std::vector<float>& texCoords, unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;
+    virtual void destroyMesh_impl(unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;
     virtual void updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4* models, size_t instanceCount) = 0;
     virtual void updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4* colors, size_t instanceCount) = 0;
     virtual void createSprite_impl(unsigned int* vao) = 0;

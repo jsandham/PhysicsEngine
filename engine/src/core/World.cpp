@@ -41,6 +41,11 @@ template <> size_t World::getNumberOfSystems<TerrainSystem>() const
     return mAllocators.mTerrainSystemAllocator.getCount();
 }
 
+template <> size_t World::getNumberOfSystems<AssetLoadingSystem>() const
+{
+    return mAllocators.mAssetLoadingSystemAllocator.getCount();
+}
+
 template <> size_t World::getNumberOfAssets<Mesh>() const
 {
     return mAllocators.mMeshAllocator.getCount();
@@ -119,6 +124,11 @@ template <> TerrainSystem* World::getSystem<TerrainSystem>() const
     return mAllocators.mTerrainSystemAllocator.get(0);
 }
 
+template <> AssetLoadingSystem* World::getSystem<AssetLoadingSystem>() const
+{
+    return mAllocators.mAssetLoadingSystemAllocator.get(0);
+}
+
 template <> RenderSystem* World::addSystem<RenderSystem>(size_t order)
 {
     return addSystem_impl(&mAllocators.mRenderSystemAllocator, order);
@@ -153,6 +163,11 @@ template <> TerrainSystem* World::addSystem<TerrainSystem>(size_t order)
     return addSystem_impl(&mAllocators.mTerrainSystemAllocator, order);
 }
 
+template <> AssetLoadingSystem* World::addSystem<AssetLoadingSystem>(size_t order)
+{
+    return addSystem_impl(&mAllocators.mAssetLoadingSystemAllocator, order);
+}
+
 template <> RenderSystem* World::getSystemByIndex<RenderSystem>(size_t index) const
 {
     return mAllocators.mRenderSystemAllocator.get(index);
@@ -185,6 +200,11 @@ template <> FreeLookCameraSystem* World::getSystemByIndex<FreeLookCameraSystem>(
 template <> TerrainSystem* World::getSystemByIndex<TerrainSystem>(size_t index) const
 {
     return mAllocators.mTerrainSystemAllocator.get(index);
+}
+
+template <> AssetLoadingSystem* World::getSystemByIndex<AssetLoadingSystem>(size_t index) const
+{
+    return mAllocators.mAssetLoadingSystemAllocator.get(index);
 }
 
 template <> RenderSystem* World::getSystemById<RenderSystem>(const Id& systemId) const
@@ -222,6 +242,12 @@ template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(con
 template <> TerrainSystem *World::getSystemById<TerrainSystem>(const Id &systemId) const
 {
     return getSystemById_impl(mIdState.mTerrainSystemIdToGlobalIndex, &mAllocators.mTerrainSystemAllocator,
+        systemId);
+}
+
+template <> AssetLoadingSystem* World::getSystemById<AssetLoadingSystem>(const Id& systemId) const
+{
+    return getSystemById_impl(mIdState.mAssetLoadingSystemIdToGlobalIndex, &mAllocators.mAssetLoadingSystemAllocator,
         systemId);
 }
 
@@ -268,6 +294,11 @@ template <> TerrainSystem *World::getSystemByGuid<TerrainSystem>(const Guid &sys
                               systemGuid);
 }
 
+template <> AssetLoadingSystem* World::getSystemByGuid<AssetLoadingSystem>(const Guid& systemGuid) const
+{
+    return getSystemByGuid_impl(mIdState.mAssetLoadingSystemGuidToGlobalIndex, &mAllocators.mAssetLoadingSystemAllocator,
+        systemGuid);
+}
 
 
 
@@ -715,6 +746,14 @@ template <> void World::addToIdState_impl<TerrainSystem>(const Guid &guid, const
     addToIdState(guid, id, index, type);
 }
 
+template <> void World::addToIdState_impl<AssetLoadingSystem>(const Guid& guid, const Id& id, int index, int type)
+{
+    mIdState.mAssetLoadingSystemGuidToGlobalIndex[guid] = index;
+    mIdState.mAssetLoadingSystemIdToGlobalIndex[id] = index;
+
+    addToIdState(guid, id, index, type);
+}
+
 template <> void World::removeFromIdState_impl<Scene>(const Guid &guid, const Id &id)
 {
     mIdState.mSceneGuidToGlobalIndex.erase(guid);
@@ -848,6 +887,14 @@ template <> void World::removeFromIdState_impl<TerrainSystem>(const Guid &guid, 
     mIdState.mTerrainSystemGuidToGlobalIndex.erase(guid);
     mIdState.mTerrainSystemIdToGlobalIndex.erase(id);
     
+    removeFromIdState(guid, id);
+}
+
+template <> void World::removeFromIdState_impl<AssetLoadingSystem>(const Guid& guid, const Id& id)
+{
+    mIdState.mAssetLoadingSystemGuidToGlobalIndex.erase(guid);
+    mIdState.mAssetLoadingSystemIdToGlobalIndex.erase(id);
+
     removeFromIdState(guid, id);
 }
 

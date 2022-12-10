@@ -83,9 +83,9 @@ TextureFilterMode Texture::getFilterMode() const
     return mFilterMode;
 }
 
-unsigned int Texture::getNativeGraphics() const
+void* Texture::getNativeGraphics() const
 {
-    return mTex;
+    return mTex != nullptr ? mTex->getHandle() : nullptr;
 }
 
 void Texture::setAnisoLevel(int anisoLevel)

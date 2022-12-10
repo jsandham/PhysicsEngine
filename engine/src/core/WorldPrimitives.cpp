@@ -31,115 +31,118 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     cone->setName("Cone");
 
     Shader *standardShader = world->createAsset<Shader>(Guid("d875cfa8-d25b-4c5d-a26d-caafd191baf7"));
-    
+    Material* standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
+
     assert(standardShader != nullptr);
-    
-    standardShader->setName("Standard");
-    standardShader->setVertexShader(RendererShaders::getRendererShaders()->getStandardVertexShader());
-    standardShader->setFragmentShader(RendererShaders::getRendererShaders()->getStandardFragmentShader());
-
-    std::set<ShaderMacro> variants[23];
-    variants[0].insert(ShaderMacro::None);
-
-    // directional light variants
-    variants[1].insert(ShaderMacro::Directional);
-
-    variants[2].insert(ShaderMacro::Directional);
-    variants[2].insert(ShaderMacro::HardShadows);
-    
-    variants[3].insert(ShaderMacro::Directional);
-    variants[3].insert(ShaderMacro::SoftShadows);
-
-    variants[4].insert(ShaderMacro::Directional);
-    variants[4].insert(ShaderMacro::Instancing);
-    
-    variants[5].insert(ShaderMacro::Directional);
-    variants[5].insert(ShaderMacro::HardShadows);
-    variants[5].insert(ShaderMacro::ShowCascades);
-
-    variants[6].insert(ShaderMacro::Directional);
-    variants[6].insert(ShaderMacro::HardShadows);
-    variants[6].insert(ShaderMacro::ShowCascades);
-
-    variants[7].insert(ShaderMacro::Directional);
-    variants[7].insert(ShaderMacro::HardShadows);
-    variants[7].insert(ShaderMacro::Instancing);
-
-    variants[8].insert(ShaderMacro::Directional);
-    variants[8].insert(ShaderMacro::HardShadows);
-    variants[8].insert(ShaderMacro::Instancing);
-
-    variants[9].insert(ShaderMacro::Directional);
-    variants[9].insert(ShaderMacro::HardShadows);
-    variants[9].insert(ShaderMacro::ShowCascades);
-    variants[9].insert(ShaderMacro::Instancing);
-
-    variants[10].insert(ShaderMacro::Directional);
-    variants[10].insert(ShaderMacro::HardShadows);
-    variants[10].insert(ShaderMacro::ShowCascades);
-    variants[10].insert(ShaderMacro::Instancing);
-
-    // spot light variants
-    variants[11].insert(ShaderMacro::Spot);
-
-    variants[12].insert(ShaderMacro::Spot);
-    variants[12].insert(ShaderMacro::HardShadows);
-
-    variants[13].insert(ShaderMacro::Spot);
-    variants[13].insert(ShaderMacro::SoftShadows);
-
-    variants[14].insert(ShaderMacro::Spot);
-    variants[14].insert(ShaderMacro::Instancing);
-
-    variants[15].insert(ShaderMacro::Spot);
-    variants[15].insert(ShaderMacro::HardShadows);
-    variants[15].insert(ShaderMacro::Instancing);
-
-    variants[16].insert(ShaderMacro::Spot);
-    variants[16].insert(ShaderMacro::SoftShadows);
-    variants[16].insert(ShaderMacro::Instancing);
-
-    // point light variants
-    variants[17].insert(ShaderMacro::Point);
-
-    variants[18].insert(ShaderMacro::Point);
-    variants[18].insert(ShaderMacro::HardShadows);
-
-    variants[19].insert(ShaderMacro::Point);
-    variants[19].insert(ShaderMacro::SoftShadows);
-
-    variants[20].insert(ShaderMacro::Point);
-    variants[20].insert(ShaderMacro::Instancing);
-
-    variants[21].insert(ShaderMacro::Point);
-    variants[21].insert(ShaderMacro::HardShadows);
-    variants[21].insert(ShaderMacro::Instancing);
-
-    variants[22].insert(ShaderMacro::Point);
-    variants[22].insert(ShaderMacro::SoftShadows);
-    variants[22].insert(ShaderMacro::Instancing);
-
-    for (int i = 0; i < 23; i++)
-    {
-        standardShader->addVariant(i, variants[i]);
-    }
-
-    standardShader->preprocess();
-    standardShader->compile();
-
-    Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
-    
     assert(standardMaterial != nullptr);
 
-    standardMaterial->setName("Standard");
-    standardMaterial->setShaderId(standardShader->getGuid());
-    standardMaterial->onShaderChanged();
+    if (RendererShaders::getRendererShaders() != nullptr)
+    {
+        standardShader->setName("Standard");
+        standardShader->setVertexShader(RendererShaders::getRendererShaders()->getStandardVertexShader());
+        standardShader->setFragmentShader(RendererShaders::getRendererShaders()->getStandardFragmentShader());
+    
+        std::set<ShaderMacro> variants[23];
+        variants[0].insert(ShaderMacro::None);
 
-    standardMaterial->setFloat("material.shininess", 0.5f);
-    standardMaterial->setVec3("material.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
-    standardMaterial->setVec3("material.diffuse", glm::vec3(1, 1, 1));
-    standardMaterial->setVec3("material.specular", glm::vec3(0.2, 0.2, 0.2));
-    standardMaterial->setVec3("material.colour", glm::vec3(0.0f, 1.0f, 1.0f));
+        // directional light variants
+        variants[1].insert(ShaderMacro::Directional);
+
+        variants[2].insert(ShaderMacro::Directional);
+        variants[2].insert(ShaderMacro::HardShadows);
+
+        variants[3].insert(ShaderMacro::Directional);
+        variants[3].insert(ShaderMacro::SoftShadows);
+
+        variants[4].insert(ShaderMacro::Directional);
+        variants[4].insert(ShaderMacro::Instancing);
+
+        variants[5].insert(ShaderMacro::Directional);
+        variants[5].insert(ShaderMacro::HardShadows);
+        variants[5].insert(ShaderMacro::ShowCascades);
+
+        variants[6].insert(ShaderMacro::Directional);
+        variants[6].insert(ShaderMacro::HardShadows);
+        variants[6].insert(ShaderMacro::ShowCascades);
+
+        variants[7].insert(ShaderMacro::Directional);
+        variants[7].insert(ShaderMacro::HardShadows);
+        variants[7].insert(ShaderMacro::Instancing);
+
+        variants[8].insert(ShaderMacro::Directional);
+        variants[8].insert(ShaderMacro::HardShadows);
+        variants[8].insert(ShaderMacro::Instancing);
+
+        variants[9].insert(ShaderMacro::Directional);
+        variants[9].insert(ShaderMacro::HardShadows);
+        variants[9].insert(ShaderMacro::ShowCascades);
+        variants[9].insert(ShaderMacro::Instancing);
+
+        variants[10].insert(ShaderMacro::Directional);
+        variants[10].insert(ShaderMacro::HardShadows);
+        variants[10].insert(ShaderMacro::ShowCascades);
+        variants[10].insert(ShaderMacro::Instancing);
+
+        // spot light variants
+        variants[11].insert(ShaderMacro::Spot);
+
+        variants[12].insert(ShaderMacro::Spot);
+        variants[12].insert(ShaderMacro::HardShadows);
+
+        variants[13].insert(ShaderMacro::Spot);
+        variants[13].insert(ShaderMacro::SoftShadows);
+
+        variants[14].insert(ShaderMacro::Spot);
+        variants[14].insert(ShaderMacro::Instancing);
+
+        variants[15].insert(ShaderMacro::Spot);
+        variants[15].insert(ShaderMacro::HardShadows);
+        variants[15].insert(ShaderMacro::Instancing);
+
+        variants[16].insert(ShaderMacro::Spot);
+        variants[16].insert(ShaderMacro::SoftShadows);
+        variants[16].insert(ShaderMacro::Instancing);
+
+        // point light variants
+        variants[17].insert(ShaderMacro::Point);
+
+        variants[18].insert(ShaderMacro::Point);
+        variants[18].insert(ShaderMacro::HardShadows);
+
+        variants[19].insert(ShaderMacro::Point);
+        variants[19].insert(ShaderMacro::SoftShadows);
+
+        variants[20].insert(ShaderMacro::Point);
+        variants[20].insert(ShaderMacro::Instancing);
+
+        variants[21].insert(ShaderMacro::Point);
+        variants[21].insert(ShaderMacro::HardShadows);
+        variants[21].insert(ShaderMacro::Instancing);
+
+        variants[22].insert(ShaderMacro::Point);
+        variants[22].insert(ShaderMacro::SoftShadows);
+        variants[22].insert(ShaderMacro::Instancing);
+
+        for (int i = 0; i < 23; i++)
+        {
+            standardShader->addVariant(i, variants[i]);
+        }
+
+        standardShader->preprocess();
+        standardShader->compile();
+
+        standardMaterial->setName("Standard");
+        standardMaterial->setShaderId(standardShader->getGuid());
+        standardMaterial->onShaderChanged();
+
+        standardMaterial->setFloat("material.shininess", 0.5f);
+        standardMaterial->setVec3("material.ambient", glm::vec3(0.5f, 0.5f, 0.5f));
+        standardMaterial->setVec3("material.diffuse", glm::vec3(1, 1, 1));
+        standardMaterial->setVec3("material.specular", glm::vec3(0.2, 0.2, 0.2));
+        standardMaterial->setVec3("material.colour", glm::vec3(0.0f, 1.0f, 1.0f));
+    }
+
+    std::cout << "FFFF" << std::endl;
 
     //.  .  .  .  .  .  .  .  .  .
     //.  .  .  .  .  .  .  .  .  .

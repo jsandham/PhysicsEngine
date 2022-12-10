@@ -41,7 +41,7 @@ class Texture3D : public Texture
     void setPixel(int x, int y, int z, const Color &color);
 
     void create() override;
-    void destroy() override;
+    //void destroy() override;
     void update() override;
     void readPixels() override;
     void writePixels() override;

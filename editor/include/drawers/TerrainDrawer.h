@@ -2,14 +2,16 @@
 #define TERRAIN_DRAWER_H__
 
 #include "InspectorDrawer.h"
+#include <graphics/Framebuffer.h>
 
 namespace PhysicsEditor
 {
     class TerrainDrawer : public InspectorDrawer
     {
     private:
-        unsigned int mFBO;
-        unsigned int mColor;
+        //unsigned int mFBO;
+        //unsigned int mColor;
+        Framebuffer* mFBO;
         unsigned int mProgram;
     public:
         TerrainDrawer();

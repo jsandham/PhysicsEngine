@@ -16,6 +16,12 @@ Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
     mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
+
+    mVbo[0] = VertexBuffer::create();
+    mVbo[1] = VertexBuffer::create();
+    mVbo[2] = VertexBuffer::create();
+    mVbo[3] = VertexBuffer::create();
+    mVbo[4] = VertexBuffer::create();
 }
 
 Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
@@ -24,10 +30,21 @@ Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id
     mSourceFilepath = "";
     mCreated = false;
     mChanged = false;
+
+    mVbo[0] = VertexBuffer::create();
+    mVbo[1] = VertexBuffer::create();
+    mVbo[2] = VertexBuffer::create();
+    mVbo[3] = VertexBuffer::create();
+    mVbo[4] = VertexBuffer::create();
 }
 
 Mesh::~Mesh()
 {
+    delete mVbo[0];
+    delete mVbo[1];
+    delete mVbo[2];
+    delete mVbo[3];
+    delete mVbo[4];
 }
 
 void Mesh::serialize(YAML::Node &out) const
@@ -287,7 +304,7 @@ unsigned int Mesh::getNativeGraphicsVAO() const
     return mVao;
 }
 
-unsigned int Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
+void* Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
 {
     return mVbo[static_cast<int>(meshVBO)];
 }
@@ -329,7 +346,7 @@ void Mesh::create()
         return;
     }
 
-    Renderer::getRenderer()->createMesh(mVertices, mNormals, mTexCoords, &mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
+    Renderer::getRenderer()->createMesh(mVertices, mNormals, mTexCoords, &mVao, mVbo[0], mVbo[1], mVbo[2], mVbo[3], mVbo[4]);
 
     mCreated = true;
 }
@@ -341,7 +358,7 @@ void Mesh::destroy()
         return;
     }
 
-    Renderer::getRenderer()->destroyMesh(&mVao, &mVbo[0], &mVbo[1], &mVbo[2], &mVbo[3], &mVbo[4]);
+    Renderer::getRenderer()->destroyMesh(&mVao, mVbo[0], mVbo[1], mVbo[2], mVbo[3], mVbo[4]);
 
     mCreated = false;
 }

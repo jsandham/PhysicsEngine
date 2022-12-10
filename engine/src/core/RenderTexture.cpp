@@ -14,6 +14,8 @@ RenderTexture::RenderTexture(World *world, const Id &id) : Texture(world, id)
     mWrapMode = TextureWrapMode::Repeat;
     mFilterMode = TextureFilterMode::Trilinear;
 
+    mTargets.mMainFBO = Framebuffer::create(mWidth, mHeight);
+
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
     mCreated = false;
@@ -27,6 +29,8 @@ RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Tex
     mWrapMode = TextureWrapMode::Repeat;
     mFilterMode = TextureFilterMode::Trilinear;
 
+    mTargets.mMainFBO = Framebuffer::create(mWidth, mHeight);
+
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
     mCreated = false;
@@ -39,6 +43,8 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) 
     mFormat = TextureFormat::RGBA;
     mWrapMode = TextureWrapMode::Repeat;
     mFilterMode = TextureFilterMode::Trilinear;
+
+    mTargets.mMainFBO = Framebuffer::create(mWidth, mHeight);
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
@@ -55,6 +61,8 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, 
     mWrapMode = TextureWrapMode::Repeat;
     mFilterMode = TextureFilterMode::Trilinear;
 
+    mTargets.mMainFBO = Framebuffer::create(mWidth, mHeight);
+
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
     mCreated = false;
@@ -64,7 +72,7 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, 
 
 RenderTexture::~RenderTexture()
 {
-
+    delete mTargets.mMainFBO;
 }
 
 void RenderTexture::serialize(YAML::Node& out) const
@@ -143,21 +151,9 @@ void RenderTexture::create()
         return;
     }
 
-    Renderer::getRenderer()->createRenderTextureTargets(&mTargets, mFormat, mWrapMode, mFilterMode, mWidth, mHeight);
+    //Renderer::getRenderer()->createRenderTextureTargets(&mTargets, mFormat, mWrapMode, mFilterMode, mWidth, mHeight);
 
     mCreated = true;
-}
-
-void RenderTexture::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroyRenderTextureTargets(&mTargets);
-
-    mCreated = false;
 }
 
 void RenderTexture::update()
@@ -175,17 +171,17 @@ void RenderTexture::writePixels()
 
 }
 
-unsigned int RenderTexture::getNativeGraphicsMainFBO() const
+Framebuffer* RenderTexture::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;
 }
 
-unsigned int RenderTexture::getNativeGraphicsColorTex() const
+TextureHandle* RenderTexture::getNativeGraphicsColorTex() const
 {
-    return mTargets.mColorTex;
+    return mTargets.mMainFBO->getColorTex();
 }
 
-unsigned int RenderTexture::getNativeGraphicsDepthTex() const
+TextureHandle* RenderTexture::getNativeGraphicsDepthTex() const
 {
-    return mTargets.mDepthTex;
+    return mTargets.mMainFBO->getDepthTex();
 }

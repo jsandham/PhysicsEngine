@@ -2,14 +2,16 @@
 #define OPENGL_RENDERER_API_H__
 
 #include "../../Renderer.h"
-#include "RenderContextOpenGL.h"
+#include "OpenGLRenderContext.h"
+#include "OpenGLTextureHandle.h"
+#include "OpenGLVertexBuffer.h"
 
 namespace PhysicsEngine
 {
     class OpenGLRenderer : public Renderer
 	{
     private:
-        RenderContextOpenGL* mContext;
+        OpenGLRenderContext* mContext;
 
       protected:
         void init_impl() override;
@@ -28,10 +30,10 @@ namespace PhysicsEngine
         void setGlobalLightUniforms_impl(const LightUniform &uniform) override;
         void createScreenQuad_impl(unsigned int *vao, unsigned int *vbo) override;
         void renderScreenQuad_impl(unsigned int vao) override;
-        void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color) override;
-        void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
-                                       unsigned int *depth) override;
-        void destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth) override;
+        //void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color) override;
+        //void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
+        //                               unsigned int *depth) override;
+        //void destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth) override;
         void bindFramebuffer_impl(unsigned int fbo) override;
         void unbindFramebuffer_impl() override;
         void clearFrambufferColor_impl(const Color &color) override;
@@ -40,47 +42,50 @@ namespace PhysicsEngine
         void bindVertexArray_impl(unsigned int vao) override;
         void unbindVertexArray_impl() override;
         void setViewport_impl(int x, int y, int width, int height) override;
-        void createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
-                                   unsigned int *queryId0, unsigned int *queryId1) override;
-        void destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1) override;
-        void resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged) override;
+        //void createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
+        //                           unsigned int *queryId0, unsigned int *queryId1) override;
+        //void destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1) override;
+        //void resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged) override;
         void readColorAtPixel_impl(const unsigned int *fbo, int x, int y, Color32 *color) override;
-        void createTargets_impl(LightTargets *targets, ShadowMapResolution resolution) override;
-        void destroyTargets_impl(LightTargets *targets) override;
-        void resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution) override;
-        void createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
-                                     int width, int height, const std::vector<unsigned char> &data,
-                                     unsigned int *tex) override;
-        void destroyTexture2D_impl(unsigned int *tex) override;
-        void updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                     unsigned int tex) override;
-        void readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
-                                         std::vector<unsigned char> &data, unsigned int tex) override;
-        void writePixelsTexture2D_impl(TextureFormat format, int width, int height,
-                                          const std::vector<unsigned char> &data, unsigned int tex) override;
-        void createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
-                                     int width, int height, int depth, const std::vector<unsigned char> &data,
-                                     unsigned int *tex) override;
-        void destroyTexture3D_impl(unsigned int *tex) override;
-        void updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                     unsigned int tex) override;
-        void readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
-                                         std::vector<unsigned char> &data, unsigned int tex) override;
-        void writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
-                                          const std::vector<unsigned char> &data, unsigned int tex) override;
-        void createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
-                                   int width, const std::vector<unsigned char> &data, unsigned int *tex) override;
-        void destroyCubemap_impl(unsigned int *tex) override;
-        void updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                   unsigned int tex) override;
-        void readPixelsCubemap_impl(TextureFormat format, int width, int numChannels,
-                                       std::vector<unsigned char> &data, unsigned int tex) override;
-        void writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
-                                        unsigned int tex) override;
-        void createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format,
-                                                TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                                                int height) override;
-        void destroyRenderTextureTargets_impl(RenderTextureTargets *targets) override;
+        //void createTargets_impl(LightTargets *targets, ShadowMapResolution resolution) override;
+        //void destroyTargets_impl(LightTargets *targets) override;
+        //void resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution) override;
+        
+        //void createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
+        //                             int width, int height, const std::vector<unsigned char> &data,
+        //                             TextureHandle*tex /*unsigned int* tex*/) override;
+        //void destroyTexture2D_impl(TextureHandle*tex /*unsigned int* tex*/) override;
+        //void updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+        //    TextureHandle* tex /*unsigned int tex*/) override;
+        //void readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
+        //                                 std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) override;
+        //void writePixelsTexture2D_impl(TextureFormat format, int width, int height,
+        //                                  const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) override;
+        //void createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
+        //                             int width, int height, int depth, const std::vector<unsigned char> &data,
+        //    TextureHandle* tex /*unsigned int* tex*/) override;
+        //void destroyTexture3D_impl(TextureHandle* tex /*unsigned int* tex*/) override;
+        //void updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+        //    TextureHandle* tex /*unsigned int tex*/) override;
+        //void readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth, int numChannels,
+        //                                 std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) override;
+        //void writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
+        //                                  const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) override;
+        //void createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
+        //                           int width, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/) override;
+        //void destroyCubemap_impl(TextureHandle* tex /*unsigned int* tex*/) override;
+        //void updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+        //    TextureHandle* tex /*unsigned int tex*/) override;
+        //void readPixelsCubemap_impl(TextureFormat format, int width, int numChannels,
+        //                               std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/) override;
+        //void writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
+        //    TextureHandle* tex /*unsigned int tex*/) override;
+        
+        
+        //void createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format,
+        //                                        TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+        //                                        int height) override;
+        //void destroyRenderTextureTargets_impl(RenderTextureTargets *targets) override;
         void createTerrainChunk_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                                         const std::vector<float> &texCoords, int vertexCount, unsigned int *vao,
                                         unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2) override;
@@ -92,11 +97,11 @@ namespace PhysicsEngine
                                         const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                                         unsigned int vbo2) override;
         void createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
-                                const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                                unsigned int *vbo1, unsigned int *vbo2, unsigned int *model_vbo,
-                                unsigned int *color_vbo) override;
-        void destroyMesh_impl(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2,
-                                 unsigned int *model_vbo, unsigned int *color_vbo) override;
+                                const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
+            VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo,
+            VertexBuffer*color_vbo) override;
+        void destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+            VertexBuffer*model_vbo, VertexBuffer*color_vbo) override;
         void updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4 *models, size_t instanceCount) override;
         void updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount) override;
         void createSprite_impl(unsigned int *vao) override;

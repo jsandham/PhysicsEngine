@@ -299,8 +299,8 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.start = subMeshVertexStartIndex;
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
                     object.vao = mesh->getNativeGraphicsVAO();
-                    object.instanceModelVbo = mesh->getNativeGraphicsVBO(MeshVBO::InstanceModel);
-                    object.instanceColorVbo = mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor);
+                    object.instanceModelVbo = *reinterpret_cast<unsigned int*>(mesh->getNativeGraphicsVBO(MeshVBO::InstanceModel));
+                    object.instanceColorVbo = *reinterpret_cast<unsigned int*>(mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor));
                     object.instanced = true;
 
                     std::pair<Guid, RenderObject> key = std::make_pair(material->getGuid(), object);
@@ -484,7 +484,7 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
             if (texture != nullptr)
             {
-                object.texture = texture->getNativeGraphics();
+                object.texture = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
             }
             else
             {

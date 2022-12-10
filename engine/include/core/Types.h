@@ -45,6 +45,7 @@ constexpr int DEBUGSYSTEM_TYPE = 3003;
 constexpr int GIZMOSYSTEM_TYPE = 3004;
 constexpr int FREELOOKCAMERASYSTEM_TYPE = 3005;
 constexpr int TERRAINSYSTEM_TYPE = 3006;
+constexpr int ASSETLOADINGSYSTEM_TYPE = 3007;
 
 // Names
 constexpr char SCENE_NAME[] = "Scene";
@@ -80,6 +81,7 @@ constexpr char DEBUGSYSTEM_NAME[] = "DebugSystem";
 constexpr char GIZMOSYSTEM_NAME[] = "GizmoSystem";
 constexpr char FREELOOKCAMERASYSTEM_NAME[] = "FreeLookCameraSystem";
 constexpr char TERRAINSYSTEM_NAME[] = "TerrainSystem";
+constexpr char ASSETLOADINGSYSTEM_NAME[] = "AssetLoadingSystem";
 
 // extensions
 constexpr char SCENE_EXT[] = ".scene";

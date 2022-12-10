@@ -2,15 +2,11 @@
 #define APPLICATION_WINDOW_H__
 
 #include <string>
-#include "../graphics/RenderContext.h"
 
 namespace PhysicsEngine
 {
 	class ApplicationWindow
 	{
-    protected:
-        RenderContext *mRenderContext;
-
 	public:
 		ApplicationWindow();
 		virtual ~ApplicationWindow() = 0;

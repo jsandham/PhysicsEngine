@@ -6,130 +6,10 @@
 
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLRenderer.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "GLSL/glsl_shaders.h"
 
 using namespace PhysicsEngine;
-
-static const std::string INVALID_ENUM = "An unacceptable value is specified for an enumerated argument";
-static const std::string INVALID_VALUE = "A numeric argument is out of range";
-static const std::string INVALID_OPERATION = "The specified operation is not allowed in the current state";
-static const std::string INVALID_FRAMEBUFFER_OPERATION = "The framebuffer object is not complete";
-static const std::string OUT_OF_MEMORY = "There is not enough money left to execute the command";
-static const std::string STACK_UNDERFLOW = "An attempt has been made to perform an operation that would cause an internal stack to underflow";
-static const std::string STACK_OVERFLOW = "An attempt has been made to perform an operation that would cause an internal stack to overflow";
-static const std::string UNKNOWN_ERROR = "Unknown error";
-static const std::string FRAMEBUFFER_UNDEFINED = "The current FBO binding is 0 but no default framebuffer exists";
-static const std::string FRAMEBUFFER_INCOMPLETE_ATTACHMENT = "One of the buffers enabled for rendering is incomplete";
-static const std::string FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = "No buffers are attached to the FBO and it is not configured for rendering without attachments";
-static const std::string FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER = "Not all attachments enabled via glDrawBuffers exists in framebuffer";
-static const std::string FRAMEBUFFER_INCOMPLETE_READ_BUFFER = "Not all buffers specified via glReadBuffer exists in framebuffer";
-static const std::string FRAMEBUFFER_UNSUPPORTED = "The combination of internal buffer formats is unsupported";
-static const std::string FRAMEBUFFER_INCOMPLETE_MULTISAMPLE = "The number of samples for each attachment is not the same";
-static const std::string FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS = "Not all color attachments are layered textures or bound to the same target";
-static const std::string UNKNOWN_FRAMEBUFFER_ERROR = "Unknown framebuffer status error";
-
-static void logError(const std::string& error, const std::string& line, const std::string& file)
-{
-    char errorBuffer[512];
-    size_t i = 1;
-    errorBuffer[0] = '(';
-    strncpy(errorBuffer + i, error.c_str(), error.length());
-    i += error.length();
-    strncpy(errorBuffer + i, ") line: ", 8);
-    i += 8;
-    strncpy(errorBuffer + i, line.c_str(), line.length());
-    i += line.length();
-    strncpy(errorBuffer + i, " file: ", 7);
-    i += 7;
-    strncpy(errorBuffer + i, file.c_str(), file.length());
-    i += file.length();
-    errorBuffer[i] = '\n';
-    errorBuffer[i + 1] = '\0';
-    Log::error(errorBuffer);
-}
-
-#define LOG_ERROR(ERROR, LINE, FILE) logError(ERROR, LINE, FILE);
-
-static void checkError(const std::string& line, const std::string& file)
-{
-    GLenum error;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        switch (error)
-        {
-        case GL_INVALID_ENUM:
-            LOG_ERROR(INVALID_ENUM, line, file);
-            break;
-        case GL_INVALID_VALUE:
-            LOG_ERROR(INVALID_VALUE, line, file);
-            break;
-        case GL_INVALID_OPERATION:
-            LOG_ERROR(INVALID_OPERATION, line, file);
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            LOG_ERROR(INVALID_FRAMEBUFFER_OPERATION, line, file);
-            break;
-        case GL_OUT_OF_MEMORY:
-            LOG_ERROR(OUT_OF_MEMORY, line, file);
-            break;
-        case GL_STACK_UNDERFLOW:
-            LOG_ERROR(STACK_UNDERFLOW, line, file);
-            break;
-        case GL_STACK_OVERFLOW:
-            LOG_ERROR(STACK_OVERFLOW, line, file);
-            break;
-        default:
-            LOG_ERROR(UNKNOWN_ERROR, line, file);
-            break;
-        }
-    }
-}
-
-static void checkFrambufferError(const std::string& line, const std::string& file)
-{
-    GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-    if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE)
-    {
-        switch (framebufferStatus)
-        {
-        case GL_FRAMEBUFFER_UNDEFINED:
-            LOG_ERROR(FRAMEBUFFER_UNDEFINED, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_ATTACHMENT, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_READ_BUFFER, line, file);
-            break;
-        case GL_FRAMEBUFFER_UNSUPPORTED:
-            LOG_ERROR(FRAMEBUFFER_UNSUPPORTED, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MULTISAMPLE, line, file);
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS, line, file);
-            break;
-        default:
-            LOG_ERROR(UNKNOWN_FRAMEBUFFER_ERROR, line, file);
-            break;
-        }
-    }
-}
-
-#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)  \
-    do{                                        \
-        ROUTINE;                               \
-        checkError(LINE, FILE);               \
-    }while(0)
-
-#define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
 
 struct Uniform
 {
@@ -147,78 +27,78 @@ struct Attribute
     GLchar name[32];
 };
 
-static GLenum getTextureFormat(TextureFormat format)
-{
-    GLenum openglFormat = GL_DEPTH_COMPONENT;
-
-    switch (format)
-    {
-    case TextureFormat::Depth:
-        openglFormat = GL_DEPTH_COMPONENT;
-        break;
-    case TextureFormat::RG:
-        openglFormat = GL_RG;
-        break;
-    case TextureFormat::RGB:
-        openglFormat = GL_RGB;
-        break;
-    case TextureFormat::RGBA:
-        openglFormat = GL_RGBA;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture format\n");
-        break;
-    }
-
-    return openglFormat;
-}
-
-static GLint getTextureWrapMode(TextureWrapMode wrapMode)
-{
-    GLint openglWrapMode = GL_REPEAT;
-
-    switch (wrapMode)
-    {
-    case TextureWrapMode::Repeat:
-        openglWrapMode = GL_REPEAT;
-        break;
-    case TextureWrapMode::Clamp:
-        openglWrapMode = GL_CLAMP_TO_EDGE;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture wrap mode\n");
-        break;
-    }
-
-    return openglWrapMode;
-}
-
-static GLint getTextureFilterMode(TextureFilterMode filterMode)
-{
-    GLint openglFilterMode = GL_NEAREST;
-
-    switch (filterMode)
-    {
-    case TextureFilterMode::Nearest:
-        openglFilterMode = GL_NEAREST;
-        break;
-    case TextureFilterMode::Bilinear:
-        openglFilterMode = GL_LINEAR;
-        break;
-    case TextureFilterMode::Trilinear:
-        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
-        break;
-    default:
-        Log::error("OpengGL: Invalid texture filter mode\n");
-        break;
-    }
-
-    return openglFilterMode;
-}
+//static GLenum getTextureFormat(TextureFormat format)
+//{
+//    GLenum openglFormat = GL_DEPTH_COMPONENT;
+//
+//    switch (format)
+//    {
+//    case TextureFormat::Depth:
+//        openglFormat = GL_DEPTH_COMPONENT;
+//        break;
+//    case TextureFormat::RG:
+//        openglFormat = GL_RG;
+//        break;
+//    case TextureFormat::RGB:
+//        openglFormat = GL_RGB;
+//        break;
+//    case TextureFormat::RGBA:
+//        openglFormat = GL_RGBA;
+//        break;
+//    default:
+//        Log::error("OpengGL: Invalid texture format\n");
+//        break;
+//    }
+//
+//    return openglFormat;
+//}
+//
+//static GLint getTextureWrapMode(TextureWrapMode wrapMode)
+//{
+//    GLint openglWrapMode = GL_REPEAT;
+//
+//    switch (wrapMode)
+//    {
+//    case TextureWrapMode::Repeat:
+//        openglWrapMode = GL_REPEAT;
+//        break;
+//    case TextureWrapMode::Clamp:
+//        openglWrapMode = GL_CLAMP_TO_EDGE;
+//        break;
+//    default:
+//        Log::error("OpengGL: Invalid texture wrap mode\n");
+//        break;
+//    }
+//
+//    return openglWrapMode;
+//}
+//
+//static GLint getTextureFilterMode(TextureFilterMode filterMode)
+//{
+//    GLint openglFilterMode = GL_NEAREST;
+//
+//    switch (filterMode)
+//    {
+//    case TextureFilterMode::Nearest:
+//        openglFilterMode = GL_NEAREST;
+//        break;
+//    case TextureFilterMode::Bilinear:
+//        openglFilterMode = GL_LINEAR;
+//        break;
+//    case TextureFilterMode::Trilinear:
+//        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
+//        break;
+//    default:
+//        Log::error("OpengGL: Invalid texture filter mode\n");
+//        break;
+//    }
+//
+//    return openglFilterMode;
+//}
 
 void OpenGLRenderer::init_impl()
 {
-    mContext = RenderContextOpenGL::get();
+    mContext = OpenGLRenderContext::get();
 
     std::string version = (const char*)glGetString(GL_VERSION);
     std::string shader_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
@@ -422,75 +302,75 @@ void OpenGLRenderer::renderScreenQuad_impl(unsigned int vao)
     CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 }
 
-void OpenGLRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color)
-{
-    // generate fbo (color + depth)
-    CHECK_ERROR(glGenFramebuffers(1, fbo));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
-
-    CHECK_ERROR(glGenTextures(1, color));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *color));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0));
-
-    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void OpenGLRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
-                                               unsigned int *depth)
-{
-    // generate fbo (color + depth)
-    CHECK_ERROR(glGenFramebuffers(1, fbo));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
-
-    CHECK_ERROR(glGenTextures(1, color));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *color));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glGenTextures(1, depth));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *depth));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depth, 0));
-
-    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void OpenGLRenderer::destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth)
-{
-    // detach textures from their framebuffer
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // delete frambuffer
-    CHECK_ERROR(glDeleteFramebuffers(1, fbo));
-
-    // delete textures
-    CHECK_ERROR(glDeleteTextures(1, color));
-    CHECK_ERROR(glDeleteTextures(1, depth));
-}
+//void OpenGLRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color)
+//{
+//    // generate fbo (color + depth)
+//    CHECK_ERROR(glGenFramebuffers(1, fbo));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
+//
+//    CHECK_ERROR(glGenTextures(1, color));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *color));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0));
+//
+//    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+//    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//}
+//
+//void OpenGLRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
+//                                               unsigned int *depth)
+//{
+//    // generate fbo (color + depth)
+//    CHECK_ERROR(glGenFramebuffers(1, fbo));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
+//
+//    CHECK_ERROR(glGenTextures(1, color));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *color));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glGenTextures(1, depth));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *depth));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *color, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *depth, 0));
+//
+//    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+//    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//}
+//
+//void OpenGLRenderer::destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth)
+//{
+//    // detach textures from their framebuffer
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *fbo));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // delete frambuffer
+//    CHECK_ERROR(glDeleteFramebuffers(1, fbo));
+//
+//    // delete textures
+//    CHECK_ERROR(glDeleteTextures(1, color));
+//    CHECK_ERROR(glDeleteTextures(1, depth));
+//}
 
 void OpenGLRenderer::bindFramebuffer_impl(unsigned int fbo)
 {
@@ -535,257 +415,257 @@ void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
-void OpenGLRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
-                                           unsigned int *queryId0,
-                             unsigned int *queryId1)
-{
-    // generate timing queries
-    CHECK_ERROR(glGenQueries(1, queryId0));
-    CHECK_ERROR(glGenQueries(1, queryId1));
-
-    // dummy query to prevent OpenGL errors from popping out
-    // see https://www.lighthouse3d.com/tutorials/opengl-timer-query/
-    // CHECK_ERROR(glQueryCounter(*queryId1, GL_TIMESTAMP));
-
-    // generate main camera fbo (color + depth)
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mMainFBO)));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mColorTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mDepthTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0));
-
-    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // generate color picking fbo (color + depth)
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mColorPickingFBO)));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mColorPickingTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorPickingTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mColorPickingDepthTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorPickingDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorPickingTex, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mColorPickingDepthTex, 0));
-
-    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int colorPickingAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, colorPickingAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // generate geometry fbo
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mGeometryFBO)));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mPositionTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mPositionTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mNormalTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mNormalTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mAlbedoSpecTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mAlbedoSpecTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mPositionTex, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, targets->mNormalTex, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, targets->mAlbedoSpecTex, 0));
-
-    unsigned int geometryAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-    CHECK_ERROR(glDrawBuffers(3, geometryAttachments));
-
-    // create and attach depth buffer (renderbuffer)
-    unsigned int rboDepth;
-    CHECK_ERROR(glGenRenderbuffers(1, &rboDepth));
-    CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, rboDepth));
-    CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080));
-    CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // generate ssao fbo
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mSsaoFBO)));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mSsaoColorTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mSsaoColorTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mSsaoColorTex, 0));
-
-    unsigned int ssaoAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, ssaoAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    auto lerp = [](float a, float b, float t) { return a + t * (b - a); };
-
-    // generate noise texture for use in ssao
-    std::uniform_real_distribution<GLfloat> distribution(0.0, 1.0);
-    std::default_random_engine generator;
-    for (unsigned int j = 0; j < 64; ++j)
-    {
-        float x = distribution(generator) * 2.0f - 1.0f;
-        float y = distribution(generator) * 2.0f - 1.0f;
-        float z = distribution(generator);
-        float radius = distribution(generator);
-
-        glm::vec3 sample(x, y, z);
-        sample = radius * glm::normalize(sample);
-        float scale = float(j) / 64.0f;
-
-        // scale samples s.t. they're more aligned to center of kernel
-        scale = lerp(0.1f, 1.0f, scale * scale);
-        sample *= scale;
-
-        ssaoSamples[j] = sample;
-    }
-
-    glm::vec3 ssaoNoise[16];
-    for (int j = 0; j < 16; j++)
-    {
-        // rotate around z-axis (in tangent space)
-        glm::vec3 noise(distribution(generator) * 2.0f - 1.0f, distribution(generator) * 2.0f - 1.0f, 0.0f);
-        ssaoNoise[j] = noise;
-    }
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mSsaoNoiseTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mSsaoNoiseTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1)
-{
-    // detach textures from their framebuffer
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // delete frambuffers
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mMainFBO)));
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mColorPickingFBO)));
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mGeometryFBO)));
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mSsaoFBO)));
-
-    // delete textures
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mDepthTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorPickingTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorPickingDepthTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mPositionTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mNormalTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mAlbedoSpecTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mSsaoColorTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mSsaoNoiseTex)));
-
-    // delete timing query
-    CHECK_ERROR(glDeleteQueries(1, queryId0));
-    CHECK_ERROR(glDeleteQueries(1, queryId1));
-}
-
-void OpenGLRenderer::resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged)
-{
-    /*int width = camera->getViewport().mWidth;
-    int height = camera->getViewport().mHeight;
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *depthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorPickingTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorPickingDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-    if (camera->mSSAO == CameraSSAO::SSAO_On) {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *positionTex));
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *normalTex));
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *albedoSpecTex));
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *ssaoColorTex));
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-    }
-
-    *viewportChanged = false;*/
-}
+//void OpenGLRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
+//                                           unsigned int *queryId0,
+//                             unsigned int *queryId1)
+//{
+//    // generate timing queries
+//    CHECK_ERROR(glGenQueries(1, queryId0));
+//    CHECK_ERROR(glGenQueries(1, queryId1));
+//
+//    // dummy query to prevent OpenGL errors from popping out
+//    // see https://www.lighthouse3d.com/tutorials/opengl-timer-query/
+//    // CHECK_ERROR(glQueryCounter(*queryId1, GL_TIMESTAMP));
+//
+//    // generate main camera fbo (color + depth)
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mMainFBO)));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mColorTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mDepthTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0));
+//
+//    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+//    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // generate color picking fbo (color + depth)
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mColorPickingFBO)));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mColorPickingTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorPickingTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mColorPickingDepthTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorPickingDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorPickingTex, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mColorPickingDepthTex, 0));
+//
+//    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+//    unsigned int colorPickingAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, colorPickingAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // generate geometry fbo
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mGeometryFBO)));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mPositionTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mPositionTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mNormalTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mNormalTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mAlbedoSpecTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mAlbedoSpecTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mPositionTex, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, targets->mNormalTex, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, targets->mAlbedoSpecTex, 0));
+//
+//    unsigned int geometryAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+//    CHECK_ERROR(glDrawBuffers(3, geometryAttachments));
+//
+//    // create and attach depth buffer (renderbuffer)
+//    unsigned int rboDepth;
+//    CHECK_ERROR(glGenRenderbuffers(1, &rboDepth));
+//    CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, rboDepth));
+//    CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 1080));
+//    CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // generate ssao fbo
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mSsaoFBO)));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mSsaoColorTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mSsaoColorTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mSsaoColorTex, 0));
+//
+//    unsigned int ssaoAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, ssaoAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    auto lerp = [](float a, float b, float t) { return a + t * (b - a); };
+//
+//    // generate noise texture for use in ssao
+//    std::uniform_real_distribution<GLfloat> distribution(0.0, 1.0);
+//    std::default_random_engine generator;
+//    for (unsigned int j = 0; j < 64; ++j)
+//    {
+//        float x = distribution(generator) * 2.0f - 1.0f;
+//        float y = distribution(generator) * 2.0f - 1.0f;
+//        float z = distribution(generator);
+//        float radius = distribution(generator);
+//
+//        glm::vec3 sample(x, y, z);
+//        sample = radius * glm::normalize(sample);
+//        float scale = float(j) / 64.0f;
+//
+//        // scale samples s.t. they're more aligned to center of kernel
+//        scale = lerp(0.1f, 1.0f, scale * scale);
+//        sample *= scale;
+//
+//        ssaoSamples[j] = sample;
+//    }
+//
+//    glm::vec3 ssaoNoise[16];
+//    for (int j = 0; j < 16; j++)
+//    {
+//        // rotate around z-axis (in tangent space)
+//        glm::vec3 noise(distribution(generator) * 2.0f - 1.0f, distribution(generator) * 2.0f - 1.0f, 0.0f);
+//        ssaoNoise[j] = noise;
+//    }
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mSsaoNoiseTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mSsaoNoiseTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+//
+//void OpenGLRenderer::destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1)
+//{
+//    // detach textures from their framebuffer
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mColorPickingFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mGeometryFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mSsaoFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // delete frambuffers
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mMainFBO)));
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mColorPickingFBO)));
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mGeometryFBO)));
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mSsaoFBO)));
+//
+//    // delete textures
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mDepthTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorPickingTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorPickingDepthTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mPositionTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mNormalTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mAlbedoSpecTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mSsaoColorTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mSsaoNoiseTex)));
+//
+//    // delete timing query
+//    CHECK_ERROR(glDeleteQueries(1, queryId0));
+//    CHECK_ERROR(glDeleteQueries(1, queryId1));
+//}
+//
+//void OpenGLRenderer::resizeTargets_impl(CameraTargets *targets, Viewport viewport, bool *viewportChanged)
+//{
+//    /*int width = camera->getViewport().mWidth;
+//    int height = camera->getViewport().mHeight;
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *depthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorPickingTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *colorPickingDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//    if (camera->mSSAO == CameraSSAO::SSAO_On) {
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *positionTex));
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *normalTex));
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *albedoSpecTex));
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *ssaoColorTex));
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//    }
+//
+//    *viewportChanged = false;*/
+//}
 
 void OpenGLRenderer::readColorAtPixel_impl(const unsigned int *fbo, int x, int y, Color32 *color)
 {
@@ -795,514 +675,543 @@ void OpenGLRenderer::readColorAtPixel_impl(const unsigned int *fbo, int x, int y
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void OpenGLRenderer::createTargets_impl(LightTargets *targets, ShadowMapResolution resolution)
-{
-    GLsizei res = 512;
-    switch (resolution)
-    {
-    case ShadowMapResolution::Low512x512:
-        res = 512;
-        break;
-    case ShadowMapResolution::Medium1024x1024:
-        res = 1024;
-        break;
-    case ShadowMapResolution::High2048x2048:
-        res = 2048;
-        break;
-    case ShadowMapResolution::VeryHigh4096x4096:
-        res = 4096;
-        break;
-    default:
-        res = 1024;
-        break;
-    }
-
-    // generate shadow map fbos
-    // create directional light cascade shadow map fbo
-    CHECK_ERROR(glGenFramebuffers(5, &(targets->mShadowCascadeFBO[0])));
-    CHECK_ERROR(glGenTextures(5, &(targets->mShadowCascadeDepthTex[0])));
-
-    for (int i = 0; i < 5; i++)
-    {
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]));
-
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-        CHECK_ERROR(glDrawBuffer(GL_NONE));
-        CHECK_ERROR(glReadBuffer(GL_NONE));
-
-        CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i],
-                               0));
-
-        checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    }
-
-    // create spotlight shadow map fbo
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mShadowSpotlightFBO)));
-    CHECK_ERROR(glGenTextures(1, &(targets->mShadowSpotlightDepthTex)));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-    CHECK_ERROR(glDrawBuffer(GL_NONE));
-    CHECK_ERROR(glReadBuffer(GL_NONE));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex, 0));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // create pointlight shadow cubemap fbo
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mShadowCubemapFBO)));
-    CHECK_ERROR(glGenTextures(1, &(targets->mShadowCubemapDepthTex)));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex));
-
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-
-    CHECK_ERROR(glDrawBuffer(GL_NONE));
-    CHECK_ERROR(glReadBuffer(GL_NONE));
-
-    CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, targets->mShadowCubemapDepthTex, 0));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void OpenGLRenderer::destroyTargets_impl(LightTargets *targets)
-{
-    // detach textures from their framebuffer
-    for (int i = 0; i < 5; i++)
-    {
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]));
-        CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    }
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO));
-    CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // delete frambuffers
-    for (int i = 0; i < 5; i++)
-    {
-        CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowCascadeFBO[i])));
-    }
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowSpotlightFBO)));
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowCubemapFBO)));
-
-    // delete textures
-    for (int i = 0; i < 5; i++)
-    {
-        CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowCascadeDepthTex[i])));
-    }
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowSpotlightDepthTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowCubemapDepthTex)));
-}
-
-void OpenGLRenderer::resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution)
-{
-    GLsizei res = 512;
-    switch (resolution)
-    {
-    case ShadowMapResolution::Low512x512:
-        res = 512;
-        break;
-    case ShadowMapResolution::Medium1024x1024:
-        res = 1024;
-        break;
-    case ShadowMapResolution::High2048x2048:
-        res = 2048;
-        break;
-    case ShadowMapResolution::VeryHigh4096x4096:
-        res = 4096;
-        break;
-    default:
-        res = 1024;
-        break;
-    }
-
-    // If resolution not actually changed, return
-    /*if (res == static_cast<GLsizei>(resolution)) {
-        *resolutionChanged = false;
-        return;
-    }*/
-
-    for (int i = 0; i < 5; i++)
-    {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]));
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-    }
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 NULL));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode,
-                                             TextureFilterMode filterMode, int width,
-                               int height, const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    CHECK_ERROR(glGenTextures(1, tex));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
-
-    CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
-
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
-
-    // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::destroyTexture2D_impl(unsigned int *tex)
-{
-    CHECK_ERROR(glDeleteTextures(1, tex));
-}
-
-void OpenGLRenderer::updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                             unsigned int tex)
-{
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, tex));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
-
-    // Determine how many levels of anisotropic filtering are available
-    float aniso = 0.0f;
-    CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
-
-    // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
-                                   std::vector<unsigned char> &data, unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    CHECK_ERROR(glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels, &data[0]));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::writePixelsTexture2D_impl(TextureFormat format, int width, int height,
-                                                  const std::vector<unsigned char> &data,
-                                    unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-void OpenGLRenderer::createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode,
-                                             TextureFilterMode filterMode, int width,
-                               int height, int depth, const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    CHECK_ERROR(glGenTextures(1, tex));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, *tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]));
-
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode));
-
-    // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
-}
-
-void OpenGLRenderer::destroyTexture3D_impl(unsigned int *tex)
-{
-    CHECK_ERROR(glDeleteTextures(1, tex));
-}
-
-void OpenGLRenderer::updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                             unsigned int tex)
-{
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, tex));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode));
-
-    // Determine how many levels of anisotropic filtering are available
-    float aniso = 0.0f;
-    CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
-
-    // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
-}
-
-void OpenGLRenderer::readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
-                                                 int numChannels,
-                                   std::vector<unsigned char> &data, unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    CHECK_ERROR(glGetTextureImage(tex, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * depth * numChannels, &data[0]));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
-}
-
-void OpenGLRenderer::writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
-                                    const std::vector<unsigned char> &data, unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    CHECK_ERROR(glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
-}
-
-void OpenGLRenderer::createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
-                                           int width,
-                             const std::vector<unsigned char> &data, unsigned int *tex)
-{
-    CHECK_ERROR(glGenTextures(1, tex));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, *tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    for (unsigned int i = 0; i < 6; i++)
-    {
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, data.data()));
-    }
-
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-}
-
-void OpenGLRenderer::destroyCubemap_impl(unsigned int *tex)
-{
-    CHECK_ERROR(glDeleteTextures(1, tex));
-}
-
-void OpenGLRenderer::updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
-                                           unsigned int tex)
-{
-    GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-}
-
-void OpenGLRenderer::readPixelsCubemap_impl(TextureFormat format, int width, int numChannels,
-                                               std::vector<unsigned char> &data,
-                                 unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    for (unsigned int i = 0; i < 6; i++)
-    {
-        CHECK_ERROR(glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE,
-                      &data[i * width * width * numChannels]));
-    }
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-}
-
-void OpenGLRenderer::writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
-                                  unsigned int tex)
-{
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, tex));
-
-    GLenum openglFormat = getTextureFormat(format);
-
-    for (unsigned int i = 0; i < 6; i++)
-    {
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
-                     GL_UNSIGNED_BYTE, data.data()));
-    }
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-}
-
-void OpenGLRenderer::createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format,
-                                                        TextureWrapMode wrapMode,
-                                          TextureFilterMode filterMode, int width, int height)
-{
-    // generate fbo (color + depth)
-    CHECK_ERROR(glGenFramebuffers(1, &(targets->mMainFBO)));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mColorTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorTex));
-
-    GLenum openglFormat = getTextureFormat(format);
-    // GLint openglWrapMode = getTextureWrapMode(wrapMode);
-    // GLint openglFilterMode = getTextureFilterMode(filterMode);
-
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
-    // CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D);
-
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-    //     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
-
-    // float aniso = 0.0f;
-    // CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
-
-    CHECK_ERROR(glGenTextures(1, &(targets->mDepthTex)));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mDepthTex));
-    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-    //     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
-
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0));
-
-    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
-    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
-
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
-
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void OpenGLRenderer::destroyRenderTextureTargets_impl(RenderTextureTargets *targets)
-{
-    // detach textures from their framebuffer
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-    // delete frambuffers
-    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mMainFBO)));
-
-    // delete textures
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorTex)));
-    CHECK_ERROR(glDeleteTextures(1, &(targets->mDepthTex)));
-}
+//void OpenGLRenderer::createTargets_impl(LightTargets *targets, ShadowMapResolution resolution)
+//{
+//    GLsizei res = 512;
+//    switch (resolution)
+//    {
+//    case ShadowMapResolution::Low512x512:
+//        res = 512;
+//        break;
+//    case ShadowMapResolution::Medium1024x1024:
+//        res = 1024;
+//        break;
+//    case ShadowMapResolution::High2048x2048:
+//        res = 2048;
+//        break;
+//    case ShadowMapResolution::VeryHigh4096x4096:
+//        res = 4096;
+//        break;
+//    default:
+//        res = 1024;
+//        break;
+//    }
+//
+//    // generate shadow map fbos
+//    // create directional light cascade shadow map fbo
+//    CHECK_ERROR(glGenFramebuffers(5, &(targets->mShadowCascadeFBO[0])));
+//    CHECK_ERROR(glGenTextures(5, &(targets->mShadowCascadeDepthTex[0])));
+//
+//    for (int i = 0; i < 5; i++)
+//    {
+//        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]));
+//
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+//        CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+//
+//        CHECK_ERROR(glDrawBuffer(GL_NONE));
+//        CHECK_ERROR(glReadBuffer(GL_NONE));
+//
+//        CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i],
+//                               0));
+//
+//        checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//    }
+//
+//    // create spotlight shadow map fbo
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mShadowSpotlightFBO)));
+//    CHECK_ERROR(glGenTextures(1, &(targets->mShadowSpotlightDepthTex)));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+//
+//    CHECK_ERROR(glDrawBuffer(GL_NONE));
+//    CHECK_ERROR(glReadBuffer(GL_NONE));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex, 0));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // create pointlight shadow cubemap fbo
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mShadowCubemapFBO)));
+//    CHECK_ERROR(glGenTextures(1, &(targets->mShadowCubemapDepthTex)));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex));
+//
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+//
+//    CHECK_ERROR(glDrawBuffer(GL_NONE));
+//    CHECK_ERROR(glReadBuffer(GL_NONE));
+//
+//    CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, targets->mShadowCubemapDepthTex, 0));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//}
+//
+//void OpenGLRenderer::destroyTargets_impl(LightTargets *targets)
+//{
+//    // detach textures from their framebuffer
+//    for (int i = 0; i < 5; i++)
+//    {
+//        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCascadeFBO[i]));
+//        CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//    }
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowSpotlightFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mShadowCubemapFBO));
+//    CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // delete frambuffers
+//    for (int i = 0; i < 5; i++)
+//    {
+//        CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowCascadeFBO[i])));
+//    }
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowSpotlightFBO)));
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mShadowCubemapFBO)));
+//
+//    // delete textures
+//    for (int i = 0; i < 5; i++)
+//    {
+//        CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowCascadeDepthTex[i])));
+//    }
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowSpotlightDepthTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mShadowCubemapDepthTex)));
+//}
+//
+//void OpenGLRenderer::resizeTargets_impl(LightTargets *targets, ShadowMapResolution resolution)
+//{
+//    GLsizei res = 512;
+//    switch (resolution)
+//    {
+//    case ShadowMapResolution::Low512x512:
+//        res = 512;
+//        break;
+//    case ShadowMapResolution::Medium1024x1024:
+//        res = 1024;
+//        break;
+//    case ShadowMapResolution::High2048x2048:
+//        res = 2048;
+//        break;
+//    case ShadowMapResolution::VeryHigh4096x4096:
+//        res = 4096;
+//        break;
+//    default:
+//        res = 1024;
+//        break;
+//    }
+//
+//    // If resolution not actually changed, return
+//    /*if (res == static_cast<GLsizei>(resolution)) {
+//        *resolutionChanged = false;
+//        return;
+//    }*/
+//
+//    for (int i = 0; i < 5; i++)
+//    {
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowCascadeDepthTex[i]));
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//    }
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mShadowSpotlightDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, targets->mShadowCubemapDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 0, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 1, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 2, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 3, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 4, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_DEPTH_COMPONENT, res, res, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+//                 NULL));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+
+//void OpenGLRenderer::createTexture2D_impl(TextureFormat format, TextureWrapMode wrapMode,
+//                                             TextureFilterMode filterMode, int width,
+//                               int height, const std::vector<unsigned char> &data, TextureHandle*tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glGenTextures(1, &opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, opengltex->mHandle /* *tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
+//
+//    CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
+//
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//
+//    // clamp the requested anisotropic filtering level to what is available and set it
+//    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+//
+//void OpenGLRenderer::destroyTexture2D_impl(TextureHandle*tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glDeleteTextures(1, &opengltex->mHandle /*tex*/));
+//}
+//
+//void OpenGLRenderer::updateTexture2D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//                                             TextureHandle*tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//
+//    // Determine how many levels of anisotropic filtering are available
+//    float aniso = 0.0f;
+//    CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
+//
+//    // clamp the requested anisotropic filtering level to what is available and set it
+//    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+//
+//void OpenGLRenderer::readPixelsTexture2D_impl(TextureFormat format, int width, int height, int numChannels,
+//                                   std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    CHECK_ERROR(glGetTextureImage(opengltex->mHandle /*tex*/, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * numChannels, &data[0]));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+//
+//void OpenGLRenderer::writePixelsTexture2D_impl(TextureFormat format, int width, int height,
+//                                                  const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//}
+//
+//void OpenGLRenderer::createTexture3D_impl(TextureFormat format, TextureWrapMode wrapMode,
+//                                             TextureFilterMode filterMode, int width,
+//                               int height, int depth, const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glGenTextures(1, &opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, opengltex->mHandle /**tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]));
+//
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode));
+//
+//    // clamp the requested anisotropic filtering level to what is available and set it
+//    CHECK_ERROR(glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
+//}
+//
+//void OpenGLRenderer::destroyTexture3D_impl(TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glDeleteTextures(1, &opengltex->mHandle /*tex*/));
+//}
+//
+//void OpenGLRenderer::updateTexture3D_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D,opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, openglWrapMode));
+//
+//    // Determine how many levels of anisotropic filtering are available
+//    float aniso = 0.0f;
+//    CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
+//
+//    // clamp the requested anisotropic filtering level to what is available and set it
+//    CHECK_ERROR(glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)anisoLevel, 1.0f, aniso)));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
+//}
+//
+//void OpenGLRenderer::readPixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
+//                                                 int numChannels,
+//                                   std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    CHECK_ERROR(glGetTextureImage(opengltex->mHandle /*tex*/, 0, openglFormat, GL_UNSIGNED_BYTE, width * height * depth * numChannels, &data[0]));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
+//}
+//
+//void OpenGLRenderer::writePixelsTexture3D_impl(TextureFormat format, int width, int height, int depth,
+//                                    const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    CHECK_ERROR(glTexImage3D(GL_TEXTURE_3D, 0, openglFormat, width, height, depth, 0, openglFormat, GL_UNSIGNED_BYTE, &data[0]));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_3D, 0));
+//}
+//
+//void OpenGLRenderer::createCubemap_impl(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode,
+//                                           int width,
+//                             const std::vector<unsigned char> &data, TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glGenTextures(1, &opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, opengltex->mHandle /* *tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    for (unsigned int i = 0; i < 6; i++)
+//    {
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
+//                     GL_UNSIGNED_BYTE, data.data()));
+//    }
+//
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//}
+//
+//void OpenGLRenderer::destroyCubemap_impl(TextureHandle* tex /*unsigned int* tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glDeleteTextures(1, &opengltex->mHandle /*tex*/));
+//}
+//
+//void OpenGLRenderer::updateCubemap_impl(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, opengltex->mHandle /*tex*/));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
+//                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//}
+//
+//void OpenGLRenderer::readPixelsCubemap_impl(TextureFormat format, int width, int numChannels,
+//                                               std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    for (unsigned int i = 0; i < 6; i++)
+//    {
+//        CHECK_ERROR(glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE,
+//                      &data[i * width * width * numChannels]));
+//    }
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//}
+//
+//void OpenGLRenderer::writePixelsCubemap_impl(TextureFormat format, int width, const std::vector<unsigned char> &data,
+//    TextureHandle* tex /*unsigned int tex*/)
+//{
+//    OpenGLTextureHandle* opengltex = static_cast<OpenGLTextureHandle*>(tex);
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, opengltex->mHandle /*tex*/));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//
+//    for (unsigned int i = 0; i < 6; i++)
+//    {
+//        CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, width, width, 0, openglFormat,
+//                     GL_UNSIGNED_BYTE, data.data()));
+//    }
+//
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+//}
+
+//void OpenGLRenderer::createRenderTextureTargets_impl(RenderTextureTargets *targets, TextureFormat format,
+//                                                        TextureWrapMode wrapMode,
+//                                          TextureFilterMode filterMode, int width, int height)
+//{
+//    // generate fbo (color + depth)
+//    CHECK_ERROR(glGenFramebuffers(1, &(targets->mMainFBO)));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mColorTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mColorTex));
+//
+//    GLenum openglFormat = getTextureFormat(format);
+//    // GLint openglWrapMode = getTextureWrapMode(wrapMode);
+//    // GLint openglFilterMode = getTextureFilterMode(filterMode);
+//
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, width, height, 0, openglFormat, GL_UNSIGNED_BYTE, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//
+//    // CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D);
+//
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//    //     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//
+//    // float aniso = 0.0f;
+//    // CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
+//
+//    CHECK_ERROR(glGenTextures(1, &(targets->mDepthTex)));
+//    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, targets->mDepthTex));
+//    CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+//    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//    //     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
+//    // CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+//
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, targets->mColorTex, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, targets->mDepthTex, 0));
+//
+//    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+//    unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
+//    CHECK_ERROR(glDrawBuffers(1, mainAttachments));
+//
+//    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+//
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//}
+//
+//void OpenGLRenderer::destroyRenderTextureTargets_impl(RenderTextureTargets *targets)
+//{
+//    // detach textures from their framebuffer
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, targets->mMainFBO));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0));
+//    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+//
+//    // delete frambuffers
+//    CHECK_ERROR(glDeleteFramebuffers(1, &(targets->mMainFBO)));
+//
+//    // delete textures
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mColorTex)));
+//    CHECK_ERROR(glDeleteTextures(1, &(targets->mDepthTex)));
+//}
 
 void OpenGLRenderer::createTerrainChunk_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                                   const std::vector<float> &texCoords, int vertexCount, unsigned int *vao,
@@ -1376,35 +1285,41 @@ void OpenGLRenderer::updateTerrainChunk_impl(const std::vector<float> &vertices,
 }
 
 void OpenGLRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
-                          const std::vector<float> &texCoords, unsigned int *vao, unsigned int *vbo0,
-                          unsigned int *vbo1, unsigned int *vbo2, unsigned int *model_vbo, unsigned int *color_vbo)
+                          const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
+    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
 {
+    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
+    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
+    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
+    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
+    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
+
     CHECK_ERROR(glGenVertexArrays(1, vao));
     CHECK_ERROR(glBindVertexArray(*vao));
-    CHECK_ERROR(glGenBuffers(1, vbo0));      // vertex vbo
-    CHECK_ERROR(glGenBuffers(1, vbo1));      // normals vbo
-    CHECK_ERROR(glGenBuffers(1, vbo2));      // texcoords vbo
-    CHECK_ERROR(glGenBuffers(1, model_vbo)); // instance model vbo
-    CHECK_ERROR(glGenBuffers(1, color_vbo)); // instance color vbo
+    CHECK_ERROR(glGenBuffers(1, &openglvbo0->mBuffer));      // vertex vbo
+    CHECK_ERROR(glGenBuffers(1, &openglvbo1->mBuffer));      // normals vbo
+    CHECK_ERROR(glGenBuffers(1, &openglvbo2->mBuffer));      // texcoords vbo
+    CHECK_ERROR(glGenBuffers(1, &openglmodel->mBuffer)); // instance model vbo
+    CHECK_ERROR(glGenBuffers(1, &openglcolor->mBuffer)); // instance color vbo
 
     CHECK_ERROR(glBindVertexArray(*vao));
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *vbo0));
+    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo0->mBuffer));
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW));
     CHECK_ERROR(glEnableVertexAttribArray(0));
     CHECK_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
 
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *vbo1));
+    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo1->mBuffer));
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW));
     CHECK_ERROR(glEnableVertexAttribArray(1));
     CHECK_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
 
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *vbo2));
+    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo2->mBuffer));
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW));
     CHECK_ERROR(glEnableVertexAttribArray(2));
     CHECK_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0));
 
     // instancing model matrices vbo
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *model_vbo));
+    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglmodel->mBuffer));
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW));
     // set attribute pointers for matrix (4 times vec4)
     CHECK_ERROR(glEnableVertexAttribArray(3));
@@ -1422,7 +1337,7 @@ void OpenGLRenderer::createMesh_impl(const std::vector<float> &vertices, const s
     CHECK_ERROR(glVertexAttribDivisor(6, 1));
 
     // instancing colors vbo
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *color_vbo));
+    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglcolor->mBuffer));
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW));
     CHECK_ERROR(glEnableVertexAttribArray(7));
     CHECK_ERROR(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void *)0));
@@ -1432,14 +1347,20 @@ void OpenGLRenderer::createMesh_impl(const std::vector<float> &vertices, const s
     CHECK_ERROR(glBindVertexArray(0));
 }
 
-void OpenGLRenderer::destroyMesh_impl(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1, unsigned int *vbo2,
-                           unsigned int *model_vbo, unsigned int *color_vbo)
+void OpenGLRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
 {
-    CHECK_ERROR(glDeleteBuffers(1, vbo0));
-    CHECK_ERROR(glDeleteBuffers(1, vbo1));
-    CHECK_ERROR(glDeleteBuffers(1, vbo2));
-    CHECK_ERROR(glDeleteBuffers(1, model_vbo));
-    CHECK_ERROR(glDeleteBuffers(1, color_vbo));
+    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
+    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
+    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
+    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
+    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
+
+    CHECK_ERROR(glDeleteBuffers(1, &openglvbo0->mBuffer));
+    CHECK_ERROR(glDeleteBuffers(1, &openglvbo1->mBuffer));
+    CHECK_ERROR(glDeleteBuffers(1, &openglvbo2->mBuffer));
+    CHECK_ERROR(glDeleteBuffers(1, &openglmodel->mBuffer));
+    CHECK_ERROR(glDeleteBuffers(1, &openglcolor->mBuffer));
 
     CHECK_ERROR(glDeleteVertexArrays(1, vao));
 }

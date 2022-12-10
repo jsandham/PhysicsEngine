@@ -48,7 +48,6 @@ class Texture2D : public Texture
     void setPixel(int x, int y, const Color32 &color);
 
     void create() override;
-    void destroy() override;
     void update() override;
     void readPixels() override;
     void writePixels() override;

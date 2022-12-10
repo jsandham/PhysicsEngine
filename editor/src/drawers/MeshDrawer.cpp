@@ -13,7 +13,8 @@ MeshDrawer::MeshDrawer()
     mWireframeOn = false;
     mResetModelMatrix = false;
 
-    Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    //Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
+    mFBO = Framebuffer::create(1000, 1000);
 
     Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
 
@@ -22,6 +23,7 @@ MeshDrawer::MeshDrawer()
 
 MeshDrawer::~MeshDrawer()
 {
+    delete mFBO;
 }
 
 void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
@@ -131,10 +133,14 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
         shader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
-    Renderer::getRenderer()->bindFramebuffer(mFBO);
-    Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
-    Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    //Renderer::getRenderer()->bindFramebuffer(mFBO);
+    //Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
+    //Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
+    mFBO->bind();
+    mFBO->setViewport(0, 0, 1000, 1000);
+    mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+    mFBO->clearDepth(1.0f);
 
     shader->setInt("wireframe", 1);
 
@@ -147,7 +153,8 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
         Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
     }
 
-    Renderer::getRenderer()->unbindFramebuffer();
+    //Renderer::getRenderer()->unbindFramebuffer();
+    mFBO->unbind();
 
     if (ImGui::BeginChild("MeshPreviewWindow",
                           ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
@@ -192,7 +199,7 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
 
         // ImGui::GetForegroundDrawList()->AddRect(contentMin, contentMax, 0xFFFF0000);
 
-        ImGui::Image((void *)(intptr_t)mColor,
+        ImGui::Image((void *)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
                      ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                      ImVec2(0, 0));
     }

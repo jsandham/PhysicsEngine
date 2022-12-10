@@ -6,6 +6,8 @@ using namespace PhysicsEngine;
 
 Texture3D::Texture3D(World *world, const Id &id) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex2D;
 
     mWidth = 0;
@@ -23,6 +25,8 @@ Texture3D::Texture3D(World *world, const Id &id) : Texture(world, id)
 
 Texture3D::Texture3D(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex3D;
 
     mWidth = 0;
@@ -40,6 +44,8 @@ Texture3D::Texture3D(World *world, const Guid &guid, const Id &id) : Texture(wor
 
 Texture3D::Texture3D(World *world, const Id &id, int width, int height, int depth, int numChannels) : Texture(world, id)
 {
+    mTex = TextureHandle::create();
+
     mDimension = TextureDimension::Tex3D;
 
     mWidth = width;
@@ -59,6 +65,7 @@ Texture3D::Texture3D(World *world, const Id &id, int width, int height, int dept
 
 Texture3D::~Texture3D()
 {
+    delete mTex;
 }
 
 void Texture3D::serialize(YAML::Node &out) const
@@ -165,21 +172,9 @@ void Texture3D::create()
         return;
     }
 
-    Renderer::getRenderer()->createTexture3D(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData, &mTex);
+    //mTex->create(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData);
 
     mCreated = true;
-}
-
-void Texture3D::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroyTexture3D(&mTex);
-
-    mCreated = false;
 }
 
 void Texture3D::update()
@@ -189,17 +184,17 @@ void Texture3D::update()
         return;
     }
 
-    Renderer::getRenderer()->updateTexture3D(mWrapMode, mFilterMode, mAnisoLevel, mTex);
+    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
 
     mUpdateRequired = false;
 }
 
 void Texture3D::readPixels()
 {
-    Renderer::getRenderer()->readPixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mNumChannels, mRawTextureData, mTex);
+    mTex->readPixels(mRawTextureData);
 }
 
 void Texture3D::writePixels()
 {
-    Renderer::getRenderer()->writePixelsTexture3D(mFormat, mWidth, mHeight, mDepth, mRawTextureData, mTex);
+    mTex->writePixels(mRawTextureData);
 }

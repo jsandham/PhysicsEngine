@@ -7,21 +7,21 @@
 
 namespace PhysicsEngine
 {
-	class RenderContextOpenGL : public RenderContext
+	class OpenGLRenderContext : public RenderContext
 	{
 	private:
 		HGLRC mOpenGLRC;
 		HDC mWindowDC;
 
 	public:
-		RenderContextOpenGL(void* window);
-		~RenderContextOpenGL();
+		OpenGLRenderContext(void* window);
+		~OpenGLRenderContext();
 
 		void present();
 		void turnVsyncOn();
 		void turnVsyncOff();
 
-		static RenderContextOpenGL* get() { return (RenderContextOpenGL*)sContext; }
+		static OpenGLRenderContext* get() { return (OpenGLRenderContext*)sContext; }
 
 	private:
 		static void SetSwapInterval(int interval);
