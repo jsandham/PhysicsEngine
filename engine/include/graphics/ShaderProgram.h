@@ -33,10 +33,9 @@ namespace PhysicsEngine
     struct ShaderUniform
     {
         char mData[64];
-        std::string mName;       // variable name in GLSL (including block name if applicable)
+        std::string mName;       // variable name (including block name if applicable)
         ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-        TextureHandle *mTex;
-        //int mTex;                // if data stores a texture id, this is the texture handle
+        TextureHandle *mTex; // if data stores a texture id, this is the texture handle
         unsigned int mUniformId; // integer hash of uniform name
 
         std::string getShortName() const
@@ -66,6 +65,7 @@ namespace PhysicsEngine
 	class ShaderProgram
 	{
       protected:
+        std::string mName;
         std::string mVertex;
         std::string mFragment;
         std::string mGeometry;
@@ -81,8 +81,8 @@ namespace PhysicsEngine
         std::string getGeometryShader() const;
         ShaderStatus getStatus() const;
 
-        virtual void load(const std::string &vertex, const std::string &fragment, const std::string &geometry) = 0;
-        virtual void load(const std::string &vertex, const std::string &fragment) = 0;
+        virtual void load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry) = 0;
+        virtual void load(const std::string& name, const std::string &vertex, const std::string &fragment) = 0;
         virtual void compile() = 0;
         virtual void bind() = 0;
         virtual void unbind() = 0;
@@ -129,7 +129,6 @@ namespace PhysicsEngine
         virtual glm::mat2 getMat2(const char *name) const = 0;
         virtual glm::mat3 getMat3(const char *name) const = 0;
         virtual glm::mat4 getMat4(const char *name) const = 0;
-        virtual int getTexture2D(const char *name, int texUnit) const = 0;
         
         virtual bool getBool(int nameLocation) const = 0;
         virtual int getInt(int nameLocation) const = 0;
@@ -142,7 +141,6 @@ namespace PhysicsEngine
         virtual glm::mat2 getMat2(int nameLocation) const = 0;
         virtual glm::mat3 getMat3(int nameLocation) const = 0;
         virtual glm::mat4 getMat4(int nameLocation) const = 0;
-        virtual int getTexture2D(int nameLocation, int texUnit) const = 0;
 
         virtual void *getHandle() = 0;
 

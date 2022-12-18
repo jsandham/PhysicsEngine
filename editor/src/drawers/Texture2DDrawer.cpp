@@ -87,10 +87,10 @@ Texture2DDrawer::Texture2DDrawer()
     mProgramB = ShaderProgram::create();
     mProgramA = ShaderProgram::create();
 
-    mProgramR->load(vertexShader, fragmentShaderR);
-    mProgramG->load(vertexShader, fragmentShaderG);
-    mProgramB->load(vertexShader, fragmentShaderB);
-    mProgramA->load(vertexShader, fragmentShaderA);
+    mProgramR->load("R",vertexShader, fragmentShaderR);
+    mProgramG->load("G",vertexShader, fragmentShaderG);
+    mProgramB->load("B",vertexShader, fragmentShaderB);
+    mProgramA->load("A",vertexShader, fragmentShaderA);
 
     mProgramR->compile();
     mProgramG->compile();

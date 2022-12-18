@@ -11,8 +11,8 @@ class DirectXShaderProgram : public ShaderProgram
     DirectXShaderProgram();
     ~DirectXShaderProgram();
 
-    void load(const std::string &vertex, const std::string &fragment, const std::string &geometry) override;
-    void load(const std::string &vertex, const std::string &fragment) override;
+    void load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry) override;
+    void load(const std::string& name, const std::string &vertex, const std::string &fragment) override;
     void compile() override;
     void bind() override;
     void unbind() override;
@@ -59,7 +59,6 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(const char *name) const override;
     glm::mat3 getMat3(const char *name) const override;
     glm::mat4 getMat4(const char *name) const override;
-    int getTexture2D(const char *name, int texUnit) const override;
 
     bool getBool(int nameLocation) const override;
     int getInt(int nameLocation) const override;
@@ -72,7 +71,6 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int nameLocation) const override;
     glm::mat3 getMat3(int nameLocation) const override;
     glm::mat4 getMat4(int nameLocation) const override;
-    int getTexture2D(int nameLocation, int texUnit) const override;
 
     void *getHandle() override;
 };

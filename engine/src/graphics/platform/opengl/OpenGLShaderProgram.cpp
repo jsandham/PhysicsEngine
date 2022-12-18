@@ -18,16 +18,18 @@ OpenGLShaderProgram::~OpenGLShaderProgram()
     CHECK_ERROR(glDeleteProgram(mHandle));
 }
 
-void OpenGLShaderProgram::load(const std::string &vertex, const std::string &fragment, const std::string &geometry)
+void OpenGLShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment,
+                               const std::string &geometry)
 {
+    mName = name;
     mVertex = vertex;
     mFragment = fragment;
     mGeometry = geometry;
 }
 
-void OpenGLShaderProgram::load(const std::string &vertex, const std::string &fragment)
+void OpenGLShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment)
 {
-    this->load(vertex, fragment, "");
+    this->load(name, vertex, fragment, "");
 }
 
 void OpenGLShaderProgram::compile()
@@ -50,8 +52,8 @@ void OpenGLShaderProgram::compile()
     {
         CHECK_ERROR(glGetShaderInfoLog(vertexShaderObj, 512, NULL, mStatus.mVertexCompileLog));
 
-        //std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
-        //Log::error(message.c_str());
+        std::string message = "Shader: Vertex shader compilation failed (" + mName + ")\n";
+        Log::error(message.c_str());
     }
 
     // Compile fragment shader
@@ -63,8 +65,8 @@ void OpenGLShaderProgram::compile()
     {
         CHECK_ERROR(glGetShaderInfoLog(fragmentShaderObj, 512, NULL, mStatus.mFragmentCompileLog));
 
-        //std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
-        //Log::error(message.c_str());
+        std::string message = "Shader: Fragment shader compilation failed (" + mName + ")\n";
+        Log::error(message.c_str());
     }
 
     // Compile geometry shader
@@ -79,13 +81,10 @@ void OpenGLShaderProgram::compile()
         {
             CHECK_ERROR(glGetShaderInfoLog(geometryShaderObj, 512, NULL, mStatus.mGeometryCompileLog));
 
-            //std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
-            //Log::error(message.c_str());
+            std::string message = "Shader: Geometry shader compilation failed (" + mName + ")\n";
+            Log::error(message.c_str());
         }
     }
-
-    // Create shader program
-    //*program = glCreateProgram();
 
     // Attach shader objects to shader program
     CHECK_ERROR(glAttachShader(mHandle, vertexShaderObj));
@@ -102,8 +101,8 @@ void OpenGLShaderProgram::compile()
     {
         CHECK_ERROR(glGetProgramInfoLog(mHandle, 512, NULL, mStatus.mLinkLog));
 
-        //std::string message = "Shader: " + name + " program linking failed\n";
-        //Log::error(message.c_str());
+        std::string message = "Shader: " + mName + " program linking failed\n";
+        Log::error(message.c_str());
     }
 
     // Detach shader objects from shader program
@@ -161,7 +160,7 @@ std::vector<ShaderUniform> OpenGLShaderProgram::getUniforms() const
 
     std::vector<ShaderUniform> uniforms(uniformCount);
 
-    for (int j = 0; j < uniformCount; j++)
+    for (size_t j = 0; j < uniforms.size(); j++)
     {
         Uniform uniform;
         CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
@@ -203,7 +202,6 @@ std::vector<ShaderUniform> OpenGLShaderProgram::getUniforms() const
         }
 
         uniforms[j].mUniformId = 0;
-        /*uniforms[j].mTex = -1;*/
         uniforms[j].mTex = nullptr;
         memset(uniforms[j].mData, '\0', 64);
     }
@@ -373,7 +371,14 @@ void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>
     for (int i = 0; i < count; i++)
     {
         CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(texs[i]->getHandle())));
+        if (texs[i] != nullptr)
+        {
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i]->getHandle())));           
+        }
+        else
+        {
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+        }
     }
 }
 
@@ -425,11 +430,6 @@ glm::mat3 OpenGLShaderProgram::getMat3(const char *name) const
 glm::mat4 OpenGLShaderProgram::getMat4(const char *name) const
 {
     return this->getMat4(Renderer::getRenderer()->findUniformLocation(name, mHandle));
-}
-
-int OpenGLShaderProgram::getTexture2D(const char *name, int texUnit) const
-{
-    return this->getTexture2D(Renderer::getRenderer()->findUniformLocation(name, mHandle), texUnit);
 }
 
 bool OpenGLShaderProgram::getBool(int nameLocation) const
@@ -525,15 +525,6 @@ glm::mat4 OpenGLShaderProgram::getMat4(int nameLocation) const
     CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::mat4), &value[0][0]));
 
     return value;
-}
-
-int OpenGLShaderProgram::getTexture2D(int nameLocation, int texUnit) const
-{
-    int tex = -1;
-    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-    CHECK_ERROR(glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex));
-
-    return tex;
 }
 
 void *OpenGLShaderProgram::getHandle()

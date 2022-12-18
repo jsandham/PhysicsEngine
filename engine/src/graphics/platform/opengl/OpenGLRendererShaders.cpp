@@ -28,24 +28,26 @@ OpenGLRendererShaders::OpenGLRendererShaders()
     mGizmoShader = ShaderProgram::create();
     mGridShader = ShaderProgram::create();
 
-    mSSAOShader->load(getSSAOVertexShader(), getSSAOFragmentShader());
-    mGeometryShader->load(getGeometryVertexShader(), getGeometryFragmentShader());
-    mDepthShader->load(getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
-    mDepthCubemapShader->load(getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(), getShadowDepthCubemapGeometryShader());
-    mScreenQuadShader->load(getScreenQuadVertexShader(), getScreenQuadFragmentShader());
-    mSpriteShader->load(getSpriteVertexShader(), getSpriteFragmentShader());
-    mGBufferShader->load(getGBufferVertexShader(), getGBufferFragmentShader());
-    mColorShader->load(getColorVertexShader(), getColorFragmentShader());
-    mColorInstancedShader->load(getColorInstancedVertexShader(), getColorInstancedFragmentShader());
-    mNormalShader->load(getNormalVertexShader(), getNormalFragmentShader());
-    mNormalInstancedShader->load(getNormalInstancedVertexShader(), getNormalInstancedFragmentShader());
-    mPositionShader->load(getPositionVertexShader(), getPositionFragmentShader());
-    mPositionInstancedShader->load(getPositionInstancedVertexShader(), getPositionInstancedFragmentShader());
-    mLinearDepthShader->load(getLinearDepthVertexShader(), getLinearDepthFragmentShader());
-    mLinearDepthInstancedShader->load(getLinearDepthInstancedVertexShader(), getLinearDepthInstancedFragmentShader());
-    mLineShader->load(getLineVertexShader(), getLineFragmentShader());
-    mGizmoShader->load(getGizmoVertexShader(), getGizmoFragmentShader());
-    mGridShader->load(getGridVertexShader(), getGridFragmentShader());
+    mSSAOShader->load("SSAO", getSSAOVertexShader(), getSSAOFragmentShader());
+    mGeometryShader->load("Geometry", getGeometryVertexShader(), getGeometryFragmentShader());
+    mDepthShader->load("DepthMap", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
+    mDepthCubemapShader->load("DepthCubemap", getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(),
+                              getShadowDepthCubemapGeometryShader());
+    mScreenQuadShader->load("ScreenQuad", getScreenQuadVertexShader(), getScreenQuadFragmentShader());
+    mSpriteShader->load("Sprite", getSpriteVertexShader(), getSpriteFragmentShader());
+    mGBufferShader->load("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader());
+    mColorShader->load("Color", getColorVertexShader(), getColorFragmentShader());
+    mColorInstancedShader->load("ColorInstanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader());
+    mNormalShader->load("Normal", getNormalVertexShader(), getNormalFragmentShader());
+    mNormalInstancedShader->load("NormalInstanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader());
+    mPositionShader->load("Position", getPositionVertexShader(), getPositionFragmentShader());
+    mPositionInstancedShader->load("PositionInstanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader());
+    mLinearDepthShader->load("LinearDepth", getLinearDepthVertexShader(), getLinearDepthFragmentShader());
+    mLinearDepthInstancedShader->load("LinearDepthInstanced", getLinearDepthInstancedVertexShader(),
+                                      getLinearDepthInstancedFragmentShader());
+    mLineShader->load("Line", getLineVertexShader(), getLineFragmentShader());
+    mGizmoShader->load("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader());
+    mGridShader->load("Grid", getGridVertexShader(), getGridFragmentShader());
 
     Log::warn("Start compile internal shaders\n");
     mSSAOShader->compile();

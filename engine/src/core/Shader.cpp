@@ -217,7 +217,7 @@ void Shader::preprocess()
 
         // geometryShader = version + defines + shader;
 
-        mPrograms[i]->load(vertexShader, fragmentShader);
+        mPrograms[i]->load(mName, vertexShader, fragmentShader);
         mVariants[i] = variant;
 
         i++;
@@ -636,10 +636,10 @@ glm::mat4 Shader::getMat4(const char *name) const
     return mActiveProgram != nullptr ? mActiveProgram->getMat4(name) : glm::mat4();
 }
 
-int Shader::getTexture2D(const char *name, int texUnit) const
-{
-    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(name, texUnit) : -1;
-}
+//int Shader::getTexture2D(const char *name, int texUnit) const
+//{
+//    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(name, texUnit) : -1;
+//}
 
 bool Shader::getBool(int nameLocation) const
 {
@@ -689,11 +689,6 @@ glm::mat3 Shader::getMat3(int nameLocation) const
 glm::mat4 Shader::getMat4(int nameLocation) const
 {
     return mActiveProgram != nullptr ? mActiveProgram->getMat4(nameLocation) : glm::mat4(0.0f);
-}
-
-int Shader::getTexture2D(int nameLocation, int texUnit) const
-{
-    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(nameLocation, texUnit) : -1;
 }
 
 unsigned int Shader::uniformToId(const char *uniform)

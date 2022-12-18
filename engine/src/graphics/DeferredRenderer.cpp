@@ -62,19 +62,6 @@ static void initializeDeferredRenderer(World *world, DeferredRendererState &stat
     state.mColorShaderModelLoc = state.mColorShaderProgram->findUniformLocation("model");
     state.mColorShaderColorLoc = state.mColorShaderProgram->findUniformLocation("material.color");
 
-    /*state.mGBufferShaderProgram = RendererShaders::getRendererShaders()->getGBufferShader().mProgram;
-    state.mGBufferShaderModelLoc = RendererShaders::getRendererShaders()->getGBufferShader().mModelLoc;
-    state.mGBufferShaderDiffuseTexLoc = RendererShaders::getRendererShaders()->getGBufferShader().mDiffuseTexLoc;
-    state.mGBufferShaderSpecTexLoc = RendererShaders::getRendererShaders()->getGBufferShader().mSpecTexLoc;
-
-    state.mColorShaderProgram = RendererShaders::getRendererShaders()->getColorShader().mProgram;
-    state.mColorShaderModelLoc = RendererShaders::getRendererShaders()->getColorShader().mModelLoc;
-    state.mColorShaderColorLoc = RendererShaders::getRendererShaders()->getColorShader().mColorLoc;
-    state.mColorInstancedShaderProgram = RendererShaders::getRendererShaders()->getColorInstancedShader().mProgram;
-
-    state.mQuadShaderProgram = RendererShaders::getRendererShaders()->getScreenQuadShader().mProgram;
-    state.mQuadShaderTexLoc = RendererShaders::getRendererShaders()->getScreenQuadShader().mTexLoc;*/
-
     Renderer::getRenderer()->createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
 
     Renderer::getRenderer()->createGlobalCameraUniforms(state.mCameraState);
@@ -104,42 +91,28 @@ static void beginDeferredFrame(World *world, Camera *camera, DeferredRendererSta
         RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
-            //Renderer::getRenderer()->bindFramebuffer(renderTexture->getNativeGraphicsMainFBO());
             framebuffer = renderTexture->getNativeGraphicsMainFBO();
         }
         else
         {
-            //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
             framebuffer = camera->getNativeGraphicsMainFBO();
         }
     }
     else
     {
-        //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
         framebuffer = camera->getNativeGraphicsMainFBO();
     }
 
-    //Renderer::getRenderer()->clearFrambufferColor(camera->mBackgroundColor);
-    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    //Renderer::getRenderer()->unbindFramebuffer();
     framebuffer->bind();
-    framebuffer->clearColor(Color::black);
+    framebuffer->clearColor(camera->mBackgroundColor);
     framebuffer->clearDepth(1.0f);
     framebuffer->unbind();
 
-    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
-    //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    //Renderer::getRenderer()->unbindFramebuffer();
     camera->getNativeGraphicsGeometryFBO()->bind();
     camera->getNativeGraphicsGeometryFBO()->clearColor(Color::black);
     camera->getNativeGraphicsGeometryFBO()->clearDepth(1.0f);
     camera->getNativeGraphicsGeometryFBO()->unbind();
 
-    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
-    //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
-    //Renderer::getRenderer()->unbindFramebuffer();
     camera->getNativeGraphicsColorPickingFBO()->bind();
     camera->getNativeGraphicsColorPickingFBO()->clearColor(Color::black);
     camera->getNativeGraphicsColorPickingFBO()->clearDepth(1.0f);
@@ -151,10 +124,9 @@ static void geometryPass(World *world, Camera *camera, DeferredRendererState &st
                                  const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
-    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsGeometryFBO());
     camera->getNativeGraphicsGeometryFBO()->bind();
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    camera->getNativeGraphicsGeometryFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                                        camera->getViewport().mWidth, camera->getViewport().mHeight);
     
     state.mGBufferShaderProgram->bind();
     //Renderer::getRenderer()->use(state.mGBufferShaderProgram);
@@ -197,17 +169,15 @@ static void geometryPass(World *world, Camera *camera, DeferredRendererState &st
         }
     }
 
-    //Renderer::getRenderer()->unbindFramebuffer();
     camera->getNativeGraphicsGeometryFBO()->unbind();
 }
 
 static void lightingPass(World *world, Camera *camera, DeferredRendererState &state,
                                  const std::vector<RenderObject> &renderObjects)
 {
-    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsMainFBO());
     camera->getNativeGraphicsMainFBO()->bind();
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                                    camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     //Renderer::getRenderer()->use(state.mSimpleLitDeferredShaderProgram);
 
@@ -230,7 +200,6 @@ static void lightingPass(World *world, Camera *camera, DeferredRendererState &st
     //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     //glBindVertexArray(0);
 
-    //Renderer::getRenderer()->unbindFramebuffer();
     camera->getNativeGraphicsMainFBO()->unbind();
 }
 
@@ -274,10 +243,10 @@ static void renderColorPickingDeferred(World *world, Camera *camera, DeferredRen
         }
     }
 
-    //Renderer::getRenderer()->bindFramebuffer(camera->getNativeGraphicsColorPickingFBO());
     camera->getNativeGraphicsColorPickingFBO()->bind();
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    camera->getNativeGraphicsColorPickingFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                                            camera->getViewport().mWidth,
+                                                            camera->getViewport().mHeight);
 
     color = 1;
     int modelIndex = 0;
@@ -297,7 +266,6 @@ static void renderColorPickingDeferred(World *world, Camera *camera, DeferredRen
                 color++;
             }
 
-            //Renderer::getRenderer()->use(state.mColorInstancedShaderProgram);
             state.mColorInstancedShaderProgram->bind();
             Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
@@ -316,17 +284,15 @@ static void renderColorPickingDeferred(World *world, Camera *camera, DeferredRen
 
             color++;
 
-            //Renderer::getRenderer()->use(state.mColorShaderProgram);
             state.mColorShaderProgram->bind();
-            Renderer::getRenderer()->setMat4(state.mColorShaderModelLoc, models[modelIndex]);
-            Renderer::getRenderer()->setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+            state.mColorShaderProgram->setMat4(state.mColorShaderModelLoc, models[modelIndex]);
+            state.mColorShaderProgram->setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
 
             Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }
 
-    //Renderer::getRenderer()->unbindFramebuffer();
     camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 

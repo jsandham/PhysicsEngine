@@ -12,14 +12,14 @@ DirectXShaderProgram ::~DirectXShaderProgram()
 
 }
 
-void DirectXShaderProgram::load(const std::string &vertex, const std::string &fragment, const std::string &geometry)
+void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry)
 {
 
 }
 
-void DirectXShaderProgram::load(const std::string &vertex, const std::string &fragment)
+void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment)
 {
-    this->load(vertex, fragment, "");
+    this->load(name, vertex, fragment, "");
 }
 
 void DirectXShaderProgram::compile()
@@ -219,11 +219,6 @@ glm::mat4 DirectXShaderProgram::getMat4(const char *name) const
     return glm::mat4();
 }
 
-int DirectXShaderProgram::getTexture2D(const char *name, int texUnit) const
-{
-    return -1;
-}
-
 bool DirectXShaderProgram::getBool(int nameLocation) const 
 {
     return false;
@@ -277,11 +272,6 @@ glm::mat3 DirectXShaderProgram::getMat3(int nameLocation) const
 glm::mat4 DirectXShaderProgram::getMat4(int nameLocation) const
 {
     return glm::mat4();
-}
-
-int DirectXShaderProgram::getTexture2D(int nameLocation, int texUnit) const
-{
-    return -1;
 }
 
 void *DirectXShaderProgram::getHandle()

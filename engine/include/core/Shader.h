@@ -148,7 +148,6 @@ class Shader : public Asset
     glm::mat2 getMat2(const char *name) const;
     glm::mat3 getMat3(const char *name) const;
     glm::mat4 getMat4(const char *name) const;
-    int getTexture2D(const char *name, int texUnit) const;
 
     bool getBool(int nameLocation) const;
     int getInt(int nameLocation) const;
@@ -160,7 +159,6 @@ class Shader : public Asset
     glm::mat2 getMat2(int nameLocation) const;
     glm::mat3 getMat3(int nameLocation) const;
     glm::mat4 getMat4(int nameLocation) const;
-    int getTexture2D(int nameLocation, int texUnit) const;
 
     static unsigned int uniformToId(const char* property);
 };
