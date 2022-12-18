@@ -3,6 +3,8 @@
 
 #include "InspectorDrawer.h"
 #include <graphics/Framebuffer.h>
+#include <graphics/ShaderProgram.h>
+#include <graphics/TextureHandle.h>
 
 namespace PhysicsEditor
 {
@@ -17,11 +19,19 @@ class Texture2DDrawer : public InspectorDrawer
     unsigned int mVAO;
     unsigned int mVBO;
 
-    unsigned int mProgramR;
-    unsigned int mProgramG;
-    unsigned int mProgramB;
-    unsigned int mProgramA;
+    ShaderProgram* mProgramR;
+    ShaderProgram* mProgramG;
+    ShaderProgram* mProgramB;
+    ShaderProgram* mProgramA;
+    //unsigned int mProgramR;
+    //unsigned int mProgramG;
+    //unsigned int mProgramB;
+    //unsigned int mProgramA;
 
+    //TextureHandle* mTexLocR;
+    //TextureHandle* mTexLocG;
+    //TextureHandle* mTexLocB;
+    //TextureHandle* mTexLocA;
     int mTexLocR;
     int mTexLocG;
     int mTexLocB;

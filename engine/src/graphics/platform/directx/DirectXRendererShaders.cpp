@@ -2,187 +2,177 @@
 
 using namespace PhysicsEngine;
 
-void DirectXRendererShaders::init_impl()
+DirectXRendererShaders::DirectXRendererShaders()
 {
+    mSSAOShader = ShaderProgram::create();
+    mGeometryShader = ShaderProgram::create();
+    mDepthShader = ShaderProgram::create();
+    mDepthCubemapShader = ShaderProgram::create();
+    mScreenQuadShader = ShaderProgram::create();
+    mSpriteShader = ShaderProgram::create();
+    mGBufferShader = ShaderProgram::create();
+    mColorShader = ShaderProgram::create();
+    mColorInstancedShader = ShaderProgram::create();
+    mNormalShader = ShaderProgram::create();
+    mNormalInstancedShader = ShaderProgram::create();
+    mPositionShader = ShaderProgram::create();
+    mPositionInstancedShader = ShaderProgram::create();
+    mLinearDepthShader = ShaderProgram::create();
+    mLinearDepthInstancedShader = ShaderProgram::create();
+    mLineShader = ShaderProgram::create();
+    mGizmoShader = ShaderProgram::create();
+    mGridShader = ShaderProgram::create();
 
+    /*mSSAOShader->load(getSSAOVertexShader(), getSSAOFragmentShader());
+    mGeometryShader->load(getGeometryVertexShader(), getGeometryFragmentShader());
+    mDepthShader->load(getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
+    mDepthCubemapShader->load(getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(),
+                              getShadowDepthCubemapGeometryShader());
+    mScreenQuadShader->load(getScreenQuadVertexShader(), getScreenQuadFragmentShader());
+    mSpriteShader->load(getSpriteVertexShader(), getSpriteFragmentShader());
+    mGBufferShader->load(getGBufferVertexShader(), getGBufferFragmentShader());
+    mColorShader->load(getColorVertexShader(), getColorFragmentShader());
+    mColorInstancedShader->load(getColorInstancedVertexShader(), getColorInstancedFragmentShader());
+    mNormalShader->load(getNormalVertexShader(), getNormalFragmentShader());
+    mNormalInstancedShader->load(getNormalInstancedVertexShader(), getNormalInstancedFragmentShader());
+    mPositionShader->load(getPositionVertexShader(), getPositionFragmentShader());
+    mPositionInstancedShader->load(getPositionInstancedVertexShader(), getPositionInstancedFragmentShader());
+    mLinearDepthShader->load(getLinearDepthVertexShader(), getLinearDepthFragmentShader());
+    mLinearDepthInstancedShader->load(getLinearDepthInstancedVertexShader(), getLinearDepthInstancedFragmentShader());
+    mLineShader->load(getLineVertexShader(), getLineFragmentShader());
+    mGizmoShader->load(getGizmoVertexShader(), getGizmoFragmentShader());
+    mGridShader->load(getGridVertexShader(), getGridFragmentShader());
+
+    Log::warn("Start compile shaders\n");
+    mSSAOShader->compile();
+    mGeometryShader->compile();
+    mDepthShader->compile();
+    mDepthCubemapShader->compile();
+    mScreenQuadShader->compile();
+    mSpriteShader->compile();
+    mGBufferShader->compile();
+    mColorShader->compile();
+    mColorInstancedShader->compile();
+    mNormalShader->compile();
+    mNormalInstancedShader->compile();
+    mPositionShader->compile();
+    mPositionInstancedShader->compile();
+    mLinearDepthShader->compile();
+    mLinearDepthInstancedShader->compile();
+    mLineShader->compile();
+    mGizmoShader->compile();
+    mGridShader->compile();
+    Log::warn("End compile shaders\n");*/
 }
 
-//void DirectXRendererShaders::compileSSAOShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileGeometryShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileDepthShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileDepthCubemapShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileScreenQuadShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileSpriteShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileGBufferShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileColorShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileColorInstancedShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileNormalShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileNormalInstancedShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compilePositionShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compilePositionInstancedShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileLinearDepthShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileLinearDepthInstancedShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileLineShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileGizmoShader_impl()
-//{
-//
-//}
-//
-//void DirectXRendererShaders::compileGridShader_impl()
-//{
-//
-//}
+DirectXRendererShaders::~DirectXRendererShaders()
+{
+    delete mSSAOShader;
+    delete mGeometryShader;
+    delete mDepthShader;
+    delete mDepthCubemapShader;
+    delete mScreenQuadShader;
+    delete mSpriteShader;
+    delete mGBufferShader;
+    delete mColorShader;
+    delete mColorInstancedShader;
+    delete mNormalShader;
+    delete mNormalInstancedShader;
+    delete mPositionShader;
+    delete mPositionInstancedShader;
+    delete mLinearDepthShader;
+    delete mLinearDepthInstancedShader;
+    delete mLineShader;
+    delete mGizmoShader;
+    delete mGridShader;
+}
 
-SSAOShader DirectXRendererShaders::getSSAOShader_impl()
+ShaderProgram *DirectXRendererShaders::getSSAOShader_impl()
 {
 	return mSSAOShader;
 }
 
-GeometryShader DirectXRendererShaders::getGeometryShader_impl()
+ShaderProgram *DirectXRendererShaders::getGeometryShader_impl()
 {
 	return mGeometryShader;
 }
 
-DepthShader DirectXRendererShaders::getDepthShader_impl()
+ShaderProgram *DirectXRendererShaders::getDepthShader_impl()
 {
 	return mDepthShader;
 }
 
-DepthCubemapShader DirectXRendererShaders::getDepthCubemapShader_impl()
+ShaderProgram *DirectXRendererShaders::getDepthCubemapShader_impl()
 {
 	return mDepthCubemapShader;
 }
 
-ScreenQuadShader DirectXRendererShaders::getScreenQuadShader_impl()
+ShaderProgram *DirectXRendererShaders::getScreenQuadShader_impl()
 {
 	return mScreenQuadShader;
 }
 
-SpriteShader DirectXRendererShaders::getSpriteShader_impl()
+ShaderProgram *DirectXRendererShaders::getSpriteShader_impl()
 {
 	return mSpriteShader;
 }
 
-GBufferShader DirectXRendererShaders::getGBufferShader_impl()
+ShaderProgram *DirectXRendererShaders::getGBufferShader_impl()
 {
 	return mGBufferShader;
 }
 
-ColorShader DirectXRendererShaders::getColorShader_impl()
+ShaderProgram *DirectXRendererShaders::getColorShader_impl()
 {
 	return mColorShader;
 }
 
-ColorInstancedShader DirectXRendererShaders::getColorInstancedShader_impl()
+ShaderProgram *DirectXRendererShaders::getColorInstancedShader_impl()
 {
 	return mColorInstancedShader;
 }
 
-NormalShader DirectXRendererShaders::getNormalShader_impl()
+ShaderProgram *DirectXRendererShaders::getNormalShader_impl()
 {
 	return mNormalShader;
 }
 
-NormalInstancedShader DirectXRendererShaders::getNormalInstancedShader_impl()
+ShaderProgram *DirectXRendererShaders::getNormalInstancedShader_impl()
 {
 	return mNormalInstancedShader;
 }
 
-PositionShader DirectXRendererShaders::getPositionShader_impl()
+ShaderProgram *DirectXRendererShaders::getPositionShader_impl()
 {
 	return mPositionShader;
 }
 
-PositionInstancedShader DirectXRendererShaders::getPositionInstancedShader_impl()
+ShaderProgram *DirectXRendererShaders::getPositionInstancedShader_impl()
 {
 	return mPositionInstancedShader;
 }
 
-LinearDepthShader DirectXRendererShaders::getLinearDepthShader_impl()
+ShaderProgram *DirectXRendererShaders::getLinearDepthShader_impl()
 {
 	return mLinearDepthShader;
 }
 
-LinearDepthInstancedShader DirectXRendererShaders::getLinearDepthInstancedShader_impl()
+ShaderProgram *DirectXRendererShaders::getLinearDepthInstancedShader_impl()
 {
 	return mLinearDepthInstancedShader;
 }
 
-LineShader DirectXRendererShaders::getLineShader_impl()
+ShaderProgram *DirectXRendererShaders::getLineShader_impl()
 {
 	return mLineShader;
 }
 
-GizmoShader DirectXRendererShaders::getGizmoShader_impl()
+ShaderProgram *DirectXRendererShaders::getGizmoShader_impl()
 {
 	return mGizmoShader;
 }
 
-GridShader DirectXRendererShaders::getGridShader_impl()
+ShaderProgram *DirectXRendererShaders::getGridShader_impl()
 {
 	return mGridShader;
 }

@@ -80,7 +80,8 @@ struct ForwardRendererState
     glm::mat4 mCascadeOrthoProj[5];
     glm::mat4 mCascadeLightView[5];
 
-    int mDepthShaderProgram;
+    ShaderProgram *mDepthShaderProgram;
+    //int mDepthShaderProgram;
     int mDepthShaderModelLoc;
     int mDepthShaderViewLoc;
     int mDepthShaderProjectionLoc;
@@ -92,7 +93,8 @@ struct ForwardRendererState
     // pointlight cubemap shadow map data
     glm::mat4 mCubeViewProjMatrices[6];
 
-    int mDepthCubemapShaderProgram;
+    ShaderProgram *mDepthCubemapShaderProgram;
+    //int mDepthCubemapShaderProgram;
     int mDepthCubemapShaderLightPosLoc;
     int mDepthCubemapShaderFarPlaneLoc;
     int mDepthCubemapShaderModelLoc;
@@ -103,17 +105,21 @@ struct ForwardRendererState
     int mDepthCubemapShaderCubeViewProjMatricesLoc4;
     int mDepthCubemapShaderCubeViewProjMatricesLoc5;
 
-    int mGeometryShaderProgram;
+    ShaderProgram *mGeometryShaderProgram;
+    //int mGeometryShaderProgram;
     int mGeometryShaderModelLoc;
 
     // color picking
-    int mColorShaderProgram;
-    int mColorInstancedShaderProgram;
+    ShaderProgram *mColorShaderProgram;
+    ShaderProgram *mColorInstancedShaderProgram;
+    //int mColorShaderProgram;
+    //int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
     // ssao
-    int mSsaoShaderProgram;
+    ShaderProgram *mSsaoShaderProgram;
+    //int mSsaoShaderProgram;
     int mSsaoShaderProjectionLoc;
     int mSsaoShaderPositionTexLoc;
     int mSsaoShaderNormalTexLoc;
@@ -121,7 +127,8 @@ struct ForwardRendererState
     int mSsaoShaderSamplesLoc[64];
 
     // sprite
-    int mSpriteShaderProgram;
+    ShaderProgram *mSpriteShaderProgram;
+    //int mSpriteShaderProgram;
     int mSpriteModelLoc;
     int mSpriteViewLoc;
     int mSpriteProjectionLoc;
@@ -131,7 +138,8 @@ struct ForwardRendererState
     // quad
     unsigned int mQuadVAO;
     unsigned int mQuadVBO;
-    int mQuadShaderProgram;
+    ShaderProgram *mQuadShaderProgram;
+    //int mQuadShaderProgram;
     int mQuadShaderTexLoc;
 };
 
@@ -140,25 +148,30 @@ struct DeferredRendererState
     // internal graphics camera state
     CameraUniform mCameraState;
 
-    int mGBufferShaderProgram;
+    ShaderProgram *mGBufferShaderProgram;
+    //int mGBufferShaderProgram;
     int mGBufferShaderModelLoc;
     int mGBufferShaderDiffuseTexLoc;
     int mGBufferShaderSpecTexLoc;
 
-    int mSimpleLitDeferredShaderProgram;
+    ShaderProgram *mSimpleLitDeferredShaderProgram;
+    //int mSimpleLitDeferredShaderProgram;
     int mSimpleLitDeferredShaderViewPosLoc;
     int mSimpleLitDeferredShaderLightLocs[32];
 
     // color picking
-    int mColorShaderProgram;
-    int mColorInstancedShaderProgram;
+    ShaderProgram *mColorShaderProgram;
+    ShaderProgram *mColorInstancedShaderProgram;
+    //int mColorShaderProgram;
+    //int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
     // quad
     unsigned int mQuadVAO;
     unsigned int mQuadVBO;
-    int mQuadShaderProgram;
+    ShaderProgram *mQuadShaderProgram;
+    //int mQuadShaderProgram;
     int mQuadShaderTexLoc;
 };
 
@@ -168,46 +181,58 @@ struct DebugRendererState
     CameraUniform mCameraState;
 
     // normals
-    int mNormalsShaderProgram;
-    int mNormalsInstancedShaderProgram;
+    ShaderProgram *mNormalsShaderProgram;
+    ShaderProgram *mNormalsInstancedShaderProgram;
+    //int mNormalsShaderProgram;
+    //int mNormalsInstancedShaderProgram;
     int mNormalsShaderModelLoc;
 
     // position
-    int mPositionShaderProgram;
-    int mPositionInstancedShaderProgram;
+    ShaderProgram *mPositionShaderProgram;
+    ShaderProgram *mPositionInstancedShaderProgram;
+    //int mPositionShaderProgram;
+    //int mPositionInstancedShaderProgram;
     int mPositionShaderModelLoc;
 
     // linear depth
-    int mLinearDepthShaderProgram;
-    int mLinearDepthInstancedShaderProgram;
+    ShaderProgram *mLinearDepthShaderProgram;
+    ShaderProgram *mLinearDepthInstancedShaderProgram;
+    //int mLinearDepthShaderProgram;
+    //int mLinearDepthInstancedShaderProgram;
     int mLinearDepthShaderModelLoc;
 
     // color picking
-    int mColorShaderProgram;
-    int mColorInstancedShaderProgram;
+    ShaderProgram *mColorShaderProgram;
+    ShaderProgram *mColorInstancedShaderProgram;
+    //int mColorShaderProgram;
+    //int mColorInstancedShaderProgram;
     int mColorShaderModelLoc;
     int mColorShaderColorLoc;
 
     // quad
     unsigned int mQuadVAO;
     unsigned int mQuadVBO;
-    int mQuadShaderProgram;
+    ShaderProgram *mQuadShaderProgram;
+    //int mQuadShaderProgram;
     int mQuadShaderTexLoc;
 };
 
 struct GizmoRendererState
 {
-    int mLineShaderProgram;
+    ShaderProgram *mLineShaderProgram;
+    //int mLineShaderProgram;
     int mLineShaderMVPLoc;
 
-    int mGizmoShaderProgram;
+    ShaderProgram *mGizmoShaderProgram;
+    //int mGizmoShaderProgram;
     int mGizmoShaderModelLoc;
     int mGizmoShaderViewLoc;
     int mGizmoShaderProjLoc;
     int mGizmoShaderColorLoc;
     int mGizmoShaderLightPosLoc;
 
-    int mGridShaderProgram;
+    ShaderProgram *mGridShaderProgram;
+    //int mGridShaderProgram;
     int mGridShaderMVPLoc;
     int mGridShaderColorLoc;
 
@@ -354,8 +379,8 @@ public:
     static void setMat2(int nameLocation, const glm::mat2 &mat);
     static void setMat3(int nameLocation, const glm::mat3 &mat);
     static void setMat4(int nameLocation, const glm::mat4 &mat);
-    static void setTexture2D(int nameLocation, int texUnit, int tex);
-    static void setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs);
+    static void setTexture2D(int nameLocation, int texUnit, TextureHandle* tex);
+    static void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs);
     static bool getBool(int nameLocation, int program);
     static int getInt(int nameLocation, int program);
     static float getFloat(int nameLocation, int program);
@@ -488,8 +513,8 @@ protected:
     virtual void setMat2_impl(int nameLocation, const glm::mat2& mat) = 0;
     virtual void setMat3_impl(int nameLocation, const glm::mat3& mat) = 0;
     virtual void setMat4_impl(int nameLocation, const glm::mat4& mat) = 0;
-    virtual void setTexture2D_impl(int nameLocation, int texUnit, int tex) = 0;
-    virtual void setTexture2Ds_impl(int nameLocation, int* texUnits, int count, int* texs) = 0;
+    virtual void setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex) = 0;
+    virtual void setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) = 0;
     virtual bool getBool_impl(int nameLocation, int program) = 0;
     virtual int getInt_impl(int nameLocation, int program) = 0;
     virtual float getFloat_impl(int nameLocation, int program) = 0;

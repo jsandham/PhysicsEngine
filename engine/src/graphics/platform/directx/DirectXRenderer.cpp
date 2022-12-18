@@ -179,8 +179,8 @@ void DirectXRenderer::setVec4_impl(int nameLocation, const glm::vec4 &vec){}
 void DirectXRenderer::setMat2_impl(int nameLocation, const glm::mat2 &mat){}
 void DirectXRenderer::setMat3_impl(int nameLocation, const glm::mat3 &mat){}
 void DirectXRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat){}
-void DirectXRenderer::setTexture2D_impl(int nameLocation, int texUnit, int tex){}
-void DirectXRenderer::setTexture2Ds_impl(int nameLocation, int *texUnits, int count, int *texs){}
+void DirectXRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex){}
+void DirectXRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs){}
 bool DirectXRenderer::getBool_impl(int nameLocation, int program)
 {
     return false;

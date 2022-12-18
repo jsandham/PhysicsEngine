@@ -32,7 +32,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(id);
 
-    std::vector<ShaderProgram> programs = shader->getPrograms();
+    std::vector<ShaderProgram*> programs = shader->getPrograms();
     std::vector<ShaderUniform> uniforms = shader->getUniforms();
 
     if(ImGui::BeginTable("Shader Info", 2))
@@ -189,24 +189,24 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
         bool linked = true;
         for (size_t i = 0; i < programs.size(); i++)
         {
-            if (vertexCompiled && !programs[i].mStatus.mVertexShaderCompiled)
+            if (vertexCompiled && !programs[i]->getStatus().mVertexShaderCompiled)
             {
-                strncpy(vertexCompileLog, programs[i].mStatus.mVertexCompileLog, sizeof(vertexCompileLog));
+                strncpy(vertexCompileLog, programs[i]->getStatus().mVertexCompileLog, sizeof(vertexCompileLog));
                 vertexCompiled = false;
             }
-            if (fragmentCompiled && !programs[i].mStatus.mFragmentShaderCompiled)
+            if (fragmentCompiled && !programs[i]->getStatus().mFragmentShaderCompiled)
             {
-                strncpy(fragmentCompileLog, programs[i].mStatus.mFragmentCompileLog, sizeof(fragmentCompileLog));
+                strncpy(fragmentCompileLog, programs[i]->getStatus().mFragmentCompileLog, sizeof(fragmentCompileLog));
                 fragmentCompiled = false;
             }
-            if (geometryCompiled && !programs[i].mStatus.mGeometryShaderCompiled)
+            if (geometryCompiled && !programs[i]->getStatus().mGeometryShaderCompiled)
             {
-                strncpy(geometryCompileLog, programs[i].mStatus.mGeometryCompileLog, sizeof(geometryCompileLog));
+                strncpy(geometryCompileLog, programs[i]->getStatus().mGeometryCompileLog, sizeof(geometryCompileLog));
                 geometryCompiled = false;
             }
-            if (linked && !programs[i].mStatus.mShaderLinked)
+            if (linked && !programs[i]->getStatus().mShaderLinked)
             {
-                strncpy(linkLog, programs[i].mStatus.mLinkLog, sizeof(linkLog));
+                strncpy(linkLog, programs[i]->getStatus().mLinkLog, sizeof(linkLog));
                 linked = false;
             }
         }

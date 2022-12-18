@@ -52,7 +52,7 @@ class Texture : public Asset
     TextureFormat getFormat() const;
     TextureWrapMode getWrapMode() const;
     TextureFilterMode getFilterMode() const;
-    void* getNativeGraphics() const;
+    TextureHandle* getNativeGraphics() const;
 
     void setAnisoLevel(int anisoLevel);
     void setWrapMode(TextureWrapMode wrapMode);

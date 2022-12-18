@@ -136,8 +136,8 @@ namespace PhysicsEngine
         void setMat2_impl(int nameLocation, const glm::mat2 &mat) override;
         void setMat3_impl(int nameLocation, const glm::mat3 &mat) override;
         void setMat4_impl(int nameLocation, const glm::mat4 &mat) override;
-        void setTexture2D_impl(int nameLocation, int texUnit, int tex) override;
-        void setTexture2Ds_impl(int nameLocation, int *texUnits, int count, int *texs) override;
+        void setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex) override;
+        void setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) override;
         bool getBool_impl(int nameLocation, int program) override;
         int getInt_impl(int nameLocation, int program) override;
         float getFloat_impl(int nameLocation, int program) override;

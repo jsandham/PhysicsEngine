@@ -8,6 +8,15 @@ using namespace PhysicsEngine;
 
 RendererShaders* RendererShaders::sInstance = nullptr;
 
+RendererShaders::RendererShaders()
+{
+
+}
+
+RendererShaders::~RendererShaders()
+{
+}
+
 void RendererShaders::init()
 {
 	switch (RenderContext::getRenderAPI())
@@ -19,8 +28,6 @@ void RendererShaders::init()
 		sInstance = new DirectXRendererShaders();
 		break;
 	}
-
-	sInstance->init_impl();
 }
 
 RendererShaders* RendererShaders::getRendererShaders()
@@ -28,92 +35,92 @@ RendererShaders* RendererShaders::getRendererShaders()
 	return sInstance;
 }
 
-SSAOShader RendererShaders::getSSAOShader()
+ShaderProgram *RendererShaders::getSSAOShader()
 {
 	return sInstance->getSSAOShader_impl();
 }
 
-GeometryShader RendererShaders::getGeometryShader()
+ShaderProgram *RendererShaders::getGeometryShader()
 {
 	return sInstance->getGeometryShader_impl();
 }
 
-DepthShader RendererShaders::getDepthShader()
+ShaderProgram *RendererShaders::getDepthShader()
 {
 	return sInstance->getDepthShader_impl();
 }
 
-DepthCubemapShader RendererShaders::getDepthCubemapShader()
+ShaderProgram *RendererShaders::getDepthCubemapShader()
 {
 	return sInstance->getDepthCubemapShader_impl();
 }
 
-ScreenQuadShader RendererShaders::getScreenQuadShader()
+ShaderProgram *RendererShaders::getScreenQuadShader()
 {
 	return sInstance->getScreenQuadShader_impl();
 }
 
-SpriteShader RendererShaders::getSpriteShader()
+ShaderProgram *RendererShaders::getSpriteShader()
 {
 	return sInstance->getSpriteShader_impl();
 }
 
-GBufferShader RendererShaders::getGBufferShader()
+ShaderProgram *RendererShaders::getGBufferShader()
 {
 	return sInstance->getGBufferShader_impl();
 }
 
-ColorShader RendererShaders::getColorShader()
+ShaderProgram *RendererShaders::getColorShader()
 {
 	return sInstance->getColorShader_impl();
 }
 
-ColorInstancedShader RendererShaders::getColorInstancedShader()
+ShaderProgram *RendererShaders::getColorInstancedShader()
 {
 	return sInstance->getColorInstancedShader_impl();
 }
 
-NormalShader RendererShaders::getNormalShader()
+ShaderProgram *RendererShaders::getNormalShader()
 {
 	return sInstance->getNormalShader_impl();
 }
 
-NormalInstancedShader RendererShaders::getNormalInstancedShader()
+ShaderProgram *RendererShaders::getNormalInstancedShader()
 {
 	return sInstance->getNormalInstancedShader_impl();
 }
 
-PositionShader RendererShaders::getPositionShader()
+ShaderProgram *RendererShaders::getPositionShader()
 {
 	return sInstance->getPositionShader_impl();
 }
 
-PositionInstancedShader RendererShaders::getPositionInstancedShader()
+ShaderProgram *RendererShaders::getPositionInstancedShader()
 {
 	return sInstance->getPositionInstancedShader_impl();
 }
 
-LinearDepthShader RendererShaders::getLinearDepthShader()
+ShaderProgram *RendererShaders::getLinearDepthShader()
 {
 	return sInstance->getLinearDepthShader_impl();
 }
 
-LinearDepthInstancedShader RendererShaders::getLinearDepthInstancedShader()
+ShaderProgram *RendererShaders::getLinearDepthInstancedShader()
 {
 	return sInstance->getLinearDepthInstancedShader_impl();
 }
 
-LineShader RendererShaders::getLineShader()
+ShaderProgram *RendererShaders::getLineShader()
 {
 	return sInstance->getLineShader_impl();
 }
 
-GizmoShader RendererShaders::getGizmoShader()
+ShaderProgram *RendererShaders::getGizmoShader()
 {
 	return sInstance->getGizmoShader_impl();
 }
 
-GridShader RendererShaders::getGridShader()
+ShaderProgram *RendererShaders::getGridShader()
 {
 	return sInstance->getGridShader_impl();
 }

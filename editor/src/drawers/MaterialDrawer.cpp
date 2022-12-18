@@ -132,7 +132,7 @@ inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboa
     Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
 
     ImGui::SlotData data;
-    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()), &data))
+    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getHandle()), &data))
     {
         if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
         {
@@ -296,14 +296,15 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     variant |= static_cast<int64_t>(ShaderMacro::Directional);
     variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
 
-    int shaderProgram = shader->getProgramFromVariant(variant);
-    if (shaderProgram == -1)
-    {
-        // If we dont have the directional light + shadow variant, revert to default variant
-        shaderProgram = shader->getProgramFromVariant(0);
-    }
+    //int shaderProgram = shader->getProgramFromVariant(variant);
+    //if (shaderProgram == -1)
+    //{
+    //    // If we dont have the directional light + shadow variant, revert to default variant
+    //    shaderProgram = shader->getProgramFromVariant(0);
+    //}
 
-    shader->use(shaderProgram);
+    //shader->use(shaderProgram);
+    shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
     shader->setMat4("model", mModel);
 
     material->apply();

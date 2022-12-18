@@ -6,6 +6,8 @@
 #include "glm/glm.hpp"
 #include "../core/Color.h"
 
+#include "TextureHandle.h"
+
 namespace PhysicsEngine
 {
     typedef struct SpriteObject
@@ -13,7 +15,8 @@ namespace PhysicsEngine
         glm::mat4 model;
         Color color;
         int vao;
-        int texture;
+        //int texture;
+        TextureHandle *texture;
     } SpriteObject;
 } // namespace PhysicsEngine
 

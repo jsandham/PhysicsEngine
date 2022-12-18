@@ -50,7 +50,19 @@ void DeferredRenderer::update(const Input &input, Camera *camera,
 
 static void initializeDeferredRenderer(World *world, DeferredRendererState &state)
 {
-    state.mGBufferShaderProgram = RendererShaders::getRendererShaders()->getGBufferShader().mProgram;
+    state.mQuadShaderProgram = RendererShaders::getScreenQuadShader();
+    state.mGBufferShaderProgram = RendererShaders::getGBufferShader();
+    state.mColorShaderProgram = RendererShaders::getColorShader();
+    state.mColorInstancedShaderProgram = RendererShaders::getColorInstancedShader();
+
+    state.mQuadShaderTexLoc = state.mQuadShaderProgram->findUniformLocation("screenTexture");
+    state.mGBufferShaderModelLoc = state.mGBufferShaderProgram->findUniformLocation("model");
+    state.mGBufferShaderDiffuseTexLoc = state.mGBufferShaderProgram->findUniformLocation("texture_diffuse1");
+    state.mGBufferShaderSpecTexLoc = state.mGBufferShaderProgram->findUniformLocation("texture_specular1");
+    state.mColorShaderModelLoc = state.mColorShaderProgram->findUniformLocation("model");
+    state.mColorShaderColorLoc = state.mColorShaderProgram->findUniformLocation("material.color");
+
+    /*state.mGBufferShaderProgram = RendererShaders::getRendererShaders()->getGBufferShader().mProgram;
     state.mGBufferShaderModelLoc = RendererShaders::getRendererShaders()->getGBufferShader().mModelLoc;
     state.mGBufferShaderDiffuseTexLoc = RendererShaders::getRendererShaders()->getGBufferShader().mDiffuseTexLoc;
     state.mGBufferShaderSpecTexLoc = RendererShaders::getRendererShaders()->getGBufferShader().mSpecTexLoc;
@@ -61,7 +73,7 @@ static void initializeDeferredRenderer(World *world, DeferredRendererState &stat
     state.mColorInstancedShaderProgram = RendererShaders::getRendererShaders()->getColorInstancedShader().mProgram;
 
     state.mQuadShaderProgram = RendererShaders::getRendererShaders()->getScreenQuadShader().mProgram;
-    state.mQuadShaderTexLoc = RendererShaders::getRendererShaders()->getScreenQuadShader().mTexLoc;
+    state.mQuadShaderTexLoc = RendererShaders::getRendererShaders()->getScreenQuadShader().mTexLoc;*/
 
     Renderer::getRenderer()->createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
 
@@ -144,10 +156,10 @@ static void geometryPass(World *world, Camera *camera, DeferredRendererState &st
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
     
-    Renderer::getRenderer()->use(state.mGBufferShaderProgram);
-
-    int mGBufferShaderDiffuseTexLoc = Renderer::getRenderer()->findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
-    int mGBufferShaderSpecTexLoc = Renderer::getRenderer()->findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
+    state.mGBufferShaderProgram->bind();
+    //Renderer::getRenderer()->use(state.mGBufferShaderProgram);
+    //int mGBufferShaderDiffuseTexLoc = Renderer::getRenderer()->findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
+    //int mGBufferShaderSpecTexLoc = Renderer::getRenderer()->findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
 
     //std::string message = "mGBufferShaderDiffuseTexLoc: " + std::to_string(mGBufferShaderDiffuseTexLoc) +
     //                      " mGBufferShaderSpecTexLoc: " + std::to_string(mGBufferShaderSpecTexLoc) + "\n";
@@ -285,7 +297,8 @@ static void renderColorPickingDeferred(World *world, Camera *camera, DeferredRen
                 color++;
             }
 
-            Renderer::getRenderer()->use(state.mColorInstancedShaderProgram);
+            //Renderer::getRenderer()->use(state.mColorInstancedShaderProgram);
+            state.mColorInstancedShaderProgram->bind();
             Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
             Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
@@ -303,7 +316,8 @@ static void renderColorPickingDeferred(World *world, Camera *camera, DeferredRen
 
             color++;
 
-            Renderer::getRenderer()->use(state.mColorShaderProgram);
+            //Renderer::getRenderer()->use(state.mColorShaderProgram);
+            state.mColorShaderProgram->bind();
             Renderer::getRenderer()->setMat4(state.mColorShaderModelLoc, models[modelIndex]);
             Renderer::getRenderer()->setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
 
@@ -324,8 +338,9 @@ static void endDeferredFrame(World *world, Camera *camera, DeferredRendererState
         Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
-        Renderer::getRenderer()->use(state.mQuadShaderProgram);
-        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, *reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle()));
+        //Renderer::getRenderer()->use(state.mQuadShaderProgram);
+        state.mQuadShaderProgram->bind();
+        Renderer::getRenderer()->setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
 
         Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();

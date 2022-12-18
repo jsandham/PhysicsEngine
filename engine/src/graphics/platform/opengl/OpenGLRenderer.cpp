@@ -1741,11 +1741,10 @@ std::vector<ShaderUniform> OpenGLRenderer::getShaderUniforms_impl(int program)
         }
 
         uniforms[j].mUniformId = 0;
-        uniforms[j].mTex = -1;
+        //uniforms[j].mTex = -1;
+        uniforms[j].mTex = nullptr;
         memset(uniforms[j].mData, '\0', 64);
     }
-
-    
 
     return uniforms;
 }
@@ -1848,22 +1847,29 @@ void OpenGLRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat)
     CHECK_ERROR(glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
 }
 
-void OpenGLRenderer::setTexture2D_impl(int nameLocation, int texUnit, int tex)
+void OpenGLRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex)
 {
     CHECK_ERROR(glUniform1i(nameLocation, texUnit));
 
     CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, tex));
+    if (tex != nullptr)
+    {
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(tex->getHandle())));
+    }
+    else
+    {
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    }
 }
 
-void OpenGLRenderer::setTexture2Ds_impl(int nameLocation, int *texUnits, int count, int *texs)
+void OpenGLRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
 {
-    CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits));
+    CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits.data()));
 
     for (int i = 0; i < count; i++)
     {
         CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, texs[i]));
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(texs[i]->getHandle())));
     }
 }
 
@@ -1983,13 +1989,15 @@ void OpenGLRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &unifor
 
         if (uniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            if (uniforms[i].mTex != -1)
+            //if (uniforms[i].mTex != -1)
+            if (uniforms[i].mTex != nullptr)
             {
                 OpenGLRenderer::setTexture2D(location, textureUnit, uniforms[i].mTex);
             }
             else
             {
-                OpenGLRenderer::setTexture2D(location, textureUnit, 0);
+                /*OpenGLRenderer::setTexture2D(location, textureUnit, 0);*/
+                OpenGLRenderer::setTexture2D(location, textureUnit, nullptr);
             }
 
             textureUnit++;

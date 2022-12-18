@@ -501,12 +501,12 @@ void Renderer::setMat4(int nameLocation, const glm::mat4 &mat)
     return sInstance->setMat4_impl(nameLocation, mat);
 }
 
-void Renderer::setTexture2D(int nameLocation, int texUnit, int tex)
+void Renderer::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex)
 {
     return sInstance->setTexture2D_impl(nameLocation, texUnit, tex);
 }
 
-void Renderer::setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs)
+void Renderer::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
 {
     return sInstance->setTexture2Ds_impl(nameLocation, texUnits, count, texs);
 }

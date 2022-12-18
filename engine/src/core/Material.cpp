@@ -94,7 +94,7 @@ void Material::apply()
 
     assert(shader != nullptr);
 
-    Renderer::getRenderer()->applyMaterial(mUniforms, shader->getActiveProgram());
+    Renderer::getRenderer()->applyMaterial(mUniforms, *reinterpret_cast<unsigned int*>(shader->getActiveProgram()->getHandle()));
 }
 
 void Material::onShaderChanged()
@@ -144,11 +144,13 @@ void Material::onTextureChanged()
             Texture2D *texture = mWorld->getAssetByGuid<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
-                mUniforms[i].mTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
+                /*mUniforms[i].mTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());*/
+                mUniforms[i].mTex = texture->getNativeGraphics();
             }
             else
             {
-                mUniforms[i].mTex = -1;
+                /*mUniforms[i].mTex = -1;*/
+                mUniforms[i].mTex = nullptr;
             }
         }
     }

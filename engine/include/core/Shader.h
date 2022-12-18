@@ -15,6 +15,8 @@
 #include "Asset.h"
 #include "Color.h"
 
+#include "../graphics/ShaderProgram.h"
+
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine
@@ -23,22 +25,6 @@ enum class RenderQueue
 {
     Opaque = 0,
     Transparent = 1
-};
-
-enum class ShaderUniformType
-{
-    Int = 0,
-    Float = 1,
-    Color = 2,
-    Vec2 = 3,
-    Vec3 = 4,
-    Vec4 = 5,
-    Mat2 = 6,
-    Mat3 = 7,
-    Mat4 = 8,
-    Sampler2D = 9,
-    SamplerCube = 10,
-    Invalid = 11
 };
 
 enum class ShaderMacro
@@ -54,62 +40,12 @@ enum class ShaderMacro
     Instancing = 128
 };
 
-enum class ShaderSourceLanguage
-{
-    GLSL = 0,
-    HLSL = 1
-};
-
 struct ShaderCreationAttrib
 {
     std::string mName;
     std::string mSourceFilepath;
     ShaderSourceLanguage mSourceLanguage;
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
-};
-
-struct ShaderStatus
-{
-    char mVertexCompileLog[512];
-    char mFragmentCompileLog[512];
-    char mGeometryCompileLog[512];
-    char mLinkLog[512];
-    int mVertexShaderCompiled;
-    int mFragmentShaderCompiled;
-    int mGeometryShaderCompiled;
-    int mShaderLinked;
-};
-
-struct ShaderProgram
-{
-    ShaderStatus mStatus;
-
-    std::string mVertexShader;
-    std::string mFragmentShader;
-    std::string mGeometryShader;
-
-    int64_t mVariant;
-    unsigned int mHandle;
-};
-
-struct ShaderUniform
-{
-    char mData[64];
-    std::string mName; // variable name in GLSL (including block name if applicable)
-    ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-    int mTex; // if data stores a texture id, this is the texture handle
-    unsigned int mUniformId; // integer hash of uniform name
-
-    std::string getShortName() const
-    {
-        size_t pos = mName.find_first_of('.');
-        return mName.substr(pos + 1);
-    }
-};
-
-struct ShaderAttribute
-{
-    std::string mName;
 };
 
 class Shader : public Asset
@@ -124,7 +60,9 @@ class Shader : public Asset
 
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 
-    std::vector<ShaderProgram> mPrograms;
+    std::vector<ShaderProgram*> mPrograms;
+    std::vector<int64_t> mVariants;
+
     std::vector<ShaderUniform> mUniforms;
     std::vector<ShaderUniform> mMaterialUniforms;
     std::vector<ShaderAttribute> mAttributes;
@@ -132,7 +70,7 @@ class Shader : public Asset
     ShaderSourceLanguage mShaderSourceLanguage;
 
     bool mAllProgramsCompiled;
-    int mActiveProgram;
+    ShaderProgram *mActiveProgram;
 
   public:
     Shader(World *world, const Id &id);
@@ -150,19 +88,20 @@ class Shader : public Asset
     bool isCompiled() const;
 
     void addVariant(int variantId, const std::set<ShaderMacro>& macros);
+    void removeVariant(int variantId);
     void preprocess();
     void compile();
-    void use(int program);
-    void unuse();
+    void bind(int variant);
+    void unbind();
     void setVertexShader(const std::string &vertexShader);
     void setGeometryShader(const std::string &geometryShader);
     void setFragmentShader(const std::string &fragmentShader);
     void setUniformBlock(const std::string &blockName, int bindingPoint) const;
     int findUniformLocation(const std::string &name, int program) const;
-    int getProgramFromVariant(int64_t variant) const;
-    int getActiveProgram() const;
+    ShaderProgram* getProgramFromVariant(int64_t variant) const;
+    ShaderProgram* getActiveProgram() const;
 
-    std::vector<ShaderProgram> getPrograms() const;
+    std::vector<ShaderProgram*> getPrograms() const;
     std::vector<ShaderUniform> getUniforms() const;
     std::vector<ShaderUniform> getMaterialUniforms() const;
     std::vector<ShaderAttribute> getAttributeNames() const;
@@ -183,8 +122,8 @@ class Shader : public Asset
     void setMat2(const char *name, const glm::mat2 &mat) const;
     void setMat3(const char *name, const glm::mat3 &mat) const;
     void setMat4(const char *name, const glm::mat4 &mat) const;
-    void setTexture2D(const char *name, int texUnit, int tex) const;
-    void setTexture2Ds(const char *name, int *texUnits, int count, int* texs) const;
+    void setTexture2D(const char *name, int texUnit, TextureHandle* tex) const;
+    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const;
 
     void setBool(int nameLocation, bool value) const;
     void setInt(int nameLocation, int value) const;
@@ -196,8 +135,8 @@ class Shader : public Asset
     void setMat2(int nameLocation, const glm::mat2 &mat) const;
     void setMat3(int nameLocation, const glm::mat3 &mat) const;
     void setMat4(int nameLocation, const glm::mat4 &mat) const;
-    void setTexture2D(int nameLocation, int texUnit, int tex) const;
-    void setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs) const;
+    void setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) const;
+    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const;
 
     bool getBool(const char *name) const;
     int getInt(const char *name) const;

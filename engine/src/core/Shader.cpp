@@ -16,7 +16,7 @@ Shader::Shader(World *world, const Id &id) : Asset(world, id)
     mGeometryShader = "";
 
     mAllProgramsCompiled = false;
-    mActiveProgram = -1;
+    mActiveProgram = nullptr;
 
     mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
@@ -30,13 +30,17 @@ Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid
     mGeometryShader = "";
 
     mAllProgramsCompiled = false;
-    mActiveProgram = -1;
+    mActiveProgram = nullptr;
 
     mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
 Shader::~Shader()
 {
+    for (size_t i = 0; i < mPrograms.size(); i++)
+    {
+        delete mPrograms[i];
+    }
 }
 
 void Shader::serialize(YAML::Node &out) const
@@ -100,8 +104,6 @@ void Shader::load(const ShaderCreationAttrib& attrib)
 
     std::filesystem::path temp = attrib.mSourceFilepath;
     mSource = temp.filename().string();
-
-    mPrograms.resize(attrib.mVariantMacroMap.size());
 }
 
 bool Shader::isCompiled() const
@@ -112,32 +114,111 @@ bool Shader::isCompiled() const
 void Shader::addVariant(int variantId, const std::set<ShaderMacro> &macros)
 {
     mVariantMacroMap[variantId] = macros;
+    mAllProgramsCompiled = false;
+}
 
-    mPrograms.resize(mVariantMacroMap.size());
+void Shader::removeVariant(int variant)
+{
+    mVariantMacroMap.erase(variant);
+    mAllProgramsCompiled = false;
 }
 
 void Shader::preprocess()
 {
+    for (size_t i = mVariantMacroMap.size(); i < mPrograms.size(); i++)
+    {
+        delete mPrograms[i];
+    }
+
+    size_t count = mPrograms.size();
+
+    mPrograms.resize(mVariantMacroMap.size());
+    mVariants.resize(mVariantMacroMap.size());
+    for (size_t i = count; i < mPrograms.size(); i++)
+    {
+        mPrograms[i] = ShaderProgram::create();
+    }
+
     int i = 0;
     for (auto it = mVariantMacroMap.begin(); it != mVariantMacroMap.end(); it++)
     {
-        mPrograms[i].mVertexShader = mVertexShader;
-        mPrograms[i].mFragmentShader = mFragmentShader;
-        mPrograms[i].mGeometryShader = mGeometryShader;
-
         int64_t variant = 0;
         for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
         {
             variant |= static_cast<int64_t>(*it2);
         }
 
-        mPrograms[i].mVariant = variant;
-        mPrograms[i].mHandle = 0;
+        std::string version;
+        std::string defines;
 
-        Renderer::getRenderer()->preprocess(mPrograms[i].mVertexShader,
-                             mPrograms[i].mFragmentShader,
-                             mPrograms[i].mGeometryShader,
-                             mPrograms[i].mVariant);
+        if (variant & static_cast<int64_t>(ShaderMacro::Directional))
+        {
+            defines += "#define DIRECTIONALLIGHT\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::Spot))
+        {
+            defines += "#define SPOTLIGHT\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::Point))
+        {
+            defines += "#define POINTLIGHT\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::HardShadows))
+        {
+            defines += "#define HARDSHADOWS\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::SoftShadows))
+        {
+            defines += "#define SOFTSHADOWS\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::SSAO))
+        {
+            defines += "#define SSAO\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::ShowCascades))
+        {
+            defines += "#define SHOWCASCADES\n";
+        }
+        if (variant & static_cast<int64_t>(ShaderMacro::Instancing))
+        {
+            defines += "#define INSTANCING\n";
+        }
+
+        std::string vertexShader = mVertexShader;
+        std::string fragmentShader = mFragmentShader;
+        std::string geometryShader = mGeometryShader;
+
+        std::string shader;
+
+        size_t pos = vertexShader.find('\n');
+        if (pos != std::string::npos)
+        {
+            version = vertexShader.substr(0, pos + 1);
+            shader = vertexShader.substr(pos + 1);
+        }
+
+        vertexShader = version + defines + shader;
+
+        pos = fragmentShader.find('\n');
+        if (pos != std::string::npos)
+        {
+            version = fragmentShader.substr(0, pos + 1);
+            shader = fragmentShader.substr(pos + 1);
+        }
+
+        fragmentShader = version + defines + shader;
+
+        // pos = geometryShader.find('\n');
+        // if (pos != std::string::npos)
+        //{
+        //     version = geometryShader.substr(0, pos + 1);
+        //     shader = geometryShader.substr(pos + 1);
+        // }
+
+        // geometryShader = version + defines + shader;
+
+        mPrograms[i]->load(vertexShader, fragmentShader);
+        mVariants[i] = variant;
 
         i++;
     }
@@ -147,10 +228,7 @@ void Shader::compile()
 {
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        Renderer::getRenderer()->destroy(mPrograms[i].mHandle);
-
-        Renderer::getRenderer()->compile(mName, mPrograms[i].mVertexShader, mPrograms[i].mFragmentShader, mPrograms[i].mGeometryShader,
-                          &mPrograms[i].mHandle, mPrograms[i].mStatus);
+        mPrograms[i]->compile();
     }
 
     mAllProgramsCompiled = true;
@@ -169,9 +247,7 @@ void Shader::compile()
     // run through all variants and find all uniforms/attributes (and add to sets of known uniforms/attributes if new)
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        unsigned int program = mPrograms[i].mHandle;
-
-        std::vector<ShaderUniform> uniforms = Renderer::getRenderer()->getShaderUniforms(program);
+        std::vector<ShaderUniform> uniforms = mPrograms[i]->getUniforms();
 
         for (size_t j = 0; j < uniforms.size(); j++)
         {
@@ -184,7 +260,7 @@ void Shader::compile()
                 ShaderUniform uniform;
                 uniform.mName = name;
                 uniform.mType = type;
-                uniform.mTex = -1;
+                uniform.mTex = nullptr;
                 uniform.mUniformId = Shader::uniformToId(name.c_str());
                 memset(uniform.mData, '\0', 64);
 
@@ -200,21 +276,19 @@ void Shader::compile()
     }
 }
 
-void Shader::use(int program)
+void Shader::bind(int variant)
 {
-    if (program == -1)
+    mActiveProgram = getProgramFromVariant(variant);
+    if (mActiveProgram != nullptr)
     {
-        return;
+        mActiveProgram->bind();
     }
-
-    mActiveProgram = program;
-    Renderer::getRenderer()->use(program);
 }
 
-void Shader::unuse()
+void Shader::unbind()
 {
-    mActiveProgram = -1;
-    Renderer::getRenderer()->unuse();
+    mActiveProgram->unbind();
+    mActiveProgram = nullptr;
 }
 
 void Shader::setVertexShader(const std::string &vertexShader)
@@ -255,7 +329,7 @@ void Shader::setUniformBlock(const std::string &blockName, int bindingPoint) con
     // set uniform block on all shader program
     for (size_t i = 0; i < mPrograms.size(); i++)
     {
-        Renderer::getRenderer()->setUniformBlock(blockName.c_str(), bindingPoint, mPrograms[i].mHandle);
+        Renderer::getRenderer()->setUniformBlock(blockName.c_str(), bindingPoint, *reinterpret_cast<unsigned int*>(mPrograms[i]->getHandle()));
     }
 }
 
@@ -264,25 +338,28 @@ int Shader::findUniformLocation(const std::string &name, int program) const
     return Renderer::getRenderer()->findUniformLocation(name.c_str(), program);
 }
 
-int Shader::getProgramFromVariant(int64_t variant) const
+ShaderProgram* Shader::getProgramFromVariant(int64_t variant) const
 {
-    for (size_t i = 0; i < mPrograms.size(); i++)
+    if (mAllProgramsCompiled)
     {
-        if (mPrograms[i].mVariant == variant)
+        for (size_t i = 0; i < mVariants.size(); i++)
         {
-            return mPrograms[i].mHandle;
+            if (mVariants[i] == variant)
+            {
+                return mPrograms[i];
+            }
         }
     }
 
-    return -1;
+    return nullptr;
 }
 
-int Shader::getActiveProgram() const
+ShaderProgram* Shader::getActiveProgram() const
 {
     return mActiveProgram;
 }
 
-std::vector<ShaderProgram> Shader::getPrograms() const
+std::vector<ShaderProgram*> Shader::getPrograms() const
 {
     return mPrograms;
 }
@@ -319,323 +396,304 @@ std::string Shader::getFragmentShader() const
 
 void Shader::setBool(const char *name, bool value) const
 {
-    this->setBool(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setBool(name, value);
+    }
 }
 
 void Shader::setInt(const char *name, int value) const
 {
-    this->setInt(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setInt(name, value);
+    }
 }
 
 void Shader::setFloat(const char *name, float value) const
 {
-    this->setFloat(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), value);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setFloat(name, value);
+    }
 }
 
 void Shader::setColor(const char *name, const Color &color) const
 {
-    this->setColor(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), color);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setColor(name, color);
+    }
 }
 
 void Shader::setVec2(const char *name, const glm::vec2 &vec) const
 {
-    this->setVec2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setVec2(name, vec);
+    }
 }
 
 void Shader::setVec3(const char *name, const glm::vec3 &vec) const
 {
-    this->setVec3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setVec3(name, vec);
+    }
 }
 
 void Shader::setVec4(const char *name, const glm::vec4 &vec) const
 {
-    this->setVec4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), vec);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setVec4(name, vec);
+    }
 }
 
 void Shader::setMat2(const char *name, const glm::mat2 &mat) const
 {
-    this->setMat2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setMat2(name, mat);
+    }
 }
 
 void Shader::setMat3(const char *name, const glm::mat3 &mat) const
 {
-    this->setMat3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setMat3(name, mat);
+    }
 }
 
 void Shader::setMat4(const char *name, const glm::mat4 &mat) const
 {
-    this->setMat4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), mat);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setMat4(name, mat);
+    }
 }
 
-void Shader::setTexture2D(const char *name, int texUnit, int tex) const
+void Shader::setTexture2D(const char *name, int texUnit, TextureHandle* tex) const
 {
-    this->setTexture2D(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnit, tex);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setTexture2D(name, texUnit, tex);
+    }
 }
 
-void Shader::setTexture2Ds(const char *name, int *texUnits, int count, int *texs) const
+void Shader::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const
 {
-    this->setTexture2Ds(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnits, count, texs);
+    if (mActiveProgram != nullptr)
+    {
+        mActiveProgram->setTexture2Ds(name, texUnits, count, texs);
+    }
 }
 
 void Shader::setBool(int nameLocation, bool value) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setBool(nameLocation, (int)value);
+        mActiveProgram->setBool(nameLocation, value);
     }
 }
 
 void Shader::setInt(int nameLocation, int value) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setInt(nameLocation, value);
+        mActiveProgram->setInt(nameLocation, value);
     }
 }
 
 void Shader::setFloat(int nameLocation, float value) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setFloat(nameLocation, value);
+        mActiveProgram->setFloat(nameLocation, value);
     }
 }
 
 void Shader::setColor(int nameLocation, const Color &color) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setColor(nameLocation, color);
+        mActiveProgram->setColor(nameLocation, color);
     }
 }
 
 void Shader::setVec2(int nameLocation, const glm::vec2 &vec) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setVec2(nameLocation, vec);
+        mActiveProgram->setVec2(nameLocation, vec);
     }
 }
 
 void Shader::setVec3(int nameLocation, const glm::vec3 &vec) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setVec3(nameLocation, vec);
+        mActiveProgram->setVec3(nameLocation, vec);
     }
 }
 
 void Shader::setVec4(int nameLocation, const glm::vec4 &vec) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setVec4(nameLocation, vec);
+        mActiveProgram->setVec4(nameLocation, vec);
     }
 }
 
 void Shader::setMat2(int nameLocation, const glm::mat2 &mat) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setMat2(nameLocation, mat);
+        mActiveProgram->setMat2(nameLocation, mat);
     }
 }
 
 void Shader::setMat3(int nameLocation, const glm::mat3 &mat) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setMat3(nameLocation, mat);
+        mActiveProgram->setMat3(nameLocation, mat);
     }
 }
 
 void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setMat4(nameLocation, mat);
+        mActiveProgram->setMat4(nameLocation, mat);
     }
 }
 
-void Shader::setTexture2D(int nameLocation, int texUnit, int tex) const
+void Shader::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setTexture2D(nameLocation, texUnit, tex);
+        mActiveProgram->setTexture2D(nameLocation, texUnit, tex);
     }
 }
 
-void Shader::setTexture2Ds(int nameLocation, int *texUnits, int count, int *texs) const
+void Shader::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const
 {
-    if (mActiveProgram != -1)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setTexture2Ds(nameLocation, texUnits, count, texs);
+        mActiveProgram->setTexture2Ds(nameLocation, texUnits, count, texs);
     }
 }
 
 bool Shader::getBool(const char *name) const
 {
-    return this->getBool(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getBool(name) : false;
 }
 
 int Shader::getInt(const char *name) const
 {
-    return this->getInt(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getInt(name) : -1;
 }
 
 float Shader::getFloat(const char *name) const
 {
-    return this->getFloat(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getFloat(name) : 0.0f;
 }
 
 Color Shader::getColor(const char *name) const
 {
-    return this->getColor(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getColor(name) : Color::black;
 }
 
 glm::vec2 Shader::getVec2(const char *name) const
 {
-    return this->getVec2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getVec2(name) : glm::vec2();
 }
 
 glm::vec3 Shader::getVec3(const char *name) const
 {
-    return this->getVec3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getVec3(name) : glm::vec3();
 }
 
 glm::vec4 Shader::getVec4(const char *name) const
 {
-    return this->getVec4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getVec4(name) : glm::vec4();
 }
 
 glm::mat2 Shader::getMat2(const char *name) const
 {
-    return this->getMat2(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getMat2(name) : glm::mat2();
 }
 
 glm::mat3 Shader::getMat3(const char *name) const
 {
-    return this->getMat3(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getMat3(name) : glm::mat3();
 }
 
 glm::mat4 Shader::getMat4(const char *name) const
 {
-    return this->getMat4(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram));
+    return mActiveProgram != nullptr ? mActiveProgram->getMat4(name) : glm::mat4();
 }
 
 int Shader::getTexture2D(const char *name, int texUnit) const
 {
-    return this->getTexture2D(Renderer::getRenderer()->findUniformLocation(name, mActiveProgram), texUnit);
+    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(name, texUnit) : -1;
 }
 
 bool Shader::getBool(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getBool(nameLocation, mActiveProgram);
-    }
-
-    return false;
+    return mActiveProgram != nullptr ? mActiveProgram->getBool(nameLocation) : false;
 }
 
 int Shader::getInt(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getInt(nameLocation, mActiveProgram);
-    }
-
-    return 0;
+    return mActiveProgram != nullptr ? mActiveProgram->getInt(nameLocation) : 0;
 }
 
 float Shader::getFloat(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getFloat(nameLocation, mActiveProgram);
-    }
-
-    return 0.0f;
+    return mActiveProgram != nullptr ? mActiveProgram->getFloat(nameLocation) : 0.0f;
 }
 
 Color Shader::getColor(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getColor(nameLocation, mActiveProgram);
-    }
-
-    return Color(0.0f, 0.0f, 0.0f, 1.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getColor(nameLocation) : Color::black;
 }
 
 glm::vec2 Shader::getVec2(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getVec2(nameLocation, mActiveProgram);
-    }
-
-    return glm::vec2(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getVec2(nameLocation) : glm::vec2(0.0f);
 }
 
 glm::vec3 Shader::getVec3(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getVec3(nameLocation, mActiveProgram);
-    }
-
-    return glm::vec3(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getVec3(nameLocation) : glm::vec3(0.0f);
 }
 
 glm::vec4 Shader::getVec4(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getVec4(nameLocation, mActiveProgram);
-    }
-
-    return glm::vec4(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getVec4(nameLocation) : glm::vec4(0.0f);
 }
 
 glm::mat2 Shader::getMat2(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getMat2(nameLocation, mActiveProgram);
-    }
-
-    return glm::mat2(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getMat2(nameLocation) : glm::mat2(0.0f);
 }
 
 glm::mat3 Shader::getMat3(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getMat3(nameLocation, mActiveProgram);
-    }
-
-    return glm::mat3(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getMat3(nameLocation) : glm::mat3(0.0f);
 }
 
 glm::mat4 Shader::getMat4(int nameLocation) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getMat4(nameLocation, mActiveProgram);
-    }
-
-    return glm::mat4(0.0f);
+    return mActiveProgram != nullptr ? mActiveProgram->getMat4(nameLocation) : glm::mat4(0.0f);
 }
 
 int Shader::getTexture2D(int nameLocation, int texUnit) const
 {
-    if (mActiveProgram != -1)
-    {
-        return Renderer::getRenderer()->getTexture2D(nameLocation, texUnit, mActiveProgram);
-    }
-
-    return -1;
+    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(nameLocation, texUnit) : -1;
 }
 
 unsigned int Shader::uniformToId(const char *uniform)

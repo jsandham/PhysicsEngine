@@ -484,11 +484,11 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
             if (texture != nullptr)
             {
-                object.texture = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());
+                object.texture = texture->getNativeGraphics();
             }
             else
             {
-                object.texture = -1;
+                object.texture = nullptr;
             }
 
             mSpriteObjects.push_back(object);

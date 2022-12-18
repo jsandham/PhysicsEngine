@@ -114,7 +114,6 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     ImGui::Text("Preview");
 
     Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(shaders[mActiveDrawModeIndex]);
-    int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
 
     float meshRadius = mesh->getBounds().mRadius;
 
@@ -124,7 +123,9 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
     Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
 
-    shader->use(shaderProgram);
+    //int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
+    //shader->use(shaderProgram);
+    shader->bind(static_cast<int64_t>(ShaderMacro::None));
     shader->setMat4("model", mModel);
 
     if (mActiveDrawModeIndex == 0)
