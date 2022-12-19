@@ -16,6 +16,12 @@ namespace PhysicsEngine
         void present_impl() override;
         void turnVsyncOn_impl() override;
         void turnVsyncOff_impl() override;
+        void bindFramebuffer_impl(Framebuffer* fbo) override;
+        void unbindFramebuffer_impl() override;
+        void clearFrambufferColor_impl(const Color &color) override;
+        void clearFrambufferColor_impl(float r, float g, float b, float a) override;
+        void clearFramebufferDepth_impl(float depth) override;
+        void setViewport_impl(int x, int y, int width, int height) override;
         
         void turnOn_impl(Capability capability) override;
         void turnOff_impl(Capability capability) override;
@@ -32,14 +38,8 @@ namespace PhysicsEngine
         //void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
         //                            unsigned int *depth) override;
         //void destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth) override;
-        void bindFramebuffer_impl(unsigned int fbo) override;
-        void unbindFramebuffer_impl() override;
-        void clearFrambufferColor_impl(const Color &color) override;
-        void clearFrambufferColor_impl(float r, float g, float b, float a) override;
-        void clearFramebufferDepth_impl(float depth) override;
         void bindVertexArray_impl(unsigned int vao) override;
         void unbindVertexArray_impl() override;
-        void setViewport_impl(int x, int y, int width, int height) override;
         //void createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
         //                        unsigned int *queryId0, unsigned int *queryId1) override;
         //void destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1) override;
@@ -122,7 +122,7 @@ namespace PhysicsEngine
         std::vector<ShaderUniform> getShaderUniforms_impl(int program) override;
         std::vector<ShaderAttribute> getShaderAttributes_impl(int program) override;
         void setUniformBlock_impl(const char *blockName, int bindingPoint, int program) override;
-        void use_impl(int program) override;
+        /*void use_impl(int program) override;
         void unuse_impl() override;
         void destroy_impl(int program) override;
         void setBool_impl(int nameLocation, bool value) override;
@@ -148,9 +148,8 @@ namespace PhysicsEngine
         glm::vec4 getVec4_impl(int nameLocation, int program) override;
         glm::mat2 getMat2_impl(int nameLocation, int program) override;
         glm::mat3 getMat3_impl(int nameLocation, int program) override;
-        glm::mat4 getMat4_impl(int nameLocation, int program) override;
-        int getTexture2D_impl(int nameLocation, int texUnit, int program) override;
-        void applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, int shaderProgram) override;
+        glm::mat4 getMat4_impl(int nameLocation, int program) override;*/
+        void applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram) override;
         void renderLines_impl(int start, int count, int vao) override;
         void renderLinesWithCurrentlyBoundVAO_impl(int start, int count) override;
         void renderWithCurrentlyBoundVAO_impl(int start, int count) override;

@@ -94,7 +94,7 @@ void Material::apply()
 
     assert(shader != nullptr);
 
-    Renderer::getRenderer()->applyMaterial(mUniforms, *reinterpret_cast<unsigned int*>(shader->getActiveProgram()->getHandle()));
+    Renderer::getRenderer()->applyMaterial(mUniforms, shader->getActiveProgram());
 }
 
 void Material::onShaderChanged()

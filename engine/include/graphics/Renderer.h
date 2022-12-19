@@ -262,6 +262,12 @@ public:
     static void present();
     static void turnVsyncOn();
     static void turnVsyncOff();
+    static void bindFramebuffer(Framebuffer* fbo);
+    static void unbindFramebuffer();
+    static void clearFrambufferColor(const Color &color);
+    static void clearFrambufferColor(float r, float g, float b, float a);
+    static void clearFramebufferDepth(float depth);
+    static void setViewport(int x, int y, int width, int height);
 
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
@@ -278,14 +284,8 @@ public:
     //static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color,
     //                               unsigned int *depth);
     //static void destroyFramebuffer(unsigned int *fbo, unsigned int *color, unsigned int *depth);
-    static void bindFramebuffer(unsigned int fbo);
-    static void unbindFramebuffer();
-    static void clearFrambufferColor(const Color &color);
-    static void clearFrambufferColor(float r, float g, float b, float a);
-    static void clearFramebufferDepth(float depth);
     static void bindVertexArray(unsigned int vao);
     static void unbindVertexArray();
-    static void setViewport(int x, int y, int width, int height);
     //static void createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
     //                           unsigned int *queryId0, unsigned int *queryId1);
     //static void destroyTargets(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1);
@@ -366,7 +366,7 @@ public:
     static std::vector<ShaderUniform> getShaderUniforms(int program);
     static std::vector<ShaderAttribute> getShaderAttributes(int program);
     static void setUniformBlock(const char *blockName, int bindingPoint, int program);
-    static void use(int program);
+    /*static void use(int program);
     static void unuse();
     static void destroy(int program);
     static void setBool(int nameLocation, bool value);
@@ -392,9 +392,8 @@ public:
     static glm::vec4 getVec4(int nameLocation, int program);
     static glm::mat2 getMat2(int nameLocation, int program);
     static glm::mat3 getMat3(int nameLocation, int program);
-    static glm::mat4 getMat4(int nameLocation, int program);
-    static int getTexture2D(int nameLocation, int texUnit, int program);
-    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram);
+    static glm::mat4 getMat4(int nameLocation, int program);*/
+    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram);
     static void renderLines(int start, int count, int vao);
     static void renderLinesWithCurrentlyBoundVAO(int start, int count);
     static void renderWithCurrentlyBoundVAO(int start, int count);
@@ -409,6 +408,12 @@ protected:
     virtual void present_impl() = 0;
     virtual void turnVsyncOn_impl() = 0;
     virtual void turnVsyncOff_impl() = 0;
+    virtual void bindFramebuffer_impl(Framebuffer* fbo) = 0;
+    virtual void unbindFramebuffer_impl() = 0;
+    virtual void clearFrambufferColor_impl(const Color &color) = 0;
+    virtual void clearFrambufferColor_impl(float r, float g, float b, float a) = 0;
+    virtual void clearFramebufferDepth_impl(float depth) = 0;
+    virtual void setViewport_impl(int x, int y, int width, int height) = 0;
 
     virtual void turnOn_impl(Capability capability) = 0;
     virtual void turnOff_impl(Capability capability) = 0;
@@ -424,14 +429,8 @@ protected:
     //virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color) = 0;
     //virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
     //virtual void destroyFramebuffer_impl(unsigned int* fbo, unsigned int* color, unsigned int* depth) = 0;
-    virtual void bindFramebuffer_impl(unsigned int fbo) = 0;
-    virtual void unbindFramebuffer_impl() = 0;
-    virtual void clearFrambufferColor_impl(const Color& color) = 0;
-    virtual void clearFrambufferColor_impl(float r, float g, float b, float a) = 0;
-    virtual void clearFramebufferDepth_impl(float depth) = 0;
     virtual void bindVertexArray_impl(unsigned int vao) = 0;
     virtual void unbindVertexArray_impl() = 0;
-    virtual void setViewport_impl(int x, int y, int width, int height) = 0;
     //virtual void createTargets_impl(CameraTargets* targets, Viewport viewport, glm::vec3* ssaoSamples, unsigned int* queryId0, unsigned int* queryId1) = 0;
     //virtual void destroyTargets_impl(CameraTargets* targets, unsigned int* queryId0, unsigned int* queryId1) = 0;
     //virtual void resizeTargets_impl(CameraTargets* targets, Viewport viewport, bool* viewportChanged) = 0;
@@ -500,7 +499,7 @@ protected:
     virtual std::vector<ShaderUniform> getShaderUniforms_impl(int program) = 0;
     virtual std::vector<ShaderAttribute> getShaderAttributes_impl(int program) = 0;
     virtual void setUniformBlock_impl(const char* blockName, int bindingPoint, int program) = 0;
-    virtual void use_impl(int program) = 0;
+    /*virtual void use_impl(int program) = 0;
     virtual void unuse_impl() = 0;
     virtual void destroy_impl(int program) = 0;
     virtual void setBool_impl(int nameLocation, bool value) = 0;
@@ -526,9 +525,8 @@ protected:
     virtual glm::vec4 getVec4_impl(int nameLocation, int program) = 0;
     virtual glm::mat2 getMat2_impl(int nameLocation, int program) = 0;
     virtual glm::mat3 getMat3_impl(int nameLocation, int program) = 0;
-    virtual glm::mat4 getMat4_impl(int nameLocation, int program) = 0;
-    virtual int getTexture2D_impl(int nameLocation, int texUnit, int program) = 0;
-    virtual void applyMaterial_impl(const std::vector<ShaderUniform>& uniforms, int shaderProgram) = 0;
+    virtual glm::mat4 getMat4_impl(int nameLocation, int program) = 0;*/
+    virtual void applyMaterial_impl(const std::vector<ShaderUniform>& uniforms, ShaderProgram* shaderProgram) = 0;
     virtual void renderLines_impl(int start, int count, int vao) = 0;
     virtual void renderLinesWithCurrentlyBoundVAO_impl(int start, int count) = 0;
     virtual void renderWithCurrentlyBoundVAO_impl(int start, int count) = 0;

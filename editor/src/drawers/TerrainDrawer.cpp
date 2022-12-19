@@ -29,13 +29,17 @@ TerrainDrawer::TerrainDrawer()
         "    FragColor = vec4(height, height, height, 1);\n"
         "}";
 
-    ShaderStatus status;
-    Renderer::getRenderer()->compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
+    mProgram = ShaderProgram::create();
+    mProgram->load("TerrainDrawer", vertexShader, fragmentShader);
+    mProgram->compile();
+    //ShaderStatus status;
+    //Renderer::getRenderer()->compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
 }
 
 TerrainDrawer::~TerrainDrawer()
 {
     delete mFBO;
+    delete mProgram;
 }
 
 void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
@@ -144,10 +148,13 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             mFBO->bind();
             mFBO->setViewport(0, 0, 256, 256);
             mFBO->clearColor(Color::black);
-            Renderer::getRenderer()->use(mProgram);
+
+            //Renderer::getRenderer()->use(mProgram);
+            mProgram->bind();
             Renderer::getRenderer()->render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
-            Renderer::getRenderer()->unuse();
+            //Renderer::getRenderer()->unuse();
             //Renderer::getRenderer()->unbindFramebuffer();
+            mProgram->unbind();
             mFBO->unbind();
 
             /*ImGui::Image((void*)(intptr_t)mColor,

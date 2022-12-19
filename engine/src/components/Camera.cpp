@@ -75,10 +75,15 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
 
-    mTargets.mMainFBO = Framebuffer::create(1920, 1080);
+    /*mTargets.mMainFBO = Framebuffer::create(1920, 1080);
     mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080);
-    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080);
+    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080);*/
+
+    mTargets.mMainFBO = Framebuffer::create(1920, 1080);
+    mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
+    mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
+    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
 
     /*mTargets.mMainFBO = 0;
     mTargets.mColorTex = 0;
@@ -495,7 +500,7 @@ TextureHandle *Camera::getNativeGraphicsDepthTex() const
 
 TextureHandle *Camera::getNativeGraphicsColorPickingTex() const
 {
-    return mTargets.mColorPickingFBO->getDepthTex();
+    return mTargets.mColorPickingFBO->getColorTex();
 }
 
 TextureHandle *Camera::getNativeGraphicsPositionTex() const

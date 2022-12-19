@@ -43,6 +43,47 @@ void Renderer::turnVsyncOff()
 {
     sInstance->turnVsyncOff_impl();
 }
+
+void Renderer::bindFramebuffer(Framebuffer* fbo)
+{
+    return sInstance->bindFramebuffer_impl(fbo);
+}
+
+void Renderer::unbindFramebuffer()
+{
+    return sInstance->unbindFramebuffer_impl();
+}
+
+void Renderer::clearFrambufferColor(const Color &color)
+{
+    return sInstance->clearFrambufferColor_impl(color);
+}
+
+void Renderer::clearFrambufferColor(float r, float g, float b, float a)
+{
+    return sInstance->clearFrambufferColor_impl(r, g, b, a);
+}
+
+void Renderer::clearFramebufferDepth(float depth)
+{
+    return sInstance->clearFramebufferDepth_impl(depth);
+}
+
+void Renderer::setViewport(int x, int y, int width, int height)
+{
+    return sInstance->setViewport_impl(x, y, width, height);
+}
+
+
+
+
+
+
+
+
+
+
+
     
 void Renderer::turnOn(Capability capability)
 {
@@ -114,31 +155,6 @@ void Renderer::renderScreenQuad(unsigned int vao)
 //    return sInstance->destroyFramebuffer_impl(fbo, color, depth);
 //}
 
-void Renderer::bindFramebuffer(unsigned int fbo)
-{
-    return sInstance->bindFramebuffer_impl(fbo);
-}
-
-void Renderer::unbindFramebuffer()
-{
-    return sInstance->unbindFramebuffer_impl();
-}
-
-void Renderer::clearFrambufferColor(const Color &color)
-{
-    return sInstance->clearFrambufferColor_impl(color);
-}
-
-void Renderer::clearFrambufferColor(float r, float g, float b, float a)
-{
-    return sInstance->clearFrambufferColor_impl(r, g, b, a);
-}
-
-void Renderer::clearFramebufferDepth(float depth)
-{
-    return sInstance->clearFramebufferDepth_impl(depth);
-}
-
 void Renderer::bindVertexArray(unsigned int vao)
 {
     return sInstance->bindVertexArray_impl(vao);
@@ -147,11 +163,6 @@ void Renderer::bindVertexArray(unsigned int vao)
 void Renderer::unbindVertexArray()
 {
     return sInstance->unbindVertexArray_impl();
-}
-
-void Renderer::setViewport(int x, int y, int width, int height)
-{
-    return sInstance->setViewport_impl(x, y, width, height);
 }
 
 //void Renderer::createTargets(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
@@ -431,147 +442,142 @@ void Renderer::setUniformBlock(const char *blockName, int bindingPoint, int prog
     return sInstance->setUniformBlock_impl(blockName, bindingPoint, program);
 }
 
-void Renderer::use(int program)
-{
-    return sInstance->use_impl(program);
-}
+//void Renderer::use(int program)
+//{
+//    return sInstance->use_impl(program);
+//}
+//
+//void Renderer::unuse()
+//{
+//    return sInstance->unuse_impl();
+//}
+//
+//void Renderer::destroy(int program)
+//{
+//    return sInstance->destroy_impl(program);
+//}
+//
+//void Renderer::setBool(int nameLocation, bool value)
+//{
+//    return sInstance->setBool_impl(nameLocation, value);
+//}
+//
+//void Renderer::setInt(int nameLocation, int value)
+//{
+//    return sInstance->setInt_impl(nameLocation, value);
+//}
+//
+//void Renderer::setFloat(int nameLocation, float value)
+//{
+//    return sInstance->setFloat_impl(nameLocation, value);
+//}
+//
+//void Renderer::setColor(int nameLocation, const Color &color)
+//{
+//    return sInstance->setColor_impl(nameLocation, color);
+//}
+//
+//void Renderer::setColor32(int nameLocation, const Color32 &color)
+//{
+//    return sInstance->setColor32_impl(nameLocation, color);
+//}
+//
+//void Renderer::setVec2(int nameLocation, const glm::vec2 &vec)
+//{
+//    return sInstance->setVec2_impl(nameLocation, vec);
+//}
+//
+//void Renderer::setVec3(int nameLocation, const glm::vec3 &vec)
+//{
+//    return sInstance->setVec3_impl(nameLocation, vec);
+//}
+//
+//void Renderer::setVec4(int nameLocation, const glm::vec4 &vec)
+//{
+//    return sInstance->setVec4_impl(nameLocation, vec);
+//}
+//
+//void Renderer::setMat2(int nameLocation, const glm::mat2 &mat)
+//{
+//    return sInstance->setMat2_impl(nameLocation, mat);
+//}
+//
+//void Renderer::setMat3(int nameLocation, const glm::mat3 &mat)
+//{
+//    return sInstance->setMat3_impl(nameLocation, mat);
+//}
+//
+//void Renderer::setMat4(int nameLocation, const glm::mat4 &mat)
+//{
+//    return sInstance->setMat4_impl(nameLocation, mat);
+//}
+//
+//void Renderer::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex)
+//{
+//    return sInstance->setTexture2D_impl(nameLocation, texUnit, tex);
+//}
+//
+//void Renderer::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+//{
+//    return sInstance->setTexture2Ds_impl(nameLocation, texUnits, count, texs);
+//}
+//
+//bool Renderer::getBool(int nameLocation, int program)
+//{
+//    return sInstance->getBool_impl(nameLocation, program);
+//}
+//
+//int Renderer::getInt(int nameLocation, int program)
+//{
+//    return sInstance->getInt_impl(nameLocation, program);
+//}
+//
+//float Renderer::getFloat(int nameLocation, int program)
+//{
+//    return sInstance->getFloat_impl(nameLocation, program);
+//}
+//
+//Color Renderer::getColor(int nameLocation, int program)
+//{
+//    return sInstance->getColor_impl(nameLocation, program);
+//}
+//
+//Color32 Renderer::getColor32(int nameLocation, int program)
+//{
+//    return sInstance->getColor32_impl(nameLocation, program);
+//}
+//
+//glm::vec2 Renderer::getVec2(int nameLocation, int program)
+//{
+//    return sInstance->getVec2_impl(nameLocation, program);
+//}
+//
+//glm::vec3 Renderer::getVec3(int nameLocation, int program)
+//{
+//    return sInstance->getVec3_impl(nameLocation, program);
+//}
+//
+//glm::vec4 Renderer::getVec4(int nameLocation, int program)
+//{
+//    return sInstance->getVec4_impl(nameLocation, program);
+//}
+//
+//glm::mat2 Renderer::getMat2(int nameLocation, int program)
+//{
+//    return sInstance->getMat2_impl(nameLocation, program);
+//}
+//
+//glm::mat3 Renderer::getMat3(int nameLocation, int program)
+//{
+//    return sInstance->getMat3_impl(nameLocation, program);
+//}
+//
+//glm::mat4 Renderer::getMat4(int nameLocation, int program)
+//{
+//    return sInstance->getMat4_impl(nameLocation, program);
+//}
 
-void Renderer::unuse()
-{
-    return sInstance->unuse_impl();
-}
-
-void Renderer::destroy(int program)
-{
-    return sInstance->destroy_impl(program);
-}
-
-void Renderer::setBool(int nameLocation, bool value)
-{
-    return sInstance->setBool_impl(nameLocation, value);
-}
-
-void Renderer::setInt(int nameLocation, int value)
-{
-    return sInstance->setInt_impl(nameLocation, value);
-}
-
-void Renderer::setFloat(int nameLocation, float value)
-{
-    return sInstance->setFloat_impl(nameLocation, value);
-}
-
-void Renderer::setColor(int nameLocation, const Color &color)
-{
-    return sInstance->setColor_impl(nameLocation, color);
-}
-
-void Renderer::setColor32(int nameLocation, const Color32 &color)
-{
-    return sInstance->setColor32_impl(nameLocation, color);
-}
-
-void Renderer::setVec2(int nameLocation, const glm::vec2 &vec)
-{
-    return sInstance->setVec2_impl(nameLocation, vec);
-}
-
-void Renderer::setVec3(int nameLocation, const glm::vec3 &vec)
-{
-    return sInstance->setVec3_impl(nameLocation, vec);
-}
-
-void Renderer::setVec4(int nameLocation, const glm::vec4 &vec)
-{
-    return sInstance->setVec4_impl(nameLocation, vec);
-}
-
-void Renderer::setMat2(int nameLocation, const glm::mat2 &mat)
-{
-    return sInstance->setMat2_impl(nameLocation, mat);
-}
-
-void Renderer::setMat3(int nameLocation, const glm::mat3 &mat)
-{
-    return sInstance->setMat3_impl(nameLocation, mat);
-}
-
-void Renderer::setMat4(int nameLocation, const glm::mat4 &mat)
-{
-    return sInstance->setMat4_impl(nameLocation, mat);
-}
-
-void Renderer::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex)
-{
-    return sInstance->setTexture2D_impl(nameLocation, texUnit, tex);
-}
-
-void Renderer::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
-{
-    return sInstance->setTexture2Ds_impl(nameLocation, texUnits, count, texs);
-}
-
-bool Renderer::getBool(int nameLocation, int program)
-{
-    return sInstance->getBool_impl(nameLocation, program);
-}
-
-int Renderer::getInt(int nameLocation, int program)
-{
-    return sInstance->getInt_impl(nameLocation, program);
-}
-
-float Renderer::getFloat(int nameLocation, int program)
-{
-    return sInstance->getFloat_impl(nameLocation, program);
-}
-
-Color Renderer::getColor(int nameLocation, int program)
-{
-    return sInstance->getColor_impl(nameLocation, program);
-}
-
-Color32 Renderer::getColor32(int nameLocation, int program)
-{
-    return sInstance->getColor32_impl(nameLocation, program);
-}
-
-glm::vec2 Renderer::getVec2(int nameLocation, int program)
-{
-    return sInstance->getVec2_impl(nameLocation, program);
-}
-
-glm::vec3 Renderer::getVec3(int nameLocation, int program)
-{
-    return sInstance->getVec3_impl(nameLocation, program);
-}
-
-glm::vec4 Renderer::getVec4(int nameLocation, int program)
-{
-    return sInstance->getVec4_impl(nameLocation, program);
-}
-
-glm::mat2 Renderer::getMat2(int nameLocation, int program)
-{
-    return sInstance->getMat2_impl(nameLocation, program);
-}
-
-glm::mat3 Renderer::getMat3(int nameLocation, int program)
-{
-    return sInstance->getMat3_impl(nameLocation, program);
-}
-
-glm::mat4 Renderer::getMat4(int nameLocation, int program)
-{
-    return sInstance->getMat4_impl(nameLocation, program);
-}
-
-int Renderer::getTexture2D(int nameLocation, int texUnit, int program)
-{
-    return sInstance->getTexture2D_impl(nameLocation, texUnit, program);
-}
-
-void Renderer::applyMaterial(const std::vector<ShaderUniform> &uniforms, int shaderProgram)
+void Renderer::applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
 {
     return sInstance->applyMaterial_impl(uniforms, shaderProgram);
 }

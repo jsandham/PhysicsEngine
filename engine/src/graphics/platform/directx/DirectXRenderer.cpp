@@ -50,6 +50,39 @@ void DirectXRenderer::turnVsyncOff_impl()
     mContext->turnVsyncOff();
 }
 
+void DirectXRenderer::bindFramebuffer_impl(Framebuffer* fbo)
+{
+}
+void DirectXRenderer::unbindFramebuffer_impl()
+{
+}
+void DirectXRenderer::clearFrambufferColor_impl(const Color &color)
+{
+}
+void DirectXRenderer::clearFrambufferColor_impl(float r, float g, float b, float a)
+{
+}
+void DirectXRenderer::clearFramebufferDepth_impl(float depth)
+{
+}
+
+void DirectXRenderer::setViewport_impl(int x, int y, int width, int height)
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void DirectXRenderer::turnOn_impl(Capability capability){}
 void DirectXRenderer::turnOff_impl(Capability capability){}
 void DirectXRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest){}
@@ -65,14 +98,8 @@ void DirectXRenderer::renderScreenQuad_impl(unsigned int vao){}
 //void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color,
 //                            unsigned int *depth){}
 //void DirectXRenderer::destroyFramebuffer_impl(unsigned int *fbo, unsigned int *color, unsigned int *depth){}
-void DirectXRenderer::bindFramebuffer_impl(unsigned int fbo){}
-void DirectXRenderer::unbindFramebuffer_impl(){}
-void DirectXRenderer::clearFrambufferColor_impl(const Color &color){}
-void DirectXRenderer::clearFrambufferColor_impl(float r, float g, float b, float a){}
-void DirectXRenderer::clearFramebufferDepth_impl(float depth){}
 void DirectXRenderer::bindVertexArray_impl(unsigned int vao){}
 void DirectXRenderer::unbindVertexArray_impl(){}
-void DirectXRenderer::setViewport_impl(int x, int y, int width, int height){}
 //void DirectXRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples, unsigned int *queryId0,
 //                        unsigned int *queryId1){}
 //void DirectXRenderer::destroyTargets_impl(CameraTargets *targets, unsigned int *queryId0, unsigned int *queryId1){}
@@ -165,76 +192,72 @@ std::vector<ShaderAttribute> DirectXRenderer::getShaderAttributes_impl(int progr
     return std::vector<ShaderAttribute>();
 }
 void DirectXRenderer::setUniformBlock_impl(const char *blockName, int bindingPoint, int program){}
-void DirectXRenderer::use_impl(int program){}
-void DirectXRenderer::unuse_impl(){}
-void DirectXRenderer::destroy_impl(int program){}
-void DirectXRenderer::setBool_impl(int nameLocation, bool value){}
-void DirectXRenderer::setInt_impl(int nameLocation, int value){}
-void DirectXRenderer::setFloat_impl(int nameLocation, float value){}
-void DirectXRenderer::setColor_impl(int nameLocation, const Color &color){}
-void DirectXRenderer::setColor32_impl(int nameLocation, const Color32 &color){}
-void DirectXRenderer::setVec2_impl(int nameLocation, const glm::vec2 &vec){}
-void DirectXRenderer::setVec3_impl(int nameLocation, const glm::vec3 &vec){}
-void DirectXRenderer::setVec4_impl(int nameLocation, const glm::vec4 &vec){}
-void DirectXRenderer::setMat2_impl(int nameLocation, const glm::mat2 &mat){}
-void DirectXRenderer::setMat3_impl(int nameLocation, const glm::mat3 &mat){}
-void DirectXRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat){}
-void DirectXRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex){}
-void DirectXRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs){}
-bool DirectXRenderer::getBool_impl(int nameLocation, int program)
-{
-    return false;
-}
-
-int DirectXRenderer::getInt_impl(int nameLocation, int program)
-{
-    return 0;
-}
-
-float DirectXRenderer::getFloat_impl(int nameLocation, int program)
-{
-    return 0.0f;
-}
-
-Color DirectXRenderer::getColor_impl(int nameLocation, int program)
-{
-    return Color(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-Color32 DirectXRenderer::getColor32_impl(int nameLocation, int program)
-{
-    return Color32(0, 0, 0, 255);
-}
-
-glm::vec2 DirectXRenderer::getVec2_impl(int nameLocation, int program)
-{
-    return glm::vec2();
-}
-glm::vec3 DirectXRenderer::getVec3_impl(int nameLocation, int program)
-{
-    return glm::vec3();
-}
-glm::vec4 DirectXRenderer::getVec4_impl(int nameLocation, int program)
-{
-    return glm::vec4();
-}
-glm::mat2 DirectXRenderer::getMat2_impl(int nameLocation, int program)
-{
-    return glm::mat2();
-}
-glm::mat3 DirectXRenderer::getMat3_impl(int nameLocation, int program)
-{
-    return glm::mat3();
-}
-glm::mat4 DirectXRenderer::getMat4_impl(int nameLocation, int program)
-{
-    return glm::mat4();
-}
-int DirectXRenderer::getTexture2D_impl(int nameLocation, int texUnit, int program)
-{
-    return 0;
-}
-void DirectXRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, int shaderProgram){}
+//void DirectXRenderer::use_impl(int program){}
+//void DirectXRenderer::unuse_impl(){}
+//void DirectXRenderer::destroy_impl(int program){}
+//void DirectXRenderer::setBool_impl(int nameLocation, bool value){}
+//void DirectXRenderer::setInt_impl(int nameLocation, int value){}
+//void DirectXRenderer::setFloat_impl(int nameLocation, float value){}
+//void DirectXRenderer::setColor_impl(int nameLocation, const Color &color){}
+//void DirectXRenderer::setColor32_impl(int nameLocation, const Color32 &color){}
+//void DirectXRenderer::setVec2_impl(int nameLocation, const glm::vec2 &vec){}
+//void DirectXRenderer::setVec3_impl(int nameLocation, const glm::vec3 &vec){}
+//void DirectXRenderer::setVec4_impl(int nameLocation, const glm::vec4 &vec){}
+//void DirectXRenderer::setMat2_impl(int nameLocation, const glm::mat2 &mat){}
+//void DirectXRenderer::setMat3_impl(int nameLocation, const glm::mat3 &mat){}
+//void DirectXRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat){}
+//void DirectXRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex){}
+//void DirectXRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs){}
+//bool DirectXRenderer::getBool_impl(int nameLocation, int program)
+//{
+//    return false;
+//}
+//
+//int DirectXRenderer::getInt_impl(int nameLocation, int program)
+//{
+//    return 0;
+//}
+//
+//float DirectXRenderer::getFloat_impl(int nameLocation, int program)
+//{
+//    return 0.0f;
+//}
+//
+//Color DirectXRenderer::getColor_impl(int nameLocation, int program)
+//{
+//    return Color(0.0f, 0.0f, 0.0f, 1.0f);
+//}
+//
+//Color32 DirectXRenderer::getColor32_impl(int nameLocation, int program)
+//{
+//    return Color32(0, 0, 0, 255);
+//}
+//
+//glm::vec2 DirectXRenderer::getVec2_impl(int nameLocation, int program)
+//{
+//    return glm::vec2();
+//}
+//glm::vec3 DirectXRenderer::getVec3_impl(int nameLocation, int program)
+//{
+//    return glm::vec3();
+//}
+//glm::vec4 DirectXRenderer::getVec4_impl(int nameLocation, int program)
+//{
+//    return glm::vec4();
+//}
+//glm::mat2 DirectXRenderer::getMat2_impl(int nameLocation, int program)
+//{
+//    return glm::mat2();
+//}
+//glm::mat3 DirectXRenderer::getMat3_impl(int nameLocation, int program)
+//{
+//    return glm::mat3();
+//}
+//glm::mat4 DirectXRenderer::getMat4_impl(int nameLocation, int program)
+//{
+//    return glm::mat4();
+//}
+void DirectXRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram){}
 void DirectXRenderer::renderLines_impl(int start, int count, int vao){}
 void DirectXRenderer::renderLinesWithCurrentlyBoundVAO_impl(int start, int count){}
 void DirectXRenderer::renderWithCurrentlyBoundVAO_impl(int start, int count){}

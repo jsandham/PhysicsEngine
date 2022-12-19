@@ -140,7 +140,7 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
         }
         else
         {
-            Renderer::getRenderer()->setMat4(mState.mGBufferShaderModelLoc, models[modelIndex]);
+            mState.mGBufferShaderProgram->setMat4(mState.mGBufferShaderModelLoc, models[modelIndex]);
 
             // if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
             //{
@@ -291,7 +291,8 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
 
         //Renderer::getRenderer()->use(state.mQuadShaderProgram);
         mState.mQuadShaderProgram->bind();
-        Renderer::getRenderer()->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        mState.mQuadShaderProgram->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        //Renderer::getRenderer()->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
 
         Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();

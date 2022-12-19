@@ -11,8 +11,9 @@ namespace PhysicsEditor
     private:
         //unsigned int mFBO;
         //unsigned int mColor;
+        //unsigned int mProgram;
         Framebuffer* mFBO;
-        unsigned int mProgram;
+        ShaderProgram* mProgram;
     public:
         TerrainDrawer();
         ~TerrainDrawer();

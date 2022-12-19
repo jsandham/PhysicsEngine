@@ -27,75 +27,6 @@ struct Attribute
     GLchar name[32];
 };
 
-//static GLenum getTextureFormat(TextureFormat format)
-//{
-//    GLenum openglFormat = GL_DEPTH_COMPONENT;
-//
-//    switch (format)
-//    {
-//    case TextureFormat::Depth:
-//        openglFormat = GL_DEPTH_COMPONENT;
-//        break;
-//    case TextureFormat::RG:
-//        openglFormat = GL_RG;
-//        break;
-//    case TextureFormat::RGB:
-//        openglFormat = GL_RGB;
-//        break;
-//    case TextureFormat::RGBA:
-//        openglFormat = GL_RGBA;
-//        break;
-//    default:
-//        Log::error("OpengGL: Invalid texture format\n");
-//        break;
-//    }
-//
-//    return openglFormat;
-//}
-//
-//static GLint getTextureWrapMode(TextureWrapMode wrapMode)
-//{
-//    GLint openglWrapMode = GL_REPEAT;
-//
-//    switch (wrapMode)
-//    {
-//    case TextureWrapMode::Repeat:
-//        openglWrapMode = GL_REPEAT;
-//        break;
-//    case TextureWrapMode::Clamp:
-//        openglWrapMode = GL_CLAMP_TO_EDGE;
-//        break;
-//    default:
-//        Log::error("OpengGL: Invalid texture wrap mode\n");
-//        break;
-//    }
-//
-//    return openglWrapMode;
-//}
-//
-//static GLint getTextureFilterMode(TextureFilterMode filterMode)
-//{
-//    GLint openglFilterMode = GL_NEAREST;
-//
-//    switch (filterMode)
-//    {
-//    case TextureFilterMode::Nearest:
-//        openglFilterMode = GL_NEAREST;
-//        break;
-//    case TextureFilterMode::Bilinear:
-//        openglFilterMode = GL_LINEAR;
-//        break;
-//    case TextureFilterMode::Trilinear:
-//        openglFilterMode = GL_LINEAR_MIPMAP_LINEAR;
-//        break;
-//    default:
-//        Log::error("OpengGL: Invalid texture filter mode\n");
-//        break;
-//    }
-//
-//    return openglFilterMode;
-//}
-
 void OpenGLRenderer::init_impl()
 {
     mContext = OpenGLRenderContext::get();
@@ -125,6 +56,70 @@ void OpenGLRenderer::turnVsyncOff_impl()
 {
     mContext->turnVsyncOff();
 }
+
+void OpenGLRenderer::bindFramebuffer_impl(Framebuffer* fbo)
+{
+    if (fbo == nullptr)
+    {
+        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));            
+    }
+    else
+    {
+        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *reinterpret_cast<unsigned int*>(fbo->getHandle())));
+    }
+}
+
+void OpenGLRenderer::unbindFramebuffer_impl()
+{
+    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+
+void OpenGLRenderer::clearFrambufferColor_impl(const Color &color)
+{
+    CHECK_ERROR(glClearColor(color.mR, color.mG, color.mB, color.mA));
+    CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+}
+
+void OpenGLRenderer::clearFrambufferColor_impl(float r, float g, float b, float a)
+{
+    CHECK_ERROR(glClearColor(r, g, b, a));
+    CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+}
+
+void OpenGLRenderer::clearFramebufferDepth_impl(float depth)
+{
+    CHECK_ERROR(glClearDepth(depth));
+    CHECK_ERROR(glClear(GL_DEPTH_BUFFER_BIT));
+}
+
+void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)
+{
+    CHECK_ERROR(glViewport(x, y, width, height));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void OpenGLRenderer::turnOn_impl(Capability capability)
 {
@@ -372,34 +367,6 @@ void OpenGLRenderer::renderScreenQuad_impl(unsigned int vao)
 //    CHECK_ERROR(glDeleteTextures(1, depth));
 //}
 
-void OpenGLRenderer::bindFramebuffer_impl(unsigned int fbo)
-{
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-}
-
-void OpenGLRenderer::unbindFramebuffer_impl()
-{
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-void OpenGLRenderer::clearFrambufferColor_impl(const Color &color)
-{
-    CHECK_ERROR(glClearColor(color.mR, color.mG, color.mB, color.mA));
-    CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void OpenGLRenderer::clearFrambufferColor_impl(float r, float g, float b, float a)
-{
-    CHECK_ERROR(glClearColor(r, g, b, a));
-    CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void OpenGLRenderer::clearFramebufferDepth_impl(float depth)
-{
-    CHECK_ERROR(glClearDepth(depth));
-    CHECK_ERROR(glClear(GL_DEPTH_BUFFER_BIT));
-}
-
 void OpenGLRenderer::bindVertexArray_impl(unsigned int vao)
 {
     CHECK_ERROR(glBindVertexArray(vao));
@@ -408,11 +375,6 @@ void OpenGLRenderer::bindVertexArray_impl(unsigned int vao)
 void OpenGLRenderer::unbindVertexArray_impl()
 {
     CHECK_ERROR(glBindVertexArray(0));
-}
-
-void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)
-{
-    CHECK_ERROR(glViewport(x, y, width, height));
 }
 
 //void OpenGLRenderer::createTargets_impl(CameraTargets *targets, Viewport viewport, glm::vec3 *ssaoSamples,
@@ -1776,251 +1738,240 @@ void OpenGLRenderer::setUniformBlock_impl(const char *blockName, int bindingPoin
     }
 }
 
-void OpenGLRenderer::use_impl(int program)
-{
-    CHECK_ERROR(glUseProgram(program));
-}
+//void OpenGLRenderer::use_impl(int program)
+//{
+//    CHECK_ERROR(glUseProgram(program));
+//}
+//
+//void OpenGLRenderer::unuse_impl()
+//{
+//    CHECK_ERROR(glUseProgram(0));
+//}
+//
+//void OpenGLRenderer::destroy_impl(int program)
+//{
+//    CHECK_ERROR(glDeleteProgram(program));
+//}
+//
+//void OpenGLRenderer::setBool_impl(int nameLocation, bool value)
+//{
+//    CHECK_ERROR(glUniform1i(nameLocation, (int)value));
+//}
+//
+//void OpenGLRenderer::setInt_impl(int nameLocation, int value)
+//{
+//    CHECK_ERROR(glUniform1i(nameLocation, value));
+//}
+//
+//void OpenGLRenderer::setFloat_impl(int nameLocation, float value)
+//{
+//    CHECK_ERROR(glUniform1f(nameLocation, value));
+//}
+//
+//void OpenGLRenderer::setColor_impl(int nameLocation, const Color &color)
+//{
+//    CHECK_ERROR(glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.mR)));
+//}
+//
+//void OpenGLRenderer::setColor32_impl(int nameLocation, const Color32 &color)
+//{
+//    CHECK_ERROR(glUniform4ui(nameLocation, static_cast<GLuint>(color.mR), static_cast<GLuint>(color.mG),
+//                 static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
+//}
+//
+//void OpenGLRenderer::setVec2_impl(int nameLocation, const glm::vec2 &vec)
+//{
+//    CHECK_ERROR(glUniform2fv(nameLocation, 1, &vec[0]));
+//}
+//
+//void OpenGLRenderer::setVec3_impl(int nameLocation, const glm::vec3 &vec)
+//{
+//    CHECK_ERROR(glUniform3fv(nameLocation, 1, &vec[0]));
+//}
+//
+//void OpenGLRenderer::setVec4_impl(int nameLocation, const glm::vec4 &vec)
+//{
+//    CHECK_ERROR(glUniform4fv(nameLocation, 1, &vec[0]));
+//}
+//
+//void OpenGLRenderer::setMat2_impl(int nameLocation, const glm::mat2 &mat)
+//{
+//    CHECK_ERROR(glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
+//}
+//
+//void OpenGLRenderer::setMat3_impl(int nameLocation, const glm::mat3 &mat)
+//{
+//    CHECK_ERROR(glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
+//}
+//
+//void OpenGLRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat)
+//{
+//    CHECK_ERROR(glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
+//}
+//
+//void OpenGLRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex)
+//{
+//    CHECK_ERROR(glUniform1i(nameLocation, texUnit));
+//
+//    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
+//    if (tex != nullptr)
+//    {
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(tex->getHandle())));
+//    }
+//    else
+//    {
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+//    }
+//}
+//
+//void OpenGLRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+//{
+//    CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits.data()));
+//
+//    for (int i = 0; i < count; i++)
+//    {
+//        CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
+//        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(texs[i]->getHandle())));
+//    }
+//}
+//
+//bool OpenGLRenderer::getBool_impl(int nameLocation, int program)
+//{
+//    int value = 0;
+//    CHECK_ERROR(glGetUniformiv(program, nameLocation, &value));
+//
+//    return (bool)value;
+//}
+//
+//int OpenGLRenderer::getInt_impl(int nameLocation, int program)
+//{
+//    int value = 0;
+//    CHECK_ERROR(glGetUniformiv(program, nameLocation, &value));
+//
+//    return value;
+//}
+//
+//float OpenGLRenderer::getFloat_impl(int nameLocation, int program)
+//{
+//    float value = 0.0f;
+//    CHECK_ERROR(glGetUniformfv(program, nameLocation, &value));
+//
+//    return value;
+//}
+//
+//Color OpenGLRenderer::getColor_impl(int nameLocation, int program)
+//{
+//    Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(Color), &color.mR));
+//
+//    return color;
+//}
+//
+//Color32 OpenGLRenderer::getColor32_impl(int nameLocation, int program)
+//{
+//    Color32 color = Color32(0, 0, 0, 255);
+//
+//    GLuint c[4];
+//    CHECK_ERROR(glGetnUniformuiv(program, nameLocation, 4 * sizeof(GLuint), &c[0]));
+//
+//    color.mR = static_cast<unsigned char>(c[0]);
+//    color.mG = static_cast<unsigned char>(c[1]);
+//    color.mB = static_cast<unsigned char>(c[2]);
+//    color.mA = static_cast<unsigned char>(c[3]);
+//
+//    return color;
+//}
+//
+//glm::vec2 OpenGLRenderer::getVec2_impl(int nameLocation, int program)
+//{
+//    glm::vec2 value = glm::vec2(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec2), &value[0]));
+//
+//    return value;
+//}
+//
+//glm::vec3 OpenGLRenderer::getVec3_impl(int nameLocation, int program)
+//{
+//    glm::vec3 value = glm::vec3(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec3), &value[0]));
+//
+//    return value;
+//}
+//
+//glm::vec4 OpenGLRenderer::getVec4_impl(int nameLocation, int program)
+//{
+//    glm::vec4 value = glm::vec4(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec4), &value[0]));
+//
+//    return value;
+//}
+//
+//glm::mat2 OpenGLRenderer::getMat2_impl(int nameLocation, int program)
+//{
+//    glm::mat2 value = glm::mat2(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat2), &value[0][0]));
+//
+//    return value;
+//}
+//
+//glm::mat3 OpenGLRenderer::getMat3_impl(int nameLocation, int program)
+//{
+//    glm::mat3 value = glm::mat3(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat3), &value[0][0]));
+//
+//    return value;
+//}
+//
+//glm::mat4 OpenGLRenderer::getMat4_impl(int nameLocation, int program)
+//{
+//    glm::mat4 value = glm::mat4(0.0f);
+//    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat4), &value[0][0]));
+//
+//    return value;
+//}
 
-void OpenGLRenderer::unuse_impl()
-{
-    CHECK_ERROR(glUseProgram(0));
-}
-
-void OpenGLRenderer::destroy_impl(int program)
-{
-    CHECK_ERROR(glDeleteProgram(program));
-}
-
-void OpenGLRenderer::setBool_impl(int nameLocation, bool value)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, (int)value));
-}
-
-void OpenGLRenderer::setInt_impl(int nameLocation, int value)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, value));
-}
-
-void OpenGLRenderer::setFloat_impl(int nameLocation, float value)
-{
-    CHECK_ERROR(glUniform1f(nameLocation, value));
-}
-
-void OpenGLRenderer::setColor_impl(int nameLocation, const Color &color)
-{
-    CHECK_ERROR(glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.mR)));
-}
-
-void OpenGLRenderer::setColor32_impl(int nameLocation, const Color32 &color)
-{
-    CHECK_ERROR(glUniform4ui(nameLocation, static_cast<GLuint>(color.mR), static_cast<GLuint>(color.mG),
-                 static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
-}
-
-void OpenGLRenderer::setVec2_impl(int nameLocation, const glm::vec2 &vec)
-{
-    CHECK_ERROR(glUniform2fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLRenderer::setVec3_impl(int nameLocation, const glm::vec3 &vec)
-{
-    CHECK_ERROR(glUniform3fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLRenderer::setVec4_impl(int nameLocation, const glm::vec4 &vec)
-{
-    CHECK_ERROR(glUniform4fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLRenderer::setMat2_impl(int nameLocation, const glm::mat2 &mat)
-{
-    CHECK_ERROR(glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLRenderer::setMat3_impl(int nameLocation, const glm::mat3 &mat)
-{
-    CHECK_ERROR(glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLRenderer::setMat4_impl(int nameLocation, const glm::mat4 &mat)
-{
-    CHECK_ERROR(glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLRenderer::setTexture2D_impl(int nameLocation, int texUnit, TextureHandle* tex)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, texUnit));
-
-    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-    if (tex != nullptr)
-    {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(tex->getHandle())));
-    }
-    else
-    {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-    }
-}
-
-void OpenGLRenderer::setTexture2Ds_impl(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
-{
-    CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits.data()));
-
-    for (int i = 0; i < count; i++)
-    {
-        CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(texs[i]->getHandle())));
-    }
-}
-
-bool OpenGLRenderer::getBool_impl(int nameLocation, int program)
-{
-    int value = 0;
-    CHECK_ERROR(glGetUniformiv(program, nameLocation, &value));
-
-    return (bool)value;
-}
-
-int OpenGLRenderer::getInt_impl(int nameLocation, int program)
-{
-    int value = 0;
-    CHECK_ERROR(glGetUniformiv(program, nameLocation, &value));
-
-    return value;
-}
-
-float OpenGLRenderer::getFloat_impl(int nameLocation, int program)
-{
-    float value = 0.0f;
-    CHECK_ERROR(glGetUniformfv(program, nameLocation, &value));
-
-    return value;
-}
-
-Color OpenGLRenderer::getColor_impl(int nameLocation, int program)
-{
-    Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(Color), &color.mR));
-
-    return color;
-}
-
-Color32 OpenGLRenderer::getColor32_impl(int nameLocation, int program)
-{
-    Color32 color = Color32(0, 0, 0, 255);
-
-    GLuint c[4];
-    CHECK_ERROR(glGetnUniformuiv(program, nameLocation, 4 * sizeof(GLuint), &c[0]));
-
-    color.mR = static_cast<unsigned char>(c[0]);
-    color.mG = static_cast<unsigned char>(c[1]);
-    color.mB = static_cast<unsigned char>(c[2]);
-    color.mA = static_cast<unsigned char>(c[3]);
-
-    return color;
-}
-
-glm::vec2 OpenGLRenderer::getVec2_impl(int nameLocation, int program)
-{
-    glm::vec2 value = glm::vec2(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec2), &value[0]));
-
-    return value;
-}
-
-glm::vec3 OpenGLRenderer::getVec3_impl(int nameLocation, int program)
-{
-    glm::vec3 value = glm::vec3(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec3), &value[0]));
-
-    return value;
-}
-
-glm::vec4 OpenGLRenderer::getVec4_impl(int nameLocation, int program)
-{
-    glm::vec4 value = glm::vec4(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::vec4), &value[0]));
-
-    return value;
-}
-
-glm::mat2 OpenGLRenderer::getMat2_impl(int nameLocation, int program)
-{
-    glm::mat2 value = glm::mat2(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat2), &value[0][0]));
-
-    return value;
-}
-
-glm::mat3 OpenGLRenderer::getMat3_impl(int nameLocation, int program)
-{
-    glm::mat3 value = glm::mat3(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat3), &value[0][0]));
-
-    return value;
-}
-
-glm::mat4 OpenGLRenderer::getMat4_impl(int nameLocation, int program)
-{
-    glm::mat4 value = glm::mat4(0.0f);
-    CHECK_ERROR(glGetnUniformfv(program, nameLocation, sizeof(glm::mat4), &value[0][0]));
-
-    return value;
-}
-
-int OpenGLRenderer::getTexture2D_impl(int nameLocation, int texUnit, int program)
-{
-    int tex = -1;
-    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-    CHECK_ERROR(glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex));
-
-    return tex;
-}
-
-void OpenGLRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, int shaderProgram)
+void OpenGLRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
 {
     
     int textureUnit = 0;
     for (size_t i = 0; i < uniforms.size(); i++)
     {
-        int location = findUniformLocation(uniforms[i].mName.c_str(), shaderProgram);
+        int location = findUniformLocation(uniforms[i].mName.c_str(), *reinterpret_cast<unsigned int*>(shaderProgram->getHandle()));
 
         assert(location != -1);
 
         if (uniforms[i].mType == ShaderUniformType::Sampler2D)
         {
-            //if (uniforms[i].mTex != -1)
             if (uniforms[i].mTex != nullptr)
             {
-                OpenGLRenderer::setTexture2D(location, textureUnit, uniforms[i].mTex);
+                shaderProgram->setTexture2D(location, textureUnit, uniforms[i].mTex);
             }
             else
             {
-                /*OpenGLRenderer::setTexture2D(location, textureUnit, 0);*/
-                OpenGLRenderer::setTexture2D(location, textureUnit, nullptr);
+                shaderProgram->setTexture2D(location, textureUnit, nullptr);
             }
 
             textureUnit++;
         }
         else if (uniforms[i].mType == ShaderUniformType::Int)
         {
-            OpenGLRenderer::setInt(location, *reinterpret_cast<const int *>(uniforms[i].mData));
+            shaderProgram->setInt(location, *reinterpret_cast<const int*>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Float)
         {
-            OpenGLRenderer::setFloat(location, *reinterpret_cast<const float *>(uniforms[i].mData));
+            shaderProgram->setFloat(location, *reinterpret_cast<const float*>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec2)
         {
-            OpenGLRenderer::setVec2(location, *reinterpret_cast<const glm::vec2 *>(uniforms[i].mData));
+            shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2*>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec3)
         {
-            OpenGLRenderer::setVec3(location, *reinterpret_cast<const glm::vec3 *>(uniforms[i].mData));
+            shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3*>(uniforms[i].mData));
         }
         else if (uniforms[i].mType == ShaderUniformType::Vec4)
         {
-            OpenGLRenderer::setVec4(location, *reinterpret_cast<const glm::vec4 *>(uniforms[i].mData));
+            shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4*>(uniforms[i].mData));
         }
     }
 }
