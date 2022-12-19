@@ -3,33 +3,20 @@
 
 using namespace PhysicsEngine;
 
-static void initializeGizmoRenderer(World* world, GizmoRendererState& state);
-static void destroyGizmoRenderer(GizmoRendererState& state);
-static void renderLineGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<LineGizmo>& gizmos);
-static void renderPlaneGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<PlaneGizmo>& gizmos);
-static void renderAABBGizmos(World* world, Camera* camera, GizmoRendererState& state, const std::vector<AABBGizmo>& gizmos);
-static void renderSphereGizmos(World* world, Camera* camera, GizmoRendererState& state,
-    const std::vector<SphereGizmo>& gizmos);
-static void renderFrustumGizmos(World* world, Camera* camera, GizmoRendererState& state,
-    const std::vector<FrustumGizmo>& gizmos);
-static void renderShadedFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
-static void renderWireframeFrustumGizmo(World* world, Camera* camera, GizmoRendererState& state, const FrustumGizmo& gizmo);
-static void renderGridGizmo(World* world, Camera* camera, GizmoRendererState& state);
-
 GizmoRenderer::GizmoRenderer()
 {
 }
 
 GizmoRenderer::~GizmoRenderer()
 {
-    destroyGizmoRenderer(mState);
+    destroyGizmoRenderer();
 }
 
 void GizmoRenderer::init(World *world)
 {
     mWorld = world;
 
-    initializeGizmoRenderer(mWorld, mState);
+    initializeGizmoRenderer();
 }
 
 void GizmoRenderer::update(Camera *camera)
@@ -40,16 +27,16 @@ void GizmoRenderer::update(Camera *camera)
         addToDrawList(mWorld->mBoundingSpheres[i], Color(0.0f, 0.0f, 1.0f, 0.3f) /*Color::blue*/);
     }
 
-    renderLineGizmos(mWorld, camera, mState, mLines);
-    renderPlaneGizmos(mWorld, camera, mState, mPlanes);
-    renderAABBGizmos(mWorld, camera, mState, mAABBs);
-    renderSphereGizmos(mWorld, camera, mState, mSpheres);
-    renderFrustumGizmos(mWorld, camera, mState, mFrustums);
+    renderLineGizmos(camera);
+    renderPlaneGizmos(camera);
+    renderAABBGizmos(camera);
+    renderSphereGizmos(camera);
+    renderFrustumGizmos(camera);
 }
 
 void GizmoRenderer::drawGrid(Camera* camera)
 {
-    renderGridGizmo(mWorld, camera, mState);
+    renderGridGizmo(camera);
 }
 
 void GizmoRenderer::addToDrawList(const Line &line, const Color &color)
@@ -95,37 +82,36 @@ void GizmoRenderer::clearDrawList()
     mPlanes.clear();
 }
 
-
-static void initializeGizmoRenderer(World *world, GizmoRendererState &state)
+void GizmoRenderer::initializeGizmoRenderer()
 {
-    state.mLineShaderProgram = RendererShaders::getLineShader();
-    state.mGizmoShaderProgram = RendererShaders::getGizmoShader();
-    state.mGridShaderProgram = RendererShaders::getGridShader();
+    mState.mLineShaderProgram = RendererShaders::getLineShader();
+    mState.mGizmoShaderProgram = RendererShaders::getGizmoShader();
+    mState.mGridShaderProgram = RendererShaders::getGridShader();
 
-    state.mLineShaderMVPLoc = state.mLineShaderProgram->findUniformLocation("mvp");
-    state.mGizmoShaderModelLoc = state.mGizmoShaderProgram->findUniformLocation("model");
-    state.mGizmoShaderViewLoc = state.mGizmoShaderProgram->findUniformLocation("view");
-    state.mGizmoShaderProjLoc = state.mGizmoShaderProgram->findUniformLocation("projection");
-    state.mGizmoShaderColorLoc = state.mGizmoShaderProgram->findUniformLocation("color");
-    state.mGizmoShaderLightPosLoc = state.mGizmoShaderProgram->findUniformLocation("lightPos");
-    state.mGridShaderMVPLoc = state.mGridShaderProgram->findUniformLocation("mvp");
-    state.mGridShaderColorLoc = state.mGridShaderProgram->findUniformLocation("color");
+    mState.mLineShaderMVPLoc = mState.mLineShaderProgram->findUniformLocation("mvp");
+    mState.mGizmoShaderModelLoc = mState.mGizmoShaderProgram->findUniformLocation("model");
+    mState.mGizmoShaderViewLoc = mState.mGizmoShaderProgram->findUniformLocation("view");
+    mState.mGizmoShaderProjLoc = mState.mGizmoShaderProgram->findUniformLocation("projection");
+    mState.mGizmoShaderColorLoc = mState.mGizmoShaderProgram->findUniformLocation("color");
+    mState.mGizmoShaderLightPosLoc = mState.mGizmoShaderProgram->findUniformLocation("lightPos");
+    mState.mGridShaderMVPLoc = mState.mGridShaderProgram->findUniformLocation("mvp");
+    mState.mGridShaderColorLoc = mState.mGridShaderProgram->findUniformLocation("color");
 
-    state.mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    mState.mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
-    state.mFrustumVertices.resize(108, 0.0f);
-    state.mFrustumNormals.resize(108, 0.0f);
+    mState.mFrustumVertices.resize(108, 0.0f);
+    mState.mFrustumNormals.resize(108, 0.0f);
 
-    Renderer::getRenderer()->createFrustum(state.mFrustumVertices, state.mFrustumNormals, &state.mFrustumVAO, &state.mFrustumVBO[0],
-                            &state.mFrustumVBO[1]);
+    Renderer::getRenderer()->createFrustum(mState.mFrustumVertices, mState.mFrustumNormals, &mState.mFrustumVAO, &mState.mFrustumVBO[0],
+                            &mState.mFrustumVBO[1]);
 
     for (int i = -100; i < 100; i++)
     {
         glm::vec3 start = glm::vec3(i, 0.0f, -100.0f);
         glm::vec3 end = glm::vec3(i, 0.0f, 100.0f);
 
-        state.mGridVertices.push_back(start);
-        state.mGridVertices.push_back(end);
+        mState.mGridVertices.push_back(start);
+        mState.mGridVertices.push_back(end);
     }
 
     for (int i = -100; i < 100; i++)
@@ -133,53 +119,52 @@ static void initializeGizmoRenderer(World *world, GizmoRendererState &state)
         glm::vec3 start = glm::vec3(-100.0f, 0.0f, i);
         glm::vec3 end = glm::vec3(100.0f, 0.0f, i);
 
-        state.mGridVertices.push_back(start);
-        state.mGridVertices.push_back(end);
+        mState.mGridVertices.push_back(start);
+        mState.mGridVertices.push_back(end);
     }
 
-    Renderer::getRenderer()->createGrid(state.mGridVertices, &state.mGridVAO, &state.mGridVBO);
+    Renderer::getRenderer()->createGrid(mState.mGridVertices, &mState.mGridVAO, &mState.mGridVBO);
 }
 
-static void destroyGizmoRenderer(GizmoRendererState &state)
+void GizmoRenderer::destroyGizmoRenderer()
 {
-    Renderer::getRenderer()->destroyFrustum(&state.mFrustumVAO, &state.mFrustumVBO[0], &state.mFrustumVBO[1]);
-    Renderer::getRenderer()->destroyGrid(&state.mGridVAO, &state.mGridVBO);
+    Renderer::getRenderer()->destroyFrustum(&mState.mFrustumVAO, &mState.mFrustumVBO[0], &mState.mFrustumVBO[1]);
+    Renderer::getRenderer()->destroyGrid(&mState.mGridVAO, &mState.mGridVBO);
 }
 
-static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                                     const std::vector<LineGizmo> &gizmos)
+void GizmoRenderer::renderLineGizmos(Camera *camera)
 {
-    if (gizmos.empty())
+    if (mLines.empty())
     {
         return;
     }
 
-    std::vector<float> vertices(6 * gizmos.size());
+    std::vector<float> vertices(6 * mLines.size());
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mLines.size(); i++)
     {
-        vertices[6 * i + 0] = gizmos[i].mLine.mStart.x;
-        vertices[6 * i + 1] = gizmos[i].mLine.mStart.y;
-        vertices[6 * i + 2] = gizmos[i].mLine.mStart.z;
+        vertices[6 * i + 0] = mLines[i].mLine.mStart.x;
+        vertices[6 * i + 1] = mLines[i].mLine.mStart.y;
+        vertices[6 * i + 2] = mLines[i].mLine.mStart.z;
 
-        vertices[6 * i + 3] = gizmos[i].mLine.mEnd.x;
-        vertices[6 * i + 4] = gizmos[i].mLine.mEnd.y;
-        vertices[6 * i + 5] = gizmos[i].mLine.mEnd.z;
+        vertices[6 * i + 3] = mLines[i].mLine.mEnd.x;
+        vertices[6 * i + 4] = mLines[i].mLine.mEnd.y;
+        vertices[6 * i + 5] = mLines[i].mLine.mEnd.z;
     }
 
-    std::vector<float> colors(8 * gizmos.size());
+    std::vector<float> colors(8 * mLines.size());
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mLines.size(); i++)
     {
-        colors[8 * i + 0] = gizmos[i].mColor.mR;
-        colors[8 * i + 1] = gizmos[i].mColor.mG;
-        colors[8 * i + 2] = gizmos[i].mColor.mB;
-        colors[8 * i + 3] = gizmos[i].mColor.mA;
+        colors[8 * i + 0] = mLines[i].mColor.mR;
+        colors[8 * i + 1] = mLines[i].mColor.mG;
+        colors[8 * i + 2] = mLines[i].mColor.mB;
+        colors[8 * i + 3] = mLines[i].mColor.mA;
 
-        colors[8 * i + 4] = gizmos[i].mColor.mR;
-        colors[8 * i + 5] = gizmos[i].mColor.mG;
-        colors[8 * i + 6] = gizmos[i].mColor.mB;
-        colors[8 * i + 7] = gizmos[i].mColor.mA;
+        colors[8 * i + 4] = mLines[i].mColor.mR;
+        colors[8 * i + 5] = mLines[i].mColor.mG;
+        colors[8 * i + 6] = mLines[i].mColor.mB;
+        colors[8 * i + 7] = mLines[i].mColor.mA;
     }
 
     unsigned int lineVAO;
@@ -193,8 +178,8 @@ static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &s
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    state.mLineShaderProgram->bind();
-    state.mLineShaderProgram->setMat4(state.mLineShaderMVPLoc, mvp);
+    mState.mLineShaderProgram->bind();
+    mState.mLineShaderProgram->setMat4(mState.mLineShaderMVPLoc, mvp);
 
     Renderer::getRenderer()->renderLines(lineVAO, 0, (int)vertices.size() / 3);
 
@@ -203,10 +188,9 @@ static void renderLineGizmos(World *world, Camera *camera, GizmoRendererState &s
     Renderer::getRenderer()->destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
 }
 
-static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                                       const std::vector<SphereGizmo> &gizmos)
+void GizmoRenderer::renderSphereGizmos(Camera *camera)
 {
-    if (gizmos.empty())
+    if (mSpheres.empty())
     {
         return;
     }
@@ -216,7 +200,7 @@ static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState 
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Sphere);
+    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -224,19 +208,19 @@ static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState 
 
     Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    state.mGizmoShaderProgram->bind();
-    state.mGizmoShaderProgram->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    mState.mGizmoShaderProgram->bind();
+    mState.mGizmoShaderProgram->setVec3(mState.mGizmoShaderLightPosLoc, transform->getPosition());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderViewLoc, camera->getViewMatrix());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mSpheres.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mSphere.mCentre);
-        model = glm::scale(model,
-                           glm::vec3(gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius, gizmos[i].mSphere.mRadius));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), mSpheres[i].mSphere.mCentre);
+        model = glm::scale(
+            model, glm::vec3(mSpheres[i].mSphere.mRadius, mSpheres[i].mSphere.mRadius, mSpheres[i].mSphere.mRadius));
 
-        state.mGizmoShaderProgram->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        state.mGizmoShaderProgram->setMat4(state.mGizmoShaderModelLoc, model);
+        mState.mGizmoShaderProgram->setColor(mState.mGizmoShaderColorLoc, mSpheres[i].mColor);
+        mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderModelLoc, model);
 
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
@@ -248,10 +232,9 @@ static void renderSphereGizmos(World *world, Camera *camera, GizmoRendererState 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                                     const std::vector<AABBGizmo> &gizmos)
+void GizmoRenderer::renderAABBGizmos(Camera *camera)
 {
-    if (gizmos.empty())
+    if (mAABBs.empty())
     {
         return;
     }
@@ -261,7 +244,7 @@ static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &s
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Cube);
+    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Cube);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -269,18 +252,18 @@ static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &s
  
     Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    state.mGizmoShaderProgram->bind();
-    state.mGizmoShaderProgram->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    mState.mGizmoShaderProgram->bind();
+    mState.mGizmoShaderProgram->setVec3(mState.mGizmoShaderLightPosLoc, transform->getPosition());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderViewLoc, camera->getViewMatrix());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mAABBs.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mAABB.mCentre);
-        model = glm::scale(model, gizmos[i].mAABB.mSize);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), mAABBs[i].mAABB.mCentre);
+        model = glm::scale(model, mAABBs[i].mAABB.mSize);
 
-        state.mGizmoShaderProgram->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        state.mGizmoShaderProgram->setMat4(state.mGizmoShaderModelLoc, model);
+        mState.mGizmoShaderProgram->setColor(mState.mGizmoShaderColorLoc, mAABBs[i].mColor);
+        mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderModelLoc, model);
 
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
@@ -291,10 +274,9 @@ static void renderAABBGizmos(World *world, Camera *camera, GizmoRendererState &s
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                                      const std::vector<PlaneGizmo> &gizmos)
+void GizmoRenderer::renderPlaneGizmos(Camera *camera)
 {
-    if (gizmos.empty())
+    if (mPlanes.empty())
     {
         return;
     }
@@ -304,7 +286,7 @@ static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = world->getPrimtiveMesh(PrimitiveType::Plane);
+    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Plane);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -312,24 +294,24 @@ static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &
 
     Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
 
-    state.mGizmoShaderProgram->bind();
-    state.mGizmoShaderProgram->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
+    mState.mGizmoShaderProgram->bind();
+    mState.mGizmoShaderProgram->setVec3(mState.mGizmoShaderLightPosLoc, transform->getPosition());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderViewLoc, camera->getViewMatrix());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderProjLoc, camera->getProjMatrix());
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mPlanes.size(); i++)
     {
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), gizmos[i].mPlane.mX0);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), mPlanes[i].mPlane.mX0);
         glm::vec3 a = glm::vec3(0, 0, 1);
-        glm::vec3 b = gizmos[i].mPlane.mNormal;
+        glm::vec3 b = mPlanes[i].mPlane.mNormal;
         float d = glm::dot(a, b);
         glm::vec3 c = glm::cross(a, b);
         float angle = glm::atan(glm::length(c), d);
 
         model = glm::rotate(model, angle, c);
 
-        state.mGizmoShaderProgram->setColor(state.mGizmoShaderColorLoc, gizmos[i].mColor);
-        state.mGizmoShaderProgram->setMat4(state.mGizmoShaderModelLoc, model);
+        mState.mGizmoShaderProgram->setColor(mState.mGizmoShaderColorLoc, mPlanes[i].mColor);
+        mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderModelLoc, model);
 
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
@@ -340,8 +322,7 @@ static void renderPlaneGizmos(World *world, Camera *camera, GizmoRendererState &
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-static void renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
-                                             const FrustumGizmo &gizmo)
+void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo)
 {
     glm::vec3 temp[36];
     temp[0] = gizmo.mFrustum.mNtl;
@@ -394,9 +375,9 @@ static void renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRenderer
 
     for (int j = 0; j < 36; j++)
     {
-        state.mFrustumVertices[3 * j + 0] = temp[j].x;
-        state.mFrustumVertices[3 * j + 1] = temp[j].y;
-        state.mFrustumVertices[3 * j + 2] = temp[j].z;
+        mState.mFrustumVertices[3 * j + 0] = temp[j].x;
+        mState.mFrustumVertices[3 * j + 1] = temp[j].y;
+        mState.mFrustumVertices[3 * j + 2] = temp[j].z;
     }
 
     for (int j = 0; j < 6; j++)
@@ -408,29 +389,28 @@ static void renderShadedFrustumGizmo(World *world, Camera *camera, GizmoRenderer
 
         for (int k = 0; k < 6; k++)
         {
-            state.mFrustumNormals[18 * j + 3 * k + 0] = normal.x;
-            state.mFrustumNormals[18 * j + 3 * k + 1] = normal.y;
-            state.mFrustumNormals[18 * j + 3 * k + 2] = normal.z;
+            mState.mFrustumNormals[18 * j + 3 * k + 0] = normal.x;
+            mState.mFrustumNormals[18 * j + 3 * k + 1] = normal.y;
+            mState.mFrustumNormals[18 * j + 3 * k + 2] = normal.z;
         }
     }
 
     Transform *transform = camera->getComponent<Transform>();
 
-    state.mGizmoShaderProgram->bind();
-    state.mGizmoShaderProgram->setVec3(state.mGizmoShaderLightPosLoc, transform->getPosition());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderModelLoc, glm::mat4(1.0f));
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderViewLoc, camera->getViewMatrix());
-    state.mGizmoShaderProgram->setMat4(state.mGizmoShaderProjLoc, camera->getProjMatrix());
-    state.mGizmoShaderProgram->setColor(state.mGizmoShaderColorLoc, gizmo.mColor);
+    mState.mGizmoShaderProgram->bind();
+    mState.mGizmoShaderProgram->setVec3(mState.mGizmoShaderLightPosLoc, transform->getPosition());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderModelLoc, glm::mat4(1.0f));
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderViewLoc, camera->getViewMatrix());
+    mState.mGizmoShaderProgram->setMat4(mState.mGizmoShaderProjLoc, camera->getProjMatrix());
+    mState.mGizmoShaderProgram->setColor(mState.mGizmoShaderColorLoc, gizmo.mColor);
 
-    Renderer::getRenderer()->updateFrustum(state.mFrustumVertices, state.mFrustumNormals, state.mFrustumVBO[0],
-                            state.mFrustumVBO[1]);
+    Renderer::getRenderer()->updateFrustum(mState.mFrustumVertices, mState.mFrustumNormals, mState.mFrustumVBO[0],
+                            mState.mFrustumVBO[1]);
 
-    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)state.mFrustumVertices.size() / 3);
+    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mState.mFrustumVertices.size() / 3);
 }
 
-static void renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRendererState &state,
-                                                const FrustumGizmo &gizmo)
+void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo)
 {
     glm::vec3 temp[24];
     temp[0] = gizmo.mFrustum.mNtl;
@@ -462,25 +442,24 @@ static void renderWireframeFrustumGizmo(World *world, Camera *camera, GizmoRende
 
     for (int j = 0; j < 24; j++)
     {
-        state.mFrustumVertices[3 * j + 0] = temp[j].x;
-        state.mFrustumVertices[3 * j + 1] = temp[j].y;
-        state.mFrustumVertices[3 * j + 2] = temp[j].z;
+        mState.mFrustumVertices[3 * j + 0] = temp[j].x;
+        mState.mFrustumVertices[3 * j + 1] = temp[j].y;
+        mState.mFrustumVertices[3 * j + 2] = temp[j].z;
     }
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    state.mLineShaderProgram->bind();
-    state.mLineShaderProgram->setMat4(state.mLineShaderMVPLoc, mvp);
+    mState.mLineShaderProgram->bind();
+    mState.mLineShaderProgram->setMat4(mState.mLineShaderMVPLoc, mvp);
 
-    Renderer::getRenderer()->updateFrustum(state.mFrustumVertices, state.mFrustumVBO[0]);
+    Renderer::getRenderer()->updateFrustum(mState.mFrustumVertices, mState.mFrustumVBO[0]);
     
     Renderer::getRenderer()->renderLinesWithCurrentlyBoundVAO(0, 24);
 }
 
-static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState &state,
-                                        const std::vector<FrustumGizmo> &gizmos)
+void GizmoRenderer::renderFrustumGizmos(Camera *camera)
 {
-    if (gizmos.empty())
+    if (mFrustums.empty())
     {
         return;
     }
@@ -492,17 +471,17 @@ static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    Renderer::getRenderer()->bindVertexArray(state.mFrustumVAO);
+    Renderer::getRenderer()->bindVertexArray(mState.mFrustumVAO);
 
-    for (size_t i = 0; i < gizmos.size(); i++)
+    for (size_t i = 0; i < mFrustums.size(); i++)
     {
-        if (!gizmos[i].mWireFrame)
+        if (!mFrustums[i].mWireFrame)
         {
-            renderShadedFrustumGizmo(world, camera, state, gizmos[i]);
+            renderShadedFrustumGizmo(camera, mFrustums[i]);
         }
         else
         {
-            renderWireframeFrustumGizmo(world, camera, state, gizmos[i]);
+            renderWireframeFrustumGizmo(camera, mFrustums[i]);
         }
     }
 
@@ -512,7 +491,7 @@ static void renderFrustumGizmos(World *world, Camera *camera, GizmoRendererState
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
 
-static void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &state)
+void GizmoRenderer::renderGridGizmo(Camera *camera)
 {
     Renderer::getRenderer()->turnOn(Capability::Blending);
     Renderer::getRenderer()->turnOn(Capability::LineSmoothing);
@@ -524,11 +503,11 @@ static void renderGridGizmo(World *world, Camera *camera, GizmoRendererState &st
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
-    state.mGridShaderProgram->bind();
-    state.mGridShaderProgram->setMat4(state.mGridShaderMVPLoc, mvp);
-    state.mGridShaderProgram->setColor(state.mGridShaderColorLoc, state.mGridColor);
+    mState.mGridShaderProgram->bind();
+    mState.mGridShaderProgram->setMat4(mState.mGridShaderMVPLoc, mvp);
+    mState.mGridShaderProgram->setColor(mState.mGridShaderColorLoc, mState.mGridColor);
 
-    Renderer::getRenderer()->renderLines(0, (int)state.mGridVertices.size(), state.mGridVAO);
+    Renderer::getRenderer()->renderLines(0, (int)mState.mGridVertices.size(), mState.mGridVAO);
 
     camera->getNativeGraphicsMainFBO()->unbind();
 

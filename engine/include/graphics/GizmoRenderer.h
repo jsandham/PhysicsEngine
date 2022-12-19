@@ -121,6 +121,18 @@ class GizmoRenderer
     void addToDrawList(const Frustum &frustum, const Color &color, bool wireframe = false);
     void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe = false);
     void clearDrawList();
+
+  private:
+    void initializeGizmoRenderer();
+    void destroyGizmoRenderer();
+    void renderLineGizmos(Camera *camera);
+    void renderPlaneGizmos(Camera *camera);
+    void renderAABBGizmos(Camera *camera);
+    void renderSphereGizmos(Camera *camera);
+    void renderFrustumGizmos(Camera *camera);
+    void renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
+    void renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
+    void renderGridGizmo(Camera *camera);
 };
 
 } // namespace PhysicsEngine

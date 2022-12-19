@@ -33,6 +33,14 @@ class DebugRenderer
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models,
                 const std::vector<Id> &transformIds);
+
+  private:
+    void initializeDebugRenderer();
+    void beginDebugFrame(Camera *camera);
+    void renderDebug(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
+    void renderDebugColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                        const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
+    void endDebugFrame(Camera *camera);
 };
 
 } // namespace PhysicsEngine

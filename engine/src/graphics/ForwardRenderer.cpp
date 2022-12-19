@@ -3,26 +3,6 @@
 
 using namespace PhysicsEngine;
 
-static void initializeRenderer(World* world, ForwardRendererState& state);
-static void beginFrame(World* world, Camera* camera, ForwardRendererState& state);
-static void computeSSAO(World* world, Camera* camera, ForwardRendererState& state,
-    const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
-static void renderShadows(World* world, Camera* camera, Light* light, Transform* lightTransform,
-    ForwardRendererState& state, const std::vector<RenderObject>& renderObjects,
-    const std::vector<glm::mat4>& models);
-static void renderOpaques(World* world, Camera* camera, Light* light, Transform* lightTransform,
-    ForwardRendererState& state, const std::vector<RenderObject>& renderObjects,
-    const std::vector<glm::mat4>& models);
-static void renderSprites(World* world, Camera* camera, ForwardRendererState& state,
-    const std::vector<SpriteObject>& spriteObjects);
-static void renderColorPicking(World* world, Camera* camera, ForwardRendererState& state,
-    const std::vector<RenderObject>& renderObjects,
-    const std::vector<glm::mat4>& models, const std::vector<Id>& transformIds);
-static void renderTransparents();
-static void postProcessing();
-static void endFrame(World* world, Camera* camera, ForwardRendererState& state);
-static void calcCascadeOrthoProj(Camera* camera, glm::vec3 lightDirection, ForwardRendererState& state);
-
 ForwardRenderer::ForwardRenderer()
 {
 }
@@ -35,7 +15,7 @@ void ForwardRenderer::init(World *world)
 {
     mWorld = world;
 
-    initializeRenderer(mWorld, mState);
+    initializeRenderer();
 }
 
 void ForwardRenderer::update(const Input &input, Camera *camera,
@@ -44,11 +24,11 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
                              const std::vector<Id> &transformIds,
                              const std::vector<SpriteObject> &spriteObjects)
 {
-    beginFrame(mWorld, camera, mState);
+    beginFrame(camera);
 
     if (camera->mSSAO == CameraSSAO::SSAO_On)
     {
-        computeSSAO(mWorld, camera, mState, renderObjects, models);
+        computeSSAO(camera, renderObjects, models);
     }
 
     for (size_t j = 0; j < mWorld->getActiveScene()->getNumberOfComponents<Light>(); j++)
@@ -63,103 +43,103 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
             {
                 if (light->mShadowType != ShadowType::None)
                 {
-                    renderShadows(mWorld, camera, light, lightTransform, mState, renderObjects, models);
+                    renderShadows(camera, light, lightTransform, renderObjects, models);
                 }
                 
-                renderOpaques(mWorld, camera, light, lightTransform, mState, renderObjects, models);
+                renderOpaques(camera, light, lightTransform, renderObjects, models);
                 
                 renderTransparents();
             }
         }
     }
 
-    renderSprites(mWorld, camera, mState, spriteObjects);
+    renderSprites(camera, spriteObjects);
 
-    renderColorPicking(mWorld, camera, mState, renderObjects, models, transformIds);
+    renderColorPicking(camera, renderObjects, models, transformIds);
 
     postProcessing();
 
-    endFrame(mWorld, camera, mState);
+    endFrame(camera);
 }
 
-static void initializeRenderer(World *world, ForwardRendererState &state)
+void ForwardRenderer::initializeRenderer()
 {
-    state.mQuadShaderProgram = RendererShaders::getScreenQuadShader();
-    state.mDepthShaderProgram = RendererShaders::getDepthShader();
-    state.mDepthCubemapShaderProgram = RendererShaders::getDepthCubemapShader();
-    state.mGeometryShaderProgram = RendererShaders::getGeometryShader();
-    state.mColorShaderProgram = RendererShaders::getColorShader();
-    state.mColorInstancedShaderProgram = RendererShaders::getColorInstancedShader();
-    state.mSsaoShaderProgram = RendererShaders::getSSAOShader();
-    state.mSpriteShaderProgram = RendererShaders::getSpriteShader();
+    mState.mQuadShaderProgram = RendererShaders::getScreenQuadShader();
+    mState.mDepthShaderProgram = RendererShaders::getDepthShader();
+    mState.mDepthCubemapShaderProgram = RendererShaders::getDepthCubemapShader();
+    mState.mGeometryShaderProgram = RendererShaders::getGeometryShader();
+    mState.mColorShaderProgram = RendererShaders::getColorShader();
+    mState.mColorInstancedShaderProgram = RendererShaders::getColorInstancedShader();
+    mState.mSsaoShaderProgram = RendererShaders::getSSAOShader();
+    mState.mSpriteShaderProgram = RendererShaders::getSpriteShader();
 
-    state.mQuadShaderTexLoc = state.mQuadShaderProgram->findUniformLocation("screenTexture");
-    state.mDepthShaderModelLoc = state.mDepthShaderProgram->findUniformLocation("model");
-    state.mDepthShaderViewLoc = state.mDepthShaderProgram->findUniformLocation("view");
-    state.mDepthShaderProjectionLoc = state.mDepthShaderProgram->findUniformLocation("projection");
-    state.mDepthCubemapShaderLightPosLoc = state.mDepthCubemapShaderProgram->findUniformLocation("lightPos");
-    state.mDepthCubemapShaderFarPlaneLoc = state.mDepthCubemapShaderProgram->findUniformLocation("farPlane");
-    state.mDepthCubemapShaderModelLoc = state.mDepthCubemapShaderProgram->findUniformLocation("model");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc0 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[0]");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc1 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[1]");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc2 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[2]");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc3 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[3]");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc4 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[4]");
-    state.mDepthCubemapShaderCubeViewProjMatricesLoc5 =
-        state.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[5]");
-    state.mGeometryShaderModelLoc = state.mGeometryShaderProgram->findUniformLocation("model");
-    state.mColorShaderModelLoc = state.mColorShaderProgram->findUniformLocation("model");
-    state.mColorShaderColorLoc = state.mColorShaderProgram->findUniformLocation("material.color");
-    state.mSsaoShaderProjectionLoc = state.mSsaoShaderProgram->findUniformLocation("projection");
-    state.mSsaoShaderPositionTexLoc = state.mSsaoShaderProgram->findUniformLocation("positionTex");
-    state.mSsaoShaderNormalTexLoc = state.mSsaoShaderProgram->findUniformLocation("normalTex");
-    state.mSsaoShaderNoiseTexLoc = state.mSsaoShaderProgram->findUniformLocation("noiseTex");
+    mState.mQuadShaderTexLoc = mState.mQuadShaderProgram->findUniformLocation("screenTexture");
+    mState.mDepthShaderModelLoc = mState.mDepthShaderProgram->findUniformLocation("model");
+    mState.mDepthShaderViewLoc = mState.mDepthShaderProgram->findUniformLocation("view");
+    mState.mDepthShaderProjectionLoc = mState.mDepthShaderProgram->findUniformLocation("projection");
+    mState.mDepthCubemapShaderLightPosLoc = mState.mDepthCubemapShaderProgram->findUniformLocation("lightPos");
+    mState.mDepthCubemapShaderFarPlaneLoc = mState.mDepthCubemapShaderProgram->findUniformLocation("farPlane");
+    mState.mDepthCubemapShaderModelLoc = mState.mDepthCubemapShaderProgram->findUniformLocation("model");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc0 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[0]");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc1 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[1]");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc2 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[2]");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc3 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[3]");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc4 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[4]");
+    mState.mDepthCubemapShaderCubeViewProjMatricesLoc5 =
+        mState.mDepthCubemapShaderProgram->findUniformLocation("cubeViewProjMatrices[5]");
+    mState.mGeometryShaderModelLoc = mState.mGeometryShaderProgram->findUniformLocation("model");
+    mState.mColorShaderModelLoc = mState.mColorShaderProgram->findUniformLocation("model");
+    mState.mColorShaderColorLoc = mState.mColorShaderProgram->findUniformLocation("material.color");
+    mState.mSsaoShaderProjectionLoc = mState.mSsaoShaderProgram->findUniformLocation("projection");
+    mState.mSsaoShaderPositionTexLoc = mState.mSsaoShaderProgram->findUniformLocation("positionTex");
+    mState.mSsaoShaderNormalTexLoc = mState.mSsaoShaderProgram->findUniformLocation("normalTex");
+    mState.mSsaoShaderNoiseTexLoc = mState.mSsaoShaderProgram->findUniformLocation("noiseTex");
     for (int i = 0; i < 64; i++)
     {
-        state.mSsaoShaderSamplesLoc[i] =
-            state.mSsaoShaderProgram->findUniformLocation("samples[" + std::to_string(i) + "]");
+        mState.mSsaoShaderSamplesLoc[i] =
+            mState.mSsaoShaderProgram->findUniformLocation("samples[" + std::to_string(i) + "]");
     }
-    state.mSpriteModelLoc = state.mSpriteShaderProgram->findUniformLocation("model");
-    state.mSpriteViewLoc = state.mSpriteShaderProgram->findUniformLocation("view");
-    state.mSpriteProjectionLoc = state.mSpriteShaderProgram->findUniformLocation("projection");
-    state.mSpriteColorLoc = state.mSpriteShaderProgram->findUniformLocation("spriteColor");
-    state.mSpriteImageLoc = state.mSpriteShaderProgram->findUniformLocation("image");
+    mState.mSpriteModelLoc = mState.mSpriteShaderProgram->findUniformLocation("model");
+    mState.mSpriteViewLoc = mState.mSpriteShaderProgram->findUniformLocation("view");
+    mState.mSpriteProjectionLoc = mState.mSpriteShaderProgram->findUniformLocation("projection");
+    mState.mSpriteColorLoc = mState.mSpriteShaderProgram->findUniformLocation("spriteColor");
+    mState.mSpriteImageLoc = mState.mSpriteShaderProgram->findUniformLocation("image");
 
-    Renderer::getRenderer()->createScreenQuad(&state.mQuadVAO, &state.mQuadVBO);
+    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
 
-    Renderer::getRenderer()->createGlobalCameraUniforms(state.mCameraState);
-    Renderer::getRenderer()->createGlobalLightUniforms(state.mLightState);
+    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
+    Renderer::getRenderer()->createGlobalLightUniforms(mState.mLightState);
 
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-static void beginFrame(World *world, Camera *camera, ForwardRendererState &state)
+void ForwardRenderer::beginFrame(Camera *camera)
 {
     Renderer::getRenderer()->turnOn(Capability::BackfaceCulling);
 
     camera->beginQuery();
 
-    state.mCameraState.mProjection = camera->getProjMatrix();
-    state.mCameraState.mView = camera->getViewMatrix();
-    state.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    state.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
+    mState.mCameraState.mProjection = camera->getProjMatrix();
+    mState.mCameraState.mView = camera->getViewMatrix();
+    mState.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
+    mState.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     // update camera state data
-    Renderer::getRenderer()->setGlobalCameraUniforms(state.mCameraState);
+    Renderer::getRenderer()->setGlobalCameraUniforms(mState.mCameraState);
 
     Framebuffer *framebuffer = nullptr;
 
     if (camera->mRenderTextureId.isValid())
     {
-        RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
+        RenderTexture *renderTexture = mWorld->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
             framebuffer = renderTexture->getNativeGraphicsMainFBO();
@@ -192,15 +172,14 @@ static void beginFrame(World *world, Camera *camera, ForwardRendererState &state
     }
 }
 
-static void computeSSAO(World *world, Camera *camera, ForwardRendererState &state,
-                                const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
+void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
     camera->getNativeGraphicsGeometryFBO()->bind();
     camera->getNativeGraphicsGeometryFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    state.mGeometryShaderProgram->bind();
+    mState.mGeometryShaderProgram->bind();
 
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
@@ -211,7 +190,7 @@ static void computeSSAO(World *world, Camera *camera, ForwardRendererState &stat
         }
         else
         {
-            state.mGeometryShaderProgram->setMat4(state.mGeometryShaderModelLoc, models[modelIndex]);
+            mState.mGeometryShaderProgram->setMat4(mState.mGeometryShaderModelLoc, models[modelIndex]);
             Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
@@ -224,23 +203,24 @@ static void computeSSAO(World *world, Camera *camera, ForwardRendererState &stat
     camera->getNativeGraphicsSSAOFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    state.mSsaoShaderProgram->bind();
-    state.mSsaoShaderProgram->setMat4(state.mSsaoShaderProjectionLoc, camera->getProjMatrix());
+    mState.mSsaoShaderProgram->bind();
+    mState.mSsaoShaderProgram->setMat4(mState.mSsaoShaderProjectionLoc, camera->getProjMatrix());
     for (int i = 0; i < 64; i++)
     {
-        state.mSsaoShaderProgram->setVec3(state.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
+        mState.mSsaoShaderProgram->setVec3(mState.mSsaoShaderSamplesLoc[i], camera->getSSAOSample(i));
     }
-    state.mSsaoShaderProgram->setTexture2D(state.mSsaoShaderPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
-    state.mSsaoShaderProgram->setTexture2D(state.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
-    state.mSsaoShaderProgram->setTexture2D(state.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
+    mState.mSsaoShaderProgram->setTexture2D(mState.mSsaoShaderPositionTexLoc, 0,
+                                            camera->getNativeGraphicsPositionTex());
+    mState.mSsaoShaderProgram->setTexture2D(mState.mSsaoShaderNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
+    mState.mSsaoShaderProgram->setTexture2D(mState.mSsaoShaderNoiseTexLoc, 2, camera->getNativeGraphicsSSAONoiseTex());
 
-    Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
+    Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
 
     camera->getNativeGraphicsSSAOFBO()->unbind();
 }
 
-static void renderShadows(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
+void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lightTransform,
+                                  const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
     if (light->mLightType == LightType::Directional)
@@ -248,10 +228,10 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
         std::array<float, 6> cascadeEnds = camera->calcViewSpaceCascadeEnds();
         for (size_t i = 0; i < cascadeEnds.size(); i++)
         {
-            state.mCascadeEnds[i] = cascadeEnds[i];
+            mState.mCascadeEnds[i] = cascadeEnds[i];
         }
 
-        calcCascadeOrthoProj(camera, lightTransform->getForward(), state);
+        calcCascadeOrthoProj(camera, lightTransform->getForward());
 
         for (int i = 0; i < 5; i++)
         {
@@ -261,9 +241,9 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
                                                                      static_cast<int>(light->getShadowMapResolution()));
             light->getNativeGraphicsShadowCascadeFBO(i)->clearDepth(1.0f);
 
-            state.mDepthShaderProgram->bind();
-            state.mDepthShaderProgram->setMat4(state.mDepthShaderViewLoc, state.mCascadeLightView[i]);
-            state.mDepthShaderProgram->setMat4(state.mDepthShaderProjectionLoc, state.mCascadeOrthoProj[i]);
+            mState.mDepthShaderProgram->bind();
+            mState.mDepthShaderProgram->setMat4(mState.mDepthShaderViewLoc, mState.mCascadeLightView[i]);
+            mState.mDepthShaderProgram->setMat4(mState.mDepthShaderProjectionLoc, mState.mCascadeOrthoProj[i]);
 
             int modelIndex = 0;
             for (size_t j = 0; j < renderObjects.size(); j++)
@@ -274,7 +254,7 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
                 }
                 else
                 {
-                    state.mDepthShaderProgram->setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                    mState.mDepthShaderProgram->setMat4(mState.mDepthShaderModelLoc, models[modelIndex]);
                     Renderer::getRenderer()->render(renderObjects[j], camera->mQuery);
                     modelIndex++;
                 }
@@ -290,14 +270,14 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
             0, 0, static_cast<int>(light->getShadowMapResolution()), static_cast<int>(light->getShadowMapResolution()));
         light->getNativeGraphicsShadowSpotlightFBO()->clearDepth(1.0f);
 
-        state.mShadowProjMatrix = light->getProjMatrix();
-        state.mShadowViewMatrix =
+        mState.mShadowProjMatrix = light->getProjMatrix();
+        mState.mShadowViewMatrix =
             glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
                         glm::vec3(0.0f, 1.0f, 0.0f));
 
-        state.mDepthShaderProgram->bind();
-        state.mDepthShaderProgram->setMat4(state.mDepthShaderProjectionLoc, state.mShadowProjMatrix);
-        state.mDepthShaderProgram->setMat4(state.mDepthShaderViewLoc, state.mShadowViewMatrix);
+        mState.mDepthShaderProgram->bind();
+        mState.mDepthShaderProgram->setMat4(mState.mDepthShaderProjectionLoc, mState.mShadowProjMatrix);
+        mState.mDepthShaderProgram->setMat4(mState.mDepthShaderViewLoc, mState.mShadowViewMatrix);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -308,7 +288,7 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
             }
             else
             {
-                state.mDepthShaderProgram->setMat4(state.mDepthShaderModelLoc, models[modelIndex]);
+                mState.mDepthShaderProgram->setMat4(mState.mDepthShaderModelLoc, models[modelIndex]);
                 
                 Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
                 modelIndex++;
@@ -320,27 +300,27 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
     else if (light->mLightType == LightType::Point)
     {
 
-        state.mCubeViewProjMatrices[0] =
+        mState.mCubeViewProjMatrices[0] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state.mCubeViewProjMatrices[1] =
+        mState.mCubeViewProjMatrices[1] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(-1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state.mCubeViewProjMatrices[2] =
+        mState.mCubeViewProjMatrices[2] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, 1.0)));
-        state.mCubeViewProjMatrices[3] =
+        mState.mCubeViewProjMatrices[3] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, -1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, -1.0)));
-        state.mCubeViewProjMatrices[4] =
+        mState.mCubeViewProjMatrices[4] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, 1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        state.mCubeViewProjMatrices[5] =
+        mState.mCubeViewProjMatrices[5] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
@@ -350,21 +330,23 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
                                                                 static_cast<int>(light->getShadowMapResolution()));
         light->getNativeGraphicsShadowCubemapFBO()->clearDepth(1.0f);
 
-        state.mDepthCubemapShaderProgram->bind();
-        state.mDepthCubemapShaderProgram->setVec3(state.mDepthCubemapShaderLightPosLoc, lightTransform->getPosition());
-        state.mDepthCubemapShaderProgram->setFloat(state.mDepthCubemapShaderFarPlaneLoc, camera->getFrustum().mFarPlane);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc0,
-                                                  state.mCubeViewProjMatrices[0]);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc1,
-                                                  state.mCubeViewProjMatrices[1]);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc2,
-                                                  state.mCubeViewProjMatrices[2]);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc3,
-                                                  state.mCubeViewProjMatrices[3]);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc4,
-                                                  state.mCubeViewProjMatrices[4]);
-        state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderCubeViewProjMatricesLoc5,
-                                                  state.mCubeViewProjMatrices[5]);
+        mState.mDepthCubemapShaderProgram->bind();
+        mState.mDepthCubemapShaderProgram->setVec3(mState.mDepthCubemapShaderLightPosLoc,
+                                                   lightTransform->getPosition());
+        mState.mDepthCubemapShaderProgram->setFloat(mState.mDepthCubemapShaderFarPlaneLoc,
+                                                    camera->getFrustum().mFarPlane);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc0,
+                                                   mState.mCubeViewProjMatrices[0]);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc1,
+                                                   mState.mCubeViewProjMatrices[1]);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc2,
+                                                   mState.mCubeViewProjMatrices[2]);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc3,
+                                                   mState.mCubeViewProjMatrices[3]);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc4,
+                                                   mState.mCubeViewProjMatrices[4]);
+        mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderCubeViewProjMatricesLoc5,
+                                                   mState.mCubeViewProjMatrices[5]);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -375,7 +357,7 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
             }
             else
             {
-                state.mDepthCubemapShaderProgram->setMat4(state.mDepthCubemapShaderModelLoc, models[modelIndex]);
+                mState.mDepthCubemapShaderProgram->setMat4(mState.mDepthCubemapShaderModelLoc, models[modelIndex]);
                 
                 Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
                 modelIndex++;
@@ -386,40 +368,40 @@ static void renderShadows(World *world, Camera *camera, Light *light, Transform 
     }
 }
 
-static void renderOpaques(World *world, Camera *camera, Light *light, Transform *lightTransform,
-                                  ForwardRendererState &state, const std::vector<RenderObject> &renderObjects, 
+void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
+                                  const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
-    state.mLightState.mPosition = lightTransform->getPosition();
-    state.mLightState.mDirection = lightTransform->getForward();
-    state.mLightState.mColor = light->mColor;
+    mState.mLightState.mPosition = lightTransform->getPosition();
+    mState.mLightState.mDirection = lightTransform->getForward();
+    mState.mLightState.mColor = light->mColor;
 
-    state.mLightState.mIntensity = light->mIntensity;
-    state.mLightState.mSpotAngle = light->mSpotAngle;
-    state.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
-    state.mLightState.mShadowStrength = light->mShadowStrength;
-    state.mLightState.mShadowBias = light->mShadowBias;
+    mState.mLightState.mIntensity = light->mIntensity;
+    mState.mLightState.mSpotAngle = light->mSpotAngle;
+    mState.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
+    mState.mLightState.mShadowStrength = light->mShadowStrength;
+    mState.mLightState.mShadowBias = light->mShadowBias;
 
     if (light->mLightType == LightType::Directional)
     {
         for (int i = 0; i < 5; i++)
         {
-            state.mLightState.mLightProjection[i] = state.mCascadeOrthoProj[i];
+            mState.mLightState.mLightProjection[i] = mState.mCascadeOrthoProj[i];
 
-            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, state.mCascadeEnds[i + 1], 1.0f);
+            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, mState.mCascadeEnds[i + 1], 1.0f);
             glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-            state.mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
+            mState.mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
 
-            state.mLightState.mLightView[i] = state.mCascadeLightView[i];
+            mState.mLightState.mLightView[i] = mState.mCascadeLightView[i];
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
-        state.mLightState.mLightProjection[0] = state.mShadowProjMatrix;
-        state.mLightState.mLightView[0] = state.mShadowViewMatrix;
+        mState.mLightState.mLightProjection[0] = mState.mShadowProjMatrix;
+        mState.mLightState.mLightView[0] = mState.mShadowViewMatrix;
     }
 
-    Renderer::getRenderer()->setGlobalLightUniforms(state.mLightState);
+    Renderer::getRenderer()->setGlobalLightUniforms(mState.mLightState);
 
     int64_t variant = static_cast<int64_t>(ShaderMacro::None);
     if (light->mLightType == LightType::Directional)
@@ -455,7 +437,7 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
 
     if (camera->mRenderTextureId.isValid())
     {
-        RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
+        RenderTexture *renderTexture = mWorld->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
             framebuffer = renderTexture->getNativeGraphicsMainFBO();
@@ -485,7 +467,7 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
     {
         if (currentShaderIndex != renderObjects[i].shaderIndex)
         {
-            shader = world->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
+            shader = mWorld->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
           
             if (renderObjects[i].instanced)
             {
@@ -513,7 +495,7 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
 
         if (currentMaterialIndex != renderObjects[i].materialIndex)
         {
-            material = world->getAssetByIndex<Material>(renderObjects[i].materialIndex);
+            material = mWorld->getAssetByIndex<Material>(renderObjects[i].materialIndex);
             material->apply();
 
             currentMaterialIndex = renderObjects[i].materialIndex;
@@ -547,10 +529,9 @@ static void renderOpaques(World *world, Camera *camera, Light *light, Transform 
     framebuffer->unbind();
 }
 
-static void renderSprites(World *world, Camera *camera, ForwardRendererState &state,
-                                  const std::vector<SpriteObject> &spriteObjects)
+void ForwardRenderer::renderSprites(Camera *camera, const std::vector<SpriteObject> &spriteObjects)
 {
-    state.mSpriteShaderProgram->bind();
+    mState.mSpriteShaderProgram->bind();
 
     //float width = static_cast<float>(camera->getViewport().mWidth);
     //float height = static_cast<float>(camera->getViewport().mHeight);
@@ -559,14 +540,14 @@ static void renderSprites(World *world, Camera *camera, ForwardRendererState &st
     glm::mat4 projection = camera->getProjMatrix();
     glm::mat4 view = camera->getViewMatrix();
 
-    state.mSpriteShaderProgram->setMat4(state.mSpriteProjectionLoc, projection);
-    state.mSpriteShaderProgram->setMat4(state.mSpriteViewLoc, view);
+    mState.mSpriteShaderProgram->setMat4(mState.mSpriteProjectionLoc, projection);
+    mState.mSpriteShaderProgram->setMat4(mState.mSpriteViewLoc, view);
 
     Framebuffer *framebuffer = nullptr;
 
     if (camera->mRenderTextureId.isValid())
     {
-        RenderTexture *renderTexture = world->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
+        RenderTexture *renderTexture = mWorld->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
         if (renderTexture != nullptr)
         {
             framebuffer = renderTexture->getNativeGraphicsMainFBO();
@@ -587,9 +568,9 @@ static void renderSprites(World *world, Camera *camera, ForwardRendererState &st
 
     for (size_t i = 0; i < spriteObjects.size(); i++)
     {
-        state.mSpriteShaderProgram->setMat4(state.mSpriteModelLoc, spriteObjects[i].model);
-        state.mSpriteShaderProgram->setColor(state.mSpriteColorLoc, spriteObjects[i].color);
-        state.mSpriteShaderProgram->setTexture2D(state.mSpriteImageLoc, 0, spriteObjects[i].texture);
+        mState.mSpriteShaderProgram->setMat4(mState.mSpriteModelLoc, spriteObjects[i].model);
+        mState.mSpriteShaderProgram->setColor(mState.mSpriteColorLoc, spriteObjects[i].color);
+        mState.mSpriteShaderProgram->setTexture2D(mState.mSpriteImageLoc, 0, spriteObjects[i].texture);
 
         Renderer::getRenderer()->render(0, 6, spriteObjects[i].vao, camera->mQuery);
     }
@@ -597,8 +578,7 @@ static void renderSprites(World *world, Camera *camera, ForwardRendererState &st
     framebuffer->unbind();
 }
 
-static void renderColorPicking(World *world, Camera *camera, ForwardRendererState &state,
-                                       const std::vector<RenderObject> &renderObjects,
+void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
                                        const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     camera->clearColoring();
@@ -658,7 +638,7 @@ static void renderColorPicking(World *world, Camera *camera, ForwardRendererStat
                 color++;
             }
 
-            state.mColorInstancedShaderProgram->bind();
+            mState.mColorInstancedShaderProgram->bind();
             Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
             Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
@@ -676,9 +656,9 @@ static void renderColorPicking(World *world, Camera *camera, ForwardRendererStat
 
             color++;
 
-            state.mColorShaderProgram->bind();
-            state.mColorShaderProgram->setMat4(state.mColorShaderModelLoc, models[modelIndex]);
-            state.mColorShaderProgram->setColor32(state.mColorShaderColorLoc, Color32(r, g, b, a));
+            mState.mColorShaderProgram->bind();
+            mState.mColorShaderProgram->setMat4(mState.mColorShaderModelLoc, models[modelIndex]);
+            mState.mColorShaderProgram->setColor32(mState.mColorShaderColorLoc, Color32(r, g, b, a));
             Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
 
             modelIndex++;
@@ -688,15 +668,15 @@ static void renderColorPicking(World *world, Camera *camera, ForwardRendererStat
     camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 
-static void renderTransparents()
+void ForwardRenderer::renderTransparents()
 {
 }
 
-static void postProcessing()
+void ForwardRenderer::postProcessing()
 {
 }
 
-static void endFrame(World *world, Camera *camera, ForwardRendererState &state)
+void ForwardRenderer::endFrame(Camera *camera)
 {
     if (camera->mRenderToScreen)
     {
@@ -704,10 +684,10 @@ static void endFrame(World *world, Camera *camera, ForwardRendererState &state)
         Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
-        state.mQuadShaderProgram->bind();
-        state.mQuadShaderProgram->setTexture2D(state.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        mState.mQuadShaderProgram->bind();
+        mState.mQuadShaderProgram->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
 
-        Renderer::getRenderer()->renderScreenQuad(state.mQuadVAO);
+        Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
 
         Renderer::getRenderer()->unbindFramebuffer();
     }
@@ -717,7 +697,7 @@ static void endFrame(World *world, Camera *camera, ForwardRendererState &state)
     Renderer::getRenderer()->turnOff(Capability::BackfaceCulling);
 }
 
-static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, ForwardRendererState &state)
+void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection)
 {
     glm::mat4 viewInv = camera->getInvViewMatrix();
     float fov = camera->getFrustum().mFov;
@@ -727,22 +707,22 @@ static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, Forwa
 
     for (int i = 0; i < 5; i++)
     {
-        float xn = -1.0f * state.mCascadeEnds[i] * tanHalfHFOV;
-        float xf = -1.0f * state.mCascadeEnds[i + 1] * tanHalfHFOV;
-        float yn = -1.0f * state.mCascadeEnds[i] * tanHalfVFOV;
-        float yf = -1.0f * state.mCascadeEnds[i + 1] * tanHalfVFOV;
+        float xn = -1.0f * mState.mCascadeEnds[i] * tanHalfHFOV;
+        float xf = -1.0f * mState.mCascadeEnds[i + 1] * tanHalfHFOV;
+        float yn = -1.0f * mState.mCascadeEnds[i] * tanHalfVFOV;
+        float yf = -1.0f * mState.mCascadeEnds[i + 1] * tanHalfVFOV;
 
         // Find cascade frustum corners
         glm::vec4 frustumCorners[8];
-        frustumCorners[0] = glm::vec4(xn, yn, state.mCascadeEnds[i], 1.0f);
-        frustumCorners[1] = glm::vec4(-xn, yn, state.mCascadeEnds[i], 1.0f);
-        frustumCorners[2] = glm::vec4(xn, -yn, state.mCascadeEnds[i], 1.0f);
-        frustumCorners[3] = glm::vec4(-xn, -yn, state.mCascadeEnds[i], 1.0f);
+        frustumCorners[0] = glm::vec4(xn, yn, mState.mCascadeEnds[i], 1.0f);
+        frustumCorners[1] = glm::vec4(-xn, yn, mState.mCascadeEnds[i], 1.0f);
+        frustumCorners[2] = glm::vec4(xn, -yn, mState.mCascadeEnds[i], 1.0f);
+        frustumCorners[3] = glm::vec4(-xn, -yn, mState.mCascadeEnds[i], 1.0f);
 
-        frustumCorners[4] = glm::vec4(xf, yf, state.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[5] = glm::vec4(-xf, yf, state.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[6] = glm::vec4(xf, -yf, state.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[7] = glm::vec4(-xf, -yf, state.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[4] = glm::vec4(xf, yf, mState.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[5] = glm::vec4(-xf, yf, mState.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[6] = glm::vec4(xf, -yf, mState.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[7] = glm::vec4(-xf, -yf, mState.mCascadeEnds[i + 1], 1.0f);
 
         // find frustum centre by averaging corners
         glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -764,12 +744,12 @@ static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, Forwa
 
         // need to set p such that it is far enough out to have the light projection capture all objects that
         // might cast shadows
-        float d = std::max(80.0f, -(state.mCascadeEnds[i + 1] - state.mCascadeEnds[i]));
+        float d = std::max(80.0f, -(mState.mCascadeEnds[i + 1] - mState.mCascadeEnds[i]));
         glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x - d * lightDirection.x,
                                 frustrumCentreWorldSpace.y - d * lightDirection.y,
                                 frustrumCentreWorldSpace.z - d * lightDirection.z);
 
-        state.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(0.0f, 1.0f, 0.0f));
+        mState.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::lowest();
@@ -778,7 +758,7 @@ static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, Forwa
         float minZ = std::numeric_limits<float>::max();
         float maxZ = std::numeric_limits<float>::lowest();
 
-        glm::mat4 cascadeLightView = state.mCascadeLightView[i];
+        glm::mat4 cascadeLightView = mState.mCascadeLightView[i];
 
         // Transform the frustum coordinates from view to world space and then world to light space
         glm::vec4 vL[8];
@@ -795,6 +775,6 @@ static void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection, Forwa
         }
         // Should be glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ) but need to decrease/increase minZ and maxZ
         // respectively to capture all objects that can cast a show
-        state.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
+        mState.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
     }
 }

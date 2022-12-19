@@ -18,6 +18,7 @@
 
 #include "TextureHandle.h"
 #include "VertexBuffer.h"
+#include "UniformBuffer.h"
 
 namespace PhysicsEngine
 {

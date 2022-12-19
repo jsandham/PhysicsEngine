@@ -32,6 +32,15 @@ class DeferredRenderer
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models,
                 const std::vector<Id> &transformIds);
+
+  private:
+    void initializeDeferredRenderer();
+    void beginDeferredFrame(Camera *camera);
+    void geometryPass(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
+    void lightingPass(Camera *camera, const std::vector<RenderObject> &renderObjects);
+    void renderColorPickingDeferred(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                           const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
+    void endDeferredFrame(Camera *camera);
 };
 
 } // namespace PhysicsEngine

@@ -35,6 +35,20 @@ class ForwardRenderer
                 const std::vector<glm::mat4> &models, 
                 const std::vector<Id> &transformIds,
                 const std::vector<SpriteObject> &spriteObjects);
+
+  private:
+    void initializeRenderer();
+    void beginFrame(Camera* camera);
+    void computeSSAO(Camera* camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
+    void renderShadows(Camera* camera, Light* light, Transform* lightTransform, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
+    void renderOpaques(Camera* camera, Light* light, Transform* lightTransform, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
+    void renderSprites(Camera* camera, const std::vector<SpriteObject>& spriteObjects);
+    void renderColorPicking(Camera* camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models, const std::vector<Id>& transformIds);
+    void renderTransparents();
+    void postProcessing();
+    void endFrame(Camera* camera);
+    void calcCascadeOrthoProj(Camera* camera, glm::vec3 lightDirection);
+
 };
 
 } // namespace PhysicsEngine
