@@ -36,11 +36,11 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     assert(standardShader != nullptr);
     assert(standardMaterial != nullptr);
 
-    if (RendererShaders::getRendererShaders() != nullptr)
+    if (RendererShaders::getStandardShader() != nullptr)
     {
         standardShader->setName("Standard");
-        standardShader->setVertexShader(RendererShaders::getRendererShaders()->getStandardVertexShader());
-        standardShader->setFragmentShader(RendererShaders::getRendererShaders()->getStandardFragmentShader());
+        standardShader->setVertexShader(RendererShaders::getStandardShader()->getVertexShader());
+        standardShader->setFragmentShader(RendererShaders::getStandardShader()->getFragmentShader());
     
         std::set<ShaderMacro> variants[23];
         variants[0].insert(ShaderMacro::None);

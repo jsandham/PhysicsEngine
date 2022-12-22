@@ -1,136 +1,395 @@
 #include "../../include/graphics/RendererShaders.h"
 #include "../../include/graphics/RenderContext.h"
+#include "../../include/core/Log.h"
 
 #include "../../include/graphics/platform/opengl/OpenGLRendererShaders.h"
 #include "../../include/graphics/platform/directx/DirectXRendererShaders.h"
 
 using namespace PhysicsEngine;
 
-RendererShaders* RendererShaders::sInstance = nullptr;
+StandardShader *RendererShaders::sStandardShader = nullptr;
+SSAOShader* RendererShaders::sSSAOShader = nullptr;
+GeometryShader* RendererShaders::sGeometryShader = nullptr;
+DepthShader*  RendererShaders::sDepthShader = nullptr;
+DepthCubemapShader* RendererShaders::sDepthCubemapShader = nullptr;
+QuadShader* RendererShaders::sQuadShader = nullptr;
+SpriteShader* RendererShaders::sSpriteShader = nullptr;
+GBufferShader* RendererShaders::sGBufferShader = nullptr;
+ColorShader* RendererShaders::sColorShader = nullptr;
+ColorInstancedShader* RendererShaders::sColorInstancedShader = nullptr;
+NormalShader* RendererShaders::sNormalShader = nullptr;
+NormalInstancedShader* RendererShaders::sNormalInstancedShader = nullptr;
+PositionShader* RendererShaders::sPositionShader = nullptr;
+PositionInstancedShader* RendererShaders::sPositionInstancedShader = nullptr;
+LinearDepthShader* RendererShaders::sLinearDepthShader = nullptr;
+LinearDepthInstancedShader* RendererShaders::sLinearDepthInstancedShader = nullptr;
+LineShader* RendererShaders::sLineShader = nullptr;
+GizmoShader* RendererShaders::sGizmoShader = nullptr;
+GridShader* RendererShaders::sGridShader = nullptr;
 
-RendererShaders::RendererShaders()
+void RendererShaders::createInternalShaders()
 {
-
+    Log::warn("Start compling internal shaders\n");
+    sStandardShader = StandardShader::create();
+    sSSAOShader = SSAOShader::create();
+    sGeometryShader = GeometryShader::create();
+    sDepthShader = DepthShader::create();
+    sDepthCubemapShader = DepthCubemapShader::create();
+    sQuadShader = QuadShader::create();
+    sSpriteShader = SpriteShader::create();
+    sGBufferShader = GBufferShader::create();
+    sColorShader = ColorShader::create();
+    sColorInstancedShader = ColorInstancedShader::create();
+    sNormalShader = NormalShader::create();
+    sNormalInstancedShader = NormalInstancedShader::create();
+    sPositionShader = PositionShader::create();
+    sPositionInstancedShader = PositionInstancedShader::create();
+    sLinearDepthShader = LinearDepthShader::create();
+    sLinearDepthInstancedShader = LinearDepthInstancedShader::create();
+    sLineShader = LineShader::create();
+    sGizmoShader = GizmoShader::create();
+    sGridShader = GridShader::create();
+    Log::warn("Finished compiling internal shaders\n");
 }
 
-RendererShaders::~RendererShaders()
+StandardShader *RendererShaders::getStandardShader()
 {
+    return RendererShaders::sStandardShader;
 }
 
-void RendererShaders::init()
+SSAOShader *RendererShaders::getSSAOShader()
 {
-	switch (RenderContext::getRenderAPI())
-	{
-	case RenderAPI::OpenGL:
-		sInstance = new OpenGLRendererShaders();
-		break;
-	case RenderAPI::DirectX:
-		sInstance = new DirectXRendererShaders();
-		break;
-	}
+    return RendererShaders::sSSAOShader;
 }
 
-RendererShaders* RendererShaders::getRendererShaders()
+GeometryShader *RendererShaders::getGeometryShader()
 {
-	return sInstance;
+    return RendererShaders::sGeometryShader;
 }
 
-ShaderProgram *RendererShaders::getSSAOShader()
+DepthShader *RendererShaders::getDepthShader()
 {
-	return sInstance->getSSAOShader_impl();
+    return RendererShaders::sDepthShader;
 }
 
-ShaderProgram *RendererShaders::getGeometryShader()
+DepthCubemapShader *RendererShaders::getDepthCubemapShader()
 {
-	return sInstance->getGeometryShader_impl();
+    return RendererShaders::sDepthCubemapShader;
 }
 
-ShaderProgram *RendererShaders::getDepthShader()
+QuadShader *RendererShaders::getScreenQuadShader()
 {
-	return sInstance->getDepthShader_impl();
+    return RendererShaders::sQuadShader;
 }
 
-ShaderProgram *RendererShaders::getDepthCubemapShader()
+SpriteShader *RendererShaders::getSpriteShader()
 {
-	return sInstance->getDepthCubemapShader_impl();
+    return RendererShaders::sSpriteShader;
 }
 
-ShaderProgram *RendererShaders::getScreenQuadShader()
+GBufferShader *RendererShaders::getGBufferShader()
 {
-	return sInstance->getScreenQuadShader_impl();
+    return RendererShaders::sGBufferShader;
 }
 
-ShaderProgram *RendererShaders::getSpriteShader()
+ColorShader *RendererShaders::getColorShader()
 {
-	return sInstance->getSpriteShader_impl();
+    return RendererShaders::sColorShader;
 }
 
-ShaderProgram *RendererShaders::getGBufferShader()
+ColorInstancedShader *RendererShaders::getColorInstancedShader()
 {
-	return sInstance->getGBufferShader_impl();
+    return RendererShaders::sColorInstancedShader;
 }
 
-ShaderProgram *RendererShaders::getColorShader()
+NormalShader *RendererShaders::getNormalShader()
 {
-	return sInstance->getColorShader_impl();
+    return RendererShaders::sNormalShader;
 }
 
-ShaderProgram *RendererShaders::getColorInstancedShader()
+NormalInstancedShader *RendererShaders::getNormalInstancedShader()
 {
-	return sInstance->getColorInstancedShader_impl();
+    return RendererShaders::sNormalInstancedShader;
 }
 
-ShaderProgram *RendererShaders::getNormalShader()
+PositionShader *RendererShaders::getPositionShader()
 {
-	return sInstance->getNormalShader_impl();
+    return RendererShaders::sPositionShader;
 }
 
-ShaderProgram *RendererShaders::getNormalInstancedShader()
+PositionInstancedShader *RendererShaders::getPositionInstancedShader()
 {
-	return sInstance->getNormalInstancedShader_impl();
+    return RendererShaders::sPositionInstancedShader;
 }
 
-ShaderProgram *RendererShaders::getPositionShader()
+LinearDepthShader *RendererShaders::getLinearDepthShader()
 {
-	return sInstance->getPositionShader_impl();
+    return RendererShaders::sLinearDepthShader;
 }
 
-ShaderProgram *RendererShaders::getPositionInstancedShader()
+LinearDepthInstancedShader *RendererShaders::getLinearDepthInstancedShader()
 {
-	return sInstance->getPositionInstancedShader_impl();
+    return RendererShaders::sLinearDepthInstancedShader;
 }
 
-ShaderProgram *RendererShaders::getLinearDepthShader()
+LineShader *RendererShaders::getLineShader()
 {
-	return sInstance->getLinearDepthShader_impl();
+    return RendererShaders::sLineShader;
 }
 
-ShaderProgram *RendererShaders::getLinearDepthInstancedShader()
+GizmoShader *RendererShaders::getGizmoShader()
 {
-	return sInstance->getLinearDepthInstancedShader_impl();
+    return RendererShaders::sGizmoShader;
 }
 
-ShaderProgram *RendererShaders::getLineShader()
+GridShader *RendererShaders::getGridShader()
 {
-	return sInstance->getLineShader_impl();
+    return RendererShaders::sGridShader;
 }
 
-ShaderProgram *RendererShaders::getGizmoShader()
+StandardShader *StandardShader::create()
 {
-	return sInstance->getGizmoShader_impl();
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLStandardShader();
+    case RenderAPI::DirectX:
+        return new DirectXStandardShader();
+    }
+
+    return nullptr;
 }
 
-ShaderProgram *RendererShaders::getGridShader()
+GBufferShader *GBufferShader::create()
 {
-	return sInstance->getGridShader_impl();
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLGBufferShader();
+    case RenderAPI::DirectX:
+        return new DirectXGBufferShader();
+    }
+
+    return nullptr;
 }
 
-std::string RendererShaders::getStandardVertexShader()
+QuadShader *QuadShader::create()
 {
-	return sInstance->getStandardVertexShader_impl();
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLQuadShader();
+    case RenderAPI::DirectX:
+        return new DirectXQuadShader();
+    }
+
+    return nullptr;
 }
 
-std::string RendererShaders::getStandardFragmentShader()
+DepthShader *DepthShader::create()
 {
-	return sInstance->getStandardFragmentShader_impl();
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLDepthShader();
+    case RenderAPI::DirectX:
+        return new DirectXDepthShader();
+    }
+
+	return nullptr;
+}
+
+DepthCubemapShader *DepthCubemapShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLDepthCubemapShader();
+    case RenderAPI::DirectX:
+        return new DirectXDepthCubemapShader();
+    }
+
+    return nullptr;
+}
+
+GeometryShader *GeometryShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLGeometryShader();
+    case RenderAPI::DirectX:
+        return new DirectXGeometryShader();
+    }
+
+    return nullptr;
+}
+
+NormalShader *NormalShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLNormalShader();
+    case RenderAPI::DirectX:
+        return new DirectXNormalShader();
+    }
+
+    return nullptr;
+}
+
+NormalInstancedShader *NormalInstancedShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLNormalInstancedShader();
+    case RenderAPI::DirectX:
+        return new DirectXNormalInstancedShader();
+    }
+
+    return nullptr;
+}
+
+PositionShader *PositionShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLPositionShader();
+    case RenderAPI::DirectX:
+        return new DirectXPositionShader();
+    }
+
+    return nullptr;
+}
+
+PositionInstancedShader *PositionInstancedShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLPositionInstancedShader();
+    case RenderAPI::DirectX:
+        return new DirectXPositionInstancedShader();
+    }
+
+    return nullptr;
+}
+
+LinearDepthShader *LinearDepthShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLLinearDepthShader();
+    case RenderAPI::DirectX:
+        return new DirectXLinearDepthShader();
+    }
+
+    return nullptr;
+}
+
+LinearDepthInstancedShader *LinearDepthInstancedShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLLinearDepthInstancedShader();
+    case RenderAPI::DirectX:
+        return new DirectXLinearDepthInstancedShader();
+    }
+
+    return nullptr;
+}
+
+ColorShader *ColorShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLColorShader();
+    case RenderAPI::DirectX:
+        return new DirectXColorShader();
+    }
+
+    return nullptr;
+}
+
+ColorInstancedShader *ColorInstancedShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLColorInstancedShader();
+    case RenderAPI::DirectX:
+        return new DirectXColorInstancedShader();
+    }
+
+    return nullptr;
+}
+
+SSAOShader *SSAOShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLSSAOShader();
+    case RenderAPI::DirectX:
+        return new DirectXSSAOShader();
+    }
+
+    return nullptr;
+}
+
+SpriteShader *SpriteShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLSpriteShader();
+    case RenderAPI::DirectX:
+        return new DirectXSpriteShader();
+    }
+
+    return nullptr;
+}
+
+LineShader *LineShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLLineShader();
+    case RenderAPI::DirectX:
+        return new DirectXLineShader();
+    }
+
+    return nullptr;
+}
+
+GizmoShader *GizmoShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLGizmoShader();
+    case RenderAPI::DirectX:
+        return new DirectXGizmoShader();
+    }
+
+    return nullptr;
+}
+
+GridShader *GridShader::create()
+{
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLGridShader();
+    case RenderAPI::DirectX:
+        return new DirectXGridShader();
+    }
+
+    return nullptr;
 }

@@ -17,7 +17,16 @@ void DeferredRenderer::init(World *world)
 {
     mWorld = world;
 
-    initializeDeferredRenderer();
+    mQuadShader = RendererShaders::getScreenQuadShader();
+    mGBufferShader = RendererShaders::getGBufferShader();
+    mColorShader = RendererShaders::getColorShader();
+    mColorInstancedShader = RendererShaders::getColorInstancedShader();
+
+    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
+
+    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
+
+    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
 void DeferredRenderer::update(const Input &input, Camera *camera,
@@ -33,27 +42,6 @@ void DeferredRenderer::update(const Input &input, Camera *camera,
     renderColorPickingDeferred(camera, renderObjects, models, transformIds);
 
     endDeferredFrame(camera);
-}
-
-void DeferredRenderer::initializeDeferredRenderer()
-{
-    mState.mQuadShaderProgram = RendererShaders::getScreenQuadShader();
-    mState.mGBufferShaderProgram = RendererShaders::getGBufferShader();
-    mState.mColorShaderProgram = RendererShaders::getColorShader();
-    mState.mColorInstancedShaderProgram = RendererShaders::getColorInstancedShader();
-
-    mState.mQuadShaderTexLoc = mState.mQuadShaderProgram->findUniformLocation("screenTexture");
-    mState.mGBufferShaderModelLoc = mState.mGBufferShaderProgram->findUniformLocation("model");
-    mState.mGBufferShaderDiffuseTexLoc = mState.mGBufferShaderProgram->findUniformLocation("texture_diffuse1");
-    mState.mGBufferShaderSpecTexLoc = mState.mGBufferShaderProgram->findUniformLocation("texture_specular1");
-    mState.mColorShaderModelLoc = mState.mColorShaderProgram->findUniformLocation("model");
-    mState.mColorShaderColorLoc = mState.mColorShaderProgram->findUniformLocation("material.color");
-
-    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
-
-    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
-
-    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
 void DeferredRenderer::beginDeferredFrame(Camera *camera)
@@ -114,8 +102,7 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
     camera->getNativeGraphicsGeometryFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
     
-    mState.mGBufferShaderProgram->bind();
-    //Renderer::getRenderer()->use(state.mGBufferShaderProgram);
+    mGBufferShader->bind();
     //int mGBufferShaderDiffuseTexLoc = Renderer::getRenderer()->findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
     //int mGBufferShaderSpecTexLoc = Renderer::getRenderer()->findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
 
@@ -140,7 +127,7 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
         }
         else
         {
-            mState.mGBufferShaderProgram->setMat4(mState.mGBufferShaderModelLoc, models[modelIndex]);
+            mGBufferShader->setModel(models[modelIndex]);
 
             // if (currentMaterialIndex != renderObjects[renderQueue[i].second].materialIndex)
             //{
@@ -251,7 +238,8 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
                 color++;
             }
 
-            mState.mColorInstancedShaderProgram->bind();
+            mColorInstancedShader->bind();
+           
             Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
             Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
@@ -269,9 +257,9 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
 
             color++;
 
-            mState.mColorShaderProgram->bind();
-            mState.mColorShaderProgram->setMat4(mState.mColorShaderModelLoc, models[modelIndex]);
-            mState.mColorShaderProgram->setColor32(mState.mColorShaderColorLoc, Color32(r, g, b, a));
+            mColorShader->bind();
+            mColorShader->setModel(models[modelIndex]);
+            mColorShader->setColor(Color32(r, g, b, a));
 
             Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
             modelIndex++;
@@ -289,10 +277,8 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
         Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
-        //Renderer::getRenderer()->use(state.mQuadShaderProgram);
-        mState.mQuadShaderProgram->bind();
-        mState.mQuadShaderProgram->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
-        //Renderer::getRenderer()->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        mQuadShader->bind();
+        mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
         Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();

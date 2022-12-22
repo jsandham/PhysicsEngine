@@ -17,23 +17,6 @@ Camera::Camera(World *world, const Id &id) : Component(world, id)
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
 
-    /*mTargets.mMainFBO = 0;
-    mTargets.mColorTex = 0;
-    mTargets.mDepthTex = 0;
-
-    mTargets.mColorPickingFBO = 0;
-    mTargets.mColorPickingTex = 0;
-    mTargets.mColorPickingDepthTex = 0;
-
-    mTargets.mGeometryFBO = 0;
-    mTargets.mPositionTex = 0;
-    mTargets.mNormalTex = 0;
-    mTargets.mAlbedoSpecTex = 0;
-
-    mTargets.mSsaoFBO = 0;
-    mTargets.mSsaoColorTex = 0;
-    mTargets.mSsaoNoiseTex = 0;*/
-
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
     mMode = CameraMode::Main;
@@ -75,32 +58,10 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mQuery.mQueryBack = 0;
     mQuery.mQueryFront = 1;
 
-    /*mTargets.mMainFBO = Framebuffer::create(1920, 1080);
-    mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
-    mTargets.mGeometryFBO = Framebuffer::create(1920, 1080);
-    mTargets.mSsaoFBO = Framebuffer::create(1920, 1080);*/
-
     mTargets.mMainFBO = Framebuffer::create(1920, 1080);
     mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
-
-    /*mTargets.mMainFBO = 0;
-    mTargets.mColorTex = 0;
-    mTargets.mDepthTex = 0;
-
-    mTargets.mColorPickingFBO = 0;
-    mTargets.mColorPickingTex = 0;
-    mTargets.mColorPickingDepthTex = 0;
-
-    mTargets.mGeometryFBO = 0;
-    mTargets.mPositionTex = 0;
-    mTargets.mNormalTex = 0;
-    mTargets.mAlbedoSpecTex = 0;
-
-    mTargets.mSsaoFBO = 0;
-    mTargets.mSsaoColorTex = 0;
-    mTargets.mSsaoNoiseTex = 0;*/
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;

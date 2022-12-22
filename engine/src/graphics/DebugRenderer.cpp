@@ -15,7 +15,21 @@ void DebugRenderer::init(World *world)
 {
     mWorld = world;
 
-    initializeDebugRenderer();
+    mQuadShader = RendererShaders::getScreenQuadShader();
+    mNormalsShader = RendererShaders::getNormalShader();
+    mPositionShader = RendererShaders::getPositionShader();
+    mLinearDepthShader = RendererShaders::getLinearDepthShader();
+    mColorShader = RendererShaders::getColorShader();
+    mNormalsInstancedShader = RendererShaders::getNormalInstancedShader();
+    mPositionInstancedShader = RendererShaders::getPositionInstancedShader();
+    mLinearDepthInstancedShader = RendererShaders::getLinearDepthInstancedShader();
+    mColorInstancedShader = RendererShaders::getColorInstancedShader();
+
+    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
+
+    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
+
+    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
 void DebugRenderer::update(const Input &input, Camera *camera,
@@ -30,32 +44,6 @@ void DebugRenderer::update(const Input &input, Camera *camera,
     renderDebugColorPicking(camera, renderObjects, models, transformIds);
 
     endDebugFrame(camera);
-}
-
-void DebugRenderer::initializeDebugRenderer()
-{
-    mState.mQuadShaderProgram = RendererShaders::getScreenQuadShader();
-    mState.mNormalsShaderProgram = RendererShaders::getNormalShader();
-    mState.mPositionShaderProgram = RendererShaders::getPositionShader();
-    mState.mLinearDepthShaderProgram = RendererShaders::getLinearDepthShader();
-    mState.mColorShaderProgram = RendererShaders::getColorShader();
-    mState.mNormalsInstancedShaderProgram = RendererShaders::getNormalInstancedShader();
-    mState.mPositionInstancedShaderProgram = RendererShaders::getPositionInstancedShader();
-    mState.mLinearDepthInstancedShaderProgram = RendererShaders::getLinearDepthInstancedShader();
-    mState.mColorInstancedShaderProgram = RendererShaders::getColorInstancedShader();
-
-    mState.mQuadShaderTexLoc = mState.mQuadShaderProgram->findUniformLocation("screenTexture");
-    mState.mNormalsShaderModelLoc = mState.mNormalsShaderProgram->findUniformLocation("model");
-    mState.mPositionShaderModelLoc = mState.mPositionShaderProgram->findUniformLocation("model");
-    mState.mLinearDepthShaderModelLoc = mState.mLinearDepthShaderProgram->findUniformLocation("model");
-    mState.mColorShaderModelLoc = mState.mColorShaderProgram->findUniformLocation("model");
-    mState.mColorShaderColorLoc = mState.mColorShaderProgram->findUniformLocation("material.color");
-
-    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
-
-    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
-
-    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
 void DebugRenderer::beginDebugFrame(Camera *camera)
@@ -136,13 +124,13 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>&
             switch (camera->mColorTarget)
             {
             case ColorTarget::Normal:
-                mState.mNormalsInstancedShaderProgram->bind();
+                mNormalsInstancedShader->bind();
                 break;
             case ColorTarget::Position:
-                mState.mPositionInstancedShaderProgram->bind();
+                mPositionInstancedShader->bind();
                 break;
             case ColorTarget::LinearDepth:
-                mState.mLinearDepthInstancedShaderProgram->bind();
+                mLinearDepthInstancedShader->bind();
                 break;
             }
 
@@ -156,16 +144,16 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>&
             switch (camera->mColorTarget)
             {
             case ColorTarget::Normal:
-                mState.mNormalsShaderProgram->bind();
-                mState.mNormalsShaderProgram->setMat4(mState.mNormalsShaderModelLoc, models[modelIndex]);
+                mNormalsShader->bind();
+                mNormalsShader->setModel(models[modelIndex]);
                 break;
             case ColorTarget::Position:
-                mState.mPositionShaderProgram->bind();
-                mState.mPositionShaderProgram->setMat4(mState.mPositionShaderModelLoc, models[modelIndex]);
+                mPositionShader->bind();
+                mPositionShader->setModel(models[modelIndex]);
                 break;
             case ColorTarget::LinearDepth:
-                mState.mLinearDepthShaderProgram->bind();
-                mState.mLinearDepthShaderProgram->setMat4(mState.mLinearDepthShaderModelLoc, models[modelIndex]);
+                mLinearDepthShader->bind();
+                mLinearDepthShader->setModel(models[modelIndex]);
                 break;
             }
 
@@ -240,7 +228,8 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera,
                 color++;
             }
 
-            mState.mColorInstancedShaderProgram->bind();
+            mColorInstancedShader->bind();
+           
             Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
                                            renderObjects[i].instanceCount);
             Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
@@ -258,9 +247,9 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera,
 
             color++;
 
-            mState.mColorShaderProgram->bind();
-            mState.mColorShaderProgram->setMat4(mState.mColorShaderModelLoc, models[modelIndex]);
-            mState.mColorShaderProgram->setColor32(mState.mColorShaderColorLoc, Color32(r, g, b, a));
+            mColorShader->bind();
+            mColorShader->setModel(models[modelIndex]);
+            mColorShader->setColor(Color32(r, g, b, a));
 
             Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
             modelIndex++;
@@ -278,8 +267,8 @@ void DebugRenderer::endDebugFrame(Camera *camera)
         Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
-        mState.mQuadShaderProgram->bind();
-        mState.mQuadShaderProgram->setTexture2D(mState.mQuadShaderTexLoc, 0, camera->getNativeGraphicsColorTex());
+        mQuadShader->bind();
+        mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
         Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();

@@ -28,7 +28,7 @@ Application::Application(const std::string& name, int width, int height)
 	mWindow = ApplicationWindow::createApplicationWindow(name, width, height);
 
 	Renderer::init();
-	RendererShaders::init();
+    RendererShaders::createInternalShaders();
 }
 
 Application::~Application()

@@ -7,188 +7,656 @@
 
 using namespace PhysicsEngine;
 
-OpenGLRendererShaders::OpenGLRendererShaders()
+OpenGLStandardShader::OpenGLStandardShader()
 {
-    mSSAOShader = ShaderProgram::create();
-    mGeometryShader = ShaderProgram::create();
-    mDepthShader = ShaderProgram::create();
-    mDepthCubemapShader = ShaderProgram::create();
-    mScreenQuadShader = ShaderProgram::create();
-    mSpriteShader = ShaderProgram::create();
-    mGBufferShader = ShaderProgram::create();
-    mColorShader = ShaderProgram::create();
-    mColorInstancedShader = ShaderProgram::create();
-    mNormalShader = ShaderProgram::create();
-    mNormalInstancedShader = ShaderProgram::create();
-    mPositionShader = ShaderProgram::create();
-    mPositionInstancedShader = ShaderProgram::create();
-    mLinearDepthShader = ShaderProgram::create();
-    mLinearDepthInstancedShader = ShaderProgram::create();
-    mLineShader = ShaderProgram::create();
-    mGizmoShader = ShaderProgram::create();
-    mGridShader = ShaderProgram::create();
-
-    mSSAOShader->load("SSAO", getSSAOVertexShader(), getSSAOFragmentShader());
-    mGeometryShader->load("Geometry", getGeometryVertexShader(), getGeometryFragmentShader());
-    mDepthShader->load("DepthMap", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
-    mDepthCubemapShader->load("DepthCubemap", getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(),
-                              getShadowDepthCubemapGeometryShader());
-    mScreenQuadShader->load("ScreenQuad", getScreenQuadVertexShader(), getScreenQuadFragmentShader());
-    mSpriteShader->load("Sprite", getSpriteVertexShader(), getSpriteFragmentShader());
-    mGBufferShader->load("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader());
-    mColorShader->load("Color", getColorVertexShader(), getColorFragmentShader());
-    mColorInstancedShader->load("ColorInstanced", getColorInstancedVertexShader(), getColorInstancedFragmentShader());
-    mNormalShader->load("Normal", getNormalVertexShader(), getNormalFragmentShader());
-    mNormalInstancedShader->load("NormalInstanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader());
-    mPositionShader->load("Position", getPositionVertexShader(), getPositionFragmentShader());
-    mPositionInstancedShader->load("PositionInstanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader());
-    mLinearDepthShader->load("LinearDepth", getLinearDepthVertexShader(), getLinearDepthFragmentShader());
-    mLinearDepthInstancedShader->load("LinearDepthInstanced", getLinearDepthInstancedVertexShader(),
-                                      getLinearDepthInstancedFragmentShader());
-    mLineShader->load("Line", getLineVertexShader(), getLineFragmentShader());
-    mGizmoShader->load("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader());
-    mGridShader->load("Grid", getGridVertexShader(), getGridFragmentShader());
-
-    Log::warn("Start compile internal shaders\n");
-    mSSAOShader->compile();
-    mGeometryShader->compile();
-    mDepthShader->compile();
-    mDepthCubemapShader->compile();
-    mScreenQuadShader->compile();
-    mSpriteShader->compile();
-    mGBufferShader->compile();
-    mColorShader->compile();
-    mColorInstancedShader->compile();
-    mNormalShader->compile();
-    mNormalInstancedShader->compile();
-    mPositionShader->compile();
-    mPositionInstancedShader->compile();
-    mLinearDepthShader->compile();
-    mLinearDepthInstancedShader->compile();
-    mLineShader->compile();
-    mGizmoShader->compile();
-    mGridShader->compile();
-    Log::warn("End compile internal shaders\n");
+    mShader = ShaderProgram::create();
+    mShader->load("Standard", getStandardVertexShader(), getStandardFragmentShader());
+    mShader->compile();
 }
 
-OpenGLRendererShaders::~OpenGLRendererShaders()
+OpenGLStandardShader::~OpenGLStandardShader()
 {
-    delete mSSAOShader;
-    delete mGeometryShader;
-    delete mDepthShader;
-    delete mDepthCubemapShader;
-    delete mScreenQuadShader;
-    delete mSpriteShader;
-    delete mGBufferShader;
-    delete mColorShader;
-    delete mColorInstancedShader;
-    delete mNormalShader;
-    delete mNormalInstancedShader;
-    delete mPositionShader;
-    delete mPositionInstancedShader;
-    delete mLinearDepthShader;
-    delete mLinearDepthInstancedShader;
-    delete mLineShader;
-    delete mGizmoShader;
-    delete mGridShader;
+    delete mShader;
 }
 
-ShaderProgram *OpenGLRendererShaders::getSSAOShader_impl()
+void OpenGLStandardShader::bind()
 {
-	return mSSAOShader;
+    mShader->bind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getGeometryShader_impl()
+void OpenGLStandardShader::unbind()
 {
-    return mGeometryShader;
+    mShader->unbind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getDepthShader_impl()
+std::string OpenGLStandardShader::getVertexShader()
 {
-	return mDepthShader;
+    return getStandardVertexShader();
 }
 
-ShaderProgram *OpenGLRendererShaders::getDepthCubemapShader_impl()
+std::string OpenGLStandardShader::getFragmentShader()
 {
-	return mDepthCubemapShader;
+    return getStandardFragmentShader();
 }
 
-ShaderProgram *OpenGLRendererShaders::getScreenQuadShader_impl()
+OpenGLGBufferShader::OpenGLGBufferShader()
 {
-	return mScreenQuadShader;
+    mShader = ShaderProgram::create();
+    mShader->load("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
 }
 
-ShaderProgram *OpenGLRendererShaders::getSpriteShader_impl()
+OpenGLGBufferShader ::~OpenGLGBufferShader()
 {
-	return mSpriteShader;
+    delete mShader;
 }
 
-ShaderProgram *OpenGLRendererShaders::getGBufferShader_impl()
+void OpenGLGBufferShader::bind()
 {
-	return mGBufferShader;
+    mShader->bind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getColorShader_impl()
+void OpenGLGBufferShader::unbind()
 {
-	return mColorShader;
+    mShader->unbind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getColorInstancedShader_impl()
+void OpenGLGBufferShader::setModel(const glm::mat4 &model)
 {
-	return mColorInstancedShader;
+    mShader->setMat4(mModelLoc, model);
 }
 
-ShaderProgram *OpenGLRendererShaders::getNormalShader_impl()
+OpenGLQuadShader::OpenGLQuadShader()
 {
-	return mNormalShader;
+    mShader = ShaderProgram::create();
+    mShader->load("ScreenQuad", getScreenQuadVertexShader(), getScreenQuadFragmentShader());
+    mShader->compile();
+
+    mScreenTexLoc = mShader->findUniformLocation("screenTexture");
 }
 
-ShaderProgram *OpenGLRendererShaders::getNormalInstancedShader_impl()
+OpenGLQuadShader ::~OpenGLQuadShader()
 {
-	return mNormalInstancedShader;
+    delete mShader;
 }
 
-ShaderProgram *OpenGLRendererShaders::getPositionShader_impl()
+void OpenGLQuadShader::bind()
 {
-	return mPositionShader;
+    mShader->bind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getPositionInstancedShader_impl()
+void OpenGLQuadShader::unbind()
 {
-	return mPositionInstancedShader;
+    mShader->unbind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getLinearDepthShader_impl()
+void OpenGLQuadShader::setScreenTexture(int texUnit, TextureHandle *tex)
 {
-	return mLinearDepthShader;
+    mShader->setTexture2D(mScreenTexLoc, texUnit, tex);
 }
 
-ShaderProgram *OpenGLRendererShaders::getLinearDepthInstancedShader_impl()
+OpenGLDepthShader::OpenGLDepthShader()
 {
-	return mLinearDepthInstancedShader;
+    mShader = ShaderProgram::create();
+    mShader->load("DepthMap", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+    mViewLoc = mShader->findUniformLocation("view");
+    mProjectionLoc = mShader->findUniformLocation("projection");
 }
 
-ShaderProgram *OpenGLRendererShaders::getLineShader_impl()
+OpenGLDepthShader ::~OpenGLDepthShader()
 {
-	return mLineShader;
+    delete mShader;
 }
 
-ShaderProgram *OpenGLRendererShaders::getGizmoShader_impl()
+void OpenGLDepthShader::bind()
 {
-	return mGizmoShader;
+    mShader->bind();
 }
 
-ShaderProgram *OpenGLRendererShaders::getGridShader_impl()
+void OpenGLDepthShader::unbind()
 {
-	return mGridShader;
+    mShader->unbind();
 }
 
-std::string OpenGLRendererShaders::getStandardVertexShader_impl()
+void OpenGLDepthShader::setModel(const glm::mat4 &model)
 {
-    return PhysicsEngine::getStandardVertexShader();
+    mShader->setMat4(mModelLoc, model);
 }
 
-std::string OpenGLRendererShaders::getStandardFragmentShader_impl()
+void OpenGLDepthShader::setView(const glm::mat4 &view)
 {
-    return PhysicsEngine::getStandardFragmentShader();
+    mShader->setMat4(mViewLoc, view);
+}
+
+void OpenGLDepthShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionLoc, projection);
+}
+
+OpenGLDepthCubemapShader::OpenGLDepthCubemapShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("DepthCubemap", getShadowDepthCubemapVertexShader(), getShadowDepthCubemapFragmentShader(),
+                  getShadowDepthCubemapGeometryShader());
+    mShader->compile();
+
+    mLightPosLoc = mShader->findUniformLocation("lightPos");
+    mFarPlaneLoc = mShader->findUniformLocation("farPlane");
+    mModelLoc = mShader->findUniformLocation("model");
+    mCubeViewProjMatricesLoc[0] = mShader->findUniformLocation("cubeViewProjMatrices[0]");
+    mCubeViewProjMatricesLoc[1] = mShader->findUniformLocation("cubeViewProjMatrices[1]");
+    mCubeViewProjMatricesLoc[2] = mShader->findUniformLocation("cubeViewProjMatrices[2]");
+    mCubeViewProjMatricesLoc[3] = mShader->findUniformLocation("cubeViewProjMatrices[3]");
+    mCubeViewProjMatricesLoc[4] = mShader->findUniformLocation("cubeViewProjMatrices[4]");
+    mCubeViewProjMatricesLoc[5] = mShader->findUniformLocation("cubeViewProjMatrices[5]");
+}
+
+OpenGLDepthCubemapShader::~OpenGLDepthCubemapShader()
+{
+    delete mShader;
+}
+
+void OpenGLDepthCubemapShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLDepthCubemapShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLDepthCubemapShader::setLightPos(const glm::vec3 &lightPos)
+{
+    mShader->setVec3(mLightPosLoc, lightPos);
+}
+
+void OpenGLDepthCubemapShader::setFarPlane(float farPlane)
+{
+    mShader->setFloat(mFarPlaneLoc, farPlane);
+}
+
+void OpenGLDepthCubemapShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+void OpenGLDepthCubemapShader::setCubeViewProj(int index, const glm::mat4 &modelView)
+{
+    assert(index >= 0);
+    assert(index <= 5);
+    mShader->setMat4(mCubeViewProjMatricesLoc[index], modelView);
+}
+
+OpenGLGeometryShader::OpenGLGeometryShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Geometry", getGeometryVertexShader(), getGeometryFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+}
+
+OpenGLGeometryShader::~OpenGLGeometryShader()
+{
+    delete mShader;
+}
+
+void OpenGLGeometryShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLGeometryShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLGeometryShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+OpenGLNormalShader::OpenGLNormalShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Normal", getNormalVertexShader(), getNormalFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+}
+
+OpenGLNormalShader::~OpenGLNormalShader()
+{
+    delete mShader;
+}
+
+void OpenGLNormalShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLNormalShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLNormalShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+OpenGLNormalInstancedShader::OpenGLNormalInstancedShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Normal Instanced", getNormalInstancedVertexShader(), getNormalInstancedFragmentShader());
+    mShader->compile();
+}
+
+OpenGLNormalInstancedShader::~OpenGLNormalInstancedShader()
+{
+    delete mShader;
+}
+
+void OpenGLNormalInstancedShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLNormalInstancedShader::unbind()
+{
+    mShader->unbind();
+}
+
+OpenGLPositionShader::OpenGLPositionShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Position", getPositionVertexShader(), getPositionFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+}
+
+OpenGLPositionShader::~OpenGLPositionShader()
+{
+    delete mShader;
+}
+
+void OpenGLPositionShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLPositionShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLPositionShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+OpenGLPositionInstancedShader::OpenGLPositionInstancedShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Position Instanced", getPositionInstancedVertexShader(), getPositionInstancedFragmentShader());
+    mShader->compile();
+}
+
+OpenGLPositionInstancedShader::~OpenGLPositionInstancedShader()
+{
+    delete mShader;
+}
+
+void OpenGLPositionInstancedShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLPositionInstancedShader::unbind()
+{
+    mShader->unbind();
+}
+
+OpenGLLinearDepthShader::OpenGLLinearDepthShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("LinearDepth", getLinearDepthVertexShader(), getLinearDepthFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+}
+
+OpenGLLinearDepthShader::~OpenGLLinearDepthShader()
+{
+    delete mShader;
+}
+
+void OpenGLLinearDepthShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLLinearDepthShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLLinearDepthShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+OpenGLLinearDepthInstancedShader::OpenGLLinearDepthInstancedShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Linear Depth Instanced", getLinearDepthInstancedVertexShader(), getLinearDepthInstancedFragmentShader());
+    mShader->compile();
+}
+
+OpenGLLinearDepthInstancedShader::~OpenGLLinearDepthInstancedShader()
+{
+    delete mShader;
+}
+
+void OpenGLLinearDepthInstancedShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLLinearDepthInstancedShader::unbind()
+{
+    mShader->unbind();
+}
+
+OpenGLColorShader::OpenGLColorShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Color", getColorVertexShader(), getColorFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+    mColorLoc = mShader->findUniformLocation("material.color");
+}
+
+OpenGLColorShader::~OpenGLColorShader()
+{
+    delete mShader;
+}
+
+void OpenGLColorShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLColorShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLColorShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+void OpenGLColorShader::setColor(const Color32 &color)
+{
+    mShader->setColor32(mColorLoc, color);
+}
+
+OpenGLColorInstancedShader::OpenGLColorInstancedShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Color Instanced", getColorInstancedVertexShader(),
+                  getColorInstancedFragmentShader());
+    mShader->compile();
+}
+
+OpenGLColorInstancedShader::~OpenGLColorInstancedShader()
+{
+    delete mShader;
+}
+
+void OpenGLColorInstancedShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLColorInstancedShader::unbind()
+{
+    mShader->unbind();
+}
+
+OpenGLSSAOShader::OpenGLSSAOShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("SSAO", getSSAOVertexShader(), getSSAOFragmentShader());
+    mShader->compile();
+
+    mProjectionLoc = mShader->findUniformLocation("projection");
+    mPositionTexLoc = mShader->findUniformLocation("positionTex");
+    mNormalTexLoc = mShader->findUniformLocation("normalTex");
+    mNoiseTexLoc = mShader->findUniformLocation("noiseTex");
+    for (int i = 0; i < 64; i++)
+    {
+        mSamplesLoc[i] = mShader->findUniformLocation("samples[" + std::to_string(i) + "]");
+    }
+}
+    
+OpenGLSSAOShader::~OpenGLSSAOShader()
+{
+    delete mShader;
+}
+
+void OpenGLSSAOShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLSSAOShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLSSAOShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionLoc, projection);
+}
+
+void OpenGLSSAOShader::setPositionTexture(int texUnit, TextureHandle *tex)
+{
+    mShader->setTexture2D(mNormalTexLoc, texUnit, tex);
+}
+
+void OpenGLSSAOShader::setNormalTexture(int texUnit, TextureHandle *tex)
+{
+    mShader->setTexture2D(mPositionTexLoc, texUnit, tex);
+}
+
+void OpenGLSSAOShader::setNoiseTexture(int texUnit, TextureHandle *tex)
+{
+    mShader->setTexture2D(mNoiseTexLoc, texUnit, tex);
+}
+
+void OpenGLSSAOShader::setSample(int index, const glm::vec3 &sample)
+{
+    assert(index >= 0);
+    assert(index <= 63);
+    mShader->setVec3(mSamplesLoc[index], sample);
+}
+
+OpenGLSpriteShader::OpenGLSpriteShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Sprite", getSpriteVertexShader(), getSpriteFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+    mViewLoc = mShader->findUniformLocation("view");
+    mProjectionLoc = mShader->findUniformLocation("projection");
+    mColorLoc = mShader->findUniformLocation("spriteColor");
+    mImageLoc = mShader->findUniformLocation("image");
+}
+
+OpenGLSpriteShader::~OpenGLSpriteShader()
+{
+    delete mShader;
+}
+
+void OpenGLSpriteShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLSpriteShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLSpriteShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+   
+void OpenGLSpriteShader::setView(const glm::mat4 &view)
+{
+    mShader->setMat4(mViewLoc, view);
+}
+
+void OpenGLSpriteShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionLoc, projection);
+}
+  
+void OpenGLSpriteShader::setColor(const Color &color)
+{
+    mShader->setColor(mColorLoc, color);
+}
+
+void OpenGLSpriteShader::setImage(int texUnit, TextureHandle *tex)
+{
+    mShader->setTexture2D(mImageLoc, texUnit, tex);
+}
+
+OpenGLLineShader::OpenGLLineShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Line", getLineVertexShader(), getLineFragmentShader());
+    mShader->compile();
+
+    mMVPLoc = mShader->findUniformLocation("mvp");
+}
+
+OpenGLLineShader::~OpenGLLineShader()
+{
+    delete mShader;
+}
+
+void OpenGLLineShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLLineShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLLineShader::setMVP(const glm::mat4 &mvp)
+{
+    mShader->setMat4(mMVPLoc, mvp);
+}
+
+OpenGLGizmoShader::OpenGLGizmoShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader());
+    mShader->compile();
+
+    mModelLoc = mShader->findUniformLocation("model");
+    mViewLoc = mShader->findUniformLocation("view");
+    mProjectionLoc = mShader->findUniformLocation("projection");
+    mColorLoc = mShader->findUniformLocation("color");
+    mLightPosLoc = mShader->findUniformLocation("lightPos");
+}
+
+OpenGLGizmoShader::~OpenGLGizmoShader()
+{
+    delete mShader;
+}
+
+void OpenGLGizmoShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLGizmoShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLGizmoShader::setModel(const glm::mat4 &model)
+{
+    mShader->setMat4(mModelLoc, model);
+}
+
+void OpenGLGizmoShader::setView(const glm::mat4 &view)
+{
+    mShader->setMat4(mViewLoc, view);
+}
+
+void OpenGLGizmoShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionLoc, projection);
+}
+
+void OpenGLGizmoShader::setColor(const Color &color)
+{
+    mShader->setColor(mColorLoc, color);
+}
+
+void OpenGLGizmoShader::setLightPos(const glm::vec3 &lightPos)
+{
+    mShader->setVec3(mLightPosLoc, lightPos);
+}
+
+OpenGLGridShader::OpenGLGridShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Grid", getGridVertexShader(), getGridFragmentShader());
+    mShader->compile();
+
+    mMVPLoc = mShader->findUniformLocation("mvp");
+    mColorLoc = mShader->findUniformLocation("color");
+}
+
+OpenGLGridShader::~OpenGLGridShader()
+{
+    delete mShader;
+}
+
+void OpenGLGridShader::bind()
+{
+    mShader->bind();
+}
+
+void OpenGLGridShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OpenGLGridShader::setMVP(const glm::mat4 &mvp)
+{
+    mShader->setMat4(mMVPLoc, mvp);
+}
+
+void OpenGLGridShader::setColor(const Color &color)
+{
+    mShader->setColor(mColorLoc, color);
 }

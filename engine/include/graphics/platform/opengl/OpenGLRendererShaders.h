@@ -5,54 +5,321 @@
 
 namespace PhysicsEngine
 {
-    class OpenGLRendererShaders : public RendererShaders
+    class OpenGLStandardShader : public StandardShader
     {
-    private:
-        ShaderProgram *mSSAOShader;
-        ShaderProgram *mGeometryShader;
-        ShaderProgram *mDepthShader;
-        ShaderProgram *mDepthCubemapShader;
-        ShaderProgram *mScreenQuadShader;
-        ShaderProgram *mSpriteShader;
-        ShaderProgram *mGBufferShader;
-        ShaderProgram *mColorShader;
-        ShaderProgram *mColorInstancedShader;
-        ShaderProgram *mNormalShader;
-        ShaderProgram *mNormalInstancedShader;
-        ShaderProgram *mPositionShader;
-        ShaderProgram *mPositionInstancedShader;
-        ShaderProgram *mLinearDepthShader;
-        ShaderProgram *mLinearDepthInstancedShader;
-        ShaderProgram *mLineShader;
-        ShaderProgram *mGizmoShader;
-        ShaderProgram *mGridShader;
+      private:
+        ShaderProgram *mShader;
 
+      public:
+        OpenGLStandardShader();
+        ~OpenGLStandardShader();
+
+        void bind() override;
+        void unbind() override;
+
+        std::string getVertexShader() override;
+        std::string getFragmentShader() override;
+    };
+
+    class OpenGLGBufferShader : public GBufferShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+
+      public:
+        OpenGLGBufferShader();
+        ~OpenGLGBufferShader();
+
+        void bind() override;
+        void unbind() override;
+
+        void setModel(const glm::mat4 &model) override;
+    };
+
+    class OpenGLQuadShader : public QuadShader
+    {
+      private: 
+          ShaderProgram *mShader;
+          int mScreenTexLoc;
+
+      public:
+        OpenGLQuadShader();
+        ~OpenGLQuadShader();
+
+        void bind() override;
+        void unbind() override;
+        void setScreenTexture(int texUnit, TextureHandle *tex) override;
+    };
+
+    class OpenGLDepthShader : public DepthShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+        int mViewLoc;
+        int mProjectionLoc;
+
+      public:
+        OpenGLDepthShader();
+        ~OpenGLDepthShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+        void setView(const glm::mat4 &view) override;
+        void setProjection(const glm::mat4 &projection) override;
+    };
+
+    class OpenGLDepthCubemapShader : public DepthCubemapShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mLightPosLoc;
+        int mFarPlaneLoc;
+        int mModelLoc;
+        int mCubeViewProjMatricesLoc[6];
+
+      public:
+        OpenGLDepthCubemapShader();
+        ~OpenGLDepthCubemapShader();
+
+        void bind() override;
+        void unbind() override;
+        void setLightPos(const glm::vec3 &lightPos) override;
+        void setFarPlane(float farPlane) override;
+        void setModel(const glm::mat4 &model) override;
+        void setCubeViewProj(int index, const glm::mat4 &modelView) override;
+    };
+
+    class OpenGLGeometryShader : public GeometryShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+
+      public:
+        OpenGLGeometryShader();
+        ~OpenGLGeometryShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+    };
+
+    class OpenGLNormalShader : public NormalShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+
+      public:
+        OpenGLNormalShader();
+        ~OpenGLNormalShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+    };
+
+    class OpenGLNormalInstancedShader : public NormalInstancedShader
+    {
+      private:
+        ShaderProgram *mShader;
+
+      public:
+        OpenGLNormalInstancedShader();
+        ~OpenGLNormalInstancedShader();
+
+        void bind() override;
+        void unbind() override;
+    };
+
+    class OpenGLPositionShader : public PositionShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+
+      public:
+        OpenGLPositionShader();
+        ~OpenGLPositionShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+    };
+
+    class OpenGLPositionInstancedShader : public PositionInstancedShader
+    {
+      private:
+        ShaderProgram *mShader;
+
+      public:
+        OpenGLPositionInstancedShader();
+        ~OpenGLPositionInstancedShader();
+
+        void bind() override;
+        void unbind() override;
+    };
+    
+    class OpenGLLinearDepthShader : public LinearDepthShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+
+      public:
+        OpenGLLinearDepthShader();
+        ~OpenGLLinearDepthShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+    };
+
+    class OpenGLLinearDepthInstancedShader : public LinearDepthInstancedShader
+    {
+      private:
+        ShaderProgram *mShader;
+
+      public:
+        OpenGLLinearDepthInstancedShader();
+        ~OpenGLLinearDepthInstancedShader();
+
+        void bind() override;
+        void unbind() override;
+    };
+
+    class OpenGLColorShader : public ColorShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+        int mColorLoc;
+
+      public:
+        OpenGLColorShader();
+        ~OpenGLColorShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+        void setColor(const Color32 &color) override;
+    };
+
+    class OpenGLColorInstancedShader : public ColorInstancedShader
+    {
+      private:
+        ShaderProgram *mShader;
+
+      public:
+        OpenGLColorInstancedShader();
+        ~OpenGLColorInstancedShader();
+
+        void bind() override;
+        void unbind() override;
+    };
+
+    class OpenGLSSAOShader : public SSAOShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mProjectionLoc;
+        int mPositionTexLoc;
+        int mNormalTexLoc;
+        int mNoiseTexLoc;
+        int mSamplesLoc[64];
+
+      public:
+        OpenGLSSAOShader();
+        ~OpenGLSSAOShader();
+
+        void bind() override;
+        void unbind() override;
+        void setProjection(const glm::mat4 &projection) override;
+        void setPositionTexture(int texUnit, TextureHandle *tex) override;
+        void setNormalTexture(int texUnit, TextureHandle *tex) override;
+        void setNoiseTexture(int texUnit, TextureHandle *tex) override;
+        void setSample(int index, const glm::vec3 &sample) override;
+    };
+
+    class OpenGLSpriteShader : public SpriteShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+        int mViewLoc;
+        int mProjectionLoc;
+        int mColorLoc;
+        int mImageLoc;
+      
+      public:
+        OpenGLSpriteShader();
+        ~OpenGLSpriteShader();
+
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+        void setView(const glm::mat4 &view) override;
+        void setProjection(const glm::mat4 &projection) override;
+        void setColor(const Color &color) override;
+        void setImage(int texUnit, TextureHandle *tex) override;
+    };
+
+    class OpenGLLineShader : public LineShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mMVPLoc;
+
+      public:
+        OpenGLLineShader();
+        ~OpenGLLineShader();
+
+        void bind() override;
+        void unbind() override;
+        void setMVP(const glm::mat4 &mvp) override;
+    };
+
+    class OpenGLGizmoShader : public GizmoShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mModelLoc;
+        int mViewLoc;
+        int mProjectionLoc;
+        int mColorLoc;
+        int mLightPosLoc;
+        
     public:
-        OpenGLRendererShaders();
-        ~OpenGLRendererShaders();
+        OpenGLGizmoShader();
+        ~OpenGLGizmoShader();
 
-    protected:
-        ShaderProgram *getSSAOShader_impl() override;
-        ShaderProgram *getGeometryShader_impl() override;
-        ShaderProgram *getDepthShader_impl() override;
-        ShaderProgram *getDepthCubemapShader_impl() override;
-        ShaderProgram *getScreenQuadShader_impl() override;
-        ShaderProgram *getSpriteShader_impl() override;
-        ShaderProgram *getGBufferShader_impl() override;
-        ShaderProgram *getColorShader_impl() override;
-        ShaderProgram *getColorInstancedShader_impl() override;
-        ShaderProgram *getNormalShader_impl() override;
-        ShaderProgram *getNormalInstancedShader_impl() override;
-        ShaderProgram *getPositionShader_impl() override;
-        ShaderProgram *getPositionInstancedShader_impl() override;
-        ShaderProgram *getLinearDepthShader_impl() override;
-        ShaderProgram *getLinearDepthInstancedShader_impl() override;
-        ShaderProgram *getLineShader_impl() override;
-        ShaderProgram *getGizmoShader_impl() override;
-        ShaderProgram *getGridShader_impl() override;
+        void bind() override;
+        void unbind() override;
+        void setModel(const glm::mat4 &model) override;
+        void setView(const glm::mat4 &view) override;
+        void setProjection(const glm::mat4 &projection) override;
+        void setColor(const Color &color) override;
+        void setLightPos(const glm::vec3 &lightPos) override;
+    };
 
-        std::string getStandardVertexShader_impl() override;
-        std::string getStandardFragmentShader_impl() override;
+    class OpenGLGridShader : public GridShader
+    {
+      private:
+        ShaderProgram *mShader;
+        int mMVPLoc;
+        int mColorLoc;
+
+      public:
+        OpenGLGridShader();
+        ~OpenGLGridShader();
+
+        void bind() override;
+        void unbind() override;
+        void setMVP(const glm::mat4 &mvp) override;
+        void setColor(const Color &color) override;
     };
 }
 

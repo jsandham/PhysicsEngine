@@ -96,6 +96,10 @@ class GizmoRenderer
   private:
     World *mWorld;
 
+    LineShader *mLineShader;
+    GizmoShader *mGizmoShader;
+    GridShader *mGridShader;
+
     GizmoRendererState mState;
 
     std::vector<LineGizmo> mLines;
@@ -123,8 +127,6 @@ class GizmoRenderer
     void clearDrawList();
 
   private:
-    void initializeGizmoRenderer();
-    void destroyGizmoRenderer();
     void renderLineGizmos(Camera *camera);
     void renderPlaneGizmos(Camera *camera);
     void renderAABBGizmos(Camera *camera);

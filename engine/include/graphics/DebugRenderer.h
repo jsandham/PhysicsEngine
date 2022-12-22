@@ -20,6 +20,16 @@ class DebugRenderer
   private:
     World *mWorld;
 
+    QuadShader* mQuadShader;
+    NormalShader* mNormalsShader;
+    PositionShader* mPositionShader;
+    LinearDepthShader* mLinearDepthShader;
+    ColorShader* mColorShader;
+    NormalInstancedShader* mNormalsInstancedShader;
+    PositionInstancedShader* mPositionInstancedShader;
+    LinearDepthInstancedShader* mLinearDepthInstancedShader;
+    ColorInstancedShader* mColorInstancedShader;
+
     DebugRendererState mState;
 
   public:
@@ -35,7 +45,6 @@ class DebugRenderer
                 const std::vector<Id> &transformIds);
 
   private:
-    void initializeDebugRenderer();
     void beginDebugFrame(Camera *camera);
     void renderDebug(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
     void renderDebugColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,

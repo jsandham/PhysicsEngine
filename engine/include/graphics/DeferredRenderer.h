@@ -19,6 +19,11 @@ class DeferredRenderer
   private:
     World *mWorld;
 
+    QuadShader* mQuadShader;
+    GBufferShader* mGBufferShader;
+    ColorShader* mColorShader;
+    ColorInstancedShader* mColorInstancedShader;
+
     DeferredRendererState mState;
 
   public:
@@ -34,7 +39,6 @@ class DeferredRenderer
                 const std::vector<Id> &transformIds);
 
   private:
-    void initializeDeferredRenderer();
     void beginDeferredFrame(Camera *camera);
     void geometryPass(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
     void lightingPass(Camera *camera, const std::vector<RenderObject> &renderObjects);

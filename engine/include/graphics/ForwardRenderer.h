@@ -21,6 +21,15 @@ class ForwardRenderer
   private:
     World *mWorld;
 
+    QuadShader *mQuadShader;
+    DepthShader *mDepthShader;
+    DepthCubemapShader *mDepthCubemapShader;
+    GeometryShader *mGeometryShader;
+    ColorShader *mColorShader;
+    ColorInstancedShader *mColorInstancedShader;
+    SSAOShader *mSsaoShader;
+    SpriteShader *mSpriteShader;
+
     ForwardRendererState mState;
 
   public:
@@ -37,7 +46,6 @@ class ForwardRenderer
                 const std::vector<SpriteObject> &spriteObjects);
 
   private:
-    void initializeRenderer();
     void beginFrame(Camera* camera);
     void computeSSAO(Camera* camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
     void renderShadows(Camera* camera, Light* light, Transform* lightTransform, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
