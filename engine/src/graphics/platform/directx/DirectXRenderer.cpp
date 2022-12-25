@@ -88,10 +88,10 @@ void DirectXRenderer::turnOff_impl(Capability capability){}
 void DirectXRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest){}
 void DirectXRenderer::beginQuery_impl(unsigned int queryId){}
 void DirectXRenderer::endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime){}
-void DirectXRenderer::createGlobalCameraUniforms_impl(CameraUniform &uniform){}
-void DirectXRenderer::createGlobalLightUniforms_impl(LightUniform &uniform){}
-void DirectXRenderer::setGlobalCameraUniforms_impl(const CameraUniform &uniform){}
-void DirectXRenderer::setGlobalLightUniforms_impl(const LightUniform &uniform){}
+//void DirectXRenderer::createGlobalCameraUniforms_impl(CameraUniform &uniform){}
+//void DirectXRenderer::createGlobalLightUniforms_impl(LightUniform &uniform){}
+//void DirectXRenderer::setGlobalCameraUniforms_impl(const CameraUniform &uniform){}
+//void DirectXRenderer::setGlobalLightUniforms_impl(const LightUniform &uniform){}
 void DirectXRenderer::createScreenQuad_impl(unsigned int *vao, unsigned int *vbo){}
 void DirectXRenderer::renderScreenQuad_impl(unsigned int vao){}
 //void DirectXRenderer::createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color){}

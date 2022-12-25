@@ -110,25 +110,25 @@ void Renderer::endQuery(unsigned int queryId, unsigned long long *elapsedTime)
     return sInstance->endQuery_impl(queryId, elapsedTime);
 }
 
-void Renderer::createGlobalCameraUniforms(CameraUniform &uniform)
-{
-    return sInstance->createGlobalCameraUniforms_impl(uniform);
-}
-
-void Renderer::createGlobalLightUniforms(LightUniform &uniform)
-{
-    return sInstance->createGlobalLightUniforms_impl(uniform);
-}
-
-void Renderer::setGlobalCameraUniforms(const CameraUniform &uniform)
-{
-    return sInstance->setGlobalCameraUniforms_impl(uniform);
-}
-
-void Renderer::setGlobalLightUniforms(const LightUniform &uniform)
-{
-    return sInstance->setGlobalLightUniforms_impl(uniform);
-}
+//void Renderer::createGlobalCameraUniforms(CameraUniform &uniform)
+//{
+//    return sInstance->createGlobalCameraUniforms_impl(uniform);
+//}
+//
+//void Renderer::createGlobalLightUniforms(LightUniform &uniform)
+//{
+//    return sInstance->createGlobalLightUniforms_impl(uniform);
+//}
+//
+//void Renderer::setGlobalCameraUniforms(const CameraUniform &uniform)
+//{
+//    return sInstance->setGlobalCameraUniforms_impl(uniform);
+//}
+//
+//void Renderer::setGlobalLightUniforms(const LightUniform &uniform)
+//{
+//    return sInstance->setGlobalLightUniforms_impl(uniform);
+//}
 
 void Renderer::createScreenQuad(unsigned int *vao, unsigned int *vbo)
 {

@@ -7,6 +7,7 @@
 
 #include "Renderer.h"
 #include "RendererShaders.h"
+#include "RendererUniforms.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -30,7 +31,11 @@ class DebugRenderer
     LinearDepthInstancedShader* mLinearDepthInstancedShader;
     ColorInstancedShader* mColorInstancedShader;
 
-    DebugRendererState mState;
+    CameraUniform *mCameraUniform;
+
+    // quad
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
 
   public:
     DebugRenderer();

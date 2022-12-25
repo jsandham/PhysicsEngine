@@ -6,7 +6,7 @@
 
 using namespace PhysicsEngine;
 
-UniformBuffer::UniformBuffer(size_t size)
+UniformBuffer::UniformBuffer()
 {
 }
 
@@ -14,14 +14,14 @@ UniformBuffer::~UniformBuffer()
 {
 }
 
-UniformBuffer *UniformBuffer::create(size_t size)
+UniformBuffer *UniformBuffer::create(size_t size, unsigned int bindingPoint)
 {
     switch (RenderContext::getRenderAPI())
     {
     case RenderAPI::OpenGL:
-        return new OpenGLUniformBuffer(size);
+        return new OpenGLUniformBuffer(size, bindingPoint);
     case RenderAPI::DirectX:
-        return new DirectXUniformBuffer(size);
+        return new DirectXUniformBuffer(size, bindingPoint);
     }
 
     return nullptr;

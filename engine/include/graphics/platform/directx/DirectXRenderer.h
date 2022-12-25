@@ -28,10 +28,10 @@ namespace PhysicsEngine
         void setBlending_impl(BlendingFactor source, BlendingFactor dest) override;
         void beginQuery_impl(unsigned int queryId) override;
         void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) override;
-        void createGlobalCameraUniforms_impl(CameraUniform &uniform) override;
-        void createGlobalLightUniforms_impl(LightUniform &uniform) override;
-        void setGlobalCameraUniforms_impl(const CameraUniform &uniform) override;
-        void setGlobalLightUniforms_impl(const LightUniform &uniform) override;
+        //void createGlobalCameraUniforms_impl(CameraUniform &uniform) override;
+        //void createGlobalLightUniforms_impl(LightUniform &uniform) override;
+        //void setGlobalCameraUniforms_impl(const CameraUniform &uniform) override;
+        //void setGlobalLightUniforms_impl(const LightUniform &uniform) override;
         void createScreenQuad_impl(unsigned int *vao, unsigned int *vbo) override;
         void renderScreenQuad_impl(unsigned int vao) override;
         //void createFramebuffer_impl(int width, int height, unsigned int *fbo, unsigned int *color) override;

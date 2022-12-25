@@ -38,217 +38,6 @@ enum class BlendingFactor
     ONE_MINUS_SRC_ALPHA
 };
 
-struct CameraUniform
-{
-    glm::mat4 mProjection;     // 0
-    glm::mat4 mView;           // 64
-    glm::mat4 mViewProjection; // 128
-    glm::vec3 mCameraPos;      // 192
-
-    unsigned int mBuffer;
-};
-
-struct LightUniform
-{
-    glm::mat4 mLightProjection[5]; // 0    64   128  192  256
-    glm::mat4 mLightView[5];       // 320  384  448  512  576
-    glm::vec3 mPosition;           // 640
-    glm::vec3 mDirection;          // 656
-    glm::vec4 mColor;              // 672
-    float mCascadeEnds[5];         // 688  704  720  736  752
-    float mIntensity;              // 768
-    float mSpotAngle;              // 772
-    float mInnerSpotAngle;         // 776
-    float mShadowNearPlane;        // 780
-    float mShadowFarPlane;         // 784
-    float mShadowBias;             // 788
-    float mShadowRadius;           // 792
-    float mShadowStrength;         // 796
-
-    unsigned int mBuffer;
-};
-
-struct ForwardRendererState
-{
-    // internal graphics camera state
-    CameraUniform mCameraState;
-
-    // internal graphics light state
-    LightUniform mLightState;
-
-    // directional light cascade shadow map data
-    float mCascadeEnds[6];
-    glm::mat4 mCascadeOrthoProj[5];
-    glm::mat4 mCascadeLightView[5];
-
-    ShaderProgram *mDepthShaderProgram;
-    //int mDepthShaderProgram;
-    int mDepthShaderModelLoc;
-    int mDepthShaderViewLoc;
-    int mDepthShaderProjectionLoc;
-
-    // spotlight shadow map data
-    glm::mat4 mShadowViewMatrix;
-    glm::mat4 mShadowProjMatrix;
-
-    // pointlight cubemap shadow map data
-    glm::mat4 mCubeViewProjMatrices[6];
-
-    ShaderProgram *mDepthCubemapShaderProgram;
-    //int mDepthCubemapShaderProgram;
-    int mDepthCubemapShaderLightPosLoc;
-    int mDepthCubemapShaderFarPlaneLoc;
-    int mDepthCubemapShaderModelLoc;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc0;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc1;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc2;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc3;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc4;
-    int mDepthCubemapShaderCubeViewProjMatricesLoc5;
-
-    ShaderProgram *mGeometryShaderProgram;
-    //int mGeometryShaderProgram;
-    int mGeometryShaderModelLoc;
-
-    // color picking
-    ShaderProgram *mColorShaderProgram;
-    ShaderProgram *mColorInstancedShaderProgram;
-    //int mColorShaderProgram;
-    //int mColorInstancedShaderProgram;
-    int mColorShaderModelLoc;
-    int mColorShaderColorLoc;
-
-    // ssao
-    ShaderProgram *mSsaoShaderProgram;
-    //int mSsaoShaderProgram;
-    int mSsaoShaderProjectionLoc;
-    int mSsaoShaderPositionTexLoc;
-    int mSsaoShaderNormalTexLoc;
-    int mSsaoShaderNoiseTexLoc;
-    int mSsaoShaderSamplesLoc[64];
-
-    // sprite
-    ShaderProgram *mSpriteShaderProgram;
-    //int mSpriteShaderProgram;
-    int mSpriteModelLoc;
-    int mSpriteViewLoc;
-    int mSpriteProjectionLoc;
-    int mSpriteColorLoc;
-    int mSpriteImageLoc;
-
-    // quad
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
-    ShaderProgram *mQuadShaderProgram;
-    //int mQuadShaderProgram;
-    int mQuadShaderTexLoc;
-};
-
-struct DeferredRendererState
-{
-    // internal graphics camera state
-    CameraUniform mCameraState;
-
-    ShaderProgram *mGBufferShaderProgram;
-    //int mGBufferShaderProgram;
-    int mGBufferShaderModelLoc;
-    int mGBufferShaderDiffuseTexLoc;
-    int mGBufferShaderSpecTexLoc;
-
-    ShaderProgram *mSimpleLitDeferredShaderProgram;
-    //int mSimpleLitDeferredShaderProgram;
-    int mSimpleLitDeferredShaderViewPosLoc;
-    int mSimpleLitDeferredShaderLightLocs[32];
-
-    // color picking
-    ShaderProgram *mColorShaderProgram;
-    ShaderProgram *mColorInstancedShaderProgram;
-    //int mColorShaderProgram;
-    //int mColorInstancedShaderProgram;
-    int mColorShaderModelLoc;
-    int mColorShaderColorLoc;
-
-    // quad
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
-    ShaderProgram *mQuadShaderProgram;
-    //int mQuadShaderProgram;
-    int mQuadShaderTexLoc;
-};
-
-struct DebugRendererState
-{
-    // internal graphics camera state
-    CameraUniform mCameraState;
-
-    // normals
-    ShaderProgram *mNormalsShaderProgram;
-    ShaderProgram *mNormalsInstancedShaderProgram;
-    //int mNormalsShaderProgram;
-    //int mNormalsInstancedShaderProgram;
-    int mNormalsShaderModelLoc;
-
-    // position
-    ShaderProgram *mPositionShaderProgram;
-    ShaderProgram *mPositionInstancedShaderProgram;
-    //int mPositionShaderProgram;
-    //int mPositionInstancedShaderProgram;
-    int mPositionShaderModelLoc;
-
-    // linear depth
-    ShaderProgram *mLinearDepthShaderProgram;
-    ShaderProgram *mLinearDepthInstancedShaderProgram;
-    //int mLinearDepthShaderProgram;
-    //int mLinearDepthInstancedShaderProgram;
-    int mLinearDepthShaderModelLoc;
-
-    // color picking
-    ShaderProgram *mColorShaderProgram;
-    ShaderProgram *mColorInstancedShaderProgram;
-    //int mColorShaderProgram;
-    //int mColorInstancedShaderProgram;
-    int mColorShaderModelLoc;
-    int mColorShaderColorLoc;
-
-    // quad
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
-    ShaderProgram *mQuadShaderProgram;
-    //int mQuadShaderProgram;
-    int mQuadShaderTexLoc;
-};
-
-struct GizmoRendererState
-{
-    ShaderProgram *mLineShaderProgram;
-    //int mLineShaderProgram;
-    int mLineShaderMVPLoc;
-
-    ShaderProgram *mGizmoShaderProgram;
-    //int mGizmoShaderProgram;
-    int mGizmoShaderModelLoc;
-    int mGizmoShaderViewLoc;
-    int mGizmoShaderProjLoc;
-    int mGizmoShaderColorLoc;
-    int mGizmoShaderLightPosLoc;
-
-    ShaderProgram *mGridShaderProgram;
-    //int mGridShaderProgram;
-    int mGridShaderMVPLoc;
-    int mGridShaderColorLoc;
-
-    unsigned int mFrustumVAO;
-    unsigned int mFrustumVBO[2];
-    std::vector<float> mFrustumVertices;
-    std::vector<float> mFrustumNormals;
-
-    unsigned int mGridVAO;
-    unsigned int mGridVBO;
-    std::vector<glm::vec3> mGridVertices;
-    glm::vec3 mGridOrigin;
-    Color mGridColor;
-};
-
 class Renderer
 {
 private:
@@ -274,10 +63,10 @@ public:
     static void setBlending(BlendingFactor source, BlendingFactor dest);
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long *elapsedTime);
-    static void createGlobalCameraUniforms(CameraUniform &uniform);
-    static void createGlobalLightUniforms(LightUniform &uniform);
-    static void setGlobalCameraUniforms(const CameraUniform &uniform);
-    static void setGlobalLightUniforms(const LightUniform &uniform);
+    //static void createGlobalCameraUniforms(CameraUniform &uniform);
+    //static void createGlobalLightUniforms(LightUniform &uniform);
+    //static void setGlobalCameraUniforms(const CameraUniform &uniform);
+    //static void setGlobalLightUniforms(const LightUniform &uniform);
     static void createScreenQuad(unsigned int *vao, unsigned int *vbo);
     static void renderScreenQuad(unsigned int vao);
     //static void createFramebuffer(int width, int height, unsigned int *fbo, unsigned int *color);
@@ -420,10 +209,10 @@ protected:
     virtual void setBlending_impl(BlendingFactor source, BlendingFactor dest) = 0;
     virtual void beginQuery_impl(unsigned int queryId) = 0;
     virtual void endQuery_impl(unsigned int queryId, unsigned long long* elapsedTime) = 0;
-    virtual void createGlobalCameraUniforms_impl(CameraUniform& uniform) = 0;
-    virtual void createGlobalLightUniforms_impl(LightUniform& uniform) = 0;
-    virtual void setGlobalCameraUniforms_impl(const CameraUniform& uniform) = 0;
-    virtual void setGlobalLightUniforms_impl(const LightUniform& uniform) = 0;
+    //virtual void createGlobalCameraUniforms_impl(CameraUniform& uniform) = 0;
+    //virtual void createGlobalLightUniforms_impl(LightUniform& uniform) = 0;
+    //virtual void setGlobalCameraUniforms_impl(const CameraUniform& uniform) = 0;
+    //virtual void setGlobalLightUniforms_impl(const LightUniform& uniform) = 0;
     virtual void createScreenQuad_impl(unsigned int* vao, unsigned int* vbo) = 0;
     virtual void renderScreenQuad_impl(unsigned int vao) = 0;
     //virtual void createFramebuffer_impl(int width, int height, unsigned int* fbo, unsigned int* color) = 0;

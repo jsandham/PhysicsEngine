@@ -24,11 +24,10 @@ void ForwardRenderer::init(World *world)
     mSsaoShader = RendererShaders::getSSAOShader();
     mSpriteShader = RendererShaders::getSpriteShader();
 
-    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
+    mCameraUniform = RendererUniforms::getCameraUniform();
+    mLightUniform = RendererUniforms::getLightUniform();
 
-    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
-    Renderer::getRenderer()->createGlobalLightUniforms(mState.mLightState);
-
+    Renderer::getRenderer()->createScreenQuad(&mQuadVAO, &mQuadVBO);
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
@@ -82,16 +81,16 @@ void ForwardRenderer::beginFrame(Camera *camera)
 
     camera->beginQuery();
 
-    mState.mCameraState.mProjection = camera->getProjMatrix();
-    mState.mCameraState.mView = camera->getViewMatrix();
-    mState.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    mState.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
+    mCameraUniform->setProjection(camera->getProjMatrix());
+    mCameraUniform->setView(camera->getViewMatrix());
+    mCameraUniform->setViewProjection(camera->getProjMatrix() * camera->getViewMatrix());
+    mCameraUniform->setCameraPos(camera->getComponent<Transform>()->getPosition());
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
 
     // update camera state data
-    Renderer::getRenderer()->setGlobalCameraUniforms(mState.mCameraState);
+    mCameraUniform->copyToUniformsToDevice();
 
     Framebuffer *framebuffer = nullptr;
 
@@ -171,7 +170,7 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
     mSsaoShader->setNormalTexture(1, camera->getNativeGraphicsNormalTex());
     mSsaoShader->setNoiseTexture(2, camera->getNativeGraphicsSSAONoiseTex());
 
-    Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
+    Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
 
     camera->getNativeGraphicsSSAOFBO()->unbind();
 }
@@ -185,7 +184,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         std::array<float, 6> cascadeEnds = camera->calcViewSpaceCascadeEnds();
         for (size_t i = 0; i < cascadeEnds.size(); i++)
         {
-            mState.mCascadeEnds[i] = cascadeEnds[i];
+            mCascadeEnds[i] = cascadeEnds[i];
         }
 
         calcCascadeOrthoProj(camera, lightTransform->getForward());
@@ -199,8 +198,8 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             light->getNativeGraphicsShadowCascadeFBO(i)->clearDepth(1.0f);
 
             mDepthShader->bind();
-            mDepthShader->setView(mState.mCascadeLightView[i]);
-            mDepthShader->setProjection(mState.mCascadeOrthoProj[i]);
+            mDepthShader->setView(mCascadeLightView[i]);
+            mDepthShader->setProjection(mCascadeOrthoProj[i]);
 
             int modelIndex = 0;
             for (size_t j = 0; j < renderObjects.size(); j++)
@@ -227,14 +226,14 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             0, 0, static_cast<int>(light->getShadowMapResolution()), static_cast<int>(light->getShadowMapResolution()));
         light->getNativeGraphicsShadowSpotlightFBO()->clearDepth(1.0f);
 
-        mState.mShadowProjMatrix = light->getProjMatrix();
-        mState.mShadowViewMatrix =
+        mShadowProjMatrix = light->getProjMatrix();
+        mShadowViewMatrix =
             glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
                         glm::vec3(0.0f, 1.0f, 0.0f));
 
         mDepthShader->bind();
-        mDepthShader->setView(mState.mShadowViewMatrix);
-        mDepthShader->setProjection(mState.mShadowProjMatrix);
+        mDepthShader->setView(mShadowViewMatrix);
+        mDepthShader->setProjection(mShadowProjMatrix);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -257,27 +256,27 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
     else if (light->mLightType == LightType::Point)
     {
 
-        mState.mCubeViewProjMatrices[0] =
+        mCubeViewProjMatrices[0] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        mState.mCubeViewProjMatrices[1] =
+        mCubeViewProjMatrices[1] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(-1.0, 0.0, 0.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        mState.mCubeViewProjMatrices[2] =
+        mCubeViewProjMatrices[2] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, 1.0)));
-        mState.mCubeViewProjMatrices[3] =
+        mCubeViewProjMatrices[3] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, -1.0, 0.0),
                                                   glm::vec3(0.0, 0.0, -1.0)));
-        mState.mCubeViewProjMatrices[4] =
+        mCubeViewProjMatrices[4] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, 1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
-        mState.mCubeViewProjMatrices[5] =
+        mCubeViewProjMatrices[5] =
             (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
                                                   lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
                                                   glm::vec3(0.0, -1.0, 0.0)));
@@ -290,12 +289,12 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         mDepthCubemapShader->bind();
         mDepthCubemapShader->setLightPos(lightTransform->getPosition());
         mDepthCubemapShader->setFarPlane(camera->getFrustum().mFarPlane);
-        mDepthCubemapShader->setCubeViewProj(0, mState.mCubeViewProjMatrices[0]);
-        mDepthCubemapShader->setCubeViewProj(1, mState.mCubeViewProjMatrices[1]);
-        mDepthCubemapShader->setCubeViewProj(2, mState.mCubeViewProjMatrices[2]);
-        mDepthCubemapShader->setCubeViewProj(3, mState.mCubeViewProjMatrices[3]);
-        mDepthCubemapShader->setCubeViewProj(4, mState.mCubeViewProjMatrices[4]);
-        mDepthCubemapShader->setCubeViewProj(5, mState.mCubeViewProjMatrices[5]);
+        mDepthCubemapShader->setCubeViewProj(0, mCubeViewProjMatrices[0]);
+        mDepthCubemapShader->setCubeViewProj(1, mCubeViewProjMatrices[1]);
+        mDepthCubemapShader->setCubeViewProj(2, mCubeViewProjMatrices[2]);
+        mDepthCubemapShader->setCubeViewProj(3, mCubeViewProjMatrices[3]);
+        mDepthCubemapShader->setCubeViewProj(4, mCubeViewProjMatrices[4]);
+        mDepthCubemapShader->setCubeViewProj(5, mCubeViewProjMatrices[5]);
 
         int modelIndex = 0;
         for (size_t i = 0; i < renderObjects.size(); i++)
@@ -321,36 +320,35 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
                                   const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
-    mState.mLightState.mPosition = lightTransform->getPosition();
-    mState.mLightState.mDirection = lightTransform->getForward();
-    mState.mLightState.mColor = light->mColor;
-
-    mState.mLightState.mIntensity = light->mIntensity;
-    mState.mLightState.mSpotAngle = light->mSpotAngle;
-    mState.mLightState.mInnerSpotAngle = light->mInnerSpotAngle;
-    mState.mLightState.mShadowStrength = light->mShadowStrength;
-    mState.mLightState.mShadowBias = light->mShadowBias;
+    mLightUniform->setLightPosition(lightTransform->getPosition());
+    mLightUniform->setLightDirection(lightTransform->getForward());
+    mLightUniform->setLightColor(light->mColor);
+    mLightUniform->setLightIntensity(light->mIntensity);
+    mLightUniform->setSpotLightAngle(light->mSpotAngle);
+    mLightUniform->setInnerSpotLightAngle(light->mInnerSpotAngle);
+    mLightUniform->setShadowStrength(light->mShadowStrength);
+    mLightUniform->setShadowBias(light->mShadowBias);
 
     if (light->mLightType == LightType::Directional)
     {
         for (int i = 0; i < 5; i++)
         {
-            mState.mLightState.mLightProjection[i] = mState.mCascadeOrthoProj[i];
+            mLightUniform->setDirLightCascadeProj(i, mCascadeOrthoProj[i]);
 
-            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, mState.mCascadeEnds[i + 1], 1.0f);
+            glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, mCascadeEnds[i + 1], 1.0f);
             glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-            mState.mLightState.mCascadeEnds[i] = clipSpaceCascadeEnd.z;
-
-            mState.mLightState.mLightView[i] = mState.mCascadeLightView[i];
+            
+            mLightUniform->setDirLightCascadeEnd(i, clipSpaceCascadeEnd.z);
+            mLightUniform->setDirLightCascadeView(i, mCascadeLightView[i]);
         }
     }
     else if (light->mLightType == LightType::Spot)
     {
-        mState.mLightState.mLightProjection[0] = mState.mShadowProjMatrix;
-        mState.mLightState.mLightView[0] = mState.mShadowViewMatrix;
+        mLightUniform->setDirLightCascadeProj(0, mShadowProjMatrix);
+        mLightUniform->setDirLightCascadeView(0, mShadowViewMatrix);
     }
 
-    Renderer::getRenderer()->setGlobalLightUniforms(mState.mLightState);
+    mLightUniform->copyToUniformsToDevice();
 
     int64_t variant = static_cast<int64_t>(ShaderMacro::None);
     if (light->mLightType == LightType::Directional)
@@ -637,7 +635,7 @@ void ForwardRenderer::endFrame(Camera *camera)
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
-        Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
+        Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
 
         Renderer::getRenderer()->unbindFramebuffer();
     }
@@ -657,22 +655,22 @@ void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirect
 
     for (int i = 0; i < 5; i++)
     {
-        float xn = -1.0f * mState.mCascadeEnds[i] * tanHalfHFOV;
-        float xf = -1.0f * mState.mCascadeEnds[i + 1] * tanHalfHFOV;
-        float yn = -1.0f * mState.mCascadeEnds[i] * tanHalfVFOV;
-        float yf = -1.0f * mState.mCascadeEnds[i + 1] * tanHalfVFOV;
+        float xn = -1.0f * mCascadeEnds[i] * tanHalfHFOV;
+        float xf = -1.0f * mCascadeEnds[i + 1] * tanHalfHFOV;
+        float yn = -1.0f * mCascadeEnds[i] * tanHalfVFOV;
+        float yf = -1.0f * mCascadeEnds[i + 1] * tanHalfVFOV;
 
         // Find cascade frustum corners
         glm::vec4 frustumCorners[8];
-        frustumCorners[0] = glm::vec4(xn, yn, mState.mCascadeEnds[i], 1.0f);
-        frustumCorners[1] = glm::vec4(-xn, yn, mState.mCascadeEnds[i], 1.0f);
-        frustumCorners[2] = glm::vec4(xn, -yn, mState.mCascadeEnds[i], 1.0f);
-        frustumCorners[3] = glm::vec4(-xn, -yn, mState.mCascadeEnds[i], 1.0f);
+        frustumCorners[0] = glm::vec4(xn, yn, mCascadeEnds[i], 1.0f);
+        frustumCorners[1] = glm::vec4(-xn, yn, mCascadeEnds[i], 1.0f);
+        frustumCorners[2] = glm::vec4(xn, -yn, mCascadeEnds[i], 1.0f);
+        frustumCorners[3] = glm::vec4(-xn, -yn, mCascadeEnds[i], 1.0f);
 
-        frustumCorners[4] = glm::vec4(xf, yf, mState.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[5] = glm::vec4(-xf, yf, mState.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[6] = glm::vec4(xf, -yf, mState.mCascadeEnds[i + 1], 1.0f);
-        frustumCorners[7] = glm::vec4(-xf, -yf, mState.mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[4] = glm::vec4(xf, yf, mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[5] = glm::vec4(-xf, yf, mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[6] = glm::vec4(xf, -yf, mCascadeEnds[i + 1], 1.0f);
+        frustumCorners[7] = glm::vec4(-xf, -yf, mCascadeEnds[i + 1], 1.0f);
 
         // find frustum centre by averaging corners
         glm::vec4 frustumCentre = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -694,12 +692,12 @@ void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirect
 
         // need to set p such that it is far enough out to have the light projection capture all objects that
         // might cast shadows
-        float d = std::max(80.0f, -(mState.mCascadeEnds[i + 1] - mState.mCascadeEnds[i]));
+        float d = std::max(80.0f, -(mCascadeEnds[i + 1] - mCascadeEnds[i]));
         glm::vec3 p = glm::vec3(frustrumCentreWorldSpace.x - d * lightDirection.x,
                                 frustrumCentreWorldSpace.y - d * lightDirection.y,
                                 frustrumCentreWorldSpace.z - d * lightDirection.z);
 
-        mState.mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(0.0f, 1.0f, 0.0f));
+        mCascadeLightView[i] = glm::lookAt(p, glm::vec3(frustrumCentreWorldSpace), glm::vec3(0.0f, 1.0f, 0.0f));
 
         float minX = std::numeric_limits<float>::max();
         float maxX = std::numeric_limits<float>::lowest();
@@ -708,7 +706,7 @@ void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirect
         float minZ = std::numeric_limits<float>::max();
         float maxZ = std::numeric_limits<float>::lowest();
 
-        glm::mat4 cascadeLightView = mState.mCascadeLightView[i];
+        glm::mat4 cascadeLightView = mCascadeLightView[i];
 
         // Transform the frustum coordinates from view to world space and then world to light space
         glm::vec4 vL[8];
@@ -725,6 +723,6 @@ void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirect
         }
         // Should be glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ) but need to decrease/increase minZ and maxZ
         // respectively to capture all objects that can cast a show
-        mState.mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
+        mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
     }
 }

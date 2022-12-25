@@ -100,7 +100,16 @@ class GizmoRenderer
     GizmoShader *mGizmoShader;
     GridShader *mGridShader;
 
-    GizmoRendererState mState;
+    unsigned int mFrustumVAO;
+    unsigned int mFrustumVBO[2];
+    std::vector<float> mFrustumVertices;
+    std::vector<float> mFrustumNormals;
+
+    unsigned int mGridVAO;
+    unsigned int mGridVBO;
+    std::vector<glm::vec3> mGridVertices;
+    glm::vec3 mGridOrigin;
+    Color mGridColor;
 
     std::vector<LineGizmo> mLines;
     std::vector<AABBGizmo> mAABBs;

@@ -29,6 +29,8 @@ GridShader* RendererShaders::sGridShader = nullptr;
 
 void RendererShaders::createInternalShaders()
 {
+    // Note these pointers never free'd but they are static and 
+    // exist for the length of the program so ... meh?
     Log::warn("Start compling internal shaders\n");
     sStandardShader = StandardShader::create();
     sSSAOShader = SSAOShader::create();

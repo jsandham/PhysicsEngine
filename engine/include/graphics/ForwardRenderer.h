@@ -7,6 +7,7 @@
 
 #include "Renderer.h"
 #include "RendererShaders.h"
+#include "RendererUniforms.h"
 #include "RenderObject.h"
 #include "SpriteObject.h"
 
@@ -30,7 +31,24 @@ class ForwardRenderer
     SSAOShader *mSsaoShader;
     SpriteShader *mSpriteShader;
 
-    ForwardRendererState mState;
+    CameraUniform *mCameraUniform;
+    LightUniform *mLightUniform;
+
+    // directional light cascade shadow map data
+    float mCascadeEnds[6];
+    glm::mat4 mCascadeOrthoProj[5];
+    glm::mat4 mCascadeLightView[5];
+
+    // spotlight shadow map data
+    glm::mat4 mShadowViewMatrix;
+    glm::mat4 mShadowProjMatrix;
+
+    // pointlight cubemap shadow map data
+    glm::mat4 mCubeViewProjMatrices[6];
+
+    // quad
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
 
   public:
     ForwardRenderer();

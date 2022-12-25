@@ -3,6 +3,7 @@
 
 #include "InspectorDrawer.h"
 #include <graphics/Framebuffer.h>
+#include <graphics/RendererUniforms.h>
 
 namespace PhysicsEditor
 {
@@ -14,7 +15,8 @@ class MeshDrawer : public InspectorDrawer
     //unsigned int mDepth;
     Framebuffer* mFBO;
 
-    CameraUniform mCameraUniform;
+    CameraUniform* mCameraUniform;
+    //CameraUniform mCameraUniform;
 
     glm::mat4 mModel;
 

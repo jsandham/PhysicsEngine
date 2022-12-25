@@ -16,7 +16,8 @@ MeshDrawer::MeshDrawer()
     //Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
     mFBO = Framebuffer::create(1000, 1000);
 
-    Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
+    mCameraUniform = RendererUniforms::getCameraUniform();
+    //Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
 
     mModel = glm::mat4(1.0f);
 }
@@ -117,11 +118,15 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
 
     float meshRadius = mesh->getBounds().mRadius;
 
-    mCameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
-    mCameraUniform.mView = glm::lookAt(mCameraUniform.mCameraPos, mCameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
-                                      glm::vec3(0.0, 1.0f, 0.0f));
-    mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-    Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
+    mCameraUniform->setCameraPos(glm::vec3(0.0f, 0.0f, -4 * meshRadius));
+    mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
+    mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
+    mCameraUniform->copyToUniformsToDevice();
+    //mCameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
+    //mCameraUniform.mView = glm::lookAt(mCameraUniform.mCameraPos, mCameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
+    //                                  glm::vec3(0.0, 1.0f, 0.0f));
+    //mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
+    //Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
 
     //int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
     //shader->use(shaderProgram);

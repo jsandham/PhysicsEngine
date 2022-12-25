@@ -9,12 +9,19 @@ class OpenGLUniformBuffer : public UniformBuffer
 {
   private:
     unsigned int mBuffer;
+    unsigned int mBindingPoint;
+    size_t mSize;
 
   public:
-    OpenGLUniformBuffer(size_t size);
+    OpenGLUniformBuffer(size_t size, unsigned int bindingPoint);
     ~OpenGLUniformBuffer();
 
-    void setData(void* data, size_t size, size_t offset, size_t bindingPoint) override;
+    size_t getSize() const override;
+    unsigned int getBindingPoint() const override;
+
+    void bind() override;
+    void unbind() override;
+    void setData(void* data, size_t offset, size_t size) override;
 };
 }
 

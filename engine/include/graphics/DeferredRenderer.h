@@ -8,6 +8,7 @@
 
 #include "Renderer.h"
 #include "RendererShaders.h"
+#include "RendererUniforms.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -24,7 +25,11 @@ class DeferredRenderer
     ColorShader* mColorShader;
     ColorInstancedShader* mColorInstancedShader;
 
-    DeferredRendererState mState;
+    CameraUniform *mCameraUniform;
+
+    // quad
+    unsigned int mQuadVAO;
+    unsigned int mQuadVBO;
 
   public:
     DeferredRenderer();

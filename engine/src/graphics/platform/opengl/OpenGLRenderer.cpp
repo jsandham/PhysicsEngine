@@ -209,61 +209,61 @@ void OpenGLRenderer::endQuery_impl(unsigned int queryId, unsigned long long *ela
     CHECK_ERROR(glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime));
 }
 
-void OpenGLRenderer::createGlobalCameraUniforms_impl(CameraUniform &uniform)
-{
-    CHECK_ERROR(glGenBuffers(1, &uniform.mBuffer));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
-    CHECK_ERROR(glBufferData(GL_UNIFORM_BUFFER, 204, NULL, GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-void OpenGLRenderer::createGlobalLightUniforms_impl(LightUniform &uniform)
-{
-    CHECK_ERROR(glGenBuffers(1, &uniform.mBuffer));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
-    CHECK_ERROR(glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 1, uniform.mBuffer, 0, 824));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-void OpenGLRenderer::setGlobalCameraUniforms_impl(const CameraUniform &uniform)
-{
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
-    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(uniform.mProjection)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(uniform.mView)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 128, 64, glm::value_ptr(uniform.mViewProjection)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 192, 12, glm::value_ptr(uniform.mCameraPos)));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
-
-void OpenGLRenderer::setGlobalLightUniforms_impl(const LightUniform &uniform)
-{
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &uniform.mLightProjection[0]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &uniform.mLightView[0]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(uniform.mPosition)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(uniform.mDirection)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 672, 16, glm::value_ptr(uniform.mColor)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 688, 4, &uniform.mCascadeEnds[0]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 704, 4, &uniform.mCascadeEnds[1]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &uniform.mCascadeEnds[2]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &uniform.mCascadeEnds[3]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &uniform.mCascadeEnds[4]));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &uniform.mIntensity));
-
-    float spotAngle = glm::cos(glm::radians(uniform.mSpotAngle));
-    float innerSpotAngle = glm::cos(glm::radians(uniform.mInnerSpotAngle));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(spotAngle)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(innerSpotAngle)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(uniform.mShadowNearPlane)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(uniform.mShadowFarPlane)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowBias)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(uniform.mShadowRadius)));
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(uniform.mShadowStrength)));
-    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
-}
+//void OpenGLRenderer::createGlobalCameraUniforms_impl(CameraUniform &uniform)
+//{
+//    CHECK_ERROR(glGenBuffers(1, &uniform.mBuffer));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
+//    CHECK_ERROR(glBufferData(GL_UNIFORM_BUFFER, 204, NULL, GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+//}
+//
+//void OpenGLRenderer::createGlobalLightUniforms_impl(LightUniform &uniform)
+//{
+//    CHECK_ERROR(glGenBuffers(1, &uniform.mBuffer));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
+//    CHECK_ERROR(glBufferData(GL_UNIFORM_BUFFER, 824, NULL, GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 1, uniform.mBuffer, 0, 824));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+//}
+//
+//void OpenGLRenderer::setGlobalCameraUniforms_impl(const CameraUniform &uniform)
+//{
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
+//    CHECK_ERROR(glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniform.mBuffer, 0, 204));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(uniform.mProjection)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(uniform.mView)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 128, 64, glm::value_ptr(uniform.mViewProjection)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 192, 12, glm::value_ptr(uniform.mCameraPos)));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+//}
+//
+//void OpenGLRenderer::setGlobalLightUniforms_impl(const LightUniform &uniform)
+//{
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, uniform.mBuffer));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 0, 320, &uniform.mLightProjection[0]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 320, 320, &uniform.mLightView[0]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 640, 12, glm::value_ptr(uniform.mPosition)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 656, 12, glm::value_ptr(uniform.mDirection)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 672, 16, glm::value_ptr(uniform.mColor)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 688, 4, &uniform.mCascadeEnds[0]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 704, 4, &uniform.mCascadeEnds[1]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 720, 4, &uniform.mCascadeEnds[2]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 736, 4, &uniform.mCascadeEnds[3]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 752, 4, &uniform.mCascadeEnds[4]));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 768, 4, &uniform.mIntensity));
+//
+//    float spotAngle = glm::cos(glm::radians(uniform.mSpotAngle));
+//    float innerSpotAngle = glm::cos(glm::radians(uniform.mInnerSpotAngle));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 772, 4, &(spotAngle)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 776, 4, &(innerSpotAngle)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 780, 4, &(uniform.mShadowNearPlane)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 784, 4, &(uniform.mShadowFarPlane)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 788, 4, &(uniform.mShadowBias)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 792, 4, &(uniform.mShadowRadius)));
+//    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 796, 4, &(uniform.mShadowStrength)));
+//    CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
+//}
 
 void OpenGLRenderer::createScreenQuad_impl(unsigned int *vao, unsigned int *vbo)
 {

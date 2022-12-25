@@ -22,10 +22,9 @@ void DeferredRenderer::init(World *world)
     mColorShader = RendererShaders::getColorShader();
     mColorInstancedShader = RendererShaders::getColorInstancedShader();
 
-    Renderer::getRenderer()->createScreenQuad(&mState.mQuadVAO, &mState.mQuadVBO);
+    mCameraUniform = RendererUniforms::getCameraUniform();
 
-    Renderer::getRenderer()->createGlobalCameraUniforms(mState.mCameraState);
-
+    Renderer::getRenderer()->createScreenQuad(&mQuadVAO, &mQuadVBO);
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
@@ -48,13 +47,13 @@ void DeferredRenderer::beginDeferredFrame(Camera *camera)
 {
     camera->beginQuery();
 
-    mState.mCameraState.mProjection = camera->getProjMatrix();
-    mState.mCameraState.mView = camera->getViewMatrix();
-    mState.mCameraState.mViewProjection = camera->getProjMatrix() * camera->getViewMatrix();
-    mState.mCameraState.mCameraPos = camera->getComponent<Transform>()->getPosition();
+    mCameraUniform->setProjection(camera->getProjMatrix());
+    mCameraUniform->setView(camera->getViewMatrix());
+    mCameraUniform->setViewProjection(camera->getProjMatrix() * camera->getViewMatrix());
+    mCameraUniform->setCameraPos(camera->getComponent<Transform>()->getPosition());
 
     // set camera state binding point and update camera state data
-    Renderer::getRenderer()->setGlobalCameraUniforms(mState.mCameraState);
+    mCameraUniform->copyToUniformsToDevice();
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                           camera->getViewport().mHeight);
@@ -280,7 +279,7 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
-        Renderer::getRenderer()->renderScreenQuad(mState.mQuadVAO);
+        Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
         Renderer::getRenderer()->unbindFramebuffer();
     }
 

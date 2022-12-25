@@ -171,19 +171,30 @@ MaterialDrawer::MaterialDrawer()
     //Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
     mFBO = Framebuffer::create(1000, 1000);
 
-    Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
-    Renderer::getRenderer()->createGlobalLightUniforms(mLightUniform);
+    mCameraUniform = RendererUniforms::getCameraUniform();
+    mLightUniform = RendererUniforms::getLightUniform();
+    //Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
+    //Renderer::getRenderer()->createGlobalLightUniforms(mLightUniform);
 
-    mCameraUniform.mView = mView;
-    mCameraUniform.mProjection = mProjection;
-    mCameraUniform.mCameraPos = mCameraPos;
+    mCameraUniform->setView(mView);
+    mCameraUniform->setProjection(mProjection);
+    mCameraUniform->setCameraPos(mCameraPos);
+    //mCameraUniform.mView = mView;
+    //mCameraUniform.mProjection = mProjection;
+    //mCameraUniform.mCameraPos = mCameraPos;
 
-    mLightUniform.mIntensity = 1.0f;
-    mLightUniform.mShadowNearPlane = 0.1f;
-    mLightUniform.mShadowFarPlane = 10.0f;
-    mLightUniform.mShadowBias = 0.005f;
-    mLightUniform.mShadowRadius = 0.0f;
-    mLightUniform.mShadowStrength = 1.0f;
+    mLightUniform->setLightIntensity(1.0f);
+    mLightUniform->setShadowNearPlane(0.1f);
+    mLightUniform->setShadowFarPlane(10.0f);
+    mLightUniform->setShadowBias(0.005f);
+    mLightUniform->setShadowRadius(0.0f);
+    mLightUniform->setShadowStrength(1.0f);
+    //mLightUniform.mIntensity = 1.0f;
+    //mLightUniform.mShadowNearPlane = 0.1f;
+    //mLightUniform.mShadowFarPlane = 10.0f;
+    //mLightUniform.mShadowBias = 0.005f;
+    //mLightUniform.mShadowRadius = 0.0f;
+    //mLightUniform.mShadowStrength = 1.0f;
 }
 
 MaterialDrawer::~MaterialDrawer()
@@ -289,8 +300,10 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         return;
     }
 
-    Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
-    Renderer::getRenderer()->setGlobalLightUniforms(mLightUniform);
+    mCameraUniform->copyToUniformsToDevice();
+    mLightUniform->copyToUniformsToDevice();
+    //Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
+    //Renderer::getRenderer()->setGlobalLightUniforms(mLightUniform);
 
     int64_t variant = 0;
     variant |= static_cast<int64_t>(ShaderMacro::Directional);

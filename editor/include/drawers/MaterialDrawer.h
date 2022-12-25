@@ -8,6 +8,7 @@
 #include "core/World.h"
 
 #include <graphics/Framebuffer.h>
+#include <graphics/RendererUniforms.h>
 
 #include "imgui.h"
 
@@ -23,8 +24,10 @@ class MaterialDrawer : public InspectorDrawer
     //unsigned int mDepth;
     Framebuffer* mFBO;
 
-    CameraUniform mCameraUniform;
-    LightUniform mLightUniform;
+    CameraUniform* mCameraUniform;
+    LightUniform* mLightUniform;
+    //CameraUniform mCameraUniform;
+    //LightUniform mLightUniform;
 
     glm::vec3 mCameraPos;
     glm::mat4 mModel;

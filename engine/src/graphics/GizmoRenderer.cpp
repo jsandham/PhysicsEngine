@@ -9,8 +9,8 @@ GizmoRenderer::GizmoRenderer()
 
 GizmoRenderer::~GizmoRenderer()
 {
-    Renderer::getRenderer()->destroyFrustum(&mState.mFrustumVAO, &mState.mFrustumVBO[0], &mState.mFrustumVBO[1]);
-    Renderer::getRenderer()->destroyGrid(&mState.mGridVAO, &mState.mGridVBO);
+    Renderer::getRenderer()->destroyFrustum(&mFrustumVAO, &mFrustumVBO[0], &mFrustumVBO[1]);
+    Renderer::getRenderer()->destroyGrid(&mGridVAO, &mGridVBO);
 }
 
 void GizmoRenderer::init(World *world)
@@ -21,21 +21,21 @@ void GizmoRenderer::init(World *world)
     mGizmoShader = RendererShaders::getGizmoShader();
     mGridShader = RendererShaders::getGridShader();
 
-    mState.mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
-    mState.mFrustumVertices.resize(108, 0.0f);
-    mState.mFrustumNormals.resize(108, 0.0f);
+    mFrustumVertices.resize(108, 0.0f);
+    mFrustumNormals.resize(108, 0.0f);
 
-    Renderer::getRenderer()->createFrustum(mState.mFrustumVertices, mState.mFrustumNormals, &mState.mFrustumVAO,
-                                           &mState.mFrustumVBO[0], &mState.mFrustumVBO[1]);
+    Renderer::getRenderer()->createFrustum(mFrustumVertices, mFrustumNormals, &mFrustumVAO,
+                                           &mFrustumVBO[0], &mFrustumVBO[1]);
 
     for (int i = -100; i < 100; i++)
     {
         glm::vec3 start = glm::vec3(i, 0.0f, -100.0f);
         glm::vec3 end = glm::vec3(i, 0.0f, 100.0f);
 
-        mState.mGridVertices.push_back(start);
-        mState.mGridVertices.push_back(end);
+        mGridVertices.push_back(start);
+        mGridVertices.push_back(end);
     }
 
     for (int i = -100; i < 100; i++)
@@ -43,11 +43,11 @@ void GizmoRenderer::init(World *world)
         glm::vec3 start = glm::vec3(-100.0f, 0.0f, i);
         glm::vec3 end = glm::vec3(100.0f, 0.0f, i);
 
-        mState.mGridVertices.push_back(start);
-        mState.mGridVertices.push_back(end);
+        mGridVertices.push_back(start);
+        mGridVertices.push_back(end);
     }
 
-    Renderer::getRenderer()->createGrid(mState.mGridVertices, &mState.mGridVAO, &mState.mGridVBO);
+    Renderer::getRenderer()->createGrid(mGridVertices, &mGridVAO, &mGridVBO);
 }
 
 void GizmoRenderer::update(Camera *camera)
@@ -356,9 +356,9 @@ void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo 
 
     for (int j = 0; j < 36; j++)
     {
-        mState.mFrustumVertices[3 * j + 0] = temp[j].x;
-        mState.mFrustumVertices[3 * j + 1] = temp[j].y;
-        mState.mFrustumVertices[3 * j + 2] = temp[j].z;
+        mFrustumVertices[3 * j + 0] = temp[j].x;
+        mFrustumVertices[3 * j + 1] = temp[j].y;
+        mFrustumVertices[3 * j + 2] = temp[j].z;
     }
 
     for (int j = 0; j < 6; j++)
@@ -370,9 +370,9 @@ void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo 
 
         for (int k = 0; k < 6; k++)
         {
-            mState.mFrustumNormals[18 * j + 3 * k + 0] = normal.x;
-            mState.mFrustumNormals[18 * j + 3 * k + 1] = normal.y;
-            mState.mFrustumNormals[18 * j + 3 * k + 2] = normal.z;
+            mFrustumNormals[18 * j + 3 * k + 0] = normal.x;
+            mFrustumNormals[18 * j + 3 * k + 1] = normal.y;
+            mFrustumNormals[18 * j + 3 * k + 2] = normal.z;
         }
     }
 
@@ -385,10 +385,9 @@ void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo 
     mGizmoShader->setColor(gizmo.mColor);
     mGizmoShader->setModel(glm::mat4(1.0f));
 
-    Renderer::getRenderer()->updateFrustum(mState.mFrustumVertices, mState.mFrustumNormals, mState.mFrustumVBO[0],
-                            mState.mFrustumVBO[1]);
+    Renderer::getRenderer()->updateFrustum(mFrustumVertices, mFrustumNormals, mFrustumVBO[0], mFrustumVBO[1]);
 
-    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mState.mFrustumVertices.size() / 3);
+    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mFrustumVertices.size() / 3);
 }
 
 void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo)
@@ -423,9 +422,9 @@ void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGiz
 
     for (int j = 0; j < 24; j++)
     {
-        mState.mFrustumVertices[3 * j + 0] = temp[j].x;
-        mState.mFrustumVertices[3 * j + 1] = temp[j].y;
-        mState.mFrustumVertices[3 * j + 2] = temp[j].z;
+        mFrustumVertices[3 * j + 0] = temp[j].x;
+        mFrustumVertices[3 * j + 1] = temp[j].y;
+        mFrustumVertices[3 * j + 2] = temp[j].z;
     }
 
     glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
@@ -433,7 +432,7 @@ void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGiz
     mLineShader->bind();
     mLineShader->setMVP(mvp);
 
-    Renderer::getRenderer()->updateFrustum(mState.mFrustumVertices, mState.mFrustumVBO[0]);
+    Renderer::getRenderer()->updateFrustum(mFrustumVertices, mFrustumVBO[0]);
     
     Renderer::getRenderer()->renderLinesWithCurrentlyBoundVAO(0, 24);
 }
@@ -452,7 +451,7 @@ void GizmoRenderer::renderFrustumGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    Renderer::getRenderer()->bindVertexArray(mState.mFrustumVAO);
+    Renderer::getRenderer()->bindVertexArray(mFrustumVAO);
 
     for (size_t i = 0; i < mFrustums.size(); i++)
     {
@@ -486,9 +485,9 @@ void GizmoRenderer::renderGridGizmo(Camera *camera)
 
     mGridShader->bind();
     mGridShader->setMVP(mvp);
-    mGridShader->setColor(mState.mGridColor);
+    mGridShader->setColor(mGridColor);
 
-    Renderer::getRenderer()->renderLines(0, (int)mState.mGridVertices.size(), mState.mGridVAO);
+    Renderer::getRenderer()->renderLines(0, (int)mGridVertices.size(), mGridVAO);
 
     camera->getNativeGraphicsMainFBO()->unbind();
 
