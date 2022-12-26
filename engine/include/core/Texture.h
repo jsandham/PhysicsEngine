@@ -27,7 +27,7 @@ class Texture : public Asset
     TextureFilterMode mFilterMode;
 
     TextureHandle* mTex;
-    bool mCreated;
+    bool mDeviceUpdateRequired;
     bool mUpdateRequired;
 
   public:
@@ -38,13 +38,12 @@ class Texture : public Asset
     virtual void serialize(YAML::Node &out) const override;
     virtual void deserialize(const YAML::Node &in) override;
 
-    virtual void create() = 0;
-    //virtual void destroy() = 0;
-    virtual void update() = 0;
+    virtual void copyTextureToDevice() = 0;
+    virtual void updateTextureParameters() = 0;
     virtual void readPixels() = 0;
     virtual void writePixels() = 0;
 
-    bool isCreated() const;
+    bool deviceUpdateRequired() const;
     bool updateRequired() const;
     int getNumChannels() const;
     int getAnisoLevel() const;

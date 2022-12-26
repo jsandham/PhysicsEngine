@@ -91,12 +91,12 @@ namespace PhysicsEngine
         void updateTerrainChunk_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                                      const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                                      unsigned int vbo2) override;
-        void createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
+        /*void createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                              const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer *vbo0,
             VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo,
             VertexBuffer*color_vbo) override;
         void destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
-            VertexBuffer*model_vbo, VertexBuffer*color_vbo) override;
+            VertexBuffer*model_vbo, VertexBuffer*color_vbo) override;*/
         void updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4 *models, size_t instanceCount) override;
         void updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount) override;
         void createSprite_impl(unsigned int *vao) override;

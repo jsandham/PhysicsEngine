@@ -7,8 +7,7 @@ namespace PhysicsEngine
 {
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
-	public:
-		size_t mSize;
+    public:
 		unsigned int mBuffer;
 
 	public:
@@ -16,10 +15,10 @@ namespace PhysicsEngine
 		~OpenGLVertexBuffer();
 
 		void resize(size_t size) override;
-		//void setData(const void* data, size_t size) override;
+		void setData(void* data, size_t offset, size_t size) override;
 		void bind() override;
 		void unbind() override;
-		void* get() override;
+		void* getBuffer() override;
 	};
 }
 

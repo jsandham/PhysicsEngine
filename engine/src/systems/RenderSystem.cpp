@@ -106,20 +106,14 @@ void RenderSystem::registerRenderAssets(World *world)
     for (size_t i = 0; i < world->getNumberOfAssets<Texture2D>(); i++)
     {
         Texture2D *texture = world->getAssetByIndex<Texture2D>(i);
-        if (!texture->isCreated())
+        if (texture->deviceUpdateRequired())
         {
-            texture->create();
-
-            if (!texture->isCreated())
-            {
-                std::string errorMessage = "Error: Failed to create texture " + texture->getGuid().toString() + "\n";
-                Log::error(errorMessage.c_str());
-            }
+            texture->copyTextureToDevice();
         }
 
         if (texture->updateRequired())
         {
-            texture->update();
+            texture->updateTextureParameters();
         }
     }
 
@@ -127,20 +121,14 @@ void RenderSystem::registerRenderAssets(World *world)
     for (size_t i = 0; i < world->getNumberOfAssets<RenderTexture>(); i++)
     {
         RenderTexture* texture = world->getAssetByIndex<RenderTexture>(i);
-        if (!texture->isCreated())
+        if (texture->deviceUpdateRequired())
         {
-            texture->create();
-
-            if (!texture->isCreated())
-            {
-                std::string errorMessage = "Error: Failed to create render texture " + texture->getGuid().toString() + "\n";
-                Log::error(errorMessage.c_str());
-            }
+            texture->copyTextureToDevice();
         }
 
         if (texture->updateRequired())
         {
-            texture->update();
+            texture->updateTextureParameters();
         }
     }
 
@@ -189,15 +177,15 @@ void RenderSystem::registerRenderAssets(World *world)
     {
         Mesh *mesh = world->getAssetByIndex<Mesh>(i);
 
-        if (!mesh->isCreated())
+        if (mesh->deviceUpdateRequired())
         {
-            mesh->create();
+            mesh->copyMeshToDevice();
 
-            if (!mesh->isCreated())
-            {
-                std::string errorMessage = "Error: Failed to create mesh " + mesh->getGuid().toString() + "\n";
-                Log::error(errorMessage.c_str());
-            }
+            //if (!mesh->isCreated())
+            //{
+            //    std::string errorMessage = "Error: Failed to create mesh " + mesh->getGuid().toString() + "\n";
+            //    Log::error(errorMessage.c_str());
+            //}
         }
     }
 

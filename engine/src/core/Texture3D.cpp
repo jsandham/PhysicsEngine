@@ -19,7 +19,7 @@ Texture3D::Texture3D(World *world, const Id &id) : Texture(world, id)
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -38,7 +38,7 @@ Texture3D::Texture3D(World *world, const Guid &guid, const Id &id) : Texture(wor
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -57,7 +57,7 @@ Texture3D::Texture3D(World *world, const Id &id, int width, int height, int dept
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * depth * numChannels);
@@ -165,28 +165,22 @@ void Texture3D::setPixel(int x, int y, int z, const Color &color)
 {
 }
 
-void Texture3D::create()
+void Texture3D::copyTextureToDevice()
 {
-    if (mCreated)
+    if (mDeviceUpdateRequired)
     {
-        return;
+        // mTex->create(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData);
+        mDeviceUpdateRequired = false;
     }
-
-    //mTex->create(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mDepth, mRawTextureData);
-
-    mCreated = true;
 }
 
-void Texture3D::update()
+void Texture3D::updateTextureParameters()
 {
-    if (!mUpdateRequired)
+    if (mUpdateRequired)
     {
-        return;
+        mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
+        mUpdateRequired = false;
     }
-
-    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
-
-    mUpdateRequired = false;
 }
 
 void Texture3D::readPixels()

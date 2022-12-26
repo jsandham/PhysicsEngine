@@ -6,12 +6,17 @@
 
 using namespace PhysicsEngine;
 
-VertexBuffer::VertexBuffer()
+VertexBuffer::VertexBuffer() : mSize(0)
 {
 }
 
 VertexBuffer::~VertexBuffer()
 {
+}
+
+size_t VertexBuffer::getSize() const
+{
+    return mSize;
 }
 
 VertexBuffer* VertexBuffer::create()

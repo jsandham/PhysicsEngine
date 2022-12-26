@@ -14,37 +14,23 @@ Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
 {
     mSource = "";
     mSourceFilepath = "";
-    mCreated = false;
-    mChanged = false;
+    mDeviceUpdateRequired = false;
 
-    mVbo[0] = VertexBuffer::create();
-    mVbo[1] = VertexBuffer::create();
-    mVbo[2] = VertexBuffer::create();
-    mVbo[3] = VertexBuffer::create();
-    mVbo[4] = VertexBuffer::create();
+    mHandle = MeshHandle::create();
 }
 
 Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {
     mSource = "";
     mSourceFilepath = "";
-    mCreated = false;
-    mChanged = false;
+    mDeviceUpdateRequired = false;
 
-    mVbo[0] = VertexBuffer::create();
-    mVbo[1] = VertexBuffer::create();
-    mVbo[2] = VertexBuffer::create();
-    mVbo[3] = VertexBuffer::create();
-    mVbo[4] = VertexBuffer::create();
+    mHandle = MeshHandle::create();
 }
 
 Mesh::~Mesh()
 {
-    delete mVbo[0];
-    delete mVbo[1];
-    delete mVbo[2];
-    delete mVbo[3];
-    delete mVbo[4];
+    delete mHandle;
 }
 
 void Mesh::serialize(YAML::Node &out) const
@@ -200,7 +186,7 @@ void Mesh::load(const std::string &filepath)
     std::filesystem::path temp = filepath;
     mSource = temp.filename().string();
 
-    mCreated = false;
+    mDeviceUpdateRequired = true;
 }
 
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
@@ -231,17 +217,12 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
     //computeBoundingSphere();
     computeBoundingSphere_SIMD128();
 
-    mCreated = false;
+    mDeviceUpdateRequired = true;
 }
 
-bool Mesh::isCreated() const
+bool Mesh::deviceUpdateRequired() const
 {
-    return mCreated;
-}
-
-bool Mesh::isChanged() const
-{
-    return mChanged;
+    return mDeviceUpdateRequired;
 }
 
 const std::vector<float> &Mesh::getVertices() const
@@ -299,14 +280,19 @@ Sphere Mesh::getBounds() const
     return mBounds;
 }
 
-unsigned int Mesh::getNativeGraphicsVAO() const
+MeshHandle* Mesh::getNativeGraphicsHandle() const
 {
-    return mVao;
+    return mHandle;
 }
 
-void* Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
+VertexBuffer* Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
 {
-    return mVbo[static_cast<int>(meshVBO)];
+    return mHandle->getVBO(meshVBO);
+}
+
+unsigned int Mesh::getNativeGraphicsVAO() const
+{
+    return mHandle->getVAO();
 }
 
 void Mesh::setVertices(const std::vector<float> &vertices)
@@ -315,52 +301,39 @@ void Mesh::setVertices(const std::vector<float> &vertices)
     //computeBoundingSphere();
     computeBoundingSphere_SIMD128();
 
-    mChanged = true;
+    mDeviceUpdateRequired = true;
 }
 
 void Mesh::setNormals(const std::vector<float> &normals)
 {
     mNormals = normals;
 
-    mChanged = true;
+    mDeviceUpdateRequired = true;
 }
 
 void Mesh::setTexCoords(const std::vector<float> &texCoords)
 {
     mTexCoords = texCoords;
 
-    mChanged = true;
+    mDeviceUpdateRequired = true;
 }
 
 void Mesh::setColors(const std::vector<float> &colors)
 {
     mColors = colors;
 
-    mChanged = true;
+    mDeviceUpdateRequired = true;
 }
 
-void Mesh::create()
+void Mesh::copyMeshToDevice()
 {
-    if (mCreated)
+    if (mDeviceUpdateRequired)
     {
-        return;
+        mHandle->setData(mVertices.data(), 0, sizeof(float) * mVertices.size(), MeshVBO::Vertices);
+        mHandle->setData(mNormals.data(), 0, sizeof(float) * mNormals.size(), MeshVBO::Normals);
+        mHandle->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size(), MeshVBO::TexCoords);
+        mDeviceUpdateRequired = false;
     }
-
-    Renderer::getRenderer()->createMesh(mVertices, mNormals, mTexCoords, &mVao, mVbo[0], mVbo[1], mVbo[2], mVbo[3], mVbo[4]);
-
-    mCreated = true;
-}
-
-void Mesh::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroyMesh(&mVao, mVbo[0], mVbo[1], mVbo[2], mVbo[3], mVbo[4]);
-
-    mCreated = false;
 }
 
 void Mesh::writeMesh()

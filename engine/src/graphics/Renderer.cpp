@@ -325,18 +325,18 @@ void Renderer::updateTerrainChunk(const std::vector<float> &vertices, const std:
     return sInstance->updateTerrainChunk_impl(vertices, normals, texCoords, vbo0, vbo1, vbo2);
 }
 
-void Renderer::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
-                        const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
-    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
-{
-    return sInstance->createMesh_impl(vertices, normals, texCoords, vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
-}
-
-void Renderer::destroyMesh(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
-    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
-{
-    return sInstance->destroyMesh_impl(vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
-}
+//void Renderer::createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
+//                        const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
+//    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
+//{
+//    return sInstance->createMesh_impl(vertices, normals, texCoords, vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
+//}
+//
+//void Renderer::destroyMesh(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+//    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
+//{
+//    return sInstance->destroyMesh_impl(vao, vbo0, vbo1, vbo2, model_vbo, color_vbo);
+//}
 
 void Renderer::updateInstanceBuffer(unsigned int vbo, const glm::mat4 *models, size_t instanceCount)
 {

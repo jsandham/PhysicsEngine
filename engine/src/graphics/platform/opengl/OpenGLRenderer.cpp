@@ -1246,86 +1246,86 @@ void OpenGLRenderer::updateTerrainChunk_impl(const std::vector<float> &vertices,
     CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-void OpenGLRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
-                          const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
-    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
-{
-    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
-    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
-    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
-    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
-    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
-
-    CHECK_ERROR(glGenVertexArrays(1, vao));
-    CHECK_ERROR(glBindVertexArray(*vao));
-    CHECK_ERROR(glGenBuffers(1, &openglvbo0->mBuffer));      // vertex vbo
-    CHECK_ERROR(glGenBuffers(1, &openglvbo1->mBuffer));      // normals vbo
-    CHECK_ERROR(glGenBuffers(1, &openglvbo2->mBuffer));      // texcoords vbo
-    CHECK_ERROR(glGenBuffers(1, &openglmodel->mBuffer)); // instance model vbo
-    CHECK_ERROR(glGenBuffers(1, &openglcolor->mBuffer)); // instance color vbo
-
-    CHECK_ERROR(glBindVertexArray(*vao));
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo0->mBuffer));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glEnableVertexAttribArray(0));
-    CHECK_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
-
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo1->mBuffer));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glEnableVertexAttribArray(1));
-    CHECK_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
-
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo2->mBuffer));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glEnableVertexAttribArray(2));
-    CHECK_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0));
-
-    // instancing model matrices vbo
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglmodel->mBuffer));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW));
-    // set attribute pointers for matrix (4 times vec4)
-    CHECK_ERROR(glEnableVertexAttribArray(3));
-    CHECK_ERROR(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0));
-    CHECK_ERROR(glEnableVertexAttribArray(4));
-    CHECK_ERROR(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4))));
-    CHECK_ERROR(glEnableVertexAttribArray(5));
-    CHECK_ERROR(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeof(glm::vec4))));
-    CHECK_ERROR(glEnableVertexAttribArray(6));
-    CHECK_ERROR(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeof(glm::vec4))));
-
-    CHECK_ERROR(glVertexAttribDivisor(3, 1));
-    CHECK_ERROR(glVertexAttribDivisor(4, 1));
-    CHECK_ERROR(glVertexAttribDivisor(5, 1));
-    CHECK_ERROR(glVertexAttribDivisor(6, 1));
-
-    // instancing colors vbo
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglcolor->mBuffer));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW));
-    CHECK_ERROR(glEnableVertexAttribArray(7));
-    CHECK_ERROR(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void *)0));
-
-    CHECK_ERROR(glVertexAttribDivisor(7, 1));
-
-    CHECK_ERROR(glBindVertexArray(0));
-}
-
-void OpenGLRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
-    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
-{
-    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
-    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
-    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
-    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
-    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
-
-    CHECK_ERROR(glDeleteBuffers(1, &openglvbo0->mBuffer));
-    CHECK_ERROR(glDeleteBuffers(1, &openglvbo1->mBuffer));
-    CHECK_ERROR(glDeleteBuffers(1, &openglvbo2->mBuffer));
-    CHECK_ERROR(glDeleteBuffers(1, &openglmodel->mBuffer));
-    CHECK_ERROR(glDeleteBuffers(1, &openglcolor->mBuffer));
-
-    CHECK_ERROR(glDeleteVertexArrays(1, vao));
-}
+//void OpenGLRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
+//                          const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0,
+//    VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo)
+//{
+//    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
+//    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
+//    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
+//    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
+//    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
+//
+//    CHECK_ERROR(glGenVertexArrays(1, vao));
+//    CHECK_ERROR(glBindVertexArray(*vao));
+//    CHECK_ERROR(glGenBuffers(1, &openglvbo0->mBuffer));      // vertex vbo
+//    CHECK_ERROR(glGenBuffers(1, &openglvbo1->mBuffer));      // normals vbo
+//    CHECK_ERROR(glGenBuffers(1, &openglvbo2->mBuffer));      // texcoords vbo
+//    CHECK_ERROR(glGenBuffers(1, &openglmodel->mBuffer)); // instance model vbo
+//    CHECK_ERROR(glGenBuffers(1, &openglcolor->mBuffer)); // instance color vbo
+//
+//    CHECK_ERROR(glBindVertexArray(*vao));
+//    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo0->mBuffer));
+//    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glEnableVertexAttribArray(0));
+//    CHECK_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
+//
+//    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo1->mBuffer));
+//    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glEnableVertexAttribArray(1));
+//    CHECK_ERROR(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
+//
+//    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglvbo2->mBuffer));
+//    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glEnableVertexAttribArray(2));
+//    CHECK_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0));
+//
+//    // instancing model matrices vbo
+//    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglmodel->mBuffer));
+//    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW));
+//    // set attribute pointers for matrix (4 times vec4)
+//    CHECK_ERROR(glEnableVertexAttribArray(3));
+//    CHECK_ERROR(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0));
+//    CHECK_ERROR(glEnableVertexAttribArray(4));
+//    CHECK_ERROR(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4))));
+//    CHECK_ERROR(glEnableVertexAttribArray(5));
+//    CHECK_ERROR(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeof(glm::vec4))));
+//    CHECK_ERROR(glEnableVertexAttribArray(6));
+//    CHECK_ERROR(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeof(glm::vec4))));
+//
+//    CHECK_ERROR(glVertexAttribDivisor(3, 1));
+//    CHECK_ERROR(glVertexAttribDivisor(4, 1));
+//    CHECK_ERROR(glVertexAttribDivisor(5, 1));
+//    CHECK_ERROR(glVertexAttribDivisor(6, 1));
+//
+//    // instancing colors vbo
+//    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, openglcolor->mBuffer));
+//    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW));
+//    CHECK_ERROR(glEnableVertexAttribArray(7));
+//    CHECK_ERROR(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void *)0));
+//
+//    CHECK_ERROR(glVertexAttribDivisor(7, 1));
+//
+//    CHECK_ERROR(glBindVertexArray(0));
+//}
+//
+//void OpenGLRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+//    VertexBuffer*model_vbo, VertexBuffer*color_vbo)
+//{
+//    OpenGLVertexBuffer* openglvbo0 = static_cast<OpenGLVertexBuffer*>(vbo0);
+//    OpenGLVertexBuffer* openglvbo1 = static_cast<OpenGLVertexBuffer*>(vbo1);
+//    OpenGLVertexBuffer* openglvbo2 = static_cast<OpenGLVertexBuffer*>(vbo2);
+//    OpenGLVertexBuffer* openglmodel = static_cast<OpenGLVertexBuffer*>(model_vbo);
+//    OpenGLVertexBuffer* openglcolor = static_cast<OpenGLVertexBuffer*>(color_vbo);
+//
+//    CHECK_ERROR(glDeleteBuffers(1, &openglvbo0->mBuffer));
+//    CHECK_ERROR(glDeleteBuffers(1, &openglvbo1->mBuffer));
+//    CHECK_ERROR(glDeleteBuffers(1, &openglvbo2->mBuffer));
+//    CHECK_ERROR(glDeleteBuffers(1, &openglmodel->mBuffer));
+//    CHECK_ERROR(glDeleteBuffers(1, &openglcolor->mBuffer));
+//
+//    CHECK_ERROR(glDeleteVertexArrays(1, vao));
+//}
 
 void OpenGLRenderer::updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4 *models, size_t instanceCount)
 {

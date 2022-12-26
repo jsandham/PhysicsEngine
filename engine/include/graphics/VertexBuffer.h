@@ -5,16 +5,21 @@ namespace PhysicsEngine
 {
 	class VertexBuffer
 	{
+    protected:
+        size_t mSize;
 	public:
 		VertexBuffer();
 		virtual ~VertexBuffer() = 0;
 
 		virtual void resize(size_t size) = 0;
+        virtual void setData(void* data, size_t offset, size_t size) = 0;
 		virtual void bind() = 0;
 		virtual void unbind() = 0;
-		virtual void* get() = 0;
+		virtual void* getBuffer() = 0;
 
-		static VertexBuffer* create();
+		size_t getSize() const;
+
+        static VertexBuffer *create();
 	};
 }
 

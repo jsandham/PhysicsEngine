@@ -187,7 +187,7 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
+    mesh->getNativeGraphicsHandle()->bind();
 
     mGizmoShader->bind();
     mGizmoShader->setLightPos(transform->getPosition());
@@ -206,7 +206,7 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Renderer::getRenderer()->unbindVertexArray();
+    mesh->getNativeGraphicsHandle()->unbind();
  
     camera->getNativeGraphicsMainFBO()->unbind();
 
@@ -231,7 +231,7 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
  
-    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
+    mesh->getNativeGraphicsHandle()->bind();
 
     mGizmoShader->bind();
     mGizmoShader->setLightPos(transform->getPosition());
@@ -249,7 +249,8 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Renderer::getRenderer()->unbindVertexArray();   
+    mesh->getNativeGraphicsHandle()->unbind();
+    
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
@@ -273,7 +274,7 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    Renderer::getRenderer()->bindVertexArray(mesh->getNativeGraphicsVAO());
+    mesh->getNativeGraphicsHandle()->bind();
 
     mGizmoShader->bind();
     mGizmoShader->setLightPos(transform->getPosition());
@@ -297,7 +298,7 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
         Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
     }
 
-    Renderer::getRenderer()->unbindVertexArray();    
+    mesh->getNativeGraphicsHandle()->unbind();
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);

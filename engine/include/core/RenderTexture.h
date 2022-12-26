@@ -41,8 +41,8 @@ namespace PhysicsEngine
         int getWidth() const;
         int getHeight() const;
 
-        void create() override;
-        void update() override;
+        void copyTextureToDevice() override;
+        void updateTextureParameters() override;
         void readPixels() override;
         void writePixels() override;
 

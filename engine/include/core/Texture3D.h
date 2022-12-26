@@ -40,9 +40,8 @@ class Texture3D : public Texture
                            TextureFormat format);
     void setPixel(int x, int y, int z, const Color &color);
 
-    void create() override;
-    //void destroy() override;
-    void update() override;
+    void copyTextureToDevice() override;
+    void updateTextureParameters() override;
     void readPixels() override;
     void writePixels() override;
 };

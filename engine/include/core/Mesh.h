@@ -6,6 +6,7 @@
 #include "Asset.h"
 #include "Sphere.h"
 #include "../graphics/VertexBuffer.h"
+#include "../graphics/MeshHandle.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -13,47 +14,6 @@
 
 namespace PhysicsEngine
 {
-enum class MeshVBO
-{
-    Vertices,
-    Normals,
-    TexCoords,
-    InstanceModel,
-    InstanceColor
-};
-
-//class VertexArray
-//{
-//protected:
-//    std::vector<VertexBuffer*> mBuffers;
-//public:
-//    VertexArray();
-//    virtual ~VertexArray() = 0;
-//
-//    virtual void* get() = 0;
-//
-//    VertexBuffer* getBuffer(size_t index)
-//    {
-//        return mBuffers[index];
-//    }
-//
-//    void push(VertexBuffer* buffer)
-//    {
-//        mBuffers.push(buffer);
-//    }
-//
-//    static VertexArray* create();
-//};
-//
-//
-//class OpenGLVertexArray : public VertexArray
-//{
-//public:
-//    unsigned int mVao;
-//
-//    void* get() override;
-//};
-
 class Mesh : public Asset
 {
   private:
@@ -64,11 +24,10 @@ class Mesh : public Asset
     std::vector<float> mTexCoords;
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
-    unsigned int mVao;
-    VertexBuffer* mVbo[5];
     Sphere mBounds;
-    bool mCreated;
-    bool mChanged;
+
+    MeshHandle *mHandle;
+    bool mDeviceUpdateRequired;
 
   public:
     Mesh(World *world, const Id &id);
@@ -87,8 +46,7 @@ class Mesh : public Asset
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
               std::vector<int> subMeshStartIndices);
 
-    bool isCreated() const;
-    bool isChanged() const;
+    bool deviceUpdateRequired() const;
 
     const std::vector<float> &getVertices() const;
     const std::vector<float> &getNormals() const;
@@ -99,16 +57,16 @@ class Mesh : public Asset
     int getSubMeshEndIndex(int subMeshIndex) const;
     int getSubMeshCount() const;
     Sphere getBounds() const;
+    MeshHandle* getNativeGraphicsHandle() const;
+    VertexBuffer* getNativeGraphicsVBO(MeshVBO meshVBO) const;
     unsigned int getNativeGraphicsVAO() const;
-    void* getNativeGraphicsVBO(MeshVBO meshVBO) const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);
     void setTexCoords(const std::vector<float> &texCoords);
     void setColors(const std::vector<float> &colors);
 
-    void create();
-    void destroy();
+    void copyMeshToDevice();
     void writeMesh();
 
   private:

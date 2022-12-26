@@ -18,7 +18,7 @@ RenderTexture::RenderTexture(World *world, const Id &id) : Texture(world, id)
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
 }
 
 RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
@@ -33,7 +33,7 @@ RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Tex
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
 }
 
 RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) : Texture(world, id)
@@ -48,7 +48,7 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) 
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
 }
@@ -65,7 +65,7 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, 
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
 }
@@ -144,19 +144,12 @@ int RenderTexture::getHeight() const
     return mHeight;
 }
 
-void RenderTexture::create()
+void RenderTexture::copyTextureToDevice()
 {
-    if (mCreated)
-    {
-        return;
-    }
-
-    //Renderer::getRenderer()->createRenderTextureTargets(&mTargets, mFormat, mWrapMode, mFilterMode, mWidth, mHeight);
-
-    mCreated = true;
+   
 }
 
-void RenderTexture::update()
+void RenderTexture::updateTextureParameters()
 {
 
 }

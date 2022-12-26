@@ -23,7 +23,7 @@ Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -42,7 +42,7 @@ Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(wor
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -61,7 +61,7 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Textur
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
@@ -83,7 +83,7 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureF
 
     mNumChannels = calcNumChannels(format);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
@@ -182,6 +182,7 @@ void Texture2D::load(const std::string &filepath)
 
     std::filesystem::path temp = filepath;
     mSource = temp.filename().string();
+    mDeviceUpdateRequired = true;
 }
 
 void Texture2D::writeToPNG(const std::string &filepath) const
@@ -327,6 +328,7 @@ void Texture2D::setRawTextureData(const std::vector<unsigned char> &data, int wi
     mFormat = format;
 
     mRawTextureData = data;
+    mDeviceUpdateRequired = true;
 }
 
 void Texture2D::setPixels(const std::vector<Color32> &colors)
@@ -364,6 +366,8 @@ void Texture2D::setPixels(const std::vector<Color32> &colors)
             mRawTextureData[i + 3] = colors[i].mA;
         }
     }
+
+    mDeviceUpdateRequired = true;
 }
 
 void Texture2D::setPixel(int x, int y, const Color32 &color)
@@ -398,30 +402,26 @@ void Texture2D::setPixel(int x, int y, const Color32 &color)
         mRawTextureData[index + 2] = color.mB;
         mRawTextureData[index + 3] = color.mA;
     }
+
+    mDeviceUpdateRequired = true;
 }
 
-void Texture2D::create()
+void Texture2D::copyTextureToDevice()
 {
-    if (mCreated)
+    if (mDeviceUpdateRequired)
     {
-        return;
+        mTex->load(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData);
+        mDeviceUpdateRequired = false;
     }
-
-    mTex->load(mFormat, mWrapMode, mFilterMode, mWidth, mHeight, mRawTextureData);
-
-    mCreated = true;
 }
 
-void Texture2D::update()
+void Texture2D::updateTextureParameters()
 {
-    if (!mUpdateRequired)
+    if (mUpdateRequired)
     {
-        return;
+        mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
+        mUpdateRequired = false;
     }
-
-    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
-
-    mUpdateRequired = false;
 }
 
 void Texture2D::readPixels()

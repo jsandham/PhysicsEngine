@@ -17,7 +17,7 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -34,7 +34,7 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
@@ -51,7 +51,7 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
 
     mNumChannels = calcNumChannels(mFormat);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
@@ -70,7 +70,7 @@ Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : 
 
     mNumChannels = calcNumChannels(format);
     mAnisoLevel = 1;
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
@@ -203,6 +203,7 @@ void Cubemap::setRawCubemapData(const std::vector<unsigned char> &data)
     }
 
     mRawTextureData = data;
+    mDeviceUpdateRequired = true;
 }
 
 void Cubemap::setPixels(CubemapFace face, int x, int y, const Color32 &color)
@@ -241,43 +242,26 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, const Color32 &color)
         mRawTextureData[index + 2] = color.mB;
         mRawTextureData[index + 3] = color.mA;
     }
+
+    mDeviceUpdateRequired = true;
 }
 
-void Cubemap::create()
+void Cubemap::copyTextureToDevice()
 {
-    if (mCreated)
+    if (mDeviceUpdateRequired)
     {
-        return;
+        // Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, mTex);
+        mDeviceUpdateRequired = false;
     }
-
-    //Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, mTex);
-
-    mCreated = true;
 }
 
-//void Cubemap::destroy()
-//{
-//    if (!mCreated)
-//    {
-//        return;
-//    }
-//
-//    //Renderer::getRenderer()->destroyCubemap(mTex);
-//
-//    mCreated = false;
-//}
-
-void Cubemap::update()
+void Cubemap::updateTextureParameters()
 {
-    if (!mUpdateRequired)
+    if (mUpdateRequired)
     {
-        return;
+        mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
+        mUpdateRequired = false;
     }
-
-    mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
-    //Renderer::getRenderer()->updateCubemap(mWrapMode, mFilterMode, mAnisoLevel, mTex);
-
-    mUpdateRequired = false;
 }
 
 void Cubemap::readPixels()

@@ -47,8 +47,8 @@ class Texture2D : public Texture
     void setPixels(const std::vector<Color32> &colors);
     void setPixel(int x, int y, const Color32 &color);
 
-    void create() override;
-    void update() override;
+    void copyTextureToDevice() override;
+    void updateTextureParameters() override;
     void readPixels() override;
     void writePixels() override;
 };

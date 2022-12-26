@@ -147,11 +147,11 @@ void DirectXRenderer::updateTerrainChunk_impl(const std::vector<float> &vertices
 void DirectXRenderer::updateTerrainChunk_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
                              const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                              unsigned int vbo2){}
-void DirectXRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
-                     const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1,
-    VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
-void DirectXRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
-    VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
+//void DirectXRenderer::createMesh_impl(const std::vector<float> &vertices, const std::vector<float> &normals,
+//                     const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1,
+//    VertexBuffer*vbo2, VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
+//void DirectXRenderer::destroyMesh_impl(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
+//    VertexBuffer*model_vbo, VertexBuffer*color_vbo){}
 void DirectXRenderer::updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4 *models, size_t instanceCount){}
 void DirectXRenderer::updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount){}
 void DirectXRenderer::createSprite_impl(unsigned int *vao){}

@@ -47,9 +47,8 @@ class Cubemap : public Texture
     void setPixels(CubemapFace face, int x, int y, const Color32 &color);
     void setPixel(CubemapFace face, int x, int y, const Color32 &color);
 
-    void create() override;
-    //void destroy() override;
-    void update() override;
+    void copyTextureToDevice() override;
+    void updateTextureParameters() override;
     void readPixels() override;
     void writePixels() override;
 };

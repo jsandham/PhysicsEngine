@@ -39,13 +39,13 @@ void Texture::deserialize(const YAML::Node &in)
     mNumChannels = YAML::getValue<int>(in, "numChannels");
     mAnisoLevel = YAML::getValue<int>(in, "anisoLevel");
 
-    mCreated = false;
+    mDeviceUpdateRequired = false;
     mUpdateRequired = false;
 }
 
-bool Texture::isCreated() const
+bool Texture::deviceUpdateRequired() const
 {
-    return mCreated;
+    return mDeviceUpdateRequired;
 }
 
 bool Texture::updateRequired() const

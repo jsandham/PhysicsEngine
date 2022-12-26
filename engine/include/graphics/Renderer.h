@@ -125,12 +125,12 @@ public:
     static void updateTerrainChunk(const std::vector<float> &vertices, const std::vector<float> &normals,
                                     const std::vector<float> &texCoords, unsigned int vbo0, unsigned int vbo1,
                                     unsigned int vbo2);
-    static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
+    /*static void createMesh(const std::vector<float> &vertices, const std::vector<float> &normals,
                             const std::vector<float> &texCoords, unsigned int *vao, VertexBuffer *vbo0,
         VertexBuffer*vbo1, VertexBuffer*vbo2, VertexBuffer*model_vbo,
         VertexBuffer*color_vbo);
     static void destroyMesh(unsigned int *vao, VertexBuffer*vbo0, VertexBuffer*vbo1, VertexBuffer*vbo2,
-        VertexBuffer*model_vbo, VertexBuffer*color_vbo);
+        VertexBuffer*model_vbo, VertexBuffer*color_vbo);*/
     static void updateInstanceBuffer(unsigned int vbo, const glm::mat4 *models, size_t instanceCount);
     static void updateInstanceColorBuffer(unsigned int vbo, const glm::vec4 *colors, size_t instanceCount);
     static void createSprite(unsigned int *vao);
@@ -261,9 +261,9 @@ protected:
     virtual void updateTerrainChunk_impl(const std::vector<float>& vertices, const std::vector<float>& normals,
         const std::vector<float>& texCoords, unsigned int vbo0, unsigned int vbo1,
         unsigned int vbo2) = 0;
-    virtual void createMesh_impl(const std::vector<float>& vertices, const std::vector<float>& normals,
-        const std::vector<float>& texCoords, unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;
-    virtual void destroyMesh_impl(unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;
+    /*virtual void createMesh_impl(const std::vector<float>& vertices, const std::vector<float>& normals,
+        const std::vector<float>& texCoords, unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;*/
+    //virtual void destroyMesh_impl(unsigned int* vao, VertexBuffer* vbo0, VertexBuffer* vbo1, VertexBuffer* vbo2, VertexBuffer* model_vbo, VertexBuffer* color_vbo) = 0;
     virtual void updateInstanceBuffer_impl(unsigned int vbo, const glm::mat4* models, size_t instanceCount) = 0;
     virtual void updateInstanceColorBuffer_impl(unsigned int vbo, const glm::vec4* colors, size_t instanceCount) = 0;
     virtual void createSprite_impl(unsigned int* vao) = 0;
