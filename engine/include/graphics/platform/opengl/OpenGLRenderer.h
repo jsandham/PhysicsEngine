@@ -118,7 +118,7 @@ namespace PhysicsEngine
                                 unsigned int *vbo0, unsigned int *vbo1) override;
         void destroyLine_impl(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1) override;
 
-        void preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant) override;
+        /*void preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant) override;
         void compile_impl(const std::string &name, const std::string &vert, const std::string &frag,
                              const std::string &geom, unsigned int *program, ShaderStatus &status) override;
         int findUniformLocation_impl(const char *name, int program) override;
@@ -126,7 +126,7 @@ namespace PhysicsEngine
         int getAttributeCount_impl(int program) override;
         std::vector<ShaderUniform> getShaderUniforms_impl(int program) override;
         std::vector<ShaderAttribute> getShaderAttributes_impl(int program) override;
-        void setUniformBlock_impl(const char *blockName, int bindingPoint, int program) override;
+        void setUniformBlock_impl(const char *blockName, int bindingPoint, int program) override;*/
         /*void use_impl(int program) override;
         void unuse_impl() override;
         void destroy_impl(int program) override;
@@ -154,7 +154,7 @@ namespace PhysicsEngine
         glm::mat2 getMat2_impl(int nameLocation, int program) override;
         glm::mat3 getMat3_impl(int nameLocation, int program) override;
         glm::mat4 getMat4_impl(int nameLocation, int program) override;*/
-        void applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram) override;
+        //void applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram) override;
         void renderLines_impl(int start, int count, int vao) override;
         void renderLinesWithCurrentlyBoundVAO_impl(int start, int count) override;
         void renderWithCurrentlyBoundVAO_impl(int start, int count) override;

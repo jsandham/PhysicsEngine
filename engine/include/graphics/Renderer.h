@@ -146,7 +146,7 @@ public:
     static void createLine(const std::vector<float> &vertices, const std::vector<float> &colors, unsigned int *vao,
                             unsigned int *vbo0, unsigned int *vbo1);
     static void destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1);
-    static void preprocess(std::string &vert, std::string &frag, std::string &geom, int64_t variant);
+    /*static void preprocess(std::string &vert, std::string &frag, std::string &geom, int64_t variant);
     static void compile(const std::string &name, const std::string &vert, const std::string &frag,
                          const std::string &geom, unsigned int *program, ShaderStatus &status);
     static int findUniformLocation(const char *name, int program);
@@ -154,7 +154,7 @@ public:
     static int getAttributeCount(int program);
     static std::vector<ShaderUniform> getShaderUniforms(int program);
     static std::vector<ShaderAttribute> getShaderAttributes(int program);
-    static void setUniformBlock(const char *blockName, int bindingPoint, int program);
+    static void setUniformBlock(const char *blockName, int bindingPoint, int program);*/
     /*static void use(int program);
     static void unuse();
     static void destroy(int program);
@@ -182,7 +182,7 @@ public:
     static glm::mat2 getMat2(int nameLocation, int program);
     static glm::mat3 getMat3(int nameLocation, int program);
     static glm::mat4 getMat4(int nameLocation, int program);*/
-    static void applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram);
+    //static void applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram);
     static void renderLines(int start, int count, int vao);
     static void renderLinesWithCurrentlyBoundVAO(int start, int count);
     static void renderWithCurrentlyBoundVAO(int start, int count);
@@ -279,7 +279,7 @@ protected:
     virtual void createLine_impl(const std::vector<float>& vertices, const std::vector<float>& colors, unsigned int* vao,
         unsigned int* vbo0, unsigned int* vbo1) = 0;
     virtual void destroyLine_impl(unsigned int* vao, unsigned int* vbo0, unsigned int* vbo1) = 0;
-    virtual void preprocess_impl(std::string& vert, std::string& frag, std::string& geom, int64_t variant) = 0;
+    /*virtual void preprocess_impl(std::string& vert, std::string& frag, std::string& geom, int64_t variant) = 0;
     virtual void compile_impl(const std::string& name, const std::string& vert, const std::string& frag,
         const std::string& geom, unsigned int* program, ShaderStatus& status) = 0;
     virtual int findUniformLocation_impl(const char* name, int program) = 0;
@@ -287,7 +287,7 @@ protected:
     virtual int getAttributeCount_impl(int program) = 0;
     virtual std::vector<ShaderUniform> getShaderUniforms_impl(int program) = 0;
     virtual std::vector<ShaderAttribute> getShaderAttributes_impl(int program) = 0;
-    virtual void setUniformBlock_impl(const char* blockName, int bindingPoint, int program) = 0;
+    virtual void setUniformBlock_impl(const char* blockName, int bindingPoint, int program) = 0;*/
     /*virtual void use_impl(int program) = 0;
     virtual void unuse_impl() = 0;
     virtual void destroy_impl(int program) = 0;
@@ -315,7 +315,7 @@ protected:
     virtual glm::mat2 getMat2_impl(int nameLocation, int program) = 0;
     virtual glm::mat3 getMat3_impl(int nameLocation, int program) = 0;
     virtual glm::mat4 getMat4_impl(int nameLocation, int program) = 0;*/
-    virtual void applyMaterial_impl(const std::vector<ShaderUniform>& uniforms, ShaderProgram* shaderProgram) = 0;
+    //virtual void applyMaterial_impl(const std::vector<ShaderUniform>& uniforms, ShaderProgram* shaderProgram) = 0;
     virtual void renderLines_impl(int start, int count, int vao) = 0;
     virtual void renderLinesWithCurrentlyBoundVAO_impl(int start, int count) = 0;
     virtual void renderWithCurrentlyBoundVAO_impl(int start, int count) = 0;

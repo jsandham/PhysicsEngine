@@ -233,10 +233,6 @@ void Shader::compile()
 
     mAllProgramsCompiled = true;
 
-    // Finally set camera and light uniform block binding points
-    this->setUniformBlock("CameraBlock", 0);
-    this->setUniformBlock("LightBlock", 1);
-
     // find all uniforms and attributes in shader across all variants
     std::set<std::string> uniformNames;
     std::set<std::string> attributeNames;
@@ -324,18 +320,14 @@ ShaderSourceLanguage Shader::getSourceLanguage() const
     return mShaderSourceLanguage;
 }
 
-void Shader::setUniformBlock(const std::string &blockName, int bindingPoint) const
+int Shader::findUniformLocation(const std::string &name) const
 {
-    // set uniform block on all shader program
-    for (size_t i = 0; i < mPrograms.size(); i++)
+    if (mActiveProgram != nullptr)
     {
-        Renderer::getRenderer()->setUniformBlock(blockName.c_str(), bindingPoint, *reinterpret_cast<unsigned int*>(mPrograms[i]->getHandle()));
+        return mActiveProgram->findUniformLocation(name);
     }
-}
 
-int Shader::findUniformLocation(const std::string &name, int program) const
-{
-    return Renderer::getRenderer()->findUniformLocation(name.c_str(), program);
+    return -1;
 }
 
 ShaderProgram* Shader::getProgramFromVariant(int64_t variant) const

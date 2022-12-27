@@ -401,46 +401,46 @@ void Renderer::destroyLine(unsigned int *vao, unsigned int *vbo0, unsigned int *
     return sInstance->destroyLine_impl(vao, vbo0, vbo1);
 }
 
-void Renderer::preprocess(std::string &vert, std::string &frag, std::string &geom, int64_t variant)
-{
-    return sInstance->preprocess_impl(vert, frag, geom, variant);
-}
-
-void Renderer::compile(const std::string &name, const std::string &vert, const std::string &frag,
-                    const std::string &geom, unsigned int *program, ShaderStatus &status)
-{
-    return sInstance->compile_impl(name, vert, frag, geom, program, status);
-}
-
-int Renderer::findUniformLocation(const char *name, int program)
-{
-    return sInstance->findUniformLocation_impl(name, program);
-}
-
-int Renderer::getUniformCount(int program)
-{
-    return sInstance->getUniformCount_impl(program);
-}
-
-int Renderer::getAttributeCount(int program)
-{
-    return sInstance->getAttributeCount_impl(program);
-}
-
-std::vector<ShaderUniform> Renderer::getShaderUniforms(int program)
-{
-    return sInstance->getShaderUniforms_impl(program);
-}
-
-std::vector<ShaderAttribute> Renderer::getShaderAttributes(int program)
-{
-    return sInstance->getShaderAttributes_impl(program);
-}
-
-void Renderer::setUniformBlock(const char *blockName, int bindingPoint, int program)
-{
-    return sInstance->setUniformBlock_impl(blockName, bindingPoint, program);
-}
+//void Renderer::preprocess(std::string &vert, std::string &frag, std::string &geom, int64_t variant)
+//{
+//    return sInstance->preprocess_impl(vert, frag, geom, variant);
+//}
+//
+//void Renderer::compile(const std::string &name, const std::string &vert, const std::string &frag,
+//                    const std::string &geom, unsigned int *program, ShaderStatus &status)
+//{
+//    return sInstance->compile_impl(name, vert, frag, geom, program, status);
+//}
+//
+//int Renderer::findUniformLocation(const char *name, int program)
+//{
+//    return sInstance->findUniformLocation_impl(name, program);
+//}
+//
+//int Renderer::getUniformCount(int program)
+//{
+//    return sInstance->getUniformCount_impl(program);
+//}
+//
+//int Renderer::getAttributeCount(int program)
+//{
+//    return sInstance->getAttributeCount_impl(program);
+//}
+//
+//std::vector<ShaderUniform> Renderer::getShaderUniforms(int program)
+//{
+//    return sInstance->getShaderUniforms_impl(program);
+//}
+//
+//std::vector<ShaderAttribute> Renderer::getShaderAttributes(int program)
+//{
+//    return sInstance->getShaderAttributes_impl(program);
+//}
+//
+//void Renderer::setUniformBlock(const char *blockName, int bindingPoint, int program)
+//{
+//    return sInstance->setUniformBlock_impl(blockName, bindingPoint, program);
+//}
 
 //void Renderer::use(int program)
 //{
@@ -577,10 +577,10 @@ void Renderer::setUniformBlock(const char *blockName, int bindingPoint, int prog
 //    return sInstance->getMat4_impl(nameLocation, program);
 //}
 
-void Renderer::applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
-{
-    return sInstance->applyMaterial_impl(uniforms, shaderProgram);
-}
+//void Renderer::applyMaterial(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
+//{
+//    return sInstance->applyMaterial_impl(uniforms, shaderProgram);
+//}
 
 void Renderer::renderLines(int start, int count, int vao)
 {

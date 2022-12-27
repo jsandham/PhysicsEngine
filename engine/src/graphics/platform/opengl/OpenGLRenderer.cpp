@@ -97,30 +97,6 @@ void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void OpenGLRenderer::turnOn_impl(Capability capability)
 {
     switch (capability)
@@ -1473,270 +1449,270 @@ void OpenGLRenderer::destroyLine_impl(unsigned int *vao, unsigned int *vbo0, uns
     CHECK_ERROR(glDeleteBuffers(1, vbo1));
 }
 
-void OpenGLRenderer::preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant)
-{
-    std::string version;
-    std::string defines;
-    std::string shader;
-
-    if (variant & static_cast<int64_t>(ShaderMacro::Directional))
-    {
-        defines += "#define DIRECTIONALLIGHT\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::Spot))
-    {
-        defines += "#define SPOTLIGHT\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::Point))
-    {
-        defines += "#define POINTLIGHT\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::HardShadows))
-    {
-        defines += "#define HARDSHADOWS\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::SoftShadows))
-    {
-        defines += "#define SOFTSHADOWS\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::SSAO))
-    {
-        defines += "#define SSAO\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::ShowCascades))
-    {
-        defines += "#define SHOWCASCADES\n";
-    }
-    if (variant & static_cast<int64_t>(ShaderMacro::Instancing))
-    {
-        defines += "#define INSTANCING\n";
-    }
-
-    size_t pos = vert.find('\n');
-    if (pos != std::string::npos)
-    {
-        version = vert.substr(0, pos + 1);
-        shader = vert.substr(pos + 1);
-    }
-
-    vert = version + defines + shader;
-
-    pos = frag.find('\n');
-    if (pos != std::string::npos)
-    {
-        version = frag.substr(0, pos + 1);
-        shader = frag.substr(pos + 1);
-    }
-
-    frag = version + defines + shader;
-
-    // pos = geom.find('\n');
-    // if (pos != std::string::npos)
-    //{
-    //     version = geom.substr(0, pos + 1);
-    //     shader = geom.substr(pos + 1);
-    // }
-
-    // geom = version + defines + shader;
-}
-
-void OpenGLRenderer::compile_impl(const std::string &name, const std::string &vert, const std::string &frag,
-                       const std::string &geom, unsigned int *program, ShaderStatus &status)
-{
-    memset(status.mVertexCompileLog, 0, sizeof(status.mVertexCompileLog));
-    memset(status.mFragmentCompileLog, 0, sizeof(status.mFragmentCompileLog));
-    memset(status.mGeometryCompileLog, 0, sizeof(status.mGeometryCompileLog));
-    memset(status.mLinkLog, 0, sizeof(status.mLinkLog));
-
-    const GLchar *vertexShaderCharPtr = vert.c_str();
-    const GLchar *geometryShaderCharPtr = geom.c_str();
-    const GLchar *fragmentShaderCharPtr = frag.c_str();
-
-    // Compile vertex shader
-    GLuint vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
-    CHECK_ERROR(glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL));
-    CHECK_ERROR(glCompileShader(vertexShaderObj));
-    CHECK_ERROR(glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &status.mVertexShaderCompiled));
-    if (!status.mVertexShaderCompiled)
-    {
-        CHECK_ERROR(glGetShaderInfoLog(vertexShaderObj, 512, NULL, status.mVertexCompileLog));
-
-        std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
-        Log::error(message.c_str());
-    }
-
-    // Compile fragment shader
-    GLuint fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-    CHECK_ERROR(glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL));
-    CHECK_ERROR(glCompileShader(fragmentShaderObj));
-    CHECK_ERROR(glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &status.mFragmentShaderCompiled));
-    if (!status.mFragmentShaderCompiled)
-    {
-        CHECK_ERROR(glGetShaderInfoLog(fragmentShaderObj, 512, NULL, status.mFragmentCompileLog));
-
-        std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
-        Log::error(message.c_str());
-    }
-
-    // Compile geometry shader
-    GLuint geometryShaderObj = 0;
-    if (!geom.empty())
-    {
-        geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
-        CHECK_ERROR(glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL));
-        CHECK_ERROR(glCompileShader(geometryShaderObj));
-        CHECK_ERROR(glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &status.mGeometryShaderCompiled));
-        if (!status.mGeometryShaderCompiled)
-        {
-            CHECK_ERROR(glGetShaderInfoLog(geometryShaderObj, 512, NULL, status.mGeometryCompileLog));
-
-            std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
-            Log::error(message.c_str());
-        }
-    }
-
-    // Create shader program
-    *program = glCreateProgram();
-
-    // Attach shader objects to shader program
-    CHECK_ERROR(glAttachShader(*program, vertexShaderObj));
-    CHECK_ERROR(glAttachShader(*program, fragmentShaderObj));
-    if (geometryShaderObj != 0)
-    {
-        CHECK_ERROR(glAttachShader(*program, geometryShaderObj));
-    }
-
-    // Link shader program
-    CHECK_ERROR(glLinkProgram(*program));
-    CHECK_ERROR(glGetProgramiv(*program, GL_LINK_STATUS, &status.mShaderLinked));
-    if (!status.mShaderLinked)
-    {
-        CHECK_ERROR(glGetProgramInfoLog(*program, 512, NULL, status.mLinkLog));
-
-        std::string message = "Shader: " + name + " program linking failed\n";
-        Log::error(message.c_str());
-    }
-
-    // Detach shader objects from shader program
-    CHECK_ERROR(glDetachShader(*program, vertexShaderObj));
-    CHECK_ERROR(glDetachShader(*program, fragmentShaderObj));
-    if (geometryShaderObj != 0)
-    {
-        CHECK_ERROR(glDetachShader(*program, geometryShaderObj));
-    }
-
-    // Delete shader objects
-    CHECK_ERROR(glDeleteShader(vertexShaderObj));
-    CHECK_ERROR(glDeleteShader(fragmentShaderObj));
-    if (!geom.empty())
-    {
-        CHECK_ERROR(glDeleteShader(geometryShaderObj));
-    }
-}
-
-int OpenGLRenderer::findUniformLocation_impl(const char *name, int program)
-{
-    return glGetUniformLocation(program, name);
-}
-
-int OpenGLRenderer::getUniformCount_impl(int program)
-{
-    GLint uniformCount;
-    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount));
-
-    return uniformCount;
-}
-
-int OpenGLRenderer::getAttributeCount_impl(int program)
-{
-    GLint attributeCount;
-    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount));
-
-    return attributeCount;
-}
-
-std::vector<ShaderUniform> OpenGLRenderer::getShaderUniforms_impl(int program)
-{
-    GLint uniformCount;
-    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount));
-
-    std::vector<ShaderUniform> uniforms(uniformCount);
-
-    for (int j = 0; j < uniformCount; j++)
-    {
-        Uniform uniform;
-        CHECK_ERROR(glGetActiveUniform(program, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type, &uniform.name[0]));
-
-        uniforms[j].mName = std::string(uniform.name);
-        switch (uniform.type)
-        {
-        case GL_INT:
-            uniforms[j].mType = ShaderUniformType::Int;
-            break;
-        case GL_FLOAT:
-            uniforms[j].mType = ShaderUniformType::Float;
-            break;
-        case GL_FLOAT_VEC2:
-            uniforms[j].mType = ShaderUniformType::Vec2;
-            break;
-        case GL_FLOAT_VEC3:
-            uniforms[j].mType = ShaderUniformType::Vec3;
-            break;
-        case GL_FLOAT_VEC4:
-            uniforms[j].mType = ShaderUniformType::Vec4;
-            break;
-        case GL_FLOAT_MAT2:
-            uniforms[j].mType = ShaderUniformType::Mat2;
-            break;
-        case GL_FLOAT_MAT3:
-            uniforms[j].mType = ShaderUniformType::Mat3;
-            break;
-        case GL_FLOAT_MAT4:
-            uniforms[j].mType = ShaderUniformType::Mat4;
-            break;
-        case GL_SAMPLER_2D:
-            uniforms[j].mType = ShaderUniformType::Sampler2D;
-            break;
-        case GL_SAMPLER_CUBE:
-            uniforms[j].mType = ShaderUniformType::SamplerCube;
-            break;
-        }
-
-        uniforms[j].mUniformId = 0;
-        //uniforms[j].mTex = -1;
-        uniforms[j].mTex = nullptr;
-        memset(uniforms[j].mData, '\0', 64);
-    }
-
-    return uniforms;
-}
-
-std::vector<ShaderAttribute> OpenGLRenderer::getShaderAttributes_impl(int program)
-{
-    GLint attributeCount;
-    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount));
-
-    std::vector<ShaderAttribute> attributes(attributeCount);
-
-    for (int j = 0; j < attributeCount; j++)
-    {
-        Attribute attrib;
-        CHECK_ERROR(glGetActiveAttrib(program, (GLuint)j, 32, &attrib.nameLength, &attrib.size, &attrib.type, &attrib.name[0]));
-
-        attributes[j].mName = std::string(attrib.name);
-    }
-
-    return attributes;
-}
-
-void OpenGLRenderer::setUniformBlock_impl(const char *blockName, int bindingPoint, int program)
-{
-    GLuint blockIndex = glGetUniformBlockIndex(program, blockName);
-    if (blockIndex != GL_INVALID_INDEX)
-    {
-        CHECK_ERROR(glUniformBlockBinding(program, blockIndex, bindingPoint));
-    }
-}
+//void OpenGLRenderer::preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant)
+//{
+//    std::string version;
+//    std::string defines;
+//    std::string shader;
+//
+//    if (variant & static_cast<int64_t>(ShaderMacro::Directional))
+//    {
+//        defines += "#define DIRECTIONALLIGHT\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::Spot))
+//    {
+//        defines += "#define SPOTLIGHT\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::Point))
+//    {
+//        defines += "#define POINTLIGHT\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::HardShadows))
+//    {
+//        defines += "#define HARDSHADOWS\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::SoftShadows))
+//    {
+//        defines += "#define SOFTSHADOWS\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::SSAO))
+//    {
+//        defines += "#define SSAO\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::ShowCascades))
+//    {
+//        defines += "#define SHOWCASCADES\n";
+//    }
+//    if (variant & static_cast<int64_t>(ShaderMacro::Instancing))
+//    {
+//        defines += "#define INSTANCING\n";
+//    }
+//
+//    size_t pos = vert.find('\n');
+//    if (pos != std::string::npos)
+//    {
+//        version = vert.substr(0, pos + 1);
+//        shader = vert.substr(pos + 1);
+//    }
+//
+//    vert = version + defines + shader;
+//
+//    pos = frag.find('\n');
+//    if (pos != std::string::npos)
+//    {
+//        version = frag.substr(0, pos + 1);
+//        shader = frag.substr(pos + 1);
+//    }
+//
+//    frag = version + defines + shader;
+//
+//    // pos = geom.find('\n');
+//    // if (pos != std::string::npos)
+//    //{
+//    //     version = geom.substr(0, pos + 1);
+//    //     shader = geom.substr(pos + 1);
+//    // }
+//
+//    // geom = version + defines + shader;
+//}
+//
+//void OpenGLRenderer::compile_impl(const std::string &name, const std::string &vert, const std::string &frag,
+//                       const std::string &geom, unsigned int *program, ShaderStatus &status)
+//{
+//    memset(status.mVertexCompileLog, 0, sizeof(status.mVertexCompileLog));
+//    memset(status.mFragmentCompileLog, 0, sizeof(status.mFragmentCompileLog));
+//    memset(status.mGeometryCompileLog, 0, sizeof(status.mGeometryCompileLog));
+//    memset(status.mLinkLog, 0, sizeof(status.mLinkLog));
+//
+//    const GLchar *vertexShaderCharPtr = vert.c_str();
+//    const GLchar *geometryShaderCharPtr = geom.c_str();
+//    const GLchar *fragmentShaderCharPtr = frag.c_str();
+//
+//    // Compile vertex shader
+//    GLuint vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
+//    CHECK_ERROR(glShaderSource(vertexShaderObj, 1, &vertexShaderCharPtr, NULL));
+//    CHECK_ERROR(glCompileShader(vertexShaderObj));
+//    CHECK_ERROR(glGetShaderiv(vertexShaderObj, GL_COMPILE_STATUS, &status.mVertexShaderCompiled));
+//    if (!status.mVertexShaderCompiled)
+//    {
+//        CHECK_ERROR(glGetShaderInfoLog(vertexShaderObj, 512, NULL, status.mVertexCompileLog));
+//
+//        std::string message = "Shader: Vertex shader compilation failed (" + name + ")\n";
+//        Log::error(message.c_str());
+//    }
+//
+//    // Compile fragment shader
+//    GLuint fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
+//    CHECK_ERROR(glShaderSource(fragmentShaderObj, 1, &fragmentShaderCharPtr, NULL));
+//    CHECK_ERROR(glCompileShader(fragmentShaderObj));
+//    CHECK_ERROR(glGetShaderiv(fragmentShaderObj, GL_COMPILE_STATUS, &status.mFragmentShaderCompiled));
+//    if (!status.mFragmentShaderCompiled)
+//    {
+//        CHECK_ERROR(glGetShaderInfoLog(fragmentShaderObj, 512, NULL, status.mFragmentCompileLog));
+//
+//        std::string message = "Shader: Fragment shader compilation failed (" + name + ")\n";
+//        Log::error(message.c_str());
+//    }
+//
+//    // Compile geometry shader
+//    GLuint geometryShaderObj = 0;
+//    if (!geom.empty())
+//    {
+//        geometryShaderObj = glCreateShader(GL_GEOMETRY_SHADER);
+//        CHECK_ERROR(glShaderSource(geometryShaderObj, 1, &geometryShaderCharPtr, NULL));
+//        CHECK_ERROR(glCompileShader(geometryShaderObj));
+//        CHECK_ERROR(glGetShaderiv(geometryShaderObj, GL_COMPILE_STATUS, &status.mGeometryShaderCompiled));
+//        if (!status.mGeometryShaderCompiled)
+//        {
+//            CHECK_ERROR(glGetShaderInfoLog(geometryShaderObj, 512, NULL, status.mGeometryCompileLog));
+//
+//            std::string message = "Shader: Geometry shader compilation failed (" + name + ")\n";
+//            Log::error(message.c_str());
+//        }
+//    }
+//
+//    // Create shader program
+//    *program = glCreateProgram();
+//
+//    // Attach shader objects to shader program
+//    CHECK_ERROR(glAttachShader(*program, vertexShaderObj));
+//    CHECK_ERROR(glAttachShader(*program, fragmentShaderObj));
+//    if (geometryShaderObj != 0)
+//    {
+//        CHECK_ERROR(glAttachShader(*program, geometryShaderObj));
+//    }
+//
+//    // Link shader program
+//    CHECK_ERROR(glLinkProgram(*program));
+//    CHECK_ERROR(glGetProgramiv(*program, GL_LINK_STATUS, &status.mShaderLinked));
+//    if (!status.mShaderLinked)
+//    {
+//        CHECK_ERROR(glGetProgramInfoLog(*program, 512, NULL, status.mLinkLog));
+//
+//        std::string message = "Shader: " + name + " program linking failed\n";
+//        Log::error(message.c_str());
+//    }
+//
+//    // Detach shader objects from shader program
+//    CHECK_ERROR(glDetachShader(*program, vertexShaderObj));
+//    CHECK_ERROR(glDetachShader(*program, fragmentShaderObj));
+//    if (geometryShaderObj != 0)
+//    {
+//        CHECK_ERROR(glDetachShader(*program, geometryShaderObj));
+//    }
+//
+//    // Delete shader objects
+//    CHECK_ERROR(glDeleteShader(vertexShaderObj));
+//    CHECK_ERROR(glDeleteShader(fragmentShaderObj));
+//    if (!geom.empty())
+//    {
+//        CHECK_ERROR(glDeleteShader(geometryShaderObj));
+//    }
+//}
+//
+//int OpenGLRenderer::findUniformLocation_impl(const char *name, int program)
+//{
+//    return glGetUniformLocation(program, name);
+//}
+//
+//int OpenGLRenderer::getUniformCount_impl(int program)
+//{
+//    GLint uniformCount;
+//    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount));
+//
+//    return uniformCount;
+//}
+//
+//int OpenGLRenderer::getAttributeCount_impl(int program)
+//{
+//    GLint attributeCount;
+//    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount));
+//
+//    return attributeCount;
+//}
+//
+//std::vector<ShaderUniform> OpenGLRenderer::getShaderUniforms_impl(int program)
+//{
+//    GLint uniformCount;
+//    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount));
+//
+//    std::vector<ShaderUniform> uniforms(uniformCount);
+//
+//    for (int j = 0; j < uniformCount; j++)
+//    {
+//        Uniform uniform;
+//        CHECK_ERROR(glGetActiveUniform(program, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type, &uniform.name[0]));
+//
+//        uniforms[j].mName = std::string(uniform.name);
+//        switch (uniform.type)
+//        {
+//        case GL_INT:
+//            uniforms[j].mType = ShaderUniformType::Int;
+//            break;
+//        case GL_FLOAT:
+//            uniforms[j].mType = ShaderUniformType::Float;
+//            break;
+//        case GL_FLOAT_VEC2:
+//            uniforms[j].mType = ShaderUniformType::Vec2;
+//            break;
+//        case GL_FLOAT_VEC3:
+//            uniforms[j].mType = ShaderUniformType::Vec3;
+//            break;
+//        case GL_FLOAT_VEC4:
+//            uniforms[j].mType = ShaderUniformType::Vec4;
+//            break;
+//        case GL_FLOAT_MAT2:
+//            uniforms[j].mType = ShaderUniformType::Mat2;
+//            break;
+//        case GL_FLOAT_MAT3:
+//            uniforms[j].mType = ShaderUniformType::Mat3;
+//            break;
+//        case GL_FLOAT_MAT4:
+//            uniforms[j].mType = ShaderUniformType::Mat4;
+//            break;
+//        case GL_SAMPLER_2D:
+//            uniforms[j].mType = ShaderUniformType::Sampler2D;
+//            break;
+//        case GL_SAMPLER_CUBE:
+//            uniforms[j].mType = ShaderUniformType::SamplerCube;
+//            break;
+//        }
+//
+//        uniforms[j].mUniformId = 0;
+//        //uniforms[j].mTex = -1;
+//        uniforms[j].mTex = nullptr;
+//        memset(uniforms[j].mData, '\0', 64);
+//    }
+//
+//    return uniforms;
+//}
+//
+//std::vector<ShaderAttribute> OpenGLRenderer::getShaderAttributes_impl(int program)
+//{
+//    GLint attributeCount;
+//    CHECK_ERROR(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &attributeCount));
+//
+//    std::vector<ShaderAttribute> attributes(attributeCount);
+//
+//    for (int j = 0; j < attributeCount; j++)
+//    {
+//        Attribute attrib;
+//        CHECK_ERROR(glGetActiveAttrib(program, (GLuint)j, 32, &attrib.nameLength, &attrib.size, &attrib.type, &attrib.name[0]));
+//
+//        attributes[j].mName = std::string(attrib.name);
+//    }
+//
+//    return attributes;
+//}
+//
+//void OpenGLRenderer::setUniformBlock_impl(const char *blockName, int bindingPoint, int program)
+//{
+//    GLuint blockIndex = glGetUniformBlockIndex(program, blockName);
+//    if (blockIndex != GL_INVALID_INDEX)
+//    {
+//        CHECK_ERROR(glUniformBlockBinding(program, blockIndex, bindingPoint));
+//    }
+//}
 
 //void OpenGLRenderer::use_impl(int program)
 //{
@@ -1930,51 +1906,51 @@ void OpenGLRenderer::setUniformBlock_impl(const char *blockName, int bindingPoin
 //    return value;
 //}
 
-void OpenGLRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
-{
-    
-    int textureUnit = 0;
-    for (size_t i = 0; i < uniforms.size(); i++)
-    {
-        int location = findUniformLocation(uniforms[i].mName.c_str(), *reinterpret_cast<unsigned int*>(shaderProgram->getHandle()));
-
-        assert(location != -1);
-
-        if (uniforms[i].mType == ShaderUniformType::Sampler2D)
-        {
-            if (uniforms[i].mTex != nullptr)
-            {
-                shaderProgram->setTexture2D(location, textureUnit, uniforms[i].mTex);
-            }
-            else
-            {
-                shaderProgram->setTexture2D(location, textureUnit, nullptr);
-            }
-
-            textureUnit++;
-        }
-        else if (uniforms[i].mType == ShaderUniformType::Int)
-        {
-            shaderProgram->setInt(location, *reinterpret_cast<const int*>(uniforms[i].mData));
-        }
-        else if (uniforms[i].mType == ShaderUniformType::Float)
-        {
-            shaderProgram->setFloat(location, *reinterpret_cast<const float*>(uniforms[i].mData));
-        }
-        else if (uniforms[i].mType == ShaderUniformType::Vec2)
-        {
-            shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2*>(uniforms[i].mData));
-        }
-        else if (uniforms[i].mType == ShaderUniformType::Vec3)
-        {
-            shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3*>(uniforms[i].mData));
-        }
-        else if (uniforms[i].mType == ShaderUniformType::Vec4)
-        {
-            shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4*>(uniforms[i].mData));
-        }
-    }
-}
+//void OpenGLRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram)
+//{
+//    
+//    int textureUnit = 0;
+//    for (size_t i = 0; i < uniforms.size(); i++)
+//    {
+//        int location = shaderProgram->findUniformLocation(uniforms[i].mName);
+//
+//        assert(location != -1);
+//
+//        if (uniforms[i].mType == ShaderUniformType::Sampler2D)
+//        {
+//            if (uniforms[i].mTex != nullptr)
+//            {
+//                shaderProgram->setTexture2D(location, textureUnit, uniforms[i].mTex);
+//            }
+//            else
+//            {
+//                shaderProgram->setTexture2D(location, textureUnit, nullptr);
+//            }
+//
+//            textureUnit++;
+//        }
+//        else if (uniforms[i].mType == ShaderUniformType::Int)
+//        {
+//            shaderProgram->setInt(location, *reinterpret_cast<const int*>(uniforms[i].mData));
+//        }
+//        else if (uniforms[i].mType == ShaderUniformType::Float)
+//        {
+//            shaderProgram->setFloat(location, *reinterpret_cast<const float*>(uniforms[i].mData));
+//        }
+//        else if (uniforms[i].mType == ShaderUniformType::Vec2)
+//        {
+//            shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2*>(uniforms[i].mData));
+//        }
+//        else if (uniforms[i].mType == ShaderUniformType::Vec3)
+//        {
+//            shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3*>(uniforms[i].mData));
+//        }
+//        else if (uniforms[i].mType == ShaderUniformType::Vec4)
+//        {
+//            shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4*>(uniforms[i].mData));
+//        }
+//    }
+//}
 
 void OpenGLRenderer::renderLines_impl(int start, int count, int vao)
 {

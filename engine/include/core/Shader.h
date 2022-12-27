@@ -96,8 +96,7 @@ class Shader : public Asset
     void setVertexShader(const std::string &vertexShader);
     void setGeometryShader(const std::string &geometryShader);
     void setFragmentShader(const std::string &fragmentShader);
-    void setUniformBlock(const std::string &blockName, int bindingPoint) const;
-    int findUniformLocation(const std::string &name, int program) const;
+    int findUniformLocation(const std::string &name) const;
     ShaderProgram* getProgramFromVariant(int64_t variant) const;
     ShaderProgram* getActiveProgram() const;
 

@@ -168,30 +168,30 @@ void DirectXRenderer::createLine_impl(const std::vector<float> &vertices, const 
                      unsigned int *vbo0, unsigned int *vbo1){}
 void DirectXRenderer::destroyLine_impl(unsigned int *vao, unsigned int *vbo0, unsigned int *vbo1){}
 
-void DirectXRenderer::preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant){}
-void DirectXRenderer::compile_impl(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom,
-                  unsigned int *program, ShaderStatus &status){}
-int DirectXRenderer::findUniformLocation_impl(const char *name, int program)
-{
-    return 0;
-}
-int DirectXRenderer::getUniformCount_impl(int program)
-{
-    return 0;
-}
-int DirectXRenderer::getAttributeCount_impl(int program)
-{
-    return 0;
-}
-std::vector<ShaderUniform> DirectXRenderer::getShaderUniforms_impl(int program)
-{
-    return std::vector<ShaderUniform>();
-}
-std::vector<ShaderAttribute> DirectXRenderer::getShaderAttributes_impl(int program)
-{
-    return std::vector<ShaderAttribute>();
-}
-void DirectXRenderer::setUniformBlock_impl(const char *blockName, int bindingPoint, int program){}
+//void DirectXRenderer::preprocess_impl(std::string &vert, std::string &frag, std::string &geom, int64_t variant){}
+//void DirectXRenderer::compile_impl(const std::string &name, const std::string &vert, const std::string &frag, const std::string &geom,
+//                  unsigned int *program, ShaderStatus &status){}
+//int DirectXRenderer::findUniformLocation_impl(const char *name, int program)
+//{
+//    return 0;
+//}
+//int DirectXRenderer::getUniformCount_impl(int program)
+//{
+//    return 0;
+//}
+//int DirectXRenderer::getAttributeCount_impl(int program)
+//{
+//    return 0;
+//}
+//std::vector<ShaderUniform> DirectXRenderer::getShaderUniforms_impl(int program)
+//{
+//    return std::vector<ShaderUniform>();
+//}
+//std::vector<ShaderAttribute> DirectXRenderer::getShaderAttributes_impl(int program)
+//{
+//    return std::vector<ShaderAttribute>();
+//}
+//void DirectXRenderer::setUniformBlock_impl(const char *blockName, int bindingPoint, int program){}
 //void DirectXRenderer::use_impl(int program){}
 //void DirectXRenderer::unuse_impl(){}
 //void DirectXRenderer::destroy_impl(int program){}
@@ -257,7 +257,7 @@ void DirectXRenderer::setUniformBlock_impl(const char *blockName, int bindingPoi
 //{
 //    return glm::mat4();
 //}
-void DirectXRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram){}
+//void DirectXRenderer::applyMaterial_impl(const std::vector<ShaderUniform> &uniforms, ShaderProgram* shaderProgram){}
 void DirectXRenderer::renderLines_impl(int start, int count, int vao){}
 void DirectXRenderer::renderLinesWithCurrentlyBoundVAO_impl(int start, int count){}
 void DirectXRenderer::renderWithCurrentlyBoundVAO_impl(int start, int count){}

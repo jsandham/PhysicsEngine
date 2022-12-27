@@ -94,7 +94,50 @@ void Material::apply()
 
     assert(shader != nullptr);
 
-    Renderer::getRenderer()->applyMaterial(mUniforms, shader->getActiveProgram());
+    //Renderer::getRenderer()->applyMaterial(mUniforms, shader->getActiveProgram());
+    ShaderProgram *shaderProgram = shader->getActiveProgram();
+    
+    int textureUnit = 0;
+    for (size_t i = 0; i < mUniforms.size(); i++)
+    {
+        int location = shaderProgram->findUniformLocation(mUniforms[i].mName);
+
+        assert(location != -1);
+
+        if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
+        {
+            if (mUniforms[i].mTex != nullptr)
+            {
+                shaderProgram->setTexture2D(location, textureUnit, mUniforms[i].mTex);
+            }
+            else
+            {
+                shaderProgram->setTexture2D(location, textureUnit, nullptr);
+            }
+
+            textureUnit++;
+        }
+        else if (mUniforms[i].mType == ShaderUniformType::Int)
+        {
+            shaderProgram->setInt(location, *reinterpret_cast<const int *>(mUniforms[i].mData));
+        }
+        else if (mUniforms[i].mType == ShaderUniformType::Float)
+        {
+            shaderProgram->setFloat(location, *reinterpret_cast<const float *>(mUniforms[i].mData));
+        }
+        else if (mUniforms[i].mType == ShaderUniformType::Vec2)
+        {
+            shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2 *>(mUniforms[i].mData));
+        }
+        else if (mUniforms[i].mType == ShaderUniformType::Vec3)
+        {
+            shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3 *>(mUniforms[i].mData));
+        }
+        else if (mUniforms[i].mType == ShaderUniformType::Vec4)
+        {
+            shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4 *>(mUniforms[i].mData));
+        }
+    }
 }
 
 void Material::onShaderChanged()
@@ -144,12 +187,10 @@ void Material::onTextureChanged()
             Texture2D *texture = mWorld->getAssetByGuid<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
-                /*mUniforms[i].mTex = *reinterpret_cast<unsigned int*>(texture->getNativeGraphics());*/
                 mUniforms[i].mTex = texture->getNativeGraphics();
             }
             else
             {
-                /*mUniforms[i].mTex = -1;*/
                 mUniforms[i].mTex = nullptr;
             }
         }
