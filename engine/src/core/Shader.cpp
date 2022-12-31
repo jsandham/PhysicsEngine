@@ -628,11 +628,6 @@ glm::mat4 Shader::getMat4(const char *name) const
     return mActiveProgram != nullptr ? mActiveProgram->getMat4(name) : glm::mat4();
 }
 
-//int Shader::getTexture2D(const char *name, int texUnit) const
-//{
-//    return mActiveProgram != nullptr ? mActiveProgram->getTexture2D(name, texUnit) : -1;
-//}
-
 bool Shader::getBool(int nameLocation) const
 {
     return mActiveProgram != nullptr ? mActiveProgram->getBool(nameLocation) : false;

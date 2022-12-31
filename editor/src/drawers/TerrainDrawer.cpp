@@ -3,7 +3,8 @@
 #include "components/Terrain.h"
 
 #include "imgui.h"
-#include "../../include/imgui/imgui_extensions.h"
+#include "imgui_internal.h"
+//#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 
@@ -59,16 +60,64 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             // Transform
             {
-                Guid transformId = terrain->mCameraTransformId;
+                Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(terrain->mCameraTransformId);
+                /*Guid transformId = terrain->mCameraTransformId;
 
                 Entity* entity = nullptr;
                 if (transformId.isValid())
                 {
                     entity = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(transformId)->getEntity();
+                }*/
+
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+
+                if (ImGui::ButtonEx((transform == nullptr ? "None (Transform)" : transform->getEntity()->getName()).c_str(), ImVec2(windowSize.x, 0)))
+                {
                 }
 
-                ImGui::SlotData data;
-                if (ImGui::Slot2("Transform", transformId.isValid() ? entity->getName()/*transformId.toString()*/ : "None (Transform)", &data))
+                if (ImGui::BeginDragDropTarget())
+                {
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY");
+                    if (payload != nullptr)
+                    {
+                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(*data)->getGuid();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImVec2 size = ImGui::GetItemRectSize();
+                ImVec2 position = ImGui::GetItemRectMin();
+
+                ImVec2 topLeft = position;
+                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+                size.x += position.x;
+                size.y += position.y;
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+                {
+                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+                }
+
+                ImGui::SameLine();
+                ImGui::Text("Transform");
+
+
+
+
+
+                /*ImGui::SlotData data;
+                if (ImGui::Slot2("Transform", transformId.isValid() ? entity->getName() : "None (Transform)", &data))
                 {
                     if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Entity)
                     {
@@ -82,36 +131,80 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                     {
                         terrain->mCameraTransformId = Guid::INVALID;
                     }
-                }
+                }*/
             }
 
             // Material
             {
-                Guid materialId = terrain->getMaterial();
+                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(terrain->getMaterial());
 
-                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(materialId);
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-                ImGui::SlotData data;
-                if (ImGui::Slot2("Material", materialId.isValid() ? material->getName()/*materialId.toString()*/ : "None (Material)", &data))
+                if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
                 {
-                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
-                    {
-                        materialId = clipboard.getDraggedId();
-                        clipboard.clearDraggedItem();
-
-                        terrain->setMaterial(materialId);
-                    }
-
-                    if (data.isClicked && materialId.isValid())
-                    {
-                        clipboard.setSelectedItem(InteractionType::Material, materialId);
-                    }
-
-                    if (data.clearClicked)
-                    {
-                        terrain->setMaterial(Guid::INVALID);
-                    }
+                    clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
                 }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL");
+                    if (payload != nullptr)
+                    {
+                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+                        terrain->setMaterial(*data);
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImVec2 size = ImGui::GetItemRectSize();
+                ImVec2 position = ImGui::GetItemRectMin();
+
+                ImVec2 topLeft = position;
+                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+                size.x += position.x;
+                size.y += position.y;
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+                {
+                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+                }
+
+                ImGui::SameLine();
+                ImGui::Text("Material");
+
+
+
+                //ImGui::SlotData data;
+                //if (ImGui::Slot2("Material", materialId.isValid() ? material->getName()/*materialId.toString()*/ : "None (Material)", &data))
+                //{
+                //    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
+                //    {
+                //        materialId = clipboard.getDraggedId();
+                //        clipboard.clearDraggedItem();
+
+                //        terrain->setMaterial(materialId);
+                //    }
+
+                //    if (data.isClicked && materialId.isValid())
+                //    {
+                //        clipboard.setSelectedItem(InteractionType::Material, materialId);
+                //    }
+
+                //    if (data.clearClicked)
+                //    {
+                //        terrain->setMaterial(Guid::INVALID);
+                //    }
+                //}
             }
 
             float maxViewDistance = terrain->mMaxViewDistance;
@@ -178,35 +271,35 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 }
                 ImGui::PopItemWidth();
 
-                Guid grassMeshIds[8];
-                for (int i = 0; i < grassMeshCount; i++)
-                {
-                    grassMeshIds[i] = terrain->getGrassMesh(i);
+                //Guid grassMeshIds[8];
+                //for (int i = 0; i < grassMeshCount; i++)
+                //{
+                //    grassMeshIds[i] = terrain->getGrassMesh(i);
 
-                    Mesh* grassMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(grassMeshIds[i]);
+                //    Mesh* grassMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(grassMeshIds[i]);
 
-                    ImGui::SlotData data;
-                    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
-                    {
-                        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-                        {
-                            grassMeshIds[i] = clipboard.getDraggedId();
-                            clipboard.clearDraggedItem();
+                //    ImGui::SlotData data;
+                //    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
+                //    {
+                //        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
+                //        {
+                //            grassMeshIds[i] = clipboard.getDraggedId();
+                //            clipboard.clearDraggedItem();
 
-                            terrain->setGrassMesh(grassMeshIds[i], i);
-                        }
+                //            terrain->setGrassMesh(grassMeshIds[i], i);
+                //        }
 
-                        if (data.isClicked && grassMeshIds[i].isValid())
-                        {
-                            clipboard.setSelectedItem(InteractionType::Mesh, grassMeshIds[i]);
-                        }
+                //        if (data.isClicked && grassMeshIds[i].isValid())
+                //        {
+                //            clipboard.setSelectedItem(InteractionType::Mesh, grassMeshIds[i]);
+                //        }
 
-                        if (data.clearClicked)
-                        {
-                            terrain->setGrassMesh(Guid::INVALID, i);
-                        }
-                    }
-                }
+                //        if (data.clearClicked)
+                //        {
+                //            terrain->setGrassMesh(Guid::INVALID, i);
+                //        }
+                //    }
+                //}
 
                 ImGui::TreePop();
             }
@@ -225,35 +318,35 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 }
                 ImGui::PopItemWidth();
 
-                Guid treeMeshIds[8];
-                for (int i = 0; i < treeMeshCount; i++)
-                {
-                    treeMeshIds[i] = terrain->getTreeMesh(i);
+                //Guid treeMeshIds[8];
+                //for (int i = 0; i < treeMeshCount; i++)
+                //{
+                //    treeMeshIds[i] = terrain->getTreeMesh(i);
 
-                    Mesh* treeMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(treeMeshIds[i]);
+                //    Mesh* treeMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(treeMeshIds[i]);
 
-                    ImGui::SlotData data;
-                    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))
-                    {
-                        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-                        {
-                            treeMeshIds[i] = clipboard.getDraggedId();
-                            clipboard.clearDraggedItem();
+                //    ImGui::SlotData data;
+                //    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))
+                //    {
+                //        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
+                //        {
+                //            treeMeshIds[i] = clipboard.getDraggedId();
+                //            clipboard.clearDraggedItem();
 
-                            terrain->setTreeMesh(treeMeshIds[i], i);
-                        }
+                //            terrain->setTreeMesh(treeMeshIds[i], i);
+                //        }
 
-                        if (data.isClicked && treeMeshIds[i].isValid())
-                        {
-                            clipboard.setSelectedItem(InteractionType::Mesh, treeMeshIds[i]);
-                        }
+                //        if (data.isClicked && treeMeshIds[i].isValid())
+                //        {
+                //            clipboard.setSelectedItem(InteractionType::Mesh, treeMeshIds[i]);
+                //        }
 
-                        if (data.clearClicked)
-                        {
-                            terrain->setTreeMesh(Guid::INVALID, i);
-                        }
-                    }
-                }
+                //        if (data.clearClicked)
+                //        {
+                //            terrain->setTreeMesh(Guid::INVALID, i);
+                //        }
+                //    }
+                //}
 
                 ImGui::TreePop();
             }

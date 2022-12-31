@@ -6,160 +6,13 @@
 #include "components/Light.h"
 #include "components/Transform.h"
 
-#include "core/MaterialUtil.h"
 #include "core/Mesh.h"
 #include "core/Shader.h"
 #include "core/Texture2D.h"
 
-#include "systems/CleanUpSystem.h"
-#include "systems/RenderSystem.h"
-
 #include "graphics/Renderer.h"
 
-#include "Windows.h"
-
 using namespace PhysicsEditor;
-
-template <ShaderUniformType T> struct UniformDrawer
-{
-    static void draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-};
-
-template <ShaderUniformType T>
-inline void UniformDrawer<T>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Int>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    int temp = material->getInt(uniform->mName);
-
-    if (ImGui::InputInt(uniform->getShortName().c_str(), &temp))
-    {
-        material->setInt(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getGuid());
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Float>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    float temp = material->getFloat(uniform->mName);
-
-    if (ImGui::InputFloat(uniform->getShortName().c_str(), &temp))
-    {
-        material->setFloat(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getGuid());
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Color>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    Color temp = material->getColor(uniform->mName);
-
-    if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
-    {
-        material->setColor(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getGuid());
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Vec2>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    glm::vec2 temp = material->getVec2(uniform->mName);
-
-    if (ImGui::InputFloat2(uniform->getShortName().c_str(), &temp[0]))
-    {
-        material->setVec2(uniform->mName, temp);
-        clipboard.mModifiedAssets.insert(material->getGuid());
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Vec3>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    glm::vec3 temp = material->getVec3(uniform->mName);
-
-    if (uniform->mName.find("color") != std::string::npos ||
-        uniform->mName.find("colour") != std::string::npos)
-    {
-        if (ImGui::ColorEdit3(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
-        {
-            material->setVec3(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getGuid());
-        }
-    }
-    else
-    {
-        if (ImGui::InputFloat3(uniform->getShortName().c_str(), &temp[0]))
-        {
-            material->setVec3(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getGuid());
-        }
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Vec4>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    glm::vec4 temp = material->getVec4(uniform->mName);
-
-    if (uniform->mName.find("color") != std::string::npos ||
-        uniform->mName.find("colour") != std::string::npos)
-    {
-        if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
-        {
-            material->setVec4(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getGuid());
-        }
-    }
-    else
-    {
-        if (ImGui::InputFloat4(uniform->getShortName().c_str(), &temp[0]))
-        {
-            material->setVec4(uniform->mName, temp);
-            clipboard.mModifiedAssets.insert(material->getGuid());
-        }
-    }
-}
-
-template <>
-inline void UniformDrawer<ShaderUniformType::Sampler2D>::draw(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
-{
-    Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
-
-    ImGui::SlotData data;
-    if (ImGui::ImageSlot2(uniform->getShortName(), texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getHandle()), &data))
-    {
-        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
-        {
-            material->setTexture(uniform->mName, clipboard.getDraggedId());
-            material->onTextureChanged();
-
-            clipboard.mModifiedAssets.insert(material->getGuid());
-            clipboard.clearDraggedItem();
-        }
-
-        if (data.isClicked)
-        {
-            if (material->getTexture(uniform->mName).isValid())
-            {
-                clipboard.setSelectedItem(InteractionType::Texture2D, material->getTexture(uniform->mName));
-                clipboard.mModifiedAssets.insert(material->getGuid());
-            }
-        }
-
-        if (data.clearClicked)
-        {
-            material->setTexture(uniform->mName, Guid::INVALID);
-            material->onTextureChanged();
-            clipboard.mModifiedAssets.insert(material->getGuid());
-        }
-    }
-}
 
 MaterialDrawer::MaterialDrawer()
 {
@@ -233,28 +86,28 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         switch (uniforms[i].mType)
         {
         case ShaderUniformType::Int:
-            UniformDrawer<ShaderUniformType::Int>::draw(clipboard, material, &uniforms[i]);
+            this->drawIntUniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Float:
-            UniformDrawer<ShaderUniformType::Float>::draw(clipboard, material, &uniforms[i]);
+            this->drawFloatUniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Color:
-            UniformDrawer<ShaderUniformType::Color>::draw(clipboard, material, &uniforms[i]);
+            this->drawColorUniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Vec2:
-            UniformDrawer<ShaderUniformType::Vec2>::draw(clipboard, material, &uniforms[i]);
+            this->drawVec2Uniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Vec3:
-            UniformDrawer<ShaderUniformType::Vec3>::draw(clipboard, material, &uniforms[i]);
+            this->drawVec3Uniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Vec4:
-            UniformDrawer<ShaderUniformType::Vec4>::draw(clipboard, material, &uniforms[i]);
+            this->drawVec4Uniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::Sampler2D:
-            UniformDrawer<ShaderUniformType::Sampler2D>::draw(clipboard, material, &uniforms[i]);
+            this->drawTexture2DUniform(clipboard, material, &uniforms[i]);
             break;
         case ShaderUniformType::SamplerCube:
-            UniformDrawer<ShaderUniformType::SamplerCube>::draw(clipboard, material, &uniforms[i]);
+            this->drawCubemapUniform(clipboard, material, &uniforms[i]);
             break;
         }
     }
@@ -295,29 +148,16 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     variant |= static_cast<int64_t>(ShaderMacro::Directional);
     variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
 
-    //int shaderProgram = shader->getProgramFromVariant(variant);
-    //if (shaderProgram == -1)
-    //{
-    //    // If we dont have the directional light + shadow variant, revert to default variant
-    //    shaderProgram = shader->getProgramFromVariant(0);
-    //}
-
-    //shader->use(shaderProgram);
     shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
     shader->setMat4("model", mModel);
 
     material->apply();
 
-    //Renderer::getRenderer()->bindFramebuffer(mFBO);
-    //Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
-    //Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
     mFBO->bind();
     mFBO->setViewport(0, 0, 1000, 1000);
     mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
     mFBO->clearDepth(1.0f);
     Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
-    //Renderer::getRenderer()->unbindFramebuffer();
     mFBO->unbind();
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
@@ -331,4 +171,133 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+}
+
+void MaterialDrawer::drawIntUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    int temp = material->getInt(uniform->mName);
+
+    if (ImGui::InputInt(uniform->getShortName().c_str(), &temp))
+    {
+        material->setInt(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getGuid());
+    }
+}
+
+void MaterialDrawer::drawFloatUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    float temp = material->getFloat(uniform->mName);
+
+    if (ImGui::InputFloat(uniform->getShortName().c_str(), &temp))
+    {
+        material->setFloat(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getGuid());
+    }
+}
+
+void MaterialDrawer::drawColorUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    Color temp = material->getColor(uniform->mName);
+
+    if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
+    {
+        material->setColor(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getGuid());
+    }
+}
+
+void MaterialDrawer::drawVec2Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec2 temp = material->getVec2(uniform->mName);
+
+    if (ImGui::InputFloat2(uniform->getShortName().c_str(), &temp[0]))
+    {
+        material->setVec2(uniform->mName, temp);
+        clipboard.mModifiedAssets.insert(material->getGuid());
+    }
+}
+
+void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec3 temp = material->getVec3(uniform->mName);
+
+    if (uniform->mName.find("color") != std::string::npos ||
+        uniform->mName.find("colour") != std::string::npos)
+    {
+        if (ImGui::ColorEdit3(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
+        {
+            material->setVec3(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+    }
+    else
+    {
+        if (ImGui::InputFloat3(uniform->getShortName().c_str(), &temp[0]))
+        {
+            material->setVec3(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+    }
+}
+
+void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    glm::vec4 temp = material->getVec4(uniform->mName);
+
+    if (uniform->mName.find("color") != std::string::npos ||
+        uniform->mName.find("colour") != std::string::npos)
+    {
+        if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.x)))
+        {
+            material->setVec4(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+    }
+    else
+    {
+        if (ImGui::InputFloat4(uniform->getShortName().c_str(), &temp[0]))
+        {
+            material->setVec4(uniform->mName, temp);
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+    }
+}
+
+void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
+
+    if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getHandle())),
+        ImVec2(80, 80),
+        ImVec2(1, 1),
+        ImVec2(0, 0),
+        0,
+        ImVec4(1, 1, 1, 1),
+        ImVec4(1, 1, 1, 0.5)))
+    {
+        if(texture != nullptr)
+        {
+            clipboard.setSelectedItem(InteractionType::Texture2D, texture->getGuid());
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+    }
+
+    if (ImGui::BeginDragDropTarget())
+    {
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE2D");
+        if (payload != nullptr)
+        {
+            const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+            material->setTexture(uniform->mName, *data);
+            material->onTextureChanged();
+            clipboard.mModifiedAssets.insert(material->getGuid());
+        }
+        ImGui::EndDragDropTarget();
+    }
+}
+
+void MaterialDrawer::drawCubemapUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+{
+    
 }

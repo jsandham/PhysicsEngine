@@ -3,29 +3,10 @@
 
 #include <vector>
 
+#include "../core/Texture.h"
+
 namespace PhysicsEngine
 {
-	enum class TextureFormat
-	{
-		Depth = 0,
-		RG = 1,
-		RGB = 2,
-		RGBA = 3
-	};
-
-	enum class TextureWrapMode
-	{
-		Repeat = 0,
-		Clamp = 1
-	};
-
-	enum class TextureFilterMode
-	{
-		Nearest = 0,
-		Bilinear = 1,
-		Trilinear = 2
-	};
-
 	class TextureHandle
 	{
 	protected:

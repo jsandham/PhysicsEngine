@@ -176,18 +176,8 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                     EditorSceneManager::openScene(clipboard, filePaths[i]);
                 }
             }
-        }
 
-        if (ImGui::IsItemHovered())
-        {
             if (ImGui::IsMouseClicked(0))
-            {
-                clipboard.mDraggedType = fileTypes[i];
-                clipboard.mDraggedPath = filePaths[i].string();
-                clipboard.mDraggedId = clipboard.mLibrary.getId(clipboard.mDraggedPath);
-            }
-
-            if (ImGui::IsMouseReleased(0))
             {
                 clipboard.mSelectedType = fileTypes[i];
                 clipboard.mSelectedPath = filePaths[i].string();
@@ -195,9 +185,33 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             }
         }
 
-        if (!ImGui::IsMouseDown(0))
+        if (ImGui::BeginDragDropSource())
         {
-            clipboard.clearDraggedItem();
+            const void* data = static_cast<const void*>(clipboard.mLibrary.getId(filePaths[i].string()).c_str());
+            
+            switch (fileTypes[i])
+            {
+            case InteractionType::Cubemap:
+                ImGui::SetDragDropPayload("CUBEMAP", data, sizeof(PhysicsEngine::Guid));
+                break;
+            case InteractionType::Texture2D:
+                ImGui::SetDragDropPayload("TEXTURE2D", data, sizeof(PhysicsEngine::Guid));
+                break;
+            case InteractionType::Mesh:
+                ImGui::SetDragDropPayload("MESH", data, sizeof(PhysicsEngine::Guid));
+                break;
+            case InteractionType::Material:
+                ImGui::SetDragDropPayload("MATERIAL", data, sizeof(PhysicsEngine::Guid));
+                break;
+            case InteractionType::Scene:
+                ImGui::SetDragDropPayload("SCENE", data, sizeof(PhysicsEngine::Guid));
+                break;
+            case InteractionType::Shader:
+                ImGui::SetDragDropPayload("SHADER", data, sizeof(PhysicsEngine::Guid));
+                break;
+            }
+            ImGui::Text(filePaths[i].string().c_str());
+            ImGui::EndDragDropSource();
         }
     }
 
@@ -244,6 +258,19 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 }
               
                 ImGui::EndMenu();
+            }
+
+            if (ImGui::MenuItem("Cubemap"))
+            {
+                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>();
+                std::string filename = ("NewCubemap(" + std::to_string(count) + ").cubemap");
+                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
+
+                PhysicsEngine::Cubemap* cubemap = clipboard.getWorld()->createAsset<PhysicsEngine::Cubemap>();
+                cubemap->setName(filename);
+                cubemap->writeToYAML(filepath.string());
+
+                mSelected->addFile(filename);
             }
 
             if (ImGui::MenuItem("Material"))

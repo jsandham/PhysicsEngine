@@ -3,8 +3,7 @@
 #include "components/MeshRenderer.h"
 
 #include "imgui.h"
-
-#include "../../include/imgui/imgui_extensions.h"
+#include "imgui_internal.h"
 
 using namespace PhysicsEditor;
 
@@ -33,31 +32,51 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
             // Mesh
             {
-                Guid meshId = meshRenderer->getMesh();
+                Mesh* mesh = clipboard.getWorld()->getAssetByGuid<Mesh>(meshRenderer->getMesh());
 
-                Mesh* mesh = clipboard.getWorld()->getAssetByGuid<Mesh>(meshId);
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-                ImGui::SlotData data;
-                if (ImGui::Slot2("Mesh", meshId.isValid() ? mesh->getName()/*meshId.toString()*/ : "None (Mesh)", &data))
+                if (ImGui::ButtonEx((mesh == nullptr ? "None (Mesh)" : mesh->getName()).c_str(), ImVec2(windowSize.x, 0)))
                 {
-                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-                    {
-                        meshId = clipboard.getDraggedId();
-                        clipboard.clearDraggedItem();
-
-                        meshRenderer->setMesh(meshId);
-                    }
-
-                    if (data.isClicked && meshId.isValid())
-                    {
-                        clipboard.setSelectedItem(InteractionType::Mesh, meshId);
-                    }
-
-                    if (data.clearClicked)
-                    {
-                        meshRenderer->setMesh(Guid::INVALID);
-                    }
+                    clipboard.setSelectedItem(InteractionType::Mesh, mesh->getGuid());
                 }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH");
+                    if (payload != nullptr)
+                    {
+                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+                        meshRenderer->setMesh(*data);
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImVec2 size = ImGui::GetItemRectSize();
+                ImVec2 position = ImGui::GetItemRectMin();
+
+                ImVec2 topLeft = position;
+                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+                size.x += position.x;
+                size.y += position.y;
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+                {
+                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+                }
+
+                ImGui::SameLine();
+                ImGui::Text("Mesh");
             }
 
             // Materials
@@ -79,27 +98,49 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 Material* material = clipboard.getWorld()->getAssetByGuid<Material>(materialIds[i]);
 
-                ImGui::SlotData data;
-                if (ImGui::Slot2("Material", materialIds[i].isValid() ? material->getName()/*materialIds[i].toString()*/ : "None (Material)", &data))
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+
+                if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
                 {
-                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
-                    {
-                        materialIds[i] = clipboard.getDraggedId();
-                        clipboard.clearDraggedItem();
-
-                        meshRenderer->setMaterial(materialIds[i], i);
-                    }
-
-                    if (data.isClicked && materialIds[i].isValid())
-                    {
-                        clipboard.setSelectedItem(InteractionType::Material, materialIds[i]);
-                    }
-
-                    if (data.clearClicked)
-                    {
-                        meshRenderer->setMaterial(Guid::INVALID, i);
-                    }
+                    clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
                 }
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL");
+                    if (payload != nullptr)
+                    {
+                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+                        meshRenderer->setMaterial(*data);
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImVec2 size = ImGui::GetItemRectSize();
+                ImVec2 position = ImGui::GetItemRectMin();
+
+                ImVec2 topLeft = position;
+                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+
+                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+
+                size.x += position.x;
+                size.y += position.y;
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+                {
+                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+                }
+
+                ImGui::SameLine();
+                ImGui::Text("Material");
             }
 
             bool isStatic = meshRenderer->mIsStatic;

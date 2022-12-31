@@ -73,7 +73,8 @@ bool isAssetYamlExtension(const std::string& extension)
         extension == ".shader" ||
         extension == ".material" ||
         extension == ".sprite" ||
-        extension == ".rendertexture")
+        extension == ".rendertexture" ||
+        extension == ".cubemap")
     {
         return true;
     }

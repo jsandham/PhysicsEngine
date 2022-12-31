@@ -3,7 +3,6 @@
 
 #include "InspectorDrawer.h"
 
-#include "components/MeshRenderer.h"
 #include "core/Material.h"
 #include "core/World.h"
 
@@ -12,22 +11,15 @@
 
 #include "imgui.h"
 
-#include "../../include/imgui/imgui_extensions.h"
-
 namespace PhysicsEditor
 {
 class MaterialDrawer : public InspectorDrawer
 {
   private:
-    //unsigned int mFBO;
-    //unsigned int mColor;
-    //unsigned int mDepth;
     Framebuffer* mFBO;
 
     CameraUniform* mCameraUniform;
     LightUniform* mLightUniform;
-    //CameraUniform mCameraUniform;
-    //LightUniform mLightUniform;
 
     glm::vec3 mCameraPos;
     glm::mat4 mModel;
@@ -39,6 +31,16 @@ class MaterialDrawer : public InspectorDrawer
     ~MaterialDrawer();
 
     virtual void render(Clipboard &clipboard, const Guid& id) override;
+
+  private:
+      void drawIntUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawFloatUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawColorUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawVec2Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawVec3Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawVec4Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawTexture2DUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+      void drawCubemapUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
 };
 
 } // namespace PhysicsEditor

@@ -34,33 +34,32 @@ void Inspector::update(Clipboard &clipboard)
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::Inspector)] = unhoveredThisFrame();
 
     // draw selected asset
-    if (clipboard.getSelectedType() == InteractionType::Scene)
+    switch (clipboard.getSelectedType())
     {
+    case InteractionType::Scene:
         mSceneDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::Mesh)
-    {
+        break;
+    case InteractionType::Cubemap:
+        mCubemapDrawer.render(clipboard, clipboard.getSelectedId());
+        break;
+    case InteractionType::Mesh:
         mMeshDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::Material)
-    {
+        break;
+    case InteractionType::Material:
         mMaterialDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::Shader)
-    {
+        break;
+    case InteractionType::Shader:
         mShaderDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::Texture2D)
-    {
+        break;
+    case InteractionType::Texture2D:
         mTexture2DDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::Sprite)
-    {
+        break;
+    case InteractionType::Sprite:
         mSpriteDrawer.render(clipboard, clipboard.getSelectedId());
-    }
-    else if (clipboard.getSelectedType() == InteractionType::RenderTexture)
-    {
+        break;
+    case InteractionType::RenderTexture:
         mRenderTextureDrawer.render(clipboard, clipboard.getSelectedId());
+        break;
     }
 
     // draw selected entity
@@ -108,7 +107,7 @@ void Inspector::drawEntity(Clipboard &clipboard)
         Guid componentId = componentsOnEntity[i].first;
         int componentType = componentsOnEntity[i].second;
 
-        ImGui::PushID(componentId.toString().c_str());
+        ImGui::PushID(componentId.c_str());
 
         InspectorDrawer *drawer = nullptr;
         if (Component::isInternal(componentType))
@@ -153,51 +152,44 @@ void Inspector::drawEntity(Clipboard &clipboard)
         ImGui::PopID();
     }
 
-    std::string componentToAdd = "";
-    std::vector<std::string> components = {"Rigidbody",    "Camera",
+    static std::vector<std::string> components = { "Rigidbody",    "Camera",
                                            "MeshRenderer",   "LineRenderer", "SpriteRenderer", "Light",
-                                           "SphereCollider", "BoxCollider",  "Terrain"};
-
-    if (ImGui::BeginDropdownWindow("Add component", components, componentToAdd))
+                                           "SphereCollider", "BoxCollider",  "Terrain" };
+    size_t index;
+    if (ImGui::BeginDropdownWindow("Add component", components, &index))
     {
         Component* component = nullptr;
-        if (componentToAdd == "Rigidbody")
+        switch (index)
         {
+        case 0:
             component = entity->addComponent<Rigidbody>();
-        }
-        else if (componentToAdd == "Camera")
-        {
+            break;
+        case 1:
             component = entity->addComponent<Camera>();
-        }
-        else if (componentToAdd == "MeshRenderer")
-        {
+            break;
+        case 2:
             component = entity->addComponent<MeshRenderer>();
-        }
-        else if (componentToAdd == "LineRenderer")
-        {
+            break;
+        case 3:
             component = entity->addComponent<LineRenderer>();
-        }
-        else if (componentToAdd == "SpriteRenderer")
-        {
+            break;
+        case 4:
             component = entity->addComponent<SpriteRenderer>();
-        }
-        else if (componentToAdd == "Light")
-        {
+            break;
+        case 5:
             component = entity->addComponent<Light>();
-        }
-        else if (componentToAdd == "SphereCollider")
-        {
+            break;
+        case 6:
             component = entity->addComponent<SphereCollider>();
-        }
-        else if (componentToAdd == "BoxCollider")
-        {
+            break;
+        case 7:
             component = entity->addComponent<BoxCollider>();
-        }
-        else if (componentToAdd == "Terrain")
-        {
+            break;
+        case 8:
             component = entity->addComponent<Terrain>();
+            break;
         }
-
+        
         if (component != nullptr) {
             clipboard.mSceneDirty = true;
         }

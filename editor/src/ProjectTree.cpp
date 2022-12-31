@@ -132,6 +132,11 @@ void ProjectNode::addFile(const std::string& name)
         label = std::string(ICON_FA_AREA_CHART);
         type = InteractionType::RenderTexture;
     }
+    else if (extension == "cubemap")
+    {
+        label = std::string(ICON_FA_AREA_CHART);
+        type = InteractionType::Cubemap;
+    }
 
     mFileLabels.push_back(label + " " + name);
     mFilePaths.push_back(getDirectoryPath() / name);

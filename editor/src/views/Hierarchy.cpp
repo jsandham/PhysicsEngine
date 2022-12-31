@@ -4,9 +4,6 @@
 
 #include "../../include/imgui/imgui_extensions.h"
 #include "imgui.h"
-#include <shlobj.h>
-#include <shlwapi.h>
-#include <objbase.h>
 
 using namespace PhysicsEditor;
 
@@ -88,19 +85,13 @@ void Hierarchy::update(Clipboard &clipboard)
                 clipboard.mSceneDirty = true;
             }
 
-            if (ImGui::IsItemHovered())
+            if (ImGui::BeginDragDropSource())
             {
-                if (ImGui::IsMouseClicked(0))
-                {
-                    clipboard.mDraggedType = InteractionType::Entity;
-                    clipboard.mDraggedPath = "";
-                    clipboard.mDraggedId = mEntries[i].entity->getGuid();
-                }
+                const void* data = static_cast<const void*>(mEntries[i].entity->getGuid().c_str());
 
-                if (!ImGui::IsMouseDown(0))
-                {
-                    clipboard.clearDraggedItem();
-                }
+                ImGui::SetDragDropPayload("ENTITY", data, sizeof(PhysicsEngine::Guid));  
+                ImGui::Text(mEntries[i].entity->getName().c_str());
+                ImGui::EndDragDropSource();
             }
         }
 

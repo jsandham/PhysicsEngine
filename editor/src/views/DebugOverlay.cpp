@@ -142,7 +142,6 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("Mesh count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Mesh>());
     ImGui::Text("Material count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>());
     ImGui::Text("Texture2D count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Texture2D>());
-    ImGui::Text("Texture3D count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Texture3D>());
     ImGui::Text("Cubemap count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>());
     ImGui::Text("Font count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Font>());
     ImGui::Text("Sprite count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Sprite>());

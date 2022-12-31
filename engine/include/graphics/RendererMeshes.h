@@ -9,9 +9,7 @@ namespace PhysicsEngine
 class FrustumMesh
 {
   public:
-    FrustumMesh()
-    {
-    }
+    FrustumMesh(){}
     virtual ~FrustumMesh(){};
 
     virtual void bind() = 0;
@@ -23,9 +21,7 @@ class FrustumMesh
 class GridMesh
 {
   public:
-    GridMesh()
-    {
-    }
+    GridMesh(){}
     virtual ~GridMesh(){};
 
     virtual void bind() = 0;

@@ -433,3 +433,8 @@ void Texture2D::writePixels()
 {
     mTex->writePixels(mRawTextureData);
 }
+
+TextureHandle *Texture2D::getNativeGraphics() const
+{
+    return mTex;
+}

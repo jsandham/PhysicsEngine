@@ -1,12 +1,21 @@
 #include "../../include/core/Cubemap.h"
+#include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
 Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
+    mLeftTexGuid = Guid::INVALID;
+    mRightTexGuid = Guid::INVALID;
+    mBottomTexGuid = Guid::INVALID;
+    mTopTexGuid = Guid::INVALID;
+    mBackTexGuid = Guid::INVALID;
+    mFrontTexGuid = Guid::INVALID;
+
+    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -23,7 +32,14 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
 
 Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
-    mTex = TextureHandle::create();
+    mLeftTexGuid = Guid::INVALID;
+    mRightTexGuid = Guid::INVALID;
+    mBottomTexGuid = Guid::INVALID;
+    mTopTexGuid = Guid::INVALID;
+    mBackTexGuid = Guid::INVALID;
+    mFrontTexGuid = Guid::INVALID;
+
+    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -40,7 +56,14 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
 
 Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
+    mLeftTexGuid = Guid::INVALID;
+    mRightTexGuid = Guid::INVALID;
+    mBottomTexGuid = Guid::INVALID;
+    mTopTexGuid = Guid::INVALID;
+    mBackTexGuid = Guid::INVALID;
+    mFrontTexGuid = Guid::INVALID;
+
+    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -59,7 +82,14 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
 
 Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
+    mLeftTexGuid = Guid::INVALID;
+    mRightTexGuid = Guid::INVALID;
+    mBottomTexGuid = Guid::INVALID;
+    mTopTexGuid = Guid::INVALID;
+    mBackTexGuid = Guid::INVALID;
+    mFrontTexGuid = Guid::INVALID;
+
+    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -78,12 +108,19 @@ Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : 
 
 Cubemap::~Cubemap()
 {
-    delete mTex;
+    delete mCube;
 }
 
 void Cubemap::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);
+
+    out["leftTexId"] = mLeftTexGuid;
+    out["rightTexId"] = mRightTexGuid;
+    out["bottomTexId"] = mBottomTexGuid;
+    out["topTexId"] = mTopTexGuid;
+    out["backTexId"] = mBackTexGuid;
+    out["frontTexId"] = mFrontTexGuid;
 
     out["width"] = mWidth;
 }
@@ -91,6 +128,13 @@ void Cubemap::serialize(YAML::Node &out) const
 void Cubemap::deserialize(const YAML::Node &in)
 {
     Texture::deserialize(in);
+
+    mLeftTexGuid = YAML::getValue<Guid>(in, "leftTexId");
+    mRightTexGuid = YAML::getValue<Guid>(in, "rightTexId");
+    mBottomTexGuid = YAML::getValue<Guid>(in, "bottomTexId");
+    mTopTexGuid = YAML::getValue<Guid>(in, "topTexId");
+    mBackTexGuid = YAML::getValue<Guid>(in, "backTexId");
+    mFrontTexGuid = YAML::getValue<Guid>(in, "frontTexId");
 
     mWidth = YAML::getValue<int>(in, "width");
 }
@@ -193,6 +237,27 @@ Color32 Cubemap::getPixel(CubemapFace face, int x, int y) const
     return color;
 }
 
+Guid Cubemap::getTexId(CubemapFace face) const
+{
+    switch (face)
+    {
+    case CubemapFace::NegativeX:
+        return mLeftTexGuid;
+    case CubemapFace::PositiveX:
+        return mRightTexGuid;
+    case CubemapFace::NegativeY:
+        return mBottomTexGuid;
+    case CubemapFace::PositiveY:
+        return mTopTexGuid;
+    case CubemapFace::NegativeZ:
+        return mBackTexGuid;
+    case CubemapFace::PositiveZ:
+        return mFrontTexGuid;
+    }
+
+    return Guid::INVALID;
+}
+
 void Cubemap::setRawCubemapData(const std::vector<unsigned char> &data)
 {
     int size = static_cast<int>(mRawTextureData.size());
@@ -203,6 +268,25 @@ void Cubemap::setRawCubemapData(const std::vector<unsigned char> &data)
     }
 
     mRawTextureData = data;
+    mDeviceUpdateRequired = true;
+}
+
+void Cubemap::setRawCubemapData(CubemapFace face, const std::vector<unsigned char> &data)
+{
+    int size = static_cast<int>(mRawTextureData.size());
+    if (mWidth * mWidth * mNumChannels != size)
+    {
+        Log::error("Cubemap: Raw texture data does not match size of cubemap\n");
+        return;
+    }
+
+    size_t offset = static_cast<int>(face) * mWidth * mWidth * mNumChannels;
+
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        mRawTextureData[offset + i] = data[i];
+    }
+
     mDeviceUpdateRequired = true;
 }
 
@@ -246,11 +330,67 @@ void Cubemap::setPixel(CubemapFace face, int x, int y, const Color32 &color)
     mDeviceUpdateRequired = true;
 }
 
+void Cubemap::setTexId(CubemapFace face, const Guid &texId)
+{
+    switch (face)
+    {
+    case CubemapFace::NegativeX:
+        mLeftTexGuid = texId;
+        break;
+    case CubemapFace::PositiveX:
+        mRightTexGuid = texId;
+        break;
+    case CubemapFace::NegativeY:
+        mBottomTexGuid = texId;
+        break;
+    case CubemapFace::PositiveY:
+        mTopTexGuid = texId;
+        break;
+    case CubemapFace::NegativeZ:
+        mBackTexGuid = texId;
+        break;
+    case CubemapFace::PositiveZ:
+        mFrontTexGuid = texId;
+        break;
+    }
+}
+
+void Cubemap::fillCubemapFromAttachedTexture(CubemapFace face)
+{
+    Texture2D *texture = nullptr;
+    switch (face)
+    {
+    case CubemapFace::NegativeX:
+        texture = mWorld->getAssetByGuid<Texture2D>(mLeftTexGuid);
+        break;
+    case CubemapFace::PositiveX:
+        texture = mWorld->getAssetByGuid<Texture2D>(mRightTexGuid);
+        break;
+    case CubemapFace::NegativeY:
+        texture = mWorld->getAssetByGuid<Texture2D>(mBottomTexGuid);
+        break;
+    case CubemapFace::PositiveY:
+        texture = mWorld->getAssetByGuid<Texture2D>(mTopTexGuid);
+        break;
+    case CubemapFace::NegativeZ:
+        texture = mWorld->getAssetByGuid<Texture2D>(mBackTexGuid);
+        break;
+    case CubemapFace::PositiveZ:
+        texture = mWorld->getAssetByGuid<Texture2D>(mFrontTexGuid);
+        break;
+    }
+
+    if (texture != nullptr)
+    {
+        this->setRawCubemapData(face, texture->getRawTextureData());
+    }
+}
+
 void Cubemap::copyTextureToDevice()
 {
     if (mDeviceUpdateRequired)
     {
-        // Renderer::getRenderer()->createCubemap(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData, mTex);
+        mCube->load(mFormat, mWrapMode, mFilterMode, mWidth, mRawTextureData);
         mDeviceUpdateRequired = false;
     }
 }
@@ -259,17 +399,22 @@ void Cubemap::updateTextureParameters()
 {
     if (mUpdateRequired)
     {
-        mTex->update(mWrapMode, mFilterMode, mAnisoLevel);
+        mCube->update(mWrapMode, mFilterMode);
         mUpdateRequired = false;
     }
 }
 
 void Cubemap::readPixels()
 {
-    //Renderer::getRenderer()->readPixelsCubemap(mFormat, mWidth, mNumChannels, mRawTextureData, mTex);
+    mCube->readPixels(mRawTextureData);
 }
 
 void Cubemap::writePixels()
 {
-    //Renderer::getRenderer()->writePixelsCubemap(mFormat, mWidth, mRawTextureData, mTex);
+    mCube->writePixels(mRawTextureData);
+}
+
+CubemapHandle *Cubemap::getNativeGraphics() const
+{
+    return mCube;
 }

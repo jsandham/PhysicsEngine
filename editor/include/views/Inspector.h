@@ -7,6 +7,7 @@
 
 #include "../drawers/InspectorDrawer.h"
 #include "../drawers/SceneDrawer.h"
+#include "../drawers/CubemapDrawer.h"
 #include "../drawers/MaterialDrawer.h"
 #include "../drawers/MeshDrawer.h"
 #include "../drawers/ShaderDrawer.h"
@@ -33,6 +34,7 @@ class Inspector : public Window
 {
   private:
     SceneDrawer mSceneDrawer;
+    CubemapDrawer mCubemapDrawer;
     MeshDrawer mMeshDrawer;
     MaterialDrawer mMaterialDrawer;
     ShaderDrawer mShaderDrawer;

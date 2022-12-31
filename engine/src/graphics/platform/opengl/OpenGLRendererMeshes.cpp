@@ -24,7 +24,7 @@ OpenGLGridMesh::OpenGLGridMesh()
 {
 }
 
-OpenGLGridMesh ::~OpenGLGridMesh()
+OpenGLGridMesh::~OpenGLGridMesh()
 {
 }
 

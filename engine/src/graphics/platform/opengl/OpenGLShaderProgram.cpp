@@ -242,68 +242,67 @@ std::vector<ShaderAttribute> OpenGLShaderProgram::getAttributes() const
 
 void OpenGLShaderProgram::setBool(const char *name, bool value)
 {
-    this->setBool(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/,
-                  value);
+    this->setBool(glGetUniformLocation(mHandle, name), value);
 }
 
 void OpenGLShaderProgram::setInt(const char *name, int value)
 {
-    this->setInt(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, value);
+    this->setInt(glGetUniformLocation(mHandle, name), value);
 }
 
 void OpenGLShaderProgram::setFloat(const char *name, float value)
 {
-    this->setFloat(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, value);
+    this->setFloat(glGetUniformLocation(mHandle, name), value);
 }
 
 void OpenGLShaderProgram::setColor(const char *name, const Color &color)
 {
-    this->setColor(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, color);
+    this->setColor(glGetUniformLocation(mHandle, name), color);
 }
 
 void OpenGLShaderProgram::setColor32(const char *name, const Color32 &color)
 {
-    this->setColor32(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, color);
+    this->setColor32(glGetUniformLocation(mHandle, name), color);
 }
 
 void OpenGLShaderProgram::setVec2(const char *name, const glm::vec2 &vec)
 {
-    this->setVec2(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, vec);
+    this->setVec2(glGetUniformLocation(mHandle, name), vec);
 }
 
 void OpenGLShaderProgram::setVec3(const char *name, const glm::vec3 &vec)
 {
-    this->setVec3(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, vec);
+    this->setVec3(glGetUniformLocation(mHandle, name), vec);
 }
 
 void OpenGLShaderProgram::setVec4(const char *name, const glm::vec4 &vec)
 {
-    this->setVec4(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, vec);
+    this->setVec4(glGetUniformLocation(mHandle, name), vec);
 }
 
 void OpenGLShaderProgram::setMat2(const char *name, const glm::mat2 &mat)
 {
-    this->setMat2(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, mat);
+    this->setMat2(glGetUniformLocation(mHandle, name), mat);
 }
 
 void OpenGLShaderProgram::setMat3(const char *name, const glm::mat3 &mat)
 {
-    this->setMat3(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, mat);
+    this->setMat3(glGetUniformLocation(mHandle, name), mat);
 }
 
 void OpenGLShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
 {
-    this->setMat4(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, mat);
+    this->setMat4(glGetUniformLocation(mHandle, name), mat);
 }
 
 void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, TextureHandle* tex)
 {
-    this->setTexture2D(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, texUnit, tex);
+    this->setTexture2D(glGetUniformLocation(mHandle, name), texUnit, tex);
 }
 
 void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
 {
-    this->setTexture2Ds(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/, texUnits, count, texs);
+    this->setTexture2Ds(glGetUniformLocation(mHandle, name), texUnits, count, texs);
 }
 
 void OpenGLShaderProgram::setBool(int nameLocation, bool value)
@@ -397,52 +396,52 @@ void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>
 
 bool OpenGLShaderProgram::getBool(const char *name) const
 {
-    return this->getBool(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getBool(glGetUniformLocation(mHandle, name));
 }
 
 int OpenGLShaderProgram::getInt(const char *name) const
 {
-    return this->getInt(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getInt(glGetUniformLocation(mHandle, name));
 }
 
 float OpenGLShaderProgram::getFloat(const char *name) const
 {
-    return this->getFloat(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getFloat(glGetUniformLocation(mHandle, name));
 }
 
 Color OpenGLShaderProgram::getColor(const char *name) const
 {
-    return this->getColor(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getColor(glGetUniformLocation(mHandle, name));
 }
 
 glm::vec2 OpenGLShaderProgram::getVec2(const char *name) const
 {
-    return this->getVec2(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getVec2(glGetUniformLocation(mHandle, name));
 }
 
 glm::vec3 OpenGLShaderProgram::getVec3(const char *name) const
 {
-    return this->getVec3(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getVec3(glGetUniformLocation(mHandle, name));
 }
 
 glm::vec4 OpenGLShaderProgram::getVec4(const char *name) const
 {
-    return this->getVec4(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getVec4(glGetUniformLocation(mHandle, name));
 }
 
 glm::mat2 OpenGLShaderProgram::getMat2(const char *name) const
 {
-    return this->getMat2(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getMat2(glGetUniformLocation(mHandle, name));
 }
 
 glm::mat3 OpenGLShaderProgram::getMat3(const char *name) const
 {
-    return this->getMat3(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getMat3(glGetUniformLocation(mHandle, name));
 }
 
 glm::mat4 OpenGLShaderProgram::getMat4(const char *name) const
 {
-    return this->getMat4(glGetUniformLocation(mHandle, name) /*Renderer::getRenderer()->findUniformLocation(name, mHandle)*/);
+    return this->getMat4(glGetUniformLocation(mHandle, name));
 }
 
 bool OpenGLShaderProgram::getBool(int nameLocation) const

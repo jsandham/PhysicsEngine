@@ -65,11 +65,6 @@ template <> size_t World::getNumberOfAssets<Texture2D>() const
     return mAllocators.mTexture2DAllocator.getCount();
 }
 
-template <> size_t World::getNumberOfAssets<Texture3D>() const
-{
-    return mAllocators.mTexture3DAllocator.getCount();
-}
-
 template <> size_t World::getNumberOfAssets<Cubemap>() const
 {
     return mAllocators.mCubemapAllocator.getCount();
@@ -322,11 +317,6 @@ template <> Texture2D* World::getAssetByIndex<Texture2D>(size_t index) const
     return mAllocators.mTexture2DAllocator.get(index);
 }
 
-template <> Texture3D* World::getAssetByIndex<Texture3D>(size_t index) const
-{
-    return mAllocators.mTexture3DAllocator.get(index);
-}
-
 template <> Cubemap* World::getAssetByIndex<Cubemap>(size_t index) const
 {
     return mAllocators.mCubemapAllocator.get(index);
@@ -365,11 +355,6 @@ template <> Shader *World::getAssetById<Shader>(const Id &assetId) const
 template <> Texture2D *World::getAssetById<Texture2D>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mTexture2DIdToGlobalIndex, &mAllocators.mTexture2DAllocator, assetId);
-}
-
-template <> Texture3D *World::getAssetById<Texture3D>(const Id &assetId) const
-{
-    return getAssetById_impl(mIdState.mTexture3DIdToGlobalIndex, &mAllocators.mTexture3DAllocator, assetId);
 }
 
 template <> Cubemap *World::getAssetById<Cubemap>(const Id &assetId) const
@@ -414,11 +399,6 @@ template <> Shader *World::getAssetByGuid<Shader>(const Guid &assetGuid) const
 template <> Texture2D *World::getAssetByGuid<Texture2D>(const Guid &assetGuid) const
 {
     return getAssetByGuid_impl(mIdState.mTexture2DGuidToGlobalIndex, &mAllocators.mTexture2DAllocator, assetGuid);
-}
-
-template <> Texture3D *World::getAssetByGuid<Texture3D>(const Guid &assetGuid) const
-{
-    return getAssetByGuid_impl(mIdState.mTexture3DGuidToGlobalIndex, &mAllocators.mTexture3DAllocator, assetGuid);
 }
 
 template <> Cubemap *World::getAssetByGuid<Cubemap>(const Guid &assetGuid) const
@@ -470,11 +450,6 @@ template <> Texture2D* World::createAsset<Texture2D>()
     return createAsset_impl(&mAllocators.mTexture2DAllocator, Guid::newGuid());
 }
 
-template <> Texture3D* World::createAsset<Texture3D>()
-{
-    return createAsset_impl(&mAllocators.mTexture3DAllocator, Guid::newGuid());
-}
-
 template <> Cubemap* World::createAsset<Cubemap>()
 {
     return createAsset_impl(&mAllocators.mCubemapAllocator, Guid::newGuid());
@@ -515,11 +490,6 @@ template <> Texture2D *World::createAsset<Texture2D>(const Guid &assetGuid)
     return createAsset_impl(&mAllocators.mTexture2DAllocator, assetGuid);
 }
 
-template <> Texture3D *World::createAsset<Texture3D>(const Guid &assetGuid)
-{
-    return createAsset_impl(&mAllocators.mTexture3DAllocator, assetGuid);
-}
-
 template <> Cubemap *World::createAsset<Cubemap>(const Guid &assetGuid)
 {
     return createAsset_impl(&mAllocators.mCubemapAllocator, assetGuid);
@@ -558,11 +528,6 @@ template <> Shader* World::createAsset<Shader>(const YAML::Node& in)
 template <> Texture2D* World::createAsset<Texture2D>(const YAML::Node& in)
 {
     return createAsset_impl(&mAllocators.mTexture2DAllocator, in);
-}
-
-template <> Texture3D* World::createAsset<Texture3D>(const YAML::Node& in)
-{
-    return createAsset_impl(&mAllocators.mTexture3DAllocator, in);
 }
 
 template <> Cubemap* World::createAsset<Cubemap>(const YAML::Node& in)
@@ -645,14 +610,6 @@ template <> void World::addToIdState_impl<Texture2D>(const Guid &guid, const Id 
 {
     mIdState.mTexture2DGuidToGlobalIndex[guid] = index;
     mIdState.mTexture2DIdToGlobalIndex[id] = index;
-    
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<Texture3D>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mTexture3DGuidToGlobalIndex[guid] = index;
-    mIdState.mTexture3DIdToGlobalIndex[id] = index;
     
     addToIdState(guid, id, index, type);
 }
@@ -790,14 +747,6 @@ template <> void World::removeFromIdState_impl<Texture2D>(const Guid &guid, cons
 {
     mIdState.mTexture2DGuidToGlobalIndex.erase(guid);
     mIdState.mTexture2DIdToGlobalIndex.erase(id);
-    
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<Texture3D>(const Guid &guid, const Id &id)
-{
-    mIdState.mTexture3DGuidToGlobalIndex.erase(guid);
-    mIdState.mTexture3DIdToGlobalIndex.erase(id);
     
     removeFromIdState(guid, id);
 }
@@ -1355,9 +1304,6 @@ Asset *World::getAssetByGuid(const Guid &assetGuid, int type) const
     case AssetType<Texture2D>::type: {
         return getAssetByGuid<Texture2D>(assetGuid);
     }
-    case AssetType<Texture3D>::type: {
-        return getAssetByGuid<Texture3D>(assetGuid);
-    }
     case AssetType<Cubemap>::type: {
         return getAssetByGuid<Cubemap>(assetGuid);
     }
@@ -1383,7 +1329,6 @@ Asset *World::getAssetById(const Id &assetId, int type) const
     case AssetType<Material>::type: {return getAssetById<Material>(assetId);}
     case AssetType<Shader>::type: {return getAssetById<Shader>(assetId);}
     case AssetType<Texture2D>::type: {return getAssetById<Texture2D>(assetId);}
-    case AssetType<Texture3D>::type: {return getAssetById<Texture3D>(assetId);}
     case AssetType<Cubemap>::type: {return getAssetById<Cubemap>(assetId);}
     case AssetType<RenderTexture>::type: {return getAssetById<RenderTexture>(assetId);}
     case AssetType<Sprite>::type: {return getAssetById<Sprite>(assetId);}
@@ -1508,9 +1453,6 @@ Asset *World::createAsset(const YAML::Node &in, int type)
     case AssetType<Texture2D>::type: {
         return createAsset<Texture2D>(in);
     }
-    case AssetType<Texture3D>::type: {
-        return createAsset<Texture3D>(in);
-    }
     case AssetType<Cubemap>::type: {
         return createAsset<Cubemap>(in);
     }
@@ -1581,17 +1523,6 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
         if (swap != nullptr)
         {
             addToIdState_impl<Texture2D>(swap->getGuid(), swap->getId(), index, assetType);
-        }
-    }
-    else if (assetType == AssetType<Texture3D>::type)
-    {
-        Asset *swap = mAllocators.mTexture3DAllocator.destruct(index);
-    
-        removeFromIdState_impl<Texture3D>(assetGuid, assetId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Texture3D>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else if (assetType == AssetType<Cubemap>::type)

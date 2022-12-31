@@ -22,33 +22,8 @@ void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Sprite* sprite = clipboard.getWorld()->getAssetByGuid<Sprite>(id);
+    //Sprite* sprite = clipboard.getWorld()->getAssetByGuid<Sprite>(id);
 
-    Guid textureId = sprite->getTextureId();
-
-    std::string textureName = "None (Texture)";
-    if (textureId.isValid())
-    {
-        textureName = textureId.toString();
-    }
-
-    bool releaseTriggered = false;
-    bool clearClicked = false;
-    bool isClicked = ImGui::Slot("Texture", textureName, &releaseTriggered, &clearClicked);
-
-    if (releaseTriggered && clipboard.getDraggedType() == InteractionType::Texture2D)
-    {
-        textureId = clipboard.getDraggedId();
-        clipboard.clearDraggedItem();
-
-        sprite->setTextureId(textureId);
-        clipboard.mModifiedAssets.insert(sprite->getGuid());
-    }
-
-    if (isClicked)
-    {
-        clipboard.setSelectedItem(InteractionType::Texture2D, textureId);
-    }
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();

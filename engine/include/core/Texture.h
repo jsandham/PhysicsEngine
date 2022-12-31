@@ -2,17 +2,36 @@
 #define TEXTURE_H__
 
 #include "Asset.h"
-#include "../graphics/TextureHandle.h"
 
 #include "yaml-cpp/yaml.h"
 
 namespace PhysicsEngine
 {
+enum class TextureFormat
+{
+    Depth = 0,
+    RG = 1,
+    RGB = 2,
+    RGBA = 3
+};
+
+enum class TextureWrapMode
+{
+    Repeat = 0,
+    Clamp = 1
+};
+
+enum class TextureFilterMode
+{
+    Nearest = 0,
+    Bilinear = 1,
+    Trilinear = 2
+};
+
 enum class TextureDimension
 {
     Tex2D = 0,
-    Tex3D = 1,
-    Cube = 2
+    Cube = 1
 };
 
 class Texture : public Asset
@@ -26,7 +45,6 @@ class Texture : public Asset
     TextureWrapMode mWrapMode;
     TextureFilterMode mFilterMode;
 
-    TextureHandle* mTex;
     bool mDeviceUpdateRequired;
     bool mUpdateRequired;
 
@@ -51,7 +69,6 @@ class Texture : public Asset
     TextureFormat getFormat() const;
     TextureWrapMode getWrapMode() const;
     TextureFilterMode getFilterMode() const;
-    TextureHandle* getNativeGraphics() const;
 
     void setAnisoLevel(int anisoLevel);
     void setWrapMode(TextureWrapMode wrapMode);

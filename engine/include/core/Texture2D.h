@@ -7,6 +7,8 @@
 #include "Color.h"
 #include "Texture.h"
 
+#include "../graphics/TextureHandle.h"
+
 namespace PhysicsEngine
 {
 class Texture2D : public Texture
@@ -15,6 +17,8 @@ class Texture2D : public Texture
     std::string mSource;
     int mWidth;
     int mHeight;
+
+    TextureHandle *mTex;
 
   public:
     Texture2D(World *world, const Id &id);
@@ -51,6 +55,8 @@ class Texture2D : public Texture
     void updateTextureParameters() override;
     void readPixels() override;
     void writePixels() override;
+
+    TextureHandle *getNativeGraphics() const;
 };
 
 template <> struct AssetType<Texture2D>

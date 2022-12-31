@@ -6,9 +6,10 @@
 #include "Color.h"
 #include "Texture.h"
 
+#include "../graphics/CubemapHandle.h"
+
 namespace PhysicsEngine
 {
-//typedef enum CubemapFace
 enum class CubemapFace
 {
     PositiveX,
@@ -22,7 +23,16 @@ enum class CubemapFace
 class Cubemap : public Texture
 {
   private:
+    Guid mLeftTexGuid;
+    Guid mRightTexGuid;
+    Guid mBottomTexGuid;
+    Guid mTopTexGuid;
+    Guid mBackTexGuid;
+    Guid mFrontTexGuid;
+
     int mWidth;
+
+    CubemapHandle *mCube;
 
   public:
     Cubemap(World *world, const Id &id);
@@ -42,15 +52,22 @@ class Cubemap : public Texture
     std::vector<unsigned char> getRawCubemapData() const;
     std::vector<Color32> getPixels(CubemapFace face) const;
     Color32 getPixel(CubemapFace face, int x, int y) const;
+    Guid getTexId(CubemapFace face) const;
 
     void setRawCubemapData(const std::vector<unsigned char> &data);
+    void setRawCubemapData(CubemapFace face, const std::vector<unsigned char> &data);
     void setPixels(CubemapFace face, int x, int y, const Color32 &color);
     void setPixel(CubemapFace face, int x, int y, const Color32 &color);
+    void setTexId(CubemapFace face, const Guid& texId);
+
+    void fillCubemapFromAttachedTexture(CubemapFace face);
 
     void copyTextureToDevice() override;
     void updateTextureParameters() override;
     void readPixels() override;
     void writePixels() override;
+
+    CubemapHandle *getNativeGraphics() const;
 };
 
 template <> struct AssetType<Cubemap>

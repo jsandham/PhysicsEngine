@@ -14,7 +14,6 @@
 #include "../core/Mesh.h"
 #include "../core/Sprite.h"
 #include "../core/Texture2D.h"
-#include "../core/Texture3D.h"
 
 #include "../systems/CleanUpSystem.h"
 #include "../systems/DebugSystem.h"
@@ -38,7 +37,6 @@ struct WorldAllocators
     PoolAllocator<Material> mMaterialAllocator;
     PoolAllocator<Shader> mShaderAllocator;
     PoolAllocator<Texture2D> mTexture2DAllocator;
-    PoolAllocator<Texture3D> mTexture3DAllocator;
     PoolAllocator<Cubemap> mCubemapAllocator;
     PoolAllocator<RenderTexture> mRenderTextureAllocator;
     PoolAllocator<Font> mFontAllocator;
