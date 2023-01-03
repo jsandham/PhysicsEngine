@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "../include/EditorLayer.h"
+#include "../include/ProjectDatabase.h"
 
 #include "imgui.h"
 
@@ -32,7 +33,7 @@ void EditorLayer::init()
 
 void EditorLayer::update(const PhysicsEngine::Time& time)
 {
-    mClipboard.getLibrary().update(mClipboard.getWorld());
+    ProjectDatabase::update(mClipboard.getWorld());
 
     mMenuBar.update(mClipboard);
 

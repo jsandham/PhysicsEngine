@@ -77,12 +77,6 @@ class World
     void latentDestroyAsset(const Guid &assetGuid, int assetType);
     void immediateDestroyAsset(const Guid &assetGuid, int assetType);
 
-    std::string getAssetFilepath(const Guid &assetGuid) const;
-    std::string getSceneFilepath(const Guid &sceneGuid) const;
-
-    Guid getAssetGuid(const std::string &filepath) const;
-    Guid getSceneGuid(const std::string &filepath) const;
-
     template <typename T> size_t getNumberOfSystems() const;
     template <typename T> size_t getNumberOfAssets() const;
     template <typename T> T* getSystem() const;

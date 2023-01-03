@@ -14,6 +14,7 @@ namespace PhysicsEditor
     private:
         ProjectNode* mParent;
         std::vector<ProjectNode*> mChildren;
+        
         std::string mDirectoryLabel;
         std::filesystem::path mDirectoryPath;
         std::vector<std::string> mFileLabels;

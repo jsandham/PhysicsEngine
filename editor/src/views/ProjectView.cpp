@@ -1,9 +1,11 @@
 #include "../../include/views/ProjectView.h"
 #include "../../include/EditorSceneManager.h"
+#include "../../include/ProjectDatabase.h"
 
 #include <algorithm>
 #include <stack>
 #include <fstream>
+#include <assert.h>
 
 #include "../../include/imgui/imgui_extensions.h"
 
@@ -14,8 +16,12 @@ using namespace PhysicsEditor;
 
 ProjectView::ProjectView() : Window("Project View")
 {
-    mSelected = nullptr;
-    mRightPanelSelectedPath = std::filesystem::path();
+    mHighlightedType = InteractionType::None;
+    mHighlightedPath = std::filesystem::path();
+    mHoveredPath = std::filesystem::path();
+
+    mSelectedDirectoryPath = std::filesystem::path();
+    mSelectedFilePath = std::filesystem::path();
 }
 
 ProjectView::~ProjectView()
@@ -39,16 +45,16 @@ void ProjectView::update(Clipboard &clipboard)
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::ProjectView)] = unfocusedThisFrame();
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::ProjectView)] = unhoveredThisFrame();
 
-    if (!clipboard.getProjectPath().empty())
-    {
-        if (!mProjectTree.isEmpty() && mProjectTree.getRoot()->getDirectoryPath() != (clipboard.getProjectPath() / "data") || mProjectTree.isEmpty())
-        {
-            mProjectTree.buildProjectTree(clipboard.getProjectPath());
-        }
-    }
+    ImGui::Text(("mHighlightedType: " + std::to_string(static_cast<int>(mHighlightedType))).c_str());
+    ImGui::Text(("mHighlightedPath: " + mHighlightedPath.string()).c_str());
+    ImGui::Text(("mHoveredPath: " + mHoveredPath.string()).c_str());
+    ImGui::Text(("mSelectedDirectoryPath: " + mSelectedDirectoryPath.string()).c_str());
+    ImGui::Text(("mSelectedFilePath: " + mSelectedFilePath.string()).c_str());
 
     if (!clipboard.getProjectPath().empty())
     {
+        mProjectTree.buildProjectTree(clipboard.getProjectPath());
+
         mFilter.Draw("Filter", -100.0f);
 
         ImVec2 WindowSize = ImGui::GetWindowSize();
@@ -129,68 +135,124 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     }
     else
     {
-        if (mSelected != nullptr)
+        std::stack<ProjectNode*> stack;
+
+        stack.push(mProjectTree.getRoot());
+
+        while (!stack.empty())
         {
-            directories = mSelected->getChildren();
-           
-            fileLabels = mSelected->getFileLabels();
-            filePaths = mSelected->getFilePaths();
-            fileTypes = mSelected->getFileTypes();
+            ProjectNode* current = stack.top();
+            stack.pop();
+
+            std::error_code errorCode;
+            if (std::filesystem::equivalent(mSelectedDirectoryPath, current->getDirectoryPath(), errorCode))
+            {
+                directories = current->getChildren();
+                fileLabels = current->getFileLabels();
+                filePaths = current->getFilePaths();
+                fileTypes = current->getFileTypes();
+
+                break;
+            }
+            
+            for (size_t j = 0; j < current->getChildCount(); j++)
+            {
+                stack.push(current->getChild(j));
+            }
         }
     }
-
-    ProjectNode *newSelection = nullptr;
 
     // draw directories in right pane
     for (size_t i = 0; i < directories.size(); i++)
     {
-        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), directories[i]->getDirectoryPath() == mRightPanelSelectedPath, ImGuiSelectableFlags_AllowDoubleClick))
+        std::error_code errorCode;
+        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), std::filesystem::equivalent(directories[i]->getDirectoryPath(), mHighlightedPath, errorCode), ImGuiSelectableFlags_AllowDoubleClick))
         {
-            mRightPanelSelectedPath = directories[i]->getDirectoryPath();
+            mHighlightedType = InteractionType::Folder;
+            mHighlightedPath = directories[i]->getDirectoryPath();
 
             if (ImGui::IsMouseDoubleClicked(0))
             {
-                newSelection = directories[i];
+                mSelectedDirectoryPath = directories[i]->getDirectoryPath();
+
                 mFilter.Clear();
             }
         }
 
-        if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0))
+        if (ImGui::IsItemHovered())
         {
-            clipboard.mSelectedType = InteractionType::Folder;
-            clipboard.mSelectedPath = directories[i]->getDirectoryPath().string();
+            mHoveredPath = directories[i]->getDirectoryPath();
+        }
+
+        if (ImGui::BeginDragDropSource())
+        {
+            std::string directoryPath = directories[i]->getDirectoryPath().string();
+            size_t size = directoryPath.length();
+            size_t size2 = strlen(directoryPath.c_str());
+
+            const void* data = static_cast<const void*>(directoryPath.c_str());
+
+            ImGui::SetDragDropPayload("FOLDER", data, directoryPath.length() + 1);
+            ImGui::EndDragDropSource();
+        }
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER");
+            if (payload != nullptr)
+            {
+                const char* data = static_cast<const char*>(payload->Data);
+
+                std::filesystem::path incomingPath = std::string(data);
+                std::filesystem::path currentPath = directories[i]->getDirectoryPath();
+                std::filesystem::path newPath = currentPath / incomingPath.filename();
+
+                ProjectDatabase::move(incomingPath, newPath);
+            }
+            ImGui::EndDragDropTarget();
         }
     }
 
     // draw files in right pane
     for (size_t i = 0; i < filePaths.size(); i++)
     {
-        if (ImGui::Selectable(fileLabels[i].c_str(), filePaths[i] == mRightPanelSelectedPath, ImGuiSelectableFlags_AllowDoubleClick))
+        std::error_code errorCode;
+        if (ImGui::Selectable(fileLabels[i].c_str(), std::filesystem::equivalent(filePaths[i], mHighlightedPath, errorCode), ImGuiSelectableFlags_AllowDoubleClick))
         {
-            mRightPanelSelectedPath = filePaths[i];
+            mHighlightedType = InteractionType::File;
+            mHighlightedPath = filePaths[i];
 
             if (ImGui::IsMouseDoubleClicked(0))
             {
-                if (filePaths[i].extension().string() == ".scene")
+                if (fileTypes[i] == InteractionType::Scene)
                 {
                     EditorSceneManager::openScene(clipboard, filePaths[i]);
                 }
-            }
 
-            if (ImGui::IsMouseClicked(0))
-            {
+                mSelectedFilePath = filePaths[i];
+
                 clipboard.mSelectedType = fileTypes[i];
-                clipboard.mSelectedPath = filePaths[i].string();
-                clipboard.mSelectedId = clipboard.mLibrary.getId(clipboard.mSelectedPath);
+                clipboard.mSelectedPath = filePaths[i];
+                clipboard.mSelectedId = ProjectDatabase::getGuid(clipboard.mSelectedPath);
+
+                mFilter.Clear();
             }
+        }
+
+        if (ImGui::IsItemHovered())
+        {
+            mHoveredPath = filePaths[i];
         }
 
         if (ImGui::BeginDragDropSource())
         {
-            const void* data = static_cast<const void*>(clipboard.mLibrary.getId(filePaths[i].string()).c_str());
+            const void* data = static_cast<const void*>(ProjectDatabase::getGuid(filePaths[i].string()).c_str());
             
             switch (fileTypes[i])
             {
+            case InteractionType::File:
+                ImGui::SetDragDropPayload("FILE", data, sizeof(PhysicsEngine::Guid));
+                break;
             case InteractionType::Cubemap:
                 ImGui::SetDragDropPayload("CUBEMAP", data, sizeof(PhysicsEngine::Guid));
                 break;
@@ -213,146 +275,114 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             ImGui::Text(filePaths[i].string().c_str());
             ImGui::EndDragDropSource();
         }
-    }
 
-    if (newSelection != nullptr)
-    {
-        mSelected = newSelection;
-    }
-
-    if (mSelected == nullptr)
-    {
-        return;
-    }
-
-    // Right click popup menu
-    if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
-    {
-        if (ImGui::BeginMenu("Create..."))
+        /*if (ImGui::BeginDragDropTarget())
         {
-            if (ImGui::MenuItem("Folder"))
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE");
+            if (payload != nullptr)
             {
-                size_t count = mSelected->getChildCount();
-                std::string foldername = "Folder" + (count > 0 ? "(" + std::to_string(count) + ")" : "");
-                std::filesystem::path folderPath = mSelected->getDirectoryPath() / foldername;
-                if (std::filesystem::create_directory(folderPath))
-                {
-                    mSelected->addDirectory(foldername);
-                }
+                const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+
+                
             }
+            ImGui::EndDragDropTarget();
+        }*/
+    }
 
-            ImGui::Separator();
-
-            if (ImGui::BeginMenu("Shader..."))
+    if (!mSelectedDirectoryPath.empty())
+    {
+        // Right click popup menu
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::BeginMenu("Create..."))
             {
-                if (ImGui::MenuItem("GLSL"))
+                if (ImGui::MenuItem("Folder"))
                 {
-                    size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Shader>();
-                    std::string filename = ("Source(" + std::to_string(count) + ").glsl");
-                    std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
-
-                    std::ofstream file(filepath);
-                    file << "#vertex\n";
-                    file << "#fragment\n";
-                    file.close();
+                    ProjectDatabase::createDirectory(mSelectedDirectoryPath);
                 }
-              
+
+                ImGui::Separator();
+
+                if (ImGui::BeginMenu("Shader..."))
+                {
+                    if (ImGui::MenuItem("GLSL"))
+                    {
+                        ProjectDatabase::createShaderFile(mSelectedDirectoryPath);
+                    }
+
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::MenuItem("Cubemap"))
+                {
+                    ProjectDatabase::createCubemapFile(clipboard.getWorld(), mSelectedDirectoryPath);
+                }
+
+                if (ImGui::MenuItem("Material"))
+                {
+                    ProjectDatabase::createMaterialFile(clipboard.getWorld(), mSelectedDirectoryPath);
+                }
+
+                if (ImGui::MenuItem("Sprite"))
+                {
+                    ProjectDatabase::createSpriteFile(clipboard.getWorld(), mSelectedDirectoryPath);
+                }
+
+                if (ImGui::MenuItem("RenderTexture"))
+                {
+                    ProjectDatabase::createRenderTextureFile(clipboard.getWorld(), mSelectedDirectoryPath);
+                }
+
                 ImGui::EndMenu();
             }
 
-            if (ImGui::MenuItem("Cubemap"))
+            std::error_code errorCode;
+            bool showDelete = !mHighlightedPath.empty() && std::filesystem::equivalent(mHighlightedPath, mHoveredPath, errorCode);
+            if (ImGui::MenuItem("Delete", nullptr, false, showDelete))
             {
-                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>();
-                std::string filename = ("NewCubemap(" + std::to_string(count) + ").cubemap");
-                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
-
-                PhysicsEngine::Cubemap* cubemap = clipboard.getWorld()->createAsset<PhysicsEngine::Cubemap>();
-                cubemap->setName(filename);
-                cubemap->writeToYAML(filepath.string());
-
-                mSelected->addFile(filename);
-            }
-
-            if (ImGui::MenuItem("Material"))
-            {
-                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>();
-                std::string filename = ("NewMaterial(" + std::to_string(count) + ").material");
-                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
-
-                PhysicsEngine::Material* material = clipboard.getWorld()->createAsset<PhysicsEngine::Material>();
-                material->setName(filename);
-                material->writeToYAML(filepath.string());
-
-                mSelected->addFile(filename);
-            }
-
-            if (ImGui::MenuItem("Sprite"))
-            {
-                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Sprite>();
-                std::string filename = ("NewSprite(" + std::to_string(count) + ").sprite");
-                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
-
-                PhysicsEngine::Sprite* sprite = clipboard.getWorld()->createAsset<PhysicsEngine::Sprite>();
-                sprite->writeToYAML(filepath.string());
-
-                mSelected->addFile(filename);
-            }
-
-            if (ImGui::MenuItem("RenderTexture"))
-            {
-                size_t count = clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::RenderTexture>();
-                std::string filename = ("NewRenderTexture(" + std::to_string(count) + ").rendertexture");
-                std::filesystem::path filepath = mSelected->getDirectoryPath() / filename;
-
-                PhysicsEngine::RenderTexture* renderTexture = clipboard.getWorld()->createAsset<PhysicsEngine::RenderTexture>();
-                renderTexture->writeToYAML(filepath.string());
-
-                mSelected->addFile(filename);
-            }
-
-            ImGui::EndMenu();
-        }
-        
-        if (ImGui::MenuItem("Delete", nullptr, false, !clipboard.getSelectedPath().empty()))
-        {
-            if (clipboard.mSelectedType == InteractionType::Folder)
-            {
-                std::filesystem::path folderpath = clipboard.getSelectedPath();
-                if (std::filesystem::remove_all(folderpath))
+                if (mHighlightedType == InteractionType::Folder)
                 {
-                    clipboard.clearSelectedItem();
-
-                    mSelected->removeDirectory(folderpath.filename().string());
-
-                    if (folderpath == mRightPanelSelectedPath)
+                    if (std::filesystem::remove_all(mHighlightedPath))
                     {
-                        mRightPanelSelectedPath = std::filesystem::path();
+                        //clipboard.mSelectedType = InteractionType::None;
+                        //clipboard.mSelectedId = PhysicsEngine::Guid::INVALID;
+                        //clipboard.mSelectedPath = std::filesystem::path();
+
+                        //clipboard.clearSelectedItem();
+
+                        //if (mHighlightedPath == mSelectedDirectoryPath)
+                        //{
+                        //    mSelectedDirectoryPath = std::filesystem::path();
+                        //}
+                    }
+                }
+                else
+                {
+                    if (std::filesystem::equivalent(clipboard.mSelectedPath, mHighlightedPath))
+                    {
+                        clipboard.mSelectedType = InteractionType::None;
+                        clipboard.mSelectedId = PhysicsEngine::Guid::INVALID;
+                        clipboard.mSelectedPath = std::filesystem::path();
+
+                        if (std::filesystem::remove(mHighlightedPath))
+                        {
+                            //clipboard.mSelectedType = InteractionType::None;
+                            //clipboard.mSelectedId = PhysicsEngine::Guid::INVALID;
+                            //clipboard.mSelectedPath = std::filesystem::path();
+
+                            ////clipboard.clearSelectedItem();
+
+                            //if (mHighlightedPath == mSelectedFilePath)
+                            //{
+                            //    mSelectedFilePath = std::filesystem::path();
+                            //}
+                        }
                     }
                 }
             }
-            else
-            {
-                std::filesystem::path filepath = clipboard.getSelectedPath();
-                if (std::filesystem::remove(filepath))
-                {
-                    clipboard.clearSelectedItem();
 
-                    mSelected->removeFile(filepath.filename().string());
-                    
-                    if (filepath == mRightPanelSelectedPath)
-                    {
-                        mRightPanelSelectedPath = std::filesystem::path();
-                    }
-                }
-            }
+            ImGui::EndPopup();
         }
-
-        if (ImGui::MenuItem("Refresh", nullptr, false, true))
-        {
-            mSelected->rebuild();
-        }
-      
-        ImGui::EndPopup();
     }
 }
 
@@ -363,38 +393,55 @@ void ProjectView::drawProjectTree()
 
 void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 {
-    if (node == nullptr)
+    if (node != nullptr)
     {
-        return;
-    }
-
-    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
-    if (node->getChildCount() == 0)
-    {
-        node_flags |= ImGuiTreeNodeFlags_Leaf;
-    }
-
-    if (mSelected == node)
-    {
-        node_flags |= ImGuiTreeNodeFlags_Selected;
-    }
-
-    bool open = ImGui::TreeNodeEx(node->getDirectoryLabel().c_str(), node_flags);
-
-    if (ImGui::IsItemClicked())
-    {
-        mSelected = node;
-        mFilter.Clear();
-    }
-
-    if (open)
-    {
-        // recurse for each sub directory
-        for (size_t i = 0; i < node->getChildCount(); i++)
+        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
+        if (node->getChildCount() == 0)
         {
-            drawProjectNodeRecursive(node->getChild(i));
+            node_flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
-        ImGui::TreePop();
+        std::error_code errorCode;
+        if (std::filesystem::equivalent(mSelectedDirectoryPath, node->getDirectoryPath(), errorCode))
+        {
+            node_flags |= ImGuiTreeNodeFlags_Selected;
+        }
+
+        bool open = ImGui::TreeNodeEx(node->getDirectoryLabel().c_str(), node_flags);
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER");
+            if (payload != nullptr)
+            {
+                const char* data = static_cast<const char*>(payload->Data);
+
+                std::filesystem::path incomingPath = std::string(data);
+                std::filesystem::path currentPath = node->getDirectoryPath();
+                std::filesystem::path newPath = currentPath / incomingPath.filename();
+
+                ProjectDatabase::move(incomingPath, newPath);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        if (ImGui::IsItemClicked())
+        {
+            mHighlightedType = InteractionType::Folder;
+            mHighlightedPath = node->getDirectoryPath();
+            mSelectedDirectoryPath = node->getDirectoryPath();
+            mFilter.Clear();
+        }
+
+        if (open)
+        {
+            // recurse for each sub directory
+            for (size_t i = 0; i < node->getChildCount(); i++)
+            {
+                drawProjectNodeRecursive(node->getChild(i));
+            }
+
+            ImGui::TreePop();
+        }
     }
 }

@@ -377,10 +377,6 @@ template <> Sprite *World::getAssetById<Sprite>(const Id &assetId) const
     return getAssetById_impl(mIdState.mSpriteIdToGlobalIndex, &mAllocators.mSpriteAllocator, assetId);
 }
 
-
-
-
-
 template <> Mesh *World::getAssetByGuid<Mesh>(const Guid &assetGuid) const
 {
     return getAssetByGuid_impl(mIdState.mMeshGuidToGlobalIndex, &mAllocators.mMeshAllocator, assetGuid);
@@ -421,14 +417,6 @@ template <> Sprite *World::getAssetByGuid<Sprite>(const Guid &assetGuid) const
 {
     return getAssetByGuid_impl(mIdState.mSpriteGuidToGlobalIndex, &mAllocators.mSpriteAllocator, assetGuid);
 }
-
-
-
-
-
-
-
-
 
 template <> Mesh* World::createAsset<Mesh>()
 {
@@ -1082,18 +1070,11 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
             Asset *asset = getAssetByGuid(guid, type);
             if (asset != nullptr)
             {
-                asset->deserialize(in);
+                asset->deserialize(in.begin()->second);
             }
-
-            if (asset == nullptr)
+            else
             {
-                asset = createAsset(in.begin()->second, type);  
-            }
-
-            if (asset != nullptr)
-            {
-                mIdState.mAssetGuidToFilepath[asset->getGuid()] = filePath;
-                mIdState.mAssetFilepathToGuid[filePath] = asset->getGuid();
+                asset = createAsset(in.begin()->second, type); 
             }
 
             return asset;
@@ -1133,9 +1114,6 @@ Scene *World::loadSceneFromYAML(const std::string &filePath)
 
         if (scene != nullptr)
         {
-            mIdState.mSceneGuidToFilepath[scene->getGuid()] = filePath;
-            mIdState.mSceneFilepathToGuid[filePath] = scene->getGuid();
-
             // Copy 'do not destroy' entities from old scene to new scene
             copyDoNotDestroyEntities(mActiveScene, scene);
 
@@ -1575,50 +1553,6 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
                                 ") when trying to destroy internal asset\n";
         Log::error(message.c_str());
     }
-}
-
-std::string World::getAssetFilepath(const Guid &assetGuid) const
-{
-    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mAssetGuidToFilepath.find(assetGuid);
-    if (it != mIdState.mAssetGuidToFilepath.end())
-    {
-        return it->second;
-    }
-
-    return std::string();
-}
-
-std::string World::getSceneFilepath(const Guid &sceneGuid) const
-{
-    std::unordered_map<Guid, std::string>::const_iterator it = mIdState.mSceneGuidToFilepath.find(sceneGuid);
-    if (it != mIdState.mSceneGuidToFilepath.end())
-    {
-        return it->second;
-    }
-
-    return std::string();
-}
-
-Guid World::getAssetGuid(const std::string& filepath) const
-{
-    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mAssetFilepathToGuid.find(filepath);
-    if (it != mIdState.mAssetFilepathToGuid.end())
-    {
-        return it->second;
-    }
-
-    return Guid::INVALID;
-}
-
-Guid World::getSceneGuid(const std::string& filepath) const
-{
-    std::unordered_map<std::string, Guid>::const_iterator it = mIdState.mSceneFilepathToGuid.find(filepath);
-    if (it != mIdState.mSceneFilepathToGuid.end())
-    {
-        return it->second;
-    }
-
-    return Guid::INVALID;
 }
 
 Scene *World::getActiveScene()

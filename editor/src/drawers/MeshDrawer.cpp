@@ -13,11 +13,9 @@ MeshDrawer::MeshDrawer()
     mWireframeOn = false;
     mResetModelMatrix = false;
 
-    //Renderer::getRenderer()->createFramebuffer(1000, 1000, &mFBO, &mColor, &mDepth);
     mFBO = Framebuffer::create(1000, 1000);
 
     mCameraUniform = RendererUniforms::getCameraUniform();
-    //Renderer::getRenderer()->createGlobalCameraUniforms(mCameraUniform);
 
     mModel = glm::mat4(1.0f);
 }
@@ -39,10 +37,14 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     const int count = 4;
     const char *drawMode[] = {"Color", "Normals", "Tangents", "Binormal"};
 
-    const Guid shaders[] = { clipboard.getWorld()->getAssetGuid("data\\shaders\\colorLit.shader"), 
+    /*const Guid shaders[] = { clipboard.getWorld()->getAssetGuid("data\\shaders\\colorLit.shader"), 
                              clipboard.getWorld()->getAssetGuid("data\\shaders\\normal.shader"),
                              clipboard.getWorld()->getAssetGuid("data\\shaders\\tangent.shader"),
-                             clipboard.getWorld()->getAssetGuid("data\\shaders\\binormal.shader") };
+                             clipboard.getWorld()->getAssetGuid("data\\shaders\\binormal.shader") };*/
+    const Guid shaders[] = { Guid("9cc784fd-1c70-4a2c-bf22-dbd18fdb39cb"), //colorLit
+                             Guid("2437b7b7-11e8-4fc5-9e65-c0d3227de100"), //normal
+                             Guid("6e11628b-f727-4b30-bf40-33834060dee1"), //tangent
+                             Guid("183e29ba-4db4-4dbf-aed4-a1add5697dd9") }; //binormal
 
     // select draw mode for mesh
     if (ImGui::BeginCombo("##DrawMode", drawMode[mActiveDrawModeIndex]))
@@ -122,14 +124,7 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
     mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
     mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
     mCameraUniform->copyToUniformsToDevice();
-    //mCameraUniform.mCameraPos = glm::vec3(0.0f, 0.0f, -4 * meshRadius);
-    //mCameraUniform.mView = glm::lookAt(mCameraUniform.mCameraPos, mCameraUniform.mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f),
-    //                                  glm::vec3(0.0, 1.0f, 0.0f));
-    //mCameraUniform.mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-    //Renderer::getRenderer()->setGlobalCameraUniforms(mCameraUniform);
-
-    //int shaderProgram = shader->getProgramFromVariant(static_cast<int64_t>(ShaderMacro::None));
-    //shader->use(shaderProgram);
+  
     shader->bind(static_cast<int64_t>(ShaderMacro::None));
     shader->setMat4("model", mModel);
 
@@ -139,10 +134,6 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
         shader->setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
-    //Renderer::getRenderer()->bindFramebuffer(mFBO);
-    //Renderer::getRenderer()->setViewport(0, 0, 1000, 1000);
-    //Renderer::getRenderer()->clearFrambufferColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    //Renderer::getRenderer()->clearFramebufferDepth(1.0f);
     mFBO->bind();
     mFBO->setViewport(0, 0, 1000, 1000);
     mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
@@ -159,7 +150,6 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
         Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
     }
 
-    //Renderer::getRenderer()->unbindFramebuffer();
     mFBO->unbind();
 
     if (ImGui::BeginChild("MeshPreviewWindow",

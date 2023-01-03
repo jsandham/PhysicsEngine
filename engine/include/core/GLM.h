@@ -7,6 +7,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "Log.h"
+
 namespace YAML
 {
 template <typename T> T getValue(const Node &node, const std::string &key)

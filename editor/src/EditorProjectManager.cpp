@@ -1,4 +1,5 @@
 #include "../include/EditorProjectManager.h"
+#include "../include/ProjectDatabase.h"
 
 #include "core/World.h"
 #include "core/Log.h"
@@ -42,7 +43,7 @@ void EditorProjectManager::newProject(Clipboard& clipboard, const std::filesyste
     clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // tell library directory which project to watch
-    clipboard.getLibrary().watch(projectPath.string());
+    ProjectDatabase::watch(projectPath.string());
 
     // reset editor camera
     clipboard.mCameraSystem->resetCamera();
@@ -65,7 +66,7 @@ void EditorProjectManager::openProject(Clipboard& clipboard, const std::filesyst
     clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
 
     // tell library directory which project to watch
-    clipboard.getLibrary().watch(projectPath);
+    ProjectDatabase::watch(projectPath);
 
     // reset editor camera
     clipboard.mCameraSystem->resetCamera();
@@ -78,7 +79,7 @@ void EditorProjectManager::saveProject(Clipboard& clipboard)
 {
     for (auto it = clipboard.mModifiedAssets.begin(); it != clipboard.mModifiedAssets.end(); it++)
     {
-        std::string path = clipboard.getWorld()->getAssetFilepath(*it);
+        std::string path = ProjectDatabase::getFilePath(*it).string();
         if (!path.empty()) {
             clipboard.getWorld()->writeAssetToYAML(path, *it);
         }
