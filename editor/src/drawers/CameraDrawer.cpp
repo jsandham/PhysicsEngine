@@ -1,11 +1,8 @@
 #include "../../include/drawers/CameraDrawer.h"
-#include "../../include/imgui/imgui_extensions.h"
 
 #include "components/Camera.h"
 
 #include "imgui.h"
-
-#include <Windows.h>
 
 using namespace PhysicsEditor;
 

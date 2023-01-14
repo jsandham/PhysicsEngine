@@ -187,8 +187,6 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         if (ImGui::BeginDragDropSource())
         {
             std::string directoryPath = directories[i]->getDirectoryPath().string();
-            size_t size = directoryPath.length();
-            size_t size2 = strlen(directoryPath.c_str());
 
             const void* data = static_cast<const void*>(directoryPath.c_str());
 

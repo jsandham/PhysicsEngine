@@ -22,9 +22,6 @@ void SpriteDrawer::render(Clipboard& clipboard, const Guid& id)
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    //Sprite* sprite = clipboard.getWorld()->getAssetByGuid<Sprite>(id);
-
-
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
 }

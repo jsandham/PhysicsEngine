@@ -1,9 +1,6 @@
 #ifndef INSPECTOR_DRAWER_H__
 #define INSPECTOR_DRAWER_H__
 
-#include "core/Guid.h"
-#include "core/World.h"
-
 #include "../EditorClipboard.h"
 
 #include "imgui.h"

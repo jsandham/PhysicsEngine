@@ -3,7 +3,6 @@
 #include "components/Light.h"
 
 #include "imgui.h"
-#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 

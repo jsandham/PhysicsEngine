@@ -4,13 +4,11 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
-//#include "../../include/imgui/imgui_extensions.h"
 
 using namespace PhysicsEditor;
 
 TerrainDrawer::TerrainDrawer()
 {
-    //Renderer::getRenderer()->createFramebuffer(256, 256, &mFBO, &mColor);
     mFBO = Framebuffer::create(256, 256, 1, false);
 
     std::string vertexShader = "#version 430 core\n"
@@ -33,8 +31,6 @@ TerrainDrawer::TerrainDrawer()
     mProgram = ShaderProgram::create();
     mProgram->load("TerrainDrawer", vertexShader, fragmentShader);
     mProgram->compile();
-    //ShaderStatus status;
-    //Renderer::getRenderer()->compile("TerrainDrawer", vertexShader, fragmentShader, "", &mProgram, status);
 }
 
 TerrainDrawer::~TerrainDrawer()
@@ -61,13 +57,6 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             // Transform
             {
                 Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(terrain->mCameraTransformId);
-                /*Guid transformId = terrain->mCameraTransformId;
-
-                Entity* entity = nullptr;
-                if (transformId.isValid())
-                {
-                    entity = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(transformId)->getEntity();
-                }*/
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
@@ -111,27 +100,6 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
                 ImGui::SameLine();
                 ImGui::Text("Transform");
-
-
-
-
-
-                /*ImGui::SlotData data;
-                if (ImGui::Slot2("Transform", transformId.isValid() ? entity->getName() : "None (Transform)", &data))
-                {
-                    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Entity)
-                    {
-                        Guid entityId = clipboard.getDraggedId();
-                        clipboard.clearDraggedItem();
-
-                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(entityId)->getGuid();
-                    }
-
-                    if (data.clearClicked)
-                    {
-                        terrain->mCameraTransformId = Guid::INVALID;
-                    }
-                }*/
             }
 
             // Material
@@ -181,30 +149,6 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
                 ImGui::SameLine();
                 ImGui::Text("Material");
-
-
-
-                //ImGui::SlotData data;
-                //if (ImGui::Slot2("Material", materialId.isValid() ? material->getName()/*materialId.toString()*/ : "None (Material)", &data))
-                //{
-                //    if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Material)
-                //    {
-                //        materialId = clipboard.getDraggedId();
-                //        clipboard.clearDraggedItem();
-
-                //        terrain->setMaterial(materialId);
-                //    }
-
-                //    if (data.isClicked && materialId.isValid())
-                //    {
-                //        clipboard.setSelectedItem(InteractionType::Material, materialId);
-                //    }
-
-                //    if (data.clearClicked)
-                //    {
-                //        terrain->setMaterial(Guid::INVALID);
-                //    }
-                //}
             }
 
             float maxViewDistance = terrain->mMaxViewDistance;
@@ -235,24 +179,15 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 terrain->updateTerrainHeight();
             }
 
-            //Renderer::getRenderer()->bindFramebuffer(mFBO);
-            //Renderer::getRenderer()->setViewport(0, 0, 256, 256);
-            //Renderer::getRenderer()->clearFrambufferColor(0.0f, 0.0f, 0.0f, 1.0f);
             mFBO->bind();
             mFBO->setViewport(0, 0, 256, 256);
             mFBO->clearColor(Color::black);
 
-            //Renderer::getRenderer()->use(mProgram);
             mProgram->bind();
             Renderer::getRenderer()->render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
-            //Renderer::getRenderer()->unuse();
-            //Renderer::getRenderer()->unbindFramebuffer();
             mProgram->unbind();
             mFBO->unbind();
 
-            /*ImGui::Image((void*)(intptr_t)mColor,
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                ImVec2(0, 0));*/
             ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
                 ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
                 ImVec2(0, 0));

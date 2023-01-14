@@ -3,10 +3,6 @@
 
 #include "InspectorDrawer.h"
 
-#include "core/World.h"
-
-#include "imgui.h"
-
 namespace PhysicsEditor
 {
     class SceneDrawer : public InspectorDrawer

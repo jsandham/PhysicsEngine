@@ -33,6 +33,7 @@ for %%x in (%*) do (
 
 :: print build settings
 echo [92mBuild mode: %MODE%[0m
+echo [92mBuild modeflags: %MODEFLAGS%[0m
 echo [92mOptimization level: %OPT%[0m	
 
 :: create list of source files

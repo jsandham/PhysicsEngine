@@ -41,133 +41,136 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
     Material *material = clipboard.getWorld()->getAssetByGuid<Material>(id);
 
-    ImGui::Text(("Material id: " + material->getGuid().toString()).c_str());
-    ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
-
-    Guid currentShaderId = material->getShaderId();
-
-    Shader *ss = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
-
-    if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
+    if (material != nullptr)
     {
-        for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<Shader>(); i++)
+        ImGui::Text(("Material id: " + material->getGuid().toString()).c_str());
+        ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
+
+        Guid currentShaderId = material->getShaderId();
+
+        Shader* ss = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+
+        if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
         {
-            Shader *s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
-
-            std::string label = s->getName() + "##" + s->getGuid().toString();
-
-            bool is_selected = (currentShaderId == s->getGuid());
-            if (ImGui::Selectable(label.c_str(), is_selected))
+            for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<Shader>(); i++)
             {
-                currentShaderId = s->getGuid();
+                Shader* s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
 
-                material->setShaderId(currentShaderId);
-                material->onShaderChanged();
-                clipboard.mModifiedAssets.insert(material->getGuid());
+                std::string label = s->getName() + "##" + s->getGuid().toString();
+
+                bool is_selected = (currentShaderId == s->getGuid());
+                if (ImGui::Selectable(label.c_str(), is_selected))
+                {
+                    currentShaderId = s->getGuid();
+
+                    material->setShaderId(currentShaderId);
+                    material->onShaderChanged();
+                    clipboard.mModifiedAssets.insert(material->getGuid());
+                }
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
             }
-            if (is_selected)
+            ImGui::EndCombo();
+        }
+
+        if (currentShaderId.isInvalid()) {
+            // material has no shader assigned to it
+            return;
+        }
+
+        // draw material uniforms
+        std::vector<ShaderUniform> uniforms = material->getUniforms();
+        for (size_t i = 0; i < uniforms.size(); i++)
+        {
+            // Note: matrices not supported
+            switch (uniforms[i].mType)
             {
-                ImGui::SetItemDefaultFocus();
+            case ShaderUniformType::Int:
+                this->drawIntUniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Float:
+                this->drawFloatUniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Color:
+                this->drawColorUniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Vec2:
+                this->drawVec2Uniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Vec3:
+                this->drawVec3Uniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Vec4:
+                this->drawVec4Uniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::Sampler2D:
+                this->drawTexture2DUniform(clipboard, material, &uniforms[i]);
+                break;
+            case ShaderUniformType::SamplerCube:
+                this->drawCubemapUniform(clipboard, material, &uniforms[i]);
+                break;
             }
         }
-        ImGui::EndCombo();
-    }
 
-    if (currentShaderId.isInvalid()) {
-        // material has no shader assigned to it
-        return;
-    }
-
-    // draw material uniforms
-    std::vector<ShaderUniform> uniforms = material->getUniforms();
-    for (size_t i = 0; i < uniforms.size(); i++)
-    {
-        // Note: matrices not supported
-        switch (uniforms[i].mType)
+        if (ImGui::Checkbox("Enable Instancing", &material->mEnableInstancing))
         {
-        case ShaderUniformType::Int:
-            this->drawIntUniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Float:
-            this->drawFloatUniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Color:
-            this->drawColorUniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Vec2:
-            this->drawVec2Uniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Vec3:
-            this->drawVec3Uniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Vec4:
-            this->drawVec4Uniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::Sampler2D:
-            this->drawTexture2DUniform(clipboard, material, &uniforms[i]);
-            break;
-        case ShaderUniformType::SamplerCube:
-            this->drawCubemapUniform(clipboard, material, &uniforms[i]);
-            break;
+
         }
+
+        ImGui::Separator();
+
+        // Draw material preview child window
+        ImGui::Text("Preview");
+
+        Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
+        Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+
+        if (mesh == nullptr || shader == nullptr) {
+            return;
+        }
+
+        mCameraUniform->setView(mView);
+        mCameraUniform->setProjection(mProjection);
+        mCameraUniform->setViewProjection(mProjection * mView);
+        mCameraUniform->setCameraPos(mCameraPos);
+
+        mLightUniform->setLightIntensity(1.0f);
+        mLightUniform->setShadowNearPlane(0.1f);
+        mLightUniform->setShadowFarPlane(10.0f);
+        mLightUniform->setShadowBias(0.005f);
+        mLightUniform->setShadowRadius(0.0f);
+        mLightUniform->setShadowStrength(1.0f);
+
+        mCameraUniform->copyToUniformsToDevice();
+        mLightUniform->copyToUniformsToDevice();
+
+        int64_t variant = 0;
+        variant |= static_cast<int64_t>(ShaderMacro::Directional);
+        variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
+
+        shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
+        shader->setMat4("model", mModel);
+
+        material->apply();
+
+        mFBO->bind();
+        mFBO->setViewport(0, 0, 1000, 1000);
+        mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+        mFBO->clearDepth(1.0f);
+        Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+        mFBO->unbind();
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
+        ImGui::BeginChild("MaterialPreviewWindow",
+            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+            window_flags);
+        ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+            ImVec2(0, 0));
+        ImGui::EndChild();
     }
-
-    if (ImGui::Checkbox("Enable Instancing", &material->mEnableInstancing))
-    {
-
-    }
-
-    ImGui::Separator();
-
-    // Draw material preview child window
-    ImGui::Text("Preview");
-
-    Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
-    Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
-
-    if (mesh == nullptr || shader == nullptr) {
-        return;
-    }
-
-    mCameraUniform->setView(mView);
-    mCameraUniform->setProjection(mProjection);
-    mCameraUniform->setViewProjection(mProjection * mView);
-    mCameraUniform->setCameraPos(mCameraPos);
-
-    mLightUniform->setLightIntensity(1.0f);
-    mLightUniform->setShadowNearPlane(0.1f);
-    mLightUniform->setShadowFarPlane(10.0f);
-    mLightUniform->setShadowBias(0.005f);
-    mLightUniform->setShadowRadius(0.0f);
-    mLightUniform->setShadowStrength(1.0f);
-
-    mCameraUniform->copyToUniformsToDevice();
-    mLightUniform->copyToUniformsToDevice();
-
-    int64_t variant = 0;
-    variant |= static_cast<int64_t>(ShaderMacro::Directional);
-    variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
-
-    shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
-    shader->setMat4("model", mModel);
-
-    material->apply();
-
-    mFBO->bind();
-    mFBO->setViewport(0, 0, 1000, 1000);
-    mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-    mFBO->clearDepth(1.0f);
-    Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
-    mFBO->unbind();
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
-    ImGui::BeginChild("MaterialPreviewWindow",
-                      ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-                      window_flags);
-    ImGui::Image((void *)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
-                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                 ImVec2(0, 0));
-    ImGui::EndChild();
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();

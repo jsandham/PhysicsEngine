@@ -38,14 +38,8 @@ namespace PhysicsEditor
         std::string getFileLabel(size_t index) const;
         std::filesystem::path getFilePath(size_t index) const;
         InteractionType getFileType(size_t index) const;
-
-        ProjectNode* addDirectory(const std::string& name);
-        void addFile(const std::string& name);
-        void removeDirectory(const std::string& name);
-        void removeFile(const std::string& name);
-        void removeAllFiles();
-        void rebuild();
-
+        ProjectNode* addDirectory(const std::filesystem::path& path);
+        void addFile(const std::filesystem::path& path);
         size_t getChildCount() const;
         ProjectNode* getChild(size_t index);
         std::vector<ProjectNode*> getChildren();

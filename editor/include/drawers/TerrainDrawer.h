@@ -9,11 +9,9 @@ namespace PhysicsEditor
     class TerrainDrawer : public InspectorDrawer
     {
     private:
-        //unsigned int mFBO;
-        //unsigned int mColor;
-        //unsigned int mProgram;
         Framebuffer* mFBO;
         ShaderProgram* mProgram;
+
     public:
         TerrainDrawer();
         ~TerrainDrawer();

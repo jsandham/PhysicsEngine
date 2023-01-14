@@ -1,7 +1,7 @@
 #include "../include/ProjectTree.h"
 
 #include <cassert>
-#include <stack>
+#include <queue>
 
 #include "../include/IconsFontAwesome4.h"
 
@@ -11,12 +11,20 @@ ProjectNode::ProjectNode()
 {
     mParent = nullptr;
     mDirectoryPath = std::filesystem::path();
+
+    mFileLabels.reserve(20);
+    mFilePaths.reserve(20);
+    mFileTypes.reserve(20);
 }
 
 ProjectNode::ProjectNode(const std::filesystem::path& path)
 {
     mParent = nullptr;
     mDirectoryPath = path;
+
+    mFileLabels.reserve(20);
+    mFilePaths.reserve(20);
+    mFileTypes.reserve(20);
 }
 
 ProjectNode::~ProjectNode()
@@ -81,204 +89,87 @@ InteractionType ProjectNode::getFileType(size_t index) const
     return mFileTypes[index];
 }
 
-ProjectNode* ProjectNode::addDirectory(const std::string& name)
+ProjectNode* ProjectNode::addDirectory(const std::filesystem::path& path)
 {
     ProjectNode* node = new ProjectNode();
     node->mParent = this;
-    node->mDirectoryPath = getDirectoryPath() / name;
+    node->mDirectoryPath = path;
 
     mChildren.push_back(node);
 
     return node;
 }
 
-void ProjectNode::addFile(const std::string& name)
+void ProjectNode::addFile(const std::filesystem::path& path)
 {
-    std::string extension = name.substr(name.find_last_of(".") + 1);
-    std::string label = std::string(ICON_FA_FILE);
-    InteractionType type = InteractionType::File;
-    if (extension == "scene")
-    {
-        label = std::string(ICON_FA_MAXCDN);
-        type = InteractionType::Scene;
-    }
-    else if (extension == "material") 
-    {
-        label = std::string(ICON_FA_MAXCDN);
-        type = InteractionType::Material;
-    }
-    else if (extension == "mesh")
-    {
-        label = std::string(ICON_FA_CODEPEN);
-        type = InteractionType::Mesh;
-    }
-    else if (extension == "texture")
-    {
-        label = std::string(ICON_FA_FILE_IMAGE_O);
-        type = InteractionType::Texture2D;
-    }
-    else if (extension == "shader")
-    {
-        label = std::string(ICON_FA_AREA_CHART);
-        type = InteractionType::Shader;
-    }
-    else if (extension == "sprite")
-    {
-        label = std::string(ICON_FA_AREA_CHART);
-        type = InteractionType::Sprite;
-    }
-    else if (extension == "rendertexture")
-    {
-        label = std::string(ICON_FA_AREA_CHART);
-        type = InteractionType::RenderTexture;
-    }
-    else if (extension == "cubemap")
-    {
-        label = std::string(ICON_FA_AREA_CHART);
-        type = InteractionType::Cubemap;
-    }
+    std::string filename = path.filename().string();
+    std::string extension = filename.substr(filename.find_last_of(".") + 1);
 
-    mFileLabels.push_back(label + " " + name);
-    mFilePaths.push_back(getDirectoryPath() / name);
-    mFileTypes.push_back(type);
-}
-
-void ProjectNode::removeDirectory(const std::string& name)
-{
-    ProjectNode* nodeToDelete = nullptr;
-    int index = -1;
-    for (size_t i = 0; i < mChildren.size(); i++)
+    std::string label;
+    InteractionType type;
+    if(extension.length() >= 1)
     {
-        if (mChildren[i]->getDirectoryPath().filename().string() == name)
+        if (extension[0] == 's')
         {
-            nodeToDelete = mChildren[i];
-            index = (int)i;
-        }
-    }
-
-    if (nodeToDelete == nullptr)
-    {
-        return;
-    }
-
-    mChildren.erase(mChildren.begin() + index);
-
-    std::stack<ProjectNode*> stack;
-    stack.push(nodeToDelete);
-
-    while (!stack.empty())
-    {
-        ProjectNode* current = stack.top();
-        stack.pop();
-
-        for (size_t i = 0; i < current->mChildren.size(); i++)
-        {
-            stack.push(current->mChildren[i]);
-        }
-
-        delete current;
-    }
-}
-
-void ProjectNode::removeFile(const std::string& name)
-{
-    std::filesystem::path filepath = getDirectoryPath() / name;
-    int index = -1;
-    for (size_t i = 0; i < mFilePaths.size(); i++)
-    {
-        if (mFilePaths[i] == filepath)
-        {
-            index = (int)i;
-            break;
-        }
-    }
-
-    if (index == -1)
-    {
-        return;
-    }
-
-    mFileLabels.erase(mFileLabels.begin() + index);
-    mFilePaths.erase(mFilePaths.begin() + index);
-    mFileTypes.erase(mFileTypes.begin() + index);
-}
-
-
-void ProjectNode::removeAllFiles()
-{
-    mFileLabels.clear();
-    mFilePaths.clear();
-    mFileTypes.clear();
-}
-
-void ProjectNode::rebuild()
-{
-    std::stack<ProjectNode*> stack;
-
-    // delete all node children
-    for (size_t i = 0; i < this->getChildCount(); i++)
-    {
-        stack.push(this->getChild(i));
-    }
-
-    while (!stack.empty())
-    {
-        ProjectNode* current = stack.top();
-        stack.pop();
-
-        for (size_t i = 0; i < current->getChildCount(); i++)
-        {
-            stack.push(current->getChild(i));
-        }
-
-        delete current;
-    }
-
-    // delete all node files
-    this->removeAllFiles();
-
-    // rebuild node
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(getDirectoryPath()))
-    {
-        if (std::filesystem::is_regular_file(entry))
-        {
-            this->addFile(entry.path().filename().string());
-        }
-    }
-
-    stack.push(this);
-
-    while (!stack.empty())
-    {
-        ProjectNode* current = stack.top();
-        stack.pop();
-
-        // find directories that exist in the current directory
-        std::vector<std::filesystem::path> subDirectoryNames;
-        for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(current->getDirectoryPath()))
-        {
-            if (std::filesystem::is_directory(entry))
+            if (extension == "scene")
             {
-                subDirectoryNames.push_back(entry.path().filename());
+                label = std::string(ICON_FA_MAXCDN);
+                type = InteractionType::Scene;
+            }
+            else if (extension == "shader")
+            {
+                label = std::string(ICON_FA_AREA_CHART);
+                type = InteractionType::Shader;
+            }
+            else if (extension == "sprite")
+            {
+                label = std::string(ICON_FA_AREA_CHART);
+                type = InteractionType::Sprite;
             }
         }
-
-        // recurse for each sub directory
-        for (size_t i = 0; i < subDirectoryNames.size(); i++)
+        else if(extension[0] == 'm')
         {
-            ProjectNode* child = current->addDirectory(subDirectoryNames[i].string());
-
-            for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(child->getDirectoryPath()))
+            if (extension == "material")
             {
-                if (std::filesystem::is_regular_file(entry))
-                {
-                    child->addFile(entry.path().filename().string());
-                }
+                label = std::string(ICON_FA_MAXCDN);
+                type = InteractionType::Material;
             }
-
-            stack.push(child);
+            else if (extension == "mesh")
+            {
+                label = std::string(ICON_FA_CODEPEN);
+                type = InteractionType::Mesh;
+            }
+        }
+        else if (extension == "texture")
+        {
+            label = std::string(ICON_FA_FILE_IMAGE_O);
+            type = InteractionType::Texture2D;
+        }
+        else if (extension == "rendertexture")
+        {
+            label = std::string(ICON_FA_AREA_CHART);
+            type = InteractionType::RenderTexture;
+        }
+        else if (extension == "cubemap")
+        {
+            label = std::string(ICON_FA_AREA_CHART);
+            type = InteractionType::Cubemap;
+        }
+        else
+        {
+            label = std::string(ICON_FA_FILE);
+            type = InteractionType::File;
         }
     }
+    else
+    {
+        label = std::string(ICON_FA_FILE);
+        type = InteractionType::File;
+    }
+
+    mFileLabels.push_back(label + " " + filename);
+    mFilePaths.push_back(path);
+    mFileTypes.push_back(type);    
 }
 
 ProjectNode* ProjectNode::getChild(size_t index)
@@ -323,70 +214,47 @@ void ProjectTree::buildProjectTree(const std::filesystem::path& projectPath)
 
     mRoot = new ProjectNode(projectPath / "data");
 
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(mRoot->getDirectoryPath()))
+    std::queue<ProjectNode*> queue;
+    queue.push(mRoot);
+
+    while (!queue.empty())
     {
-        if (std::filesystem::is_regular_file(entry))
+        ProjectNode* current = queue.front();
+        queue.pop();
+
+        for (const auto& entry : std::filesystem::directory_iterator(current->getDirectoryPath()))
         {
-            mRoot->addFile(entry.path().filename().string());
-        }
-    }
-
-    std::stack<ProjectNode*> stack;
-    stack.push(mRoot);
-
-    while (!stack.empty())
-    {
-        ProjectNode* current = stack.top();
-        stack.pop();
-
-        // find directories that exist in the current directory
-        std::vector<std::filesystem::path> subDirectoryNames;
-        for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(current->getDirectoryPath()))
-        {
-            if (std::filesystem::is_directory(entry))
+            if (entry.is_regular_file())
             {
-                subDirectoryNames.push_back(entry.path().filename());
+                current->addFile(entry.path());
             }
-        }
-
-        // recurse for each sub directory
-        for (size_t i = 0; i < subDirectoryNames.size(); i++)
-        {
-            ProjectNode* child = current->addDirectory(subDirectoryNames[i].string());
-
-            for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(child->getDirectoryPath()))
+            else if (entry.is_directory())
             {
-                if (std::filesystem::is_regular_file(entry))
-                {
-                    child->addFile(entry.path().filename().string());
-                }
+                ProjectNode* child = current->addDirectory(entry.path());
+                queue.push(child);
             }
-
-            stack.push(child);
         }
     }
 }
 
 void ProjectTree::deleteProjectTree()
 {
-    if (mRoot == nullptr)
+    if (mRoot != nullptr)
     {
-        return;
-    }
+        std::queue<ProjectNode*> queue;
+        queue.push(mRoot);
 
-    std::stack<ProjectNode*> stack;
-    stack.push(mRoot);
-
-    while (!stack.empty())
-    {
-        ProjectNode* current = stack.top();
-        stack.pop();
-
-        for (size_t i = 0; i < current->getChildCount(); i++)
+        while (!queue.empty())
         {
-            stack.push(current->getChild(i));
-        }
+            ProjectNode* current = queue.front();
+            queue.pop();
 
-        delete current;
+            for (size_t i = 0; i < current->getChildCount(); i++)
+            {
+                queue.push(current->getChild(i));
+            }
+
+            delete current;
+        }
     }
 }

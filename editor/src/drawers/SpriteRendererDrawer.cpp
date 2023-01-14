@@ -5,8 +5,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
-//#include "../../include/imgui/imgui_extensions.h"
-
 using namespace PhysicsEditor;
 
 SpriteRendererDrawer::SpriteRendererDrawer()

@@ -2,6 +2,7 @@
 #include "../../include/FileSystemUtil.h"
 
 #include "imgui.h"
+#include "../../include/imgui/imgui_extensions.h"
 
 #include "../include/components/Light.h"
 #include "../include/components/MeshRenderer.h"

@@ -4,12 +4,9 @@
 #include "InspectorDrawer.h"
 
 #include "core/Material.h"
-#include "core/World.h"
 
 #include <graphics/Framebuffer.h>
 #include <graphics/RendererUniforms.h>
-
-#include "imgui.h"
 
 namespace PhysicsEditor
 {

@@ -24,19 +24,22 @@ void RenderTextureDrawer::render(Clipboard& clipboard, const Guid& id)
 
     RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(id);
 
-    ImGui::Separator();
-
-    // Draw texture child window
+    if (texture != nullptr)
     {
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
-        ImGui::BeginChild("DrawTextureWindow",
-            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-            window_flags);
+        ImGui::Separator();
 
-        ImGui::Image((void*)(intptr_t)texture->getNativeGraphicsColorTex(),
-            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(0, 1), ImVec2(1, 0));
+        // Draw texture child window
+        {
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
+            ImGui::BeginChild("DrawTextureWindow",
+                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+                window_flags);
 
-        ImGui::EndChild();
+            ImGui::Image((void*)(intptr_t)texture->getNativeGraphicsColorTex(),
+                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::EndChild();
+        }
     }
 
     ImGui::Separator();

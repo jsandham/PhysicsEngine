@@ -1,9 +1,5 @@
 #include "../../include/drawers/TransformDrawer.h"
 
-#include <math.h>
-
-#include "../../include/EditorClipboard.h"
-
 #include "components/Transform.h"
 
 #include "imgui.h"
@@ -40,7 +36,7 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (ImGui::DragFloat3("Position", glm::value_ptr(position)))
             {
-                transform->setPosition(position);// mPosition = position;
+                transform->setPosition(position);
             }
 
             if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles)))
@@ -49,11 +45,11 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
                 glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
                 glm::quat z = glm::angleAxis(glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-                transform->setRotation(z * y * x);// mRotation = z * y * x;
+                transform->setRotation(z * y * x);
             }
             if (ImGui::DragFloat3("Scale", glm::value_ptr(scale)))
             {
-                transform->setScale(scale);// mScale = scale;
+                transform->setScale(scale);
             }
         }
 

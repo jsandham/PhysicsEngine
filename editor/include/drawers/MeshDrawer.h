@@ -10,13 +10,9 @@ namespace PhysicsEditor
 class MeshDrawer : public InspectorDrawer
 {
   private:
-    //unsigned int mFBO;
-    //unsigned int mColor;
-    //unsigned int mDepth;
     Framebuffer* mFBO;
 
     CameraUniform* mCameraUniform;
-    //CameraUniform mCameraUniform;
 
     glm::mat4 mModel;
 
