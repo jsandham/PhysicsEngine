@@ -1,10 +1,11 @@
 #vertex
 #version 430 core
-layout (std140) uniform CameraBlock
+layout(std140) uniform CameraBlock
 {
-	mat4 projection;
-	mat4 view;
-	vec3 cameraPos;
+    mat4 projection;
+    mat4 view;
+    mat4 viewProjection;
+    vec3 cameraPos;
 }Camera;
 layout (std140) uniform LightBlock
 {

@@ -142,8 +142,6 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         standardMaterial->setVec3("material.colour", glm::vec3(0.0f, 1.0f, 1.0f));
     }
 
-    std::cout << "FFFF" << std::endl;
-
     //.  .  .  .  .  .  .  .  .  .
     //.  .  .  .  .  .  .  .  .  .
     //.  .  .  .  .  .  .  .  .  .
