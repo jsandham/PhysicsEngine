@@ -332,6 +332,9 @@ void Mesh::copyMeshToDevice()
         mHandle->setData(mVertices.data(), 0, sizeof(float) * mVertices.size(), MeshVBO::Vertices);
         mHandle->setData(mNormals.data(), 0, sizeof(float) * mNormals.size(), MeshVBO::Normals);
         mHandle->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size(), MeshVBO::TexCoords);
+
+        mHandle->setData(nullptr, 0, 1000 /*INSTANCE_BATCH_SIZE*/ * sizeof(glm::mat4), MeshVBO::InstanceModel);
+        mHandle->setData(nullptr, 0, 1000 /*INSTANCE_BATCH_SIZE*/ * sizeof(glm::vec4), MeshVBO::InstanceColor);
         mDeviceUpdateRequired = false;
     }
 }

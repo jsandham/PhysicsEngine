@@ -21,6 +21,7 @@ MaterialDrawer::MaterialDrawer()
     mModel = glm::mat4(1.0f);
     mView = glm::lookAt(mCameraPos, mCameraPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
     mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
+    mViewProjection = mProjection * mView;
 
     mFBO = Framebuffer::create(1000, 1000);
 
@@ -134,7 +135,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
         mCameraUniform->setView(mView);
         mCameraUniform->setProjection(mProjection);
-        mCameraUniform->setViewProjection(mProjection * mView);
+        mCameraUniform->setViewProjection(mViewProjection);
         mCameraUniform->setCameraPos(mCameraPos);
 
         mLightUniform->setLightIntensity(1.0f);

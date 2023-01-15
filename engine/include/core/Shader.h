@@ -91,7 +91,7 @@ class Shader : public Asset
     void removeVariant(int variantId);
     void preprocess();
     void compile();
-    void bind(int variant);
+    void bind(int64_t variant);
     void unbind();
     void setVertexShader(const std::string &vertexShader);
     void setGeometryShader(const std::string &geometryShader);

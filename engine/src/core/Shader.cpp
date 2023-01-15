@@ -272,7 +272,7 @@ void Shader::compile()
     }
 }
 
-void Shader::bind(int variant)
+void Shader::bind(int64_t variant)
 {
     mActiveProgram = getProgramFromVariant(variant);
     if (mActiveProgram != nullptr)

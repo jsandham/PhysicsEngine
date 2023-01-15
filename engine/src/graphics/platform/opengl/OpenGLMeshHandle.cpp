@@ -55,6 +55,84 @@ OpenGLMeshHandle::OpenGLMeshHandle()
     CHECK_ERROR(glVertexAttribDivisor(7, 1));
 
     CHECK_ERROR(glBindVertexArray(0));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //glGenVertexArrays(1, vao);
+    //glBindVertexArray(*vao);
+    //glGenBuffers(1, vbo0);      // vertex vbo
+    //glGenBuffers(1, vbo1);      // normals vbo
+    //glGenBuffers(1, vbo2);      // texcoords vbo
+    //glGenBuffers(1, model_vbo); // instance model vbo
+    //glGenBuffers(1, color_vbo); // instance color vbo
+
+    //glBindVertexArray(*vao);
+    //glBindBuffer(GL_ARRAY_BUFFER, *vbo0);
+    //glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    //glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    //glBindBuffer(GL_ARRAY_BUFFER, *vbo1);
+    //glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_DYNAMIC_DRAW);
+    //glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
+
+    //glBindBuffer(GL_ARRAY_BUFFER, *vbo2);
+    //glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_DYNAMIC_DRAW);
+    //glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0);
+
+    //// instancing model matrices vbo
+    //glBindBuffer(GL_ARRAY_BUFFER, *model_vbo);
+    //glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+    //// set attribute pointers for matrix (4 times vec4)
+    //glEnableVertexAttribArray(3);
+    //glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)0);
+    //glEnableVertexAttribArray(4);
+    //glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4)));
+    //glEnableVertexAttribArray(5);
+    //glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(2 * sizeof(glm::vec4)));
+    //glEnableVertexAttribArray(6);
+    //glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(3 * sizeof(glm::vec4)));
+
+    //glVertexAttribDivisor(3, 1);
+    //glVertexAttribDivisor(4, 1);
+    //glVertexAttribDivisor(5, 1);
+    //glVertexAttribDivisor(6, 1);
+
+    //// instancing colors vbo
+    //glBindBuffer(GL_ARRAY_BUFFER, *color_vbo);
+    //glBufferData(GL_ARRAY_BUFFER, INSTANCE_BATCH_SIZE * sizeof(glm::vec4), NULL, GL_DYNAMIC_DRAW);
+    //glEnableVertexAttribArray(7);
+    //glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (void *)0);
+
+    //glVertexAttribDivisor(7, 1);
+
+    //glBindVertexArray(0);
+
+    //Graphics::checkError(__LINE__, __FILE__);
 }
 
 OpenGLMeshHandle::~OpenGLMeshHandle()
@@ -93,7 +171,7 @@ void OpenGLMeshHandle::setData(void *data, size_t offset, size_t size, MeshVBO m
 void OpenGLMeshHandle::draw()
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, mVbo[0]->getSize() / 3));
+    CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, (mVbo[0]->getSize() / sizeof(float)) / 3));
     CHECK_ERROR(glBindVertexArray(0));
 }
 

@@ -22,6 +22,7 @@ class MaterialDrawer : public InspectorDrawer
     glm::mat4 mModel;
     glm::mat4 mView;
     glm::mat4 mProjection;
+    glm::mat4 mViewProjection;
 
   public:
     MaterialDrawer();
