@@ -18,6 +18,8 @@ class MeshHandle
 {
   public:
     MeshHandle();
+    MeshHandle(const MeshHandle &other) = delete;
+    MeshHandle &operator=(const MeshHandle &other) = delete;
     virtual ~MeshHandle() = 0;
 
     virtual void bind() = 0;

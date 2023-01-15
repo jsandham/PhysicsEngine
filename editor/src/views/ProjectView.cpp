@@ -191,6 +191,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
             const void* data = static_cast<const void*>(directoryPath.c_str());
 
             ImGui::SetDragDropPayload("FOLDER", data, directoryPath.length() + 1);
+            ImGui::Text(directoryPath.c_str());
             ImGui::EndDragDropSource();
         }
 
@@ -207,6 +208,13 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
                 ProjectDatabase::move(incomingPath, newPath);
             }
+
+            /*payload = ImGui::AcceptDragDropPayload("MATERIAL");
+            if (payload != nullptr)
+            {
+                   
+            }*/
+            
             ImGui::EndDragDropTarget();
         }
     }
@@ -244,47 +252,35 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
         if (ImGui::BeginDragDropSource())
         {
-            const void* data = static_cast<const void*>(ProjectDatabase::getGuid(filePaths[i].string()).c_str());
-            
+            std::string filePath = filePaths[i].string();
+            const void* data = static_cast<const void*>(filePath.c_str());
             switch (fileTypes[i])
             {
-            case InteractionType::File:
-                ImGui::SetDragDropPayload("FILE", data, sizeof(PhysicsEngine::Guid));
-                break;
             case InteractionType::Cubemap:
-                ImGui::SetDragDropPayload("CUBEMAP", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("CUBEMAP_PATH", data, filePath.length() + 1);
                 break;
             case InteractionType::Texture2D:
-                ImGui::SetDragDropPayload("TEXTURE2D", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("TEXTURE2D_PATH", data, filePath.length() + 1);
                 break;
             case InteractionType::Mesh:
-                ImGui::SetDragDropPayload("MESH", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("MESH_PATH", data, filePath.length() + 1);
                 break;
             case InteractionType::Material:
-                ImGui::SetDragDropPayload("MATERIAL", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("MATERIAL_PATH", data, filePath.length() + 1);
                 break;
             case InteractionType::Scene:
-                ImGui::SetDragDropPayload("SCENE", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("SCENE_PATH", data, filePath.length() + 1);
                 break;
             case InteractionType::Shader:
-                ImGui::SetDragDropPayload("SHADER", data, sizeof(PhysicsEngine::Guid));
+                ImGui::SetDragDropPayload("SHADER_PATH", data, filePath.length() + 1);
+                break;
+            case InteractionType::File:
+                ImGui::SetDragDropPayload("FILE_PATH", data, filePath.length() + 1);
                 break;
             }
-            ImGui::Text(filePaths[i].string().c_str());
+            ImGui::Text(filePath.c_str());
             ImGui::EndDragDropSource();
         }
-
-        /*if (ImGui::BeginDragDropTarget())
-        {
-            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FILE");
-            if (payload != nullptr)
-            {
-                const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
-
-                
-            }
-            ImGui::EndDragDropTarget();
-        }*/
     }
 
     if (!mSelectedDirectoryPath.empty())
@@ -407,6 +403,17 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 
         bool open = ImGui::TreeNodeEx(node->getDirectoryLabel().c_str(), node_flags);
 
+        if (ImGui::BeginDragDropSource())
+        {
+            std::string directoryPath = node->getDirectoryPath().string();
+
+            const void* data = static_cast<const void*>(directoryPath.c_str());
+
+            ImGui::SetDragDropPayload("FOLDER", data, directoryPath.length() + 1);
+            ImGui::Text(directoryPath.c_str());
+            ImGui::EndDragDropSource();
+        }
+
         if (ImGui::BeginDragDropTarget())
         {
             const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER");
@@ -423,12 +430,15 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
             ImGui::EndDragDropTarget();
         }
 
-        if (ImGui::IsItemClicked())
+        if (ImGui::IsItemHovered())
         {
-            mHighlightedType = InteractionType::Folder;
-            mHighlightedPath = node->getDirectoryPath();
-            mSelectedDirectoryPath = node->getDirectoryPath();
-            mFilter.Clear();
+            if (ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Left))
+            {
+                mHighlightedType = InteractionType::Folder;
+                mHighlightedPath = node->getDirectoryPath();
+                mSelectedDirectoryPath = node->getDirectoryPath();
+                mFilter.Clear();
+            }
         }
 
         if (open)

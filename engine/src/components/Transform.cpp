@@ -29,6 +29,7 @@ Transform::Transform(World *world, const Guid &guid, const Id &id) : Component(w
 
 Transform::~Transform()
 {
+
 }
 
 void Transform::serialize(YAML::Node &out) const

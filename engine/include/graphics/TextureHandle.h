@@ -21,6 +21,8 @@ namespace PhysicsEngine
 		TextureHandle();
 		TextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                     TextureFilterMode filterMode);
+        TextureHandle(const TextureHandle &other) = delete;
+        TextureHandle &operator=(const TextureHandle &other) = delete;
 		virtual ~TextureHandle() = 0;
 
 		TextureFormat getFormat() const;

@@ -1,4 +1,5 @@
 #include "../../include/drawers/MeshRendererDrawer.h"
+#include "../../include/ProjectDatabase.h"
 
 #include "components/MeshRenderer.h"
 
@@ -44,12 +45,12 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 if (ImGui::BeginDragDropTarget())
                 {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH");
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_PATH");
                     if (payload != nullptr)
                     {
-                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+                        const char* data = static_cast<const char*>(payload->Data);
 
-                        meshRenderer->setMesh(*data);
+                        meshRenderer->setMesh(ProjectDatabase::getGuid(data));
                     }
                     ImGui::EndDragDropTarget();
                 }
@@ -108,12 +109,12 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 if (ImGui::BeginDragDropTarget())
                 {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL");
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
                     if (payload != nullptr)
                     {
-                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+                        const char* data = static_cast<const char*>(payload->Data);
 
-                        meshRenderer->setMaterial(*data);
+                        meshRenderer->setMaterial(ProjectDatabase::getGuid(data));
                     }
                     ImGui::EndDragDropTarget();
                 }

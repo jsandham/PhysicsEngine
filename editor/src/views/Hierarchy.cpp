@@ -89,7 +89,7 @@ void Hierarchy::update(Clipboard &clipboard)
             {
                 const void* data = static_cast<const void*>(mEntries[i].entity->getGuid().c_str());
 
-                ImGui::SetDragDropPayload("ENTITY", data, sizeof(PhysicsEngine::Guid));  
+                ImGui::SetDragDropPayload("ENTITY_GUID", data, sizeof(PhysicsEngine::Guid));  
                 ImGui::Text(mEntries[i].entity->getName().c_str());
                 ImGui::EndDragDropSource();
             }

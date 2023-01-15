@@ -1,4 +1,5 @@
 #include "../../include/drawers/MaterialDrawer.h"
+#include "../../include/ProjectDatabase.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -287,12 +288,12 @@ void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* materi
 
     if (ImGui::BeginDragDropTarget())
     {
-        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE2D");
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE2D_PATH");
         if (payload != nullptr)
         {
-            const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+            const char* data = static_cast<const char*>(payload->Data);
 
-            material->setTexture(uniform->mName, *data);
+            material->setTexture(uniform->mName, ProjectDatabase::getGuid(data));
             material->onTextureChanged();
             clipboard.mModifiedAssets.insert(material->getGuid());
         }

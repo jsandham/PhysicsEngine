@@ -11,6 +11,8 @@ class CameraUniform
 {
   public:
     CameraUniform(){};
+    CameraUniform(const CameraUniform &other) = delete;
+    CameraUniform &operator=(const CameraUniform &other) = delete;
     virtual ~CameraUniform(){};
 
     virtual void setProjection(const glm::mat4& projection) = 0;
@@ -27,6 +29,8 @@ class LightUniform
 {
   public:
     LightUniform(){};
+    LightUniform(const LightUniform &other) = delete;
+    LightUniform &operator=(const LightUniform &other) = delete;
     virtual ~LightUniform(){};
 
     virtual void setDirLightCascadeProj(int index, const glm::mat4& projection) = 0;

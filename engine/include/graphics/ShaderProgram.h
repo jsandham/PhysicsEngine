@@ -74,6 +74,8 @@ namespace PhysicsEngine
 
       public:
         ShaderProgram();
+        ShaderProgram(const ShaderProgram &other) = delete;
+        ShaderProgram &operator=(const ShaderProgram &other) = delete;
         virtual ~ShaderProgram() = 0;
 
         std::string getVertexShader() const;

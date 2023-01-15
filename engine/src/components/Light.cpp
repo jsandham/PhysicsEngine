@@ -97,6 +97,14 @@ Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, gu
 
 Light::~Light()
 {
+    delete mTargets.mShadowCascadeFBO[0];
+    delete mTargets.mShadowCascadeFBO[1];
+    delete mTargets.mShadowCascadeFBO[2];
+    delete mTargets.mShadowCascadeFBO[3];
+    delete mTargets.mShadowCascadeFBO[4];
+
+    delete mTargets.mShadowSpotlightFBO;
+    delete mTargets.mShadowCubemapFBO;
 }
 
 void Light::serialize(YAML::Node &out) const

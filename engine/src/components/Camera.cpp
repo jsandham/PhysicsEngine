@@ -97,6 +97,45 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mRenderToScreen = false;
 }
 
+
+
+//// 1. copy constructor
+//Camera::Camera(const Camera &that)
+//{
+//    name = new char[strlen(that.name) + 1];
+//    strcpy(name, that.name);
+//    age = that.age;
+//}
+//
+//// 2. copy assignment operator
+//Camera& Camera::operator=(const Camera &that)
+//{
+//    if (this != &that)
+//    {
+//        delete mTargets.mMainFBO;
+//        delete mTargets.mColorPickingFBO;
+//        delete mTargets.mGeometryFBO;
+//        delete mTargets.mSsaoFBO;
+//        // This is a dangerous point in the flow of execution!
+//        // We have temporarily invalidated the class invariants,
+//        // and the next statement might throw an exception,
+//        // leaving the object in an invalid state :(
+//
+//
+//
+//
+//
+//        name = new char[strlen(that.name) + 1];
+//        strcpy(name, that.name);
+//        age = that.age;
+//    }
+//    return *this;
+//}
+
+
+
+
+
 Camera::~Camera()
 {
     delete mTargets.mMainFBO;

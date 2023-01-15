@@ -7,6 +7,8 @@ namespace PhysicsEngine
 	{
 	public:
 		UniformBuffer();
+		UniformBuffer(const UniformBuffer &other) = delete;
+        UniformBuffer &operator=(const UniformBuffer &other) = delete;
 		virtual ~UniformBuffer() = 0;
 
 		virtual size_t getSize() const = 0;

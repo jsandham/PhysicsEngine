@@ -21,6 +21,8 @@ namespace PhysicsEngine
     public:
         Framebuffer(int width, int height);
         Framebuffer(int width, int height, int numColorTex, bool addDepthTex);
+        Framebuffer(const Framebuffer &other) = delete;
+        Framebuffer &operator=(const Framebuffer &other) = delete;
         virtual ~Framebuffer() = 0;
 
         int getWidth() const;

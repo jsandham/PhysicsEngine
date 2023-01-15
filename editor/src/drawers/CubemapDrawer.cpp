@@ -1,5 +1,6 @@
 #include "../../include/drawers/CubemapDrawer.h"
 #include "../../include/imgui/imgui_extensions.h"
+#include "../../include/ProjectDatabase.h"
 
 #include "core/Cubemap.h"
 
@@ -74,12 +75,12 @@ void CubemapDrawer::drawCubemapFaceTexture(Clipboard& clipboard, CubemapFace fac
 
     if (ImGui::BeginDragDropTarget())
     {
-        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE2D");
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXTURE2D_PATH");
         if (payload != nullptr)
         {
-            const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+            const char* data = static_cast<const char*>(payload->Data);
 
-            cubemap->setTexId(face, *data);
+            cubemap->setTexId(face, ProjectDatabase::getGuid(data));
             //material->onTextureChanged();
             clipboard.mModifiedAssets.insert(cubemap->getGuid());
         }

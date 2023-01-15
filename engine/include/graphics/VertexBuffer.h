@@ -9,6 +9,8 @@ namespace PhysicsEngine
         size_t mSize;
 	public:
 		VertexBuffer();
+		VertexBuffer(const VertexBuffer &other) = delete;
+        VertexBuffer &operator=(const VertexBuffer &other) = delete;
 		virtual ~VertexBuffer() = 0;
 
 		virtual void resize(size_t size) = 0;

@@ -1,4 +1,5 @@
 #include "../../include/drawers/TerrainDrawer.h"
+#include "../../include/ProjectDatabase.h"
 
 #include "components/Terrain.h"
 
@@ -67,7 +68,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
                 if (ImGui::BeginDragDropTarget())
                 {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY");
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_GUID");
                     if (payload != nullptr)
                     {
                         const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
@@ -116,12 +117,12 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
                 if (ImGui::BeginDragDropTarget())
                 {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL");
+                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
                     if (payload != nullptr)
                     {
-                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+                        const char* data = static_cast<const char*>(payload->Data);
 
-                        terrain->setMaterial(*data);
+                        terrain->setMaterial(ProjectDatabase::getGuid(data));
                     }
                     ImGui::EndDragDropTarget();
                 }

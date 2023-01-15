@@ -1,4 +1,5 @@
 #include "../../include/drawers/SpriteRendererDrawer.h"
+#include "../../include/ProjectDatabase.h"
 
 #include "components/SpriteRenderer.h"
 
@@ -43,12 +44,12 @@ void SpriteRendererDrawer::render(Clipboard& clipboard, const Guid& id)
 
             if (ImGui::BeginDragDropTarget())
             {
-                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SPRITE");
+                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SPRITE_PATH");
                 if (payload != nullptr)
                 {
-                    const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+                    const char* data = static_cast<const char*>(payload->Data);
 
-                    spriteRenderer->setSprite(*data);
+                    spriteRenderer->setSprite(ProjectDatabase::getGuid(data));
                 }
                 ImGui::EndDragDropTarget();
             }
