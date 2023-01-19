@@ -10,6 +10,11 @@ using namespace PhysicsEngine;
 OpenGLCameraUniform::OpenGLCameraUniform()
 {
     mBuffer = UniformBuffer::create(204, 0);
+
+    mProjection = glm::mat4(1.0f);
+    mView = glm::mat4(1.0f);
+    mViewProjection = glm::mat4(1.0f);
+    mCameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 OpenGLCameraUniform::~OpenGLCameraUniform()
@@ -50,6 +55,31 @@ void OpenGLCameraUniform::copyToUniformsToDevice()
 OpenGLLightUniform::OpenGLLightUniform()
 {
     mBuffer = UniformBuffer::create(824, 1);
+
+    for (int i = 0; i < 5; i++)
+    {
+        mLightProjection[i] = glm::mat4(1.0f);
+        mLightView[i] = glm::mat4(1.0f);
+    }
+
+    mCascadeEnds[0] = 5.0f;
+    mCascadeEnds[1] = 10.0f;
+    mCascadeEnds[2] = 20.0f;
+    mCascadeEnds[3] = 40.0f;
+    mCascadeEnds[4] = 250.0f;
+
+    mPosition = glm::vec3(0.0f, 10.0f, 0.0f);
+    mDirection = glm::vec3(0.0, -1.0f, 0.0f);
+    mColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    mIntensity = 1.0f;
+    mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
+    mInnerSpotAngle = 12.5f; // glm::cos(glm::radians(12.5f));
+    mShadowNearPlane = 0.1f;
+    mShadowFarPlane = 10.0f;
+    mShadowBias = 0.005f;
+    mShadowRadius = 0.0f;
+    mShadowStrength = 1.0f;
 }
 
 OpenGLLightUniform::~OpenGLLightUniform()
