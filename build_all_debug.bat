@@ -14,9 +14,9 @@ cd "%~dp0\external\imguizmo\lib"
 call "build_imguizmo.bat" /debug /Od
 cd "..\..\.."
 
-echo [94mBuilding simplefilewatcher...[0m
-cd "%~dp0\external\simplefilewatcher\lib"
-call "build_simplefilewatcher.bat" /debug /Od
+echo [94mBuilding efsw...[0m
+cd "%~dp0\external\efsw\lib"
+call "build_efsw.bat" /debug /Od
 cd "..\..\.."
 
 echo [94mBuilding yaml-cpp...[0m

@@ -5,7 +5,7 @@ set GLM="../../external/glm"
 set YAML="../../external/yaml-cpp/include"
 set IMGUI="../../external/imgui/include"
 set IMGUIZMO="../../external/imguizmo/include"
-set FILEWATCH="../../external/simplefilewatcher/include"
+set FILEWATCH="../../external/efsw/include"
 set ENGINE="../../engine/include"
 set WARN=-W4 -wd4100 -wd4996 -wd4211 -wd4201
 set OPT=/Od
@@ -53,7 +53,7 @@ if %MODE%==release (
 )
 set IMGUI_LIB="../../external/imgui/lib/%MODE%/imgui.lib"
 set IMGUIZMO_LIB="../../external/imguizmo/lib/%MODE%/imguizmo.lib"
-set FILEWATCH_LIB="../../external/simplefilewatcher/lib/%MODE%/simplefilewatcher.lib"
+set FILEWATCH_LIB="../../external/efsw/lib/%MODE%/efsw.lib"
 set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
 
 ::import libraries

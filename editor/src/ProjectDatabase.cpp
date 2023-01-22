@@ -4,19 +4,32 @@
 
 using namespace PhysicsEditor;
 
-void DirectoryListener::handleFileAction(FW::WatchID watchid, const FW::String& dir, const FW::String& filename,
-    FW::Action action)
+void DirectoryListener::handleFileAction(efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename) 
 {
-    PhysicsEngine::Log::info(
-        ("DIR (" + dir + ") FILE (" + filename + ") has event " + std::to_string(action) + "\n").c_str());
+    switch (action) {
+    case efsw::Actions::Add:
+        PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Add\n").c_str());
+        break;
+    case efsw::Actions::Delete:
+        PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Delete\n").c_str());
+        break;
+    case efsw::Actions::Modified:
+        PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Modified\n").c_str());
+        break;
+    case efsw::Actions::Moved:
+        PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Moved from (" + oldFilename + ")\n").c_str());
+        break;
+    default:
+        PhysicsEngine::Log::info("This should never happen!\n");
+    }
 
     // If file created or modified, add to buffer to load into world
-    if (action == FW::Action::Add || action == FW::Action::Modified)
+    if (action == efsw::Action::Add || action == efsw::Action::Modified)
     {
         ProjectDatabase::fileAddedToProject(std::filesystem::path(dir) / filename);
     }
 
-    if (action == FW::Action::Delete)
+    if (action == efsw::Action::Delete)
     {
         ProjectDatabase::fileDeletedFromProject(std::filesystem::path(dir) / filename);
     }
@@ -28,8 +41,8 @@ std::map<const PhysicsEngine::Guid, std::filesystem::path> ProjectDatabase::mIdT
 std::vector<std::filesystem::path> ProjectDatabase::mAddBuffer = std::vector<std::filesystem::path>();
 std::vector<std::filesystem::path> ProjectDatabase::mDeleteBuffer = std::vector<std::filesystem::path>();
 DirectoryListener ProjectDatabase::mListener = DirectoryListener();
-FW::FileWatcher ProjectDatabase::mFileWatcher = FW::FileWatcher();
-FW::WatchID ProjectDatabase::mWatchID = 0;
+efsw::FileWatcher ProjectDatabase::mFileWatcher = efsw::FileWatcher();
+efsw::WatchID ProjectDatabase::mWatchID = 0;
 
 void ProjectDatabase::watch(const std::filesystem::path& projectPath)
 {
@@ -52,12 +65,12 @@ void ProjectDatabase::watch(const std::filesystem::path& projectPath)
 
     // add watch for project data path to detect file changes
     ProjectDatabase::mWatchID = ProjectDatabase::mFileWatcher.addWatch(ProjectDatabase::mDataPath.string(), &ProjectDatabase::mListener, true);
+
+    ProjectDatabase::mFileWatcher.watch();
 }
 
 void ProjectDatabase::update(PhysicsEngine::World* world)
 {
-    ProjectDatabase::mFileWatcher.update();
-
     // load any assets queued up in add buffer into world
     for (size_t i = 0; i < ProjectDatabase::mAddBuffer.size(); i++)
     {
@@ -295,12 +308,6 @@ void ProjectDatabase::createRenderTextureFile(PhysicsEngine::World* world, const
 
 void ProjectDatabase::move(std::filesystem::path& oldPath, std::filesystem::path& newPath)
 {
-    /*std::error_code errorCode;
-    if ()
-    {
-
-    }*/
-
     std::error_code errorCode;
     if (std::filesystem::is_directory(oldPath, errorCode))
     {
@@ -337,7 +344,18 @@ void ProjectDatabase::move(std::filesystem::path& oldPath, std::filesystem::path
     }
     else if (std::filesystem::is_regular_file(oldPath, errorCode))
     {
+        std::filesystem::rename(oldPath, newPath, errorCode);
 
+        if (!errorCode)
+        {
+            PhysicsEngine::Guid temp = getGuid(oldPath);
+
+            mFilePathToId.erase(oldPath);
+            mIdToFilePath.erase(temp);
+
+            mFilePathToId[newPath] = temp;
+            mIdToFilePath[temp] = newPath;
+        }
     }
 }
 

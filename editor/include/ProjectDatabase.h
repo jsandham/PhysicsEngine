@@ -6,7 +6,7 @@
 #include <vector>
 #include <filesystem>
 
-#include "FileWatcher.h"
+#include <efsw/efsw.hpp>
 
 #include "core/World.h"
 #include "core/Guid.h"
@@ -14,10 +14,9 @@
 
 namespace PhysicsEditor
 {
-    class DirectoryListener : public FW::FileWatchListener
-    {
+    class DirectoryListener : public efsw::FileWatchListener {
     public:
-        void handleFileAction(FW::WatchID watchid, const FW::String& dir, const FW::String& filename, FW::Action action);
+        void handleFileAction(efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename) override;
     };
 
     class ProjectDatabase
@@ -42,10 +41,10 @@ namespace PhysicsEditor
         static DirectoryListener mListener;
 
         // create the file watcher object
-        static FW::FileWatcher mFileWatcher;
+        static efsw::FileWatcher mFileWatcher;
 
         // current watch id
-        static FW::WatchID mWatchID;
+        static efsw::WatchID mWatchID;
 
     public:
         static void watch(const std::filesystem::path& projectPath);

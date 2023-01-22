@@ -190,14 +190,14 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
             const void* data = static_cast<const void*>(directoryPath.c_str());
 
-            ImGui::SetDragDropPayload("FOLDER", data, directoryPath.length() + 1);
+            ImGui::SetDragDropPayload("FOLDER_PATH", data, directoryPath.length() + 1);
             ImGui::Text(directoryPath.c_str());
             ImGui::EndDragDropSource();
         }
 
         if (ImGui::BeginDragDropTarget())
         {
-            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER");
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
             if (payload != nullptr)
             {
                 const char* data = static_cast<const char*>(payload->Data);
@@ -209,11 +209,17 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 ProjectDatabase::move(incomingPath, newPath);
             }
 
-            /*payload = ImGui::AcceptDragDropPayload("MATERIAL");
+            payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
             if (payload != nullptr)
             {
-                   
-            }*/
+                const char* data = static_cast<const char*>(payload->Data);
+
+                std::filesystem::path incomingPath = std::string(data);
+                std::filesystem::path currentPath = directories[i]->getDirectoryPath();
+                std::filesystem::path newPath = currentPath / incomingPath.filename();
+
+                ProjectDatabase::move(incomingPath, newPath);
+            }
             
             ImGui::EndDragDropTarget();
         }
@@ -409,14 +415,14 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 
             const void* data = static_cast<const void*>(directoryPath.c_str());
 
-            ImGui::SetDragDropPayload("FOLDER", data, directoryPath.length() + 1);
+            ImGui::SetDragDropPayload("FOLDER_PATH", data, directoryPath.length() + 1);
             ImGui::Text(directoryPath.c_str());
             ImGui::EndDragDropSource();
         }
 
         if (ImGui::BeginDragDropTarget())
         {
-            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER");
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
             if (payload != nullptr)
             {
                 const char* data = static_cast<const char*>(payload->Data);
