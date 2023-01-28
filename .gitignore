@@ -6,6 +6,11 @@
 *.idb
 *.ilk
 *.pdb
+*.exe
+
+editor/bin/debug/*.exe
+editor/bin/release/*.exe
+
 engine/lib/debug/obj/*.obj
 engine/lib/release/obj/*.obj
 engine/tools/shader_cpp_generator/*.obj

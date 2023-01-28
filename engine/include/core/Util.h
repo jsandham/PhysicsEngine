@@ -35,6 +35,11 @@ class Util
                            int numChannels);
     static bool writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height,
                            int numChannels);
+
+    static bool isAssetYamlExtension(const std::string &extension);
+    static bool isTextureExtension(const std::string &extension);
+    static bool isMeshExtension(const std::string &extension);
+    static bool isShaderExtension(const std::string &extension);
 };
 } // namespace PhysicsEngine
 

@@ -20,66 +20,6 @@ Texture2DDrawer::Texture2DDrawer()
     mFBO->clearDepth(1.0f);
     mFBO->unbind();
 
-    std::string vertexShader = "#version 430 core\n"
-                               "in vec3 position;\n"
-                               "in vec2 texCoord;\n"
-                               "out vec2 TexCoord;\n"
-                               "void main()\n"
-                               "{\n"
-                               "	gl_Position = vec4(position, 1.0);\n"
-                               "   TexCoord = texCoord;\n"
-                               "}";
-
-    std::string fragmentShaderR = "#version 430 core\n"
-                                  "uniform sampler2D texture0;\n"
-                                  "in vec2 TexCoord;\n"
-                                  "out vec4 FragColor;\n"
-                                  "void main()\n"
-                                  "{\n"
-                                  "    FragColor = vec4(texture(texture0, TexCoord).r, 0, 0, 1);\n"
-                                  "}";
-    std::string fragmentShaderG = "#version 430 core\n"
-                                  "uniform sampler2D texture0;\n"
-                                  "in vec2 TexCoord;\n"
-                                  "out vec4 FragColor;\n"
-                                  "void main()\n"
-                                  "{\n"
-                                  "    FragColor = vec4(0, texture(texture0, TexCoord).g, 0, 1);\n"
-                                  "}";
-    std::string fragmentShaderB = "#version 430 core\n"
-                                  "uniform sampler2D texture0;\n"
-                                  "in vec2 TexCoord;\n"
-                                  "out vec4 FragColor;\n"
-                                  "void main()\n"
-                                  "{\n"
-                                  "    FragColor = vec4(0, 0, texture(texture0, TexCoord).b, 1);\n"
-                                  "}";
-    std::string fragmentShaderA = "#version 430 core\n"
-                                  "uniform sampler2D texture0;\n"
-                                  "in vec2 TexCoord;\n"
-                                  "out vec4 FragColor;\n"
-                                  "void main()\n"
-                                  "{\n"
-                                  "    FragColor = vec4(texture(texture0, TexCoord).a,\n"
-                                  "                     texture(texture0, TexCoord).a,\n"
-                                  "                     texture(texture0, TexCoord).a, 1);\n"
-                                  "}";
-    
-    mProgramR = ShaderProgram::create();
-    mProgramG = ShaderProgram::create();
-    mProgramB = ShaderProgram::create();
-    mProgramA = ShaderProgram::create();
-
-    mProgramR->load("R",vertexShader, fragmentShaderR);
-    mProgramG->load("G",vertexShader, fragmentShaderG);
-    mProgramB->load("B",vertexShader, fragmentShaderB);
-    mProgramA->load("A",vertexShader, fragmentShaderA);
-
-    mProgramR->compile();
-    mProgramG->compile();
-    mProgramB->compile();
-    mProgramA->compile();
-
     mCurrentTexId = Guid::INVALID;
     mDrawTex = nullptr;
 }
@@ -168,6 +108,21 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
         // Draw texture child window
         {
+            Shader* shaderR = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("f1b412ca-6641-425c-b996-72ac78e9c709"));
+            Shader* shaderG = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("1bec6e45-1cfb-4bb8-8cd9-9bb331e0459c"));
+            Shader* shaderB = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("3d0fbdd9-bfbb-4add-9b1b-93eb79162f48"));
+            Shader* shaderA = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("0a125454-09bd-4cad-bf80-b8c98ad72681"));
+
+            assert(shaderR != nullptr);
+            assert(shaderG != nullptr);
+            assert(shaderB != nullptr);
+            assert(shaderA != nullptr);
+
+            mProgramR = shaderR->getProgramFromVariant(0);
+            mProgramG = shaderG->getProgramFromVariant(0);
+            mProgramB = shaderB->getProgramFromVariant(0);
+            mProgramA = shaderA->getProgramFromVariant(0);
+
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
             ImGui::BeginChild("DrawTextureWindow",
                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,

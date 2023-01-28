@@ -1,5 +1,5 @@
 #include "../../include/views/ProjectWindow.h"
-#include "../../include/EditorProjectManager.h"
+#include "../../include/ProjectDatabase.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -45,7 +45,7 @@ void ProjectWindow::update(Clipboard &clipboard)
 
     if (ImGui::Button("Create Project"))
     {
-        EditorProjectManager::newProject(clipboard, std::filesystem::path(mSelectedFolder) / getProjectName());
+        ProjectDatabase::newProject(clipboard, std::filesystem::path(mSelectedFolder) / getProjectName());
 
         ImGui::CloseCurrentPopup();
     }

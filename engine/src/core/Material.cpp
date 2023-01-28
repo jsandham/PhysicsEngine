@@ -448,7 +448,7 @@ bool Material::getBool(const std::string &name) const
 int Material::getInt(const std::string &name) const
 {
     int index = findIndexOfUniform(name);
-    int value = false;
+    int value = 0;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Int)
     {
         memcpy(&value, mUniforms[index].mData, sizeof(int));
@@ -460,7 +460,7 @@ int Material::getInt(const std::string &name) const
 float Material::getFloat(const std::string &name) const
 {
     int index = findIndexOfUniform(name);
-    float value = false;
+    float value = 0.0f;
     if (index != -1 && mUniforms[index].mType == ShaderUniformType::Float)
     {
         memcpy(&value, mUniforms[index].mData, sizeof(float));

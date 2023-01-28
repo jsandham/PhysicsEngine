@@ -94,6 +94,11 @@ constexpr char MESH_EXT[] = ".mesh";
 constexpr char FONT_EXT[] = ".font";
 constexpr char SPRITE_EXT[] = ".sprite";
 constexpr char RENDERTEXTURE_EXT[] = ".rendertexture";
+constexpr char PNG_EXT[] = ".png";
+constexpr char JPG_EXT[] = ".jpg";
+constexpr char OBJ_EXT[] = ".obj";
+constexpr char GLSL_EXT[] = ".glsl";
+constexpr char HLSL_EXT[] = ".hlsl";
 
 constexpr int isScene(int type)
 {

@@ -1,7 +1,6 @@
 #ifndef __IMGUI_EXTENSIONS_H__
 #define __IMGUI_EXTENSIONS_H__
 
-#include <GL/glew.h>
 #include <string>
 #include <vector>
 

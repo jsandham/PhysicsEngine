@@ -1,12 +1,23 @@
 #include "../include/ProjectDatabase.h"
 
+#include <core/Util.h>
+
 #include <fstream>
+#include <random>
 
 using namespace PhysicsEditor;
 
 void DirectoryListener::handleFileAction(efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename) 
 {
-    switch (action) {
+    std::filesystem::path path = std::filesystem::path(dir) / filename;
+
+    Action a;
+    a.mPath = path;
+    a.mAction = action;
+
+    ProjectDatabase::queueFileAction(a);
+
+    switch (a.mAction) {
     case efsw::Actions::Add:
         PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Add\n").c_str());
         break;
@@ -19,35 +30,20 @@ void DirectoryListener::handleFileAction(efsw::WatchID watchid, const std::strin
     case efsw::Actions::Moved:
         PhysicsEngine::Log::info(("DIR (" + dir + ") FILE (" + filename + ") has event Moved from (" + oldFilename + ")\n").c_str());
         break;
-    default:
-        PhysicsEngine::Log::info("This should never happen!\n");
-    }
-
-    // If file created or modified, add to buffer to load into world
-    if (action == efsw::Action::Add || action == efsw::Action::Modified)
-    {
-        ProjectDatabase::fileAddedToProject(std::filesystem::path(dir) / filename);
-    }
-
-    if (action == efsw::Action::Delete)
-    {
-        ProjectDatabase::fileDeletedFromProject(std::filesystem::path(dir) / filename);
     }
 }
 
 std::filesystem::path ProjectDatabase::mDataPath = std::filesystem::path();
 std::map<const std::filesystem::path, PhysicsEngine::Guid> ProjectDatabase::mFilePathToId = std::map<const std::filesystem::path, PhysicsEngine::Guid>();
 std::map<const PhysicsEngine::Guid, std::filesystem::path> ProjectDatabase::mIdToFilePath = std::map<const PhysicsEngine::Guid, std::filesystem::path>();
-std::vector<std::filesystem::path> ProjectDatabase::mAddBuffer = std::vector<std::filesystem::path>();
-std::vector<std::filesystem::path> ProjectDatabase::mDeleteBuffer = std::vector<std::filesystem::path>();
+std::queue<Action> ProjectDatabase::mActionQueue = std::queue<Action>();
 DirectoryListener ProjectDatabase::mListener = DirectoryListener();
 efsw::FileWatcher ProjectDatabase::mFileWatcher = efsw::FileWatcher();
 efsw::WatchID ProjectDatabase::mWatchID = 0;
 
 void ProjectDatabase::watch(const std::filesystem::path& projectPath)
 {
-    ProjectDatabase::mAddBuffer.clear();
-    ProjectDatabase::mDeleteBuffer.clear();
+    ProjectDatabase::mActionQueue = {};
 
     ProjectDatabase::mDataPath = projectPath / "data";
 
@@ -56,7 +52,10 @@ void ProjectDatabase::watch(const std::filesystem::path& projectPath)
     {
         if (std::filesystem::is_regular_file(entry))
         {
-            ProjectDatabase::mAddBuffer.push_back(entry.path());
+            Action action;
+            action.mPath = entry.path();
+            action.mAction = efsw::Action::Add;
+            ProjectDatabase::mActionQueue.push(action);
         }
     }
 
@@ -69,138 +68,144 @@ void ProjectDatabase::watch(const std::filesystem::path& projectPath)
     ProjectDatabase::mFileWatcher.watch();
 }
 
+void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::World* world)
+{
+    std::string extension = path.extension().string();
+
+    PhysicsEngine::Asset* asset = nullptr;
+    if (PhysicsEngine::Util::isAssetYamlExtension(extension))
+    {
+        asset = world->loadAssetFromYAML(path.string());
+        PhysicsEngine::Log::warn(("Loading asset with id: " + asset->getGuid().toString() + "\n").c_str());
+    }
+
+    // ensure each png file has a generated yaml texture file and if not then create one
+    if (PhysicsEngine::Util::isTextureExtension(extension))
+    {
+        std::string texturePath = path.string().substr(0, path.string().find_last_of(".")) + PhysicsEngine::TEXTURE2D_EXT;
+        if (!std::filesystem::exists(texturePath))
+        {
+            PhysicsEngine::Texture2D* texture = world->createAsset<PhysicsEngine::Texture2D>();
+            texture->load(path.string());
+            if (path.has_stem())
+            {
+                texture->setName(path.stem().string());
+            }
+            else
+            {
+                texture->setName(path.filename().string());
+            }
+            texture->writeToYAML(texturePath);
+
+            asset = texture;
+        }
+    }
+
+    // ensure each obj file has a generated yaml mesh file and if not then create one
+    if (PhysicsEngine::Util::isMeshExtension(extension))
+    {
+        std::string meshPath = path.string().substr(0, path.string().find_last_of(".")) + PhysicsEngine::MESH_EXT;
+        if (!std::filesystem::exists(meshPath))
+        {
+            PhysicsEngine::Mesh* mesh = world->createAsset<PhysicsEngine::Mesh>();
+            mesh->load(path.string());
+            if (path.has_stem())
+            {
+                mesh->setName(path.stem().string());
+            }
+            else
+            {
+                mesh->setName(path.filename().string());
+            }
+            mesh->writeToYAML(meshPath);
+
+            asset = mesh;
+        }
+    }
+
+    // ensure each glsl file has a generated yaml shader file and if not then create one
+    if (PhysicsEngine::Util::isShaderExtension(extension))
+    {
+        std::string shaderPath = path.string().substr(0, path.string().find_last_of(".")) + PhysicsEngine::SHADER_EXT;
+        if (!std::filesystem::exists(shaderPath))
+        {
+            PhysicsEngine::Shader* shader = world->createAsset<PhysicsEngine::Shader>();
+
+            PhysicsEngine::ShaderCreationAttrib attrib;
+            attrib.mSourceFilepath = path.string();
+            attrib.mSourceLanguage = PhysicsEngine::ShaderSourceLanguage::GLSL;
+            attrib.mVariantMacroMap[0] = { PhysicsEngine::ShaderMacro::None };
+
+            if (path.has_stem())
+            {
+                attrib.mName = path.stem().string();
+                shader->setName(path.stem().string());
+            }
+            else
+            {
+                attrib.mName = path.filename().string();
+                shader->setName(path.filename().string());
+            }
+
+            shader->load(attrib);
+            shader->writeToYAML(shaderPath);
+
+            asset = shader;
+        }
+    }
+
+    if (asset != nullptr)
+    {
+        mFilePathToId[path] = asset->getGuid();
+        mIdToFilePath[asset->getGuid()] = path;
+    }
+    else
+    {
+        PhysicsEngine::Guid fileId = PhysicsEngine::Guid::newGuid();
+        mFilePathToId[path] = fileId;
+        mIdToFilePath[fileId] = path;
+    }
+}
+
+void ProjectDatabase::deleteFile(const std::filesystem::path& path, PhysicsEngine::World* world)
+{
+    std::string extension = path.extension().string();
+    PhysicsEngine::Guid guid = getGuid(path);
+
+    if (PhysicsEngine::Util::isAssetYamlExtension(extension))
+    {
+        PhysicsEngine::Log::warn(("Deleting asset with id: " + guid.toString() + "\n").c_str());
+        world->immediateDestroyAsset(guid, world->getTypeOf(guid));
+    }
+
+    mFilePathToId.erase(path);
+    mIdToFilePath.erase(guid);
+}
+
 void ProjectDatabase::update(PhysicsEngine::World* world)
 {
-    // load any assets queued up in add buffer into world
-    for (size_t i = 0; i < ProjectDatabase::mAddBuffer.size(); i++)
+    while (!ProjectDatabase::mActionQueue.empty())
     {
-        std::string extension = ProjectDatabase::mAddBuffer[i].extension().string();
+        Action action = ProjectDatabase::mActionQueue.front();
+        ProjectDatabase::mActionQueue.pop();
 
-        PhysicsEngine::Asset* asset = nullptr;
-        if (isAssetYamlExtension(extension))
+        switch (action.mAction)
         {
-            asset = world->loadAssetFromYAML(ProjectDatabase::mAddBuffer[i].string());
-        }
-
-        // ensure each png file has a generated yaml texture file and if not then create one
-        if (isTextureExtension(extension))
-        {
-            std::string texturePath = ProjectDatabase::mAddBuffer[i].string().substr(0, ProjectDatabase::mAddBuffer[i].string().find_last_of(".")) + ".texture";
-            if (!std::filesystem::exists(texturePath))
-            {
-                PhysicsEngine::Texture2D* texture = world->createAsset<PhysicsEngine::Texture2D>();
-                texture->load(ProjectDatabase::mAddBuffer[i].string());
-                if (ProjectDatabase::mAddBuffer[i].has_stem())
-                {
-                    texture->setName(ProjectDatabase::mAddBuffer[i].stem().string());
-                }
-                else
-                {
-                    texture->setName(ProjectDatabase::mAddBuffer[i].filename().string());
-                }
-                texture->writeToYAML(texturePath);
-
-                asset = texture;
-            }
-        }
-
-        // ensure each obj file has a generated yaml mesh file and if not then create one
-        if (isMeshExtension(extension))
-        {
-            std::string meshPath = ProjectDatabase::mAddBuffer[i].string().substr(0, ProjectDatabase::mAddBuffer[i].string().find_last_of(".")) + ".mesh";
-            if (!std::filesystem::exists(meshPath))
-            {
-                PhysicsEngine::Mesh* mesh = world->createAsset<PhysicsEngine::Mesh>();
-                mesh->load(ProjectDatabase::mAddBuffer[i].string());
-                if (ProjectDatabase::mAddBuffer[i].has_stem())
-                {
-                    mesh->setName(ProjectDatabase::mAddBuffer[i].stem().string());
-                }
-                else
-                {
-                    mesh->setName(ProjectDatabase::mAddBuffer[i].filename().string());
-                }
-                mesh->writeToYAML(meshPath);
-
-                asset = mesh;
-            }
-        }
-
-        // ensure each glsl file has a generated yaml shader file and if not then create one
-        if (isShaderExtension(extension))
-        {
-            std::string shaderPath = ProjectDatabase::mAddBuffer[i].string().substr(0, ProjectDatabase::mAddBuffer[i].string().find_last_of(".")) + ".shader";
-            if (!std::filesystem::exists(shaderPath))
-            {
-                PhysicsEngine::Shader* shader = world->createAsset<PhysicsEngine::Shader>();
-
-                PhysicsEngine::ShaderCreationAttrib attrib;
-                attrib.mSourceFilepath = ProjectDatabase::mAddBuffer[i].string();
-                attrib.mSourceLanguage = PhysicsEngine::ShaderSourceLanguage::GLSL;
-                attrib.mVariantMacroMap[0] = { PhysicsEngine::ShaderMacro::None };
-
-                if (ProjectDatabase::mAddBuffer[i].has_stem())
-                {
-                    attrib.mName = ProjectDatabase::mAddBuffer[i].stem().string();
-                    shader->setName(ProjectDatabase::mAddBuffer[i].stem().string());
-                }
-                else
-                {
-                    attrib.mName = ProjectDatabase::mAddBuffer[i].filename().string();
-                    shader->setName(ProjectDatabase::mAddBuffer[i].filename().string());
-                }
-
-                shader->load(attrib);
-                shader->writeToYAML(shaderPath);
-
-                asset = shader;
-            }
-        }
-
-        if (asset != nullptr)
-        {
-            mFilePathToId[ProjectDatabase::mAddBuffer[i]] = asset->getGuid();
-            mIdToFilePath[asset->getGuid()] = ProjectDatabase::mAddBuffer[i];
-        }
-        else
-        {
-            PhysicsEngine::Guid fileId = PhysicsEngine::Guid::newGuid();
-            mFilePathToId[ProjectDatabase::mAddBuffer[i]] = fileId;
-            mIdToFilePath[fileId] = ProjectDatabase::mAddBuffer[i];
+        case efsw::Actions::Add:
+        case efsw::Actions::Modified:
+        case efsw::Actions::Moved:
+            ProjectDatabase::addFile(action.mPath, world);
+            break;
+        case efsw::Actions::Delete:
+            ProjectDatabase::deleteFile(action.mPath, world);
+            break;
         }
     }
-
-    // clear buffer
-    ProjectDatabase::mAddBuffer.clear();
-
-    // destroy any assets queued up in delete buffer from world
-    for (size_t i = 0; i < ProjectDatabase::mDeleteBuffer.size(); i++)
-    {
-        std::string extension = ProjectDatabase::mDeleteBuffer[i].extension().string();
-        PhysicsEngine::Guid guid = getGuid(mDeleteBuffer[i]);
-
-        if (isAssetYamlExtension(extension))
-        {
-            PhysicsEngine::Log::warn(("Deleting asset with id: " + guid.toString() + "\n").c_str());
-            world->immediateDestroyAsset(guid, world->getTypeOf(guid));
-        }
-
-        mFilePathToId.erase(ProjectDatabase::mDeleteBuffer[i]);
-        mIdToFilePath.erase(guid);
-    }
-
-    // clear buffer
-    ProjectDatabase::mDeleteBuffer.clear();
 }
-
-void ProjectDatabase::fileAddedToProject(const std::filesystem::path& filePath)
+    
+void ProjectDatabase::queueFileAction(Action action)
 {
-    ProjectDatabase::mAddBuffer.push_back(filePath);
-}
-
-void ProjectDatabase::fileDeletedFromProject(const std::filesystem::path& filePath)
-{
-    ProjectDatabase::mDeleteBuffer.push_back(filePath);
+    ProjectDatabase::mActionQueue.push(action);
 }
 
 void ProjectDatabase::createDirectory(const std::filesystem::path& parentPath)
@@ -306,7 +311,7 @@ void ProjectDatabase::createRenderTextureFile(PhysicsEngine::World* world, const
     }
 }
 
-void ProjectDatabase::move(std::filesystem::path& oldPath, std::filesystem::path& newPath)
+void ProjectDatabase::rename(const std::filesystem::path& oldPath, const std::filesystem::path& newPath)
 {
     std::error_code errorCode;
     if (std::filesystem::is_directory(oldPath, errorCode))
@@ -319,9 +324,9 @@ void ProjectDatabase::move(std::filesystem::path& oldPath, std::filesystem::path
             if (std::filesystem::is_regular_file(path, errorCode))
             {
                 oldPaths.push_back(path);
-                
+
                 std::filesystem::path temp = std::filesystem::relative(path, oldPath);
-             
+
                 newPaths.push_back(newPath / temp);
             }
         }
@@ -345,37 +350,18 @@ void ProjectDatabase::move(std::filesystem::path& oldPath, std::filesystem::path
     else if (std::filesystem::is_regular_file(oldPath, errorCode))
     {
         std::filesystem::rename(oldPath, newPath, errorCode);
-
-        if (!errorCode)
-        {
-            PhysicsEngine::Guid temp = getGuid(oldPath);
-
-            mFilePathToId.erase(oldPath);
-            mIdToFilePath.erase(temp);
-
-            mFilePathToId[newPath] = temp;
-            mIdToFilePath[temp] = newPath;
-        }
     }
 }
 
-void ProjectDatabase::rename(std::filesystem::path& oldPath, std::string& newFilename)
+void ProjectDatabase::remove_all(const std::filesystem::path& path)
 {
 
 }
 
+void ProjectDatabase::remove(const std::filesystem::path& path)
+{
 
-
-
-
-
-
-
-
-
-
-
-
+}
 
 PhysicsEngine::Guid ProjectDatabase::getGuid(const std::filesystem::path& filePath)
 {
@@ -399,50 +385,221 @@ std::filesystem::path ProjectDatabase::getFilePath(const PhysicsEngine::Guid& gu
     return std::filesystem::path();
 }
 
-bool ProjectDatabase::isAssetYamlExtension(const std::string& extension)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ProjectDatabase::newProject(Clipboard& clipboard, const std::filesystem::path& projectPath)
 {
-    if (extension == ".texture" ||
-        extension == ".mesh" ||
-        extension == ".shader" ||
-        extension == ".material" ||
-        extension == ".sprite" ||
-        extension == ".rendertexture" ||
-        extension == ".cubemap")
+    std::string message = "newProject project name: " + projectPath.filename().string() + " project path: " + projectPath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    if (projectPath.empty())
     {
-        return true;
+        return;
     }
 
-    return false;
+    if (std::filesystem::create_directory(projectPath))
+    {
+        bool success = true;
+        success &= std::filesystem::create_directory(projectPath / "data");
+        success &= std::filesystem::create_directory(projectPath / "data/scenes");
+        success &= std::filesystem::create_directory(projectPath / "data/textures");
+        success &= std::filesystem::create_directory(projectPath / "data/meshes");
+        success &= std::filesystem::create_directory(projectPath / "data/materials");
+        success &= std::filesystem::create_directory(projectPath / "data/shaders");
+        success &= std::filesystem::create_directory(projectPath / "data/sprites");
+
+        if (!success)
+        {
+            PhysicsEngine::Log::error("Could not create project sub directories\n");
+            return;
+        }
+    }
+    else
+    {
+        PhysicsEngine::Log::error("Could not create project root directory\n");
+        return;
+    }
+
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
+
+    // tell library directory which project to watch
+    ProjectDatabase::watch(projectPath.string());
+
+    // reset editor camera
+    clipboard.mCameraSystem->resetCamera();
+
+    clipboard.setActiveProject(projectPath.filename().string(), projectPath.string());
+    clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
 }
 
-bool ProjectDatabase::isTextureExtension(const std::string& extension)
+void ProjectDatabase::openProject(Clipboard& clipboard, const std::filesystem::path& projectPath)
 {
-    if (extension == ".png" ||
-        extension == ".jpg")
+    std::string message = "newProject project name: " + projectPath.filename().string() + " project path: " + projectPath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    if (projectPath.empty())
     {
-        return true;
+        return;
     }
 
-    return false;
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
+
+    // tell library directory which project to watch
+    ProjectDatabase::watch(projectPath);
+
+    // reset editor camera
+    clipboard.mCameraSystem->resetCamera();
+
+    clipboard.setActiveProject(projectPath.filename().string(), projectPath.string());
+    clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
 }
 
-bool ProjectDatabase::isMeshExtension(const std::string& extension)
+void ProjectDatabase::saveProject(Clipboard& clipboard)
 {
-    if (extension == ".obj")
+    for (auto it = clipboard.mModifiedAssets.begin(); it != clipboard.mModifiedAssets.end(); it++)
     {
-        return true;
+        std::string path = ProjectDatabase::getFilePath(*it).string();
+        if (!path.empty()) {
+            clipboard.getWorld()->writeAssetToYAML(path, *it);
+        }
     }
 
-    return false;
+    clipboard.mModifiedAssets.clear();
 }
 
-bool ProjectDatabase::isShaderExtension(const std::string& extension)
+void ProjectDatabase::newScene(Clipboard& clipboard, const std::string& sceneName)
 {
-    if (extension == ".glsl" ||
-        extension == ".hlsl")
+    std::string message = "newScene scene name: " + sceneName + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    // check that we have an open project
+    if (clipboard.getProjectPath().empty())
     {
-        return true;
+        return;
     }
 
-    return false;
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
+
+    // re-centre editor camera to default position
+    clipboard.mCameraSystem->resetCamera();
+
+    // clear any dragged and selected items on clipboard
+    clipboard.clearDraggedItem();
+    clipboard.clearSelectedItem();
+
+    PhysicsEngine::Scene* scene = clipboard.getWorld()->createScene();
+    if (scene != nullptr)
+    {
+        clipboard.setActiveScene(sceneName, "", scene->getGuid());
+    }
+}
+
+void ProjectDatabase::openScene(Clipboard& clipboard, const std::filesystem::path& scenePath)
+{
+    std::string message = "openScene scene name: " + scenePath.filename().string() + " scene path: " + scenePath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    // check that we have an open project
+    if (clipboard.getProjectPath().empty())
+    {
+        return;
+    }
+
+    // check to make sure the scene is part of the current project
+    if (scenePath.string().find(clipboard.getProjectPath().string()) != 0)
+    {
+        return;
+    }
+
+    // mark any (non-editor) entities in currently opened scene to be immediately destroyed
+    clipboard.getWorld()->getActiveScene()->immediateDestroyEntitiesInScene();
+
+    // reset editor camera to default position
+    clipboard.mCameraSystem->resetCamera();
+
+    // clear any dragged and selected items on clipboard
+    clipboard.clearDraggedItem();
+    clipboard.clearSelectedItem();
+
+    // load scene into world
+    PhysicsEngine::Scene* scene = clipboard.getWorld()->loadSceneFromYAML(scenePath.string());
+    if (scene != nullptr)
+    {
+        clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), scene->getGuid());
+    }
+}
+
+void ProjectDatabase::saveScene(Clipboard& clipboard, const std::filesystem::path& scenePath)
+{
+    std::string message = "saveScene scene name: " + scenePath.filename().string() + " scene path: " + scenePath.string() + "\n";
+    PhysicsEngine::Log::info(message.c_str());
+
+    if (scenePath.empty())
+    {
+        return;
+    }
+
+    clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), clipboard.getSceneId());
+
+    clipboard.getWorld()->writeSceneToYAML(scenePath.string(), clipboard.getSceneId());
+}
+
+void ProjectDatabase::populateScene(Clipboard& clipboard)
+{
+    int m = 20;
+    int n = 20;
+    std::vector<int> layout(m * n, 0);
+
+    std::random_device                  rand_dev;
+    std::mt19937                        generator(rand_dev());
+    std::uniform_int_distribution<int>  distr(0, 10);
+
+    for (size_t i = 0; i < layout.size(); i++)
+    {
+        layout[i] = distr(generator);
+    }
+
+    PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
+    lightEntity->setName("Light");
+
+    PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
+    planeEntity->setName("Plane");
+    PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
+    planeTransform->setPosition(glm::vec3(0, 0, 0));
+    planeTransform->setScale(glm::vec3(50, 1, 50));
+
+    int index = 0;
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            int l = layout[n * i + j];
+            for (int k = 0; k < l; k++)
+            {
+                std::string name = "Cube" + std::to_string(index++);
+
+                PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
+                entity->setName(name);
+                PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
+                transform->setPosition(glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f));
+                //transform->mPosition = glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f);
+            }
+        }
+    }
 }

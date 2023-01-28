@@ -33,8 +33,8 @@ ImGuiLayer::~ImGuiLayer()
         break;
     }
 
-    ImGui::DestroyContext();
     ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
 }
 
 void ImGuiLayer::init()

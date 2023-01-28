@@ -1,5 +1,4 @@
 #include "../../include/views/Inspector.h"
-#include "../../include/FileSystemUtil.h"
 
 #include "imgui.h"
 #include "../../include/imgui/imgui_extensions.h"

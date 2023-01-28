@@ -1024,8 +1024,8 @@ void World::loadAssetsInPath(const std::filesystem::path &filePath)
                 else if (std::filesystem::is_regular_file(entry, error_code))
                 {
                     std::string extension = entry.path().extension().string();
-                    if (extension == ".mesh" || extension == ".shader" || extension == ".material" ||
-                        extension == ".texture")
+                    if (extension == MESH_EXT || extension == SHADER_EXT || extension == MATERIAL_EXT ||
+                        extension == TEXTURE2D_EXT)
                     {
                         std::filesystem::path relativeDataPath =
                             entry.path().lexically_relative(std::filesystem::current_path());

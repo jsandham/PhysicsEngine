@@ -8,7 +8,7 @@ Material:
   enableInstancing: false
   material.shininess:
     type: Float
-    data: 0
+    data: 1
   material.color:
     type: Vec4
     data:
@@ -19,24 +19,24 @@ Material:
   material.ambient:
     type: Vec3
     data:
-      - 0
-      - 0
-      - 0
+      - 1
+      - 1
+      - 1
   material.diffuse:
     type: Vec3
     data:
-      - 0
-      - 0
-      - 0
+      - 1
+      - 1
+      - 1
   material.specular:
     type: Vec3
     data:
-      - 0
-      - 0
-      - 0
+      - 0.5
+      - 0.5
+      - 0.5
   material.mainTexture:
     type: Sampler2D
-    data: 00000000-0000-0000-0000-000000000000
+    data: 285299d3-8be5-4b3a-90cf-9fa77df5e54a
   material.normalMap:
     type: Sampler2D
     data: 00000000-0000-0000-0000-000000000000

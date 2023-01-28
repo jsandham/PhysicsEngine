@@ -11,33 +11,11 @@ using namespace PhysicsEditor;
 TerrainDrawer::TerrainDrawer()
 {
     mFBO = Framebuffer::create(256, 256, 1, false);
-
-    std::string vertexShader = "#version 430 core\n"
-        "in vec3 position;\n"
-        "out float height;\n"
-        "void main()\n"
-        "{\n"
-        "   height = position.y;\n"
-        "	gl_Position = vec4(position, 1.0);\n"
-        "}";
-
-    std::string fragmentShader = "#version 430 core\n"
-        "out vec4 FragColor;\n"
-        "in float height;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = vec4(height, height, height, 1);\n"
-        "}";
-
-    mProgram = ShaderProgram::create();
-    mProgram->load("TerrainDrawer", vertexShader, fragmentShader);
-    mProgram->compile();
 }
 
 TerrainDrawer::~TerrainDrawer()
 {
     delete mFBO;
-    delete mProgram;
 }
 
 void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
@@ -179,6 +157,12 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             {
                 terrain->updateTerrainHeight();
             }
+
+            Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("336b168c-3b92-473d-909a-0a2e342d483f"));
+            
+            assert(shader != nullptr);
+            
+            mProgram = shader->getProgramFromVariant(0);
 
             mFBO->bind();
             mFBO->setViewport(0, 0, 256, 256);

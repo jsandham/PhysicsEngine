@@ -12,11 +12,20 @@
 #include "core/Guid.h"
 #include "core/Log.h"
 
+#include "EditorClipboard.h"
+
 namespace PhysicsEditor
 {
-    class DirectoryListener : public efsw::FileWatchListener {
+    class DirectoryListener : public efsw::FileWatchListener 
+    {
     public:
         void handleFileAction(efsw::WatchID watchid, const std::string& dir, const std::string& filename, efsw::Action action, std::string oldFilename) override;
+    };
+
+    struct Action
+    {
+        std::filesystem::path mPath;
+        efsw::Action mAction;
     };
 
     class ProjectDatabase
@@ -31,11 +40,7 @@ namespace PhysicsEditor
         // filepath to id map
         static std::map<const PhysicsEngine::Guid, std::filesystem::path> mIdToFilePath;
 
-        // buffer of added/modified project file paths
-        static std::vector<std::filesystem::path> mAddBuffer;
-
-        // buffer of deleted project file paths
-        static std::vector<std::filesystem::path> mDeleteBuffer;
+        static std::queue<Action> mActionQueue;
 
         // file watcher listener object
         static DirectoryListener mListener;
@@ -48,15 +53,11 @@ namespace PhysicsEditor
 
     public:
         static void watch(const std::filesystem::path& projectPath);
-        static void update(PhysicsEngine::World* world); //refresh??
-        static void fileAddedToProject(const std::filesystem::path& filePath);
-        static void fileDeletedFromProject(const std::filesystem::path& filePath);
-
-        static bool isAssetYamlExtension(const std::string& extension);
-        static bool isTextureExtension(const std::string& extension);
-        static bool isMeshExtension(const std::string& extension);
-        static bool isShaderExtension(const std::string& extension);
-
+        static void update(PhysicsEngine::World* world);
+        
+        static void queueFileAction(Action action);
+        static void addFile(const std::filesystem::path& path, PhysicsEngine::World* world);
+        static void deleteFile(const std::filesystem::path& path, PhysicsEngine::World* world);
 
         static void createDirectory(const std::filesystem::path& parentPath);
         static void createShaderFile(const std::filesystem::path& parentPath);
@@ -64,10 +65,21 @@ namespace PhysicsEditor
         static void createMaterialFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
         static void createSpriteFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
         static void createRenderTextureFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
-        static void move(std::filesystem::path& oldPath, std::filesystem::path& newPath);
-        static void rename(std::filesystem::path& oldPath, std::string& newFilename);
+        static void rename(const std::filesystem::path& oldPath, const std::filesystem::path& newPath);
+        static void remove_all(const std::filesystem::path& path);
+        static void remove(const std::filesystem::path& path);
         static PhysicsEngine::Guid getGuid(const std::filesystem::path& filePath);
         static std::filesystem::path getFilePath(const PhysicsEngine::Guid& guid);
+
+        static void newProject(Clipboard& clipboard, const std::filesystem::path& projectPath);
+        static void openProject(Clipboard& clipboard, const std::filesystem::path& projectPath);
+        static void saveProject(Clipboard& clipboard);
+
+        static void newScene(Clipboard& clipboard, const std::string& sceneName);
+        static void openScene(Clipboard& clipboard, const std::filesystem::path& scenePath);
+        static void saveScene(Clipboard& clipboard, const std::filesystem::path& scenePath);
+
+        static void populateScene(Clipboard& clipboard);
     };
 } // namespace PhysicsEditor
 

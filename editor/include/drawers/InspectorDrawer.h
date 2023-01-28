@@ -17,6 +17,8 @@ class InspectorDrawer
   
   public:
     InspectorDrawer();
+    InspectorDrawer(const InspectorDrawer&) = delete;
+    InspectorDrawer& operator=(const InspectorDrawer&) = delete;
     virtual ~InspectorDrawer() = 0;
 
     virtual void render(Clipboard &clipboard, const Guid& id);

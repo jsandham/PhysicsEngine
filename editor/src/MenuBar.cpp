@@ -1,6 +1,5 @@
 #include "../include/MenuBar.h"
-#include "../include/EditorSceneManager.h"
-#include "../include/EditorProjectManager.h"
+#include "../include/ProjectDatabase.h"
 
 #include "imgui.h"
 
@@ -90,7 +89,7 @@ void MenuBar::update(Clipboard &clipboard)
     // new, open and save scene
     if (isNewSceneClicked())
     {
-        EditorSceneManager::newScene(clipboard, "default.scene");
+        ProjectDatabase::newScene(clipboard, "default.scene");
     }
 
     if (isOpenSceneClicked())
@@ -98,19 +97,19 @@ void MenuBar::update(Clipboard &clipboard)
         std::string fileToOpen = openFile("Scene (*.scene)\0*.scene\0");
         if (!fileToOpen.empty())
         {
-            EditorSceneManager::openScene(clipboard, fileToOpen);
+            ProjectDatabase::openScene(clipboard, fileToOpen);
         }
     }
     else if (isSaveClicked())
     {
-        EditorSceneManager::saveScene(clipboard, clipboard.getScenePath());
+        ProjectDatabase::saveScene(clipboard, clipboard.getScenePath());
     }
     else if (isSaveAsClicked())
     {
         std::string fileToSave = saveFile("Scene (*.scene)\0*.scene\0");
         if (!fileToSave.empty())
         {
-            EditorSceneManager::openScene(clipboard, fileToSave);
+            ProjectDatabase::openScene(clipboard, fileToSave);
         }
     }
 
@@ -120,17 +119,17 @@ void MenuBar::update(Clipboard &clipboard)
         std::string folderToOpen = selectFolder();
         if (!folderToOpen.empty())
         {
-            EditorProjectManager::openProject(clipboard, folderToOpen);
+            ProjectDatabase::openProject(clipboard, folderToOpen);
         }
     }
     else if (isSaveProjectClicked())
     {
-        EditorProjectManager::saveProject(clipboard);
+        ProjectDatabase::saveProject(clipboard);
     }
 
     if (isPopulateTestSceneClicked())
     {
-        EditorSceneManager::populateScene(clipboard);
+        ProjectDatabase::populateScene(clipboard);
     }
 
     mProjectWindow.draw(clipboard, isNewProjectClicked());

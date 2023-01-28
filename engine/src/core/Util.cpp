@@ -1,4 +1,5 @@
 #include "../../include/core/Util.h"
+#include "../../include/core/Types.h"
 
 #include <iostream>
 
@@ -139,4 +140,45 @@ bool Util::writeToBMP(const std::string &filepath, const std::vector<float> &dat
     }
 
     return true;
+}
+
+bool Util::isAssetYamlExtension(const std::string &extension)
+{
+    if (extension == TEXTURE2D_EXT || extension == MESH_EXT || extension == SHADER_EXT || extension == MATERIAL_EXT ||
+        extension == SPRITE_EXT || extension == RENDERTEXTURE_EXT || extension == CUBEMAP_EXT)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool Util::isTextureExtension(const std::string &extension)
+{
+    if (extension == PNG_EXT || extension == JPG_EXT)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool Util::isMeshExtension(const std::string &extension)
+{
+    if (extension == OBJ_EXT)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool Util::isShaderExtension(const std::string &extension)
+{
+    if (extension == GLSL_EXT || extension == HLSL_EXT)
+    {
+        return true;
+    }
+
+    return false;
 }
