@@ -196,14 +196,24 @@ void FreeLookCameraSystem::configureCamera(CameraSystemConfig config)
     mSpawnCameraOnInit = config.mSpawnCameraOnInit;
 }
 
-void FreeLookCameraSystem::setViewport(Viewport viewport)
+void FreeLookCameraSystem::setViewport(const Viewport& viewport)
 {
     getCamera()->setViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
 }
 
-void FreeLookCameraSystem::setFrustum(Frustum frustum)
+void FreeLookCameraSystem::setFrustum(const Frustum& frustum)
 {
     getCamera()->setFrustum(frustum.mFov, frustum.mAspectRatio, frustum.mNearPlane, frustum.mFarPlane);
+}
+
+void FreeLookCameraSystem::setViewport(int x, int y, int width, int height)
+{
+    getCamera()->setViewport(x, y, width, height);
+}
+
+void FreeLookCameraSystem::setFrustum(float fov, float aspectRatio, float near, float far)
+{
+    getCamera()->setFrustum(fov, aspectRatio, near, far);
 }
 
 void FreeLookCameraSystem::setRenderPath(RenderPath path)

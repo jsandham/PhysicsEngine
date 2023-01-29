@@ -107,11 +107,6 @@ PhysicsEngine::World* Clipboard::getWorld()
     return &mWorld;
 }
 
-//LibraryDirectory& Clipboard::getLibrary()
-//{
-//    return mLibrary;
-//}
-
 InteractionType Clipboard::getDraggedType() const
 {
     return mDraggedType;

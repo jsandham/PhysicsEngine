@@ -197,39 +197,6 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
 
         if (ImGui::BeginDragDropTarget())
         {
-            /*const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-            if (payload->IsDataType("FOLDER_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
-            }
-            else if (payload->IsDataType("MATERIAL_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
-            }
-            else if (payload->IsDataType("CUBEMAP_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("CUBEMAP_PATH");
-            }
-            else if (payload->IsDataType("SCENE_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("SCENE_PATH");
-            }
-
-            if (payload != nullptr)
-            {
-                const char* data = static_cast<const char*>(payload->Data);
-
-                std::filesystem::path incomingPath = std::string(data);
-                std::filesystem::path currentPath = directories[i]->getDirectoryPath();
-                std::filesystem::path newPath = currentPath / incomingPath.filename();
-
-                ProjectDatabase::rename(incomingPath, newPath);
-            }*/
-
-
-
-
-
             const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
             if (payload != nullptr)
             {
@@ -479,36 +446,6 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
 
         if (ImGui::BeginDragDropTarget())
         {
-            /*const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-            if (payload->IsDataType("FOLDER_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
-            }
-            else if (payload->IsDataType("MATERIAL_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
-            }
-            else if (payload->IsDataType("CUBEMAP_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("CUBEMAP_PATH");
-            }
-            else if (payload->IsDataType("SCENE_PATH"))
-            {
-                payload = ImGui::AcceptDragDropPayload("SCENE_PATH");
-            }
-
-            if (payload != nullptr)
-            {
-                const char* data = static_cast<const char*>(payload->Data);
-
-                std::filesystem::path incomingPath = std::string(data);
-                std::filesystem::path currentPath = node->getDirectoryPath();
-                std::filesystem::path newPath = currentPath / incomingPath.filename();
-
-                ProjectDatabase::rename(incomingPath, newPath);
-            }*/
-
-           
             const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("FOLDER_PATH");
             if (payload != nullptr)
             {

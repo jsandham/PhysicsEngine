@@ -12,8 +12,6 @@
 #include <core/Time.h>
 #include <systems/FreeLookCameraSystem.h>
 
-//#include "LibraryDirectory.h"
-
 #include "ProjectTree.h"
 #include "InteractionType.h"
 
@@ -54,8 +52,6 @@ class Clipboard
         PhysicsEngine::GizmoSystem* mGizmoSystem;
         PhysicsEngine::CleanUpSystem* mCleanUpSystem;
 
-        //LibraryDirectory mLibrary;
-
         bool mProjectDirty;
         bool mSceneDirty;
 
@@ -91,8 +87,6 @@ class Clipboard
         bool isSceneDirty() const;
 
         PhysicsEngine::World* getWorld();
-
-        //LibraryDirectory& getLibrary();
 
         InteractionType getDraggedType() const;
         InteractionType getSelectedType() const;

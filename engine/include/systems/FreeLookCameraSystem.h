@@ -31,8 +31,6 @@ namespace PhysicsEngine
     private:
         Guid mTransformId;
         Guid mCameraId;
-        //Transform* mTransform;
-        //Camera* mCamera;
 
         int mMousePosX;
         int mMousePosY;
@@ -65,8 +63,10 @@ namespace PhysicsEngine
 
         void resetCamera();
         void configureCamera(CameraSystemConfig config);
-        void setViewport(Viewport viewport);
-        void setFrustum(Frustum frustum);
+        void setViewport(const Viewport& viewport);
+        void setFrustum(const Frustum& frustum);
+        void setViewport(int x, int y, int width, int height);
+        void setFrustum(float fov, float aspectRatio, float near, float far);
         void setRenderPath(RenderPath path);
         void setSSAO(CameraSSAO ssao);
         void setGizmos(CameraGizmos gizmos);

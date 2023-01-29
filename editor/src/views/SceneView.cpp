@@ -1,4 +1,5 @@
 #include "../../include/views/SceneView.h"
+#include "../../include/ProjectDatabase.h"
 
 #include <chrono>
 
@@ -89,12 +90,6 @@ void SceneView::update(Clipboard &clipboard)
     size.x -= mSceneContentMin.x;
     size.y -= mSceneContentMin.y;
 
-    Viewport viewport;
-    viewport.mX = 0;
-    viewport.mY = 0;
-    viewport.mWidth = (int)size.x;
-    viewport.mHeight = (int)size.y;
-
     ImGuiIO& io = ImGui::GetIO();
     float sceneContentWidth = (mSceneContentMax.x - mSceneContentMin.x);
     float sceneContentHeight = (mSceneContentMax.y - mSceneContentMin.y);
@@ -109,9 +104,7 @@ void SceneView::update(Clipboard &clipboard)
 
     mIsSceneContentHovered = sceneContentRect.contains(io.MousePos.x, io.MousePos.y);
 
-    FreeLookCameraSystem* cameraSystem = clipboard.mCameraSystem;
-
-    cameraSystem->setViewport(viewport);
+    clipboard.mCameraSystem->setViewport(0, 0, (int)size.x, (int)size.y);
     clipboard.mGizmoSystem->mEnabled = !clipboard.mSceneName.empty();
 
     updateWorld(clipboard.getWorld());
@@ -137,22 +130,22 @@ void SceneView::update(Clipboard &clipboard)
             {
                 mActiveTextureIndex = n;
 
-                cameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
+                clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
                 if (targets[mActiveTextureIndex] == DebugTargets::Normals)
                 {
-                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Normal;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Normal;
                 }
                 else if (targets[mActiveTextureIndex] == DebugTargets::Position)
                 {
-                    cameraSystem->getCamera()->mColorTarget = ColorTarget::Position;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Position;
                 }
                 else if (targets[mActiveTextureIndex] == DebugTargets::LinearDepth) 
                 {
-                    cameraSystem->getCamera()->mColorTarget = ColorTarget::LinearDepth;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::LinearDepth;
                 }
                 else if (targets[mActiveTextureIndex] == DebugTargets::ShadowCascades)
                 {
-                    cameraSystem->getCamera()->mColorTarget = ColorTarget::ShadowCascades;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::ShadowCascades;
                 }
 
                 if (is_selected)
@@ -175,7 +168,7 @@ void SceneView::update(Clipboard &clipboard)
     // whether to render gizmos or not
     if (ImGui::Checkbox("Gizmos", &gizmosChecked))
     {
-        cameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
+        clipboard.mCameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
     }
     ImGui::SameLine();
 
@@ -247,19 +240,19 @@ void SceneView::update(Clipboard &clipboard)
 
     if (cameraSettingsClicked)
     {
-        drawCameraSettingsPopup(cameraSystem, &cameraSettingsClicked);
+        drawCameraSettingsPopup(clipboard.mCameraSystem, &cameraSettingsClicked);
     }
 
     // performance overlay
     if (overlayChecked)
     {
-        drawPerformanceOverlay(clipboard, cameraSystem);
+        drawPerformanceOverlay(clipboard, clipboard.mCameraSystem);
     }
 
     // Update selected entity
     if (isSceneContentHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
     {
-        Id transformId = cameraSystem->getTransformUnderMouse(nx, ny);
+        Id transformId = clipboard.mCameraSystem->getTransformUnderMouse(nx, ny);
 
         Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId);
 
@@ -302,37 +295,39 @@ void SceneView::update(Clipboard &clipboard)
         }
     }
 
-    if (clipboard.getDraggedType() == InteractionType::Mesh)
+    const ImGuiPayload* peek = ImGui::GetDragDropPayload();
+    if (peek != nullptr && peek->IsDataType("MESH_PATH"))
     {
-        if(hoveredThisFrame())
+        if (hoveredThisFrame())
         {
-            Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(clipboard.getDraggedId());
+            const char* data = static_cast<const char*>(peek->Data);
+            std::filesystem::path incomingPath = std::string(data);
+
+            Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(ProjectDatabase::getGuid(incomingPath));
             Transform* transform = entity->getComponent<Transform>();
-           
-            clipboard.mSceneViewTempEntityId = entity->getGuid();
+
             clipboard.mSceneViewTempEntity = entity;
             clipboard.mSceneViewTempTransform = transform;
         }
 
-        if(unhoveredThisFrame())
+        if (unhoveredThisFrame())
         {
-            if (clipboard.mSceneViewTempEntityId.isValid())
+            if (clipboard.mSceneViewTempEntity != nullptr)
             {
-                clipboard.getWorld()->getActiveScene()->immediateDestroyEntity(clipboard.mSceneViewTempEntityId);
-                clipboard.mSceneViewTempEntityId = Guid::INVALID;
+                clipboard.getWorld()->getActiveScene()->immediateDestroyEntity(clipboard.mSceneViewTempEntity->getGuid());
                 clipboard.mSceneViewTempEntity = nullptr;
                 clipboard.mSceneViewTempTransform = nullptr;
             }
         }
 
-        if(isHovered())
+        if (isHovered())
         {
-            if (clipboard.mSceneViewTempEntityId.isValid())
+            if (clipboard.mSceneViewTempEntity != nullptr)
             {
                 float ndc_x = 2 * (mousePosX - 0.5f * sceneContentWidth) / sceneContentWidth;
                 float ndc_y = 2 * (mousePosY - 0.5f * sceneContentHeight) / sceneContentHeight;
 
-                Ray cameraRay = cameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
+                Ray cameraRay = clipboard.mCameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
 
                 Plane xz;
                 xz.mX0 = glm::vec3(0, 0, 0);
@@ -347,24 +342,24 @@ void SceneView::update(Clipboard &clipboard)
     }
 
     // Finally draw scene
-    unsigned int tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsColorTex()->getHandle());
+    unsigned int tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsColorTex()->getHandle());
     
     switch (targets[mActiveTextureIndex])
     {
     case DebugTargets::Depth:
-        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsDepthTex()->getHandle());
+        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getHandle());
         break;
     case DebugTargets::ColorPicking:
-        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsColorPickingTex()->getHandle());
+        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getHandle());
         break;
     case DebugTargets::AlbedoSpecular:
-        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle());
+        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle());
         break;
     case DebugTargets::SSAO:
-        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsSSAOColorTex()->getHandle());
+        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getHandle());
         break;
     case DebugTargets::SSAONoise:
-        tex = *reinterpret_cast<unsigned int*>(cameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle());
+        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle());
         break;
     }
 
