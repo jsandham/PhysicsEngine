@@ -12,6 +12,8 @@ struct Time
 };
 
 float getFPS(const Time& time);
+
+Time &getTime();
 } // namespace PhysicsEngine
 
 #endif

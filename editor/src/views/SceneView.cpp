@@ -1,49 +1,27 @@
 #include "../../include/views/SceneView.h"
 #include "../../include/ProjectDatabase.h"
 
-#include <chrono>
-
 #include "core/Intersect.h"
 #include "core/Log.h"
 #include "core/Rect.h"
 #include "core/Application.h"
 
-#include "imgui.h"
-#include "ImGuizmo.h"
-
 #include "../../include/imgui/imgui_extensions.h"
 
-#include <Windows.h>
-
-using namespace PhysicsEngine;
 using namespace PhysicsEditor;
-
-enum class DebugTargets
-{
-    Color,
-    ColorPicking,
-    Depth,
-    LinearDepth,
-    Normals,
-    ShadowCascades,
-    Position,
-    AlbedoSpecular,
-    SSAO,
-    SSAONoise
-};
 
 SceneView::SceneView() : Window("Scene View")
 {
-    mActiveTextureIndex = 0;
+    mActiveDebugTarget = DebugTargets::Color;
+    mOperation = ImGuizmo::OPERATION::TRANSLATE;
+    mCoordinateMode = ImGuizmo::MODE::LOCAL;
 
     mPerfQueue.setNumberOfSamples(100);
 
     mSceneContentMin = ImVec2(0, 0);
     mSceneContentMax = ImVec2(0, 0);
+    mSceneContentSize = ImVec2(0, 0);
     mIsSceneContentHovered = false;
-
-    mInput = {};
-    mTime = {};
 }
 
 SceneView::~SceneView()
@@ -55,7 +33,7 @@ void SceneView::init(Clipboard &clipboard)
     initWorld(clipboard.getWorld());
 }
 
-void SceneView::update(Clipboard &clipboard)
+void SceneView::update(Clipboard& clipboard)
 {
     clipboard.mOpen[static_cast<int>(View::SceneView)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::SceneView)] = isHovered();
@@ -67,11 +45,36 @@ void SceneView::update(Clipboard &clipboard)
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::SceneView)] = unfocusedThisFrame();
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::SceneView)] = unhoveredThisFrame();
 
-    if (clipboard.mProjectPath.empty())
-    {
-        return;
-    }
+    mSceneContentMin = getContentMin();
+    mSceneContentMax = getContentMax();
 
+    // account for the fact that Image will draw below buttons
+    mSceneContentMin.y += 23;
+
+    mSceneContentSize.x = mSceneContentMax.x - mSceneContentMin.x;
+    mSceneContentSize.y = mSceneContentMax.y - mSceneContentMin.y;
+
+    ImGuiIO& io = ImGui::GetIO();
+    PhysicsEngine::Rect sceneContentRect(mSceneContentMin.x, mSceneContentMin.y, mSceneContentSize.x, mSceneContentSize.y);
+    mIsSceneContentHovered = sceneContentRect.contains(io.MousePos.x, io.MousePos.y);
+
+    if (clipboard.mProjectOpened)
+    {
+        updateWorld(clipboard.getWorld());
+
+        // Do stuff....
+        drawSceneHeader(clipboard);
+
+        if (clipboard.mSceneOpened)
+        {
+            // Do more stuff...
+            drawSceneContent(clipboard);
+        }
+    }
+}
+
+void SceneView::drawSceneHeader(Clipboard& clipboard)
+{
     static bool gizmosChecked = false;
     static bool overlayChecked = false;
     static bool vsyncChecked = true;
@@ -80,72 +83,38 @@ void SceneView::update(Clipboard &clipboard)
     static bool rotationModeActive = false;
     static bool scaleModeActive = false;
 
-    mSceneContentMin = getContentMin();
-    mSceneContentMax = getContentMax();
+    clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
 
-    // account for the fact that Image will draw below buttons
-    mSceneContentMin.y += 23;
-
-    ImVec2 size = mSceneContentMax;
-    size.x -= mSceneContentMin.x;
-    size.y -= mSceneContentMin.y;
-
-    ImGuiIO& io = ImGui::GetIO();
-    float sceneContentWidth = (mSceneContentMax.x - mSceneContentMin.x);
-    float sceneContentHeight = (mSceneContentMax.y - mSceneContentMin.y);
-    float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), sceneContentWidth);
-    float mousePosY =
-        sceneContentHeight - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), sceneContentHeight);
-
-    float nx = mousePosX / sceneContentWidth;
-    float ny = mousePosY / sceneContentHeight;
-
-    Rect sceneContentRect(mSceneContentMin.x, mSceneContentMin.y, sceneContentWidth, sceneContentHeight);
-
-    mIsSceneContentHovered = sceneContentRect.contains(io.MousePos.x, io.MousePos.y);
-
-    clipboard.mCameraSystem->setViewport(0, 0, (int)size.x, (int)size.y);
-    clipboard.mGizmoSystem->mEnabled = !clipboard.mSceneName.empty();
-
-    updateWorld(clipboard.getWorld());
-
-    const int count = 10;
     const char* targetNames[] = { "Color", "Color Picking", "Depth", "Linear Depth", "Normals",
                                     "Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
 
-    const DebugTargets targets[] = {DebugTargets::Color, DebugTargets::ColorPicking, DebugTargets::Depth, 
-                                    DebugTargets::LinearDepth, DebugTargets::Normals, DebugTargets::ShadowCascades, 
-                                    DebugTargets::Position, DebugTargets::AlbedoSpecular, DebugTargets::SSAO,
-                                    DebugTargets::SSAONoise};
-
-    ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
-
     // select draw texture dropdown
-    if (ImGui::BeginCombo("##DrawTexture", targetNames[mActiveTextureIndex]))
+    ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
+    if (ImGui::BeginCombo("##DrawTexture", targetNames[static_cast<int>(mActiveDebugTarget)]))
     {
-        for (int n = 0; n < count; n++)
+        for (int n = 0; n < static_cast<int>(DebugTargets::Count); n++)
         {
-            bool is_selected = (targets[mActiveTextureIndex] == targets[n]);
+            bool is_selected = (mActiveDebugTarget == static_cast<DebugTargets>(n));
             if (ImGui::Selectable(targetNames[n], is_selected))
             {
-                mActiveTextureIndex = n;
+                mActiveDebugTarget = static_cast<DebugTargets>(n);
 
-                clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Color;
-                if (targets[mActiveTextureIndex] == DebugTargets::Normals)
+                clipboard.mCameraSystem->getCamera()->mColorTarget = PhysicsEngine::ColorTarget::Color;
+                if (mActiveDebugTarget == DebugTargets::Normals)
                 {
-                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Normal;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = PhysicsEngine::ColorTarget::Normal;
                 }
-                else if (targets[mActiveTextureIndex] == DebugTargets::Position)
+                else if (mActiveDebugTarget == DebugTargets::Position)
                 {
-                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::Position;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = PhysicsEngine::ColorTarget::Position;
                 }
-                else if (targets[mActiveTextureIndex] == DebugTargets::LinearDepth) 
+                else if (mActiveDebugTarget == DebugTargets::LinearDepth)
                 {
-                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::LinearDepth;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = PhysicsEngine::ColorTarget::LinearDepth;
                 }
-                else if (targets[mActiveTextureIndex] == DebugTargets::ShadowCascades)
+                else if (mActiveDebugTarget == DebugTargets::ShadowCascades)
                 {
-                    clipboard.mCameraSystem->getCamera()->mColorTarget = ColorTarget::ShadowCascades;
+                    clipboard.mCameraSystem->getCamera()->mColorTarget = PhysicsEngine::ColorTarget::ShadowCascades;
                 }
 
                 if (is_selected)
@@ -153,12 +122,6 @@ void SceneView::update(Clipboard &clipboard)
                     ImGui::SetItemDefaultFocus();
                 }
             }
-
-            /*if (textures[n] == -1)
-            {
-                ImGui::PopItemFlag();
-                ImGui::PopStyleVar();
-            }*/
         }
         ImGui::EndCombo();
     }
@@ -168,7 +131,7 @@ void SceneView::update(Clipboard &clipboard)
     // whether to render gizmos or not
     if (ImGui::Checkbox("Gizmos", &gizmosChecked))
     {
-        clipboard.mCameraSystem->setGizmos(gizmosChecked ? CameraGizmos::Gizmos_On : CameraGizmos::Gizmos_Off);
+        clipboard.mCameraSystem->setGizmos(gizmosChecked ? PhysicsEngine::CameraGizmos::Gizmos_On : PhysicsEngine::CameraGizmos::Gizmos_Off);
     }
     ImGui::SameLine();
 
@@ -192,13 +155,12 @@ void SceneView::update(Clipboard &clipboard)
     ImGui::SameLine();
 
     // select transform gizmo movement mode
-    static ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
     if (ImGui::StampButton("T", translationModeActive))
     {
         translationModeActive = true;
         rotationModeActive = false;
         scaleModeActive = false;
-        operation = ImGuizmo::OPERATION::TRANSLATE;
+        mOperation = ImGuizmo::OPERATION::TRANSLATE;
     }
     ImGui::SameLine();
 
@@ -207,7 +169,7 @@ void SceneView::update(Clipboard &clipboard)
         translationModeActive = false;
         rotationModeActive = true;
         scaleModeActive = false;
-        operation = ImGuizmo::OPERATION::ROTATE;
+        mOperation = ImGuizmo::OPERATION::ROTATE;
     }
     ImGui::SameLine();
 
@@ -216,19 +178,18 @@ void SceneView::update(Clipboard &clipboard)
         translationModeActive = false;
         rotationModeActive = false;
         scaleModeActive = true;
-        operation = ImGuizmo::OPERATION::SCALE;
+        mOperation = ImGuizmo::OPERATION::SCALE;
     }
     ImGui::SameLine();
 
-    std::vector<std::string> worldLocalNames = {"Local", "World"};
+    std::vector<std::string> worldLocalNames = { "Local", "World" };
+    //const char* worldLocalNames[] = { "Local", "World" };
     ImGui::PushItemWidth(0.1f * ImGui::GetWindowSize().x);
-
-    static int gizmoMode = static_cast<int>(ImGuizmo::MODE::LOCAL);
-    if (ImGui::Combo("##world/local", &gizmoMode, worldLocalNames))
+    static int coordinateMode = static_cast<int>(mCoordinateMode);
+    if (ImGui::Combo("##Coordinate Mode", &coordinateMode, worldLocalNames))
     {
-
+        mCoordinateMode = static_cast<ImGuizmo::MODE>(coordinateMode);
     }
-
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
@@ -248,13 +209,25 @@ void SceneView::update(Clipboard &clipboard)
     {
         drawPerformanceOverlay(clipboard, clipboard.mCameraSystem);
     }
+}
+
+void SceneView::drawSceneContent(Clipboard& clipboard)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    float mousePosX = std::min(std::max(io.MousePos.x - mSceneContentMin.x, 0.0f), mSceneContentSize.x);
+    float mousePosY = mSceneContentSize.y - std::min(std::max(io.MousePos.y - mSceneContentMin.y, 0.0f), mSceneContentSize.y);
+
+    clipboard.mGizmoSystem->mEnabled = true;
 
     // Update selected entity
     if (isSceneContentHovered() && io.MouseClicked[0] && !ImGuizmo::IsOver())
     {
-        Id transformId = clipboard.mCameraSystem->getTransformUnderMouse(nx, ny);
+        float nx = mousePosX / mSceneContentSize.x;
+        float ny = mousePosY / mSceneContentSize.y;
 
-        Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentById<Transform>(transformId);
+        PhysicsEngine::Id transformId = clipboard.mCameraSystem->getTransformUnderMouse(nx, ny);
+
+        PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentById<PhysicsEngine::Transform>(transformId);
 
         if (transform != nullptr)
         {
@@ -262,30 +235,34 @@ void SceneView::update(Clipboard &clipboard)
         }
         else
         {
-            clipboard.setSelectedItem(InteractionType::None, Guid::INVALID);
+            clipboard.setSelectedItem(InteractionType::None, PhysicsEngine::Guid::INVALID);
         }
     }
 
     clipboard.mGizmoSystem->clearDrawList();
 
     // draw camera gizmos
-    for (int i = 0; i < clipboard.mWorld.getActiveScene()->getNumberOfComponents<Camera>(); i++)
+    for (size_t i = 0; i < clipboard.mWorld.getActiveScene()->getNumberOfComponents<PhysicsEngine::Camera>(); i++)
     {
-        Camera* camera = clipboard.mWorld.getActiveScene()->getComponentByIndex<Camera>(i);
+        PhysicsEngine::Camera* camera = clipboard.mWorld.getActiveScene()->getComponentByIndex<PhysicsEngine::Camera>(i);
 
-        if (camera->mHide == HideFlag::None && camera->mEnabled)
+        if (camera->mHide == PhysicsEngine::HideFlag::None && camera->mEnabled)
         {
-            Entity* entity = camera->getEntity();
-            Transform* transform = clipboard.mWorld.getActiveScene()->getComponent<Transform>(entity->getGuid());
+            PhysicsEngine::Entity* entity = camera->getEntity();
+            PhysicsEngine::Transform* transform = clipboard.mWorld.getActiveScene()->getComponent<PhysicsEngine::Transform>(entity->getGuid());
 
             glm::vec3 position = transform->getPosition();
             glm::vec3 front = transform->getForward();
             glm::vec3 up = transform->getUp();
             glm::vec3 right = transform->getRight();
 
-            std::array<Color, 5> cascadeColors = { Color::red, Color::green, Color::blue, Color::cyan, Color::magenta};
+            std::array<PhysicsEngine::Color, 5> cascadeColors = { PhysicsEngine::Color::red, 
+                                                                  PhysicsEngine::Color::green, 
+                                                                  PhysicsEngine::Color::blue, 
+                                                                  PhysicsEngine::Color::cyan, 
+                                                                  PhysicsEngine::Color::magenta };
 
-            std::array<Frustum, 5> cascadeFrustums = camera->calcCascadeFrustums(camera->calcViewSpaceCascadeEnds());
+            std::array<PhysicsEngine::Frustum, 5> cascadeFrustums = camera->calcCascadeFrustums(camera->calcViewSpaceCascadeEnds());
             for (size_t j = 0; j < cascadeFrustums.size(); j++)
             {
                 cascadeColors[j].mA = 0.3f;
@@ -295,6 +272,7 @@ void SceneView::update(Clipboard &clipboard)
         }
     }
 
+    // drag n drop meshes into scene
     const ImGuiPayload* peek = ImGui::GetDragDropPayload();
     if (peek != nullptr && peek->IsDataType("MESH_PATH"))
     {
@@ -303,8 +281,8 @@ void SceneView::update(Clipboard &clipboard)
             const char* data = static_cast<const char*>(peek->Data);
             std::filesystem::path incomingPath = std::string(data);
 
-            Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(ProjectDatabase::getGuid(incomingPath));
-            Transform* transform = entity->getComponent<Transform>();
+            PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->createNonPrimitive(ProjectDatabase::getGuid(incomingPath));
+            PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
 
             clipboard.mSceneViewTempEntity = entity;
             clipboard.mSceneViewTempTransform = transform;
@@ -324,17 +302,17 @@ void SceneView::update(Clipboard &clipboard)
         {
             if (clipboard.mSceneViewTempEntity != nullptr)
             {
-                float ndc_x = 2 * (mousePosX - 0.5f * sceneContentWidth) / sceneContentWidth;
-                float ndc_y = 2 * (mousePosY - 0.5f * sceneContentHeight) / sceneContentHeight;
+                float ndc_x = 2 * (mousePosX - 0.5f * mSceneContentSize.x) / mSceneContentSize.x;
+                float ndc_y = 2 * (mousePosY - 0.5f * mSceneContentSize.y) / mSceneContentSize.y;
 
-                Ray cameraRay = clipboard.mCameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
+                PhysicsEngine::Ray cameraRay = clipboard.mCameraSystem->normalizedDeviceSpaceToRay(ndc_x, ndc_y);
 
-                Plane xz;
+                PhysicsEngine::Plane xz;
                 xz.mX0 = glm::vec3(0, 0, 0);
                 xz.mNormal = glm::vec3(0, 1, 0);
 
                 float dist = -1.0f;
-                bool intersects = Intersect::intersect(cameraRay, xz, dist);
+                bool intersects = PhysicsEngine::Intersect::intersect(cameraRay, xz, dist);
 
                 clipboard.mSceneViewTempTransform->setPosition((intersects && dist >= 0.0f) ? cameraRay.getPoint(dist) : cameraRay.getPoint(5.0f));
             }
@@ -343,8 +321,8 @@ void SceneView::update(Clipboard &clipboard)
 
     // Finally draw scene
     unsigned int tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsColorTex()->getHandle());
-    
-    switch (targets[mActiveTextureIndex])
+
+    switch (mActiveDebugTarget)
     {
     case DebugTargets::Depth:
         tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getHandle());
@@ -363,12 +341,12 @@ void SceneView::update(Clipboard &clipboard)
         break;
     }
 
-    ImGui::Image((void*)(intptr_t)tex, size, ImVec2(0, size.y / 1080.0f), ImVec2(size.x / 1920.0f, 0));
+    ImGui::Image((void*)(intptr_t)tex, mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
 
     // draw transform gizmo if entity is selected
     if (clipboard.getSelectedType() == InteractionType::Entity)
     {
-        Transform* transform = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(clipboard.getSelectedId());
+        PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Transform>(clipboard.getSelectedId());
 
         if (transform != nullptr)
         {
@@ -384,8 +362,8 @@ void SceneView::update(Clipboard &clipboard)
 
             ImGuizmo::AllowAxisFlip(false);
 
-            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), operation,
-                static_cast<ImGuizmo::MODE>(gizmoMode), glm::value_ptr(model), NULL, NULL);
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), mOperation,
+                mCoordinateMode, glm::value_ptr(model), NULL, NULL);
 
             if (ImGuizmo::IsUsing())
             {
@@ -393,14 +371,14 @@ void SceneView::update(Clipboard &clipboard)
                 glm::quat rotation;
                 glm::vec3 translation;
 
-                Transform::decompose(model, translation, rotation, scale);
+                PhysicsEngine::Transform::decompose(model, translation, rotation, scale);
 
                 transform->setPosition(translation);
                 transform->setScale(scale);
                 transform->setRotation(rotation);
             }
 
-            Camera* camera = clipboard.getWorld()->getActiveScene()->getComponent<Camera>(clipboard.getSelectedId());
+            PhysicsEngine::Camera* camera = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Camera>(clipboard.getSelectedId());
             if (camera != nullptr && camera->mEnabled)
             {
                 camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(), transform->getRight());
@@ -413,7 +391,7 @@ void SceneView::update(Clipboard &clipboard)
 
                 if (camera->mRenderTextureId.isValid())
                 {
-                    RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
+                    PhysicsEngine::RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(camera->mRenderTextureId);
                     ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
                 }
                 else
@@ -444,41 +422,35 @@ void SceneView::initWorld(PhysicsEngine::World *world)
 {
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
-        System *system = world->getSystemByUpdateOrder(i);
+        PhysicsEngine::System *system = world->getSystemByUpdateOrder(i);
 
         system->init(world);
     }
 }
 
-void SceneView::updateWorld(World *world)
+void SceneView::updateWorld(PhysicsEngine::World *world)
 {
     ImGuiIO &io = ImGui::GetIO();
 
-    Input input = isFocused() ? getInput() : Input();
+    PhysicsEngine::Input input = isFocused() ? PhysicsEngine::getInput() : PhysicsEngine::Input();
 
     // Mouse
     if (isFocused())
     {
         // clamp mouse position to be within the scene view content region
-        ImVec2 sceneViewContentMin = getSceneContentMin();
-        ImVec2 sceneViewContentMax = getSceneContentMax();
-
-        int sceneViewContentWidth = (int)(sceneViewContentMax.x - sceneViewContentMin.x);
-        int sceneViewContentHeight = (int)(sceneViewContentMax.y - sceneViewContentMin.y);
-
-        input.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)sceneViewContentMin.x, 0), sceneViewContentWidth);
+        input.mMousePosX = std::min(std::max((int)io.MousePos.x - (int)mSceneContentMin.x, 0), (int)mSceneContentSize.x);
         input.mMousePosY =
-            sceneViewContentHeight -
-            std::min(std::max((int)io.MousePos.y - (int)sceneViewContentMin.y, 0), sceneViewContentHeight);
+            (int)mSceneContentSize.y -
+            std::min(std::max((int)io.MousePos.y - (int)mSceneContentMin.y, 0), (int)mSceneContentSize.y);
     }
 
     // call update on all systems in world
     for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
     {
-        System *system = world->getSystemByUpdateOrder(i);
+        PhysicsEngine::System *system = world->getSystemByUpdateOrder(i);
 
         if (system->mEnabled) {
-            system->update(input, mTime);
+            system->update(input, PhysicsEngine::getTime());
         }
     }
 }
@@ -551,7 +523,7 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
     if (ImGui::Begin("Editor Camera Settings", cameraSettingsActive, ImGuiWindowFlags_NoResize))
     {
         // Editor camera transform
-        Transform* transform = cameraSystem->getCamera()->getComponent<Transform>();
+        PhysicsEngine::Transform* transform = cameraSystem->getCamera()->getComponent<PhysicsEngine::Transform>();
         glm::vec3 position = transform->getPosition();
         glm::quat rotation = transform->getRotation();
         glm::vec3 scale = transform->getScale();
@@ -575,8 +547,8 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
             transform->setScale(scale);
         }
 
-        // Viewport viewport = cameraSystem->getViewport();
-        Frustum frustum = cameraSystem->getFrustum();
+        // PhysicsEngine::Viewport viewport = cameraSystem->getViewport();
+        PhysicsEngine::Frustum frustum = cameraSystem->getFrustum();
 
         // Viewport settings
         /*if (ImGui::InputInt("X", &viewport.mX)) {
@@ -619,12 +591,12 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
 
         if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2))
         {
-            cameraSystem->setRenderPath(static_cast<RenderPath>(renderPath));
+            cameraSystem->setRenderPath(static_cast<PhysicsEngine::RenderPath>(renderPath));
         }
 
         if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
         {
-            cameraSystem->setSSAO(static_cast<CameraSSAO>(ssao));
+            cameraSystem->setSSAO(static_cast<PhysicsEngine::CameraSSAO>(ssao));
         }
 
         // Directional light cascade splits
@@ -634,10 +606,10 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
 
         if (ImGui::Combo("Shadow Cascades", &cascadeType, cascadeTypeNames, 5))
         {
-            cameraSystem->getCamera()->mShadowCascades = static_cast<ShadowCascades>(cascadeType);
+            cameraSystem->getCamera()->mShadowCascades = static_cast<PhysicsEngine::ShadowCascades>(cascadeType);
         }
 
-        if (cameraSystem->getCamera()->mShadowCascades != ShadowCascades::NoCascades)
+        if (cameraSystem->getCamera()->mShadowCascades != PhysicsEngine::ShadowCascades::NoCascades)
         {
             ImColor colors[5] = { ImColor(1.0f, 0.0f, 0.0f),
                               ImColor(0.0f, 1.0f, 0.0f),

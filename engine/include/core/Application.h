@@ -7,7 +7,6 @@
 
 #include "ApplicationWindow.h"
 #include "Layer.h"
-#include "Time.h"
 
 namespace PhysicsEngine
 {
@@ -18,7 +17,6 @@ namespace PhysicsEngine
 
 		std::vector<Layer*> mLayers;
 		std::string mName;
-		Time mTime;
 		bool mRunning;
 		bool mMinimized;
 

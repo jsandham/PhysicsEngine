@@ -444,6 +444,8 @@ void ProjectDatabase::newProject(Clipboard& clipboard, const std::filesystem::pa
 
     clipboard.setActiveProject(projectPath.filename().string(), projectPath.string());
     clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
+
+    clipboard.mProjectOpened = true;
 }
 
 void ProjectDatabase::openProject(Clipboard& clipboard, const std::filesystem::path& projectPath)
@@ -467,6 +469,8 @@ void ProjectDatabase::openProject(Clipboard& clipboard, const std::filesystem::p
 
     clipboard.setActiveProject(projectPath.filename().string(), projectPath.string());
     clipboard.setActiveScene("", "", PhysicsEngine::Guid::INVALID);
+
+    clipboard.mProjectOpened = true;
 }
 
 void ProjectDatabase::saveProject(Clipboard& clipboard)
@@ -480,6 +484,8 @@ void ProjectDatabase::saveProject(Clipboard& clipboard)
     }
 
     clipboard.mModifiedAssets.clear();
+
+    clipboard.mProjectOpened = true;
 }
 
 void ProjectDatabase::newScene(Clipboard& clipboard, const std::string& sceneName)
@@ -500,7 +506,7 @@ void ProjectDatabase::newScene(Clipboard& clipboard, const std::string& sceneNam
     clipboard.mCameraSystem->resetCamera();
 
     // clear any dragged and selected items on clipboard
-    clipboard.clearDraggedItem();
+    //clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
     PhysicsEngine::Scene* scene = clipboard.getWorld()->createScene();
@@ -508,6 +514,8 @@ void ProjectDatabase::newScene(Clipboard& clipboard, const std::string& sceneNam
     {
         clipboard.setActiveScene(sceneName, "", scene->getGuid());
     }
+
+    clipboard.mSceneOpened = true;
 }
 
 void ProjectDatabase::openScene(Clipboard& clipboard, const std::filesystem::path& scenePath)
@@ -534,7 +542,7 @@ void ProjectDatabase::openScene(Clipboard& clipboard, const std::filesystem::pat
     clipboard.mCameraSystem->resetCamera();
 
     // clear any dragged and selected items on clipboard
-    clipboard.clearDraggedItem();
+    //clipboard.clearDraggedItem();
     clipboard.clearSelectedItem();
 
     // load scene into world
@@ -543,6 +551,8 @@ void ProjectDatabase::openScene(Clipboard& clipboard, const std::filesystem::pat
     {
         clipboard.setActiveScene(scenePath.filename().string(), scenePath.string(), scene->getGuid());
     }
+
+    clipboard.mSceneOpened = true;
 }
 
 void ProjectDatabase::saveScene(Clipboard& clipboard, const std::filesystem::path& scenePath)

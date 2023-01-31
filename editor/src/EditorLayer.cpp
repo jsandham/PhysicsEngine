@@ -45,11 +45,6 @@ void EditorLayer::update(const PhysicsEngine::Time& time)
 
     mDebugOverlay.update(mClipboard);
 
-    if (mClipboard.getDraggedType() != InteractionType::None)
-    {
-        ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, mClipboard.mDraggedPath.string().c_str());
-    }
-
     mClipboard.mTime = time;
 }
 

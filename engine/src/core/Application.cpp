@@ -1,6 +1,7 @@
 #include "../../include/core/Application.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/Input.h"
+#include "../../include/core/Time.h"
 #include "../../include/graphics/Renderer.h"
 #include "../../include/graphics/RendererShaders.h"
 #include "../../include/graphics/RendererUniforms.h"
@@ -21,10 +22,10 @@ Application::Application(const std::string& name, int width, int height)
 	mRunning = true;
 	mMinimized = false;
 
-	mTime.mStartTime = 0;
-	mTime.mEndTime = 0;
-	mTime.mDeltaTime = 0;
-	mTime.mFrameCount = 0;
+	getTime().mStartTime = 0;
+    getTime().mEndTime = 0;
+    getTime().mDeltaTime = 0;
+    getTime().mFrameCount = 0;
 
 	mWindow = ApplicationWindow::createApplicationWindow(name, width, height);
 
@@ -60,7 +61,7 @@ void Application::run()
 
 			for (Layer* layer : mLayers)
 			{
-				layer->update(mTime);
+				layer->update(getTime());
 			}
 
 			for (Layer* layer : mLayers)
@@ -76,10 +77,10 @@ void Application::run()
 		std::chrono::duration<double> end_time = end - app_start;
 		std::chrono::duration<double> elapsed_time = end - start;
 
-		mTime.mStartTime = start_time.count();
-		mTime.mEndTime = end_time.count();
-		mTime.mDeltaTime = elapsed_time.count();
-		mTime.mFrameCount++;
+		getTime().mStartTime = start_time.count();
+        getTime().mEndTime = end_time.count();
+        getTime().mDeltaTime = elapsed_time.count();
+        getTime().mFrameCount++;
 
 		mRunning = mWindow->isRunning();
         mMinimized = mWindow->isMinimized();

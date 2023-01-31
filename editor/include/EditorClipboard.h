@@ -35,12 +35,9 @@ class Clipboard
         std::filesystem::path mProjectPath;
         std::filesystem::path mScenePath;
         std::filesystem::path mSelectedPath;
-        std::filesystem::path mDraggedPath;
         PhysicsEngine::Guid mSceneId;
         PhysicsEngine::Guid mSelectedId;
-        PhysicsEngine::Guid mDraggedId;
         InteractionType mSelectedType;
-        InteractionType mDraggedType;
         PhysicsEngine::Guid mSceneViewTempEntityId;
         PhysicsEngine::Entity* mSceneViewTempEntity;
         PhysicsEngine::Transform* mSceneViewTempTransform;
@@ -52,6 +49,8 @@ class Clipboard
         PhysicsEngine::GizmoSystem* mGizmoSystem;
         PhysicsEngine::CleanUpSystem* mCleanUpSystem;
 
+        bool mProjectOpened;
+        bool mSceneOpened;
         bool mProjectDirty;
         bool mSceneDirty;
 
@@ -88,16 +87,12 @@ class Clipboard
 
         PhysicsEngine::World* getWorld();
 
-        InteractionType getDraggedType() const;
         InteractionType getSelectedType() const;
-        PhysicsEngine::Guid getDraggedId() const;
         PhysicsEngine::Guid getSelectedId() const;
         std::filesystem::path getSelectedPath() const;
 
-        void setDraggedItem(InteractionType type, PhysicsEngine::Guid id);
         void setSelectedItem(InteractionType type, PhysicsEngine::Guid id);
         void setSelectedItem(InteractionType type, std::string path);
-        void clearDraggedItem();
         void clearSelectedItem();
 };
 

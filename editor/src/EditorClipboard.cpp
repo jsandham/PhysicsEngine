@@ -12,10 +12,6 @@ Clipboard::Clipboard()
     mSelectedId = PhysicsEngine::Guid::INVALID;
     mSelectedPath = std::filesystem::path();
 
-    mDraggedType = InteractionType::None;
-    mDraggedId = PhysicsEngine::Guid::INVALID;
-    mDraggedPath = std::filesystem::path();
-
     mProjectName = "";
     mProjectPath = std::filesystem::path();
     mSceneName = "";
@@ -39,6 +35,8 @@ Clipboard::Clipboard()
     mGizmoSystem->mHide = PhysicsEngine::HideFlag::DontSave;
     mCleanUpSystem->mHide = PhysicsEngine::HideFlag::DontSave;
 
+    mProjectOpened = false;
+    mSceneOpened = false;
     mProjectDirty = false;
     mSceneDirty = false;
 
@@ -107,19 +105,9 @@ PhysicsEngine::World* Clipboard::getWorld()
     return &mWorld;
 }
 
-InteractionType Clipboard::getDraggedType() const
-{
-    return mDraggedType;
-}
-
 InteractionType Clipboard::getSelectedType() const
 {
     return mSelectedType;
-}
-
-PhysicsEngine::Guid Clipboard::getDraggedId() const
-{
-    return mDraggedId;
 }
 
 PhysicsEngine::Guid Clipboard::getSelectedId() const
@@ -132,12 +120,6 @@ std::filesystem::path Clipboard::getSelectedPath() const
     return mSelectedPath;
 }
 
-void Clipboard::setDraggedItem(InteractionType type, PhysicsEngine::Guid id)
-{
-    mDraggedType = type;
-    mDraggedId = id;
-}
-
 void Clipboard::setSelectedItem(InteractionType type, PhysicsEngine::Guid id)
 {
     mSelectedType = type;
@@ -148,13 +130,6 @@ void Clipboard::setSelectedItem(InteractionType type, std::string path)
 {
     mSelectedType = type;
     mSelectedPath = path;
-}
-
-void Clipboard::clearDraggedItem()
-{
-    mDraggedType = InteractionType::None;
-    mDraggedId = PhysicsEngine::Guid::INVALID;
-    mDraggedPath = "";
 }
 
 void Clipboard::clearSelectedItem()

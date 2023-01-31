@@ -62,11 +62,6 @@ void DebugOverlay::update(Clipboard& clipboard)
 
                 ImGui::EndTabBar();
             }
-
-            if (clipboard.getDraggedType() != InteractionType::None)
-            {
-                ImGui::GetForegroundDrawList()->AddText(ImGui::GetMousePos(), 0xFFFFFFFF, clipboard.mDraggedPath.string().c_str());
-            }
         }
 
         ImGui::End();
@@ -108,8 +103,6 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
 
     ImGui::Text("Selected id: %s\n", clipboard.getSelectedId().toString().c_str());
     ImGui::Text("Selected type: %s\n", std::to_string((int)clipboard.getSelectedType()).c_str());
-    ImGui::Text("Dragged id: %s\n", clipboard.getDraggedId().toString().c_str());
-    ImGui::Text("Dragged type: %s\n", std::to_string((int)clipboard.getDraggedType()).c_str());
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
