@@ -4,6 +4,7 @@
 #include "../../include/ProjectDatabase.h"
 #include "../../include/imgui/imgui_extensions.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 using namespace PhysicsEditor;
 
@@ -185,7 +186,8 @@ void Hierarchy::update(Clipboard &clipboard)
             }
 
             // dropping mesh into hierarchy
-            if (ImGui::BeginDragDropTarget())
+            ImRect rect(getContentMin(), getContentMax());
+            if (ImGui::BeginDragDropTargetCustom(rect, ImGui::GetCurrentWindow()->ID))
             {
                 const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_PATH");
                 if (payload != nullptr)
@@ -202,18 +204,6 @@ void Hierarchy::update(Clipboard &clipboard)
 
                 ImGui::EndDragDropTarget();
             }
-
-
-
-
-            /*if (ImGui::IsMouseReleased(0) && isHovered())
-            {
-                if (clipboard.getDraggedType() == InteractionType::Mesh)
-                {
-                    clipboard.getWorld()->getActiveScene()->createNonPrimitive(clipboard.getDraggedId());
-                    clipboard.clearDraggedItem();
-                }
-            }*/
         }
     }
 }

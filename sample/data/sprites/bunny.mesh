@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 513e44e4-ecc2-4720-819c-55888d21eea2
+  name: bunny
+  source: bunny.obj

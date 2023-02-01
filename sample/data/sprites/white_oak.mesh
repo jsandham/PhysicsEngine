@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 35c696c4-2258-4e72-8bda-dfc4358f6ce5
+  name: white_oak
+  source: white_oak.obj

@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: a9697e47-9aa5-4fd3-89ad-a5d139f4fee9
+  name: sphere-cubecoords
+  source: sphere-cubecoords.obj

@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 0b4b3026-4fb7-4cde-a393-2705f6b7eeaf
+  name: buddha
+  source: buddha.obj

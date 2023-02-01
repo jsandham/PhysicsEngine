@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 052a6638-6dfb-46b8-b53f-976685f32e8b
+  name: sphere-cylcoords-16k
+  source: sphere-cylcoords-16k.obj

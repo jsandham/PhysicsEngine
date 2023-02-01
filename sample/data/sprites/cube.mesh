@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: c8bbc6d3-8784-42eb-a1a3-eda3e0253898
+  name: cube
+  source: cube.obj

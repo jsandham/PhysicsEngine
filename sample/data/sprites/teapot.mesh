@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 18c888a9-138f-490d-98c9-06ca301d42da
+  name: teapot
+  source: teapot.obj

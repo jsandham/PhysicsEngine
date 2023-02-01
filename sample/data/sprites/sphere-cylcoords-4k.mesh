@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: 3910f94e-96ae-4a74-b36a-24c8d9969bd5
+  name: sphere-cylcoords-4k
+  source: sphere-cylcoords-4k.obj

@@ -1,0 +1,6 @@
+Mesh:
+  type: 1005
+  hide: 0
+  id: de6ae598-6c43-44d6-9c0d-effc5bebc05f
+  name: dragon
+  source: dragon.obj
