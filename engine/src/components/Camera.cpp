@@ -325,7 +325,7 @@ Id Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
-    Renderer::getRenderer()->readColorAtPixel(reinterpret_cast<unsigned int*>(mTargets.mColorPickingFBO->getHandle()), x, y, &color);
+    Renderer::getRenderer()->readColorAtPixel(mTargets.mColorPickingFBO, x, y, &color);
 
     std::unordered_map<Color32, Id>::const_iterator it = mColoringMap.find(color);
     if (it != mColoringMap.end())

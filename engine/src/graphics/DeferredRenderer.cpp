@@ -112,7 +112,8 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
     //for (size_t i = 0; i < renderObjects.size(); i++)
     //{
     //    Renderer::getRenderer()->setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
-    //    Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+    //    //Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+    //    Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
     //}
     //int currentMaterialIndex = -1;
     //Material *material = nullptr;
@@ -136,7 +137,7 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
             //    currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
             //}
 
-            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }
@@ -239,11 +240,16 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
 
             mColorInstancedShader->bind();
            
-            Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
-                                           renderObjects[i].instanceCount);
-            Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
-                                                renderObjects[i].instanceCount);
-            Renderer::getRenderer()->renderInstanced(renderObjects[i], camera->mQuery);
+            renderObjects[i].instanceModelBuffer->bind();
+            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceModelBuffer->unbind();
+
+            renderObjects[i].instanceColorBuffer->bind();
+            renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
+                                                          sizeof(glm::vec4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceColorBuffer->unbind();
+            Renderer::getRenderer()->drawInstanced(renderObjects[i], camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -260,7 +266,7 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor(Color32(r, g, b, a));
 
-            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }

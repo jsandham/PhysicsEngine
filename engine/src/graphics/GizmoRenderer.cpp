@@ -5,12 +5,22 @@ using namespace PhysicsEngine;
 
 GizmoRenderer::GizmoRenderer()
 {
+    mFrustumVertexBuffer = VertexBuffer::create();
+    mFrustumNormalBuffer = VertexBuffer::create();
+    mFrustumHandle = MeshHandle::create();
+
+    mGridVertexBuffer = VertexBuffer::create();
+    mGridHandle = MeshHandle::create();
 }
 
 GizmoRenderer::~GizmoRenderer()
 {
-    Renderer::getRenderer()->destroyFrustum(&mFrustumVAO, &mFrustumVBO[0], &mFrustumVBO[1]);
-    Renderer::getRenderer()->destroyGrid(&mGridVAO, &mGridVBO);
+    delete mFrustumVertexBuffer;
+    delete mFrustumNormalBuffer;
+    delete mFrustumHandle;
+
+    delete mGridVertexBuffer;
+    delete mGridHandle;
 }
 
 void GizmoRenderer::init(World *world)
@@ -26,8 +36,16 @@ void GizmoRenderer::init(World *world)
     mFrustumVertices.resize(108, 0.0f);
     mFrustumNormals.resize(108, 0.0f);
 
-    Renderer::getRenderer()->createFrustum(mFrustumVertices, mFrustumNormals, &mFrustumVAO,
-                                           &mFrustumVBO[0], &mFrustumVBO[1]);
+    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->resize(sizeof(float) * mFrustumVertices.size());
+    mFrustumVertexBuffer->unbind();
+
+    mFrustumNormalBuffer->bind();
+    mFrustumNormalBuffer->resize(sizeof(float) * mFrustumNormals.size());
+    mFrustumNormalBuffer->unbind();
+
+    mFrustumHandle->addVertexBuffer(mFrustumVertexBuffer, AttribType::Vec3);
+    mFrustumHandle->addVertexBuffer(mFrustumNormalBuffer, AttribType::Vec3);
 
     for (int i = -100; i < 100; i++)
     {
@@ -47,7 +65,12 @@ void GizmoRenderer::init(World *world)
         mGridVertices.push_back(end);
     }
 
-    Renderer::getRenderer()->createGrid(mGridVertices, &mGridVAO, &mGridVBO);
+    mGridVertexBuffer->bind();
+    mGridVertexBuffer->resize(sizeof(glm::vec3) * mGridVertices.size());
+    mGridVertexBuffer->setData(mGridVertices.data(), 0, sizeof(glm::vec3) * mGridVertices.size());
+    mGridVertexBuffer->unbind();
+
+    mGridHandle->addVertexBuffer(mGridVertexBuffer, AttribType::Vec3);
 }
 
 void GizmoRenderer::update(Camera *camera)
@@ -148,10 +171,22 @@ void GizmoRenderer::renderLineGizmos(Camera *camera)
         colors[8 * i + 7] = mLines[i].mColor.mA;
     }
 
-    unsigned int lineVAO;
-    unsigned int lineVBO[2];
+    VertexBuffer *lineVertexBuffer = VertexBuffer::create();
+    VertexBuffer *lineColorBuffer = VertexBuffer::create();
+    MeshHandle *lineHandle = MeshHandle::create();
 
-    Renderer::getRenderer()->createLine(vertices, colors, &lineVAO, &lineVBO[0], &lineVBO[1]);
+    lineVertexBuffer->bind();
+    lineVertexBuffer->resize(sizeof(float) * vertices.size());
+    lineVertexBuffer->setData(vertices.data(), 0, sizeof(float) * vertices.size());
+    lineVertexBuffer->unbind();
+
+    lineColorBuffer->bind();
+    lineColorBuffer->resize(sizeof(float) * colors.size());
+    lineColorBuffer->setData(colors.data(), 0, sizeof(float) * colors.size());
+    lineColorBuffer->unbind();
+
+    lineHandle->addVertexBuffer(lineVertexBuffer, AttribType::Vec3);
+    lineHandle->addVertexBuffer(lineColorBuffer, AttribType::Vec4);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -162,11 +197,13 @@ void GizmoRenderer::renderLineGizmos(Camera *camera)
     mLineShader->bind();
     mLineShader->setMVP(mvp);
 
-    Renderer::getRenderer()->renderLines(lineVAO, 0, (int)vertices.size() / 3);
+    lineHandle->drawLines(0, vertices.size() / 3);
 
     camera->getNativeGraphicsMainFBO()->unbind();
 
-    Renderer::getRenderer()->destroyLine(&lineVAO, &lineVBO[0], &lineVBO[1]);
+    delete lineVertexBuffer;
+    delete lineColorBuffer;
+    delete lineHandle;
 }
 
 void GizmoRenderer::renderSphereGizmos(Camera *camera)
@@ -203,7 +240,7 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
         mGizmoShader->setColor(mSpheres[i].mColor);
         mGizmoShader->setModel(model);
 
-        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
@@ -246,7 +283,7 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
         mGizmoShader->setColor(mAABBs[i].mColor);
         mGizmoShader->setModel(model);
 
-        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
@@ -295,7 +332,7 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
         mGizmoShader->setColor(mPlanes[i].mColor);
         mGizmoShader->setModel(model);
 
-        Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
@@ -386,9 +423,15 @@ void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo 
     mGizmoShader->setColor(gizmo.mColor);
     mGizmoShader->setModel(glm::mat4(1.0f));
 
-    Renderer::getRenderer()->updateFrustum(mFrustumVertices, mFrustumNormals, mFrustumVBO[0], mFrustumVBO[1]);
+    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->setData(mFrustumVertices.data(), 0, sizeof(float) * mFrustumVertices.size());
+    mFrustumVertexBuffer->unbind();
 
-    Renderer::getRenderer()->renderWithCurrentlyBoundVAO(0, (int)mFrustumVertices.size() / 3);
+    mFrustumNormalBuffer->bind();
+    mFrustumNormalBuffer->setData(mFrustumNormals.data(), 0, sizeof(float) * mFrustumNormals.size());
+    mFrustumNormalBuffer->unbind();
+
+    mFrustumHandle->draw(0, mFrustumVertices.size() / 3);
 }
 
 void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo)
@@ -433,9 +476,11 @@ void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGiz
     mLineShader->bind();
     mLineShader->setMVP(mvp);
 
-    Renderer::getRenderer()->updateFrustum(mFrustumVertices, mFrustumVBO[0]);
-    
-    Renderer::getRenderer()->renderLinesWithCurrentlyBoundVAO(0, 24);
+    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->setData(mFrustumVertices.data(), 0, sizeof(float) * mFrustumVertices.size());
+    mFrustumVertexBuffer->unbind();
+ 
+    mFrustumHandle->drawLines(0, 24);
 }
 
 void GizmoRenderer::renderFrustumGizmos(Camera *camera)
@@ -452,7 +497,7 @@ void GizmoRenderer::renderFrustumGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    Renderer::getRenderer()->bindVertexArray(mFrustumVAO);
+    mFrustumHandle->bind();
 
     for (size_t i = 0; i < mFrustums.size(); i++)
     {
@@ -466,7 +511,7 @@ void GizmoRenderer::renderFrustumGizmos(Camera *camera)
         }
     }
 
-    Renderer::getRenderer()->unbindVertexArray();
+    mFrustumHandle->unbind();
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
@@ -488,7 +533,7 @@ void GizmoRenderer::renderGridGizmo(Camera *camera)
     mGridShader->setMVP(mvp);
     mGridShader->setColor(mGridColor);
 
-    Renderer::getRenderer()->renderLines(0, (int)mGridVertices.size(), mGridVAO);
+    mGridHandle->drawLines(0, mGridVertices.size());
 
     camera->getNativeGraphicsMainFBO()->unbind();
 

@@ -6,6 +6,7 @@
 #include "glm/glm.hpp"
 #include "../core/Color.h"
 
+#include "MeshHandle.h"
 #include "TextureHandle.h"
 
 namespace PhysicsEngine
@@ -14,9 +15,8 @@ namespace PhysicsEngine
     {
         glm::mat4 model;
         Color color;
-        int vao;
-        //int texture;
-        TextureHandle *texture;
+        MeshHandle *mHandle;
+        TextureHandle *mTexture;
     } SpriteObject;
 } // namespace PhysicsEngine
 

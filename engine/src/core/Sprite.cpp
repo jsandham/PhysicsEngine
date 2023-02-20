@@ -6,22 +6,54 @@ using namespace PhysicsEngine;
 
 Sprite::Sprite(World *world, const Id &id) : Asset(world, id)
 {
-    mCreated = false;
-    mChanged = false;
+    mBuffer = VertexBuffer::create();
+    mHandle = MeshHandle::create();
+
+    mHandle->addVertexBuffer(mBuffer, AttribType::Vec4);
+
+    float vertices[] = {// pos      // tex
+                        0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f};
+
+    mBuffer->bind();
+    if (mBuffer->getSize() < sizeof(float) * 24)
+    {
+        mBuffer->resize(sizeof(float) * 24);
+    }
+    mBuffer->setData(vertices, 0, sizeof(float) * 24);
+    mBuffer->unbind();
 
     mPixelsPerUnit = 100;
+    mChanged = false;
 }
 
 Sprite::Sprite(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
 {
-    mCreated = false;
-    mChanged = false;
+    mBuffer = VertexBuffer::create();
+    mHandle = MeshHandle::create();
+   
+    mHandle->addVertexBuffer(mBuffer, AttribType::Vec4);
+
+    float vertices[] = {// pos      // tex
+                        0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f};
+
+    mBuffer->bind();
+    if (mBuffer->getSize() < sizeof(float) * 24)
+    {
+        mBuffer->resize(sizeof(float) * 24);
+    }
+    mBuffer->setData(vertices, 0, sizeof(float) * 24);
+    mBuffer->unbind();
 
     mPixelsPerUnit = 100;
+    mChanged = false;
 }
 
 Sprite::~Sprite()
 {
+    delete mBuffer;
+    delete mHandle;
 }
 
 void Sprite::serialize(YAML::Node &out) const
@@ -50,19 +82,14 @@ std::string Sprite::getObjectName() const
     return PhysicsEngine::SPRITE_NAME;
 }
 
-bool Sprite::isCreated() const
-{
-    return mCreated;
-}
-
 bool Sprite::isChanged() const
 {
     return mChanged;
 }
 
-unsigned int Sprite::getNativeGraphicsVAO() const
+MeshHandle *Sprite::getNativeGraphicsHandle() const
 {
-    return mVao;
+    return mHandle;
 }
 
 Guid Sprite::getTextureId() const
@@ -75,28 +102,4 @@ void Sprite::setTextureId(Guid textureId)
     mTextureId = textureId;
 
     mChanged = true;
-}
-
-void Sprite::create()
-{
-    if (mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->createSprite(&mVao);
-
-    mCreated = true;
-}
-
-void Sprite::destroy()
-{
-    if (!mCreated)
-    {
-        return;
-    }
-
-    Renderer::getRenderer()->destroySprite(&mVao);
-
-    mCreated = false;
 }

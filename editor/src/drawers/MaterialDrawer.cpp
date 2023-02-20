@@ -27,6 +27,8 @@ MaterialDrawer::MaterialDrawer()
 
     mCameraUniform = RendererUniforms::getCameraUniform();
     mLightUniform = RendererUniforms::getLightUniform();
+
+    mDrawRequired = true;
 }
 
 MaterialDrawer::~MaterialDrawer()
@@ -68,6 +70,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                     material->setShaderId(currentShaderId);
                     material->onShaderChanged();
                     clipboard.mModifiedAssets.insert(material->getGuid());
+
+                    mDrawRequired = true;
                 }
                 if (is_selected)
                 {
@@ -77,7 +81,10 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::EndCombo();
         }
 
-        if (currentShaderId.isInvalid()) {
+        Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+
+        if (shader == nullptr) 
+        {
             // material has no shader assigned to it
             return;
         }
@@ -118,7 +125,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
         if (ImGui::Checkbox("Enable Instancing", &material->mEnableInstancing))
         {
-
+            mDrawRequired = true;
         }
 
         ImGui::Separator();
@@ -126,43 +133,46 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         // Draw material preview child window
         ImGui::Text("Preview");
 
-        Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
-        Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+        // A change to the material was made so re-draw required
+        if(mDrawRequired)
+        {
+            Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
+            if (mesh != nullptr)
+            {
+                mCameraUniform->setView(mView);
+                mCameraUniform->setProjection(mProjection);
+                mCameraUniform->setViewProjection(mViewProjection);
+                mCameraUniform->setCameraPos(mCameraPos);
 
-        if (mesh == nullptr || shader == nullptr) {
-            return;
+                mLightUniform->setLightIntensity(1.0f);
+                mLightUniform->setShadowNearPlane(0.1f);
+                mLightUniform->setShadowFarPlane(10.0f);
+                mLightUniform->setShadowBias(0.005f);
+                mLightUniform->setShadowRadius(0.0f);
+                mLightUniform->setShadowStrength(1.0f);
+
+                mCameraUniform->copyToUniformsToDevice();
+                mLightUniform->copyToUniformsToDevice();
+
+                int64_t variant = 0;
+                variant |= static_cast<int64_t>(ShaderMacro::Directional);
+                variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
+
+                shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
+                shader->setMat4("model", mModel);
+
+                material->apply();
+
+                mFBO->bind();
+                mFBO->setViewport(0, 0, 1000, 1000);
+                mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+                mFBO->clearDepth(1.0f);
+                mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
+                mFBO->unbind();
+            }
+
+            mDrawRequired = false;
         }
-
-        mCameraUniform->setView(mView);
-        mCameraUniform->setProjection(mProjection);
-        mCameraUniform->setViewProjection(mViewProjection);
-        mCameraUniform->setCameraPos(mCameraPos);
-
-        mLightUniform->setLightIntensity(1.0f);
-        mLightUniform->setShadowNearPlane(0.1f);
-        mLightUniform->setShadowFarPlane(10.0f);
-        mLightUniform->setShadowBias(0.005f);
-        mLightUniform->setShadowRadius(0.0f);
-        mLightUniform->setShadowStrength(1.0f);
-
-        mCameraUniform->copyToUniformsToDevice();
-        mLightUniform->copyToUniformsToDevice();
-
-        int64_t variant = 0;
-        variant |= static_cast<int64_t>(ShaderMacro::Directional);
-        variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
-
-        shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
-        shader->setMat4("model", mModel);
-
-        material->apply();
-
-        mFBO->bind();
-        mFBO->setViewport(0, 0, 1000, 1000);
-        mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
-        mFBO->clearDepth(1.0f);
-        Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
-        mFBO->unbind();
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
         ImGui::BeginChild("MaterialPreviewWindow",
@@ -186,6 +196,7 @@ void MaterialDrawer::drawIntUniform(Clipboard& clipboard, Material* material, Sh
     {
         material->setInt(uniform->mName, temp);
         clipboard.mModifiedAssets.insert(material->getGuid());
+        mDrawRequired = true;
     }
 }
 
@@ -197,6 +208,7 @@ void MaterialDrawer::drawFloatUniform(Clipboard& clipboard, Material* material, 
     {
         material->setFloat(uniform->mName, temp);
         clipboard.mModifiedAssets.insert(material->getGuid());
+        mDrawRequired = true;
     }
 }
 
@@ -208,6 +220,7 @@ void MaterialDrawer::drawColorUniform(Clipboard& clipboard, Material* material, 
     {
         material->setColor(uniform->mName, temp);
         clipboard.mModifiedAssets.insert(material->getGuid());
+        mDrawRequired = true;
     }
 }
 
@@ -219,6 +232,7 @@ void MaterialDrawer::drawVec2Uniform(Clipboard& clipboard, Material* material, S
     {
         material->setVec2(uniform->mName, temp);
         clipboard.mModifiedAssets.insert(material->getGuid());
+        mDrawRequired = true;
     }
 }
 
@@ -233,6 +247,7 @@ void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, Material* material, S
         {
             material->setVec3(uniform->mName, temp);
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
     }
     else
@@ -241,6 +256,7 @@ void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, Material* material, S
         {
             material->setVec3(uniform->mName, temp);
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
     }
 }
@@ -256,6 +272,7 @@ void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, Material* material, S
         {
             material->setVec4(uniform->mName, temp);
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
     }
     else
@@ -264,6 +281,7 @@ void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, Material* material, S
         {
             material->setVec4(uniform->mName, temp);
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
     }
 }
@@ -284,6 +302,7 @@ void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* materi
         {
             clipboard.setSelectedItem(InteractionType::Texture2D, texture->getGuid());
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
     }
 
@@ -297,6 +316,7 @@ void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* materi
             material->setTexture(uniform->mName, ProjectDatabase::getGuid(data));
             material->onTextureChanged();
             clipboard.mModifiedAssets.insert(material->getGuid());
+            mDrawRequired = true;
         }
         ImGui::EndDragDropTarget();
     }

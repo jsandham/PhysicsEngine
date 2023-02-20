@@ -13,7 +13,8 @@ class OpenGLMeshHandle : public MeshHandle
 {
   private:
     unsigned int mVao;
-    VertexBuffer *mVbo[5];
+    unsigned int mVertexAttribIndex;
+    std::vector<VertexBuffer *> mBuffers;
 
   public:
     OpenGLMeshHandle();
@@ -21,10 +22,10 @@ class OpenGLMeshHandle : public MeshHandle
 
     void bind() override;
     void unbind() override;
-    void setData(void* data, size_t offset, size_t size, MeshVBO meshVBO) override;
-    void draw() override;
-    VertexBuffer *getVBO(MeshVBO meshVBO) override;
-    unsigned int getVAO() override;
+    void addVertexBuffer(VertexBuffer* buffer, AttribType type) override;
+    void drawLines(size_t vertexOffset, size_t vertexCount) override;
+    void draw(size_t vertexOffset, size_t vertexCount) override;
+    void drawInstanced(size_t vertexOffset, size_t vertexCount, size_t instanceCount) override;
 };
 } // namespace PhysicsEngine
 

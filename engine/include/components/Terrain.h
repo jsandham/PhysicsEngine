@@ -9,6 +9,8 @@
 
 #include "glm/glm.hpp"
 
+#include "../graphics/MeshHandle.h"
+
 namespace PhysicsEngine
 {
 struct TerrainChunk
@@ -45,8 +47,11 @@ class Terrain : public Component
         std::vector<float> mPlaneVertices;
         std::vector<float> mPlaneTexCoords;
 
-        unsigned int mVao;
-        unsigned int mVbo[3];
+        MeshHandle *mHandle;
+
+        VertexBuffer *mVertexBuffer;
+        VertexBuffer *mNormalBuffer;
+        VertexBuffer *mTexCoordsBuffer;
 
         int mTotalChunkCount;
 
@@ -87,7 +92,7 @@ class Terrain : public Component
         std::vector<float> getNormals() const;
         std::vector<float> getTexCoords() const;
 
-        unsigned int getNativeGraphicsVAO() const;
+        MeshHandle *getNativeGraphicsHandle() const;
 
         void setMaterial(Guid materialId);
         void setGrassMesh(Guid meshId, int index);

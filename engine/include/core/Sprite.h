@@ -7,6 +7,9 @@
 #include "Asset.h"
 #include "Guid.h"
 
+#include "../graphics/VertexBuffer.h"
+#include "../graphics/MeshHandle.h"
+
 #define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
 
@@ -16,10 +19,8 @@ class Sprite : public Asset
 {
   private:
     Guid mTextureId;
-    unsigned int mVao;
-    // int mWidth;
-    // int mHeight;
-    bool mCreated;
+    MeshHandle *mHandle;
+    VertexBuffer *mBuffer;
     bool mChanged;
 
   public:
@@ -36,16 +37,12 @@ class Sprite : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    bool isCreated() const;
     bool isChanged() const;
 
-    unsigned int getNativeGraphicsVAO() const;
+    MeshHandle *getNativeGraphicsHandle() const;
 
     Guid getTextureId() const;
     void setTextureId(Guid textureId);
-
-    void create();
-    void destroy();
 };
 
 template <> struct AssetType<Sprite>

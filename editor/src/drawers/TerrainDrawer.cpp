@@ -169,7 +169,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             mFBO->clearColor(Color::black);
 
             mProgram->bind();
-            Renderer::getRenderer()->render(0, terrain->getVertices().size() / 3, terrain->getNativeGraphicsVAO());
+            terrain->getNativeGraphicsHandle()->draw(0, terrain->getVertices().size() / 3);
             mProgram->unbind();
             mFBO->unbind();
 

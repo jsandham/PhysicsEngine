@@ -180,29 +180,6 @@ void RenderSystem::registerRenderAssets(World *world)
         if (mesh->deviceUpdateRequired())
         {
             mesh->copyMeshToDevice();
-
-            //if (!mesh->isCreated())
-            //{
-            //    std::string errorMessage = "Error: Failed to create mesh " + mesh->getGuid().toString() + "\n";
-            //    Log::error(errorMessage.c_str());
-            //}
-        }
-    }
-
-    // create all sprite assets not already created
-    for (size_t i = 0; i < world->getNumberOfAssets<Sprite>(); i++)
-    {
-        Sprite* sprite = world->getAssetByIndex<Sprite>(i);
-
-        if (!sprite->isCreated())
-        {
-            sprite->create();
-
-            if (!sprite->isCreated())
-            {
-                std::string errorMessage = "Error: Failed to create sprite " + sprite->getGuid().toString() + "\n";
-                Log::error(errorMessage.c_str());
-            }
         }
     }
 }
@@ -286,9 +263,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.shaderIndex = shaderIndex;
                     object.start = subMeshVertexStartIndex;
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-                    object.vao = mesh->getNativeGraphicsVAO();
-                    object.instanceModelVbo = *reinterpret_cast<unsigned int*>(mesh->getNativeGraphicsVBO(MeshVBO::InstanceModel));
-                    object.instanceColorVbo = *reinterpret_cast<unsigned int*>(mesh->getNativeGraphicsVBO(MeshVBO::InstanceColor));
+                    object.meshHandle = mesh->getNativeGraphicsHandle();
+                    object.instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+                    object.instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
                     object.instanced = true;
 
                     std::pair<Guid, RenderObject> key = std::make_pair(material->getGuid(), object);
@@ -324,9 +301,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.shaderIndex = shaderIndex;
                     object.start = subMeshVertexStartIndex;
                     object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-                    object.vao = mesh->getNativeGraphicsVAO();
-                    object.instanceModelVbo = -1;
-                    object.instanceColorVbo = -1;
+                    object.meshHandle = mesh->getNativeGraphicsHandle();
+                    object.instanceModelBuffer = nullptr;
+                    object.instanceColorBuffer = nullptr;
                     object.instanced = false;
 
                     mTotalRenderObjects.push_back(object);
@@ -408,9 +385,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.shaderIndex = shaderIndex;
                     object.start = terrain->getChunkStart(j);
                     object.size = terrain->getChunkSize(j);
-                    object.vao = terrain->getNativeGraphicsVAO();
-                    object.instanceModelVbo = -1;
-                    object.instanceColorVbo = -1;
+                    object.meshHandle = terrain->getNativeGraphicsHandle();
+                    object.instanceModelBuffer = nullptr;
+                    object.instanceColorBuffer = nullptr;
                     object.instanced = false;
 
                     mTotalRenderObjects.push_back(object);
@@ -468,15 +445,15 @@ void RenderSystem::buildSpriteObjectsList(World* world)
             SpriteObject object;
             object.model = model;
             object.color = spriteRenderer->mColor;
-            object.vao = sprite->getNativeGraphicsVAO();
+            object.mHandle = sprite->getNativeGraphicsHandle();
 
             if (texture != nullptr)
             {
-                object.texture = texture->getNativeGraphics();
+                object.mTexture = texture->getNativeGraphics();
             }
             else
             {
-                object.texture = nullptr;
+                object.mTexture = nullptr;
             }
 
             mSpriteObjects.push_back(object);

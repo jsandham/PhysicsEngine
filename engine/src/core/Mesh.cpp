@@ -16,7 +16,19 @@ Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
     mSourceFilepath = "";
     mDeviceUpdateRequired = false;
 
+    mVertexBuffer = VertexBuffer::create();
+    mNormalBuffer = VertexBuffer::create();
+    mTexCoordsBuffer = VertexBuffer::create();
+    mInstanceModelBuffer = VertexBuffer::create();
+    mInstanceColorBuffer = VertexBuffer::create();
+
     mHandle = MeshHandle::create();
+
+    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::Vec4);
 }
 
 Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
@@ -25,11 +37,29 @@ Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id
     mSourceFilepath = "";
     mDeviceUpdateRequired = false;
 
+    mVertexBuffer = VertexBuffer::create();
+    mNormalBuffer = VertexBuffer::create();
+    mTexCoordsBuffer = VertexBuffer::create();
+    mInstanceModelBuffer = VertexBuffer::create();
+    mInstanceColorBuffer = VertexBuffer::create();
+
     mHandle = MeshHandle::create();
+
+    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::Vec4);
 }
 
 Mesh::~Mesh()
 {
+    delete mVertexBuffer;
+    delete mNormalBuffer;
+    delete mTexCoordsBuffer;
+    delete mInstanceModelBuffer;
+    delete mInstanceColorBuffer;
+
     delete mHandle;
 }
 
@@ -189,6 +219,148 @@ void Mesh::load(const std::string &filepath)
     mDeviceUpdateRequired = true;
 }
 
+//void Mesh::load(const std::string &filepath)
+//{
+//    if (filepath.empty())
+//    {
+//        return;
+//    }
+//
+//    tinyobj::ObjReaderConfig reader_config;
+//    reader_config.mtl_search_path = "./"; // Path to material files
+//
+//    tinyobj::ObjReader reader;
+//
+//    if (!reader.ParseFromFile(filepath, reader_config))
+//    {
+//        if (!reader.Error().empty())
+//        {
+//            Log::error(reader.Error().c_str());
+//            return;
+//        }
+//    }
+//
+//    if (!reader.Warning().empty())
+//    {
+//        Log::warn(reader.Warning().c_str());
+//    }
+//
+//    auto &attrib = reader.GetAttrib();
+//    auto &shapes = reader.GetShapes();
+//    // auto &materials = reader.GetMaterials();
+//
+//    mSubMeshStartIndices.resize(shapes.size() + 1, 0);
+//
+//    // Number unique (vertx_index, normal-index, tecoord_index) triples
+//    size_t count = 0;
+//    size_t totalIndices = 0;
+//    std::map<tinyobj::index_t, size_t> map;
+//    for (size_t s = 0; s < shapes.size(); s++)
+//    {
+//        for (size_t i = 0; i < shapes[s].mesh.indices.size(); i++)
+//        {
+//            auto it = map.find(shapes[s].mesh.indices[i]);
+//            if (it == map.end())
+//            {
+//                map.insert(std::pair<tinyobj::index_t, size_t>(shapes[s].mesh.indices[i], count));
+//                count++;
+//            }
+//        }
+//
+//        totalIndices += shapes[s].mesh.indices.size();
+//
+//        // mSubMeshStartIndices[s + 1] = (int)(totalIndices);
+//    }
+//
+//    mIndices.resize(totalIndices);
+//    mVertices.resize(3 * count);
+//    mNormals.resize(3 * count);
+//    mTexCoords.resize(2 * count);
+//
+//    // Loop over indices and construct vertex, normals, and texcoords arrays
+//    for (auto const &entry : map)
+//    {
+//        tinyobj::index_t key = entry.first;
+//        size_t index = entry.second;
+//
+//        tinyobj::real_t vx = attrib.vertices[3 * size_t(key.vertex_index) + 0];
+//        tinyobj::real_t vy = attrib.vertices[3 * size_t(key.vertex_index) + 1];
+//        tinyobj::real_t vz = attrib.vertices[3 * size_t(key.vertex_index) + 2];
+//
+//        mVertices[3 * index + 0] = vx;
+//        mVertices[3 * index + 1] = vy;
+//        mVertices[3 * index + 2] = vz;
+//
+//        // Check if `normal_index` is zero or positive. negative = no normal data
+//        if (key.normal_index >= 0)
+//        {
+//            tinyobj::real_t nx = attrib.normals[3 * size_t(key.normal_index) + 0];
+//            tinyobj::real_t ny = attrib.normals[3 * size_t(key.normal_index) + 1];
+//            tinyobj::real_t nz = attrib.normals[3 * size_t(key.normal_index) + 2];
+//
+//            mNormals[3 * index + 0] = nx;
+//            mNormals[3 * index + 1] = ny;
+//            mNormals[3 * index + 2] = nz;
+//        }
+//
+//        // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+//        if (key.texcoord_index >= 0)
+//        {
+//            tinyobj::real_t tx = attrib.texcoords[2 * size_t(key.texcoord_index) + 0];
+//            tinyobj::real_t ty = attrib.texcoords[2 * size_t(key.texcoord_index) + 1];
+//
+//            mTexCoords[2 * index + 0] = tx;
+//            mTexCoords[2 * index + 1] = ty;
+//        }
+//    }
+//
+//    // Create indices array
+//    size_t index = 0;
+//    for (size_t s = 0; s < shapes.size(); s++)
+//    {
+//        // Loop over faces(polygon)
+//        size_t index_offset = 0;
+//        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+//        {
+//            size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+//
+//            // Loop over vertices in the face.
+//            for (size_t v = 0; v < fv; v++)
+//            {
+//                // access to vertex
+//                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+//
+//                auto it = map.find(idx);
+//                if (it != map.end())
+//                {
+//                    mIndices[index] = it->second;
+//                    index++;
+//                }
+//                else
+//                {
+//                    std::cout << "Error" << std::endl;
+//                }
+//            }
+//
+//            index_offset += fv;
+//        }
+//    }
+//
+//    // if(vIndex != nIndex)
+//    //{
+//    // computeNormals();
+//    // computeNormals_SIMD128();
+//    //}
+//
+//    // computeBoundingSphere();
+//    computeBoundingSphere_SIMD128();
+//
+//    std::filesystem::path temp = filepath;
+//    mSource = temp.filename().string();
+//
+//    mDeviceUpdateRequired = true;
+//}
+
 void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
                 std::vector<float> colors, std::vector<int> subMeshStartIndices)
 {
@@ -285,14 +457,14 @@ MeshHandle* Mesh::getNativeGraphicsHandle() const
     return mHandle;
 }
 
-VertexBuffer* Mesh::getNativeGraphicsVBO(MeshVBO meshVBO) const
+VertexBuffer* Mesh::getNativeGraphicsInstanceModelBuffer() const
 {
-    return mHandle->getVBO(meshVBO);
+    return mInstanceModelBuffer;
 }
 
-unsigned int Mesh::getNativeGraphicsVAO() const
+VertexBuffer* Mesh::getNativeGraphicsInstanceColorBuffer() const
 {
-    return mHandle->getVAO();
+    return mInstanceColorBuffer;
 }
 
 void Mesh::setVertices(const std::vector<float> &vertices)
@@ -329,12 +501,46 @@ void Mesh::copyMeshToDevice()
 {
     if (mDeviceUpdateRequired)
     {
-        mHandle->setData(mVertices.data(), 0, sizeof(float) * mVertices.size(), MeshVBO::Vertices);
-        mHandle->setData(mNormals.data(), 0, sizeof(float) * mNormals.size(), MeshVBO::Normals);
-        mHandle->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size(), MeshVBO::TexCoords);
+        mVertexBuffer->bind();
+        if (mVertexBuffer->getSize() < sizeof(float) * mVertices.size())
+        {
+            mVertexBuffer->resize(sizeof(float) * mVertices.size());
+        }
+        mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
+        mVertexBuffer->unbind();
+        
+        mNormalBuffer->bind();
+        if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
+        {
+            mNormalBuffer->resize(sizeof(float) * mNormals.size());
+        }
+        mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
+        mNormalBuffer->unbind();
+        
+        mTexCoordsBuffer->bind();
+        if (mTexCoordsBuffer->getSize() < sizeof(float) * mTexCoords.size())
+        {
+            mTexCoordsBuffer->resize(sizeof(float) * mTexCoords.size());
+        }
+        mTexCoordsBuffer->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size());
+        mTexCoordsBuffer->unbind();
+        
+        mInstanceModelBuffer->bind();
+        if (mInstanceModelBuffer->getSize() < sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
+        {
+            mInstanceModelBuffer->resize(sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+        }
+        mInstanceModelBuffer->setData(nullptr, 0, Renderer::getRenderer()->INSTANCE_BATCH_SIZE * sizeof(glm::mat4));
+        mInstanceModelBuffer->unbind();
+        
+        mInstanceColorBuffer->bind();
+        if (mInstanceColorBuffer->getSize() < sizeof(glm::vec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
+        {
+            mInstanceColorBuffer->resize(sizeof(glm::vec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+        }
+        mInstanceColorBuffer->setData(nullptr, 0, Renderer::getRenderer()->INSTANCE_BATCH_SIZE * sizeof(glm::vec4));
+        mInstanceColorBuffer->unbind();
 
-        mHandle->setData(nullptr, 0, 1000 /*INSTANCE_BATCH_SIZE*/ * sizeof(glm::mat4), MeshVBO::InstanceModel);
-        mHandle->setData(nullptr, 0, 1000 /*INSTANCE_BATCH_SIZE*/ * sizeof(glm::vec4), MeshVBO::InstanceColor);
         mDeviceUpdateRequired = false;
     }
 }

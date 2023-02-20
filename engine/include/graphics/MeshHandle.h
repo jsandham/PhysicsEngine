@@ -5,13 +5,12 @@
 
 namespace PhysicsEngine
 {
-enum class MeshVBO
+enum class AttribType
 {
-    Vertices,
-    Normals,
-    TexCoords,
-    InstanceModel,
-    InstanceColor
+    Vec2,
+    Vec3,
+    Vec4,
+    Mat4
 };
 
 class MeshHandle
@@ -22,13 +21,13 @@ class MeshHandle
     MeshHandle &operator=(const MeshHandle &other) = delete;
     virtual ~MeshHandle() = 0;
 
+    virtual void addVertexBuffer(VertexBuffer* buffer, AttribType type) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;
-    virtual void setData(void* data, size_t offset, size_t size, MeshVBO meshVBO) = 0;
-    virtual void draw() = 0;
-    virtual VertexBuffer *getVBO(MeshVBO meshVBO) = 0;
-    virtual unsigned int getVAO() = 0;
-
+    virtual void drawLines(size_t vertexOffset, size_t vertexCount) = 0;
+    virtual void draw(size_t vertexOffset, size_t vertexCount) = 0;
+    virtual void drawInstanced(size_t vertexOffset, size_t vertexCount, size_t instanceCount) = 0;
+    
     static MeshHandle* create();
 };
 }

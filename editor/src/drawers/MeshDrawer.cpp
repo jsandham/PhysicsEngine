@@ -133,13 +133,14 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
 
         shader->setInt("wireframe", 1);
 
-        Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO());
+        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
 
         if (mWireframeOn)
         {
             shader->setInt("wireframe", 0);
 
-            Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
+            //Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
+            mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
         }
 
         mFBO->unbind();

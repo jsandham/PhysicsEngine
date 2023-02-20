@@ -6,28 +6,31 @@
 #include "../core/Sphere.h"
 #include "glm/glm.hpp"
 
+#include "../graphics/MeshHandle.h"
+
 namespace PhysicsEngine
 {
 typedef struct RenderObject
 {
+    MeshHandle *meshHandle;
+    VertexBuffer *instanceModelBuffer;
+    VertexBuffer *instanceColorBuffer;
+
     int instanceStart;
     int instanceCount;
     int materialIndex;
     int shaderIndex;
     int start; // start index in vbo
     int size;  // size of vbo
-    int vao;
-    int instanceModelVbo;
-    int instanceColorVbo;
     bool instanced;
 
     bool operator==(const RenderObject &object) const
     {
         return this->instanceStart == object.instanceStart && this->instanceCount == object.instanceCount &&
                this->materialIndex == object.materialIndex && this->shaderIndex == object.shaderIndex &&
-               this->start == object.start && this->size == object.size && this->vao == object.vao &&
-               this->instanceModelVbo == object.instanceModelVbo && this->instanceColorVbo == object.instanceColorVbo &&
-               this->instanced == object.instanced;
+               this->start == object.start && this->size == object.size && this->instanced == object.instanced && 
+               this->meshHandle == object.meshHandle && this->instanceModelBuffer == object.instanceModelBuffer && 
+               this->instanceColorBuffer == object.instanceColorBuffer;
     }
 } RenderObject;
 
@@ -57,7 +60,7 @@ template <> struct hash<PhysicsEngine::RenderObject>
     size_t operator()(const PhysicsEngine::RenderObject &object) const noexcept
     {
         std::hash<int> hash;
-        return hash(object.start) ^ hash(object.size) ^ hash(object.vao);
+        return hash(object.start) ^ hash(object.size);
     }
 };
 } // namespace std

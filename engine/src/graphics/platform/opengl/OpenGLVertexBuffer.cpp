@@ -22,7 +22,7 @@ void OpenGLVertexBuffer::resize(size_t size)
     CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW));
 }
 
-void OpenGLVertexBuffer::setData(void* data, size_t offset, size_t size)
+void OpenGLVertexBuffer::setData(const void* data, size_t offset, size_t size)
 {
 	assert(offset + size <= mSize);
 

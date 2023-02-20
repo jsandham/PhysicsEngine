@@ -10,6 +10,11 @@ DirectXMeshHandle::~DirectXMeshHandle()
 {
 }
 
+void DirectXMeshHandle::addVertexBuffer(VertexBuffer *buffer, AttribType type)
+{
+
+}
+
 void DirectXMeshHandle::bind()
 {
 }
@@ -18,20 +23,14 @@ void DirectXMeshHandle::unbind()
 {
 }
 
-void DirectXMeshHandle::setData(void *data, size_t offset, size_t size, MeshVBO meshVBO)
+void DirectXMeshHandle::drawLines(size_t vertexOffset, size_t vertexCount)
 {
 }
 
-void DirectXMeshHandle::draw()
+void DirectXMeshHandle::draw(size_t vertexOffset, size_t vertexCount)
 {
 }
 
-VertexBuffer *DirectXMeshHandle::getVBO(MeshVBO meshVBO)
+void DirectXMeshHandle::drawInstanced(size_t vertexOffset, size_t vertexCount, size_t instanceCount)
 {
-    return nullptr;
-}
-
-unsigned int DirectXMeshHandle::getVAO()
-{
-    return 0;
 }

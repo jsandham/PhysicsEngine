@@ -19,14 +19,21 @@ class Mesh : public Asset
   private:
     std::string mSource;
     std::string mSourceFilepath;
+
     std::vector<float> mVertices;
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;
     std::vector<float> mColors;
     std::vector<int> mSubMeshVertexStartIndices;
+    
     Sphere mBounds;
 
     MeshHandle *mHandle;
+    VertexBuffer *mVertexBuffer;
+    VertexBuffer *mNormalBuffer;
+    VertexBuffer *mTexCoordsBuffer;
+    VertexBuffer *mInstanceModelBuffer;
+    VertexBuffer *mInstanceColorBuffer;
     bool mDeviceUpdateRequired;
 
   public:
@@ -58,8 +65,8 @@ class Mesh : public Asset
     int getSubMeshCount() const;
     Sphere getBounds() const;
     MeshHandle* getNativeGraphicsHandle() const;
-    VertexBuffer* getNativeGraphicsVBO(MeshVBO meshVBO) const;
-    unsigned int getNativeGraphicsVAO() const;
+    VertexBuffer* getNativeGraphicsInstanceModelBuffer() const;
+    VertexBuffer* getNativeGraphicsInstanceColorBuffer() const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

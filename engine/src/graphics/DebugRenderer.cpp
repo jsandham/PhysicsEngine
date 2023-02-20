@@ -133,9 +133,11 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>&
                 break;
             }
 
-            Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
-                                           renderObjects[i].instanceCount);
-            Renderer::getRenderer()->renderInstanced(renderObjects[i], camera->mQuery);
+            renderObjects[i].instanceModelBuffer->bind();
+            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceModelBuffer->unbind();
+            Renderer::getRenderer()->drawInstanced(renderObjects[i], camera->mQuery);
             modelIndex += renderObjects[i].instanceCount;
         }
         else
@@ -156,7 +158,7 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>&
                 break;
             }
 
-            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }
@@ -229,11 +231,16 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera,
 
             mColorInstancedShader->bind();
            
-            Renderer::getRenderer()->updateInstanceBuffer(renderObjects[i].instanceModelVbo, &models[modelIndex],
-                                           renderObjects[i].instanceCount);
-            Renderer::getRenderer()->updateInstanceColorBuffer(renderObjects[i].instanceColorVbo, &colors[0],
-                                                renderObjects[i].instanceCount);
-            Renderer::getRenderer()->renderInstanced(renderObjects[i], camera->mQuery);
+            renderObjects[i].instanceModelBuffer->bind();
+            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceModelBuffer->unbind();
+
+            renderObjects[i].instanceColorBuffer->bind();
+            renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
+                                                          sizeof(glm::vec4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceColorBuffer->unbind();
+            Renderer::getRenderer()->drawInstanced(renderObjects[i], camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -250,7 +257,7 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera,
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor(Color32(r, g, b, a));
 
-            Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }

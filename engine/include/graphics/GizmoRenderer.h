@@ -100,13 +100,14 @@ class GizmoRenderer
     GizmoShader *mGizmoShader;
     GridShader *mGridShader;
 
-    unsigned int mFrustumVAO;
-    unsigned int mFrustumVBO[2];
+    MeshHandle *mFrustumHandle;
+    VertexBuffer *mFrustumVertexBuffer;
+    VertexBuffer *mFrustumNormalBuffer;
     std::vector<float> mFrustumVertices;
     std::vector<float> mFrustumNormals;
 
-    unsigned int mGridVAO;
-    unsigned int mGridVBO;
+    MeshHandle *mGridHandle;
+    VertexBuffer *mGridVertexBuffer;
     std::vector<glm::vec3> mGridVertices;
     glm::vec3 mGridOrigin;
     Color mGridColor;

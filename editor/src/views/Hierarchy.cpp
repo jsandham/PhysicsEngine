@@ -35,52 +35,63 @@ void Hierarchy::update(Clipboard &clipboard)
 
     if (clipboard.mSceneOpened)
     {
-        // If number of entities has changed, update cached entity ids and names
-        if (mEntries.size() != clipboard.getWorld()->getActiveScene()->getNumberOfNonHiddenEntities())
+        mEntries.resize(clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
+
+        size_t index = 0;
+        for (size_t i = 0; i < clipboard.getWorld()->getActiveScene()->getNumberOfEntities(); i++)
         {
-            rebuildEntityLists(clipboard.getWorld());
+            PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->getEntityByIndex(i);
+            if (entity->mHide == PhysicsEngine::HideFlag::None)
+            {
+                mEntries[index] = (int)i;
+                index++;
+            }
         }
 
-        if (clipboard.getSceneId().isValid())
+        mEntries.resize(index);
+
+        // Set selected entity in hierarchy
+        int selectedIndex;
+        if (clipboard.getSelectedType() == InteractionType::Entity)
         {
-            // Set selected entity in hierarchy
-            int selectedIndex;
-            if (clipboard.getSelectedType() == InteractionType::Entity)
-            {
-                selectedIndex = mIdToEntryIndex[clipboard.getSelectedId()];
-            }
-            else
-            {
-                selectedIndex = -1;
-            }
+            selectedIndex = clipboard.getWorld()->getIndexOf(clipboard.getSelectedId());
+        }
+        else
+        {
+            selectedIndex = -1;
+        }
 
-            // Check if scene is dirty and mark accordingly
-            if (clipboard.mSceneDirty)
-            {
-                ImGui::Text((clipboard.getSceneName() + "*").c_str());
-            }
-            else
-            {
-                ImGui::Text(clipboard.getSceneName().c_str());
-            }
-            ImGui::Separator();
+        // Check if scene is dirty and mark accordingly
+        if (clipboard.mSceneDirty)
+        {
+            ImGui::Text((clipboard.getSceneName() + "*").c_str());
+        }
+        else
+        {
+            ImGui::Text(clipboard.getSceneName().c_str());
+        }
+        ImGui::Separator();
 
-            // Display entities in hierarchy
-            for (size_t i = 0; i < mEntries.size(); i++)
+        ImGuiListClipper clipper;
+        clipper.Begin((int)mEntries.size());
+        while (clipper.Step())
+        {
+            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
             {
+                PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->getEntityByIndex(mEntries[i]);
                 static bool selected = false;
                 char buf1[64];
-                std::size_t len = std::min(size_t(64 - 1), mEntries[i].entity->getName().length());
-                strncpy(buf1, mEntries[i].entity->getName().c_str(), len);
+                std::size_t len = std::min(size_t(64 - 1), entity->getName().length());
+                strncpy(buf1, entity->getName().c_str(), len);
                 buf1[len] = '\0';
 
                 bool edited = false;
-                if (ImGui::SelectableInput(mEntries[i].label.c_str(), selectedIndex == i, &edited,
+                if (ImGui::SelectableInput(entity->getGuid().c_str(), selectedIndex == mEntries[i], &edited,
                     ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
                 {
-                    mEntries[i].entity->setName(std::string(buf1));
+                    entity->setName(std::string(buf1));
 
-                    clipboard.setSelectedItem(InteractionType::Entity, mEntries[i].entity->getGuid());
+                    clipboard.setSelectedItem(InteractionType::Entity, entity->getGuid());
                 }
 
                 if (edited)
@@ -90,139 +101,120 @@ void Hierarchy::update(Clipboard &clipboard)
 
                 if (ImGui::BeginDragDropSource())
                 {
-                    const void* data = static_cast<const void*>(mEntries[i].entity->getGuid().c_str());
+                    const void* data = static_cast<const void*>(entity->getGuid().c_str());
 
                     ImGui::SetDragDropPayload("ENTITY_GUID", data, sizeof(PhysicsEngine::Guid));
-                    ImGui::Text(mEntries[i].entity->getName().c_str());
+                    ImGui::Text(entity->getName().c_str());
                     ImGui::EndDragDropSource();
                 }
             }
+        }
 
-            // Right click popup menu
-            if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        // Right click popup menu
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("Copy", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
             {
-                if (ImGui::MenuItem("Copy", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
+            }
+            if (ImGui::MenuItem("Paste", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
+            {
+            }
+            if (ImGui::MenuItem("Delete", NULL, false, clipboard.getSelectedType() == InteractionType::Entity) &&
+                clipboard.getSelectedType() == InteractionType::Entity)
+            {
+                clipboard.getWorld()->getActiveScene()->latentDestroyEntity(clipboard.getSelectedId());
+
+                clipboard.clearSelectedItem();
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::BeginMenu("Create..."))
+            {
+                if (ImGui::MenuItem("Empty"))
                 {
+                    clipboard.getWorld()->getActiveScene()->createEntity();
                 }
-                if (ImGui::MenuItem("Paste", NULL, false, clipboard.getSelectedType() == InteractionType::Entity))
+                if (ImGui::MenuItem("Camera"))
                 {
-                }
-                if (ImGui::MenuItem("Delete", NULL, false, clipboard.getSelectedType() == InteractionType::Entity) &&
-                    clipboard.getSelectedType() == InteractionType::Entity)
-                {
-                    clipboard.getWorld()->getActiveScene()->latentDestroyEntity(clipboard.getSelectedId());
-
-                    clipboard.clearSelectedItem();
+                    clipboard.getWorld()->getActiveScene()->createCamera();
                 }
 
-                ImGui::Separator();
-
-                if (ImGui::BeginMenu("Create..."))
+                if (ImGui::BeginMenu("Light"))
                 {
-                    if (ImGui::MenuItem("Empty"))
+                    if (ImGui::MenuItem("Directional"))
                     {
-                        clipboard.getWorld()->getActiveScene()->createEntity();
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
                     }
-                    if (ImGui::MenuItem("Camera"))
+                    if (ImGui::MenuItem("Spot"))
                     {
-                        clipboard.getWorld()->getActiveScene()->createCamera();
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Spot);
                     }
-
-                    if (ImGui::BeginMenu("Light"))
+                    if (ImGui::MenuItem("Point"))
                     {
-                        if (ImGui::MenuItem("Directional"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
-                        }
-                        if (ImGui::MenuItem("Spot"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Spot);
-                        }
-                        if (ImGui::MenuItem("Point"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Point);
-                        }
-                        ImGui::EndMenu();
+                        clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Point);
                     }
-
-                    if (ImGui::BeginMenu("2D"))
-                    {
-                        if (ImGui::MenuItem("Plane"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
-                        }
-                        if (ImGui::MenuItem("Disc"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Disc);
-                        }
-                        ImGui::EndMenu();
-                    }
-
-                    if (ImGui::BeginMenu("3D"))
-                    {
-                        if (ImGui::MenuItem("Cube"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
-                        }
-                        if (ImGui::MenuItem("Sphere"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Sphere);
-                        }
-                        if (ImGui::MenuItem("Cylinder"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cylinder);
-                        }
-                        if (ImGui::MenuItem("Cone"))
-                        {
-                            clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cone);
-                        }
-                        ImGui::EndMenu();
-                    }
-
                     ImGui::EndMenu();
                 }
 
-                ImGui::EndPopup();
-            }
-
-            // dropping mesh into hierarchy
-            ImRect rect(getContentMin(), getContentMax());
-            if (ImGui::BeginDragDropTargetCustom(rect, ImGui::GetCurrentWindow()->ID))
-            {
-                const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_PATH");
-                if (payload != nullptr)
+                if (ImGui::BeginMenu("2D"))
                 {
-                    const char* data = static_cast<const char*>(payload->Data);
-                    std::filesystem::path incomingPath = std::string(data);
-
-                    PhysicsEngine::Mesh* mesh = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Mesh>(ProjectDatabase::getGuid(incomingPath));
-                    if (mesh != nullptr)
+                    if (ImGui::MenuItem("Plane"))
                     {
-                        clipboard.getWorld()->getActiveScene()->createNonPrimitive(ProjectDatabase::getGuid(incomingPath));
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
                     }
+                    if (ImGui::MenuItem("Disc"))
+                    {
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Disc);
+                    }
+                    ImGui::EndMenu();
                 }
 
-                ImGui::EndDragDropTarget();
+                if (ImGui::BeginMenu("3D"))
+                {
+                    if (ImGui::MenuItem("Cube"))
+                    {
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
+                    }
+                    if (ImGui::MenuItem("Sphere"))
+                    {
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Sphere);
+                    }
+                    if (ImGui::MenuItem("Cylinder"))
+                    {
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cylinder);
+                    }
+                    if (ImGui::MenuItem("Cone"))
+                    {
+                        clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cone);
+                    }
+                    ImGui::EndMenu();
+                }
+
+                ImGui::EndMenu();
             }
+
+            ImGui::EndPopup();
         }
-    }
-}
 
-void Hierarchy::rebuildEntityLists(PhysicsEngine::World *world)
-{
-    mEntries.resize(world->getActiveScene()->getNumberOfNonHiddenEntities());
-
-    int index = 0;
-    for (size_t i = 0; i < world->getActiveScene()->getNumberOfEntities(); i++)
-    {
-        PhysicsEngine::Entity* entity = world->getActiveScene()->getEntityByIndex(i);
-        if (entity->mHide == PhysicsEngine::HideFlag::None)
+        // dropping mesh into hierarchy
+        ImRect rect(getContentMin(), getContentMax());
+        if (ImGui::BeginDragDropTargetCustom(rect, ImGui::GetCurrentWindow()->ID))
         {
-            mEntries[index].entity = entity;
-            mEntries[index].label = entity->getGuid().toString();
-            mEntries[index].indentLevel = 0;
-            mIdToEntryIndex[entity->getGuid()] = index;
-            index++;
+            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MESH_PATH");
+            if (payload != nullptr)
+            {
+                const char* data = static_cast<const char*>(payload->Data);
+                std::filesystem::path incomingPath = std::string(data);
+
+                PhysicsEngine::Mesh* mesh = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Mesh>(ProjectDatabase::getGuid(incomingPath));
+                if (mesh != nullptr)
+                {
+                    clipboard.getWorld()->getActiveScene()->createNonPrimitive(ProjectDatabase::getGuid(incomingPath));
+                }
+            }
+
+            ImGui::EndDragDropTarget();
         }
     }
 }

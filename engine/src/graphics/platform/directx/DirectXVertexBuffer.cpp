@@ -17,7 +17,7 @@ void DirectXVertexBuffer::resize(size_t size)
  
 }
 
-void DirectXVertexBuffer::setData(void* data, size_t offset, size_t size)
+void DirectXVertexBuffer::setData(const void* data, size_t offset, size_t size)
 {
 	assert(size <= mSize);
 
