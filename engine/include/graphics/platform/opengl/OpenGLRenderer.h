@@ -29,7 +29,9 @@ namespace PhysicsEngine
         void turnOff_impl(Capability capability) override;
         void setBlending_impl(BlendingFactor source, BlendingFactor dest) override;
         void draw_impl(const RenderObject &renderObject, GraphicsQuery &query) override;
+        void drawIndexed_impl(const RenderObject &renderObject, GraphicsQuery &query) override;
         void drawInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query) override;
+        void drawIndexedInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query) override;
 
         void beginQuery_impl(unsigned int queryId) override;
         void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) override;

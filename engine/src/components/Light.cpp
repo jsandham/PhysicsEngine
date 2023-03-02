@@ -19,27 +19,9 @@ Light::Light(World *world, const Id &id) : Component(world, id)
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
 
-    mIsCreated = false;
     mEnabled = true;
-    mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
-    /*mTargets.mShadowCascadeFBO[0] = 0;
-    mTargets.mShadowCascadeFBO[1] = 0;
-    mTargets.mShadowCascadeFBO[2] = 0;
-    mTargets.mShadowCascadeFBO[3] = 0;
-    mTargets.mShadowCascadeFBO[4] = 0;
-
-    mTargets.mShadowCascadeDepthTex[0] = 0;
-    mTargets.mShadowCascadeDepthTex[1] = 0;
-    mTargets.mShadowCascadeDepthTex[2] = 0;
-    mTargets.mShadowCascadeDepthTex[3] = 0;
-    mTargets.mShadowCascadeDepthTex[4] = 0;
-
-    mTargets.mShadowSpotlightFBO = 0;
-    mTargets.mShadowSpotlightDepthTex = 0;
-    mTargets.mShadowCubemapFBO = 0;
-    mTargets.mShadowCubemapDepthTex = 0;*/
     mTargets.mShadowCascadeFBO[0] = Framebuffer::create(1024, 1024);
     mTargets.mShadowCascadeFBO[1] = Framebuffer::create(1024, 1024);
     mTargets.mShadowCascadeFBO[2] = Framebuffer::create(1024, 1024);
@@ -64,27 +46,9 @@ Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, gu
     mLightType = LightType::Directional;
     mShadowType = ShadowType::Hard;
 
-    mIsCreated = false;
     mEnabled = true;
-    mIsShadowMapResolutionChanged = false;
     mShadowMapResolution = ShadowMapResolution::Medium1024x1024;
 
-    //mTargets.mShadowCascadeFBO[0] = 0;
-    //mTargets.mShadowCascadeFBO[1] = 0;
-    //mTargets.mShadowCascadeFBO[2] = 0;
-    //mTargets.mShadowCascadeFBO[3] = 0;
-    //mTargets.mShadowCascadeFBO[4] = 0;
-
-    //mTargets.mShadowCascadeDepthTex[0] = 0;
-    //mTargets.mShadowCascadeDepthTex[1] = 0;
-    //mTargets.mShadowCascadeDepthTex[2] = 0;
-    //mTargets.mShadowCascadeDepthTex[3] = 0;
-    //mTargets.mShadowCascadeDepthTex[4] = 0;
-
-    //mTargets.mShadowSpotlightFBO = 0;
-    //mTargets.mShadowSpotlightDepthTex = 0;
-    //mTargets.mShadowCubemapFBO = 0;
-    //mTargets.mShadowCubemapDepthTex = 0;
     mTargets.mShadowCascadeFBO[0] = Framebuffer::create(1024, 1024);
     mTargets.mShadowCascadeFBO[1] = Framebuffer::create(1024, 1024);
     mTargets.mShadowCascadeFBO[2] = Framebuffer::create(1024, 1024);
@@ -141,7 +105,6 @@ void Light::deserialize(const YAML::Node &in)
     mShadowType = YAML::getValue<ShadowType>(in, "shadowType");
     mShadowMapResolution = YAML::getValue<ShadowMapResolution>(in, "shadowMapResolution");
     mEnabled = YAML::getValue<bool>(in, "enabled");
-    mIsShadowMapResolutionChanged = true;
 }
 
 int Light::getType() const
@@ -154,42 +117,16 @@ std::string Light::getObjectName() const
     return PhysicsEngine::LIGHT_NAME;
 }
 
-void Light::createTargets()
-{
-    //Renderer::getRenderer()->createTargets(&mTargets, mShadowMapResolution);
-
-    mIsCreated = true;
-}
-
-void Light::destroyTargets()
-{
-    //Renderer::getRenderer()->destroyTargets(&mTargets);
-
-    mIsCreated = false;
-}
-
 void ::Light::resizeTargets()
 {
     //Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
-
-    mIsShadowMapResolutionChanged = false;
-}
-
-bool Light::isCreated() const
-{
-    return mIsCreated;
-}
-
-bool Light::isShadowMapResolutionChanged() const
-{
-    return mIsShadowMapResolutionChanged;
 }
 
 void Light::setShadowMapResolution(ShadowMapResolution resolution)
 {
     mShadowMapResolution = resolution;
 
-    mIsShadowMapResolutionChanged = true;
+    resizeTargets();
 }
 
 ShadowMapResolution Light::getShadowMapResolution() const
@@ -228,18 +165,15 @@ Framebuffer* Light::getNativeGraphicsShadowCubemapFBO() const
 
 TextureHandle* Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
 {
-    /*return mTargets.mShadowCascadeDepthTex[std::min(4, std::max(0, index))];*/
     return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))]->getDepthTex();
 }
 
 TextureHandle* Light::getNativeGrpahicsShadowSpotlightDepthTex() const
 {
-    /*return mTargets.mShadowSpotlightDepthTex;*/
     return mTargets.mShadowSpotlightFBO->getDepthTex();
 }
 
 TextureHandle* Light::getNativeGraphicsShadowCubemapDepthTex() const
 {
-    /*return mTargets.mShadowCubemapDepthTex;*/
     return mTargets.mShadowCubemapFBO->getDepthTex();
 }

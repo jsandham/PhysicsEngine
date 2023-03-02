@@ -134,13 +134,13 @@ class Scene : public Object
 
     bool writeToYAML(const std::string &filepath) const;
 
-    void load(const std::string &filepath);
-
     std::string getName() const;
 
     size_t getNumberOfEntities() const;
     size_t getNumberOfNonHiddenEntities() const;
 
+    int getIndexOf(const Id &id) const;
+    int getTypeOf(const Id &id) const;
     int getIndexOf(const Guid &guid) const;
     int getTypeOf(const Guid &guid) const;
     Entity *getEntityByIndex(size_t index) const;
@@ -148,7 +148,7 @@ class Scene : public Object
     Entity *getEntityByGuid(const Guid &entityGuid) const;
     Component *getComponentById(const Id &componentId, int type) const;
     Component *getComponentByGuid(const Guid &componentGuid, int type) const;
-    //Component *addComponent(const Guid &entityGuid, int type);
+    Component *addComponent(const Guid &entityGuid, int type);
     Component *addComponent(const YAML::Node &in, int type);
 
     Entity *createEntity();
@@ -169,6 +169,7 @@ class Scene : public Object
 
     bool isMarkedForLatentDestroy(const Guid &guid);
     void clearIdsMarkedCreatedOrDestroyed();
+
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity(const Guid &entityGuid) const;
 

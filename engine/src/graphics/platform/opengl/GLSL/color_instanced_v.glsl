@@ -3,9 +3,9 @@
 
 layout (location = 0) in vec3 position;
 layout (location = 3) in mat4 model;
-layout (location = 7) in vec4 color;
+layout (location = 7) in uvec4 color;
 
-out vec4 Color;
+out uvec4 Color;
 
 void main()
 {

@@ -240,7 +240,7 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
         mGizmoShader->setColor(mSpheres[i].mColor);
         mGizmoShader->setModel(model);
 
-        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
@@ -283,7 +283,7 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
         mGizmoShader->setColor(mAABBs[i].mColor);
         mGizmoShader->setModel(model);
 
-        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
@@ -332,7 +332,7 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
         mGizmoShader->setColor(mPlanes[i].mColor);
         mGizmoShader->setModel(model);
 
-        mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
+        mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
     }
 
     mesh->getNativeGraphicsHandle()->unbind();

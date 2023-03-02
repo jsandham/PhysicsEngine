@@ -64,6 +64,9 @@ class Color32
     {
         return ((mR == other.mR) && (mG == other.mG) && (mB == other.mB) && (mA == other.mA));
     }
+
+    static uint32_t convertColor32ToUint32(const Color32 &c);
+    static Color32 convertUint32ToColor32(uint32_t i);
 };
 } // namespace PhysicsEngine
 

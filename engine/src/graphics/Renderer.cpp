@@ -99,9 +99,19 @@ void Renderer::draw(const RenderObject &renderObject, GraphicsQuery &query)
     return sInstance->draw_impl(renderObject, query);
 }
 
+void Renderer::drawIndexed(const RenderObject &renderObject, GraphicsQuery &query)
+{
+    return sInstance->drawIndexed_impl(renderObject, query);
+}
+
 void Renderer::drawInstanced(const RenderObject &renderObject, GraphicsQuery &query)
 {
     return sInstance->drawInstanced_impl(renderObject, query);
+}
+
+void Renderer::drawIndexedInstanced(const RenderObject &renderObject, GraphicsQuery &query)
+{
+    return sInstance->drawIndexedInstanced_impl(renderObject, query);
 }
 
 void Renderer::beginQuery(unsigned int queryId)

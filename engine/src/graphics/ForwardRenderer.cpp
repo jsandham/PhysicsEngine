@@ -149,7 +149,7 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
         {
             mGeometryShader->setModel(models[modelIndex]);
 
-            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
             modelIndex++;
         }
     }
@@ -212,7 +212,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
                 else
                 {
                     mDepthShader->setModel(models[modelIndex]);
-                    Renderer::getRenderer()->draw(renderObjects[j], camera->mQuery);
+                    Renderer::getRenderer()->drawIndexed(renderObjects[j], camera->mQuery);
                     modelIndex++;
                 }
             }
@@ -247,7 +247,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             {
                 mDepthShader->setModel(models[modelIndex]);
                 
-                Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+                Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
         }
@@ -308,7 +308,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             {
                 mDepthCubemapShader->setModel(models[modelIndex]);
                 
-                Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+                Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
         }
@@ -467,11 +467,11 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
 
         if (renderObjects[i].instanced)
         {
-            Renderer::getRenderer()->drawInstanced(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
         }
         else
         {
-            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
         }
     }
 
@@ -521,74 +521,36 @@ void ForwardRenderer::renderSprites(Camera *camera, const std::vector<SpriteObje
         mSpriteShader->setColor(spriteObjects[i].color);
         mSpriteShader->setImage(0, spriteObjects[i].mTexture);
 
-        spriteObjects[i].mHandle->draw(0, 6);
+        spriteObjects[i].mHandle->drawIndexed(0, 6);
     }
 
     framebuffer->unbind();
 }
 
 void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
-                                       const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
+                                         const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
-    camera->clearColoring();
-
-    // assign colors to render objects.
-    uint32_t color = 1;
-
-    int transformIdIndex = 0;
-    for (size_t i = 0; i < renderObjects.size(); i++)
-    {
-        if (renderObjects[i].instanced)
-        {
-            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
-            {
-                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-                unsigned char a = static_cast<unsigned char>(255);
-
-                camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
-                color++;
-                transformIdIndex++;
-            }
-        }
-        else
-        {
-            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-            unsigned char a = static_cast<unsigned char>(255);
-
-            camera->assignColoring(Color32(r, g, b, a), transformIds[transformIdIndex]);
-            color++;
-            transformIdIndex++;
-        }
-    }
+    camera->setColoringIds(transformIds);
 
     camera->getNativeGraphicsColorPickingFBO()->bind();
     camera->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                         camera->getViewport().mHeight);
 
-    color = 1;
+    uint32_t color = 1;
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
         if (renderObjects[i].instanced)
         {
-            std::vector<glm::vec4> colors(renderObjects[i].instanceCount);
+            std::vector<Color32> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
             {
-                unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-                unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-                unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-                unsigned char a = static_cast<unsigned char>(255);
-
-                colors[j] = glm::vec4(r, g, b, a);
+                colors[j] = Color32::convertUint32ToColor32(color);
                 color++;
             }
 
             mColorInstancedShader->bind();
-  
+
             renderObjects[i].instanceModelBuffer->bind();
             renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                                           sizeof(glm::mat4) * renderObjects[i].instanceCount);
@@ -596,31 +558,25 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
 
             renderObjects[i].instanceColorBuffer->bind();
             renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
-                                                          sizeof(glm::vec4) * renderObjects[i].instanceCount);
+                                                          sizeof(Color32) * renderObjects[i].instanceCount);
             renderObjects[i].instanceColorBuffer->unbind();
-            Renderer::getRenderer()->drawInstanced(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
         else
         {
-            unsigned char r = static_cast<unsigned char>(255 - ((color & 0x000000FF) >> 0));
-            unsigned char g = static_cast<unsigned char>(255 - ((color & 0x0000FF00) >> 8));
-            unsigned char b = static_cast<unsigned char>(255 - ((color & 0x00FF0000) >> 16));
-            unsigned char a = static_cast<unsigned char>(255);
-
-            color++;
-
             mColorShader->bind();
             mColorShader->setModel(models[modelIndex]);
-            mColorShader->setColor(Color32(r, g, b, a));
-       
-            Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+            mColorShader->setColor32(Color32::convertUint32ToColor32(color));
 
+            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+
+            color++;
             modelIndex++;
         }
     }
-   
+
     camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 

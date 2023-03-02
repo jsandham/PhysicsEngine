@@ -268,7 +268,13 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         }
     }
 
-    plane->load(planeVertices, planeNormals, planeTexCoords, {0, 3 * vertexCount});
+    std::vector<unsigned int> planeIndices(vertexCount);
+    for (int ii = 0; ii < vertexCount; ii++)
+    {
+        planeIndices[ii] = ii;
+    }
+    plane->load(planeVertices, planeNormals, planeTexCoords, planeIndices, {0, vertexCount});
+
 
     // Generate disc
     int discTriangleCount = nx * nz;
@@ -317,7 +323,12 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         discTexCoords[k++] = 0.5f;
     }
 
-    disc->load(discVertices, discNormals, discTexCoords, {0, 3 * discVertexCount});
+    std::vector<unsigned int> discIndices(discVertexCount);
+    for (int ii = 0; ii < discVertexCount; ii++)
+    {
+        discIndices[ii] = ii;
+    }
+    disc->load(discVertices, discNormals, discTexCoords, discIndices, {0, discVertexCount});
 
     // Generate cube mesh
     int cubeVertexCount = 6 * vertexCount;
@@ -432,7 +443,12 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     faceStart += 3 * vertexCount;
     texStart += 2 * vertexCount;
 
-    cube->load(cubeVertices, cubeNormals, cubeTexCoords, {0, 3 * cubeVertexCount});
+    std::vector<unsigned int> cubeIndices(cubeVertexCount);
+    for (int ii = 0; ii < cubeVertexCount; ii++)
+    {
+        cubeIndices[ii] = ii;
+    }
+    cube->load(cubeVertices, cubeNormals, cubeTexCoords, cubeIndices, {0, cubeVertexCount});
 
     // Generate Sphere mesh
     int sphereVertexCount = cubeVertexCount;
@@ -465,7 +481,12 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         sphereTexCoords[2 * v + 1] = cubeTexCoords[2 * v + 1];
     }
 
-    sphere->load(sphereVertices, sphereNormals, sphereTexCoords, {0, 3 * sphereVertexCount});
+    std::vector<unsigned int> sphereIndices(sphereVertexCount);
+    for (int ii = 0; ii < sphereVertexCount; ii++)
+    {
+        sphereIndices[ii] = ii;
+    }
+    sphere->load(sphereVertices, sphereNormals, sphereTexCoords, sphereIndices, {0, sphereVertexCount});
 
     // Generate cylinder
     int cylinderTriangleCount = 4 * discTriangleCount;
@@ -575,7 +596,12 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         }
     }*/
 
-    cylinder->load(cylinderVertices, cylinderNormals, cylinderTexCoords, {0, 3 * cylinderVertexCount});
+    std::vector<unsigned int> cylinderIndices(cylinderVertexCount);
+    for (int ii = 0; ii < cylinderVertexCount; ii++)
+    {
+        cylinderIndices[ii] = ii;
+    }
+    cylinder->load(cylinderVertices, cylinderNormals, cylinderTexCoords, cylinderIndices, {0, cylinderVertexCount});
 
     mPlaneMeshGuid = plane->getGuid();
     mDiscMeshGuid = disc->getGuid();

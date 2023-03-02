@@ -182,7 +182,7 @@ namespace PhysicsEngine
         virtual void bind() = 0;
         virtual void unbind() = 0;
         virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setColor(const Color32 &color) = 0;
+        virtual void setColor32(const Color32 &color) = 0;
 
         static ColorShader *create();
     };

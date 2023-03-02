@@ -62,7 +62,9 @@ public:
     static void turnOff(Capability capability);
     static void setBlending(BlendingFactor source, BlendingFactor dest);
     static void draw(const RenderObject &renderObject, GraphicsQuery &query);
+    static void drawIndexed(const RenderObject &renderObject, GraphicsQuery &query);
     static void drawInstanced(const RenderObject &renderObject, GraphicsQuery &query);
+    static void drawIndexedInstanced(const RenderObject &renderObject, GraphicsQuery &query);
 
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long *elapsedTime);
@@ -85,7 +87,9 @@ protected:
     virtual void turnOff_impl(Capability capability) = 0;
     virtual void setBlending_impl(BlendingFactor source, BlendingFactor dest) = 0;
     virtual void draw_impl(const RenderObject &renderObject, GraphicsQuery &query) = 0;
+    virtual void drawIndexed_impl(const RenderObject &renderObject, GraphicsQuery &query) = 0;
     virtual void drawInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query) = 0;
+    virtual void drawIndexedInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query) = 0;
 
     virtual void beginQuery_impl(unsigned int queryId) = 0;
     virtual void endQuery_impl(unsigned int queryId, unsigned long long* elapsedTime) = 0;

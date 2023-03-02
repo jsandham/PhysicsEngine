@@ -405,7 +405,7 @@ void OpenGLColorShader::setModel(const glm::mat4 &model)
     mShader->setMat4(mModelLoc, model);
 }
 
-void OpenGLColorShader::setColor(const Color32 &color)
+void OpenGLColorShader::setColor32(const Color32 &color)
 {
     mShader->setColor32(mColorLoc, color);
 }

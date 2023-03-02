@@ -167,7 +167,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                 mFBO->setViewport(0, 0, 1000, 1000);
                 mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
                 mFBO->clearDepth(1.0f);
-                mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);
+                /*mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);*/
+                mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
                 mFBO->unbind();
             }
 

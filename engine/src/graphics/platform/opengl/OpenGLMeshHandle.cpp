@@ -2,6 +2,7 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 using namespace PhysicsEngine;
 
@@ -53,6 +54,15 @@ void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type)
         CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, 1));
         mVertexAttribIndex++;
         break;
+    case AttribType::Color32:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(
+            glVertexAttribPointer(mVertexAttribIndex, 4, GL_UNSIGNED_INT, GL_FALSE, 4 * sizeof(GL_UNSIGNED_INT), 0));
+        // TODO: This is used when the buffer is used in instancing. Pass bool to indicate when buffer is an instancing
+        // buffer?
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, 1));
+        mVertexAttribIndex++;
+        break;
     case AttribType::Mat4:
         for (int i = 0; i < 4; i++)
         {
@@ -71,23 +81,46 @@ void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type)
     CHECK_ERROR(glBindVertexArray(0));
 }
 
+void OpenGLMeshHandle::addIndexBuffer(IndexBuffer *buffer)
+{
+    assert(buffer != nullptr);
+
+    CHECK_ERROR(glBindVertexArray(mVao));
+    buffer->bind();
+    CHECK_ERROR(glBindVertexArray(0));
+}
+
 void OpenGLMeshHandle::drawLines(size_t vertexOffset, size_t vertexCount)
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawArrays(GL_LINES, vertexOffset, vertexCount));
+    CHECK_ERROR(glDrawArrays(GL_LINES, (GLint)vertexOffset, (GLsizei)vertexCount));
     CHECK_ERROR(glBindVertexArray(0));
 }
 
 void OpenGLMeshHandle::draw(size_t vertexOffset, size_t vertexCount)
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawArrays(GL_TRIANGLES, vertexOffset, vertexCount));
+    CHECK_ERROR(glDrawArrays(GL_TRIANGLES, (GLint)vertexOffset, (GLsizei)vertexCount));
+    CHECK_ERROR(glBindVertexArray(0));
+}
+
+void OpenGLMeshHandle::drawIndexed(size_t indexOffset, size_t indexCount)
+{
+    CHECK_ERROR(glBindVertexArray(mVao));
+    CHECK_ERROR(glDrawElements(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, 0));
     CHECK_ERROR(glBindVertexArray(0));
 }
 
 void OpenGLMeshHandle::drawInstanced(size_t vertexOffset, size_t vertexCount, size_t instanceCount)
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawArraysInstanced(GL_TRIANGLES, vertexOffset, vertexCount, instanceCount));
+    CHECK_ERROR(glDrawArraysInstanced(GL_TRIANGLES, (GLint)vertexOffset, (GLsizei)vertexCount, (GLsizei)instanceCount));
+    CHECK_ERROR(glBindVertexArray(0));
+}
+
+void OpenGLMeshHandle::drawIndexedInstanced(size_t indexOffset, size_t indexCount, size_t instanceCount)
+{
+    CHECK_ERROR(glBindVertexArray(mVao));
+    CHECK_ERROR(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, 0, (GLsizei)instanceCount));
     CHECK_ERROR(glBindVertexArray(0));
 }

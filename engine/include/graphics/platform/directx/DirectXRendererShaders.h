@@ -160,7 +160,7 @@ namespace PhysicsEngine
         void bind() override;
         void unbind() override;
         void setModel(const glm::mat4 &model) override;
-        void setColor(const Color32 &color) override;
+        void setColor32(const Color32 &color) override;
     };
 
     class DirectXColorInstancedShader : public ColorInstancedShader

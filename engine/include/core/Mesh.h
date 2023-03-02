@@ -6,6 +6,7 @@
 #include "Asset.h"
 #include "Sphere.h"
 #include "../graphics/VertexBuffer.h"
+#include "../graphics/IndexBuffer.h"
 #include "../graphics/MeshHandle.h"
 
 #define GLM_FORCE_RADIANS
@@ -24,7 +25,10 @@ class Mesh : public Asset
     std::vector<float> mNormals;
     std::vector<float> mTexCoords;
     std::vector<float> mColors;
+    std::vector<unsigned int> mIndices;
+
     std::vector<int> mSubMeshVertexStartIndices;
+    std::vector<int> mSubMeshStartIndices;
     
     Sphere mBounds;
 
@@ -34,6 +38,7 @@ class Mesh : public Asset
     VertexBuffer *mTexCoordsBuffer;
     VertexBuffer *mInstanceModelBuffer;
     VertexBuffer *mInstanceColorBuffer;
+    IndexBuffer *mIndexBuffer;
     bool mDeviceUpdateRequired;
 
   public:
@@ -49,9 +54,9 @@ class Mesh : public Asset
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
-              std::vector<float> colors, std::vector<int> subMeshStartIndices);
+              std::vector<float> colors, std::vector<unsigned int> indices, std::vector<int> subMeshStartIndices);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
-              std::vector<int> subMeshStartIndices);
+              std::vector<unsigned int> indices, std::vector<int> subMeshStartIndices);
 
     bool deviceUpdateRequired() const;
 
@@ -59,6 +64,7 @@ class Mesh : public Asset
     const std::vector<float> &getNormals() const;
     const std::vector<float> &getTexCoords() const;
     const std::vector<float> &getColors() const;
+    const std::vector<unsigned int> &getIndices() const;
     const std::vector<int> &getSubMeshStartIndices() const;
     int getSubMeshStartIndex(int subMeshIndex) const;
     int getSubMeshEndIndex(int subMeshIndex) const;

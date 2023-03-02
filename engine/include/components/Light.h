@@ -41,12 +41,6 @@ struct LightTargets
     Framebuffer *mShadowCascadeFBO[5];
     Framebuffer *mShadowSpotlightFBO;
     Framebuffer *mShadowCubemapFBO;
-    //unsigned int mShadowCascadeFBO[5];
-    //unsigned int mShadowCascadeDepthTex[5];
-    //unsigned int mShadowSpotlightFBO;
-    //unsigned int mShadowSpotlightDepthTex;
-    //unsigned int mShadowCubemapFBO;
-    //unsigned int mShadowCubemapDepthTex;
 };
 
 class Light : public Component
@@ -65,8 +59,6 @@ class Light : public Component
     bool mEnabled;
 
   private:
-    bool mIsShadowMapResolutionChanged;
-    bool mIsCreated;
     ShadowMapResolution mShadowMapResolution;
     LightTargets mTargets;
 
@@ -81,11 +73,8 @@ class Light : public Component
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void createTargets();
-    void destroyTargets();
     void resizeTargets();
 
-    bool isCreated() const;
     bool isShadowMapResolutionChanged() const;
     void setShadowMapResolution(ShadowMapResolution resolution);
     ShadowMapResolution getShadowMapResolution() const;

@@ -198,6 +198,19 @@ void OpenGLRenderer::draw_impl(const RenderObject &renderObject, GraphicsQuery &
     query.mTris += count / 3;
 }
 
+void OpenGLRenderer::drawIndexed_impl(const RenderObject &renderObject, GraphicsQuery &query)
+{
+    assert(renderObject.instanced == false);
+
+    renderObject.meshHandle->drawIndexed(renderObject.start, renderObject.size);
+
+    unsigned int count = renderObject.size;
+
+    query.mNumDrawCalls++;
+    query.mVerts += count;
+    query.mTris += count / 3;
+}
+
 void OpenGLRenderer::drawInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query)
 {
     assert(renderObject.instanced == true);
@@ -205,6 +218,19 @@ void OpenGLRenderer::drawInstanced_impl(const RenderObject &renderObject, Graphi
     renderObject.meshHandle->drawInstanced(renderObject.start / 3, renderObject.size / 3, renderObject.instanceCount);
 
     unsigned int count = renderObject.size / 3;
+
+    query.mNumDrawCalls++;
+    query.mVerts += count;
+    query.mTris += count / 3;
+}
+
+void OpenGLRenderer::drawIndexedInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query)
+{
+    assert(renderObject.instanced == true);
+
+    renderObject.meshHandle->drawIndexedInstanced(renderObject.start, renderObject.size, renderObject.instanceCount);
+
+    unsigned int count = renderObject.size;
 
     query.mNumDrawCalls++;
     query.mVerts += count;

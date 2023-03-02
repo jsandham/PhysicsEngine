@@ -25,13 +25,11 @@ class RenderSystem : public System
     DebugRenderer mDebugRenderer;
 
     std::vector<glm::mat4> mTotalModels;
-    /*std::vector<Guid> mTotalTransformIds;*/
     std::vector<Id> mTotalTransformIds;
     std::vector<Sphere> mTotalBoundingSpheres;
     std::vector<RenderObject> mTotalRenderObjects;
     
     std::vector<glm::mat4> mModels;
-    /*std::vector<Guid> mTransformIds;*/
     std::vector<Id> mTransformIds;
     std::vector<RenderObject> mRenderObjects;
 
@@ -55,8 +53,6 @@ class RenderSystem : public System
 
   private:
     void registerRenderAssets(World *world);
-    void registerCameras(World *world);
-    void registerLights(World *world);
     void buildRenderObjectsList(World *world);
     void buildSpriteObjectsList(World* world);
     void cullRenderObjects(Camera *camera);

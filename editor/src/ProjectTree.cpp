@@ -12,9 +12,9 @@ ProjectNode::ProjectNode()
     mParent = nullptr;
     mDirectoryPath = std::filesystem::path();
 
-    mFileLabels.reserve(20);
-    mFilePaths.reserve(20);
-    mFileTypes.reserve(20);
+    mFileLabels.reserve(200);
+    mFilePaths.reserve(200);
+    mFileTypes.reserve(200);
 }
 
 ProjectNode::ProjectNode(const std::filesystem::path& path)
@@ -22,9 +22,9 @@ ProjectNode::ProjectNode(const std::filesystem::path& path)
     mParent = nullptr;
     mDirectoryPath = path;
 
-    mFileLabels.reserve(20);
-    mFilePaths.reserve(20);
-    mFileTypes.reserve(20);
+    mFileLabels.reserve(200);
+    mFilePaths.reserve(200);
+    mFileTypes.reserve(200);
 }
 
 ProjectNode::~ProjectNode()

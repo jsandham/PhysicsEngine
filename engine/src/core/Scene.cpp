@@ -197,9 +197,6 @@ template <> Terrain *Scene::getComponentById<Terrain>(const Id &componentId) con
     return getComponentById_impl(mIdState.mTerrainIdToGlobalIndex, &mAllocators.mTerrainAllocator, componentId);
 }
 
-
-
-
 template <> Transform *Scene::getComponentByGuid<Transform>(const Guid &componentGuid) const
 {
     return getComponentByGuid_impl(mIdState.mTransformGuidToGlobalIndex, &mAllocators.mTransformAllocator, componentGuid);
@@ -267,9 +264,6 @@ template <> Terrain *Scene::getComponentByGuid<Terrain>(const Guid &componentGui
 {
     return getComponentByGuid_impl(mIdState.mTerrainGuidToGlobalIndex, &mAllocators.mTerrainAllocator, componentGuid);
 }
-
-
-
 
 template <> Transform* Scene::getComponent<Transform>(const Guid& entityGuid) const
 {
@@ -925,15 +919,6 @@ bool Scene::writeToYAML(const std::string &filepath) const
             std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity();
             for (size_t j = 0; j < temp.size(); j++)
             {
-                //Component *component = nullptr;
-                //Component *getInternalComponent(const SceneAllocators &allocators, const SceneIdState &state,
-                //                                const Guid &id, int type);
-                //if (Component::isInternal(temp[j].second))
-                //{
-                //    component =
-                //        PhysicsEngine::getInternalComponent(mAllocators, mIdState, temp[j].first, temp[j].second);
-                //}
-
                 Component *component = getComponentByGuid(temp[j].first, temp[j].second);
 
                 if (component->mHide == HideFlag::None)
@@ -954,32 +939,6 @@ bool Scene::writeToYAML(const std::string &filepath) const
     out.close();
 
     return true;
-}
-
-void Scene::load(const std::string &filepath)
-{
-    if (filepath.empty())
-    {
-        return;
-    }
-
-    /*YAML::Node in = YAML::LoadFile(filepath);
-
-    if (!in.IsMap()) {
-        return false;
-    }
-
-    mId = YAML::getValue<Guid>(in, "id");
-
-    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it) {
-        if (it->first.IsScalar() && it->second.IsMap()) {
-            if (loadSceneObjectFromYAML(it->second) == nullptr) {
-                return false;
-            }
-        }
-    }
-
-    return true;*/
 }
 
 std::string Scene::getName() const
@@ -1171,6 +1130,28 @@ Component *Scene::addComponent(const YAML::Node &in, int type)
     }
 
     return nullptr;
+}
+
+int Scene::getIndexOf(const Id &id) const
+{
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mIdToGlobalIndex.find(id);
+    if (it != mIdState.mIdToGlobalIndex.end())
+    {
+        return it->second;
+    }
+
+    return -1;
+}
+
+int Scene::getTypeOf(const Id &id) const
+{
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mIdToType.find(id);
+    if (it != mIdState.mIdToType.end())
+    {
+        return it->second;
+    }
+
+    return -1;
 }
 
 int Scene::getIndexOf(const Guid &guid) const
@@ -1428,9 +1409,6 @@ void Scene::immediateDestroyEntity(const Guid &entityGuid)
     int index = getIndexOf(entityGuid);
     Entity *swap = mAllocators.mEntityAllocator.destruct(index);
     
-
-    //removeGuidToGlobalIndexMap_impl<Entity>(entityGuid, entityId);
-
     mIdState.mEntityGuidToGlobalIndex.erase(entityGuid);
     mIdState.mGuidToGlobalIndex.erase(entityGuid);
     mIdState.mGuidToType.erase(entityGuid);
@@ -1438,10 +1416,6 @@ void Scene::immediateDestroyEntity(const Guid &entityGuid)
     if (swap != nullptr)
     {
         addToIdState_impl<Entity>(swap->getGuid(), swap->getId(), index, EntityType<Entity>::type);
-
-        //mIdState.mEntityGuidToGlobalIndex[swap->getGuid()] = index;
-        //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-        //mIdState.mGuidToType[swap->getGuid()] = EntityType<Entity>::type;
     }
 }
 
@@ -1486,9 +1460,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
         if (swap != nullptr)
         {
             addToIdState_impl<Transform>(swap->getGuid(), swap->getId(), index, componentType);
-            //mIdState.mTransformGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
         }
     }
     else if (componentType == ComponentType<Rigidbody>::type)
@@ -1501,9 +1472,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mRigidbodyGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<Rigidbody>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1517,9 +1485,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mCameraGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<Camera>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1533,9 +1498,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mMeshRendererGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<MeshRenderer>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1549,9 +1511,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mSpriteRendererGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<SpriteRenderer>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1565,9 +1524,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mLineRendererGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<LineRenderer>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1581,9 +1537,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mLightGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<Light>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1597,9 +1550,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mBoxColliderGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<BoxCollider>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1613,9 +1563,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mSphereColliderGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<SphereCollider>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1629,9 +1576,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mMeshColliderGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<MeshCollider>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1645,9 +1589,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mCapsuleColliderGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<CapsuleCollider>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
@@ -1661,9 +1602,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     
         if (swap != nullptr)
         {
-            //mIdState.mTerrainGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToGlobalIndex[swap->getGuid()] = index;
-            //mIdState.mGuidToType[swap->getGuid()] = componentType;
             addToIdState_impl<Terrain>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }

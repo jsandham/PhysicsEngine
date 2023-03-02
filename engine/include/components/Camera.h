@@ -75,23 +75,6 @@ struct CameraTargets
     Framebuffer *mColorPickingFBO;
     Framebuffer *mGeometryFBO;
     Framebuffer *mSsaoFBO;
-
-    /*unsigned int mMainFBO;
-    unsigned int mColorTex;
-    unsigned int mDepthTex;
-
-    unsigned int mColorPickingFBO;
-    unsigned int mColorPickingTex;
-    unsigned int mColorPickingDepthTex;
-
-    unsigned int mGeometryFBO;
-    unsigned int mPositionTex;
-    unsigned int mNormalTex;
-    unsigned int mAlbedoSpecTex;
-
-    unsigned int mSsaoFBO;
-    unsigned int mSsaoColorTex;
-    unsigned int mSsaoNoiseTex;*/
 };
 
 class Camera : public Component
@@ -129,19 +112,15 @@ class Camera : public Component
     glm::vec3 mUp;
     glm::vec3 mRight;
 
-    std::unordered_map<Color32, Id> mColoringMap;
+    std::vector<Id> mColoringIds;
 
-    bool mIsCreated;
     bool mIsViewportChanged;
 
   public:
     Camera(World *world, const Id &id);
     Camera(World *world, const Guid &guid, const Id &id);
-
     //Camera(const Camera&) = delete;  
     //Camera &operator=(const Camera&) =delete;
-
-
     ~Camera();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -150,15 +129,12 @@ class Camera : public Component
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void createTargets();
-    void destroyTargets();
     void resizeTargets();
     void beginQuery();
     void endQuery();
 
     void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right);
-    void assignColoring(Color32 color, const Id &transformId);
-    void clearColoring();
+    void setColoringIds(const std::vector<Id>& ids);
 
     bool isCreated() const;
     bool isViewportChanged() const;

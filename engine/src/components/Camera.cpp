@@ -46,7 +46,6 @@ Camera::Camera(World *world, const Id &id) : Component(world, id)
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
     mEnabled = true;
-    mIsCreated = false;
     mIsViewportChanged = false;
     mRenderToScreen = false;
 }
@@ -92,7 +91,6 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
         glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
 
     mEnabled = true;
-    mIsCreated = false;
     mIsViewportChanged = false;
     mRenderToScreen = false;
 }
@@ -195,28 +193,9 @@ std::string Camera::getObjectName() const
     return PhysicsEngine::CAMERA_NAME;
 }
 
-bool Camera::isCreated() const
-{
-    return mIsCreated;
-}
-
 bool Camera::isViewportChanged() const
 {
     return mIsViewportChanged;
-}
-
-void Camera::createTargets()
-{
-    //Renderer::getRenderer()->createTargets(&mTargets, mViewport, &mSsaoSamples[0], &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
-
-    mIsCreated = true;
-}
-
-void Camera::destroyTargets()
-{
-    //Renderer::getRenderer()->destroyTargets(&mTargets, &mQuery.mQueryId[0], &mQuery.mQueryId[1]);
-
-    mIsCreated = false;
 }
 
 void Camera::resizeTargets()
@@ -233,33 +212,27 @@ void Camera::beginQuery()
     mQuery.mLines = 0;
     mQuery.mPoints = 0;
 
-    if (mIsCreated)
-    {
-        //Renderer::getRenderer()->beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
-    }
+    // Renderer::getRenderer()->beginQuery(mQuery.mQueryId[mQuery.mQueryBack]);
 }
 
 void Camera::endQuery()
 {
     unsigned long long elapsedTime = 0; // in nanoseconds
-
-    if (mIsCreated)
-    {
-        //Renderer::getRenderer()->endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
     
-        mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
+    //Renderer::getRenderer()->endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+    
+    mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
-        // swap which query is active
-        if (mQuery.mQueryBack)
-        {
-            mQuery.mQueryBack = 0;
-            mQuery.mQueryFront = 1;
-        }
-        else
-        {
-            mQuery.mQueryBack = 1;
-            mQuery.mQueryFront = 0;
-        }
+    // swap which query is active
+    if (mQuery.mQueryBack)
+    {
+        mQuery.mQueryBack = 0;
+        mQuery.mQueryFront = 1;
+    }
+    else
+    {
+        mQuery.mQueryBack = 1;
+        mQuery.mQueryFront = 0;
     }
 }
 
@@ -276,14 +249,9 @@ void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forwa
     mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
 }
 
-void Camera::assignColoring(Color32 color, const Id &transformId)
+void Camera::setColoringIds(const std::vector<Id> &ids)
 {
-    mColoringMap.insert(std::pair<Color32, Id>(color, transformId));
-}
-
-void Camera::clearColoring()
-{
-    mColoringMap.clear();
+    mColoringIds = ids;
 }
 
 glm::vec3 Camera::getPosition() const
@@ -327,10 +295,10 @@ Id Camera::getTransformIdAtScreenPos(int x, int y) const
     Color32 color;
     Renderer::getRenderer()->readColorAtPixel(mTargets.mColorPickingFBO, x, y, &color);
 
-    std::unordered_map<Color32, Id>::const_iterator it = mColoringMap.find(color);
-    if (it != mColoringMap.end())
+    uint32_t i = Color32::convertColor32ToUint32(color);
+    if ((i - 1) < mColoringIds.size() && i >= 1)
     {
-        return it->second;
+        return mColoringIds[i - 1];
     }
 
     return Id::INVALID;

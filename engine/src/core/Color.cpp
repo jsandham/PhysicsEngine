@@ -51,3 +51,24 @@ Color32::Color32(unsigned char r, unsigned char g, unsigned char b, unsigned cha
 Color32::~Color32()
 {
 }
+
+uint32_t Color32::convertColor32ToUint32(const Color32 &c)
+{
+    uint32_t color = 0;
+    color |= (255 - c.mA) << 24;
+    color |= (255 - c.mB) << 16;
+    color |= (255 - c.mG) << 8;
+    color |= (255 - c.mR);
+
+    return color;
+}
+
+Color32 Color32::convertUint32ToColor32(uint32_t i)
+{
+    unsigned char r = static_cast<unsigned char>(255 - ((i & 0x000000FF) >> 0));
+    unsigned char g = static_cast<unsigned char>(255 - ((i & 0x0000FF00) >> 8));
+    unsigned char b = static_cast<unsigned char>(255 - ((i & 0x00FF0000) >> 16));
+    unsigned char a = static_cast<unsigned char>(255);
+
+    return Color32(r, g, b, a);
+}

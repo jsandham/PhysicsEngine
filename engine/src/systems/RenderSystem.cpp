@@ -64,8 +64,6 @@ void RenderSystem::init(World *world)
 void RenderSystem::update(const Input &input, const Time &time)
 {
     registerRenderAssets(mWorld);
-    registerCameras(mWorld);
-    registerLights(mWorld);
 
     buildRenderObjectsList(mWorld);
     buildSpriteObjectsList(mWorld);
@@ -180,37 +178,6 @@ void RenderSystem::registerRenderAssets(World *world)
         if (mesh->deviceUpdateRequired())
         {
             mesh->copyMeshToDevice();
-        }
-    }
-}
-
-void RenderSystem::registerCameras(World *world)
-{
-    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Camera>(); i++)
-    {
-        Camera *camera = world->getActiveScene()->getComponentByIndex<Camera>(i);
-
-        if (!camera->isCreated())
-        {
-            camera->createTargets();
-        }
-    }
-}
-
-void RenderSystem::registerLights(World *world)
-{
-    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Light>(); i++)
-    {
-        Light *light = world->getActiveScene()->getComponentByIndex<Light>(i);
-
-        if (!light->isCreated())
-        {
-            light->createTargets();
-        }
-
-        if (light->isShadowMapResolutionChanged())
-        {
-            light->resizeTargets();
         }
     }
 }

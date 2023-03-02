@@ -143,9 +143,8 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
         {
             ProjectNode* current = stack.top();
             stack.pop();
-
-            std::error_code errorCode;
-            if (std::filesystem::equivalent(mSelectedDirectoryPath, current->getDirectoryPath(), errorCode))
+            
+            if(mSelectedDirectoryPath.compare(current->getDirectoryPath()) == 0)
             {
                 directories = current->getChildren();
                 fileLabels = current->getFileLabels();
@@ -165,8 +164,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     // draw directories in right pane
     for (size_t i = 0; i < directories.size(); i++)
     {
-        std::error_code errorCode;
-        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), std::filesystem::equivalent(directories[i]->getDirectoryPath(), mHighlightedPath, errorCode), ImGuiSelectableFlags_AllowDoubleClick))
+        if (ImGui::Selectable(directories[i]->getDirectoryLabel().c_str(), mHighlightedPath.compare(directories[i]->getDirectoryPath()) == 0, ImGuiSelectableFlags_AllowDoubleClick))
         {
             mHighlightedType = InteractionType::Folder;
             mHighlightedPath = directories[i]->getDirectoryPath();
@@ -252,8 +250,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
     // draw files in right pane
     for (size_t i = 0; i < filePaths.size(); i++)
     {
-        std::error_code errorCode;
-        if (ImGui::Selectable(fileLabels[i].c_str(), std::filesystem::equivalent(filePaths[i], mHighlightedPath, errorCode), ImGuiSelectableFlags_AllowDoubleClick))
+        if (ImGui::Selectable(fileLabels[i].c_str(), mHighlightedPath.compare(filePaths[i]) == 0, ImGuiSelectableFlags_AllowDoubleClick))
         {
             mHighlightedType = InteractionType::File;
             mHighlightedPath = filePaths[i];
@@ -360,8 +357,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 ImGui::EndMenu();
             }
 
-            std::error_code errorCode;
-            bool showDelete = !mHighlightedPath.empty() && std::filesystem::equivalent(mHighlightedPath, mHoveredPath, errorCode);
+            bool showDelete = !mHighlightedPath.empty() && mHoveredPath.compare(mHighlightedPath) == 0;
             if (ImGui::MenuItem("Delete", nullptr, false, showDelete))
             {
                 if (mHighlightedType == InteractionType::Folder)
@@ -382,7 +378,7 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                 }
                 else
                 {
-                    if (std::filesystem::equivalent(clipboard.mSelectedPath, mHighlightedPath))
+                    if (clipboard.mSelectedPath.compare(mHighlightedPath) == 0)
                     {
                         clipboard.mSelectedType = InteractionType::None;
                         clipboard.mSelectedId = PhysicsEngine::Guid::INVALID;
@@ -425,8 +421,7 @@ void ProjectView::drawProjectNodeRecursive(ProjectNode *node)
             node_flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
-        std::error_code errorCode;
-        if (std::filesystem::equivalent(mSelectedDirectoryPath, node->getDirectoryPath(), errorCode))
+        if (mSelectedDirectoryPath.compare(node->getDirectoryPath()) == 0)
         {
             node_flags |= ImGuiTreeNodeFlags_Selected;
         }

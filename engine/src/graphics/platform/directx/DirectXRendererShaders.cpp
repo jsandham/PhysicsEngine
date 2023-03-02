@@ -276,7 +276,7 @@ void DirectXColorShader::setModel(const glm::mat4 &model)
 {
 }
 
-void DirectXColorShader::setColor(const Color32 &color)
+void DirectXColorShader::setColor32(const Color32 &color)
 {
 }
 

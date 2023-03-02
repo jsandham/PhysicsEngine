@@ -5,12 +5,126 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "WorldAllocators.h"
-#include "WorldIdState.h"
+#include "Guid.h"
+#include "PoolAllocator.h"
+
+#include "../core/Scene.h"
+
+#include "../core/Cubemap.h"
+#include "../core/Font.h"
+#include "../core/Material.h"
+#include "../core/Mesh.h"
+#include "../core/Sprite.h"
+#include "../core/Texture2D.h"
+
+#include "../systems/CleanUpSystem.h"
+#include "../systems/DebugSystem.h"
+#include "../systems/GizmoSystem.h"
+#include "../systems/PhysicsSystem.h"
+#include "../systems/RenderSystem.h"
+#include "../systems/FreeLookCameraSystem.h"
+#include "../systems/TerrainSystem.h"
+#include "../systems/AssetLoadingSystem.h"
+
 #include "WorldPrimitives.h"
 
 namespace PhysicsEngine
 {
+// Simple structs used for grouping world id to global index maps when passing to functions
+struct WorldIdState
+{
+    // world scene guid state
+    std::unordered_map<Guid, int> mSceneGuidToGlobalIndex;
+
+    // world asset guid state
+    std::unordered_map<Guid, int> mMeshGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mMaterialGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mShaderGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mTexture2DGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mTexture3DGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mCubemapGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mRenderTextureGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mFontGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mSpriteGuidToGlobalIndex;
+
+    // world system guid state
+    std::unordered_map<Guid, int> mRenderSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mPhysicsSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mCleanupSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mDebugSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mGizmoSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mFreeLookCameraSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mTerrainSystemGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mAssetLoadingSystemGuidToGlobalIndex;
+
+    // world id state for all scenes, systems, and assets
+    std::unordered_map<Guid, int> mGuidToGlobalIndex;
+    std::unordered_map<Guid, int> mGuidToType;
+
+    // asset create/deletion state
+    std::vector<std::pair<Guid, int>> mAssetGuidsMarkedCreated;
+    std::vector<std::pair<Guid, int>> mAssetGuidsMarkedLatentDestroy;
+    std::vector<std::pair<Guid, int>> mAssetGuidsMarkedMoved;
+
+    // world scene id state
+    std::unordered_map<Id, int> mSceneIdToGlobalIndex;
+
+    // world asset id state
+    std::unordered_map<Id, int> mMeshIdToGlobalIndex;
+    std::unordered_map<Id, int> mMaterialIdToGlobalIndex;
+    std::unordered_map<Id, int> mShaderIdToGlobalIndex;
+    std::unordered_map<Id, int> mTexture2DIdToGlobalIndex;
+    std::unordered_map<Id, int> mTexture3DIdToGlobalIndex;
+    std::unordered_map<Id, int> mCubemapIdToGlobalIndex;
+    std::unordered_map<Id, int> mRenderTextureIdToGlobalIndex;
+    std::unordered_map<Id, int> mFontIdToGlobalIndex;
+    std::unordered_map<Id, int> mSpriteIdToGlobalIndex;
+
+    // world system id state
+    std::unordered_map<Id, int> mRenderSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mPhysicsSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mCleanupSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mDebugSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mGizmoSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mFreeLookCameraSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mTerrainSystemIdToGlobalIndex;
+    std::unordered_map<Id, int> mAssetLoadingSystemIdToGlobalIndex;
+
+    // world id state for all scenes, systems, and assets
+    std::unordered_map<Id, int> mIdToGlobalIndex;
+    std::unordered_map<Id, int> mIdToType;
+
+    std::unordered_map<Guid, Id> mGuidToId;
+    std::unordered_map<Id, Guid> mIdToGuid;
+};
+
+// Simple structs used for grouping world allocators when passing to functions
+struct WorldAllocators
+{
+    // internal scene allocator
+    PoolAllocator<Scene> mSceneAllocator;
+
+    // internal asset allocators
+    PoolAllocator<Mesh> mMeshAllocator;
+    PoolAllocator<Material> mMaterialAllocator;
+    PoolAllocator<Shader> mShaderAllocator;
+    PoolAllocator<Texture2D> mTexture2DAllocator;
+    PoolAllocator<Cubemap> mCubemapAllocator;
+    PoolAllocator<RenderTexture> mRenderTextureAllocator;
+    PoolAllocator<Font> mFontAllocator;
+    PoolAllocator<Sprite> mSpriteAllocator;
+
+    // internal system allocators
+    PoolAllocator<RenderSystem> mRenderSystemAllocator;
+    PoolAllocator<PhysicsSystem> mPhysicsSystemAllocator;
+    PoolAllocator<CleanUpSystem> mCleanupSystemAllocator;
+    PoolAllocator<DebugSystem> mDebugSystemAllocator;
+    PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
+    PoolAllocator<FreeLookCameraSystem> mFreeLookCameraSystemAllocator;
+    PoolAllocator<TerrainSystem> mTerrainSystemAllocator;
+    PoolAllocator<AssetLoadingSystem> mAssetLoadingSystemAllocator;
+};
+
 class World
 {
   private:
