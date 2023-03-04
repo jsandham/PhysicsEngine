@@ -29,9 +29,9 @@ class MeshRenderer : public Component
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void setMesh(Guid meshId);
-    void setMaterial(Guid materialId);
-    void setMaterial(Guid materialId, int index);
+    void setMesh(const Guid& meshId);
+    void setMaterial(const Guid& materialId);
+    void setMaterial(const Guid& materialId, int index);
 
     Guid getMesh() const;
     Guid getMaterial() const;

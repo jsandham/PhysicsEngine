@@ -13,7 +13,7 @@ class DirectXMeshHandle : public MeshHandle
     DirectXMeshHandle();
     ~DirectXMeshHandle();
 
-    void addVertexBuffer(VertexBuffer *buffer, AttribType type) override;
+    void addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer = false) override;
     void addIndexBuffer(IndexBuffer *buffer) override;
     void bind() override;
     void unbind() override;

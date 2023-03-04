@@ -58,8 +58,8 @@ Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
     mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
     mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
     mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
-    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4);
-    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::Color32);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4, true);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::UVec4, true);
 
     mHandle->addIndexBuffer(mIndexBuffer);
 }
@@ -83,8 +83,8 @@ Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id
     mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
     mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
     mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
-    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4);
-    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::Color32);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4, true);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::UVec4, true);
 
     mHandle->addIndexBuffer(mIndexBuffer);
 }
@@ -576,15 +576,15 @@ void Mesh::copyMeshToDevice()
         {
             mInstanceModelBuffer->resize(sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        mInstanceModelBuffer->setData(nullptr, 0, Renderer::getRenderer()->INSTANCE_BATCH_SIZE * sizeof(glm::mat4));
+        mInstanceModelBuffer->setData(nullptr, 0, sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceModelBuffer->unbind();
         
         mInstanceColorBuffer->bind();
-        if (mInstanceColorBuffer->getSize() < sizeof(glm::vec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
+        if (mInstanceColorBuffer->getSize() < sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
         {
-            mInstanceColorBuffer->resize(sizeof(glm::vec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+            mInstanceColorBuffer->resize(sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        mInstanceColorBuffer->setData(nullptr, 0, Renderer::getRenderer()->INSTANCE_BATCH_SIZE * sizeof(glm::vec4));
+        mInstanceColorBuffer->setData(nullptr, 0, sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceColorBuffer->unbind();
 
         mIndexBuffer->bind();

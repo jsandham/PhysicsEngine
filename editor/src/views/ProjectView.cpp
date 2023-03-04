@@ -45,11 +45,11 @@ void ProjectView::update(Clipboard &clipboard)
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::ProjectView)] = unfocusedThisFrame();
     clipboard.mUnhoveredThisFrame[static_cast<int>(View::ProjectView)] = unhoveredThisFrame();
 
-    ImGui::Text(("mHighlightedType: " + std::to_string(static_cast<int>(mHighlightedType))).c_str());
-    ImGui::Text(("mHighlightedPath: " + mHighlightedPath.string()).c_str());
-    ImGui::Text(("mHoveredPath: " + mHoveredPath.string()).c_str());
-    ImGui::Text(("mSelectedDirectoryPath: " + mSelectedDirectoryPath.string()).c_str());
-    ImGui::Text(("mSelectedFilePath: " + mSelectedFilePath.string()).c_str());
+    //ImGui::Text(("mHighlightedType: " + std::to_string(static_cast<int>(mHighlightedType))).c_str());
+    //ImGui::Text(("mHighlightedPath: " + mHighlightedPath.string()).c_str());
+    //ImGui::Text(("mHoveredPath: " + mHoveredPath.string()).c_str());
+    //ImGui::Text(("mSelectedDirectoryPath: " + mSelectedDirectoryPath.string()).c_str());
+    //ImGui::Text(("mSelectedFilePath: " + mSelectedFilePath.string()).c_str());
 
     if (!clipboard.getProjectPath().empty())
     {

@@ -8,11 +8,18 @@ namespace PhysicsEngine
 {
 enum class AttribType
 {
+    Int,
+    Float,
     Vec2,
     Vec3,
     Vec4,
-    Mat4,
-    Color32
+    IVec2,
+    IVec3,
+    IVec4,
+    UVec2,
+    UVec3,
+    UVec4,
+    Mat4
 };
 
 class MeshHandle
@@ -23,7 +30,7 @@ class MeshHandle
     MeshHandle &operator=(const MeshHandle &other) = delete;
     virtual ~MeshHandle() = 0;
 
-    virtual void addVertexBuffer(VertexBuffer* buffer, AttribType type) = 0;
+    virtual void addVertexBuffer(VertexBuffer* buffer, AttribType type, bool instanceBuffer = false) = 0;
     virtual void addIndexBuffer(IndexBuffer *buffer) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;

@@ -23,12 +23,13 @@ std::string PhysicsEngine::getColorInstancedFragmentShader()
 {
 return "#version 430 core\n"
 "\n"
-"flat in uvec4 Color;\n"
+"in vec4 Color;\n"
+"\n"
 "out vec4 FragColor;\n"
+"\n"
 "void main()\n"
 "{\n"
-"    FragColor = vec4(Color.r / 255.0f, Color.g / 255.0f,\n"
-"                      Color.b / 255.0f, Color.a / 255.0f);\n"
+"    FragColor = Color;\n"
 "}\n";
 }
 std::string PhysicsEngine::getColorInstancedVertexShader()
@@ -46,11 +47,12 @@ return "#version 430 core\n"
 "layout (location = 3) in mat4 model;\n"
 "layout (location = 7) in uvec4 color;\n"
 "\n"
-"out uvec4 Color;\n"
+"out vec4 Color;\n"
 "\n"
 "void main()\n"
 "{\n"
-"    Color = color;\n"
+"    Color = vec4(color.r / 255.0f, color.g / 255.0f,\n"
+"                      color.b / 255.0f, color.a / 255.0f);\n"
 "    gl_Position = Camera.viewProjection * model * vec4(position, 1.0);\n"
 "}\n";
 }

@@ -321,6 +321,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
                                   const std::vector<RenderObject> &renderObjects, 
                                   const std::vector<glm::mat4> &models)
 {
+    // Configure light uniform
     mLightUniform->setLightPosition(lightTransform->getPosition());
     mLightUniform->setLightDirection(lightTransform->getForward());
     mLightUniform->setLightColor(light->mColor);
@@ -351,9 +352,12 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
 
     mLightUniform->copyToUniformsToDevice();
 
+    // Configure shader variant
     int64_t variant = static_cast<int64_t>(ShaderMacro::None);
-    if (light->mLightType == LightType::Directional)
+ 
+    switch (light->mLightType)
     {
+    case LightType::Directional:
         variant = static_cast<int64_t>(ShaderMacro::Directional);
         if (camera->mShadowCascades != ShadowCascades::NoCascades)
         {
@@ -362,25 +366,26 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
                 variant |= static_cast<int64_t>(ShaderMacro::ShowCascades);
             }
         }
-    }
-    else if (light->mLightType == LightType::Spot)
-    {
+        break;
+    case LightType::Spot:
         variant = static_cast<int64_t>(ShaderMacro::Spot);
-    }
-    else if (light->mLightType == LightType::Point)
-    {
+        break;
+    case LightType::Point:
         variant = static_cast<int64_t>(ShaderMacro::Point);
+        break;
     }
 
-    if (light->mShadowType == ShadowType::Hard)
+    switch (light->mShadowType)
     {
+    case ShadowType::Hard:
         variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
-    }
-    else if (light->mShadowType == ShadowType::Soft)
-    {
+        break;
+    case ShadowType::Soft:
         variant |= static_cast<int64_t>(ShaderMacro::SoftShadows);
+        break;
     }
 
+    // Select framebuffer
     Framebuffer *framebuffer = nullptr;
 
     if (camera->mRenderTextureId.isValid())
@@ -400,6 +405,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         framebuffer = camera->getNativeGraphicsMainFBO();
     }
 
+    // Draw to framebuffer
     framebuffer->bind();
     framebuffer->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                              camera->getViewport().mHeight);
@@ -542,10 +548,14 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
     {
         if (renderObjects[i].instanced)
         {
-            std::vector<Color32> colors(renderObjects[i].instanceCount);
+            std::vector<glm::uvec4> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
             {
-                colors[j] = Color32::convertUint32ToColor32(color);
+                Color32 c = Color32::convertUint32ToColor32(color);
+                colors[j].r = c.mR;
+                colors[j].g = c.mG;
+                colors[j].b = c.mB;
+                colors[j].a = c.mA;
                 color++;
             }
 
@@ -558,7 +568,7 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
 
             renderObjects[i].instanceColorBuffer->bind();
             renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
-                                                          sizeof(Color32) * renderObjects[i].instanceCount);
+                                                          sizeof(glm::uvec4) * renderObjects[i].instanceCount);
             renderObjects[i].instanceColorBuffer->unbind();
             Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
 

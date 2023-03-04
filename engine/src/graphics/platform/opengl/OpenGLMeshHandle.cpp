@@ -27,40 +27,82 @@ void OpenGLMeshHandle::unbind()
     CHECK_ERROR(glBindVertexArray(0));
 }
 
-void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type)
+void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type, bool instanceBuffer)
 {
     assert(buffer != nullptr);
+
+    int divisor = instanceBuffer ? 1 : 0;
 
     CHECK_ERROR(glBindVertexArray(mVao));
     buffer->bind();
 
     switch (type)
     {
+    case AttribType::Int:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 1, GL_INT, sizeof(GL_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::Float:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 1, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
     case AttribType::Vec2:
         CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
         CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
         mVertexAttribIndex++;
         break;
     case AttribType::Vec3:
         CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
         CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
         mVertexAttribIndex++;
         break;
     case AttribType::Vec4:
         CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
         CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), 0));
-        // TODO: This is used when the buffer is used in instancing. Pass bool to indicate when buffer is an instancing
-        // buffer?
-        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, 1));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
         mVertexAttribIndex++;
         break;
-    case AttribType::Color32:
+    case AttribType::IVec2:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 2, GL_INT, 2 * sizeof(GL_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::IVec3:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 3, GL_INT, 3 * sizeof(GL_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::IVec4:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 4, GL_INT, 4 * sizeof(GL_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::UVec2:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 2, GL_UNSIGNED_INT, 2 * sizeof(GL_UNSIGNED_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::UVec3:
+        CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 3, GL_UNSIGNED_INT, 3 * sizeof(GL_UNSIGNED_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
+        mVertexAttribIndex++;
+        break;
+    case AttribType::UVec4:
         CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
         CHECK_ERROR(
-            glVertexAttribPointer(mVertexAttribIndex, 4, GL_UNSIGNED_INT, GL_FALSE, 4 * sizeof(GL_UNSIGNED_INT), 0));
-        // TODO: This is used when the buffer is used in instancing. Pass bool to indicate when buffer is an instancing
-        // buffer?
-        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, 1));
+            glVertexAttribIPointer(mVertexAttribIndex, 4, GL_UNSIGNED_INT, 4 * sizeof(GL_UNSIGNED_INT), 0));
+        CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
         mVertexAttribIndex++;
         break;
     case AttribType::Mat4:
@@ -68,9 +110,7 @@ void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type)
         {
             CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
             CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4) * i)));
-            // TODO: This is used when the buffer is used in instancing. Pass bool to indicate when buffer is an
-            // instancing buffer?
-            CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, 1));
+            CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
             mVertexAttribIndex++;
         }
         break;

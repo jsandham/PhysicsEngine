@@ -10,7 +10,7 @@ DirectXMeshHandle::~DirectXMeshHandle()
 {
 }
 
-void DirectXMeshHandle::addVertexBuffer(VertexBuffer *buffer, AttribType type)
+void DirectXMeshHandle::addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer)
 {
 
 }

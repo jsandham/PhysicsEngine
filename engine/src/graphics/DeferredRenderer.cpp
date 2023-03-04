@@ -192,10 +192,14 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
     {
         if (renderObjects[i].instanced)
         {
-            std::vector<Color32> colors(renderObjects[i].instanceCount);
+            std::vector<glm::uvec4> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
             {
-                colors[j] = Color32::convertUint32ToColor32(color);
+                Color32 c = Color32::convertUint32ToColor32(color);
+                colors[j].r = c.mR;
+                colors[j].g = c.mG;
+                colors[j].b = c.mB;
+                colors[j].a = c.mA;
                 color++;
             }
 
@@ -208,7 +212,7 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
 
             renderObjects[i].instanceColorBuffer->bind();
             renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
-                                                          sizeof(Color32) * renderObjects[i].instanceCount);
+                                                          sizeof(glm::uvec4) * renderObjects[i].instanceCount);
             renderObjects[i].instanceColorBuffer->unbind();
             Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
 
