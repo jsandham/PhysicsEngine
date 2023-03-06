@@ -6,10 +6,6 @@
 
 using namespace PhysicsEngine;
 
-CubemapHandle::CubemapHandle()
-{
-}
-
 CubemapHandle::CubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,
     TextureFilterMode filterMode)
 {
@@ -38,19 +34,6 @@ TextureFilterMode CubemapHandle::getFilterMode() const
 int CubemapHandle::getWidth() const
 {
     return mWidth;
-}
-
-CubemapHandle* CubemapHandle::create()
-{
-    switch (RenderContext::getRenderAPI())
-    {
-    case RenderAPI::OpenGL:
-        return new OpenGLCubemapHandle();
-    case RenderAPI::DirectX:
-        return new DirectXCubemapHandle();
-    }
-
-    return nullptr;
 }
 
 CubemapHandle* CubemapHandle::create(int width, TextureFormat format, TextureWrapMode wrapMode,

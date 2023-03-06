@@ -136,19 +136,19 @@ vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir)
 	vec3 finalColor = (ambient + diffuse + specular);
 #if defined(SHOWCASCADES)
 	if (ClipSpaceZ <= Light.cascadeEnds[0]) {
-		finalColor = finalColor * vec3(1.0f, 0.0f, 0.0f);
+		finalColor = vec3(1.0f, 0.0f, 0.0f);
 	}
 	else if (ClipSpaceZ <= Light.cascadeEnds[1]) {
-		finalColor = finalColor * vec3(0.0f, 1.0f, 0.0f);
+		finalColor = vec3(0.0f, 1.0f, 0.0f);
 	}
 	else if (ClipSpaceZ <= Light.cascadeEnds[2]) {
-		finalColor = finalColor * vec3(0.0f, 0.0f, 1.0f);
+		finalColor = vec3(0.0f, 0.0f, 1.0f);
 	}
 	else if (ClipSpaceZ <= Light.cascadeEnds[3]) {
-		finalColor = finalColor * vec3(0.0f, 1.0f, 1.0f);
+		finalColor = vec3(0.0f, 1.0f, 1.0f);
 	}
-	else if (ClipSpaceZ <= Light.cascadeEnds[4]) {
-		finalColor = finalColor * vec3(0.6f, 0.0f, 0.6f);
+	else if (ClipSpaceZ <= Light.cascadeEnds[4])
+		finalColor = vec3(0.6f, 0.0f, 0.6f);
 	}
 	else {
 		finalColor = vec3(0.5, 0.5, 0.5);

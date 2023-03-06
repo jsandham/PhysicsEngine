@@ -18,7 +18,6 @@ namespace PhysicsEngine
 		int mHeight;
 
 	public:
-		TextureHandle();
 		TextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                     TextureFilterMode filterMode);
         TextureHandle(const TextureHandle &other) = delete;
@@ -46,7 +45,6 @@ namespace PhysicsEngine
 
 		virtual void* getHandle() = 0;
 
-		static TextureHandle* create();
         static TextureHandle* create(int width, int height, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode);
 	};
 }

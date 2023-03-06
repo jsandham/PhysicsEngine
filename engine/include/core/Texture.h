@@ -17,8 +17,16 @@ enum class TextureFormat
 
 enum class TextureWrapMode
 {
+    // D3D11: D3D11_TEXTURE_ADDRESS_WRAP. OpenG: GL_REPEAT
     Repeat = 0,
-    Clamp = 1
+    // D3D11: D3D11_TEXTURE_ADDRESS_CLAMP. OpenGL: GL_CLAMP_TO_EDGE
+    ClampToEdge = 1,
+    // D3D11: D3D11_TEXTURE_ADDRESS_BORDER. OpenGL: GL_CLAMP_TO_BORDER
+    ClampToBorder = 2,
+    // D3D11: D3D11_TEXTURE_ADDRESS_MIRROR. OpenGL: GL_MIRRORED_REPEAT
+    MirrorRepeat = 3,
+    // D3D11: D3D11_TEXTURE_ADDRESS_MIRROR_ONCE. OpenGL: GL_MIRROR_CLAMP_TO_EDGE
+    MirrorClampToEdge = 4
 };
 
 enum class TextureFilterMode

@@ -10,8 +10,6 @@ using namespace PhysicsEngine;
 
 Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
-
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -25,12 +23,12 @@ Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
     mAnisoLevel = 1;
     mDeviceUpdateRequired = false;
     mUpdateRequired = false;
+
+    mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
 Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
 {
-    mTex = TextureHandle::create();
-
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -44,12 +42,12 @@ Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(wor
     mAnisoLevel = 1;
     mDeviceUpdateRequired = false;
     mUpdateRequired = false;
+
+    mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
 Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
-
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -65,12 +63,12 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Textur
     mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
+
+    mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
 Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureFormat format) : Texture(world, id)
 {
-    mTex = TextureHandle::create();
-
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -87,6 +85,8 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureF
     mUpdateRequired = false;
 
     mRawTextureData.resize(width * height * mNumChannels);
+
+    mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
 Texture2D::~Texture2D()

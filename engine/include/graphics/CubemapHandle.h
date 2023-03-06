@@ -16,7 +16,6 @@ class CubemapHandle
     int mWidth;
 
   public:
-    CubemapHandle();
     CubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode);
     virtual ~CubemapHandle() = 0;
 
@@ -35,7 +34,6 @@ class CubemapHandle
 
     virtual void *getHandle() = 0;
 
-    static CubemapHandle *create();
     static CubemapHandle *create(int width, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode);
 };
 } // namespace PhysicsEngine

@@ -10,16 +10,21 @@ namespace PhysicsEngine
 {
 	class DirectXTextureHandle : public TextureHandle
 	{
-	public:
-		D3D11_TEXTURE2D_DESC mDesc;
+	private:
+		D3D11_TEXTURE2D_DESC mTextureDesc;
 		ID3D11Texture2D* mTexture;
-		ID3D11ShaderResourceView* mResourceView;
-		ID3D11SamplerState* mSamplerState;
-		D3D11_SAMPLER_DESC mSamplerDesc;
 
-		DirectXTextureHandle();
+		D3D11_SHADER_RESOURCE_VIEW_DESC mResourceViewDesc;
+		ID3D11ShaderResourceView* mResourceView;
+		
+		D3D11_SAMPLER_DESC mSamplerDesc;
+		ID3D11SamplerState* mSamplerState;
+
+	public:
         DirectXTextureHandle(int width, int height, TextureFormat format,
                                                    TextureWrapMode wrapMode, TextureFilterMode filterMode);
+        ~DirectXTextureHandle();
+
 		void load(TextureFormat format,
 			TextureWrapMode wrapMode,
 			TextureFilterMode filterMode,

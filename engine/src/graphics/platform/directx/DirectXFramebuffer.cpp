@@ -7,18 +7,48 @@ using namespace PhysicsEngine;
 
 DirectXFramebuffer::DirectXFramebuffer(int width, int height) : Framebuffer(width, height)
 {
+    mColorTex.resize(1);
    
+    mColorTex[0] =
+        TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge, TextureFilterMode::Nearest);
+    mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+                                      TextureFilterMode::Nearest);
 }
 
 DirectXFramebuffer::DirectXFramebuffer(int width, int height, int numColorTex, bool addDepthTex)
     : Framebuffer(width, height, numColorTex, addDepthTex)
 {
+    mColorTex.resize(mNumColorTex);
 
+    for (size_t i = 0; i < mColorTex.size(); i++)
+    {
+        mColorTex[i] = TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
+                                             TextureFilterMode::Nearest);
+    }
+
+    if (mAddDepthTex)
+    {
+        mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+                                          TextureFilterMode::Nearest);
+    }
+    else
+    {
+        mDepthTex = nullptr;
+    }
 }
 
 DirectXFramebuffer::~DirectXFramebuffer()
 {
-    
+    // delete textures
+    for (size_t i = 0; i < mColorTex.size(); i++)
+    {
+        delete mColorTex[i];
+    }
+
+    if (mAddDepthTex)
+    {
+        delete mDepthTex;
+    }
 }
 
 void DirectXFramebuffer::clearColor(Color color)
@@ -48,7 +78,10 @@ void DirectXFramebuffer::unbind()
 
 void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
 {
-
+    assert(x >= 0);
+    assert(y >= 0);
+    assert((unsigned int)(x + width) <= mWidth);
+    assert((unsigned int)(y + height) <= mHeight);
 }
 
 TextureHandle *DirectXFramebuffer::getColorTex(size_t i)

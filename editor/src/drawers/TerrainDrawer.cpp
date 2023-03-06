@@ -173,9 +173,12 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             mProgram->unbind();
             mFBO->unbind();
 
-            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
-                ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
-                ImVec2(0, 0));
+            if (mFBO->getColorTex()->getHandle() != nullptr)
+            {
+                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+                    ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+                    ImVec2(0, 0));
+            }
 
             if (ImGui::TreeNodeEx("Grass", ImGuiTreeNodeFlags_DefaultOpen))
             {

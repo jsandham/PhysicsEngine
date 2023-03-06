@@ -15,8 +15,6 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
     mBackTexGuid = Guid::INVALID;
     mFrontTexGuid = Guid::INVALID;
 
-    mCube = CubemapHandle::create();
-
     mDimension = TextureDimension::Cube;
 
     mWidth = 0;
@@ -28,6 +26,8 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
     mAnisoLevel = 1;
     mDeviceUpdateRequired = false;
     mUpdateRequired = false;
+
+    mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
 Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
@@ -39,8 +39,6 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
     mBackTexGuid = Guid::INVALID;
     mFrontTexGuid = Guid::INVALID;
 
-    mCube = CubemapHandle::create();
-
     mDimension = TextureDimension::Cube;
 
     mWidth = 0;
@@ -52,6 +50,8 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
     mAnisoLevel = 1;
     mDeviceUpdateRequired = false;
     mUpdateRequired = false;
+
+    mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
 Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
@@ -62,8 +62,6 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
     mTopTexGuid = Guid::INVALID;
     mBackTexGuid = Guid::INVALID;
     mFrontTexGuid = Guid::INVALID;
-
-    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -78,6 +76,8 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
     mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
+
+    mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
 Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : Texture(world, id)
@@ -88,8 +88,6 @@ Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : 
     mTopTexGuid = Guid::INVALID;
     mBackTexGuid = Guid::INVALID;
     mFrontTexGuid = Guid::INVALID;
-
-    mCube = CubemapHandle::create();
 
     mDimension = TextureDimension::Cube;
 
@@ -104,6 +102,8 @@ Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : 
     mUpdateRequired = false;
 
     mRawTextureData.resize(6 * width * width * mNumChannels);
+
+    mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
 Cubemap::~Cubemap()

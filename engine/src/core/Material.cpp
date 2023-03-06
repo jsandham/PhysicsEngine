@@ -94,7 +94,6 @@ void Material::apply()
 
     assert(shader != nullptr);
 
-    //Renderer::getRenderer()->applyMaterial(mUniforms, shader->getActiveProgram());
     ShaderProgram *shaderProgram = shader->getActiveProgram();
     
     int textureUnit = 0;

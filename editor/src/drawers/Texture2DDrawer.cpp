@@ -48,19 +48,19 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
             mDrawTex = texture->getNativeGraphics();
         }
 
-        const std::array<const char*, 2> wrapMode = { "Repeat", "Clamp To Edge" };
-        const std::array<const char*, 3> filterMode = { "Nearest", "Linear", "Bilinear" };
+        const std::array<const char*, 5> wrapModes = { "Repeat", "Clamp To Edge", "Clamp to border", "Mirror repeat", "Mirror clamp to edge"};
+        const std::array<const char*, 3> filterModes = { "Nearest", "Linear", "Bilinear" };
 
         static int activeWrapModeIndex = static_cast<int>(texture->getWrapMode());
         static int activeFilterModeIndex = static_cast<int>(texture->getFilterMode());
 
         // select wrap mode for texture
-        if (ImGui::BeginCombo("Wrap Mode", wrapMode[activeWrapModeIndex]))
+        if (ImGui::BeginCombo("Wrap Mode", wrapModes[activeWrapModeIndex]))
         {
-            for (int n = 0; n < wrapMode.size(); n++)
+            for (int n = 0; n < wrapModes.size(); n++)
             {
-                bool is_selected = (wrapMode[activeWrapModeIndex] == wrapMode[n]);
-                if (ImGui::Selectable(wrapMode[n], is_selected))
+                bool is_selected = (wrapModes[activeWrapModeIndex] == wrapModes[n]);
+                if (ImGui::Selectable(wrapModes[n], is_selected))
                 {
                     activeWrapModeIndex = n;
 
@@ -77,12 +77,12 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
         }
 
         // select filter mode for texture
-        if (ImGui::BeginCombo("Filter Mode", filterMode[activeFilterModeIndex]))
+        if (ImGui::BeginCombo("Filter Mode", filterModes[activeFilterModeIndex]))
         {
-            for (int n = 0; n < filterMode.size(); n++)
+            for (int n = 0; n < filterModes.size(); n++)
             {
-                bool is_selected = (filterMode[activeFilterModeIndex] == filterMode[n]);
-                if (ImGui::Selectable(filterMode[n], is_selected))
+                bool is_selected = (filterModes[activeFilterModeIndex] == filterModes[n]);
+                if (ImGui::Selectable(filterModes[n], is_selected))
                 {
                     activeFilterModeIndex = n;
 
@@ -306,9 +306,17 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PopStyleColor();
             }
 
-            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getHandle())),
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                ImVec2(0, 0));
+            if (mDrawTex->getHandle() != nullptr)
+            {
+               ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getHandle())),
+                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                    ImVec2(0, 0));
+                
+                // directx
+                //ImGui::Image(mDrawTex->getHandle(),
+                //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                //    ImVec2(0, 0));
+            }
 
             ImGui::EndChild();
         }

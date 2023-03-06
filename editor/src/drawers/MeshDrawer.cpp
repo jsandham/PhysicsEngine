@@ -186,9 +186,12 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
                 mMouseY = ny;
             }
 
-            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                ImVec2(0, 0));
+            if (mFBO->getColorTex()->getHandle() != nullptr)
+            {
+                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                    ImVec2(0, 0));
+            }
         }
 
         if (mResetModelMatrix)

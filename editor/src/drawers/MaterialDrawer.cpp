@@ -167,7 +167,6 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                 mFBO->setViewport(0, 0, 1000, 1000);
                 mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
                 mFBO->clearDepth(1.0f);
-                /*mesh->getNativeGraphicsHandle()->draw(0, mesh->getVertices().size() / 3);*/
                 mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
                 mFBO->unbind();
             }
@@ -179,9 +178,13 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         ImGui::BeginChild("MaterialPreviewWindow",
             ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
             window_flags);
-        ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
-            ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-            ImVec2(0, 0));
+
+        if (mFBO->getColorTex()->getHandle() != nullptr)
+        {
+            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                ImVec2(0, 0));
+        }
         ImGui::EndChild();
     }
 

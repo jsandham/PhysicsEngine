@@ -6,12 +6,9 @@
 
 using namespace PhysicsEngine;
 
-DirectXCubemapHandle::DirectXCubemapHandle()
-{
-}
-
 DirectXCubemapHandle::DirectXCubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,
-                                         TextureFilterMode filterMode)
+                                           TextureFilterMode filterMode)
+    : CubemapHandle(width, format, wrapMode, filterMode)
 {
 }
 

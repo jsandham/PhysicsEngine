@@ -320,28 +320,31 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
     }
 
     // Finally draw scene
-    unsigned int tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsColorTex()->getHandle());
+    void* tex = clipboard.mCameraSystem->getNativeGraphicsColorTex()->getHandle();
 
     switch (mActiveDebugTarget)
     {
     case DebugTargets::Depth:
-        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getHandle());
+        tex = clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getHandle();
         break;
     case DebugTargets::ColorPicking:
-        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getHandle());
+        tex = clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getHandle();
         break;
     case DebugTargets::AlbedoSpecular:
-        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle());
+        tex = clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle();
         break;
     case DebugTargets::SSAO:
-        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getHandle());
+        tex = clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getHandle();
         break;
     case DebugTargets::SSAONoise:
-        tex = *reinterpret_cast<unsigned int*>(clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle());
+        tex = clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle();
         break;
     }
 
-    ImGui::Image((void*)(intptr_t)tex, mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+    if (tex != nullptr)
+    {
+        ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(tex)), mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+    }
 
     // draw transform gizmo if entity is selected
     if (clipboard.getSelectedType() == InteractionType::Entity)
@@ -392,11 +395,17 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
                 if (camera->mRenderTextureId.isValid())
                 {
                     PhysicsEngine::RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(camera->mRenderTextureId);
-                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    if (renderTexture->getNativeGraphicsColorTex()->getHandle() != nullptr)
+                    {
+                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    }
                 }
                 else
                 {
-                    ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    if (camera->getNativeGraphicsColorTex()->getHandle() != nullptr)
+                    {
+                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                    }
                 }
             }
         }

@@ -11,7 +11,6 @@ namespace PhysicsEngine
 		unsigned int mHandle;
 
 	public:
-		OpenGLTextureHandle();
 		OpenGLTextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                           TextureFilterMode filterMode);
 		~OpenGLTextureHandle();

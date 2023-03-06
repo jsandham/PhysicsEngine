@@ -11,7 +11,6 @@ class OpenGLCubemapHandle : public CubemapHandle
     unsigned int mHandle;
 
   public:
-    OpenGLCubemapHandle();
     OpenGLCubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,
                         TextureFilterMode filterMode);
     ~OpenGLCubemapHandle();

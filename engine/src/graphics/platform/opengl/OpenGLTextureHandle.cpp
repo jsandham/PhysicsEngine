@@ -42,8 +42,17 @@ static GLint getTextureWrapMode(TextureWrapMode wrapMode)
     case TextureWrapMode::Repeat:
         openglWrapMode = GL_REPEAT;
         break;
-    case TextureWrapMode::Clamp:
+    case TextureWrapMode::ClampToEdge:
         openglWrapMode = GL_CLAMP_TO_EDGE;
+        break;
+    case TextureWrapMode::ClampToBorder:
+        openglWrapMode = GL_CLAMP_TO_BORDER;
+        break;
+    case TextureWrapMode::MirrorRepeat:
+        openglWrapMode = GL_MIRRORED_REPEAT;
+        break;
+    case TextureWrapMode::MirrorClampToEdge:
+        openglWrapMode = GL_MIRROR_CLAMP_TO_EDGE;
         break;
     default:
         Log::error("OpengGL: Invalid texture wrap mode\n");
@@ -76,52 +85,13 @@ static GLint getTextureFilterMode(TextureFilterMode filterMode)
     return openglFilterMode;
 }
 
-OpenGLTextureHandle::OpenGLTextureHandle()
-{
-	CHECK_ERROR(glGenTextures(1, &mHandle));
-}
-
 OpenGLTextureHandle::OpenGLTextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
-                                       TextureFilterMode filterMode)
+                                         TextureFilterMode filterMode)
+    : TextureHandle(width, height, format, wrapMode, filterMode)
 {
-    mFormat = format;
-    mWrapMode = wrapMode;
-    mFilterMode = filterMode;
-    mAnisoLevel = 1;
-    mWidth = width;
-    mHeight = height;
-
     CHECK_ERROR(glGenTextures(1, &mHandle));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 
-    GLenum openglFormat = getTextureFormat(mFormat);
-    GLint openglWrapMode = getTextureWrapMode(mWrapMode);
-    GLint openglFilterMode = getTextureFilterMode(mFilterMode);
-
-    // glTexImage2D allows "re-allocating" a texture without having to delete and re-create it first
-    if (mFormat == TextureFormat::Depth)
-    {
-        CHECK_ERROR(
-            glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_FLOAT, nullptr));
-    }
-    else
-    {
-        CHECK_ERROR(
-            glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_UNSIGNED_BYTE, nullptr));
-    }
-
-    CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
-
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                                openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
-
-    // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
-
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    this->load(format, wrapMode, filterMode, width, height, std::vector<unsigned char>());
 }
 
 OpenGLTextureHandle::~OpenGLTextureHandle()
@@ -146,7 +116,6 @@ void OpenGLTextureHandle::load(TextureFormat format,
 	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 
 	GLenum openglFormat = getTextureFormat(mFormat);
-	GLint openglWrapMode = getTextureWrapMode(mWrapMode);
 	GLint openglFilterMode = getTextureFilterMode(mFilterMode);
 
 	// glTexImage2D allows "re-allocating" a texture without having to delete and re-create it first
@@ -166,8 +135,8 @@ void OpenGLTextureHandle::load(TextureFormat format,
 	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
 	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 		openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
 
 	// clamp the requested anisotropic filtering level to what is available and set it
 	CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
@@ -181,15 +150,14 @@ void OpenGLTextureHandle::update(TextureWrapMode wrapMode, TextureFilterMode fil
     mFilterMode = filterMode;
     mAnisoLevel = anisoLevel;
 
-    GLint openglWrapMode = getTextureWrapMode(mWrapMode);
     GLint openglFilterMode = getTextureFilterMode(mFilterMode);
     
     CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, openglWrapMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
     
     // Determine how many levels of anisotropic filtering are available
     float aniso = 0.0f;

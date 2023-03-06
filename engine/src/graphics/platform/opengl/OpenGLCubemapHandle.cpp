@@ -43,8 +43,17 @@ static GLint getTextureWrapMode(TextureWrapMode wrapMode)
     case TextureWrapMode::Repeat:
         openglWrapMode = GL_REPEAT;
         break;
-    case TextureWrapMode::Clamp:
+    case TextureWrapMode::ClampToEdge:
         openglWrapMode = GL_CLAMP_TO_EDGE;
+        break;
+    case TextureWrapMode::ClampToBorder:
+        openglWrapMode = GL_CLAMP_TO_BORDER;
+        break;
+    case TextureWrapMode::MirrorRepeat:
+        openglWrapMode = GL_MIRRORED_REPEAT;
+        break;
+    case TextureWrapMode::MirrorClampToEdge:
+        openglWrapMode = GL_MIRROR_CLAMP_TO_EDGE;
         break;
     default:
         Log::error("OpengGL: Invalid texture wrap mode\n");
@@ -77,39 +86,13 @@ static GLint getTextureFilterMode(TextureFilterMode filterMode)
     return openglFilterMode;
 }
 
-OpenGLCubemapHandle::OpenGLCubemapHandle()
-{
-    CHECK_ERROR(glGenTextures(1, &mHandle));
-}
-
 OpenGLCubemapHandle::OpenGLCubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,
                                          TextureFilterMode filterMode)
+    : CubemapHandle(width, format, wrapMode, filterMode)
 {
-    mFormat = format;
-    mWrapMode = wrapMode;
-    mFilterMode = filterMode;
-    mWidth = width;
-
     CHECK_ERROR(glGenTextures(1, &mHandle));
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
-    
-    GLenum openglFormat = getTextureFormat(mFormat);
-    GLint openglWrapMode = getTextureWrapMode(mWrapMode);
-    GLint openglFilterMode = getTextureFilterMode(mFilterMode);
-    
-    for (unsigned int i = 0; i < 6; i++)
-    {
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, mWidth, mWidth, 0, openglFormat, GL_UNSIGNED_BYTE, nullptr));
-    }
-    
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
-    
-    CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+
+    this->load(format, wrapMode, filterMode, width, std::vector<unsigned char>());
 }
 
 OpenGLCubemapHandle::~OpenGLCubemapHandle()
@@ -128,7 +111,6 @@ void OpenGLCubemapHandle::load(TextureFormat format, TextureWrapMode wrapMode, T
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
 
     GLenum openglFormat = getTextureFormat(mFormat);
-    GLint openglWrapMode = getTextureWrapMode(mWrapMode);
     GLint openglFilterMode = getTextureFilterMode(mFilterMode);
 
     for (unsigned int i = 0; i < 6; i++)
@@ -140,9 +122,9 @@ void OpenGLCubemapHandle::load(TextureFormat format, TextureWrapMode wrapMode, T
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
                                 openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, getTextureWrapMode(mWrapMode)));
 
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 }
@@ -152,16 +134,15 @@ void OpenGLCubemapHandle::update(TextureWrapMode wrapMode, TextureFilterMode fil
     mWrapMode = wrapMode;
     mFilterMode = filterMode;
 
-    GLint openglWrapMode = getTextureWrapMode(mWrapMode);
     GLint openglFilterMode = getTextureFilterMode(mFilterMode);
     
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
                     openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, openglWrapMode));
-    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, openglWrapMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, getTextureWrapMode(mWrapMode)));
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 }
 

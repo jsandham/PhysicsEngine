@@ -33,7 +33,7 @@ static const std::string FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS =
     "Not all color attachments are layered textures or bound to the same target";
 static const std::string UNKNOWN_FRAMEBUFFER_ERROR = "Unknown framebuffer status error";
 
-void PhysicsEngine::logError(const std::string &error, const std::string &line, const std::string &file)
+static void logError(const std::string &error, const std::string &line, const std::string &file)
 {
     char errorBuffer[512];
     size_t i = 1;
@@ -52,6 +52,8 @@ void PhysicsEngine::logError(const std::string &error, const std::string &line, 
     errorBuffer[i + 1] = '\0';
     Log::error(errorBuffer);
 }
+
+#define LOG_ERROR(ERROR, LINE, FILE) logError(ERROR, LINE, FILE);
 
 void PhysicsEngine::checkError(const std::string &line, const std::string &file)
 {

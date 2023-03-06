@@ -126,6 +126,8 @@ void DirectXDepthCubemapShader::setModel(const glm::mat4 &model)
 
 void DirectXDepthCubemapShader::setCubeViewProj(int index, const glm::mat4 &modelView)
 {
+    assert(index >= 0);
+    assert(index <= 5);
 }
 
 DirectXGeometryShader::DirectXGeometryShader()
@@ -330,6 +332,8 @@ void DirectXSSAOShader::setNoiseTexture(int texUnit, TextureHandle *tex)
 
 void DirectXSSAOShader::setSample(int index, const glm::vec3 &sample)
 {
+    assert(index >= 0);
+    assert(index <= 63);
 }
 
 DirectXSpriteShader::DirectXSpriteShader()

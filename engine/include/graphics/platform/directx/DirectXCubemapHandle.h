@@ -11,7 +11,6 @@ class DirectXCubemapHandle : public CubemapHandle
     unsigned int mHandle;
 
   public:
-    DirectXCubemapHandle();
     DirectXCubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode);
     ~DirectXCubemapHandle();
 

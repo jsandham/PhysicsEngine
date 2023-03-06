@@ -9,6 +9,10 @@ namespace PhysicsEngine
 {
 class DirectXMeshHandle : public MeshHandle
 {
+  private:
+    std::vector<VertexBuffer *> mBuffers;
+    IndexBuffer *mIndexBuffer;
+
   public:
     DirectXMeshHandle();
     ~DirectXMeshHandle();

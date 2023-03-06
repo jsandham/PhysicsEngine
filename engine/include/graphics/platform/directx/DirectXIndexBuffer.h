@@ -11,10 +11,8 @@ namespace PhysicsEngine
 	class DirectXIndexBuffer : public IndexBuffer
 	{
 	private:
-		D3D11_BUFFER_DESC mBufferDesc;
-		D3D11_MAPPED_SUBRESOURCE mMappedSubresource;
-		ID3D11Buffer* mBufferHandle;
-		ID3D11InputLayout* mInputLayout;
+        D3D11_BUFFER_DESC mBufferDesc;
+        ID3D11Buffer *mBuffer;
 
 	public:
 		DirectXIndexBuffer();

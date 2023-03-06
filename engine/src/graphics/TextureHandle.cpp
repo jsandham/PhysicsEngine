@@ -6,14 +6,16 @@
 
 using namespace PhysicsEngine;
 
-TextureHandle::TextureHandle()
-{
-}
-
 TextureHandle::TextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                            TextureFilterMode filterMode)
 {
-
+    mWidth = width;
+    mHeight = height;
+    mAnisoLevel = 1;
+    
+    mFormat = format;
+    mWrapMode = wrapMode;
+    mFilterMode = filterMode;
 }
 
 TextureHandle::~TextureHandle()
@@ -50,18 +52,18 @@ int TextureHandle::getHeight() const
     return mHeight;
 }
 
-TextureHandle* TextureHandle::create()
-{
-	switch (RenderContext::getRenderAPI())
-	{
-	case RenderAPI::OpenGL:
-		return new OpenGLTextureHandle();
-	case RenderAPI::DirectX:
-		return new DirectXTextureHandle();
-	}
-
-	return nullptr;
-}
+//TextureHandle* TextureHandle::create()
+//{
+//	switch (RenderContext::getRenderAPI())
+//	{
+//	case RenderAPI::OpenGL:
+//		return new OpenGLTextureHandle();
+//	case RenderAPI::DirectX:
+//		return new DirectXTextureHandle();
+//	}
+//
+//	return nullptr;
+//}
 
 TextureHandle *TextureHandle::create(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                                      TextureFilterMode filterMode)
