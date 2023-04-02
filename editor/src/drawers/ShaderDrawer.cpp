@@ -8,6 +8,7 @@
 
 #include "core/Shader.h"
 #include "core/Log.h"
+#include "graphics/RenderContext.h"
 
 #include "imgui.h"
 #include "glm/glm.hpp"
@@ -51,10 +52,10 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::TableNextColumn();
             ImGui::Text("Language:");
             ImGui::TableNextColumn();
-            switch (shader->getSourceLanguage())
+            switch (RenderContext::getRenderAPI())
             {
-            case ShaderSourceLanguage::GLSL: {ImGui::Text("GLSL"); break; }
-            case ShaderSourceLanguage::HLSL: {ImGui::Text("HLSL"); break; }
+            case RenderAPI::OpenGL: {ImGui::Text("GLSL"); break; }
+            case RenderAPI::DirectX: {ImGui::Text("HLSL"); break; }
             }
 
             ImGui::TableNextColumn();

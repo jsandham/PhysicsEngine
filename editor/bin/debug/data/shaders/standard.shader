@@ -3,8 +3,8 @@ Shader:
   hide : 0
   id : 3bafff3c-81ff-4e24-881a-26c7fd6ab62e
   name : Editor Loaded Standard
-  shaderSourceLanguage : GLSL
   source : standard.glsl
+  hlsl_source : standard.hlsl
   variants:
     0 : [None]
     1 : [Directional]

@@ -1,20 +1,61 @@
 #include "../../../../include/graphics/platform/directx/DirectXShaderProgram.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
+
+#include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
+
+#include <algorithm>
+#include <d3dcompiler.h>
+
+#pragma comment(lib, "d3dcompiler.lib")
 
 using namespace PhysicsEngine;
 
 DirectXShaderProgram::DirectXShaderProgram()
 {
+    mVertexShader = NULL;
+    mPixelShader = NULL;
+    mGeometryShader = NULL;
 
+    mVertexShaderBlob = NULL;
+    mPixelShaderBlob = NULL;
+    mGeometryShaderBlob = NULL;
 }
 
 DirectXShaderProgram ::~DirectXShaderProgram()
 {
+    if (mVertexShader != NULL)
+    {
+        mVertexShader->Release();
+    }
+    if (mPixelShader != NULL)
+    {
+        mPixelShader->Release();
+    }
+    if (mGeometryShader != NULL)
+    {
+        mGeometryShader->Release();
+    }
 
+    if (mVertexShaderBlob != NULL)
+    {
+        mVertexShaderBlob->Release();
+    }
+    if (mPixelShaderBlob != NULL)
+    {
+        mPixelShaderBlob->Release();
+    }
+    if (mGeometryShaderBlob != NULL)
+    {
+        mGeometryShaderBlob->Release();
+    }
 }
 
 void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry)
 {
-
+    mName = name;
+    mVertex = vertex;
+    mFragment = fragment;
+    mGeometry = geometry;
 }
 
 void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment)
@@ -24,17 +65,142 @@ void DirectXShaderProgram::load(const std::string& name, const std::string &vert
 
 void DirectXShaderProgram::compile()
 {
+    memset(mStatus.mVertexCompileLog, 0, sizeof(mStatus.mVertexCompileLog));
+    memset(mStatus.mFragmentCompileLog, 0, sizeof(mStatus.mFragmentCompileLog));
+    memset(mStatus.mGeometryCompileLog, 0, sizeof(mStatus.mGeometryCompileLog));
+    memset(mStatus.mLinkLog, 0, sizeof(mStatus.mLinkLog));
 
+    mStatus.mVertexShaderCompiled = 1;
+    mStatus.mFragmentShaderCompiled = 1;
+    mStatus.mGeometryShaderCompiled = 1;
+
+    if (mVertexShader != NULL)
+    {
+        mVertexShader->Release();
+    }
+    if (mPixelShader != NULL)
+    {
+        mPixelShader->Release();
+    }
+    if (mGeometryShader != NULL)
+    {
+        mGeometryShader->Release();
+    }
+
+    if (mVertexShaderBlob != NULL)
+    {
+        mVertexShaderBlob->Release();
+    }
+    if (mPixelShaderBlob != NULL)
+    {
+        mPixelShaderBlob->Release();
+    }
+    if (mGeometryShaderBlob != NULL)
+    {
+        mGeometryShaderBlob->Release();
+    }
+
+    UINT flags = D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG;
+
+    ID3DBlob *errorBlob = nullptr;
+
+    HRESULT result;
+
+    // Compile vertex shader shader
+    result = D3DCompile(mVertex.data(), mVertex.size(), NULL, NULL, NULL, "VSMain", "vs_5_0", flags, 0,
+                    &mVertexShaderBlob, &errorBlob);
+    
+    if (FAILED(result))
+    {
+        std::string message = "Shader: Vertex shader compilation failed (" + mName + ")\n";
+        Log::error(message.c_str());
+
+        mStatus.mVertexShaderCompiled = 0;
+        if (errorBlob)
+        {
+            memcpy(mStatus.mVertexCompileLog, errorBlob->GetBufferPointer(), 
+                   std::min((size_t)512, (size_t)errorBlob->GetBufferSize()));
+            Log::error((char*)errorBlob->GetBufferPointer());
+            errorBlob->Release();
+        }
+    }
+
+    // Compile pixel shader shader
+    result = D3DCompile(mFragment.data(), mFragment.size(), NULL, NULL, NULL, "PSMain", "ps_5_0", flags,
+                    0, &mPixelShaderBlob, &errorBlob);
+    if (FAILED(result))
+    {
+        std::string message = "Shader: Pixel shader compilation failed (" + mName + ")\n";
+        Log::error(message.c_str());
+
+        mStatus.mFragmentShaderCompiled = 0;
+        if (errorBlob)
+        {
+            memcpy(mStatus.mFragmentCompileLog, errorBlob->GetBufferPointer(),
+                   std::min((size_t)512, (size_t)errorBlob->GetBufferSize()));
+            Log::error((char *)errorBlob->GetBufferPointer());
+            errorBlob->Release();
+        }
+    }
+
+    if (!mGeometry.empty())
+    {
+        // Compile pixel shader shader
+        result = D3DCompile(mGeometry.data(), mGeometry.size(), NULL, NULL, NULL, "GSMain", "ps_5_0", flags, 0,
+                        &mGeometryShaderBlob, &errorBlob);
+        if (FAILED(result))
+        {
+            std::string message = "Shader: Geometry shader compilation failed (" + mName + ")\n";
+            Log::error(message.c_str());
+
+            mStatus.mGeometryShaderCompiled = 0;
+            if (errorBlob)
+            {
+                memcpy(mStatus.mGeometryCompileLog, errorBlob->GetBufferPointer(),
+                       std::min((size_t)512, (size_t)errorBlob->GetBufferSize()));
+                Log::error((char *)errorBlob->GetBufferPointer());
+                errorBlob->Release();
+            }
+        }
+    }
+
+    ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
+    assert(device != nullptr);
+
+    if (mVertexShaderBlob != NULL)
+    {
+        CHECK_ERROR(device->CreateVertexShader(
+            mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(), NULL, &mVertexShader));
+    }
+
+    if (mPixelShaderBlob != NULL)
+    {
+        CHECK_ERROR(device->CreatePixelShader(
+            mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), NULL, &mPixelShader));
+    }
+
+    if (mGeometryShaderBlob != NULL)
+    {
+        CHECK_ERROR(device->CreateGeometryShader(
+            mGeometryShaderBlob->GetBufferPointer(), mGeometryShaderBlob->GetBufferSize(), NULL, &mGeometryShader));
+    }
 }
 
 void DirectXShaderProgram::bind()
 {
+    DirectXRenderContext::get()->getD3DDeviceContext()->VSSetShader(mVertexShader, NULL, 0);
+    DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(mPixelShader, NULL, 0);
 
+    //DirectXRenderContext::get()->getD3DDeviceContext()->VSSetConstantBuffers(0, mVSConstantBuffersCount,
+    //                                                                         mVSConstantBuffers);
+    //DirectXRenderContext::get()->getD3DDeviceContext()->PSSetConstantBuffers(0, mPSConstantBuffersCount,
+    //                                                                         mPSConstantBuffers);
 }
 
 void DirectXShaderProgram::unbind()
 {
-
+    DirectXRenderContext::get()->getD3DDeviceContext()->VSSetShader(NULL, NULL, 0);
+    DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(NULL, NULL, 0);
 }
 
 int DirectXShaderProgram::findUniformLocation(const std::string &name) const
@@ -272,9 +438,4 @@ glm::mat3 DirectXShaderProgram::getMat3(int nameLocation) const
 glm::mat4 DirectXShaderProgram::getMat4(int nameLocation) const
 {
     return glm::mat4();
-}
-
-void *DirectXShaderProgram::getHandle()
-{
-    return nullptr;
 }

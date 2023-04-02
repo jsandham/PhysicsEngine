@@ -17,8 +17,6 @@ Shader::Shader(World *world, const Id &id) : Asset(world, id)
 
     mAllProgramsCompiled = false;
     mActiveProgram = nullptr;
-
-    mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
 Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
@@ -31,8 +29,6 @@ Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid
 
     mAllProgramsCompiled = false;
     mActiveProgram = nullptr;
-
-    mShaderSourceLanguage = ShaderSourceLanguage::GLSL;
 }
 
 Shader::~Shader()
@@ -47,7 +43,6 @@ void Shader::serialize(YAML::Node &out) const
 {
     Asset::serialize(out);
 
-    out["shaderSourceLanguage"] = mShaderSourceLanguage;
     out["source"] = mSource;
     out["variants"] = mVariantMacroMap;
 }
@@ -56,7 +51,6 @@ void Shader::deserialize(const YAML::Node &in)
 {
     Asset::deserialize(in);
 
-    mShaderSourceLanguage = YAML::getValue<ShaderSourceLanguage>(in, "shaderSourceLanguage");
     mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
     mSource = YAML::getValue<std::string>(in, "source");
     mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath"); // dont serialize out
@@ -64,7 +58,6 @@ void Shader::deserialize(const YAML::Node &in)
     ShaderCreationAttrib attrib;
     attrib.mName = mName;
     attrib.mSourceFilepath = mSourceFilepath;
-    attrib.mSourceLanguage = mShaderSourceLanguage;
     attrib.mVariantMacroMap = mVariantMacroMap;
 
     load(attrib);
@@ -99,7 +92,6 @@ void Shader::load(const ShaderCreationAttrib& attrib)
     }
 
     mName = attrib.mName;
-    mShaderSourceLanguage = attrib.mSourceLanguage;
     mVariantMacroMap = attrib.mVariantMacroMap;
 
     std::filesystem::path temp = attrib.mSourceFilepath;
@@ -313,11 +305,6 @@ std::string Shader::getSource() const
 std::string Shader::getSourceFilepath() const
 {
     return mSourceFilepath;
-}
-
-ShaderSourceLanguage Shader::getSourceLanguage() const
-{
-    return mShaderSourceLanguage;
 }
 
 int Shader::findUniformLocation(const std::string &name) const

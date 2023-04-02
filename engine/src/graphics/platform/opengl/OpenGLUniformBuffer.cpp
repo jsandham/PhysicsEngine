@@ -43,8 +43,9 @@ void OpenGLUniformBuffer::unbind()
     CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
 
-void OpenGLUniformBuffer::setData(void *data, size_t offset, size_t size)
+void OpenGLUniformBuffer::setData(const void *data, size_t offset, size_t size)
 {
+    assert(data != NULL);
     assert(offset + size <= mSize);
 
     CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data));

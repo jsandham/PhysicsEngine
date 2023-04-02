@@ -308,14 +308,14 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (mDrawTex->getHandle() != nullptr)
             {
-               ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getHandle())),
-                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                    ImVec2(0, 0));
+               //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getHandle())),
+               //     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+               //     ImVec2(0, 0));
                 
                 // directx
-                //ImGui::Image(mDrawTex->getHandle(),
-                //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                //    ImVec2(0, 0));
+                ImGui::Image(mDrawTex->getHandle(),
+                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                    ImVec2(0, 0));
             }
 
             ImGui::EndChild();

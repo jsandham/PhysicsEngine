@@ -5,6 +5,8 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
 
+#include "../../include/graphics/RenderContext.h"
+
 using namespace PhysicsEngine;
 
 template <> size_t World::getNumberOfSystems<RenderSystem>() const
@@ -1206,8 +1208,27 @@ void World::generateSourcePaths(const std::string &filepath, YAML::Node &in)
         switch (type)
         {
         case AssetType<Shader>::type:
+        {
+            switch (RenderContext::getRenderAPI())
+            {
+            case RenderAPI::OpenGL: 
+            {
+                std::filesystem::path source = YAML::getValue<std::string>(in, "source");
+                in["sourceFilepath"] = (path / source).string();
+                break;
+            }
+            case RenderAPI::DirectX:
+            {
+                std::filesystem::path source = YAML::getValue<std::string>(in, "hlsl_source");
+                in["sourceFilepath"] = (path / source).string();
+                break;
+            }
+            }
+            break;
+        }
         case AssetType<Texture2D>::type:
-        case AssetType<Mesh>::type: {
+        case AssetType<Mesh>::type: 
+        {
             std::filesystem::path source = YAML::getValue<std::string>(in, "source");
             in["sourceFilepath"] = (path / source).string();
             break;

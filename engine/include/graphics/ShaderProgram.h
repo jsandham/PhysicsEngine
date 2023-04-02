@@ -8,12 +8,6 @@
 
 namespace PhysicsEngine
 {
-    enum class ShaderSourceLanguage
-    {
-        GLSL = 0,
-        HLSL = 1
-    };
-
     enum class ShaderUniformType
     {
         Int = 0,
@@ -143,8 +137,6 @@ namespace PhysicsEngine
         virtual glm::mat2 getMat2(int nameLocation) const = 0;
         virtual glm::mat3 getMat3(int nameLocation) const = 0;
         virtual glm::mat4 getMat4(int nameLocation) const = 0;
-
-        virtual void *getHandle() = 0;
 
         static ShaderProgram *create();
 	};

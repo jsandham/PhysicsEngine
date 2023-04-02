@@ -538,8 +538,3 @@ glm::mat4 OpenGLShaderProgram::getMat4(int nameLocation) const
 
     return value;
 }
-
-void *OpenGLShaderProgram::getHandle()
-{
-    return static_cast<void*>(&mHandle);
-}

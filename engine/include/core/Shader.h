@@ -44,7 +44,6 @@ struct ShaderCreationAttrib
 {
     std::string mName;
     std::string mSourceFilepath;
-    ShaderSourceLanguage mSourceLanguage;
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 };
 
@@ -66,8 +65,6 @@ class Shader : public Asset
     std::vector<ShaderUniform> mUniforms;
     std::vector<ShaderUniform> mMaterialUniforms;
     std::vector<ShaderAttribute> mAttributes;
-
-    ShaderSourceLanguage mShaderSourceLanguage;
 
     bool mAllProgramsCompiled;
     ShaderProgram *mActiveProgram;
@@ -109,7 +106,6 @@ class Shader : public Asset
     std::string getFragmentShader() const;
     std::string getSource() const;
     std::string getSourceFilepath() const;
-    ShaderSourceLanguage getSourceLanguage() const;
 
     void setBool(const char *name, bool value) const;
     void setInt(const char *name, int value) const;
@@ -203,41 +199,6 @@ template <> struct convert<PhysicsEngine::RenderQueue>
         else if (type == "Transparent")
         {
             rhs = PhysicsEngine::RenderQueue::Transparent;
-        }
-
-        return true;
-    }
-};
-
-// ShaderSourceLanguage
-template <> struct convert<PhysicsEngine::ShaderSourceLanguage>
-{
-    static Node encode(const PhysicsEngine::ShaderSourceLanguage& rhs)
-    {
-        Node node;
-        switch (rhs)
-        {
-        case PhysicsEngine::ShaderSourceLanguage::GLSL:
-            node = "GLSL";
-            break;
-        case PhysicsEngine::ShaderSourceLanguage::HLSL:
-            node = "HLSL";
-            break;
-        }
-
-        return node;
-    }
-
-    static bool decode(const Node& node, PhysicsEngine::ShaderSourceLanguage& rhs)
-    {
-        std::string type = node.as<std::string>();
-        if (type == "GLSL")
-        {
-            rhs = PhysicsEngine::ShaderSourceLanguage::GLSL;
-        }
-        else if (type == "HLSL")
-        {
-            rhs = PhysicsEngine::ShaderSourceLanguage::HLSL;
         }
 
         return true;

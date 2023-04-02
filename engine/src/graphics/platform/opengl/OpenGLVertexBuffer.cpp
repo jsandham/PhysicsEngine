@@ -24,6 +24,7 @@ void OpenGLVertexBuffer::resize(size_t size)
 
 void OpenGLVertexBuffer::setData(const void* data, size_t offset, size_t size)
 {
+    assert(data != NULL);
 	assert(offset + size <= mSize);
 
 	CHECK_ERROR(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));

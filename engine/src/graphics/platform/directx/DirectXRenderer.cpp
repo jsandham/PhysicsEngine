@@ -73,6 +73,14 @@ void DirectXRenderer::clearFramebufferDepth_impl(float depth)
 
 void DirectXRenderer::setViewport_impl(int x, int y, int width, int height)
 {
+    D3D11_VIEWPORT viewport = {0};
+
+    viewport.TopLeftX = static_cast<float>(x);
+    viewport.TopLeftY = static_cast<float>(y);
+    viewport.Width = static_cast<float>(width);
+    viewport.Height = static_cast<float>(height);
+
+    mContext->getD3DDeviceContext()->RSSetViewports(1, &viewport);
 }
 
 void DirectXRenderer::turnOn_impl(Capability capability)

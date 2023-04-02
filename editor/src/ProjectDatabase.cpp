@@ -133,7 +133,6 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 
             PhysicsEngine::ShaderCreationAttrib attrib;
             attrib.mSourceFilepath = path.string();
-            attrib.mSourceLanguage = PhysicsEngine::ShaderSourceLanguage::GLSL;
             attrib.mVariantMacroMap[0] = { PhysicsEngine::ShaderMacro::None };
 
             if (path.has_stem())
@@ -228,6 +227,22 @@ void ProjectDatabase::createShaderFile(const std::filesystem::path& parentPath)
     while (true)
     {
         std::string filename = ("Source(" + std::to_string(i++) + ").glsl");
+        std::filesystem::path filepath = parentPath / filename;
+
+        if (!std::filesystem::exists(filepath))
+        {
+            std::ofstream file(filepath);
+            file << "#vertex\n";
+            file << "#fragment\n";
+            file.close();
+            break;
+        }
+    }
+
+    i = 0;
+    while (true)
+    {
+        std::string filename = ("Source(" + std::to_string(i++) + ").hlsl");
         std::filesystem::path filepath = parentPath / filename;
 
         if (!std::filesystem::exists(filepath))

@@ -32,13 +32,6 @@ static DXGI_FORMAT getTextureFormat(TextureFormat format)
     return directxFormat;
 }
 
-
-
-
-
-
-
-
 static D3D11_TEXTURE_ADDRESS_MODE getTextureWrapMode(TextureWrapMode wrapMode)
 {
     D3D11_TEXTURE_ADDRESS_MODE directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;

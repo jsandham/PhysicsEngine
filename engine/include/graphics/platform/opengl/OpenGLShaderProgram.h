@@ -73,8 +73,6 @@ class OpenGLShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int nameLocation) const override;
     glm::mat3 getMat3(int nameLocation) const override;
     glm::mat4 getMat4(int nameLocation) const override;
-
-    void *getHandle() override;
 };
 } // namespace PhysicsEngine
 

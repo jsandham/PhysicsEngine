@@ -2,11 +2,23 @@
 #define DIRECTXSHADERPROGRAM_H__
 
 #include "../../../../include/graphics/ShaderProgram.h"
+#define NOMINMAX
+#include <windows.h>
+#include <d3d11.h>
 
 namespace PhysicsEngine
 {
 class DirectXShaderProgram : public ShaderProgram
 {
+  private:
+    ID3D11VertexShader *mVertexShader;
+    ID3D11PixelShader *mPixelShader;
+    ID3D11GeometryShader *mGeometryShader;
+
+    ID3DBlob *mVertexShaderBlob;
+    ID3DBlob *mPixelShaderBlob;
+    ID3DBlob *mGeometryShaderBlob;
+
   public:
     DirectXShaderProgram();
     ~DirectXShaderProgram();
@@ -71,8 +83,6 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int nameLocation) const override;
     glm::mat3 getMat3(int nameLocation) const override;
     glm::mat4 getMat4(int nameLocation) const override;
-
-    void *getHandle() override;
 };
 } // namespace PhysicsEngine
 
