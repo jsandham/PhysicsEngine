@@ -1,7 +1,9 @@
 #ifndef GLSL_SHADERS_H__
 #define GLSL_SHADERS_H__
 
-namespace PhysicsEngine
+#include <string>
+
+namespace glsl
 {
 	std::string getGeometryVertexShader();
 	std::string getGeometryFragmentShader();

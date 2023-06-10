@@ -19,7 +19,7 @@ class OpenGLUniformBuffer : public UniformBuffer
     size_t getSize() const override;
     unsigned int getBindingPoint() const override;
 
-    void bind() override;
+    void bind(PipelineStage stage) override;
     void unbind() override;
     void setData(const void* data, size_t offset, size_t size) override;
 };

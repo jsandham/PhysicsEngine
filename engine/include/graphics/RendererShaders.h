@@ -6,323 +6,370 @@
 
 namespace PhysicsEngine
 {
-    class StandardShader
-    {
-      public:
-        StandardShader()
-        {
-        }
-        virtual ~StandardShader(){};
+class StandardShader
+{
+  private:
+    ShaderProgram *mShader;
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+  public:
+    StandardShader();
+    ~StandardShader();
 
-        virtual std::string getVertexShader() = 0;
-        virtual std::string getFragmentShader() = 0;
+    void bind();
+    void unbind();
 
-        static StandardShader *create();
-    };
-    
-    class GBufferShader
-    {
-      public:
-        GBufferShader()
-        {
-        }
-        virtual ~GBufferShader(){};
+    std::string getVertexShader() const;
+    std::string getFragmentShader() const;
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+class GBufferShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
 
-        virtual void setModel(const glm::mat4 &model) = 0;
+  public:
+    GBufferShader();
+    ~GBufferShader();
 
-        static GBufferShader *create();
-    };
+    void bind();
+    void unbind();
 
-    class QuadShader
-    {
-      public:
-        QuadShader()
-        {
-        }
-        virtual ~QuadShader(){};
+    void setModel(const glm::mat4 &model);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setScreenTexture(int texUnit, TextureHandle *tex) = 0;
+class QuadShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mScreenTexLoc;
 
-        static QuadShader *create();
-    };
+  public:
+    QuadShader();
+    ~QuadShader();
 
-    class DepthShader
-    {
-      public:
-        DepthShader(){};
-        virtual ~DepthShader(){};
+    void bind();
+    void unbind();
+    void setScreenTexture(int texUnit, TextureHandle *tex);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setView(const glm::mat4 &view) = 0;
-        virtual void setProjection(const glm::mat4 &projection) = 0;
+class DepthShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
+    int mViewLoc;
+    int mProjectionLoc;
 
-        static DepthShader *create();
-    };
+  public:
+    DepthShader();
+    ~DepthShader();
 
-    class DepthCubemapShader
-    {
-      public:
-        DepthCubemapShader(){};
-        virtual ~DepthCubemapShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+    void setView(const glm::mat4 &view);
+    void setProjection(const glm::mat4 &projection);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setLightPos(const glm::vec3 &lightPos) = 0;
-        virtual void setFarPlane(float farPlane) = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setCubeViewProj(int index, const glm::mat4 &modelView) = 0;
+class DepthCubemapShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mLightPosLoc;
+    int mFarPlaneLoc;
+    int mModelLoc;
+    int mCubeViewProjMatricesLoc[6];
 
-        static DepthCubemapShader *create();
-    };
+  public:
+    DepthCubemapShader();
+    ~DepthCubemapShader();
 
-    class GeometryShader
-    {
-      public:
-        GeometryShader(){};
-        virtual ~GeometryShader(){};
+    void bind();
+    void unbind();
+    void setLightPos(const glm::vec3 &lightPos);
+    void setFarPlane(float farPlane);
+    void setModel(const glm::mat4 &model);
+    void setCubeViewProj(int index, const glm::mat4 &modelView);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
+class GeometryShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
 
-        static GeometryShader *create();
-    };
+  public:
+    GeometryShader();
+    ~GeometryShader();
 
-    class NormalShader
-    {
-      public:
-        NormalShader(){};
-        virtual ~NormalShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
+class NormalShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
 
-        static NormalShader *create();
-    };
+  public:
+    NormalShader();
+    ~NormalShader();
 
-    class NormalInstancedShader
-    {
-      public:
-        NormalInstancedShader(){};
-        virtual ~NormalInstancedShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+class NormalInstancedShader
+{
+  private:
+    ShaderProgram *mShader;
 
-        static NormalInstancedShader *create();
-    };
+  public:
+    NormalInstancedShader();
+    ~NormalInstancedShader();
 
-    class PositionShader
-    {
-      public:
-        PositionShader(){};
-        virtual ~PositionShader(){};
+    void bind();
+    void unbind();
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
+class PositionShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
 
-        static PositionShader *create();
-    };
+  public:
+    PositionShader();
+    ~PositionShader();
 
-    class PositionInstancedShader
-    {
-      public:
-        PositionInstancedShader(){};
-        virtual ~PositionInstancedShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+class PositionInstancedShader
+{
+  private:
+    ShaderProgram *mShader;
 
-        static PositionInstancedShader *create();
-    };
+  public:
+    PositionInstancedShader();
+    ~PositionInstancedShader();
 
-    class LinearDepthShader
-    {
-      public:
-        LinearDepthShader(){};
-        virtual ~LinearDepthShader(){};
+    void bind();
+    void unbind();
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
+class LinearDepthShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
 
-        static LinearDepthShader *create();
-    };
+  public:
+    LinearDepthShader();
+    ~LinearDepthShader();
 
-    class LinearDepthInstancedShader
-    {
-      public:
-        LinearDepthInstancedShader(){};
-        virtual ~LinearDepthInstancedShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+class LinearDepthInstancedShader
+{
+  private:
+    ShaderProgram *mShader;
 
-        static LinearDepthInstancedShader *create();
-    };
+  public:
+    LinearDepthInstancedShader();
+    ~LinearDepthInstancedShader();
 
-    class ColorShader
-    {
-      public:
-        ColorShader(){};
-        virtual ~ColorShader(){};
+    void bind();
+    void unbind();
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setColor32(const Color32 &color) = 0;
+class ColorShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
+    int mColorLoc;
 
-        static ColorShader *create();
-    };
+  public:
+    ColorShader();
+    ~ColorShader();
 
-    class ColorInstancedShader
-    {
-      public:
-        ColorInstancedShader(){};
-        virtual ~ColorInstancedShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+    void setColor32(const Color32 &color);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+class ColorInstancedShader
+{
+  private:
+    ShaderProgram *mShader;
 
-        static ColorInstancedShader *create();
-    };
+  public:
+    ColorInstancedShader();
+    ~ColorInstancedShader();
 
-    class SSAOShader
-    {
-      public:
-        SSAOShader(){};
-        virtual ~SSAOShader(){};
+    void bind();
+    void unbind();
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setProjection(const glm::mat4 &projection) = 0;
-        virtual void setPositionTexture(int texUnit, TextureHandle *tex) = 0;
-        virtual void setNormalTexture(int texUnit, TextureHandle *tex) = 0;
-        virtual void setNoiseTexture(int texUnit, TextureHandle *tex) = 0;
-        virtual void setSample(int index, const glm::vec3 &sample) = 0;
+class SSAOShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mProjectionLoc;
+    int mPositionTexLoc;
+    int mNormalTexLoc;
+    int mNoiseTexLoc;
+    int mSamplesLoc[64];
 
-        static SSAOShader *create();
-    };
+  public:
+    SSAOShader();
+    ~SSAOShader();
 
-    class SpriteShader
-    {
-      public:
-        SpriteShader(){};
-        virtual ~SpriteShader(){};
+    void bind();
+    void unbind();
+    void setProjection(const glm::mat4 &projection);
+    void setPositionTexture(int texUnit, TextureHandle *tex);
+    void setNormalTexture(int texUnit, TextureHandle *tex);
+    void setNoiseTexture(int texUnit, TextureHandle *tex);
+    void setSample(int index, const glm::vec3 &sample);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setView(const glm::mat4 &view) = 0;
-        virtual void setProjection(const glm::mat4 &projection) = 0;
-        virtual void setColor(const Color &color) = 0;
-        virtual void setImage(int texUnit, TextureHandle *tex) = 0;
+class SpriteShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
+    int mViewLoc;
+    int mProjectionLoc;
+    int mColorLoc;
+    int mImageLoc;
 
-        static SpriteShader *create();
-    };
+  public:
+    SpriteShader();
+    ~SpriteShader();
 
-    class LineShader
-    {
-      public:
-        LineShader(){};
-        virtual ~LineShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+    void setView(const glm::mat4 &view);
+    void setProjection(const glm::mat4 &projection);
+    void setColor(const Color &color);
+    void setImage(int texUnit, TextureHandle *tex);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setMVP(const glm::mat4 &mvp) = 0;
+class LineShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mMVPLoc;
 
-        static LineShader *create();
-    };
+  public:
+    LineShader();
+    ~LineShader();
 
-    class GizmoShader
-    {
-      public:
-        GizmoShader(){};
-        virtual ~GizmoShader(){};
+    void bind();
+    void unbind();
+    void setMVP(const glm::mat4 &mvp);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setModel(const glm::mat4 &model) = 0;
-        virtual void setView(const glm::mat4 &view) = 0;
-        virtual void setProjection(const glm::mat4 &projection) = 0;
-        virtual void setColor(const Color &color) = 0;
-        virtual void setLightPos(const glm::vec3 &lightPos) = 0;
+class GizmoShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mModelLoc;
+    int mViewLoc;
+    int mProjectionLoc;
+    int mColorLoc;
+    int mLightPosLoc;
 
-        static GizmoShader *create();
-    };
+  public:
+    GizmoShader();
+    ~GizmoShader();
 
-    class GridShader
-    {
-      public:
-        GridShader(){};
-        virtual ~GridShader(){};
+    void bind();
+    void unbind();
+    void setModel(const glm::mat4 &model);
+    void setView(const glm::mat4 &view);
+    void setProjection(const glm::mat4 &projection);
+    void setColor(const Color &color);
+    void setLightPos(const glm::vec3 &lightPos);
+};
 
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-        virtual void setMVP(const glm::mat4 &mvp) = 0;
-        virtual void setColor(const Color &color) = 0;
+class GridShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mMVPLoc;
+    int mColorLoc;
 
-        static GridShader *create();
-    };
+  public:
+    GridShader();
+    ~GridShader();
 
-    class RendererShaders
-    {
-      private:
-        static StandardShader *sStandardShader;
-        static SSAOShader *sSSAOShader;
-        static GeometryShader *sGeometryShader;
-        static DepthShader *sDepthShader;
-        static DepthCubemapShader *sDepthCubemapShader;
-        static QuadShader *sQuadShader;
-        static SpriteShader *sSpriteShader;
-        static GBufferShader *sGBufferShader;
-        static ColorShader *sColorShader;
-        static ColorInstancedShader *sColorInstancedShader;
-        static NormalShader *sNormalShader;
-        static NormalInstancedShader *sNormalInstancedShader;
-        static PositionShader *sPositionShader;
-        static PositionInstancedShader *sPositionInstancedShader;
-        static LinearDepthShader *sLinearDepthShader;
-        static LinearDepthInstancedShader *sLinearDepthInstancedShader;
-        static LineShader *sLineShader;
-        static GizmoShader *sGizmoShader;
-        static GridShader *sGridShader;
+    void bind();
+    void unbind();
+    void setMVP(const glm::mat4 &mvp);
+    void setColor(const Color &color);
+};
 
-      public:
-        static StandardShader *getStandardShader();
-        static SSAOShader *getSSAOShader();
-        static GeometryShader *getGeometryShader();
-        static DepthShader *getDepthShader();
-        static DepthCubemapShader *getDepthCubemapShader();
-        static QuadShader *getScreenQuadShader();
-        static SpriteShader *getSpriteShader();
-        static GBufferShader *getGBufferShader();
-        static ColorShader *getColorShader();
-        static ColorInstancedShader *getColorInstancedShader();
-        static NormalShader *getNormalShader();
-        static NormalInstancedShader *getNormalInstancedShader();
-        static PositionShader *getPositionShader();
-        static PositionInstancedShader *getPositionInstancedShader();
-        static LinearDepthShader *getLinearDepthShader();
-        static LinearDepthInstancedShader *getLinearDepthInstancedShader();
-        static LineShader *getLineShader();
-        static GizmoShader *getGizmoShader();
-        static GridShader *getGridShader();
 
-        static void createInternalShaders();
-    };
-}
+class RendererShaders
+{
+  private:
+    static StandardShader *sStandardShader;
+    static SSAOShader *sSSAOShader;
+    static GeometryShader *sGeometryShader;
+    static DepthShader *sDepthShader;
+    static DepthCubemapShader *sDepthCubemapShader;
+    static QuadShader *sQuadShader;
+    static SpriteShader *sSpriteShader;
+    static GBufferShader *sGBufferShader;
+    static ColorShader *sColorShader;
+    static ColorInstancedShader *sColorInstancedShader;
+    static NormalShader *sNormalShader;
+    static NormalInstancedShader *sNormalInstancedShader;
+    static PositionShader *sPositionShader;
+    static PositionInstancedShader *sPositionInstancedShader;
+    static LinearDepthShader *sLinearDepthShader;
+    static LinearDepthInstancedShader *sLinearDepthInstancedShader;
+    static LineShader *sLineShader;
+    static GizmoShader *sGizmoShader;
+    static GridShader *sGridShader;
+
+  public:
+    static StandardShader *getStandardShader();
+    static SSAOShader *getSSAOShader();
+    static GeometryShader *getGeometryShader();
+    static DepthShader *getDepthShader();
+    static DepthCubemapShader *getDepthCubemapShader();
+    static QuadShader *getScreenQuadShader();
+    static SpriteShader *getSpriteShader();
+    static GBufferShader *getGBufferShader();
+    static ColorShader *getColorShader();
+    static ColorInstancedShader *getColorInstancedShader();
+    static NormalShader *getNormalShader();
+    static NormalInstancedShader *getNormalInstancedShader();
+    static PositionShader *getPositionShader();
+    static PositionInstancedShader *getPositionInstancedShader();
+    static LinearDepthShader *getLinearDepthShader();
+    static LinearDepthInstancedShader *getLinearDepthInstancedShader();
+    static LineShader *getLineShader();
+    static GizmoShader *getGizmoShader();
+    static GridShader *getGridShader();
+
+    static void createInternalShaders();
+};
+} // namespace PhysicsEngine
 
 #endif

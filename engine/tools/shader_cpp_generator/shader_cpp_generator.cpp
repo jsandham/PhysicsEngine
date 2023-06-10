@@ -718,7 +718,7 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_v.glsl"] = "getStandardVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_f.glsl"] = "getStandardFragmentShader";
 
-    write_header("PhysicsEngine", out);
+    write_header("glsl", out);
 
     std::cout << "Generating shader cpp file..." << std::endl;
     for (size_t i = 0; i < files.size(); i++)
@@ -730,7 +730,7 @@ void generate_cpp_file(std::vector<File>& files)
          
             std::cout << "functionName: " << functionName << " path: " << files[i].path << std::endl;
 
-            write_function_declaration("PhysicsEngine", functionName, out);
+            write_function_declaration("glsl", functionName, out);
             write_scope_start(out);
             write_function_body(files[i].buffer, out);
             write_scope_end(out);   

@@ -19,6 +19,11 @@ class DirectXShaderProgram : public ShaderProgram
     ID3DBlob *mPixelShaderBlob;
     ID3DBlob *mGeometryShaderBlob;
 
+    D3D11_BUFFER_DESC mVSConstantBufferDesc;
+    D3D11_BUFFER_DESC mPSConstantBufferDesc;
+    ID3D11Buffer *mVSConstantBuffer;
+    ID3D11Buffer *mPSConstantBuffer;
+
   public:
     DirectXShaderProgram();
     ~DirectXShaderProgram();

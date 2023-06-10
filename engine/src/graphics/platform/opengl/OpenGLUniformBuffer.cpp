@@ -33,7 +33,7 @@ unsigned int OpenGLUniformBuffer::getBindingPoint() const
     return mBindingPoint;
 }
 
-void OpenGLUniformBuffer::bind()
+void OpenGLUniformBuffer::bind(PipelineStage stage)
 {
     CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, mBuffer));
 }

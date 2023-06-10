@@ -1,6 +1,12 @@
 #ifndef UNIFORM_BUFFER_H__
 #define UNIFORM_BUFFER_H__
 
+enum class PipelineStage
+{
+	VS,
+	PS
+};
+
 namespace PhysicsEngine
 {
 	class UniformBuffer
@@ -14,7 +20,7 @@ namespace PhysicsEngine
 		virtual size_t getSize() const = 0;
         virtual unsigned int getBindingPoint() const = 0;
 
-		virtual void bind() = 0;
+		virtual void bind(PipelineStage stage) = 0;
         virtual void unbind() = 0;
 		virtual void setData(const void* data, size_t offset, size_t size) = 0;
 

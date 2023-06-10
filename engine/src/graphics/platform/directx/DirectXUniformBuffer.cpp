@@ -39,12 +39,20 @@ unsigned int DirectXUniformBuffer::getBindingPoint() const
     return mBindingPoint;
 }
 
-void DirectXUniformBuffer::bind()
+void DirectXUniformBuffer::bind(PipelineStage stage)
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
     
-    //context->VSSetConstantBuffers(0, 1, &mBuffer);
+    switch (stage)
+    {
+    case PipelineStage::VS:
+        context->VSSetConstantBuffers(0, 1, &mBuffer);
+        break;
+    case PipelineStage::PS:
+        context->PSSetConstantBuffers(0, 1, &mBuffer);
+        break;
+    }
 }
 
 void DirectXUniformBuffer::unbind()

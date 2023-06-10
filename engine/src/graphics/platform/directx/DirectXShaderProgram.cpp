@@ -19,6 +19,12 @@ DirectXShaderProgram::DirectXShaderProgram()
     mVertexShaderBlob = NULL;
     mPixelShaderBlob = NULL;
     mGeometryShaderBlob = NULL;
+
+
+    ZeroMemory(&mVSConstantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+    mVSConstantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;   // write access access by CPU and GPU
+    mVSConstantBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
+    mVSConstantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
 }
 
 DirectXShaderProgram ::~DirectXShaderProgram()

@@ -1,46 +1,44 @@
 #ifndef RENDERER_MESHES_H__
 #define RENDERER_MESHES_H__
 
-#include "ShaderProgram.h"
-#include <string>
+#include "MeshHandle.h"
 
 namespace PhysicsEngine
 {
-class FrustumMesh
+class PlaneMesh
 {
+  private:
+    MeshHandle *mMesh;
+
   public:
-    FrustumMesh(){}
-    virtual ~FrustumMesh(){};
+    PlaneMesh(int nx, int nz);
+    ~PlaneMesh();
 
-    virtual void bind() = 0;
-    virtual void unbind() = 0;
-
-    static FrustumMesh *create();
+    void bind();
+    void unbind();
 };
 
-class GridMesh
+class SphereMesh
 {
+  private:
+    MeshHandle *mMesh;
+
   public:
-    GridMesh(){}
-    virtual ~GridMesh(){};
+    SphereMesh();
+    ~SphereMesh();
 
-    virtual void bind() = 0;
-    virtual void unbind() = 0;
-
-    static GridMesh *create();
+    void bind();
+    void unbind();
 };
-
 
 class RendererMeshes
 {
   private:
-    static FrustumMesh *sFrustumMesh;
-    static GridMesh *sGridMesh;
+    static SphereMesh *sSphereMesh;
 
   public:
-    static FrustumMesh *getFrustumMesh();
-    static GridMesh *getGridMesh();
-
+    static SphereMesh *getSphereMesh();
+   
     static void createInternalMeshes();
 };
 } // namespace PhysicsEngine

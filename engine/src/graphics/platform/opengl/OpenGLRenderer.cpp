@@ -7,7 +7,8 @@
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLRenderer.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
-#include "GLSL/glsl_shaders.h"
+
+#include "../../../../include/graphics/InternalShaders.h"
 
 using namespace PhysicsEngine;
 

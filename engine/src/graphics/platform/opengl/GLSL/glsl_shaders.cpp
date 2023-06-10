@@ -3,8 +3,8 @@
 //***************************************
 #include <string>
 #include "glsl_shaders.h"
-using namespace PhysicsEngine;
-std::string PhysicsEngine::getColorFragmentShader()
+using namespace glsl;
+std::string glsl::getColorFragmentShader()
 {
 return "#version 430 core\n"
 "struct Material\n"
@@ -19,7 +19,7 @@ return "#version 430 core\n"
 "                      material.color.b / 255.0f, material.color.a / 255.0f);\n"
 "}\n";
 }
-std::string PhysicsEngine::getColorInstancedFragmentShader()
+std::string glsl::getColorInstancedFragmentShader()
 {
 return "#version 430 core\n"
 "\n"
@@ -32,7 +32,7 @@ return "#version 430 core\n"
 "    FragColor = Color;\n"
 "}\n";
 }
-std::string PhysicsEngine::getColorInstancedVertexShader()
+std::string glsl::getColorInstancedVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -56,7 +56,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * model * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getColorVertexShader()
+std::string glsl::getColorVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -74,7 +74,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * model * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getGBufferFragmentShader()
+std::string glsl::getGBufferFragmentShader()
 {
 return "#version 430 core\n"
 "struct Material\n"
@@ -112,7 +112,7 @@ return "#version 430 core\n"
 "  gAlbedoSpec.a = 1.0;//texture(texture_specular1, TexCoords).r;\n"
 "}\n";
 }
-std::string PhysicsEngine::getGBufferVertexShader()
+std::string glsl::getGBufferVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -141,7 +141,7 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getGeometryFragmentShader()
+std::string glsl::getGeometryFragmentShader()
 {
 return "#version 430 core\n"
 "layout(location = 0) out vec3 positionTex;\n"
@@ -156,7 +156,7 @@ return "#version 430 core\n"
 "   normalTex = normalize(Normal);\n"
 "}\n";
 }
-std::string PhysicsEngine::getGeometryVertexShader()
+std::string glsl::getGeometryVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -182,7 +182,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.projection * viewPos;\n"
 "}\n";
 }
-std::string PhysicsEngine::getGizmoFragmentShader()
+std::string glsl::getGizmoFragmentShader()
 {
 return "#version 430 core\n"
 "out vec4 FragColor;\n"
@@ -199,7 +199,7 @@ return "#version 430 core\n"
 "  FragColor = diffuse * color;\n"
 "}\n";
 }
-std::string PhysicsEngine::getGizmoVertexShader()
+std::string glsl::getGizmoVertexShader()
 {
 return "#version 430 core\n"
 "layout(location = 0) in vec3 position;\n"
@@ -216,7 +216,7 @@ return "#version 430 core\n"
 "    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getGridFragmentShader()
+std::string glsl::getGridFragmentShader()
 {
 return "#version 430 core\n"
 "in vec4 Color;\n"
@@ -227,7 +227,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(Color.x, Color.y, Color.z, clamp(1.0f / depth, 0.0f, 0.5f));\n"
 "}\n";
 }
-std::string PhysicsEngine::getGridVertexShader()
+std::string glsl::getGridVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -249,7 +249,7 @@ return "#version 430 core\n"
 "    Color = color;\n"
 "}\n";
 }
-std::string PhysicsEngine::getLinearDepthFragmentShader()
+std::string glsl::getLinearDepthFragmentShader()
 {
 return "#version 430 core\n"
 "out vec4 FragColor;\n"
@@ -266,7 +266,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(vec3(depth), 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getLinearDepthInstancedFragmentShader()
+std::string glsl::getLinearDepthInstancedFragmentShader()
 {
 return "#version 430 core\n"
 "out vec4 FragColor;\n"
@@ -283,7 +283,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(vec3(depth), 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getLinearDepthInstancedVertexShader()
+std::string glsl::getLinearDepthInstancedVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -300,7 +300,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * model * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getLinearDepthVertexShader()
+std::string glsl::getLinearDepthVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -317,7 +317,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * model * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getLineFragmentShader()
+std::string glsl::getLineFragmentShader()
 {
 return "#version 430 core\n"
 "in vec4 Color;\n"
@@ -327,7 +327,7 @@ return "#version 430 core\n"
 "  FragColor = Color;\n"
 "}\n";
 }
-std::string PhysicsEngine::getLineVertexShader()
+std::string glsl::getLineVertexShader()
 {
 return "#version 430 core\n"
 "layout(location = 0) in vec3 position;\n"
@@ -340,7 +340,7 @@ return "#version 430 core\n"
 "    gl_Position = mvp * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getNormalFragmentShader()
+std::string glsl::getNormalFragmentShader()
 {
 return "#version 430 core\n"
 "in vec3 Normal;\n"
@@ -350,7 +350,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(normalize(Normal), 1);\n"
 "}\n";
 }
-std::string PhysicsEngine::getNormalInstancedFragmentShader()
+std::string glsl::getNormalInstancedFragmentShader()
 {
 return "#version 430 core\n"
 "in vec3 Normal;\n"
@@ -360,7 +360,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(normalize(Normal), 1);\n"
 "}\n";
 }
-std::string PhysicsEngine::getNormalInstancedVertexShader()
+std::string glsl::getNormalInstancedVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -384,7 +384,7 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getNormalVertexShader()
+std::string glsl::getNormalVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -408,7 +408,7 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getPositionFragmentShader()
+std::string glsl::getPositionFragmentShader()
 {
 return "#version 430 core\n"
 "in vec3 FragPos;\n"
@@ -418,7 +418,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(FragPos, 1);\n"
 "}\n";
 }
-std::string PhysicsEngine::getPositionInstancedFragmentShader()
+std::string glsl::getPositionInstancedFragmentShader()
 {
 return "#version 430 core\n"
 "in vec3 FragPos;\n"
@@ -428,7 +428,7 @@ return "#version 430 core\n"
 "  FragColor = vec4(FragPos, 1);\n"
 "}\n";
 }
-std::string PhysicsEngine::getPositionInstancedVertexShader()
+std::string glsl::getPositionInstancedVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -449,7 +449,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * worldPos;\n"
 "}\n";
 }
-std::string PhysicsEngine::getPositionVertexShader()
+std::string glsl::getPositionVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
@@ -470,7 +470,7 @@ return "#version 430 core\n"
 "    gl_Position = Camera.viewProjection * worldPos;\n"
 "}\n";
 }
-std::string PhysicsEngine::getScreenQuadFragmentShader()
+std::string glsl::getScreenQuadFragmentShader()
 {
 return "#version 330 core\n"
 "out vec4 FragColor;\n"
@@ -482,7 +482,7 @@ return "#version 330 core\n"
 "  FragColor = vec4(col, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getScreenQuadVertexShader()
+std::string glsl::getScreenQuadVertexShader()
 {
 return "#version 330 core\n"
 "layout(location = 0) in vec2 aPos;\n"
@@ -494,7 +494,7 @@ return "#version 330 core\n"
 "    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getShadowDepthCubemapFragmentShader()
+std::string glsl::getShadowDepthCubemapFragmentShader()
 {
 return "#version 430 core\n"
 "in vec4 FragPos;\n"
@@ -508,7 +508,7 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getShadowDepthCubemapGeometryShader()
+std::string glsl::getShadowDepthCubemapGeometryShader()
 {
 return "#version 430 core\n"
 "layout(triangles) in;\n"
@@ -530,7 +530,7 @@ return "#version 430 core\n"
 "  }\n"
 "}\n";
 }
-std::string PhysicsEngine::getShadowDepthCubemapVertexShader()
+std::string glsl::getShadowDepthCubemapVertexShader()
 {
 return "#version 430 core\n"
 "layout (location = 0) in vec3 position;\n"
@@ -541,14 +541,14 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getShadowDepthMapFragmentShader()
+std::string glsl::getShadowDepthMapFragmentShader()
 {
 return "#version 430 core\n"
 "void main()\n"
 "{\n"
 "}\n";
 }
-std::string PhysicsEngine::getShadowDepthMapVertexShader()
+std::string glsl::getShadowDepthMapVertexShader()
 {
 return "#version 430 core\n"
 "layout (location = 0) in vec3 position;\n"
@@ -560,7 +560,7 @@ return "#version 430 core\n"
 "    gl_Position = projection * view * model * vec4(position, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getSpriteFragmentShader()
+std::string glsl::getSpriteFragmentShader()
 {
 return "#version 430 core\n"
 "in vec2 TexCoords;\n"
@@ -572,7 +572,7 @@ return "#version 430 core\n"
 "  color = spriteColor * texture(image, TexCoords);\n"
 "}\n";
 }
-std::string PhysicsEngine::getSpriteVertexShader()
+std::string glsl::getSpriteVertexShader()
 {
 return "#version 430 core\n"
 "layout(location = 0) in vec4 vertex; // <vec2 position, vec2 texCoords>\n"
@@ -586,7 +586,7 @@ return "#version 430 core\n"
 "    gl_Position = projection * view * model * vec4(vertex.xy, 0.0, 1.0);\n"
 "}\n";
 }
-std::string PhysicsEngine::getSSAOFragmentShader()
+std::string glsl::getSSAOFragmentShader()
 {
 return "#version 430 core\n"
 "out float FragColor;\n"
@@ -634,7 +634,7 @@ return "#version 430 core\n"
 "   FragColor = occlusion;\n"
 "}\n";
 }
-std::string PhysicsEngine::getSSAOVertexShader()
+std::string glsl::getSSAOVertexShader()
 {
 return "#version 430 core\n"
 "layout (location = 0) in vec3 position;\n"
@@ -646,7 +646,7 @@ return "#version 430 core\n"
 "   TexCoord = texCoord;\n"
 "}\n";
 }
-std::string PhysicsEngine::getStandardFragmentShader()
+std::string glsl::getStandardFragmentShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform LightBlock\n"
@@ -858,7 +858,7 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
-std::string PhysicsEngine::getStandardVertexShader()
+std::string glsl::getStandardVertexShader()
 {
 return "#version 430 core\n"
 "layout(std140) uniform CameraBlock\n"
