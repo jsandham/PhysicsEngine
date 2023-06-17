@@ -14,8 +14,8 @@ namespace PhysicsEngine
 		D3D11_TEXTURE2D_DESC mTextureDesc;
 		ID3D11Texture2D* mTexture;
 
-		D3D11_SHADER_RESOURCE_VIEW_DESC mResourceViewDesc;
-		ID3D11ShaderResourceView* mResourceView;
+		D3D11_SHADER_RESOURCE_VIEW_DESC mShaderResourceViewDesc;
+		ID3D11ShaderResourceView* mShaderResourceView;
 		
 		D3D11_SAMPLER_DESC mSamplerDesc;
 		ID3D11SamplerState* mSamplerState;
@@ -36,7 +36,8 @@ namespace PhysicsEngine
 		void writePixels(const std::vector<unsigned char>& data) override;
 		void bind(unsigned int texUnit) override;
 		void unbind(unsigned int texUnit) override;
-		void* getHandle() override;
+        void *getTexture() override;
+        void *getIMGUITexture() override;
 	};
 }
 

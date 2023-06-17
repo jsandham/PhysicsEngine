@@ -24,14 +24,14 @@ DirectXRenderContext::DirectXRenderContext(void* window)
     sd.BufferCount = 2; //1;
     sd.OutputWindow = static_cast<HWND>(window);
     sd.Windowed = true;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     sd.Flags = 0;
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
-        nullptr,
-        0,
+        nullptr, 
+        D3D11_CREATE_DEVICE_DEBUG,
         nullptr,
         0,
         D3D11_SDK_VERSION,

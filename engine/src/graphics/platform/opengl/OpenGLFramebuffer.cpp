@@ -20,9 +20,9 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height) : Framebuffer(width,
                                           TextureFilterMode::Nearest);   
 
     CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                                           *reinterpret_cast<unsigned int *>(mColorTex[0]->getHandle()), 0));
+                                           *reinterpret_cast<unsigned int *>(mColorTex[0]->getTexture()), 0));
     CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                                           *reinterpret_cast<unsigned int *>(mDepthTex->getHandle()), 0));
+                                       *reinterpret_cast<unsigned int *>(mDepthTex->getTexture()), 0));
 
     // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
     unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
@@ -46,7 +46,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
                                              TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + i), GL_TEXTURE_2D,
-                                           *reinterpret_cast<unsigned int *>(mColorTex[i]->getHandle()), 0));
+                                           *reinterpret_cast<unsigned int *>(mColorTex[i]->getTexture()), 0));
     }
 
     if (mAddDepthTex)
@@ -55,7 +55,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
                                           TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                                           *reinterpret_cast<unsigned int *>(mDepthTex->getHandle()), 0));
+                                           *reinterpret_cast<unsigned int *>(mDepthTex->getTexture()), 0));
     }
     else
     {
@@ -145,9 +145,4 @@ TextureHandle *OpenGLFramebuffer::getColorTex(size_t i)
 TextureHandle *OpenGLFramebuffer::getDepthTex()
 {
     return mDepthTex;
-}
-
-void *OpenGLFramebuffer::getHandle()
-{
-    return static_cast<void *>(&mHandle);
 }

@@ -173,9 +173,9 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
             mProgram->unbind();
             mFBO->unbind();
 
-            if (mFBO->getColorTex()->getHandle() != nullptr)
+            if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
             {
-                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
                     ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
                     ImVec2(0, 0));
             }

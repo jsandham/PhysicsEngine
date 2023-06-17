@@ -221,7 +221,12 @@ void OpenGLTextureHandle::unbind(unsigned int texUnit)
 	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void* OpenGLTextureHandle::getHandle()
+void *OpenGLTextureHandle::getTexture()
 {
 	return static_cast<void*>(&mHandle);
+}
+
+void *OpenGLTextureHandle::getIMGUITexture()
+{
+    return static_cast<void *>(&mHandle);
 }

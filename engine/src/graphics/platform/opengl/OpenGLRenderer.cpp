@@ -66,7 +66,7 @@ void OpenGLRenderer::bindFramebuffer_impl(Framebuffer* fbo)
     }
     else
     {
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, *reinterpret_cast<unsigned int*>(fbo->getHandle())));
+        fbo->bind();
     }
 }
 

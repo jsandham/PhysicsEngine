@@ -24,7 +24,6 @@ namespace PhysicsEngine
 
 		TextureHandle *getColorTex(size_t i = 0) override;
         TextureHandle *getDepthTex() override;
-        void *getHandle() override;
 	};
 }
 

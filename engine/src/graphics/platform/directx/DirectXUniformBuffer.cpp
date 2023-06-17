@@ -9,13 +9,15 @@ using namespace PhysicsEngine;
 
 DirectXUniformBuffer::DirectXUniformBuffer(size_t size, unsigned int bindingPoint) : UniformBuffer()
 {
-    mSize = size;
+    // Constant buffer size must be multiple of 16 bytes
+    mSize = 16 * ((size - 1) / 16 + 1);
     mBindingPoint = bindingPoint;
 
     ZeroMemory(&mBufferDesc, sizeof(D3D11_BUFFER_DESC));
     mBufferDesc.Usage = D3D11_USAGE_DYNAMIC;             // write access access by CPU and GPU
     mBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;  // use as a constant buffer
     mBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
+    mBufferDesc.ByteWidth = mSize;
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
 

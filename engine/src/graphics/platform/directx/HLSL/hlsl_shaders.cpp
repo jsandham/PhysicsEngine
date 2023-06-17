@@ -1,160 +1,812 @@
+//***************************************
+// THIS IS A GENERATED FILE. DO NOT EDIT.
+//***************************************
+#include <string>
 #include "hlsl_shaders.h"
-
 using namespace hlsl;
-
-std::string hlsl::getGeometryVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getGeometryFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getSSAOVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getSSAOFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getShadowDepthMapVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getShadowDepthMapFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getShadowDepthCubemapVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getShadowDepthCubemapFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getShadowDepthCubemapGeometryShader()
-{
-    return std::string();
-}
-std::string hlsl::getColorVertexShader()
-{
-    return std::string();
-}
 std::string hlsl::getColorFragmentShader()
 {
-    return std::string();
-}
-std::string hlsl::getColorInstancedVertexShader()
-{
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
 std::string hlsl::getColorInstancedFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
-std::string hlsl::getScreenQuadVertexShader()
+std::string hlsl::getColorInstancedVertexShader()
 {
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
-std::string hlsl::getScreenQuadFragmentShader()
+std::string hlsl::getColorVertexShader()
 {
-    return std::string();
-}
-std::string hlsl::getSpriteVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getSpriteFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getGBufferVertexShader()
-{
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
 std::string hlsl::getGBufferFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
-std::string hlsl::getNormalVertexShader()
+std::string hlsl::getGBufferVertexShader()
 {
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
-std::string hlsl::getNormalFragmentShader()
+std::string hlsl::getGeometryFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
-std::string hlsl::getNormalInstancedVertexShader()
+std::string hlsl::getGeometryVertexShader()
 {
-    return std::string();
-}
-std::string hlsl::getNormalInstancedFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getPositionVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getPositionFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getPositionInstancedVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getPositionInstancedFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getLinearDepthVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getLinearDepthFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getLinearDepthInstancedVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getLinearDepthInstancedFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getLineVertexShader()
-{
-    return std::string();
-}
-std::string hlsl::getLineFragmentShader()
-{
-    return std::string();
-}
-std::string hlsl::getGizmoVertexShader()
-{
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
 std::string hlsl::getGizmoFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
-std::string hlsl::getGridVertexShader()
+std::string hlsl::getGizmoVertexShader()
 {
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
 std::string hlsl::getGridFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
 }
-std::string hlsl::getStandardVertexShader()
+std::string hlsl::getGridVertexShader()
 {
-    return std::string();
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getLinearDepthFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getLinearDepthInstancedFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getLinearDepthInstancedVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getLinearDepthVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getLineFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getLineVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getNormalFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getNormalInstancedFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getNormalInstancedVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getNormalVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getPositionFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getPositionInstancedFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getPositionInstancedVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getPositionVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getScreenQuadFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getScreenQuadVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getShadowDepthCubemapFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getShadowDepthCubemapGeometryShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getShadowDepthCubemapVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getShadowDepthMapFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getShadowDepthMapVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getSpriteFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getSpriteVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
+std::string hlsl::getSSAOFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getSSAOVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }
 std::string hlsl::getStandardFragmentShader()
 {
-    return std::string();
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getStandardVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
 }

@@ -320,24 +320,24 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
     }
 
     // Finally draw scene
-    void* tex = clipboard.mCameraSystem->getNativeGraphicsColorTex()->getHandle();
+    void* tex = clipboard.mCameraSystem->getNativeGraphicsColorTex()->getIMGUITexture();
 
     switch (mActiveDebugTarget)
     {
     case DebugTargets::Depth:
-        tex = clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getHandle();
+        tex = clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getIMGUITexture();
         break;
     case DebugTargets::ColorPicking:
-        tex = clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getHandle();
+        tex = clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getIMGUITexture();
         break;
     case DebugTargets::AlbedoSpecular:
-        tex = clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getHandle();
+        tex = clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getIMGUITexture();
         break;
     case DebugTargets::SSAO:
-        tex = clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getHandle();
+        tex = clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getIMGUITexture();
         break;
     case DebugTargets::SSAONoise:
-        tex = clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getHandle();
+        tex = clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getIMGUITexture();
         break;
     }
 
@@ -395,16 +395,16 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
                 if (camera->mRenderTextureId.isValid())
                 {
                     PhysicsEngine::RenderTexture* renderTexture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(camera->mRenderTextureId);
-                    if (renderTexture->getNativeGraphicsColorTex()->getHandle() != nullptr)
+                    if (renderTexture->getNativeGraphicsColorTex()->getIMGUITexture() != nullptr)
                     {
-                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(renderTexture->getNativeGraphicsColorTex()->getIMGUITexture())), min, max, ImVec2(0, 1), ImVec2(1, 0));
                     }
                 }
                 else
                 {
-                    if (camera->getNativeGraphicsColorTex()->getHandle() != nullptr)
+                    if (camera->getNativeGraphicsColorTex()->getIMGUITexture() != nullptr)
                     {
-                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getHandle())), min, max, ImVec2(0, 1), ImVec2(1, 0));
+                        ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(camera->getNativeGraphicsColorTex()->getIMGUITexture())), min, max, ImVec2(0, 1), ImVec2(1, 0));
                     }
                 }
             }

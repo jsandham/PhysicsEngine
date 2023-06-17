@@ -33,6 +33,7 @@ cd "..\..\.."
 echo [95mGenerating cpp shaders...[0m
 cd "%~dp0\engine\tools\shader_cpp_generator"
 call "shader_cpp_generator.exe"
+call "shader_cpp_generator_hlsl.exe"
 cd "..\..\.."
 
 echo [94mBuilding engine...[0m

@@ -306,14 +306,14 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PopStyleColor();
             }
 
-            if (mDrawTex->getHandle() != nullptr)
+            if (mDrawTex->getIMGUITexture() != nullptr)
             {
-               //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getHandle())),
+               //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getIMGUITexture())),
                //     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                //     ImVec2(0, 0));
                 
                 // directx
-                ImGui::Image(mDrawTex->getHandle(),
+                ImGui::Image(mDrawTex->getIMGUITexture(),
                     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                     ImVec2(0, 0));
             }

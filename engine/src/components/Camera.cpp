@@ -456,7 +456,7 @@ Framebuffer *Camera::getNativeGraphicsSSAOFBO() const
     return mTargets.mSsaoFBO;
 }
 
-TextureHandle* Camera::getNativeGraphicsColorTex() const
+TextureHandle *Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
 }

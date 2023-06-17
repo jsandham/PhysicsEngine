@@ -26,7 +26,8 @@ namespace PhysicsEngine
 		void writePixels(const std::vector<unsigned char>& data) override;
 		void bind(unsigned int texUnit) override;
 		void unbind(unsigned int texUnit) override;
-		void* getHandle() override;
+        void *getTexture() override;
+        void *getIMGUITexture() override;
 	};
 }
 

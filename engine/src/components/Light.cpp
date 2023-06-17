@@ -163,17 +163,17 @@ Framebuffer* Light::getNativeGraphicsShadowCubemapFBO() const
     return mTargets.mShadowCubemapFBO;
 }
 
-TextureHandle* Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
+TextureHandle *Light::getNativeGraphicsShadowCascadeDepthTex(int index) const
 {
     return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))]->getDepthTex();
 }
 
-TextureHandle* Light::getNativeGrpahicsShadowSpotlightDepthTex() const
+TextureHandle *Light::getNativeGrpahicsShadowSpotlightDepthTex() const
 {
     return mTargets.mShadowSpotlightFBO->getDepthTex();
 }
 
-TextureHandle* Light::getNativeGraphicsShadowCubemapDepthTex() const
+TextureHandle *Light::getNativeGraphicsShadowCubemapDepthTex() const
 {
     return mTargets.mShadowCubemapFBO->getDepthTex();
 }

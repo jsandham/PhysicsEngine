@@ -58,7 +58,7 @@ void CubemapDrawer::render(Clipboard &clipboard, const Guid& id)
 
 void CubemapDrawer::drawCubemapFaceTexture(Clipboard& clipboard, CubemapFace face, Cubemap* cubemap, Texture2D* texture)
 {
-    if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getHandle())),
+    if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getIMGUITexture())),
         ImVec2(80, 80),
         ImVec2(1, 1),
         ImVec2(0, 0),

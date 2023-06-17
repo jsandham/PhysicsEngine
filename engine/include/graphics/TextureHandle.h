@@ -7,6 +7,17 @@
 
 namespace PhysicsEngine
 {
+	struct TextureHandleDescr
+	{
+        TextureFormat mFormat;
+        TextureWrapMode mWrapMode;
+        TextureFilterMode mFilterMode;
+        int mAnisoLevel;
+        int mWidth;
+        int mHeight;
+        bool mIsRenderTexture;
+	};
+
 	class TextureHandle
 	{
 	protected:
@@ -43,7 +54,8 @@ namespace PhysicsEngine
 		virtual void bind(unsigned int texUnit) = 0;
 		virtual void unbind(unsigned int texUnit) = 0;
 
-		virtual void* getHandle() = 0;
+		virtual void *getTexture() = 0;
+        virtual void* getIMGUITexture() = 0;
 
         static TextureHandle* create(int width, int height, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode);
 	};

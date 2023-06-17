@@ -5,18 +5,6 @@
 
 namespace PhysicsEngine
 {
-class PlaneMesh
-{
-  private:
-    MeshHandle *mMesh;
-
-  public:
-    PlaneMesh(int nx, int nz);
-    ~PlaneMesh();
-
-    void bind();
-    void unbind();
-};
 
 class SphereMesh
 {

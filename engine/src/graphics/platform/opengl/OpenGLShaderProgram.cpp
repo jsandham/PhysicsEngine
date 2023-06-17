@@ -368,7 +368,7 @@ void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, TextureHan
     CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
     if (tex != nullptr)
     {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int*>(tex->getHandle())));
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(tex->getTexture())));
     }
     else
     {
@@ -385,7 +385,7 @@ void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>
         CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
         if (texs[i] != nullptr)
         {
-            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i]->getHandle())));           
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i]->getTexture())));           
         }
         else
         {

@@ -3,10 +3,19 @@
 
 #include "../../Framebuffer.h"
 
+#include <vector>
+#include <windows.h>
+#include <d3d11.h>
+
 namespace PhysicsEngine
 {
 	class DirectXFramebuffer : public Framebuffer
 	{
+      private:
+        std::vector<ID3D11RenderTargetView*> mRenderTargetViews;
+        std::vector<ID3D11RenderTargetView*> mNullRenderTargetViews;
+        ID3D11DepthStencilView* mDepthStencilView;
+
 	public:
 		DirectXFramebuffer(int width, int height);
 		DirectXFramebuffer(int width, int height, int numColorTex, bool addDepthTex);
@@ -21,7 +30,6 @@ namespace PhysicsEngine
 
 		TextureHandle *getColorTex(size_t i = 0) override;
         TextureHandle *getDepthTex() override;
-		void* getHandle() override;
 	};
 }
 

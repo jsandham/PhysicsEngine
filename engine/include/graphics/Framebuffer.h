@@ -35,7 +35,6 @@ namespace PhysicsEngine
         virtual void unbind() = 0;
         virtual void setViewport(int x, int y, int width, int height) = 0;
 
-        virtual void *getHandle() = 0;
         virtual TextureHandle *getColorTex(size_t i = 0) = 0;
         virtual TextureHandle *getDepthTex() = 0;
 

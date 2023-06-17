@@ -91,51 +91,51 @@ std::string Material::getObjectName() const
 void Material::apply()
 {
     Shader *shader = mWorld->getAssetByGuid<Shader>(mShaderGuid);
-
     assert(shader != nullptr);
 
     ShaderProgram *shaderProgram = shader->getActiveProgram();
+    assert(shaderProgram != nullptr);
     
     int textureUnit = 0;
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
         int location = shaderProgram->findUniformLocation(mUniforms[i].mName);
-
         assert(location != -1);
 
-        if (mUniforms[i].mType == ShaderUniformType::Sampler2D)
+        switch (mUniforms[i].mType)
         {
-            if (mUniforms[i].mTex != nullptr)
-            {
-                shaderProgram->setTexture2D(location, textureUnit, mUniforms[i].mTex);
-            }
-            else
-            {
-                shaderProgram->setTexture2D(location, textureUnit, nullptr);
-            }
-
+        case ShaderUniformType::Sampler2D: 
+        {
+            shaderProgram->setTexture2D(location, textureUnit, mUniforms[i].mTex);
             textureUnit++;
+            break;
         }
-        else if (mUniforms[i].mType == ShaderUniformType::Int)
+        case ShaderUniformType::Int:
         {
             shaderProgram->setInt(location, *reinterpret_cast<const int *>(mUniforms[i].mData));
+            break;
         }
-        else if (mUniforms[i].mType == ShaderUniformType::Float)
+        case ShaderUniformType::Float:
         {
             shaderProgram->setFloat(location, *reinterpret_cast<const float *>(mUniforms[i].mData));
+            break;
         }
-        else if (mUniforms[i].mType == ShaderUniformType::Vec2)
+        case ShaderUniformType::Vec2:
         {
             shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2 *>(mUniforms[i].mData));
+            break;
         }
-        else if (mUniforms[i].mType == ShaderUniformType::Vec3)
+        case ShaderUniformType::Vec3:
         {
             shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3 *>(mUniforms[i].mData));
+            break;
         }
-        else if (mUniforms[i].mType == ShaderUniformType::Vec4)
+        case ShaderUniformType::Vec4:
         {
             shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4 *>(mUniforms[i].mData));
+            break;
         }
+        }        
     }
 }
 

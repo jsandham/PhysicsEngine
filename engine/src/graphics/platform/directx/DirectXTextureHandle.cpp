@@ -66,7 +66,7 @@ DirectXTextureHandle::DirectXTextureHandle(int width, int height, TextureFormat 
     : TextureHandle(width, height, format, wrapMode, filterMode)
 {
     mTexture = nullptr;
-    mResourceView = nullptr;
+    mShaderResourceView = nullptr;
     mSamplerState = nullptr;
 
     this->load(format, wrapMode, filterMode, width, height, std::vector<unsigned char>());
@@ -78,9 +78,9 @@ DirectXTextureHandle::~DirectXTextureHandle()
     {
         mTexture->Release();
     }
-    if (mResourceView != nullptr)
+    if (mShaderResourceView != nullptr)
     {
-        mResourceView->Release();
+        mShaderResourceView->Release();
     }
     if (mSamplerState != nullptr)
     {
@@ -111,9 +111,9 @@ void DirectXTextureHandle::load(TextureFormat format,
     {
         mTexture->Release();
     }
-    if (mResourceView != nullptr)
+    if (mShaderResourceView != nullptr)
     {
-        mResourceView->Release();
+        mShaderResourceView->Release();
     }
     if (mSamplerState != nullptr)
     {
@@ -129,8 +129,20 @@ void DirectXTextureHandle::load(TextureFormat format,
     mTextureDesc.Format = getTextureFormat(format);
     mTextureDesc.SampleDesc.Count = 1;
     mTextureDesc.Usage = D3D11_USAGE_DYNAMIC;
-    mTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    /*mTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        mTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+        break;
+    case TextureFormat::RG:
+    case TextureFormat::RGB:
+    case TextureFormat::RGBA:
+        mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        break;
+    }*/
     mTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    mTextureDesc.CPUAccessFlags = 0;
     mTextureDesc.MiscFlags = 0;
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
@@ -167,12 +179,12 @@ void DirectXTextureHandle::load(TextureFormat format,
         CHECK_ERROR(device->CreateTexture2D(&mTextureDesc, NULL, &mTexture));
     }
 
-    ZeroMemory(&mResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-    mResourceViewDesc.Format = mTextureDesc.Format;
-    mResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    mResourceViewDesc.Texture2D.MipLevels = mTextureDesc.MipLevels;
+    ZeroMemory(&mShaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+    mShaderResourceViewDesc.Format = mTextureDesc.Format;
+    mShaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    mShaderResourceViewDesc.Texture2D.MipLevels = mTextureDesc.MipLevels;
 
-    CHECK_ERROR(device->CreateShaderResourceView(mTexture, &mResourceViewDesc, &mResourceView));
+    CHECK_ERROR(device->CreateShaderResourceView(mTexture, &mShaderResourceViewDesc, &mShaderResourceView));
 
     /*ZeroMemory(&mSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
     mSamplerDesc.AddressU = getTextureWrapMode(wrapMode);
@@ -208,7 +220,7 @@ void DirectXTextureHandle::bind(unsigned int texUnit)
 
     assert(context != nullptr);
 
-    context->PSSetShaderResources(texUnit, 1, &mResourceView);
+    context->PSSetShaderResources(texUnit, 1, &mShaderResourceView);
     //context->PSSetSamplers(texUnit, 1, &mSamplerState);
 }
 
@@ -225,7 +237,12 @@ void DirectXTextureHandle::unbind(unsigned int texUnit)
     //context->PSSetSamplers(texUnit, 1, &ss);
 }
 
-void* DirectXTextureHandle::getHandle()
+void* DirectXTextureHandle::getTexture()
 {
-    return static_cast<void *>(mResourceView);
+    return static_cast<void *>(mTexture);
+}
+
+void *DirectXTextureHandle::getIMGUITexture()
+{
+    return static_cast<void *>(mShaderResourceView);
 }

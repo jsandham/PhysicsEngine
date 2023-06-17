@@ -179,9 +179,9 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
             ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
             window_flags);
 
-        if (mFBO->getColorTex()->getHandle() != nullptr)
+        if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
         {
-            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getHandle())),
+            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                 ImVec2(0, 0));
         }
@@ -294,7 +294,7 @@ void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* materi
 {
     Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
 
-    if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getHandle())),
+    if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getIMGUITexture())),
         ImVec2(80, 80),
         ImVec2(1, 1),
         ImVec2(0, 0),

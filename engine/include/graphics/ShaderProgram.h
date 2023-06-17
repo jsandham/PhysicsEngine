@@ -2,6 +2,7 @@
 #define SHADERPROGRAM_H__
 
 #include "TextureHandle.h"
+#include "RenderTextureHandle.h"
 
 #include "../core/Color.h"
 #include <glm/glm.hpp>
@@ -98,8 +99,9 @@ namespace PhysicsEngine
         virtual void setMat2(const char *name, const glm::mat2 &mat) = 0;
         virtual void setMat3(const char *name, const glm::mat3 &mat) = 0;
         virtual void setMat4(const char *name, const glm::mat4 &mat) = 0;
-        virtual void setTexture2D(const char *name, int texUnit, TextureHandle* tex) = 0;
-        virtual void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) = 0;
+        virtual void setTexture2D(const char *name, int texUnit, TextureHandle *tex) = 0;
+        virtual void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                                   const std::vector<TextureHandle *> &texs) = 0;
 
         virtual void setBool(int nameLocation, bool value) = 0;
         virtual void setInt(int nameLocation, int value) = 0;

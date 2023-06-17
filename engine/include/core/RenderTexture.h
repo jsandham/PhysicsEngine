@@ -9,9 +9,6 @@ namespace PhysicsEngine
     struct RenderTextureTargets
     {
         Framebuffer *mMainFBO;
-        //unsigned int mMainFBO;
-        //unsigned int mColorTex;
-        //unsigned int mDepthTex;
     };
 
     class RenderTexture : public Texture
