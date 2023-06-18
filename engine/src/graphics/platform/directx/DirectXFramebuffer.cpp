@@ -15,9 +15,9 @@ DirectXFramebuffer::DirectXFramebuffer(int width, int height) : Framebuffer(widt
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
    
-    mColorTex[0] = TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
+    mColorTex[0] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
                                          TextureFilterMode::Nearest);
-    mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+    mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
                                       TextureFilterMode::Nearest);
 
     // Creating a view of the texture to be used when binding it as a render target
@@ -72,7 +72,7 @@ DirectXFramebuffer::DirectXFramebuffer(int width, int height, int numColorTex, b
 
     for (size_t i = 0; i < mColorTex.size(); i++)
     {
-        mColorTex[i] = TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
+        mColorTex[i] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
                                              TextureFilterMode::Nearest);
         CHECK_ERROR(device->CreateRenderTargetView(static_cast<ID3D11Texture2D*>(mColorTex[i]->getTexture()), nullptr,
                                                    &mRenderTargetViews[i]));
@@ -80,7 +80,7 @@ DirectXFramebuffer::DirectXFramebuffer(int width, int height, int numColorTex, b
 
     if (mAddDepthTex)
     {
-        mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+        mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
                                           TextureFilterMode::Nearest);
         CHECK_ERROR(device->CreateDepthStencilView(static_cast<ID3D11Texture2D*>(mDepthTex->getTexture()), nullptr,
                                                    &mDepthStencilView));
@@ -175,13 +175,13 @@ void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
     context->RSSetViewports(1, &viewport);
 }
 
-TextureHandle *DirectXFramebuffer::getColorTex(size_t i)
+RenderTextureHandle *DirectXFramebuffer::getColorTex(size_t i)
 {
     assert(i < mColorTex.size());
     return mColorTex[i];
 }
 
-TextureHandle *DirectXFramebuffer::getDepthTex()
+RenderTextureHandle *DirectXFramebuffer::getDepthTex()
 {
     return mDepthTex;
 }

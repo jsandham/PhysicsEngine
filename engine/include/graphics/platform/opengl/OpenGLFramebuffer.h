@@ -22,8 +22,8 @@ namespace PhysicsEngine
         void unbind() override;
         void setViewport(int x, int y, int width, int height) override;
 
-		TextureHandle *getColorTex(size_t i = 0) override;
-        TextureHandle *getDepthTex() override;
+		RenderTextureHandle *getColorTex(size_t i = 0) override;
+        RenderTextureHandle *getDepthTex() override;
 	};
 }
 

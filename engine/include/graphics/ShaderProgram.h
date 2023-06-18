@@ -30,7 +30,7 @@ namespace PhysicsEngine
         char mData[64];
         std::string mName;       // variable name (including block name if applicable)
         ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-        TextureHandle *mTex; // if data stores a texture id, this is the texture handle
+        void *mTex; // if data stores a texture id, this is the texture handle
         unsigned int mUniformId; // integer hash of uniform name
 
         std::string getShortName() const
@@ -99,9 +99,9 @@ namespace PhysicsEngine
         virtual void setMat2(const char *name, const glm::mat2 &mat) = 0;
         virtual void setMat3(const char *name, const glm::mat3 &mat) = 0;
         virtual void setMat4(const char *name, const glm::mat4 &mat) = 0;
-        virtual void setTexture2D(const char *name, int texUnit, TextureHandle *tex) = 0;
+        virtual void setTexture2D(const char *name, int texUnit, void *tex) = 0;
         virtual void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
-                                   const std::vector<TextureHandle *> &texs) = 0;
+                                   const std::vector<void *> &texs) = 0;
 
         virtual void setBool(int nameLocation, bool value) = 0;
         virtual void setInt(int nameLocation, int value) = 0;
@@ -114,8 +114,8 @@ namespace PhysicsEngine
         virtual void setMat2(int nameLocation, const glm::mat2 &mat) = 0;
         virtual void setMat3(int nameLocation, const glm::mat3 &mat) = 0;
         virtual void setMat4(int nameLocation, const glm::mat4 &mat) = 0;
-        virtual void setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) = 0;
-        virtual void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) = 0;
+        virtual void setTexture2D(int nameLocation, int texUnit, void* tex) = 0;
+        virtual void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) = 0;
         
         virtual bool getBool(const char *name) const = 0;
         virtual int getInt(const char *name) const = 0;

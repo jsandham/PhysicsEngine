@@ -453,7 +453,7 @@ void Shader::setMat4(const char *name, const glm::mat4 &mat) const
     }
 }
 
-void Shader::setTexture2D(const char *name, int texUnit, TextureHandle* tex) const
+void Shader::setTexture2D(const char *name, int texUnit, void* tex) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -461,7 +461,7 @@ void Shader::setTexture2D(const char *name, int texUnit, TextureHandle* tex) con
     }
 }
 
-void Shader::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const
+void Shader::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -549,7 +549,7 @@ void Shader::setMat4(int nameLocation, const glm::mat4 &mat) const
     }
 }
 
-void Shader::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) const
+void Shader::setTexture2D(int nameLocation, int texUnit, void* tex) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -557,7 +557,7 @@ void Shader::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) con
     }
 }
 
-void Shader::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const
+void Shader::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const
 {
     if (mActiveProgram != nullptr)
     {

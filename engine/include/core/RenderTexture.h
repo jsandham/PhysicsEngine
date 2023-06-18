@@ -44,8 +44,8 @@ namespace PhysicsEngine
         void writePixels() override;
 
         Framebuffer* getNativeGraphicsMainFBO() const;
-        TextureHandle* getNativeGraphicsColorTex() const;
-        TextureHandle* getNativeGraphicsDepthTex() const;
+        RenderTextureHandle* getNativeGraphicsColorTex() const;
+        RenderTextureHandle* getNativeGraphicsDepthTex() const;
 	};
 
     template <> struct AssetType<RenderTexture>

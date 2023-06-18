@@ -50,7 +50,7 @@ class QuadShader
 
     void bind();
     void unbind();
-    void setScreenTexture(int texUnit, TextureHandle *tex);
+    void setScreenTexture(int texUnit, void *tex);
 };
 
 class DepthShader
@@ -239,9 +239,9 @@ class SSAOShader
     void bind();
     void unbind();
     void setProjection(const glm::mat4 &projection);
-    void setPositionTexture(int texUnit, TextureHandle *tex);
-    void setNormalTexture(int texUnit, TextureHandle *tex);
-    void setNoiseTexture(int texUnit, TextureHandle *tex);
+    void setPositionTexture(int texUnit, void *tex);
+    void setNormalTexture(int texUnit, void *tex);
+    void setNoiseTexture(int texUnit, void *tex);
     void setSample(int index, const glm::vec3 &sample);
 };
 

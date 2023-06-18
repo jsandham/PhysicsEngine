@@ -458,17 +458,17 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
 
         if (light->mLightType == LightType::Directional)
         {
-            std::vector<TextureHandle*> tex = {light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex(),
-                                               light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex(),
-                                                light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex(),
-                                                light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex(),
-                                                light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()};
+            std::vector<void *> tex = {light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getTexture(),
+                                       light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getTexture(),
+                                       light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getTexture(),
+                                       light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getTexture(),
+                                       light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getTexture()};
             std::vector<int> texUnit = {3, 4, 5, 6, 7};
             shader->setTexture2Ds("shadowMap", texUnit, 5, tex);
         }
         else if (light->mLightType == LightType::Spot)
         {
-            shader->setTexture2D("shadowMap[0]", 3, light->getNativeGrpahicsShadowSpotlightDepthTex());
+            shader->setTexture2D("shadowMap[0]", 3, light->getNativeGrpahicsShadowSpotlightDepthTex()->getTexture());
         }
 
         if (renderObjects[i].instanced)

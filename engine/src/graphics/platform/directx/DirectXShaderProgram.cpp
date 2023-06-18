@@ -279,12 +279,12 @@ void DirectXShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
 
 }
 
-void DirectXShaderProgram::setTexture2D(const char *name, int texUnit, TextureHandle* tex)
+void DirectXShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
 {
 
 }
 
-void DirectXShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+void DirectXShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
 {
 
 }
@@ -333,11 +333,11 @@ void DirectXShaderProgram::setMat4(int nameLocation, const glm::mat4 &mat)
 {
 }
 
-void DirectXShaderProgram::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex)
+void DirectXShaderProgram::setTexture2D(int nameLocation, int texUnit, void* tex)
 {
 }
 
-void DirectXShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+void DirectXShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
 {
 }
 

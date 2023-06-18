@@ -90,7 +90,7 @@ void QuadShader::unbind()
     mShader->unbind();
 }
 
-void QuadShader::setScreenTexture(int texUnit, TextureHandle *tex)
+void QuadShader::setScreenTexture(int texUnit, void *tex)
 {
     mShader->setTexture2D(mScreenTexLoc, texUnit, tex);
 }
@@ -467,17 +467,17 @@ void SSAOShader::setProjection(const glm::mat4 &projection)
     mShader->setMat4(mProjectionLoc, projection);
 }
 
-void SSAOShader::setPositionTexture(int texUnit, TextureHandle *tex)
+void SSAOShader::setPositionTexture(int texUnit, void *tex)
 {
     mShader->setTexture2D(mNormalTexLoc, texUnit, tex);
 }
 
-void SSAOShader::setNormalTexture(int texUnit, TextureHandle *tex)
+void SSAOShader::setNormalTexture(int texUnit, void *tex)
 {
     mShader->setTexture2D(mPositionTexLoc, texUnit, tex);
 }
 
-void SSAOShader::setNoiseTexture(int texUnit, TextureHandle *tex)
+void SSAOShader::setNoiseTexture(int texUnit, void *tex)
 {
     mShader->setTexture2D(mNoiseTexLoc, texUnit, tex);
 }

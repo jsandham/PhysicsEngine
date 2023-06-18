@@ -416,7 +416,7 @@ void RenderSystem::buildSpriteObjectsList(World* world)
 
             if (texture != nullptr)
             {
-                object.mTexture = texture->getNativeGraphics();
+                object.mTexture = texture->getNativeGraphics()->getTexture();
             }
             else
             {

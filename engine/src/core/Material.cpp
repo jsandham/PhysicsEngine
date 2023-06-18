@@ -186,7 +186,7 @@ void Material::onTextureChanged()
             Texture2D *texture = mWorld->getAssetByGuid<Texture2D>(*reinterpret_cast<Guid *>(mUniforms[i].mData));
             if (texture != nullptr)
             {
-                mUniforms[i].mTex = texture->getNativeGraphics();
+                mUniforms[i].mTex = texture->getNativeGraphics()->getTexture();
             }
             else
             {

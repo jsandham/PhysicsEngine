@@ -320,42 +320,42 @@ Framebuffer *FreeLookCameraSystem::getNativeGraphicsMainFBO() const
     return getCamera()->getNativeGraphicsMainFBO();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsColorTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsColorTex() const
 {
     return getCamera()->getNativeGraphicsColorTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsDepthTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsDepthTex() const
 {
     return getCamera()->getNativeGraphicsDepthTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsColorPickingTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsColorPickingTex() const
 {
     return getCamera()->getNativeGraphicsColorPickingTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsPositionTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsPositionTex() const
 {
     return getCamera()->getNativeGraphicsPositionTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsNormalTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsNormalTex() const
 {
     return getCamera()->getNativeGraphicsNormalTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsAlbedoSpecTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsAlbedoSpecTex() const
 {
     return getCamera()->getNativeGraphicsAlbedoSpecTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAOColorTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAOColorTex() const
 {
     return getCamera()->getNativeGraphicsSSAOColorTex();
 }
 
-TextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
 {
     return getCamera()->getNativeGraphicsSSAONoiseTex();
 }

@@ -91,14 +91,14 @@ namespace PhysicsEngine
         glm::vec2 distanceTraveledSinceRightMouseClick() const;
 
         Framebuffer *getNativeGraphicsMainFBO() const;
-        TextureHandle *getNativeGraphicsColorTex() const;
-        TextureHandle *getNativeGraphicsDepthTex() const;
-        TextureHandle *getNativeGraphicsColorPickingTex() const;
-        TextureHandle *getNativeGraphicsPositionTex() const;
-        TextureHandle *getNativeGraphicsNormalTex() const;
-        TextureHandle *getNativeGraphicsAlbedoSpecTex() const;
-        TextureHandle *getNativeGraphicsSSAOColorTex() const;
-        TextureHandle *getNativeGraphicsSSAONoiseTex() const;
+        RenderTextureHandle *getNativeGraphicsColorTex() const;
+        RenderTextureHandle *getNativeGraphicsDepthTex() const;
+        RenderTextureHandle *getNativeGraphicsColorPickingTex() const;
+        RenderTextureHandle *getNativeGraphicsPositionTex() const;
+        RenderTextureHandle *getNativeGraphicsNormalTex() const;
+        RenderTextureHandle *getNativeGraphicsAlbedoSpecTex() const;
+        RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
+        RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
 
         GraphicsQuery getQuery() const;
 

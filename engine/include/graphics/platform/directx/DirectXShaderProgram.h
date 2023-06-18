@@ -49,8 +49,8 @@ class DirectXShaderProgram : public ShaderProgram
     void setMat2(const char *name, const glm::mat2 &mat) override;
     void setMat3(const char *name, const glm::mat3 &mat) override;
     void setMat4(const char *name, const glm::mat4 &mat) override;
-    void setTexture2D(const char *name, int texUnit, TextureHandle* tex) override;
-    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) override;
+    void setTexture2D(const char *name, int texUnit, void* tex) override;
+    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) override;
 
     void setBool(int nameLocation, bool value) override;
     void setInt(int nameLocation, int value) override;
@@ -63,8 +63,8 @@ class DirectXShaderProgram : public ShaderProgram
     void setMat2(int nameLocation, const glm::mat2 &mat) override;
     void setMat3(int nameLocation, const glm::mat3 &mat) override;
     void setMat4(int nameLocation, const glm::mat4 &mat) override;
-    void setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) override;
-    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) override;
+    void setTexture2D(int nameLocation, int texUnit, void* tex) override;
+    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) override;
 
     bool getBool(const char *name) const override;
     int getInt(const char *name) const override;

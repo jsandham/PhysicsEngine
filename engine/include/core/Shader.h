@@ -117,8 +117,8 @@ class Shader : public Asset
     void setMat2(const char *name, const glm::mat2 &mat) const;
     void setMat3(const char *name, const glm::mat3 &mat) const;
     void setMat4(const char *name, const glm::mat4 &mat) const;
-    void setTexture2D(const char *name, int texUnit, TextureHandle* tex) const;
-    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const;
+    void setTexture2D(const char *name, int texUnit, void* tex) const;
+    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
 
     void setBool(int nameLocation, bool value) const;
     void setInt(int nameLocation, int value) const;
@@ -130,8 +130,8 @@ class Shader : public Asset
     void setMat2(int nameLocation, const glm::mat2 &mat) const;
     void setMat3(int nameLocation, const glm::mat3 &mat) const;
     void setMat4(int nameLocation, const glm::mat4 &mat) const;
-    void setTexture2D(int nameLocation, int texUnit, TextureHandle* tex) const;
-    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs) const;
+    void setTexture2D(int nameLocation, int texUnit, void* tex) const;
+    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
 
     bool getBool(const char *name) const;
     int getInt(const char *name) const;

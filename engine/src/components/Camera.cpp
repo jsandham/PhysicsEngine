@@ -456,42 +456,42 @@ Framebuffer *Camera::getNativeGraphicsSSAOFBO() const
     return mTargets.mSsaoFBO;
 }
 
-TextureHandle *Camera::getNativeGraphicsColorTex() const
+RenderTextureHandle *Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsDepthTex() const
+RenderTextureHandle *Camera::getNativeGraphicsDepthTex() const
 {
     return mTargets.mMainFBO->getDepthTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsColorPickingTex() const
+RenderTextureHandle *Camera::getNativeGraphicsColorPickingTex() const
 {
     return mTargets.mColorPickingFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsPositionTex() const
+RenderTextureHandle *Camera::getNativeGraphicsPositionTex() const
 {
     return mTargets.mGeometryFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsNormalTex() const
+RenderTextureHandle *Camera::getNativeGraphicsNormalTex() const
 {
     return mTargets.mGeometryFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsAlbedoSpecTex() const
+RenderTextureHandle *Camera::getNativeGraphicsAlbedoSpecTex() const
 {
     return mTargets.mGeometryFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsSSAOColorTex() const
+RenderTextureHandle *Camera::getNativeGraphicsSSAOColorTex() const
 {
     return mTargets.mSsaoFBO->getColorTex();
 }
 
-TextureHandle *Camera::getNativeGraphicsSSAONoiseTex() const
+RenderTextureHandle *Camera::getNativeGraphicsSSAONoiseTex() const
 {
     return mTargets.mSsaoFBO->getColorTex();
 }

@@ -9,7 +9,7 @@
 #include "Component.h"
 
 #include "../graphics/Framebuffer.h"
-#include "../graphics/TextureHandle.h"
+#include "../graphics/RenderTextureHandle.h"
 
 namespace PhysicsEngine
 {
@@ -85,9 +85,9 @@ class Light : public Component
     Framebuffer* getNativeGraphicsShadowSpotlightFBO() const;
     Framebuffer* getNativeGraphicsShadowCubemapFBO() const;
 
-    TextureHandle* getNativeGraphicsShadowCascadeDepthTex(int index) const;
-    TextureHandle* getNativeGrpahicsShadowSpotlightDepthTex() const;
-    TextureHandle* getNativeGraphicsShadowCubemapDepthTex() const;
+    RenderTextureHandle* getNativeGraphicsShadowCascadeDepthTex(int index) const;
+    RenderTextureHandle *getNativeGrpahicsShadowSpotlightDepthTex() const;
+    RenderTextureHandle *getNativeGraphicsShadowCubemapDepthTex() const;
 };
 
 template <> struct ComponentType<Light>

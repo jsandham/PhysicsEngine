@@ -129,20 +129,8 @@ void DirectXTextureHandle::load(TextureFormat format,
     mTextureDesc.Format = getTextureFormat(format);
     mTextureDesc.SampleDesc.Count = 1;
     mTextureDesc.Usage = D3D11_USAGE_DYNAMIC;
-    /*mTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-    switch (format)
-    {
-    case TextureFormat::Depth:
-        mTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-        break;
-    case TextureFormat::RG:
-    case TextureFormat::RGB:
-    case TextureFormat::RGBA:
-        mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-        break;
-    }*/
+    mTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     mTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    mTextureDesc.CPUAccessFlags = 0;
     mTextureDesc.MiscFlags = 0;
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();

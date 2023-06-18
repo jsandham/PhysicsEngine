@@ -45,7 +45,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
         if (mCurrentTexId != texture->getGuid())
         {
             mCurrentTexId = texture->getGuid();
-            mDrawTex = texture->getNativeGraphics();
+            mDrawTex = texture->getNativeGraphics()->getIMGUITexture();
         }
 
         const std::array<const char*, 5> wrapModes = { "Repeat", "Clamp To Edge", "Clamp to border", "Mirror repeat", "Mirror clamp to edge"};
@@ -139,7 +139,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RG"))
                 {
-                    mDrawTex = texture->getNativeGraphics();
+                    mDrawTex = texture->getNativeGraphics()->getIMGUITexture();
                 }
                 ImGui::PopStyleColor();
 
@@ -148,11 +148,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
                 if (ImGui::Button("R"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
-                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramR->unbind();
                     mFBO->unbind();
@@ -164,11 +164,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
                 if (ImGui::Button("G"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
-                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramG->unbind();
                     mFBO->unbind();
@@ -180,7 +180,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RGB"))
                 {
-                    mDrawTex = texture->getNativeGraphics();
+                    mDrawTex = texture->getNativeGraphics()->getIMGUITexture();
                 }
                 ImGui::PopStyleColor();
 
@@ -189,11 +189,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
                 if (ImGui::Button("R"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
-                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramR->unbind();
                     mFBO->unbind();
@@ -205,11 +205,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
                 if (ImGui::Button("G"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
-                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramG->unbind();
                     mFBO->unbind();
@@ -221,11 +221,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
                 if (ImGui::Button("B"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramB->bind();
-                    mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramB->unbind();
                     mFBO->unbind();
@@ -237,7 +237,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RGBA"))
                 {
-                    mDrawTex = texture->getNativeGraphics();
+                    mDrawTex = texture->getNativeGraphics()->getIMGUITexture();
                 }
                 ImGui::PopStyleColor();
 
@@ -246,11 +246,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF0000FF);
                 if (ImGui::Button("R"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
-                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramR->unbind();
                     mFBO->unbind();
@@ -262,11 +262,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF00FF00);
                 if (ImGui::Button("G"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
-                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramG->unbind();
                     mFBO->unbind();
@@ -278,11 +278,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
                 if (ImGui::Button("B"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramB->bind();
-                    mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramB->unbind();
                     mFBO->unbind();
@@ -294,11 +294,11 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFFFFFF);
                 if (ImGui::Button("A"))
                 {
-                    mDrawTex = mFBO->getColorTex();
+                    mDrawTex = mFBO->getColorTex()->getIMGUITexture();
                     mFBO->bind();
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramA->bind();
-                    mProgramA->setTexture2D("texture0", 0, texture->getNativeGraphics());
+                    mProgramA->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
                     Renderer::getRenderer()->renderScreenQuad(mVAO);
                     mProgramA->unbind();
                     mFBO->unbind();
@@ -306,16 +306,17 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::PopStyleColor();
             }
 
-            if (mDrawTex->getIMGUITexture() != nullptr)
+            if (mDrawTex != nullptr)
             {
-               //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex->getIMGUITexture())),
-               //     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-               //     ImVec2(0, 0));
-                
-                // directx
-                ImGui::Image(mDrawTex->getIMGUITexture(),
+                // opengl
+                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex)),
                     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                     ImVec2(0, 0));
+                
+                // directx
+                //ImGui::Image(mDrawTex,
+                //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                //    ImVec2(0, 0));
             }
 
             ImGui::EndChild();

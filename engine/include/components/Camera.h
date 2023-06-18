@@ -23,6 +23,7 @@
 #include "../core/RenderTexture.h"
 
 #include "../graphics/Framebuffer.h"
+#include "../graphics/RenderTextureHandle.h"
 #include "../graphics/GraphicsQuery.h"
 
 namespace PhysicsEngine
@@ -165,14 +166,14 @@ class Camera : public Component
     Framebuffer* getNativeGraphicsGeometryFBO() const;
     Framebuffer* getNativeGraphicsSSAOFBO() const;
 
-    TextureHandle *getNativeGraphicsColorTex() const;
-    TextureHandle *getNativeGraphicsDepthTex() const;
-    TextureHandle *getNativeGraphicsColorPickingTex() const;
-    TextureHandle *getNativeGraphicsPositionTex() const;
-    TextureHandle *getNativeGraphicsNormalTex() const;
-    TextureHandle *getNativeGraphicsAlbedoSpecTex() const;
-    TextureHandle *getNativeGraphicsSSAOColorTex() const;
-    TextureHandle *getNativeGraphicsSSAONoiseTex() const;
+    RenderTextureHandle *getNativeGraphicsColorTex() const;
+    RenderTextureHandle *getNativeGraphicsDepthTex() const;
+    RenderTextureHandle *getNativeGraphicsColorPickingTex() const;
+    RenderTextureHandle *getNativeGraphicsPositionTex() const;
+    RenderTextureHandle *getNativeGraphicsNormalTex() const;
+    RenderTextureHandle *getNativeGraphicsAlbedoSpecTex() const;
+    RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
+    RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
 };
 
 template <> struct ComponentType<Camera>

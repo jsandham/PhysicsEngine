@@ -169,12 +169,12 @@ Framebuffer* RenderTexture::getNativeGraphicsMainFBO() const
     return mTargets.mMainFBO;
 }
 
-TextureHandle* RenderTexture::getNativeGraphicsColorTex() const
+RenderTextureHandle *RenderTexture::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
 }
 
-TextureHandle* RenderTexture::getNativeGraphicsDepthTex() const
+RenderTextureHandle *RenderTexture::getNativeGraphicsDepthTex() const
 {
     return mTargets.mMainFBO->getDepthTex();
 }

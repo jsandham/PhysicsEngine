@@ -295,12 +295,12 @@ void OpenGLShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
     this->setMat4(glGetUniformLocation(mHandle, name), mat);
 }
 
-void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, TextureHandle* tex)
+void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
 {
     this->setTexture2D(glGetUniformLocation(mHandle, name), texUnit, tex);
 }
 
-void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
 {
     this->setTexture2Ds(glGetUniformLocation(mHandle, name), texUnits, count, texs);
 }
@@ -361,14 +361,14 @@ void OpenGLShaderProgram::setMat4(int nameLocation, const glm::mat4 &mat)
     CHECK_ERROR(glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
 }
 
-void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, TextureHandle* tex)
+void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, void* tex)
 {
     CHECK_ERROR(glUniform1i(nameLocation, texUnit));
 
     CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
     if (tex != nullptr)
     {
-        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(tex->getTexture())));
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(tex)));
     }
     else
     {
@@ -376,7 +376,7 @@ void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, TextureHan
     }
 }
 
-void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<TextureHandle*>& texs)
+void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
 {
     CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits.data()));
 
@@ -385,7 +385,7 @@ void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>
         CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
         if (texs[i] != nullptr)
         {
-            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i]->getTexture())));           
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i])));           
         }
         else
         {

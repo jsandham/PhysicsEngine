@@ -22,7 +22,7 @@ class Texture2DDrawer : public InspectorDrawer
     ShaderProgram* mProgramA;
 
     Guid mCurrentTexId;
-    TextureHandle* mDrawTex;
+    void* mDrawTex;
 
   public:
     Texture2DDrawer();

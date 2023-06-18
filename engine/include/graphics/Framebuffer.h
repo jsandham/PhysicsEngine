@@ -3,15 +3,15 @@
 
 #include "../core/Color.h"
 
-#include "TextureHandle.h"
+#include "RenderTextureHandle.h"
 
 namespace PhysicsEngine
 {
 	class Framebuffer
 	{
     protected:
-        std::vector<TextureHandle *> mColorTex;
-        TextureHandle *mDepthTex;
+        std::vector<RenderTextureHandle *> mColorTex;
+        RenderTextureHandle *mDepthTex;
 
         unsigned int mWidth;
         unsigned int mHeight;
@@ -35,8 +35,8 @@ namespace PhysicsEngine
         virtual void unbind() = 0;
         virtual void setViewport(int x, int y, int width, int height) = 0;
 
-        virtual TextureHandle *getColorTex(size_t i = 0) = 0;
-        virtual TextureHandle *getDepthTex() = 0;
+        virtual RenderTextureHandle *getColorTex(size_t i = 0) = 0;
+        virtual RenderTextureHandle *getDepthTex() = 0;
 
         static Framebuffer *create(int width, int height);
         static Framebuffer *create(int width, int height, int numColorTex, bool addDepthTex);

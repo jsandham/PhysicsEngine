@@ -14,9 +14,9 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height) : Framebuffer(width,
     CHECK_ERROR(glGenFramebuffers(1, &mHandle));
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mHandle));
 
-    mColorTex[0] = TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
+    mColorTex[0] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
                                           TextureFilterMode::Nearest);
-    mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+    mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
                                           TextureFilterMode::Nearest);   
 
     CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
@@ -42,7 +42,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
 
     for (size_t i = 0; i < mColorTex.size(); i++)
     {
-        mColorTex[i] = TextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
+        mColorTex[i] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
                                              TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + i), GL_TEXTURE_2D,
@@ -51,7 +51,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
 
     if (mAddDepthTex)
     {
-        mDepthTex = TextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
+        mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
                                           TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
@@ -136,13 +136,13 @@ void OpenGLFramebuffer::setViewport(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
-TextureHandle *OpenGLFramebuffer::getColorTex(size_t i)
+RenderTextureHandle *OpenGLFramebuffer::getColorTex(size_t i)
 {
     assert(i < mColorTex.size());
     return mColorTex[i];
 }
 
-TextureHandle *OpenGLFramebuffer::getDepthTex()
+RenderTextureHandle *OpenGLFramebuffer::getDepthTex()
 {
     return mDepthTex;
 }
