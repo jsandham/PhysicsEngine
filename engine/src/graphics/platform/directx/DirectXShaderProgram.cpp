@@ -209,12 +209,12 @@ void DirectXShaderProgram::unbind()
     DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(NULL, NULL, 0);
 }
 
-int DirectXShaderProgram::findUniformLocation(const std::string &name) const
+std::vector<ShaderUniform> DirectXShaderProgram::getUniforms() const
 {
-    return -1;
+    return std::vector<ShaderUniform>();
 }
 
-std::vector<ShaderUniform> DirectXShaderProgram::getUniforms() const
+std::vector<ShaderUniform> DirectXShaderProgram::getMaterialUniforms() const
 {
     return std::vector<ShaderUniform>();
 }
@@ -289,55 +289,56 @@ void DirectXShaderProgram::setTexture2Ds(const char *name, const std::vector<int
 
 }
 
-void DirectXShaderProgram::setBool(int nameLocation, bool value)
+void DirectXShaderProgram::setBool(int uniformId, bool value)
 {
 }
 
-void DirectXShaderProgram::setInt(int nameLocation, int value)
+void DirectXShaderProgram::setInt(int uniformId, int value)
 {
 }
 
-void DirectXShaderProgram::setFloat(int nameLocation, float value)
+void DirectXShaderProgram::setFloat(int uniformId, float value)
 {
 }
 
-void DirectXShaderProgram::setColor(int nameLocation, const Color &color)
+void DirectXShaderProgram::setColor(int uniformId, const Color &color)
 {
 }
 
-void DirectXShaderProgram::setColor32(int nameLocation, const Color32 &color)
+void DirectXShaderProgram::setColor32(int uniformId, const Color32 &color)
 {
 }
 
-void DirectXShaderProgram::setVec2(int nameLocation, const glm::vec2 &vec)
+void DirectXShaderProgram::setVec2(int uniformId, const glm::vec2 &vec)
 {
 }
 
-void DirectXShaderProgram::setVec3(int nameLocation, const glm::vec3 &vec)
+void DirectXShaderProgram::setVec3(int uniformId, const glm::vec3 &vec)
 {
 }
 
-void DirectXShaderProgram::setVec4(int nameLocation, const glm::vec4 &vec)
+void DirectXShaderProgram::setVec4(int uniformId, const glm::vec4 &vec)
 {
 }
 
-void DirectXShaderProgram::setMat2(int nameLocation, const glm::mat2 &mat)
+void DirectXShaderProgram::setMat2(int uniformId, const glm::mat2 &mat)
 {
 }
 
-void DirectXShaderProgram::setMat3(int nameLocation, const glm::mat3 &mat)
+void DirectXShaderProgram::setMat3(int uniformId, const glm::mat3 &mat)
 {
 }
 
-void DirectXShaderProgram::setMat4(int nameLocation, const glm::mat4 &mat)
+void DirectXShaderProgram::setMat4(int uniformId, const glm::mat4 &mat)
 {
 }
 
-void DirectXShaderProgram::setTexture2D(int nameLocation, int texUnit, void* tex)
+void DirectXShaderProgram::setTexture2D(int uniformId, int texUnit, void *tex)
 {
 }
 
-void DirectXShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
+void DirectXShaderProgram::setTexture2Ds(int uniformId, const std::vector<int> &texUnits, int count,
+                                         const std::vector<void *> &texs)
 {
 }
 
@@ -359,6 +360,11 @@ float DirectXShaderProgram::getFloat(const char *name) const
 Color DirectXShaderProgram::getColor(const char *name) const
 {
     return Color::black;
+}
+
+Color32 DirectXShaderProgram::getColor32(const char *name) const
+{
+    return Color32::black;
 }
 
 glm::vec2 DirectXShaderProgram::getVec2(const char *name) const
@@ -391,57 +397,57 @@ glm::mat4 DirectXShaderProgram::getMat4(const char *name) const
     return glm::mat4();
 }
 
-bool DirectXShaderProgram::getBool(int nameLocation) const 
+bool DirectXShaderProgram::getBool(int uniformId) const
 {
     return false;
 }
 
-int DirectXShaderProgram::getInt(int nameLocation) const 
+int DirectXShaderProgram::getInt(int uniformId) const
 {
     return -1;
 }
 
-float DirectXShaderProgram::getFloat(int nameLocation) const 
+float DirectXShaderProgram::getFloat(int uniformId) const
 {
     return 0.0f;
 }
 
-Color DirectXShaderProgram::getColor(int nameLocation) const 
+Color DirectXShaderProgram::getColor(int uniformId) const
 {
     return Color::black;
 }
 
-Color32 DirectXShaderProgram::getColor32(int nameLocation) const 
+Color32 DirectXShaderProgram::getColor32(int uniformId) const
 {
     return Color32::black;
 }
 
-glm::vec2 DirectXShaderProgram::getVec2(int nameLocation) const
+glm::vec2 DirectXShaderProgram::getVec2(int uniformId) const
 {
     return glm::vec2();
 }
 
-glm::vec3 DirectXShaderProgram::getVec3(int nameLocation) const
+glm::vec3 DirectXShaderProgram::getVec3(int uniformId) const
 {
     return glm::vec3();
 }
 
-glm::vec4 DirectXShaderProgram::getVec4(int nameLocation) const
+glm::vec4 DirectXShaderProgram::getVec4(int uniformId) const
 {
     return glm::vec4();
 }
 
-glm::mat2 DirectXShaderProgram::getMat2(int nameLocation) const
+glm::mat2 DirectXShaderProgram::getMat2(int uniformId) const
 {
     return glm::mat2();
 }
 
-glm::mat3 DirectXShaderProgram::getMat3(int nameLocation) const
+glm::mat3 DirectXShaderProgram::getMat3(int uniformId) const
 {
     return glm::mat3();
 }
 
-glm::mat4 DirectXShaderProgram::getMat4(int nameLocation) const
+glm::mat4 DirectXShaderProgram::getMat4(int uniformId) const
 {
     return glm::mat4();
 }

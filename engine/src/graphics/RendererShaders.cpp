@@ -1,4 +1,5 @@
 #include "../../include/core/Log.h"
+#include "../../include/core/Shader.h"
 
 #include "../../include/graphics/RendererShaders.h"
 #include "../../include/graphics/InternalShaders.h"
@@ -43,7 +44,7 @@ GBufferShader::GBufferShader()
     mShader->load("GBuffer", getGBufferVertexShader(), getGBufferFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
+    mModelId = Shader::uniformToId("model");
 }
 
 GBufferShader ::~GBufferShader()
@@ -63,7 +64,7 @@ void GBufferShader::unbind()
 
 void GBufferShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 QuadShader::QuadShader()
@@ -72,7 +73,7 @@ QuadShader::QuadShader()
     mShader->load("ScreenQuad", getScreenQuadVertexShader(), getScreenQuadFragmentShader());
     mShader->compile();
 
-    mScreenTexLoc = mShader->findUniformLocation("screenTexture");
+    mScreenTexId = Shader::uniformToId("screenTexture");
 }
 
 QuadShader ::~QuadShader()
@@ -92,7 +93,7 @@ void QuadShader::unbind()
 
 void QuadShader::setScreenTexture(int texUnit, void *tex)
 {
-    mShader->setTexture2D(mScreenTexLoc, texUnit, tex);
+    mShader->setTexture2D(mScreenTexId, texUnit, tex);
 }
 
 DepthShader::DepthShader()
@@ -101,9 +102,9 @@ DepthShader::DepthShader()
     mShader->load("DepthMap", getShadowDepthMapVertexShader(), getShadowDepthMapFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
-    mViewLoc = mShader->findUniformLocation("view");
-    mProjectionLoc = mShader->findUniformLocation("projection");
+    mModelId = Shader::uniformToId("model");
+    mViewId = Shader::uniformToId("view");
+    mProjectionId = Shader::uniformToId("projection");
 }
 
 DepthShader ::~DepthShader()
@@ -123,17 +124,17 @@ void DepthShader::unbind()
 
 void DepthShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 void DepthShader::setView(const glm::mat4 &view)
 {
-    mShader->setMat4(mViewLoc, view);
+    mShader->setMat4(mViewId, view);
 }
 
 void DepthShader::setProjection(const glm::mat4 &projection)
 {
-    mShader->setMat4(mProjectionLoc, projection);
+    mShader->setMat4(mProjectionId, projection);
 }
 
 DepthCubemapShader::DepthCubemapShader()
@@ -143,15 +144,15 @@ DepthCubemapShader::DepthCubemapShader()
                   getShadowDepthCubemapGeometryShader());
     mShader->compile();
 
-    mLightPosLoc = mShader->findUniformLocation("lightPos");
-    mFarPlaneLoc = mShader->findUniformLocation("farPlane");
-    mModelLoc = mShader->findUniformLocation("model");
-    mCubeViewProjMatricesLoc[0] = mShader->findUniformLocation("cubeViewProjMatrices[0]");
-    mCubeViewProjMatricesLoc[1] = mShader->findUniformLocation("cubeViewProjMatrices[1]");
-    mCubeViewProjMatricesLoc[2] = mShader->findUniformLocation("cubeViewProjMatrices[2]");
-    mCubeViewProjMatricesLoc[3] = mShader->findUniformLocation("cubeViewProjMatrices[3]");
-    mCubeViewProjMatricesLoc[4] = mShader->findUniformLocation("cubeViewProjMatrices[4]");
-    mCubeViewProjMatricesLoc[5] = mShader->findUniformLocation("cubeViewProjMatrices[5]");
+    mLightPosId = Shader::uniformToId("lightPos");
+    mFarPlaneId = Shader::uniformToId("farPlane");
+    mModelId = Shader::uniformToId("model");
+    mCubeViewProjMatricesId[0] = Shader::uniformToId("cubeViewProjMatrices[0]");
+    mCubeViewProjMatricesId[1] = Shader::uniformToId("cubeViewProjMatrices[1]");
+    mCubeViewProjMatricesId[2] = Shader::uniformToId("cubeViewProjMatrices[2]");
+    mCubeViewProjMatricesId[3] = Shader::uniformToId("cubeViewProjMatrices[3]");
+    mCubeViewProjMatricesId[4] = Shader::uniformToId("cubeViewProjMatrices[4]");
+    mCubeViewProjMatricesId[5] = Shader::uniformToId("cubeViewProjMatrices[5]");
 }
 
 DepthCubemapShader::~DepthCubemapShader()
@@ -171,24 +172,24 @@ void DepthCubemapShader::unbind()
 
 void DepthCubemapShader::setLightPos(const glm::vec3 &lightPos)
 {
-    mShader->setVec3(mLightPosLoc, lightPos);
+    mShader->setVec3(mLightPosId, lightPos);
 }
 
 void DepthCubemapShader::setFarPlane(float farPlane)
 {
-    mShader->setFloat(mFarPlaneLoc, farPlane);
+    mShader->setFloat(mFarPlaneId, farPlane);
 }
 
 void DepthCubemapShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 void DepthCubemapShader::setCubeViewProj(int index, const glm::mat4 &modelView)
 {
     assert(index >= 0);
     assert(index <= 5);
-    mShader->setMat4(mCubeViewProjMatricesLoc[index], modelView);
+    mShader->setMat4(mCubeViewProjMatricesId[index], modelView);
 }
 
 GeometryShader::GeometryShader()
@@ -197,7 +198,7 @@ GeometryShader::GeometryShader()
     mShader->load("Geometry", getGeometryVertexShader(), getGeometryFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
+    mModelId = Shader::uniformToId("model");
 }
 
 GeometryShader::~GeometryShader()
@@ -217,7 +218,7 @@ void GeometryShader::unbind()
 
 void GeometryShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 NormalShader::NormalShader()
@@ -226,7 +227,7 @@ NormalShader::NormalShader()
     mShader->load("Normal", getNormalVertexShader(), getNormalFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
+    mModelId = Shader::uniformToId("model");
 }
 
 NormalShader::~NormalShader()
@@ -246,7 +247,7 @@ void NormalShader::unbind()
 
 void NormalShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 NormalInstancedShader::NormalInstancedShader()
@@ -277,7 +278,7 @@ PositionShader::PositionShader()
     mShader->load("Position", getPositionVertexShader(), getPositionFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
+    mModelId = Shader::uniformToId("model");
 }
 
 PositionShader::~PositionShader()
@@ -297,7 +298,7 @@ void PositionShader::unbind()
 
 void PositionShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 PositionInstancedShader::PositionInstancedShader()
@@ -328,7 +329,7 @@ LinearDepthShader::LinearDepthShader()
     mShader->load("LinearDepth", getLinearDepthVertexShader(), getLinearDepthFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
+    mModelId = Shader::uniformToId("model");
 }
 
 LinearDepthShader::~LinearDepthShader()
@@ -348,7 +349,7 @@ void LinearDepthShader::unbind()
 
 void LinearDepthShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 LinearDepthInstancedShader::LinearDepthInstancedShader()
@@ -380,8 +381,8 @@ ColorShader::ColorShader()
     mShader->load("Color", getColorVertexShader(), getColorFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
-    mColorLoc = mShader->findUniformLocation("material.color");
+    mModelId = Shader::uniformToId("model");
+    mColorId = Shader::uniformToId("material.color");
 }
 
 ColorShader::~ColorShader()
@@ -401,12 +402,12 @@ void ColorShader::unbind()
 
 void ColorShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 void ColorShader::setColor32(const Color32 &color)
 {
-    mShader->setColor32(mColorLoc, color);
+    mShader->setColor32(mColorId, color);
 }
 
 ColorInstancedShader::ColorInstancedShader()
@@ -437,13 +438,13 @@ SSAOShader::SSAOShader()
     mShader->load("SSAO", getSSAOVertexShader(), getSSAOFragmentShader());
     mShader->compile();
 
-    mProjectionLoc = mShader->findUniformLocation("projection");
-    mPositionTexLoc = mShader->findUniformLocation("positionTex");
-    mNormalTexLoc = mShader->findUniformLocation("normalTex");
-    mNoiseTexLoc = mShader->findUniformLocation("noiseTex");
+    mProjectionId = Shader::uniformToId("projection");
+    mPositionTexId = Shader::uniformToId("positionTex");
+    mNormalTexId = Shader::uniformToId("normalTex");
+    mNoiseTexId = Shader::uniformToId("noiseTex");
     for (int i = 0; i < 64; i++)
     {
-        mSamplesLoc[i] = mShader->findUniformLocation("samples[" + std::to_string(i) + "]");
+        mSamplesId[i] = Shader::uniformToId(("samples[" + std::to_string(i) + "]").c_str());
     }
 }
 
@@ -464,29 +465,29 @@ void SSAOShader::unbind()
 
 void SSAOShader::setProjection(const glm::mat4 &projection)
 {
-    mShader->setMat4(mProjectionLoc, projection);
+    mShader->setMat4(mProjectionId, projection);
 }
 
 void SSAOShader::setPositionTexture(int texUnit, void *tex)
 {
-    mShader->setTexture2D(mNormalTexLoc, texUnit, tex);
+    mShader->setTexture2D(mNormalTexId, texUnit, tex);
 }
 
 void SSAOShader::setNormalTexture(int texUnit, void *tex)
 {
-    mShader->setTexture2D(mPositionTexLoc, texUnit, tex);
+    mShader->setTexture2D(mPositionTexId, texUnit, tex);
 }
 
 void SSAOShader::setNoiseTexture(int texUnit, void *tex)
 {
-    mShader->setTexture2D(mNoiseTexLoc, texUnit, tex);
+    mShader->setTexture2D(mNoiseTexId, texUnit, tex);
 }
 
 void SSAOShader::setSample(int index, const glm::vec3 &sample)
 {
     assert(index >= 0);
     assert(index <= 63);
-    mShader->setVec3(mSamplesLoc[index], sample);
+    mShader->setVec3(mSamplesId[index], sample);
 }
 
 SpriteShader::SpriteShader()
@@ -495,11 +496,11 @@ SpriteShader::SpriteShader()
     mShader->load("Sprite", getSpriteVertexShader(), getSpriteFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
-    mViewLoc = mShader->findUniformLocation("view");
-    mProjectionLoc = mShader->findUniformLocation("projection");
-    mColorLoc = mShader->findUniformLocation("spriteColor");
-    mImageLoc = mShader->findUniformLocation("image");
+    mModelId = Shader::uniformToId("model");
+    mViewId = Shader::uniformToId("view");
+    mProjectionId = Shader::uniformToId("projection");
+    mColorId = Shader::uniformToId("spriteColor");
+    mImageId = Shader::uniformToId("image");
 }
 
 SpriteShader::~SpriteShader()
@@ -519,27 +520,27 @@ void SpriteShader::unbind()
 
 void SpriteShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 void SpriteShader::setView(const glm::mat4 &view)
 {
-    mShader->setMat4(mViewLoc, view);
+    mShader->setMat4(mViewId, view);
 }
 
 void SpriteShader::setProjection(const glm::mat4 &projection)
 {
-    mShader->setMat4(mProjectionLoc, projection);
+    mShader->setMat4(mProjectionId, projection);
 }
 
 void SpriteShader::setColor(const Color &color)
 {
-    mShader->setColor(mColorLoc, color);
+    mShader->setColor(mColorId, color);
 }
 
-void SpriteShader::setImage(int texUnit, TextureHandle *tex)
+void SpriteShader::setImage(int texUnit, void *tex)
 {
-    mShader->setTexture2D(mImageLoc, texUnit, tex);
+    mShader->setTexture2D(mImageId, texUnit, tex);
 }
 
 LineShader::LineShader()
@@ -548,7 +549,7 @@ LineShader::LineShader()
     mShader->load("Line", getLineVertexShader(), getLineFragmentShader());
     mShader->compile();
 
-    mMVPLoc = mShader->findUniformLocation("mvp");
+    mMVPId = Shader::uniformToId("mvp");
 }
 
 LineShader::~LineShader()
@@ -568,7 +569,7 @@ void LineShader::unbind()
 
 void LineShader::setMVP(const glm::mat4 &mvp)
 {
-    mShader->setMat4(mMVPLoc, mvp);
+    mShader->setMat4(mMVPId, mvp);
 }
 
 GizmoShader::GizmoShader()
@@ -577,11 +578,11 @@ GizmoShader::GizmoShader()
     mShader->load("Gizmo", getGizmoVertexShader(), getGizmoFragmentShader());
     mShader->compile();
 
-    mModelLoc = mShader->findUniformLocation("model");
-    mViewLoc = mShader->findUniformLocation("view");
-    mProjectionLoc = mShader->findUniformLocation("projection");
-    mColorLoc = mShader->findUniformLocation("color");
-    mLightPosLoc = mShader->findUniformLocation("lightPos");
+    mModelId = Shader::uniformToId("model");
+    mViewId = Shader::uniformToId("view");
+    mProjectionId = Shader::uniformToId("projection");
+    mColorId = Shader::uniformToId("color");
+    mLightPosId = Shader::uniformToId("lightPos");
 }
 
 GizmoShader::~GizmoShader()
@@ -601,27 +602,27 @@ void GizmoShader::unbind()
 
 void GizmoShader::setModel(const glm::mat4 &model)
 {
-    mShader->setMat4(mModelLoc, model);
+    mShader->setMat4(mModelId, model);
 }
 
 void GizmoShader::setView(const glm::mat4 &view)
 {
-    mShader->setMat4(mViewLoc, view);
+    mShader->setMat4(mViewId, view);
 }
 
 void GizmoShader::setProjection(const glm::mat4 &projection)
 {
-    mShader->setMat4(mProjectionLoc, projection);
+    mShader->setMat4(mProjectionId, projection);
 }
 
 void GizmoShader::setColor(const Color &color)
 {
-    mShader->setColor(mColorLoc, color);
+    mShader->setColor(mColorId, color);
 }
 
 void GizmoShader::setLightPos(const glm::vec3 &lightPos)
 {
-    mShader->setVec3(mLightPosLoc, lightPos);
+    mShader->setVec3(mLightPosId, lightPos);
 }
 
 GridShader::GridShader()
@@ -630,8 +631,8 @@ GridShader::GridShader()
     mShader->load("Grid", getGridVertexShader(), getGridFragmentShader());
     mShader->compile();
 
-    mMVPLoc = mShader->findUniformLocation("mvp");
-    mColorLoc = mShader->findUniformLocation("color");
+    mMVPId = Shader::uniformToId("mvp");
+    mColorId = Shader::uniformToId("color");
 }
 
 GridShader::~GridShader()
@@ -651,12 +652,12 @@ void GridShader::unbind()
 
 void GridShader::setMVP(const glm::mat4 &mvp)
 {
-    mShader->setMat4(mMVPLoc, mvp);
+    mShader->setMat4(mMVPId, mvp);
 }
 
 void GridShader::setColor(const Color &color)
 {
-    mShader->setColor(mColorLoc, color);
+    mShader->setColor(mColorId, color);
 }
 
 StandardShader *RendererShaders::sStandardShader = nullptr;

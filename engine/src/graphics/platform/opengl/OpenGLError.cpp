@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <iostream>
+#include <string>
 
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/core/Log.h"
@@ -55,7 +56,7 @@ static void logError(const std::string &error, const std::string &line, const st
 
 #define LOG_ERROR(ERROR, LINE, FILE) logError(ERROR, LINE, FILE);
 
-void PhysicsEngine::checkError(const std::string &line, const std::string &file)
+void PhysicsEngine::checkError(int line, const char* file)
 {
     GLenum error;
     while ((error = glGetError()) != GL_NO_ERROR)
@@ -63,34 +64,34 @@ void PhysicsEngine::checkError(const std::string &line, const std::string &file)
         switch (error)
         {
         case GL_INVALID_ENUM:
-            LOG_ERROR(INVALID_ENUM, line, file);
+            LOG_ERROR(INVALID_ENUM, std::to_string(line), std::string(file));
             break;
         case GL_INVALID_VALUE:
-            LOG_ERROR(INVALID_VALUE, line, file);
+            LOG_ERROR(INVALID_VALUE, std::to_string(line), std::string(file));
             break;
         case GL_INVALID_OPERATION:
-            LOG_ERROR(INVALID_OPERATION, line, file);
+            LOG_ERROR(INVALID_OPERATION, std::to_string(line), std::string(file));
             break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
-            LOG_ERROR(INVALID_FRAMEBUFFER_OPERATION, line, file);
+            LOG_ERROR(INVALID_FRAMEBUFFER_OPERATION, std::to_string(line), std::string(file));
             break;
         case GL_OUT_OF_MEMORY:
-            LOG_ERROR(OUT_OF_MEMORY, line, file);
+            LOG_ERROR(OUT_OF_MEMORY, std::to_string(line), std::string(file));
             break;
         case GL_STACK_UNDERFLOW:
-            LOG_ERROR(STACK_UNDERFLOW, line, file);
+            LOG_ERROR(STACK_UNDERFLOW, std::to_string(line), std::string(file));
             break;
         case GL_STACK_OVERFLOW:
-            LOG_ERROR(STACK_OVERFLOW, line, file);
+            LOG_ERROR(STACK_OVERFLOW, std::to_string(line), std::string(file));
             break;
         default:
-            LOG_ERROR(UNKNOWN_ERROR, line, file);
+            LOG_ERROR(UNKNOWN_ERROR, std::to_string(line), std::string(file));
             break;
         }
     }
 }
 
-void PhysicsEngine::checkFrambufferError(const std::string &line, const std::string &file)
+void PhysicsEngine::checkFrambufferError(int line, const char* file)
 {
     GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
     if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE)
@@ -98,31 +99,31 @@ void PhysicsEngine::checkFrambufferError(const std::string &line, const std::str
         switch (framebufferStatus)
         {
         case GL_FRAMEBUFFER_UNDEFINED:
-            LOG_ERROR(FRAMEBUFFER_UNDEFINED, line, file);
+            LOG_ERROR(FRAMEBUFFER_UNDEFINED, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_ATTACHMENT, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_ATTACHMENT, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_READ_BUFFER, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_READ_BUFFER, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED:
-            LOG_ERROR(FRAMEBUFFER_UNSUPPORTED, line, file);
+            LOG_ERROR(FRAMEBUFFER_UNSUPPORTED, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MULTISAMPLE, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_MULTISAMPLE, std::to_string(line), std::string(file));
             break;
         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS, line, file);
+            LOG_ERROR(FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS, std::to_string(line), std::string(file));
             break;
         default:
-            LOG_ERROR(UNKNOWN_FRAMEBUFFER_ERROR, line, file);
+            LOG_ERROR(UNKNOWN_FRAMEBUFFER_ERROR, std::to_string(line), std::string(file));
             break;
         }
     }

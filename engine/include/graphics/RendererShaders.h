@@ -26,7 +26,7 @@ class GBufferShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
+    int mModelId;
 
   public:
     GBufferShader();
@@ -42,7 +42,7 @@ class QuadShader
 {
   private:
     ShaderProgram *mShader;
-    int mScreenTexLoc;
+    int mScreenTexId;
 
   public:
     QuadShader();
@@ -57,9 +57,9 @@ class DepthShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
-    int mViewLoc;
-    int mProjectionLoc;
+    int mModelId;
+    int mViewId;
+    int mProjectionId;
 
   public:
     DepthShader();
@@ -76,10 +76,10 @@ class DepthCubemapShader
 {
   private:
     ShaderProgram *mShader;
-    int mLightPosLoc;
-    int mFarPlaneLoc;
-    int mModelLoc;
-    int mCubeViewProjMatricesLoc[6];
+    int mLightPosId;
+    int mFarPlaneId;
+    int mModelId;
+    int mCubeViewProjMatricesId[6];
 
   public:
     DepthCubemapShader();
@@ -97,7 +97,7 @@ class GeometryShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
+    int mModelId;
 
   public:
     GeometryShader();
@@ -112,7 +112,7 @@ class NormalShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
+    int mModelId;
 
   public:
     NormalShader();
@@ -140,7 +140,7 @@ class PositionShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
+    int mModelId;
 
   public:
     PositionShader();
@@ -168,7 +168,7 @@ class LinearDepthShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
+    int mModelId;
 
   public:
     LinearDepthShader();
@@ -196,8 +196,8 @@ class ColorShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
-    int mColorLoc;
+    int mModelId;
+    int mColorId;
 
   public:
     ColorShader();
@@ -226,11 +226,11 @@ class SSAOShader
 {
   private:
     ShaderProgram *mShader;
-    int mProjectionLoc;
-    int mPositionTexLoc;
-    int mNormalTexLoc;
-    int mNoiseTexLoc;
-    int mSamplesLoc[64];
+    int mProjectionId;
+    int mPositionTexId;
+    int mNormalTexId;
+    int mNoiseTexId;
+    int mSamplesId[64];
 
   public:
     SSAOShader();
@@ -249,11 +249,11 @@ class SpriteShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
-    int mViewLoc;
-    int mProjectionLoc;
-    int mColorLoc;
-    int mImageLoc;
+    int mModelId;
+    int mViewId;
+    int mProjectionId;
+    int mColorId;
+    int mImageId;
 
   public:
     SpriteShader();
@@ -265,14 +265,14 @@ class SpriteShader
     void setView(const glm::mat4 &view);
     void setProjection(const glm::mat4 &projection);
     void setColor(const Color &color);
-    void setImage(int texUnit, TextureHandle *tex);
+    void setImage(int texUnit, void *tex);
 };
 
 class LineShader
 {
   private:
     ShaderProgram *mShader;
-    int mMVPLoc;
+    int mMVPId;
 
   public:
     LineShader();
@@ -287,11 +287,11 @@ class GizmoShader
 {
   private:
     ShaderProgram *mShader;
-    int mModelLoc;
-    int mViewLoc;
-    int mProjectionLoc;
-    int mColorLoc;
-    int mLightPosLoc;
+    int mModelId;
+    int mViewId;
+    int mProjectionId;
+    int mColorId;
+    int mLightPosId;
 
   public:
     GizmoShader();
@@ -310,8 +310,8 @@ class GridShader
 {
   private:
     ShaderProgram *mShader;
-    int mMVPLoc;
-    int mColorLoc;
+    int mMVPId;
+    int mColorId;
 
   public:
     GridShader();

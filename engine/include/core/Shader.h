@@ -62,9 +62,7 @@ class Shader : public Asset
     std::vector<ShaderProgram*> mPrograms;
     std::vector<int64_t> mVariants;
 
-    std::vector<ShaderUniform> mUniforms;
     std::vector<ShaderUniform> mMaterialUniforms;
-    std::vector<ShaderAttribute> mAttributes;
 
     bool mAllProgramsCompiled;
     ShaderProgram *mActiveProgram;
@@ -93,14 +91,12 @@ class Shader : public Asset
     void setVertexShader(const std::string &vertexShader);
     void setGeometryShader(const std::string &geometryShader);
     void setFragmentShader(const std::string &fragmentShader);
-    int findUniformLocation(const std::string &name) const;
+    
     ShaderProgram* getProgramFromVariant(int64_t variant) const;
     ShaderProgram* getActiveProgram() const;
 
     std::vector<ShaderProgram*> getPrograms() const;
-    std::vector<ShaderUniform> getUniforms() const;
     std::vector<ShaderUniform> getMaterialUniforms() const;
-    std::vector<ShaderAttribute> getAttributeNames() const;
     std::string getVertexShader() const;
     std::string getGeometryShader() const;
     std::string getFragmentShader() const;
@@ -120,18 +116,18 @@ class Shader : public Asset
     void setTexture2D(const char *name, int texUnit, void* tex) const;
     void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
 
-    void setBool(int nameLocation, bool value) const;
-    void setInt(int nameLocation, int value) const;
-    void setFloat(int nameLocation, float value) const;
-    void setColor(int nameLocation, const Color &color) const;
-    void setVec2(int nameLocation, const glm::vec2 &vec) const;
-    void setVec3(int nameLocation, const glm::vec3 &vec) const;
-    void setVec4(int nameLocation, const glm::vec4 &vec) const;
-    void setMat2(int nameLocation, const glm::mat2 &mat) const;
-    void setMat3(int nameLocation, const glm::mat3 &mat) const;
-    void setMat4(int nameLocation, const glm::mat4 &mat) const;
-    void setTexture2D(int nameLocation, int texUnit, void* tex) const;
-    void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
+    void setBool(int uniformId, bool value) const;
+    void setInt(int uniformId, int value) const;
+    void setFloat(int uniformId, float value) const;
+    void setColor(int uniformId, const Color &color) const;
+    void setVec2(int uniformId, const glm::vec2 &vec) const;
+    void setVec3(int uniformId, const glm::vec3 &vec) const;
+    void setVec4(int uniformId, const glm::vec4 &vec) const;
+    void setMat2(int uniformId, const glm::mat2 &mat) const;
+    void setMat3(int uniformId, const glm::mat3 &mat) const;
+    void setMat4(int uniformId, const glm::mat4 &mat) const;
+    void setTexture2D(int uniformId, int texUnit, void* tex) const;
+    void setTexture2Ds(int uniformId, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
 
     bool getBool(const char *name) const;
     int getInt(const char *name) const;
@@ -144,16 +140,16 @@ class Shader : public Asset
     glm::mat3 getMat3(const char *name) const;
     glm::mat4 getMat4(const char *name) const;
 
-    bool getBool(int nameLocation) const;
-    int getInt(int nameLocation) const;
-    float getFloat(int nameLocation) const;
-    Color getColor(int nameLocation) const;
-    glm::vec2 getVec2(int nameLocation) const;
-    glm::vec3 getVec3(int nameLocation) const;
-    glm::vec4 getVec4(int nameLocation) const;
-    glm::mat2 getMat2(int nameLocation) const;
-    glm::mat3 getMat3(int nameLocation) const;
-    glm::mat4 getMat4(int nameLocation) const;
+    bool getBool(int uniformId) const;
+    int getInt(int uniformId) const;
+    float getFloat(int uniformId) const;
+    Color getColor(int uniformId) const;
+    glm::vec2 getVec2(int uniformId) const;
+    glm::vec3 getVec3(int uniformId) const;
+    glm::vec4 getVec4(int uniformId) const;
+    glm::mat2 getMat2(int uniformId) const;
+    glm::mat3 getMat3(int uniformId) const;
+    glm::mat4 getMat4(int uniformId) const;
 
     static unsigned int uniformToId(const char* property);
 };
@@ -386,37 +382,40 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 
         node["type"] = rhs.mType;
 
-        if (rhs.mType == PhysicsEngine::ShaderUniformType::Int)
+        switch (rhs.mType)
         {
+        case PhysicsEngine::ShaderUniformType::Int: {
             node["data"] = *reinterpret_cast<const int *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Float)
-        {
+        case PhysicsEngine::ShaderUniformType::Float: {
             node["data"] = *reinterpret_cast<const float *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Color)
-        {
+        case PhysicsEngine::ShaderUniformType::Color: {
             node["data"] = *reinterpret_cast<const PhysicsEngine::Color *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec2: {
             node["data"] = *reinterpret_cast<const glm::vec2 *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec3)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec3: {
             node["data"] = *reinterpret_cast<const glm::vec3 *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec4)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec4: {
             node["data"] = *reinterpret_cast<const glm::vec4 *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Sampler2D)
-        {
+        case PhysicsEngine::ShaderUniformType::Sampler2D: {
             node["data"] = *reinterpret_cast<const PhysicsEngine::Guid *>(rhs.mData);
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::SamplerCube)
-        {
-            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid*>(rhs.mData);
+        case PhysicsEngine::ShaderUniformType::SamplerCube: {
+            node["data"] = *reinterpret_cast<const PhysicsEngine::Guid *>(rhs.mData);
+            break;
+        }
         }
 
         return node;
@@ -426,45 +425,48 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
     {
         rhs.mType = YAML::getValue<PhysicsEngine::ShaderUniformType>(node, "type");
 
-        if (rhs.mType == PhysicsEngine::ShaderUniformType::Int)
+        switch (rhs.mType)
         {
+        case PhysicsEngine::ShaderUniformType::Int: {
             int data = YAML::getValue<int>(node, "data");
             memcpy(rhs.mData, &data, sizeof(int));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Float)
-        {
+        case PhysicsEngine::ShaderUniformType::Float: {
             float data = YAML::getValue<float>(node, "data");
             memcpy(rhs.mData, &data, sizeof(float));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Color)
-        {
+        case PhysicsEngine::ShaderUniformType::Color: {
             PhysicsEngine::Color data = YAML::getValue<PhysicsEngine::Color>(node, "data");
             memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Color));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec2)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec2: {
             glm::vec2 data = YAML::getValue<glm::vec2>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec2));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec3)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec3: {
             glm::vec3 data = YAML::getValue<glm::vec3>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec3));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Vec4)
-        {
+        case PhysicsEngine::ShaderUniformType::Vec4: {
             glm::vec4 data = YAML::getValue<glm::vec4>(node, "data");
             memcpy(rhs.mData, &data, sizeof(glm::vec4));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::Sampler2D)
-        {
+        case PhysicsEngine::ShaderUniformType::Sampler2D: {
             PhysicsEngine::Guid data = YAML::getValue<PhysicsEngine::Guid>(node, "data");
             memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
+            break;
         }
-        else if (rhs.mType == PhysicsEngine::ShaderUniformType::SamplerCube)
-        {
+        case PhysicsEngine::ShaderUniformType::SamplerCube: {
             PhysicsEngine::Guid data = YAML::getValue<PhysicsEngine::Guid>(node, "data");
             memcpy(rhs.mData, &data, sizeof(PhysicsEngine::Guid));
+            break;
+        }
         }
 
         return true;

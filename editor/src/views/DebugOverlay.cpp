@@ -189,19 +189,19 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
         ImGui::EndCombo();
     }
 
-    std::vector<PhysicsEngine::ShaderUniform> uniforms = selected->getUniforms();
+    //std::vector<PhysicsEngine::ShaderUniform> uniforms = selected->getUniforms();
 
-    for (size_t i = 0; i < uniforms.size(); i++)
-    {
-        ImGui::Text(("Uniform: " + std::to_string(i)).c_str());
-        ImGui::Indent(16.0f);
-        {
-            ImGui::Text("Data: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mData);
-            ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName.c_str());
-            ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(static_cast<int>(uniforms[i].mType)).c_str());
-            //ImGui::Text("CachedHandle: "); ImGui::SameLine(); ImGui::Text(std::to_string(*reinterpret_cast<unsigned int*>(uniforms[i].mTex)).c_str());
-            ImGui::Text("Uniform id: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mUniformId).c_str());
-        }
-        ImGui::Unindent(16.0f);
-    }
+    //for (size_t i = 0; i < uniforms.size(); i++)
+    //{
+    //    ImGui::Text(("Uniform: " + std::to_string(i)).c_str());
+    //    ImGui::Indent(16.0f);
+    //    {
+    //        ImGui::Text("Data: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mData);
+    //        ImGui::Text("Name: "); ImGui::SameLine(); ImGui::Text(uniforms[i].mName.c_str());
+    //        ImGui::Text("Type: "); ImGui::SameLine(); ImGui::Text(std::to_string(static_cast<int>(uniforms[i].mType)).c_str());
+    //        //ImGui::Text("CachedHandle: "); ImGui::SameLine(); ImGui::Text(std::to_string(*reinterpret_cast<unsigned int*>(uniforms[i].mTex)).c_str());
+    //        ImGui::Text("Uniform id: "); ImGui::SameLine(); ImGui::Text(std::to_string(uniforms[i].mUniformId).c_str());
+    //    }
+    //    ImGui::Unindent(16.0f);
+    //}
 }

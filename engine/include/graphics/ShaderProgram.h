@@ -65,6 +65,10 @@ namespace PhysicsEngine
         std::string mFragment;
         std::string mGeometry;
 
+        std::vector<ShaderUniform> mUniforms;
+        std::vector<ShaderUniform> mMaterialUniforms;
+        std::vector<ShaderAttribute> mAttributes;
+
         ShaderStatus mStatus;
 
       public:
@@ -83,9 +87,9 @@ namespace PhysicsEngine
         virtual void compile() = 0;
         virtual void bind() = 0;
         virtual void unbind() = 0;
-        virtual int findUniformLocation(const std::string &name) const = 0;
 
         virtual std::vector<ShaderUniform> getUniforms() const = 0;
+        virtual std::vector<ShaderUniform> getMaterialUniforms() const = 0;
         virtual std::vector<ShaderAttribute> getAttributes() const = 0;
 
         virtual void setBool(const char* name, bool value) = 0;
@@ -103,24 +107,26 @@ namespace PhysicsEngine
         virtual void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
                                    const std::vector<void *> &texs) = 0;
 
-        virtual void setBool(int nameLocation, bool value) = 0;
-        virtual void setInt(int nameLocation, int value) = 0;
-        virtual void setFloat(int nameLocation, float value) = 0;
-        virtual void setColor(int nameLocation, const Color &color) = 0;
-        virtual void setColor32(int nameLocation, const Color32 &color) = 0;
-        virtual void setVec2(int nameLocation, const glm::vec2 &vec) = 0;
-        virtual void setVec3(int nameLocation, const glm::vec3 &vec) = 0;
-        virtual void setVec4(int nameLocation, const glm::vec4 &vec) = 0;
-        virtual void setMat2(int nameLocation, const glm::mat2 &mat) = 0;
-        virtual void setMat3(int nameLocation, const glm::mat3 &mat) = 0;
-        virtual void setMat4(int nameLocation, const glm::mat4 &mat) = 0;
-        virtual void setTexture2D(int nameLocation, int texUnit, void* tex) = 0;
-        virtual void setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) = 0;
+        virtual void setBool(int uniformId, bool value) = 0;
+        virtual void setInt(int uniformId, int value) = 0;
+        virtual void setFloat(int uniformId, float value) = 0;
+        virtual void setColor(int uniformId, const Color &color) = 0;
+        virtual void setColor32(int uniformId, const Color32 &color) = 0;
+        virtual void setVec2(int uniformId, const glm::vec2 &vec) = 0;
+        virtual void setVec3(int uniformId, const glm::vec3 &vec) = 0;
+        virtual void setVec4(int uniformId, const glm::vec4 &vec) = 0;
+        virtual void setMat2(int uniformId, const glm::mat2 &mat) = 0;
+        virtual void setMat3(int uniformId, const glm::mat3 &mat) = 0;
+        virtual void setMat4(int uniformId, const glm::mat4 &mat) = 0;
+        virtual void setTexture2D(int uniformId, int texUnit, void *tex) = 0;
+        virtual void setTexture2Ds(int uniformId, const std::vector<int> &texUnits, int count,
+                                   const std::vector<void *> &texs) = 0;
         
         virtual bool getBool(const char *name) const = 0;
         virtual int getInt(const char *name) const = 0;
         virtual float getFloat(const char *name) const = 0;
         virtual Color getColor(const char *name) const = 0;
+        virtual Color32 getColor32(const char *name) const = 0;
         virtual glm::vec2 getVec2(const char *name) const = 0;
         virtual glm::vec3 getVec3(const char *name) const = 0;
         virtual glm::vec4 getVec4(const char *name) const = 0;
@@ -128,17 +134,17 @@ namespace PhysicsEngine
         virtual glm::mat3 getMat3(const char *name) const = 0;
         virtual glm::mat4 getMat4(const char *name) const = 0;
         
-        virtual bool getBool(int nameLocation) const = 0;
-        virtual int getInt(int nameLocation) const = 0;
-        virtual float getFloat(int nameLocation) const = 0;
-        virtual Color getColor(int nameLocation) const = 0;
-        virtual Color32 getColor32(int nameLocation) const = 0;
-        virtual glm::vec2 getVec2(int nameLocation) const = 0;
-        virtual glm::vec3 getVec3(int nameLocation) const = 0;
-        virtual glm::vec4 getVec4(int nameLocation) const = 0;
-        virtual glm::mat2 getMat2(int nameLocation) const = 0;
-        virtual glm::mat3 getMat3(int nameLocation) const = 0;
-        virtual glm::mat4 getMat4(int nameLocation) const = 0;
+        virtual bool getBool(int uniformId) const = 0;
+        virtual int getInt(int uniformId) const = 0;
+        virtual float getFloat(int uniformId) const = 0;
+        virtual Color getColor(int uniformId) const = 0;
+        virtual Color32 getColor32(int uniformId) const = 0;
+        virtual glm::vec2 getVec2(int uniformId) const = 0;
+        virtual glm::vec3 getVec3(int uniformId) const = 0;
+        virtual glm::vec4 getVec4(int uniformId) const = 0;
+        virtual glm::mat2 getMat2(int uniformId) const = 0;
+        virtual glm::mat3 getMat3(int uniformId) const = 0;
+        virtual glm::mat4 getMat4(int uniformId) const = 0;
 
         static ShaderProgram *create();
 	};

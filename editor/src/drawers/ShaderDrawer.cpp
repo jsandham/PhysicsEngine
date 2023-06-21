@@ -36,7 +36,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     if (shader != nullptr)
     {
         std::vector<ShaderProgram*> programs = shader->getPrograms();
-        std::vector<ShaderUniform> uniforms = shader->getUniforms();
+        //std::vector<ShaderUniform> uniforms = shader->getUniforms();
 
         if (ImGui::BeginTable("Shader Info", 2))
         {
@@ -68,7 +68,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::TableNextColumn();
             ImGui::Text(std::to_string(programs.size()).c_str());
 
-            ImGui::TableNextColumn();
+            /*ImGui::TableNextColumn();
             ImGui::Text("Uniform Count:");
             ImGui::TableNextColumn();
             ImGui::Text(std::to_string(uniforms.size()).c_str());
@@ -78,7 +78,25 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImGui::TableNextColumn();
                 ImGui::TableNextColumn();
                 ImGui::Text(uniforms[i].mName.c_str());
+            }*/
+
+            for (size_t i = 0; i < programs.size(); i++)
+            {
+                std::vector<ShaderUniform> uniforms = programs[i]->getUniforms();
+
+                ImGui::TableNextColumn();
+                ImGui::Text("Uniform Count:");
+                ImGui::TableNextColumn();
+                ImGui::Text(std::to_string(uniforms.size()).c_str());
+
+                for (size_t j = 0; j < uniforms.size(); j++)
+                {
+                    ImGui::TableNextColumn();
+                    ImGui::TableNextColumn();
+                    ImGui::Text(uniforms[j].mName.c_str());
+                }
             }
+            
 
             ImGui::EndTable();
         }

@@ -16,7 +16,7 @@ namespace PhysicsEngine
         glm::mat4 model;
         Color color;
         MeshHandle *mHandle;
-        TextureHandle *mTexture;
+        void *mTexture;
     } SpriteObject;
 } // namespace PhysicsEngine
 

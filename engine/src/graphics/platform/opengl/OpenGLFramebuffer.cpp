@@ -28,7 +28,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height) : Framebuffer(width,
     unsigned int mainAttachments[1] = {GL_COLOR_ATTACHMENT0};
     CHECK_ERROR(glDrawBuffers(1, mainAttachments));
 
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+    checkFrambufferError(__LINE__, __FILE__);
 
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
@@ -70,7 +70,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
     }
     CHECK_ERROR(glDrawBuffers(mNumColorTex, mainAttachments.data()));
 
-    checkFrambufferError(std::to_string(__LINE__), std::string(__FILE__));
+    checkFrambufferError(__LINE__, __FILE__);
 
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }

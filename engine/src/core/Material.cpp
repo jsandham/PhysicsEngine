@@ -95,47 +95,38 @@ void Material::apply()
 
     ShaderProgram *shaderProgram = shader->getActiveProgram();
     assert(shaderProgram != nullptr);
-    
+
     int textureUnit = 0;
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
-        int location = shaderProgram->findUniformLocation(mUniforms[i].mName);
-        assert(location != -1);
-
         switch (mUniforms[i].mType)
         {
-        case ShaderUniformType::Sampler2D: 
-        {
-            shaderProgram->setTexture2D(location, textureUnit, mUniforms[i].mTex);
+        case ShaderUniformType::Sampler2D: {
+            shaderProgram->setTexture2D(mUniforms[i].mUniformId, textureUnit, mUniforms[i].mTex);
             textureUnit++;
             break;
         }
-        case ShaderUniformType::Int:
-        {
-            shaderProgram->setInt(location, *reinterpret_cast<const int *>(mUniforms[i].mData));
+        case ShaderUniformType::Int: {
+            shaderProgram->setInt(mUniforms[i].mUniformId, *reinterpret_cast<const int *>(mUniforms[i].mData));
             break;
         }
-        case ShaderUniformType::Float:
-        {
-            shaderProgram->setFloat(location, *reinterpret_cast<const float *>(mUniforms[i].mData));
+        case ShaderUniformType::Float: {
+            shaderProgram->setFloat(mUniforms[i].mUniformId, *reinterpret_cast<const float *>(mUniforms[i].mData));
             break;
         }
-        case ShaderUniformType::Vec2:
-        {
-            shaderProgram->setVec2(location, *reinterpret_cast<const glm::vec2 *>(mUniforms[i].mData));
+        case ShaderUniformType::Vec2: {
+            shaderProgram->setVec2(mUniforms[i].mUniformId, *reinterpret_cast<const glm::vec2 *>(mUniforms[i].mData));
             break;
         }
-        case ShaderUniformType::Vec3:
-        {
-            shaderProgram->setVec3(location, *reinterpret_cast<const glm::vec3 *>(mUniforms[i].mData));
+        case ShaderUniformType::Vec3: {
+            shaderProgram->setVec3(mUniforms[i].mUniformId, *reinterpret_cast<const glm::vec3 *>(mUniforms[i].mData));
             break;
         }
-        case ShaderUniformType::Vec4:
-        {
-            shaderProgram->setVec4(location, *reinterpret_cast<const glm::vec4 *>(mUniforms[i].mData));
+        case ShaderUniformType::Vec4: {
+            shaderProgram->setVec4(mUniforms[i].mUniformId, *reinterpret_cast<const glm::vec4 *>(mUniforms[i].mData));
             break;
         }
-        }        
+        }
     }
 }
 

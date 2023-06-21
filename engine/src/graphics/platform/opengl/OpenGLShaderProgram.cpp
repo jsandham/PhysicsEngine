@@ -32,6 +32,22 @@ void OpenGLShaderProgram::load(const std::string &name, const std::string &verte
     this->load(name, vertex, fragment, "");
 }
 
+struct GLUniform
+{
+    GLsizei nameLength;
+    GLint size;
+    GLenum type;
+    GLchar name[32];
+};
+
+struct GLAttribute
+{
+    GLsizei nameLength;
+    GLint size;
+    GLenum type;
+    GLchar name[32];
+};
+
 void OpenGLShaderProgram::compile()
 {
     memset(mStatus.mVertexCompileLog, 0, sizeof(mStatus.mVertexCompileLog));
@@ -132,6 +148,83 @@ void OpenGLShaderProgram::compile()
     {
         CHECK_ERROR(glUniformBlockBinding(mHandle, blockIndex, 1));
     }
+
+    // Uniforms
+    GLint uniformCount;
+    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORMS, &uniformCount));
+
+    mUniforms.resize(uniformCount);
+    mLocations.resize(uniformCount);
+    mUniformIds.resize(uniformCount);
+
+    for (size_t j = 0; j < mUniforms.size(); j++)
+    {
+        GLUniform uniform;
+        CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
+                                       &uniform.name[0]));
+
+        mUniforms[j].mName = std::string(uniform.name);
+        switch (uniform.type)
+        {
+        case GL_INT:
+            mUniforms[j].mType = ShaderUniformType::Int;
+            break;
+        case GL_FLOAT:
+            mUniforms[j].mType = ShaderUniformType::Float;
+            break;
+        case GL_FLOAT_VEC2:
+            mUniforms[j].mType = ShaderUniformType::Vec2;
+            break;
+        case GL_FLOAT_VEC3:
+            mUniforms[j].mType = ShaderUniformType::Vec3;
+            break;
+        case GL_FLOAT_VEC4:
+            mUniforms[j].mType = ShaderUniformType::Vec4;
+            break;
+        case GL_FLOAT_MAT2:
+            mUniforms[j].mType = ShaderUniformType::Mat2;
+            break;
+        case GL_FLOAT_MAT3:
+            mUniforms[j].mType = ShaderUniformType::Mat3;
+            break;
+        case GL_FLOAT_MAT4:
+            mUniforms[j].mType = ShaderUniformType::Mat4;
+            break;
+        case GL_SAMPLER_2D:
+            mUniforms[j].mType = ShaderUniformType::Sampler2D;
+            break;
+        case GL_SAMPLER_CUBE:
+            mUniforms[j].mType = ShaderUniformType::SamplerCube;
+            break;
+        }
+
+        mUniforms[j].mUniformId = Shader::uniformToId(&uniform.name[0]);
+        mUniforms[j].mTex = nullptr;
+        memset(mUniforms[j].mData, '\0', 64);
+
+        mLocations[j] = findUniformLocation(mUniforms[j].mName);
+        mUniformIds[j] = mUniforms[j].mUniformId;
+
+        if (mUniforms[j].mName.find("material") != std::string::npos)
+        {
+            mMaterialUniforms.push_back(mUniforms[j]);
+        }
+    }
+
+    // Attributes
+    GLint attributeCount;
+    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_ATTRIBUTES, &attributeCount));
+
+    mAttributes.resize(attributeCount);
+
+    for (int j = 0; j < attributeCount; j++)
+    {
+        GLAttribute attrib;
+        CHECK_ERROR(
+            glGetActiveAttrib(mHandle, (GLuint)j, 32, &attrib.nameLength, &attrib.size, &attrib.type, &attrib.name[0]));
+
+        mAttributes[j].mName = std::string(attrib.name);
+    }
 }
 
 void OpenGLShaderProgram::bind()
@@ -144,226 +237,81 @@ void OpenGLShaderProgram::unbind()
     CHECK_ERROR(glUseProgram(0));
 }
 
-int OpenGLShaderProgram::findUniformLocation(const std::string &name) const
-{
-    return glGetUniformLocation(mHandle, name.c_str());
-}
-
-struct Uniform
-{
-    GLsizei nameLength;
-    GLint size;
-    GLenum type;
-    GLchar name[32];
-};
-
-struct Attribute
-{
-    GLsizei nameLength;
-    GLint size;
-    GLenum type;
-    GLchar name[32];
-};
-
 std::vector<ShaderUniform> OpenGLShaderProgram::getUniforms() const
 {
-    GLint uniformCount;
-    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORMS, &uniformCount));
+    return mUniforms;
+}
 
-    std::vector<ShaderUniform> uniforms(uniformCount);
-
-    for (size_t j = 0; j < uniforms.size(); j++)
-    {
-        Uniform uniform;
-        CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
-                                       &uniform.name[0]));
-
-        uniforms[j].mName = std::string(uniform.name);
-        switch (uniform.type)
-        {
-        case GL_INT:
-            uniforms[j].mType = ShaderUniformType::Int;
-            break;
-        case GL_FLOAT:
-            uniforms[j].mType = ShaderUniformType::Float;
-            break;
-        case GL_FLOAT_VEC2:
-            uniforms[j].mType = ShaderUniformType::Vec2;
-            break;
-        case GL_FLOAT_VEC3:
-            uniforms[j].mType = ShaderUniformType::Vec3;
-            break;
-        case GL_FLOAT_VEC4:
-            uniforms[j].mType = ShaderUniformType::Vec4;
-            break;
-        case GL_FLOAT_MAT2:
-            uniforms[j].mType = ShaderUniformType::Mat2;
-            break;
-        case GL_FLOAT_MAT3:
-            uniforms[j].mType = ShaderUniformType::Mat3;
-            break;
-        case GL_FLOAT_MAT4:
-            uniforms[j].mType = ShaderUniformType::Mat4;
-            break;
-        case GL_SAMPLER_2D:
-            uniforms[j].mType = ShaderUniformType::Sampler2D;
-            break;
-        case GL_SAMPLER_CUBE:
-            uniforms[j].mType = ShaderUniformType::SamplerCube;
-            break;
-        }
-
-        uniforms[j].mUniformId = 0;
-        uniforms[j].mTex = nullptr;
-        memset(uniforms[j].mData, '\0', 64);
-    }
-
-    return uniforms;
+std::vector<ShaderUniform> OpenGLShaderProgram::getMaterialUniforms() const
+{
+    return mMaterialUniforms;
 }
 
 std::vector<ShaderAttribute> OpenGLShaderProgram::getAttributes() const
 {
-    GLint attributeCount;
-    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_ATTRIBUTES, &attributeCount));
-
-    std::vector<ShaderAttribute> attributes(attributeCount);
-
-    for (int j = 0; j < attributeCount; j++)
-    {
-        Attribute attrib;
-        CHECK_ERROR(
-            glGetActiveAttrib(mHandle, (GLuint)j, 32, &attrib.nameLength, &attrib.size, &attrib.type, &attrib.name[0]));
-
-        attributes[j].mName = std::string(attrib.name);
-    }
-
-    return attributes;
+    return mAttributes;
 }
 
 void OpenGLShaderProgram::setBool(const char *name, bool value)
 {
-    this->setBool(glGetUniformLocation(mHandle, name), value);
+    CHECK_ERROR(glUniform1i(findUniformLocation(name), (int)value));
 }
 
 void OpenGLShaderProgram::setInt(const char *name, int value)
 {
-    this->setInt(glGetUniformLocation(mHandle, name), value);
+    CHECK_ERROR(glUniform1i(findUniformLocation(name), value));
 }
 
 void OpenGLShaderProgram::setFloat(const char *name, float value)
 {
-    this->setFloat(glGetUniformLocation(mHandle, name), value);
+    CHECK_ERROR(glUniform1f(findUniformLocation(name), value));
 }
 
 void OpenGLShaderProgram::setColor(const char *name, const Color &color)
 {
-    this->setColor(glGetUniformLocation(mHandle, name), color);
+    CHECK_ERROR(glUniform4fv(findUniformLocation(name), 1, static_cast<const GLfloat *>(&color.mR)));
 }
 
 void OpenGLShaderProgram::setColor32(const char *name, const Color32 &color)
 {
-    this->setColor32(glGetUniformLocation(mHandle, name), color);
+    CHECK_ERROR(glUniform4ui(findUniformLocation(name), static_cast<GLuint>(color.mR),
+                             static_cast<GLuint>(color.mG), static_cast<GLuint>(color.mB),
+                             static_cast<GLuint>(color.mA)));
 }
 
 void OpenGLShaderProgram::setVec2(const char *name, const glm::vec2 &vec)
 {
-    this->setVec2(glGetUniformLocation(mHandle, name), vec);
+    CHECK_ERROR(glUniform2fv(findUniformLocation(name), 1, &vec[0]));
 }
 
 void OpenGLShaderProgram::setVec3(const char *name, const glm::vec3 &vec)
 {
-    this->setVec3(glGetUniformLocation(mHandle, name), vec);
+    CHECK_ERROR(glUniform3fv(findUniformLocation(name), 1, &vec[0]));
 }
 
 void OpenGLShaderProgram::setVec4(const char *name, const glm::vec4 &vec)
 {
-    this->setVec4(glGetUniformLocation(mHandle, name), vec);
+    CHECK_ERROR(glUniform4fv(findUniformLocation(name), 1, &vec[0]));
 }
 
 void OpenGLShaderProgram::setMat2(const char *name, const glm::mat2 &mat)
 {
-    this->setMat2(glGetUniformLocation(mHandle, name), mat);
+    CHECK_ERROR(glUniformMatrix2fv(findUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
 
 void OpenGLShaderProgram::setMat3(const char *name, const glm::mat3 &mat)
 {
-    this->setMat3(glGetUniformLocation(mHandle, name), mat);
+    CHECK_ERROR(glUniformMatrix3fv(findUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
 
 void OpenGLShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
 {
-    this->setMat4(glGetUniformLocation(mHandle, name), mat);
+    CHECK_ERROR(glUniformMatrix4fv(findUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
 
 void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
 {
-    this->setTexture2D(glGetUniformLocation(mHandle, name), texUnit, tex);
-}
-
-void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
-{
-    this->setTexture2Ds(glGetUniformLocation(mHandle, name), texUnits, count, texs);
-}
-
-void OpenGLShaderProgram::setBool(int nameLocation, bool value)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, (int)value));
-}
-
-void OpenGLShaderProgram::setInt(int nameLocation, int value)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, value));
-}
-
-void OpenGLShaderProgram::setFloat(int nameLocation, float value)
-{
-    CHECK_ERROR(glUniform1f(nameLocation, value));
-}
-
-void OpenGLShaderProgram::setColor(int nameLocation, const Color &color)
-{
-    CHECK_ERROR(glUniform4fv(nameLocation, 1, static_cast<const GLfloat *>(&color.mR)));
-}
-
-void OpenGLShaderProgram::setColor32(int nameLocation, const Color32 &color)
-{
-    CHECK_ERROR(glUniform4ui(nameLocation, static_cast<GLuint>(color.mR), static_cast<GLuint>(color.mG),
-                             static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
-}
-
-void OpenGLShaderProgram::setVec2(int nameLocation, const glm::vec2 &vec)
-{
-    CHECK_ERROR(glUniform2fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLShaderProgram::setVec3(int nameLocation, const glm::vec3 &vec)
-{
-    CHECK_ERROR(glUniform3fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLShaderProgram::setVec4(int nameLocation, const glm::vec4 &vec)
-{
-    CHECK_ERROR(glUniform4fv(nameLocation, 1, &vec[0]));
-}
-
-void OpenGLShaderProgram::setMat2(int nameLocation, const glm::mat2 &mat)
-{
-    CHECK_ERROR(glUniformMatrix2fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLShaderProgram::setMat3(int nameLocation, const glm::mat3 &mat)
-{
-    CHECK_ERROR(glUniformMatrix3fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLShaderProgram::setMat4(int nameLocation, const glm::mat4 &mat)
-{
-    CHECK_ERROR(glUniformMatrix4fv(nameLocation, 1, GL_FALSE, &mat[0][0]));
-}
-
-void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, void* tex)
-{
-    CHECK_ERROR(glUniform1i(nameLocation, texUnit));
+    CHECK_ERROR(glUniform1i(findUniformLocation(name), texUnit));
 
     CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
     if (tex != nullptr)
@@ -376,16 +324,107 @@ void OpenGLShaderProgram::setTexture2D(int nameLocation, int texUnit, void* tex)
     }
 }
 
-void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
+void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
 {
-    CHECK_ERROR(glUniform1iv(nameLocation, count, texUnits.data()));
+    CHECK_ERROR(glUniform1iv(findUniformLocation(name), count, texUnits.data()));
 
     for (int i = 0; i < count; i++)
     {
         CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
         if (texs[i] != nullptr)
         {
-            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i])));           
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i])));
+        }
+        else
+        {
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+        }
+    }
+}
+
+void OpenGLShaderProgram::setBool(int uniformId, bool value)
+{
+    CHECK_ERROR(glUniform1i(findUniformLocation(uniformId), (int)value));
+}
+
+void OpenGLShaderProgram::setInt(int uniformId, int value)
+{
+    CHECK_ERROR(glUniform1i(findUniformLocation(uniformId), value));
+}
+
+void OpenGLShaderProgram::setFloat(int uniformId, float value)
+{
+    CHECK_ERROR(glUniform1f(findUniformLocation(uniformId), value));
+}
+
+void OpenGLShaderProgram::setColor(int uniformId, const Color &color)
+{
+    CHECK_ERROR(glUniform4fv(findUniformLocation(uniformId), 1, static_cast<const GLfloat *>(&color.mR)));
+}
+
+void OpenGLShaderProgram::setColor32(int uniformId, const Color32 &color)
+{
+    CHECK_ERROR(glUniform4ui(findUniformLocation(uniformId), static_cast<GLuint>(color.mR),
+                             static_cast<GLuint>(color.mG),
+                             static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
+}
+
+void OpenGLShaderProgram::setVec2(int uniformId, const glm::vec2 &vec)
+{
+    CHECK_ERROR(glUniform2fv(findUniformLocation(uniformId), 1, &vec[0]));
+}
+
+void OpenGLShaderProgram::setVec3(int uniformId, const glm::vec3 &vec)
+{
+    CHECK_ERROR(glUniform3fv(findUniformLocation(uniformId), 1, &vec[0]));
+}
+
+void OpenGLShaderProgram::setVec4(int uniformId, const glm::vec4 &vec)
+{
+    CHECK_ERROR(glUniform4fv(findUniformLocation(uniformId), 1, &vec[0]));
+}
+
+void OpenGLShaderProgram::setMat2(int uniformId, const glm::mat2 &mat)
+{
+    CHECK_ERROR(glUniformMatrix2fv(findUniformLocation(uniformId), 1, GL_FALSE, &mat[0][0]));
+}
+
+void OpenGLShaderProgram::setMat3(int uniformId, const glm::mat3 &mat)
+{
+    CHECK_ERROR(glUniformMatrix3fv(findUniformLocation(uniformId), 1, GL_FALSE, &mat[0][0]));
+}
+
+void OpenGLShaderProgram::setMat4(int uniformId, const glm::mat4 &mat)
+{
+    CHECK_ERROR(glUniformMatrix4fv(findUniformLocation(uniformId), 1, GL_FALSE, &mat[0][0]));
+}
+
+void OpenGLShaderProgram::setTexture2D(int uniformId, int texUnit, void *tex)
+{
+    CHECK_ERROR(glUniform1i(findUniformLocation(uniformId), texUnit));
+
+    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
+    if (tex != nullptr)
+    {
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(tex)));
+    }
+    else
+    {
+        CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+}
+
+void OpenGLShaderProgram::setTexture2Ds(int uniformId, const std::vector<int> &texUnits, int count,
+                                        const std::vector<void *> &texs)
+{
+    CHECK_ERROR(glUniform1iv(findUniformLocation(uniformId), count, texUnits.data()));
+
+    for (int i = 0; i < count; i++)
+    {
+        CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnits[i]));
+        if (texs[i] != nullptr)
+        {
+            CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, *reinterpret_cast<unsigned int *>(texs[i])));
         }
         else
         {
@@ -396,92 +435,42 @@ void OpenGLShaderProgram::setTexture2Ds(int nameLocation, const std::vector<int>
 
 bool OpenGLShaderProgram::getBool(const char *name) const
 {
-    return this->getBool(glGetUniformLocation(mHandle, name));
-}
-
-int OpenGLShaderProgram::getInt(const char *name) const
-{
-    return this->getInt(glGetUniformLocation(mHandle, name));
-}
-
-float OpenGLShaderProgram::getFloat(const char *name) const
-{
-    return this->getFloat(glGetUniformLocation(mHandle, name));
-}
-
-Color OpenGLShaderProgram::getColor(const char *name) const
-{
-    return this->getColor(glGetUniformLocation(mHandle, name));
-}
-
-glm::vec2 OpenGLShaderProgram::getVec2(const char *name) const
-{
-    return this->getVec2(glGetUniformLocation(mHandle, name));
-}
-
-glm::vec3 OpenGLShaderProgram::getVec3(const char *name) const
-{
-    return this->getVec3(glGetUniformLocation(mHandle, name));
-}
-
-glm::vec4 OpenGLShaderProgram::getVec4(const char *name) const
-{
-    return this->getVec4(glGetUniformLocation(mHandle, name));
-}
-
-glm::mat2 OpenGLShaderProgram::getMat2(const char *name) const
-{
-    return this->getMat2(glGetUniformLocation(mHandle, name));
-}
-
-glm::mat3 OpenGLShaderProgram::getMat3(const char *name) const
-{
-    return this->getMat3(glGetUniformLocation(mHandle, name));
-}
-
-glm::mat4 OpenGLShaderProgram::getMat4(const char *name) const
-{
-    return this->getMat4(glGetUniformLocation(mHandle, name));
-}
-
-bool OpenGLShaderProgram::getBool(int nameLocation) const
-{
     int value = 0;
-    CHECK_ERROR(glGetUniformiv(mHandle, nameLocation, &value));
+    CHECK_ERROR(glGetUniformiv(mHandle, findUniformLocation(name), &value));
 
     return (bool)value;
 }
 
-int OpenGLShaderProgram::getInt(int nameLocation) const
+int OpenGLShaderProgram::getInt(const char *name) const
 {
     int value = 0;
-    CHECK_ERROR(glGetUniformiv(mHandle, nameLocation, &value));
+    CHECK_ERROR(glGetUniformiv(mHandle, findUniformLocation(name), &value));
 
     return value;
 }
 
-float OpenGLShaderProgram::getFloat(int nameLocation) const
+float OpenGLShaderProgram::getFloat(const char *name) const
 {
     float value = 0.0f;
-    CHECK_ERROR(glGetUniformfv(mHandle, nameLocation, &value));
+    CHECK_ERROR(glGetUniformfv(mHandle, findUniformLocation(name), &value));
 
     return value;
 }
 
-Color OpenGLShaderProgram::getColor(int nameLocation) const
+Color OpenGLShaderProgram::getColor(const char *name) const
 {
     Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(Color), &color.mR));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(Color), &color.mR));
 
     return color;
 }
 
-Color32 OpenGLShaderProgram::getColor32(int nameLocation) const
+Color32 OpenGLShaderProgram::getColor32(const char *name) const
 {
     Color32 color = Color32(0, 0, 0, 255);
 
     GLuint c[4];
-    CHECK_ERROR(glGetnUniformuiv(mHandle, nameLocation, 4 * sizeof(GLuint), &c[0]));
+    CHECK_ERROR(glGetnUniformuiv(mHandle, findUniformLocation(name), 4 * sizeof(GLuint), &c[0]));
 
     color.mR = static_cast<unsigned char>(c[0]);
     color.mG = static_cast<unsigned char>(c[1]);
@@ -491,50 +480,163 @@ Color32 OpenGLShaderProgram::getColor32(int nameLocation) const
     return color;
 }
 
-glm::vec2 OpenGLShaderProgram::getVec2(int nameLocation) const
+glm::vec2 OpenGLShaderProgram::getVec2(const char *name) const
 {
     glm::vec2 value = glm::vec2(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::vec2), &value[0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::vec2), &value[0]));
 
     return value;
 }
 
-glm::vec3 OpenGLShaderProgram::getVec3(int nameLocation) const
+glm::vec3 OpenGLShaderProgram::getVec3(const char *name) const
 {
     glm::vec3 value = glm::vec3(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::vec3), &value[0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::vec3), &value[0]));
 
     return value;
 }
 
-glm::vec4 OpenGLShaderProgram::getVec4(int nameLocation) const
+glm::vec4 OpenGLShaderProgram::getVec4(const char *name) const
 {
     glm::vec4 value = glm::vec4(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::vec4), &value[0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::vec4), &value[0]));
 
     return value;
 }
 
-glm::mat2 OpenGLShaderProgram::getMat2(int nameLocation) const
+glm::mat2 OpenGLShaderProgram::getMat2(const char *name) const
 {
     glm::mat2 value = glm::mat2(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::mat2), &value[0][0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::mat2), &value[0][0]));
 
     return value;
 }
 
-glm::mat3 OpenGLShaderProgram::getMat3(int nameLocation) const
+glm::mat3 OpenGLShaderProgram::getMat3(const char *name) const
 {
     glm::mat3 value = glm::mat3(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::mat3), &value[0][0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::mat3), &value[0][0]));
 
     return value;
 }
 
-glm::mat4 OpenGLShaderProgram::getMat4(int nameLocation) const
+glm::mat4 OpenGLShaderProgram::getMat4(const char *name) const
 {
     glm::mat4 value = glm::mat4(0.0f);
-    CHECK_ERROR(glGetnUniformfv(mHandle, nameLocation, sizeof(glm::mat4), &value[0][0]));
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(name), sizeof(glm::mat4), &value[0][0]));
 
     return value;
+}
+
+bool OpenGLShaderProgram::getBool(int uniformId) const
+{
+    int value = 0;
+    CHECK_ERROR(glGetUniformiv(mHandle, findUniformLocation(uniformId), &value));
+
+    return (bool)value;
+}
+
+int OpenGLShaderProgram::getInt(int uniformId) const
+{
+    int value = 0;
+    CHECK_ERROR(glGetUniformiv(mHandle, findUniformLocation(uniformId), &value));
+
+    return value;
+}
+
+float OpenGLShaderProgram::getFloat(int uniformId) const
+{
+    float value = 0.0f;
+    CHECK_ERROR(glGetUniformfv(mHandle, findUniformLocation(uniformId), &value));
+
+    return value;
+}
+
+Color OpenGLShaderProgram::getColor(int uniformId) const
+{
+    Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(Color), &color.mR));
+    
+    return color;
+}
+
+Color32 OpenGLShaderProgram::getColor32(int uniformId) const
+{
+    Color32 color = Color32(0, 0, 0, 255);
+
+    GLuint c[4];
+    CHECK_ERROR(glGetnUniformuiv(mHandle, findUniformLocation(uniformId), 4 * sizeof(GLuint), &c[0]));
+
+    color.mR = static_cast<unsigned char>(c[0]);
+    color.mG = static_cast<unsigned char>(c[1]);
+    color.mB = static_cast<unsigned char>(c[2]);
+    color.mA = static_cast<unsigned char>(c[3]);
+
+    return color;
+}
+
+glm::vec2 OpenGLShaderProgram::getVec2(int uniformId) const
+{
+    glm::vec2 value = glm::vec2(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::vec2), &value[0]));
+
+    return value;
+}
+
+glm::vec3 OpenGLShaderProgram::getVec3(int uniformId) const
+{
+    glm::vec3 value = glm::vec3(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::vec3), &value[0]));
+
+    return value;
+}
+
+glm::vec4 OpenGLShaderProgram::getVec4(int uniformId) const
+{
+    glm::vec4 value = glm::vec4(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::vec4), &value[0]));
+
+    return value;
+}
+
+glm::mat2 OpenGLShaderProgram::getMat2(int uniformId) const
+{
+    glm::mat2 value = glm::mat2(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::mat2), &value[0][0]));
+
+    return value;
+}
+
+glm::mat3 OpenGLShaderProgram::getMat3(int uniformId) const
+{
+    glm::mat3 value = glm::mat3(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::mat3), &value[0][0]));
+
+    return value;
+}
+
+glm::mat4 OpenGLShaderProgram::getMat4(int uniformId) const
+{
+    glm::mat4 value = glm::mat4(0.0f);
+    CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(glm::mat4), &value[0][0]));
+
+    return value;
+}
+
+int OpenGLShaderProgram::findUniformLocation(const std::string &name) const
+{
+    return glGetUniformLocation(mHandle, name.c_str());
+}
+
+int OpenGLShaderProgram::findUniformLocation(int uniformId) const
+{
+    for (size_t i = 0; i < mUniformIds.size(); i++)
+    {
+        if (uniformId == mUniformIds[i])
+        {
+            return mLocations[i];
+        }
+    }
+
+    return -1;
 }
