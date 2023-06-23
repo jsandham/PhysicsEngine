@@ -181,7 +181,7 @@ struct AppLog
     }
 };
 
-Console::Console() : Window("Console")
+Console::Console() : mOpen(true)
 {
 }
 
@@ -193,9 +193,27 @@ void Console::init(Clipboard &clipboard)
 {
 }
 
-void Console::update(Clipboard &clipboard)
+void Console::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
-    clipboard.mOpen[static_cast<int>(View::Console)] = isOpen();
+    if (isOpenedThisFrame)
+    {
+        mOpen = true;
+    }
+
+    if (!mOpen)
+    {
+        return;
+    }
+
+    if (ImGui::Begin("Console", &mOpen))
+    {
+        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        {
+            ImGui::SetWindowFocus("Console");
+        }
+    }
+
+    /*clipboard.mOpen[static_cast<int>(View::Console)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::Console)] = isHovered();
     clipboard.mFocused[static_cast<int>(View::Console)] = isFocused();
     clipboard.mOpenedThisFrame[static_cast<int>(View::Console)] = openedThisFrame();
@@ -203,7 +221,7 @@ void Console::update(Clipboard &clipboard)
     clipboard.mFocusedThisFrame[static_cast<int>(View::Console)] = focusedThisFrame();
     clipboard.mClosedThisFrame[static_cast<int>(View::Console)] = closedThisFrame();
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::Console)] = unfocusedThisFrame();
-    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Console)] = unhoveredThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Console)] = unhoveredThisFrame();*/
 
     static AppLog log;
 
@@ -218,4 +236,6 @@ void Console::update(Clipboard &clipboard)
     Log::clear();
 
     log.Draw("Console");
+
+    ImGui::End();
 }

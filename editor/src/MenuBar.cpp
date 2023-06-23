@@ -132,10 +132,10 @@ void MenuBar::update(Clipboard &clipboard)
         ProjectDatabase::populateScene(clipboard);
     }
 
-    mProjectWindow.draw(clipboard, isNewProjectClicked());
-    mAboutPopup.draw(clipboard, isAboutClicked());
-    mPreferencesWindow.draw(clipboard, isPreferencesClicked());
-    mBuildWindow.draw(clipboard, isBuildClicked());
+    mProjectWindow.update(clipboard, isNewProjectClicked());
+    mAboutPopup.update(clipboard, isAboutClicked());
+    mPreferencesWindow.update(clipboard, isPreferencesClicked());
+    mBuildWindow.update(clipboard, isBuildClicked());
 }
 
 bool MenuBar::isNewSceneClicked() const

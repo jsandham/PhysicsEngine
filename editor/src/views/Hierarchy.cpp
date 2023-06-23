@@ -8,7 +8,7 @@
 
 using namespace PhysicsEditor;
 
-Hierarchy::Hierarchy() : Window("Hierarchy")
+Hierarchy::Hierarchy() : mOpen(true)
 {
    
 }
@@ -21,9 +21,37 @@ void Hierarchy::init(Clipboard &clipboard)
 {
 }
 
-void Hierarchy::update(Clipboard &clipboard)
+void Hierarchy::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
-    clipboard.mOpen[static_cast<int>(View::Hierarchy)] = isOpen();
+    if (isOpenedThisFrame)
+    {
+        mOpen = true;
+    }
+
+    if (!mOpen)
+    {
+        return;
+    }
+
+    if (ImGui::Begin("Hierarchy", &mOpen))
+    {
+        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        {
+            ImGui::SetWindowFocus("Hierarchy");
+        }
+    }
+
+    mWindowPos = ImGui::GetWindowPos();
+    mContentMin = ImGui::GetWindowContentRegionMin();
+    mContentMax = ImGui::GetWindowContentRegionMax();
+    
+    mContentMin.x += mWindowPos.x;
+    mContentMin.y += mWindowPos.y;
+    mContentMax.x += mWindowPos.x;
+    mContentMax.y += mWindowPos.y;
+
+
+    /*clipboard.mOpen[static_cast<int>(View::Hierarchy)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::Hierarchy)] = isHovered();
     clipboard.mFocused[static_cast<int>(View::Hierarchy)] = isFocused();
     clipboard.mOpenedThisFrame[static_cast<int>(View::Hierarchy)] = openedThisFrame();
@@ -31,7 +59,7 @@ void Hierarchy::update(Clipboard &clipboard)
     clipboard.mFocusedThisFrame[static_cast<int>(View::Hierarchy)] = focusedThisFrame();
     clipboard.mClosedThisFrame[static_cast<int>(View::Hierarchy)] = closedThisFrame();
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::Hierarchy)] = unfocusedThisFrame();
-    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Hierarchy)] = unhoveredThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Hierarchy)] = unhoveredThisFrame();*/
 
     if (clipboard.mSceneOpened)
     {
@@ -217,4 +245,21 @@ void Hierarchy::update(Clipboard &clipboard)
             ImGui::EndDragDropTarget();
         }
     }
+
+    ImGui::End();
+}
+
+ImVec2 Hierarchy::getWindowPos() const
+{
+    return mWindowPos;
+}
+
+ImVec2 Hierarchy::getContentMin() const
+{
+    return mContentMin;
+}
+
+ImVec2 Hierarchy::getContentMax() const
+{
+    return mContentMax;
 }

@@ -150,10 +150,8 @@ private:
     BuildWindow(const BuildWindow &other) = delete;
     BuildWindow &operator=(const BuildWindow &other) = delete;
 
-    void draw(Clipboard& clipboard, bool isOpenedThisFrame);
-
-    void init(Clipboard &clipboard);
-    void update(Clipboard &clipboard);
+	void init(Clipboard& clipboard);
+    void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
   private:
     void build();

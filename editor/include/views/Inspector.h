@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "Window.h"
-
 #include "../drawers/InspectorDrawer.h"
 #include "../drawers/SceneDrawer.h"
 #include "../drawers/CubemapDrawer.h"
@@ -28,7 +26,7 @@
 
 namespace PhysicsEditor
 {
-class Inspector : public Window
+class Inspector
 {
   private:
     SceneDrawer mSceneDrawer;
@@ -51,14 +49,16 @@ class Inspector : public Window
     MeshColliderDrawer mMeshColliderDrawer;
     TerrainDrawer mTerrainDrawer;
 
+    bool mOpen;
+
   public:
     Inspector();
     ~Inspector();
     Inspector(const Inspector &other) = delete;
     Inspector &operator=(const Inspector &other) = delete;
 
-    void init(Clipboard &clipboard) override;
-    void update(Clipboard &clipboard) override;
+    void init(Clipboard& clipboard);
+    void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
   private:
     void drawEntity(Clipboard &clipboard);

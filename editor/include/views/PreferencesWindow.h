@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_WINDOW_H__
 #define PREFERENCES_WINDOW_H__
 
-#include "PopupWindow.h"
+#include "../EditorClipboard.h"
 #include "imgui.h"
 
 namespace ImGui
@@ -32,16 +32,19 @@ namespace PhysicsEditor
         Count
     };
 
-class PreferencesWindow : public PopupWindow
+class PreferencesWindow
 {
+  private:
+    bool mOpen;
+
   public:
     PreferencesWindow();
     ~PreferencesWindow();
     PreferencesWindow(const PreferencesWindow &other) = delete;
     PreferencesWindow &operator=(const PreferencesWindow &other) = delete;
 
-    void init(Clipboard &clipboard) override;
-    void update(Clipboard &clipboard) override;
+    void init(Clipboard &clipboard);
+    void update(Clipboard& clipboard, bool isOpenedThisFrame);
 };
 } // namespace PhysicsEditor
 

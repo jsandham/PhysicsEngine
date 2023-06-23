@@ -5,15 +5,14 @@
 #include <vector>
 #include <filesystem>
 
-#include "Window.h"
-
 #include "../ProjectTree.h"
+#include "../EditorClipboard.h"
 
 #include "imgui.h"
 
 namespace PhysicsEditor
 {
-class ProjectView : public Window
+class ProjectView
 {
   private:
     ProjectTree mProjectTree;
@@ -27,14 +26,16 @@ class ProjectView : public Window
 
     ImGuiTextFilter mFilter;
 
+    bool mOpen;
+
   public:
     ProjectView();
     ~ProjectView();
     ProjectView(const ProjectView &other) = delete;
     ProjectView &operator=(const ProjectView &other) = delete;
 
-    void init(Clipboard &clipboard) override;
-    void update(Clipboard &clipboard) override;
+    void init(Clipboard& clipboard);
+    void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
     void drawLeftPane();
     void drawRightPane(Clipboard &clipboard);

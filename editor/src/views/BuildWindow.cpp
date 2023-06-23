@@ -74,7 +74,11 @@ BuildWindow::~BuildWindow()
 	mBuildWorker.join();
 }
 
-void BuildWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
+void BuildWindow::init(Clipboard& clipboard)
+{
+}
+
+void BuildWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 {
 	if (isOpenedThisFrame)
 	{
@@ -87,7 +91,43 @@ void BuildWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
 
 	if (ImGui::BeginPopupModal(mName.c_str(), &mOpen, ImGuiWindowFlags_NoResize))
 	{
-		update(clipboard);
+		int targetPlatformIndex = static_cast<int>(mTargetPlatform);
+		const char* targetPlatformNames[] = { "Windows", "Linux" };
+
+		if (ImGui::Combo("Target Platform", &targetPlatformIndex, targetPlatformNames, 2))
+		{
+			mTargetPlatform = static_cast<TargetPlatform>(targetPlatformIndex);
+		}
+
+		if (!mBuildInProgress && ImGui::Button("Build"))
+		{
+			mSelectedFolder = selectFolder();
+
+			if (!mSelectedFolder.empty())
+			{
+				mLaunchBuild = true;
+				mBuildCompletion = 0.0f;
+			}
+		}
+
+		if (mBuildInProgress)
+		{
+			ImGui::Text(mBuildStep.c_str());
+			ImGui::ProgressBar(mBuildCompletion);
+
+			mBuildLog.Draw("Build Log", ImVec2(mWidth, mHeight / 2.5f), true);
+		}
+
+		if (mBuildComplete)
+		{
+			if (ImGui::Button("Ok"))
+			{
+				mBuildInProgress = false;
+				mBuildComplete = false;
+
+				mOpen = false;
+			}
+		}
 
 		ImGui::EndPopup();
 	}
@@ -98,51 +138,6 @@ void BuildWindow::draw(Clipboard& clipboard, bool isOpenedThisFrame)
 		{
 			mBuildInProgress = false;
 			mBuildComplete = false;
-		}
-	}
-}
-
-void BuildWindow::init(Clipboard &clipboard)
-{
-}
-
-void BuildWindow::update(Clipboard &clipboard)
-{
-	int targetPlatformIndex = static_cast<int>(mTargetPlatform);
-	const char* targetPlatformNames[] = { "Windows", "Linux" };
-
-	if (ImGui::Combo("Target Platform", &targetPlatformIndex, targetPlatformNames, 2))
-	{
-		mTargetPlatform = static_cast<TargetPlatform>(targetPlatformIndex);
-	}
-
-	if (!mBuildInProgress && ImGui::Button("Build"))
-	{
-		mSelectedFolder = selectFolder();
-
-		if (!mSelectedFolder.empty())
-		{
-			mLaunchBuild = true;
-			mBuildCompletion = 0.0f;
-		}
-	}
-
-	if (mBuildInProgress)
-	{
-		ImGui::Text(mBuildStep.c_str());
-		ImGui::ProgressBar(mBuildCompletion);
-
-		mBuildLog.Draw("Build Log", ImVec2(mWidth, mHeight / 2.5f), true);
-	}
-
-	if (mBuildComplete)
-	{
-		if (ImGui::Button("Ok"))
-		{
-			mBuildInProgress = false;
-			mBuildComplete = false;
-
-			mOpen = false;
 		}
 	}
 }

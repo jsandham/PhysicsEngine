@@ -6,13 +6,6 @@
 
 namespace PhysicsEditor
 {
-    class Overlay
-    {
-    public:
-        virtual void init(Clipboard& clipboard) = 0;
-        virtual void update(Clipboard& clipboard) = 0;
-    };
-
     class DebugOverlay
     {
     private:

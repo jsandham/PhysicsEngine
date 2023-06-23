@@ -8,7 +8,7 @@
 
 using namespace PhysicsEditor;
 
-Inspector::Inspector() : Window("Inspector")
+Inspector::Inspector() : mOpen(true)
 {
     
 }
@@ -21,9 +21,27 @@ void Inspector::init(Clipboard &clipboard)
 {
 }
 
-void Inspector::update(Clipboard &clipboard)
+void Inspector::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
-    clipboard.mOpen[static_cast<int>(View::Inspector)] = isOpen();
+    if (isOpenedThisFrame)
+    {
+        mOpen = true;
+    }
+
+    if (!mOpen)
+    {
+        return;
+    }
+
+    if (ImGui::Begin("Inspector", &mOpen))
+    {
+        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        {
+            ImGui::SetWindowFocus("Inspector");
+        }
+    }
+
+    /*clipboard.mOpen[static_cast<int>(View::Inspector)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::Inspector)] = isHovered();
     clipboard.mFocused[static_cast<int>(View::Inspector)] = isFocused();
     clipboard.mOpenedThisFrame[static_cast<int>(View::Inspector)] = openedThisFrame();
@@ -31,7 +49,7 @@ void Inspector::update(Clipboard &clipboard)
     clipboard.mFocusedThisFrame[static_cast<int>(View::Inspector)] = focusedThisFrame();
     clipboard.mClosedThisFrame[static_cast<int>(View::Inspector)] = closedThisFrame();
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::Inspector)] = unfocusedThisFrame();
-    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Inspector)] = unhoveredThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::Inspector)] = unhoveredThisFrame();*/
 
     // draw selected asset
     switch (clipboard.getSelectedType())
@@ -64,6 +82,8 @@ void Inspector::update(Clipboard &clipboard)
     {
         drawEntity(clipboard);
     }
+
+    ImGui::End();
 }
 
 void Inspector::drawEntity(Clipboard &clipboard)

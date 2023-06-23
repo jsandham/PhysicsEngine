@@ -3,7 +3,7 @@
 
 using namespace PhysicsEditor;
 
-PreferencesWindow::PreferencesWindow() : PopupWindow("##Preferences...", 600.0f, 300.0f, 400.0f, 200.0f)
+PreferencesWindow::PreferencesWindow()
 {
 }
 
@@ -27,60 +27,74 @@ void PreferencesWindow::init(Clipboard &clipboard)
     io.Fonts->Build();
 }
 
-void PreferencesWindow::update(Clipboard &clipboard)
+void PreferencesWindow::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
-    // Order matters here
-    const char* themeNames[] = { "Classic",    "Light",  "Dark", "Dracula",  "Cherry",
-                                "LightGreen", "Yellow", "Grey", "Charcoal", "Corporate" };
-
-    static int index = static_cast<int>(EditorStyle::Corporate);
-    if (ImGui::BeginCombo("Themes", themeNames[index]))
+    if (isOpenedThisFrame)
     {
-        for (int n = 0; n < static_cast<int>(EditorStyle::Count); n++)
+        ImGui::SetNextWindowPos(ImVec2(600.0f, 300.0f));
+        ImGui::SetNextWindowSize(ImVec2(400.0f, 200.0f));
+
+        ImGui::OpenPopup("##Preferences...");
+        mOpen = true;
+    }
+
+    if (ImGui::BeginPopupModal("##Preferences...", &mOpen, ImGuiWindowFlags_NoResize))
+    {
+        // Order matters here
+        const char* themeNames[] = { "Classic",    "Light",  "Dark", "Dracula",  "Cherry",
+                                    "LightGreen", "Yellow", "Grey", "Charcoal", "Corporate" };
+
+        static int index = static_cast<int>(EditorStyle::Corporate);
+        if (ImGui::BeginCombo("Themes", themeNames[index]))
         {
-            bool is_selected = false;
-            if (ImGui::Selectable(themeNames[n], is_selected))
+            for (int n = 0; n < static_cast<int>(EditorStyle::Count); n++)
             {
-                switch (static_cast<EditorStyle>(n))
+                bool is_selected = false;
+                if (ImGui::Selectable(themeNames[n], is_selected))
                 {
-                case EditorStyle::Classic: { ImGui::StyleColorsClassic(); break; }
-                case EditorStyle::Light: { ImGui::StyleColorsLight(); break; }
-                case EditorStyle::Dark: { ImGui::StyleColorsDark(); break; }
-                case EditorStyle::Dracula: { ImGui::StyleColorsDracula(); break; }
-                case EditorStyle::Cherry: { ImGui::StyleColorsCherry(); break; }
-                case EditorStyle::LightGreen: { ImGui::StyleColorsLightGreen(); break; }
-                case EditorStyle::Yellow: { ImGui::StyleColorsYellow(); break; }
-                case EditorStyle::Grey: { ImGui::StyleColorsGrey(); break; }
-                case EditorStyle::Charcoal: { ImGui::StyleColorsCharcoal(); break; }
-                case EditorStyle::Corporate: { ImGui::StyleColorsCorporate(); break; }
+                    switch (static_cast<EditorStyle>(n))
+                    {
+                    case EditorStyle::Classic: { ImGui::StyleColorsClassic(); break; }
+                    case EditorStyle::Light: { ImGui::StyleColorsLight(); break; }
+                    case EditorStyle::Dark: { ImGui::StyleColorsDark(); break; }
+                    case EditorStyle::Dracula: { ImGui::StyleColorsDracula(); break; }
+                    case EditorStyle::Cherry: { ImGui::StyleColorsCherry(); break; }
+                    case EditorStyle::LightGreen: { ImGui::StyleColorsLightGreen(); break; }
+                    case EditorStyle::Yellow: { ImGui::StyleColorsYellow(); break; }
+                    case EditorStyle::Grey: { ImGui::StyleColorsGrey(); break; }
+                    case EditorStyle::Charcoal: { ImGui::StyleColorsCharcoal(); break; }
+                    case EditorStyle::Corporate: { ImGui::StyleColorsCorporate(); break; }
+                    }
+
+                    index = n;
                 }
-
-                index = n;
             }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
-    }
 
-    ImGuiIO& io = ImGui::GetIO();
-    ImFont* font_current = ImGui::GetFont();
-    if (ImGui::BeginCombo("Fonts", font_current->GetDebugName()))
-    {
-        for (int n = 0; n < io.Fonts->Fonts.Size; n++)
+        ImGuiIO& io = ImGui::GetIO();
+        ImFont* font_current = ImGui::GetFont();
+        if (ImGui::BeginCombo("Fonts", font_current->GetDebugName()))
         {
-            ImFont* font = io.Fonts->Fonts[n];
-            ImGui::PushID((void*)font);
-            if (ImGui::Selectable(font->GetDebugName(), font == font_current))
-                io.FontDefault = font;
-            ImGui::PopID();
+            for (int n = 0; n < io.Fonts->Fonts.Size; n++)
+            {
+                ImFont* font = io.Fonts->Fonts[n];
+                ImGui::PushID((void*)font);
+                if (ImGui::Selectable(font->GetDebugName(), font == font_current))
+                    io.FontDefault = font;
+                ImGui::PopID();
+            }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
-    }
 
-    //ImGui::Image(io.Fonts->TexID, ImVec2((float)io.Fonts->TexWidth, (float)io.Fonts->TexHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+        //ImGui::Image(io.Fonts->TexID, ImVec2((float)io.Fonts->TexWidth, (float)io.Fonts->TexHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
-    if (ImGui::Button("Ok"))
-    {
-        ImGui::CloseCurrentPopup();
+        if (ImGui::Button("Ok"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
     }
 }
 

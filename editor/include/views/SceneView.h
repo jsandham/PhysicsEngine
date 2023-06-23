@@ -6,8 +6,8 @@
 #include "core/World.h"
 #include "systems/FreeLookCameraSystem.h"
 
+#include "../EditorClipboard.h"
 #include "../PerformanceQueue.h"
-#include "Window.h"
 
 #include "imgui.h"
 #include "ImGuizmo.h"
@@ -29,7 +29,7 @@ namespace PhysicsEditor
         Count = 10
     };
 
-class SceneView : public Window
+class SceneView
 {
   private:
     DebugTargets mActiveDebugTarget;
@@ -37,6 +37,17 @@ class SceneView : public Window
     ImGuizmo::MODE mCoordinateMode;
 
     PerformanceQueue mPerfQueue;
+
+    ImVec2 mWindowPos;
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
+    float mWindowWidth;
+    float mWindowHeight;
+
+    bool mOpen;
+    bool mFocused;
+    bool mHovered;
+    bool mHoveredLastFrame;
 
     ImVec2 mSceneContentMin;
     ImVec2 mSceneContentMax;
@@ -49,8 +60,21 @@ class SceneView : public Window
     SceneView(const SceneView &other) = delete;
     SceneView &operator=(const SceneView &other) = delete;
 
-    void init(Clipboard &clipboard) override;
-    void update(Clipboard &clipboard) override;
+    void init(Clipboard &clipboard);
+    void update(Clipboard &clipboard, bool isOpenedThisFrame);
+
+    ImVec2 getWindowPos() const;
+    ImVec2 getContentMin() const;
+    ImVec2 getContentMax() const;
+
+    float getWindowWidth() const;
+    float getWindowHeight() const;
+
+    bool isOpen() const;
+    bool isFocused() const;
+    bool isHovered() const;
+    bool hoveredThisFrame() const;
+    bool unhoveredThisFrame() const;
 
     ImVec2 getSceneContentMin() const;
     ImVec2 getSceneContentMax() const;

@@ -37,11 +37,11 @@ void EditorLayer::update(const PhysicsEngine::Time& time)
 
     mMenuBar.update(mClipboard);
 
-    mHierarchy.draw(mClipboard, mMenuBar.isOpenHierarchyCalled());
-    mInspector.draw(mClipboard, mMenuBar.isOpenInspectorCalled());
-    mConsole.draw(mClipboard, mMenuBar.isOpenConsoleCalled());
-    mProjectView.draw(mClipboard, mMenuBar.isOpenProjectViewCalled());
-    mSceneView.draw(mClipboard, mMenuBar.isOpenSceneViewCalled());
+    mHierarchy.update(mClipboard, mMenuBar.isOpenHierarchyCalled());
+    mInspector.update(mClipboard, mMenuBar.isOpenInspectorCalled());
+    mConsole.update(mClipboard, mMenuBar.isOpenConsoleCalled());
+    mProjectView.update(mClipboard, mMenuBar.isOpenProjectViewCalled());
+    mSceneView.update(mClipboard, mMenuBar.isOpenSceneViewCalled());
 
     mDebugOverlay.update(mClipboard);
 

@@ -1,15 +1,16 @@
 #ifndef PROJECT_WINDOW_H__
 #define PROJECT_WINDOW_H__
 
-#include "PopupWindow.h"
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class ProjectWindow : public PopupWindow
+class ProjectWindow
 {
   private:
     std::vector<char> mInputBuffer;
     std::string mSelectedFolder;
+    bool mOpen;
 
   public:
     ProjectWindow();
@@ -17,8 +18,8 @@ class ProjectWindow : public PopupWindow
     ProjectWindow(const ProjectWindow &other) = delete;
     ProjectWindow &operator=(const ProjectWindow &other) = delete;
 
-    void init(Clipboard &clipboard) override;
-    void update(Clipboard &clipboard) override;
+    void init(Clipboard &clipboard);
+    void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
     std::string getProjectName() const;
 };

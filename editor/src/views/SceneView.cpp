@@ -10,7 +10,7 @@
 
 using namespace PhysicsEditor;
 
-SceneView::SceneView() : Window("Scene View")
+SceneView::SceneView() : mOpen(true), mFocused(false), mHovered(false), mHoveredLastFrame(false)
 {
     mActiveDebugTarget = DebugTargets::Color;
     mOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -33,9 +33,45 @@ void SceneView::init(Clipboard &clipboard)
     initWorld(clipboard.getWorld());
 }
 
-void SceneView::update(Clipboard& clipboard)
+void SceneView::update(Clipboard& clipboard, bool isOpenedThisFrame)
 {
-    clipboard.mOpen[static_cast<int>(View::SceneView)] = isOpen();
+    mHoveredLastFrame = mHovered;
+    mFocused = false;
+    mHovered = false;
+
+    if (isOpenedThisFrame)
+    {
+        mOpen = true;
+    }
+
+    if (!mOpen)
+    {
+        return;
+    }
+
+    if (ImGui::Begin("SceneView", &mOpen))
+    {
+        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        {
+            ImGui::SetWindowFocus("SceneView");
+        }
+    }
+
+    mWindowPos = ImGui::GetWindowPos();
+    mWindowWidth = ImGui::GetWindowWidth();
+    mWindowHeight = ImGui::GetWindowHeight();
+    mContentMin = ImGui::GetWindowContentRegionMin();
+    mContentMax = ImGui::GetWindowContentRegionMax();
+
+    mContentMin.x += mWindowPos.x;
+    mContentMin.y += mWindowPos.y;
+    mContentMax.x += mWindowPos.x;
+    mContentMax.y += mWindowPos.y;
+
+    mFocused = ImGui::IsWindowFocused();
+    mHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
+
+    /*clipboard.mOpen[static_cast<int>(View::SceneView)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::SceneView)] = isHovered();
     clipboard.mFocused[static_cast<int>(View::SceneView)] = isFocused();
     clipboard.mOpenedThisFrame[static_cast<int>(View::SceneView)] = openedThisFrame();
@@ -43,7 +79,7 @@ void SceneView::update(Clipboard& clipboard)
     clipboard.mFocusedThisFrame[static_cast<int>(View::SceneView)] = focusedThisFrame();
     clipboard.mClosedThisFrame[static_cast<int>(View::SceneView)] = closedThisFrame();
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::SceneView)] = unfocusedThisFrame();
-    clipboard.mUnhoveredThisFrame[static_cast<int>(View::SceneView)] = unhoveredThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::SceneView)] = unhoveredThisFrame();*/
 
     mSceneContentMin = getContentMin();
     mSceneContentMax = getContentMax();
@@ -71,6 +107,8 @@ void SceneView::update(Clipboard& clipboard)
             drawSceneContent(clipboard);
         }
     }
+
+    ImGui::End();
 }
 
 void SceneView::drawSceneHeader(Clipboard& clipboard)
@@ -662,4 +700,54 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem*came
     }
 
     ImGui::End();
+}
+
+ImVec2 SceneView::getWindowPos() const
+{
+    return mWindowPos;
+}
+
+ImVec2 SceneView::getContentMin() const
+{
+    return mContentMin;
+}
+
+ImVec2 SceneView::getContentMax() const
+{
+    return mContentMax;
+}
+
+float SceneView::getWindowWidth() const
+{
+    return mWindowWidth;
+}
+
+float SceneView::getWindowHeight() const
+{
+    return mWindowHeight;
+}
+
+bool SceneView::isOpen() const
+{
+    return mOpen;
+}
+
+bool SceneView::isFocused() const
+{
+    return mFocused;
+}
+
+bool SceneView::isHovered() const
+{
+    return mHovered;
+}
+
+bool SceneView::hoveredThisFrame() const
+{
+    return !mHoveredLastFrame && mHovered;
+}
+
+bool SceneView::unhoveredThisFrame() const
+{
+    return mHoveredLastFrame && !mHovered;
 }

@@ -14,7 +14,7 @@
 
 using namespace PhysicsEditor;
 
-ProjectView::ProjectView() : Window("Project View")
+ProjectView::ProjectView() : mOpen(true)
 {
     mHighlightedType = InteractionType::None;
     mHighlightedPath = std::filesystem::path();
@@ -33,9 +33,27 @@ void ProjectView::init(Clipboard &clipboard)
 {
 }
 
-void ProjectView::update(Clipboard &clipboard)
+void ProjectView::update(Clipboard &clipboard, bool isOpenedThisFrame)
 {
-    clipboard.mOpen[static_cast<int>(View::ProjectView)] = isOpen();
+    if (isOpenedThisFrame)
+    {
+        mOpen = true;
+    }
+
+    if (!mOpen)
+    {
+        return;
+    }
+
+    if (ImGui::Begin("ProjectView", &mOpen))
+    {
+        if (ImGui::GetIO().MouseClicked[1] && ImGui::IsWindowHovered())
+        {
+            ImGui::SetWindowFocus("ProjectView");
+        }
+    }
+
+    /*clipboard.mOpen[static_cast<int>(View::ProjectView)] = isOpen();
     clipboard.mHovered[static_cast<int>(View::ProjectView)] = isHovered();
     clipboard.mFocused[static_cast<int>(View::ProjectView)] = isFocused();
     clipboard.mOpenedThisFrame[static_cast<int>(View::ProjectView)] = openedThisFrame();
@@ -43,7 +61,7 @@ void ProjectView::update(Clipboard &clipboard)
     clipboard.mFocusedThisFrame[static_cast<int>(View::ProjectView)] = focusedThisFrame();
     clipboard.mClosedThisFrame[static_cast<int>(View::ProjectView)] = closedThisFrame();
     clipboard.mUnfocusedThisFrame[static_cast<int>(View::ProjectView)] = unfocusedThisFrame();
-    clipboard.mUnhoveredThisFrame[static_cast<int>(View::ProjectView)] = unhoveredThisFrame();
+    clipboard.mUnhoveredThisFrame[static_cast<int>(View::ProjectView)] = unhoveredThisFrame();*/
 
     //ImGui::Text(("mHighlightedType: " + std::to_string(static_cast<int>(mHighlightedType))).c_str());
     //ImGui::Text(("mHighlightedPath: " + mHighlightedPath.string()).c_str());
@@ -85,6 +103,8 @@ void ProjectView::update(Clipboard &clipboard)
         }
         ImGui::EndChild();
     }
+
+    ImGui::End();
 }
 
 void ProjectView::drawLeftPane()
