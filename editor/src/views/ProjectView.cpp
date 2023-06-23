@@ -344,11 +344,6 @@ void ProjectView::drawRightPane(Clipboard &clipboard)
                     ProjectDatabase::createMaterialFile(clipboard.getWorld(), mSelectedDirectoryPath);
                 }
 
-                if (ImGui::MenuItem("Sprite"))
-                {
-                    ProjectDatabase::createSpriteFile(clipboard.getWorld(), mSelectedDirectoryPath);
-                }
-
                 if (ImGui::MenuItem("RenderTexture"))
                 {
                     ProjectDatabase::createRenderTextureFile(clipboard.getWorld(), mSelectedDirectoryPath);

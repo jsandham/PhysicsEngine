@@ -11,10 +11,8 @@
 #include "../core/Scene.h"
 
 #include "../core/Cubemap.h"
-#include "../core/Font.h"
 #include "../core/Material.h"
 #include "../core/Mesh.h"
-#include "../core/Sprite.h"
 #include "../core/Texture2D.h"
 
 #include "../systems/CleanUpSystem.h"
@@ -44,8 +42,6 @@ struct WorldIdState
     std::unordered_map<Guid, int> mTexture3DGuidToGlobalIndex;
     std::unordered_map<Guid, int> mCubemapGuidToGlobalIndex;
     std::unordered_map<Guid, int> mRenderTextureGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mFontGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mSpriteGuidToGlobalIndex;
 
     // world system guid state
     std::unordered_map<Guid, int> mRenderSystemGuidToGlobalIndex;
@@ -77,8 +73,6 @@ struct WorldIdState
     std::unordered_map<Id, int> mTexture3DIdToGlobalIndex;
     std::unordered_map<Id, int> mCubemapIdToGlobalIndex;
     std::unordered_map<Id, int> mRenderTextureIdToGlobalIndex;
-    std::unordered_map<Id, int> mFontIdToGlobalIndex;
-    std::unordered_map<Id, int> mSpriteIdToGlobalIndex;
 
     // world system id state
     std::unordered_map<Id, int> mRenderSystemIdToGlobalIndex;
@@ -111,8 +105,6 @@ struct WorldAllocators
     PoolAllocator<Texture2D> mTexture2DAllocator;
     PoolAllocator<Cubemap> mCubemapAllocator;
     PoolAllocator<RenderTexture> mRenderTextureAllocator;
-    PoolAllocator<Font> mFontAllocator;
-    PoolAllocator<Sprite> mSpriteAllocator;
 
     // internal system allocators
     PoolAllocator<RenderSystem> mRenderSystemAllocator;

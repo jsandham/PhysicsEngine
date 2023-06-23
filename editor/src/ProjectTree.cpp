@@ -121,11 +121,6 @@ void ProjectNode::addFile(const std::filesystem::path& path)
                 label = std::string(ICON_FA_AREA_CHART);
                 type = InteractionType::Shader;
             }
-            else if (extension == "sprite")
-            {
-                label = std::string(ICON_FA_AREA_CHART);
-                type = InteractionType::Sprite;
-            }
         }
         else if(extension[0] == 'm')
         {

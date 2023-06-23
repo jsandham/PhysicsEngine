@@ -13,7 +13,6 @@
 #include "../graphics/DeferredRenderer.h"
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/RenderObject.h"
-#include "../graphics/SpriteObject.h"
 
 namespace PhysicsEngine
 {
@@ -35,8 +34,6 @@ class RenderSystem : public System
 
     //std::vector<bool> mCulledObjectFlags;
 
-    std::vector<SpriteObject> mSpriteObjects;
-
   public:
     RenderSystem(World *world, const Id &id);
     RenderSystem(World *world, const Guid &guid, const Id &id);
@@ -54,7 +51,6 @@ class RenderSystem : public System
   private:
     void registerRenderAssets(World *world);
     void buildRenderObjectsList(World *world);
-    void buildSpriteObjectsList(World* world);
     void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();

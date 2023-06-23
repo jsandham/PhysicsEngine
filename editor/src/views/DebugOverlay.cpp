@@ -136,8 +136,6 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("Material count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Material>());
     ImGui::Text("Texture2D count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Texture2D>());
     ImGui::Text("Cubemap count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>());
-    ImGui::Text("Font count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Font>());
-    ImGui::Text("Sprite count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Sprite>());
     ImGui::Unindent(16.0f);
 
     ImGui::SliderFloat("MaxFPS", &mMaxFPS, 30.0f, 120.0f, "%.0f", 1.0f);

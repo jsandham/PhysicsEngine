@@ -11,6 +11,8 @@ using namespace PhysicsEngine;
 OpenGLShaderProgram::OpenGLShaderProgram()
 {
     mHandle = glCreateProgram();
+
+    assert(mHandle > 0);
 }
 
 OpenGLShaderProgram::~OpenGLShaderProgram()
@@ -150,66 +152,82 @@ void OpenGLShaderProgram::compile()
     }
 
     // Uniforms
-    GLint uniformCount;
-    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORMS, &uniformCount));
+    GLint count;
+    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORMS, &count));
 
-    mUniforms.resize(uniformCount);
-    mLocations.resize(uniformCount);
-    mUniformIds.resize(uniformCount);
+    mUniforms.resize(count);
+    mMaterialUniforms.resize(count);
+    mLocations.resize(count);
+    mUniformIds.resize(count);
 
+    int uniformCount = 0;
+    int materialUniformCount = 0;
     for (size_t j = 0; j < mUniforms.size(); j++)
     {
         GLUniform uniform;
         CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
                                        &uniform.name[0]));
 
-        mUniforms[j].mName = std::string(uniform.name);
-        switch (uniform.type)
+        int loc = findUniformLocation(&uniform.name[0]);
+
+        if (loc >= 0)
         {
-        case GL_INT:
-            mUniforms[j].mType = ShaderUniformType::Int;
-            break;
-        case GL_FLOAT:
-            mUniforms[j].mType = ShaderUniformType::Float;
-            break;
-        case GL_FLOAT_VEC2:
-            mUniforms[j].mType = ShaderUniformType::Vec2;
-            break;
-        case GL_FLOAT_VEC3:
-            mUniforms[j].mType = ShaderUniformType::Vec3;
-            break;
-        case GL_FLOAT_VEC4:
-            mUniforms[j].mType = ShaderUniformType::Vec4;
-            break;
-        case GL_FLOAT_MAT2:
-            mUniforms[j].mType = ShaderUniformType::Mat2;
-            break;
-        case GL_FLOAT_MAT3:
-            mUniforms[j].mType = ShaderUniformType::Mat3;
-            break;
-        case GL_FLOAT_MAT4:
-            mUniforms[j].mType = ShaderUniformType::Mat4;
-            break;
-        case GL_SAMPLER_2D:
-            mUniforms[j].mType = ShaderUniformType::Sampler2D;
-            break;
-        case GL_SAMPLER_CUBE:
-            mUniforms[j].mType = ShaderUniformType::SamplerCube;
-            break;
-        }
+            mUniforms[uniformCount].mName = std::string(uniform.name);
+            switch (uniform.type)
+            {
+            case GL_INT:
+                mUniforms[uniformCount].mType = ShaderUniformType::Int;
+                break;
+            case GL_FLOAT:
+                mUniforms[uniformCount].mType = ShaderUniformType::Float;
+                break;
+            case GL_FLOAT_VEC2:
+                mUniforms[uniformCount].mType = ShaderUniformType::Vec2;
+                break;
+            case GL_FLOAT_VEC3:
+                mUniforms[uniformCount].mType = ShaderUniformType::Vec3;
+                break;
+            case GL_FLOAT_VEC4:
+                mUniforms[uniformCount].mType = ShaderUniformType::Vec4;
+                break;
+            case GL_FLOAT_MAT2:
+                mUniforms[uniformCount].mType = ShaderUniformType::Mat2;
+                break;
+            case GL_FLOAT_MAT3:
+                mUniforms[uniformCount].mType = ShaderUniformType::Mat3;
+                break;
+            case GL_FLOAT_MAT4:
+                mUniforms[uniformCount].mType = ShaderUniformType::Mat4;
+                break;
+            case GL_SAMPLER_2D:
+                mUniforms[uniformCount].mType = ShaderUniformType::Sampler2D;
+                break;
+            case GL_SAMPLER_CUBE:
+                mUniforms[uniformCount].mType = ShaderUniformType::SamplerCube;
+                break;
+            }
 
-        mUniforms[j].mUniformId = Shader::uniformToId(&uniform.name[0]);
-        mUniforms[j].mTex = nullptr;
-        memset(mUniforms[j].mData, '\0', 64);
+            mUniforms[uniformCount].mUniformId = Shader::uniformToId(&uniform.name[0]);
+            mUniforms[uniformCount].mTex = nullptr;
+            memset(mUniforms[uniformCount].mData, '\0', 64);
 
-        mLocations[j] = findUniformLocation(mUniforms[j].mName);
-        mUniformIds[j] = mUniforms[j].mUniformId;
+            mLocations[uniformCount] = loc;
+            mUniformIds[uniformCount] = mUniforms[uniformCount].mUniformId;
 
-        if (mUniforms[j].mName.find("material") != std::string::npos)
-        {
-            mMaterialUniforms.push_back(mUniforms[j]);
+            if (mUniforms[uniformCount].mName.find("material") != std::string::npos)
+            {
+                mMaterialUniforms[materialUniformCount] = mUniforms[uniformCount];
+                materialUniformCount++;
+            }
+
+            uniformCount++;
         }
     }
+
+    mUniforms.resize(uniformCount);
+    mMaterialUniforms.resize(materialUniformCount);
+    mLocations.resize(uniformCount);
+    mUniformIds.resize(uniformCount);
 
     // Attributes
     GLint attributeCount;
@@ -623,9 +641,10 @@ glm::mat4 OpenGLShaderProgram::getMat4(int uniformId) const
     return value;
 }
 
-int OpenGLShaderProgram::findUniformLocation(const std::string &name) const
+int OpenGLShaderProgram::findUniformLocation(const char* name) const
 {
-    return glGetUniformLocation(mHandle, name.c_str());
+    // Returns -1 if uniform is part of uniform block or name does not correspond to a uniform
+    return glGetUniformLocation(mHandle, name);
 }
 
 int OpenGLShaderProgram::findUniformLocation(int uniformId) const

@@ -20,11 +20,6 @@ template <> size_t Scene::getNumberOfComponents<MeshRenderer>() const
     return mAllocators.mMeshRendererAllocator.getCount();
 }
 
-template <> size_t Scene::getNumberOfComponents<SpriteRenderer>() const
-{
-    return mAllocators.mSpriteRendererAllocator.getCount();
-}
-
 template <> size_t Scene::getNumberOfComponents<LineRenderer>() const
 {
     return mAllocators.mLineRendererAllocator.getCount();
@@ -80,11 +75,6 @@ template <> MeshRenderer* Scene::getComponentByIndex<MeshRenderer>(size_t index)
     return mAllocators.mMeshRendererAllocator.get(index);
 }
 
-template <> SpriteRenderer* Scene::getComponentByIndex<SpriteRenderer>(size_t index) const
-{
-    return mAllocators.mSpriteRendererAllocator.get(index);
-}
-
 template <> LineRenderer* Scene::getComponentByIndex<LineRenderer>(size_t index) const
 {
     return mAllocators.mLineRendererAllocator.get(index);
@@ -138,12 +128,6 @@ template <> Transform* Scene::getComponentById<Transform>(const Id& componentId)
 template <> MeshRenderer *Scene::getComponentById<MeshRenderer>(const Id &componentId) const
 {
     return getComponentById_impl(mIdState.mMeshRendererIdToGlobalIndex, &mAllocators.mMeshRendererAllocator,
-        componentId);
-}
-
-template <> SpriteRenderer *Scene::getComponentById<SpriteRenderer>(const Id &componentId) const
-{
-    return getComponentById_impl(mIdState.mSpriteRendererIdToGlobalIndex, &mAllocators.mSpriteRendererAllocator,
         componentId);
 }
 
@@ -205,12 +189,6 @@ template <> Transform *Scene::getComponentByGuid<Transform>(const Guid &componen
 template <> MeshRenderer *Scene::getComponentByGuid<MeshRenderer>(const Guid &componentGuid) const
 {
     return getComponentByGuid_impl(mIdState.mMeshRendererGuidToGlobalIndex, &mAllocators.mMeshRendererAllocator,
-                                 componentGuid);
-}
-
-template <> SpriteRenderer *Scene::getComponentByGuid<SpriteRenderer>(const Guid &componentGuid) const
-{
-    return getComponentByGuid_impl(mIdState.mSpriteRendererGuidToGlobalIndex, &mAllocators.mSpriteRendererAllocator,
                                  componentGuid);
 }
 
@@ -276,11 +254,6 @@ template <> MeshRenderer *Scene::getComponent<MeshRenderer>(const Guid &entityGu
     return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityGuid);
 }
 
-template <> SpriteRenderer *Scene::getComponent<SpriteRenderer>(const Guid &entityGuid) const
-{
-    return getComponent_impl(&mAllocators.mSpriteRendererAllocator, entityGuid);
-}
-
 template <> LineRenderer *Scene::getComponent<LineRenderer>(const Guid &entityGuid) const
 {
     return getComponent_impl(&mAllocators.mLineRendererAllocator, entityGuid);
@@ -329,11 +302,6 @@ template <> Terrain *Scene::getComponent<Terrain>(const Guid &entityGuid) const
 template <> MeshRenderer *Scene::addComponent<MeshRenderer>(const Guid &entityGuid)
 {
     return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityGuid);
-}
-
-template <> SpriteRenderer *Scene::addComponent<SpriteRenderer>(const Guid &entityGuid)
-{
-    return addComponent_impl(&mAllocators.mSpriteRendererAllocator, entityGuid);
 }
 
 template <> LineRenderer *Scene::addComponent<LineRenderer>(const Guid &entityGuid)
@@ -389,11 +357,6 @@ template <> Transform* Scene::addComponent<Transform>(const YAML::Node& in)
 template <> MeshRenderer* Scene::addComponent<MeshRenderer>(const YAML::Node& in)
 {
     return addComponent_impl(&mAllocators.mMeshRendererAllocator, in);
-}
-
-template <> SpriteRenderer* Scene::addComponent<SpriteRenderer>(const YAML::Node& in)
-{
-    return addComponent_impl(&mAllocators.mSpriteRendererAllocator, in);
 }
 
 template <> LineRenderer* Scene::addComponent<LineRenderer>(const YAML::Node& in)
@@ -485,15 +448,6 @@ template <> void Scene::addToIdState_impl<MeshRenderer>(const Guid &guid, const 
 {
     mIdState.mMeshRendererGuidToGlobalIndex[guid] = index;
     mIdState.mMeshRendererIdToGlobalIndex[id] = index;
-    
-    addToIdState(guid, id, index, type);
-}
-
-template <>
-void Scene::addToIdState_impl<SpriteRenderer>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mSpriteRendererGuidToGlobalIndex[guid] = index;
-    mIdState.mSpriteRendererIdToGlobalIndex[id] = index;
     
     addToIdState(guid, id, index, type);
 }
@@ -592,14 +546,6 @@ template <> void Scene::removeFromIdState_impl<MeshRenderer>(const Guid &guid, c
 {
     mIdState.mMeshRendererGuidToGlobalIndex.erase(guid);
     mIdState.mMeshRendererIdToGlobalIndex.erase(id);
-    
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<SpriteRenderer>(const Guid &guid, const Id &id)
-{
-    mIdState.mSpriteRendererGuidToGlobalIndex.erase(guid);
-    mIdState.mSpriteRendererIdToGlobalIndex.erase(id);
     
     removeFromIdState(guid, id);
 }
@@ -1013,9 +959,6 @@ Component *Scene::getComponentById(const Id &componentId, int type) const
     case ComponentType<MeshRenderer>::type: {
         return getComponentById<MeshRenderer>(componentId);
     }
-    case ComponentType<SpriteRenderer>::type: {
-        return getComponentById<SpriteRenderer>(componentId);
-    }
     case ComponentType<LineRenderer>::type: {
         return getComponentById<LineRenderer>(componentId);
     }
@@ -1058,9 +1001,6 @@ Component *Scene::getComponentByGuid(const Guid &componentGuid, int type) const
     case ComponentType<MeshRenderer>::type: {
         return getComponentByGuid<MeshRenderer>(componentGuid);
     }
-    case ComponentType<SpriteRenderer>::type: {
-        return getComponentByGuid<SpriteRenderer>(componentGuid);
-    }
     case ComponentType<LineRenderer>::type: {
         return getComponentByGuid<LineRenderer>(componentGuid);
     }
@@ -1102,9 +1042,6 @@ Component *Scene::addComponent(const YAML::Node &in, int type)
     }
     case ComponentType<MeshRenderer>::type: {
         return addComponent<MeshRenderer>(in);
-    }
-    case ComponentType<SpriteRenderer>::type: {
-        return addComponent<SpriteRenderer>(in);
     }
     case ComponentType<LineRenderer>::type: {
         return addComponent<LineRenderer>(in);
@@ -1499,19 +1436,6 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
         if (swap != nullptr)
         {
             addToIdState_impl<MeshRenderer>(swap->getGuid(), swap->getId(), index, componentType);
-        }
-    }
-    else if (componentType == ComponentType<SpriteRenderer>::type)
-    {
-        swap = mAllocators.mSpriteRendererAllocator.destruct(index);
-    
-        mIdState.mSpriteRendererGuidToGlobalIndex.erase(componentGuid);
-        mIdState.mGuidToGlobalIndex.erase(componentGuid);
-        mIdState.mGuidToType.erase(componentGuid);
-    
-        if (swap != nullptr)
-        {
-            addToIdState_impl<SpriteRenderer>(swap->getGuid(), swap->getId(), index, componentType);
         }
     }
     else if (componentType == ComponentType<LineRenderer>::type)

@@ -31,7 +31,7 @@ namespace PhysicsEngine
         std::string mName;       // variable name (including block name if applicable)
         ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
         void *mTex; // if data stores a texture id, this is the texture handle
-        unsigned int mUniformId; // integer hash of uniform name
+        int mUniformId; // integer hash of uniform name
 
         std::string getShortName() const
         {

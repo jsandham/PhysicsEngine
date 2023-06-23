@@ -151,7 +151,10 @@ class Shader : public Asset
     glm::mat3 getMat3(int uniformId) const;
     glm::mat4 getMat4(int uniformId) const;
 
-    static unsigned int uniformToId(const char* property);
+    static int uniformToId(const char* property);
+
+    static int MODEL_UNIFORM_ID;
+    static int SHADOW_MAP_UNIFORM_ID;
 };
 
 template <> struct AssetType<Shader>

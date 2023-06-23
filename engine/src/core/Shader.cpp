@@ -625,9 +625,10 @@ glm::mat4 Shader::getMat4(int uniformId) const
     return mActiveProgram != nullptr ? mActiveProgram->getMat4(uniformId) : glm::mat4(0.0f);
 }
 
-unsigned int Shader::uniformToId(const char *uniform)
+int Shader::uniformToId(const char *uniform)
 {
-    unsigned int hash = 5381;
+    /*unsigned int hash = 5381;*/
+    int hash = 5381;
     int c;
 
     c = *uniform++;
@@ -639,3 +640,6 @@ unsigned int Shader::uniformToId(const char *uniform)
     
     return hash;
 }
+
+int Shader::MODEL_UNIFORM_ID = Shader::uniformToId("model");
+int Shader::SHADOW_MAP_UNIFORM_ID = Shader::uniformToId("shadowMap[0]");

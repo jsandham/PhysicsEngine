@@ -13,6 +13,8 @@ Material::Material(World *world, const Id &id) : Asset(world, id)
     mShaderChanged = true;
     mTextureChanged = true;
     mEnableInstancing = false;
+
+    mShader = nullptr;
 }
 
 Material::Material(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
@@ -23,6 +25,8 @@ Material::Material(World *world, const Guid &guid, const Id &id) : Asset(world, 
     mShaderChanged = true;
     mTextureChanged = true;
     mEnableInstancing = false;
+
+    mShader = nullptr;
 }
 
 Material::~Material()
@@ -96,6 +100,10 @@ void Material::apply()
     ShaderProgram *shaderProgram = shader->getActiveProgram();
     assert(shaderProgram != nullptr);
 
+    // Possible replacement for above code if we are willing to cache shader
+    //ShaderProgram *shaderProgram = mShader->getActiveProgram();
+    //assert(shaderProgram != nullptr);
+
     int textureUnit = 0;
     for (size_t i = 0; i < mUniforms.size(); i++)
     {
@@ -132,20 +140,20 @@ void Material::apply()
 
 void Material::onShaderChanged()
 {
-    Shader *shader = mWorld->getAssetByGuid<Shader>(mShaderGuid);
+    mShader = mWorld->getAssetByGuid<Shader>(mShaderGuid);
 
-    if (shader == nullptr)
+    if (mShader == nullptr)
     {
         return;
     }
 
-    if (!shader->isCompiled())
+    if (!mShader->isCompiled())
     {
         Log::error("Must compile shader before calling onShaderChanged\n");
         return;
     }
 
-    std::vector<ShaderUniform> newUniforms = shader->getMaterialUniforms();
+    std::vector<ShaderUniform> newUniforms = mShader->getMaterialUniforms();
 
     // Attempt to copy cached uniform data to new uniforms
     std::vector<ShaderUniform> cachedUniforms = mWorld->getCachedMaterialUniforms(getGuid(), mShaderGuid);
@@ -717,7 +725,7 @@ int Material::findIndexOfUniform(const std::string &name) const
     return -1;
 }
 
-int Material::findIndexOfUniform(unsigned int uniformId) const
+int Material::findIndexOfUniform(int uniformId) const
 {
     for (size_t i = 0; i < mUniforms.size(); i++)
     {

@@ -9,7 +9,6 @@ set STANDARD_LIB="opengl32.lib" "user32.lib" "ole32.lib"
 
 :: import libraries
 set GLEW_LIB="../../lib"
-set FREETYPE_LIB="../../lib"
 
 :: static libraries
 set ENGINE_LIB="../../lib"
@@ -18,7 +17,6 @@ set GOOGLETEST_LIB="../../../googletest/lib"
 set ENGINE="../../include"
 set GOOGLETEST="../../../googletest/include"
 set GLEW="../../include/glew-2.1.0"
-set FREETYPE="../../include/freetype"
 set WARN=-W4 
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
@@ -50,7 +48,7 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ test code...[0m
 for /R "../src" %%f in (*.cpp) do (
-	call cl /c /I%ENGINE% /I%GLEW% /I%FREETYPE% /I%GOOGLETEST% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /I%ENGINE% /I%GLEW% /I%GOOGLETEST% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
 
 :: create list of .obj files
@@ -63,7 +61,7 @@ for /r "%MODE%/obj" %%v in (*.obj) do (
 
 :: create test executable
 echo [92mCreating test executable...[0m
-link %OBJ_FILES% %STANDARD_LIB% %ENGINE_LIB%/%MODE%/engine.lib %GLEW_LIB%/%MODE%/glew32.lib %FREETYPE_LIB%/%MODE%/freetype.lib %GOOGLETEST_LIB%/%MODE%/googletest.lib
+link %OBJ_FILES% %STANDARD_LIB% %ENGINE_LIB%/%MODE%/engine.lib %GLEW_LIB%/%MODE%/glew32.lib %GOOGLETEST_LIB%/%MODE%/googletest.lib
 
 :: delete .obj fles
 echo [92mDeleting objects...[0m

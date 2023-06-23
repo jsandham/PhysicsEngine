@@ -54,9 +54,6 @@ void Inspector::update(Clipboard &clipboard)
     case InteractionType::Texture2D:
         mTexture2DDrawer.render(clipboard, clipboard.getSelectedId());
         break;
-    case InteractionType::Sprite:
-        mSpriteDrawer.render(clipboard, clipboard.getSelectedId());
-        break;
     case InteractionType::RenderTexture:
         mRenderTextureDrawer.render(clipboard, clipboard.getSelectedId());
         break;
@@ -118,7 +115,6 @@ void Inspector::drawEntity(Clipboard &clipboard)
             case ComponentType<Rigidbody>::type: { drawer = &mRigidbodyDrawer; break; }
             case ComponentType<Camera>::type: { drawer = &mCameraDrawer; break; }
             case ComponentType<MeshRenderer>::type: { drawer = &mMeshRendererDrawer; break; }
-            case ComponentType<SpriteRenderer>::type: { drawer = &mSpriteRendererDrawer; break; }
             case ComponentType<LineRenderer>::type: { drawer = &mLineRendererDrawer; break; }
             case ComponentType<Light>::type: { drawer = &mLightDrawer; break; }
             case ComponentType<BoxCollider>::type: { drawer = &mBoxColliderDrawer; break; }
@@ -153,7 +149,7 @@ void Inspector::drawEntity(Clipboard &clipboard)
     }
 
     static std::vector<std::string> components = { "Rigidbody",    "Camera",
-                                           "MeshRenderer",   "LineRenderer", "SpriteRenderer", "Light",
+                                           "MeshRenderer",   "LineRenderer", "Light",
                                            "SphereCollider", "BoxCollider",  "Terrain" };
     size_t index;
     if (ImGui::BeginDropdownWindow("Add component", components, &index))
@@ -174,18 +170,15 @@ void Inspector::drawEntity(Clipboard &clipboard)
             component = entity->addComponent<LineRenderer>();
             break;
         case 4:
-            component = entity->addComponent<SpriteRenderer>();
-            break;
-        case 5:
             component = entity->addComponent<Light>();
             break;
-        case 6:
+        case 5:
             component = entity->addComponent<SphereCollider>();
             break;
-        case 7:
+        case 6:
             component = entity->addComponent<BoxCollider>();
             break;
-        case 8:
+        case 7:
             component = entity->addComponent<Terrain>();
             break;
         }

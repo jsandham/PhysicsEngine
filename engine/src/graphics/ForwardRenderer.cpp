@@ -22,7 +22,6 @@ void ForwardRenderer::init(World *world)
     mColorShader = RendererShaders::getColorShader();
     mColorInstancedShader = RendererShaders::getColorInstancedShader();
     mSsaoShader = RendererShaders::getSSAOShader();
-    mSpriteShader = RendererShaders::getSpriteShader();
 
     mCameraUniform = RendererUniforms::getCameraUniform();
     mLightUniform = RendererUniforms::getLightUniform();
@@ -34,8 +33,7 @@ void ForwardRenderer::init(World *world)
 void ForwardRenderer::update(const Input &input, Camera *camera,
                              const std::vector<RenderObject> &renderObjects,
                              const std::vector<glm::mat4> &models,
-                             const std::vector<Id> &transformIds,
-                             const std::vector<SpriteObject> &spriteObjects)
+                             const std::vector<Id> &transformIds)
 {
     beginFrame(camera);
 
@@ -65,8 +63,6 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
             }
         }
     }
-
-    renderSprites(camera, spriteObjects);
 
     renderColorPicking(camera, renderObjects, models, transformIds);
 
@@ -430,9 +426,37 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             else
             {
                 shader->bind(shader->getProgramFromVariant(variant) != nullptr ? variant : 0);
-            }  
+            }
 
             currentShaderIndex = renderObjects[i].shaderIndex;
+        
+            if (light->mShadowType != ShadowType::None)
+            {
+                if (light->mLightType == LightType::Directional)
+                {
+                    std::vector<void *> tex = {
+                        light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getTexture(),
+                        light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getTexture(),
+                        light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getTexture(),
+                        light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getTexture(),
+                        light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getTexture()};
+                    std::vector<int> texUnit = {3, 4, 5, 6, 7};
+                    shader->setTexture2Ds(Shader::SHADOW_MAP_UNIFORM_ID, texUnit, 5, tex);
+                }
+                else if (light->mLightType == LightType::Spot)
+                {
+                    shader->setTexture2D(Shader::SHADOW_MAP_UNIFORM_ID, 3,
+                                         light->getNativeGrpahicsShadowSpotlightDepthTex()->getTexture());
+                }
+            }
+        }
+
+        if (currentMaterialIndex != renderObjects[i].materialIndex)
+        {
+            material = mWorld->getAssetByIndex<Material>(renderObjects[i].materialIndex);
+            material->apply();
+
+            currentMaterialIndex = renderObjects[i].materialIndex;
         }
 
         if (renderObjects[i].instanced)
@@ -444,31 +468,8 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         }
         else
         {
-            shader->setMat4("model", models[modelIndex]);
+            shader->setMat4(Shader::MODEL_UNIFORM_ID, models[modelIndex]);
             modelIndex++;
-        }
-
-        if (currentMaterialIndex != renderObjects[i].materialIndex)
-        {
-            material = mWorld->getAssetByIndex<Material>(renderObjects[i].materialIndex);
-            material->apply();
-
-            currentMaterialIndex = renderObjects[i].materialIndex;
-        }
-
-        if (light->mLightType == LightType::Directional)
-        {
-            std::vector<void *> tex = {light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getTexture(),
-                                       light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getTexture(),
-                                       light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getTexture(),
-                                       light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getTexture(),
-                                       light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getTexture()};
-            std::vector<int> texUnit = {3, 4, 5, 6, 7};
-            shader->setTexture2Ds("shadowMap", texUnit, 5, tex);
-        }
-        else if (light->mLightType == LightType::Spot)
-        {
-            shader->setTexture2D("shadowMap[0]", 3, light->getNativeGrpahicsShadowSpotlightDepthTex()->getTexture());
         }
 
         if (renderObjects[i].instanced)
@@ -477,57 +478,15 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         }
         else
         {
-            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            if (renderObjects[i].indexed)
+            {
+                Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            }
+            else
+            {
+                 Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+            }
         }
-    }
-
-    framebuffer->unbind();
-}
-
-void ForwardRenderer::renderSprites(Camera *camera, const std::vector<SpriteObject> &spriteObjects)
-{
-    mSpriteShader->bind();
-
-    //float width = static_cast<float>(camera->getViewport().mWidth);
-    //float height = static_cast<float>(camera->getViewport().mHeight);
-
-    // glm::mat4 projection = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
-    glm::mat4 projection = camera->getProjMatrix();
-    glm::mat4 view = camera->getViewMatrix();
-
-    mSpriteShader->setProjection(projection);
-    mSpriteShader->setView(view);
-
-    Framebuffer *framebuffer = nullptr;
-
-    if (camera->mRenderTextureId.isValid())
-    {
-        RenderTexture *renderTexture = mWorld->getAssetByGuid<RenderTexture>(camera->mRenderTextureId);
-        if (renderTexture != nullptr)
-        {
-            framebuffer = renderTexture->getNativeGraphicsMainFBO();
-        }
-        else
-        {
-            framebuffer = camera->getNativeGraphicsMainFBO();
-        }
-    }
-    else
-    {
-        framebuffer = camera->getNativeGraphicsMainFBO();
-    }
-
-    framebuffer->bind();
-    framebuffer->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                             camera->getViewport().mHeight);
-
-    for (size_t i = 0; i < spriteObjects.size(); i++)
-    {
-        mSpriteShader->setModel(spriteObjects[i].model);
-        mSpriteShader->setColor(spriteObjects[i].color);
-        mSpriteShader->setImage(0, spriteObjects[i].mTexture);
-
-        spriteObjects[i].mHandle->drawIndexed(0, 6);
     }
 
     framebuffer->unbind();

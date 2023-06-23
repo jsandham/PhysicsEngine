@@ -20,7 +20,6 @@
 #include "../components/MeshRenderer.h"
 #include "../components/Rigidbody.h"
 #include "../components/SphereCollider.h"
-#include "../components/SpriteRenderer.h"
 #include "../components/Transform.h"
 #include "../components/Terrain.h"
 
@@ -35,7 +34,6 @@ struct SceneIdState
     // scene components guid state
     std::unordered_map<Guid, int> mTransformGuidToGlobalIndex;
     std::unordered_map<Guid, int> mMeshRendererGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mSpriteRendererGuidToGlobalIndex;
     std::unordered_map<Guid, int> mLineRendererGuidToGlobalIndex;
     std::unordered_map<Guid, int> mRigidbodyGuidToGlobalIndex;
     std::unordered_map<Guid, int> mCameraGuidToGlobalIndex;
@@ -69,7 +67,6 @@ struct SceneIdState
     // scene components id state
     std::unordered_map<Id, int> mTransformIdToGlobalIndex;
     std::unordered_map<Id, int> mMeshRendererIdToGlobalIndex;
-    std::unordered_map<Id, int> mSpriteRendererIdToGlobalIndex;
     std::unordered_map<Id, int> mLineRendererIdToGlobalIndex;
     std::unordered_map<Id, int> mRigidbodyIdToGlobalIndex;
     std::unordered_map<Id, int> mCameraIdToGlobalIndex;
@@ -97,7 +94,6 @@ struct SceneAllocators
     // internal component allocators
     PoolAllocator<Transform> mTransformAllocator;
     PoolAllocator<MeshRenderer> mMeshRendererAllocator;
-    PoolAllocator<SpriteRenderer> mSpriteRendererAllocator;
     PoolAllocator<LineRenderer> mLineRendererAllocator;
     PoolAllocator<Rigidbody> mRigidbodyAllocator;
     PoolAllocator<Camera> mCameraAllocator;

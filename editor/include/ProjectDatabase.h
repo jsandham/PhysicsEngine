@@ -63,7 +63,6 @@ namespace PhysicsEditor
         static void createShaderFile(const std::filesystem::path& parentPath);
         static void createCubemapFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
         static void createMaterialFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
-        static void createSpriteFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
         static void createRenderTextureFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath);
         static void rename(const std::filesystem::path& oldPath, const std::filesystem::path& newPath);
         static void remove_all(const std::filesystem::path& path);

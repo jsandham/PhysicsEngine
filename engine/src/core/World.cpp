@@ -77,16 +77,6 @@ template <> size_t World::getNumberOfAssets<RenderTexture>() const
     return mAllocators.mRenderTextureAllocator.getCount();
 }
 
-template <> size_t World::getNumberOfAssets<Font>() const
-{
-    return mAllocators.mFontAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfAssets<Sprite>() const
-{
-    return mAllocators.mSpriteAllocator.getCount();
-}
-
 template <> RenderSystem* World::getSystem<RenderSystem>() const
 {
     return mAllocators.mRenderSystemAllocator.get(0);
@@ -248,10 +238,6 @@ template <> AssetLoadingSystem* World::getSystemById<AssetLoadingSystem>(const I
         systemId);
 }
 
-
-
-
-
 template <> RenderSystem *World::getSystemByGuid<RenderSystem>(const Guid &systemGuid) const
 {
     return getSystemByGuid_impl(mIdState.mRenderSystemGuidToGlobalIndex, &mAllocators.mRenderSystemAllocator,
@@ -297,8 +283,6 @@ template <> AssetLoadingSystem* World::getSystemByGuid<AssetLoadingSystem>(const
         systemGuid);
 }
 
-
-
 template <> Mesh* World::getAssetByIndex<Mesh>(size_t index) const
 {
     return mAllocators.mMeshAllocator.get(index);
@@ -329,16 +313,6 @@ template <> RenderTexture* World::getAssetByIndex<RenderTexture>(size_t index) c
     return mAllocators.mRenderTextureAllocator.get(index);
 }
 
-template <> Font* World::getAssetByIndex<Font>(size_t index) const
-{
-    return mAllocators.mFontAllocator.get(index);
-}
-
-template <> Sprite* World::getAssetByIndex<Sprite>(size_t index) const
-{
-    return mAllocators.mSpriteAllocator.get(index);
-}
-
 template <> Mesh* World::getAssetById<Mesh>(const Id& assetId) const
 {
     return getAssetById_impl(mIdState.mMeshIdToGlobalIndex, &mAllocators.mMeshAllocator, assetId);
@@ -367,16 +341,6 @@ template <> Cubemap *World::getAssetById<Cubemap>(const Id &assetId) const
 template <> RenderTexture *World::getAssetById<RenderTexture>(const Id &assetId) const
 {
     return getAssetById_impl(mIdState.mRenderTextureIdToGlobalIndex, &mAllocators.mRenderTextureAllocator, assetId);
-}
-
-template <> Font *World::getAssetById<Font>(const Id &assetId) const
-{
-    return getAssetById_impl(mIdState.mFontIdToGlobalIndex, &mAllocators.mFontAllocator, assetId);
-}
-
-template <> Sprite *World::getAssetById<Sprite>(const Id &assetId) const
-{
-    return getAssetById_impl(mIdState.mSpriteIdToGlobalIndex, &mAllocators.mSpriteAllocator, assetId);
 }
 
 template <> Mesh *World::getAssetByGuid<Mesh>(const Guid &assetGuid) const
@@ -410,16 +374,6 @@ template <> RenderTexture *World::getAssetByGuid<RenderTexture>(const Guid &asse
                                assetGuid);
 }
 
-template <> Font *World::getAssetByGuid<Font>(const Guid &assetGuid) const
-{
-    return getAssetByGuid_impl(mIdState.mFontGuidToGlobalIndex, &mAllocators.mFontAllocator, assetGuid);
-}
-
-template <> Sprite *World::getAssetByGuid<Sprite>(const Guid &assetGuid) const
-{
-    return getAssetByGuid_impl(mIdState.mSpriteGuidToGlobalIndex, &mAllocators.mSpriteAllocator, assetGuid);
-}
-
 template <> Mesh* World::createAsset<Mesh>()
 {
     return createAsset_impl(&mAllocators.mMeshAllocator, Guid::newGuid());
@@ -448,16 +402,6 @@ template <> Cubemap* World::createAsset<Cubemap>()
 template <> RenderTexture* World::createAsset<RenderTexture>()
 {
     return createAsset_impl(&mAllocators.mRenderTextureAllocator, Guid::newGuid());
-}
-
-template <> Font* World::createAsset<Font>()
-{
-    return createAsset_impl(&mAllocators.mFontAllocator, Guid::newGuid());
-}
-
-template <> Sprite* World::createAsset<Sprite>()
-{
-    return createAsset_impl(&mAllocators.mSpriteAllocator, Guid::newGuid());
 }
 
 template <> Mesh* World::createAsset<Mesh>(const Guid& assetGuid)
@@ -490,16 +434,6 @@ template <> RenderTexture *World::createAsset<RenderTexture>(const Guid &assetGu
     return createAsset_impl(&mAllocators.mRenderTextureAllocator, assetGuid);
 }
 
-template <> Font *World::createAsset<Font>(const Guid &assetGuid)
-{
-    return createAsset_impl(&mAllocators.mFontAllocator, assetGuid);
-}
-
-template <> Sprite *World::createAsset<Sprite>(const Guid &assetGuid)
-{
-    return createAsset_impl(&mAllocators.mSpriteAllocator, assetGuid);
-}
-
 template <> Mesh* World::createAsset<Mesh>(const YAML::Node& in)
 {
     return createAsset_impl(&mAllocators.mMeshAllocator, in);
@@ -528,16 +462,6 @@ template <> Cubemap* World::createAsset<Cubemap>(const YAML::Node& in)
 template <> RenderTexture* World::createAsset<RenderTexture>(const YAML::Node& in)
 {
     return createAsset_impl(&mAllocators.mRenderTextureAllocator, in);
-}
-
-template <> Font* World::createAsset<Font>(const YAML::Node& in)
-{
-    return createAsset_impl(&mAllocators.mFontAllocator, in);
-}
-
-template <> Sprite* World::createAsset<Sprite>(const YAML::Node& in)
-{
-    return createAsset_impl(&mAllocators.mSpriteAllocator, in);
 }
 
 void World::addToIdState(const Guid &guid, const Id &id, int index, int type)
@@ -616,22 +540,6 @@ template <> void World::addToIdState_impl<RenderTexture>(const Guid &guid, const
 {
     mIdState.mRenderTextureGuidToGlobalIndex[guid] = index;
     mIdState.mRenderTextureIdToGlobalIndex[id] = index;
-    
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<Font>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mFontGuidToGlobalIndex[guid] = index;
-    mIdState.mFontIdToGlobalIndex[id] = index;
-    
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<Sprite>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mSpriteGuidToGlobalIndex[guid] = index;
-    mIdState.mSpriteIdToGlobalIndex[id] = index;
     
     addToIdState(guid, id, index, type);
 }
@@ -753,22 +661,6 @@ template <> void World::removeFromIdState_impl<RenderTexture>(const Guid &guid, 
 {
     mIdState.mRenderTextureGuidToGlobalIndex.erase(guid);
     mIdState.mRenderTextureIdToGlobalIndex.erase(id);
-    
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<Font>(const Guid &guid, const Id &id)
-{
-    mIdState.mFontGuidToGlobalIndex.erase(guid);
-    mIdState.mFontIdToGlobalIndex.erase(id);
-    
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<Sprite>(const Guid &guid, const Id &id)
-{
-    mIdState.mSpriteGuidToGlobalIndex.erase(guid);
-    mIdState.mSpriteIdToGlobalIndex.erase(id);
     
     removeFromIdState(guid, id);
 }
@@ -1309,12 +1201,6 @@ Asset *World::getAssetByGuid(const Guid &assetGuid, int type) const
     case AssetType<RenderTexture>::type: {
         return getAssetByGuid<RenderTexture>(assetGuid);
     }
-    case AssetType<Sprite>::type: {
-        return getAssetByGuid<Sprite>(assetGuid);
-    }
-    case AssetType<Font>::type: {
-        return getAssetByGuid<Font>(assetGuid);
-    }
     }
 
     return nullptr;
@@ -1330,8 +1216,6 @@ Asset *World::getAssetById(const Id &assetId, int type) const
     case AssetType<Texture2D>::type: {return getAssetById<Texture2D>(assetId);}
     case AssetType<Cubemap>::type: {return getAssetById<Cubemap>(assetId);}
     case AssetType<RenderTexture>::type: {return getAssetById<RenderTexture>(assetId);}
-    case AssetType<Sprite>::type: {return getAssetById<Sprite>(assetId);}
-    case AssetType<Font>::type: {return getAssetById<Font>(assetId);}
     }
 
     return nullptr;
@@ -1458,12 +1342,6 @@ Asset *World::createAsset(const YAML::Node &in, int type)
     case AssetType<RenderTexture>::type: {
         return createAsset<RenderTexture>(in);
     }
-    case AssetType<Sprite>::type: {
-        return createAsset<Sprite>(in);
-    }
-    case AssetType<Font>::type: {
-        return createAsset<Font>(in);
-    }
     }
 
     return nullptr;
@@ -1544,28 +1422,6 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
         if (swap != nullptr)
         {
             addToIdState_impl<RenderTexture>(swap->getGuid(), swap->getId(), index, assetType);
-        }
-    }
-    else if (assetType == AssetType<Font>::type)
-    {
-        Asset *swap = mAllocators.mFontAllocator.destruct(index);
-    
-        removeFromIdState_impl<Font>(assetGuid, assetId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Font>(swap->getGuid(), swap->getId(), index, assetType);
-        }
-    }
-    else if (assetType == AssetType<Sprite>::type)
-    {
-        Asset *swap = mAllocators.mSpriteAllocator.destruct(index);
-    
-        removeFromIdState_impl<Sprite>(assetGuid, assetId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Sprite>(swap->getGuid(), swap->getId(), index, assetType);
         }
     }
     else

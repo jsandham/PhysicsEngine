@@ -9,7 +9,6 @@
 #include "RendererShaders.h"
 #include "RendererUniforms.h"
 #include "RenderObject.h"
-#include "SpriteObject.h"
 
 namespace PhysicsEngine
 {
@@ -29,7 +28,6 @@ class ForwardRenderer
     ColorShader *mColorShader;
     ColorInstancedShader *mColorInstancedShader;
     SSAOShader *mSsaoShader;
-    SpriteShader *mSpriteShader;
 
     CameraUniform *mCameraUniform;
     LightUniform *mLightUniform;
@@ -60,15 +58,13 @@ class ForwardRenderer
     void update(const Input &input, Camera *camera,
                 const std::vector<RenderObject> &renderObjects,
                 const std::vector<glm::mat4> &models, 
-                const std::vector<Id> &transformIds,
-                const std::vector<SpriteObject> &spriteObjects);
+                const std::vector<Id> &transformIds);
 
   private:
     void beginFrame(Camera* camera);
     void computeSSAO(Camera* camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
     void renderShadows(Camera* camera, Light* light, Transform* lightTransform, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
     void renderOpaques(Camera* camera, Light* light, Transform* lightTransform, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models);
-    void renderSprites(Camera* camera, const std::vector<SpriteObject>& spriteObjects);
     void renderColorPicking(Camera* camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4>& models, const std::vector<Id>& transformIds);
     void renderTransparents();
     void postProcessing();

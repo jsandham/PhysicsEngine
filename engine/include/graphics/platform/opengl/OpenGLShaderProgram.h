@@ -80,7 +80,7 @@ class OpenGLShaderProgram : public ShaderProgram
     glm::mat4 getMat4(int uniformId) const override;
 
 private:
-    int findUniformLocation(const std::string &name) const;
+    int findUniformLocation(const char* name) const;
     int findUniformLocation(int uniformId) const;
     
 

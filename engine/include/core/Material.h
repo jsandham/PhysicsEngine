@@ -19,6 +19,8 @@ class Material : public Asset
     bool mShaderChanged;
     bool mTextureChanged;
 
+    Shader *mShader;
+
   public:
     RenderQueue mRenderQueue;
     bool mEnableInstancing;
@@ -95,7 +97,7 @@ class Material : public Asset
 
   private:
     int findIndexOfUniform(const std::string &name) const;
-    int findIndexOfUniform(unsigned int uniformId) const;
+    int findIndexOfUniform(int uniformId) const;
 };
 
 template <> struct AssetType<Material>

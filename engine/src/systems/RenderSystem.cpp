@@ -66,7 +66,6 @@ void RenderSystem::update(const Input &input, const Time &time)
     registerRenderAssets(mWorld);
 
     buildRenderObjectsList(mWorld);
-    buildSpriteObjectsList(mWorld);
 
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
@@ -83,7 +82,7 @@ void RenderSystem::update(const Input &input, const Time &time)
             {
                 if (camera->mRenderPath == RenderPath::Forward)
                 {
-                    mForwardRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds, mSpriteObjects);
+                    mForwardRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
                 }
                 else
                 {
@@ -234,6 +233,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
                     object.instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
                     object.instanced = true;
+                    object.indexed = false;
 
                     std::pair<Guid, RenderObject> key = std::make_pair(material->getGuid(), object);
 
@@ -272,6 +272,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.instanceModelBuffer = nullptr;
                     object.instanceColorBuffer = nullptr;
                     object.instanced = false;
+                    object.indexed = true;
 
                     mTotalRenderObjects.push_back(object);
                     mTotalModels.push_back(model);
@@ -356,6 +357,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     object.instanceModelBuffer = nullptr;
                     object.instanceColorBuffer = nullptr;
                     object.instanced = false;
+                    object.indexed = false;
 
                     mTotalRenderObjects.push_back(object);
                     mTotalModels.push_back(model);
@@ -371,61 +373,6 @@ void RenderSystem::buildRenderObjectsList(World *world)
     assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
     mWorld->mBoundingSpheres = mTotalBoundingSpheres;
-}
-
-void RenderSystem::buildSpriteObjectsList(World* world)
-{
-    mSpriteObjects.clear();
-
-    // add enabled renderers to render object list
-    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<SpriteRenderer>(); i++)
-    {
-        SpriteRenderer *spriteRenderer = world->getActiveScene()->getComponentByIndex<SpriteRenderer>(i);
-
-        if (spriteRenderer->mEnabled)
-        {
-            Transform* transform = spriteRenderer->getComponent<Transform>();
-            Sprite *sprite = world->getAssetByGuid<Sprite>(spriteRenderer->getSprite());
-
-            if (transform == nullptr || sprite == nullptr)
-            {
-                continue;
-            }
-
-            Texture2D *texture = world->getAssetByGuid<Texture2D>(sprite->getTextureId());
-
-            glm::vec2 size = glm::vec2(100, 100);
-            //float rotate = 0.0f;
-
-            glm::mat4 model = transform->getModelMatrix();
-
-            if (spriteRenderer->mFlipX)
-            {
-                model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 1, 0));
-            }
-
-            if (spriteRenderer->mFlipY)
-            {
-                model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1, 0, 0));
-            }
-
-            SpriteObject object;
-            object.model = model;
-            object.color = spriteRenderer->mColor;
-            object.mHandle = sprite->getNativeGraphicsHandle();
-
-            if (texture != nullptr)
-            {
-                object.mTexture = texture->getNativeGraphics()->getTexture();
-            }
-            else
-            {
-                object.mTexture = nullptr;
-            }
-
-            mSpriteObjects.push_back(object);
-        }
-    }
 }
 
 void RenderSystem::cullRenderObjects(Camera *camera)

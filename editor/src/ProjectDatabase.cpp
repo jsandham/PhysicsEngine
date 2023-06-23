@@ -292,23 +292,6 @@ void ProjectDatabase::createMaterialFile(PhysicsEngine::World* world, const std:
     }
 }
 
-void ProjectDatabase::createSpriteFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath)
-{
-    int i = 0;
-    while (true)
-    {
-        std::string filename = ("New Sprite(" + std::to_string(i++) + ").sprite");
-        std::filesystem::path filepath = parentPath / filename;
-
-        if (!std::filesystem::exists(filepath))
-        {
-            PhysicsEngine::Sprite* sprite = world->createAsset<PhysicsEngine::Sprite>();
-            sprite->writeToYAML(filepath.string());
-            break;
-        }
-    }
-}
-
 void ProjectDatabase::createRenderTextureFile(PhysicsEngine::World* world, const std::filesystem::path& parentPath)
 {
     int i = 0;

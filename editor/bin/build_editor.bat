@@ -58,9 +58,8 @@ set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
 
 ::import libraries
 set GLEW_LIB="../../external/glew-2.1.0/lib/%MODE%/glew32.lib"
-set FREETYPE_LIB="../../external/freetype/lib/%MODE%/freetype.lib"
 
-set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% %FREETYPE_LIB% opengl32.lib comdlg32.lib
+set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% opengl32.lib comdlg32.lib
 set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%FILEWATCH% /I%ENGINE%
 cl /std:c++17 /Fe"%MODE%/EditorApplication" %OPT% %WARN% %MODEFLAGS% %FLAGS% %INCLUDES% ../EditorApplication.cpp %SRC_FILES% %LIBS%
 
