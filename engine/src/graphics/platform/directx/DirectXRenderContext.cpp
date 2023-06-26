@@ -3,6 +3,7 @@
 #pragma comment(lib, "d3d11.lib")
 
 #include <stdio.h>
+#include <assert.h>
 
 using namespace PhysicsEngine;
 
@@ -24,7 +25,7 @@ DirectXRenderContext::DirectXRenderContext(void* window)
     sd.BufferCount = 2; //1;
     sd.OutputWindow = static_cast<HWND>(window);
     sd.Windowed = true;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;//DXGI_SWAP_EFFECT_DISCARD;
     sd.Flags = 0;
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
@@ -53,10 +54,8 @@ DirectXRenderContext::DirectXRenderContext(void* window)
 
     ID3D11Resource* backbuffer = nullptr;
     mSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void**>(&backbuffer));
-    mD3DDevice->CreateRenderTargetView(backbuffer, nullptr, &mD3DTarget);
+    hr = mD3DDevice->CreateRenderTargetView(backbuffer, nullptr, &mD3DTarget);
     backbuffer->Release();
-
-    mD3DDeviceContext->OMSetRenderTargets(1, &mD3DTarget, NULL);
 }
 
 DirectXRenderContext::~DirectXRenderContext()
@@ -68,6 +67,10 @@ DirectXRenderContext::~DirectXRenderContext()
     if (mD3DDeviceContext != nullptr)
     {
         mD3DDeviceContext->Release();
+    }
+    if (mD3DTarget != nullptr)
+    {
+        mD3DTarget->Release();
     }
 
     if (mDevice != nullptr)
@@ -87,9 +90,6 @@ DirectXRenderContext::~DirectXRenderContext()
 
 void DirectXRenderContext::present()
 {
-    //float color[] = {1, 0, 0, 1};
-    //mDeviceContext->ClearRenderTargetView(mTarget, color);
-
     HRESULT hr = mSwapChain->Present(mSwapInterval, 0);
 
     LPTSTR lpBuf = NULL;
@@ -105,4 +105,29 @@ void DirectXRenderContext::turnVsyncOn()
 void DirectXRenderContext::turnVsyncOff()
 {
     mSwapInterval = 0;
+}
+
+void DirectXRenderContext::bindBackBuffer()
+{
+    mD3DDeviceContext->OMSetRenderTargets(1, &mD3DTarget, NULL);
+}
+
+void DirectXRenderContext::unBindBackBuffer()
+{
+    ID3D11RenderTargetView *nullViews[] = {nullptr};
+    mD3DDeviceContext->OMSetRenderTargets(1, nullViews, NULL);
+}
+
+void DirectXRenderContext::clearBackBufferColor(float r, float g, float b, float a)
+{
+     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+     assert(context != nullptr);
+
+     float color[4];
+     color[0] = 1.0f; // r;
+     color[1] = 0.0f; // g;
+     color[2] = 0.0f; // b;
+     color[3] = 1.0f; // a;
+
+     context->ClearRenderTargetView(mD3DTarget, color);
 }

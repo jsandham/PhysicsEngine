@@ -136,6 +136,14 @@ void OpenGLFramebuffer::setViewport(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
+void OpenGLFramebuffer::readColorAtPixel(int x, int y, Color32 *color)
+{
+    this->bind();
+    CHECK_ERROR(glReadBuffer(GL_COLOR_ATTACHMENT0));
+    CHECK_ERROR(glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color));
+    this->unbind();
+}
+
 RenderTextureHandle *OpenGLFramebuffer::getColorTex(size_t i)
 {
     assert(i < mColorTex.size());

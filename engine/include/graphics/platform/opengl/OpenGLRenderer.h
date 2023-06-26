@@ -18,12 +18,10 @@ namespace PhysicsEngine
         void present_impl() override;
         void turnVsyncOn_impl() override;
         void turnVsyncOff_impl() override;
-        void bindFramebuffer_impl(Framebuffer* fbo) override;
-        void unbindFramebuffer_impl() override;
-        void readColorAtPixel_impl(Framebuffer *fbo, int x, int y, Color32 *color) override;
-        void clearFrambufferColor_impl(const Color &color) override;
-        void clearFrambufferColor_impl(float r, float g, float b, float a) override;
-        void clearFramebufferDepth_impl(float depth) override;
+        void bindBackBuffer_impl() override;
+        void unbindBackBuffer_impl() override;
+        void clearBackBufferColor_impl(const Color &color) override;
+        void clearBackBufferColor_impl(float r, float g, float b, float a) override;
         void setViewport_impl(int x, int y, int width, int height) override;
         void turnOn_impl(Capability capability) override;
         void turnOff_impl(Capability capability) override;

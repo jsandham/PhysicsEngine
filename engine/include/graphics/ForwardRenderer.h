@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../core/Input.h"
+#include "../components/Light.h"
 
 #include "Renderer.h"
 #include "RendererShaders.h"

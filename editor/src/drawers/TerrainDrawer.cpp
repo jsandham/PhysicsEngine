@@ -2,6 +2,7 @@
 #include "../../include/ProjectDatabase.h"
 
 #include "components/Terrain.h"
+#include "graphics/RenderContext.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -175,9 +176,24 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
             {
-                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-                    ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
-                    ImVec2(0, 0));
+                if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+                {
+                    // opengl
+                    ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+                        ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
+                else
+                {
+                    // directx
+                    ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+                        ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
+
+                //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+                //    ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+                //    ImVec2(0, 0));
             }
 
             if (ImGui::TreeNodeEx("Grass", ImGuiTreeNodeFlags_DefaultOpen))

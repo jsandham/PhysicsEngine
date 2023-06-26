@@ -1,6 +1,7 @@
 #include "../../include/drawers/MeshDrawer.h"
 
 #include "core/Mesh.h"
+#include "graphics/RenderContext.h"
 
 #include "imgui.h"
 
@@ -188,9 +189,24 @@ void MeshDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
             {
-                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                    ImVec2(0, 0));
+                if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+                {
+                    // opengl
+                    ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+                        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
+                else
+                {
+                    // directx
+                    ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+                        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
+
+                //ImGui::Image(mDrawTex,
+                //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                //    ImVec2(0, 0));
             }
         }
 

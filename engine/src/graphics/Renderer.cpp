@@ -44,34 +44,24 @@ void Renderer::turnVsyncOff()
     sInstance->turnVsyncOff_impl();
 }
 
-void Renderer::bindFramebuffer(Framebuffer* fbo)
+void Renderer::bindBackBuffer()
 {
-    return sInstance->bindFramebuffer_impl(fbo);
+    return sInstance->bindBackBuffer_impl();
 }
 
-void Renderer::unbindFramebuffer()
+void Renderer::unbindBackBuffer()
 {
-    return sInstance->unbindFramebuffer_impl();
+    return sInstance->unbindBackBuffer_impl();
 }
 
-void Renderer::readColorAtPixel(Framebuffer *fbo, int x, int y, Color32 *color)
+void Renderer::clearBackBufferColor(const Color &color)
 {
-    return sInstance->readColorAtPixel_impl(fbo, x, y, color);
+     return sInstance->clearBackBufferColor_impl(color);
 }
 
-void Renderer::clearFrambufferColor(const Color &color)
+void Renderer::clearBackBufferColor(float r, float g, float b, float a)
 {
-    return sInstance->clearFrambufferColor_impl(color);
-}
-
-void Renderer::clearFrambufferColor(float r, float g, float b, float a)
-{
-    return sInstance->clearFrambufferColor_impl(r, g, b, a);
-}
-
-void Renderer::clearFramebufferDepth(float depth)
-{
-    return sInstance->clearFramebufferDepth_impl(depth);
+     return sInstance->clearBackBufferColor_impl(r, g, b, a);
 }
 
 void Renderer::setViewport(int x, int y, int width, int height)

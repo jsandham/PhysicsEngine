@@ -238,7 +238,7 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
 {
     if (camera->mRenderToScreen)
     {
-        Renderer::getRenderer()->bindFramebuffer(0);
+        Renderer::getRenderer()->bindBackBuffer();
         Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                               camera->getViewport().mHeight);
 
@@ -246,7 +246,7 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
         Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
-        Renderer::getRenderer()->unbindFramebuffer();
+        Renderer::getRenderer()->unbindBackBuffer();
     }
 
     camera->endQuery();

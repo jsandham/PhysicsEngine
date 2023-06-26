@@ -21,6 +21,7 @@ namespace PhysicsEngine
         void bind() override;
         void unbind() override;
         void setViewport(int x, int y, int width, int height) override;
+        void readColorAtPixel(int x, int y, Color32 *color) override;
 
 		RenderTextureHandle *getColorTex(size_t i = 0) override;
         RenderTextureHandle *getDepthTex() override;

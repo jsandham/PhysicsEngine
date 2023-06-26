@@ -28,6 +28,9 @@ namespace PhysicsEngine
 		void present();
 		void turnVsyncOn();
 		void turnVsyncOff();
+        void bindBackBuffer();
+        void unBindBackBuffer();
+        void clearBackBufferColor(float r, float g, float b, float a);
 
 		ID3D11Device* getD3DDevice() { return mD3DDevice; }
 		ID3D11DeviceContext* getD3DDeviceContext() { return mD3DDeviceContext; }

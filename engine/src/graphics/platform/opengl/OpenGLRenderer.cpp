@@ -58,50 +58,25 @@ void OpenGLRenderer::turnVsyncOff_impl()
     mContext->turnVsyncOff();
 }
 
-void OpenGLRenderer::bindFramebuffer_impl(Framebuffer* fbo)
+void OpenGLRenderer::bindBackBuffer_impl()
 {
-    if (fbo == nullptr)
-    {
-        CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));            
-    }
-    else
-    {
-        fbo->bind();
-    }
+    mContext->bindBackBuffer();
 }
 
-void OpenGLRenderer::unbindFramebuffer_impl()
+void OpenGLRenderer::unbindBackBuffer_impl()
 {
-    CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    mContext->unBindBackBuffer();
 }
 
-void OpenGLRenderer::readColorAtPixel_impl(Framebuffer *fbo, int x, int y, Color32 *color)
+void OpenGLRenderer::clearBackBufferColor_impl(const Color &color)
 {
-    if (fbo != nullptr)
-    {
-        fbo->bind();
-        CHECK_ERROR(glReadBuffer(GL_COLOR_ATTACHMENT0));
-        CHECK_ERROR(glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color));
-        fbo->unbind();
-    }
+    this->clearBackBufferColor_impl(color.mR, color.mG, color.mB, color.mA);
 }
 
-void OpenGLRenderer::clearFrambufferColor_impl(const Color &color)
-{
-    CHECK_ERROR(glClearColor(color.mR, color.mG, color.mB, color.mA));
-    CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void OpenGLRenderer::clearFrambufferColor_impl(float r, float g, float b, float a)
+void OpenGLRenderer::clearBackBufferColor_impl(float r, float g, float b, float a)
 {
     CHECK_ERROR(glClearColor(r, g, b, a));
     CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
-}
-
-void OpenGLRenderer::clearFramebufferDepth_impl(float depth)
-{
-    CHECK_ERROR(glClearDepth(depth));
-    CHECK_ERROR(glClear(GL_DEPTH_BUFFER_BIT));
 }
 
 void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)

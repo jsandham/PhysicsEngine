@@ -372,7 +372,7 @@ void Mesh::load(const std::string &filepath)
                 auto it = map.find(idx);
                 if (it != map.end())
                 {
-                    mIndices[index] = it->second;
+                    mIndices[index] = static_cast<unsigned int>(it->second);
                     index++;
                 }
                 else

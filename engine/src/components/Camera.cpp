@@ -293,7 +293,7 @@ Id Camera::getTransformIdAtScreenPos(int x, int y) const
 {
     // Note: OpenGL assumes that the window origin is the bottom left corner
     Color32 color;
-    Renderer::getRenderer()->readColorAtPixel(mTargets.mColorPickingFBO, x, y, &color);
+    mTargets.mColorPickingFBO->readColorAtPixel(x, y, &color);
 
     uint32_t i = Color32::convertColor32ToUint32(color);
     if ((i - 1) < mColoringIds.size() && i >= 1)

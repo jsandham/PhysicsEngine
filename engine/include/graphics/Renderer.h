@@ -7,18 +7,10 @@
 
 #include "glm/glm.hpp"
 
-#include "../components/Camera.h"
-#include "../components/Light.h"
-#include "../core/RenderTexture.h"
-#include "../core/Shader.h"
-#include "../core/Texture.h"
+#include "../core/Color.h"
 
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
-
-#include "TextureHandle.h"
-#include "VertexBuffer.h"
-#include "UniformBuffer.h"
 
 namespace PhysicsEngine
 {
@@ -51,12 +43,10 @@ public:
     static void present();
     static void turnVsyncOn();
     static void turnVsyncOff();
-    static void bindFramebuffer(Framebuffer* fbo);
-    static void unbindFramebuffer();
-    static void readColorAtPixel(Framebuffer *fbo, int x, int y, Color32 *color);
-    static void clearFrambufferColor(const Color &color);
-    static void clearFrambufferColor(float r, float g, float b, float a);
-    static void clearFramebufferDepth(float depth);
+    static void bindBackBuffer();
+    static void unbindBackBuffer();
+    static void clearBackBufferColor(const Color &color);
+    static void clearBackBufferColor(float r, float g, float b, float a);
     static void setViewport(int x, int y, int width, int height);
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
@@ -76,12 +66,10 @@ protected:
     virtual void present_impl() = 0;
     virtual void turnVsyncOn_impl() = 0;
     virtual void turnVsyncOff_impl() = 0;
-    virtual void bindFramebuffer_impl(Framebuffer* fbo) = 0;
-    virtual void unbindFramebuffer_impl() = 0;
-    virtual void readColorAtPixel_impl(Framebuffer *fbo, int x, int y, Color32 *color) = 0;
-    virtual void clearFrambufferColor_impl(const Color &color) = 0;
-    virtual void clearFrambufferColor_impl(float r, float g, float b, float a) = 0;
-    virtual void clearFramebufferDepth_impl(float depth) = 0;
+    virtual void bindBackBuffer_impl() = 0;
+    virtual void unbindBackBuffer_impl() = 0;
+    virtual void clearBackBufferColor_impl(const Color &color) = 0;
+    virtual void clearBackBufferColor_impl(float r, float g, float b, float a) = 0;
     virtual void setViewport_impl(int x, int y, int width, int height) = 0;
     virtual void turnOn_impl(Capability capability) = 0;
     virtual void turnOff_impl(Capability capability) = 0;

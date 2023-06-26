@@ -16,14 +16,23 @@ void PreferencesWindow::init(Clipboard &clipboard)
     // Setup default style
     ImGui::StyleColorsCorporate();
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontDefault();
-
     ImFontConfig config;
     config.MergeMode = true;
     config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
     static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+    io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("fonts/ProggyTiny.ttf", 10.0f);
+    io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("fonts/Cousine-Regular.ttf", 13.0f);
+    io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("fonts/DroidSans.ttf", 13.0f);
+    io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+    io.Fonts->AddFontFromFileTTF("fonts/Karla-Regular.ttf", 13.0f);
+    io.Fonts->AddFontFromFileTTF("fonts/fontawesome-webfont.ttf", 13.0f, &config, icon_ranges);
+
     io.Fonts->Build();
 }
 

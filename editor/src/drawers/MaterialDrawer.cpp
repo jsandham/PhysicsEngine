@@ -12,6 +12,7 @@
 #include "core/Texture2D.h"
 
 #include "graphics/Renderer.h"
+#include "graphics/RenderContext.h"
 
 using namespace PhysicsEditor;
 
@@ -181,9 +182,24 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
         if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
         {
-            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                ImVec2(0, 0));
+            if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+            {
+                // opengl
+                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                    ImVec2(0, 0));
+            }
+            else
+            {
+                // directx
+                ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                    ImVec2(0, 0));
+            }
+
+            //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+            //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+            //    ImVec2(0, 0));
         }
         ImGui::EndChild();
     }

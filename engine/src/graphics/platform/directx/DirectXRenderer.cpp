@@ -50,25 +50,24 @@ void DirectXRenderer::turnVsyncOff_impl()
     mContext->turnVsyncOff();
 }
 
-void DirectXRenderer::bindFramebuffer_impl(Framebuffer* fbo)
+void DirectXRenderer::bindBackBuffer_impl()
 {
-}
-void DirectXRenderer::unbindFramebuffer_impl()
-{
+    mContext->bindBackBuffer();
 }
 
-void DirectXRenderer::readColorAtPixel_impl(Framebuffer *fbo, int x, int y, Color32 *color)
+void DirectXRenderer::unbindBackBuffer_impl()
 {
+    mContext->unBindBackBuffer();
 }
 
-void DirectXRenderer::clearFrambufferColor_impl(const Color &color)
+void DirectXRenderer::clearBackBufferColor_impl(const Color &color)
 {
+     this->clearBackBufferColor_impl(color.mR, color.mG, color.mB, color.mA);
 }
-void DirectXRenderer::clearFrambufferColor_impl(float r, float g, float b, float a)
+
+void DirectXRenderer::clearBackBufferColor_impl(float r, float g, float b, float a)
 {
-}
-void DirectXRenderer::clearFramebufferDepth_impl(float depth)
-{
+    mContext->clearBackBufferColor(r, g, b, a);
 }
 
 void DirectXRenderer::setViewport_impl(int x, int y, int width, int height)
@@ -79,6 +78,8 @@ void DirectXRenderer::setViewport_impl(int x, int y, int width, int height)
     viewport.TopLeftY = static_cast<float>(y);
     viewport.Width = static_cast<float>(width);
     viewport.Height = static_cast<float>(height);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
 
     mContext->getD3DDeviceContext()->RSSetViewports(1, &viewport);
 }

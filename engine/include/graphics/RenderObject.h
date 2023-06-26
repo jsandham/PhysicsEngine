@@ -3,10 +3,12 @@
 
 #define GLM_FORCE_RADIANS
 
+#include "../core/Id.h"
+#include "../core/Guid.h"
 #include "../core/Sphere.h"
-#include "glm/glm.hpp"
-
 #include "../graphics/MeshHandle.h"
+
+#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

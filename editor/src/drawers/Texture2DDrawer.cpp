@@ -2,6 +2,7 @@
 #include "../../include/EditorClipboard.h"
 
 #include "core/Texture2D.h"
+#include "graphics/RenderContext.h"
 
 #include "imgui.h"
 
@@ -308,15 +309,20 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (mDrawTex != nullptr)
             {
-                // opengl
-                ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex)),
-                    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                    ImVec2(0, 0));
-                
-                // directx
-                //ImGui::Image(mDrawTex,
-                //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-                //    ImVec2(0, 0));
+                if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+                {
+                    // opengl
+                    ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex)),
+                        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
+                else
+                {
+                    // directx
+                    ImGui::Image(mDrawTex,
+                        ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
+                        ImVec2(0, 0));
+                }
             }
 
             ImGui::EndChild();

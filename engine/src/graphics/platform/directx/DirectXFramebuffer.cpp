@@ -7,6 +7,67 @@
 
 using namespace PhysicsEngine;
 
+//// Initialize the render target texture description.
+//D3D11_TEXTURE2D_DESC textureDesc;
+//ZeroMemory(&textureDesc, sizeof(textureDesc));
+//
+//// Setup the render target texture description.
+//textureDesc.Width = width;
+//textureDesc.Height = height;
+//textureDesc.MipLevels = 1;
+//textureDesc.ArraySize = 1;
+//textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+//textureDesc.SampleDesc.Count = 1;
+//textureDesc.Usage = D3D11_USAGE_DEFAULT;
+//textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+//textureDesc.CPUAccessFlags = 0;
+//textureDesc.MiscFlags = 0;
+//
+//// Create the render target textures.
+//ID3D11Device *device = GRAPHICS.GetPipeline()->GetDevice();
+//mRenderTargetTextures.resize(count, nullptr);
+//for (u32 i = 0; i < count; ++i)
+//{
+//    HRESULT result = device->CreateTexture2D(&textureDesc, nullptr, mRenderTargetTextures.data() + i);
+//    if (FAILED(result))
+//    {
+//        return;
+//    }
+//}
+//
+//// Setup the description of the render target view.
+//D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+//renderTargetViewDesc.Format = textureDesc.Format;
+//renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+//renderTargetViewDesc.Texture2D.MipSlice = 0;
+//
+//// Create the render target views.
+//mRenderTargetViews.resize(count, nullptr);
+//for (u32 i = 0; i < count; ++i)
+//{
+//    HRESULT result =
+//        device->CreateRenderTargetView(mRenderTargetTextures[i], &renderTargetViewDesc, mRenderTargetViews.data() + i);
+//    if (FAILED(result))
+//    {
+//        return;
+//    }
+//}
+//
+//// Setup the description of the shader resource view.
+//D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+//shaderResourceViewDesc.Format = textureDesc.Format;
+//shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+//shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+//shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+
+
+
+
+
+
+
+
 DirectXFramebuffer::DirectXFramebuffer(int width, int height) : Framebuffer(width, height)
 {
     mColorTex.resize(1);
@@ -22,7 +83,7 @@ DirectXFramebuffer::DirectXFramebuffer(int width, int height) : Framebuffer(widt
 
     // Creating a view of the texture to be used when binding it as a render target
     // D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-    // renderTargetViewDesc.Format = format;
+    // renderTargetViewDesc.Format = textureDesc.Format;
     // renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
     // renderTargetViewDesc.Texture2D.MipSlice = 0;
     CHECK_ERROR(device->CreateRenderTargetView(static_cast<ID3D11Texture2D*>(mColorTex[0]->getTexture()), nullptr,
@@ -124,10 +185,10 @@ void DirectXFramebuffer::clearColor(float r, float g, float b, float a)
     assert(context != nullptr);
 
     float color[4];
-    color[0] = r;
-    color[1] = g;
-    color[2] = b;
-    color[3] = a;
+    color[0] = 1.0f;// r;
+    color[1] = 0.0f;// g;
+    color[2] = 0.0f;// b;
+    color[3] = 1.0f;// a;
 
     context->ClearRenderTargetView(mRenderTargetViews[0], color);
 }
@@ -141,19 +202,19 @@ void DirectXFramebuffer::clearDepth(float depth)
 }
 
 void DirectXFramebuffer::bind()
-{
-    //ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
-    //assert(context != nullptr);
+{ 
+    ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    assert(context != nullptr);
 
-    //context->OMSetRenderTargets(mRenderTargetViews.size(), mRenderTargetViews.data(), mDepthStencilView);
+    context->OMSetRenderTargets(mRenderTargetViews.size(), mRenderTargetViews.data(), mDepthStencilView);
 }
 
 void DirectXFramebuffer::unbind()
 {
-    //ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
-    //assert(context != nullptr);
+    ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    assert(context != nullptr);
 
-    //context->OMSetRenderTargets(mNullRenderTargetViews.size(), mNullRenderTargetViews.data(), nullptr);
+    context->OMSetRenderTargets(mNullRenderTargetViews.size(), mNullRenderTargetViews.data(), nullptr);
 }
 
 void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
@@ -171,8 +232,14 @@ void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
     viewport.Height = static_cast<float>(mHeight);
     viewport.TopLeftX = static_cast<float>(x);
     viewport.TopLeftY = static_cast<float>(y);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
 
     context->RSSetViewports(1, &viewport);
+}
+
+void DirectXFramebuffer::readColorAtPixel(int x, int y, Color32 *color)
+{
 }
 
 RenderTextureHandle *DirectXFramebuffer::getColorTex(size_t i)

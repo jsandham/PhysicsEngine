@@ -3,6 +3,7 @@
 #include "../../../../include/graphics/Renderer.h"
 
 #include "../../../../include/core/Log.h"
+#include "../../../../include/core/Shader.h"
 
 #include <GL/glew.h>
 

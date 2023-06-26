@@ -20,6 +20,9 @@ namespace PhysicsEngine
 		void present();
 		void turnVsyncOn();
 		void turnVsyncOff();
+        void bindBackBuffer();
+        void unBindBackBuffer();
+        void clearBackBufferColor(float r, float g, float b, float a);
 
 		static OpenGLRenderContext* get() { return (OpenGLRenderContext*)sContext; }
 

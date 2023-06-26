@@ -9,6 +9,7 @@
 #include "imgui_impl_win32.h"
 
 #include <core/Application.h>
+#include <graphics/Renderer.h>
 #include <graphics/RenderContext.h>
 #include <graphics/platform/directx/DirectXRenderContext.h>
 #include <windows.h>
@@ -114,6 +115,7 @@ void ImGuiLayer::end()
     // imgui render calls
     ImGui::Render();
 
+    PhysicsEngine::Renderer::bindBackBuffer();
     switch (PhysicsEngine::RenderContext::getRenderAPI())
     {
     case PhysicsEngine::RenderAPI::OpenGL:
@@ -123,6 +125,7 @@ void ImGuiLayer::end()
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
         break;
     }
+    PhysicsEngine::Renderer::unbindBackBuffer();
 
     ImGui::EndFrame();
 }

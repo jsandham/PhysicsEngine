@@ -5,6 +5,7 @@
 #include "core/Log.h"
 #include "core/Rect.h"
 #include "core/Application.h"
+#include "graphics/RenderContext.h"
 
 #include "../../include/imgui/imgui_extensions.h"
 
@@ -381,7 +382,16 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 
     if (tex != nullptr)
     {
-        ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(tex)), mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+        if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
+        {
+            // opengl
+            ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(tex)), mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+        }
+        else
+        {
+            // directx
+            ImGui::Image(tex, mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+        }
     }
 
     // draw transform gizmo if entity is selected

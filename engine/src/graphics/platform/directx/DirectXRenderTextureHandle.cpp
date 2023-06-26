@@ -69,7 +69,7 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
     mShaderResourceView = nullptr;
     mSamplerState = nullptr;
 
-     mFormat = format;
+    mFormat = format;
     mWrapMode = wrapMode;
     mFilterMode = filterMode;
     mAnisoLevel = 1;
@@ -93,29 +93,28 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
     {
         mSamplerState->Release();
     }
-
+    
+    // Setup the render target texture description.
     ZeroMemory(&mTextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-
     mTextureDesc.Width = width;
     mTextureDesc.Height = height;
     mTextureDesc.MipLevels = 1;
     mTextureDesc.ArraySize = 1;
-    mTextureDesc.Format = getTextureFormat(format);
     mTextureDesc.SampleDesc.Count = 1;
-    mTextureDesc.Usage = D3D11_USAGE_DYNAMIC;
-    /*mTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    mTextureDesc.Usage = D3D11_USAGE_DEFAULT;
     switch (format)
     {
     case TextureFormat::Depth:
-        mTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+        mTextureDesc.Format = DXGI_FORMAT_D32_FLOAT;
+        mTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
         break;
     case TextureFormat::RG:
     case TextureFormat::RGB:
     case TextureFormat::RGBA:
+        mTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
         break;
-    }*/
-    mTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    }    
     mTextureDesc.CPUAccessFlags = 0;
     mTextureDesc.MiscFlags = 0;
 
@@ -124,24 +123,23 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
 
     CHECK_ERROR(device->CreateTexture2D(&mTextureDesc, NULL, &mTexture));
 
-    ZeroMemory(&mShaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-    mShaderResourceViewDesc.Format = mTextureDesc.Format;
-    mShaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    mShaderResourceViewDesc.Texture2D.MipLevels = mTextureDesc.MipLevels;
 
-    CHECK_ERROR(device->CreateShaderResourceView(mTexture, &mShaderResourceViewDesc, &mShaderResourceView));
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        break;
+    case TextureFormat::RG:
+    case TextureFormat::RGB:
+    case TextureFormat::RGBA:
+        ZeroMemory(&mShaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+        mShaderResourceViewDesc.Format = mTextureDesc.Format;
+        mShaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        mShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+        mShaderResourceViewDesc.Texture2D.MipLevels = mTextureDesc.MipLevels;
 
-    /*ZeroMemory(&mSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
-    mSamplerDesc.AddressU = getTextureWrapMode(wrapMode);
-    mSamplerDesc.AddressV = getTextureWrapMode(wrapMode);
-    mSamplerDesc.MinLOD = 0;
-    mSamplerDesc.MaxLOD = 11;
-    mSamplerDesc.Filter =
-        filterMode == TextureFilterMode::Bilinear ? D3D11_FILTER_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_POINT;
-    mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-    mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-    CHECK_ERROR(device->CreateSamplerState(&mSamplerDesc, &mSamplerState));*/
+        CHECK_ERROR(device->CreateShaderResourceView(mTexture, &mShaderResourceViewDesc, &mShaderResourceView));
+        break;
+    }    
 }
 
 DirectXRenderTextureHandle::~DirectXRenderTextureHandle()
@@ -169,19 +167,3 @@ void *DirectXRenderTextureHandle::getIMGUITexture()
 {
     return static_cast<void*>(mShaderResourceView);
 }
-//
-//
-////namespace Graphics
-////{
-////	ShaderProgram
-////  Texture2D
-////  Cubemap
-////  Framebuffer
-////  VertexBuffer
-////  UniformBuffer
-////  Mesh
-////}
-////
-////
-////Graphics::Texture2D
-////Graphics::ShaderProgram
